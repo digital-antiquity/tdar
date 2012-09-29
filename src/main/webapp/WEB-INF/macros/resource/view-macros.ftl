@@ -119,7 +119,7 @@ View freemarker macros
 		<ul class="downloads">
         <#list resource.informationResourceFiles as irfile>
               <#if irfile.latestUploadedVersion??>
-					<li class="${irfile.extension} <#if irfile.deleted>view-deleted-file</#if>">
+					<li class="${irfile.latestUploadedVersion.extension} <#if irfile.deleted>view-deleted-file</#if>">
 	                    <@createFileLink irfile />
               </#if>
               <#if irfile.latestTranslatedVersion?? && resource.resourceType == 'DATASET' >
@@ -490,8 +490,10 @@ No categories or subcategories specified.
 
 <p class="meta">
 	<@showCreatorProxy proxyList=authorshipProxies />
-		<strong>Year:</strong> ${document.date?c}<br/>
-
+	<#if resource.date?has_content>
+		<strong>Year:</strong> ${resource.date?c}<br/>
+	</#if>
+	
 	<#if copyrightMandatory && resource.copyrightHolder?? >
 	    <strong>Primary Copyright Holder:</strong>
 	    <@browse resource.copyrightHolder /><br/>

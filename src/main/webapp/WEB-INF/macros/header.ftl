@@ -43,7 +43,7 @@
                      "/includes/gzoom_uncompressed.js",
                      "/includes/tdar.dataintegration.js", 
                      "/includes/latLongUtil-1.0.js",
-                     "/includes/jquery.maphighlight.local.js"
+                     "/includes/jquery.maphighlight.local.js",
                      "/includes/tdar.upload.js",
                      "/includes/blueimp-javascript-templates/tmpl.min.js",
                      "/includes/blueimp-jquery-file-upload-3c5d440/js/jquery.iframe-transport.js", 
