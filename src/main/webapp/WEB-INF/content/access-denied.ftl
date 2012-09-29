@@ -1,0 +1,9 @@
+<head>
+<title>Access Denied</title>
+<meta name="lastModifiedDate" content="$Date$"/>
+</head>
+<p>
+You do not have the privileges necessary to access this section of this site.  This
+access attempt has been logged.  If you feel this has been error, please contact us
+or file a bug report at our <a href='http://dev.tdar.org/jira'>issue tracker</a>.
+</p>

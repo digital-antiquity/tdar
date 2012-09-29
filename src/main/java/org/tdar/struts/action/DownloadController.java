@@ -1,0 +1,176 @@
+package org.tdar.struts.action;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.InterceptorRef;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.convention.annotation.Results;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.tdar.core.bean.resource.InformationResourceFile;
+import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
+
+@ParentPackage("secured")
+@Namespace("/filestore/{informationResourceFileId}")
+@Results({
+        @Result(name = "success", type = "stream",
+                params = {
+                        "contentType", "${contentType}",
+                        "inputName", "inputStream",
+                        "contentDisposition", "filename=\"${fileName}\"",
+                        "contentLength", "${contentLength}"
+        }
+        ),
+        @Result(name = "error", type = "httpheader", params = { "error", "404" }),
+        @Result(name = "forbidden", type = "httpheader", params = { "error", "403" })
+
+})
+@Component
+@Scope("prototype")
+public class DownloadController extends TdarActionSupport {
+
+    private static final long serialVersionUID = 7548544212676661097L;
+    private transient InputStream inputStream;
+    private String contentType;
+    private String fileName;
+    private Long contentLength;
+    private Long informationResourceFileId;
+    private Integer version;
+    private VersionType type;
+
+    public static final String FORBIDDEN = "forbidden";
+
+    @Action(value = "get")
+    public String execute() {
+        InformationResourceFileVersion irFileVersion = null;
+        if (informationResourceFileId == null)
+            return ERROR;
+        irFileVersion = getInformationResourceFileVersionService().find(informationResourceFileId);
+        if (irFileVersion == null) {
+            getLogger().debug("no informationResourceFiles associated with this id [" + informationResourceFileId + "]");
+            return ERROR;
+        }
+        if ((irFileVersion.getInformationResourceFile().isConfidential() || !irFileVersion.getInformationResourceFile().getInformationResource()
+                .isAvailableToPublic())
+                && !getEntityService().canViewConfidentialInformation(getSessionData().getPerson(),
+                        irFileVersion.getInformationResourceFile().getInformationResource())) {
+            String msg = String.format("user %s does not have permissions to download %s", getSessionData().getPerson(), irFileVersion);
+            getLogger().warn(msg);
+            return FORBIDDEN;
+        }
+        return handleDownload(irFileVersion);
+    }
+
+    @Action(value = "thumbnail", interceptorRefs = { @InterceptorRef("unAuthenticatedStack") })
+    public String thumbnail() {
+        InformationResourceFileVersion irFileVersion = null;
+        if (informationResourceFileId == null)
+            return ERROR;
+        irFileVersion = getInformationResourceFileVersionService().find(informationResourceFileId);
+        if (irFileVersion == null) {
+            getLogger().warn("thumbnail request: no informationResourceFiles associated with this id [" + informationResourceFileId + "]");
+            return ERROR;
+        }
+
+        // image must be thumbnail
+        if (irFileVersion.getFileVersionType() != VersionType.WEB_SMALL) {
+            getLogger().warn("thumbail request: requested informationResourceFileVersion exists but is not a thumbnail:" + informationResourceFileId);
+            return ERROR;
+        }
+
+        // must not be confidential/embargoed
+        if ((irFileVersion.getInformationResourceFile().isConfidential() || !irFileVersion.getInformationResourceFile().getInformationResource()
+                .isAvailableToPublic()) && !getEntityService().canViewConfidentialInformation(getSessionData().getPerson(),
+                        irFileVersion.getInformationResourceFile().getInformationResource())) {
+            getLogger().warn("thumbail request: resource is confidential/embargoed:" + informationResourceFileId);
+            return FORBIDDEN;
+        }
+
+        return handleDownload(irFileVersion);
+    }
+
+    private String handleDownload(InformationResourceFileVersion irFileVersion) {
+        try {
+
+            File resourceFile = irFileVersion.getFile();
+            fileName = irFileVersion.getFilename();
+
+            if (resourceFile == null || !resourceFile.exists()) {
+                addActionError("File not found");
+                return ERROR;
+            }
+            try {
+                getLogger().debug("downloading file:" + resourceFile.getCanonicalPath());
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            contentLength = resourceFile.length();
+            contentType = irFileVersion.getMimeType();
+            inputStream = new FileInputStream(resourceFile);
+            if (!irFileVersion.isDerivative()) {
+                InformationResourceFile irFile = irFileVersion.getInformationResourceFile();
+                irFile.incrementDownloadCount();
+                getInformationResourceService().save(irFile);
+            }
+        } catch (FileNotFoundException e) {
+            addActionErrorWithException("File not found", e);
+            return ERROR;
+        }
+
+        return SUCCESS;
+    }
+
+    public InputStream getInputStream() {
+        return inputStream;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public Long getContentLength() {
+        return contentLength;
+    }
+
+    public void setInformationResourceFileId(Long informationResourceFileId) {
+        this.informationResourceFileId = informationResourceFileId;
+    }
+
+    public Long getInformationResourceFileId() {
+        return informationResourceFileId;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+    public VersionType getType() {
+        return type;
+    }
+
+    public void setType(VersionType type) {
+        this.type = type;
+    }
+
+}

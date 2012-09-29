@@ -1,0 +1,200 @@
+package org.tdar.struts.action;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.convention.annotation.Result;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+import org.tdar.core.bean.PersonalFilestoreTicket;
+import org.tdar.core.bean.entity.Person;
+import org.tdar.core.service.FilestoreService;
+import org.tdar.filestore.PersonalFilestore;
+import org.tdar.filestore.PersonalFilestoreFile;
+
+@SuppressWarnings("serial")
+@Namespace("/upload")
+@Component
+@Scope("prototype")
+@ParentPackage("secured")
+public class UploadController extends AuthenticationAware.Base {
+
+    @Autowired
+    private FilestoreService filestoreService;
+
+    private List<File> uploadFile = new ArrayList<File>();
+    private List<String> uploadFileContentType = new ArrayList<String>();
+    private List<Long> uploadFileSizes = new ArrayList<Long>();
+    private List<String> uploadFileFileName = new ArrayList<String>();
+    private PersonalFilestoreTicket personalFilestoreTicket;
+
+    private String callback;
+
+    // on the receiving end
+    private List<String> processedFileNames;
+
+    // this is the groupId that comes back to us from the the various upload requests
+    private Long ticketId;
+
+    // private static final long INVALID_TICKET_ID = -1L;
+
+    @Action(value = "index", results = { @Result(name = "success", location = "index.ftl") })
+    public String index() {
+
+        // get a claimcheck that all uploads will use
+        // personalFilestoreTicket = filestoreService.createPersonalFilestoreTicket(getAuthenticatedUser());
+        return SUCCESS;
+    }
+
+    @Action(value = "upload", results = {
+            @Result(name = SUCCESS, type = "freemarker", location = "results.ftl", params = { "contentType", "text/plain" }),
+            @Result(name = ERROR, type = "freemarker", location = "error.ftl", params = { "contentType", "text/plain" })
+            // FIXME: the line below does not work like i want it to. I'd like to render error.ftl *and* return a error status code.
+            // @Result(name = ERROR, type = "freemarker", location = "error.ftl", params = { "contentType", "text/plain", "status", "400" })
+            })
+    public String upload() {
+        PersonalFilestoreTicket ticket = getGenericService().find(PersonalFilestoreTicket.class, ticketId);
+        if (ticket == null) {
+            addActionError("asynchronous uploads require a valid ticket"); // FIXME: yeah, like a user will understand this.
+        }
+        if (CollectionUtils.isEmpty(uploadFile)) {
+            addActionError("No files in this request");
+        }
+        Person submitter = getAuthenticatedUser();
+        for (int i = 0; i < uploadFile.size(); i++) {
+            File file = uploadFile.get(i);
+            String fileName = uploadFileFileName.get(i);
+            // put upload in holding area to be retrieved later (maybe) by the informationResourceController
+            if (file != null && file.exists()) {
+                logger.debug("UPLOAD CONTROLLER: processing file:" + uploadFileFileName.get(i) + ", ticket id that came from form:" + ticketId);
+                PersonalFilestore filestore = filestoreService.getPersonalFilestore(submitter);
+                try {
+                    filestore.store(ticket, file, fileName);
+                } catch (Exception e) {
+                    addActionErrorWithException("Could not store file.", e);
+                }
+            }
+        }
+        if (CollectionUtils.isEmpty(getActionErrors())) {
+            return SUCCESS;
+        } else {
+            // FIXME: I was hoping for an annotation-based way to return an error code *and* render a freemarker template. @Result annotations seem to only
+            // allow one or the other (or I'm doing it wrong).
+            setHttpCode(HttpServletResponse.SC_BAD_REQUEST); // 400 seems appropriate
+            return ERROR;
+        }
+    }
+
+    @Deprecated
+    // this feels wrong.
+    private void setHttpCode(int code) {
+        HttpServletResponse response = ServletActionContext.getResponse();
+        response.setStatus(code);
+    }
+
+    @Action(value = "list", results = { @Result(name = "success", type = "freemarker", location = "list.ftl") })
+    public String list() {
+        PersonalFilestore filestore = filestoreService.getPersonalFilestore(getAuthenticatedUser());
+        PersonalFilestoreTicket formGroup = getGenericService().find(PersonalFilestoreTicket.class, ticketId);
+        List<PersonalFilestoreFile> processedFiles = filestore.retrieveAll(formGroup);
+        processedFileNames = new ArrayList<String>();
+        for (PersonalFilestoreFile pf : processedFiles) {
+            processedFileNames.add(pf.getFile().getName());
+        }
+        return "success";
+    }
+
+    // FIXME: generate a JsonResult rather than put these in an ftl
+    @Action(value = "grab-ticket", results = { @Result(name = "success", type = "freemarker", location = "grab-ticket.ftl",
+            params = { "contentType", "text/plain" }) })
+    public String grabTicket() {
+        personalFilestoreTicket = filestoreService.createPersonalFilestoreTicket(getAuthenticatedUser());
+        return SUCCESS;
+    }
+
+    public long getUploadFileSize() {
+        long totalBytes = 0;
+        
+        for (File file : uploadFile) {
+            uploadFileSizes.add(file.length());
+            totalBytes += file.length();
+        }
+        return totalBytes;
+    }
+
+    public List<File> getUploadFile() {
+        return uploadFile;
+    }
+
+    public void setUploadFile(List<File> uploadFile) {
+        this.uploadFile = uploadFile;
+    }
+
+    public List<String> getUploadFileContentType() {
+        return uploadFileContentType;
+    }
+
+    public void setUploadFileContentType(List<String> uploadFileContentType) {
+        this.uploadFileContentType = uploadFileContentType;
+    }
+
+    public List<String> getUploadFileFileName() {
+        return uploadFileFileName;
+    }
+
+    public void setUploadFileFileName(List<String> uploadFileFileName) {
+        this.uploadFileFileName = uploadFileFileName;
+    }
+
+    public PersonalFilestoreTicket getPersonalFilestoreTicket() {
+        return personalFilestoreTicket;
+    }
+
+    public Long getTicketId() {
+        return ticketId;
+    }
+
+    public void setTicketId(Long ticketId) {
+        this.ticketId = ticketId;
+    }
+
+    public List<String> getProcessedFileNames() {
+        return processedFileNames;
+    }
+
+    public void setProcessedFileNames(List<String> processedFileNames) {
+        this.processedFileNames = processedFileNames;
+    }
+
+    public String getCallback() {
+        return callback;
+    }
+
+    public void setCallback(String callback) {
+        this.callback = callback;
+    }
+
+    /**
+     * @param uploadFileSizes the uploadFileSizes to set
+     */
+    public void setUploadFileSizes(List<Long> uploadFileSizes) {
+        this.uploadFileSizes = uploadFileSizes;
+    }
+
+    /**
+     * @return the uploadFileSizes
+     */
+    public List<Long> getUploadFileSizes() {
+        return uploadFileSizes;
+    }
+
+}
