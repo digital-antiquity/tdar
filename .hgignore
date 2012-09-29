@@ -6,7 +6,7 @@ indexes
 target
 bin
 src/main/resources/*.properties
-*-local-settings.xml
+src/main/resources/*-local-settings.xml
 googlemaps-api-key.js
 logs
 *.jpage
@@ -15,6 +15,6 @@ logs
 tags
 *.orig
 *.rej
-
+*.log
 syntax: regexp
 ^src/main/webapp/robots\.txt$
