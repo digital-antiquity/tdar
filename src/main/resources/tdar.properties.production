@@ -1,0 +1,5 @@
+file.store.location=/home/tdar/filestore
+personal.file.store.location=/home/tdar/personal-filestore
+web.root=src/main/webapp
+file.store.class=org.tdar.filestore.PairtreeFilestore
+run.periodic.events=true

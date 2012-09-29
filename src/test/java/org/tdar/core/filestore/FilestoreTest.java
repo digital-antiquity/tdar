@@ -1,0 +1,199 @@
+/**
+ * 
+ */
+package org.tdar.core.filestore;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.tdar.TestConstants.TEST_DOCUMENT;
+import static org.tdar.TestConstants.TEST_DOCUMENT_NAME;
+import static org.tdar.TestConstants.TEST_IMAGE;
+import static org.tdar.TestConstants.TEST_IMAGE_NAME;
+
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
+import org.junit.Test;
+import org.springframework.test.annotation.Rollback;
+import org.tdar.TestConstants;
+import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.InformationResourceFile;
+import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
+import org.tdar.filestore.PairtreeFilestore;
+
+import com.opensymphony.xwork2.interceptor.annotations.Before;
+
+/**
+ * @author Adam Brin
+ * 
+ */
+public class FilestoreTest {
+
+    public static final Long INFORMATION_RESOURCE_ID = 12345l;
+    public static final Long INFORMATION_RESOURCE_FILE_ID = 1234l;
+    public static final Long INFORMATION_RESOURCE_FILE_VERSION_ID = 1112l;
+    private static final Integer VERSION = 1;
+    public static String baseIrPath = File.separator + "12" + File.separator + "34" + File.separator + "5" + File.separator + PairtreeFilestore.CONTAINER_NAME
+            + File.separator;
+
+    protected Logger logger = Logger.getLogger(getClass());
+
+    @Before
+    public void cleanup() {
+        File f = new File(TestConstants.FILESTORE_PATH);
+        System.out.println(f.getAbsolutePath());
+        try {
+            FileUtils.deleteDirectory(f);
+            f = new File(TestConstants.FILESTORE_PATH);
+            f.mkdirs();
+            System.out.println(f.getAbsolutePath());
+        } catch (IOException e) {
+            Logger.getLogger(getClass()).info("Couldn't cleanup filestore, perhaps you're on windows...");
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void filestorePairtreeTest() {
+        assertEquals(PairtreeFilestore.toPairTree(1234567890), File.separator + 12 + File.separator + 34 + File.separator + 56 + File.separator + 78
+                + File.separator + 90 + File.separator + PairtreeFilestore.CONTAINER_NAME + File.separator);
+    }
+
+    @Test
+    public void sanitizeFilenameTest() {
+        assertEquals(PairtreeFilestore.sanitizeFilename("abc.txt"), "abc.txt");
+        assertEquals(PairtreeFilestore.sanitizeFilename("abc'.txt"), "abc_.txt");
+        assertEquals(PairtreeFilestore.sanitizeFilename("abc\"a!@#$%^&*()_{}[]+<>?/\\\\.txt"), "abc_a_______________+______.txt");
+    }
+
+    @Test
+    @Rollback(true)
+    public void filestoreFilenameTest() {
+        cleanup();
+        PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
+        String name = "abc.txt";
+        InformationResourceFileVersion version = generateVersion(name);
+        String baseAssert = store.getFilestoreLocation() + baseIrPath + INFORMATION_RESOURCE_FILE_ID + File.separator + "v1" + File.separator;
+        assertEquals(baseAssert + "archival" + File.separator + name, store.getAbsoluteFilePath(version));
+        version.setFileVersionType(VersionType.WEB_LARGE);
+        assertEquals(baseAssert + PairtreeFilestore.DERIV + File.separator + name, store.getAbsoluteFilePath(version));
+        Logger.getLogger(getClass()).info(store.getAbsoluteFilePath(version));
+    }
+
+    @Test
+    @Rollback(true)
+    public void filestorePopulateVersionTest() throws IOException {
+        cleanup();
+        PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
+        InformationResourceFileVersion version = generateVersion(TEST_DOCUMENT_NAME);
+        File f = new File(TEST_DOCUMENT);
+        store.store(f, version);
+        assertNotNull(version.getChecksum());
+        assertEquals("MD5", version.getChecksumType());
+        assertNotNull(version.getDateCreated());
+        assertEquals("pdf", version.getExtension().toLowerCase());
+        // assertNotNull(version.getFile());
+        assertEquals(TEST_DOCUMENT_NAME, version.getFilename());
+        assertEquals(null, version.getFileType());
+        assertEquals(null, version.getFormat());
+        assertEquals(INFORMATION_RESOURCE_FILE_VERSION_ID, version.getId());
+        assertEquals(INFORMATION_RESOURCE_FILE_ID, version.getInformationResourceFileId());
+        version.getFileVersionType();
+        assertEquals(INFORMATION_RESOURCE_ID, version.getInformationResourceId());
+        assertEquals("application/pdf", version.getMimeType());
+        // version.getPath();
+        assertEquals(null, version.getPremisId());
+        assertEquals(f.length(), version.getSize().intValue());
+        assertEquals(VERSION, version.getVersion());
+        ;
+        // version.getHeight();
+        // version.getWidth();
+    }
+
+    private InformationResourceFileVersion generateVersion(String name) {
+        Document ir = new Document();
+        ir.setId(INFORMATION_RESOURCE_ID);
+        InformationResourceFile irFile = new InformationResourceFile();
+        irFile.setId(INFORMATION_RESOURCE_FILE_ID);
+        irFile.setInformationResource(ir);
+        @SuppressWarnings("deprecation")
+        InformationResourceFileVersion version = new InformationResourceFileVersion();
+        version.setVersion(VERSION);
+        version.setId(INFORMATION_RESOURCE_FILE_VERSION_ID);
+        version.setFilename(name);
+        version.setInformationResourceFile(irFile);
+        version.setFileVersionType(VersionType.UPLOADED_ARCHIVAL);
+        return version;
+    }
+
+    @Test
+    @Rollback(true)
+    public void testStorageAndRetrieval() throws IOException {
+        cleanup();
+        PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
+        InformationResourceFileVersion version = generateVersion(TEST_DOCUMENT_NAME);
+        store.store(new File(TEST_DOCUMENT), version);
+        File f = new File(store.getAbsoluteFilePath(version));
+        assertTrue("file exists: " + f.getCanonicalPath(), f.exists());
+        String expectedPath = store.getFilestoreLocation() + baseIrPath + INFORMATION_RESOURCE_FILE_ID + File.separator + "v1";
+        assertEquals(expectedPath + File.separator + "archival" + File.separator + TEST_DOCUMENT_NAME, f.getAbsolutePath());
+        try {
+            store.purge(version);
+        } catch (IOException e) {
+            if (System.getProperty("os.name").indexOf("indows") == -1 && e.getMessage().contains("Unable to delete file")) {
+                logger.info("couldn't delete file... windows");
+            } else {
+                e.printStackTrace();
+            }
+        }
+        // windows isn't so keen about renaming files it thinks are open, even if
+        // they're not
+        if (System.getProperty("os.name").indexOf("indows") == -1) {
+            assertFalse(f.exists());
+        }
+        String expectedDeletedPath = expectedPath + PairtreeFilestore.DELETED_SUFFIX + File.separator + "archival" + File.separator + TEST_DOCUMENT_NAME;
+        logger.info(expectedDeletedPath);
+        // + File.separator + TEST_DOCUMENT_NAME
+        assertTrue("deleted folder does not exist", new File(expectedDeletedPath).exists());
+    }
+
+    @Test
+    @Rollback(true)
+    public void testStorageAndRetrievalDeleted() throws IOException {
+        cleanup();
+        PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
+        InformationResourceFileVersion version = generateVersion(TEST_IMAGE_NAME);
+        version.getInformationResourceFile().setLatestVersion(2);
+        version.setVersion(2);
+        version.setFileVersionType(VersionType.UPLOADED);
+        store.store(new File(TEST_IMAGE), version);
+        File f = new File(store.getAbsoluteFilePath(version));
+        assertTrue("file exists: " + f.getCanonicalPath(), f.exists());
+        String expectedPath = store.getFilestoreLocation() + baseIrPath + INFORMATION_RESOURCE_FILE_ID + File.separator + "v2";
+        assertEquals(expectedPath + File.separator + TEST_IMAGE_NAME, f.getAbsolutePath());
+        try {
+            store.purge(version);
+        } catch (IOException e) {
+            if (System.getProperty("os.name").indexOf("indows") == -1 && e.getMessage().contains("Unable to delete file")) {
+                logger.info("couldn't delete file... windows");
+            } else {
+                e.printStackTrace();
+            }
+        }
+        // windows isn't so keen about renaming files it thinks are open, even if
+        // they're not
+        if (System.getProperty("os.name").indexOf("indows") == -1) {
+            assertFalse(f.exists());
+        }
+        String expectedDeletedPath = expectedPath + PairtreeFilestore.DELETED_SUFFIX + File.separator + TEST_IMAGE_NAME;
+        logger.info(expectedDeletedPath);
+        // logger.info(f.getAbsolutePath());
+        assertTrue("deleted folder does not exist", new File(expectedDeletedPath).exists());
+    }
+
+}

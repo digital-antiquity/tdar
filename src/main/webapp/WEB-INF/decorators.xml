@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!--
+vim:sts=2:sw=2:
+-->
+<decorators defaultdir="/">
+  <excludes>
+    <pattern>**/ajax/**</pattern>
+    <pattern>/css/*</pattern>
+    <pattern>/images/*</pattern>
+    <pattern>/includes/*</pattern>
+    <pattern>/*.html</pattern>
+    <pattern>/config-browser/*</pattern>
+    <pattern>/services/*</pattern>
+  </excludes>
+<!--   <decorator name='login' page='layout-login.dec'>
+    <pattern>/login*</pattern>
+  </decorator> -->
+  <!-- everything else -->
+  <decorator name="main" page="layout.dec">
+    <pattern>/*</pattern>
+  </decorator>
+</decorators>
+

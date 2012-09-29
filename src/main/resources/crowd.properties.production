@@ -1,0 +1,13 @@
+application.name                        tdar
+application.password                    2.tdar.37
+application.login.url                   http://beta.tdar.org/login
+
+crowd.server.url                        http://auth.tdar.org/crowd/services/
+
+session.isauthenticated                 session.isauthenticated
+session.tokenkey                        session.tokenkey
+session.validationinterval              37
+session.lastvalidation                  session.lastvalidation
+
+
+

@@ -1,0 +1,1027 @@
+#toolbars {
+	font-size: 1.2em !important;
+}
+
+.twoColumn #content {
+	width: 690px !important
+}
+
+.twoColumn #content .entry {
+	width: 670px !important
+}
+
+.twoColumn #sidebar {
+	width: 250px;
+}
+
+.wrapper {
+	width: 980px
+}
+
+#facets li {
+list-style:none !important;
+margin-left: 0em !important;
+}
+#noticecontent {
+	font-size: 120% !important
+}
+
+th,td,p,h4,b,span,input,label {
+	color: #333;
+}
+
+th,label {
+	font-size: 100% !important
+}
+
+p.comment {
+	margin-left: 3em;
+	margin-top: 1em
+}
+
+input,button,select {
+	font-size: 95%;
+	/*	margin-bottom: .3em */
+}
+
+button img {
+	height: 1.2em;
+	padding-right: 2px
+}
+
+fieldset {
+	border: 1px solid #999;
+	margin: 10px;
+	padding: 5px;
+}
+
+form span,form p {
+	position: relative
+}
+
+h2 {
+	font-size: 140% !important;
+	text-shadow: 0 2px 3px #E1D7BC;
+	margin-top: 0em;
+	padding-top: 0em;
+	padding-bottom: 1em;
+	margin-bottom: 0em;
+}
+
+h3 {
+	margin-top: 0em;
+	padding-top: 0em;
+	font-size: 115% !important;
+	border-bottom: 1px solid #E1D7BC;
+	padding-bottom: 1em;
+	margin-bottom: 1em;
+	color: #606030;
+	text-shadow: 0 2px 3px #E1D7BC;
+}
+
+h4 {
+	font-size: 107% !important;
+	padding-bottom: 1em;
+	font-variant: small-caps;
+	color: #606030;
+	text-shadow: 0 2px 3px #E1D7BC;
+}
+
+h5 {
+	font-size: 107% !important;
+	color: #606030;
+}
+
+#content ul.treeview,#content .treeview,#content .treeview ul {
+	list-style: none !important;
+	background-color: transparent !important;
+}
+
+#content .treeview li {
+	list-style: none !important;
+	margin: 0px !important;
+	padding: 3px 0pt 3px 16px !important;
+	background:
+		url(/includes/jquery-treeview/images/treeview-default-line.gif)
+		no-repeat 0px 0px !important;
+}
+
+#content .treeview .hitarea {
+	margin-top: 0.3em;
+}
+
+label {
+	position: absolute;
+	text-align: right;
+	min-width: 8em;
+	/* width: 8em; */
+	font-weight: bold;
+}
+
+.glide {
+	background-color: #FEFAE6;
+	padding: 1em;
+	border: 1px solid #E1D7BC;
+	margin-bottom: 1em;
+	filter: progid :       DXImageTransform.Microsoft.gradient (     
+		 startColorstr =   
+		   '#FEFAE6', endColorstr =       '#F6F2DE' ); /* for IE */
+	background: -webkit-gradient(linear, left top, left bottom, from(#FEFAE6),
+		to(#F6F2DE) ); /* for webkit browsers */
+	background: -moz-linear-gradient(top, #FEFAE6, #F6F2DE);
+	/* for firefox 3.6+ */
+}
+
+button.addAnother {
+	border: 0px;
+	background: inherit;
+	text-underline: none;
+}
+
+.addAnother {
+	color: #1692B8;
+	cursor: pointer;
+	text-decoration: none;
+	font-size: 8pt;
+}
+
+div .addAnother {
+	top: -.5em;
+}
+
+.normalTop {
+	top: 0em !important;
+}
+
+.addAnother img {
+	margin-right: 5px
+}
+
+.addAnother * {
+	vertical-align: middle;
+	margin: 2px !important;
+}
+
+td .addAnother {
+	margin: 2px !important;
+}
+
+label+input[type=radio],label+input[type=checkbox],label+button {
+	margin-left: 12em;
+}
+input.field[type=checkbox] {
+	margin-left: 9.2em;
+}
+
+.smallIndent {
+	margin-left: .5em !important
+}
+
+.col2 label+input[type=radio],.col2 label+input[type=checkbox] {
+	margin-left: 21em
+}
+
+.col3 label+input[type=radio],.col3 label+input[type=checkbox] {
+	margin-left: 14em
+}
+
+.col4 label+input[type=radio],.col4 label+input[type=checkbox] {
+	margin-left: 10em
+}
+
+input[type=radio]+label,input[type=checkbox]+label,input[type=checkbox]+input[type=hidden]+label
+  {
+  margin-left: 0em;
+  margin-top: -0.15em;
+  text-align: left;
+  white-space: nowrap;
+}
+
+input[type=checkbox] {
+	margin-right: 5px;
+}
+
+td button.addAnother {
+	top: .1em !important;
+}
+
+button {
+	padding: 0px;
+	margin: 0px;
+}
+
+button img {
+	padding: 0px;
+	margin: 0px;
+}
+
+#reminder label,#error label {
+	width: auto;
+	position: relative;
+	text-align: left;
+	display: block;
+	background-position: 0px 3px;
+	color: #990000;
+	padding-left: 2em;
+	background-image: url(../images/exclamation.gif);
+	background-repeat: no-repeat
+}
+
+input.error,textarea.error,select.error, span.error {
+	border: 1px solid #990000;
+	background-image: url(../images/exclamation.gif);
+	background-repeat: no-repeat;
+	background-position: top right;
+}
+span.error {padding-right: 3em;}
+
+select.error { /* error image obstructs spinner on select box */
+	background-image: none;
+}
+
+.action-errors {
+   background-color: #ffc;
+    margin: -0.5em 10px 1em 0;
+    padding: 1em;
+    text-align: left;
+    border: 1px solid red;
+}
+
+#pToggleStackTrace {
+    font-size:smaller;
+    font-style:normal;
+    color: brown   ;
+    text-align:right;
+}
+
+#stackTraceList {
+    font-style:normal;
+    color:brown;
+    height: 100pt;
+    overflow: auto;
+    border-top: 1px solid #444;
+    text-align: left;
+    font: monospace;
+    font-size: smaller;
+}
+
+
+/* if input is inside a div.field, then on every new line and the first, remove the extra left border */
+.field>input:first-child,.field>br+input {
+	margin-left: .5em !important;
+	margin-bottom: 6px; /* ie7 */
+}
+
+.col2>input:first-child {
+	margin-bottom: 6px; /* ie7 */
+	margin-left: 6px; /* ie7 */
+}
+
+table.hideHeader tr th {
+	display: none;
+}
+
+em + .field,label + .field, label + em  {
+	margin-left: 8.5em;
+}
+
+div.grippie { /*	margin-left: 8.8em */
+	
+}
+
+.indentFull,label+select,label+input,input[type=button],input[type=submit]
+	{
+	margin-left: 9.2em;
+	margin-bottom: .5em;
+}  /* always .4 em more than .field */
+.addAnother {
+	margin-left: 10em;
+}  /* always .8em more than select */
+.field {
+	width: 36em
+}
+
+textarea {
+	width: 95%;
+	font-family: Arial;
+}
+
+div.grippie {
+	width: 96%;
+}
+
+.shortfield {
+	width: 12.4em;
+}
+/* HACK: make right border of shortfields textboxes end at the same position as the long text boxes */
+.right-shortfield {
+	width: 13.8em;
+}
+
+.longfield {
+	width: 36em !important;
+}
+
+/* //TODO:kill me */
+.reallylongfield {
+	width: 95%
+}
+
+label.check,label.radio {
+	position: relative;
+	text-align: left;
+}
+
+table label,table .field,.field input,table select,table input,table textarea
+	{
+	margin-left: 0em;
+}
+
+input[type=radio] {
+	margin-left: 2em;
+	margin-right: .5em;
+}
+
+#t-issn {
+	clear: both;
+}
+
+#notice h2 {
+	margin-left: 0em
+}
+
+
+div.grippie {
+	background: #EEEEEE url(/images/grippie.png)
+		no-repeat scroll center 2px;
+	border-color: #DDDDDD;
+	border-style: solid;
+	border-width: 0pt 1px 1px;
+	cursor: s-resize;
+	height: 6px;
+	margin-bottom: 5pt;
+	overflow: hidden;
+}
+
+.resizable-textarea textarea {
+	display: block;
+	margin-bottom: 0pt;
+	height: 6em;
+	font-size:1em;
+}
+
+#content .proj ul,#content .proj ul li {
+	list-style-type: none !important;
+	display: block
+}
+
+.singleColumn #content,.singleColumn #content .entry {
+	width: 99%
+}
+
+.singleColumn #sidebar {
+	display: none;
+	visibility: hidden;
+}
+
+/*FIXME: this conflicts with style.css, so we rely on tdar.css being included after style.css. Sketchy. */
+#sidebar ul {
+	margin-left: 1em;
+}
+
+#sidebar code {
+    background-color:inherit;
+    font-weight:normal;
+    font-size:inherit;
+}	
+	
+#sidebar ul li{
+	list-style: disc;
+	font-weight:normal;
+	margin-left: 1em;
+}
+
+#notice {
+    border: 1px solid #CCC;
+    background: #ffffCC;
+    padding: 5px
+}
+
+#noticecontent {
+    font-size: 80%;
+    font-weight: bold;
+    background: #FFFFCC;
+}
+#noticecontent aside {
+    font-weight: normal;
+}
+
+
+
+.wwgrp br {
+	display: none;
+	visbility: hidden;
+}
+
+label+table.field {
+	margin-top: -0.3em;
+}
+
+label.toplabel {
+	width: 20em !important;
+	margin-left: 0em;
+	text-align: left;
+}
+
+.tableFormat {
+	width: 99%;
+	z-index: 100;
+	background-color: #E1D7BC;
+	border: 1px solid #CFB59A;
+	border-spacing: 0px 0px;
+}
+
+.tableFormat thead {
+	background-color: #D0C6AB;
+}
+
+.tableFormat td {
+	border-top: 1px solid #CFB59A;
+}
+
+.silhouette {
+	float: left;
+	padding: 2px
+}
+
+.ui-autocomplete-loading {
+	background: url('../images/indicator.gif') no-repeat right;
+}
+
+/* Autocomplete
+----------------------------------*/
+.ui-autocomplete {
+	position: absolute;
+	cursor: default;
+}
+
+.ui-autocomplete-loading {
+	background: white url('../images/ui-anim_basic_16x16.gif') right center
+		no-repeat;
+}
+
+/* workarounds */
+* html .ui-autocomplete {
+	width: 1px;
+}  /* without this, the menu expands to 100% in IE6 */ /* Menu
+----------------------------------*/
+.ui-menu {
+	list-style: none;
+	padding: 2px;
+	margin: 0;
+	display: block;
+}
+
+.ui-menu .ui-menu {
+	margin-top: -3px;
+}
+
+.ui-menu .ui-menu-item {
+	margin: 1px;
+	padding: 1px;
+	width: 100%;
+	background-color: #FFF;
+	border: 1px solid #ddd;
+}
+
+.proj h4 {
+	border-bottom: 1px solid #BBB;
+	font-size: 112% !important;
+	font-variant: normal !important;
+}
+
+.ui-menu .ui-menu-item a {
+	text-decoration: none;
+	padding: 2px;
+	display: block;
+}
+
+.ui-menu .ui-menu-item a.ui-state-hover,.ui-menu .ui-menu-item a.ui-state-active
+	{
+	background-color: #eee;
+    font-weight: normal;
+    margin: inherit !important;
+}
+
+div.notice {
+	padding: 0px
+}
+
+.width99percent input[type=text],.width99percent input[type=password],.width99percent input[type=select]
+	{
+	width: 93%;
+}
+
+
+.width50percent2 input[type=text],.width50percent input[type=password],.width50percent input[type=select]
+  {
+  width: 48.6%;
+}
+
+.width30percent input[type=text],.width30percent input[type=password],.width30percent input[type=select]
+  {
+  width: 30%;
+  margin-right: 1%;
+}
+
+.width32percent input[type=text],.width30percent input[type=password],.width30percent input[type=select]
+  {
+  width: 32%;
+}
+
+.width15percent input[type="text"], .width30percent input[type="password"], .width30percent input[type="select"] {
+width: 15%;
+margin-right: 1%;
+}
+
+
+.width50percent input[type=text],.width50percent input[type=password],.width50percent input[type=select]
+	{
+	width: 48%;
+	margin-right: 1%;
+}
+
+.tableFormat label {
+	min-width: auto !important;
+	position: relative !important;
+	text-align: auto !important;
+}
+
+.width70percent input[type=text],.width70percent input[type=password],.width70percent input[type=select]
+  {
+  width: 73%;
+  margin-right: 1%;
+}
+
+.width70percent>input  ~ input {
+  width: 25%;
+  margin-right: 1%;
+}
+
+.width60percent input[type=text],.width60percent input[type=password],.width60percent input[type=select]
+  {
+  width: 63%;
+  margin-right: 1%;
+}
+
+.width60percent>input  ~ input {
+  width: 37%;
+  margin-right: 1%;
+}
+
+.weight-normal {
+    font-weight: normal;
+}
+
+.manualAutocomplete {
+	width: 90% !important;
+}
+
+.padtop {
+	padding-bottom: 1em !important
+}
+
+.projectMenu {
+	list-style: none;
+	margin-top: 3.8em !important;
+}
+
+.projectTable {
+	table-layout: fixed;
+}
+
+#description {
+	margin-top: 36px !important;
+}
+
+.additional {
+	float: right;
+	font-weight: normal;
+	vertical-align: bottom;
+}
+
+.small {
+	font-weight: normal;
+	font-size: 80%;
+}
+
+.typeDesc {
+	font-variant: small-caps;
+}
+
+.accordion .head {
+    cursor: pointer;
+}
+.resource-list {
+    list-style: none;
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
+}
+
+.entry ol li div.listItem {
+	margin-left: 1.2em;
+}
+
+/*imply that this piece is set apart from the items preceding it */
+p.new-group {
+	margin-top: 1em;
+}
+
+.entry ol h5 {
+	display: inline;
+}
+
+table+.addAnother {
+	margin-bottom: 10px;
+	margin-left: 10.5em;
+	margin-top: 5px;
+}
+
+#recordTotal {
+	border-bottom: 1px solid #ccc;
+}
+
+/*
+#currentResultPage {
+	background-color: #FFC;
+	border: 1px solid #BBB;
+	font-weight: bold;
+	margin: 2px;
+	padding: 1px 3px 1px 4px;
+}
+
+.paginationLink {
+	background-color: #FFE;
+	border: 1px solid #BBB;
+	margin: 2px;
+	padding: 1px 3px 1px 4px;
+}*/
+.parent-value {
+	color: #996633;
+	font-size: 90%;
+}
+
+.parent-info {
+	font-style: italic;
+	border: 1px dashed #555;
+	padding: 5px;
+	margin: 5px;
+}
+
+/*for informational text associated with left-labeled fields */
+p.parent-info.field {
+	margin-left: 8.5em;
+	margin-top: -0.5em;
+	margin-bottom: 1em;
+	width: 80%;
+}
+
+.infoNote {
+	border: 1px dashed #555;
+	padding: 5px;
+	margin: 5px;
+	font-variant: small-caps;
+	font-weight: bold;
+	font-size: 115%;
+}
+
+input[type="submit"],input[type="button"] {
+	padding: 2px !important;
+}
+
+.toolbar-old,#toolbar-old {
+	background: #eeeeee; /* old browsers */
+	background: -moz-linear-gradient(top, #eeeeee 0%, #cccccc 100%);
+	/* firefox */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #eeeeee),
+		color-stop(100%, #cccccc) ); /* webkit */
+	filter: progid :     DXImageTransform.Microsoft.gradient (     
+		 startColorstr =  
+		  '#eeeeee', endColorstr =     '#cccccc', GradientType =     0 );
+	/* ie */
+	padding: 5px 5px 2px 5px;
+	margin: 0px 0px 5px 0px !important;
+	border: 1px solid #AAA;
+	display: block;
+}
+
+.toolbar,#toolbar {
+	padding: 5px 5px 2px 5px;
+	margin: 0px 20px 5px 0px !important;
+}
+
+.proj-toolbar,#proj-toolbar {
+	padding: 5px 5px 0px 5px;
+	margin: 0px !important;
+	border-top: 1px solid #aaa;
+}
+
+.toolbar li,#toolbar li,.proj-toolbar li,#proj-toolbar li {
+	border-right: 1px solid #AAA;
+	padding: 0px 2px;
+	display: inline !important;
+}
+
+#toolbar li>a,#toolbar li>span,#proj-toolbar li>a,#proj-toolbar li>span
+	{
+	margin: 5px;
+}
+
+#toolbar li a,#proj-toolbar li a {
+	color: #4265A7;
+}
+
+.link,.bookmark {
+	color: #4265A7;
+	font-weight: bold;
+}
+
+.link:hover {
+	cursor: pointer;
+	color: #993333;
+}
+
+#gzoom-control {
+	background: transparent !important;
+	border: none !important;
+	padding: 0px !important;
+}
+
+#selectARegion {
+	background: #1E5799; /* old browsers */
+	background: -moz-linear-gradient(top, #1E5799 0%, #207cca 100%);
+	/* firefox */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #1E5799),
+		color-stop(100%, #207cca) ); /* webkit */
+	filter: progid :   DXImageTransform.Microsoft.gradient (    
+		startColorstr = 
+		 '#1E5799', endColorstr =   '#207cca', GradientType =   0 ); /* ie */
+	border: 1px solid #999;
+	font-weight: bold;
+	margin: 0px;
+	padding: 3px 5px 2px;
+	width: 55px;
+	text-align: center;
+	color: #fff;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
+
+#mapResetButton {
+	width: 55px;
+	background: #eeeeee; /* old browsers */
+	background: -moz-linear-gradient(top, #eeeeee 0%, #cccccc 100%);
+	/* firefox */
+	text-align: center;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #eeeeee),
+		color-stop(100%, #cccccc) ); /* webkit */
+	border: 1px solid #999;
+	padding: 3px 5px 2px;
+	cursor: pointer;
+	filter: progid :   DXImageTransform.Microsoft.gradient (    
+		startColorstr = 
+		 '#eeeeee', endColorstr =   '#cccccc', GradientType =   0 ); /* ie */
+	border: 1px solid #999;
+	padding: 3px 5px 2px;
+	font-weight: bold;
+}
+
+tr.even td.sorting_1 {
+	background-color: #EDEDED !important;
+}
+
+tr.odd td.sorting_1 {
+	background-color: #DDD !important;
+}
+
+tr.odd {
+	background-color: #EEE !important;
+}
+
+div.dataTables_scroll {
+	background: #CCC;
+	border-left: 1px solid #AAA;
+	border-right: 1px solid #AAA;
+}
+
+.dataTables_processing {
+	margin-top: 4px;
+}
+
+input.disabled,textarea.disabled,label.disabled {
+	color: #998;
+}
+
+#toolbar li.disabled span{
+	color: #9AA2AB;
+}
+
+.opaque {
+	opacity: 0.6;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
+	/** IE8 opacity, must appear before next line **/
+	filter: alpha(opacity =   60); /** IE6-7 **/
+}
+
+div.inheritlabel {
+	margin-top: -10pt;
+	margin-bottom: 1em;
+}
+
+.paginationLink { //
+	border: 1px solid #999; //
+	margin: 0px 5px 0px 0px; //
+	padding: 0px 0px 0px 2px;
+}
+
+/** resource creator-related styles:begin  **/
+/** (this section may be temporary)  **/
+img.icon {
+	border: 0px;
+	width: 50pt;
+	height: 50pt;
+}
+
+/* .creatorPerson {
+	background-color: #eef;
+}
+
+.creatorInstitution {
+	background-color: #fee;
+}
+*/
+.hidden {
+	display: none;
+}
+
+.watermark {
+	color: #999 !important;
+}
+
+/** resource creator-related styles:end **/
+.smallLabel {
+	font-size: small;
+	font-variant: small-caps;
+	font-weight: bold;
+}
+
+.marginLeft10 {
+	margin-left: 10px;
+}
+
+
+/* prettier rendering of term/definition lists */
+dt, dd { margin-left:1em}
+dt {font-weight: bold; font-style: italic;}
+dd {margin-bottom: 1em; font-weight: normal;}
+
+
+/* callouts for deleted resources */
+.resource-deleted, .resource-flagged {
+	background-color: #EDD87B;
+	margin: -0.5em 10px 1em 0;
+	padding: 1em;
+	font-style:italic;
+	text-align: center;
+}
+.resource-deleted p, .resource-flagged p{
+	margin: 0px;
+}
+.deleted-file {
+    background-color: #EDD87B;
+    text-decoration: line-through;
+}
+.line-through {
+	text-decoration: line-through;
+}
+.search-result-title-active {}
+.search-result-title-draft {font-style:italic;}
+.search-result-title-deleted {text-decoration: line-through;}
+
+div.file_upload {
+	background:#CDEB8B !important;
+}
+
+
+/*FIXME: hack to make the combobox spinner look right in FF*/ 
+@-moz-document url-prefix() {
+    
+//#divOntology-1 {border: 1px solid green;
+//overflow: visible;
+//}
+
+.ui-button-icon {//margin-top: -14px !important; 
+  //border: 1px solid blue;
+  padding-bottom: 0px;
+  top: -5px !important;
+  overflow: visible;
+}
+
+.ui-icon-triangle-1-s {
+   height: 20px !important;
+  top: 0 !important;
+}      
+
+.manualAutocomplete {
+    width: 88% !important;
+}      
+}
+
+a.external {
+	padding-right:13px;
+	background: url(/images/external-link-ltr-icon.png) center right no-repeat;
+}
+
+.errorDialog {
+	position:fixed !important;
+}
+
+.replaceWithMe {
+	margin-left:12em;
+}
+
+
+.coverageDescription {
+	width: 12em !important;
+}
+
+label.datatableListItem {
+	font-weight: normal;
+}
+
+#nav {
+	z-index:1000 !important; 
+  position: relative !important;
+ }
+
+#files {
+	background-color:#F2E8CD;
+	border: 1px solid #CCC;
+    margin-top:0px !important;
+}
+
+.glide .ui-button-text {
+    font-size:85% !important;
+}
+
+#files tr {
+    border-bottom: solid 1px #ccc;
+}
+
+.file-button {
+    width: 8em;
+}
+
+#files .newrow {
+	background-color:#F0E8DE
+}
+
+#uploadFiles {
+	display:inline;
+}
+
+.collapsible {
+    cursor: pointer;
+    background-color: #F0E8DE;
+}
+
+.tdar-ui-icon {
+    float:left; 
+    margin-top: 3px;
+}
+
+.coverageEndYear, .coverageStartYear {
+width: 6em !important;
+}
+
+#overlay{ 
+  z-index: 1100 !important;
+}
+
+#lightbox { 
+  z-index: 1101 !important;
+}
+
+.charfield10 {
+  width: 7em !important;
+}
+
+table label {
+	text-align: initial !important;
+}
+
+.checkboxtable {
+width: 100% !important;
+}

@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<!-- vim:sts=2:sw=2: -->
+<!-- $Id: applicationContext.xml 617 2008-03-28 17:27:23Z alllee $ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+       ">
+
+  <!--  custom settings/beans -->
+	<import resource="spring-local-settings.xml" />
+
+	<!-- tDAR data sources -->
+	<import resource='spring-data-sources.xml' />
+	<!-- hibernate session factory configuration -->
+	<import resource='spring-hibernate.xml' />
+	<!-- Spring transaction interceptors and managers -->
+	<import resource='spring-transaction.xml' />
+	<!-- persistence layer daos -->
+	<import resource='spring-daos.xml' />
+	<!-- persistence layer services -->
+	<import resource='spring-services.xml' />
+	<!-- crowd beans -->
+	<import resource='spring-crowd.xml' />
+	<!-- TAG Service -->
+	<import resource='spring-tag.xml' />
+	<!-- Transformers <import resource='spring-transforms.xml'/> -->
+	<!-- Tasks -->
+	<import resource='spring-tasks.xml' />
+	<!-- session scoped bean -->
+	<bean id='sessionData' class='org.tdar.web.SessionData' scope='session'>
+		<aop:scoped-proxy />
+	</bean>
+
+</beans>
