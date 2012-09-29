@@ -1,3 +1,4 @@
+<#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
 <@view.htmlHeader resourceType="document">
 <meta name="lastModifiedDate" content="$Date$"/>
@@ -57,13 +58,8 @@
     <#if document.doi?? && document.doi != ''>
     <tr><td nowrap><b>DOI:</b></td><td>${document.doi}</td></tr>
     </#if>
-	<#if document.url?? && document.url != ''>
-  <tr><td nowrap><b>URL:</b></td><td>
-	   <a href="${document.url}">${document.url}</a>
-	   </td>
-  </tr>
-  </#if>
 	<tr><td nowrap><b>Document type:</b></td><td>${document.documentType.label}</td></tr>
 </@view.infoResourceBasicInformation>
 
 <@view.sharedViewComponents document />
+</#escape>

@@ -22,6 +22,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * $Id$
  * 
+ * This is the class to build the relationships between creators and resources. These relationships include a role, which may depend
+ * on the resource type and creator type.
  * 
  * @author <a href='mailto:allen.lee@asu.edu'>Allen Lee</a>
  * @version $Rev$
@@ -38,12 +40,12 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
 
     @ManyToOne(optional = false)
     @IndexedEmbedded
-    @BulkImportField(implementedSubclasses = { Person.class, Institution.class }, label = "Resource Creator",order=1)
+    @BulkImportField(implementedSubclasses = { Person.class, Institution.class }, label = "Resource Creator", order = 1)
     private Creator creator;
 
     @Enumerated(EnumType.STRING)
     @Field
-    @BulkImportField(label = "Resource Creator Role",comment=BulkImportField.CREATOR_ROLE_DESCRIPTION,order=200)
+    @BulkImportField(label = "Resource Creator Role", comment = BulkImportField.CREATOR_ROLE_DESCRIPTION, order = 200)
     private ResourceCreatorRole role;
 
     public ResourceCreator(Resource resource, Creator creator, ResourceCreatorRole role) {
@@ -102,7 +104,7 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
         try {
             boolean relevant = getRole().isRelevantFor(getCreatorType(), getResource().getResourceType());
             if (!relevant) {
-                Object[] tmp = {getRole(), getResource(), getResource().getResourceType()};
+                Object[] tmp = { getRole(), getResource(), getResource().getResourceType() };
                 logger.debug(String.format("role {} is not relevant for resourceType {} for {}", tmp));
             }
             return relevant;

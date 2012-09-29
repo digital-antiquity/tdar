@@ -1,3 +1,4 @@
+<#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/list-macros.ftl" as rlist>
 
 <#macro listDatasets datasetList> 
@@ -101,3 +102,4 @@ applyZebraColors();
     </@s.form>
 </#if>
     </div>
+</#escape>

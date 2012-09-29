@@ -1,13 +1,17 @@
 package org.tdar.struts.interceptor;
 
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.service.external.CrowdService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.AnnotationUtils;
+import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.core.service.external.auth.TdarGroup;
+import org.tdar.struts.RequiresTdarUserGroup;
+import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.web.SessionData;
 import org.tdar.web.SessionDataAware;
 
@@ -20,7 +24,10 @@ import com.opensymphony.xwork2.interceptor.Interceptor;
  * $Id$
  * 
  * Verifies requests made for protected resources, or redirects the user to the login screen
- * while preserving the initially requested URL in the session.
+ * while preserving the initially requested URL in the session.  
+ * 
+ * Performs group membership checks if the {@link RequiresTdarUserGroup} annotation is set on the Action class or method.
+ * By default assumes a group membership of {@link TdarGroup.TDAR_USERS}
  * 
  * @author <a href='mailto:allen.lee@asu.edu'>Allen Lee</a>
  * @version $Rev$
@@ -33,45 +40,60 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
 
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-    private transient CrowdService crowdService;
+    @Autowired
+    private transient AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
+    // A Spring AOP session scoped proxy is injected here that retrieves the appropriate SessionData bound to the HTTP Session.
     private SessionData sessionData;
-//    private String cacheControlHeaders;
-//    @Autowired
-//    private TdarConfiguration tdarConfiguration;
 
-    public CrowdService getCrowdService() {
-        return crowdService;
+    public AuthenticationAndAuthorizationService getAuthenticationAndAuthorizationService() {
+        return authenticationAndAuthorizationService;
     }
-
-    public void setCrowdService(CrowdService crowdService) {
-        this.crowdService = crowdService;
+    
+    public void setAuthenticationAndAuthorizationService(AuthenticationAndAuthorizationService authenticationService) {
+        this.authenticationAndAuthorizationService = authenticationService;
     }
 
     @Override
     public void destroy() {
-        crowdService = null;
+        authenticationAndAuthorizationService = null;
         sessionData = null;
     }
 
     @Override
     public void init() {
-//        this.cacheControlHeaders = tdarConfiguration.getCacheControlHeaders();
+        // this.cacheControlHeaders = tdarConfiguration.getCacheControlHeaders();
     }
 
     @Override
     public String intercept(ActionInvocation invocation) throws Exception {
-        if (getSessionData().isAuthenticated()) {
-//            setCacheControl(cacheControlHeaders);
-            return invocation.invoke();
+        SessionData sessionData = getSessionData();
+        Object action = invocation.getAction();
+        ActionProxy proxy = invocation.getProxy();
+        String methodName = proxy.getMethod();
+        if (methodName == null) {
+            methodName = "execute";
         }
-        // FIXME: these won't display without using a RedirectMessageInterceptor
-        // http://glindholm.wordpress.com/2008/07/02/preserving-messages-across-a-redirect-in-struts-2/
-        // addActionMessage("You must authenticate before proceeding.");
-        // set return url on session data...
+        if (sessionData.isAuthenticated()) {
+            // check for group authorization 
+            RequiresTdarUserGroup classLevelRequiresGroupAnnotation = AnnotationUtils.findAnnotation(action.getClass(), RequiresTdarUserGroup.class);
+            RequiresTdarUserGroup methodLevelRequiresGroupAnnotation = AnnotationUtils.findAnnotation(action.getClass().getMethod(methodName), RequiresTdarUserGroup.class);
+            TdarGroup group = TdarGroup.TDAR_USERS;
+            if (methodLevelRequiresGroupAnnotation != null) {
+                group = methodLevelRequiresGroupAnnotation.value();                
+            }
+            else if (classLevelRequiresGroupAnnotation != null) {
+                group = classLevelRequiresGroupAnnotation.value();
+            }
+            if (getAuthenticationAndAuthorizationService().isMember(sessionData.getPerson(), group)) {
+                return invocation.invoke();
+            }
+            logger.debug(String.format("unauthorized access to %s/%s from %s with required group %s", action.getClass().getSimpleName(), methodName, sessionData.getPerson(), group));
+            return TdarActionSupport.UNAUTHORIZED;
+        }
         setReturnUrl(invocation);
         return Action.LOGIN;
     }
-    
+
     protected void setCacheControl(String cacheControlHeaders) {
         logger.debug("Setting cache control headers to {}", cacheControlHeaders);
         HttpServletResponse response = ServletActionContext.getResponse();
@@ -86,7 +108,7 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
         HttpServletRequest request = ServletActionContext.getRequest();
         ActionProxy proxy = invocation.getProxy();
         String returnUrl = String.format("%s/%s", proxy.getNamespace(), proxy.getActionName());
-        if (! request.getMethod().equals("GET") || returnUrl.matches(SKIP_REDIRECT)) {
+        if (!request.getMethod().equals("GET") || returnUrl.matches(SKIP_REDIRECT)) {
             logger.warn("Not setting return url for anything other than a get {}", request.getMethod());
             return;
         }

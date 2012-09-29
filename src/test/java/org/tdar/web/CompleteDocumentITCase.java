@@ -59,7 +59,7 @@ public class CompleteDocumentITCase extends AbstractAdminAuthenticatedWebTestCas
         docValMap.put("authorshipProxies[1].person.email", "testabc1233@test.com");
         docValMap.put("authorshipProxies[1].person.id", "");
         docValMap.put(DESCRIPTION_FIELDNAME, DESCRIPTION);
-        docValMap.put("resource.dateCreated", "1923");
+        docValMap.put("resource.date", "1923");
         docValMap.put("authorizedUsers[0].user.id", "121");
         docValMap.put("authorizedUsers[1].user.id", "5349");
         docValMap.put("authorizedUsers[0].generalPermission", "MODIFY_METADATA");
@@ -71,7 +71,7 @@ public class CompleteDocumentITCase extends AbstractAdminAuthenticatedWebTestCas
         docValMap.put("document.doi", "doi:10.1016/j.iheduc.2003.11.004");
         docValMap.put("document.isbn", "9780385483995");
         docValMap.put("resourceLanguage", "SPANISH");
-        docValMap.put("document.url", "http://www.tdar.org");
+        docValMap.put("resource.url", "http://www.tdar.org");
         docValMap.put("document.publisher", "test");
         docValMap.put("document.publisherLocation", "new york");
         docValMap.put("document.edition", "3rd");
@@ -101,7 +101,7 @@ public class CompleteDocumentITCase extends AbstractAdminAuthenticatedWebTestCas
         docValMap.put("coverageDates[1].startDate", "1200");
         docValMap.put("coverageDates[1].endDate", "1000");
         docValMap.put("coverageDates[1].dateType", "RADIOCARBON_DATE");
-        docValMap.put("resourceProviderInstitution", "Digital Antiquity");
+        docValMap.put("resourceProviderInstitutionName", "Digital Antiquity");
         docValMap.put("resourceAvailability", "Embargoed");
         // FIXME: notes not maintaining order
         docValMap.put("resourceNotes[0].type", "GENERAL");
@@ -142,7 +142,7 @@ public class CompleteDocumentITCase extends AbstractAdminAuthenticatedWebTestCas
         submitForm();
 
         String path = internalPage.getUrl().getPath().toLowerCase();
-        logger.info(getPageText());
+        logger.trace(getPageText());
         assertTrue("expecting to be on view page. Actual path:" + path +"\n"  + getPageText(), path.matches(REGEX_DOCUMENT_VIEW));
 
         logger.info(getPageText());

@@ -105,7 +105,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
         assertTrue(testImagesDirectory.isDirectory());
         List<File> uploadFiles = new ArrayList<File>();
-        uploadFiles.addAll(FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, true));
+        uploadFiles.addAll(FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, false));
 
         Pair<PersonalFilestoreTicket, List<FileProxy>> proxyPair = uploadFilesAsync(uploadFiles);
         final Long ticketId = proxyPair.getFirst().getId();
@@ -137,6 +137,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         boolean manifest_gc = false;
         boolean manifest_book = false;
         logger.info("{}", details);
+        logger.info(bulkUploadController.getAsyncErrors());
         assertTrue(StringUtils.isEmpty(bulkUploadController.getAsyncErrors()));
         for (Pair<Long, String> detail : details) {
             Resource resource = resourceService.find(detail.getFirst());
@@ -264,8 +265,8 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         assertTrue(StringUtils.isEmpty(bulkUploadController.getAsyncErrors()));
         assertTrue(resourceService.find(details.get(0).getFirst()).isActive());
         assertTrue(resourceService.find(details.get(1).getFirst()).isActive());
-        assertEquals(new Integer(1234),((InformationResource)resourceService.find(details.get(0).getFirst())).getDateCreated());
-        assertEquals(new Integer(2222),((InformationResource)resourceService.find(details.get(1).getFirst())).getDateCreated());
+        assertEquals(new Integer(1234),((InformationResource)resourceService.find(details.get(0).getFirst())).getDate());
+        assertEquals(new Integer(2222),((InformationResource)resourceService.find(details.get(1).getFirst())).getDate());
     }
 
     @Test
@@ -311,7 +312,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         assertTrue(bulkUploadController.getAsyncErrors().contains("The following required fields have not been provided: Description,  Date Created "));
     }
 
-    private BulkUploadController setupBasicBulkUploadTest(String manifestName) throws FileNotFoundException {
+    private BulkUploadController setupBasicBulkUploadTest(String manifestName) throws Exception {
         BulkUploadController bulkUploadController = generateNewInitializedController(BulkUploadController.class);
         bulkUploadController.prepare();
 
@@ -319,7 +320,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
         assertTrue(testImagesDirectory.isDirectory());
         List<File> uploadFiles = new ArrayList<File>();
-        uploadFiles.addAll(FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, true));
+        uploadFiles.addAll(FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, false));
 
         Pair<PersonalFilestoreTicket, List<FileProxy>> proxyPair = uploadFilesAsync(uploadFiles);
         final Long ticketId = proxyPair.getFirst().getId();
@@ -341,7 +342,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
     public void testCloneInformationResourceWithNotes() throws Exception {
         Dataset dataset = new Dataset();
         dataset.setTitle("Test dataset becoming document");
-        dataset.setDateRegistered(new Date());
+        dataset.setDateCreated(new Date());
         dataset.setSubmitter(getUser());
         ResourceNote note = new ResourceNote();
         note.setResource(dataset);
@@ -362,7 +363,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
     public void testCloneImageInheritanceSettings() {
         Image expected = new Image();
         expected.setTitle("test image");
-        expected.setDateRegistered(new Date());
+        expected.setDateCreated(new Date());
         expected.setSubmitter(getUser());
         expected.setProject(Project.NULL);
         //assuming all inheritance flags are false by default.
@@ -402,7 +403,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
     public void testCloneImageWithRelatedCollections() {
         Image expected = new Image();
         expected.setTitle("test image");
-        expected.setDateRegistered(new Date());
+        expected.setDateCreated(new Date());
         expected.setSubmitter(getUser());
         expected.setProject(Project.NULL);
         
@@ -420,7 +421,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
     public void testCloneImageWithSourceCollections() {
         Image expected = new Image();
         expected.setTitle("test image");
-        expected.setDateRegistered(new Date());
+        expected.setDateCreated(new Date());
         expected.setSubmitter(getUser());
         expected.setProject(Project.NULL);
         
@@ -445,7 +446,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
      * -the shared collection contains all N resources
      * -the controller creates N internal collections, each containing a single resource w/ edit rights to the creator
      */
-    public void testAddingAdHocCollectionToBulkUpload() throws FileNotFoundException {
+    public void testAddingAdHocCollectionToBulkUpload() throws Exception {
         // start by getting the original count of public/private collections
         int origInternalCount = getCollectionCount(CollectionType.INTERNAL);
         int origSharedCount = getCollectionCount(CollectionType.SHARED);
@@ -458,7 +459,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
         assertTrue(testImagesDirectory.isDirectory());
         List<File> uploadFiles = new ArrayList<File>();
-        uploadFiles.addAll(FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, true));
+        uploadFiles.addAll(FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, false));
 
         Pair<PersonalFilestoreTicket, List<FileProxy>> proxyPair = uploadFilesAsync(uploadFiles);
         final Long ticketId = proxyPair.getFirst().getId();

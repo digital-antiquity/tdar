@@ -1,3 +1,4 @@
+<#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 <head>
 <title>Managing citation information for ${resource.title}</title>
@@ -45,3 +46,4 @@ Source and related citations for <b>${resource.title}</b>.
 </fieldset>
 </@s.form>
 </body>
+</#escape>

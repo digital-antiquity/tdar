@@ -12,11 +12,13 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
+import org.tdar.core.service.PdfService;
 
 @ParentPackage("secured")
 @Namespace("/filestore/{informationResourceFileId}")
@@ -27,7 +29,7 @@ import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
                         "inputName", "inputStream",
                         "contentDisposition", "filename=\"${fileName}\"",
                         "contentLength", "${contentLength}"
-        }
+                }
         ),
         @Result(name = "error", type = "httpheader", params = { "error", "404" }),
         @Result(name = "forbidden", type = "httpheader", params = { "error", "403" })
@@ -35,7 +37,7 @@ import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
 })
 @Component
 @Scope("prototype")
-public class DownloadController extends AuthenticationAware.Base  {
+public class DownloadController extends AuthenticationAware.Base {
 
     private static final long serialVersionUID = 7548544212676661097L;
     private transient InputStream inputStream;
@@ -45,8 +47,12 @@ public class DownloadController extends AuthenticationAware.Base  {
     private Long informationResourceFileId;
     private Integer version;
     private VersionType type;
+    private Long informationResourceId;
 
     public static final String FORBIDDEN = "forbidden";
+
+    @Autowired
+    private PdfService pdfService;
 
     @Action(value = "confirm", results = { @Result(name = "confirm", location = "/WEB-INF/content/confirm-download.ftl") })
     public String confirm() {
@@ -73,10 +79,11 @@ public class DownloadController extends AuthenticationAware.Base  {
             getLogger().warn(msg);
             return FORBIDDEN;
         }
+        informationResourceId = irFileVersion.getInformationResourceId();
         return handleDownload(irFileVersion);
     }
 
-    @Action(value = "thumbnail", interceptorRefs = { @InterceptorRef("unAuthenticatedStack") })
+    @Action(value = "thumbnail", interceptorRefs = { @InterceptorRef("unauthenticatedStack") })
     public String thumbnail() {
         InformationResourceFileVersion irFileVersion = null;
         if (informationResourceFileId == null)
@@ -93,9 +100,9 @@ public class DownloadController extends AuthenticationAware.Base  {
             return ERROR;
         }
 
-//        (irFileVersion.getInformationResourceFile().isConfidential() || !irFileVersion.getInformationResourceFile().getInformationResource()
-//                .isAvailableToPublic()) && !getEntityService().canViewConfidentialInformation(getSessionData().getPerson(),
-//                        irFileVersion.getInformationResourceFile().getInformationResource())
+        // (irFileVersion.getInformationResourceFile().isConfidential() || !irFileVersion.getInformationResourceFile().getInformationResource()
+        // .isAvailableToPublic()) && !getEntityService().canViewConfidentialInformation(getSessionData().getPerson(),
+        // irFileVersion.getInformationResourceFile().getInformationResource())
         // must not be confidential/embargoed
         if (!getEntityService().canDownload(irFileVersion, getSessionData().getPerson())) {
             getLogger().warn("thumbail request: resource is confidential/embargoed:" + informationResourceFileId);
@@ -110,10 +117,19 @@ public class DownloadController extends AuthenticationAware.Base  {
 
             File resourceFile = irFileVersion.getFile();
             fileName = irFileVersion.getFilename();
-
             if (resourceFile == null || !resourceFile.exists()) {
                 addActionError("File not found");
                 return ERROR;
+            }
+
+            // If it's a PDF, add the cover page if we can, if we fail, just send the original file
+            if (irFileVersion.getExtension().equalsIgnoreCase("PDF")) {
+                try {
+                    resourceFile = pdfService.mergeCoverPage(getAuthenticatedUser(),irFileVersion);
+                } catch (Exception e) {
+                    getLogger().error("Error occured while merging cover page onto " + irFileVersion, e);
+//                    e.printStackTrace();
+                }
             }
             try {
                 getLogger().debug("downloading file:" + resourceFile.getCanonicalPath());
@@ -179,5 +195,10 @@ public class DownloadController extends AuthenticationAware.Base  {
     public void setType(VersionType type) {
         this.type = type;
     }
+
+    public Long getInformationResourceId() {
+        return informationResourceId;
+    }
+
 
 }

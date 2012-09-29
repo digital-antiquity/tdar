@@ -33,7 +33,7 @@ import org.tdar.core.dao.Dao;
 
 public interface ServiceInterface<T, S extends Dao<T>> {
 
-    public T find(Number id);
+    public T find(Long id);
 
     public List<T> findAll();
 
@@ -70,7 +70,7 @@ public interface ServiceInterface<T, S extends Dao<T>> {
         private D dao;
 
         @Transactional(readOnly = true)
-        public E find(Number id) {
+        public E find(Long id) {
             return dao.find(id);
         }
 
@@ -139,26 +139,6 @@ public interface ServiceInterface<T, S extends Dao<T>> {
             if (entity == null)
                 return;
             dao.delete(entity);
-        }
-
-        /**
-         * Returns a new collection containing the results of merge()-ing every entity in the entity collection passed into this method.
-         * 
-         * @param collection
-         * @return
-         */
-        @Transactional(readOnly = false)
-        public Collection<E> mergeAll(Collection<E> collection) {
-            if (CollectionUtils.isEmpty(collection)) {
-                return Collections.emptyList();
-            }
-            ArrayList<E> mergedEntities = new ArrayList<E>();
-            for (E entity : collection) {
-                mergedEntities.add(dao.merge(entity));
-            }
-            // collection.clear();
-            // collection.addAll(mergedEntities);
-            return mergedEntities;
         }
 
         @Transactional(readOnly = false)

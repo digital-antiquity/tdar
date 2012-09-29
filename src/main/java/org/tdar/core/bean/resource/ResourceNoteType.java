@@ -1,5 +1,7 @@
 package org.tdar.core.bean.resource;
 
+import org.tdar.core.bean.HasLabel;
+
 /**
  * $Id$
  * 
@@ -8,7 +10,7 @@ package org.tdar.core.bean.resource;
  * @author Adam Brin
  * @version $Revision$
  */
-public enum ResourceNoteType { 
+public enum ResourceNoteType implements HasLabel { 
     GENERAL("General Note"),
     REDACTION("Redaction Note"),
     RIGHTS_ATTRIBUTION("Rights & Attribution"),

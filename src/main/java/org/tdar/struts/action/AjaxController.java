@@ -28,24 +28,15 @@ public class AjaxController extends TdarActionSupport {
     private static final long serialVersionUID = -1202795099371942148L;
     
     private Long categoryVariableId;
-    private Integer index;
     
     @Action("column-metadata-subcategories")
     public String columnMetadataSubcategories() {
         if (categoryVariableId == null || categoryVariableId == -1L) {
-            logger.warn("Invalid category variable: " + categoryVariableId);
-        }
-        if (index == null) {
-            logger.warn(String.format("Didn't specify subcategory index [%d] ", index));
+            logger.error("Invalid category variable: " + categoryVariableId);
         }
         return SUCCESS;
     }
 
-    @Action("subcategories")
-    public String subcategories() {
-        return SUCCESS;
-    }
-    
     public CategoryVariable getCategoryVariable() {
         return getCategoryVariableService().find(categoryVariableId);
     }
@@ -64,14 +55,5 @@ public class AjaxController extends TdarActionSupport {
     public void setCategoryVariableId(Long categoryVariableId) {
         this.categoryVariableId = categoryVariableId;
     }
-
-    public Integer getIndex() {
-        return index;
-    }
-
-    public void setIndex(Integer index) {
-        this.index = index;
-    }
-
 
 }

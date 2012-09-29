@@ -23,7 +23,7 @@ public class SensoryDataWebITCase extends AbstractAdminAuthenticatedWebTestCase 
     public void testCreateSensoryDocumentMinimal() {
         gotoPage("/sensory-data/add");
         setInput(SDOC_FIELD_TITLE, SDOC_TITLE);
-        setInput("sensoryData.dateCreated", "1943");
+        setInput("sensoryData.date", "1943");
         setInput(SDOC_FIELD_DESCRIPTION, SDOC_DESC);
         submitForm();
     }
@@ -46,7 +46,7 @@ public class SensoryDataWebITCase extends AbstractAdminAuthenticatedWebTestCase 
         sensoryHash.put("sensoryData.surveyDateBegin", "03/09/1974");
         sensoryHash.put("sensoryData.surveyDateEnd", "03/09/1975");
         sensoryHash.put("sensoryData.surveyConditions", "conditionsval");
-        sensoryHash.put("sensoryData.dateCreated", "1943");
+        sensoryHash.put("sensoryData.date", "1943");
         sensoryHash.put("sensoryData.scannerDetails", "scannerdetails val");
         sensoryHash.put("sensoryData.companyName", "companyname val");
         sensoryHash.put("sensoryData.estimatedDataResolution", "12345");

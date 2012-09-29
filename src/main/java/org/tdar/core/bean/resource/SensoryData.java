@@ -9,6 +9,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.search.annotations.Indexed;
@@ -485,6 +487,8 @@ public class SensoryData extends InformationResource {
         this.rgbPreservedFromOriginal = rgbPreservedFromOriginal;
     }
 
+    @XmlElementWrapper(name="sensoryDataScans")
+    @XmlElement(name="sensoryDataScan")
     public Set<SensoryDataScan> getSensoryDataScans() {
         return sensoryDataScans;
     }
@@ -493,6 +497,8 @@ public class SensoryData extends InformationResource {
         this.sensoryDataScans = sensoryDataScans;
     }
 
+    @XmlElementWrapper(name="sensoryDataImages")
+    @XmlElement(name="sensoryDataImage")
     public Set<SensoryDataImage> getSensoryDataImages() {
         return sensoryDataImages;
     }

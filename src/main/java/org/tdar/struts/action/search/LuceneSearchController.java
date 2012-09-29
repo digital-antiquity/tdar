@@ -1,22 +1,24 @@
 package org.tdar.struts.action.search;
 
-import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -29,55 +31,44 @@ import org.hibernate.search.query.facet.FacetingRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Indexable;
+import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
+import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
-import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAccessType;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.ExcelService;
+import org.tdar.core.service.GenericKeywordService;
+import org.tdar.core.service.RssService;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.search.query.FieldQueryPart;
 import org.tdar.search.query.KeywordQueryPart;
-import org.tdar.search.query.QueryBuilder;
+import org.tdar.search.query.QueryDescriptionBuilder;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.QueryPartGroup;
-import org.tdar.search.query.ResourceQueryBuilder;
+import org.tdar.search.query.RangeQueryPart;
 import org.tdar.search.query.ResourceTypeQueryPart;
 import org.tdar.search.query.SortOption;
-import org.tdar.search.query.SpatialLimit;
 import org.tdar.search.query.SpatialQueryPart;
 import org.tdar.search.query.TemporalLimit;
 import org.tdar.search.query.TemporalQueryPart;
-import org.tdar.utils.keyword.KeywordNode;
-
-import com.sun.syndication.feed.atom.Link;
-import com.sun.syndication.feed.module.Module;
-import com.sun.syndication.feed.module.opensearch.OpenSearchModule;
-import com.sun.syndication.feed.module.opensearch.impl.OpenSearchModuleImpl;
-import com.sun.syndication.feed.synd.SyndContent;
-import com.sun.syndication.feed.synd.SyndContentImpl;
-import com.sun.syndication.feed.synd.SyndEnclosure;
-import com.sun.syndication.feed.synd.SyndEnclosureImpl;
-import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndEntryImpl;
-import com.sun.syndication.feed.synd.SyndFeed;
-import com.sun.syndication.feed.synd.SyndFeedImpl;
-import com.sun.syndication.feed.synd.SyndPerson;
-import com.sun.syndication.feed.synd.SyndPersonImpl;
-import com.sun.syndication.io.SyndFeedOutput;
+import org.tdar.search.query.queryBuilder.QueryBuilder;
+import org.tdar.search.query.queryBuilder.ResourceQueryBuilder;
+import org.tdar.struts.data.KeywordNode;
 
 /**
  * $Id$
@@ -90,60 +81,44 @@ import com.sun.syndication.io.SyndFeedOutput;
 @Component
 @Scope("prototype")
 @ParentPackage("default")
-public class LuceneSearchController extends AbstractLookupController {
+public class LuceneSearchController extends AbstractLookupController<Resource> {
 
-    public static final String TITLE_TAG_KEYWORD_PHRASE = "referred query from the Transatlantic Archaeology Gateway";
-    public static final String TITLE_FILTERED_BY_KEYWORD = "Filtered by Keyword";
-    private static final String LIMITED_TO = "Limited to :";
-    public static final String TITLE_ALL_RECORDS = "All Records";
-    public static final String TITLE_BY_TDAR_ID = "Search by TDAR ID";
-    public static final String WITH_SITE_NAME_KEYWORDS = " with site name keywords ";
-    public static final String WITH_SITE_TYPE_KEYWORDS = " with site type keywords ";
-    public static final String WITH_MATERIAL_KEYWORDS = " with material keywords ";
-    public static final String WITH_CULTURE_KEYWORDS = " with culture keywords ";
-    public static final String WITH_INVESTIGATION_TYPES = " with investigation types ";
-    public static final String WITH_UNCONTROLLED_SITE_TYPE_KEYWORDS = " with free-form site type keywords ";
-    public static final String WITH_UNCONTROLLED_CULTURE_KEYWORDS = " with free-form culture keywords ";
-    public static final String BETWEEN = " between ";
-    public static final String WITH_TEXT_IN_TITLE = " with text in title";
-    public static final String USING_KEYWORD = " using keyword ";
-    public static final String COMMA_SEPARATOR = ", ";
-    public static final String AND = " and ";
-    public static final String BC = " BC ";
-    public static final String AD = " AD ";
-    public static final String WITH_RADIOCARBON_DATE_BETWEEN = " with radiocarbon date between ";
-    public static final String WITHIN_MAP_CONSTRAINTS = " within map constraints ";
-    public static final String SEARCHING_FOR_RESOURCE_WITH_T_DAR_ID = "Searching for resource with tDAR ID:";
-    public static final String SELECTED_RESOURCE_TYPES = "Selected resource types: ";
-    public static final String SELECTED_DOCUMENT_TYPES = "Selected document type: ";
-    public static final String STRONG_CLOSE = " </strong> ";
-    public static final String STRONG = " <strong> ";
-    public static final String SEARCHING_ALL_RESOURCE_TYPES = " Searching all resource types ";
-    public static final Pattern INVALID_XML_CHARS = Pattern.compile("[\u0001\u0009\\u000A\\u000D\uD800\uDFFF]");
-    // \uDC00-\uDBFF -\uD7FF\uE000-\uFFFD
     private static final long serialVersionUID = 3869953915909593269L;
-    private static final String WITH_GEOGRAPHIC_KEYWORDS = " with geographic keywords: ";
+
     private String rssUrl;
     private String query;
+    private String rawQuery;
     private String referrer;
     private Double minx;
     private Double maxx;
     private Double miny;
     private Double maxy;
-    private String documentType;
-    private String yearType;
-    private Integer fromYear;
-    private Integer toYear;
+    private Integer minDateValue = -1000000000;
+    private Integer maxDateValue = 1000000000;
+    private DocumentType documentType;
+    private Integer dateCreatedMin;
+    private Integer dateCreatedMax;
     private List<Project> projects;
     private int defaultRecordsPerPage = 20;
     private List<Long> projectIds;
+
+    private Date dateRegisteredStart;
+    private Date dateRegisteredEnd;
+    private Date dateUpdatedStart;
+    private Date dateUpdatedEnd;
+
     @Autowired
     private ProjectService projectService;
 
     @Autowired
     private UrlService urlService;
-    // for keyword search
-    // TODO: push these up to AuthenticationAware.Base?
+
+    @Autowired
+    private GenericKeywordService genericKeywordService;
+
+    @Autowired
+    private RssService rssService;
+
     private List<MaterialKeyword> allMaterialKeywords;
     private List<Long> materialKeywordIds;
 
@@ -158,29 +133,25 @@ public class LuceneSearchController extends AbstractLookupController {
     private List<MaterialKeyword> selectedMaterialKeywords = new ArrayList<MaterialKeyword>();
     private List<CultureKeyword> selectedCultureKeywords = new ArrayList<CultureKeyword>();
 
+    private List<String> otherKeywords = new ArrayList<String>();
+    private List<String> geographicKeywords = new ArrayList<String>();
+    private List<String> temporalKeywords = new ArrayList<String>();
+
     private KeywordNode<SiteTypeKeyword> approvedSiteTypeKeywords;
     private List<Long> approvedSiteTypeKeywordIds;
     private List<String> uncontrolledSiteTypeKeywords;
-    private List<String> geographicKeywords;
     private List<String> siteNameKeywords;
     private ResourceAccessType fileAccess;
     private List<SiteTypeKeyword> selectedSiteTypeKeywords = new ArrayList<SiteTypeKeyword>();
+    private QueryBuilder q = new ResourceQueryBuilder();
+    private Long contentLength;
 
-    public int getDefaultRecordsPerPage() {
-        return defaultRecordsPerPage;
-    }
-
-    public void setDefaultRecordsPerPage(int defaultRecordsPerPage) {
-        this.defaultRecordsPerPage = defaultRecordsPerPage;
-    }
-
-    private SyndFeed feed;
-    private InputStream rssInputStream;
+    private InputStream inputStream;
     private String searchPhrase;
     private String searchSubtitle;
-
-    private List<Long> searchSubmitterIds;
-    private List<Long> searchContributorIds;
+    private QueryDescriptionBuilder descBuilder = new QueryDescriptionBuilder();
+    private List<Long> searchSubmitterIds = new ArrayList<Long>();
+    private List<Long> searchContributorIds = new ArrayList<Long>();
     private Person searchSubmitter;
     private Person searchContributor;
 
@@ -193,6 +164,11 @@ public class LuceneSearchController extends AbstractLookupController {
     private List<Facet> locationFacets = new ArrayList<Facet>();
     private List<Facet> dateCreatedFacets = new ArrayList<Facet>();
     private String dateCreated = "";
+    
+    private List<CoverageDate> coverageDates = new ArrayList<CoverageDate>();
+
+    @Autowired
+    private ExcelService excelService;
 
     public LuceneSearchController() {
         // default to only show active resources
@@ -206,8 +182,6 @@ public class LuceneSearchController extends AbstractLookupController {
 
     @Actions({ @Action(value = "basic"), @Action(value = "advanced") })
     public String execute() {
-        logger.trace("execute() called. fromYear:{}  toYear{}", fromYear, toYear);
-
         setupSearch();
         return SUCCESS;
     }
@@ -222,78 +196,137 @@ public class LuceneSearchController extends AbstractLookupController {
         return SUCCESS;
     }
 
-    public static String cleanStringForXML(String input) {
-        return INVALID_XML_CHARS.matcher(input).replaceAll("");
+    @Action(value = "download", results = {
+            @Result(name = "success", type = "stream", params = {
+                    "contentType", "application/vnd.ms-excel",
+                    "inputName", "inputStream",
+                    "contentDisposition", "attachment;filename=\"report.xls",
+                    "contentLength", "${contentLength}" })
+    })
+    public String viewExcelReport() throws ParseException {
+        try {
+        	if(!isAuthenticated()) return UNAUTHORIZED;
+            prepareSearchQuery();
+            setMode("excel");
+            setRecordsPerPage(200);
+            handleSearch(q);
+            int rowNum = 0;
+            int maxRow = getMaxDownloadRecords();
+            if (maxRow > getTotalRecords()) {
+                maxRow = getTotalRecords();
+            }
+            if (getTotalRecords() > 0) {
+                HSSFSheet sheet = excelService.createWorkbook("results");
+
+                List<String> fieldNames = new ArrayList<String>(Arrays.asList("ID", "ResourceType", "Title", "Date", "Authors", "Project", "Description",
+                        "Number Of Files", "URL",
+                        "Physical Location"));
+
+                if (isEditor()) {
+                    fieldNames.add("Status");
+                    fieldNames.add("Date Added");
+                    fieldNames.add("Submitted By");
+                    fieldNames.add("Date Last Updated");
+                    fieldNames.add("Updated By");
+                }
+
+                // ADD HEADER ROW THAT SHOWS URL and SEARCH PHRASE
+                sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum, 0, fieldNames.size()));
+                excelService.addDocumentHeaderRow(sheet, rowNum, 0, Arrays.asList("tDAR Search Results: " + getDescBuilder().toString()));
+                rowNum++;
+                excelService.addPairedHeaderRow(
+                        sheet,
+                        rowNum,
+                        0,
+                        Arrays.asList("Search Url: ", urlService.getBaseUrl() + getServletRequest().getRequestURI().replace("/download", "/results") + "?"
+                                + getServletRequest().getQueryString()));
+                rowNum++;
+                excelService.addPairedHeaderRow(sheet, rowNum, 0,
+                        Arrays.asList("Downloaded by: ", getAuthenticatedUser().getProperName() + " on " + new Date()));
+                rowNum++;
+                rowNum++;
+                excelService.addHeaderRow(sheet, rowNum, 0, fieldNames);
+                int startRecord = 0;
+                int currentRecord = 0;
+                while (currentRecord < maxRow) {
+                    startRecord = getNextPageStartRecord();
+                    setStartRecord(getNextPageStartRecord()); // resetting for next search
+                    for (Resource result : getResults()) {
+                        rowNum++;
+                        if(currentRecord++ > maxRow) break;
+                        Resource r = (Resource) result;
+                        Integer dateCreated = null;
+                        Integer numFiles = 0;
+                        if (result instanceof InformationResource) {
+                            dateCreated = ((InformationResource) result).getDate();
+                            numFiles = ((InformationResource) result).getTotalNumberOfFiles();
+                        }
+                        List<Creator> authors = new ArrayList<Creator>();
+
+                        for (ResourceCreator creator : r.getPrimaryCreators()) {
+                            authors.add(creator.getCreator());
+                        }
+                        String location = "";
+                        String projectName = "";
+                        if (r instanceof InformationResource) {
+                            InformationResource ires = ((InformationResource) r);
+                            location = ires.getCopyLocation();
+                            projectName = ires.getProjectTitle();
+
+                        }
+                        ArrayList<Object> data = new ArrayList<Object>(Arrays.asList(r.getId(), r.getResourceType(), r.getTitle(), dateCreated,
+                                authors, projectName, r.getShortenedDescription(), numFiles, urlService.absoluteUrl(r), location));
+
+                        if (isEditor()) {
+                            data.add(r.getStatus());
+                            data.add(r.getDateCreated());
+                            data.add(r.getSubmitter().getProperName());
+                            data.add(r.getDateUpdated());
+                            data.add(r.getUpdatedBy().getProperName());
+                        }
+
+                        excelService.addDataRow(sheet, rowNum, 0, data);
+                    }
+                    if (startRecord < getTotalRecords()) {
+                        handleSearch(q);
+                    }
+                }
+
+                excelService.setColumnWidth(sheet, 0, 5000);
+
+                File tempFile = File.createTempFile("results", "xls");
+                FileOutputStream fos = new FileOutputStream(tempFile);
+                sheet.getWorkbook().write(fos);
+                fos.close();
+                setInputStream(new FileInputStream(tempFile));
+                setContentLength(tempFile.length());
+            }
+        } catch (Exception e) {
+            addActionErrorWithException("something happened with excel export", e);
+            return INPUT;
+        }
+
+        return SUCCESS;
     }
 
-    @SuppressWarnings("unchecked")
     @Action(value = "rss", results = {
-            @Result(name = "success", type = "stream", params = { "documentName", "rssFeed", "formatOutput", "true", "inputName", "rssInputStream",
-                    "contentType", "application/rss+xml", "contentEncoding", "UTF-8" }),
-            @Result(name = "notfound", type = "httpheader", params = { "status", "404" }) })
+            @Result(name = "success", type = "stream", params = {
+                    "documentName", "rssFeed",
+                    "formatOutput", "true",
+                    "inputName", "inputStream",
+                    "contentType", "application/rss+xml",
+                    "contentLength", "${contentLength}",
+                    "contentEncoding", "UTF-8" })
+    })
     public String viewRss() {
         try {
             setSortField(SortOption.ID_REVERSE);
             setSecondarySortField(SortOption.TITLE);
             setMode("rss");
             performSearch();
-            feed = new SyndFeedImpl();
-            feed.setFeedType("atom_1.0");
-            String subtitle = getSearchSubtitle();
-            subtitle = StringUtils.replace(subtitle, STRONG, "");
-            subtitle = StringUtils.replace(subtitle, STRONG_CLOSE, "");
-            feed.setTitle("tDAR Search Results: " + subtitle);
-            OpenSearchModule osm = new OpenSearchModuleImpl();
-            osm.setItemsPerPage(getRecordsPerPage());
-            osm.setStartIndex(getStartRecord());
-            osm.setTotalResults(getTotalRecords());
-
-            Link link = new Link();
-            link.setHref(getUrlService().getBaseUrl() + "/includes/opensearch.xml");
-            link.setType("application/opensearchdescription+xml");
-            osm.setLink(link);
-            List<Module> modules = feed.getModules();
-            modules.add(osm);
-            feed.setModules(modules);
-            feed.setLink(getRssUrl());
-            feed.setDescription(getSearchPhrase());
-            List<SyndEntry> entries = new ArrayList<SyndEntry>();
-            for (Indexable resource_ : getResults()) {
-                Resource resource = (Resource) resource_;
-                SyndEntry entry = new SyndEntryImpl();
-                entry.setTitle(cleanStringForXML(resource.getTitle()));
-                SyndContent description = new SyndContentImpl();
-
-                if (StringUtils.isEmpty(resource.getDescription())) {
-                    description.setValue("no description");
-                } else {
-                    description.setValue(cleanStringForXML(resource.getDescription()));
-                }
-                List<SyndPerson> authors = new ArrayList<SyndPerson>();
-                for (ResourceCreator creator : resource.getPrimaryCreators()) {
-                    SyndPerson person = new SyndPersonImpl();
-                    person.setName(cleanStringForXML(creator.getCreator().getProperName()));
-                    authors.add(person);
-                }
-                if (authors.size() > 0) {
-                    entry.setAuthors(authors);
-                }
-                if (resource instanceof InformationResource && ((InformationResource) resource).getLatestUploadedVersions().size() > 0) {
-                    for (InformationResourceFileVersion version : ((InformationResource) resource).getLatestUploadedVersions()) {
-                        logger.trace("enclosure:" + version);
-                        addEnclosure(entry, version);
-                        addEnclosure(entry, version.getInformationResourceFile().getLatestThumbnail());
-                    }
-                }
-
-                entry.setDescription(description);
-                entry.setLink(urlService.absoluteUrl(resource));
-                entry.setPublishedDate(resource.getDateRegistered());
-                entries.add(entry);
-            }
-            feed.setEntries(entries);
-            feed.setPublishedDate(new Date());
-            getRssFeed();
+            setInputStream(rssService.createRssFeedFromResourceList(getSessionData().getPerson(), getSearchSubtitle(), getDescBuilder().toString(),
+                    getResults(),
+                    getRecordsPerPage(), getStartRecord(), getTotalRecords(), getRssUrl()));
         } catch (Exception e) {
             logger.error("rss error", e);
             addActionErrorWithException("could not process your search", e);
@@ -301,138 +334,82 @@ public class LuceneSearchController extends AbstractLookupController {
         return SUCCESS;
     }
 
-    @SuppressWarnings("unchecked")
-    private void addEnclosure(SyndEntry entry, InformationResourceFileVersion version) {
-        if (version == null)
-            return;
-        if (getSessionData().getPerson() != null && getEntityService().canDownload(version, getSessionData().getPerson())) {
-            logger.info("allowed:" + version);
-            SyndEnclosure enclosure = new SyndEnclosureImpl();
-            enclosure.setLength(version.getSize());
-            enclosure.setType(version.getMimeType());
-            enclosure.setUrl(getUrlService().downloadUrl(version));
-            entry.getEnclosures().add(enclosure);
-        }
-    }
-
     // If there's an error due to invalid input, it doesn't appear to be enough to simply forward back to the search page, because we
     // still get ftl errors because the freemarker chokes on the same invalid input from original request. So we redirect instead.
     @Action(value = "results", results = { @Result(name = "success", location = "results.ftl"),
             @Result(name = INPUT, location = "advanced.ftl") })
-    // , type = "redirect"
-    public String performSearch() {
-        String actionResult = INPUT;
+    public String search() {
+        logger.trace("begin search");
         if (getMode() == null) {
             setMode("SEARCH");
         }
         try {
-            try {
-                actionResult = performSearch(true);
-            } catch (ParseException px) {
-                logger.debug("parse exception: {}, trying with escaping", px);
-                try {
-                    actionResult = performSearch(false);
-                } catch (ParseException ipx) {
-                    logger.debug("parse exception: {}", ipx);
-                    addActionErrorWithException("Invalid query syntax, please try using simpler terms without special characters.", ipx);
-                    actionResult = INPUT;
-                }
-            }
-            setSearchPhrase();
-            setRssUrl();
-            setSearchSubtitle();
+            performSearch();
         } catch (Exception e) {
-            logger.error("search error: {}", e);
+            logger.error("search error occurred", e);
             addActionErrorWithException("could not process your search", e);
+            return INPUT;
         }
-        return actionResult;
+        logger.trace("search completed search");
+        return SUCCESS;
+    }
+
+    public void performSearch() throws ParseException {
+        logger.trace("prepare search Query");
+        prepareSearchQuery();
+        logger.trace("handle search");
+        handleSearch(q);
+        logger.trace("set rss URL");
+        setRssUrl();
     }
 
     private FieldQueryPart setupUsingStrict(boolean strictParsing, String name, String value) {
         FieldQueryPart part = new FieldQueryPart(name);
         if (!strictParsing) {
-            part.setEscapedValue(query);
+            part.setEscapedValue(value);
         } else {
-            part.setFieldValue(query);
+            part.setFieldValue(value);
         }
         return part;
     }
 
-    // package-private
-    String performSearch(boolean strictParsing) throws ParseException {
-        QueryBuilder q = new ResourceQueryBuilder();
+    void prepareSearchQuery() throws ParseException {
+        // FIXME: jtd: this method is too big, refactor and clarify logic
+        setSearchSubtitle(QueryDescriptionBuilder.TITLE_ALL_RECORDS);
         if (getId() != null && getId() > 0) { // ignore all other options if we are searching for specific tdar-id
             q.append(new FieldQueryPart(QueryFieldNames.ID, Long.toString(getId())));
-            handleSearch(q);
-            return SUCCESS;
+            getDescBuilder().append(QueryDescriptionBuilder.SEARCHING_FOR_RESOURCE_WITH_T_DAR_ID, getId());
+            setSearchPhrase(getDescBuilder().toHtml());
+            return;
         }
 
         if (getRecordsPerPage() == 0) {
             setRecordsPerPage(defaultRecordsPerPage);
         }
-
-        if (StringUtils.isNotBlank(query)) {
-            String query_ = query.trim();
-            if (query_.startsWith("\"") && query_.endsWith("\"")) {
-                query_ = query_.substring(1, query_.length() - 1);
-            }
-            // still quotes... undo
-            if (query_.contains("\"")) {
-                query_ = query;
-            }
-            QueryPartGroup primary = new QueryPartGroup();
-
-            FieldQueryPart titlePart = setupUsingStrict(strictParsing, QueryFieldNames.TITLE, query_);
-            FieldQueryPart descriptionPart = setupUsingStrict(strictParsing, QueryFieldNames.DESCRIPTION, query);
-            FieldQueryPart creatorPart = setupUsingStrict(strictParsing, QueryFieldNames.RESOURCE_CREATORS_PROPER_NAME, query);
-            if (query_.contains(" ")) {
-                titlePart.setQuotedEscapeValue(query_);
-                descriptionPart.setQuotedEscapeValue(query_);
-                creatorPart.setQuotedEscapeValue(query_);
-                FieldQueryPart phrase = new FieldQueryPart(QueryFieldNames.ALL_PHRASE);
-                phrase.setQuotedEscapeValue(query_);
-                primary.append(phrase.setBoost(3.2f));
-                creatorPart.setProximity(2);
-                titlePart.setProximity(3);
-                descriptionPart.setProximity(4);
-                phrase.setProximity(4);
-            }
-            primary.append(titlePart.setBoost(6f));
-            primary.append(descriptionPart.setBoost(4f));
-            primary.append(creatorPart.setBoost(5f));
-
-            primary.append(setupUsingStrict(strictParsing, QueryFieldNames.CONTENT, query_));
-            primary.append(setupUsingStrict(strictParsing, QueryFieldNames.ALL, query_).setBoost(2f));
-            q.append(primary);
-            primary.setOperator(Operator.OR);
+        
+        if (StringUtils.isNotEmpty(getRawQuery())) {
+            q.setRawQuery(getRawQuery());
+            getDescBuilder().append(QueryDescriptionBuilder.RAW_QUERY, getRawQuery());
+            setSearchPhrase(getDescBuilder().toHtml());
+            return;
         }
-
-        if (fromYear != null && toYear != null && getYearType() != null) {
-            TemporalQueryPart tq = new TemporalQueryPart();
-            tq.addTemporalLimit(new TemporalLimit(CoverageType.valueOf(getYearType()),
-                    fromYear, toYear));
-            q.append(tq);
-        }
+        
+        appendGeneralPhraseQuery(q);
+        
+        appendTemporalLimitQuery(q);
 
         if (fileAccess != null) {
-            q.append(new FieldQueryPart(QueryFieldNames.RESOURCE_ACCESS_TYPE, fileAccess.name()));
+            getDescBuilder().append(QueryDescriptionBuilder.FILE_ACCESS, fileAccess);
+            q.append(new FieldQueryPart(QueryFieldNames.RESOURCE_ACCESS_TYPE, fileAccess));
         }
 
-        if (StringUtils.isNotBlank(getTitle())) {
-            FieldQueryPart fqp = new FieldQueryPart(QueryFieldNames.TITLE, getTitle());
-            if (!strictParsing) {
-                fqp.setEscapedValue(getTitle());
-            }
-            FieldQueryPart titlePart = new FieldQueryPart(QueryFieldNames.TITLE);
-            titlePart.setQuotedEscapeValue(getTitle());
-            q.append(titlePart.setBoost(6f));
-            q.append(fqp);
-        }
+        appendTitleQuery(q);
 
         QueryPartGroup projectQueryGroup = new QueryPartGroup();
         projectQueryGroup.setOperator(Operator.OR);
         if (!CollectionUtils.isEmpty(projectIds)) {
             boolean valid = false;
+            getDescBuilder().append(QueryDescriptionBuilder.PROJECT, projectIds);
             for (Long projectId : projectIds) {
                 if (projectId != null && projectId > -1) {
                     projectQueryGroup.append(new FieldQueryPart(QueryFieldNames.PROJECT_ID, projectId.toString()));
@@ -444,19 +421,32 @@ public class LuceneSearchController extends AbstractLookupController {
             }
         }
 
+        if (dateCreatedMin != null && dateCreatedMax != null) {
+            RangeQueryPart part = new RangeQueryPart(QueryFieldNames.DATE, dateCreatedMin.toString(), dateCreatedMax.toString());
+            q.append(part);
+            getDescBuilder().appendRange(QueryDescriptionBuilder.DATE_CREATED_RANGE_BETWEEN, dateCreatedMin.toString(), dateCreatedMax.toString());
+        } else if (dateCreatedMax != null) {
+            RangeQueryPart part = new RangeQueryPart(QueryFieldNames.DATE, minDateValue.toString(), dateCreatedMax.toString());
+            getDescBuilder().appendRange(QueryDescriptionBuilder.DATE_CREATED_RANGE_BEFORE, "", dateCreatedMax.toString());
+            q.append(part);
+        } else if (dateCreatedMin != null) {
+            RangeQueryPart part = new RangeQueryPart(QueryFieldNames.DATE, dateCreatedMin.toString(), maxDateValue.toString());
+            getDescBuilder().appendRange(QueryDescriptionBuilder.DATE_CREATED_RANGE_AFTER, dateCreatedMin.toString(), "");
+            q.append(part);
+        }
+
         if (minx != null && maxx != null && miny != null && maxy != null) {
             SpatialQueryPart sq = new SpatialQueryPart();
-            sq.addSpatialLimit(new SpatialLimit(LatitudeLongitudeBox.obfuscate(
-                    minx, maxx, LatitudeLongitudeBox.LATITUDE),
-                    LatitudeLongitudeBox.obfuscate(maxx, minx,
-                            LatitudeLongitudeBox.LATITUDE),
-                    LatitudeLongitudeBox.obfuscate(miny, maxy,
-                            LatitudeLongitudeBox.LONGITUDE),
-                    LatitudeLongitudeBox.obfuscate(maxy, miny,
-                            LatitudeLongitudeBox.LONGITUDE)));
+            getDescBuilder().appendSpatialQuery(QueryDescriptionBuilder.WITHIN_MAP_CONSTRAINTS, minx, maxx, miny, maxy);
+            LatitudeLongitudeBox limit = new LatitudeLongitudeBox(minx, miny, maxx, maxy);
+            if (!limit.isValid()) {
+                throw new TdarRecoverableRuntimeException("the bounding box specified is not valid ");
+            }
+            sq.addSpatialLimit(limit);
             q.append(sq);
         }
         if (!CollectionUtils.isEmpty(getResourceTypes())) {
+            getDescBuilder().append(QueryDescriptionBuilder.SELECTED_RESOURCE_TYPES, getResourceTypes());
             ResourceTypeQueryPart rtq = new ResourceTypeQueryPart();
             for (ResourceType type : getResourceTypes()) {
                 rtq.addResourceTypeLimit(type);
@@ -464,219 +454,124 @@ public class LuceneSearchController extends AbstractLookupController {
             q.append(rtq);
         }
 
-        if (!StringUtils.isEmpty(documentType)) {
-            DocumentType docType = DocumentType.fromString(documentType);
-            if (docType != null) {
-                q.append(new FieldQueryPart(QueryFieldNames.DOCUMENT_TYPE, docType.name()));
+        if (getDocumentType() != null) {
+            getDescBuilder().append(QueryDescriptionBuilder.SELECTED_DOCUMENT_TYPES, getDocumentType());
+            if (getDocumentType() != null) {
+                q.append(new FieldQueryPart(QueryFieldNames.DOCUMENT_TYPE, getDocumentType()));
             }
+        }
+
+        if (StringUtils.isNotEmpty(query) && query.contains(QueryFieldNames.INTEGRATABLE)) {
+            getDescBuilder().append(QueryDescriptionBuilder.TITLE_TAG_KEYWORD_PHRASE, "true");
         }
 
         appendMaterialKeywordQuery(q);
         appendCultureKeywordQuery(q);
-        appendGeographicKeywordQuery(q);
         appendInvestigationTypeQuery(q);
         appendSiteTypeKeywordQuery(q);
         appendSiteNameKeywordQuery(q);
         appendAdminQuery(q);
+        appendOtherKeywordQuery(q);
+        appendTemporalKeywordQuery(q);
+        appendGeographicKeywordQuery(q);
+        appendDateRegisteredQuery(q);
+        appendDateUpdatedQuery(q);
 
         if (getAuthenticatedUser() != null && isUseSubmitterContext()) {
             q.append(new FieldQueryPart(QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY, getAuthenticatedUser().getId().toString()));
         }
 
-        if (CollectionUtils.isEmpty(getIncludedStatuses())) {
-            getIncludedStatuses().add(Status.ACTIVE);
-            if (getAuthenticatedUser() != null && isUseSubmitterContext()) {
-                // SHOULD BE IN USER CONTEXT, SO SHOULD BE OK
-                getIncludedStatuses().add(Status.DRAFT);
-            }
-        }
-        appendStatusTypes(q, getIncludedStatuses());
+        appendStatusInformation(q, getDescBuilder(), getIncludedStatuses(), getAuthenticatedUser());
+
         if (getSortField() != SortOption.RELEVANCE) {
             setSecondarySortField(SortOption.TITLE);
         }
-        handleSearch(q);
-        return SUCCESS;
+        logger.trace("setting search phrase");
+        setSearchPhrase(getDescBuilder().toHtml());
+        return;
     }
 
-    public String getRssFeed() {
-        if (feed != null) {
-            StringWriter writer = new StringWriter();
-            SyndFeedOutput output = new SyndFeedOutput();
-            try {
-                output.output(feed, writer);
-                setRssInputStream(new ByteArrayInputStream(writer.toString().getBytes()));
-            } catch (Exception e) {
-                addActionErrorWithException("could not process your search", e);
-            }
 
+    private void appendGeneralPhraseQuery(QueryBuilder q) {
+        if (StringUtils.isBlank(query)) return;
+        
+        setSearchSubtitle(query);
+        getDescBuilder().append(QueryDescriptionBuilder.USING_KEYWORD, query);
+        
+        String cleanedQueryString = query.trim();
+        // if we have a leading and trailng quote, strip them
+        if (cleanedQueryString.startsWith("\"") && cleanedQueryString.endsWith("\"")) {
+            cleanedQueryString = cleanedQueryString.substring(1, cleanedQueryString.length() - 1);
         }
-        return "";
+        cleanedQueryString = QueryParser.escape(cleanedQueryString);
+        String unquotedQueryString = getSearchService().sanitize(cleanedQueryString);
+        
+        QueryPartGroup primary = new QueryPartGroup();
+
+        boolean hasSpaces = cleanedQueryString.contains(" ");
+        if (hasSpaces) {
+            // quoting so we can do things like proximity
+            cleanedQueryString = "\"" + cleanedQueryString + "\"";
+        }
+        
+
+        FieldQueryPart titlePart = new FieldQueryPart(QueryFieldNames.TITLE, cleanedQueryString);
+        FieldQueryPart descriptionPart = new FieldQueryPart(QueryFieldNames.DESCRIPTION, cleanedQueryString);
+        FieldQueryPart creatorPart = new FieldQueryPart(QueryFieldNames.RESOURCE_CREATORS_PROPER_NAME, cleanedQueryString);
+        FieldQueryPart content = new FieldQueryPart(QueryFieldNames.CONTENT, cleanedQueryString);
+        FieldQueryPart allFields = new FieldQueryPart(QueryFieldNames.ALL, cleanedQueryString).setBoost(2f);
+
+        if (hasSpaces) {
+            // APPLIES WEIGHTING BASED ON THE "PHRASE" NOT THE TERM
+            FieldQueryPart phrase = new FieldQueryPart(QueryFieldNames.ALL_PHRASE, cleanedQueryString);
+            //FIXME: magic words
+            phrase.setProximity(4);
+            phrase.setBoost(3.2f);
+            primary.append(phrase);
+            creatorPart.setProximity(2);
+            titlePart.setProximity(3);
+            //perform a phrase and a keyword search on title
+            FieldQueryPart titleUnquotedPart = new FieldQueryPart(QueryFieldNames.TITLE, unquotedQueryString);
+            //boost the title keyword search a little less than the title phrase search under the assumption that phrase matches should have better relevancy score
+            primary.append(titleUnquotedPart.setBoost(5f));
+            
+            descriptionPart.setProximity(4);
+        }
+            
+        primary.append(titlePart.setBoost(6f));
+        primary.append(descriptionPart.setBoost(4f));
+        primary.append(creatorPart.setBoost(5f));
+
+        primary.append(content);
+        primary.append(allFields);
+        q.append(primary);
+        primary.setOperator(Operator.OR);
     }
-
-    public String getSearchPhrase() {
-        return searchPhrase;
+    
+    private void appendTitleQuery(QueryBuilder q) {
+        if (StringUtils.isBlank(getTitle())) return;
+        getDescBuilder().append(QueryDescriptionBuilder.WITH_TEXT_IN_TITLE, getTitle());
+        QueryPartGroup group= new QueryPartGroup();
+        group.setOperator(Operator.OR);
+        FieldQueryPart wordsInTitle = new FieldQueryPart(QueryFieldNames.TITLE);
+        wordsInTitle.setEscapedValue(getSearchService().sanitize(getTitle()));
+        FieldQueryPart wholeTitle = new FieldQueryPart(QueryFieldNames.TITLE);
+        wholeTitle.setQuotedEscapeValue(getTitle());
+        wholeTitle.setBoost(6f);//FIXME: magic numbers
+        group.append(wholeTitle);
+        group.append(wordsInTitle);
+        q.append(group);
     }
-
-    /*
-     * the search phrase is used by multiple items including the results page and the rss feed
-     */
-
-    // FIXME: COMBINE WITH THE QUERY BUILDING BELOW, this SHOULD NOT BE IT'S OWN METHOD!!
-    public void setSearchPhrase() {
-        StringBuilder result = new StringBuilder();
-        if (getId() != null && getId() > 0) {
-            result.append(SEARCHING_FOR_RESOURCE_WITH_T_DAR_ID).append(STRONG).append(getId()).append(STRONG_CLOSE);
-            this.searchPhrase = result.toString();
-            return;
-        }
-        if (!CollectionUtils.isEmpty(getResourceTypes())) {
-            result.append(SELECTED_RESOURCE_TYPES);
-            Iterator<ResourceType> iter = getResourceTypes().iterator();
-            while (iter.hasNext()) {
-                ResourceType type = iter.next();
-                if (type != null) {
-                    result.append(STRONG).append(type.getLabel()).append(STRONG_CLOSE);
-                }
-                if (iter.hasNext())
-                    result.append(COMMA_SEPARATOR);
-            }
-        } else {
-            result.append(SEARCHING_ALL_RESOURCE_TYPES);
-        }
-
-        if (!StringUtils.isEmpty(documentType)) {
-            try {
-                DocumentType docType = DocumentType.fromString(documentType);
-                if (docType != null) {
-                    result.append(SELECTED_DOCUMENT_TYPES);
-                    result.append(STRONG);
-                    result.append(docType.getLabel());
-                    result.append(STRONG_CLOSE);
-                }
-            } catch (Exception e) {
-                addActionErrorWithException("could not process your search", e);
-            }
-        }
-
-        if (fileAccess != null) {
-            result.append(LIMITED_TO).append(STRONG).append(fileAccess.getLabel()).append(STRONG_CLOSE);
-        }
-
-        if (!CollectionUtils.isEmpty(projectIds)) {
-            if (projectIds.size() == 1) {
-                if (projectIds.get(0) != null) {
-                    result.append("limited to project id: ").append(STRONG).append(projectIds.get(0)).append(STRONG_CLOSE);
-                }
-            } else {
-                result.append("limited to ").append(STRONG).append("selected project ids").append(STRONG_CLOSE);
-            }
-        }
-
-        if (!StringUtils.isEmpty(getQuery())) {
-            if (getQuery().contains("integratable:true")) {
-                result.append("using ").append(STRONG).append(TITLE_TAG_KEYWORD_PHRASE).append(STRONG_CLOSE);
-
-            } else {
-                result.append(USING_KEYWORD).append(STRONG).append(query.toString()).append(STRONG_CLOSE);
-            }
-        }
-
-        if (!StringUtils.isEmpty(getTitle())) {
-            result.append(WITH_TEXT_IN_TITLE).append(STRONG).append(getTitle().toString()).append(STRONG_CLOSE);
-        }
-
-        if (!StringUtils.isEmpty(getYearType())) {
-            switch (CoverageType.valueOf(getYearType())) {
-                case CALENDAR_DATE:
-                    result.append(BETWEEN).append(STRONG);
-                    if (getFromYear() > 0) {
-                        result.append(getFromYear()).append(AD);
-                    } else {
-                        result.append(Math.abs(getFromYear())).append(BC);
-                    }
-
-                    result.append(STRONG_CLOSE).append(AND).append(STRONG);
-                    if (getToYear() > 0) {
-                        result.append(getToYear()).append(AD);
-                    } else {
-                        result.append(Math.abs(getFromYear())).append(BC);
-                    }
-                    result.append(STRONG_CLOSE);
-                    break;
-                case RADIOCARBON_DATE:
-                    result.append(WITH_RADIOCARBON_DATE_BETWEEN).append(STRONG).append(getFromYear()).append(STRONG_CLOSE).append(AND).
-                            append(STRONG_CLOSE).append(getToYear()).append(STRONG_CLOSE);
-                    break;
-            }
-        }
-        if (getMinx() != null) {
-            result.append(WITHIN_MAP_CONSTRAINTS);
-        }
-
-        appendKeywordsFromList(result, selectedCultureKeywords, WITH_CULTURE_KEYWORDS);
-        appendUncontrolledKeywordsFromList(result, geographicKeywords, WITH_GEOGRAPHIC_KEYWORDS);
-        appendKeywordsFromList(result, selectedInvestigationTypes, WITH_INVESTIGATION_TYPES);
-        appendKeywordsFromList(result, selectedMaterialKeywords, WITH_MATERIAL_KEYWORDS);
-        appendKeywordsFromList(result, selectedSiteTypeKeywords, WITH_SITE_TYPE_KEYWORDS);
-
-        appendUncontrolledKeywordsFromList(result, siteNameKeywords, WITH_SITE_NAME_KEYWORDS);
-        appendUncontrolledKeywordsFromList(result, uncontrolledSiteTypeKeywords, WITH_UNCONTROLLED_SITE_TYPE_KEYWORDS);
-        appendUncontrolledKeywordsFromList(result, uncontrolledCultureKeywords, WITH_UNCONTROLLED_CULTURE_KEYWORDS);
-
-        this.searchPhrase = result.toString();
-    }
-
-    private void appendUncontrolledKeywordsFromList(StringBuilder result, List<String> list, String extra) {
-        if (!isEmpty(list)) {
-            result.append(extra);
-            Iterator<String> iter = list.iterator();
-            while (iter.hasNext()) {
-                result.append(STRONG).append(iter.next()).append(STRONG_CLOSE);
-                if (iter.hasNext())
-                    result.append(COMMA_SEPARATOR);
-            }
-        }
-    }
-
-    private <K extends Keyword> void appendKeywordsFromList(StringBuilder result, List<K> list, String extra) {
-        if (!CollectionUtils.isEmpty(list)) {
-            result.append(" ");
-            result.append(extra);
-            result.append(" ");
-            Iterator<K> iter = list.listIterator();
-            while (iter.hasNext()) {
-                Keyword type = iter.next();
-                result.append(STRONG).append(type.getLabel()).append(STRONG_CLOSE);
-                if (iter.hasNext())
-                    result.append(COMMA_SEPARATOR);
-            }
-        }
-
+    
+    public String getSearchPhraseHtml() {
+        return getDescBuilder().toHtml();
     }
 
     public String getSearchSubtitle() {
         return searchSubtitle;
     }
 
-    public void setSearchSubtitle() {
-        String title = TITLE_ALL_RECORDS;
-        if (getId() != null && getId() > 0) {
-            title = TITLE_BY_TDAR_ID;
-        }
-
-        if (!CollectionUtils.isEmpty(selectedCultureKeywords) || !CollectionUtils.isEmpty(selectedInvestigationTypes)
-                || !CollectionUtils.isEmpty(selectedMaterialKeywords) || !CollectionUtils.isEmpty(selectedSiteTypeKeywords)
-                || !isEmpty(siteNameKeywords)
-                || !isEmpty(uncontrolledSiteTypeKeywords) || !isEmpty(uncontrolledCultureKeywords)) {
-            title = TITLE_FILTERED_BY_KEYWORD;
-        }
-
-        if (!StringUtils.isEmpty(query)) {
-            title = query;
-            if (getQuery().contains(QueryFieldNames.INTEGRATABLE + ":true")) {
-                title = TITLE_TAG_KEYWORD_PHRASE;
-            }
-        }
+    public void setSearchSubtitle(String title) {
         this.searchSubtitle = title;
     }
 
@@ -688,6 +583,7 @@ public class LuceneSearchController extends AbstractLookupController {
             group.setOperator(Operator.OR);
             for (Person submitter : submitters) {
                 group.append(new FieldQueryPart(QueryFieldNames.SUBMITTER_ID, submitter.getId().toString()));
+                getDescBuilder().appendSubmitter(submitter);
             }
             q.append(group);
         } else {
@@ -699,12 +595,14 @@ public class LuceneSearchController extends AbstractLookupController {
             group.setOperator(Operator.OR);
             for (Person contributor : contributors) {
                 group.append(new FieldQueryPart(QueryFieldNames.RESOURCE_CREATORS_CREATOR_ID, contributor.getId().toString()));
+                getDescBuilder().appendAuthor(contributor);
             }
             q.append(group);
         } else if (searchContributor != null) {
             // need a fqp for each part filled out in the form. (first name, last name)
             addEscapedWildcardField(q, QueryFieldNames.RESOURCE_CREATORS_CREATOR_NAME_KEYWORD, searchContributor.getFirstName());
             addEscapedWildcardField(q, QueryFieldNames.RESOURCE_CREATORS_CREATOR_NAME_KEYWORD, searchContributor.getLastName());
+            getDescBuilder().appendAuthor(searchContributor);
         }
     }
 
@@ -721,6 +619,7 @@ public class LuceneSearchController extends AbstractLookupController {
             }
             q.append(fqp);
         }
+        getDescBuilder().appendSubmitter(person);
     }
 
     private void appendAdminQuery(QueryBuilder q) {
@@ -750,14 +649,18 @@ public class LuceneSearchController extends AbstractLookupController {
     }
 
     private void appendMaterialKeywordQuery(QueryBuilder q) {
-        Set<MaterialKeyword> keywords = getMaterialKeywordService().findByIds(materialKeywordIds);
-        selectedMaterialKeywords.addAll(keywords);
-        appendKeywords(selectedMaterialKeywords, QueryFieldNames.ACTIVE_MATERIAL_KEYWORDS, q);
+        Set<MaterialKeyword> keywords = getGenericKeywordService().findByIds(MaterialKeyword.class, materialKeywordIds);
+        getSelectedMaterialKeywords().addAll(keywords);
+        getDescBuilder().append(QueryDescriptionBuilder.WITH_MATERIAL_KEYWORDS, getSelectedMaterialKeywords());
+        appendKeywords(getSelectedMaterialKeywords(), QueryFieldNames.ACTIVE_MATERIAL_KEYWORDS, q);
     }
+    
+    
 
     private void appendCultureKeywordQuery(QueryBuilder q) {
-        Set<CultureKeyword> cultureKeywords = getCultureKeywordService().findByIds(approvedCultureKeywordIds);
+        Set<CultureKeyword> cultureKeywords = getGenericKeywordService().findByIds(CultureKeyword.class, approvedCultureKeywordIds);
         selectedCultureKeywords.addAll(cultureKeywords);
+        getDescBuilder().append(QueryDescriptionBuilder.WITH_CULTURE_KEYWORDS, selectedCultureKeywords);
         appendKeywords(cultureKeywords, QueryFieldNames.ACTIVE_CULTURE_KEYWORDS, q);
         if (getUncontrolledCultureKeywords() == null)
             return;
@@ -768,43 +671,86 @@ public class LuceneSearchController extends AbstractLookupController {
 
     @SuppressWarnings("rawtypes")
     private void appendKeywords(Collection keywords, String type, QueryBuilder q) {
-        if (!keywords.isEmpty())
+        if (!keywords.isEmpty()) {
             q.append(new KeywordQueryPart(type, keywords));
-
+        }
     }
 
     private void appendSiteTypeKeywordQuery(QueryBuilder q) {
-        Set<SiteTypeKeyword> siteTypeKeywords = getSiteTypeKeywordService().findByIds(approvedSiteTypeKeywordIds);
+        Set<SiteTypeKeyword> siteTypeKeywords = getGenericKeywordService().findByIds(SiteTypeKeyword.class, approvedSiteTypeKeywordIds);
         selectedSiteTypeKeywords.addAll(siteTypeKeywords);
+        getDescBuilder().append(QueryDescriptionBuilder.WITH_SITE_TYPE_KEYWORDS, selectedSiteTypeKeywords);
         appendKeywords(siteTypeKeywords, QueryFieldNames.ACTIVE_SITE_TYPE_KEYWORDS, q);
         if (uncontrolledSiteTypeKeywords == null)
             return;
         appendKeywords(uncontrolledSiteTypeKeywords, QueryFieldNames.ACTIVE_SITE_TYPE_KEYWORDS, q);
     }
+    
+    private void appendTemporalLimitQuery(QueryBuilder q) {
+        if(CollectionUtils.isEmpty(coverageDates)) return;
+        if(!coverageDates.get(0).isValid()) return;
+        TemporalQueryPart tq = new TemporalQueryPart();
+        tq.addTemporalLimit(new TemporalLimit(coverageDates.get(0)));
+        getDescBuilder().appendCoverageDate(coverageDates.get(0));
+        q.append(tq);
+    }
 
     private void appendSiteNameKeywordQuery(QueryBuilder q) {
         if (siteNameKeywords == null)
             return;
+        getDescBuilder().append(QueryDescriptionBuilder.WITH_SITE_NAME_KEYWORDS, siteNameKeywords);
         appendKeywords(siteNameKeywords, QueryFieldNames.ACTIVE_SITE_NAME_KEYWORDS, q);
     }
 
-    private void appendGeographicKeywordQuery(QueryBuilder q) {
-        if (geographicKeywords == null)
-            return;
-        appendKeywords(geographicKeywords, QueryFieldNames.ACTIVE_GEOGRAPHIC_KEYWORDS, q);
-    }
-
     private void appendInvestigationTypeQuery(QueryBuilder q) {
-        Set<InvestigationType> investigationTypes = getInvestigationTypeService().findByIds(investigationTypeIds);
+        Set<InvestigationType> investigationTypes = getGenericKeywordService().findByIds(InvestigationType.class, investigationTypeIds);
+        getDescBuilder().append(QueryDescriptionBuilder.WITH_INVESTIGATION_TYPES, investigationTypes);
         selectedInvestigationTypes.addAll(investigationTypes);
         appendKeywords(investigationTypes, QueryFieldNames.ACTIVE_INVESTIGATION_TYPES, q);
+    }
+
+    private void appendOtherKeywordQuery(QueryBuilder q) {
+        getDescBuilder().append(QueryDescriptionBuilder.WITH_OTHER_KEYWORDS, otherKeywords);
+        appendKeywords(otherKeywords, QueryFieldNames.ACTIVE_OTHER_KEYWORDS, q);
+    }
+
+    private void appendTemporalKeywordQuery(QueryBuilder q) {
+        getDescBuilder().append(QueryDescriptionBuilder.WITH_TEMPORAL_KEYWORDS, getTemporalKeywords());
+        appendKeywords(getTemporalKeywords(), QueryFieldNames.ACTIVE_TEMPORAL_KEYWORDS, q);
+    }
+
+    private void appendGeographicKeywordQuery(QueryBuilder q) {
+        getDescBuilder().append(QueryDescriptionBuilder.WITH_GEOGRAPHIC_KEYWORDS, getGeographicKeywords());
+        appendKeywords(getGeographicKeywords(), QueryFieldNames.ACTIVE_GEOGRAPHIC_KEYWORDS, q);
+    }
+
+    private void appendDateUpdatedQuery(QueryBuilder q) {
+        if (dateUpdatedStart == null && dateUpdatedEnd == null)
+            return;
+        if (dateUpdatedStart != null)
+            getDescBuilder().append(QueryDescriptionBuilder.WITH_UPDATE_DATE_AFTER, dateUpdatedStart);
+        if (dateUpdatedEnd != null)
+            getDescBuilder().append(QueryDescriptionBuilder.WITH_UPDATE_DATE_BEFORE, dateUpdatedEnd);
+        RangeQueryPart dateRangeQueryPart = new RangeQueryPart(QueryFieldNames.DATE_UPDATED, dateUpdatedStart, dateUpdatedEnd);
+        q.append(dateRangeQueryPart);
+    }
+
+    private void appendDateRegisteredQuery(QueryBuilder q) {
+        if (dateRegisteredStart == null && dateRegisteredEnd == null)
+            return;
+        if (dateRegisteredStart != null)
+            getDescBuilder().append(QueryDescriptionBuilder.WITH_REGISTRATION_DATE_AFTER, dateRegisteredStart);
+        if (dateRegisteredEnd != null)
+            getDescBuilder().append(QueryDescriptionBuilder.WITH_REGISTRATION_DATE_BEFORE, dateRegisteredEnd);
+        RangeQueryPart dateRangeQueryPart = new RangeQueryPart(QueryFieldNames.DATE_CREATED, dateRegisteredStart, dateRegisteredEnd);
+        q.append(dateRangeQueryPart);
     }
 
     private FacetingRequest facetOn(String name, String field, FullTextQuery ftq, List<Facet> facetList) {
         FacetingRequest facetRequest = getSearchService().getQueryBuilder(Resource.class).facet().name(name).onField(field).discrete()
                 .orderedBy(FacetSortOrder.COUNT_DESC).includeZeroCounts(false).createFacetingRequest();
 
-        if (name.equals(QueryFieldNames.DATE_CREATED)) {
+        if (name.equals(QueryFieldNames.DATE)) {
             facetRequest = getSearchService().getQueryBuilder(Resource.class).facet().name(name).onField(field).range()
                     .below(1800).
                     from(1800).to(1850).
@@ -828,9 +774,9 @@ public class LuceneSearchController extends AbstractLookupController {
         facetOn(QueryFieldNames.RESOURCE_TYPE, QueryFieldNames.RESOURCE_TYPE, ftq, getResourceTypeFacets());
         facetOn(QueryFieldNames.DOCUMENT_TYPE, QueryFieldNames.DOCUMENT_TYPE, ftq, getDocumentTypeFacets());
         facetOn(QueryFieldNames.RESOURCE_ACCESS_TYPE, QueryFieldNames.RESOURCE_ACCESS_TYPE, ftq, getFileAccessFacets());
-        facetOn("cultures", QueryFieldNames.ACTIVE_CULTURE_KEYWORDS_LABEL, ftq, getCultureFacets());
-        facetOn("location", QueryFieldNames.ACTIVE_GEOGRAPHIC_KEYWORDS_LABEL, ftq, getLocationFacets());
-        facetOn(QueryFieldNames.DATE_CREATED, QueryFieldNames.DATE_CREATED, ftq, getDateCreatedFacets());
+//        facetOn("cultures", QueryFieldNames.ACTIVE_CULTURE_KEYWORDS_LABEL, ftq, getCultureFacets());
+//        facetOn("location", QueryFieldNames.ACTIVE_GEOGRAPHIC_KEYWORDS_LABEL, ftq, getLocationFacets());
+//        facetOn(QueryFieldNames.DATE, QueryFieldNames.DATE, ftq, getDateCreatedFacets());
     }
 
     public void setQuery(String query) {
@@ -873,50 +819,9 @@ public class LuceneSearchController extends AbstractLookupController {
         this.maxy = maxy;
     }
 
-    public String getYearType() {
-        if (StringUtils.isEmpty(yearType) || yearType == "NONE")
-            return "NONE";
-        try {
-            CoverageType.valueOf(yearType);
-        } catch (IllegalArgumentException ie) {
-            yearType = "NONE";
-            logger.debug("{}", ie);
-        }
-        return yearType;
-    }
-
-    public void setYearType(String yearType) {
-        this.yearType = yearType;
-    }
-
-    public Integer getFromYear() {
-        return fromYear;
-    }
-
-    public void setFromYear(Integer fromYear) {
-        this.fromYear = fromYear;
-    }
-
-    public Integer getToYear() {
-        return toYear;
-    }
-
-    public void setToYear(Integer toYear) {
-        this.toYear = toYear;
-    }
-
-    // public Boolean getShowIndependentProjects() {
-    // return showIndependentProjects;
-    // }
-    //
-    // public void setShowIndependentProjects(Boolean showIndependentProjects) {
-    // logger.debug("show independent projects: {}", showIndependentProjects);
-    // this.showIndependentProjects = showIndependentProjects;
-    // }
-
     public List<MaterialKeyword> getAllMaterialKeywords() {
         if (CollectionUtils.isEmpty(allMaterialKeywords)) {
-            allMaterialKeywords = getMaterialKeywordService().findAll();
+            allMaterialKeywords = getGenericKeywordService().findAll(MaterialKeyword.class);
             Collections.sort(allMaterialKeywords);
         }
         return allMaterialKeywords;
@@ -935,7 +840,7 @@ public class LuceneSearchController extends AbstractLookupController {
 
     public KeywordNode<CultureKeyword> getApprovedCultureKeywords() {
         if (approvedCultureKeywords == null) {
-            approvedCultureKeywords = KeywordNode.organizeKeywords(getCultureKeywordService().findAllApproved());
+            approvedCultureKeywords = KeywordNode.organizeKeywords(genericKeywordService.findAllApproved(CultureKeyword.class));
         }
         return approvedCultureKeywords;
     }
@@ -967,7 +872,7 @@ public class LuceneSearchController extends AbstractLookupController {
 
     public List<InvestigationType> getAllInvestigationTypes() {
         if (CollectionUtils.isEmpty(allInvestigationTypes)) {
-            allInvestigationTypes = getInvestigationTypeService().findAll();
+            allInvestigationTypes = getGenericKeywordService().findAll(InvestigationType.class);
             Collections.sort(allInvestigationTypes);
         }
         return allInvestigationTypes;
@@ -992,7 +897,7 @@ public class LuceneSearchController extends AbstractLookupController {
 
     public KeywordNode<SiteTypeKeyword> getApprovedSiteTypeKeywords() {
         if (approvedSiteTypeKeywords == null) {
-            approvedSiteTypeKeywords = KeywordNode.organizeKeywords(getSiteTypeKeywordService().findAllApproved());
+            approvedSiteTypeKeywords = KeywordNode.organizeKeywords(genericKeywordService.findAllApproved(SiteTypeKeyword.class));
         }
         return approvedSiteTypeKeywords;
     }
@@ -1041,12 +946,12 @@ public class LuceneSearchController extends AbstractLookupController {
         return selectedSiteTypeKeywords;
     }
 
-    public void setRssInputStream(InputStream rssInputStream) {
-        this.rssInputStream = rssInputStream;
+    public void setInputStream(InputStream rssInputStream) {
+        this.inputStream = rssInputStream;
     }
 
-    public InputStream getRssInputStream() {
-        return rssInputStream;
+    public InputStream getInputStream() {
+        return inputStream;
     }
 
     public void setRssUrl() {
@@ -1129,14 +1034,6 @@ public class LuceneSearchController extends AbstractLookupController {
         return documentTypeFacets;
     }
 
-    public void setDocumentType(String documentType) {
-        this.documentType = documentType;
-    }
-
-    public String getDocumentType() {
-        return documentType;
-    }
-
     /**
      * @param dateCreatedFacets
      *            the dateCreatedFacets to set
@@ -1194,13 +1091,6 @@ public class LuceneSearchController extends AbstractLookupController {
         return Arrays.asList(Status.values());
     }
 
-    // FIXME: this business of lists with single nulls needs to go away. In the meantime, use this to check if a list is "empty-ish"
-    private <E extends Object> boolean isEmpty(Collection<E> col) {
-        if (CollectionUtils.isEmpty(col))
-            return true;
-        return col.size() == 1 && col.iterator().next() == null;
-    }
-
     public List<SortOption> getSortOptions() {
         return SortOption.getOptionsForContext(Resource.class);
     }
@@ -1243,6 +1133,126 @@ public class LuceneSearchController extends AbstractLookupController {
         this.dateCreated = dateCreated;
     }
 
+    /**
+     * @return the dateCreatedMax
+     */
+    public Integer getDateCreatedMax() {
+        return dateCreatedMax;
+    }
+
+    /**
+     * @param dateCreatedMax
+     *            the dateCreatedMax to set
+     */
+    public void setDateCreatedMax(Integer dateCreatedMax) {
+        this.dateCreatedMax = dateCreatedMax;
+    }
+
+    /**
+     * @return the dateCreatedMin
+     */
+    public Integer getDateCreatedMin() {
+        return dateCreatedMin;
+    }
+
+    /**
+     * @param dateCreatedMin
+     *            the dateCreatedMin to set
+     */
+    public void setDateCreatedMin(Integer dateCreatedMin) {
+        this.dateCreatedMin = dateCreatedMin;
+    }
+
+    /**
+     * @return the descBuilder
+     */
+    public QueryDescriptionBuilder getDescBuilder() {
+        return descBuilder;
+    }
+
+    /**
+     * @param descBuilder
+     *            the descBuilder to set
+     */
+    public void setDescBuilder(QueryDescriptionBuilder descBuilder) {
+        this.descBuilder = descBuilder;
+    }
+
+    /**
+     * @return the documentType
+     */
+    public DocumentType getDocumentType() {
+        return documentType;
+    }
+
+    /**
+     * @param documentType
+     *            the documentType to set
+     */
+    public void setDocumentType(DocumentType documentType) {
+        this.documentType = documentType;
+    }
+
+    /**
+     * @return the searchPhrase
+     */
+    public String getSearchPhrase() {
+        return searchPhrase;
+    }
+
+    /**
+     * @param searchPhrase
+     *            the searchPhrase to set
+     */
+    public void setSearchPhrase(String searchPhrase) {
+        this.searchPhrase = searchPhrase;
+    }
+
+    /**
+     * @return the maxDateValue
+     */
+    public Integer getMaxDateValue() {
+        return maxDateValue;
+    }
+
+    /**
+     * @param maxDateValue
+     *            the maxDateValue to set
+     */
+    public void setMaxDateValue(Integer maxDateValue) {
+        this.maxDateValue = maxDateValue;
+    }
+
+    /**
+     * @return the minDateValue
+     */
+    public Integer getMinDateValue() {
+        return minDateValue;
+    }
+
+    /**
+     * @param minDateValue
+     *            the minDateValue to set
+     */
+    public void setMinDateValue(Integer minDateValue) {
+        this.minDateValue = minDateValue;
+    }
+
+    /**
+     * @return the contentLength
+     */
+    public Long getContentLength() {
+        return contentLength;
+    }
+
+    /**
+     * @param contentLength
+     *            the contentLength to set
+     */
+    public void setContentLength(Long contentLength) {
+        this.contentLength = contentLength;
+    }
+
     public Person getSearchSubmitter() {
         if (searchSubmitter == null) {
             searchSubmitter = new Person();
@@ -1265,11 +1275,98 @@ public class LuceneSearchController extends AbstractLookupController {
         this.searchContributor = searchContributor;
     }
 
+    public int getDefaultRecordsPerPage() {
+        return defaultRecordsPerPage;
+    }
+
+    public void setDefaultRecordsPerPage(int defaultRecordsPerPage) {
+        this.defaultRecordsPerPage = defaultRecordsPerPage;
+    }
+
+    public List<String> getOtherKeywords() {
+        return otherKeywords;
+    }
+
     public List<String> getGeographicKeywords() {
         return geographicKeywords;
     }
 
+    public List<String> getTemporalKeywords() {
+        return temporalKeywords;
+    }
+
+    public Integer getMaxDownloadRecords() {
+        return TdarConfiguration.getInstance().getSearchExcelExportRecordMax();
+    }
+
+    public Date getDateRegisteredStart() {
+        return dateRegisteredStart;
+    }
+
+    public void setDateRegisteredStart(Date dateRegisteredStart) {
+        this.dateRegisteredStart = dateRegisteredStart;
+    }
+
+    public Date getDateRegisteredEnd() {
+        return dateRegisteredEnd;
+    }
+
+    public void setDateRegisteredEnd(Date dateRegisteredEnd) {
+        this.dateRegisteredEnd = dateRegisteredEnd;
+    }
+
+    public Date getDateUpdatedStart() {
+        return dateUpdatedStart;
+    }
+
+    public void setDateUpdatedStart(Date dateUpdatedStart) {
+        this.dateUpdatedStart = dateUpdatedStart;
+    }
+
+    public Date getDateUpdatedEnd() {
+        return dateUpdatedEnd;
+    }
+
+    public void setDateUpdatedEnd(Date dateUpdatedEnd) {
+        this.dateUpdatedEnd = dateUpdatedEnd;
+    }
+
     public void setGeographicKeywords(List<String> geographicKeywords) {
         this.geographicKeywords = geographicKeywords;
+    }
+
+    public void setTemporalKeywords(List<String> temporalKeywords) {
+        this.temporalKeywords = temporalKeywords;
+    }
+
+    public void setSelectedMaterialKeywords(List<MaterialKeyword> selectedMaterialKeywords) {
+        this.selectedMaterialKeywords = selectedMaterialKeywords;
+    }
+
+    public String getRawQuery() {
+        return rawQuery;
+    }
+
+    public void setRawQuery(String rawQuery) {
+        this.rawQuery = rawQuery;
+    }
+
+    public List<CoverageDate> getCoverageDates() {
+        return coverageDates;
+    }
+
+    public void setCoverageDates(List<CoverageDate> coverageDates) {
+        this.coverageDates = coverageDates;
+    }
+    
+    public CoverageDate getBlankCoverageDate() {
+        return new CoverageDate(CoverageType.CALENDAR_DATE);
+    }
+
+    public List<CoverageType> getAllCoverageTypes() {
+        List<CoverageType> coverageTypes = new ArrayList<CoverageType>();
+        coverageTypes.add(CoverageType.CALENDAR_DATE);
+        coverageTypes.add(CoverageType.RADIOCARBON_DATE);
+        return coverageTypes;
     }
 }

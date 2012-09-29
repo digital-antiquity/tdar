@@ -19,6 +19,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.tdar.core.bean.entity.Person;
 
 /**
+ * Helper class to corral all of the integration info in one place
+ * 
  * @author Adam Brin
  * 
  */

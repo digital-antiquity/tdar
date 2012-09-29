@@ -15,8 +15,9 @@ import javax.persistence.Table;
 import org.tdar.core.bean.Persistable;
 
 /**
- * @author Adam Brin
+ * A class to manage scheduled processes and upgrades ... really just running things once
  * 
+ * @author Adam Brin
  */
 @Entity
 @Table(name="upgrade_task")

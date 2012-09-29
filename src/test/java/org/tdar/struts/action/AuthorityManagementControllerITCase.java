@@ -1,28 +1,28 @@
 package org.tdar.struts.action;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailException;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.core.bean.DedupeableType;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.service.GenericService;
-import org.tdar.core.service.resource.ResourceService;
-import org.tdar.utils.authoritymanagement.DedupeableType;
-
-import com.opensymphony.xwork2.Preparable;
+import org.tdar.core.service.external.EmailService;
 
 public class AuthorityManagementControllerITCase extends AbstractAdminControllerITCase{
     
@@ -32,15 +32,34 @@ public class AuthorityManagementControllerITCase extends AbstractAdminController
     @Autowired
     private GenericService genericService;
     
+    @Autowired 
+    EmailService emailService;
+    
+    
     @Before 
     public void setup() {
         controller = generateNewInitializedController(AuthorityManagementController.class);
+        
+        //replace mailsender with stub that does nothing
+        emailService.setMailSender(new MailSender() {
+
+			@Override
+			public void send(SimpleMailMessage simpleMessage)
+					throws MailException {
+			}
+
+			@Override
+			public void send(SimpleMailMessage[] simpleMessages)
+					throws MailException {
+			}});
     }
     
     @Override
     protected TdarActionSupport getController() {
         return controller;
     }
+    
+   
     
     @Test
     public void testIndex() {
@@ -105,6 +124,69 @@ public class AuthorityManagementControllerITCase extends AbstractAdminController
         genericService.synchronize();   
     }
     
+    
+    @Test
+    @Rollback
+    public void testProtectedPersonRecordsCannotBeDeduped() {
+        setIgnoreActionErrors(true);
+        Person person1 = createAndSaveNewPerson("person1@mailinator.com", "person1");
+        Person protectedRecord1 = createAndSaveNewPerson("protectedRecord1@mailinator.com", "protectedRecord1");
+        Person protectedRecord2 = createAndSaveNewPerson("protectedRrecord2@mailinator.com", "protectedRecord2");
+        protectedRecord1.setRegistered(true);
+        protectedRecord2.setRegistered(true);
+        genericService.saveOrUpdate(protectedRecord1);
+        genericService.saveOrUpdate(protectedRecord2);
+        controller.setEntityType(DedupeableType.PERSON);
+        controller.getSelectedDupeIds().addAll(Arrays.asList(person1.getId(), protectedRecord1.getId(), protectedRecord2.getId()));
+        controller.prepare();
+        controller.validate();
+        controller.selectAuthority();
+        assertTrue("expecting protected record error", controller.getActionErrors().contains(AuthorityManagementController.ERROR_TOO_MANY_PROTECTED_RECORDS));
+    }
+    
+    @Test
+    @Rollback
+    public void testProtectedPersonRecordsCannotBeDeduped2() {
+        setIgnoreActionErrors(true);
+        Person person1 = createAndSaveNewPerson("person1@mailinator.com", "person1");
+        Person protectedRecord = createAndSaveNewPerson("protectedRecord1@mailinator.com", "protectedRecord1");
+        protectedRecord.setRegistered(true);
+        genericService.saveOrUpdate(protectedRecord);
+        controller.setEntityType(DedupeableType.PERSON);
+        controller.getSelectedDupeIds().addAll(Arrays.asList(person1.getId(), protectedRecord.getId()));
+        controller.setAuthorityId(person1.getId());
+        controller.prepare();
+        controller.validate();
+        controller.mergeDuplicates();
+        assertTrue("expecting protected record error", controller.getActionErrors().contains(AuthorityManagementController.ERROR_CANNOT_DEDUPE_PROTECTED_RECORDS));
+    }
+    
+    @Test
+    @Rollback
+    //when you dedupe something, it should become a synonym of the authority record that took its place
+    public void testSynonyms() throws InstantiationException, IllegalAccessException {
+        Person authority = new Person("authority", "record", "authrec@tdar.org");
+        Person dupe = new Person("dee", "duped", "deduped@tdar.org");
+        Person dupe2 = new Person("reed", "undant", "redundant@tdar.org");
+        genericService.save(authority);
+        genericService.save(dupe);
+        genericService.save(dupe2);
+        controller.setEntityType(DedupeableType.PERSON);
+        controller.getSelectedDupeIds().add(dupe.getId());
+        controller.getSelectedDupeIds().add(dupe2.getId());
+        controller.setAuthorityId(authority.getId());
+        controller.prepare();
+        controller.validate();
+        controller.mergeDuplicates();
+        
+        //make sure the synonyms were persisted
+        Person authority2 = genericService.find(Person.class, authority.getId());
+        assertTrue("authority record should have duplicates", authority2.getSynonyms().size() > 0);
+        
+    }
+    
+    
+    
     //make two institutions (auth and dupe), and then associate it w/ all manner of tdar stuff
     private void makeSomeInstitutionReferences(Institution authority, Institution dupe) throws Exception {
         entityService.save(authority);
@@ -128,12 +210,13 @@ public class AuthorityManagementControllerITCase extends AbstractAdminController
         Person person = new Person("john", "doe", "johndoe123@mailinator.com");
         person.setInstitution(dupe);
         genericService.saveOrUpdate(person);
-        
-        
     }
     
     
     //TODO: test for max dupe size.
+    
+    
+    
 
     
 }

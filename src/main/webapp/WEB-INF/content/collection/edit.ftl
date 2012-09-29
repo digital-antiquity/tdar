@@ -1,3 +1,4 @@
+<#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
@@ -7,7 +8,7 @@
 <#else>
 <title>Editing: ${persistable.name}</title>
 </#if>
-<meta name="lastModifiedDate" content="$Date: 2011-07-11 08:30:39 -0700 (Mon, 11 Jul 2011) $"/>
+<meta name="lastModifiedDate" content="$Date$"/>
 
 <@edit.resourceJavascript formId="#MetadataForm" />
 <script type='text/javascript' src='<@s.url value="/includes/datatable-support.js"/>'></script>
@@ -126,7 +127,7 @@ function removeResourceClicked(id, elem) {
 <p class='field'>
 </p>
 <@s.textarea labelposition='top' label='Collection Description' name='resourceCollection.description'  
-     title="Please enter the description " />
+     cssClass='resizable' title="Please enter the description " />
 
 
 </div>
@@ -200,4 +201,4 @@ The form will check for matches in the tDAR database and populate the related fi
 </div>
 
 </body>
-
+</#escape>

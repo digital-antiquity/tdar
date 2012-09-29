@@ -5,8 +5,28 @@
 
 <urlrewrite>
 	<rule>
+		<name>XML Namespace Document</name>
+		<note>
+		The XML namespace URI for tDAR is "http://www.tdar.org/namespace". This namespace URI should never change.
+		The following rule redirects from the namespace URI to a page where the namespace is currently documented. 
+		If the location of the documentation changes, the &lt;to&gt; element below should be updated to follow it.
+		</note>
+		<from>/namespace</from>
+		<to type="temporary-redirect">http://dev.tdar.org/confluence/display/TDAR/tDAR+XML+namespace</to>
+	</rule>
+	<rule>
 		<from>^/services$</from>
 		<to>/services/</to>
+	</rule>
+
+	<rule>
+		<from>^/admin/?$</from>
+		<to>/admin/internal</to>
+	</rule>
+
+	<rule>
+		<from>^/projects/list</from>
+		<to>/dashboard/dashboard</to>
 	</rule>
 	
 	<rule>
@@ -14,7 +34,7 @@
 	   <to>/browse/$1?id=$2</to>
 	</rule>
   <outbound-rule>
-    <from>^/browse/(.+)?id=(\d+)$</from>
+    <from>^/browse/(.+)\?id=(\d+)$</from>
     <to>/browse/$1/$2</to>
   </outbound-rule>
 
@@ -104,6 +124,11 @@
 		<to>/resource/add?projectId=$1</to>
 	</rule>
 
+	<rule>
+		<from>^/resource/([0-9]+)$</from>
+		<to>/resource/view?resourceId=$1</to>
+	</rule>
+
 	<outbound-rule>
 		<from>^/resource/add\?projectId=([0-9]+)$</from>
 		<to>/resource/add/$1</to>
@@ -133,6 +158,17 @@
 		<from>^/workspace$</from>
 		<to>/workspace/list</to>
 	</rule>
+	
+	
+	<rule>
+	   <from>^/entity/(person|institution)/([0-9]+)/(edit)$</from>
+        <to>/entity/$1/$3?id=$2</to>
+	</rule>
+    <outbound-rule>
+        <from>^/entity/(person|institution)/(edit)\?id=([0-9]+)$</from>
+        <to>/entity/$1/$3/$2</to>
+    </outbound-rule>
+	   
 
   <!--  http://stackoverflow.com/questions/962729/is-it-possible-to-disable-jsessionid-in-tomcat-servlet -->
 	<outbound-rule encodefirst="true">

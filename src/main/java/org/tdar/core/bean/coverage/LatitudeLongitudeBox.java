@@ -1,21 +1,27 @@
 package org.tdar.core.bean.coverage;
 
+import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.search.annotations.ClassBridge;
 import org.hibernate.search.annotations.ContainedIn;
 import org.tdar.core.bean.HasResource;
+import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.configuration.JSONTransient;
 import org.tdar.core.exception.TdarRuntimeException;
-import org.tdar.index.bridge.LatLongClassBridge;
+import org.tdar.search.index.bridge.LatLongClassBridge;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -33,11 +39,20 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @Table(name = "latitude_longitude")
 @XStreamAlias("latitudeLongitude")
 @ClassBridge(impl = LatLongClassBridge.class)
-public class LatitudeLongitudeBox extends Persistable.Base implements HasResource<Resource> {
+@XmlRootElement
+// (name="latitudeLongitudeBox")
+public class LatitudeLongitudeBox extends Persistable.Base implements HasResource<Resource>, Obfuscatable {
+
+    private transient boolean obfuscated;
+    private transient Double minObfuscatedLatitude = null;
+    private transient Double minObfuscatedLongitude = null;
+    private transient Double maxObfuscatedLatitude = null;
+    private transient Double maxObfuscatedLongitude = null;
 
     private static final String PSQL_POLYGON = "POLYGON((%1$s %2$s,%3$s %2$s,%3$s %4$s,%1$s %4$s,%1$s %2$s))";
 
-    private static final String PSQL_MULTIPOLYGON_DATELINE = "MULTIPOLYGON(((%1$s %2$s,%1$s %3$s, -180 %3$s, -180 %2$s,%1$s %2$s)), ((180 %3$s, %4$s %3$s,%4$s %2$s,180 %2$s,180 %3$s)))";
+      private static final String PSQL_MULTIPOLYGON_DATELINE = "MULTIPOLYGON(((%1$s %2$s,%1$s %3$s,  180 %3$s,  180 %2$s,%1$s %2$s)), ((-180 %3$s, %4$s %3$s,%4$s %2$s,-180 %2$s,-180 %3$s)))";
+//    private static final String PSQL_MULTIPOLYGON_DATELINE = "MULTIPOLYGON(((%1$s %2$s,%1$s %3$s, -180 %3$s, -180 %2$s,%1$s %2$s)), (( 180 %3$s, %4$s %3$s,%4$s %2$s, 180 %2$s, 180 %3$s)))";
     private static final long serialVersionUID = 2605563277326422859L;
 
     public static final double MAX_LATITUDE = 90d;
@@ -68,6 +83,24 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     @Column(nullable = false, name = "maximum_longitude")
     private Double maximumLongitude;
 
+    // used in testing and management
+    private transient Set<GeographicKeyword> geographicKeywords;
+
+    public LatitudeLongitudeBox() {
+    }
+
+    public LatitudeLongitudeBox(Double minxOrMinLong, Double minyOrMinLat, Double maxxOrMaxLong, Double maxyOrMaxLat) {
+        this.minimumLongitude = minxOrMinLong;
+        this.minimumLatitude = minyOrMinLat;
+        this.maximumLatitude = maxyOrMaxLat;
+        this.maximumLongitude = maxxOrMaxLong;
+        isValid();
+    }
+
+    @Deprecated
+    /*
+     * This property should only be used by hibernate or if you REALLY need the unobfuscated version
+     */
     public Double getMinimumLatitude() {
         return minimumLatitude;
     }
@@ -83,7 +116,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
      * 
      * NOTE: the box should always be bigger than the original.
      * 
-     * http://www.movable-type.co.uk/scripts/latlong.html
+     * http://www.movable-type.co.uk/scripts/html
      */
 
     public static Double obfuscate(Double num, Double num2, int type) {
@@ -122,19 +155,31 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     public Double getMinObfuscatedLatitude() {
-        return obfuscate(minimumLatitude, maximumLatitude, LATITUDE);
+        if (minObfuscatedLatitude == null) {
+            minObfuscatedLatitude = obfuscate(minimumLatitude, maximumLatitude, LATITUDE);
+        }
+        return minObfuscatedLatitude;
     }
 
     public Double getMaxObfuscatedLatitude() {
-        return obfuscate(maximumLatitude, minimumLatitude, LATITUDE);
+        if (maxObfuscatedLatitude == null) {
+            maxObfuscatedLatitude = obfuscate(maximumLatitude, minimumLatitude, LATITUDE);
+        }
+        return maxObfuscatedLatitude;
     }
 
     public Double getMinObfuscatedLongitude() {
-        return obfuscate(minimumLongitude, maximumLongitude, LONGITUDE);
+        if (minObfuscatedLongitude == null) {
+            minObfuscatedLongitude = obfuscate(minimumLongitude, maximumLongitude, LONGITUDE);
+        }
+        return minObfuscatedLongitude;
     }
 
     public Double getMaxObfuscatedLongitude() {
-        return obfuscate(maximumLongitude, minimumLongitude, LONGITUDE);
+        if (maxObfuscatedLongitude == null) {
+            maxObfuscatedLongitude = obfuscate(maximumLongitude, minimumLongitude, LONGITUDE);
+        }
+        return maxObfuscatedLongitude;
     }
 
     public void setMinimumLatitude(Double minimumLatitude) {
@@ -145,6 +190,10 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         }
     }
 
+    @Deprecated
+    /*
+     * This property should only be used by hibernate or if you REALLY need the unobfuscated version
+     */
     public Double getMaximumLatitude() {
         return maximumLatitude;
     }
@@ -157,6 +206,10 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         }
     }
 
+    @Deprecated
+    /*
+     * This property should only be used by hibernate or if you REALLY need the unobfuscated version
+     */
     public Double getMinimumLongitude() {
         return minimumLongitude;
     }
@@ -169,6 +222,10 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         }
     }
 
+    @Deprecated
+    /*
+     * This property should only be used by hibernate or if you REALLY need the unobfuscated version
+     */
     public Double getMaximumLongitude() {
         return maximumLongitude;
     }
@@ -203,7 +260,10 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     public boolean isValid() {
-        return maximumLatitude != null && minimumLatitude != null && maximumLongitude != null && minimumLongitude != null;
+        if (isValidLatitude(maximumLatitude) && isValidLatitude(minimumLatitude) && isValidLongitude(minimumLongitude) && isValidLongitude(maximumLongitude)) {
+            return true;
+        }
+        return false;
     }
 
     public String toString() {
@@ -224,6 +284,9 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         // if we've got something that goes over the dateline, then we need to split
         // into a multipolygon instead of a standard one. The multipolygon is two polygons
         // each one being on either side of the dateline
+        if (!isValid()) {
+            throw new TdarRuntimeException("the specified latLong box is not valid");
+        }
         if (crossesDateline()) {
             return String.format(PSQL_MULTIPOLYGON_DATELINE, getMinObfuscatedLongitude(), getMinObfuscatedLatitude(),
                     getMaxObfuscatedLatitude(), getMaxObfuscatedLongitude()).toString();
@@ -239,11 +302,89 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     /**
      * @return
      */
-    private boolean crossesDateline() {
-        return (getMinObfuscatedLongitude() < -100f && getMaxObfuscatedLongitude() > 100f);
+    public boolean crossesDateline() {
+        return LatitudeLongitudeBox.crossesDateline(getMinObfuscatedLongitude(), getMaxObfuscatedLongitude());
+    }
+
+    public boolean crossesPrimeMeridian() {
+        return LatitudeLongitudeBox.crossesPrimeMeridian(getMinObfuscatedLongitude(), getMaxObfuscatedLongitude());
+    }
+
+    public static boolean crossesDateline(double minLongitude, double maxLongitude) {
+        /*
+         * below is the logic that was originally used in PostGIS -- it worked to help identify issues where a box was
+         * drawn around Guam and Hawaii, but it's not really needed anymore because all of our logic looks at the box
+         * and breaks it in two over the IDL instead of choosing the smaller box.
+         * return (getMinObfuscatedLongitude() < -100f && getMaxObfuscatedLongitude() > 100f);
+         */
+         if (minLongitude > 0f && maxLongitude < 0f) {
+         return true;
+         } 
+
+        return false;
+    }
+
+    public static boolean crossesPrimeMeridian(double minLongitude, double maxLongitude) {
+        if (minLongitude < 0f && maxLongitude > 0f) {
+            return true;
+        }
+
+        return false;
     }
 
     public boolean isValidForController() {
         return true;
     }
+
+    @XmlTransient
+    @JSONTransient
+    public boolean isObfuscated() {
+        return obfuscated;
+    }
+
+    public void setObfuscated(boolean obfuscated) {
+        this.obfuscated = obfuscated;
+    }
+
+    public List<Obfuscatable> obfuscate() {
+        setMaximumLatitude(getMaxObfuscatedLatitude());
+        setMinimumLatitude(getMinObfuscatedLatitude());
+        setMaximumLongitude(getMaxObfuscatedLongitude());
+        setMinimumLongitude(getMinObfuscatedLongitude());
+        setObfuscated(true);
+        return null;
+    }
+
+    @Transient
+    public void setMinX(Double minX) {
+        this.minimumLongitude = minX;
+    }
+
+    @Transient
+    public void setMaxX(Double maxX) {
+        this.maximumLongitude = maxX;
+    }
+
+    @Transient
+    public void setMinY(Double minY) {
+        this.minimumLatitude = minY;
+    }
+
+    @Transient
+    public void setMaxY(Double maxY) {
+        this.maximumLatitude = maxY;
+    }
+
+    public void addGeographicKeywords(Set<GeographicKeyword> allGeographicInfo) {
+        this.setGeographicKeywords(allGeographicInfo);
+    }
+
+    public Set<GeographicKeyword> getGeographicKeywords() {
+        return geographicKeywords;
+    }
+
+    public void setGeographicKeywords(Set<GeographicKeyword> geographicKeywords) {
+        this.geographicKeywords = geographicKeywords;
+    }
+
 }

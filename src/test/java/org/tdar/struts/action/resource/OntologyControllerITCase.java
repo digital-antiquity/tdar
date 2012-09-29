@@ -1,15 +1,8 @@
 package org.tdar.struts.action.resource;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -33,6 +26,7 @@ import org.tdar.core.bean.resource.dataTable.DataTable;
 import org.tdar.core.bean.resource.dataTable.DataTableColumn;
 import org.tdar.core.bean.resource.dataTable.DataTableColumnType;
 import org.tdar.core.service.resource.OntologyService;
+import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 
 /**
@@ -63,7 +57,7 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
-    public void testControllerLoadsTabText() throws IOException {
+    public void testControllerLoadsTabText() throws Exception {
         controller = super.generateNewInitializedController(OntologyController.class);
         controller.prepare();
         Ontology ont = controller.getOntology();
@@ -99,7 +93,7 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
-    public void testOntologyWithReservedChars() throws IOException {
+    public void testOntologyWithReservedChars() throws Exception {
         String ontText = IOUtils.toString(getClass().getResourceAsStream("/ontology/nodes_with_bad_chars_and_weird_percents.txt"));
         Long id = loadOntologyFromText(ontText);
         Ontology ont = ontologyService.find(id);
@@ -107,15 +101,18 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
         for (OntologyNode node : ont.getOntologyNodes()) {
             map.put(node.getIri(), node);
         }
+        logger.debug("iri -> nodes: {}", map);
+        OntologyNode node = map.get("Navicular__Central____Cuboid");
+        assertNotNull(node);
+        assertEquals("Navicular (Central) & Cuboid", node.getDisplayName());
+        assertEquals("4th Tarsal", node.getSynonyms().iterator().next());
         assertEquals("<Fish Element Additional>", map.get("_Fish_Element_Additional_").getDisplayName());
-        assertEquals("Navicular (Central) & Cuboid", map.get("Navicular_(Central)_Cuboid").getDisplayName());
-        assertEquals("4th Tarsal", map.get("Navicular_(Central)_Cuboid").getSynonyms().iterator().next());
+        assertEquals("Clavicle % Clavicle.clavicle", map.get("Clavicle___Clavicle.clavicle").getDisplayName());
     }
 
     @Test
     @Rollback
-    public void testMappedOntologyUpdate() throws IOException {
-
+    public void testMappedOntologyUpdate() throws Exception {
         String ontText = IOUtils.toString(getClass().getResourceAsStream(TAB_ONTOLOGY_FILE));
         int originalFileLength = ontText.split("([\r\n]+)").length;
         Long id = loadOntologyFromText(ontText);
@@ -163,7 +160,7 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
         assertFalse(latestVersions.equals(ont.getLatestUploadedVersions()));
     }
 
-    private Long loadOntologyFromText(String ontText) {
+    private Long loadOntologyFromText(String ontText) throws TdarActionException {
         controller = super.generateNewInitializedController(OntologyController.class);
         controller.prepare();
         Ontology ont = controller.getOntology();
@@ -180,7 +177,7 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback(true)
-    public void testUnMappedOntologyUpdate() throws IOException {
+    public void testUnMappedOntologyUpdate() throws Exception {
         controller = super.generateNewInitializedController(OntologyController.class);
         controller.prepare();
         Ontology ont = controller.getOntology();
@@ -264,7 +261,7 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback(true)
-    public void createOntologyOrderTest() throws IOException {
+    public void createOntologyOrderTest() throws Exception {
         controller = super.generateNewInitializedController(OntologyController.class);
         controller.prepare();
         Ontology ont = controller.getOntology();

@@ -20,11 +20,13 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.IndexedEmbedded;
 import org.tdar.core.bean.SupportsResource;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
@@ -50,6 +52,7 @@ public class Ontology extends InformationResource implements SupportsResource {
 
     @ManyToOne
     @JoinColumn(name = "category_variable_id")
+    @IndexedEmbedded(depth = 1)
     private CategoryVariable categoryVariable;
 
     @OneToMany(mappedBy = "ontology", cascade = CascadeType.ALL)
@@ -83,7 +86,6 @@ public class Ontology extends InformationResource implements SupportsResource {
         return null;
     }
 
-    @XmlIDREF
     public CategoryVariable getCategoryVariable() {
         return categoryVariable;
     }
@@ -160,6 +162,8 @@ public class Ontology extends InformationResource implements SupportsResource {
         return sortedNodes;
     }
 
+    @XmlElementWrapper(name="ontologyNodes")
+    @XmlElement(name="ontologyNode")
     public List<OntologyNode> getOntologyNodes() {
         return ontologyNodes;
     }

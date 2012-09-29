@@ -44,7 +44,7 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
         DataTable table = dataTables.iterator().next();
         List<DataTableColumn> dataTableColumns = table.getDataTableColumns();
         assertEquals(5, dataTableColumns.size());
-        int i = 0;
+        int i = 1; //0 is the tDAR ID Column which may not be returned
         for (DataTableColumn col : table.getSortedDataTableColumns()) {
             logger.debug("{} : {}", col.getSequenceNumber(), col);
             assertEquals(new Integer(i), col.getSequenceNumber());

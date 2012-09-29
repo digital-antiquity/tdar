@@ -1,6 +1,5 @@
 package org.tdar.core.service.resource;
 
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -10,10 +9,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.tools.ant.filters.StringInputStream;
@@ -36,13 +31,15 @@ import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.util.HomepageGeographicKeywordCache;
+import org.tdar.core.bean.util.HomepageResourceCountCache;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.GenericService;
-import org.tdar.geosearch.GeoSearchService;
-import org.tdar.utils.Pair;
+import org.tdar.core.service.XmlService;
+import org.tdar.search.geosearch.GeoSearchService;
 
 @Service
 public class ResourceService extends GenericService {
@@ -53,6 +50,9 @@ public class ResourceService extends GenericService {
     }
 
     @Autowired
+    private XmlService xmlService;
+
+    @Autowired
     private DatasetDao datasetDao;
 
     @Autowired
@@ -61,32 +61,32 @@ public class ResourceService extends GenericService {
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Transactional(readOnly = true)
-    public boolean isOntology(Number id) {
+    public boolean isOntology(Long id) {
         return getGenericDao().find(Ontology.class, id) != null;
     }
 
     @Transactional(readOnly = true)
-    public boolean isDataset(Number id) {
+    public boolean isDataset(Long id) {
         return getGenericDao().find(Dataset.class, id) != null;
     }
 
     @Transactional(readOnly = true)
-    public boolean isProject(Number id) {
+    public boolean isProject(Long id) {
         return getGenericDao().find(Project.class, id) != null;
     }
 
     @Transactional(readOnly = true)
-    public boolean isCodingSheet(Number id) {
+    public boolean isCodingSheet(Long id) {
         return getGenericDao().find(CodingSheet.class, id) != null;
     }
 
     @Transactional(readOnly = true)
-    public boolean isSensoryData(Number id) {
+    public boolean isSensoryData(Long id) {
         return getGenericDao().find(SensoryData.class, id) != null;
     }
 
     @Transactional(readOnly = true)
-    public Resource find(Number id) {
+    public Resource find(Long id) {
         if (id == null)
             return null;
         ResourceType rt = datasetDao.findResourceType(id);
@@ -126,16 +126,6 @@ public class ResourceService extends GenericService {
     }
 
     @Transactional(readOnly = true)
-    public <T extends Resource> String convertToXML(T resource) throws JAXBException {
-        JAXBContext jc = JAXBContext.newInstance(resource.getClass());
-        Marshaller marshaller = jc.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        StringWriter sw = new StringWriter();
-        marshaller.marshal(resource, sw);
-        return sw.toString();
-    }
-
-    @Transactional(readOnly = true)
     public <T extends Resource> void saveRecordToFilestore(T resource) {
         @SuppressWarnings("deprecation")
         InformationResourceFileVersion version = new InformationResourceFileVersion();
@@ -143,7 +133,7 @@ public class ResourceService extends GenericService {
         version.setExtension("xml");
         version.setInformationResourceId(resource.getId());
         try {
-            TdarConfiguration.getInstance().getFilestore().store(new StringInputStream(convertToXML(resource)), version);
+            TdarConfiguration.getInstance().getFilestore().storeAndRotate(new StringInputStream(xmlService.convertToXML(resource)), version, 5);
         } catch (Exception e) {
             logger.error("something happend when converting record to XML: {}", e);
             throw new TdarRecoverableRuntimeException("could not save xml record");
@@ -155,12 +145,9 @@ public class ResourceService extends GenericService {
         return Arrays.asList(Status.values());
     }
 
+    @Transactional(readOnly = false)
     public void incrementAccessCounter(Resource r) {
         datasetDao.incrementAccessCounter(r);
-    }
-
-    public void setDatasetDao(DatasetDao datasetDao) {
-        this.datasetDao = datasetDao;
     }
 
     @Transactional(readOnly = true)
@@ -169,7 +156,7 @@ public class ResourceService extends GenericService {
     }
 
     @Transactional(readOnly = true)
-    public Map<GeographicKeyword, Pair<Long, Double>> getISOGeographicCounts() {
+    public List<HomepageGeographicKeywordCache> getISOGeographicCounts() {
         return datasetDao.getISOGeographicCounts();
     }
 
@@ -199,7 +186,7 @@ public class ResourceService extends GenericService {
 
     @Transactional
     /**
-     * Given a colleciton of hibernate-managed beans (the 'current' collection)  and another collection of transient beans (the 'incoming' collection),
+     * Given a collection of hibernate-managed beans (the 'current' collection)  and another collection of transient beans (the 'incoming' collection),
      * update the current collection to match the contents of the incoming collection. This method will associate all elements in the incoming collection 
      * with the specified resource.  Contents of both collections should satisfy the HasResource interface.
      * 
@@ -213,6 +200,11 @@ public class ResourceService extends GenericService {
     public <H extends HasResource<R>, R extends Resource> void saveHasResources(R resource, boolean shouldSave, ErrorHandling validateMethod,
             Collection<H> incoming_,
             Set<H> current, Class<H> cls) {
+        if (CollectionUtils.isEmpty(incoming_) && CollectionUtils.isEmpty(current)) {
+            //skip a complete no-op
+            return;
+        }
+
         // FIXME: the last parameter should be able to be determined via generics/reflection instead of passing in
         if (incoming_ == null) {
             incoming_ = new ArrayList<H>();
@@ -275,7 +267,7 @@ public class ResourceService extends GenericService {
     /**
      * @return
      */
-    public Map<ResourceType, Pair<Long, Double>> getResourceCounts() {
+    public List<HomepageResourceCountCache> getResourceCounts() {
         return datasetDao.getResourceCounts();
     }
 

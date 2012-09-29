@@ -17,13 +17,17 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Type;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.dataTable.DataTableColumn;
+import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
@@ -83,7 +87,8 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
         setId(id);
     }
 
-    @XmlTransient
+    @XmlElement(name = "ontologyRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public Ontology getOntology() {
         return ontology;
     }
@@ -152,6 +157,8 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
         return index.compareTo(other.index);
     }
 
+    @XmlElementWrapper(name = "dataValueOntologyNodeMappings")
+    @XmlElement(name = "dataValueOntologyNodeMapping")
     public Set<DataValueOntologyNodeMapping> getDataValueOntologyNodeMappings() {
         return dataValueOntologyNodeMappings;
     }

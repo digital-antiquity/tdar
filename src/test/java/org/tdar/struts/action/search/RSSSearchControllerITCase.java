@@ -105,6 +105,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
         assertEquals(0,controller.getActionErrors().size());
     }
 
+    
     @Test
     @Rollback(true)
     public void testFindResourceBuiIdRSS() throws XpathException, SAXException, IOException {
@@ -114,9 +115,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
         controller.setSessionData(new SessionData()); // create unauthenticated session
         doSearch("");
         controller.viewRss();
-        String rssFeedStatus = controller.getRssFeed();
-        assertEquals("", rssFeedStatus);
-        String rssFeed = IOUtils.toString(controller.getRssInputStream());
+        String rssFeed = IOUtils.toString(controller.getInputStream());
 
         assertTrue(resultsContainId(3074l));
         logger.info(rssFeed);

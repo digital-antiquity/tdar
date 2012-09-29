@@ -10,13 +10,14 @@
 		<hibernate.version>3.6.6.Final</hibernate.version>
 		<org.springframework.version>3.0.5.RELEASE</org.springframework.version>
 		<postgresql.jdbc.version>8.4-701.jdbc4</postgresql.jdbc.version>
-		<spring.amqp.version>1.0.0.RC2</spring.amqp.version>
-		<clover.version>3.0.2</clover.version>
+		<spring.amqp.version>1.0.0.RELEASE</spring.amqp.version>
+		<clover.version>3.1.3</clover.version>
 		<!-- /end managed versions -->
-		<jvm.args>-Xms256m -Xmx1024m -XX:PermSize=128m -XX:MaxPermSize=512m</jvm.args>
+		<jvm.args>-Xms256m -Xmx2048m -XX:PermSize=128m -XX:MaxPermSize=512m</jvm.args>
 		<generated.schema.dir>target/generated/db</generated.schema.dir>
 		<generated.schema.file>schema.sql</generated.schema.file>
 		<jetty.port>8080</jetty.port>
+		<jetty.stop.port>12919</jetty.stop.port>
 		<use.test.classpath>false</use.test.classpath>
 	</properties>
 	<organization>
@@ -25,9 +26,9 @@
 	</organization>
 	<repositories>
 		<repository>
-			<id>dev.tdar.org.snapshot</id>
+			<id>build.tdar.org.snapshot</id>
 			<name>tDAR Maven2 snapshots repository</name>
-			<url>http://dev.tdar.org/archiva/repository/snapshots</url>
+			<url>http://build.tdar.org/archiva/repository/snapshots</url>
 			<releases>
 				<enabled>false</enabled>
 			</releases>
@@ -36,9 +37,9 @@
 			</snapshots>
 		</repository>
 		<repository>
-			<id>dev.tdar.org</id>
+			<id>build.tdar.org</id>
 			<name>tDAR Maven2 repository</name>
-			<url>http://dev.tdar.org/archiva/repository/internal</url>
+			<url>http://build.tdar.org/archiva/repository/internal</url>
 			<releases>
 				<enabled>true</enabled>
 			</releases>
@@ -63,9 +64,12 @@
 			<url>https://repository.jboss.org/nexus/content/groups/public/</url>
 		</repository>
 		<repository>
-			<id>com.springsource.repository.libraries.release</id>
-			<name>SpringSource Enterprise Bundle Repository - SpringSource Library Releases</name>
-			<url>http://repository.springsource.com/maven/libraries/release</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>central</id>
+			<name>libs-release</name>
+			<url>http://repo.springsource.org/libs-release</url>
 		</repository>
 		<repository>
 			<id>repository.springframework.milestone</id>
@@ -76,6 +80,10 @@
 			<id>com.springsource.repository.libraries.external</id>
 			<name>SpringSource Enterprise Bundle Repository - External Library Releases</name>
 			<url>http://repository.springsource.com/maven/libraries/external</url>
+		</repository>
+		<repository>
+			<id>spring-release</id>
+			<url>http://maven.springframework.org/release</url>
 		</repository>
 		<repository>
 			<id>org.jboss.repository.nexus.public</id>
@@ -98,7 +106,6 @@
 	<groupId>org.tdar</groupId>
 	<artifactId>tdar</artifactId>
 	<packaging>war</packaging>
-	<version>6-FLUVIAL</version>
 	<name>The Digital Archaeological Record</name>
 	<url>http://www.tdar.org</url>
 	<description>Preservation of the digital archaeological record for research, analysis, and dissemination</description>
@@ -107,7 +114,7 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>r08</version>
+			<version>10.0.1</version>
 		</dependency>
 		<!-- postgres jdbc -->
 		<dependency>
@@ -118,8 +125,7 @@
 		<dependency>
 			<groupId>org.postgis</groupId>
 			<artifactId>postgis-jdbc</artifactId>
-			<version>1.3.2</version>
-			<!-- newer versions are available but not via mvn -->
+			<version>1.3.3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.pdfbox</groupId>
@@ -139,7 +145,7 @@
 		<dependency>
 			<groupId>com.ibm.icu</groupId>
 			<artifactId>icu4j</artifactId>
-			<version>4.8</version>
+			<version>4.8.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>de.schlichtherle</groupId>
@@ -154,12 +160,18 @@
 		<dependency>
 			<groupId>imageJ</groupId>
 			<artifactId>imageJ-core</artifactId>
-			<version>1.43</version>
+			<version>1.46c</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.media</groupId>
 			<artifactId>jmf</artifactId>
 			<version>2.1.1e</version>
+		</dependency>
+
+		<dependency>
+			<groupId>net.tanesha.recaptcha4j</groupId>
+			<artifactId>recaptcha4j</artifactId>
+			<version>0.0.7</version>
 		</dependency>
 		<!-- log4j -->
 		<dependency>
@@ -180,6 +192,11 @@
 					<artifactId>jmxri</artifactId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>apache-log4j-extras</artifactId>
+			<version>1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-cli</groupId>
@@ -215,7 +232,7 @@
 		<dependency>
 			<groupId>gov.loc</groupId>
 			<artifactId>bagit</artifactId>
-			<version>3.9</version>
+			<version>3.13</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>commons-codec</artifactId>
@@ -241,18 +258,29 @@
 		<dependency>
 			<groupId>com.thoughtworks.xstream</groupId>
 			<artifactId>xstream</artifactId>
-			<version>1.3.1</version>
+			<version>1.4.2</version>
+		</dependency>
+		<!-- Spring LDAP -->
+		<dependency>
+			<groupId>org.springframework.ldap</groupId>
+			<artifactId>spring-ldap-core</artifactId>
+			<version>1.3.1.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.ldap</groupId>
+			<artifactId>spring-ldap-core-tiger</artifactId>
+			<version>1.3.1.RELEASE</version>
 		</dependency>
 		<!-- Junit -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.8.2</version>
+			<version>4.10</version>
 		</dependency>
 		<dependency>
 			<groupId>com.jayway.awaitility</groupId>
 			<artifactId>awaitility</artifactId>
-			<version>1.3.2</version>
+			<version>1.3.3</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -322,6 +350,11 @@
 			<groupId>org.freemarker</groupId>
 			<artifactId>freemarker</artifactId>
 			<version>2.3.18</version>
+		</dependency>
+		<dependency>
+			<groupId>org.owasp</groupId>
+			<artifactId>antisamy</artifactId>
+			<version>1.4</version>
 		</dependency>
 		<!-- Apache POI / HSSF -->
 		<dependency>
@@ -446,13 +479,13 @@
 		<dependency>
 			<groupId>com.healthmarketscience.jackcess</groupId>
 			<artifactId>jackcess</artifactId>
-			<version>1.2.4</version>
+			<version>1.2.6</version>
 		</dependency>
 		<!-- OpenCSV -->
 		<dependency>
 			<groupId>net.sf.opencsv</groupId>
 			<artifactId>opencsv</artifactId>
-			<version>2.1</version>
+			<version>2.3</version>
 		</dependency>
 		<!-- Jakarta Commons -->
 		<dependency>
@@ -473,7 +506,7 @@
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.0.1</version>
+			<version>2.1</version>
 		</dependency>
 		<dependency>
 			<groupId>xalan</groupId>
@@ -522,12 +555,12 @@
 		<dependency>
 			<groupId>org.apache.tika</groupId>
 			<artifactId>tika-core</artifactId>
-			<version>0.9</version>
+			<version>1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.tuckey</groupId>
 			<artifactId>urlrewritefilter</artifactId>
-			<version>3.1.0</version>
+			<version>3.2.0</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>
@@ -542,7 +575,12 @@
 			<version>1.6.1</version>
 			<type>jar</type>
 		</dependency>
-
+		<!-- joda time -->
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>2.0</version>
+		</dependency>
 		<!-- <dependency> <groupId>org.codehaus.jackson</groupId> <artifactId>jackson-mapper-asl</artifactId> 
 			<version>1.8.0-SNAPSHOT</version> </dependency> -->
 	</dependencies>
@@ -581,13 +619,13 @@
 				<artifactId>maven-clover2-plugin</artifactId>
 				<version>${clover.version}</version>
 				<configuration>
-					<license><![CDATA[MqpQoCBhDmavvosORCwMrdmPirMWMWEKOElvtmurQrJSSOk
-                            mj2L0DkhJI62C5hFt2P5BbQls2KisEB0QmKYDGft>516UT>
-                            rNrrSSROMPQonmqOMmQSUpMqNmnRopOqqmustXwNVwuTTUw
-                            nVwvwtuSWtssWTVrxVTUtWuTOPQnmqmUUnouptunsmmmmmU
-                            UnouptunsmmmmmUUKebW4fdfqXiW1oZeXblildfZXiWIbZl
-                            oaUUnmm
-                            ]]></license>
+					<license><![CDATA[
+                                        qOnqVaohfjOhUkHMhveRpNdQPmuvJodAXuKFqBtfxWsIXP
+                                        mi2KacQ8VwKv0a2nkwq90mHh2KGzuvYp2fjtNxnP>ww5sX
+                                        RROpxwMPOOqQRNMrrOoXvqqmoQmnMnnMoQuWuTtNsutTSu
+                                        XqUsSuVttuxvuXXsOXxTUVsSsrMonmqmUUnpnrqmqmmmmm
+                                        mUUnpnrqmqmmmmmmUUKebW4fdfqXiW1oZeXblildfZXiWI
+                                        bZloaUUnmm]]></license>
 					<includes>
 						<include>**/*.java</include>
 					</includes>
@@ -609,6 +647,19 @@
 						<version>${clover.version}</version>
 					</dependency>
 				</dependencies>
+			</plugin>
+			<plugin>
+				<groupId>org.pitest</groupId>
+				<artifactId>pitest-maven</artifactId>
+				<version>0.23</version>
+				<configuration>
+					<inScopeClasses>
+						<param>org.tdar.*</param>
+					</inScopeClasses>
+					<targetClasses>
+						<param>org.tdar.*</param>
+					</targetClasses>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -674,8 +725,11 @@
 							<url>${postgres.templatedb.url}</url>
 							<autocommit>true</autocommit>
 							<enableBlockMode>true</enableBlockMode>
-							<sqlCommand>drop database if exists ${test.db.name}; drop
-								database if exists ${test.dataimport.db.name};</sqlCommand>
+							<sqlCommand>drop database if exists
+								${test.db.name}; drop
+								database
+								if exists
+								${test.dataimport.db.name};</sqlCommand>
 							<!-- ignore error when database is not avaiable -->
 							<onError>continue</onError>
 						</configuration>
@@ -691,7 +745,8 @@
 							<url>${postgres.templatedb.url}</url>
 							<!-- no transaction -->
 							<autocommit>true</autocommit>
-							<sqlCommand>create database ${test.db.name}; create database
+							<sqlCommand>create database ${test.db.name};
+								create database
 								${test.dataimport.db.name};</sqlCommand>
 						</configuration>
 					</execution>
@@ -721,7 +776,7 @@
 				<configuration>
 					<links>
 						<link>http://commons.apache.org/lang/api-release/</link>
-						<link>http://docs.jboss.org/hibernate/stable/core/api/</link>
+						<link>http://docs.jboss.org/hibernate/orm/3.6/javadocs/</link>
 						<link>http://static.springsource.org/spring/docs/2.5.x/api</link>
 						<link>http://www.opensymphony.com/xwork/api</link>
 						<link>http://struts.apache.org/2.x/struts2-core/apidocs</link>
@@ -797,8 +852,8 @@
 					<contextPath>/</contextPath>
 					<webDefaultXml>src/main/resources/webdefault.xml</webDefaultXml>
 					<scanIntervalSeconds>0</scanIntervalSeconds>
-					<stopKey>tdar</stopKey>
-					<stopPort>12919</stopPort>
+					<stopKey>tdar${jetty.port}</stopKey>
+					<stopPort>${jetty.stop.port}</stopPort>
 				</configuration>
 				<executions>
 					<execution>
@@ -1009,8 +1064,8 @@
 								</goals>
 								<configuration>
 									<tasks>
-                    <mkdir dir="target" />
-                    <mkdir dir="target/generated" />
+										<mkdir dir="target" />
+										<mkdir dir="target/generated" />
 										<mkdir dir="target/generated/db" />
 										<mkdir dir="target/generated/webapp" />
 										<mkdir dir="target/generated/webapp-test" />
@@ -1023,6 +1078,7 @@
 			</build>
 			<properties>
 				<jetty.port>8180</jetty.port>
+				<jetty.stop.port>12920</jetty.stop.port>
 				<use.test.classpath>true</use.test.classpath>
 				<webapp.deploy.dir>target/generated/webapp-test</webapp.deploy.dir>
 			</properties>
@@ -1050,7 +1106,7 @@
 								</goals>
 								<configuration>
 									<tasks>
-                    <mkdir dir="target" />
+										<mkdir dir="target" />
 										<mkdir dir="target/generated" />
 										<mkdir dir="target/generated/db" />
 										<mkdir dir="target/generated/webapp" />
@@ -1119,7 +1175,7 @@
 								</goals>
 								<configuration>
 									<tasks>
-                    <mkdir dir="target" />
+										<mkdir dir="target" />
 										<mkdir dir="target/generated" />
 										<mkdir dir="target/generated/db" />
 										<mkdir dir="target/generated/webapp" />
@@ -1151,7 +1207,7 @@
 								</goals>
 								<configuration>
 									<tasks>
-                    <mkdir dir="target" />
+										<mkdir dir="target" />
 										<mkdir dir="target/generated" />
 										<mkdir dir="target/generated/db" />
 										<mkdir dir="target/generated/webapp" />
@@ -1304,6 +1360,8 @@
 									<tasks>
 										<copy file="src/main/resources/crowd.properties.template"
 											tofile="src/main/resources/crowd.properties" />
+										<copy file="src/main/resources/ldap.properties.template"
+											tofile="src/main/resources/ldap.properties" />
 										<copy file="src/main/resources/hibernate.properties.template"
 											tofile="src/main/resources/hibernate.properties" />
 										<copy file="src/main/resources/log4j.properties.template"
@@ -1334,5 +1392,6 @@
 		<developerConnection>scm:hg:file://${basedir}</developerConnection>
 
 	</scm>
+	<version>7-GRID</version>
 </project>
 

@@ -7,7 +7,7 @@ import java.util.HashSet;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.search.query.DynamicQueryComponent;
+import org.tdar.search.query.queryBuilder.DynamicQueryComponent;
 
 public class SearchServiceTest {
 

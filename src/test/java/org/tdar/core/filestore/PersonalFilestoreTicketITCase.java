@@ -17,11 +17,11 @@ import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.service.EntityService;
-import org.tdar.core.service.FilestoreService;
+import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.GenericService;
-import org.tdar.filestore.PersonalFileType;
-import org.tdar.filestore.PersonalFilestore;
-import org.tdar.filestore.PersonalFilestoreFile;
+import org.tdar.filestore.personalFilestore.PersonalFileType;
+import org.tdar.filestore.personalFilestore.PersonalFilestore;
+import org.tdar.filestore.personalFilestore.PersonalFilestoreFile;
 
 public class PersonalFilestoreTicketITCase extends AbstractIntegrationTestCase {
 
@@ -29,7 +29,7 @@ public class PersonalFilestoreTicketITCase extends AbstractIntegrationTestCase {
     GenericService genericService;
 
     @Autowired
-    FilestoreService filestoreService;
+    PersonalFilestoreService filestoreService;
 
     @Autowired
     EntityService entityService;

@@ -1,5 +1,8 @@
 package org.tdar.struts.action;
 
+import static org.tdar.core.service.external.auth.InternalTdarRights.SEARCH_FOR_DELETED_RECORDS;
+import static org.tdar.core.service.external.auth.InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -19,6 +22,7 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.service.external.auth.InternalTdarRights;
 import org.tdar.search.query.SortOption;
 
 /**
@@ -40,7 +44,7 @@ public class DashboardController extends AuthenticationAware.Base {
     private List<Project> emptyProjects = new ArrayList<Project>();
     // private List<Resource> bookmarkedResources;
     // private PartitionedResourceResult partitionedBookmarkedResources;
-    private Long activeResourceCount = -1l;
+    private Long activeResourceCount = 0l; 
     private int maxRecentResources = 5;
     private List<Resource> filteredFullUserProjects;
     private List<Resource> fullUserProjects;
@@ -53,7 +57,6 @@ public class DashboardController extends AuthenticationAware.Base {
     @Override
     @Action("dashboard")
     public String execute() {
-        // setActiveResourceCount(getResourceService().countResourcesForUserAccess(getAuthenticatedUser()));
         setRecentlyEditedResources(getProjectService().findRecentlyEditedResources(getAuthenticatedUser(), maxRecentResources));
         setEmptyProjects(getProjectService().findEmptyProjects(getAuthenticatedUser()));
         setResourceCountAndStatusForUser(getResourceService().getResourceCountAndStatusForUser(getAuthenticatedUser(), Arrays.asList(ResourceType.values())));
@@ -63,6 +66,8 @@ public class DashboardController extends AuthenticationAware.Base {
         getSharedResourceCollections().removeAll(getResourceCollections());
         Collections.sort(resourceCollections);
         Collections.sort(sharedResourceCollections);
+        activeResourceCount += getStatusCountForUser().get(Status.ACTIVE);
+        activeResourceCount += getStatusCountForUser().get(Status.DRAFT);
         logger.trace("{}", resourceCollections);
         return SUCCESS;
     }
@@ -144,7 +149,8 @@ public class DashboardController extends AuthenticationAware.Base {
 
     public List<Resource> getFullUserProjects() {
         if (fullUserProjects == null) {
-            fullUserProjects = new ArrayList<Resource>(getProjectService().findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), isAdministrator()));
+            boolean canEditAnything = getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
+            fullUserProjects = new ArrayList<Resource>(getProjectService().findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), canEditAnything));
             fullUserProjects.removeAll(getAllSubmittedProjects());
         }
         return fullUserProjects;
@@ -159,7 +165,8 @@ public class DashboardController extends AuthenticationAware.Base {
     }
 
     public Set<Resource> getEditableProjects() {
-        return getProjectService().findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), isAdministrator());
+        boolean canEditAnything = getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
+        return getProjectService().findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), canEditAnything);
     }
 
     public void prepare() {
@@ -174,7 +181,12 @@ public class DashboardController extends AuthenticationAware.Base {
             for (ResourceType type : getResourceCountAndStatusForUser().keySet()) {
                 Long count = 0L;
                 for (Status status : getResourceCountAndStatusForUser().get(type).keySet()) {
-                    if (!isAdministrator() && (status == Status.DELETED || status == Status.FLAGGED)) {
+                    if (getAuthenticationAndAuthorizationService().cannot(InternalTdarRights.SEARCH_FOR_DELETED_RECORDS, getAuthenticatedUser()) 
+                            && status == Status.DELETED) {
+                        continue;
+                    }
+                    if (getAuthenticationAndAuthorizationService().cannot(InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, getAuthenticatedUser()) 
+                            && status == Status.FLAGGED) {
                         continue;
                     }
                     count += getResourceCountAndStatusForUser().get(type).get(status);
@@ -189,7 +201,12 @@ public class DashboardController extends AuthenticationAware.Base {
         if (CollectionUtils.isEmpty(statusCountForUser.keySet())) {
             for (Status status : Status.values()) {
                 Long count = 0L;
-                if (!isAdministrator() && (status == Status.DELETED || status == Status.FLAGGED)) {
+                if (getAuthenticationAndAuthorizationService().cannot(InternalTdarRights.SEARCH_FOR_DELETED_RECORDS, getAuthenticatedUser()) 
+                        && status == Status.DELETED) {
+                    continue;
+                }
+                if (getAuthenticationAndAuthorizationService().cannot(InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, getAuthenticatedUser()) 
+                        && status == Status.FLAGGED) {
                     continue;
                 }
                 for (ResourceType type : getResourceCountAndStatusForUser().keySet()) {
@@ -198,6 +215,7 @@ public class DashboardController extends AuthenticationAware.Base {
                     }
                 }
                 statusCountForUser.put(status, count);
+
             }
         }
         return statusCountForUser;
@@ -208,15 +226,10 @@ public class DashboardController extends AuthenticationAware.Base {
     }
 
     public List<Status> getStatuses() {
-        List<Status> toReturn = new ArrayList<Status>();
-        for (Status status : getResourceService().findAllStatuses()) {
-            if (!isAdministrator() && (status == Status.FLAGGED ||
-                    status == Status.DELETED)) {
-                continue;
-            }
-            toReturn.add(status);
+        List<Status> toReturn = new ArrayList<Status>(getResourceService().findAllStatuses());
+        getAuthenticationAndAuthorizationService().removeIfNotAllowed(toReturn, Status.DELETED, SEARCH_FOR_DELETED_RECORDS, getAuthenticatedUser());
+        getAuthenticationAndAuthorizationService().removeIfNotAllowed(toReturn, Status.FLAGGED, SEARCH_FOR_FLAGGED_RECORDS, getAuthenticatedUser());
 
-        }
         return toReturn;
     }
 
@@ -226,7 +239,7 @@ public class DashboardController extends AuthenticationAware.Base {
         return toReturn;
     }
 
-    public List<SortOption> getSortOptions() {
+    public List<SortOption> getResourceDatatableSortOptions() {
         return SortOption.getOptionsForContext(Resource.class);
     }
 

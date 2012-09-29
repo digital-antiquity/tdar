@@ -1,3 +1,4 @@
+<#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 <head>
 <#if resource.id == -1>
@@ -27,10 +28,10 @@ This will be linked as a <b>${linkType}</b> citation for: <b>${linkedInformation
 <p id="t-year" >
     <span tooltipcontent="Four digit year, e.g. 1966 or 2005. " tiplabel="Year">
       <#assign dateVal = ""/>
-       <#if resource.dateCreated?? && resource.dateCreated != -1>
-         <#assign dateVal = resource.dateCreated?c />
+       <#if resource.date?? && resource.date!= -1>
+         <#assign dateVal = resource.date?c />
       </#if>
-        <@s.textfield labelposition='left' id='dateCreated' label='Year' name='resource.dateCreated' value="${dateVal}" cssClass="shortfield reasonableDate required" required=true
+        <@s.textfield labelposition='left' id='dateCreated' label='Year' name='resource.date' value="${dateVal}" cssClass="shortfield reasonableDate required" required=true
          title="Please enter the year this document was created" />
     </span>
 </p>
@@ -61,11 +62,12 @@ This will be linked as a <b>${linkType}</b> citation for: <b>${linkedInformation
 
 </@edit.basicInformation>
 
+
 <@edit.asyncFileUpload "Document" true />
 
 <@edit.resourceCreators "Authors / Editors" authorshipProxies 'authorship' false />
 
-<div class="glide">
+<div class="glide" id="divAboutYourDocument">
 <h3>About Your Document</h3>
 
 <p id="t-ident" class="clear">
@@ -84,12 +86,6 @@ This will be linked as a <b>${linkType}</b> citation for: <b>${linkedInformation
     <span tiplabel="Language" tooltipcontent="Select the language in which the document is written.">
         <@s.select labelposition='left' label='Language'  emptyOption='false' name='resourceLanguage'  listValue="label" list='%{languages}' cssClass="right-shortfield "/>
     </span>
-</p>
-
-<p 
-    tiplabel="URL"
-    tooltipcontent="Uniform Resource Locator (Web address).">
-    <@s.textfield labelposition='left' id='url' label='URL' name='document.url' cssClass='longfield url' />
 </p>
 
 <p> 
@@ -166,5 +162,19 @@ This will be linked as a <b>${linkType}</b> citation for: <b>${linkedInformation
 <@edit.resourceJavascript includeAsync=true includeInheritance=true>
 
 setupDocumentEditForm();
+
+//certain fields in the "about your document" become extraneous upon selecting a new documentType value.  Clear the value of these fields prior to 
+//submission
+$(function(){
+    $('#resourceMetadataForm').submit(function() {
+        //assumption:  divAboutYourDocument has no radio buttons, select boxes, or checkboxes. This piece wont work if our assumption becomes false
+        $(':input', '#divAboutYourDocument').filter(':hidden').val("");
+    });
+});
+
+
+
+
 </@edit.resourceJavascript>
 </body>
+</#escape>

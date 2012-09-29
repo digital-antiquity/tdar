@@ -61,7 +61,7 @@ public class ResourceController extends AuthenticationAware.Base {
                     @Result(name = "IMAGE", type = "redirect", location = "/image/edit?resourceId=${resource.id}"),
                     @Result(name = "SENSORY_DATA", type = "redirect", location = "/sensory-data/edit?resourceId=${resource.id}"),
                     @Result(name = "CODING_SHEET", type = "redirect", location = "/coding-sheet/edit?resourceId=${resource.id}")
-    })
+            })
     public String edit() {
         InformationResource informationResource = getInformationResourceService().find(resourceId);
         if (informationResource == null) {
@@ -77,24 +77,29 @@ public class ResourceController extends AuthenticationAware.Base {
         return resourceType.name();
     }
 
-    // FIXME: resourceType param may not be necessary as the resource type can be inferred from the URL / handling controller anyways.
-    @Action(value = "select",
+    /**
+     * Used to edit an existing resource's resource type / document type / etc.
+     * 
+     * @return
+     */
+    @Action(value = "view",
             results = {
-                    @Result(name = INPUT, location = "add.ftl"),
-                    @Result(name = "DATASET", type = "redirect", location = "/dataset/add?projectId=${projectId}&resourceType=${resourceType}"),
-                    @Result(name = "DOCUMENT", type = "redirect", location = "/document/add?projectId=${projectId}&resourceType=${resourceType}"),
-                    @Result(name = "ONTOLOGY", type = "redirect", location = "/ontology/add?projectId=${projectId}&resourceType=${resourceType}"),
-                    @Result(name = "IMAGE", type = "redirect", location = "/image/add?projectId=${projectId}&resourceType=${resourceType}"),
-                    @Result(name = "SENSORY_DATA", type = "redirect", location = "/sensory-data/add?projectId=${projectId}&resourceType=${resourceType}"),
-                    @Result(name = "CODING_SHEET", type = "redirect", location = "/coding-sheet/add?projectId=${projectId}&resourceType=${resourceType}")
-    })
-    public String select() {
-        if (resourceType == null) {
-            addFieldError("resourceType", "Please enter a resource type.");
-            return INPUT;
+                    @Result(name = "DATASET", type = "redirect", location = "/dataset/view?id=${resourceId}"),
+                    @Result(name = "DOCUMENT", type = "redirect", location = "/document/view?id=${resourceId}"),
+                    @Result(name = "ONTOLOGY", type = "redirect", location = "/ontology/view?id=${resourceId}"),
+                    @Result(name = "IMAGE", type = "redirect", location = "/image/view?id=${resourceId}"),
+                    @Result(name = "SENSORY_DATA", type = "redirect", location = "/sensory-data/view?id=${resourceId}"),
+                    @Result(name = "CODING_SHEET", type = "redirect", location = "/coding-sheet/view?id=${resourceId}")
+            })
+    public String view() {
+        InformationResource informationResource = getInformationResourceService().find(resourceId);
+        if (informationResource == null) {
+            getLogger().error("trying to edit information resource but it was null.");
+            addActionError("Information resource wasn't loaded properly, please file a bug report.  Thanks!");
+            return NOT_FOUND;
         }
 
-        return resourceType.name();
+        return informationResource.getResourceType().name();
     }
 
     public ResourceType getResourceType() {
@@ -149,4 +154,7 @@ public class ResourceController extends AuthenticationAware.Base {
         this.resourceId = resourceId;
     }
 
+    public Long getResourceId() {
+        return resourceId;
+    }
 }

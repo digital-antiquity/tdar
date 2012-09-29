@@ -3,6 +3,7 @@ package org.tdar.db.model.abstracts;
 import java.util.Collection;
 import java.util.Map;
 
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.tdar.core.bean.resource.dataTable.DataTable;
 import org.tdar.core.bean.resource.dataTable.DataTableColumn;
 import org.tdar.core.bean.resource.dataTable.DataTableColumnType;
@@ -11,9 +12,6 @@ import org.tdar.core.bean.resource.dataTable.DataTableColumnType;
  * A base class for target Databases that can be written to via a
  * DatabaseConverter.
  * 
- * FIXME (alllee): I don't think we need all this flexibility, and might be
- * better served just implementing a PostgresDatabase directly or rethinking the
- * design of these interfaces.
  * 
  * @author <a href='mailto:Yan.Qi@asu.edu'>Yan Qi</a>
  * @version $Revision$
@@ -24,7 +22,7 @@ public interface TargetDatabase extends Database {
      * Returns a table name consistent with this target database's allowable
      * table names.
      */
-    
+
     public static final String TDAR_ID_COLUMN = "id_row_tdar";
 
     public String normalizeTableOrColumnNames(String input);
@@ -46,7 +44,13 @@ public interface TargetDatabase extends Database {
      * @param dataType
      * @return
      */
-    public String toImplementedTypeDeclaration(DataTableColumnType dataType,
-            int precision);
+    public String toImplementedTypeDeclaration(DataTableColumnType dataType, int precision);
+
+    @Deprecated
+    public <T> T selectAllFromTable(DataTable table, ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues);
+
+    public <T> T selectAllFromTableInImportOrder(DataTable table, ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues);
+
+    public <T> T selectAllFromTable(DataTableColumn column, String key, ResultSetExtractor<T> resultSetExtractor);
 
 }

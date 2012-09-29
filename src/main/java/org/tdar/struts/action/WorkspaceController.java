@@ -34,13 +34,13 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.dataTable.DataTable;
 import org.tdar.core.bean.resource.dataTable.DataTableColumn;
-import org.tdar.core.service.FilestoreService;
-import org.tdar.filestore.PersonalFilestoreFile;
+import org.tdar.core.service.PersonalFilestoreService;
+import org.tdar.filestore.personalFilestore.PersonalFilestoreFile;
 import org.tdar.struts.data.IntegrationColumn;
 import org.tdar.struts.data.IntegrationColumn.ColumnType;
 import org.tdar.struts.data.IntegrationDataResult;
+import org.tdar.struts.data.PartitionedResourceResult;
 import org.tdar.utils.Pair;
-import org.tdar.utils.resource.PartitionedResourceResult;
 
 /**
  * $Id$
@@ -68,7 +68,7 @@ public class WorkspaceController extends AuthenticationAware.Base {
     private Long ticketId;
 
     @Autowired
-    private FilestoreService filestoreService;
+    private PersonalFilestoreService filestoreService;
     private List<IntegrationDataResult> integrationDataResults = new ArrayList<IntegrationDataResult>();
     private String integrationDataResultsFilename;
     private transient InputStream integrationDataResultsInputStream;
@@ -157,7 +157,7 @@ public class WorkspaceController extends AuthenticationAware.Base {
                 }
                 // generate distinct value maps in integration data list
             }
-            logger.debug("intermediate: {}", getDataIntegrationService().serializeIntegrationContext(getIntegrationColumns(), getAuthenticatedUser()));
+            logger.debug("intermediate: {}", getDataIntegrationService().serializeIntegrationContext(getIntegrationColumns(), getGenericService().merge(getAuthenticatedUser())));
         } catch (Exception e) {
             addActionErrorWithException(e.getMessage(), e);
             return INPUT;
@@ -172,7 +172,14 @@ public class WorkspaceController extends AuthenticationAware.Base {
             })
     public String displayFilteredResults() {
         getLogger().trace("XXX: DISPLAYING FILTERED RESULTS :XXX");
-        String integrationContextXml = getDataIntegrationService().serializeIntegrationContext(getIntegrationColumns(), getAuthenticatedUser());
+        String integrationContextXml = "";
+        try {
+            integrationContextXml = getDataIntegrationService().serializeIntegrationContext(getIntegrationColumns(), getGenericService().merge(getAuthenticatedUser()));
+            logResourceModification(null, "display filtered results (payload: tableToDisplayColumns)", integrationContextXml);
+        } catch (Exception e) {
+            logger.error("could not serialize to XML", e);
+        }
+
         try {
             // ADD ERROR CHECKING LOGIC
 
@@ -187,7 +194,7 @@ public class WorkspaceController extends AuthenticationAware.Base {
             //
             Pair<List<IntegrationDataResult>, Map<List<OntologyNode>, Map<DataTable, Integer>>> generatedIntegrationData = getDataIntegrationService()
                     .generateIntegrationData(getIntegrationColumns(), getSelectedDataTables());
-            
+
             integrationDataResults = generatedIntegrationData.getFirst();
             setPivotData(generatedIntegrationData.getSecond());
             PersonalFilestoreTicket ticket = getDataIntegrationService().toExcel(getIntegrationColumns(), generatedIntegrationData,
@@ -201,7 +208,6 @@ public class WorkspaceController extends AuthenticationAware.Base {
             addActionErrorWithException(e.getMessage(), e);
             return INPUT;
         }
-        logResourceModification(null, "display filtered results (payload: tableToDisplayColumns)", integrationContextXml);
         return SUCCESS;
     }
 
@@ -221,9 +227,14 @@ public class WorkspaceController extends AuthenticationAware.Base {
         // create temporary file
         try {
             List<PersonalFilestoreFile> files = filestoreService.retrieveAllPersonalFilestoreFiles(getTicketId());
-            integrationDataResultsInputStream = new FileInputStream(files.get(0).getFile());
-            integrationDataResultsContentLength = files.get(0).getFile().length();
-            integrationDataResultsFilename = files.get(0).getFile().getName();
+            for(PersonalFilestoreFile target : files ){
+            	if(target.getFile().getName().endsWith(".xls")){
+            		integrationDataResultsInputStream = new FileInputStream(target.getFile());
+                    integrationDataResultsContentLength = target.getFile().length();
+                    integrationDataResultsFilename = target.getFile().getName();
+            	}
+            }
+            
         } catch (IOException exception) {
             addActionErrorWithException("Unable to access file.", exception);
         }

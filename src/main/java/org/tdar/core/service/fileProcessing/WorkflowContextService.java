@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
+import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.resource.InformationResourceFileService;
@@ -43,42 +44,47 @@ public class WorkflowContextService {
      */
     @Transactional
     public void processContext(WorkflowContext ctx) {
-        // Delete the old, existing derivatives on current IRFile.  That is, any derivatives that have previously been persisted.
+        // Delete the old, existing derivatives on current IRFile. That is, any derivatives that have previously been persisted.
         HashMap<String, Object> props = new HashMap<String, Object>();
         props.put("informationResourceFile.id", ctx.getInformationResourceFileId());
-        //FIXME: only delete the derivatives for the CURRENT VERSON, not ALL VERSIONS
+        // FIXME: only delete the derivatives for the CURRENT VERSON, not ALL VERSIONS
         for (InformationResourceFileVersion v : informationResourceFileVersionService.findByEqCriteria(props)) {
             if (v.isDerivative()) {
                 informationResourceFileVersionService.delete(v, false);
             }
         }
-        
-        // If resource is a Document, set the total # of pages if Document  
+
+        // If resource is a Document, set the total # of pages if Document
         // FIXME: why is this done in the workflow context and not in the workflow itself?
         InformationResource resource = informationResourceService.find(ctx.getInformationResourceId());
         if (ctx.getNumPages() > 0) {
             if (resource instanceof Document) {
                 ((Document) resource).setNumberOfPages(ctx.getNumPages());
-//                informationResourceService.saveOrUpdate(resource);
+                // informationResourceService.saveOrUpdate(resource);
             }
         }
 
         // gets the uploaded IRFileVersion
         InformationResourceFileVersion orig = ctx.getOriginalFile();
 
-        // Finds the irFile.  We could call orig.getInformationResourceFile() but we need irFile associated w/ the current hibernate session
+        // Finds the irFile. We could call orig.getInformationResourceFile() but we need irFile associated w/ the current hibernate session
         InformationResourceFile irFile = informationResourceFileService.find(ctx.getInformationResourceFileId());
         orig.setInformationResourceFile(irFile);
-        irFile.clearQueuedStatus();
+        if (ctx.isProcessedSuccessfully()) {
+            irFile.clearQueuedStatus();
+        } else {
+            irFile.setStatus(FileStatus.PROCESSING_ERROR);
+        }
+        logger.debug(irFile);
 
-        //Grab the new derivatives from the context and persist them.  
+        // Grab the new derivatives from the context and persist them.
         for (InformationResourceFileVersion version : ctx.getVersions()) {
             version.setInformationResourceFile(irFile);
-            //if the derivative's ID is null, we know that it hasn't been persisted yet, so we save.
+            // if the derivative's ID is null, we know that it hasn't been persisted yet, so we save.
             if (version.getId() == null) {
                 informationResourceFileVersionService.save(version);
             }
-            //if the derivative's ID is not null it has previously been saved, so we pull it onto the current hibernate session and update it.
+            // if the derivative's ID is not null it has previously been saved, so we pull it onto the current hibernate session and update it.
             else {
                 version = informationResourceFileVersionService.merge(version);
                 informationResourceFileVersionService.saveOrUpdate(version);
@@ -89,6 +95,7 @@ public class WorkflowContextService {
         logger.trace(ctx.toXML());
         orig = informationResourceFileVersionService.merge(orig);
         informationResourceFileService.saveOrUpdate(orig);
+        informationResourceFileService.saveOrUpdate(irFile);
         // force update of content so it gets indexed
         resource.markUpdated(resource.getUpdatedBy());
         informationResourceService.saveOrUpdate(resource);
@@ -104,6 +111,7 @@ public class WorkflowContextService {
         ctx.setInformationResourceId(version.getInformationResourceId());
         ctx.setInformationResourceFileId(version.getInformationResourceFileId());
         ctx.setWorkingDirectory(new File(System.getProperty("java.io.tmpdir")));
+        logger.trace(ctx.toXML());
         return ctx;
     }
 }

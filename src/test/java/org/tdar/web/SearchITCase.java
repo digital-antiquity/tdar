@@ -8,6 +8,7 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.SensoryData;
@@ -133,15 +134,14 @@ public class SearchITCase extends AbstractAdminAuthenticatedWebTestCase {
     }
 
     @Test
+    public void testIdSearch() {
+            gotoPage("/search/results?query=&id=" + TestConstants.PROJECT_ID);
+    }
+
+    @Test
     @Rollback
     public void testFacets() {
-        SensoryData data = new SensoryData();
-        data.markUpdated(getAdminUser());
-        data.setTitle("test");
-        data.setDescription("test");
-        data.setStatus(Status.ACTIVE);
-        genericService.save(data);
-        indexService.index(data);
+        createResourceTypes();
         for (ResourceType type : ResourceType.values()) {
             gotoPage("/search/results?");
             clickLinkOnPage(type.getLabel());
@@ -153,6 +153,16 @@ public class SearchITCase extends AbstractAdminAuthenticatedWebTestCase {
 //                }
 //            }
         }
+    }
+    
+    //decrease reliance on test data by generating our own
+    private void createResourceTypes() {
+        List<Resource> resources = new ArrayList<Resource>();
+        for(ResourceType type : ResourceType.values()) {
+            Resource r = createAndSaveNewResource(type.getResourceClass());
+            resources.add(r);
+        }
+        indexService.indexCollection(resources);
     }
 
 }

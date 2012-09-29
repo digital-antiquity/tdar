@@ -1,3 +1,4 @@
+<#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 <#import "/WEB-INF/macros/resource/list-macros.ftl" as rlist>
 <#assign hideInherited=true > <#-- //TODO: remove hideInherited if safe-->
@@ -40,27 +41,20 @@ For example, if you change "Investigation Types" for your project, any resource 
 <div class="glide">
 <h3>tDAR project metadata</h3>
 <p>
-Projects in tDAR can contain a variety of different information resources and are used
-to organize a set of related information resources such as documents, datasets,
-coding sheets, and images.  A project's child resources can either <b>inherit or
-override</b> the metadata entered at this project level. For instance, if you enter
-the keywords "southwest" and "pueblo" on a project, resources associated with this
-project that choose to <b>inherit</b> those keywords will also be discovered by
-searches for the keywords "southwest" and "pueblo." Child resources that
-<b>override</b> those keywords would not be associated with keywords defined at the project level.
+Projects in tDAR contain and help organize a variety of different information resources such as documents,
+ datasets, coding sheets, and images. The project also functions as a template to pass shared metadata
+  (keywords) to child resources. Child resources may either inherit metadata from the parent project or 
+  the child resource may have unique metadata. For instance, if you enter the keywords &quot;Southwest&quot; and 
+  &quot;Pueblo&quot; for a project, resources associated with this project that you choose to inherit metadata
+   will be discovered in searches including those keywords. Child resources that override those keywords
+    would not be associated with keywords defined at the project level.
 </p>
 </div>
 
 <#if ! project.informationResources.isEmpty() >
 <div class='glide'>
-<h3 id="collapse"><span class="arrow ui-icon ui-icon-triangle-1-e"></span>Resources within this Project</h3>
-<div style="display:none">
-      <@rlist.informationResources iterable="project.documents" title="Documents" displayable=!project.documents.empty editable=editable showProject=false/>
-      <@rlist.informationResources iterable="project.images" title="Images" displayable=!project.images.empty editable=editable showProject=false/>
-      <@rlist.informationResources iterable="project.datasets" title="Datasets" displayable=!project.datasets.empty editable=editable showProject=false/>
-      <@rlist.informationResources iterable="project.codingSheets" title="Coding sheets" displayable=!project.codingSheets.empty editable=editable showProject=false/>
-      <@rlist.informationResources iterable="project.ontologies" title="Ontologies" displayable=!project.ontologies.empty editable=editable showProject=false/>
-</div>
+<h3>There are ${project.informationResources.size()} Resources within this Project</h3>
+<a class="field" href="<@s.url value="/project/${project.id?c}" />">view all items in this project</a>
 </div>
 </#if>
 
@@ -95,3 +89,4 @@ searches for the keywords "southwest" and "pueblo." Child resources that
 
 
 </body>
+</#escape>

@@ -1,3 +1,4 @@
+<#escape _untrusted as _untrusted?html>
 <head>
 <title>Add a source citation to ${linkedInformationResource.title}</title>
 <meta name="lastModifiedDate" content="$Date$"/>
@@ -25,3 +26,4 @@ Adding a source citation to the information resource entitled: <span class='high
 <@s.select labelposition='left' label='Document type' id='documentTypeId' name='documentType' emptyOption='true' listValue="label" list='%{documentTypes}' />
 <@s.submit align='left' value='Continue'/>
 </@s.form>
+</#escape>

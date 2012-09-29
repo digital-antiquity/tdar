@@ -8,6 +8,7 @@ package org.tdar.core.dao.resource;
 
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.Query;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Component;
@@ -70,6 +71,19 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
      */
     public List<ResourceCollection> findAllSharedResourceCollections() {
         return findByCriteria(getDetachedCriteria().add(Restrictions.eq("type", CollectionType.SHARED)));
+    }
+
+    public ResourceCollection findCollectionsWithName(Person user, ResourceCollection collection) {
+        Query query = getCurrentSession().getNamedQuery(QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME);// QUERY_PROJECT_EDITABLE
+        query.setLong("userId", user.getId());
+        query.setString("name", collection.getName());
+        @SuppressWarnings("unchecked")
+        List<ResourceCollection> list = (List<ResourceCollection>)query.list();
+        logger.info("{}",list);
+        if (CollectionUtils.isNotEmpty(list)) {
+            return list.get(0);
+        }
+        return null;
     }
 
 }

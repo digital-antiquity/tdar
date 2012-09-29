@@ -17,6 +17,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.io.FileUtils;
@@ -38,7 +39,7 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
 
     public enum VersionType {
         UPLOADED, UPLOADED_TEXT, UPLOADED_ARCHIVAL, ARCHIVAL, WEB_SMALL, WEB_MEDIUM, WEB_LARGE,
-        TRANSLATED, INDEXABLE_TEXT, LOG;
+        TRANSLATED, INDEXABLE_TEXT, METADATA, LOG;
     }
 
     @ManyToOne(optional = false, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
@@ -138,6 +139,7 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
         this.filename = filename;
     }
 
+    @XmlAttribute(name = "version")
     public Integer getVersion() {
         return version;
     }
@@ -272,6 +274,9 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
     @Transient
     // Ultimately, this may need to be converted into a URI, or something that can be converted directly
     // into a reader due to the indexing requirment.
+    // FIXME: consider injecting this as a transient variable when loaded 
+    // instead of doing a lookup using the TdarConfiguration singleton's Filestore.  Otherwise
+    // we will have difficulty converting TdarConfiguration + Filestore into spring managed beans
     public File getFile() {
         if (file != null) {
             return file;
@@ -317,6 +322,7 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
             case WEB_SMALL:
             case WEB_MEDIUM:
             case WEB_LARGE:
+            case METADATA:
             case TRANSLATED:
                 return true;
             default:
@@ -367,6 +373,7 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
      * 
      * @return the informationResourceFileId
      */
+    @XmlAttribute(name = "informationResourceFileId")
     public Long getInformationResourceFileId() {
         if (informationResourceFile != null)
             return informationResourceFile.getId();
@@ -388,6 +395,7 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
      * 
      * @return the informationResourceId
      */
+    @XmlAttribute(name = "informationResourceId")
     public Long getInformationResourceId() {
         if (informationResourceFile != null && informationResourceFile.getInformationResource() != null)
             return informationResourceFile.getInformationResource().getId();
@@ -402,7 +410,7 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
     public int compareTo(InformationResourceFileVersion other) {
         int comparison = -1;
         logger.trace("comparing: " + other + " to " + this);
-        if (Persistable.Base.isEqual(this, getClass().cast(other))) { // exactly equal
+        if (equals(other)) { // exactly equal
             comparison = 0;
         } else {
             comparison = getVersion().compareTo(other.getVersion());
@@ -425,30 +433,11 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
     @SuppressWarnings("unchecked")
     @Override
     public List<?> getEqualityFields() {
-        return Arrays.asList(informationResourceFileId, version, fileVersionType, getId());
+        return Arrays.asList(getInformationResourceFileId(), version, fileVersionType, getId());
     }
 
-    @Override
-    public boolean equals(Object candidate) {
-        if (this == candidate) {
-            return true;
-        }
-        try {
-            return Persistable.Base.isEqual(this, getClass().cast(candidate));
-        } catch (ClassCastException e) {
-            logger.debug("{} <==> {} ", candidate.getClass(), getClass());
-            logger.debug("{}", e);
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    @Override
-    public int hashCode() {
-        if (isTransient()) {
-            return super.hashCode();
-        }
-        return Persistable.Base.toHashCode(this);
+    public boolean hasValidFile() {
+        return getFile() != null && getFile().exists();
     }
 
 }

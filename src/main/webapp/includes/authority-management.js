@@ -1,206 +1,116 @@
-var $searchControls;
-var $selEntityType;
-var $dataTable = null;
+var searchControls;
+var selEntityType;
+var dataTable = null;
 var g_selectedDupeIds = {};
 
 var g_settingsMap = {
         person:{
+            tableSelector: '#dupe_datatable',
             sAjaxSource:'/lookup/person',
+            "bLengthChange": false,
+            "bFilter": true,
             aoColumns:[
-                       {sTitle:"id", bUseRendered: false, mDataProp:"id", fnRender: fnRenderIdColumn, tdarSortOption:'ID'},
-                       {sTitle:"First", mDataProp:"firstName", tdarSortOption:'PERSON_FIRST_NAME'},
-                       {sTitle:"Last", mDataProp:"lastName", tdarSortOption:'PERSON_LAST_NAME'},
-                       {sTitle:"Email", mDataProp:"email", tdarSortOption:'CREATOR_EMAIL'}],
+                       {sTitle:"id", bUseRendered: false, mDataProp:"id", tdarSortOption:'ID'},
+                       {sTitle:"First", mDataProp:"firstName", tdarSortOption:'FIRST_NAME'},
+                       {sTitle:"Last", mDataProp:"lastName", tdarSortOption:'LAST_NAME'},
+                       {sTitle:"Email", mDataProp:"email", tdarSortOption:'CREATOR_EMAIL', bSortable:false}], //FIXME: make sortable
+            sPaginationType:"full_numbers",
             sAjaxDataProp: 'people',
-            sDom:'<"H"lr>t<"F"ip>' //omit the search box
+            selectableRows: true,
+            requestCallback: getPersonSearchData,
+            sDom:'<"datatabletop"ilrp>t<>' //omit the search box
         },
         institution:{
+            tableSelector: '#dupe_datatable',
+        	sAjaxSource:'/lookup/institution',
+            "bLengthChange": false,
+            "bFilter": true,
             aoColumns:[
-                       {sTitle:"id", bUseRendered: false, mDataProp:"id", fnRender: fnRenderIdColumn, tdarSortOption:'ID'},
+                       {sTitle:"id", bUseRendered: false, mDataProp:"id", tdarSortOption:'ID'},
                        {sTitle:"Name", mDataProp:"name", tdarSortOption:'CREATOR_NAME'}],
-            sAjaxDataProp: 'institutions',
-            sAjaxSource:'/lookup/institution'
-        },
+            sPaginationType:"full_numbers",
+        	sAjaxDataProp: 'institutions',
+            selectableRows: true,
+            requestCallback: function(searchBoxContents) {
+            	return {
+            		minLookupLength:0,
+            		institution: $('#txtInstitution').val()
+            	};
+            },
+            sDom:'<"datatabletop"ilrp>t<>' //omit the search box
+       },
         keyword:{
+            tableSelector: '#dupe_datatable',
+            sAjaxSource:'/lookup/keyword',
+            "bLengthChange": false,
+            "bFilter": true,
             aoColumns:[
-                       {sTitle:"id", bUseRendered: false, mDataProp:"id", fnRender: fnRenderIdColumn, tdarSortOption:'ID'},
+                       {sTitle:"id", bUseRendered: false, mDataProp:"id", tdarSortOption:'ID'},
                        {sTitle:"Label", mDataProp:"label", tdarSortOption:'LABEL'}],
+            sPaginationType:"full_numbers",
             sAjaxDataProp: 'items',
-            sAjaxSource:'/lookup/keyword'
+            selectableRows: true,
+            requestCallback: function(searchBoxContents) {
+                return {keywordType: getKeywordType(selEntityType.val()),
+                			term: $('#txtKeyword').val()
+                };
+            },
+            sDom:'<"datatabletop"ilrp>t<>' //omit the search box
         }
 };
 
-function initIndexPageJavascript() { //onload stuff
-    var $selEntityType = $("#selEntityType");
-    $searchControls = $('.searchControl');
-    var $divKeywordSearchControl = $("#divKeywordSearchControl");
-    var $divInstitutionSearchControl = $('#divInstitutionSearchControl');
-    var $divPersonSearchControl = $('#divPersonSearchControl');
-    updateSearchControl();
-    $selEntityType.change(updateSearchControl).change();
-    applyWatermarks();
-    
-    $("#btnSearch").click(doSearch);
-    
-    //register datatable checkbox changes
-    $('#dupe_datatable').delegate('input[type=checkbox]', 'change', rowSelected);
-    
-    $('span.button').button().click(clearDupeList);
-}
 
-
-function rowSelected(evt) {
-    var elem = this;
-    var $elem = $(elem);
-    var id = $elem.val();
-    //console.log('rowSelected:' + id + ':' + $elem.prop('checked'));
-    
-    if($elem.prop('checked')) {
-        //get the json data associated w/ the selected row
-        var data = $dataTable.fnGetData($elem.parents('tr')[0]);
-        console.log(data);
-        g_selectedDupeIds[id] = data; 
-    } else {
-        delete g_selectedDupeIds[id];
+function registerDataTable() {
+    if(dataTable) {
+        dataTable.fnDestroy();
+        dataTable.empty();
     }
-    
-    renderSelectedDupes(g_selectedDupeIds);
-}
-
-
-function registerDataTable(entityTypeVal) {
-    if($dataTable) {
-        $dataTable.fnDestroy();
-        $dataTable.empty();
-        g_selectedDupeIds = {};
-    }
-     var lookupType = $selEntityType.data('lookupType');
+     var lookupType = selEntityType.data('lookupType');
      var settings = g_settingsMap[lookupType];
-     var datatableSettings = $.extend({
-         "bJQueryUI": true,
-         "bProcessing": true,
-         "bServerSide": true,
-         "sScrollY": "350px",
-         "fnServerData": _fnServerData,
-         "fnRowCallback": fnRowCallback
-     }, settings);
      
-     $dataTable = $("#dupe_datatable").dataTable(datatableSettings);
+     settings.rowSelectionCallback =  renderSelectedDupes;
+     
+     dataTable = registerLookupDataTable(settings);
 }
 
-
+//show the correct search control based on the value of the 'entity type' dropdown
 function updateSearchControl() {
-    $searchControls.hide();
-    $selEntityType = $('#selEntityType');
-    var entityTypeVal=$selEntityType.val();
+    searchControls.hide();
+    selEntityType = $('#selEntityType');
+    var entityTypeVal=selEntityType.val();
     if(entityTypeVal) {
         if(entityTypeVal == 'PERSON') {
             $("#divPersonSearchControl").show();
-            $selEntityType.data('lookupType', 'person');
+            selEntityType.data('lookupType', 'person');
         } else if(entityTypeVal == 'INSTITUTION') {
             $("#divInstitutionSearchControl").show();
-            $selEntityType.data('lookupType', 'institution');
+            selEntityType.data('lookupType', 'institution');
         } else {
             $("#divKeywordSearchControl").show();
-            $selEntityType.data('lookupType', 'keyword');
+            selEntityType.data('lookupType', 'keyword');
         }
     }
     $('#hdnEntityType').val(entityTypeVal);
     
     if(entityTypeVal) {
-        registerDataTable(entityTypeVal);
+        registerDataTable();
         clearDupeList();
     }
 }
 
 function doSearch() {
-    var lookupType  =  $selEntityType.data('lookupType');
+    var lookupType  =  selEntityType.data('lookupType');
     if(!lookupType) return;
     if(lookupType == 'person') {
         //since person search is comprised of several fields it doesn't matter what we pass to  fnFilter(), we just want a redraw
-        $dataTable.fnFilter('IGNORED');
+        dataTable.fnFilter('IGNORED');
     } else if (lookupType == 'institution') {
-        $dataTable.fnFilter($('#txtInstitution').val());
+        dataTable.fnFilter($('#txtInstitution').val());
     } else if (lookupType == 'keyword') {
-        $dataTable.fnFilter($('#txtKeyword').val());
+        dataTable.fnFilter($('#txtKeyword').val());
     }
 }
 
-function handleLookupResult(data) {
-    console.log("handleLookupResult:" +  data);
-}
-
-
-
-//intercept the server request,  and translate the parameters to server format.  similarly,  take the json returned by the jserver
-//and translate to format expected by the client.
-function _fnServerData(sSource, aoData, fnCallback) {
-    //don't retreive any data until we have valid search parameters.
-    var lookupType = $selEntityType.data('lookupType');
-
-    $.ajax({
-        dataType: 'jsonp',
-        url: sSource,
-        data: convertRequest(aoData, lookupType),
-        success: function(_data) {
-            fnCallback(convertResponse(_data, lookupType));  //intercept data returned by server, translate to client format
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-            console.error("your query sucks:" + errorThrown);
-        }
-    });
-}
-
-
-function fnRowCallback(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-    //determine whether the user selected this item already (if so check the box)
-    var $cb = $(nRow).find('input[type=checkbox]'); 
-    var id = $cb.val();
-    if(g_selectedDupeIds[id]) {
-        $cb.prop('checked', true);
-    }
-    return nRow;
-}
-
-
-/**
- * alter the request that prior to being sent to the server
- * @param aoData
- * @param lookupType
- */
-function convertRequest(aoData, lookupType) {
-    var oData = {};
-    //first convert the request from array of key/val pairs to map<string,string>.
-    $.each(aoData, function(){
-        oData[this.name] = this.value;
-    });
-
-    //derive sort column from the field name and reversed status
-    var aoColumns = g_settingsMap[lookupType].aoColumns;
-    var tdarSortOption = aoColumns[oData["iSortCol_0"]].tdarSortOption;
-    var sSortReversed = {desc:'true'}[oData["sSortDir_0"]];
-    if(sSortReversed) tdarSortOption += '_REVERSE';
-    var translatedData = {
-            startRecord:oData.iDisplayStart,
-            recordsPerPage:oData.iDisplayLength,
-            minLookupLength:0,
-            sortField: tdarSortOption
-    };
-    
-    switch(lookupType) {
-    case "person":
-        getPersonSearchData(translatedData);
-        break;
-    case "keyword":
-        translatedData.keywordType = getKeywordType($selEntityType.val());
-        translatedData.term = oData.sSearch;
-        break;
-    case "institution":
-        translatedData.institution = oData.sSearch;
-        break;
-    }
-    return translatedData;
-}
 
 //FIXME: this is a dumb, hackey way to get the keywordType to send the lookup controller.
 //a better way would be to send enum value to lookupcontroller   
@@ -216,36 +126,22 @@ function getKeywordType(enumVal) {
 	}[enumVal];
 }
 
-function getPersonSearchData(translatedData)  {
+function getPersonSearchData()  {
+	var data = {minLookupLength:0};
     $.each ($(':text', '#divPersonSearchControl'), function(ignored, txtElem){
-        translatedData[txtElem.name] = $(txtElem).val();
+        data[txtElem.name] = $(txtElem).val();
     });
-}
-
-/**
- *  alter the response returned from the server before it is received by the datatable
- * @param data - xhr response
- * @param lookupType - lookupType stored in $selEntityType.data
- */
-function convertResponse(data, lookupType) {
-    var translatedData = {
-            iTotalDisplayRecords:data.status.totalRecords,
-            iTotalRecords:data.status.totalRecords    
-    };
-    
-    var sAjaxDataProp = g_settingsMap[lookupType].sAjaxDataProp;
-    translatedData[sAjaxDataProp] = data[sAjaxDataProp];
-    return translatedData;
+    return data;
 }
 
 
-function renderSelectedDupes(duplicateMap) {
+//for now we just render everything each time something is checked
+function renderSelectedDupes(id, obj, isAdded) {
     $('#frmDupes ul').remove();
     var $ul = $(document.createElement('ul'));
     var dupeCount = 0;
     
-    
-    $.each(duplicateMap, function(idx, data){
+    $.each(dataTable.data('selectedRows'), function(idx, data){
         dupeCount++;
         //FIXME: need a better way to display summary label for selected item, or maybe we should just have the same table structure as datatable.
         var label = data.name;
@@ -260,12 +156,10 @@ function renderSelectedDupes(duplicateMap) {
     $('#pDupeInfo').toggle(dupeCount > 0);
 }
 
-
 function clearDupeList() {
-    //todo use jqueryui button instead of html button
-    g_selectedDupeIds = {};
-    renderSelectedDupes(g_selectedDupeIds);
-    $dataTable.fnDraw();
+	dataTable.data('selectedRows', {});
+	$('input[type=checkbox]', dataTable).prop('checked', false);
+	renderSelectedDupes(null, null, null);
     return false;
 }
 

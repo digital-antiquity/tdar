@@ -1,4 +1,5 @@
 
+//FIXME: selectableRows is redundant -- let rowSelectionCallback implicitly indicate that we want selectable rows.
 function registerLookupDataTable(parms) {
 
     //tableSelector, sAjaxSource, sAjaxDataProp,  aoColumns, requestCallback, selectableRows
@@ -28,7 +29,7 @@ function registerLookupDataTable(parms) {
     //here is where we will store the selected rows (if caller wants to track that stuff)
     $dataTable.data('selectedRows', {});
 
-    var dataTableOptions ={
+    var dataTableOptions = {
             "bProcessing": true,
             "bServerSide": true,
             //"sAjaxDataProp": sAjaxDataProp,
@@ -46,6 +47,7 @@ function registerLookupDataTable(parms) {
                     data : _convertRequest(aoData, options.aoColumns, options.requestCallback),
                     success : function(_data) {
                         //intercept data returned by server, translate to client format
+                    	
                         var recordInfo = {
                                 iTotalDisplayRecords: _data.status.totalRecords,
                                 iTotalRecords: _data.status.totalRecords    

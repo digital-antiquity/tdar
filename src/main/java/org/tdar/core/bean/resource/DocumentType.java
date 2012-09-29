@@ -1,5 +1,7 @@
 package org.tdar.core.bean.resource;
 
+import org.tdar.core.bean.HasLabel;
+
 
 
 /**
@@ -10,7 +12,7 @@ package org.tdar.core.bean.resource;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
  */
-public enum DocumentType { 
+public enum DocumentType implements HasLabel { 
 
     BOOK("Book / Report"), 
     BOOK_SECTION("Book Chapter / Section"),

@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Lob;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.apache.lucene.search.Explanation;
@@ -13,21 +14,24 @@ import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Index;
 import org.hibernate.search.annotations.Store;
+import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
-import org.tdar.index.analyzer.AutocompleteAnalyzer;
-import org.tdar.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
-import org.tdar.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
+import org.tdar.core.bean.entity.Dedupable;
+import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
+import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
+import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 
 /**
  * $Id$
  * 
+ * Base Class for all keywords
  * 
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Rev$
  */
-public interface Keyword extends Persistable, Indexable {
+public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
 
     public String getLabel();
 
@@ -41,7 +45,7 @@ public interface Keyword extends Persistable, Indexable {
 
     @MappedSuperclass
     @XmlType(name = "kwdbase")
-    public static abstract class Base <T extends Base<?>> extends Persistable.Base implements Keyword, Comparable<T> {
+    public static abstract class Base<T extends Base<?>> extends Persistable.Base implements Keyword, Comparable<T> {
 
         private static final long serialVersionUID = -7516574981065004043L;
 
@@ -52,7 +56,7 @@ public interface Keyword extends Persistable, Indexable {
         @Fields({ @Field(name = "label", analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
                 @Field(name = "label_auto", analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)),
                 @Field(name = "labelKeyword", analyzer = @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)),
-                @Field(name = QueryFieldNames.LABEL_SORT, index= Index.UN_TOKENIZED, store = Store.YES)})
+                @Field(name = QueryFieldNames.LABEL_SORT, index = Index.UN_TOKENIZED, store = Store.YES) })
         private String label;
 
         @Lob
@@ -60,6 +64,7 @@ public interface Keyword extends Persistable, Indexable {
         private String definition;
 
         @Field
+        @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)
         @Transient
         public String getKeywordType() {
             return getClass().getSimpleName();
@@ -68,10 +73,9 @@ public interface Keyword extends Persistable, Indexable {
         private transient Float score = -1f;
         private transient Explanation explanation;
 
-        
         @Override
         public int compareTo(T o) {
-            return getLabel().compareTo(o.getLabel());
+            return this.getLabel().compareTo(o.getLabel());
         }
 
         public String getLabel() {
@@ -82,6 +86,7 @@ public interface Keyword extends Persistable, Indexable {
             this.label = label;
         }
 
+        @XmlTransient
         public String getDefinition() {
             return definition;
         }
@@ -100,6 +105,7 @@ public interface Keyword extends Persistable, Indexable {
         }
 
         @Transient
+        @XmlTransient
         public Float getScore() {
             return score;
         }
@@ -109,12 +115,29 @@ public interface Keyword extends Persistable, Indexable {
         }
 
         @Transient
+        @XmlTransient
         public Explanation getExplanation() {
             return explanation;
         }
 
         public void setExplanation(Explanation explanation) {
             this.explanation = explanation;
+        }
+
+        @Override
+        public boolean isDedupable() {
+            return true;
+        }
+
+        public <D extends Dedupable> void addSynonym(D synonym) {
+            for(String name : synonym.getSynonyms()) {
+                getSynonyms().add(name);
+            }
+            getSynonyms().add(synonym.getSynonymFormattedName());
+        }
+
+        public String getSynonymFormattedName() {
+            return getLabel();
         }
 
     }

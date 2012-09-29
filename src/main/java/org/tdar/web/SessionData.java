@@ -92,7 +92,7 @@ public class SessionData implements Serializable {
         Person person = getPerson();
         if (person == null)
             return false;
-        return person.isContributor();
+        return person.getContributor();
     }
 
 }

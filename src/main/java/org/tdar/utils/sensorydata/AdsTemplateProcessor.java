@@ -416,7 +416,7 @@ public class AdsTemplateProcessor {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         Integer year = new Integer(cal.get(Calendar.YEAR)); 
-        r.setDateCreated(year);
+        r.setDate(year);
     }
     
     private void setOtherKeywords(InformationResource resource, Cell cell) {

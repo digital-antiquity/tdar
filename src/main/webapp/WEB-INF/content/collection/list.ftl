@@ -1,3 +1,4 @@
+<#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/list-macros.ftl" as list>
 
 <head>
@@ -17,3 +18,4 @@
 <@list.listResources results collection.sortBy  />
 </#if>
 </body>
+</#escape>

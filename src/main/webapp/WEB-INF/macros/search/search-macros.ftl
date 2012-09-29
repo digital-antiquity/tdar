@@ -60,3 +60,98 @@
       </script>
     </#if>
 </#macro>
+
+
+
+
+<#macro initResultPagination>
+<#global firstRec = (startRecord + 1) />
+<#global curPage = ((startRecord/recordsPerPage)?floor + 1) />
+<#global numPages = ((totalRecords/recordsPerPage)?ceiling) />
+<#global lastRec = nextPageStartRecord>
+
+<#if (firstRec > totalRecords)>
+ <#assign numPages = 0 />
+ <#assign firstRec = totalRecords/>
+</#if>
+
+<#if (nextPageStartRecord > totalRecords) >
+	<#assign lastRec = totalRecords>
+</#if>
+
+<#if (firstRec - recordsPerPage) < 1 >
+	<#assign prevPageStartRec = 0>
+<#else>
+	<#assign prevPageStartRec = firstRec - recordsPerPage - 1>
+</#if>
+</#macro>
+<#macro searchLink path linkText>
+	<a href="
+	<@s.url includeParams="all" value="${path}">
+	<#if path?? && path!="results">
+	<@s.param name="id" value=""/>
+	</#if>
+		<#nested>
+	</@s.url> 
+	">${linkText}</a>
+</#macro>
+
+<#macro paginationLink startRecord path linkText>
+	<span class="paginationLink">
+	<@searchLink path linkText>
+		<@s.param name="startRecord" value="${startRecord?c}" />
+		<@s.param name="recordsPerPage" value="${recordsPerPage?c}" />
+	</@searchLink>
+	</span>
+</#macro>
+
+<#macro join sequence delimiter=",">
+    <#list sequence as item>
+        ${item}<#if item_has_next>${delimiter}</#if><#t>
+    </#list>
+</#macro>
+
+<#macro pagination path="results">
+	<div class="pagination">
+  <#assign start =0>
+  <#assign end =numPages -1>
+  <#if numPages &gt; 40 && curPage &gt; 19 >
+    <#assign start = curPage - 20>
+  </#if>
+  <#if numPages &gt; 40 && curPage &lt; numPages -19 >
+    <#assign end = curPage + 19>
+  </#if> 
+
+  <#if start != 0>
+      <@paginationLink startRecord=(0 * recordsPerPage) path="${path}" linkText="first" />
+  </#if>
+		<#if (firstRec > 1)>
+			<@paginationLink startRecord=prevPageStartRec path="${path}" linkText="previous" />
+		</#if>
+		<#if (numPages > 1)>
+			<#list start..end as i>
+				<#if (i + 1) = curPage>
+                                        <#-- FIXME: there are 2 of these spans with
+                                        the same id being generated.  Turn this into
+                                        a CSS class instead or is this a bug?
+                                        -->
+					<span id="currentResultPage">${i + 1}</span>
+				<#else>
+					<@paginationLink startRecord=(i * recordsPerPage) path="${path}" linkText=(i + 1) />
+				</#if>
+			</#list>
+			<#else>
+			1<br/>
+		</#if>
+		<#if (nextPageStartRecord < totalRecords) >
+			<@paginationLink startRecord=nextPageStartRecord path="${path}" linkText="next" />
+		</#if>
+  <#if (end != numPages && nextPageStartRecord < totalRecords)>
+          <@paginationLink startRecord=(totalRecords - totalRecords % recordsPerPage) path="${path}" linkText="last" />
+  </#if>
+	</div>
+</#macro>
+
+<#macro bcad _year>
+  <#if (_year < 0)>BC<#else>AD</#if><#t/>
+</#macro>

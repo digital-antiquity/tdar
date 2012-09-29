@@ -27,11 +27,12 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.search.Explanation;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyzer;
@@ -53,23 +54,32 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.JSONTransient;
-import org.tdar.index.analyzer.AutocompleteAnalyzer;
-import org.tdar.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
-import org.tdar.index.analyzer.PatternTokenAnalyzer;
+import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
+import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
+import org.tdar.search.index.analyzer.PatternTokenAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
+import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
  * @author Adam Brin
  * 
+ *         Resource Collections serve a number of purposes:
+ *         - they manage rights
+ *         - they organize resources
+ *         The combination enables us to manage all access rights and permissions for resources through the user of these collections.
+ * 
+ *         <b>INTERNAL</b> collections enable access rights to a specific resource. Users never see these, they simply see the rights on the resource.
+ *         <b>SHARED</b> collections are ones that users create and enable access. Shared collections can be public or private
  */
 @Entity
-@Indexed(index = "Resource")
+@Indexed(index = "Collection")
 @Table(name = "collection")
 public class ResourceCollection extends Persistable.Base implements HasName, Updatable, Indexable, Validatable, Comparable<ResourceCollection> {
 
     public enum CollectionType {
         INTERNAL("Internal"),
+        // PERSONAL("Personal"),
         SHARED("Shared");
 
         private String label;
@@ -139,10 +149,10 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         setDateCreated(new Date());
     }
 
-    @Field(store = Store.YES, analyzer = @Analyzer(impl = KeywordAnalyzer.class), name = QueryFieldNames.ID)
-    public Long getIndexedId() {
-        return getId();
-    }
+    // @Field(store = Store.YES, analyzer = @Analyzer(impl = KeywordAnalyzer.class), name = QueryFieldNames.ID)
+    // public Long getIndexedId() {
+    // return getId();
+    // }
 
     public ResourceCollection(Resource resource, Person owner) {
         this(CollectionType.SHARED);
@@ -167,7 +177,9 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         this.description = description;
     }
 
-    @XmlTransient
+    @XmlElementWrapper(name = "resources")
+    @XmlElement(name = "resourceRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public Set<Resource> getResources() {
         return resources;
     }
@@ -184,8 +196,9 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         this.type = type;
     }
 
-    @XmlIDREF
-    @XmlAttribute(name = "userIds")
+    // FIXME: want to serialize these out, but cannot properly obfuscate them because they're in a "managed" set
+    // if you do, and try and obfsucate by removing, you end up in a situation of completely removing the object
+    @XmlTransient
     public Set<AuthorizedUser> getAuthorizedUsers() {
         return authorizedUsers;
     }
@@ -194,8 +207,8 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         this.authorizedUsers = users;
     }
 
-    @XmlIDREF
-    @XmlAttribute(name = "ownerId")
+    @XmlAttribute(name = "ownerIdRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public Person getOwner() {
         return owner;
     }
@@ -204,8 +217,8 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         this.owner = owner;
     }
 
-    @XmlIDREF
-    @XmlAttribute(name = "parentId")
+    @XmlAttribute(name = "parentIdRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public ResourceCollection getParent() {
         return parent;
     }
@@ -214,14 +227,26 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         this.parent = parent;
     }
 
+    @Field()
     public boolean isVisible() {
         return visible;
+    }
+
+    @Field()
+    public boolean isTopLevel() {
+        if (getParent() == null || getParent().isVisible() == false) {
+            return true;
+        }
+        return false;
     }
 
     public void setVisible(boolean visible) {
         this.visible = visible;
     }
 
+    /*
+     * Convenience Method that provides a list of users that match the permission
+     */
     public Set<Person> getUsersWhoCan(GeneralPermissions permission, boolean recurse) {
         Set<Person> people = new HashSet<Person>();
         for (AuthorizedUser user : authorizedUsers) {
@@ -266,10 +291,11 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     public boolean isShared() {
         return type == CollectionType.SHARED;
     }
-    
+
     public boolean isInternal() {
         return type == CollectionType.INTERNAL;
     }
+
     /**
      * @param sortBy
      *            the sortBy to set
@@ -296,6 +322,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     }
 
     @Override
+    @XmlTransient
     public Explanation getExplanation() {
         return explanation;
     }
@@ -322,6 +349,9 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         return new String[] { "id", "name" };
     }
 
+    /*
+     * used for populating the Lucene Index with users that have appropriate rights to modify things in the collection
+     */
     @Field(name = QueryFieldNames.COLLECTION_USERS_WHO_CAN_MODIFY)
     @Analyzer(impl = PatternTokenAnalyzer.class)
     @Transient
@@ -341,7 +371,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     }
 
     /*
-     * Default to sorting by name, but grouping by parentId
+     * Default to sorting by name, but grouping by parentId, used for sorting int he tree
      */
     @Override
     public int compareTo(ResourceCollection o) {
@@ -359,8 +389,11 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
             return tree.get(0).compareTo(tree_.get(0));
         }
     }
-    
-    @Transient 
+
+    /*
+     * Get all of the resource collections via a tree (actually list of lists)
+     */
+    @Transient
     public List<ResourceCollection> getHierarchicalResourceCollections() {
         ArrayList<ResourceCollection> parentTree = new ArrayList<ResourceCollection>();
         parentTree.add(this);
@@ -370,9 +403,12 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
             parentTree.add(0, collection);
         }
         return parentTree;
-        
+
     }
 
+    /*
+     * Get ordered list of parents (titles) of this resources ... great grandfather, grandfather, father, you.
+     */
     @Transient
     public List<String> getParentNameList() {
         ArrayList<String> parentNameTree = new ArrayList<String>();
@@ -382,6 +418,9 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         return parentNameTree;
     }
 
+    /*
+     * Get ordered list of parents (ids) of this resources ... great grandfather, grandfather, father, you.
+     */
     @Transient
     public List<Long> getParentIdList() {
         ArrayList<Long> parentIdTree = new ArrayList<Long>();
@@ -391,7 +430,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         return parentIdTree;
     }
 
-    
     @Override
     public boolean isValidForController() {
         return StringUtils.isNotBlank(getName());
@@ -420,30 +458,27 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         return getName();
     }
 
-    public String getKeywords() {
-        return null;
-    }
-
     public String getUrlNamespace() {
         return "collection";
     }
-    
-/* commenting out for Fluvial, but would enable ResourceCollections and Resources to share the same index
- *
- *  @Transient
-    @Field(index = Index.UN_TOKENIZED, store = Store.YES, analyzer=@Analyzer(impl = TdarStandardAnalyzer.class), name=QueryFieldNames.SEARCH_TYPE)
-    public SimpleSearchType getSimpleSearchType() {
-        return SimpleSearchType.COLLECTION; 
-    }
-    
-    
-    @Field(name = QueryFieldNames.STATUS, analyzer = @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class))
-    public Status getStatusForSearch() {
-        if (getType() == CollectionType.SHARED && visible) {
-            return Status.ACTIVE;
-        }
-        return null;
-    }
 
- */
+    /*
+     * commenting out for Fluvial, but would enable ResourceCollections and Resources to share the same index
+     * 
+     * @Transient
+     * 
+     * @Field(index = Index.UN_TOKENIZED, store = Store.YES, analyzer=@Analyzer(impl = TdarStandardAnalyzer.class), name=QueryFieldNames.SEARCH_TYPE)
+     * public SimpleSearchType getSimpleSearchType() {
+     * return SimpleSearchType.COLLECTION;
+     * }
+     * 
+     * 
+     * @Field(name = QueryFieldNames.STATUS, analyzer = @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class))
+     * public Status getStatusForSearch() {
+     * if (getType() == CollectionType.SHARED && visible) {
+     * return Status.ACTIVE;
+     * }
+     * return null;
+     * }
+     */
 }

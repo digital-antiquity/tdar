@@ -1,15 +1,20 @@
 package org.tdar.core.bean.resource;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.hibernate.search.annotations.ContainedIn;
 import org.hibernate.search.annotations.Field;
 import org.tdar.core.bean.Persistable;
+import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
@@ -54,6 +59,11 @@ public class CodingRule extends Persistable.Base
         return code;
     }
 
+    @Override
+    public List<?> getEqualityFields() {
+        return Arrays.asList(getCode());
+    }
+
     public void setCode(String code) {
         this.code = sanitize(code);
     }
@@ -89,7 +99,8 @@ public class CodingRule extends Persistable.Base
         this.description = description.trim();
     }
 
-    @XmlTransient
+    @XmlElement(name = "codingSheetRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public CodingSheet getCodingSheet() {
         return codingSheet;
     }
@@ -99,7 +110,7 @@ public class CodingRule extends Persistable.Base
     }
 
     public String toString() {
-        return String.format("[%s], [%s], [%s]", code, term, description);
+        return String.format("{%s, %s, %s}", code, term, description);
     }
 
     /**
@@ -113,4 +124,5 @@ public class CodingRule extends Persistable.Base
             return code.compareTo(other.code);
         }
     }
+
 }

@@ -2,31 +2,30 @@ package org.tdar.core.bean.entity;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Indexed;
 import org.tdar.core.bean.BulkImportField;
-import org.tdar.index.analyzer.AutocompleteAnalyzer;
-import org.tdar.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
+import org.tdar.core.bean.Obfuscatable;
+import org.tdar.core.bean.Validatable;
+import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
+import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 
 /**
  * $Id$
@@ -42,24 +41,20 @@ import org.tdar.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 @Indexed(index = "Institution")
 @DiscriminatorValue("INSTITUTION")
 @XmlRootElement(name = "institution")
-public class Institution extends Creator implements Comparable<Institution> {
+public class Institution extends Creator implements Comparable<Institution>, Validatable {
 
     private static final long serialVersionUID = 892315581573902067L;
-
-    public Institution() {
-    }
-
-    public Institution(String name) {
-        this.name = name;
-    }
 
     @Transient
     private final static String[] JSON_PROPERTIES = { "id", "name", "url" };
 
     private static final String ACRONYM_REGEX = "(?:.+)(?:[\\(\\[\\{])(.+)(?:[\\)\\]\\}])(?:.*)";
 
+    @Transient
+    private static final String[] IGNORE_PROPERTIES_FOR_UNIQUENESS = { "id", "dateCreated", "dateUpdated" };
+
     @Column(nullable = false, unique = true)
-    @BulkImportField(label="Institution Name",comment=BulkImportField.CREATOR_INSTITUTION_DESCRIPTION,order=10)
+    @BulkImportField(label = "Institution Name", comment = BulkImportField.CREATOR_INSTITUTION_DESCRIPTION, order = 10)
     private String name;
 
     private String url;
@@ -70,17 +65,20 @@ public class Institution extends Creator implements Comparable<Institution> {
         return name.compareTo(candidate.name);
     }
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY, optional = true)
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.LAZY, optional = true)
     private Institution parentInstitution;
 
-    @ElementCollection()
-    @JoinTable(name = "institution_synonym")
-    private Set<String> alternateNames;
+    public Institution() {
+    }
+
+    public Institution(String name) {
+        this.name = name;
+    }
 
     @XmlElement
-    //FIXME: this seemingly conflicts w/ @Field annotations on Creator.getName(). Figure out which declaration is working
+    // FIXME: this seemingly conflicts w/ @Field annotations on Creator.getName(). Figure out which declaration is working
     @Fields({ @Field(name = "name_auto", analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)),
-            @Field(analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)) }) 
+            @Field(analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)) })
     public String getName() {
         if (parentInstitution != null) {
             return parentInstitution.getName() + " : " + name;
@@ -135,22 +133,6 @@ public class Institution extends Creator implements Comparable<Institution> {
         this.parentInstitution = parentInstitution;
     }
 
-    /**
-     * @param alternateNames
-     *            the alternateNames to set
-     */
-    public void setAlternateNames(Set<String> alternateNames) {
-        this.alternateNames = alternateNames;
-    }
-
-    /**
-     * @return the alternateNames
-     */
-    @XmlTransient
-    public Set<String> getAlternateNames() {
-        return alternateNames;
-    }
-
     @Override
     public CreatorType getCreatorType() {
         return CreatorType.INSTITUTION;
@@ -165,5 +147,24 @@ public class Institution extends Creator implements Comparable<Institution> {
     protected String[] getIncludedJsonProperties() {
         return JSON_PROPERTIES;
     }
+
+    public static String[] getIgnorePropertiesForUniqueness() {
+        return IGNORE_PROPERTIES_FOR_UNIQUENESS;
+    }
+
+    public List<Obfuscatable> obfuscate() {
+        return null;
+    }
+
+    @Override
+    public boolean isValidForController() {
+    	return StringUtils.isNotBlank(name);
+    }
+
+    @Override
+    public boolean isValid() {
+    	return isValidForController() && getId() != null;
+    }
+
 
 }

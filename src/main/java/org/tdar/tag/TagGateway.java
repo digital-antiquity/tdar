@@ -19,6 +19,7 @@ import org.hibernate.search.FullTextQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.coverage.CoverageType;
+import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.Project;
@@ -33,11 +34,10 @@ import org.tdar.search.query.FreetextQueryPart;
 import org.tdar.search.query.KeywordQueryPart;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.QueryPartGroup;
-import org.tdar.search.query.ResourceQueryBuilder;
-import org.tdar.search.query.SpatialLimit;
 import org.tdar.search.query.SpatialQueryPart;
 import org.tdar.search.query.TemporalLimit;
 import org.tdar.search.query.TemporalQueryPart;
+import org.tdar.search.query.queryBuilder.ResourceQueryBuilder;
 import org.tdar.tag.Query.What;
 import org.tdar.tag.Query.When;
 import org.tdar.tag.Query.Where;
@@ -122,7 +122,7 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
         }
         if (where != null) {
             SpatialQueryPart sqp = new SpatialQueryPart();
-            sqp.addSpatialLimit(new SpatialLimit(
+            sqp.addSpatialLimit(new LatitudeLongitudeBox(
                     where.getMinLongitude().doubleValue(),
                     where.getMaxLongitude().doubleValue(),
                     where.getMinLatitude().doubleValue(),

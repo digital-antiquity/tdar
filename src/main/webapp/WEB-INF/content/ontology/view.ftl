@@ -1,3 +1,4 @@
+<#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
 <@view.htmlHeader resourceType="ontology">
 <meta name="lastModifiedDate" content="$Date$"/>
@@ -196,3 +197,4 @@ st.compute();
 //emulate a click on the root node.  
 st.onClick(st.root);  
 </script>
+</#escape>

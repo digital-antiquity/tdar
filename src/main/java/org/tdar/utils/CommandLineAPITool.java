@@ -61,7 +61,7 @@ public class CommandLineAPITool {
 
     private static final String ALPHA_TDAR_ORG = "alpha.tdar.org";
     private static final String CORE_TDAR_ORG = "core.tdar.org";
-    
+
     Logger logger = Logger.getLogger(getClass());
     DefaultHttpClient httpclient = new DefaultHttpClient();
     private String hostname = CORE_TDAR_ORG;
@@ -124,10 +124,10 @@ public class CommandLineAPITool {
                 filenames = line.getOptionValues(OPTION_FILE);
             }
 
-            if(line.hasOption(OPTION_PROJECT_ID)) {
+            if (line.hasOption(OPTION_PROJECT_ID)) {
                 importer.setProjectId(new Long(line.getOptionValue(OPTION_PROJECT_ID)));
             }
-            
+
             if (line.hasOption(OPTION_CONFIG)) {
                 Properties properties = new Properties();
                 try {
@@ -258,7 +258,8 @@ public class CommandLineAPITool {
 
         int errorCount = 0;
         for (File file : parentDir.listFiles()) {
-            if(file.isHidden()) continue;
+            if (file.isHidden())
+                continue;
             String fileName = file.getName();
             if (file.isDirectory()) {
                 directories.add(file);
@@ -299,12 +300,11 @@ public class CommandLineAPITool {
 
         reqEntity.addPart("record", new StringBody(FileUtils.readFileToString(record)));
 
-        if(projectId != null) {
+        if (projectId != null) {
             logger.debug("setting projectId:" + projectId);
             reqEntity.addPart("projectId", new StringBody(projectId.toString()));
         }
-        
-        
+
         if (!CollectionUtils.isEmpty(attachments)) {
             for (int i = 0; i < attachments.size(); i++) {
                 reqEntity.addPart("uploadFile", new FileBody(attachments.get(i)));
@@ -315,7 +315,7 @@ public class CommandLineAPITool {
         HttpResponse response = httpclient.execute(apicall);
         int statusCode = response.getStatusLine().getStatusCode();
         if (statusCode >= HttpStatus.SC_BAD_REQUEST) {
-            System.err.println("Server returned error: ["+record.getAbsolutePath()+"]:" + response.getStatusLine().getReasonPhrase());
+            System.err.println("Server returned error: [" + record.getAbsolutePath() + "]:" + response.getStatusLine().getReasonPhrase());
             callSuccessful = false;
         }
         logger.info(record.toString() + " - " + response.getStatusLine());

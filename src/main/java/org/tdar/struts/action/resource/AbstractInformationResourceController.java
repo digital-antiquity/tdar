@@ -10,12 +10,14 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.Institution;
@@ -30,11 +32,14 @@ import org.tdar.core.bean.resource.LanguageEnum;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.FilestoreService;
+import org.tdar.core.service.PersonalFilestoreService;
+import org.tdar.core.service.external.auth.InternalTdarRights;
 import org.tdar.filestore.FileAnalyzer;
-import org.tdar.filestore.PersonalFilestore;
-import org.tdar.filestore.PersonalFilestoreFile;
+import org.tdar.filestore.personalFilestore.PersonalFilestore;
+import org.tdar.filestore.personalFilestore.PersonalFilestoreFile;
+import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FileProxy;
+import org.tdar.utils.HashQueue;
 
 /**
  * $Id$
@@ -50,6 +55,8 @@ import org.tdar.struts.data.FileProxy;
  */
 public abstract class AbstractInformationResourceController<R extends InformationResource> extends AbstractResourceController<R> {
 
+    public static final String FILE_INPUT_METHOD = "text";
+
     private static final long serialVersionUID = -200666002871956655L;
 
     private List<CategoryVariable> allDomainCategories;
@@ -64,8 +71,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     private LanguageEnum resourceLanguage;
     private LanguageEnum metadataLanguage;
     private List<LanguageEnum> languages;
-    // private List<InformationResourceFileProxy> currentVersionFiles;
-    // private Collection<InformationResourceFileVersion> accessibleFiles;
     private List<FileProxy> fileProxies = new ArrayList<FileProxy>();
 
     private String fileInputMethod;
@@ -76,7 +81,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     private Long ticketId;
 
     // resource provider institution and contacts
-    private String resourceProviderInstitution;
+    private String resourceProviderInstitutionName;
 
     // resource availability
     private String resourceAvailability;
@@ -86,7 +91,9 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     protected PersonalFilestoreTicket filestoreTicket;
 
     @Autowired
-    protected FilestoreService filestoreService;
+    protected PersonalFilestoreService filestoreService;
+
+    private boolean resourceFilesHaveChanged = false;
 
     protected abstract void processUploadedFiles(List<InformationResourceFile> uploadedFiles) throws IOException;
 
@@ -149,66 +156,70 @@ public abstract class AbstractInformationResourceController<R extends Informatio
      * @return a List<FileProxy> representing all fully initialized FileProxy objects to be processed by the service layer.
      */
     protected List<FileProxy> handleAsyncUploads() {
-        if (ticketId == null) {
-            return fileProxies;
-        }
-        filestoreTicket = getGenericService().find(PersonalFilestoreTicket.class, ticketId);
-        pendingFiles = filestoreService.retrieveAllPersonalFilestoreFiles(filestoreTicket);
-        LinkedHashMap<String, FileProxy> filenameProxyMap = new LinkedHashMap<String, FileProxy>();
-        logger.debug("file proxies: {} ", fileProxies);
-        for (FileProxy fileProxy : fileProxies) {
-            if (fileProxy == null) {
-                // was pending & deleted, skip
-                logger.debug("Skipping null file proxy ostensibly resulting from a deleted pending file.");
-                continue;
-            }
-            if (StringUtils.isEmpty(fileProxy.getFilename())) {
-                logger.warn("file proxy with no filename {}", fileProxy);
-                continue;
-            }
-            // FIXME: this logic shouldn't be necessary with the new ftl changes, but the
-            // tests aren't updated to deal with this.
-            // 1. if there is no existing proxy with the same filename, add it.
-            // 2. if there is an existing proxy, replace it if this fileProxy is a REPLACE.
-            // FileProxy existingProxy = filenameProxyMap.get(fileProxy.getFilename());
-            // if (existingProxy == null || fileProxy.getAction() == FileAction.REPLACE) {
-            // filenameProxyMap.put(fileProxy.getFilename(), fileProxy);
-            // }
-            logger.debug("putting {} into the map", fileProxy);
-            filenameProxyMap.put(fileProxy.getFilename(), fileProxy);
-        }
+        cullInvalidProxies(fileProxies);
+        pendingFiles = filestoreService.retrieveAllPersonalFilestoreFiles(ticketId);
+        ArrayList<FileProxy> finalProxyList = new ArrayList<FileProxy>(fileProxies);
+
+        //subset of proxy list,  hashed into queues.
+        HashQueue<String, FileProxy> proxiesNeedingFiles = buildProxyQueue(fileProxies);
+        
+        //FIXME: trying to handle duplicate filenames more gracefully by using hashqueue instead of hashmap, but this assumes that the sequence of pending files 
+        //       is *similar* to sequence of incoming file proxies.  probably a dodgy assumption, but arguably better than obliterating proxies w/ dupe filenames
+        
         // associates InputStreams with all FileProxy objects that need to create a new version.
         for (PersonalFilestoreFile pendingFile : pendingFiles) {
             File file = pendingFile.getFile();
-            FileProxy proxy = filenameProxyMap.get(file.getName());
+            FileProxy proxy = proxiesNeedingFiles.poll(file.getName());
+            //if we encounter file that has no matching proxy, we create a new proxy and add it to the final list
+            //we assume this happens when proxy fields in form were submitted in state that struts could not type-convert into a proxy instance
             if (proxy == null) {
-                logger.debug("something bad happened in the JS side of things, there should always be a FileProxy resulting from the upload callback {}",
+                logger.warn("something bad happened in the JS side of things, there should always be a FileProxy resulting from the upload callback {}",
                         file.getName());
                 proxy = new FileProxy(file.getName(), VersionType.UPLOADED, false);
-                filenameProxyMap.put(file.getName(), proxy);
+                finalProxyList.add(proxy);
             }
             try {
                 proxy.setInputStream(new FileInputStream(file));
-            } catch (IOException exception) {
-                addActionErrorWithException("Unable to get an InputStream to " + file.getName(), exception);
-                // remove FileProxy since we won't be able to process it
-                filenameProxyMap.remove(file.getName());
-                continue;
-            }
-            // TRYING TO FIX THE CASE WHERE SOMETHING weird HAPPEND & THE CONTROLLER GOT SOME METHOD
-            // THAT SAYS MODIFY_METADATA, BUT THERE'S A FILE ATTACHED... WHEN IN DOUBT, ADD THE THING
-            if (!proxy.getAction().shouldExpectFileHandle() && proxy.getInputStream() != null) {
-                logger.debug("resetting file proxy action to ADD because it has a FILE ATTACHED");
-                proxy.setAction(FileAction.ADD);
+            } catch (FileNotFoundException ex) {
+                addActionErrorWithException("Could not create inputstream for file:" + file, ex);
+                proxy.setInputStream(null);
+                //change fileAction to no-op
+                proxy.setAction(FileAction.NONE);
+                finalProxyList.remove(proxy);
             }
         }
-        ArrayList<FileProxy> finalProxySet = new ArrayList<FileProxy>(filenameProxyMap.values());
-        Collections.sort(finalProxySet);
-        // FIXME: apply sequence numbering?
-        return finalProxySet;
-
+        
+        Collections.sort(finalProxyList);
+        return finalProxyList;
     }
 
+    //build a priorityqueue of proxies that expect files.  
+    private HashQueue<String, FileProxy> buildProxyQueue(List<FileProxy> proxies) {
+        HashQueue<String, FileProxy> hashQueue = new HashQueue<String, FileProxy>();
+        for(FileProxy proxy : proxies) {
+            if(proxy.getAction().shouldExpectFileHandle()) {
+                hashQueue.push(proxy.getFilename(), proxy);
+            }
+        }
+        return hashQueue;
+    }
+    
+    //return a list of fileProxies,  culling null and invalid instances
+    private void  cullInvalidProxies(List<FileProxy> proxies) {
+        logger.debug("file proxies: {} ", proxies);
+        ListIterator<FileProxy> iterator = proxies.listIterator();
+        while(iterator.hasNext()) {
+            FileProxy proxy = iterator.next();
+            if(proxy == null) {
+                logger.debug("fileProxy[{}] is null - culling", iterator.previousIndex());
+                iterator.remove();
+            } else if (StringUtils.isEmpty(proxy.getFilename())) {
+                logger.debug("fileProxy[{}].fileName is blank - culling (value: {})", iterator.previousIndex(), proxy);
+                iterator.remove();
+            } 
+        }
+    }    
+    
     /**
      * One-size-fits-all method for handling uploaded InformationResource files.
      * 
@@ -234,6 +245,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         }
         // FIXME: should be refactored to take in a Set<FileProxy> files to be processed?
         try {
+            setResourceFilesHaveChanged(true);
             processUploadedFiles(modifiedFiles);
         } catch (IOException e) {
             addActionErrorWithException("We were unable to process the uploaded content.", e);
@@ -305,24 +317,23 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             logger.warn("an error occured when trying to cleanup the filestore: {} for {} ", filestoreTicket, getAuthenticatedUser());
             e.printStackTrace();
         }
-        // getInformationResourceService().updateProjectIndex(getPersistable().getProjectId());
     }
 
     protected void loadResourceProviderInformation() {
         // load resource provider institution and publishers
-        setResourceProviderInstitutionObject(getResource().getResourceProviderInstitution());
+        setResourceProviderInstitution(getResource().getResourceProviderInstitution());
 
     }
 
     protected void saveResourceProviderInformation() {
-        getLogger().debug("Saving resource provider information: {}", resourceProviderInstitution);
+        getLogger().debug("Saving resource provider information: {}", resourceProviderInstitutionName);
         // save resource provider institution and contact information
         // TODO: use findOrSaveInstitution()
-        if (StringUtils.isNotBlank(resourceProviderInstitution)) {
-            Institution institution = getEntityService().findInstitutionByName(resourceProviderInstitution);
+        if (StringUtils.isNotBlank(resourceProviderInstitutionName)) {
+            Institution institution = getEntityService().findInstitutionByName(resourceProviderInstitutionName);
             if (institution == null) {
                 institution = new Institution();
-                institution.setName(resourceProviderInstitution);
+                institution.setName(resourceProviderInstitutionName);
                 getEntityService().save(institution);
             }
             getResource().setResourceProviderInstitution(institution);
@@ -372,19 +383,17 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         this.uploadedFilesFileNames = uploadedFileFileName;
     }
 
-    public String getResourceProviderInstitution() {
-        return resourceProviderInstitution;
+    public String getResourceProviderInstitutionName() {
+        return resourceProviderInstitutionName;
     }
 
-    public void setResourceProviderInstitution(String resourceProviderInstitution) {
-        this.resourceProviderInstitution = resourceProviderInstitution;
+    public void setResourceProviderInstitutionName(String name) {
+        this.resourceProviderInstitutionName = name;
     }
 
-    //FIXME: WAS setResourceProvicerInstitution(institution), but was causing issues w/ struts type conversion
-    //what we really should do is have the controller/freemarker just use the institution object (e.g.  resourceProvider.name)
-    public void setResourceProviderInstitutionObject(Institution resourceProviderInstitution) {
+    public void setResourceProviderInstitution(Institution resourceProviderInstitution) {
         if (resourceProviderInstitution != null) {
-            this.resourceProviderInstitution = resourceProviderInstitution.getName();
+            this.resourceProviderInstitutionName = resourceProviderInstitution.getName();
         }
     }
 
@@ -403,6 +412,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         loadResourceProviderInformation();
         setAllowedToViewConfidentialFiles(getEntityService().canViewConfidentialInformation(getAuthenticatedUser(), getPersistable()));
         initializeFileProxies();
+        getDatasetService().assignMappedDataForInformationResource(getResource());
     }
 
     private void initializeFileProxies() {
@@ -426,12 +436,11 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         getResource().setDateMadePublic(calendar.getTime());
         getResource().setResourceLanguage(resourceLanguage);
         getResource().setMetadataLanguage(metadataLanguage);
-
-        getResource().setProject(getProject());
         // handle dataset availability + date made public
         saveResourceProviderInformation();
+//        getEntityService().saveOrUpdate(getResource());
     }
-    
+
     public Integer getEmbargoPeriodInYears() {
         return InformationResource.EMBARGO_PERIOD_YEARS;
     }
@@ -487,7 +496,8 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         if (potentialParents == null) {
             Person submitter = getAuthenticatedUser();
             potentialParents = new ArrayList<Resource>();
-            potentialParents.addAll(getProjectService().findSparseTitleIdProjectListByPerson(submitter, isAdministrator()));
+            boolean canEditAnything = getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
+            potentialParents.addAll(getProjectService().findSparseTitleIdProjectListByPerson(submitter, canEditAnything));
             if (!getProject().equals(Project.NULL) && !potentialParents.contains(getProject())) {
                 potentialParents.add(getProject());
             }
@@ -532,6 +542,9 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         if (getResource().isInheritingOtherInformation()) {
             setOtherKeywords(null);
         }
+        // FIXME: we need to set the project at this point to avoid getProjectId() being indexed too early
+        // see TDAR-2001
+        getResource().setProject(getProject());
         super.saveBasicResourceMetadata();
     }
 
@@ -613,7 +626,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     }
 
     private boolean isTextInput() {
-        return "text".equals(fileInputMethod);
+        return FILE_INPUT_METHOD.equals(fileInputMethod);
     }
 
     public String getFileInputMethod() {
@@ -641,22 +654,39 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     }
 
     @Override
-    public R loadFromId(Long id) {
-        super.loadFromId(id);
-        if(getPersistable() != null) {
-            setProject(getPersistable().getProject());
-        }
-        return getPersistable();
+    public void prepare() {
+        super.prepare();
+        if (getPersistable() == null)
+            return;
+        setProject(getPersistable().getProject());
     }
 
     @Override
     public void validate() {
         super.validate();
-        if (getPersistable().getDateCreated() == null) {
+        if (getPersistable().getDate() == null) {
             logger.debug("Invalid date created for {}", getPersistable());
             String resourceTypeLabel = getPersistable().getResourceType().getLabel();
             addActionError("Please enter a valid creation year for " + resourceTypeLabel);
         }
 
+    }
+
+    @Action(value = "reprocess", results = { @Result(name = SUCCESS, type = "redirect", location = "view?id=${resource.id}") })
+    public String retranslate() throws TdarActionException {
+        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+        // FIXME: trying to avoid concurrent modification exceptions
+        // NOTE: this processes deleted ones again too
+        getInformationResourceService().reprocessInformationResourceFiles(new ArrayList(getResource().getInformationResourceFiles()));
+
+        return SUCCESS;
+    }
+
+    public boolean isResourceFilesHaveChanged() {
+        return resourceFilesHaveChanged;
+    }
+
+    public void setResourceFilesHaveChanged(boolean resourceFilesHaveChanged) {
+        this.resourceFilesHaveChanged = resourceFilesHaveChanged;
     }
 }

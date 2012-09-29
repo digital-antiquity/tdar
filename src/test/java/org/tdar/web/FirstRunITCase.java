@@ -3,9 +3,7 @@
  */
 package org.tdar.web;
 
-import static org.junit.Assert.assertTrue;
 import static org.tdar.TestConstants.ADMIN_PROJECT_ID;
-import static org.tdar.TestConstants.DEFAULT_BASE_URL;
 import static org.tdar.TestConstants.TEST_DOCUMENT;
 import static org.tdar.TestConstants.TEST_DOCUMENT_NAME;
 
@@ -13,6 +11,7 @@ import java.net.URL;
 
 import org.junit.Test;
 import org.tdar.URLConstants;
+import org.tdar.core.bean.resource.Status;
 
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
@@ -36,24 +35,33 @@ public class FirstRunITCase extends AbstractAuthenticatedWebTestCase {
         assertTextPresentInPage("Create a Document");
         setInput("document.title", TEST_TITLE);
         setInput("resource.description", TEST_ABSTRACT);
-        setInput("resource.dateCreated", "1934");
+        setInput("resource.date", "1934");
         setInput("ticketId", ticketId);
         setInput("projectId", Long.toString(ADMIN_PROJECT_ID));
         addFileProxyFields(0, false, TEST_DOCUMENT_NAME);
         submitForm();
         HtmlPage page = (HtmlPage) internalPage;
         logger.info(page.getUrl().toString());
-        logger.info(page.asText());
-        assertTextPresentInPage(TEST_TITLE);
+
+        // make sure we're on the view page
+        assertPageTitleEquals(TEST_TITLE);
         assertTextPresentInPage(TEST_ABSTRACT);
         assertTextPresentInPage(TEST_DOCUMENT_NAME);
         URL url = internalPage.getUrl();
 
+        // change resource to draft, assert you can still see the view page
+        // FIXME: I'm able to save document as draft as a non-admin in my local instance, but it fails in the web test. Not sure what's going on.
+        clickLinkWithText("edit");
+        setInput("status", Status.DRAFT.name());
+        submitForm();
+        assertPageTitleEquals(TEST_TITLE);
+
+        // now delete it, assert you cannot go to view page anymore
         clickLinkWithText("delete");
         submitForm("delete");
-        assertTrue(internalPage.getUrl().toString().contains(URLConstants.DASHBOARD));
+        assertCurrentUrlEquals(getBaseUrl() + URLConstants.DASHBOARD);
         gotoPage(url.toString());
-        assertTrue(internalPage.getUrl().toString().equals(DEFAULT_BASE_URL + URLConstants.HOME));
+        assertPageTitleEquals("Access Denied");
     }
 
     @Test
@@ -66,12 +74,12 @@ public class FirstRunITCase extends AbstractAuthenticatedWebTestCase {
 
         assertTextPresentInPage("Register a New Coding Sheet");
         setInput("codingSheet.title", TEST_TITLE);
-        setInput("codingSheet.dateCreated", "1934");
+        setInput("codingSheet.date", "1934");
         setInput("codingSheet.description", TEST_ABSTRACT);
         setInput("fileTextInput", codingSheetRules);
         setInput("projectId", Long.toString(ADMIN_PROJECT_ID));
         submitForm();
-        assertTextPresentInPage(TEST_TITLE);
+        assertPageTitleEquals(TEST_TITLE);
         assertTextPresentInPage(TEST_ABSTRACT);
         assertTextPresentInPage("another description");
         assertTextPresentInPage("test description");
@@ -79,8 +87,10 @@ public class FirstRunITCase extends AbstractAuthenticatedWebTestCase {
 
         clickLinkWithText("delete");
         submitForm("delete");
-        assertTrue(internalPage.getUrl().toString() + " ? /dashboard", internalPage.getUrl().toString().contains(URLConstants.DASHBOARD));
+        assertCurrentUrlEquals(getBaseUrl() + URLConstants.DASHBOARD);
+
         gotoPage(url.toString());
-        assertTrue(internalPage.getUrl().toString().equals(DEFAULT_BASE_URL + URLConstants.HOME));
+        assertPageTitleEquals("Access Denied");
     }
+
 }

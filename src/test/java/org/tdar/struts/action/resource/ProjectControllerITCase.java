@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -28,8 +29,9 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.search.query.SortOption;
+import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.utils.entity.ResourceCreatorProxy;
+import org.tdar.struts.data.ResourceCreatorProxy;
 
 public class ProjectControllerITCase extends AbstractResourceControllerITCase {
 
@@ -51,7 +53,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
-    public void testProjectResourceCreator() {
+    public void testProjectResourceCreator() throws Exception {
         Person test1 = new Person("test", "person", "");
         Person test5 = new Person("test", "person", null);
         Person test2 = new Person("test", "person", "test@test.com");
@@ -117,7 +119,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         testResource.setProject(project_);
         genericService.saveOrUpdate(testResource);
         assertEquals(getBasicUser(), testResource.getSubmitter());
-        assertTrue(entityService.canEditResource(getBasicUser(), testResource));
+        assertTrue(authenticationAndAuthorizationService.canEditResource(getBasicUser(), testResource));
 
         // create a new collection with an owner and three users that have each permission type (view, modify, admin)
         ResourceCollection testCollection = new ResourceCollection(CollectionType.SHARED);
@@ -141,12 +143,12 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
 
         logger.info("u:{}, r:{}", testModify.getId(), testResource.getId());
         logger.info("rc:{}", project_.getResourceCollections());
-        assertFalse(entityService.canEditResource(testOwner, testResource));
-        assertFalse(entityService.canEditResource(testView, testResource));
+        assertFalse(authenticationAndAuthorizationService.canEditResource(testOwner, testResource));
+        assertFalse(authenticationAndAuthorizationService.canEditResource(testView, testResource));
 
         // THESE NEXT TESTS SHOULD BE TRUE IF INHERITANCE IS TURNED BACK ON FROM PROJECT -> RESOURCE
-        assertFalse(entityService.canEditResource(testModify, testResource));
-        assertFalse(entityService.canEditResource(testAdmin, testResource));
+        assertFalse(authenticationAndAuthorizationService.canEditResource(testModify, testResource));
+        assertFalse(authenticationAndAuthorizationService.canEditResource(testAdmin, testResource));
     }
 
     @Test
@@ -194,7 +196,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
     @Test
     // create a new project and add it to a collection
     @Rollback
-    public void testAddingToExistingCollection() {
+    public void testAddingToExistingCollection() throws Exception {
         ProjectController controller = generateNewInitializedController(ProjectController.class);
         init(controller, getUser());
         controller.prepare();
@@ -240,11 +242,18 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
     @Test
     @Rollback
     // create a new project w/ ad hoc resourceCollecion
-    public void testAddProjectToAdHocCollection() {
+    public void testAddProjectToAdHocCollection() throws Exception {
         ProjectController controller = generateNewInitializedController(ProjectController.class);
         init(controller, getUser());
         controller.prepare();
-        controller.edit();
+        try {
+        	controller.edit();
+        	Assert.fail("Edit should be unsuccessful");
+        }
+        catch (TdarActionException exception) {
+        	// FIXME: ???
+        	assertTrue("Edit was unsuccessful", controller.getActionErrors().isEmpty());
+        }
         Project project = controller.getProject();
         project.setTitle("testing adhoc collection creation");
         project.setDescription("test");

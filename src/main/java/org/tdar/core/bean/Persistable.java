@@ -14,15 +14,18 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.lucene.analysis.KeywordAnalyzer;
+import org.hibernate.search.annotations.Analyzer;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Store;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.search.query.QueryFieldNames;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
@@ -72,15 +75,17 @@ public interface Persistable extends Serializable {
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id = -1L;
 
-        @XmlTransient
+        // @XmlTransient
+        @Field(store = Store.YES, analyzer = @Analyzer(impl = KeywordAnalyzer.class), name = QueryFieldNames.ID)
+        @XmlAttribute(name = "id")
         public Long getId() {
             return id;
         }
-        
-        @XmlID @XmlAttribute(name="id") @Transient
-        public String getXmlId() {
-            return getId().toString();
-        }
+
+        // @XmlID
+        // public String getXmlId() {
+        // return getId().toString();
+        // }
 
         public void setId(Long id) {
             this.id = id;
@@ -181,7 +186,11 @@ public interface Persistable extends Serializable {
         }
 
         public static boolean isTransient(Persistable persistable) {
-            return persistable.getId() == null || persistable.getId().longValue() == -1L;
+            return persistable.getId() == null || persistable.getId() == -1L;
+        }
+
+        public static boolean isNullOrTransient(Persistable persistable) {
+            return persistable == null || isTransient(persistable);
         }
 
         @Override
@@ -210,6 +219,9 @@ public interface Persistable extends Serializable {
 
         @XmlAttribute
         public Integer getSequenceNumber() {
+            if (sequenceNumber == null) {
+                setSequenceNumber(0);
+            }
             return sequenceNumber;
         }
 

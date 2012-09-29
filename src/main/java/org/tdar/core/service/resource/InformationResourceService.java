@@ -68,7 +68,7 @@ public class InformationResourceService extends AbstractInformationResourceServi
         try {
             T resource = resourceClass.newInstance();
             resource.setTitle(proxy.getTitle());
-            resource.setDateRegistered(proxy.getDateRegistered());
+            resource.setDateCreated(proxy.getDateCreated());
             resource.markUpdated(proxy.getSubmitter());
             resource.setStatus(proxy.getStatus());
             saveOrUpdate(resource);
@@ -106,11 +106,11 @@ public class InformationResourceService extends AbstractInformationResourceServi
                     resource.getResourceCollections().add(collection);
                 }
             }
-            resource.setLatitudeLongitudeBoxes(new HashSet<LatitudeLongitudeBox>(proxy.getLatitudeLongitudeBoxes()));
             resource.setMaterialKeywords(new HashSet<MaterialKeyword>(proxy.getMaterialKeywords()));
             resource.setTemporalKeywords(new HashSet<TemporalKeyword>(proxy.getTemporalKeywords()));
-            resource.setCoverageDates(proxy.getCoverageDates());
 
+            resource.setCoverageDates(cloneSet(resource, proxy.getCoverageDates()));
+            resource.setLatitudeLongitudeBoxes(cloneSet(resource, proxy.getLatitudeLongitudeBoxes()));
             resource.setResourceCreators(cloneSet(resource, proxy.getResourceCreators()));
             resource.setResourceAnnotations(cloneSet(resource, proxy.getResourceAnnotations()));
             resource.setResourceNotes(cloneSet(resource, proxy.getResourceNotes()));
@@ -119,10 +119,10 @@ public class InformationResourceService extends AbstractInformationResourceServi
 
             if (resource instanceof InformationResource) {
                 InformationResource ires = (InformationResource) resource;
-                ires.setDateCreated(proxy.getDateCreated());
+                ires.setDate(proxy.getDate());
                 ires.setProject(proxy.getProject());
-                ires.setDateMadePublic(proxy.getDateMadePublic());
                 ires.setResourceProviderInstitution(proxy.getResourceProviderInstitution());
+                ires.setDateMadePublic(proxy.getDateMadePublic());
                 ires.setResourceLanguage(proxy.getResourceLanguage());
                 ires.setMetadataLanguage(proxy.getMetadataLanguage());
                 ires.setAvailableToPublic(proxy.isAvailableToPublic());

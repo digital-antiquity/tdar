@@ -11,13 +11,16 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.request.ContributorRequest;
-import org.tdar.core.service.external.CrowdService.AuthenticationResult;
+import org.tdar.core.service.ObfuscationService;
+import org.tdar.core.service.external.auth.AuthenticationResult;
+import org.tdar.core.service.external.auth.InternalTdarRights;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -38,6 +41,9 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 @Result(name = "new", type = "redirect", location = "new")
 public class AccountController extends AuthenticationAware.Base implements Preparable {
+
+    // @Autowired
+    // RecaptchaService recaptchaService;
 
     public static final String COULD_NOT_AUTHENTICATE_AT_THIS_TIME = "Could not authenticate at this time";
     public static final String ERROR_PASSWORDS_DONT_MATCH = "Please make sure your passwords match.";
@@ -64,9 +70,14 @@ public class AccountController extends AuthenticationAware.Base implements Prepa
     private boolean requestingContributorAccess;
     private String institutionName;
     private String comment; // for simple spam protection
-
+    private String passwordResetURL;
+    private ContributorRequest contributorRequest;
     // private String recaptcha_challenge_field;
     // private String recaptcha_response_field;
+    // private String recaptcha_public_key;
+
+    @Autowired
+    ObfuscationService obfuscationService;
 
     @Action(value = "new", interceptorRefs = @InterceptorRef("basicStack"),
             results = {
@@ -82,14 +93,15 @@ public class AccountController extends AuthenticationAware.Base implements Prepa
         return SUCCESS;
     }
 
-    @Action(value = "recover", interceptorRefs = @InterceptorRef("basicStack"), results = { @Result(name = "success", type = "redirect",
-            location = "http://auth.tdar.org/crowd/console/forgottenlogindetails!default.action") })
+    @Action(value = "recover", interceptorRefs = @InterceptorRef("basicStack"), 
+            results = { @Result(name = SUCCESS, type = "redirect", location = "${passwordResetURL}") })
     @SkipValidation
     public String recover() {
+        setPasswordResetURL(getAuthenticationAndAuthorizationService().getAuthenticationProvider().getPasswordResetURL());
         return SUCCESS;
     }
 
-    @Action("edit")
+    @Action(value="edit", results={ @Result(name=SUCCESS, type="redirect", location="/entity/person/${person.id}/edit")})
     @SkipValidation
     public String edit() {
         if (isAuthenticated()) {
@@ -102,11 +114,10 @@ public class AccountController extends AuthenticationAware.Base implements Prepa
     @Action("view")
     @SkipValidation
     public String view() {
-        if (isAuthenticated()) {
-            return SUCCESS;
-        } else {
-            return "new";
-        }
+        if(!isAuthenticated()) return "new";
+        if(getAuthenticatedUser().equals(person)) return SUCCESS;
+        logger.warn("User {}(id:{}) attempted to access account view page for {}(id:{})", new Object[]{getAuthenticatedUser(), getAuthenticatedUser().getId(), person, personId});
+        return UNAUTHORIZED;
     }
 
     // FIXME: not implemented yet.
@@ -132,68 +143,78 @@ public class AccountController extends AuthenticationAware.Base implements Prepa
         if (person == null) {
             return INPUT;
         }
-        Person person_ = getEntityService().findByEmail(person.getEmail());
+        // recaptchaService.checkResponse(recaptcha_challenge_field, recaptcha_response_field);
+        try {
+            Person person_ = getEntityService().findByEmail(person.getEmail());
 
-        if (person_ != null) {
-            if (person_.isRegistered()) {
-                addActionError(ERROR_ALREADY_REGISTERED);
+            if (person_ != null) {
+                if (person_.isRegistered()) {
+                    addActionError(ERROR_ALREADY_REGISTERED);
+                    return ERROR;
+                }
+                person.setId(person_.getId());
+                person = getEntityService().merge(person);
+            }
+            person.setRegistered(true);
+            Institution institution = getEntityService().findInstitutionByName(institutionName);
+            if (institution == null && !StringUtils.isBlank(institutionName)) {
+                institution = new Institution();
+                institution.setName(institutionName);
+                getEntityService().save(institution);
+            }
+            person.setInstitution(institution);
+            // set password to hash of password + email
+            person.setPassword(DigestUtils.shaHex(password + person.getEmail()));
+
+            getEntityService().saveOrUpdate(person);
+            // after the person has been saved, create a contributor request for
+            // them as needed.
+            if (isRequestingContributorAccess()) {
+                // create an account request for the administrator..
+                setContributorRequest(new ContributorRequest());
+                getContributorRequest().setApplicant(person);
+                // FIXME: eventually, this should only happen after being approved (and giving us money)
+                person.setContributor(true);
+                getContributorRequest().setContributorReason(person.getContributorReason());
+                getContributorRequest().setTimestamp(new Date());
+                getEntityService().saveOrUpdate(getContributorRequest());
+            }
+            // add user to Crowd
+            getEntityService().saveOrUpdate(person);
+
+            getLogger().debug("Trying to add user to auth service...");
+
+            boolean success = getAuthenticationAndAuthorizationService().getAuthenticationProvider().addUser(person, password);
+            if (success) {
+                getLogger().debug("Added user to auth service successfully.");
+            } else {
+                getLogger().debug("user already existed in auth service.  moving on to authentication");
+            }
+            // log person in.
+            AuthenticationResult result = getAuthenticationAndAuthorizationService().getAuthenticationProvider().authenticate(getServletRequest(),
+                    getServletResponse(), person.getEmail(),
+                    password);
+
+            if (result.isValid()) {
+                getLogger().debug("Authenticated successfully with auth service.");
+                getEntityService().registerLogin(person);
+                createAuthenticationToken(person);
+                return SUCCESS;
+            }
+
+            // pushing error lower for unsuccessful add to CROWD, there could be
+            // mulitple reasons for this failure including the fact that the
+            // user is already in CROWD
+            if (!success) {
+                addActionError("a problem occured while trying to create a user");
                 return ERROR;
             }
-            person.setId(person_.getId());
-            person = getEntityService().merge(person);
+            getLogger().error("Unable to authenticate with the auth service.");
+            addActionError(result.toString());
+        } catch (Throwable t) {
+            logger.debug("authentication error", t);
+            addActionErrorWithException("Count not create account", t);
         }
-
-        person.setRegistered(true);
-        Institution institution = getEntityService().findInstitutionByName(institutionName);
-        if (institution == null && !StringUtils.isBlank(institutionName)) {
-            institution = new Institution();
-            institution.setName(institutionName);
-            getEntityService().save(institution);
-        }
-        person.setInstitution(institution);
-        // set password to hash of password + email
-        person.setPassword(DigestUtils.shaHex(password + person.getEmail()));
-
-        getEntityService().saveOrUpdate(person);
-        // after the person has been saved, create a contributor request for
-        // them as needed.
-        if (isRequestingContributorAccess()) {
-            // create an account request for the administrator..
-            ContributorRequest request = new ContributorRequest();
-            request.setApplicant(person);
-            // FIXME: eventually, this should only happen after being approved (and giving us money)
-            person.setContributor(true);
-            request.setContributorReason(person.getContributorReason());
-            request.setTimestamp(new Date());
-            getEntityService().saveOrUpdate(request);
-        }
-        // add user to Crowd
-        getEntityService().saveOrUpdate(person);
-
-        getLogger().debug("Trying to add user to crowd...");
-        boolean success = getCrowdService().addUser(person, password);
-        if (success) {
-            getLogger().debug("Added user to crowd successfully.");
-        } else {
-            getLogger().debug("user already existed in crowd.  moving on to authentication");
-        }
-        // log person in.
-        AuthenticationResult result = getCrowdService().authenticate(getServletRequest(), getServletResponse(), person.getEmail(), password);
-        if (result.isValid()) {
-            getLogger().debug("Authenticated successfully with crowd..");
-            createAuthenticationToken(person);
-            return SUCCESS;
-        }
-
-        // pushing error lower for unsuccessful add to CROWD, there could be
-        // mulitple reasons for this failure including the fact that the
-        // user is already in CROWD
-        if (!success) {
-            addActionError("a problem occured while trying to create a user");
-            return ERROR;
-        }
-        getLogger().error("Unable to authenticate with the crowd service.");
-        addActionError(result.toString());
         return ERROR;
     }
 
@@ -252,19 +273,6 @@ public class AccountController extends AuthenticationAware.Base implements Prepa
         // 1 - check for whether the "bogus" comment field has data
         // 2 - check whether someone is adding characters that should not be there
         // 3 - check for known spammer - fname == lname & phone = 123456
-        try {
-        Object[] obj = { getPerson().getFirstName(), 
-                getPerson().getLastName(), 
-                getPerson().getEmail(), 
-                getPerson().getPhone(), 
-                getInstitutionName(),
-                getComment(), 
-                getPerson().getContributorReason() };
-        logger.debug("user info: name: {} {} ({} -- {} | {}) ;  {} | {} ",obj);
-        } catch (Exception e) {
-            logger.debug("{}", e);
-        }
-        
         if (StringUtils.isNotBlank(getComment())) {
             logger.debug(String.format("we think this user was a spammer: %s  -- %s", getConfirmEmail(), getComment()));
             addActionError(COULD_NOT_AUTHENTICATE_AT_THIS_TIME);
@@ -305,6 +313,12 @@ public class AccountController extends AuthenticationAware.Base implements Prepa
     }
 
     public Person getPerson() {
+        // THIS DOES NOT WORK BECAUSE YOU'VE DETACHED THE PERSON FROM BOTH THE SPRING
+        // AND HIBERNATE SESSIONS...
+        // ALSO, THIS IS NOT A PLACE WHERE ANYONE BUT THE "user" WHO JUST REGISTERED
+        // WOULD SEE ANYTHING BUT THEIR OWN INFO... I WOULD ARGUE THIS IS A CARE WHERE
+        // WE WOULD SHOW EVERYTHING
+        // if(!isEditable()) {obfuscationService.obfuscate(person); }
         return person;
     }
 
@@ -400,34 +414,57 @@ public class AccountController extends AuthenticationAware.Base implements Prepa
         this.timeCheck = timeCheck;
     }
 
-    // /**
-    // * @return the recaptcha_response_field
-    // */
-    // public String getRecaptcha_response_field() {
-    // return recaptcha_response_field;
+    public String getPasswordResetURL()
+    {
+        return passwordResetURL;
+    }
+
+    public void setPasswordResetURL(String url)
+    {
+        this.passwordResetURL = url;
+    }
+
+    public ContributorRequest getContributorRequest() {
+        return contributorRequest;
+    }
+
+    public void setContributorRequest(ContributorRequest contributorRequest) {
+        this.contributorRequest = contributorRequest;
+    }
+
+    // public void setRecaptcha_challenge_field(String recaptcha_challenge_field) {
+    // this.recaptcha_challenge_field = recaptcha_challenge_field;
     // }
     //
-    // /**
-    // * @param recaptcha_response_field
-    // * the recaptcha_response_field to set
-    // */
-    // public void setRecaptcha_response_field(String recaptcha_response_field) {
-    // this.recaptcha_response_field = recaptcha_response_field;
-    // }
-    //
-    // /**
-    // * @return the recaptcha_challenge_field
-    // */
     // public String getRecaptcha_challenge_field() {
     // return recaptcha_challenge_field;
     // }
     //
-    // /**
-    // * @param recaptcha_challenge_field
-    // * the recaptcha_challenge_field to set
-    // */
-    // public void setRecaptcha_challenge_field(String recaptcha_challenge_field) {
-    // this.recaptcha_challenge_field = recaptcha_challenge_field;
+    // public void setRecaptcha_response_field(String recaptcha_response_field) {
+    // this.recaptcha_response_field = recaptcha_response_field;
     // }
+    //
+    // public String getRecaptcha_response_field() {
+    // return recaptcha_response_field;
+    // }
+    //
+    // public void setRecaptcha_public_key(String recaptcha_public_key) {
+    // this.recaptcha_public_key = recaptcha_public_key;
+    // }
+    //
+    // public String getRecaptcha_public_key() {
+    // return TdarConfiguration.getInstance().getRecaptchaPublicKey();
+    // }
+
+    public boolean isEditable() {
+        return getAuthenticatedUser().equals(person)
+                || getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_PERSONAL_ENTITES, getAuthenticatedUser());
+    }
+    
+    //if form submittal takes too long we assume spambot.   expose the timeout value to view layer so that we can make sure
+    //actual humans get a form that is never too old while still locking out spambots.
+    public long getRegistrationTimeout() {
+        return ONE_HOUR_IN_MS;
+    }
 
 }

@@ -2,17 +2,23 @@ package org.tdar.core.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.apache.poi.hssf.record.formula.functions.T;
 import org.hibernate.ScrollableResults;
+import org.hibernate.stat.Statistics;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.GenericDao.FindOptions;
@@ -20,12 +26,19 @@ import org.tdar.core.dao.GenericDao.FindOptions;
 /**
  * $Id$
  * 
+ * This service is intended to handle most of the general service functions and is the superclass of any of the entity specific
+ * serivces. Ideally, most calls would run through the generic service and Daos. Most of these classes take a persistent class
+ * which is what the service actually passess to the Dao to actually run the query. Eg, Resource.class... any persistable class
+ * should work here.
+ * 
  * @author Adam Brin
  * @version $Revision$
  */
 @Service
 public class GenericService {
 
+    @Autowired
+    @Qualifier("genericDao")
     private GenericDao genericDao;
 
     public static final int MINIMUM_VALID_ID = 0;
@@ -40,10 +53,26 @@ public class GenericService {
         return extractIds(findRandom(persistentClass, maxResults));
     }
 
+    public <T extends Persistable> List<T> findIdRange(Class<T> persistentClass, long firstId, long lastId, int maxResults) {
+        return genericDao.findIdRange(persistentClass, firstId, lastId, maxResults);
+    }
+
     public <T extends Persistable> List<Long> extractIds(Collection<T> persistables) {
         List<Long> ids = new ArrayList<Long>();
         for (T persistable : persistables) {
             ids.add(persistable.getId());
+        }
+        return ids;
+    }
+
+    public <T extends Persistable> List<Long> extractIds(Collection<T> persistables, int max) {
+        List<Long> ids = new ArrayList<Long>();
+        int count = 0;
+        for (T persistable : persistables) {
+            ids.add(persistable.getId());
+            count++;
+            if (count == max)
+                break;
         }
         return ids;
     }
@@ -78,7 +107,6 @@ public class GenericService {
         return toReturn;
     }
 
-    
     /*
      * Takes a list of persistable items in and tries to get them back by looking up the id
      */
@@ -121,6 +149,11 @@ public class GenericService {
     }
 
     @Transactional(readOnly = true)
+    public <T> List<T> findAllSorted(Class<T> persistentClass) {
+        return genericDao.findAllSorted(persistentClass);
+    }
+
+    @Transactional(readOnly = true)
     public <T> List<T> findAllSorted(Class<T> persistentClass, String orderBy) {
         return genericDao.findAllSorted(persistentClass, orderBy);
     }
@@ -131,22 +164,13 @@ public class GenericService {
     }
 
     @Transactional(readOnly = true)
-    public <T> T find(Class<T> persistentClass, Number id) {
+    public <T> T find(Class<T> persistentClass, Long id) {
         return (T) genericDao.find(persistentClass, id);
-    }
-    
-    @Transactional(readOnly = true)
-    public <T> List<T> find(Class<T> persistentClass, List<? extends Number> idlist) {
-        return genericDao.find(persistentClass, idlist);
     }
 
     @Transactional(readOnly = true)
-    public <T> List<T> findAll(Class<T> persistentClass, List<Number> ids) {
-        List<T> results = new ArrayList<T>();
-        for (Number id : ids) {
-            results.add(genericDao.find(persistentClass, id));
-        }
-        return results;
+    public <T> List<T> findAll(Class<T> persistentClass, List<Long> idlist) {
+        return genericDao.findAll(persistentClass, idlist);
     }
 
     @Transactional(readOnly = true)
@@ -157,6 +181,17 @@ public class GenericService {
     @Transactional
     public <T> T merge(T entity) {
         return (T) genericDao.merge(entity);
+    }
+
+    /**
+     * Returns a new collection containing the results of merge()-ing every entity in the entity collection passed into this method.
+     * 
+     * @param collection
+     * @return
+     */
+    @Transactional(readOnly = false)
+    public Collection<T> mergeAll(Collection<T> collection) {
+        return (Collection<T>)genericDao.mergeAll(collection);
     }
 
     // background on different transactional settings and the implications of
@@ -198,6 +233,13 @@ public class GenericService {
     }
 
     @Transactional
+    public void saveOrUpdate(Object... obj) {
+        for (Object _obj : obj) {
+            saveOrUpdate(_obj);
+        }
+    }
+
+    @Transactional
     public void delete(Object obj) {
         genericDao.delete(obj);
     }
@@ -205,12 +247,6 @@ public class GenericService {
     @Transactional
     public void delete(Collection<?> persistentEntities) {
         genericDao.delete(persistentEntities);
-    }
-
-    @Autowired
-    @Qualifier("genericDao")
-    public void setGenericDao(GenericDao genericDao) {
-        this.genericDao = genericDao;
     }
 
     protected GenericDao getGenericDao() {
@@ -221,4 +257,77 @@ public class GenericService {
         genericDao.refresh(object);
     }
 
+    public static String extractStringValue(Object val) {
+        if (val == null) {
+            return "";
+        } else if (val instanceof HasLabel) {
+            return ((HasLabel) val).getLabel();
+        } else if (val instanceof Collection<?>) {
+            Collection<?> values = (Collection<?>) val;
+            StringBuilder sb = new StringBuilder();
+            Iterator<?> iter = values.iterator();
+            while (iter.hasNext()) {
+                String val_ = extractStringValue(iter.next());
+                if (StringUtils.isNotBlank(val_)) {
+                    if (sb.length() > 0) {
+                        sb.append(", ");
+                    }
+                    sb.append(val_);
+                }
+            }
+            return sb.toString();
+        } else {
+            String string = val.toString();
+            if (StringUtils.isNotEmpty(string)) {
+                return string;
+            }
+        }
+        return "";
+    }
+
+    public void markReadOnly(Object obj) {
+        genericDao.markReadOnly(obj);
+    }
+
+    public <O> O markWritable(O obj) {
+        return genericDao.markWritable(obj);
+    }
+
+    public void clearCurrentSession() {
+        genericDao.clearCurrentSession();
+    }
+
+    public void markReadOnly() {
+        genericDao.markReadOnly();
+    }
+
+    public void markWritable() {
+        genericDao.markWritable();
+    }
+
+    @Transactional(readOnly = true)
+    public Statistics getSessionStatistics() {
+        return genericDao.getSessionStatistics();
+    }
+
+    @Transactional(readOnly = true)
+    public long getActiveSessionCount() {
+        Statistics stats = genericDao.getSessionStatistics();
+        return stats.getSessionOpenCount() - stats.getSessionCloseCount();
+    }
+
+    /**
+     * Deletes all entities from the given persistent class. Use with caution!
+     * 
+     * @param persistentClass
+     * @return the number of deleted entities
+     * @see org.tdar.core.dao.GenericDao#deleteAll(java.lang.Class)
+     */
+    public <E extends Persistable> int deleteAll(Class<E> persistentClass) {
+        return genericDao.deleteAll(persistentClass);
+    }
+
+    protected GenericDao getDao() {
+        return genericDao;
+    }
 }

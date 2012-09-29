@@ -43,15 +43,7 @@
  tabindex="${parameters.tabindex?html}"<#rt/>
 </#if>
 <#-- tDAR SPECIFIC PARAMETERS -->
-<#if parameters.watermark??>
- watermark="${parameters.watermark?html}"<#rt/>
-</#if>
-<#if parameters.tooltipcontent??>
- tooltipcontent="${parameters.tooltipcontent?html}"<#rt/>
-</#if>
-<#if parameters.tiplabel??>
- tiplabel="${parameters.tiplabel?html}"<#rt/>
-</#if>
+<#include "/${parameters.templateDir}/tdar/tdar-attributes.ftl" />
 <#-- -->
 <#if parameters.id??>
  id="${parameters.id?html}"<#rt/>

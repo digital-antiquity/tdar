@@ -1,8 +1,13 @@
 package org.tdar.core.bean.keyword;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.JoinTable;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAttribute;
 
@@ -19,11 +24,6 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
  * 
  * See http://www.getty.edu/research/conducting_research/vocabularies/ and
  * http://geonames.usgs.gov/pls/gnispublic/
- * 
- * One thing we could do is create a GettyService that queries getty for
- * vocabulary terms... or include their tables (fairly enormous) into our
- * database.
- * 
  * 
  * @author <a href='Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
@@ -65,6 +65,10 @@ public class GeographicKeyword extends UncontrolledKeyword.Base<GeographicKeywor
     @Enumerated(EnumType.STRING)
     private Level level;
 
+    @ElementCollection()
+    @JoinTable(name = "geographic_keyword_synonym")
+    private Set<String> synonyms;
+
     /**
      * @param level
      *            the level to set
@@ -87,4 +91,14 @@ public class GeographicKeyword extends UncontrolledKeyword.Base<GeographicKeywor
         return toReturn.toString();
     }
 
+    public Set<String> getSynonyms() {
+        if(synonyms == null) {
+            synonyms = new HashSet<String>();
+        }
+        return synonyms;
+    }
+
+    public void setSynonyms(Set<String> synonyms) {
+        this.synonyms = synonyms;
+    }
 }

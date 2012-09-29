@@ -3,6 +3,6 @@
 <meta name="lastModifiedDate" content="$Date$"/>
 </head>
 <body>
-<#include "/includes/ftl/terms.ftl">
-<#include "/includes/ftl/notice.ftl">
+<#include "/${themeDir}/terms.ftl">
+<#include "/${themeDir}/notice.ftl">
 </body>

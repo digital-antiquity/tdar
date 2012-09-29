@@ -6,24 +6,18 @@ import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,8 +33,8 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.resource.OntologyNodeService;
 import org.tdar.db.model.PostgresDatabase;
-import org.tdar.filestore.PersonalFileType;
-import org.tdar.filestore.PersonalFilestore;
+import org.tdar.filestore.personalFilestore.PersonalFileType;
+import org.tdar.filestore.personalFilestore.PersonalFilestore;
 import org.tdar.struts.data.IntegrationColumn;
 import org.tdar.struts.data.IntegrationContext;
 import org.tdar.struts.data.IntegrationDataResult;
@@ -67,13 +61,16 @@ public class DataIntegrationService {
     private GenericService genericService;
 
     @Autowired
-    private FilestoreService filestoreService;
+    private PersonalFilestoreService filestoreService;
 
     @Autowired
     private ExcelService excelService;
 
     @Autowired
     private OntologyNodeService ontologyNodeService;
+
+    @Autowired
+    private XmlService xmlService;
 
     public void setTdarDataImportDatabase(PostgresDatabase tdarDataImportDatabase) {
         this.tdarDataImportDatabase = tdarDataImportDatabase;
@@ -108,7 +105,7 @@ public class DataIntegrationService {
             IntegrationDataResult integrationDataResult = tdarDataImportDatabase.generateIntegrationResult(table, integrationColumns, pivot);
             results.add(integrationDataResult);
         }
-        //Collections.sort(pivot);
+        // Collections.sort(pivot);
         return new Pair<List<IntegrationDataResult>, Map<List<OntologyNode>, Map<DataTable, Integer>>>(results, pivot);
     }
 
@@ -123,80 +120,37 @@ public class DataIntegrationService {
         // get total number of display and integration columns
         // line them up integration, integration (filtered), display...
 
-        HSSFWorkbook workbook = new HSSFWorkbook();
+        HSSFSheet sheet = excelService.createWorkbook("Integration Results");
+        HSSFWorkbook workbook = sheet.getWorkbook();
+
         List<String> names = new ArrayList<String>();
         // setting up styles using references from:
         // http://poi.apache.org/spreadsheet/quick-guide.html#FillsAndFrills //NOTE: some values like colors and borders do not match current excel
 
-        HSSFFont font = workbook.createFont();
-        font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
-        HSSFCellStyle headerStyle = excelService.createHeaderStyle(workbook, font);
+        // HSSFCellStyle headerStyle = excelService.createHeaderStyle(workbook);
         HSSFCellStyle dataTableNameStyle = excelService.createTableNameStyle(workbook);
         HSSFCellStyle summaryStyle = excelService.createSummaryStyle(workbook);
-
-        HSSFSheet sheet = workbook.createSheet("Integration Results");
+        List<String> headerLabels = new ArrayList<String>();
         // freeze header row
-        sheet.createFreezePane(0, 1, 0, 1);
+        sheet.createFreezePane(ExcelService.FIRST_COLUMN, 1, 0, 1);
         // first column is the table where the
-        int rowIndex = 0;
-        int columnIndex = 0;
-        HSSFRow headerRow = sheet.createRow(rowIndex++);
-        excelService.createCell(headerRow, columnIndex++, "Dataset/Table Name", headerStyle);
+        int rowIndex = 1;
+        // int columnIndex = 0;
+        headerLabels.add("Dataset/Table Name");
 
         StringBuilder description = new StringBuilder("Data integration between dataset ");
 
         List<DataTable> tableList = new ArrayList<DataTable>();
         List<String> columnNames = new ArrayList<String>();
         List<String> datasetNames = new ArrayList<String>();
-        // create header
-        int numDataSheets = 1;
-        for (IntegrationColumn integrationColumn : integrationColumns) {
-            columnNames.add(integrationColumn.getName());
-            excelService.createCell(headerRow, columnIndex++, integrationColumn.getName(), headerStyle);
-
-            if (integrationColumn.isIntegrationColumn()) {
-                excelService.createCell(headerRow, columnIndex++, "Mapped ontology value for " + integrationColumn.getName(), headerStyle);
-            }
-        }
-
-        for (IntegrationDataResult integrationDataResult : integrationDataResults) {
-            DataTable table = integrationDataResult.getDataTable();
-            datasetNames.add(table.getDataset().getTitle());
-            names.add(table.getName());
-
-            tableList.add(table);
-
-            // iterate through the actual data values, row by row
-            for (List<String> rowData : integrationDataResult.getRowData()) {
-                int rowDataColumnIndex = 0;
-                HSSFRow row = sheet.createRow(rowIndex++);
-                excelService.createCell(row, rowDataColumnIndex++, table.getDataset().getTitle(), dataTableNameStyle);
-                for (String value : rowData) {
-                    excelService.createCell(row, rowDataColumnIndex++, value);
-                }
-            }
-
-            // if we are more than excel can handle, clone the header column and start in a new workboook
-            if (rowIndex >= ExcelService.MAX_ROWS_PER_SHEET - 1) {
-                numDataSheets++;
-                sheet = workbook.createSheet("results continued " + numDataSheets);
-                // freeze header row
-                sheet.createFreezePane(0, 1, 0, 1);
-                HSSFRow newHeaderRow = sheet.createRow(0);
-                Iterator<Cell> cellIterator = headerRow.cellIterator();
-                while (cellIterator.hasNext()) {
-                    Cell nextCell = cellIterator.next();
-                    excelService.createCell(newHeaderRow, nextCell.getColumnIndex(), nextCell.getStringCellValue(), headerStyle);
-                }
-                rowIndex = 1;
-            }
-        }
+        sheet = createDataSheet(integrationColumns, integrationDataResults, sheet, workbook, names, dataTableNameStyle, headerLabels, rowIndex, tableList,
+                columnNames, datasetNames);
 
         description.append(" with datasets: ").append(StringUtils.join(datasetNames, ", "));
         description.append("\n\t using tables: ").append(StringUtils.join(names, ", "));
         description.append("\n\t using columns:").append(StringUtils.join(columnNames, ", "));
 
-        headerRow.setRowStyle(headerStyle);
+        // headerRow.setRowStyle(headerStyle);
 
         // check that this works in excel on windows:
         // https://issues.apache.org/bugzilla/show_bug.cgi?id=50315
@@ -204,104 +158,8 @@ public class DataIntegrationService {
         // sheet.setAutoFilter(new CellRangeAddress(0, 0, 0, columnIndex - 1));
 
         Map<List<OntologyNode>, Map<DataTable, Integer>> pivot = generatedIntegrationData.getSecond();
-        HSSFSheet pivotSheet = workbook.createSheet("Summary");
-        int colNum = 0;
-        rowIndex = 0;
-        HSSFRow row = pivotSheet.createRow(rowIndex++);
-
-        for (String name : columnNames) {
-            excelService.createHeaderCell(summaryStyle, row, colNum, name);
-            colNum++;
-        }
-        for (DataTable table : tableList) {
-            excelService.createHeaderCell(summaryStyle, row, colNum, table.getDisplayName());
-            colNum++;
-        }
-
-        for (List<OntologyNode> key : pivot.keySet()) {
-            colNum = 0;
-            row = pivotSheet.createRow(rowIndex++);
-            for (OntologyNode col : key) {
-                if (col != null) {
-                    excelService.createCell(row, colNum, col.getDisplayName());
-                }
-                colNum++;
-            }
-            Map<DataTable, Integer> vals = pivot.get(key);
-            for (DataTable table : tableList) {
-                Integer integer = vals.get(table);
-                if (integer == null) {
-                    excelService.createCell(row, colNum, "0");
-                } else {
-                    excelService.createCell(row, colNum, integer.toString());
-                }
-                colNum++;
-            }
-        }
-
-        HSSFSheet summarySheet = workbook.createSheet("Description");
-
-        HSSFRow summaryRow = summarySheet.createRow(0);
-
-        excelService.createHeaderCell(summaryStyle, summaryRow, 0,
-                "Summary of Integration Results by:" + person.getProperName() + " on " + new SimpleDateFormat().format(new Date()));
-        summarySheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 5));
-
-        int currentRow = 1;
-        currentRow += 2;
-        summaryRow = summarySheet.createRow(currentRow);
-
-        excelService.createHeaderCell(summaryStyle, summaryRow, 0, "Table:");
-        for (int i = 0; i < tableList.size(); i++) {
-            DataTable table = tableList.get(i);
-            StringBuilder builder = new StringBuilder(table.getDisplayName());
-            builder.append(table.getDataset().getTitle());
-            builder.append(" (").append(table.getDataset().getId()).append(")");
-            HSSFCell cell = summaryRow.createCell(i + 1);
-            cell.setCellValue(builder.toString());
-            cell.setCellStyle(summaryStyle);
-        }
-        currentRow++;
-
-        for (IntegrationColumn integrationColumn : integrationColumns) {
-            summaryRow = summarySheet.createRow(currentRow);
-            int repeatNum = 2;
-            HSSFRow descriptionRow = summarySheet.createRow(currentRow + 1);
-            HSSFRow mappingRow = summarySheet.createRow(currentRow + 2);
-            if (integrationColumn.isIntegrationColumn()) {
-                excelService.createHeaderCell(summaryStyle, summaryRow, 0, " Integration Column:");
-                excelService.createCell(descriptionRow, 0, "    Description:");
-                excelService.createCell(mappingRow, 0, "    Mapped Ontology:");
-                repeatNum++;
-            } else {
-                excelService.createHeaderCell(summaryStyle, summaryRow, 0, " Display Column:");
-                excelService.createCell(descriptionRow, 0, "    Description:");
-            }
-            int colIndex = 0;
-            for (int i = 0; i < tableList.size(); i++) {
-                DataTable table = tableList.get(i);
-                DataTableColumn column = integrationColumn.getColumnForTable(table);
-                if (column == null) {
-                    continue;
-                }
-                excelService.createCell(summaryRow, colIndex + 1, column.getDisplayName(), summaryStyle);
-                excelService.createCell(descriptionRow, colIndex + 1, column.getDescription());
-                if (integrationColumn.isIntegrationColumn()) {
-                    Ontology ontology = column.getDefaultOntology();
-                    StringBuilder builder = new StringBuilder(ontology.getTitle());
-                    builder.append(" (").append(ontology.getId()).append(")");
-                    excelService.createCell(mappingRow, colIndex + 1, builder.toString());
-                }
-                colIndex++;
-            }
-            currentRow += repeatNum;
-        }
-
-        // auto-sizing columns
-        for (int i = 0; i < columnIndex; i++) {
-            sheet.autoSizeColumn(i);
-            summarySheet.autoSizeColumn(i);
-        }
+        createSummarySheet(workbook, tableList, columnNames, pivot);
+        createDescriptionSheet(integrationColumns, person, sheet, workbook, summaryStyle, tableList);
 
         String fileName = "tdar-integration-" + StringUtils.join(names, "_");
         PersonalFilestoreTicket ticket = new PersonalFilestoreTicket();
@@ -325,17 +183,152 @@ public class DataIntegrationService {
         return ticket;
     }
 
-    public String serializeIntegrationContext(List<IntegrationColumn> integrationColumns, Person creator) {
-        StringWriter writer = new StringWriter();
-        try {
-            JAXBContext jc = JAXBContext.newInstance(IntegrationContext.class);
-            Marshaller marshaller = jc.createMarshaller();
-            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            marshaller.marshal(new IntegrationContext(creator, integrationColumns), writer);
-        } catch (JAXBException exception) {
-            exception.printStackTrace();
+    private void createDescriptionSheet(List<IntegrationColumn> integrationColumns, Person person, HSSFSheet sheet, HSSFWorkbook workbook,
+            HSSFCellStyle summaryStyle,
+            List<DataTable> tableList) {
+        HSSFSheet summarySheet = workbook.createSheet("Description");
+        HSSFRow summaryRow = summarySheet.createRow(0);
+
+        excelService.createHeaderCell(summaryStyle, summaryRow, 0,
+                "Summary of Integration Results by:" + person.getProperName() + " on " + new SimpleDateFormat().format(new Date()));
+        summarySheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 5));
+
+        int currentRow = 3;
+
+        List<String> summaryLabels = new ArrayList<String>();
+        summaryLabels.add("Table:");
+        for (int i = 0; i < tableList.size(); i++) {
+            DataTable table = tableList.get(i);
+            StringBuilder builder = new StringBuilder(table.getDisplayName());
+            builder.append(table.getDataset().getTitle());
+            builder.append(" (").append(table.getDataset().getId()).append(")");
+            summaryLabels.add(builder.toString());
         }
-        return writer.toString();
+        excelService.addHeaderRow(summarySheet, 1, 0, summaryLabels);
+
+        for (IntegrationColumn integrationColumn : integrationColumns) {
+            List<String> labels = new ArrayList<String>();
+            List<String> descriptions = new ArrayList<String>();
+            List<String> mappings = new ArrayList<String>();
+
+            descriptions.add("    Description:");
+            if (integrationColumn.isIntegrationColumn()) {
+                labels.add(" Integration Column:");
+                mappings.add("    Mapped Ontology:");
+            } else {
+                labels.add(" Display Column:");
+            }
+
+            for (int i = 0; i < tableList.size(); i++) {
+                DataTable table = tableList.get(i);
+                DataTableColumn column = integrationColumn.getColumnForTable(table);
+                if (column == null) {
+                    continue;
+                }
+                labels.add(column.getDisplayName());
+                descriptions.add(column.getDescription());
+                if (integrationColumn.isIntegrationColumn()) {
+                    Ontology ontology = column.getDefaultOntology();
+                    StringBuilder builder = new StringBuilder(ontology.getTitle()).append(" (").append(ontology.getId()).append(")");
+                    mappings.add(builder.toString());
+                }
+            }
+            excelService.addDataRow(summarySheet, currentRow++, 0, labels);
+            excelService.addDataRow(summarySheet, currentRow++, 0, descriptions);
+            if (!mappings.isEmpty()) {
+                excelService.addDataRow(summarySheet, currentRow++, 0, mappings);
+            }
+        }
+
+        // auto-sizing columns
+        for (int i = 0; i < summaryLabels.size(); i++) {
+            sheet.autoSizeColumn(i);
+            summarySheet.autoSizeColumn(i);
+        }
+    }
+
+    private void createSummarySheet(HSSFWorkbook workbook, List<DataTable> tableList, List<String> columnNames,
+            Map<List<OntologyNode>, Map<DataTable, Integer>> pivot) {
+        int rowIndex;
+        HSSFSheet pivotSheet = workbook.createSheet("Summary");
+
+        rowIndex = 2;
+        List<String> rowHeaders = new ArrayList<String>(columnNames);
+        for (DataTable table : tableList) {
+            rowHeaders.add(table.getDisplayName());
+        }
+
+        excelService.addHeaderRow(pivotSheet, ExcelService.FIRST_ROW, ExcelService.FIRST_COLUMN, rowHeaders);
+
+        for (List<OntologyNode> key : pivot.keySet()) {
+            List<String> rowData = new ArrayList<String>();
+            for (OntologyNode col : key) {
+                if (col != null) {
+                    rowData.add(col.getDisplayName());
+                }
+            }
+            Map<DataTable, Integer> vals = pivot.get(key);
+            for (DataTable table : tableList) {
+                Integer integer = vals.get(table);
+                if (integer == null) {
+                    rowData.add("0");
+                } else {
+                    rowData.add(integer.toString());
+                }
+            }
+            excelService.addDataRow(pivotSheet, rowIndex++, 0, rowData);
+        }
+    }
+
+    private HSSFSheet createDataSheet(List<IntegrationColumn> integrationColumns, List<IntegrationDataResult> integrationDataResults, HSSFSheet sheet,
+            HSSFWorkbook workbook, List<String> names, HSSFCellStyle dataTableNameStyle, List<String> headerLabels, int rowIndex, List<DataTable> tableList,
+            List<String> columnNames, List<String> datasetNames) {
+        // create header
+        int numDataSheets = 1;
+        for (IntegrationColumn integrationColumn : integrationColumns) {
+            columnNames.add(integrationColumn.getName());
+            headerLabels.add(integrationColumn.getName());
+
+            if (integrationColumn.isIntegrationColumn()) {
+                headerLabels.add("Mapped ontology value for " + integrationColumn.getName());
+            }
+        }
+        excelService.addHeaderRow(sheet, ExcelService.FIRST_ROW, ExcelService.FIRST_COLUMN, headerLabels);
+
+        for (IntegrationDataResult integrationDataResult : integrationDataResults) {
+            DataTable table = integrationDataResult.getDataTable();
+            datasetNames.add(table.getDataset().getTitle());
+            names.add(table.getName());
+
+            tableList.add(table);
+
+            // iterate through the actual data values, row by row
+            for (List<String> rowData_ : integrationDataResult.getRowData()) {
+                List<String> rowData = new ArrayList<String>(rowData_);
+                rowData.add(ExcelService.FIRST_COLUMN, table.getDataset().getTitle());
+                rowIndex++;
+                excelService.addDataRow(sheet, rowIndex, ExcelService.FIRST_COLUMN, rowData);
+                excelService.setCellStyle(sheet, rowIndex, ExcelService.FIRST_COLUMN, dataTableNameStyle);
+            }
+
+            // if we are more than excel can handle, clone the header column and start in a new workboook
+            if (rowIndex >= ExcelService.MAX_ROWS_PER_SHEET - 1) {
+                numDataSheets++;
+                sheet = workbook.createSheet("results continued " + numDataSheets);
+                // freeze header row
+                sheet.createFreezePane(0, 1, 0, 1);
+                // check if adding a new style causes an issue here
+                excelService.addHeaderRow(sheet, ExcelService.FIRST_ROW, ExcelService.FIRST_COLUMN, headerLabels);
+                rowIndex = 1;
+            }
+        }
+        return sheet;
+    }
+
+    public String serializeIntegrationContext(List<IntegrationColumn> integrationColumns, Person creator) throws Exception {
+        StringWriter sw = new StringWriter();
+        xmlService.convertToXML(new IntegrationContext(creator, integrationColumns), sw);
+        return sw.toString();
     }
 
 }

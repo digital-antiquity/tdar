@@ -17,19 +17,17 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.AsyncUpdateReceiver;
 import org.tdar.core.service.BulkUploadService;
 import org.tdar.filestore.FileAnalyzer;
-import org.tdar.filestore.PersonalFilestore;
+import org.tdar.filestore.personalFilestore.PersonalFilestore;
 import org.tdar.struts.data.FileProxy;
-import org.tdar.transform.DcTransformer;
-import org.tdar.transform.ModsTransformer;
 import org.tdar.utils.Pair;
 
 /**
@@ -48,7 +46,7 @@ import org.tdar.utils.Pair;
 @Scope("prototype")
 @Namespace("/batch")
 public class BulkUploadController extends AbstractInformationResourceController<Image> {
-    
+
     private static final long serialVersionUID = -6419692259588266839L;
 
     @Autowired
@@ -170,11 +168,6 @@ public class BulkUploadController extends AbstractInformationResourceController<
         return SUCCESS;
     }
 
-    // @Override
-    // protected Image loadResourceFromId(Long resourceId) {
-    // return null;
-    // }
-
     @Override
     protected void processUploadedFiles(List<InformationResourceFile> uploadedFiles) throws IOException {
         return;
@@ -196,16 +189,6 @@ public class BulkUploadController extends AbstractInformationResourceController<
     @Override
     public Collection<String> getValidFileExtensions() {
         return analyzer.getExtensionsForTypes(ResourceType.IMAGE, ResourceType.DOCUMENT);
-    }
-
-    @Override
-    public ModsTransformer<Image> getModsTransformer() {
-        return null;
-    }
-
-    @Override
-    public DcTransformer<Image> getDcTransformer() {
-        return null;
     }
 
     @Override

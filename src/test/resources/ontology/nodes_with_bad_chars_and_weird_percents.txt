@@ -1,5 +1,6 @@
 Appendicular
-	Clavicle
+    Clavicle % Clavicle.clavicle
+    Tilde~cular (avuncular)
 	Femur
 	Fibula or Tibia
 		Fibula

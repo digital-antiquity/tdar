@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.springframework.stereotype.Component;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator.CreatorType;
@@ -31,7 +30,9 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.SensoryData;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
 import edu.asu.lib.mods.ModsDocument;
 import edu.asu.lib.mods.ModsElementContainer;
@@ -83,41 +84,41 @@ public abstract class ModsTransformer<R extends Resource> implements
         }
 
         // add geographic subjects
-        Set<GeographicKeyword> geoTerms = source.getGeographicKeywords();
+        Set<GeographicKeyword> geoTerms = source.getActiveGeographicKeywords();
         for (GeographicKeyword geoTerm : geoTerms) {
             Subject sub = mods.createSubject();
             sub.addGeographic(geoTerm.getLabel());
         }
 
         // add temporal subjects
-        Set<TemporalKeyword> locTemporalTerms = source.getTemporalKeywords();
+        Set<TemporalKeyword> locTemporalTerms = source.getActiveTemporalKeywords();
         for (TemporalKeyword temporalTerm : locTemporalTerms) {
             Subject sub = mods.createSubject();
             sub.addTemporal(temporalTerm.getLabel());
         }
 
         // add culture subjects
-        Set<CultureKeyword> cultureTerms = source.getCultureKeywords();
+        Set<CultureKeyword> cultureTerms = source.getActiveCultureKeywords();
         for (CultureKeyword cultureTerm : cultureTerms) {
             Subject sub = mods.createSubject();
             sub.addTopic(cultureTerm.getLabel());
         }
 
         // add site name subjects
-        Set<SiteNameKeyword> siteNameTerms = source.getSiteNameKeywords();
+        Set<SiteNameKeyword> siteNameTerms = source.getActiveSiteNameKeywords();
         for (SiteNameKeyword siteNameTerm : siteNameTerms) {
             Subject sub = mods.createSubject();
             sub.addTopic(siteNameTerm.getLabel());
         }
 
         // add other subjects
-        Set<OtherKeyword> otherTerms = source.getOtherKeywords();
+        Set<OtherKeyword> otherTerms = source.getActiveOtherKeywords();
         for (OtherKeyword otherTerm : otherTerms) {
             Subject sub = mods.createSubject();
             sub.addTopic(otherTerm.getLabel());
         }
 
-        for (LatitudeLongitudeBox longLat : source.getLatitudeLongitudeBoxes()) {
+        for (LatitudeLongitudeBox longLat : source.getActiveLatitudeLongitudeBoxes()) {
             Subject sub = mods.createSubject();
             List<String> coords = new ArrayList<String>();
             coords.add("MaxY: ".concat(longLat.getMaxObfuscatedLatitude().toString()));
@@ -152,9 +153,9 @@ public abstract class ModsTransformer<R extends Resource> implements
                 }
             }
 
-            if (source.getDateCreated() != null && source.getDateCreated() != -1) {
+            if (source.getDate() != null && source.getDate() != -1) {
                 DateElement createDate = mods.getOriginInfo().createDate(OriginDateType.CREATED);
-                createDate.setValue(source.getDateCreated().toString());
+                createDate.setValue(source.getDate().toString());
             }
 
             if (source.getResourceLanguage() != null)
@@ -182,7 +183,6 @@ public abstract class ModsTransformer<R extends Resource> implements
 
     }
 
-    @Component("documentModsTransformer")
     public static class DocumentTransformer
             extends InformationResourceTransformer<Document> {
 
@@ -374,27 +374,21 @@ public abstract class ModsTransformer<R extends Resource> implements
 
     }
 
-    @Component("datasetModsTransformer")
     public static class DatasetTransformer extends ModsTransformer<Dataset> {
     }
 
-    @Component("codingSheetModsTransformer")
     public static class CodingSheetTransformer extends ModsTransformer<CodingSheet> {
     }
 
-    @Component("imageModsTransformer")
     public static class ImageTransformer extends ModsTransformer<Image> {
     }
 
-    @Component("sensoryModsTransformer")
     public static class SensoryDataTransformer extends ModsTransformer<SensoryData> {
     }
 
-    @Component("ontologyModsTransformer")
     public static class OntologyTransformer extends ModsTransformer<Ontology> {
     }
 
-    @Component("projectModsTransformer")
     public static class ProjectTransformer extends ModsTransformer<Project> {
     }
 
@@ -418,6 +412,33 @@ public abstract class ModsTransformer<R extends Resource> implements
             return typeMap.get(key);
         }
 
+    }
+
+    public static ModsDocument transformAny(Resource resource) {
+        ResourceType resourceType = ResourceType.fromClass(resource.getClass());
+        if (resourceType == null) {
+            throw new TdarRecoverableRuntimeException("Unsupported / Unknown Resource Type");
+        }
+        switch (resourceType) {
+            case CODING_SHEET:
+                return new CodingSheetTransformer().transform((CodingSheet) resource);
+            case DATASET:
+                return new DatasetTransformer().transform((Dataset) resource);
+            case DOCUMENT:
+                return new DocumentTransformer().transform((Document) resource);
+            case IMAGE:
+                return new ImageTransformer().transform((Image) resource);
+            case ONTOLOGY:
+                return new OntologyTransformer().transform((Ontology) resource);
+            case PROJECT:
+                return new ProjectTransformer().transform((Project) resource);
+            case SENSORY_DATA:
+                return new SensoryDataTransformer().transform((SensoryData) resource);
+            default:
+                break;
+        }
+
+        throw new TdarRecoverableRuntimeException("could not provide MODS tranformer for class:" + resource.getClass());
     }
 
 }

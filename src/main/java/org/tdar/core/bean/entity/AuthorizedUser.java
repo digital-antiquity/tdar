@@ -16,15 +16,20 @@ import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
  * @author Adam Brin
- * 
+ *         This is the representation of a user and a permission combined and an association with a resource collection.
  */
 @Table(name = "authorized_user")
 @Entity
@@ -32,6 +37,7 @@ public class AuthorizedUser extends Base implements Persistable {
 
     private static final long serialVersionUID = -6747818149357146542L;
 
+    /* Right now not used */
     enum AdminPermissions {
         NONE,
         PUBLISH,
@@ -77,6 +83,8 @@ public class AuthorizedUser extends Base implements Persistable {
         this.adminPermission = adminPermission;
     }
 
+    @XmlElement(name = "personRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public Person getUser() {
         return user;
     }
@@ -85,6 +93,7 @@ public class AuthorizedUser extends Base implements Persistable {
         this.user = user;
     }
 
+    @XmlTransient
     public ResourceCollection getResourceCollection() {
         return resourceCollection;
     }
@@ -120,14 +129,17 @@ public class AuthorizedUser extends Base implements Persistable {
         return false;
     }
 
+    @Transient
+    // is the authorizedUser valid not taking into account whether a collection is present
     public boolean isValidWithoutCollection() {
-        // TODO Auto-generated method stub
-        if (user == null || generalPermission == null) {
-        return false;
-        } return true;
+        logger.info("calling validate collection for user/permission/registered: [{} / {} / {}]",
+                new Object[] { user != null, generalPermission != null, user.isRegistered() });
+        return user != null && generalPermission != null && user.isRegistered();
     }
 
+    @Transient
     public boolean isValid() {
+        logger.info("calling is valid collection");
         if (resourceCollection == null || !isValidWithoutCollection()) {
             return false;
         }

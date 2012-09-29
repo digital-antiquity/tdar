@@ -12,15 +12,18 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.service.AsyncUpdateReceiver;
+import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.service.SearchIndexService;
+import org.tdar.core.service.external.auth.TdarGroup;
+import org.tdar.struts.RequiresTdarUserGroup;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.utils.Pair;
 
 @Component
 @Scope("prototype")
-@ParentPackage("secured-admin")
+@ParentPackage("secured")
 @Namespace("/admin/searchindex")
+@RequiresTdarUserGroup(TdarGroup.TDAR_ADMIN)
 public class BuildSearchIndexAction extends AuthenticationAware.Base implements AsyncUpdateReceiver {
 
     private static final long serialVersionUID = -8927970945627420725L;

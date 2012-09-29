@@ -5,7 +5,10 @@ import org.tdar.core.bean.resource.Status;
 /*
  * This interface is designed to ensure that fields are available for basic searhing
  * NOTE: HibernateSearch does not have the ability to inherit the @Field annotations
+ * 
+ * NOTE: THIS IS NOT USED
  */
+@Deprecated
 public interface SimpleSearch {
 
     enum SimpleSearchType {

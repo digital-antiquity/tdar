@@ -1,10 +1,6 @@
 /**
  * FIXME:  this jQuery plugin has been modified to support the indexed field naming we use in tDAR (see changelog). Don't upgrade unless these modifications
  * are duplicated or, preferebly, workarounds are made to make these modifications unnecessary.
- */
-/**
- * FIXME:  this jQuery plugin has been modified to support the indexed field naming we use in tDAR (see changelog). Don't upgrade unless these modifications
- * are duplicated or, preferebly, workarounds are made to make these modifications unnecessary.
  * 
  * Original location: http://www.keyframesandcode.com/resources/javascript/jQuery/demos/populate-demo.html
  */

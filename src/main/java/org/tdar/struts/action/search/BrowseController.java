@@ -1,9 +1,7 @@
 package org.tdar.struts.action.search;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -11,14 +9,17 @@ import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Creator;
+import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.search.query.FieldQueryPart;
-import org.tdar.search.query.QueryBuilder;
 import org.tdar.search.query.QueryFieldNames;
-import org.tdar.search.query.ResourceQueryBuilder;
+import org.tdar.search.query.QueryPartGroup;
 import org.tdar.search.query.SortOption;
+import org.tdar.search.query.queryBuilder.QueryBuilder;
+import org.tdar.search.query.queryBuilder.ResourceCollectionQueryBuilder;
+import org.tdar.search.query.queryBuilder.ResourceQueryBuilder;
 
 /**
  * $Id$
@@ -39,7 +40,6 @@ public class BrowseController extends AbstractLookupController {
 
     private static final long serialVersionUID = -128651515783098910L;
     private Creator creator;
-    private List<ResourceCollection> collections = new ArrayList<ResourceCollection>();
 
     // private Keyword keyword;
 
@@ -64,10 +64,15 @@ public class BrowseController extends AbstractLookupController {
     // return SUCCESS;
     // }
 
-    
     @Action("collections")
     public String browseCollections() throws ParseException {
-            setCollections(getResourceCollectionService().findAllTopLevelCollections());
+        QueryBuilder qb = new ResourceCollectionQueryBuilder();
+        qb.append(new FieldQueryPart(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED));
+        qb.append(new FieldQueryPart(QueryFieldNames.COLLECTION_VISIBLE, "true"));
+        qb.append(new FieldQueryPart(QueryFieldNames.TOP_LEVEL, "true"));
+        setMode("browseCollections");
+        handleSearch(qb);
+
         return SUCCESS;
     }
 
@@ -77,12 +82,28 @@ public class BrowseController extends AbstractLookupController {
             // setResults(getResourceService().findResourceLinkedValues(Creator.class));
         } else {
             creator = getGenericService().find(Creator.class, getId());
-            QueryBuilder qb = new ResourceQueryBuilder();
-            qb.append(new FieldQueryPart(QueryFieldNames.RESOURCE_CREATORS_CREATOR_ID, getId().toString()));
-            qb.append(new FieldQueryPart(QueryFieldNames.STATUS, Status.ACTIVE.toString()));
+            QueryBuilder queryBuilder = new ResourceQueryBuilder();
+            queryBuilder.setOperator(Operator.AND);
+
+            QueryPartGroup queryPartGroup = new QueryPartGroup();
+            queryPartGroup.setOperator(Operator.OR);
+            if (creator instanceof Institution) {
+                // institution: return all active resources that list this institution as a creator or resource provider
+                queryPartGroup.append(new FieldQueryPart(QueryFieldNames.RESOURCE_PROVIDER_ID, getId().toString()));
+                queryPartGroup.append(new FieldQueryPart(QueryFieldNames.RESOURCE_CREATORS_CREATOR_ID, getId().toString()));
+            } else {
+                // person: return all resources that list this person as a creator
+                queryPartGroup.append(new FieldQueryPart(QueryFieldNames.RESOURCE_CREATORS_CREATOR_ID, getId().toString()));
+                queryPartGroup.append(new FieldQueryPart(QueryFieldNames.RESOURCE_OWNER, getId().toString()));
+            }
+            queryBuilder.append(queryPartGroup);
+            queryBuilder.append(new FieldQueryPart(QueryFieldNames.STATUS, Status.ACTIVE.toString()));
+
             setMode("browseCreators");
             setSortField(SortOption.RESOURCE_TYPE);
-            handleSearch(qb);
+            String descr = String.format("All Resources from %s", creator.getProperName());
+            setRecordsPerPage(100);
+            handleSearch(queryBuilder);
         }
         // setResults(getResourceService().findResourceLinkedValues(Creator.class));
         return SUCCESS;
@@ -100,7 +121,6 @@ public class BrowseController extends AbstractLookupController {
     // return SUCCESS;
     // }
 
-
     public Creator getCreator() {
         return creator;
     }
@@ -108,6 +128,7 @@ public class BrowseController extends AbstractLookupController {
     public void setCreator(Creator creator) {
         this.creator = creator;
     }
+
     //
     // public Keyword getKeyword() {
     // return keyword;
@@ -116,19 +137,5 @@ public class BrowseController extends AbstractLookupController {
     // public void setKeyword(Keyword keyword) {
     // this.keyword = keyword;
     // }
-
-    /**
-     * @return the collections
-     */
-    public List<ResourceCollection> getCollections() {
-        return collections;
-    }
-
-    /**
-     * @param collections the collections to set
-     */
-    public void setCollections(List<ResourceCollection> collections) {
-        this.collections = collections;
-    }
 
 }

@@ -14,4 +14,7 @@ vim:sts=2:sw=2:
 
   <!--  <import resource="pooling/dbcp.xml" />  -->
 
+	<!-- crowd beans -->
+	<import resource='spring-crowd.xml' />
+
 </beans>

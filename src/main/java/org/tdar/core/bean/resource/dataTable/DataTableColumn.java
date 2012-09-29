@@ -17,16 +17,30 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Type;
+import org.hibernate.search.annotations.Analyzer;
+import org.hibernate.search.annotations.Field;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.DataValueOntologyNodeMapping;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
+import org.tdar.core.configuration.JSONTransient;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
+import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
  * $Id$
@@ -39,11 +53,39 @@ import org.tdar.core.bean.resource.OntologyNode;
  */
 @Entity
 @Table(name = "data_table_column")
-public class DataTableColumn extends Persistable.Sequence<DataTableColumn> {
+@XmlRootElement
+public class DataTableColumn extends Persistable.Sequence<DataTableColumn> implements Validatable {
+
+    private static final String COLUMN_S_IS_NOT_VALID_BECAUSE = "Column %s is not valid because %s";
 
     private static final long serialVersionUID = 430090539610139732L;
 
-    @ManyToOne(optional = false, cascade={CascadeType.MERGE, CascadeType.PERSIST})
+    public static final DataTableColumn TDAR_ROW_ID = new DataTableColumn() {
+
+        private static final long serialVersionUID = 3518018865128797773L;
+
+        @Override
+        public String getDisplayName() {
+            return "Row Id";
+        }
+
+        @Override
+        public String getName() {
+            return TargetDatabase.TDAR_ID_COLUMN;
+        }
+
+        @Override
+        public boolean isVisible() {
+            return false;
+        }
+
+        @Override
+        public Long getId() {
+            return -1l;
+        }
+    };
+
+    @ManyToOne(optional = false, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
     @JoinColumn(name = "data_table_id")
     private DataTable dataTable;
 
@@ -51,6 +93,8 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> {
     private String name;
 
     @Column(nullable = false, name = "display_name")
+    @Field
+    @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     private String displayName;
 
     @Lob
@@ -69,6 +113,8 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> {
     @JoinColumn(name = "category_variable_id")
     private CategoryVariable categoryVariable;
 
+    private transient CategoryVariable tempSubCategoryVariable;
+
     @ManyToOne
     @JoinColumn(name = "default_ontology_id")
     private Ontology defaultOntology;
@@ -84,6 +130,18 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dataTableColumn")
     private List<DataValueOntologyNodeMapping> valueToOntologyNodeMapping = new ArrayList<DataValueOntologyNodeMapping>();
 
+    @Column(columnDefinition = "boolean default FALSE")
+    private boolean mappingColumn = false;
+
+    @Column
+    private String delimiterValue;
+
+    @Column(columnDefinition = "boolean default TRUE")
+    private boolean ignoreFileExtension = true;
+
+    @Column(columnDefinition = "boolean default TRUE")
+    private boolean visible = true;
+
     @Transient
     private Map<Long, List<String>> ontologyNodeIdToValuesMap;
 
@@ -93,7 +151,8 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> {
     public DataTableColumn() {
     }
 
-    @XmlIDREF
+    @XmlElement(name = "dataTableRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public DataTable getDataTable() {
         return dataTable;
     }
@@ -126,7 +185,6 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> {
         this.columnEncodingType = columnEncodingType;
     }
 
-    @XmlIDREF
     public CategoryVariable getCategoryVariable() {
         return categoryVariable;
     }
@@ -135,7 +193,8 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> {
         this.categoryVariable = categoryVariable;
     }
 
-    @XmlIDREF
+    @XmlElement(name = "ontologyRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public Ontology getDefaultOntology() {
         return defaultOntology;
     }
@@ -144,7 +203,8 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> {
         this.defaultOntology = defaultOntology;
     }
 
-    @XmlIDREF
+    @XmlElement(name = "codingSheetRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public CodingSheet getDefaultCodingSheet() {
         return defaultCodingSheet;
     }
@@ -161,6 +221,8 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> {
         this.measurementUnit = measurementUnit;
     }
 
+    @XmlElementWrapper(name = "dataValueOntologyNodeMappings")
+    @XmlElement(name = "dataValueOntologyNodeMapping")
     public List<DataValueOntologyNodeMapping> getValueToOntologyNodeMapping() {
         return valueToOntologyNodeMapping;
     }
@@ -216,10 +278,10 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> {
     }
 
     public String toString() {
-        StringBuilder builder = new StringBuilder(name == null ?"null" : name).append(" - ")
-                        .append(columnDataType == null ? "null" : columnDataType)
-                        .append(' ')
-                        .append(getId() == null ? -1 : getId());
+        StringBuilder builder = new StringBuilder(name == null ? "null" : name).append(" - ")
+                .append(columnDataType == null ? "null" : columnDataType)
+                .append(' ')
+                .append(getId() == null ? -1 : getId());
         return builder.toString();
     }
 
@@ -239,4 +301,120 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> {
         return length;
     }
 
+    public String getDelimiterValue() {
+        if (delimiterValue == "") {
+            return null;
+        }
+        return delimiterValue;
+    }
+
+    public void setDelimiterValue(String delimiterValue) {
+        this.delimiterValue = delimiterValue;
+    }
+
+    public boolean isIgnoreFileExtension() {
+        return ignoreFileExtension;
+    }
+
+    public void setIgnoreFileExtension(boolean ignoreFileExtension) {
+        this.ignoreFileExtension = ignoreFileExtension;
+    }
+
+    public void copyUserMetadataFrom(DataTableColumn column) {
+        if (StringUtils.isNotBlank(column.getDisplayName())) { // NOT NULLABLE FIELD
+            setDisplayName(column.getDisplayName());
+        }
+        setDescription(column.getDescription());
+        // XXX: this should be set by the dataset conversion process
+        // if (column.getColumnDataType() != null) { // NOT NULLABLE FIELD
+        // setColumnDataType(column.getColumnDataType());
+        // }
+
+        if (column.getColumnEncodingType() != null) { // NOT NULLABLE FIELD
+            setColumnEncodingType(column.getColumnEncodingType());
+        }
+        setMeasurementUnit(column.getMeasurementUnit());
+        setMappingColumn(column.isMappingColumn());
+        setDelimiterValue(column.getDelimiterValue());
+        setIgnoreFileExtension(column.isIgnoreFileExtension());
+    }
+
+    public CategoryVariable getTempSubCategoryVariable() {
+        return tempSubCategoryVariable;
+    }
+
+    public void setTempSubCategoryVariable(CategoryVariable tempSubCategoryVariable) {
+        this.tempSubCategoryVariable = tempSubCategoryVariable;
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
+
+    @Override
+    @JSONTransient
+    public boolean isValidForController() {
+        // not implemented
+        return true;
+    }
+
+    @Override
+    @JSONTransient
+    public boolean isValid() {
+        if (columnEncodingType == null) {
+            throw new TdarRecoverableRuntimeException(String.format(COLUMN_S_IS_NOT_VALID_BECAUSE, getName(), "no encoding type is specified"));
+        }
+        switch (columnEncodingType) {
+            case CODED_VALUE:
+                if (getDefaultCodingSheet() == null) {
+                    throw new TdarRecoverableRuntimeException(String.format(COLUMN_S_IS_NOT_VALID_BECAUSE, getName(),
+                            "no coding sheet was specified for 'coded value'"));
+                }
+                break;
+            case MEASUREMENT:
+                if (measurementUnit == null) {
+                    throw new TdarRecoverableRuntimeException(String.format(COLUMN_S_IS_NOT_VALID_BECAUSE, getName(), "no measurement unit was specified"));
+                }
+                // FIXME: Not 100% sure this is correct with the NUMERIC check
+                if (columnDataType == null || !columnDataType.isNumeric()) {
+                    throw new TdarRecoverableRuntimeException(String.format(COLUMN_S_IS_NOT_VALID_BECAUSE, getName(), "measurement unit was not numeric"));
+                }
+                break;
+            case COUNT:
+                // FIXME: Not 100% sure this is correct with the NUMERIC check
+                if (columnDataType == null || !columnDataType.isNumeric()) {
+                    throw new TdarRecoverableRuntimeException(String.format(COLUMN_S_IS_NOT_VALID_BECAUSE, getName(), "count was not numeric"));
+                }
+            case UNCODED_VALUE:
+        }
+        return true;
+    }
+
+    public boolean isMappingColumn() {
+        return mappingColumn;
+    }
+
+    public void setMappingColumn(boolean mappingColumn) {
+        this.mappingColumn = mappingColumn;
+    }
+
+    public boolean hasDifferentMappingMetadata(DataTableColumn column) {
+        logger.trace("delim: '{}' - '{}'", getDelimiterValue(), column.getDelimiterValue());
+        logger.trace("mapping: {} - {}", isMappingColumn(), column.isMappingColumn());
+        logger.trace("extension: {} - {}", isIgnoreFileExtension(), column.isIgnoreFileExtension());
+        return ! (StringUtils.equals(getDelimiterValue(), column.getDelimiterValue()) &&
+                ObjectUtils.equals(isIgnoreFileExtension(), column.isIgnoreFileExtension()) &&
+                ObjectUtils.equals(isMappingColumn(), column.isMappingColumn()));
+    }
+
+    @Transient
+    @JSONTransient
+    @XmlTransient
+    public String getJsSimpleName() {
+        return getName().replaceAll("[\\s\\,\"\']", "_");
+    }
 }

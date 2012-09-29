@@ -52,8 +52,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.AsyncUpdateReceiver.DefaultReceiver;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
@@ -71,7 +73,6 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.util.CellMetadata;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.AsyncUpdateReceiver.DefaultReceiver;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.FileAnalyzer;
@@ -93,7 +94,7 @@ public class BulkUploadService {
     EntityService entityService;
 
     @Autowired
-    FilestoreService filestoreService;
+    PersonalFilestoreService filestoreService;
 
     @Autowired
     private GenericDao genericDao;
@@ -150,7 +151,7 @@ public class BulkUploadService {
         Map<String, Resource> resourcesCreated = new HashMap<String, Resource>();
         float count = 0f;
         image.setDescription("");
-        image.setDateCreated(-1);
+        image.setDate(-1);
         if (CollectionUtils.isEmpty(fileProxies)) {
             TdarRecoverableRuntimeException throwable = new TdarRecoverableRuntimeException("The system has not received any files.");
             receiver.addError(throwable);
@@ -643,13 +644,13 @@ public class BulkUploadService {
             // FIXME: CELL METADATA SHOULD MAINTAIN THE TYPE OF THE FIELD AND THEN CONSTRAIN VALUES BY
             // THE FIELD TYPE -- ENUM, STRING, INTEGER, FLOAT
             if (field.equals("metadataLanguage") || field.equals("resourceLanguage")) {
-                excelService.validateColumn(sheet, i, validationHelper, LanguageEnum.values());
+                excelService.addColumnValidation(sheet, i, validationHelper, LanguageEnum.values());
             }
             if (field.equals("ResourceCreator.role")) {
-                excelService.validateColumn(sheet, i, validationHelper, ResourceCreatorRole.values());
+                excelService.addColumnValidation(sheet, i, validationHelper, ResourceCreatorRole.values());
             }
             if (field.equals("documentType")) {
-                excelService.validateColumn(sheet, i, validationHelper, DocumentType.values());
+                excelService.addColumnValidation(sheet, i, validationHelper, DocumentType.values());
             }
 
             row.createCell(i).setCellValue(field.getOutputName());

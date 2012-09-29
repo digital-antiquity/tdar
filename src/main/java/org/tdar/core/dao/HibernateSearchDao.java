@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 @Component("hibernateSearchDao")
 public class HibernateSearchDao {
 
+    @SuppressWarnings("unused")
     private Logger logger = LoggerFactory.getLogger(getClass());
     private SessionFactory sessionFactory;
 

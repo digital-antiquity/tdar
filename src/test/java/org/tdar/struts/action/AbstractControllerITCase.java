@@ -12,9 +12,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.junit.Assert;
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.TestConstants;
@@ -33,7 +30,7 @@ import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.filestore.PersonalFilestoreFile;
+import org.tdar.filestore.personalFilestore.PersonalFilestoreFile;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
 import org.tdar.struts.action.resource.CodingSheetController;
@@ -43,8 +40,6 @@ import org.tdar.struts.action.resource.ImageController;
 import org.tdar.struts.action.resource.OntologyController;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.Pair;
-
-import com.opensymphony.xwork2.Preparable;
 
 public abstract class AbstractControllerITCase extends AbstractIntegrationTestCase {
 
@@ -98,16 +93,17 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         assertTrue(r.getBookmarks().isEmpty() || r.getBookmarks().size() == (size - 1));
     }
 
-    public ResourceCollection generateResourceCollection(String name, String description, CollectionType type, boolean visible, List<AuthorizedUser> users, List<? extends Resource> resources, Long parentId)
-            throws InstantiationException, IllegalAccessException {
+    public ResourceCollection generateResourceCollection(String name, String description, CollectionType type, boolean visible, List<AuthorizedUser> users,
+            List<? extends Resource> resources, Long parentId)
+            throws Exception {
         CollectionController controller = generateNewInitializedController(CollectionController.class);
         controller.prepare();
-//        controller.setSessionData(getSessionData());
-        logger.info("{}" , getUser());
-        assertEquals(getUser(),controller.getAuthenticatedUser());
+        // controller.setSessionData(getSessionData());
+        logger.info("{}", getUser());
+        assertEquals(getUser(), controller.getAuthenticatedUser());
         ResourceCollection resourceCollection = controller.getResourceCollection();
         resourceCollection.setName(name);
-        resourceCollection.setParent(genericService.find(ResourceCollection.class,parentId));
+        resourceCollection.setParent(genericService.find(ResourceCollection.class, parentId));
         controller.setParentId(parentId);
         resourceCollection.setType(type);
         resourceCollection.setVisible(visible);
@@ -138,7 +134,6 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         controller.upload();
         return ticketId;
     }
-
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public <C> C setupAndLoadResource(String filename, Class<C> cls) {
@@ -176,7 +171,13 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
             controller.setUploadedFiles(files);
             controller.setUploadedFilesFileName(filenames);
         }
-        controller.save();
+        try {
+        	controller.save();
+        }
+        catch (TdarActionException exception) {
+        	// what now?
+        	exception.printStackTrace();
+        }
         return (C) controller.getResource();
     }
 

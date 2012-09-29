@@ -1,3 +1,4 @@
+<#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/list-macros.ftl" as rlist>
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 
@@ -146,3 +147,4 @@ $(document).ready(function() {
   applyZebraColors();
   });
 </script>
+</#escape>

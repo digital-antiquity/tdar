@@ -3,6 +3,7 @@ package org.tdar.core.service.resource;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -85,5 +86,9 @@ public class InformationResourceFileService extends ServiceInterface.TypedDaoBas
             }
         }
         // saveOrUpdate(irFile);
+    }
+
+    public Map<String, Float> getAdminFileExtensionStats() {
+        return getDao().getAdminFileExtensionStats();
     }
 }

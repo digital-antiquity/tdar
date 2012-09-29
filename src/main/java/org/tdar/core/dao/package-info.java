@@ -1,19 +1,33 @@
+/* FIXME: still unsupported
+@org.hibernate.annotations.NamedNativeQueries({
+    @org.hibernate.annotations.NamedNativeQuery(
+        name = TdarNamedQueries.QUERY_DASHBOARD,
+        query = TdarNamedQueries.QUERY_SQL_DASHBOARD
+        ),
+})
+*/
 @javax.persistence.NamedQueries({
         //    select distinct true from collection_resource, collection, authorized_user where user_id =2 and general_permissions='MODIFY_RECORD' and authorized_user.resource_collection_id=collection.id and collection_resource.collection_id=collection.id
         //    and (resource_id in(657) or resource_id in (2454));
         @javax.persistence.NamedQuery(
-            name = TdarNamedQueries.QUERY_IS_ALLOWED_TO,
-            query = "SELECT distinct 1 from " +
-                    " Resource res inner join res.resourceCollections as rescol inner join rescol.authorizedUsers " +
-                    " as authUser where authUser.user.id=:userId and authUser.effectiveGeneralPermission > :effectivePermission and " +
-                    " res.id in (:resourceIds)"),
+                name = TdarNamedQueries.QUERY_IS_ALLOWED_TO,
+                query = "SELECT distinct 1 from " +
+                        " Resource res inner join res.resourceCollections as rescol inner join rescol.authorizedUsers " +
+                        " as authUser where authUser.user.id=:userId and authUser.effectiveGeneralPermission > :effectivePermission and " +
+                        " res.id in (:resourceIds)"),
         @javax.persistence.NamedQuery(
                 name = TdarNamedQueries.QUERY_IS_ALLOWED_TO_NEW, // NOTE: THIS MAY REQUIRE ADDITIONAL WORK
-                query = "SELECT distinct 1 from AuthorizedUser authUser inner join authUser.resourceCollection as rescol where authUser.user.id=:userId and authUser.effectiveGeneralPermission > :effectivePermission and " +
+                query = "SELECT distinct 1 from AuthorizedUser authUser inner join authUser.resourceCollection as rescol where authUser.user.id=:userId and authUser.effectiveGeneralPermission > :effectivePermission and "
+                        +
                         " rescol.id in (:resourceCollectionIds)"),
         @javax.persistence.NamedQuery(
+                name = TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME, 
+                query = "SELECT distinct resCol from ResourceCollection resCol left join resCol.authorizedUsers as authUser where (authUser.user.id=:userId or resCol.owner=:userId) and"
+                        + " resCol.type='SHARED' and resCol.name like :name "),
+        @javax.persistence.NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO, // NOTE: THIS MAY REQUIRE ADDITIONAL WORK INNER JOIN WILL PRECLUDE OwnerId w/no authorized users
-                query = "SELECT distinct resCol from ResourceCollection resCol inner join resCol.authorizedUsers as authUser where authUser.user.id=:userId and" +
+                query = "SELECT distinct resCol from ResourceCollection resCol left join resCol.authorizedUsers as authUser where (authUser.user.id=:userId or resCol.owner=:userId) and"
+                        +
                         " resCol.type='SHARED'"),
         @javax.persistence.NamedQuery(
                 name = TdarNamedQueries.QUERY_IS_ALLOWED_TO_MANAGE,
@@ -26,7 +40,7 @@
                 query = "SELECT distinct new Resource(res.id, res.title, res.resourceType) " + TdarNamedQueries.HQL_EDITABLE_RESOURCE_SUFFIX),
         @javax.persistence.NamedQuery(
                 name = TdarNamedQueries.QUERY_USER_GET_ALL_RESOURCES_COUNT,
-                query = "SELECT count(distinct res.id) " + TdarNamedQueries.HQL_EDITABLE_RESOURCE_SUFFIX),
+                query = "SELECT count(res.id) " + TdarNamedQueries.HQL_EDITABLE_RESOURCE_SUFFIX),
         @javax.persistence.NamedQuery(
                 name = TdarNamedQueries.QUERY_SPARSE_PROJECTS,
                 query = "select new Project(project.id,project.title) from Project project where " +
@@ -120,10 +134,6 @@
                 query = "select count(dtv.id) as mapped_data_value_count from DataValueOntologyNodeMapping as dtv where dtv.ontologyNode.ontology.id=:ontologyId"
         ),
         @javax.persistence.NamedQuery(
-                name = TdarNamedQueries.QUERY_IS_CODING_SHEET_MAPPED,
-                query = "select count(dtc.id) as mapped_data_value_count from DataTableColumn as dtc where dtc.defaultCodingSheet.id=:codingId"
-        ),
-        @javax.persistence.NamedQuery(
                 name = TdarNamedQueries.QUERY_IS_ONTOLOGY_MAPPED_TO_COLUMN,
                 query = "select count(dtv.id) as mapped_data_value_count from DataValueOntologyNodeMapping as dtv where dtv.ontologyNode.ontology.id=:ontologyId and dtv.dataTableColumn.id=:dataTableColumnId"
         ),
@@ -135,7 +145,7 @@
                 name = TdarNamedQueries.QUERY_MANAGED_ISO_COUNTRIES,
                 // NOTE: hibernate is not smart enough to handle the "group by kwd" it needs to be told to include ALL of the keyword attributes that
                 // it's going to request in the setter.
-                query = "select distinct kwd, count(r.id) from Resource r join "
+                query = "select distinct kwd.label, kwd.level, count(r.id) from Resource r join "
                         +
                         "r.managedGeographicKeywords as kwd where kwd.level='ISO_COUNTRY' and r.status='ACTIVE'  group by kwd.id , kwd.definition , kwd.label , kwd.level"),
         @javax.persistence.NamedQuery(
@@ -155,9 +165,74 @@
                 query = "select distinct col from ResourceCollection as col left join col.parent as parent where parent.type='SHARED' and parent.visible=false and col.visible=true and col.type='SHARED'"
         ),
         @javax.persistence.NamedQuery(
-            name = TdarNamedQueries.QUERY_RESOURCE_COUNT_BY_TYPE_AND_STATUS_BY_USER,
-            query = "select res.resourceType, res.status, count(res.id) " + TdarNamedQueries.HQL_EDITABLE_RESOURCE_SUFFIX + " group by res.resourceType, res.status"
-    )}
-)
+                name = TdarNamedQueries.QUERY_RESOURCE_COUNT_BY_TYPE_AND_STATUS_BY_USER,
+                query = "select res.resourceType, res.status, count(res.id) " + TdarNamedQueries.HQL_EDITABLE_RESOURCE_SUFFIX
+                        + " group by res.resourceType, res.status"
+        ),
+        @javax.persistence.NamedQuery(
+                name = TdarNamedQueries.QUERY_EXTERNAL_ID_SYNC,
+                query = "select distinct res.id from InformationResource res inner join res.informationResourceFiles where res.dateUpdated > :updatedDate or res.externalId is null"
+        ),
+        @javax.persistence.NamedQuery(
+                name = TdarNamedQueries.QUERY_RECENT,
+                query = "select res from Resource res where res.dateUpdated > :updatedDate "
+        ),
+        @javax.persistence.NamedQuery(
+                name = TdarNamedQueries.QUERY_KEYWORD_COUNT_CULTURE_KEYWORD_CONTROLLED,
+                query = "select keyword, (select count(*) from Resource res inner join res.cultureKeywords rk where rk.id = keyword.id) as keywordCount from CultureKeyword keyword where keyword.approved = true order by keyword.index, keywordCount desc"
+        ),
+        @javax.persistence.NamedQuery(
+                name = TdarNamedQueries.QUERY_KEYWORD_COUNT_CULTURE_KEYWORD_UNCONTROLLED,
+                query = "select keyword, (select count(*) from Resource res inner join res.cultureKeywords rk where rk.id = keyword.id) as keywordCount from CultureKeyword keyword where keyword.approved = false order by keyword.index, keywordCount desc"
+        ),
+        @javax.persistence.NamedQuery(
+                name = TdarNamedQueries.QUERY_KEYWORD_COUNT_GEOGRAPHIC_KEYWORD,
+                query = "select keyword, (select count(*) from Resource res inner join res.geographicKeywords rk where rk.id = keyword.id) as keywordCount from GeographicKeyword keyword order by keywordCount desc"
+        ),
+        @javax.persistence.NamedQuery(
+                name = TdarNamedQueries.QUERY_KEYWORD_COUNT_INVESTIGATION_TYPE,
+                query = "select keyword, (select count(*) from Resource res inner join res.investigationTypes rk where rk.id = keyword.id) as keywordCount from InvestigationType keyword order by keywordCount desc"
+        ),
+        @javax.persistence.NamedQuery(
+                name = TdarNamedQueries.QUERY_KEYWORD_COUNT_MATERIAL_KEYWORD,
+                query = "select keyword, (select count(*) from Resource res inner join res.materialKeywords rk where rk.id = keyword.id) as keywordCount from MaterialKeyword keyword order by keywordCount desc"
+        ),
+        @javax.persistence.NamedQuery(
+                name = TdarNamedQueries.QUERY_KEYWORD_COUNT_OTHER_KEYWORD,
+                query = "select keyword, (select count(*) from Resource res inner join res.otherKeywords rk where rk.id = keyword.id) as keywordCount from OtherKeyword keyword order by keywordCount desc"
+        ),
+        @javax.persistence.NamedQuery(
+                name = TdarNamedQueries.QUERY_KEYWORD_COUNT_SITE_NAME_KEYWORD,
+                query = "select keyword, (select count(*) from Resource res inner join res.siteNameKeywords rk where rk.id = keyword.id) as keywordCount from SiteNameKeyword keyword order by keywordCount desc"
+        ),
+        @javax.persistence.NamedQuery(
+                name = TdarNamedQueries.QUERY_KEYWORD_COUNT_SITE_TYPE_KEYWORD_CONTROLLED,
+                query = "select keyword, (select count(*) from Resource res inner join res.siteTypeKeywords rk where rk.id = keyword.id) as keywordCount from SiteTypeKeyword keyword where keyword.approved = true order by keyword.index, keywordCount desc"
+        ),
+        @javax.persistence.NamedQuery(
+                name = TdarNamedQueries.QUERY_KEYWORD_COUNT_SITE_TYPE_KEYWORD_UNCONTROLLED,
+                query = "select keyword, (select count(*) from Resource res inner join res.siteTypeKeywords rk where rk.id = keyword.id) as keywordCount from SiteTypeKeyword keyword where keyword.approved = false order by keyword.index, keywordCount desc"
+        ),
+        @javax.persistence.NamedQuery(
+                name = TdarNamedQueries.QUERY_KEYWORD_COUNT_TEMPORAL_KEYWORD,
+                query = "select keyword, (select count(*) from Resource res inner join res.temporalKeywords rk where rk.id = keyword.id) as keywordCount from TemporalKeyword keyword order by keywordCount desc"
+        ),
+        @javax.persistence.NamedQuery(
+                name = TdarNamedQueries.QUERY_KEYWORD_COUNT_FILE_EXTENSION,
+                query = "select extension, count(*) from InformationResourceFileVersion where fileVersionType in (:internalTypes)  group by extension "
+        ),
+        @javax.persistence.NamedQuery(
+                name = TdarNamedQueries.QUERY_RECENT_USERS_ADDED,
+                query = "select p from Person p where registered=TRUE order by id desc"
+        ),
+        @javax.persistence.NamedQuery(
+                name = TdarNamedQueries.QUERY_USAGE_STATS,
+                query = "from Statistic where recordedDate between :fromDate and :toDate and statisticType in (:statTypes) order by recordedDate desc"
+        ),
+        @javax.persistence.NamedQuery(
+                name = TdarNamedQueries.QUERY_FILE_STATS,
+                query = "select extension, avg(size) , min(size) , max(size) from InformationResourceFileVersion group by extension order by extension desc"
+        )
+})
 package org.tdar.core.dao;
 

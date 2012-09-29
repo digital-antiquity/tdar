@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.resource.ResourceType;
 
@@ -24,7 +25,7 @@ import org.tdar.core.bean.resource.ResourceType;
 
 // FIXME: the logic of these roles, when they are relevant, when they should be accepted for input, and when they should be included for citation, is almost
 // totally inscrutable
-public enum ResourceCreatorRole {
+public enum ResourceCreatorRole implements HasLabel  {
     CONTACT("Contact"),
     AUTHOR("Author", null, ResourceType.DOCUMENT),
     CONTRIBUTOR("Contributor"),
@@ -91,17 +92,6 @@ public enum ResourceCreatorRole {
         // perhaps it is better to consistent to use null for Creator.Type as well...
         this(label, forCreatorType, new ResourceType[0]);
     }
-
-//    private ResourceCreatorRole(String label, CreatorType creatorType, ResourceType resourceType) {
-//        this.label = label;
-//        this.relevantCreatorType = creatorType;
-//        ResourceType[] resourceTypes = { resourceType };
-//        if (resourceType == null) {
-//            this.relevantResourceTypes = Collections.emptyList();
-//        } else {
-//            this.relevantResourceTypes = Arrays.asList(resourceTypes);
-//        }
-//    }
 
     private ResourceCreatorRole(String label, CreatorType creatorType, ResourceType... resourceTypes) {
         this.label = label;

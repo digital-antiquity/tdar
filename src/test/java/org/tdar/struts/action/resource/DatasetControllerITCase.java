@@ -1,16 +1,14 @@
 package org.tdar.struts.action.resource;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.lang.reflect.Method;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,19 +18,28 @@ import org.apache.struts2.convention.annotation.Action;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Dataset;
+import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.dataTable.DataTable;
 import org.tdar.core.bean.resource.dataTable.DataTableColumn;
+import org.tdar.core.bean.resource.dataTable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.dataTable.DataTableColumnType;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
+import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
+
+import static org.junit.Assert.*;
 
 /**
  * $Id$
@@ -45,6 +52,7 @@ import org.tdar.struts.action.TdarActionSupport;
 public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
 
     private static final String ALEXANDRIA_EXCEL_FILENAME = "qrybonecatalogueeditedkk.xls";
+    private static final String TRUNCATED_HARP_EXCEL_FILENAME = "heshfaun-truncated.xls";
     private static final String BELEMENT_COL = "belement";
 
     private DatasetController controller;
@@ -60,12 +68,13 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testOntologyMappingCaseSensitivity() {
+    public void testOntologyMappingCaseSensitivity() throws Exception {
         Dataset dataset = setupAndLoadResource(ALEXANDRIA_EXCEL_FILENAME, Dataset.class);
         controller.setId(dataset.getId());
         Ontology bElementOntology = setupAndLoadResource("fauna-element-updated---default-ontology-draft.owl", Ontology.class);
         DataTableColumn elementColumn = new DataTableColumn();
         elementColumn.setDefaultOntology(bElementOntology);
+        elementColumn.setColumnEncodingType(DataTableColumnEncodingType.UNCODED_VALUE);
         elementColumn.setName(BELEMENT_COL);
         DataTable dataTable = dataset.getDataTables().iterator().next();
         mapColumnsToDataset(dataset, dataTable, elementColumn);
@@ -120,12 +129,22 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
             controller.prepare();
             if (method.isAnnotationPresent(Action.class)) {
                 logger.debug("Invoking action method: " + method.getName());
-                String result = (String) method.invoke(controller);
-                if (successActions.contains(method.getName())) {
-                    assertEquals("DatasetController." + method.getName() + "() should return success", DatasetController.SUCCESS, result);
-                } else {
-                    setIgnoreActionErrors(true);
-                    assertNotSame("DatasetController." + method.getName() + "() should not return SUCCESS", DatasetController.SUCCESS, result);
+                try {
+                	String result = (String) method.invoke(controller);
+                	if (successActions.contains(method.getName())) {
+                		assertEquals("DatasetController." + method.getName() + "() should return success", DatasetController.SUCCESS, result);
+                	} else {
+                		setIgnoreActionErrors(true);
+                		assertNotSame("DatasetController." + method.getName() + "() should not return SUCCESS", DatasetController.SUCCESS, result);
+                	}
+                }
+                catch (Exception e) {
+                	if (e instanceof TdarActionException) {
+                		TdarActionException exception = (TdarActionException) e;
+                		setIgnoreActionErrors(true);
+                		assertNotSame("DatasetController." + method.getName() + "() should not return SUCCESS", DatasetController.SUCCESS, exception.getResultName());                		
+                	}
+
                 }
             }
         }
@@ -133,7 +152,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testFullUser() throws InstantiationException, IllegalAccessException {
+    public void testFullUser() throws Exception {
         Dataset dataset = createAndSaveNewInformationResource(Dataset.class, false);
         Long datasetId = dataset.getId();
         addAuthorizedUser(dataset, getAdminUser(), GeneralPermissions.MODIFY_RECORD);
@@ -150,16 +169,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testEquality() {
-        AuthorizedUser authorizedUser = new AuthorizedUser(getAdminUser(), GeneralPermissions.VIEW_ALL);
-        AuthorizedUser authorizedUser2 = new AuthorizedUser(getAdminUser(), GeneralPermissions.VIEW_ALL);
-
-        assertTrue(authorizedUser.equals(authorizedUser2));
-    }
-
-    @Test
-    @Rollback
-    public void testReadUser() throws InstantiationException, IllegalAccessException {
+    public void testReadUser() throws Exception {
         Dataset dataset = createAndSaveNewInformationResource(Dataset.class, false);
         Long datasetId = dataset.getId();
         addAuthorizedUser(dataset, getAdminUser(), GeneralPermissions.VIEW_ALL);
@@ -189,7 +199,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testReadUserEmpty() throws InstantiationException, IllegalAccessException {
+    public void testReadUserEmpty() throws Exception {
         Dataset dataset = createAndSaveNewInformationResource(Dataset.class, false);
         Long datasetId = dataset.getId();
         addAuthorizedUser(dataset, getAdminUser(), GeneralPermissions.VIEW_ALL);
@@ -205,7 +215,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testDatasetReplaceSame() {
+    public void testDatasetReplaceSame() throws TdarActionException {
         Dataset dataset = setupAndLoadResource(ALEXANDRIA_EXCEL_FILENAME, Dataset.class);
         controller = generateNewInitializedController(DatasetController.class);
         AbstractResourceControllerITCase.loadResourceFromId(controller, dataset.getId());
@@ -216,7 +226,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testDatasetReplaceWithMappings() {
+    public void testDatasetReplaceWithMappings() throws TdarActionException {
         Dataset dataset = setupAndLoadResource(ALEXANDRIA_EXCEL_FILENAME, Dataset.class);
         controller = generateNewInitializedController(DatasetController.class);
 
@@ -249,7 +259,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testDatasetReplaceDifferentExcel() {
+    public void testDatasetReplaceDifferentExcel() throws TdarActionException {
         Dataset dataset = setupAndLoadResource(ALEXANDRIA_EXCEL_FILENAME, Dataset.class);
         controller = generateNewInitializedController(DatasetController.class);
         AbstractResourceControllerITCase.loadResourceFromId(controller, dataset.getId());
@@ -261,7 +271,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testDatasetReplaceDifferentColTypes() {
+    public void testDatasetReplaceDifferentColTypes() throws TdarActionException {
         Dataset dataset = setupAndLoadResource("dataset_with_floats.xls", Dataset.class);
         controller = generateNewInitializedController(DatasetController.class);
         assertEquals(DataTableColumnType.DOUBLE, dataset.getDataTables().iterator().next().getColumnByName("col2floats").getColumnDataType());
@@ -275,7 +285,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testDatasetReplaceDifferentMdb() {
+    public void testDatasetReplaceDifferentMdb() throws TdarActionException {
         Dataset dataset = setupAndLoadResource(ALEXANDRIA_EXCEL_FILENAME, Dataset.class);
         controller = generateNewInitializedController(DatasetController.class);
         AbstractResourceControllerITCase.loadResourceFromId(controller, dataset.getId());
@@ -284,6 +294,55 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
         controller.setUploadedFilesFileName(Arrays.asList(filename));
         assertEquals(TdarActionSupport.SUCCESS, controller.save());
     }
+    
+    
+    @Test
+    @Rollback(false)
+    public void testReprocessDataset() throws Exception {
+        Dataset dataset = setupAndLoadResource(TRUNCATED_HARP_EXCEL_FILENAME, Dataset.class);
+        final Long datasetId = dataset.getId();
+        final DataTable dataTable = dataset.getDataTables().iterator().next();
+        final int originalNumberOfRows = tdarDataImportDatabase.getRowCount(dataTable);
+        final List<List<String>> originalColumnData = new ArrayList<List<String>>();
+        for (DataTableColumn column: dataTable.getSortedDataTableColumns()) {
+            // munge column names and rename in tdar data database
+            originalColumnData.add(tdarDataImportDatabase.selectAllFrom(column));
+            tdarDataImportDatabase.renameColumn(column, column.getDisplayName());
+            assertFalse("Column name should be denormalized", tdarDataImportDatabase.normalizeTableOrColumnNames(column.getName()).equals(column.getName()));
+            genericService.save(column);
+        }
+        verifyDataTable(dataTable, originalNumberOfRows, originalColumnData);
+        InformationResourceFile file = dataset.getFirstInformationResourceFile();
+        controller = generateNewInitializedController(DatasetController.class);
+        AbstractResourceControllerITCase.loadResourceFromId(controller, dataset.getId());
+        datasetService.reprocess(dataset);
+        assertEquals(file, dataset.getFirstInformationResourceFile());
+        assertEquals(file.getLatestUploadedVersion(), dataset.getFirstInformationResourceFile().getLatestUploadedVersion());
+        setVerifyTransactionCallback(new TransactionCallback<Dataset>() {
+            @Override
+            public Dataset doInTransaction(TransactionStatus status) {
+                Dataset dataset = genericService.find(Dataset.class, datasetId);
+                DataTable dataTable = dataset.getDataTables().iterator().next();
+                verifyDataTable(dataTable, originalNumberOfRows, originalColumnData);
+                for (DataTableColumn column: dataTable.getSortedDataTableColumns()) {
+                    assertEquals("Column name should be normalized", tdarDataImportDatabase.normalizeTableOrColumnNames(column.getName()), column.getName());
+                }
+                return null;
+            }
+        });
+    }
+
+    private void verifyDataTable(final DataTable dataTable, final int expectedNumberOfRows, List<List<String>> expectedColumnData) {
+        assertEquals(expectedNumberOfRows, tdarDataImportDatabase.getRowCount(dataTable));
+        Iterator<List<String>> expectedColumnDataIterator = expectedColumnData.iterator();
+        for (DataTableColumn column: dataTable.getSortedDataTableColumns()) {
+            // verify column values
+            List<String> expectedValues = expectedColumnDataIterator.next();
+            List<String> actualValues = tdarDataImportDatabase.selectAllFrom(column);
+            assertEquals(expectedValues, actualValues);
+        }
+    }
+
 
     @Override
     protected TdarActionSupport getController() {

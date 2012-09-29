@@ -6,6 +6,7 @@ package org.tdar.filestore.tasks;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
@@ -96,6 +97,20 @@ public interface Task {
 
         File getParentDirectory(File outputFile) {
             return new File(outputFile.getParent());
+        }
+
+        void addDerivativeFile(File file, String extension, String text, VersionType type) throws Exception {
+            File f = new File(getWorkflowContext().getWorkingDirectory(), file.getName() + "." + extension);
+            addDerivativeFile(f, type);
+            FileUtils.writeStringToFile(f, text);
+        }
+
+        void addDerivativeFile(File f, VersionType type) throws IOException {
+            getLogger().info("Writing file: " + f);
+            mkParentDirs(f);
+            f.createNewFile();
+            InformationResourceFileVersion version = generateInformationResourceFileVersion(f, type);
+            getWorkflowContext().addVersion(version);
         }
 
         public Logger getLogger() {

@@ -40,15 +40,18 @@ public class ExcelConverter extends DatasetConverter.Base {
     private static final String ERROR_CORRUPT_FILE_TRY_RESAVING = "tDAR cannot read some rows in this workbook, possibly due to a corrupt file. This issue can often be resolved by simply opening the file using in Microsoft Excel and then re-saving the document.";
     private static final String ERROR_WRONG_EXCEL_FORMAT = "We could not open the Excel file you supplied.  Please try re-saving it in Excel as an Excel 97-2003 Workbook or Excel 2007 Workbook and upload it again.  If this problem persists, please contact us with a bug report.";
     private static final String POI_ERROR_MISSING_ROWS = "Unexpected missing row when some rows already present";
+    private static final String DB_PREFIX = "e";
     private Workbook workbook;
     private DataFormatter formatter = new HSSFDataFormatter();
 
-    public ExcelConverter() {
-        setDatabasePrefix("e");
+    public String getDatabasePrefix() {
+        return DB_PREFIX;
     }
 
+
+    public ExcelConverter() {}
+
     public ExcelConverter(InformationResourceFileVersion version, TargetDatabase targetDatabase) {
-        setDatabasePrefix("e");
         setTargetDatabase(targetDatabase);
         this.setInformationResourceFileVersion(version);
 
@@ -118,7 +121,7 @@ public class ExcelConverter extends DatasetConverter.Base {
             }
         }
         if (exceptions.size() > 0) {
-            throw new Exception(exceptions.get(0));
+            throw exceptions.get(0);
         }
     }
 

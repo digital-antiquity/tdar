@@ -16,8 +16,8 @@ import org.hibernate.search.annotations.Store;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.index.analyzer.TdarStandardAnalyzer;
-import org.tdar.index.bridge.TdarPaddedNumberBridge;
+import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
+import org.tdar.search.index.bridge.TdarPaddedNumberBridge;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
@@ -56,7 +56,7 @@ public class CoverageDate extends Persistable.Base implements HasResource<Resour
 
     @Enumerated(EnumType.STRING)
     @Field
-    @Analyzer(impl = TdarStandardAnalyzer.class)
+    @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     @Column(name = "date_type")
     @XStreamAsAttribute
     @XStreamAlias("type")
@@ -120,7 +120,7 @@ public class CoverageDate extends Persistable.Base implements HasResource<Resour
 
     @Transient
     public boolean isValid(Integer start, Integer end) {
-        if (start == null || end == null) {
+        if (dateType == null || start == null || end == null) {
             return false;
         } else
             return validate(start, end);
@@ -139,7 +139,7 @@ public class CoverageDate extends Persistable.Base implements HasResource<Resour
     }
 
     public String toString() {
-        return String.format(getDateType().getFormat(), getStartDate(), getEndDate());
+        return String.format("%s: %s - %s", getDateType(), getStartDate(), getEndDate());
     }
 
     /**

@@ -6,24 +6,33 @@
  */
 package org.tdar.struts.action.search;
 
+import static org.tdar.core.service.external.auth.InternalTdarRights.SEARCH_FOR_DELETED_RECORDS;
+import static org.tdar.core.service.external.auth.InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS;
+import static org.tdar.core.service.external.auth.InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.functors.NotNullPredicate;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.hibernate.search.FullTextQuery;
 import org.tdar.core.bean.Indexable;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.search.query.FieldQueryPart;
-import org.tdar.search.query.QueryBuilder;
+import org.tdar.search.query.QueryDescriptionBuilder;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.QueryGroup;
 import org.tdar.search.query.QueryPartGroup;
 import org.tdar.search.query.SortOption;
+import org.tdar.search.query.queryBuilder.QueryBuilder;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.search.query.SearchResultHandler;
 
@@ -31,7 +40,7 @@ import org.tdar.struts.search.query.SearchResultHandler;
  * @author Adam Brin
  * 
  */
-public abstract class AbstractLookupController extends AuthenticationAware.Base implements SearchResultHandler {
+public abstract class AbstractLookupController<I extends Indexable> extends AuthenticationAware.Base implements SearchResultHandler<I> {
 
     private static final long serialVersionUID = 2357805482356017885L;
 
@@ -39,13 +48,13 @@ public abstract class AbstractLookupController extends AuthenticationAware.Base 
     private int minLookupLength = 3;
     private int recordsPerPage = 10;
     private int startRecord = DEFAULT_START;
-    private List<Indexable> results = Collections.emptyList();
+    private List<I> results = Collections.emptyList();
     private int totalRecords;
     private SortOption sortField = SortOption.RELEVANCE;
     private SortOption secondarySortField;
     private boolean debug = false;
     public static final String ERROR_MINIMUM_LENGTH = "Search term shorter than minimum length";
-    private List<ResourceType> resourceTypes;
+    private List<ResourceType> resourceTypes = new ArrayList<ResourceType>();
     private List<Status> includedStatuses = new ArrayList<Status>();
     private String title;
     private Long id = null;
@@ -56,7 +65,7 @@ public abstract class AbstractLookupController extends AuthenticationAware.Base 
     private boolean showAll = false;
 
     protected void handleSearch(QueryBuilder q) throws ParseException {
-        getSearchService().handleSearch(q,this);
+        getSearchService().handleSearch(q, this);
     }
 
     public String getCallback() {
@@ -173,13 +182,13 @@ public abstract class AbstractLookupController extends AuthenticationAware.Base 
         }
     }
 
-    protected void addResourceTypeQueryPart(QueryBuilder q, List<ResourceType> list) {
+    protected void addResourceTypeQueryPart(QueryGroup q, List<ResourceType> list) {
         if (!CollectionUtils.isEmpty(list)) {
             QueryPartGroup grp = new QueryPartGroup();
             grp.setOperator(Operator.OR);
             for (ResourceType resourceType : list) {
                 if (resourceType != null) {
-                    grp.append(new FieldQueryPart("resourceType", resourceType.name()));
+                    grp.append(new FieldQueryPart("resourceType", resourceType));
                 }
             }
             if (!grp.isEmpty()) {
@@ -188,25 +197,47 @@ public abstract class AbstractLookupController extends AuthenticationAware.Base 
         }
     }
 
-    protected void addTitlePart(QueryBuilder q, String title) {
-        if (StringUtils.isEmpty(title))
-            return;
-        QueryPartGroup grp = new QueryPartGroup();
-        grp.setOperator(Operator.OR);
-        addEscapedWildcardField(grp, QueryFieldNames.TITLE, title);
-        FieldQueryPart titlePart = new FieldQueryPart(QueryFieldNames.TITLE);
-        titlePart.setQuotedEscapeValue(title);
-        grp.append(titlePart.setBoost(6f));
-        q.append(grp);
+    protected void addTitlePart(QueryGroup q, String title_) {
+        if (StringUtils.isNotEmpty(title_)) {
+            QueryPartGroup titleGroup = new QueryPartGroup(Operator.OR);
+            titleGroup.append(new FieldQueryPart(QueryFieldNames.TITLE_AUTO).setBoost(6f).setQuotedEscapeValue(title_));
+            titleGroup.append(new FieldQueryPart(QueryFieldNames.TITLE, title_).setBoost(4f));
+            q.append(titleGroup);
+        }
     }
 
-    protected void appendStatusTypes(QueryBuilder q, List<Status> includedStatuses) {
+    protected void appendStatusInformation(QueryBuilder q, QueryDescriptionBuilder queryDescriptionBuilder, List<Status> statuses, Person user) {
+        logger.trace("initial status for {} : {}", user, statuses);
+        CollectionUtils.filter(statuses, NotNullPredicate.INSTANCE);
+        // selecting nothing is the same as selecting everything
+        if (CollectionUtils.isEmpty(statuses)) {
+            statuses.addAll(Arrays.asList(Status.values()));
+        }
+
+        // remove invalid, inappropriate selections
+        getAuthenticationAndAuthorizationService().removeIfNotAllowed(statuses, Status.DELETED, SEARCH_FOR_DELETED_RECORDS, user);
+        getAuthenticationAndAuthorizationService().removeIfNotAllowed(statuses, Status.FLAGGED, SEARCH_FOR_FLAGGED_RECORDS, user);
+        getAuthenticationAndAuthorizationService().removeIfNotAllowed(statuses, Status.DRAFT, SEARCH_FOR_DRAFT_RECORDS, user, isUseSubmitterContext());
+
+        if (CollectionUtils.isEmpty(statuses)) {
+            throw new TdarRecoverableRuntimeException("no valid statuses were specified");
+        }
+
+        if (queryDescriptionBuilder != null && !(statuses.size() == 1 && statuses.contains(Status.ACTIVE))) {
+            queryDescriptionBuilder.append(QueryDescriptionBuilder.WITH_STATUSES, statuses);
+        }
+
+        logger.trace("ending status for {} : {}", user, statuses);
+        appendStatusTypes(q, statuses);
+    }
+
+    protected void appendStatusTypes(QueryGroup q, List<Status> includedStatuses) {
         QueryPartGroup group = new QueryPartGroup();
         group.setOperator(Operator.OR);
         if (includedStatuses != null) {
             for (Status status : includedStatuses) {
                 if (status != null) {
-                    group.append(new FieldQueryPart(QueryFieldNames.STATUS, status.name()));
+                    group.append(new FieldQueryPart(QueryFieldNames.STATUS, status));
                 }
             }
         }
@@ -223,14 +254,14 @@ public abstract class AbstractLookupController extends AuthenticationAware.Base 
      * @param results
      *            the results to set
      */
-    public void setResults(List<Indexable> results) {
+    public void setResults(List<I> results) {
         this.results = results;
     }
 
     /**
      * @return the results
      */
-    public List<Indexable> getResults() {
+    public List<I> getResults() {
         return results;
     }
 
@@ -314,7 +345,8 @@ public abstract class AbstractLookupController extends AuthenticationAware.Base 
      *            the includedStatuses to set
      */
     public void setIncludedStatuses(List<Status> includedStatuses) {
-        this.includedStatuses = includedStatuses;
+        // we need a list we can mutate
+        this.includedStatuses = new ArrayList<Status>(includedStatuses);
     }
 
     /**
@@ -355,7 +387,8 @@ public abstract class AbstractLookupController extends AuthenticationAware.Base 
     }
 
     /**
-     * @param mode the mode to set
+     * @param mode
+     *            the mode to set
      */
     public void setMode(String mode) {
         this.mode = mode;

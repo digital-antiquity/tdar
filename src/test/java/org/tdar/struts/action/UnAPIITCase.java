@@ -46,7 +46,7 @@ public class UnAPIITCase extends AbstractControllerITCase {
         unapiController.setFormat("dc");
         assertEquals("noformat", unapiController.execute());
         unapiController.setId(DOCUMENT_ID + 10000);
-        assertEquals("notfound", unapiController.execute());
+        assertEquals(TdarActionSupport.NOT_FOUND, unapiController.execute());
     }
 
     @Override

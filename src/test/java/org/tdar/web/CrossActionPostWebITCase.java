@@ -1,0 +1,76 @@
+package org.tdar.web;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.tdar.TestConstants.ADMIN_PROJECT_ID;
+import static org.tdar.TestConstants.TEST_DOCUMENT_NAME;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.test.annotation.Rollback;
+import org.tdar.TestConstants;
+import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.DocumentType;
+import org.tdar.core.bean.resource.Status;
+
+import com.gargoylesoftware.htmlunit.html.HtmlElement;
+
+public class CrossActionPostWebITCase extends AbstractAuthenticatedWebTestCase {
+
+    Long documentId = -1L;
+
+    public void setupResource() {
+        gotoPage("/document/add");
+        assertTextPresentInPage("Create a Document");
+        setInput("document.title", "this is the title ");
+        setInput("resource.description", "this is the description");
+        setInput("resource.date", "1934");
+        submitForm();
+        documentId = extractTdarIdFromCurrentURL();
+        assertNotNull(documentId);
+        assertNotSame(-1L, documentId);
+    }
+
+    // @Ignore
+    @Test
+    public void testDocumentViewGoneAwry() {
+        setupResource();
+        // load the document and simply test the "view page"
+        String docPath = "/document/" + documentId;
+        // go to the edit page, change the action, change the title and hit submit
+        gotoPage(docPath + "/edit");
+        HtmlElement form = getHtmlPage().getElementByName("resourceMetadataForm");
+        assertNotNull("should have found the resource metadata form", form);
+        form.setAttribute("action", docPath);
+        String testTitle = "this is another test";
+        setInput("document.title", testTitle);
+        submitForm();
+        gotoPage(docPath);
+        logger.debug("TITLE TEXT: " + getHtmlPage().getTitleText());
+        assertTextNotPresent(testTitle);
+    }
+
+    @Test
+    public void testDocumentAuthGoneAwry() {
+        setupResource();
+        // load the document and simply test the "view page"
+
+        String docPath = "/document/" + documentId;
+        String newDocPath = "/document/" + TestConstants.TEST_DOCUMENT_ID;
+        // go to the edit page, change the action, change the title and hit submit
+        gotoPage(docPath + "/edit");
+        HtmlElement form = getHtmlPage().getElementByName("resourceMetadataForm");
+        assertNotNull("should have found the resource metadata form", form);
+        form.setAttribute("action", docPath);
+
+        String testTitle = "this is another test";
+        setInput("id", TestConstants.TEST_DOCUMENT_ID);
+        setInput("document.title", testTitle);
+        submitForm();
+        gotoPage(newDocPath);
+        logger.debug("TITLE TEXT: " + getHtmlPage().getTitleText());
+        assertTextNotPresent(testTitle);
+    }
+
+}

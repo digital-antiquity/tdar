@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.dataTable.DataTable;
 import org.tdar.core.bean.resource.dataTable.DataTableColumn;
+import org.tdar.core.bean.resource.dataTable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.dataTable.DataTableColumnType;
 import org.tdar.core.bean.resource.dataTable.DataTableRelationship;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -54,6 +55,8 @@ public interface DatasetConverter {
 
     public void setRelationships(Set<DataTableRelationship> relationships);
 
+    public void setInformationResourceFileVersion(InformationResourceFileVersion version);
+
     public List<DataTableRelationship> getRelationshipsWithTable(String tableName);
 
     /**
@@ -61,10 +64,10 @@ public interface DatasetConverter {
      */
     public abstract static class Base implements DatasetConverter {
 
+        public static final String ERROR_UNABLE_TO_PROCESS = "tDAR is unable to process this dataset file";
         private String filename = "";
         private Long irFileId;
         private Database database = null;
-        private String prefix = "";
         protected final Logger logger = LoggerFactory.getLogger(getClass());
         protected InformationResourceFileVersion informationResourceFileVersion;
         protected TargetDatabase targetDatabase;
@@ -104,12 +107,12 @@ public interface DatasetConverter {
             dataTable.setDisplayName(name);
             String name_ = generateDataTableName(name);
             logger.info(name_);
-            
+
             if (dataTableNames.contains(name_)) {
                 int add = 1;
 
-                if (name_.length() + 1 > targetDatabase.getMaxTableLength() ) {
-                    name_ = name_.substring(0,targetDatabase.getMaxTableLength() - 2);
+                if (name_.length() + 1 > targetDatabase.getMaxTableLength()) {
+                    name_ = name_.substring(0, targetDatabase.getMaxTableLength() - 2);
                 }
 
                 while (dataTableNames.contains(name_ + add)) {
@@ -131,10 +134,10 @@ public interface DatasetConverter {
             dataTableColumn.setDisplayName(name);
             dataTableColumn.setName(targetDatabase.normalizeTableOrColumnNames(name));
             dataTableColumn.setColumnDataType(type);
-            dataTableColumn.setColumnEncodingType(type.getDefaultEncodingType());
+            dataTableColumn.setColumnEncodingType(DataTableColumnEncodingType.UNCODED_VALUE);
             dataTableColumn.setDataTable(dataTable);
-            dataTableColumn.setSequenceNumber(dataTable.getDataTableColumns().size());
             dataTable.getDataTableColumns().add(dataTableColumn);
+            dataTableColumn.setSequenceNumber(dataTable.getDataTableColumns().size());
             return dataTableColumn;
         }
 
@@ -159,12 +162,13 @@ public interface DatasetConverter {
                 logger.error("I/O error while opening input database or dumping data", e);
                 throw new TdarRecoverableRuntimeException("I/O error while opening input database or dumping data", e);
             } catch (TdarRecoverableRuntimeException tex) {
-                //FIXME: THIS FEELS DUMB.  We are catching and throwing tdar exception so that the catch-all will not wipe out a friendly-and-specific error message
-                //with a friendly-yet-generic error message.
+                // FIXME: THIS FEELS DUMB. We are catching and throwing tdar exception so that the catch-all will not wipe out a friendly-and-specific error
+                // message
+                // with a friendly-yet-generic error message.
                 throw tex;
             } catch (Exception e) {
-                logger.error("Unexpected expection while opening input dataset or dumping data", e);
-                throw new TdarRecoverableRuntimeException("Unexpected expection while opening input dataset or dumping data", e);
+                logger.error(ERROR_UNABLE_TO_PROCESS, e);
+                throw new TdarRecoverableRuntimeException(ERROR_UNABLE_TO_PROCESS, e);
             }
         }
 
@@ -194,7 +198,7 @@ public interface DatasetConverter {
                 targetDatabase.alterTableColumnType(dataTable.getName(),
                         column, best.getType(), best.getLength());
                 column.setColumnDataType(best.getType());
-                column.setColumnEncodingType(best.getType().getDefaultEncodingType());
+                // column.setColumnEncodingType(best.getType().getDefaultEncodingType());
             }
         }
 
@@ -226,13 +230,7 @@ public interface DatasetConverter {
             return database;
         }
 
-        public void setDatabasePrefix(String prefix) {
-            this.prefix = prefix;
-        }
-
-        public String getDatabasePrefix() {
-            return prefix;
-        }
+        public abstract String getDatabasePrefix();
 
         protected String generateDataTableName(String tableName) {
             StringBuilder sb = new StringBuilder(getDatabasePrefix());

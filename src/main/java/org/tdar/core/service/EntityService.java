@@ -1,6 +1,7 @@
 package org.tdar.core.service;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -23,7 +24,8 @@ import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.dao.entity.InstitutionDao;
 import org.tdar.core.dao.entity.PersonDao;
 import org.tdar.core.dao.request.ContributorRequestDao;
-import org.tdar.core.service.external.CrowdService;
+import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.core.service.external.auth.InternalTdarRights;
 
 /**
  * $Id$
@@ -55,18 +57,14 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
     private GenericService genericService;
 
     @Autowired
-    private CrowdService crowdService;
+    private AuthenticationAndAuthorizationService authenticationService;
 
     public Person findPerson(Long id) {
         return find(id);
     }
 
-    public List<Person> findAllRegisteredUsers() {
-        return getDao().findAllRegisteredUsers();
-    }
-
-    public List<Person> findAllOtherRegisteredUsers(Person person) {
-        return getDao().findAllOtherRegisteredUsers(person);
+    public List<Person> findAllRegisteredUsers(Integer num) {
+        return getDao().findAllRegisteredUsers(num);
     }
 
     public List<Institution> findAllInstitutions() {
@@ -77,12 +75,12 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         return institutionDao.findByName(name);
     }
 
-    public List<Institution> findInstitutionLike(String name) {
-        return institutionDao.withNameLike(name);
+    public Institution findInstitution(long id) {
+        return institutionDao.find(id);
     }
 
-    public List<Person> findAllRegisteredUsersSorted() {
-        return getDao().findAllRegisteredUsersSorted();
+    public List<Institution> findInstitutionLike(String name) {
+        return institutionDao.withNameLike(name);
     }
 
     public List<ContributorRequest> findAllContributorRequests() {
@@ -109,12 +107,12 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
             return false;
         }
 
-        if (isSpecialUser(person)) {
+        if (resource.getSubmitter().equals(person)) {
+            logger.debug("person was submitter");
             return true;
         }
 
-        if (resource.getSubmitter().equals(person)) {
-            logger.debug("person was submitter");
+        if (authenticationService.can(InternalTdarRights.VIEW_AND_DOWNLOAD_CONFIDENTIAL_INFO, person)) {
             return true;
         }
 
@@ -127,20 +125,6 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         return false;
     }
 
-    public boolean isSpecialUser(Person person) {
-        if (person.isPrivileged()) {
-            logger.debug("person is privleged");
-            return true;
-        }
-
-        if (crowdService.isAdministrator(person)) {
-            logger.debug("person is admin(crowd)");
-            return true;
-        }
-
-        return false;
-    }
-
     /**
      * This is a fairly expensive operation.
      * 
@@ -148,7 +132,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      * <ol>
      * <li>the person and resource parameters are not null
      * <li>resource.submitter is the same as the person parameter
-     * <li>the person has admin privileges (signified in crowd)
+     * <li>the person has curator privileges (signified in crowd)
      * <li>the person has full user privileges on the resource
      * </ol>
      * 
@@ -156,14 +140,18 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      * @param resource
      * @return true if person has write permissions on resource according to the above policies, false otherwise.
      */
-    public boolean canEditResource(Person person, Resource resource) {
-        return person != null
-                && resource != null
-                && (resource.getSubmitter().equals(person) || crowdService.isAdministrator(person) || authorizedUserDao.isAllowedTo(person, resource,
-                        GeneralPermissions.MODIFY_RECORD));
-    }
+//    @Deprecated
+//    public boolean canEditResource(Person person, Resource resource) {
+//        return person != null
+//                && resource != null
+//                && (resource.getSubmitter().equals(person) || authenticationService.can(InternalTdarRights.EDIT_RESOURCES, person) || authorizedUserDao
+//                        .isAllowedTo(person, resource,
+//                                GeneralPermissions.MODIFY_RECORD));
+//    }
 
     public boolean canDownload(InformationResourceFileVersion irFileVersion, Person person) {
+        if (irFileVersion == null)
+            return false;
         boolean fileRestricted = (irFileVersion.getInformationResourceFile().isConfidential() ||
                 !irFileVersion.getInformationResourceFile().getInformationResource().isAvailableToPublic());
         if (fileRestricted && !canViewConfidentialInformation(person, irFileVersion.getInformationResourceFile().getInformationResource())) {
@@ -174,6 +162,8 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
     }
 
     public boolean canViewCollection(ResourceCollection collection, Person person) {
+        if (collection.isShared() && collection.isVisible())
+            return true;
         return authorizedUserDao.isAllowedTo(person, GeneralPermissions.VIEW_ALL, collection);
     }
 
@@ -188,7 +178,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         return getDao().findByFullName(fullName);
     }
 
-    public AuthenticationToken findAuthenticationToken(Number id) {
+    public AuthenticationToken findAuthenticationToken(Long id) {
         return getDao().find(AuthenticationToken.class, id);
     }
 
@@ -202,23 +192,27 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         return authorizedUserDao.findEditableResources(person, isAdmin);
     }
 
+    @SuppressWarnings("unchecked")
     @Transactional(readOnly = false)
-    public Creator findOrSaveCreator(Creator transientCreator) {
+    public <C extends Creator> C findOrSaveCreator(C transientCreator) {
         if (transientCreator instanceof Person) {
-            return findOrSavePerson((Person) transientCreator);
+            return (C) findOrSavePerson((Person) transientCreator);
         }
         if (transientCreator instanceof Institution) {
-            return findOrSaveInstitution((Institution) transientCreator);
+            return (C) findOrSaveInstitution((Institution) transientCreator);
         }
         return null;
     }
 
     @Transactional(readOnly = false)
     private Person findOrSavePerson(Person transientPerson) {
-        // now find or save the person (if the person was found the institution field is ignored entirely and replaced with the persisted person's institution
+        // now find or save the person (if the person was found the institution field is ignored
+        // entirely and replaced with the persisted person's institution
         Person blessedPerson = null;
         if (StringUtils.isNotBlank(transientPerson.getEmail())) {
             blessedPerson = findByEmail(transientPerson.getEmail());
+        } else {
+            transientPerson.setEmail(null);//make sure it's null and not just blank or empty
         }
 
         // didn't find by email? cast the net a little wider...
@@ -226,15 +220,24 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
             if (transientPerson.getInstitution() != null) {
                 transientPerson.setInstitution(findOrSaveInstitution(transientPerson.getInstitution()));
             }
-            List<String> ignoredProps = Arrays.asList("id", "institution", "dateCreated", "registered", "privileged", "rpa", "contributor");
-            blessedPerson = genericService.findByExample(Person.class, transientPerson, ignoredProps, FindOptions.FIND_FIRST_OR_CREATE).get(0);
+            Set<Person> people = getDao().findByPerson(transientPerson);
+            if(!people.isEmpty()) {
+                blessedPerson = people.iterator().next();
+            }
+        }
+        
+        //still didn't find anything?  Fair enough, let's save it
+        if(blessedPerson == null) {
+            genericService.save(transientPerson);
+            blessedPerson = transientPerson;
         }
         return blessedPerson;
     }
 
     @Transactional(readOnly = false)
     private Institution findOrSaveInstitution(Institution transientInstitution) {
-        Institution blessedInstitution = genericService.findByExample(Institution.class, transientInstitution, Arrays.asList("id", "dateCreated"),
+        Institution blessedInstitution = genericService.findByExample(Institution.class, transientInstitution,
+                Arrays.asList(Institution.getIgnorePropertiesForUniqueness()),
                 FindOptions.FIND_FIRST_OR_CREATE).get(0);
         return blessedInstitution;
     }
@@ -259,17 +262,32 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
             return false;
         }
 
-        if (isSpecialUser(authenticatedUser) || authenticatedUser.equals(persistable.getOwner())) {
+        if (authenticationService.can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, authenticatedUser) || authenticatedUser.equals(persistable.getOwner())) {
             return true;
         }
 
         return authorizedUserDao.isAllowedTo(authenticatedUser, GeneralPermissions.ADMINISTER_GROUP, persistable);
     }
 
-    @Transactional 
+    @Transactional
     public List<ResourceCollection> findAccessibleResourceCollections(Person user) {
         return authorizedUserDao.findAccessibleResourceCollections(user);
     }
-    
 
+    public List<Person> showRecentLogins() {
+        return getDao().findRecentLogins();
+    }
+
+    @Transactional(readOnly = false)
+    public void registerLogin(Person authenticatedUser) {
+        authenticatedUser.setLastLogin(new Date());
+        authenticatedUser.incrementLoginCount();
+        logger.trace("login {} {}", authenticatedUser.getLastLogin(), authenticatedUser.getTotalLogins());
+        saveOrUpdate(authenticatedUser);
+    }
+
+    @Transactional(readOnly = true)
+    public Long findNumberOfActualContributors() {
+        return getDao().findNumberOfActualContributors();
+    }
 }

@@ -1,3 +1,4 @@
+<#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
 <head>
@@ -25,10 +26,10 @@
 <br/>
 <span tiplabel="Year" tooltipcontent="Four digit year, e.g. 1966 or 2005.">
        <#assign dateVal = ""/>
-       <#if codingSheet.dateCreated?? && codingSheet.dateCreated != -1>
-         <#assign dateVal = codingSheet.dateCreated?c />
+       <#if codingSheet.date?? && codingSheet.date != -1>
+         <#assign dateVal = codingSheet.date?c />
       </#if>
-        <@s.textfield labelposition='left' id='dateCreated' label='Year' name='codingSheet.dateCreated' value="${dateVal}" cssClass="shortfield reasonableDate required" required=true
+        <@s.textfield labelposition='left' id='dateCreated' label='Year' name='codingSheet.date' value="${dateVal}" cssClass="shortfield reasonableDate required" required=true
           title="Please enter the year this coding sheet was created" />
 
 </span>
@@ -60,3 +61,4 @@
 </@edit.resourceJavascript>
 
 </body>
+</#escape>

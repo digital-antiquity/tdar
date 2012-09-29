@@ -16,7 +16,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.search.annotations.Indexed;
@@ -46,6 +45,7 @@ public class CodingSheet extends InformationResource implements SupportsResource
 
     @ManyToOne
     @JoinColumn(name = "category_variable_id")
+    @IndexedEmbedded(depth = 1)
     private CategoryVariable categoryVariable;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "codingSheet")
@@ -68,7 +68,6 @@ public class CodingSheet extends InformationResource implements SupportsResource
         this.codingRules = codingRules;
     }
 
-    @XmlIDREF
     public CategoryVariable getCategoryVariable() {
         return categoryVariable;
     }
@@ -105,5 +104,4 @@ public class CodingSheet extends InformationResource implements SupportsResource
     public void setAssociatedDataTableColumns(Set<DataTableColumn> associatedDataTableColumns) {
         this.associatedDataTableColumns = associatedDataTableColumns;
     }
-
 }

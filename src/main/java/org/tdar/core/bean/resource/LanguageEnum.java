@@ -1,6 +1,7 @@
 package org.tdar.core.bean.resource;
 
 import org.apache.commons.lang.StringUtils;
+import org.tdar.core.bean.HasLabel;
 
 
 /**
@@ -11,7 +12,7 @@ import org.apache.commons.lang.StringUtils;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
  */
-public enum LanguageEnum { 
+public enum LanguageEnum implements HasLabel { 
 
 	ENGLISH("English", "en","eng"),
 	SPANISH("Spanish", "sp","spa"),

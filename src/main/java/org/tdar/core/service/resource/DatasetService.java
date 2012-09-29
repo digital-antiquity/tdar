@@ -4,52 +4,59 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.DataValueOntologyNodeMapping;
 import org.tdar.core.bean.resource.Dataset;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
-import org.tdar.core.bean.resource.OntologyNode;
+import org.tdar.core.bean.resource.Project;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.dataTable.DataTable;
 import org.tdar.core.bean.resource.dataTable.DataTableColumn;
 import org.tdar.core.bean.resource.dataTable.DataTableRelationship;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.resource.DatasetDao;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.ExcelService;
+import org.tdar.core.service.SearchIndexService;
+import org.tdar.core.service.XmlService;
 import org.tdar.db.conversion.DatasetConversionFactory;
 import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.db.model.PostgresDatabase;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.struts.data.FileProxy;
-import org.tdar.utils.SimpleSerializer;
+import org.tdar.struts.data.ResultMetadataWrapper;
 
 /**
  * $Id$
@@ -61,7 +68,10 @@ import org.tdar.utils.SimpleSerializer;
 public class DatasetService extends AbstractInformationResourceService<Dataset, DatasetDao> {
 
     @Autowired
-    private PostgresDatabase tdarDataImportDatabase;
+    private TargetDatabase tdarDataImportDatabase;
+
+    @Autowired
+    private DataTableService dataTableService;
 
     @Autowired
     private ResourceService resourceService;
@@ -70,18 +80,42 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
     private GenericDao genericDao;
 
     @Autowired
-    public void setDao(DatasetDao dao) {
-        super.setDao(dao);
-    }
+    private SearchIndexService searchIndexService;
 
+    @Autowired
+    private ExcelService excelService;
+
+    @Autowired
+    private XmlService xmlService;
+
+    @Transactional
+    public void translate(DataTableColumn column) {
+        translate(column, column.getDefaultCodingSheet());
+    }
+    
     @Transactional
     public boolean translate(final DataTableColumn column, final CodingSheet codingSheet) {
         if (codingSheet == null) {
             return false;
         }
         getLogger().debug("translating {} with {}", column.getName(), codingSheet);
+        // FIXME: if we eventually offer on-the-fly coding sheet translation we cannot
+        // modify the actual dataset in place  
         tdarDataImportDatabase.translateInPlace(column, codingSheet);
         return true;
+    }
+    
+    @Transactional
+    public boolean retranslate(DataTableColumn column) {
+        untranslate(column);
+        return translate(column, column.getDefaultCodingSheet());
+    }
+    
+    @Transactional
+    public void retranslate(Collection<DataTableColumn> columns) {
+        for (DataTableColumn column : columns) {
+            retranslate(column);
+        }
     }
 
     @Transactional
@@ -129,6 +163,34 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             IOUtils.closeQuietly(in);
         }
     }
+    
+    /**
+     * Re-uploads the latest version of the data file for the given dataset.
+     * @param dataset
+     */
+    @Transactional(noRollbackFor=TdarRecoverableRuntimeException.class)
+    public void reprocess(Dataset dataset) {
+        logger.debug("Reprocessing {}", dataset);
+    	convertDataFile(dataset.getFirstInformationResourceFile());
+    }
+
+    public List<String> getColumnNames(ResultSet resultSet, DataTable dataTable) throws SQLException {
+        List<String> columnNames = new ArrayList<String>();
+        ResultSetMetaData metadata = resultSet.getMetaData();
+        for (int columnIndex = 0; columnIndex < metadata.getColumnCount(); columnIndex++) {
+            String columnName = metadata.getColumnName(columnIndex + 1);
+            // if (columnName.equals(DataTableColumn.TDAR_ROW_ID.getName())) {
+            // continue;
+            // }
+            DataTableColumn column = dataTable.getColumnByName(columnName);
+            if (column != null) {
+                columnName = column.getDisplayName();
+            }
+
+            columnNames.add(columnName);
+        }
+        return columnNames;
+    }
 
     private HSSFWorkbook toExcel(Dataset dataset) {
         Set<DataTable> dataTables = dataset.getDataTables();
@@ -136,43 +198,30 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             return null;
         }
         HSSFWorkbook workbook = new HSSFWorkbook();
-        for (DataTable dataTable : dataTables) {
+        for (final DataTable dataTable : dataTables) {
             // each table becomes a sheet.
-            String tableName = dataTable.getName();
+            String tableName = dataTable.getDisplayName();
+            logger.debug(tableName);
+            if (workbook.getSheet(tableName) != null) {
+                throw new TdarRecoverableRuntimeException("two tables with same display name ");
+            }
             final HSSFSheet sheet = workbook.createSheet(tableName);
             ResultSetExtractor<Object> excelExtractor = new ResultSetExtractor<Object>() {
                 @Override
-                public Object extractData(ResultSet resultSet)
-                        throws SQLException, DataAccessException {
-                    ResultSetMetaData metadata = resultSet.getMetaData();
-                    int columns = metadata.getColumnCount();
+                public Object extractData(ResultSet resultSet) throws SQLException, DataAccessException {
                     // create and initialize the header row of the worksheet.
                     int rowIndex = 0;
-                    HSSFRow headerRow = sheet.createRow(rowIndex++);
-                    int id_col = -1;
-                    for (int columnIndex = 0; columnIndex < columns; columnIndex++) {
-                        String columnName = metadata
-                                .getColumnName(columnIndex + 1);
-                        if (columnName.equals(TargetDatabase.TDAR_ID_COLUMN)) {
-                            id_col = columnIndex;
-                        } else {
-                            HSSFCell headerCell = headerRow.createCell(columnIndex);
-                            headerCell.setCellValue(columnName);
-                        }
-                    }
+                    List<String> columnNames = getColumnNames(resultSet, dataTable);
+                    // List<String> columnNames =
+                    // for (int columnIndex = 0; columnIndex < metadata.getColumnCount(); columnIndex++) {
+                    // String columnName = metadata.getColumnName(columnIndex + 1);
+                    // columnNames.add(columnName);
+                    // }
+                    logger.debug("column names: " + columnNames);
+                    excelService.addHeaderRow(sheet, rowIndex, 0, columnNames);
                     while (resultSet.next()) {
-                        HSSFRow row = sheet.createRow(rowIndex++);
-                        for (int columnIndex = 0; columnIndex < columns; columnIndex++) {
-                            // int columnType = metadata.getColumnType(columnIndex+1);
-                            if (columnIndex == id_col)
-                                continue;
-
-                            HSSFCell cell = row.createCell(columnIndex);
-                            Object result = resultSet.getObject(columnIndex + 1);
-                            if (result != null) {
-                                cell.setCellValue(result.toString());
-                            }
-                        }
+                        rowIndex++;
+                        excelService.addDataRow(sheet, rowIndex, 0, resultSet);
                     }
                     return null;
                 }
@@ -188,34 +237,31 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
     }
 
     /**
-     * Converts the local data file to postgres if possible and generates the
-     * appropriate DataTable and DataTableColumn resources collected by the
-     * DatabaseConverter after conversion.
+     * Converts the given dataset file into postgres, preserving mappings and column-level metadata as much as possible.
      * 
-     * FIXME: still need to delete the uploaded data file. FIXME: may eventually
-     * replace usage of DatabaseConverter with DatabaseConversionService. That
-     * would probably replace this method entirely though.
-     * 
-     * 
-     * @param localDataFile
-     * @param dataset
      */
-    @Transactional
+    @Transactional(noRollbackFor=TdarRecoverableRuntimeException.class)
     public void convertDataFile(InformationResourceFile datasetFile) {
         if (datasetFile == null) {
             getLogger().warn("No datasetFile specified, returning");
             return;
         }
-        if (! datasetFile.isColumnarDataFileType() || ! (datasetFile.getInformationResource() instanceof Dataset) ) {
+        if (!datasetFile.isColumnarDataFileType() || !(datasetFile.getInformationResource() instanceof Dataset)) {
             getLogger().error("datasetFile had wrong file type {} or inappropriate InformationResource {}", datasetFile, datasetFile.getInformationResource());
             return;
         }
         Dataset dataset = (Dataset) datasetFile.getInformationResource();
-        // delete existing data tables and drop them from the tdardata database.
-        dropDatasetTables(dataset);
         // execute convert-to-db code.
         InformationResourceFileVersion versionToConvert = datasetFile.getLatestUploadedVersion();
+        if (versionToConvert == null || versionToConvert.getFile() == null || ! versionToConvert.getFile().exists()) {
+            throw new TdarRecoverableRuntimeException(String.format("Latest uploaded version %s for InformationResourceFile %s had no actual File payload", versionToConvert, datasetFile));
+        }
+        // drop this dataset's actual data tables from the tdardata database - we'll delete the actual hibernate metadata entities later after
+        // performing reconciliation so we can preserve as much column-level metadata as possible
+        dropDatasetTables(dataset);
+
         DatasetConverter databaseConverter = DatasetConversionFactory.getConverter(versionToConvert, tdarDataImportDatabase);
+        // returns the set of transient POJOs from the incoming dataset.
         Set<DataTable> tablesToPersist = databaseConverter.execute();
         // helper Map to manage existing tables - all remaining entries in this existingTablesMap will be purged at the end of this process
         HashMap<String, DataTable> existingTablesMap = new HashMap<String, DataTable>();
@@ -235,15 +281,17 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
                     // and all others that don't match will be deleted.
                     existingTablesMap.remove(internalTableName);
                 } else if (existingTablesMap.size() == 1 && tablesToPersist.size() == 1) {
-                    // if we just have one, then attempt to use this as our existing table regardless of the table / sheet name
+                    // the table names did not match, but we have one incoming table and one existing table. Try to match them regardless.
                     existingTable = dataset.getDataTables().iterator().next();
                     existingTablesMap.clear();
                 } else {
-                    logger.warn("Couldn't find an analog to incoming data table {}, moving on", tableToPersist);
+                    // continue with the for loop, tableToPersist does not require any metadata merging because
+                    // we can't find an existing table to merge it with
+                    logger.debug("No analogous existing table to merge with incoming data table {}, moving on", tableToPersist);
                     tableToPersist.setDataset(dataset);
                     dataset.getDataTables().add(tableToPersist);
                     getDao().saveOrUpdate(tableToPersist);
-//                    unmergedTables.add(tableToPersist);
+                    // unmergedTables.add(tableToPersist);
                     continue;
                 }
                 // if there is an analogous existing table, try to reconcile all the columns from the incoming data table
@@ -266,26 +314,34 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
                     columnsToPersist.set(i, incomingColumn);
                 }
                 logger.debug("deleting unmerged columns: {}", existingColumnsMap);
-                logger.debug("result: {}",columnsToPersist);
+                logger.debug("result: {}", columnsToPersist);
                 // get rid of all the old existing columns that don't have an analogous column (by name)
-                existingTable.getDataTableColumns().removeAll(existingColumnsMap.values());
-                getDao().delete(existingColumnsMap.values());
+                Collection<DataTableColumn> columnsToRemove = existingColumnsMap.values();
+                // first unmap these columns
+                getDao().unmapAllColumnsInProject(dataset.getProject(), columnsToRemove);
+                existingTable.getDataTableColumns().removeAll(columnsToRemove);
+                getDao().delete(columnsToRemove);
+
 
                 tableToPersist.setDataset(dataset);
                 // merge folds all the data on incomingDataTable into the existingTable transparently
-                // we don't need delete the existingTable or remove it from Dataset but we cannot refer 
+                // we don't need delete the existingTable or remove it from Dataset but we cannot refer
                 // to it safely anymore
                 tableToPersist = getDao().merge(tableToPersist, existingTable);
-
                 logger.debug("merged data table is now {}", tableToPersist);
                 logger.debug("actual data table columns {}, incoming data table columns {}", tableToPersist.getDataTableColumns(), columnsToPersist);
-                
             }
-            // clean up existing data tables
-            logger.info("deleting unmerged tables: {}", existingTablesMap.values());
-            dataset.getDataTables().removeAll(existingTablesMap.values());
-            getDao().delete(existingTablesMap.values());
-
+            // any tables left in existingTables didn't have an analog in the incoming dataset, so clean them up
+            Collection<DataTable> tablesToRemove = existingTablesMap.values();
+            logger.info("deleting unmerged tables: {}", tablesToRemove);
+            ArrayList<DataTableColumn> columnsToUnmap = new ArrayList<DataTableColumn>();
+            for (DataTable table: tablesToRemove) {
+                columnsToUnmap.addAll(table.getDataTableColumns());
+            }
+            // first unmap all columns from the removed tables
+            getDao().unmapAllColumnsInProject(dataset.getProject(), columnsToUnmap);
+            dataset.getDataTables().removeAll(tablesToRemove);
+            getDao().delete(tablesToRemove);
 
             for (DataTableRelationship rel : dataset.getRelationships()) {
                 String oldForeignName = rel.getForeignTable().getName();
@@ -309,13 +365,17 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         logger.debug("dataset: {} id: {}", dataset.getTitle(), dataset.getId());
         for (DataTable dataTable : dataset.getDataTables()) {
             logger.debug("dataTable: {}", dataTable);
-            logger.debug("dataTableColumns: {}", dataTable.getDataTableColumns());
+            List<DataTableColumn> columns = dataTable.getDataTableColumns();
+            logger.debug("dataTableColumns: {}", columns);
+            for (DataTableColumn column: columns) {
+                translate(column);
+            }
         }
         datasetFile.setStatus(FileStatus.PROCESSED);
         getDao().saveOrUpdate(datasetFile);
         getDao().saveOrUpdate(dataset);
     }
-
+    
     /**
      * Returns either the incoming column without any changes or the result of merging the incoming column
      * with the existing column.
@@ -333,7 +393,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             String normalizedColumnName, DataTableColumn incomingColumn,
             DataTableColumn existingColumn) {
         // FIXME: check that types are compatible before merging
-        
+
         if (existingColumn != null) {
             // if we've gotten this far, we know that the incoming column
             // should be saved onto the existing table instead of the transient table that it was
@@ -342,15 +402,9 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             // copy all values that should be retained
             incomingColumn.setDefaultCodingSheet(existingColumn.getDefaultCodingSheet());
             incomingColumn.setDefaultOntology(existingColumn.getDefaultOntology());
-            
-            // FIXME: it appears that local bean properties are not being transferred or managed in the merge
-            // check if setting MERGE cascades on DataTableColumn.dataTable will fix this.
-//            existingColumn.setDescription(incomingColumn.getDescription());
-//            existingColumn.setColumnDataType(incomingColumn.getColumnDataType());
-//            existingColumn.setColumnEncodingType(incomingColumn.getColumnEncodingType());
 
             incomingColumn.setCategoryVariable(existingColumn.getCategoryVariable());
-            incomingColumn.setMeasurementUnit(existingColumn.getMeasurementUnit());
+
             if (CollectionUtils.isNotEmpty(existingColumn.getValueToOntologyNodeMapping())) {
                 for (DataValueOntologyNodeMapping mapping : existingColumn.getValueToOntologyNodeMapping()) {
                     mapping.setDataTableColumn(incomingColumn);
@@ -359,6 +413,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             }
             logger.debug("Merging incoming column with existing column");
             incomingColumn = getDao().merge(incomingColumn, existingColumn);
+            incomingColumn.copyUserMetadataFrom(existingColumn);
             existingNameToColumnMap.remove(normalizedColumnName);
         }
         return incomingColumn;
@@ -375,32 +430,26 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
     }
 
     public void serializeDataValueOntologyNodeMapping(DataTableColumn dataTableColumn, Person authenticatedUser) {
-        SimpleSerializer serializer = new SimpleSerializer();
-        serializer.addToWhitelist(DataTableColumn.class, "categoryVariable", "columnDataType", "columnEncodingType", "columnEncodingType", "measurementUnit",
-                                    "name", "valueToOntologyNodeMapping");
-        serializer.addToWhitelist(CategoryVariable.class, "description", "label", "parent", "type");
-        // FIXME: ensure that we can rehydrate the list of mappings if we only persist the "bag" field (we assume mappings are implemented with a hibernate
-        // PersistentBag)
-        serializer.addToWhitelist(org.hibernate.collection.PersistentBag.class, "bag");
-        serializer.addToWhitelist(DataValueOntologyNodeMapping.class, "dataValue", "ontologyNode");
-        serializer.addToWhitelist(OntologyNode.class, "description", "displayName");
-        serializer.addToWhitelist(Persistable.Base.class, "id");
-
-        String xml = serializer.toXml(dataTableColumn);
-        resourceService.logResourceModification(dataTableColumn.getDataTable().getDataset(), authenticatedUser, "saveDataValueOntologyNodeMapping", xml);
-
-        getLogger().debug("--saveDataValueOntologyNodeMapping--\n{}", xml);
+        try {
+            StringWriter writer = new StringWriter();
+            xmlService.convertToXML(dataTableColumn, writer);
+            resourceService.logResourceModification(dataTableColumn.getDataTable().getDataset(), authenticatedUser, "saveDataValueOntologyNodeMapping",
+                    writer.toString());
+            getLogger().debug("--saveDataValueOntologyNodeMapping--\n{}", writer.toString());
+        } catch (Exception e) {
+            logger.error("could not serialize to XML:", e);
+        }
     }
 
     public void logDataTableColumns(DataTable dataTable, String message, Person authenticatedUser) {
-        // blacklist everything in DataTableColumn except for a few fields.
-        SimpleSerializer serializer = new SimpleSerializer();
-        serializer.addToWhitelist(DataTableColumn.class, "categoryVariable", "columnDataType", "columnEncodingType", "columnEncodingType", "measurementUnit",
-                "name");
-        serializer.addToWhitelist(CategoryVariable.class, "description", "label", "parent", "type");
-        String xml = serializer.toXml(dataTable.getSortedDataTableColumns());
-        resourceService.logResourceModification(dataTable.getDataset(), authenticatedUser, message, xml);
-        logger.debug(message + xml);
+        try {
+            StringWriter writer = new StringWriter();
+            xmlService.convertToXML(dataTable, writer);
+            resourceService.logResourceModification(dataTable.getDataset(), authenticatedUser, message, writer.toString());
+            logger.debug(message + writer.toString());
+        } catch (Exception e) {
+            logger.error("could not serialize to XML:", e);
+        }
     }
 
     @Transactional
@@ -449,31 +498,47 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
     }
 
     @Transactional
-    public List<List<String>> selectAllFromDataTable(DataTable dataTable, final int start, final int page, boolean includeGenerated) {
+    public ResultMetadataWrapper selectAllFromDataTable(final DataTable dataTable, final int start, final int page, boolean includeGenerated) {
+        final ResultMetadataWrapper wrapper = new ResultMetadataWrapper();
+        wrapper.setRecordsPerPage(page);
+        wrapper.setStartRecord(start);
+
         ResultSetExtractor<List<List<String>>> resultSetExtractor = new ResultSetExtractor<List<List<String>>>() {
             @Override
             public List<List<String>> extractData(ResultSet rs) throws SQLException, DataAccessException {
                 List<List<String>> results = new ArrayList<List<String>>();
-                List<String> colNames = new ArrayList<String>();
-                for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
-                    colNames.add(rs.getMetaData().getColumnName(i));
-                }
-                int rowNum = 0;
-                results.add(colNames);
+                int rowNum = 1;
                 while (rs.next()) {
-                    rowNum++;
-                    if (rowNum <= start || rowNum > start + page)
-                        continue;
-                    List<String> row = new ArrayList<String>();
-                    for (int i = 1; i <= colNames.size(); i++) {
-                        row.add(rs.getString(i));
+                    Map<DataTableColumn, String> result = convertResultSetRowToDataTableColumnMap(dataTable, rs);
+                    if (rs.isFirst()) {
+                        wrapper.setFields(new ArrayList<DataTableColumn>(result.keySet()));
                     }
-                    results.add(row);
+
+                    if (rowNum > start && rowNum <= start + page) {
+                        ArrayList<String> values = new ArrayList<String>();
+                        for (DataTableColumn col : wrapper.getFields()) {
+                            if (col.isVisible()) {
+                                values.add(result.get(col));
+                            }
+                        }
+                        results.add(values);
+                    }
+                    rowNum++;
+
+                    if (rs.isLast()) {
+                        wrapper.setTotalRecords(rs.getRow());
+                    }
                 }
                 return results;
             }
         };
-        return tdarDataImportDatabase.selectAllFromTable(dataTable, resultSetExtractor, includeGenerated);
+        try {
+            wrapper.setResults(tdarDataImportDatabase.selectAllFromTableInImportOrder(dataTable, resultSetExtractor, includeGenerated));
+        } catch (BadSqlGrammarException e) {
+            logger.trace("order column did not exist" , e);
+            wrapper.setResults(tdarDataImportDatabase.selectAllFromTable(dataTable, resultSetExtractor, includeGenerated));
+        }
+        return wrapper;
     }
 
     @Transactional
@@ -488,4 +553,90 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         }
         return relationships;
     }
+
+    @Transactional
+    public void assignMappedDataForInformationResource(InformationResource resource) {
+        String key = resource.getMappedDataKeyValue();
+        DataTableColumn column = resource.getMappedDataKeyColumn();
+        if (StringUtils.isBlank(key) || column == null) {
+            return;
+        }
+        final DataTable table = column.getDataTable();
+        ResultSetExtractor<Map<DataTableColumn, String>> resultSetExtractor = new ResultSetExtractor<Map<DataTableColumn, String>>() {
+            @Override
+            public Map<DataTableColumn, String> extractData(ResultSet rs) throws SQLException, DataAccessException {
+                while (rs.next()) {
+                    Map<DataTableColumn, String> results = convertResultSetRowToDataTableColumnMap(table, rs);
+                    return results;
+                }
+                return null;
+            }
+
+        };
+
+        Map<DataTableColumn, String> dataTableQueryResults = tdarDataImportDatabase.selectAllFromTable(column, key, resultSetExtractor);
+        resource.setRelatedDatasetData(dataTableQueryResults);
+    }
+
+    /*
+     * Return a HashMap that maps data table columns to values
+     */
+    private Map<DataTableColumn, String> convertResultSetRowToDataTableColumnMap(final DataTable table, ResultSet rs) throws SQLException {
+        Map<DataTableColumn, String> results = new HashMap<DataTableColumn, String>();
+        for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
+            DataTableColumn col = table.getColumnByName(rs.getMetaData().getColumnName(i));
+            if (col != null && col.isVisible()) { // ignore if null (non translated version of translated)
+                results.put(col, null);
+            }
+        }
+        for (DataTableColumn key : results.keySet()) {
+            results.put(key, rs.getString(key.getName()));
+        }
+        return results;
+    }
+
+    public List<Resource> findRecentlyUpdatedItemsInLastXDays(int days) {
+        return getDao().findRecentlyUpdatedItemsInLastXDays(days);
+    }
+
+    @Transactional
+    public void updateMappings(Project project, Collection<DataTableColumn> columns) {
+        if (CollectionUtils.isEmpty(columns)) {
+            return;
+        }
+        if (project == Project.NULL) {
+            throw new TdarRecoverableRuntimeException("Unable to update mappings for an unspecified project.");
+        }
+        getDao().unmapAllColumnsInProject(project, columns);
+        boolean hasMappedColumns = false;
+        for (DataTableColumn column : columns) {
+            logger.info("mapping dataset to resources using column: {} ", column);
+            Dataset dataset = column.getDataTable().getDataset();
+            if (dataset == null) {
+                throw new TdarRecoverableRuntimeException("dataset for " + column + " was null");
+            }
+            else if (ObjectUtils.notEqual(project, dataset.getProject())) {
+                throw new TdarRecoverableRuntimeException("dataset project " + project + " somehow wasn't the same as " + project);
+            }
+            if (column.isMappingColumn()) {
+                /*
+                 * Take the distinct column values mapped and associate them with files in tDAR based on:
+                 * - shared project
+                 * - filename matches column value either (a) with extension or (b) with separator eg: file1.jpg;file2.jpg
+                 * NOTE: a manual reindex happens at the end
+                 */
+                List<String> updatedValues = getDao().mapColumnToResource(column, dataTableService.findAllDistinctValues(column));
+                hasMappedColumns = true;
+                // FIXME: could add custom logic to add a backpointer (new column) to DB that has "mapped" set to true based on updatedValues
+            }
+        }
+        if (hasMappedColumns) {
+            // mapping columns to the resource runs a raw sql update, refresh the state of the Project. 
+            getDao().refresh(project);
+            // have to reindex...
+            logger.debug("{}", project.getInformationResources());        	
+        }
+        searchIndexService.index((Resource[]) project.getInformationResources().toArray(new Resource[0]));
+    }
+
 }

@@ -1,3 +1,4 @@
+<#escape _untrusted as _untrusted?html >
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
 <head>
 <title>Administrator Dashboard: Contributor Requests</title>
@@ -20,3 +21,4 @@
 </tbody>
 </table>
 <script>$(applyZebraColors);</script>
+</#escape>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document>
+<document xmlns="http://www.tdar.org/namespace">
 	<title>The True Prairie ecosystem</title>
 	<resourceType>DOCUMENT</resourceType>
 	<metadataLanguage>ENGLISH</metadataLanguage>
@@ -13,7 +13,7 @@
 	<copyLocation>AAS Citation Data Tranfer, Location Unknown [ 20370]
 	</copyLocation>
 	<publisherLocation>Stroudsburg, Pa</publisherLocation>
-	<dateCreated>1981</dateCreated>
+	<date>1981</date>
 	<publisher>distributed world wide by Academic Press</publisher>
 	<seriesName>US / IBP synthesis series ; 16</seriesName>
 	<resourceAnnotations>

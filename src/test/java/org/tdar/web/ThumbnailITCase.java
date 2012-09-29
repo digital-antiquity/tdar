@@ -46,7 +46,7 @@ public class ThumbnailITCase extends AbstractAdminAuthenticatedWebTestCase {
         setInput("ticketId", ticketId);
         setInput(IMAGE_TITLE_FIELDNAME, IMAGE_TITLE);
         setInput(DESCRIPTION_FIELDNAME, DESCRIPTION);
-        setInput("image.dateCreated", "1984");
+        setInput("image.date", "1984");
         // FIXME: need to create input
         addFileProxyFields(0, true, TEST_IMAGE_NAME);
         setInput("resourceAvailability", "Public");

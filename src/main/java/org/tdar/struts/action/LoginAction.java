@@ -12,9 +12,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.service.external.CrowdService.AuthenticationResult;
+import org.tdar.core.service.external.auth.AuthenticationResult;
+import org.tdar.struts.WriteableSession;
 
-import com.opensymphony.xwork2.validator.annotations.EmailValidator;
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 import com.opensymphony.xwork2.validator.annotations.ValidatorType;
 
@@ -63,15 +63,17 @@ public class LoginAction extends AuthenticationAware.Base {
             results = {
                     @Result(name = "new", type = "redirect", location = "/account/new"),
                     @Result(name = "return", type = "redirect", location = "${returnUrl}")
-    })
+            })
+    @WriteableSession
     public String authenticate() {
         logger.debug("Trying to authenticate.");
         if (StringUtils.isNotBlank(getComment())) {
-            logger.debug(String.format("we think this user was a spammer: %s  -- %s",getLoginEmail(),getComment()));
+            logger.debug(String.format("we think this user was a spammer: %s  -- %s", getLoginEmail(), getComment()));
             addActionError("Could not authenticate");
             return INPUT;
         }
-        AuthenticationResult result = getCrowdService().authenticate(getServletRequest(), getServletResponse(), loginEmail, loginPassword);
+        AuthenticationResult result = getAuthenticationAndAuthorizationService().getAuthenticationProvider().authenticate(getServletRequest(),
+                getServletResponse(), loginEmail, loginPassword);
         if (result.isValid()) {
             person = getEntityService().findByEmail(loginEmail);
             if (person == null) {
@@ -85,6 +87,9 @@ public class LoginAction extends AuthenticationAware.Base {
                 return "new";
             }
 
+            // enable us to force group cache to be cleared
+            getAuthenticationAndAuthorizationService().clearPermissionsCache(person);
+
             // another way to pass a url manually
             if (!StringUtils.isEmpty(url)) {
                 logger.info("url {} ", url);
@@ -93,6 +98,7 @@ public class LoginAction extends AuthenticationAware.Base {
             logger.debug(loginEmail.toUpperCase() + " logged in from " + getServletRequest().getRemoteAddr() + " using: "
                     + getServletRequest().getHeader("User-Agent"));
             createAuthenticationToken(person);
+            getEntityService().registerLogin(person);
             if (getSessionData().getReturnUrl() != null) {
                 setReturnUrl(getSessionData().getReturnUrl());
                 if (getReturnUrl().contains("filestore/")) {
@@ -110,7 +116,7 @@ public class LoginAction extends AuthenticationAware.Base {
                 return "return";
             }
             getSessionData().setReturnUrl(null);
-
+            // FIXME: return SUCCESS instead?
             return AUTHENTICATED;
         } else {
             addActionError(result.getMessage());
@@ -125,8 +131,6 @@ public class LoginAction extends AuthenticationAware.Base {
 
     // FIXME: messages should be localized
     @RequiredStringValidator(type = ValidatorType.FIELD, message = "Please enter your login email.", shortCircuit = true)
-    @EmailValidator(type = ValidatorType.FIELD, message = "The email address you entered ( ${loginEmail} )  appears to be an invalid format.",
-            shortCircuit = true)
     public void setLoginEmail(String loginEmail) {
         this.loginEmail = loginEmail;
     }
@@ -194,7 +198,8 @@ public class LoginAction extends AuthenticationAware.Base {
     }
 
     /**
-     * @param comment the comment to set
+     * @param comment
+     *            the comment to set
      */
     public void setComment(String comment) {
         this.comment = comment;

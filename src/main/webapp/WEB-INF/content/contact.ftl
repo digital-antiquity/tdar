@@ -14,5 +14,5 @@ tDAR.  If you have any other comments, suggestions, or questions, you can also e
 href="mailto:&#99;&#111;&#109;&#109;&#101;&#110;&#116;&#115;&#64;&#116;&#100;&#97;&#114;&#46;&#111;&#114;&#103;?subject=tDAR%20comments&amp;cc=tdar-svn%40lists.asu.edu">&#99;&#111;&#109;&#109;&#101;&#110;&#116;&#115;&#64;&#116;&#100;&#97;&#114;&#46;&#111;&#114;&#103;</a>
 Thanks for your interest!
 </p>
-<#include "/includes/ftl/notice.ftl">
+<#include "/${themeDir}/notice.ftl">
 

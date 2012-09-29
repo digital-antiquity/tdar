@@ -1,3 +1,4 @@
+<#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
 <head>
@@ -25,10 +26,10 @@ title="A title is required for all Images" />
 <@s.select labelposition='left' label='Language'  name='resourceLanguage'  emptyOption='false' listValue='label' list='%{languages}'/>
 <br/>
        <#assign dateVal = ""/>
-       <#if image.dateCreated?? && image.dateCreated != -1>
-         <#assign dateVal = image.dateCreated?c />
+       <#if image.date?? && image.date!= -1>
+         <#assign dateVal = image.date?c />
       </#if>
-        <@s.textfield labelposition='left' id='dateCreated' label='Year' name='image.dateCreated' value="${dateVal}" cssClass="shortfield reasonableDate required" required=true 
+        <@s.textfield labelposition='left' id='dateCreated' label='Year' name='image.date' value="${dateVal}" cssClass="shortfield reasonableDate required" required=true 
          title="Please enter the year this image was created" />
 
 
@@ -46,7 +47,6 @@ title="A title is required for all Images" />
 
 </@edit.basicInformation>
 
-
 <@edit.asyncFileUpload "Image" true />
 
 <@edit.resourceCreators 'Image Creators' authorshipProxies 'authorship' />
@@ -59,3 +59,4 @@ title="A title is required for all Images" />
 
 <@edit.resourceJavascript formId="#ImageMetadataForm" selPrefix="#image" includeAsync=true includeInheritance=true />
 </body>
+</#escape>

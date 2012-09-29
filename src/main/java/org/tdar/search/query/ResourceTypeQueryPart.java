@@ -22,8 +22,9 @@ public class ResourceTypeQueryPart implements QueryPart {
     }
 
     public void addResourceTypeLimit(ResourceType type) {
-        if (type == null)
+        if (type == null) {
             return;
+        }
         if (resourceTypeLimits == null)
             resourceTypeLimits = new ArrayList<String>();
         resourceTypeLimits.add(type.toString());

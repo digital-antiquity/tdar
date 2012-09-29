@@ -4,10 +4,12 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -21,7 +23,6 @@ import java.util.Set;
 import javax.sql.DataSource;
 
 import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -56,13 +57,19 @@ import org.tdar.utils.Pair;
  * 
  * Used to interact with the data import postgresql database.
  * 
- * FIXME: switch to SimpleJdbcTemplate eventually
+ * FIXME: switch to SimpleJdbcTemplate, use PreparedStatement api when possible (e.g. all values)
  * 
  * @version $Revision$
  */
 public class PostgresDatabase implements TargetDatabase {
 
+    public static final int MAX_VARCHAR_LENGTH = 500;
     private static final String SELECT_ALL_FROM_TABLE = "SELECT %s FROM %s";
+    private static final String SELECT_ALL_FROM_TABLE_WITH_ORDER = "SELECT %s FROM %s order by " + TargetDatabase.TDAR_ID_COLUMN;
+    private static final String SELECT_ROW_COUNT = "SELECT COUNT(0) FROM %s";
+    private static final String SELECT_ALL_FROM_COLUMN = "SELECT \"%s\" FROM %s";
+    private static final String SELECT_ALL_FROM_TABLE_WHERE = "SELECT %s FROM %s WHERE \"%s\"=?";
+    //private static final String SELECT_ALL_FROM_TABLE_WHERE = "SELECT %s FROM %s WHERE \"%s\"=\'%s\'";
     private static final String DROP_TABLE = "DROP TABLE IF EXISTS %s";
     private static final String SELECT_DISTINCT = "SELECT DISTINCT \"%s\" FROM %s ORDER BY \"%s\"";
     private static final String SELECT_DISTINCT_NOT_BLANK = "SELECT DISTINCT \"%s\" FROM %s WHERE \"%s\" IS NOT NULL AND \"%s\" !='' ORDER BY \"%s\"";
@@ -77,37 +84,32 @@ public class PostgresDatabase implements TargetDatabase {
     private static final String INSERT_STATEMENT = "INSERT INTO %1$s (%2$s) VALUES(%3$s)";
     private static final String CREATE_TABLE = "CREATE TABLE %1$s (" + TDAR_ID_COLUMN + " bigserial, %2$s)";
     private static final String SQL_ALTER_TABLE = "ALTER TABLE \"%1$s\" ALTER \"%2$s\" TYPE %3$s USING \"%2$s\"::%3$s";
-    private static final String[] reservedNames = { "all", "analyse", "analyze", "and", "any", "array", "as", "asc", "asymmetric", "both", "case", "cast",
-            "check", "collate", "column", "constraint", "create", "current_date", "current_role", "current_time", "current_timestamp", "current_user",
-            "default", "deferrable", "desc", "distinct", "do", "double", "else", "end", "except", "for", "foreign", "from", "grant", "group", "having", "in",
-            "initially", "intersect", "into", "leading", "limit", "localtime", "localtimestamp", "new", "not", "null", "off", "offset", "old", "on", "only",
-            "or", "order", "placing", "primary", "references", "select", "session_user", "some", "symmetric", "table", "then", "to", "trailing", "union",
-            "unique", "user", "using", "when", "where", "false", "true", "authorization", "between", "binary", "cross", "freeze", "full", "ilike", "inner",
-            "is", "isnull", "join", "left", "like", "natural", "notnull", "outer", "overlaps", "right", "similar", "verbose" };
-    /**
-     * 
-     */
+    private static final HashSet<String> RESERVED_COLUMN_NAMES = new HashSet<String>(
+            Arrays.asList("all", "analyse", "analyze", "and", "any", "array", "as", "asc", "asymmetric", "both", "case", "cast",
+                "check", "collate", "column", "constraint", "create", "current_date", "current_role", "current_time", "current_timestamp", "current_user",
+                "default", "deferrable", "desc", "distinct", "do", "double", "else", "end", "except", "for", "foreign", "from", "grant", "group", "having", "in",
+                "initially", "intersect", "into", "leading", "limit", "localtime", "localtimestamp", "new", "not", "null", "off", "offset", "old", "on", "only",
+                "or", "order", "placing", "primary", "references", "select", "session_user", "some", "symmetric", "table", "then", "to", "trailing", "union",
+                "unique", "user", "using", "when", "where", "false", "true", "authorization", "between", "binary", "cross", "freeze", "full", "ilike", "inner",
+                "is", "isnull", "join", "left", "like", "natural", "notnull", "outer", "overlaps", "right", "similar", "verbose")
+            );
     private static final String DEFAULT_TYPE = "text";
-
-    private final static String SCHEMA_NAME = "public";
-    private final static int BATCH_SIZE = 5000;
-
-    private JdbcTemplate jdbcTemplate;
+    private static final String SCHEMA_NAME = "public";
+    private static final int BATCH_SIZE = 5000;
+    private static final int MAX_NAME_SIZE = 63;
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    public static final int MAX_VARCHAR_LENGTH = 500;
-    private static final int MAX_NAME_SIZE = 63;
+    // FIXME: synchronized but still potentially unsafe access if not intended to be
+    // accessed across multiple threads
+    private Map<DataTable, Pair<PreparedStatement, Integer>> preparedStatementMap = Collections.synchronizedMap(new HashMap<DataTable, Pair<PreparedStatement, Integer>>());
 
-    DateFormat dateFormat = new SimpleDateFormat();
-    DateFormat accessDateFormat = new SimpleDateFormat("EEE MMM dd hh:mm:ss z yyyy");
+    private JdbcTemplate jdbcTemplate;
 
-    private Map<DataTable, Pair<PreparedStatement, Integer>> preparedStatementMap = new HashMap<DataTable, Pair<PreparedStatement, Integer>>();
-
-    
     public int getMaxTableLength() {
         return MAX_NAME_SIZE;
     }
+
     public DatabaseType getDatabaseType() {
         return DatabaseType.POSTGRES;
     }
@@ -191,6 +193,7 @@ public class PostgresDatabase implements TargetDatabase {
         return jdbcTemplate.query(sql, resultSetExtractor);
     }
 
+    @Deprecated
     public <T> T selectAllFromTable(DataTable table,
             ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues) {
         String selectColumns = "*";
@@ -199,6 +202,18 @@ public class PostgresDatabase implements TargetDatabase {
         }
 
         return jdbcTemplate.query(String.format(SELECT_ALL_FROM_TABLE, selectColumns, table.getName()), resultSetExtractor);
+    }
+
+    public <T> T selectAllFromTableInImportOrder(DataTable table,
+            ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues) {
+        String selectColumns = "*";
+        if (!includeGeneratedValues) {
+            selectColumns = "\"" + StringUtils.join(table.getColumnNames(), "\", \"") + "\"";
+        }
+
+        String sql = String.format(SELECT_ALL_FROM_TABLE_WITH_ORDER, selectColumns, table.getName());
+        logger.debug(sql);
+        return jdbcTemplate.query(sql, resultSetExtractor);
     }
 
     public List<String> selectDistinctValues(DataTableColumn dataTableColumn) {
@@ -226,10 +241,10 @@ public class PostgresDatabase implements TargetDatabase {
 
     public String normalizeTableOrColumnNames(String name) {
         String result = name.trim().replaceAll("[^\\w]", "_").toLowerCase();
-        if (result.length() > MAX_NAME_SIZE)
+        if (result.length() > MAX_NAME_SIZE) {
             result = result.substring(0, MAX_NAME_SIZE);
-
-        if (ArrayUtils.contains(reservedNames, result)) {
+        }
+        if (RESERVED_COLUMN_NAMES.contains(result)) {
             result = "col_" + result;
         }
         if (result.equals("")) {
@@ -237,9 +252,9 @@ public class PostgresDatabase implements TargetDatabase {
         }
 
         if (StringUtils.isNumeric(result.substring(0, 1))) {
+            // FIXME: document this
             result = "c" + result;
         }
-
         return result;
     }
 
@@ -401,8 +416,7 @@ public class PostgresDatabase implements TargetDatabase {
     }
 
     @Override
-    public void addTableRow(DataTable dataTable,
-            Map<DataTableColumn, String> valueColumnMap) throws Exception {
+    public void addTableRow(DataTable dataTable, Map<DataTableColumn, String> valueColumnMap) throws Exception {
         if (MapUtils.isEmpty(valueColumnMap))
             return;
 
@@ -426,6 +440,9 @@ public class PostgresDatabase implements TargetDatabase {
     }
 
     private void setPreparedStatementValue(PreparedStatement preparedStatement, int i, DataTableColumn column, String colValue) throws SQLException {
+        // not thread-safe
+        DateFormat dateFormat = new SimpleDateFormat();
+        DateFormat accessDateFormat = new SimpleDateFormat("EEE MMM dd hh:mm:ss z yyyy");
         if (!StringUtils.isEmpty(colValue)) {
             switch (column.getColumnDataType()) {
                 case BOOLEAN:
@@ -547,9 +564,7 @@ public class PostgresDatabase implements TargetDatabase {
         };
         PreparedStatementCallback<Object> translateColumnCallback = new PreparedStatementCallback<Object>() {
             @Override
-            public Object doInPreparedStatement(
-                    PreparedStatement preparedStatement) throws SQLException,
-                    DataAccessException {
+            public Object doInPreparedStatement(PreparedStatement preparedStatement) throws SQLException, DataAccessException {
                 for (CodingRule codingRule : codingSheet.getCodingRules()) {
                     String code = codingRule.getCode();
                     String term = codingRule.getTerm();
@@ -568,28 +583,28 @@ public class PostgresDatabase implements TargetDatabase {
                             }
                             break;
                         case DOUBLE:
-                        try {
-                            preparedStatement.setDouble(2, Double.valueOf(code));
+                            try {
+                                preparedStatement.setDouble(2, Double.valueOf(code));
+                                okToExecute = true;
+                            } catch (Exception e) {
+                                logger.debug("problem casting " + code + " to a Double");
+                            }
+                            break;
+                        case VARCHAR:
+                            preparedStatement.setString(2, code);
                             okToExecute = true;
-                        } catch (Exception e) {
-                            logger.debug("problem casting " + code + " to a Double");
-                        }
-                        break;
-                    case VARCHAR:
-                        preparedStatement.setString(2, code);
-                        okToExecute = true;
-                        break;
+                            break;
+                    }
+                    if (okToExecute) {
+                        logger.trace("Prepared statement is: "
+                                + preparedStatement.toString());
+                        preparedStatement.addBatch();
+                    } else {
+                        logger.debug("code:" + code + " was not a valid type for " + columnDataType);
+                    }
                 }
-                if (okToExecute) {
-                    logger.trace("Prepared statement is: "
-                            + preparedStatement.toString());
-                    preparedStatement.addBatch();
-                } else {
-                    logger.debug("code:" + code + " was not a valid type for " + columnDataType);
-                }
+                return preparedStatement.executeBatch();
             }
-            return preparedStatement.executeBatch();
-        }
         };
         // executes translation step
         jdbcTemplate.execute(translateColumnPreparedStatementCreator, translateColumnCallback);
@@ -747,4 +762,43 @@ public class PostgresDatabase implements TargetDatabase {
         }
         return selectPart.toString();
     }
+
+    public <T> T selectAllFromTable(DataTableColumn column, String key, ResultSetExtractor<T> resultSetExtractor) {
+        String selectColumns = "*";
+        return jdbcTemplate.query(String.format(SELECT_ALL_FROM_TABLE_WHERE, selectColumns, column.getDataTable().getName(), column.getName()),
+                new String[] { key },
+                resultSetExtractor);
+
+    }
+
+    public void renameColumn(DataTableColumn column, String newName) {
+        logger.warn("RENAMING COLUMN " + column + " TO " + newName, new Exception("altering column should only be done by tests."));
+        String sql = String.format(RENAME_COLUMN, column.getDataTable().getName(), column.getName(), newName);
+        column.setName(newName);
+        jdbcTemplate.execute(sql);
+    }
+    
+    public List<String> getColumnNames(ResultSet resultSet) throws SQLException {
+        List<String> columnNames = new ArrayList<String>();
+        ResultSetMetaData metadata = resultSet.getMetaData();
+        for (int columnIndex = 0; columnIndex < metadata.getColumnCount(); columnIndex++) {
+            String columnName = metadata.getColumnName(columnIndex + 1);
+            columnNames.add(columnName);
+        }
+        return columnNames;
+    }
+
+    public int getRowCount(DataTable dataTable) {
+        String sql = String.format(SELECT_ROW_COUNT, dataTable.getName());
+        return jdbcTemplate.queryForInt(sql);
+    }
+
+    public List<String> selectAllFrom(final DataTableColumn column) {
+        if (column == null) {
+            return Collections.emptyList();
+        }
+        String sql = String.format(SELECT_ALL_FROM_COLUMN, column.getName(), column.getDataTable().getName());
+        return jdbcTemplate.queryForList(sql, String.class);
+    }
+
 }

@@ -16,10 +16,8 @@ public class AsynchTester {
                 try {
                     runnable.run();
                 } catch (Error e) {
-                    System.err.println("SOMETHING REALLY BAD HAPPEND:" + e);
                     error = e;
                 } catch (RuntimeException e) {
-                    System.err.println("SOMETHING REALLY BAD HAPPEND:" + e);
                     runtimeExc = e;
                 }
             }

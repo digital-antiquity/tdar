@@ -23,18 +23,20 @@ import au.com.bytecode.opencsv.CSVReader;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
  */
-public class CsvConverter extends DatasetConverter.Base {
+public class CsvConverter extends SimpleConverter {
 
-    private CSVReader reader;
-    private String[] headerLine;
-    private String tableName = "";
+    protected static final String DB_PREFIX = "csv";
+    protected CSVReader reader;
+    protected String[] headerLine;
+    protected String tableName = "";
 
-    public CsvConverter() {
-        setDatabasePrefix("csv");
+    public String getDatabasePrefix() {
+        return DB_PREFIX;
     }
 
+    public CsvConverter() {};
+
     public CsvConverter(InformationResourceFileVersion version, TargetDatabase targetDatabase) {
-        setDatabasePrefix("csv");
         setTargetDatabase(targetDatabase);
         setInformationResourceFileVersion(version);
     }
@@ -50,10 +52,10 @@ public class CsvConverter extends DatasetConverter.Base {
             logger.error("InformationResourceFile's file was null, this should never happen.");
             return;
         }
-        reader = new CSVReader(new FileReader(csvFile));
+        setReader(new CSVReader(new FileReader(csvFile)));
         // grab first line as header.
-        tableName = FilenameUtils.getBaseName(csvFile.getName());
-        headerLine = reader.readNext();
+        setTableName(FilenameUtils.getBaseName(csvFile.getName()));
+        setHeaderLine(getReader().readNext());
         setIrFileId(informationResourceFileVersion.getId());
     }
 
@@ -65,10 +67,10 @@ public class CsvConverter extends DatasetConverter.Base {
      */
     public void dumpData() throws Exception {
 
-        DataTable dataTable = createDataTable(tableName);
+        DataTable dataTable = createDataTable(getTableName());
 
-        for (int i = 0; i < headerLine.length; i++) {
-            createDataTableColumn(headerLine[i], DataTableColumnType.TEXT,
+        for (int i = 0; i < getHeaderLine().length; i++) {
+            createDataTableColumn(getHeaderLine()[i], DataTableColumnType.TEXT,
                     dataTable);
         }
 
@@ -81,7 +83,7 @@ public class CsvConverter extends DatasetConverter.Base {
         // iterate through the rest of the CSVReader file.
         int numberOfLines = 0;
         while (true) {
-            String[] line = reader.readNext();
+            String[] line = getReader().readNext();
             if (line == null) {
                 // what to do? are we done?
                 logger.debug("line was null after processing " + numberOfLines);
@@ -91,15 +93,15 @@ public class CsvConverter extends DatasetConverter.Base {
             // 1-based count for PreparedStatement's weirdness.
             int count = 1;
             Map<DataTableColumn, String> columnToValueMap = new HashMap<DataTableColumn, String>();
-            if (line.length > headerLine.length)
-                throw new TdarRecoverableRuntimeException("row "+ numberOfLines + " has more columns "+ line.length +" than the header column");
+            if (line.length > getHeaderLine().length)
+                throw new TdarRecoverableRuntimeException("row " + numberOfLines + " has more columns " + line.length + " than the header column");
 
             for (int i = 0; i < line.length; i++) {
-                if (count <= headerLine.length) {
+                if (count <= getHeaderLine().length) {
                     columnToValueMap.put(
-                                dataTable.getDataTableColumns().get(i), line[i]);
+                            dataTable.getDataTableColumns().get(i), line[i]);
                     statisticsManager.updateStatistics(dataTable
-                                .getDataTableColumns().get(i), line[i]);
+                            .getDataTableColumns().get(i), line[i]);
                 } else {
                     logger.warn("Discarding degenerate data value at index "
                             + count + " : " + line[i]);
@@ -111,6 +113,30 @@ public class CsvConverter extends DatasetConverter.Base {
         completePreparedStatements();
         alterTableColumnTypes(dataTable, statisticsManager.getStatistics());
 
+    }
+
+    public CSVReader getReader() {
+        return reader;
+    }
+
+    public void setReader(CSVReader reader) {
+        this.reader = reader;
+    }
+
+    public String[] getHeaderLine() {
+        return headerLine;
+    }
+
+    public void setHeaderLine(String[] headerLine) {
+        this.headerLine = headerLine;
+    }
+
+    public String getTableName() {
+        return tableName;
+    }
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
     }
 
 }

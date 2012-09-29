@@ -1,20 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document>
+<document xmlns="http://www.tdar.org/namespace">
 	<id>1</id>
 	<title>The True Prairie ecosystem</title>
 	<resourceType>DOCUMENT</resourceType>
 	<metadataLanguage>ENGLISH</metadataLanguage>
 	<description>
-		This citation has been migrated into tDAR from the National Park Service's
-		National Archaeology Data Base (NADB). Most NADB records consist of
-		citation and other metadata but do not have the documents themselves
+		This citation has been migrated into tDAR from the
+		National Park Service's
+		National Archaeology Data Base (NADB). Most
+		NADB records consist of
+		citation and other metadata but do not have the
+		documents themselves
 		uploaded.</description>
 	<documentType>BOOK</documentType>
 	<resourceLanguage>ENGLISH</resourceLanguage>
 	<copyLocation>AAS Citation Data Tranfer, Location Unknown [ 20370]
 	</copyLocation>
 	<publisherLocation>Stroudsburg, Pa</publisherLocation>
-	<dateCreated>1981</dateCreated>
+	<date>1981</date>
 	<publisher>distributed world wide by Academic Press</publisher>
 	<seriesName>US / IBP synthesis series ; 16</seriesName>
 	<resourceAnnotations>

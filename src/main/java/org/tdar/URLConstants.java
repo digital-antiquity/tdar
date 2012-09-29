@@ -12,6 +12,9 @@ package org.tdar;
  */
 public interface URLConstants {
 
-    public static String HOME = "/";
-    public static String DASHBOARD = "/dashboard";
+    public static final String HOME = "/";
+    public static final String DASHBOARD = "/dashboard";
+    public static final String WORKSPACE = "/workspace/list";
+    public static final String ADMIN = "/admin/internal";
+    public static final String PAGE_NOT_FOUND = "/page-not-found";
 }

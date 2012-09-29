@@ -16,8 +16,11 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Index;
@@ -27,7 +30,8 @@ import org.hibernate.search.annotations.Store;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.configuration.JSONTransient;
 import org.tdar.search.query.QueryFieldNames;
-import org.tdar.utils.resource.PartitionedResourceResult;
+import org.tdar.struts.data.PartitionedResourceResult;
+import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
@@ -64,7 +68,7 @@ public class Project extends Resource {
             "uncontrolledCultureKeywords", "uncontrolledSiteTypeKeywords",
 
             // CoverageDate properties
-            "dateType","startDate", "endDate",
+            "dateType", "startDate", "endDate",
 
             // latlongbox properties
             "minObfuscatedLongitude", "maxObfuscatedLongitude",
@@ -73,8 +77,6 @@ public class Project extends Resource {
 
     public static final Project NULL = new Project() {
         private static final long serialVersionUID = -8849690416412685818L;
-        // FIXME: get rid of this if not needed.
-        private transient ThreadLocal<Person> personThreadLocal = new ThreadLocal<Person>();
 
         @Override
         public String getDescription() {
@@ -82,15 +84,14 @@ public class Project extends Resource {
         }
 
         @Override
-        public Person getSubmitter() {
-            return personThreadLocal.get();
+        public String getTitleSort() {
+            return "";
         }
-
         @Override
-        public void setSubmitter(Person person) {
-            personThreadLocal.set(person);
+        public boolean isActive() {
+            return false;
         }
-
+        
         @Override
         public Long getId() {
             return -1L;
@@ -166,7 +167,10 @@ public class Project extends Resource {
         Collections.sort(sensoryDataDocuments);
     }
 
-    // FIXME: this would be better done in HQL instead via ProjectService or the like..
+    @XmlElementWrapper(name = "codingSheets")
+    @XmlElement(name = "codingSheetRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    @JSONTransient
     public synchronized List<CodingSheet> getCodingSheets() {
         if (codingSheets == null) {
             partitionInformationResources();
@@ -174,6 +178,10 @@ public class Project extends Resource {
         return codingSheets;
     }
 
+    @XmlElementWrapper(name = "datasets")
+    @XmlElement(name = "datasetRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    @JSONTransient
     public synchronized List<Dataset> getDatasets() {
         if (datasets == null) {
             partitionInformationResources();
@@ -181,6 +189,10 @@ public class Project extends Resource {
         return datasets;
     }
 
+    @XmlElementWrapper(name = "documents")
+    @XmlElement(name = "documentRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    @JSONTransient
     public synchronized List<Document> getDocuments() {
         if (documents == null) {
             partitionInformationResources();
@@ -188,6 +200,10 @@ public class Project extends Resource {
         return documents;
     }
 
+    @XmlElementWrapper(name = "ontologies")
+    @XmlElement(name = "ontologyRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    @JSONTransient
     public synchronized List<Ontology> getOntologies() {
         if (ontologies == null) {
             partitionInformationResources();
@@ -195,6 +211,10 @@ public class Project extends Resource {
         return ontologies;
     }
 
+    @XmlElementWrapper(name = "images")
+    @XmlElement(name = "imageRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    @JSONTransient
     public synchronized List<Image> getImages() {
         if (images == null) {
             partitionInformationResources();
@@ -202,6 +222,10 @@ public class Project extends Resource {
         return images;
     }
 
+    @XmlElementWrapper(name = "sensoryDataDocuments")
+    @XmlElement(name = "sensoryDataRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    @JSONTransient
     public synchronized List<SensoryData> getSensoryDataDocuments() {
         if (sensoryDataDocuments == null) {
             partitionInformationResources();
@@ -209,11 +233,14 @@ public class Project extends Resource {
         return sensoryDataDocuments;
     }
 
+    @XmlTransient
+    @JSONTransient
     public Set<InformationResource> getInformationResources() {
         return informationResources;
     }
 
     @Transient
+    @JSONTransient
     public SortedSet<InformationResource> getSortedInformationResources() {
         return getSortedInformationResources(new Comparator<InformationResource>() {
             @Override
@@ -246,6 +273,12 @@ public class Project extends Resource {
     @Field(name = QueryFieldNames.PROJECT_TITLE_SORT, index = Index.UN_TOKENIZED, store = Store.YES)
     public String getProjectTitle() {
         return getTitleSort();
+    }
+    
+    @Transient
+    //return the title without "The" as a prefix  or "Project" as suffix
+    public String getCoreTitle() {
+        return getTitle().trim().replaceAll("^[T|t]he\\s", "").replaceAll("\\s[P|p]roject$", "");
     }
 
 }

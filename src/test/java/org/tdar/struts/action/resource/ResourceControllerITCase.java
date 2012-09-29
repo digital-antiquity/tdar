@@ -14,16 +14,6 @@ import org.tdar.struts.action.TdarActionSupport;
 public class ResourceControllerITCase extends AbstractResourceControllerITCase {
 
     @Test
-    public void testSelect() {
-        for (ResourceType type : ResourceType.values()) {
-            ResourceController controller = generateNewInitializedController(ResourceController.class);
-            controller.setResourceType(type);
-            String selectResult = controller.select();
-            assertEquals(type.name(), selectResult);
-        }
-    }
-
-    @Test
     @Rollback
     public void testEdit() {
     	setIgnoreActionErrors(true);

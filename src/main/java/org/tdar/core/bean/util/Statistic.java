@@ -17,6 +17,8 @@ import javax.persistence.Table;
 import org.tdar.core.bean.Persistable;
 
 /**
+ * these are used to manage basic stats on tDAR...
+ * 
  * @author Adam Brin
  * 
  */
@@ -25,7 +27,31 @@ import org.tdar.core.bean.Persistable;
 public class Statistic extends Persistable.Base {
 
     public enum StatisticType {
-        NUM_USERS, NUM_IMAGE, NUM_DATASET, NUM_PROJECT, NUM_DOCUMENT, NUM_CODING_SHEET, NUM_ONTOLOGY,NUM_SENSORY_DATA, NUM_COLLECTIONS
+        NUM_USERS("# of Users"),
+        NUM_IMAGE("# of Images"),
+        NUM_DATASET("# of Data Sets"),
+        NUM_PROJECT("# of Projects"),
+        NUM_DOCUMENT("# of Documents"),
+        NUM_CODING_SHEET("# of Coding Sheets"),
+        NUM_ONTOLOGY("# of Ontologies"),
+        NUM_SENSORY_DATA("# of Sensory Data Objects"),
+        NUM_COLLECTIONS("# of Collections"), 
+        NUM_ACTUAL_CONTRIBUTORS("# of Contributors"), REPOSITORY_SIZE("Repository Size");
+
+        private String label;
+
+        private StatisticType(String label) {
+            this.label = label;
+        }
+
+        public String getLabel() {
+            return label;
+        }
+
+        public void setLabel(String label) {
+            this.label = label;
+        }
+
     }
 
     private static final long serialVersionUID = 2693033966156306987L;
@@ -41,7 +67,6 @@ public class Statistic extends Persistable.Base {
     @Column(name = "recorded_date")
     private Date recordedDate;
 
-    
     @Override
     public String toString() {
         StringBuffer toRet = new StringBuffer(statisticType.toString());
@@ -49,6 +74,7 @@ public class Statistic extends Persistable.Base {
         toRet.append(value);
         return toRet.toString();
     }
+
     /**
      * @param recordedDate
      *            the recordedDate to set

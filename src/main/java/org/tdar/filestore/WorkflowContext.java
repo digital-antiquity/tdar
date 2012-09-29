@@ -29,6 +29,7 @@ public class WorkflowContext implements Serializable {
 	private File workingDirectory;
 	private int numPages;
 	private Filestore filestore;
+	private boolean processedSuccessfully = false;
 	private Workflow workflow;
 	
 	public void logTask(Task t, StringBuilder message) {
@@ -125,4 +126,12 @@ public class WorkflowContext implements Serializable {
 	public Workflow getWorkflow() {
 		return workflow;
 	}
+
+    public boolean isProcessedSuccessfully() {
+        return processedSuccessfully;
+    }
+
+    public void setProcessedSuccessfully(boolean processed) {
+        this.processedSuccessfully = processed;
+    }
 }

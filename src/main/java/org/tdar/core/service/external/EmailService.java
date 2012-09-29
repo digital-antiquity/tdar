@@ -1,117 +1,99 @@
 package org.tdar.core.service.external;
 
-import java.util.Properties;
-
-import javax.mail.Address;
-import javax.mail.Message;
-import javax.mail.Message.RecipientType;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.lang.ArrayUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
-import org.tdar.core.bean.entity.Person;
+import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
+import freemarker.template.Configuration;
+
 /**
  * $Id$
- *
+ * 
  * Provides email capabilities.
  * 
- *
+ * 
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Rev$
  */
 @Service
 public class EmailService {
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final Properties smtpProperties = new Properties();
+    private final static String FROM_EMAIL_NAME = "info@";
+
+    @Autowired
+    private MailSender mailSender;
+
+    @Autowired
+    private Configuration freemarkerConfiguration;
     
-    private final static String FROM_EMAIL_ADDRESS = "info@tdar.org";
-    
-    private Address fromAddress;
-    
-    private String smtpHost;
-    
-    public EmailService() {
-    	this.smtpHost = TdarConfiguration.getInstance().getSmtpHost();
-    	this.smtpProperties.put("mail.smtp.host", smtpHost);
-	}
-    
-    /**
-     * Sends an email message to the email associated with the given person.
-     * @param emailMessage
-     * @param person
-     * @param subject
-     */
-    public void send(String emailMessage, Person person, String subject) {
-        String email = person.getEmail();
-        if (StringUtils.isBlank(email)) {
-            logger.warn("Trying to send message to a person with no email: " +  person + " message: " + emailMessage);
-            return;
-        }
-        send(emailMessage, person.getEmail(), subject);
+    public void sendTemplate(String templateName, Object dataModel, String subject, String ... recipients) {
+        send(render(templateName, dataModel), subject, recipients);
     }
 
     /**
-     * Sends an email message to the email associated with the given person.
+     * Sends an email message to the given recipients.  If no recipients are passed in, defaults to TdarConfiguration.getSystemAdminEmail().
      * @param emailMessage
-     * @param person
      * @param subject
+     * @param recipients set of String varargs 
      */
-    public void send(String emailMessage, String email, String subject) {
+    public void send(String emailMessage, String subject, String ... recipients) {
+        if (ArrayUtils.isEmpty(recipients)) {
+            // if we don't receive any recipients, admin email is our default.
+            recipients = new String[] { getTdarConfiguration().getSystemAdminEmail() };
+        }
+        SimpleMailMessage message = new SimpleMailMessage();
+        // Message message = new MimeMessage(session);
+        message.setFrom(getFromEmail());
+        message.setSubject(subject);
+        message.setTo(recipients);
+        // message.addRecipient(RecipientType.TO, toAddress);
+        // FIXME: send HTML and plaintext email? Will need to use JavaMailMessage and MimeMessages instead
+        // see http://java.sun.com/products/javamail/FAQ.html#sendmpa
+        // for more info
+        // message.setContent(emailMessage, "text/plain");
+        message.setText(emailMessage);
+        mailSender.send(message);
+    }
+
+    public String getFromEmail() {
+        return FROM_EMAIL_NAME + getTdarConfiguration().getEmailHostName();
+    }
+
+    public TdarConfiguration getTdarConfiguration() {
+        return TdarConfiguration.getInstance();
+    }
+
+    public String render(String templateName, Object dataModel) {
         try {
-            Address toAddress = new InternetAddress(email);
-            Address fromAddress = getFromAddress();
-            Session session = getMailSession();
-            Message message = new MimeMessage(session);
-            message.setFrom(fromAddress);
-            message.setSubject(subject);
-            message.addRecipient(RecipientType.TO, toAddress);
-            // FIXME: send HTML and plaintext email?
-            // see http://java.sun.com/products/javamail/FAQ.html#sendmpa
-            // for more info
-            message.setContent(emailMessage, "text/plain");
-            Transport.send(message);
-
-        }
-        catch (AddressException exception) {
-            exception.printStackTrace();
-            logger.error("Couldn't send mail to " + email, exception);
-            throw new TdarRecoverableRuntimeException(exception.getMessage(), exception);
-        }
-        catch (MessagingException exception) {
-            exception.printStackTrace();
-            logger.error(exception);
-            throw new TdarRecoverableRuntimeException(exception.getMessage(), exception);
+            return FreeMarkerTemplateUtils.processTemplateIntoString(
+                    freemarkerConfiguration.getTemplate(templateName), dataModel);
+        } catch (Exception e) {
+            logger.error("Unable to process template " + templateName, e);
+            throw new TdarRecoverableRuntimeException(e);
         }
     }
 
-    public synchronized Address getFromAddress() throws AddressException {
-        if (fromAddress == null) {
-            fromAddress = new InternetAddress(FROM_EMAIL_ADDRESS, true);
-        }
-        return fromAddress;
+    /**
+     * @return the mailSender
+     */
+    public MailSender getMailSender() {
+        return mailSender;
     }
-    
-    public Session getMailSession() {
-        return Session.getDefaultInstance(smtpProperties);
-    }
-    
-    public String getSmtpHost() {
-		return smtpHost;
-	}
 
-	public void setSmtpHost(String smtpHost) {
-		this.smtpHost = smtpHost;
-	}
+    /**
+     * @param mailSender the mailSender to set
+     */
+    public void setMailSender(MailSender mailSender) {
+        this.mailSender = mailSender;
+    }
 
 }

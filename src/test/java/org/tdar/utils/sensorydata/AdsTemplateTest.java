@@ -94,7 +94,7 @@ public class AdsTemplateTest {
         assertEquals("Ark_HM_0060", sensoryData.getTitle() );
         assertEquals(new Double(0.377), sensoryData.getEstimatedDataResolution());
         assertEquals("NA", sensoryData.getAdditionalProjectNotes());
-        assertTrue("survey date should be 2008",  sensoryData.getDateCreated().equals(2008));
+        assertTrue("survey date should be 2008",  sensoryData.getDate().equals(2008));
         for(SensoryDataScan scan : sensoryData.getSensoryDataScans()) {
             assertEquals(ScannerTechnologyType.TRIANGULATION, scan.getScannerTechnology());
         }

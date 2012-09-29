@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
@@ -21,8 +22,9 @@ import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.utils.entity.ResourceCreatorProxy;
+import org.tdar.struts.data.ResourceCreatorProxy;
 
 public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 
@@ -50,7 +52,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback()
-    public void testInstitutionResourceCreatorNew() {
+    public void testInstitutionResourceCreatorNew() throws Exception {
         initControllerFields();
         // create a document with a single resource creator not currently in the
         // database, then save.
@@ -73,7 +75,6 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 
         controller = generateNewInitializedController(DocumentController.class);
         loadResourceFromId(controller, newId);
-        
 
         d = controller.getResource();
         Assert.assertEquals(d.getInternalResourceCollection(), null);
@@ -102,7 +103,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback()
-    public void testPersonResourceCreatorNew() {
+    public void testPersonResourceCreatorNew() throws Exception {
         initControllerFields();
 
         getLogger().trace("controller:" + controller);
@@ -181,7 +182,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback()
-    public void testEditResourceCreators() {
+    public void testEditResourceCreators() throws Exception {
         initControllerFields();
 
         getLogger().trace("controller:" + controller);
@@ -237,13 +238,14 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
     @Test
     @Rollback
     // create a simple document, using a pre-existing author with no email address. make sure that we didn't create a new person record.
-    public void testForDuplicatePersonWithNoEmail() {
+    public void testForDuplicatePersonWithNoEmail() throws Exception {
         initControllerFields();
         // get person record count.
         Person person = new Person();
         person.setFirstName("Pamela");
         person.setLastName("Cressey");
         ResourceCreatorProxy rcp = getNewResourceCreator("Cressey", "Pamela", null, null, ResourceCreatorRole.AUTHOR);
+        rcp.getPerson().setInstitution(null);
         int expectedPersonCount = genericService.findAll(Person.class).size();
 
         Long originalId = controller.getResource().getId();
@@ -265,7 +267,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
-    public void testResourceCreatorSortOrder() {
+    public void testResourceCreatorSortOrder() throws Exception {
         int numberOfResourceCreators = 20;
         initControllerFields();
         for (int i = 0; i < numberOfResourceCreators; i++) {
@@ -286,4 +288,74 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         }
     }
 
+    
+    @Test
+    @Rollback
+    // create a simple document, using a pre-existing author with no email address. make sure that we didn't create a new person record.
+    public void testForDuplicatePersonWithDifferentInstitution() throws Exception {
+        initControllerFields();
+        // get person record count.
+        Person person = new Person();
+        person.setFirstName("Pamela");
+        person.setLastName("Cressey");
+        ResourceCreatorProxy rcp = getNewResourceCreator("Cressey", "Pamela", null, null, ResourceCreatorRole.AUTHOR);
+        int expectedPersonCount = genericService.findAll(Person.class).size();
+
+        Long originalId = controller.getResource().getId();
+        controller.getAuthorshipProxies().add(rcp);
+        rcp.getPerson().getInstitution().setName("testForDuplicatePersonWithDifferentInstitution");
+
+        Document d = controller.getDocument();
+        d.setTitle("doc title");
+        d.setDescription("testing to see if the system created a person record when it shouldn't have");
+        d.markUpdated(getUser());
+        controller.save();
+        Long newId = controller.getResource().getId();
+
+        // now reload the document and see if the institution was saved.
+        Assert.assertNotSame("resource id should be assigned after insert", originalId, newId);
+        
+        Set<Person> findByFullName = entityService.findByFullName("Pamela Cressey");
+        logger.debug("people: {} " , findByFullName);
+        int actualPersonCount = genericService.findAll(Person.class).size();
+        Assert.assertEquals("Person count should not be the same after creating new document with an author that already exists", expectedPersonCount + 1,
+                actualPersonCount);
+    }
+
+    private Long createDocument(String collectionname, String title) throws TdarActionException {
+        controller = generateNewInitializedController(DocumentController.class);
+        controller.prepare();
+        controller.add();
+        getLogger().trace("controller:" + controller);
+        getLogger().trace("controller.resource:" + controller.getResource());
+        Document d = controller.getDocument();
+        d.setTitle(title);
+        d.setDescription("desc");
+        d.markUpdated(getUser());
+        d.setDate(1234);
+        ResourceCollection collection = new ResourceCollection();
+        collection.setName(collectionname);
+        controller.getResourceCollections().add(collection);
+
+        controller.setServletRequest(getServletPostRequest());
+        controller.save();
+        return controller.getResource().getId();
+    }
+
+    @Test
+    @Rollback()
+    public void testResourceAdhocCollection() throws Exception {
+        initControllerFields();
+        String collectionname = "my collection";
+        Long newId = createDocument(collectionname, "test 1");
+        ResourceCollection collection = controller.getResource().getSharedResourceCollections().iterator().next();
+        Long collectionId = collection.getId();
+        logger.info("{}", collection);
+        Long newId2 = createDocument(collectionname, "test 2");
+        ResourceCollection collection2 = controller.getResource().getSharedResourceCollections().iterator().next();
+        Long collectionId2 = collection2.getId();
+        assertEquals(collectionId, collectionId2);
+
+    }
+    
 }

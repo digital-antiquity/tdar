@@ -1,11 +1,27 @@
+<#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/list-macros.ftl" as rlist>
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
+<#import "/WEB-INF/macros/resource/common.ftl" as common>
+<#import "/${themeDir}/settings.ftl" as settings>
+
 <head>
-<title>${authenticatedUser.properName}'s Information Resources</title>
-<meta name="lastModifiedDate" content="$Date: 2011-08-09 06:30:06 -0700 (Tue, 09 Aug 2011) $"/>
+<title>${authenticatedUser.properName}'s Dashboard</title>
+<meta name="lastModifiedDate" content="$Date$"/>
 
 
 <script type='text/javascript' src='<@s.url value="/includes/datatable-support.js"/>'></script>
+<script type='text/javascript'>
+try {
+    $(function() {
+        //here we assume that IE reports browser versions as a string, leading w/ major version
+        if($.browser.msie &&  getBrowserMajorVersion() < 8) {
+            $('#message-ie-obsolete').show();
+        }
+    });
+} catch(ex) {
+    console.error("browser check failed");
+}
+</script>
 
 <@edit.resourceDataTableJavascript />
 
@@ -17,16 +33,28 @@
 </style>
 </head>
 
-<div class="glide">
-Welcome back, ${authenticatedUser.firstName}!  The resources you can access are listed below.  To create a <a href="<@s.url value="/resource/add"/>">new resource</a> or <a href="<@s.url value="/project/add"/>">project</a>, or <a href="<@s.url value="/collection/add"/>">collection</a>, use the "new" menu above.
-<br/>
+<div id="messages" style="margin:2px">
+    <div id="message-ie-obsolete" class="message-error" style="display:none">
+    You appear to be using an older version of Internet Explorer.  Note that certain features in tDAR may not work properly.  
+    <a href="http://www.microsoft.com/ie">Click here to learn more about Internet Explorer</a>
+    </div>
 </div>
 
+<br/>
+<div class="glide">
+Welcome back, ${authenticatedUser.firstName}! 
+<#if contributor>
+ The resources you can access are listed below.  To create a <a href="<@s.url value="/resource/add"/>">new resource</a> or <a href="<@s.url value="/project/add"/>">project</a>, or <a href="<@s.url value="/collection/add"/>">collection</a>, use the "new" menu above.
+</#if>
+<br/>
+</div>
 <!--
 <div class="glide news">
+<B>FIXME: ADD NEW BLOG POST</B>
 We just upgraded tDAR with a bunch of additional features, a list of features are available <a href="http://www.tdar.org/news/2011/10/tdar-software-update-fluvial/">here</a> on the tDAR website. 
 </div>
 -->
+<#if contributor>
 <#if (activeResourceCount == 0)>
 <div class="glide">
 <h3>Getting Started</h3>
@@ -41,8 +69,8 @@ We just upgraded tDAR with a bunch of additional features, a list of features ar
 <div class="glide">
 <h3>At a glance</h3>
 
-    <div style="float:right"><@pieChart statusCountForUser "statusForUser" "includedStatuses" /></div>
-    <@pieChart resourceCountForUser "resourceForUser" "resourceTypes" />
+    <div style="float:right"><@common.pieChart statusCountForUser "statusForUser" "includedStatuses" /></div>
+    <@common.pieChart resourceCountForUser "resourceForUser" "resourceTypes" />
 
 
 </div>
@@ -56,7 +84,7 @@ We just upgraded tDAR with a bunch of additional features, a list of features ar
             <a href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>">edit</a> |
             <a href="<@s.url value='/${res.urlNamespace}/delete'><@s.param name="id" value="${res.id?c}"/></@s.url>">delete</a>
         </div>
-           <span class="fixed"> [${res.resourceType.label}] <a href="<@s.url value='/${res.urlNamespace}/view'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@rlist.abbr maxlen=65>${res.title}</@rlist.abbr></a></span>
+           <span class="fixed"> [${res.resourceType.label}] <a href="<@s.url value='/${res.urlNamespace}/view'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@common.truncate res.title 65 /></a></span>
     </li>
     </@s.iterator>
 </ol>
@@ -71,7 +99,7 @@ We just upgraded tDAR with a bunch of additional features, a list of features ar
     <@s.iterator value='emptyProjects' status='recentEditStatus' var='res'>
     <li id="li-recent-resource-${res.id?c}">
             <a href="<@s.url value='/${res.urlNamespace}/view'><@s.param name="id" value="${res.id?c}"/></@s.url>">
-                <@rlist.abbr>${res.title}</@rlist.abbr>
+                <@common.truncate res.title 70 />
             </a> 
         <div class="recent-nav">
             <a href="<@s.url value='/resource/add?projectId=${res.id?c}'><@s.param name="id" value="${res.id?c}"/></@s.url>" title="add a resource to this project">add resource</a> |
@@ -84,6 +112,7 @@ We just upgraded tDAR with a bunch of additional features, a list of features ar
 </div>
 </#if>
 
+
 <div class="glide" id="project-list">
 <h3>Browse Resources By Project</h3>
 <form action=''>
@@ -91,12 +120,9 @@ We just upgraded tDAR with a bunch of additional features, a list of features ar
 </form>
 </div>
 <div id="sidebar" parse="true">
-<style>
-#sidebar ul ul {font-size:100% !important}
-</style>
 <#macro repeat num val>
  <#if (num > 0)>
-  <@repeat (num-1) val />${val}
+  <@repeat (num-1) val /><#noescape>${val}</#noescape>
  </#if>
 </#macro>
 
@@ -113,6 +139,15 @@ We just upgraded tDAR with a bunch of additional features, a list of features ar
        <@listCollections sharedResourceCollections />
     </div>
   </#if>
+</div>
+</#if>
+<div class="glide" id="divAccountInfo">
+<h3>About Your Account</h3>
+    <em class="label">Full Name</em>${authenticatedUser.properName}<#if authenticatedUser.institution??>, ${authenticatedUser.institution.name}</#if><br />
+    <#if authenticatedUser.penultimateLogin??>
+        <em class="label">Last Login</em>${authenticatedUser.penultimateLogin?datetime}<br/>
+    </#if>
+<em class="label">&nbsp;</em><a href="<@s.url value='/entity/person/edit?id=${sessionData.person.id?c}'/>">edit your profile</a>
 </div>
 
 <#macro listCollections resourceCollections_ >
@@ -142,37 +177,4 @@ We just upgraded tDAR with a bunch of additional features, a list of features ar
       </ul>
 
 </#macro>
-
-<#macro pieChart map name type width=300 height=100>
-    <#assign ilist = map />
-    <#assign ikeys=ilist?keys />
-    <#assign values = ""/>
-    <#assign labels = ""/>
-    <#assign keys = "" />
-    <#list ikeys as ikey>
-      <#assign val = ilist.get(ikey) />
-      <#assign label = ikey.label />
-      <#if (val?? && val > 0)>
-      <#assign values>${values}${val},</#assign>
-      <#assign labels>${labels}${label}|</#assign>
-      <#assign keys>${keys}${ikey}|</#assign>
-      </#if>
-    </#list>
-
-    <#if values!="" && labels !="">
-    <#assign values = values?substring(0,values?last_index_of(","))/>
-    <#assign labels = labels?substring(0,labels?last_index_of("|"))/>
-     <!-- http://code.google.com/apis/chart/image/docs/chart_params.html -->
-     <#assign pieUrl>http://chart.googleapis.com/chart?cht=p&chd=t:${values}&chs=${width}x${height}&chl=${labels}&chf=bg,s,0000FF00&chco=4B514D|C3AA72|DC7612|2C4D56|BD3200|A09D5B|F6D86B</#assign>
-    <img usemap="${name}" id="${name}-img" src="${pieUrl}">
-    <script>
-$.ajax({
-  url: "${pieUrl}&chof=json",
-  dataType: 'json',
-  success: function(data) { makeMap(data,"${name}",'${type}', "${keys}");} 
-});    
-    </script>
-    </#if>
-
-</#macro>
-
+</#escape>

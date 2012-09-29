@@ -20,6 +20,7 @@ import javax.imageio.ImageIO;
 
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.tasks.Task.AbstractTask;
 
@@ -49,7 +50,7 @@ public class ImageThumbnailTask extends AbstractTask {
         try {
             task.run(origFile);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new TdarRecoverableRuntimeException("processing error", e);
         }
         String outXML = task.getWorkflowContext().toXML();
         System.out.println(outXML);
@@ -84,13 +85,15 @@ public class ImageThumbnailTask extends AbstractTask {
         ijSource = new Opener().openImage(sourceFile.getAbsolutePath());
         if (ijSource == null) {
             getLogger().debug("Unable to load source image: " + sourceFile);
+            throw new TdarRecoverableRuntimeException("processing error");
         } else {
             try {
                 createJpegDerivative(ijSource, origFileName, MEDIUM, false);
                 createJpegDerivative(ijSource, origFileName, LARGE, false);
                 createJpegDerivative(ijSource, origFileName, SMALL, false);
             } catch (Throwable e) {
-                getLogger().warn("Failed to create jpeg derivative",e);
+                getLogger().error("Failed to create jpeg derivative", e);
+                throw new TdarRecoverableRuntimeException("processing error", e);
             }
         }
     }

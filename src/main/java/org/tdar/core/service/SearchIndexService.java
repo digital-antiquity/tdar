@@ -13,6 +13,7 @@ import org.hibernate.search.SearchFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -26,11 +27,12 @@ import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.HibernateSearchDao;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.resource.DatasetService;
 
 @Service
 @Transactional(readOnly = true)
@@ -43,6 +45,9 @@ public class SearchIndexService {
 
     @Autowired
     private GenericService genericService;
+
+    @Autowired
+    private DatasetService datasetService;
 
     private static final int FLUSH_EVERY = TdarConfiguration.getInstance().getIndexerFlushSize();
 
@@ -87,7 +92,7 @@ public class SearchIndexService {
                 while (scrollableResults.next()) {
                     Object item = scrollableResults.get(0);
                     currentProgress = (float) numProcessed / total.floatValue();
-                    fullTextSession.index(item);
+                    index(fullTextSession, item);
                     numProcessed++;
                     float totalProgress = (currentProgress * maxPer + percent);
 
@@ -120,8 +125,15 @@ public class SearchIndexService {
         }
     }
 
+    private void index(FullTextSession fullTextSession, Object item) {
+        if (item instanceof InformationResource) {
+            datasetService.assignMappedDataForInformationResource(((InformationResource) item));
+        }
+        fullTextSession.index(item);
+    }
+
     @SuppressWarnings("deprecation")
-    public void index(Indexable... obj) {
+    public <H extends Indexable & Persistable> void index(H... obj) {
         log.debug("manual indexing ... " + obj.length);
         genericService.synchronize();
 
@@ -130,13 +142,12 @@ public class SearchIndexService {
         fullTextSession.setFlushMode(FlushMode.MANUAL);
         fullTextSession.setCacheMode(CacheMode.IGNORE);
         fullTextSession.flushToIndexes();
-        for (Indexable obj_ : obj)
-            if (obj_ instanceof Persistable) {
-                fullTextSession.purge(obj_.getClass(), ((Persistable) obj_).getId());
-                fullTextSession.index(obj_);
-            } else {
-                throw new TdarRecoverableRuntimeException("object must subclass persistable");
+        for (H obj_ : obj) {
+            if (obj_ != null) {
+                fullTextSession.purge(obj_.getClass(), obj_.getId());
+                index(fullTextSession, obj_);
             }
+        }
         fullTextSession.flushToIndexes();
         // fullTextSession.clear();
         fullTextSession.setFlushMode(previousFlushMode);
@@ -160,13 +171,13 @@ public class SearchIndexService {
 
     public <C> void indexCollection(Collection<C> indexable) {
         log.debug("manual indexing ... " + indexable.size());
-        if (indexable == null)
-            return;
-        FullTextSession fullTextSession = getFullTextSession();
-        for (C toIndex : indexable) {
-            fullTextSession.index(toIndex);
+        if (indexable != null) {
+            FullTextSession fullTextSession = getFullTextSession();
+            for (C toIndex : indexable) {
+                index(fullTextSession, toIndex);
+            }
+            fullTextSession.flushToIndexes();
         }
-        fullTextSession.flushToIndexes();
     }
 
     /*

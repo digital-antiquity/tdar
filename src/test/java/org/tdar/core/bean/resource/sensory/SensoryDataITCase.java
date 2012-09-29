@@ -4,7 +4,6 @@ package org.tdar.core.bean.resource.sensory;
 //import static org.junit.Assert.assertNotNull;
 //import static org.junit.Assert.assertNull;
 //import static org.junit.Assert.assertTrue;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashSet;
 
@@ -32,7 +31,7 @@ public class SensoryDataITCase extends AbstractIntegrationTestCase {
 
         sensoryData.setTitle("test sensory data");
         sensoryData.setDescription("test description");
-        sensoryData.setDateRegistered(new Date());
+        sensoryData.setDateCreated(new Date());
         Person submitter = genericService.find(Person.class, 1L);
         sensoryData.setSubmitter(submitter);
 

@@ -1,6 +1,7 @@
 package org.tdar.db.conversion.analyzers;
 
 import org.tdar.core.bean.resource.dataTable.DataTableColumnType;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
 public class CharAnalyzer implements ColumnAnalyzer {
 	private int len = 0;
@@ -14,6 +15,9 @@ public class CharAnalyzer implements ColumnAnalyzer {
 			return true;
 		if ("".equals(value))
 			return true;
+		if (value.matches("(.*)(#(REF|NUM|N/A|VALUE|NAME|DIV))(.*)")) {
+		    throw new TdarRecoverableRuntimeException("data contains excel translation errors, please check for cells with #REF, #VALUE, #NUM or other Excel Errors");
+		}
 		if (value.length() > len) {
 			len = value.length();
 		}

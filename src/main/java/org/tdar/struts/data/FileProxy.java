@@ -1,5 +1,8 @@
 package org.tdar.struts.data;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -16,7 +19,7 @@ import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
 /**
  * $Id$
  * 
- * Represents incoming file management actions from the web for new files, replacing existing files, deleting files.
+ * Encapsulates tdar file management actions for adding new files, replacing existing files (creating a new version), deleting files, and adding derivatives.
  * 
  * @author $Author$
  * @version $Revision$
@@ -75,10 +78,15 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy> {
         this.confidential = confidential;
     }
 
-    public FileProxy(InformationResourceFile file, boolean confidential, FileAction action) {
-        this.setAction(action);
-        this.setConfidential(confidential);
-        this.setFileId(file.getId());
+    /**
+     * Constructs a FileProxy representing a new version of the given InformationResourceFileVersion, useful
+     * for reprocessing an existing file.
+     * 
+     * @param version
+     */
+    public FileProxy(InformationResourceFileVersion version) throws IOException {
+    	this(version.getFilename(), new FileInputStream(version.getFile()), VersionType.UPLOADED, FileAction.ADD);
+    	setFileId(version.getInformationResourceFileId());
     }
 
     public FileAction getAction() {

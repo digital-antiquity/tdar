@@ -23,14 +23,4 @@ public interface CodingSheetParser {
 
     public List<CodingRule> parse(CodingSheet codingSheet, InputStream stream) throws CodingSheetParserException;
 
-    /**
-     * Returns a String representing the file extension supported by this coding sheet parser to
-     * assist the CodingSheetParserFactory in determining which coding sheet parser is appropriate
-     * for a given coding sheet file.
-     * 
-     * Currently only supports one file extension.
-     * 
-     * @return
-     */
-    public String[] getSupportedFileExtensions();
 }

@@ -1,5 +1,7 @@
 package org.tdar.core.bean.resource;
 
+import org.tdar.core.bean.HasLabel;
+
 /**
  * $Id$
  * 
@@ -15,7 +17,7 @@ package org.tdar.core.bean.resource;
  * @author <a href='mailto:allen.lee@asu.edu'>Allen Lee</a>
  * @version $Rev$
  */
-public enum ResourceAnnotationType {
+public enum ResourceAnnotationType implements HasLabel {
 	
 	IDENTIFIER("Resource Identifier");
     

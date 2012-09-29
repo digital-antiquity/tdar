@@ -1,3 +1,4 @@
+<#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/list-macros.ftl" as rlist>
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 
@@ -111,5 +112,4 @@ ${integrationDataResult.dataTable.dataset.title})</h2>
 </table>
 </div>
 </@s.iterator>
-
-
+</#escape>

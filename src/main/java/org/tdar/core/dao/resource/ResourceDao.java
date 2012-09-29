@@ -1,28 +1,33 @@
 package org.tdar.core.dao.resource;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.hibernate.Query;
+import org.hibernate.SQLQuery;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.SimpleExpression;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
-import org.tdar.core.bean.keyword.GeographicKeyword;
+import org.tdar.core.bean.keyword.GeographicKeyword.Level;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.util.HomepageGeographicKeywordCache;
+import org.tdar.core.bean.util.HomepageResourceCountCache;
 import org.tdar.core.dao.Dao;
 import org.tdar.core.dao.NamedNativeQueries;
 import org.tdar.core.dao.TdarNamedQueries;
-import org.tdar.core.service.external.CrowdService;
-import org.tdar.utils.Pair;
+import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 
 /**
  * $Id$
@@ -37,7 +42,7 @@ import org.tdar.utils.Pair;
  */
 public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<E> {
     @Autowired
-    private CrowdService crowdService;
+    private AuthenticationAndAuthorizationService authenticationService;
 
     public ResourceDao(Class<E> resourceClass) {
         super(resourceClass);
@@ -62,7 +67,7 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         }
         SimpleExpression eq = Restrictions.eq("submitter.id", submitter.getId());
 
-        if (!crowdService.isAdministrator(submitter)) {
+        if (!authenticationService.isAdministrator(submitter)) {
             criteria.add(Restrictions.and(eq, Restrictions.or(
                     Restrictions.eq("status", Status.ACTIVE), Restrictions.eq("status", Status.DRAFT))));
         } else {
@@ -121,46 +126,51 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         return (Number) query.uniqueResult();
     }
 
-    public Map<GeographicKeyword, Pair<Long, Double>> getISOGeographicCounts() {
+    public List<HomepageGeographicKeywordCache> getISOGeographicCounts() {
         logger.info("executing country count from database");
-        Map<GeographicKeyword, Pair<Long, Double>> countryCount = new HashMap<GeographicKeyword, Pair<Long, Double>>();
+
+        List<HomepageGeographicKeywordCache> cache = new ArrayList<HomepageGeographicKeywordCache>();
         Query query = getCurrentSession().getNamedQuery(QUERY_MANAGED_ISO_COUNTRIES);
         for (Object o : query.list()) {
             try {
                 Object[] objs = (Object[]) o;
                 if (objs == null || objs[0] == null)
                     continue;
-                countryCount.put((GeographicKeyword) objs[0], new Pair<Long, Double>((Long) objs[1], Math.log((Long) objs[1])));
+                cache.add(new HomepageGeographicKeywordCache((String) objs[0], (Level) objs[1], (Long) objs[2]));
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        return countryCount;
+        return cache;
     }
 
     /**
      * @return
      */
-    public Map<ResourceType, Pair<Long, Double>> getResourceCounts() {
+    public List<HomepageResourceCountCache> getResourceCounts() {
         logger.info("executing resource count from database");
-        Map<ResourceType, Pair<Long, Double>> resourceTypeCounts = new HashMap<ResourceType, Pair<Long, Double>>();
+        List<HomepageResourceCountCache> resourceTypeCounts = new ArrayList<HomepageResourceCountCache>();
         Query query = getCurrentSession().getNamedQuery(QUERY_ACTIVE_RESOURCE_TYPE_COUNT);
 
-        // initialize with zeros
-        for (ResourceType rt : ResourceType.values()) {
-            resourceTypeCounts.put(rt, new Pair<Long, Double>(0l, 0.0));
-        }
+        List<ResourceType> types = new ArrayList<ResourceType>(Arrays.asList(ResourceType.values()));
 
         for (Object o : query.list()) {
             try {
                 Object[] objs = (Object[]) o;
                 if (objs == null || objs[0] == null)
                     continue;
-                resourceTypeCounts.put((ResourceType) objs[1], new Pair<Long, Double>((Long) objs[0], Math.log((Long) objs[0])));
+                ResourceType resourceType = (ResourceType) objs[1];
+                resourceTypeCounts.add(new HomepageResourceCountCache(resourceType, (Long) objs[0]));
+                types.remove(resourceType);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+        
+        for (ResourceType remainingType : types) {
+            resourceTypeCounts.add(new HomepageResourceCountCache(remainingType, 0l));
+        }
+        
         return resourceTypeCounts;
     }
 
@@ -172,28 +182,37 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         return count;
     }
 
+    public Map<ResourceType, Map<Status, Long>> getResourceCountAndStatusForUser(Person p, List<ResourceType> types) {
+        // Query sqlQuery = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_DASHBOARD);
+        SQLQuery sqlQuery = NamedNativeQueries.generateDashboardGraphQuery(getCurrentSession());
+        sqlQuery.setLong("submitterId", p.getId());
+        sqlQuery.setInteger("effectivePermissions", GeneralPermissions.MODIFY_RECORD.getEffectivePermissions() - 1);
+        // SQLQuery sqlQuery = getCurrentSession().createSQLQuery(NamedNativeQueries.generateDashboardGraphQuery(p, GeneralPermissions.MODIFY_RECORD));
+        Set<Long> ids = new HashSet<Long>();
+        Map<ResourceType, Map<Status, Long>> toReturn = new HashMap<ResourceType, Map<Status, Long>>();
 
-    public Map<ResourceType, Map<Status, Long>> getResourceCountAndStatusForUser(Person p,List<ResourceType> types) {
-      Query query = getCurrentSession().getNamedQuery(QUERY_RESOURCE_COUNT_BY_TYPE_AND_STATUS_BY_USER);
-      query.setLong("userId", p.getId());
-      query.setParameterList("resourceTypes", Arrays.asList(ResourceType.values()));
-      query.setParameter("allResourceTypes",true);
-      query.setParameter("allStatuses", true);
-      query.setParameter("effectivePermission", GeneralPermissions.MODIFY_RECORD.getEffectivePermissions() - 1);
-      query.setParameter("admin", false);
-      query.setParameterList("statuses", Arrays.asList(Status.values()));
-      Map<ResourceType, Map<Status, Long>> toReturn = new HashMap<ResourceType, Map<Status, Long>>();
-      for (Object obj_ : query.list()) {
-          Object[] objs = (Object[]) obj_;
-          ResourceType type = (ResourceType) objs[0];
-          Status status = (Status) objs[1];
-          Long count = (Long) objs[2];
-          if (toReturn.get(type) == null) {
-              toReturn.put(type, new HashMap<Status, Long>());
-          }
-          toReturn.get(type).put(status, count);
-      }
-      return toReturn;
-  }
+        for (Object obj_ : sqlQuery.list()) {
+            Object[] objs = (Object[]) obj_;
+            Long id_ = (Long) objs[0];
+            boolean newId = ids.add(id_);
+            if (!newId) {
+                continue;
+            }
+            Status status = Status.valueOf((String) objs[1]);
+            ResourceType type = ResourceType.valueOf((String) objs[2]);
+            Map<Status, Long> statMap = toReturn.get(type);
+            if (statMap == null) {
+                statMap = new HashMap<Status, Long>();
+                toReturn.put(type, statMap);
+            }
+            Long count = statMap.get(status);
+            if (count == null) {
+                count = 0L;
+            }
+            statMap.put(status, count + 1L);
+        }
+
+        return toReturn;
+    }
 
 }

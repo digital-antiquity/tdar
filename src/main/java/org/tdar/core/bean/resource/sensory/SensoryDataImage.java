@@ -5,12 +5,15 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.StringUtils;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.SensoryData;
+import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -47,11 +50,13 @@ public class SensoryDataImage extends Persistable.Sequence<SensoryDataImage> imp
     }
 
     @Override
+    @XmlTransient
     public boolean isValid() {
         return StringUtils.isNotBlank(filename);
     }
 
-    @XmlTransient
+    @XmlElement(name = "resourceRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public SensoryData getResource() {
         return resource;
     }
@@ -61,6 +66,7 @@ public class SensoryDataImage extends Persistable.Sequence<SensoryDataImage> imp
     }
 
     @Override
+    @XmlTransient
     public boolean isValidForController() {
         return true;
     }

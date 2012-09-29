@@ -1,21 +1,30 @@
 package org.tdar.core.bean.resource;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Boost;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.BulkImportField;
-import org.tdar.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
-import org.tdar.index.analyzer.TdarStandardAnalyzer;
+import org.tdar.core.bean.entity.ResourceCreator;
+import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.configuration.JSONTransient;
+import org.tdar.core.service.GenericService;
+import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
+import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -46,75 +55,75 @@ public class Document extends InformationResource {
     @Enumerated(EnumType.STRING)
     @Column(name = "document_type")
     @Field
-    @Analyzer(impl = TdarStandardAnalyzer.class)
-    @BulkImportField(label="Document Type")
+    @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
+    @BulkImportField(label = "Document Type")
     private DocumentType documentType;
 
-    @BulkImportField(label="Series Name")
+    @BulkImportField(label = "Series Name")
     @Column(name = "series_name")
     @Field
     private String seriesName;
 
-    @BulkImportField(label="Series Number")
+    @BulkImportField(label = "Series Number")
     @Column(name = "series_number")
     private String seriesNumber;
 
     @Column(name = "number_of_pages")
     private Integer numberOfPages;
 
-    @BulkImportField(label="Edition")
+    @BulkImportField(label = "Edition")
     private String edition;
 
-    @BulkImportField(label="Publisher Location")
+    @BulkImportField(label = "Publisher Location")
     @Column(name = "publisher_location")
     private String publisherLocation;
 
-    @BulkImportField(label="Publisher Name")
+    @BulkImportField(label = "Publisher Name")
     @Field
     @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
     private String publisher;
 
-    @BulkImportField(label="ISBN")
+    @BulkImportField(label = "ISBN")
     @Field
     @Analyzer(impl = KeywordAnalyzer.class)
     private String isbn;
 
-    @BulkImportField(label="Book Title")
+    @BulkImportField(label = "Book Title")
     @Column(name = "book_title")
     @Field(boost = @Boost(1.5f))
     private String bookTitle;
 
-    @BulkImportField(label="ISSN")
+    @BulkImportField(label = "ISSN")
     @Field
     @Analyzer(impl = KeywordAnalyzer.class)
     private String issn;
 
-    @BulkImportField(label="DOI")
+    @BulkImportField(label = "DOI")
     @Field
     @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
     private String doi;
 
-    @BulkImportField(label="Start Page",order=10)
+    @BulkImportField(label = "Start Page", order = 10)
     @Column(name = "start_page")
     private String startPage;
 
-    @BulkImportField(label="End Page",order=11)
+    @BulkImportField(label = "End Page", order = 11)
     @Column(name = "end_page")
     private String endPage;
 
-    @BulkImportField(label="Journal Name")
+    @BulkImportField(label = "Journal Name")
     @Column(name = "journal_name")
     @Field
     private String journalName;
 
-    @BulkImportField(label="Volume")
+    @BulkImportField(label = "Volume")
     private String volume;
 
-    @BulkImportField(label="# of Volumes")
+    @BulkImportField(label = "# of Volumes")
     @Column(name = "number_of_volumes")
     private Integer numberOfVolumes;
 
-    @BulkImportField(label="Journal Number")
+    @BulkImportField(label = "Journal Number")
     @Column(name = "journal_number")
     private String journalNumber;
 
@@ -231,10 +240,6 @@ public class Document extends InformationResource {
         this.endPage = endPage;
     }
 
-    // public void addAuthor(DocumentAuthor documentCreatorPerson) {
-    // documentCreatorPersons.add(documentCreatorPerson);
-    // }
-
     public String getBookTitle() {
         return bookTitle;
     }
@@ -267,18 +272,99 @@ public class Document extends InformationResource {
         this.journalNumber = journalNumber;
     }
 
-    @Transient
-    public String getText() {
-        // return a formatted citation?
-        return "This method is currently stubbed out.";
+    public String getFormattedAuthorList() {
+        StringBuilder sb = new StringBuilder();
+        List<ResourceCreator> primaryCreators = new ArrayList<ResourceCreator>(getPrimaryCreators());
+        Collections.sort(primaryCreators);
+        for (ResourceCreator creator : primaryCreators) {
+            if (creator.getRole() == ResourceCreatorRole.AUTHOR) {
+                appendIfNotBlank(sb, creator.getCreator().getProperName(), ",", "");
+            }
+        }
+        for (ResourceCreator creator : primaryCreators) {
+            if (creator.getRole() == ResourceCreatorRole.EDITOR) {
+                appendIfNotBlank(sb, creator.getCreator().getProperName(), ",", "");
+            }
+        }
+        return sb.toString();
+    }
+
+    @JSONTransient
+    public String getFormattedTitleInfo() {
+        StringBuilder sb = new StringBuilder();
+        appendIfNotBlank(sb, getTitle(), "", "");
+        appendIfNotBlank(sb, getEdition(), ",", "");
+        return sb.toString();
+    }
+
+    //FIXME: ADD IS?N
+    @JSONTransient
+    public String getFormattedSourceInformation() {
+        StringBuilder sb = new StringBuilder();
+        switch (getDocumentType()) {
+            case BOOK:
+                appendIfNotBlank(sb, getPublisherLocation(), "", "");
+                appendIfNotBlank(sb, getPublisher(), ":", "");
+                break;
+            case BOOK_SECTION:
+                appendIfNotBlank(sb, getBookTitle(), "", "In ");
+                appendIfNotBlank(sb, getPageRange(), ".", "Pp. ");
+                appendIfNotBlank(sb, getPublisherLocation(), ".", "");
+                appendIfNotBlank(sb, getPublisher(), ":", "");
+                break;
+            case CONFERENCE_PRESENTATION:
+                appendIfNotBlank(sb, getPublisher(), "", "Presented at ");
+                appendIfNotBlank(sb, getPublisherLocation(), ",", "");
+                break;
+            case JOURNAL_ARTICLE:
+                appendIfNotBlank(sb, getJournalName(), "", "");
+                if (StringUtils.isNotBlank(getJournalNumber()) || StringUtils.isNotBlank(getVolume())) {
+                    sb.append(".");
+                }
+                appendIfNotBlank(sb, getVolume(), "", "");
+                appendIfNotBlank(sb, getJournalNumber(), "", "");
+                appendIfNotBlank(sb, getPageRange(), ":", "");
+                break;
+            case OTHER:
+                break;
+            case THESIS:
+                appendIfNotBlank(sb, getPublisher(), "", "Thesis or Dissertation. ");
+                appendIfNotBlank(sb, getPublisherLocation(), ",", "");
+                break;
+        }
+        if (getDate() != null) {
+            appendIfNotBlank(sb, getDate().toString(), ".", "");
+        }
+        return sb.toString();
+    }
+
+    private StringBuilder appendIfNotBlank(StringBuilder sb, String str, String prefixIfNotAtStart, String textPrefixIfNotBlank) {
+        if (StringUtils.isNotBlank(str)) {
+            if (sb.length() > 0) {
+                sb.append(prefixIfNotAtStart).append(" ");
+            }
+            if (StringUtils.isNotBlank(textPrefixIfNotBlank)) {
+                sb.append(textPrefixIfNotBlank);
+            }
+            sb.append(str);
+        }
+        return sb;
     }
 
     @Override
     public String getAdditonalKeywords() {
         StringBuilder sb = new StringBuilder();
         sb.append(super.getAdditonalKeywords()).append(" ").append(getBookTitle()).append(" ").append(getDoi()).
-        append(" ").append(getIssn()).append(" ").append(getIsbn()).append(" ").append(getPublisher()).append(" ").
-        append(getSeriesName());
+                append(" ").append(getIssn()).append(" ").append(getIsbn()).append(" ").append(getPublisher()).append(" ").
+                append(getSeriesName());
         return sb.toString();
     }
+
+    public String getPageRange() {
+        StringBuilder sb = new StringBuilder();
+        appendIfNotBlank(sb, getStartPage(), "", "");
+        appendIfNotBlank(sb, getEndPage(), "-", "");
+        return sb.toString().replaceAll("\\s", "");
+    }
+
 }

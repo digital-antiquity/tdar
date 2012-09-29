@@ -10,7 +10,7 @@ import org.tdar.core.bean.keyword.Keyword;
 
 /**
  * 
- * $Id: QueryPart.java 1728 2011-03-10 03:51:29Z abrin $
+ * $Id$
  * 
  * {@link QueryPart} which builds a query string looking for
  * keywords associated with a project and it's resources.
