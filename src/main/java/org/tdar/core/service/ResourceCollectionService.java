@@ -1,12 +1,18 @@
+/**
+ * $Id$
+ * 
+ * @author $Author$
+ * @version $Revision$
+ */
 package org.tdar.core.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -26,11 +32,10 @@ import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.search.query.SortOption;
 
 /**
- * $Id$
- * 
  * @author Adam Brin
- * @version $Revision$
+ * 
  */
+
 @Service
 public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<ResourceCollection, ResourceCollectionDao> {
 
@@ -120,11 +125,6 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     }
 
     @Transactional
-    public void saveAuthorizedUsersForResourceCollection(ResourceCollection resourceCollection, List<AuthorizedUser> authorizedUsers) {
-        saveAuthorizedUsersForResourceCollection(resourceCollection, authorizedUsers, true);
-    }
-    
-    @Transactional
     public void saveAuthorizedUsersForResourceCollection(ResourceCollection resourceCollection, List<AuthorizedUser> authorizedUsers, boolean shouldSaveResource) {
         if (resourceCollection == null) {
             throw new TdarRecoverableRuntimeException("could not save resource collection ... null");
@@ -143,9 +143,9 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                     continue;
                 }
 
-                incomingUser.setResourceCollection(resourceCollection);
+//                incomingUser.setResourceCollection(resourceCollection);
 
-                if (!Persistable.Base.isNullOrTransient(incomingUser.getUser())) {
+                if (Persistable.Base.isNotNullOrTransient(incomingUser.getUser())) {
                     Person user = getDao().find(Person.class, incomingUser.getUser().getId());
                     if (user != null) {
                         // it's important to ensure that we replace the proxy user w/ the persistent user prior to calling isValid(), because isValid()
@@ -171,41 +171,22 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         if (shouldSaveResource)
             getDao().saveOrUpdate(resourceCollection);
     }
-    
-    @Transactional
-    public Set<ResourceCollection> findAllEditableCollections(Person person) {
-        Set<ResourceCollection> allEditableCollections = new HashSet<ResourceCollection>(getDao().findExplicitlyAuthorizedCollections(person, CollectionType.SHARED));
-        // problem here is that all of the potential children may have other collections as children, and these may be "valid" collections for our tree
-        Set<ResourceCollection> childCollections = new HashSet<ResourceCollection>();
-        for (ResourceCollection potentialCollection: allEditableCollections) {
-            childCollections.addAll(findAllChildCollectionsRecursive(potentialCollection));
+
+    @Transactional(readOnly = true)
+    public List<ResourceCollection> findParentOwnerCollections(Person person) {
+        return getDao().findParentOwnerCollections(person, Arrays.asList(CollectionType.SHARED));
+    }
+
+    @Transactional(readOnly = true)
+    public List<ResourceCollection> findPotentialParentCollections(Person person, ResourceCollection collection) {
+        List<ResourceCollection> potentialCollections = getDao().findParentOwnerCollections(person, Arrays.asList(CollectionType.SHARED));
+        if (collection == null) {
+            return potentialCollections;
         }
-        allEditableCollections.addAll(childCollections);
-        return allEditableCollections;
-    }
-
-    @Transactional(readOnly = true)
-    public List<ResourceCollection> findExplicitlyAuthorizedCollections(Person person) {
-        return getDao().findExplicitlyAuthorizedCollections(person, CollectionType.SHARED);
-    }
-
-    /**
-     * Returns a set of ResourceCollections that are viable parents for the given ResourceCollection which are the 
-     * set of all editable ResourceCollections, excluding any descendants of the given ResourceCollection to avoid cycles.
-     * 
-     * @param person
-     * @param collection
-     * @return
-     */
-    @Transactional(readOnly = true)
-    public Set<ResourceCollection> findPotentialParentCollections(Person person, ResourceCollection collection) {
-        Set<ResourceCollection> allEditableCollections = findAllEditableCollections(person);
-        // remove any potential collections that may be descendants of the parameterized ResourceCollection
-        Iterator<ResourceCollection> iterator = allEditableCollections.iterator();
+        Iterator<ResourceCollection> iterator = potentialCollections.iterator();
         while (iterator.hasNext()) {
             ResourceCollection parent = iterator.next();
             while (parent != null) {
-                // checking for recursive loops both direct children or grandchildren...
                 if (parent.equals(collection)) {
                     logger.trace("removing {} from parent list to prevent infinite loops", collection);
                     iterator.remove();
@@ -214,7 +195,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                 parent = parent.getParent();
             }
         }
-        return allEditableCollections;
+        return potentialCollections;
     }
 
     @Transactional
@@ -235,6 +216,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         Iterator<ResourceCollection> iterator = current.iterator();
         while (iterator.hasNext()) {
             ResourceCollection resourceCollection = iterator.next();
+            
+            //retain internal collections, but remove any existing shared collections that don't exist in the incoming list of shared collections
             if (!incoming_.contains(resourceCollection) && resourceCollection.isShared()) {
                 toRemove.add(resourceCollection);
             }
@@ -291,53 +274,17 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         return getDao().findAllSharedResourceCollections();
     }
 
-    public List<ResourceCollection> findAllChildCollectionsRecursive(ResourceCollection collection) {
-        return findAllChildCollectionsRecursive(collection, CollectionType.SHARED);
-    }
-
-    public List<ResourceCollection> findAllChildCollectionsRecursive(ResourceCollection collection, CollectionType collectionType) {
+    public List<ResourceCollection> findAllChildCollectionsRecursive(ResourceCollection collection, CollectionType shared) {
         List<ResourceCollection> collections = new ArrayList<ResourceCollection>();
-        LinkedList<ResourceCollection> toEvaluate = new LinkedList<ResourceCollection>();
+        List<ResourceCollection> toEvaluate = new ArrayList<ResourceCollection>();
         toEvaluate.add(collection);
         while (!toEvaluate.isEmpty()) {
-            ResourceCollection child = toEvaluate.removeFirst();
+            ResourceCollection child = toEvaluate.get(0);
             collections.add(child);
-            toEvaluate.addAll(findAllDirectChildCollections(child.getId(), null, collectionType));
+            toEvaluate.remove(0);
+            toEvaluate.addAll(findAllDirectChildCollections(child.getId(), null, CollectionType.SHARED));
         }
         return collections;
     }
-    
-    /**
-     * Returns all of the authorized users for a collection, including the explicit permissions on the specified collection along with any permisssions
-     * inherited from the collection's ancestors.  
-     * 
-     * @param collection
-     * @return
-     */
-    public List<AuthorizedUser>getEffectiveAuthorizedUsers(ResourceCollection collection) {
-       List<AuthorizedUser> authUsers = new ArrayList<AuthorizedUser>();
-       for(ResourceCollection ancestor : collection.getHierarchicalResourceCollections()) {
-           authUsers.addAll(ancestor.getAuthorizedUsers());
-       }
-       
-       return authUsers;
-    }
-    
-    /**
-     * return copy of inherited authusers
-     * @return
-     */
-    public List<AuthorizedUser> getTransientInheritedAuthorizedUsers(ResourceCollection collection) {
-        List<AuthorizedUser> authusers = new ArrayList<AuthorizedUser>();
-        if(collection.isRoot()) return authusers;
-        
-        List<AuthorizedUser> effectiveAuthusers = getEffectiveAuthorizedUsers(collection.getParent());
-        for(AuthorizedUser authuser: effectiveAuthusers) {
-            AuthorizedUser transientAuthuser = new AuthorizedUser(authuser.getUser(), authuser.getGeneralPermission());
-            authusers.add(transientAuthuser);
-        }
-        return authusers;
-    }
 
-    
 }

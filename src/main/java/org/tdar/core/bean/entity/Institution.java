@@ -1,7 +1,9 @@
 package org.tdar.core.bean.entity;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -10,7 +12,9 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
@@ -28,7 +32,6 @@ import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
-import org.tdar.search.query.QueryFieldNames;
 
 /**
  * $Id$
@@ -44,7 +47,7 @@ import org.tdar.search.query.QueryFieldNames;
 @Indexed(index = "Institution")
 @DiscriminatorValue("INSTITUTION")
 @XmlRootElement(name = "institution")
-public class Institution extends Creator implements Comparable<Institution>, Validatable {
+public class Institution extends Creator implements Comparable<Institution>, Dedupable<Institution>, Validatable {
 
     private static final long serialVersionUID = 892315581573902067L;
 
@@ -54,7 +57,12 @@ public class Institution extends Creator implements Comparable<Institution>, Val
     private static final String ACRONYM_REGEX = "(?:.+)(?:[\\(\\[\\{])(.+)(?:[\\)\\]\\}])(?:.*)";
 
     @Transient
-    private static final String[] IGNORE_PROPERTIES_FOR_UNIQUENESS = { "id", "dateCreated", "dateUpdated" };
+    private static final String[] IGNORE_PROPERTIES_FOR_UNIQUENESS = { "id", "dateCreated", "description", "dateUpdated", "url",
+            "location", "parentInstitution", "parentinstitution_id", "synonyms", "status"  };
+
+    @OneToMany(orphanRemoval = true,cascade=CascadeType.ALL)
+    @JoinColumn(name = "merge_creator_id")
+    private Set<Institution> synonyms = new HashSet<Institution>();
 
     @Column(nullable = false, unique = true)
     @BulkImportField(label = "Institution Name", comment = BulkImportField.CREATOR_INSTITUTION_DESCRIPTION, order = 10)
@@ -170,4 +178,18 @@ public class Institution extends Creator implements Comparable<Institution>, Val
         return isValidForController() && getId() != null;
     }
 
+    public Set<Institution> getSynonyms() {
+        return synonyms;
+    }
+
+    public void setSynonyms(Set<Institution> synonyms) {
+        this.synonyms = synonyms;
+    }
+    
+    public boolean hasNoPersistableValues() {
+        if (StringUtils.isBlank(getName())) {
+            return true;
+        }
+        return false;
+    }
 }

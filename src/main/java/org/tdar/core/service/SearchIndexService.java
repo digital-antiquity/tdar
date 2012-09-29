@@ -1,5 +1,6 @@
 package org.tdar.core.service;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -40,6 +41,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.HibernateSearchDao;
+import org.tdar.core.dao.resource.ProjectDao;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.utils.activity.Activity;
@@ -63,7 +65,7 @@ public class SearchIndexService {
     private ResourceCollectionService resourceCollectionService;
 
     @Autowired
-    private ProjectService projectService;
+    private ProjectDao projectDao;
 
     private static final int FLUSH_EVERY = TdarConfiguration.getInstance().getIndexerFlushSize();
 
@@ -158,7 +160,7 @@ public class SearchIndexService {
         if (item instanceof Project) {
             Project project = (Project) item;
             if (CollectionUtils.isEmpty(project.getCachedInformationResources())) {
-                projectService.findAllResourcesInProject(project);
+                projectDao.findAllResourcesInProject(project);
             }
         }
         fullTextSession.index(item);
@@ -186,26 +188,26 @@ public class SearchIndexService {
         indexCollection(collectionToReindex);
     }
 
-    @SuppressWarnings("deprecation")
-    public <H extends Indexable & Persistable> void index(H... obj) {
-        log.debug("MANUAL INDEXING ... " + obj.length);
-        genericService.synchronize();
-
-        FullTextSession fullTextSession = getFullTextSession();
-        FlushMode previousFlushMode = fullTextSession.getFlushMode();
-        fullTextSession.setFlushMode(FlushMode.MANUAL);
-        fullTextSession.setCacheMode(CacheMode.IGNORE);
-        fullTextSession.flushToIndexes();
-        for (H obj_ : obj) {
-            if (obj_ != null) {
-                fullTextSession.purge(obj_.getClass(), obj_.getId());
-                index(fullTextSession, obj_);
-            }
-        }
-        fullTextSession.flushToIndexes();
-        // fullTextSession.clear();
-        fullTextSession.setFlushMode(previousFlushMode);
-    }
+//    @SuppressWarnings("deprecation")
+//    public <H extends Indexable & Persistable> void index(H... obj) {
+//        log.debug("MANUAL INDEXING ... " + obj.length);
+//        genericService.synchronize();
+//
+//        FullTextSession fullTextSession = getFullTextSession();
+//        FlushMode previousFlushMode = fullTextSession.getFlushMode();
+//        fullTextSession.setFlushMode(FlushMode.MANUAL);
+//        fullTextSession.setCacheMode(CacheMode.IGNORE);
+//        fullTextSession.flushToIndexes();
+//        for (H obj_ : obj) {
+//            if (obj_ != null) {
+//                fullTextSession.purge(obj_.getClass(), obj_.getId());
+//                index(fullTextSession, obj_);
+//            }
+//        }
+//        fullTextSession.flushToIndexes();
+//        // fullTextSession.clear();
+//        fullTextSession.setFlushMode(previousFlushMode);
+//    }
 
     public int getDivisor(Number total) {
         int divisor = 5;
@@ -223,13 +225,17 @@ public class SearchIndexService {
         return divisor;
     }
 
+    public <C extends Indexable> void index(C ... indexable) {
+        indexCollection(Arrays.asList(indexable));
+    }
+    
     public <C extends Indexable> void indexCollection(Collection<C> indexable) {
         log.debug("manual indexing ... " + indexable.size());
         if (indexable != null) {
             FullTextSession fullTextSession = getFullTextSession();
 
             for (C toIndex : indexable) {
-                // fullTextSession.purge(toIndex.getClass(), toIndex.getId());
+//                fullTextSession.purge(toIndex.getClass(), toIndex.getId());
                 index(fullTextSession, toIndex);
                 log.debug("indexing: " + toIndex);
                 try {

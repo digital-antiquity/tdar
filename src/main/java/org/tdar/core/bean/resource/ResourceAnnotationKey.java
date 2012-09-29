@@ -68,6 +68,17 @@ public class ResourceAnnotationKey extends Persistable.Base implements Indexable
 
     private transient Float score = -1f;
     private transient Explanation explanation;
+    private transient boolean readyToIndex = true;
+
+    @Transient
+    @XmlTransient
+    public boolean isReadyToIndex() {
+        return readyToIndex;
+    }
+
+    public void setReadyToIndex(boolean readyToIndex) {
+        this.readyToIndex = readyToIndex;
+    }
 
     @XmlAttribute
     public ResourceAnnotationType getResourceAnnotationType() {
@@ -124,6 +135,7 @@ public class ResourceAnnotationKey extends Persistable.Base implements Indexable
     }
 
     @Transient
+    @XmlTransient
     public Float getScore() {
         return score;
     }
@@ -144,6 +156,6 @@ public class ResourceAnnotationKey extends Persistable.Base implements Indexable
 
     @Transient
     public String getLabel() {
-        return key;
+        return this.key;
     }
 }

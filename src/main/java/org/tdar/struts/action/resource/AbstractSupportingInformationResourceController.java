@@ -74,6 +74,7 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
     protected void saveCategories() {
         if (getPersistable() instanceof SupportsResource) {
             SupportsResource supporting = (SupportsResource) getPersistable();
+            logger.info("Category: {} ; subcategory: {} ", categoryId, subcategoryId);
             if (Persistable.Base.isNullOrTransient(subcategoryId)) {
                 supporting.setCategoryVariable(getCategoryVariableService().find(categoryId));
             } else {

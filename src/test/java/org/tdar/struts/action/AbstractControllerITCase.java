@@ -9,27 +9,29 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
+import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Image;
+import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.search.query.SortOption;
@@ -97,8 +99,6 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         assertTrue(r.getBookmarks().isEmpty() || r.getBookmarks().size() == (size - 1));
     }
 
-
-    
     public ResourceCollection generateResourceCollection(String name, String description, CollectionType type, boolean visible, List<AuthorizedUser> users,
             List<? extends Resource> resources, Long parentId)
             throws Exception {
@@ -131,7 +131,6 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         }
         resourceCollection.setSortBy(SortOption.RESOURCE_TYPE);
         controller.setServletRequest(getServletPostRequest());
-        controller.setAsync(false);
         String save = controller.save();
         assertTrue(save.equals(TdarActionSupport.SUCCESS));
         return resourceCollection;
@@ -153,11 +152,6 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public <C> C setupAndLoadResource(String filename, Class<C> cls) {
-        return setupAndLoadResource(filename, cls, null);
-    }
-
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public <C> C setupAndLoadResource(String filename, Class<C> cls, Long projectId) {
         AbstractInformationResourceController controller = null;
         Long ticketId = -1L;
         if (cls.equals(Ontology.class)) {
@@ -177,8 +171,14 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
             return null;
 
         controller.prepare();
-        controller.getResource().setTitle(filename);
-        controller.getResource().setDescription("This resource was created as a result of a test: " + getClass());
+        final Resource resource = controller.getResource();
+        resource.setTitle(filename);
+        resource.setDescription("This resource was created as a result of a test: " + getClass());
+        if ((resource instanceof InformationResource) && TdarConfiguration.getInstance().getCopyrightMandatory()) {
+            Creator copyrightHolder = genericService.find(Person.class, 1L);
+            ((InformationResource)resource).setCopyrightHolder(copyrightHolder );
+        }
+
         List<File> files = new ArrayList<File>();
         List<String> filenames = new ArrayList<String>();
         File file = new File(getTestFilePath(), filename);
@@ -187,14 +187,13 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         filenames.add(filename);
         if (ticketId != -1) {
             controller.setTicketId(ticketId);
-            controller.setFileProxies(Arrays.asList(new FileProxy(filename, VersionType.UPLOADED, false)));
+            controller.setFileProxies(Arrays.asList(new FileProxy(filename, VersionType.UPLOADED, FileAccessRestriction.PUBLIC)));
         } else {
             controller.setUploadedFiles(files);
             controller.setUploadedFilesFileName(filenames);
         }
         try {
             controller.setServletRequest(getServletPostRequest());
-            controller.setProjectId(projectId);
             controller.save();
         } catch (TdarActionException exception) {
             // what now?
@@ -207,7 +206,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         return PATH;
     }
 
-    public Pair<PersonalFilestoreTicket, List<FileProxy>> uploadFilesAsync(Collection<File> uploadFiles) throws FileNotFoundException {
+    public Pair<PersonalFilestoreTicket, List<FileProxy>> uploadFilesAsync(List<File> uploadFiles) throws FileNotFoundException {
         UploadController uploadController = generateNewInitializedController(UploadController.class);
         assertEquals(TdarActionSupport.SUCCESS, uploadController.grabTicket());
         PersonalFilestoreTicket ticket = uploadController.getPersonalFilestoreTicket();
@@ -216,7 +215,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         assertNull(uploadController.getTicketId());
 
         uploadController.setTicketId(ticket.getId());
-        uploadController.setUploadFile(new ArrayList<File>(uploadFiles));
+        uploadController.setUploadFile(uploadFiles);
         for (File uploadedFile : uploadFiles) {
             uploadController.getUploadFileFileName().add(uploadedFile.getName());
             FileProxy fileProxy = new FileProxy();
@@ -266,7 +265,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         p.setPhone("212 000 0000");
         p.setContributor(true);
         p.setContributorReason(REASON);
-        p.setRpa(true);
+        p.setRpaNumber("214");
 
         return setupValidUserInController(controller, p);
     }
@@ -291,23 +290,4 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
 
         return execute;
     }
-    
-    @SuppressWarnings("unchecked")
-    //returns a new, "sparse" version of specified object  
-    protected <P extends Persistable> P createSparseObject(P persistedObject) {
-        P sparseObject = null;
-        try {
-            sparseObject = (P) persistedObject.getClass().newInstance();
-        } catch (Exception ignored) {} 
-        sparseObject.setId(persistedObject.getId());
-        return sparseObject;
-    }
-    
-    //put sparse versions of the items in specified collection into another collection
-    protected <P extends Persistable, C extends Collection<P>> void createSparseObjects(C persistedCollection, C newEmptyCollection) {
-        for( P item : persistedCollection) {
-            newEmptyCollection.add(createSparseObject(item));
-        }
-    }
-    
 }

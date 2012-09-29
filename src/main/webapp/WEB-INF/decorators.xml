@@ -12,10 +12,11 @@ vim:sts=2:sw=2:
     <pattern>/config-browser/*</pattern>
     <pattern>/services/*</pattern>
   </excludes>
-<!--   <decorator name='login' page='layout-login.dec'>
+  <decorator name="bootstrapmain" page="layout-bootstrap.dec">
     <pattern>/login*</pattern>
-  </decorator> -->
-  <!-- everything else -->
+    <pattern>/</pattern>
+    <pattern>/document/**</pattern>
+  </decorator>
   <decorator name="main" page="layout.dec">
     <pattern>/*</pattern>
   </decorator>

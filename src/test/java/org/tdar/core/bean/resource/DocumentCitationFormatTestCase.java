@@ -53,10 +53,10 @@ public class DocumentCitationFormatTestCase {
     }
 
     public static void setupDocumentWithAllFields(Document document, DocumentType type) {
-        document.getResourceCreators().add(new ResourceCreator(document, new Person("First", "Last", "first@last"), ResourceCreatorRole.AUTHOR));
-        document.getResourceCreators().add(new ResourceCreator(document, new Institution("institution auth"), ResourceCreatorRole.AUTHOR));
-        document.getResourceCreators().add(new ResourceCreator(document, new Person("First2", "Last2", "first2@last"), ResourceCreatorRole.EDITOR));
-        document.getResourceCreators().add(new ResourceCreator(document, new Institution("Collaborating institution"), ResourceCreatorRole.COLLABORATOR));
+        document.getResourceCreators().add(new ResourceCreator(new Person("First", "Last", "first@last"), ResourceCreatorRole.AUTHOR));
+        document.getResourceCreators().add(new ResourceCreator(new Institution("institution auth"), ResourceCreatorRole.AUTHOR));
+        document.getResourceCreators().add(new ResourceCreator(new Person("First2", "Last2", "first2@last"), ResourceCreatorRole.EDITOR));
+        document.getResourceCreators().add(new ResourceCreator(new Institution("Collaborating institution"), ResourceCreatorRole.COLLABORATOR));
         document.setDocumentType(type);
         document.setDate(1234);
         if (document.getId() == null || document.getId() == -1) {
@@ -74,7 +74,7 @@ public class DocumentCitationFormatTestCase {
         document.setJournalNumber("journalNumber");
         document.setNumberOfPages(10);
         document.setNumberOfVolumes(2);
-        document.setPublisher("publisher");
+        document.setPublisher(new Institution("publisher"));
         document.setPublisherLocation("publisherLocation");
         document.setSeriesName("seriesName");
         document.setSeriesNumber("seriesNumber");

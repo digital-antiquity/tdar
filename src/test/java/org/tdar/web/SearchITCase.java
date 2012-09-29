@@ -15,6 +15,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.SearchIndexService;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.search.SearchFieldType;
@@ -60,8 +61,7 @@ public class SearchITCase extends AbstractAdminAuthenticatedWebTestCase {
     }
 
     // FIXME: I get an exception when I try to modify the contents of the
-    // checkbox collection... why? I know the collection itself is immutable,
-    // but
+    // checkbox collection... why? I know the collection itself is immutable, but
     // I still thought you could modify the individual items... is this a bug or
     // am I doing it wrong?
     public void thisTestIsBroken() {
@@ -169,11 +169,15 @@ public class SearchITCase extends AbstractAdminAuthenticatedWebTestCase {
     @Rollback
     public void testFacets() throws InstantiationException,
             IllegalAccessException {
-        List<Resource> resources = new ArrayList<Resource>();
         for (ResourceType rt : ResourceType.values()) {
-            gotoPage("/" + rt.getUrlNamespace() + "/add");
+            final String path = "/" + rt.getUrlNamespace() + "/add";
+            gotoPage(path);
             setInput(String.format("%s.%s", rt.getFieldName(), "title"), "test");
             setInput(String.format("%s.%s", rt.getFieldName(), "description"), "test");
+            if (isCopyrightMandatory()  && isNotAddProject(path)) {
+                setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+                setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
+            }
             if (!rt.isProject()) {
                 setInput(String.format("%s.%s", rt.getFieldName(), "date"), "2134");
             }
@@ -193,9 +197,6 @@ public class SearchITCase extends AbstractAdminAuthenticatedWebTestCase {
             gotoPage(SEARCH_RESULTS_BASE_URL + "?");
             clickLinkOnPage(type.getPlural());
             boolean sawSomething = false;
-            if (type == null)
-                continue;
-
             for (Element element : querySelectorAll(".resource-list h5 a")) {
                 String href = element.getAttribute("href");
                 if (!element.getAttribute("href").toLowerCase()
@@ -214,6 +215,14 @@ public class SearchITCase extends AbstractAdminAuthenticatedWebTestCase {
                     String.format("should have at least one result for",
                             type.name()), sawSomething);
         }
+    }
+
+    private boolean isCopyrightMandatory() {
+        return TdarConfiguration.getInstance().getCopyrightMandatory();
+    }
+
+    private boolean isNotAddProject(final String path) {
+        return !path.endsWith("project/add");
     }
 
     @Test

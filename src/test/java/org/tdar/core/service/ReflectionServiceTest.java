@@ -23,7 +23,7 @@ public class ReflectionServiceTest {
     @Test
     public void testPersonReferences() {
         Set<Field> set = reflectionService.findFieldsReferencingClass(Resource.class, Person.class);
-        Assert.assertEquals(2, set.size());
+        Assert.assertEquals(3, set.size());
     }
 
     @Test

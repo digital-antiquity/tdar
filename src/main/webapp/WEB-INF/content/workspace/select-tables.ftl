@@ -21,7 +21,7 @@
 </#macro>
 
 <#macro listDataTables dataset>
-	<#if dataset?? && (!dataset.viewable?has_content || dataset.viewable)>
+    <#if dataset?? && (!dataset.viewable?has_content || dataset.viewable)>
         <#list dataset.getDataTables() as table>
         <tr>
             <td>

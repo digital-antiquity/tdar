@@ -4,7 +4,6 @@ package org.tdar.core.bean.resource.sensory;
 //import static org.junit.Assert.assertNotNull;
 //import static org.junit.Assert.assertNull;
 //import static org.junit.Assert.assertTrue;
-import java.util.Date;
 import java.util.LinkedHashSet;
 
 import junit.framework.Assert;
@@ -13,8 +12,10 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
+import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.SensoryData;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.GenericService;
 
 public class SensoryDataITCase extends AbstractIntegrationTestCase {
@@ -34,6 +35,10 @@ public class SensoryDataITCase extends AbstractIntegrationTestCase {
         Person submitter = genericService.find(Person.class, 1L);
         sensoryData.markUpdated(submitter);
         sensoryData.setDate(1234);
+        if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
+            Creator copyrightHolder = submitter;
+            sensoryData.setCopyrightHolder(copyrightHolder);
+        }
         // add some scans
         SensoryDataScan scan = new SensoryDataScan();
         scan.setFilename("filename");

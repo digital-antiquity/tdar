@@ -1,10 +1,8 @@
 package org.tdar.struts.action.entity;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
-import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -88,17 +86,16 @@ public class PersonController extends AbstractPersistableController<Person> {
         }
     }
 
-    
     // check whether password change was requested and whether it was valid
     private boolean validateAndProcessUsernameChange() {
         // no change requested
         if (StringUtils.isBlank(newUsername))
             return false;
-        
+
         if (StringUtils.isBlank(password)) {
             throw new TdarRecoverableRuntimeException("you must re-enter your password to change your username");
         }
-            
+
         if (!StringUtils.equals(password, confirmPassword)) {
             // change requested, passwords don't match
             addActionError(AccountController.ERROR_PASSWORDS_DONT_MATCH);
@@ -114,7 +111,7 @@ public class PersonController extends AbstractPersistableController<Person> {
 
     @Override
     public boolean isEditable() {
-        return getAuthenticatedUser().equals(getPersistable()) 
+        return getAuthenticatedUser().equals(getPersistable())
                 || getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_PERSONAL_ENTITES, getAuthenticatedUser());
     }
 

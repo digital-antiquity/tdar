@@ -38,6 +38,7 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.support.DatabaseMetaDataCallback;
 import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.jdbc.support.MetaDataAccessException;
@@ -641,6 +642,8 @@ public class PostgresDatabase implements TargetDatabase {
                             preparedStatement.setString(2, code);
                             okToExecute = true;
                             break;
+                        default:
+                            break;
                     }
                     if (okToExecute) {
                         logger.trace("Prepared statement is: "
@@ -816,14 +819,14 @@ public class PostgresDatabase implements TargetDatabase {
             if (!integrationColumn.isDisplayColumn() && column != null) {
                 Set<String> whereVals = new HashSet<String>();
                 for (OntologyNode node : integrationColumn.getOntologyNodesForSelect()) {
-                    for (String val: column.getMappedDataValues(node)) {
-                        whereVals.add(quote(StringEscapeUtils.escapeSql(val), false));                        
+                    for (String val : column.getMappedDataValues(node)) {
+                        whereVals.add(quote(StringEscapeUtils.escapeSql(val), false));
                     }
 
-//                     FIXME: need to verify / replace this logic at some point
-//                    for (String val : node.getMappedDataValues(column)) {
-//
-//                    }
+                    // FIXME: need to verify / replace this logic at some point
+                    // for (String val : node.getMappedDataValues(column)) {
+                    //
+                    // }
                 }
                 if (whereVals.isEmpty()) {
                     continue;
@@ -886,6 +889,10 @@ public class PostgresDatabase implements TargetDatabase {
         }
         String sql = String.format(SELECT_ALL_FROM_COLUMN, column.getName(), column.getDataTable().getName());
         return jdbcTemplate.queryForList(sql, String.class);
+    }
+
+    public List<String[]> query(String selectSql, ParameterizedRowMapper<String[]> parameterizedRowMapper) {
+        return jdbcTemplate.query(selectSql, parameterizedRowMapper);
     }
 
 }

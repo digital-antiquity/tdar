@@ -1,18 +1,16 @@
 package org.tdar.core.bean.entity;
 
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -20,6 +18,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -35,6 +34,7 @@ import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Resolution;
 import org.hibernate.search.annotations.Store;
 import org.tdar.core.bean.HasName;
+import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.JsonModel;
 import org.tdar.core.bean.OaiDcProvider;
@@ -42,9 +42,11 @@ import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.resource.Addressable;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.JSONTransient;
 import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
+import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 
 /**
@@ -62,7 +64,9 @@ import org.tdar.search.query.QueryFieldNames;
 @Inheritance(strategy = InheritanceType.JOINED)
 @XmlSeeAlso({ Person.class, Institution.class })
 @XmlAccessorType(XmlAccessType.PROPERTY)
-public abstract class Creator extends JsonModel.Base implements Persistable, HasName, Indexable, Dedupable, Updatable, OaiDcProvider, Obfuscatable, Addressable {
+public abstract class Creator extends JsonModel.Base implements Persistable, HasName, HasStatus, Indexable, Updatable, OaiDcProvider,
+        Obfuscatable,
+        Addressable {
 
     private transient boolean obfuscated;
 
@@ -71,9 +75,11 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
     public enum CreatorType {
         PERSON("P"), INSTITUTION("I");
         private String code;
+
         private CreatorType(String code) {
             this.code = code;
         }
+
         public static CreatorType valueOf(Class<? extends Creator> cls) {
             if (cls.equals(Person.class)) {
                 return CreatorType.PERSON;
@@ -82,7 +88,7 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
             }
             return null;
         }
-        
+
         public String getCode() {
             return this.code;
         }
@@ -114,13 +120,15 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
     @Column(name = "date_created")
     private Date dateCreated;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    @Field(norms = Norms.NO, store = Store.YES)
+    @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
+    private Status status = Status.ACTIVE;
+
     @Lob
     @Type(type = "org.hibernate.type.StringClobType")
     private String description;
-
-    @ElementCollection()
-    @JoinTable(name = "creator_synonym")
-    private Set<String> synonyms = new HashSet<String>();
 
     public Creator() {
         setDateCreated(new Date());
@@ -134,6 +142,7 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
 
     private transient Float score = -1f;
     private transient Explanation explanation;
+    private transient boolean readyToIndex = true;
 
     // @OneToMany(cascade = CascadeType.ALL, mappedBy = "creator", fetch = FetchType.LAZY, orphanRemoval = true)
     // private Set<ResourceCreator> resourceCreators = new LinkedHashSet<ResourceCreator>();
@@ -159,6 +168,7 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
     }
 
     @Override
+    @XmlAttribute
     public Long getId() {
         return id;
     }
@@ -167,21 +177,6 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
     public void setId(Long id) {
         this.id = id;
     }
-
-    /*
-     * @NumericField
-     * 
-     * @XmlTransient
-     * 
-     * @Field(norms = Norms.NO, store = Store.YES)
-     * public Integer getReferenceCount() {
-     * if (CollectionUtils.isEmpty(getResourceCreators())) {
-     * return 0;
-     * } else {
-     * return getResourceCreators().size();
-     * }
-     * }
-     */
 
     public void setDateCreated(Date dateCreated) {
         this.dateCreated = dateCreated;
@@ -264,25 +259,8 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
         this.explanation = explanation;
     }
 
-    public Set<String> getSynonyms() {
-        if (synonyms == null) {
-            synonyms = new HashSet<String>();
-        }
-        return synonyms;
-    }
-
-    public <D extends Dedupable> void addSynonym(D synonym) {
-        for (String name : synonym.getSynonyms()) {
-            getSynonyms().add(name);
-        }
-        getSynonyms().add(synonym.getSynonymFormattedName());
-    }
-
-    public void setSynonyms(Set<String> synonyms) {
-        this.synonyms = synonyms;
-    }
-
-    @Override
+    @Transient
+    @XmlTransient
     public boolean isDedupable() {
         return true;
     }
@@ -295,6 +273,23 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
     public void markUpdated(Person p) {
         // setUpdatedBy(p);
         setDateUpdated(new Date());
+    }
+
+    @XmlAttribute
+    public Status getStatus() {
+        return this.status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public boolean isActive() {
+        return this.status == Status.ACTIVE;
+    }
+
+    public boolean isDeleted() {
+        return this.status == Status.DELETED;
     }
 
     /*
@@ -340,4 +335,17 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
     public String getUrlNamespace() {
         return "browse/creator";
     }
+
+    public abstract boolean hasNoPersistableValues();
+
+    @Transient
+    @XmlTransient
+    public boolean isReadyToIndex() {
+        return readyToIndex;
+    }
+
+    public void setReadyToIndex(boolean readyToIndex) {
+        this.readyToIndex = readyToIndex;
+    }
+
 }

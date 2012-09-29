@@ -5,18 +5,24 @@ import static org.junit.Assert.assertTrue;
 import java.util.HashSet;
 
 import org.apache.log4j.Logger;
+import org.junit.Assert;
 import org.junit.Test;
-import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
+import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.builder.DynamicQueryComponent;
+import org.tdar.search.query.builder.QueryBuilder;
+import org.tdar.search.query.builder.ResourceQueryBuilder;
 
 public class SearchServiceTest {
 
     public Logger logger = Logger.getLogger(getClass());
-    HashSet<DynamicQueryComponent> createFields;
+    HashSet<DynamicQueryComponent> createFields = new HashSet<DynamicQueryComponent>();
 
     public SearchServiceTest() {
-        createFields = SearchService.createFields(InformationResource.class, "");
+        QueryBuilder qb = new ResourceQueryBuilder();
+        for (Class<?> cls : qb.getClasses()) {
+            createFields.addAll(SearchService.createFields(cls, ""));
+        }
     }
 
     @Test
@@ -28,6 +34,19 @@ public class SearchServiceTest {
             logger.trace(dqc.getLabel());
         }
         assertTrue("Child @Field annotation not found on: creatorPersons.person.institution.acronym", found);
+    }
+
+    @Test
+    public void testEnumAnnotation() {
+        boolean found = false;
+        for (DynamicQueryComponent dqc : createFields) {
+            if (dqc.getLabel().equalsIgnoreCase(QueryFieldNames.INTEGRATABLE))
+                found = true;
+            if (dqc.getLabel().toLowerCase().endsWith("etype")  || dqc.getLabel().toLowerCase().contains("status") || dqc.getLabel().contains("integratable")) {
+                Assert.assertNotNull(dqc.getAnalyzer());
+            }
+        }
+        assertTrue("found integratable annotation", found);
     }
 
     @Test
@@ -64,7 +83,6 @@ public class SearchServiceTest {
         assertTrue("Child @Field annotation not found on: activeOtherKeywords.label", found);
     }
 
-    
     @Test
     public void testEmbeddedPrefixedChildAnnotation() {
         boolean found = false;

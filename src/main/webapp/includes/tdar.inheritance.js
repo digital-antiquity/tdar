@@ -494,13 +494,13 @@ function processInheritance(formId) {
 function updateInheritanceCheckboxes() {
     var projectId = $('#projectId').val();
     if (projectId <= 0) {
-        $('.inheritlabel').find('label').addClass('disabled');
-        $('.inheritlabel').find(':checkbox').prop('disabled', true);
-        $('.inheritlabel').find(':checkbox').prop('checked', false);
+        $('.divInheritSection').find('label').addClass('disabled');
+        $('.divInheritSection').find(':checkbox').prop('disabled', true);
+        $('.divInheritSection').find(':checkbox').prop('checked', false);
         enableAll();
     } else {
-        $('.inheritlabel').find('label').removeClass('disabled');
-        $('.inheritlabel').find(':checkbox').prop('disabled', false);
+        $('.divInheritSection').find('label').removeClass('disabled');
+        $('.divInheritSection').find(':checkbox').prop('disabled', false);
     }
 }
 
@@ -520,6 +520,7 @@ function enableAll() {
 function updateInheritableSections(json) {
     //HACK: temporary fix for TDAR-2268 - our form populate js is overwriting the ID field with data.id
     var jsonid = json.id;
+//    console.log(json);
     json.id = null;
     delete(json.id);
 
@@ -530,8 +531,8 @@ function updateInheritableSections(json) {
         labelText = 'Inherit values from parent project "' + TDAR.ellipsify(json.title, 60) + '"';
         selectedProjectName = "Inherit metadata from " + json.title;
     }
-    $('.inheritlabel label').text(labelText);
-    $('#lblCurrentlySelectedProject').text(selectedProjectName);
+    $('.divInheritSection label').text(labelText);
+    $('#spanCurrentlySelectedProjectText').text(selectedProjectName);
 
     // show or hide the text of each inheritable section based on checkbox
     // state.
@@ -580,7 +581,7 @@ function selectAllInheritanceClicked() {
         $elem.data('isUpdatingSections', true);
 
         var checked = $elem.prop('checked');
-        var $sectionCheckboxes = $('.inheritlabel input[type=checkbox]');
+        var $sectionCheckboxes = $('.divInheritSection input[type=checkbox]');
 
         // make all of the section checkboxes just like this checkbox.
         if (checked) {
@@ -619,7 +620,7 @@ function enableOrDisableInheritAllSection() {
 function updateSelectAllCheckboxState() {
     var $cbSelectAllInheritance = $('#cbSelectAllInheritance');
     if (!$cbSelectAllInheritance.data('isUpdatingSections')) {
-        var $uncheckedBoxes = $('.inheritlabel input[type=checkbox]').not(":checked");
+        var $uncheckedBoxes = $('.divInheritSection input[type=checkbox]').not(":checked");
         $cbSelectAllInheritance.prop('checked', $uncheckedBoxes.length === 0);
     }
 }

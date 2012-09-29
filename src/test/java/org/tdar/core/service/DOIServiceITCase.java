@@ -69,7 +69,7 @@ public class DOIServiceITCase extends AbstractIntegrationTestCase {
         resourceService.saveOrUpdate(toBeDeleted);
 
         // create new resources (1) without file (1) with file (2) with file, ancient date, and already has DOI
-        InformationResource generateInformationResourceWithUser = generateInformationResourceWithUser();
+        InformationResource generateInformationResourceWithUser = generateDocumentWithUser();
         InformationResource file = generateInformationResourceWithFileAndUser();
         InformationResource file2 = generateInformationResourceWithFileAndUser();
         file2.setDateUpdated(new Date(10000)); // forever ago -- should not register

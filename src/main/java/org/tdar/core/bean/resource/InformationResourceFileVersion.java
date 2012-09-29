@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -38,7 +37,8 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
 
     private static final long serialVersionUID = 3768354809654162949L;
 
-    @ManyToOne(optional = false, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
+    @ManyToOne()
+    // optional = false, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
     @JoinColumn(name = "information_resource_file_id")
     private InformationResourceFile informationResourceFile;
 
@@ -80,7 +80,7 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
 
     @Column(name = "total_time")
     private Long totalTime;
-    
+
     private Long size;
 
     private String path;
@@ -319,20 +319,20 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
      */
     public boolean isDerivative() {
         return getFileVersionType().isDerivative();
-//        switch (getFileVersionType()) {
-//            case INDEXABLE_TEXT:
-//            case WEB_SMALL:
-//            case WEB_MEDIUM:
-//            case WEB_LARGE:
-//            case METADATA:
-//            case TRANSLATED:
-//                return true;
-//            default:
-//                return false;
-//        }
-//        // return (getFileVersionType() == VersionType.INDEXABLE_TEXT
-//        // || getFileVersionType() == VersionType.WEB_SMALL
-//        // || getFileVersionType() == VersionType.WEB_MEDIUM || getFileVersionType() == VersionType.WEB_LARGE);
+        // switch (getFileVersionType()) {
+        // case INDEXABLE_TEXT:
+        // case WEB_SMALL:
+        // case WEB_MEDIUM:
+        // case WEB_LARGE:
+        // case METADATA:
+        // case TRANSLATED:
+        // return true;
+        // default:
+        // return false;
+        // }
+        // // return (getFileVersionType() == VersionType.INDEXABLE_TEXT
+        // // || getFileVersionType() == VersionType.WEB_SMALL
+        // // || getFileVersionType() == VersionType.WEB_MEDIUM || getFileVersionType() == VersionType.WEB_LARGE);
     }
 
     /**
@@ -345,6 +345,7 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
     /**
      * @return
      */
+    @XmlTransient
     public String getIndexableContent() {
         String toReturn = "";
         if (!isIndexable()) {
@@ -398,6 +399,7 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
      * @return the informationResourceId
      */
     @XmlAttribute(name = "informationResourceId")
+    @Transient
     public Long getInformationResourceId() {
         if (informationResourceFile != null && informationResourceFile.getInformationResource() != null)
             return informationResourceFile.getInformationResource().getId();

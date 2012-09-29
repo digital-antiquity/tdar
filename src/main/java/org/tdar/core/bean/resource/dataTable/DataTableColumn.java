@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -13,7 +12,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
@@ -33,7 +31,6 @@ import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
-import org.tdar.core.bean.resource.dataintegration.DataValueOntologyNodeMapping;
 import org.tdar.core.configuration.JSONTransient;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.db.model.abstracts.TargetDatabase;
@@ -83,7 +80,8 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
         }
     };
 
-    @ManyToOne(optional = false, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
+    @ManyToOne(optional = false)
+    // , cascade = { CascadeType.PERSIST })
     @JoinColumn(name = "data_table_id")
     private DataTable dataTable;
 
@@ -122,10 +120,6 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     @Enumerated(EnumType.STRING)
     @Column(name = "measurement_unit")
     private MeasurementUnit measurementUnit;
-
-    @Deprecated
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "dataTableColumn")
-    private List<DataValueOntologyNodeMapping> valueToOntologyNodeMapping = new ArrayList<DataValueOntologyNodeMapping>();
 
     @Column(columnDefinition = "boolean default FALSE")
     private boolean mappingColumn = false;
@@ -223,16 +217,6 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
 
     public void setMeasurementUnit(MeasurementUnit measurementUnit) {
         this.measurementUnit = measurementUnit;
-    }
-
-//    @XmlElementWrapper(name = "dataValueOntologyNodeMappings")
-//    @XmlElement(name = "dataValueOntologyNodeMapping")
-    public List<DataValueOntologyNodeMapping> getValueToOntologyNodeMapping() {
-        return valueToOntologyNodeMapping;
-    }
-
-    public void setValueToOntologyNodeMapping(List<DataValueOntologyNodeMapping> valueToOntologyNodeMapping) {
-        this.valueToOntologyNodeMapping = valueToOntologyNodeMapping;
     }
 
     @Transient
@@ -399,7 +383,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
 
     public List<String> getMappedDataValues(OntologyNode node) {
         ArrayList<String> values = new ArrayList<String>();
-        for (CodingRule rule: getDefaultCodingSheet().getCodingRules()) {
+        for (CodingRule rule : getDefaultCodingSheet().getCodingRules()) {
             if (ObjectUtils.equals(node, rule.getOntologyNode())) {
                 values.add(rule.getTerm());
             }

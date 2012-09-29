@@ -12,6 +12,9 @@ import java.util.regex.Pattern;
 
 import org.junit.Test;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
+import org.tdar.core.configuration.TdarConfiguration;
+
 
 public class ThumbnailITCase extends AbstractAdminAuthenticatedWebTestCase {
 
@@ -47,9 +50,13 @@ public class ThumbnailITCase extends AbstractAdminAuthenticatedWebTestCase {
         setInput(IMAGE_TITLE_FIELDNAME, IMAGE_TITLE);
         setInput(DESCRIPTION_FIELDNAME, DESCRIPTION);
         setInput("image.date", "1984");
+        if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
+            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+            setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
+        }
         // FIXME: need to create input
-        addFileProxyFields(0, true, TEST_IMAGE_NAME);
-        setInput("resourceAvailability", "Public");
+        addFileProxyFields(0, FileAccessRestriction.CONFIDENTIAL, TEST_IMAGE_NAME);
+//        setInput("resourceAvailability", "Public");
         submitForm();
 
         // the logged in creator should be able to see the image
@@ -88,7 +95,7 @@ public class ThumbnailITCase extends AbstractAdminAuthenticatedWebTestCase {
         loginAdmin();
         gotoPage(editPage);
         setInput("fileProxies[0].action", "MODIFY_METADATA");
-        setInput("fileProxies[0].confidential", "false");
+        setInput("fileProxies[0].restriction", "PUBLIC");
         submitForm();
         logout();
         gotoPage(viewPage);
@@ -108,7 +115,8 @@ public class ThumbnailITCase extends AbstractAdminAuthenticatedWebTestCase {
         // NOW MAKE THE PAGE EMBARGED -- THE THUMBNAIL SHOULD NOT BE VISIBLE
         loginAdmin();
         gotoPage(editPage);
-        setInput("resourceAvailability", "Embargoed");
+        setInput("fileProxies[0].action", "MODIFY_METADATA");
+        setInput("fileProxies[0].restriction", "EMBARGOED");
         submitForm();
         logout();
         gotoPage(viewPage);

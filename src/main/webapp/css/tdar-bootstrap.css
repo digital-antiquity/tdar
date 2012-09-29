@@ -1,0 +1,42 @@
+.mapcontainer #map_legend {
+	position: relative;
+	right: -262px;
+	top: -21px;
+	background-color: #EEE;
+	display: block;
+	width: 280px;
+	height: 1.8em
+}
+
+.mapcontainer .legendText {
+	padding-top: 0px !important;
+	margin-left: 5px;
+	margin-right: 5px
+}
+
+.mapcontainer  .legendBox, .mapcontainer  .legendText {
+	clear: none;
+	float: left;
+}
+
+.mapcontainer  .legendBox {
+	border: 1px solid #666666;
+	width: 10px;
+	margin-top: 3px;
+	height: 10px;
+	padding: 2px;
+}
+
+div.barlabel {
+    top: 0;
+    z-index: 1000;
+    overflow: visible;
+    left: 0px;
+    position: relative;
+    display: block;
+    text-align: center;
+    font-size: smaller;
+    line-height: 1.2em;
+    vertical-align: top !important;
+    height: 1.5em;
+ }

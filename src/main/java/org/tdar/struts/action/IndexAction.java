@@ -55,6 +55,19 @@ public class IndexAction extends AuthenticationAware.Base {
     public String execute() {
         return SUCCESS;
     }
+    
+//    @Action(value = "oai", results = {
+//            @Result(name = SUCCESS_GET_RECORD, location = "getRecord.ftl", type = "freemarker", params = {
+//                    "contentType", "text/xml" }),
+
+    @Actions({
+            @Action(value="opensearch", results = {
+                    @Result(name = "success", location = "opensearch.ftl", type = "freemarker", params = { "contentType", "application/xml" })
+            })
+    })
+    public String emptyText() {
+        return SUCCESS;
+    }
 
     @Actions({
             @Action("about"),

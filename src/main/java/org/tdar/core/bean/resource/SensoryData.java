@@ -7,18 +7,18 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.search.annotations.Indexed;
 import org.tdar.core.bean.resource.sensory.SensoryDataImage;
 import org.tdar.core.bean.resource.sensory.SensoryDataScan;
-import org.tdar.core.configuration.JSONTransient;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -168,10 +168,12 @@ public class SensoryData extends InformationResource {
     @Column(name = "rgb_preserved_from_original", nullable = false)
     private boolean rgbPreservedFromOriginal;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "resource", orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(nullable=false,  updatable=false, name="sensory_data_id")
     private Set<SensoryDataScan> sensoryDataScans = new LinkedHashSet<SensoryDataScan>();
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "resource", orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(nullable=false,  updatable=false,   name="sensory_data_id")
     private Set<SensoryDataImage> sensoryDataImages = new LinkedHashSet<SensoryDataImage>();
 
     public SensoryData() {
@@ -490,8 +492,8 @@ public class SensoryData extends InformationResource {
         this.rgbPreservedFromOriginal = rgbPreservedFromOriginal;
     }
 
-    @XmlElementWrapper(name="sensoryDataScans")
-    @XmlElement(name="sensoryDataScan")
+    @XmlElementWrapper(name = "sensoryDataScans")
+    @XmlElement(name = "sensoryDataScan")
     public Set<SensoryDataScan> getSensoryDataScans() {
         return sensoryDataScans;
     }
@@ -500,8 +502,8 @@ public class SensoryData extends InformationResource {
         this.sensoryDataScans = sensoryDataScans;
     }
 
-    @XmlElementWrapper(name="sensoryDataImages")
-    @XmlElement(name="sensoryDataImage")
+    @XmlElementWrapper(name = "sensoryDataImages")
+    @XmlElement(name = "sensoryDataImage")
     public Set<SensoryDataImage> getSensoryDataImages() {
         return sensoryDataImages;
     }

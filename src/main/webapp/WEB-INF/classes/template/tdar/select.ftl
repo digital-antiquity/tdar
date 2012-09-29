@@ -46,7 +46,6 @@
 <#include "/${parameters.templateDir}/simple/scripting-events.ftl" />
 <#include "/${parameters.templateDir}/simple/common-attributes.ftl" />
 <#include "/${parameters.templateDir}/simple/dynamic-attributes.ftl" />
-<#include "/${parameters.templateDir}/tdar/tdar-attributes.ftl" />
 >
 <#if parameters.headerKey?? && parameters.headerValue??>
     <option value="${parameters.headerKey?html}"
@@ -80,8 +79,8 @@
         <#else>
             <#assign itemValue = stack.findString('top')/>
         </#if>
-        <#if parameters.truncate?? && parameters.truncate < (itemValue.length())?int>
-            <#assign itemValue = itemValue?substring(0,parameters.truncate) + "...">
+        <#if parameters.truncate?? && parameters.truncate?number < (itemValue.length())?int>
+            <#assign itemValue = itemValue?substring(0,parameters.truncate?number) + "...">
         </#if>
 
     <option value="${itemKeyStr?html}"<#rt/>

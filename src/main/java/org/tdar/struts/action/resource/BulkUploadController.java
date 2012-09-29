@@ -3,7 +3,6 @@ package org.tdar.struts.action.resource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
@@ -21,7 +20,6 @@ import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.resource.Image;
-import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -53,29 +51,18 @@ public class BulkUploadController extends AbstractInformationResourceController<
     @Autowired
     private BulkUploadService bulkUploadService;
 
-    @Override
-    protected void loadCustomMetadata() {
-        loadInformationResourceProperties();
-    }
-
-    // private Class validClasses = {}
-
     @Autowired
     private FileAnalyzer analyzer;
 
     private String bulkFileName;
-
     private long bulkContentLength;
-
     private FileInputStream templateInputStream;
-
     private Float percentDone = 0f;
-
     private String phase;
-
     private List<Pair<Long, String>> details;
-
     private String asyncErrors;
+    int maxReferenceRow = 0;
+    private File templateFile;
 
     /**
      * Save basic metadata of the registering concept.
@@ -110,7 +97,6 @@ public class BulkUploadController extends AbstractInformationResourceController<
         handleAsyncUploads();
         Collection<FileProxy> fileProxiesToProcess = getFileProxiesToProcess();
 
-        getGenericService().markReadOnly(getPersistable());
         if (isAsync()) {
             logger.info("running asyncronously");
             bulkUploadService.saveAsync(image, getAuthenticatedUser(), getTicketId(), excelManifest, fileProxiesToProcess);
@@ -118,6 +104,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
             logger.info("running inline");
             bulkUploadService.save(image, getAuthenticatedUser(), getTicketId(), excelManifest, fileProxiesToProcess);
         }
+        getGenericService().markReadOnly(getPersistable());
         getGenericService().detachFromSession(getPersistable());
         setPersistable(null);
         return SUCCESS_ASYNC;
@@ -137,10 +124,6 @@ public class BulkUploadController extends AbstractInformationResourceController<
         }
         return "wait";
     }
-
-    int maxReferenceRow = 0;
-
-    private File templateFile;
 
     @SkipValidation
     @Action(value = "template", results = {
@@ -171,11 +154,6 @@ public class BulkUploadController extends AbstractInformationResourceController<
         return SUCCESS;
     }
 
-    @Override
-    protected void processUploadedFiles(List<InformationResourceFile> uploadedFiles) throws IOException {
-        return;
-    }
-
     /**
      * Get the current concept.
      * 
@@ -191,7 +169,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
 
     @Override
     public Collection<String> getValidFileExtensions() {
-        return analyzer.getExtensionsForTypes(ResourceType.IMAGE, ResourceType.DOCUMENT,ResourceType.VIDEO);
+        return analyzer.getExtensionsForTypes(ResourceType.IMAGE, ResourceType.DOCUMENT, ResourceType.VIDEO);
     }
 
     @Override

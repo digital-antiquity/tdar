@@ -13,6 +13,7 @@ import org.tdar.core.bean.keyword.SiteTypeKeyword;
 
 //domain of entity types that we allow users to 'de-dupe'
 // FIXME: consider using an INTERFACE instead of a ENUM and then autowiring a list of the thing that support that interface
+@SuppressWarnings("rawtypes")
 public enum DedupeableType implements HasLabel {
     INSTITUTION(Institution.class, "Institution"),
     PERSON(Person.class, "Person"),

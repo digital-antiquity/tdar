@@ -150,7 +150,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
                 // put all of the keywords in a superset
                 Project project = (Project) resource;
                 Set<Keyword> keywords = new HashSet<Keyword>(project.getActiveSiteTypeKeywords());
-                List<InformationResource> projectInformationResources = projectService.findAllResourcesInProject(project, Status.ACTIVE);
+                Set<InformationResource> projectInformationResources = projectService.findAllResourcesInProject(project, Status.ACTIVE);
                 for (InformationResource informationResource : projectInformationResources) {
                     keywords.addAll(informationResource.getActiveSiteTypeKeywords());
                 }
@@ -204,7 +204,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
                 // put all of the keywords in a superset
                 Project project = (Project) resource;
                 Set<Keyword> keywords = new HashSet<Keyword>(project.getActiveCultureKeywords());
-                List<InformationResource> projectInformationResources = projectService.findAllResourcesInProject(project, Status.ACTIVE);
+                Set<InformationResource> projectInformationResources = projectService.findAllResourcesInProject(project, Status.ACTIVE);
                 for (InformationResource informationResource : projectInformationResources) {
                     keywords.addAll(informationResource.getActiveCultureKeywords());
                 }
@@ -235,7 +235,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
                 // put all of the keywords in a superset
                 Project project = (Project) resource;
                 Set<Keyword> keywords = new HashSet<Keyword>(project.getActiveCultureKeywords());
-                List<InformationResource> projectInformationResources = projectService.findAllResourcesInProject(project, Status.ACTIVE);
+                Set<InformationResource> projectInformationResources = projectService.findAllResourcesInProject(project, Status.ACTIVE);
                 for (InformationResource informationResource : projectInformationResources) {
                     keywords.addAll(informationResource.getActiveCultureKeywords());
                 }
@@ -259,7 +259,6 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         LatitudeLongitudeBox elsewhere = new LatitudeLongitudeBox(100d, 10d, 110d, 20d);
 
         doc.getLatitudeLongitudeBoxes().add(region);
-        region.setResource(doc);
 
         genericService.save(doc);
         reindex();
@@ -395,6 +394,9 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         for (ResourceType type : ResourceType.values()) {
             Resource resource = createAndSaveNewResource(type.getResourceClass());
             for (Status status : Status.values()) {
+                if (Status.DUPLICATE == status) {
+                    continue;
+                }
                 resource.setStatus(status);
                 genericService.saveOrUpdate(resource);
                 searchIndexService.index(resource);
@@ -601,9 +603,9 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         Person submitter = new Person("Evelyn", "deVos", "ecd@mailinator.com");
         genericService.save(submitter);
         Document doc = createAndSaveNewInformationResource(Document.class, submitter);
-        ResourceCreator rc = new ResourceCreator(doc, new Person("Kelly", "deVos", "kellyd@mailinator.com"), ResourceCreatorRole.AUTHOR);
+        ResourceCreator rc = new ResourceCreator( new Person("Kelly", "deVos", "kellyd@mailinator.com"), ResourceCreatorRole.AUTHOR);
         genericService.save(rc.getCreator());
-        genericService.save(rc);
+//        genericService.save(rc);
         doc.getResourceCreators().add(rc);
         genericService.saveOrUpdate(doc);
         searchIndexService.index(doc);
@@ -715,7 +717,6 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     private Document createDocumentWithDates(int i, int j) throws InstantiationException, IllegalAccessException {
         Document document = createAndSaveNewInformationResource(Document.class);
         CoverageDate date = new CoverageDate(CoverageType.CALENDAR_DATE, i, j);
-        date.setResource(document);
         document.getCoverageDates().add(date);
         genericService.saveOrUpdate(date);
         return document;
@@ -838,7 +839,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     private Resource constructActiveResourceWithCreator(Creator creator, ResourceCreatorRole role) {
         try {
             Document doc = createAndSaveNewInformationResource(Document.class);
-            ResourceCreator resourceCreator = new ResourceCreator(doc, creator, role);
+            ResourceCreator resourceCreator = new ResourceCreator( creator, role);
             doc.getResourceCreators().add(resourceCreator);
             return doc;
         } catch (Exception ignored) {

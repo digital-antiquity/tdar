@@ -225,13 +225,11 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         return toReturn;
     }
 
-
-
     /*
-     * This method is the combined method for finding a random resource in a collection or a project or in all of tDAR. Due to the nature of the 
+     * This method is the combined method for finding a random resource in a collection or a project or in all of tDAR. Due to the nature of the
      * database queries that are actually performed, it's split into two parts (a) find the random resource.id and (b) retrieve the resource
      */
-    @SuppressWarnings("hiding")
+    @SuppressWarnings({ "hiding", "unchecked" })
     protected <E> List<E> findRandomFeaturedResource(boolean restrictToFiles, List<ResourceCollection> collections, Project project, int maxResults) {
         logger.trace("find random resource start");
 
@@ -243,7 +241,7 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
             criteria.createCriteria("informationResourceFiles");
         }
 
-        if (!Persistable.Base.isNullOrTransient(project)) {
+        if (Persistable.Base.isNotNullOrTransient(project)) {
             criteria.createCriteria("project").add(Restrictions.eq("id", project.getId()));
         }
 
@@ -261,7 +259,7 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         // find the resource by ID using the projected version
         List<Long> ids = new ArrayList<Long>();
         for (Object result : criteria.list()) {
-            ids.add((Long)result);
+            ids.add((Long) result);
         }
         logger.trace("find random resource end");
         return (List<E>) findAll(ids);

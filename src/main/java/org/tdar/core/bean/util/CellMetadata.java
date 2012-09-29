@@ -29,7 +29,7 @@ public class CellMetadata implements Comparable<CellMetadata> {
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(name).append(" display:(").append(displayName).append(" rqrd:").append(required).append(") -- ").append(mappedClass);
+        sb.append(name).append(" display:").append(displayName).append(" rqrd:").append(required).append(" -- ").append(mappedClass);
         return sb.toString();
     }
 

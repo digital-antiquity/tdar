@@ -98,12 +98,16 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
 
     @Override
     public String[] findGroupMemberships(Person person) {
-        String[] toReturn = new String[0];
+        List<String> toReturn = new ArrayList<String>();
         if (adminUsers.contains(person.getEmail())) {
-            toReturn = new String[1];
-            toReturn[0] = TdarGroup.TDAR_ADMIN.name();
+            toReturn.add(TdarGroup.TDAR_ADMIN.name());
         }
-        return toReturn;
+        if (editors.contains(person.getEmail())) {
+            toReturn.add(TdarGroup.TDAR_EDITOR.name());
+        }
+        toReturn.add(TdarGroup.TDAR_USERS.name());
+
+        return toReturn.toArray(new String[0]);
     }
 
     @Override

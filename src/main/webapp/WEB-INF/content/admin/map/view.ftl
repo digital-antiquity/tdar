@@ -13,4 +13,4 @@
     </object>
 
 <![endif]-->
-	<img src="/admin/map/map"/>
+    <img src="/admin/map/map"/>

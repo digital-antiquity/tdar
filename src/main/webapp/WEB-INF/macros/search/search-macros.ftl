@@ -1,10 +1,8 @@
 <#macro queryField freeTextLabel="Search" showAdvancedLink=true showLimits=false>
 
-<label for="queryField">${freeTextLabel}:</label>    <@s.textfield id='queryField' name='query' size='81' value="${query!}" cssClass="longfield"/> 
-<#if showAdvancedLink><a style="padding-left:10px" href="<@s.url value="/search/advanced"/>">advanced search</a></#if>
-
-<br/>
-		<@s.submit value="Search" />
+ <@s.textfield label="${freeTextLabel}" id='queryField' name='query' size='81' value="${query!}" cssClass="input-xxlarge"/>
+<#if showAdvancedLink><span class="help-inline"><a style="display:inline" href="<@s.url value="/search/advanced"/>">advanced search</a></span></#if>
+        <@s.submit value="Search" />
 <#nested>
 <#if showLimits>
 <br/>
@@ -99,10 +97,10 @@
   <link rel="alternate" type="application/atom+xml" title="Atom 1.0" href="${rssUrl}" />
   </#if>
   <#if (nextPageStartRecord < totalRecords) >
-	  <link rel="next" href="<@s.url value="" includeParams="all" ><@s.param name="startRecord" value="${nextPageStartRecord}"/></@s.url>"/>
+      <link rel="next" href="<@s.url value="" includeParams="all" ><@s.param name="startRecord" value="${nextPageStartRecord}"/></@s.url>"/>
   </#if>
   <#if (prevPageStartRecord > 0) >
-	  <link rel="previous" href="<@s.url value="" includeParams="all" ><@s.param name="startRecord" value="${prevPageStartRecord}" /></@s.url>"/>
+      <link rel="previous" href="<@s.url value="" includeParams="all" ><@s.param name="startRecord" value="${prevPageStartRecord}" /></@s.url>"/>
   </#if>
 </#macro>
 
@@ -118,33 +116,33 @@
 </#if>
 
 <#if (nextPageStartRecord > totalRecords) >
-	<#assign lastRec = totalRecords>
+    <#assign lastRec = totalRecords>
 </#if>
 
 <#if (firstRec - recordsPerPage) < 1 >
-	<#assign prevPageStartRec = 0>
+    <#assign prevPageStartRec = 0>
 <#else>
-	<#assign prevPageStartRec = firstRec - recordsPerPage - 1>
+    <#assign prevPageStartRec = firstRec - recordsPerPage - 1>
 </#if>
 </#macro>
 <#macro searchLink path linkText>
-	<a href="
-	<@s.url includeParams="all" value="${path}">
-	<#if path?? && path!="results">
-	<@s.param name="id" value=""/>
-	</#if>
-		<#nested>
-	</@s.url> 
-	">${linkText}</a>
+    <a href="
+    <@s.url includeParams="all" value="${path}">
+    <#if path?? && path!="results">
+    <@s.param name="id" value=""/>
+    </#if>
+        <#nested>
+    </@s.url> 
+    ">${linkText}</a>
 </#macro>
 
 <#macro paginationLink startRecord path linkText>
-	<span class="paginationLink">
-	<@searchLink path linkText>
-		<@s.param name="startRecord" value="${startRecord?c}" />
-		<@s.param name="recordsPerPage" value="${recordsPerPage?c}" />
-	</@searchLink>
-	</span>
+    <span class="paginationLink">
+    <@searchLink path linkText>
+        <@s.param name="startRecord" value="${startRecord?c}" />
+        <@s.param name="recordsPerPage" value="${recordsPerPage?c}" />
+    </@searchLink>
+    </span>
 </#macro>
 
 <#macro join sequence delimiter=",">
@@ -154,7 +152,7 @@
 </#macro>
 
 <#macro pagination path="results">
-	<div class="pagination">
+    <div class="pagination">
   <#assign start =0>
   <#assign end =numPages -1>
   <#if numPages &gt; 40 && curPage &gt; 19 >
@@ -167,31 +165,31 @@
   <#if start != 0>
       <@paginationLink startRecord=(0 * recordsPerPage) path="${path}" linkText="first" />
   </#if>
-		<#if (firstRec > 1)>
-			<@paginationLink startRecord=prevPageStartRec path="${path}" linkText="previous" />
-		</#if>
-		<#if (numPages > 1)>
-			<#list start..end as i>
-				<#if (i + 1) = curPage>
+        <#if (firstRec > 1)>
+            <@paginationLink startRecord=prevPageStartRec path="${path}" linkText="previous" />
+        </#if>
+        <#if (numPages > 1)>
+            <#list start..end as i>
+                <#if (i + 1) = curPage>
                                         <#-- FIXME: there are 2 of these spans with
                                         the same id being generated.  Turn this into
                                         a CSS class instead or is this a bug?
                                         -->
-					<span id="currentResultPage">${i + 1}</span>
-				<#else>
-					<@paginationLink startRecord=(i * recordsPerPage) path="${path}" linkText=(i + 1) />
-				</#if>
-			</#list>
-			<#else>
-			1<br/>
-		</#if>
-		<#if (nextPageStartRecord < totalRecords) >
-			<@paginationLink startRecord=nextPageStartRecord path="${path}" linkText="next" />
-		</#if>
+                    <span id="currentResultPage">${i + 1}</span>
+                <#else>
+                    <@paginationLink startRecord=(i * recordsPerPage) path="${path}" linkText=(i + 1) />
+                </#if>
+            </#list>
+            <#else>
+            1<br/>
+        </#if>
+        <#if (nextPageStartRecord < totalRecords) >
+            <@paginationLink startRecord=nextPageStartRecord path="${path}" linkText="next" />
+        </#if>
   <#if (end != numPages && nextPageStartRecord < totalRecords)>
           <@paginationLink startRecord=(totalRecords - totalRecords % recordsPerPage) path="${path}" linkText="last" />
   </#if>
-	</div>
+    </div>
 </#macro>
 
 <#macro bcad _year>
@@ -202,9 +200,9 @@
 <#macro basicPagination label="Records">
 <#if (totalRecords > 0 && numPages > 1)>
   <div class="glide">
-	<div id="recordTotal">${label} ${firstRec} - ${lastRec} of ${totalRecords}
-	</div> 
-	<@pagination ""/> 
+    <div id="recordTotal">${label} ${firstRec} - ${lastRec} of ${totalRecords}
+    </div> 
+    <@pagination ""/> 
   </div>
 <#elseif (totalRecords > 0)>
   <div class="glide">

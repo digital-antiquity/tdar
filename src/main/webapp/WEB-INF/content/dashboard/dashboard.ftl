@@ -28,7 +28,7 @@ try {
 
 <div id="messages" style="margin:2px">
     <div id="message-ie-obsolete" class="message-error" style="display:none">
-    You appear to be using an older version of Internet Explorer.  Note that certain features in tDAR may not work properly.  
+    You appear to be using an older version of Internet Explorer.  Note that certain features in ${siteAcronym} may not work properly.  
     <a href="http://www.microsoft.com/ie">Click here to learn more about Internet Explorer</a>
     </div>
 </div>

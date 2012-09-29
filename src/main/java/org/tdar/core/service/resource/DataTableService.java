@@ -17,6 +17,7 @@ import org.tdar.core.dao.resource.DataTableColumnDao;
 import org.tdar.core.dao.resource.DataTableDao;
 import org.tdar.core.service.ServiceInterface;
 import org.tdar.db.model.PostgresDatabase;
+import org.tdar.db.model.abstracts.TargetDatabase;
 
 /**
  * $Id$
@@ -34,9 +35,10 @@ public class DataTableService extends ServiceInterface.TypedDaoBase<DataTable, D
 
     @Autowired
     private DataTableColumnDao dataTableColumnDao;
+
     @Autowired
-    private PostgresDatabase tdarDataImportDatabase;
-    
+    private TargetDatabase tdarDataImportDatabase;
+
     @Transactional(readOnly = true)
     public DataTable findByName(final String name) {
         return getDao().findByName(name);

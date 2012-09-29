@@ -1,6 +1,9 @@
 package org.tdar.struts.action;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,33 +13,50 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import org.tdar.URLConstants;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.service.PersonalFilestoreService;
+import org.tdar.core.service.XmlService;
 import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
+import org.tdar.struts.action.resource.AbstractResourceController;
+import org.tdar.struts.data.FileProxy;
 
 @SuppressWarnings("serial")
 @Namespace("/upload")
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
+
+//@Results({@Result(name = "exception", type = "stream",
+//    params = {
+//            "contentType", "application/json",
+//            "inputName", "jsonInputStream"})
+//})
 public class UploadController extends AuthenticationAware.Base {
 
     @Autowired
     private PersonalFilestoreService filestoreService;
+    @Autowired
+    XmlService xmlService;
 
     private List<File> uploadFile = new ArrayList<File>();
     private List<String> uploadFileContentType = new ArrayList<String>();
     private List<Long> uploadFileSizes = new ArrayList<Long>();
     private List<String> uploadFileFileName = new ArrayList<String>();
     private PersonalFilestoreTicket personalFilestoreTicket;
-
     private String callback;
+    private Long informationResourceId;
+    InputStream jsonInputStream;
+    private int jsonContentLength;
 
     // on the receiving end
     private List<String> processedFileNames;
@@ -78,8 +98,9 @@ public class UploadController extends AuthenticationAware.Base {
                 String contentType = "";
                 try {
                     contentType = uploadFileContentType.get(i);
-                } catch (Exception e) { /* OK, JUST USED FOR DEBUG */ }
-                Object[] out = { fileName, file.length() ,contentType, ticketId };
+                } catch (Exception e) { /* OK, JUST USED FOR DEBUG */
+                }
+                Object[] out = { fileName, file.length(), contentType, ticketId };
                 logger.debug("UPLOAD CONTROLLER: processing file: {} ({}) , contentType: {} , tkt: {}", out);
                 PersonalFilestore filestore = filestoreService.getPersonalFilestore(submitter);
                 try {
@@ -94,7 +115,7 @@ public class UploadController extends AuthenticationAware.Base {
         } else {
             // FIXME: I was hoping for an annotation-based way to return an error code *and* render a freemarker template. @Result annotations seem to only
             // allow one or the other (or I'm doing it wrong).
-            logger.error("{}",getActionErrors());
+            logger.error("{}", getActionErrors());
             getServletResponse().setStatus(HttpServletResponse.SC_BAD_REQUEST); // 400 seems appropriate
             return ERROR;
         }
@@ -113,6 +134,7 @@ public class UploadController extends AuthenticationAware.Base {
     }
 
     // FIXME: generate a JsonResult rather than put these in an ftl
+    // @PostOnly
     @Action(value = "grab-ticket", results = { @Result(name = "success", type = "freemarker", location = "grab-ticket.ftl",
             params = { "contentType", "text/plain" }) })
     public String grabTicket() {
@@ -120,6 +142,7 @@ public class UploadController extends AuthenticationAware.Base {
         return SUCCESS;
     }
 
+    @Action
     public long getUploadFileSize() {
         long totalBytes = 0;
 
@@ -129,6 +152,39 @@ public class UploadController extends AuthenticationAware.Base {
         }
         return totalBytes;
     }
+
+    @Action(value = "list-resource-files", results = {
+            @Result(name = SUCCESS, type = "stream",
+                    params = {
+                            "contentType", "application/json",
+                            "inputName", "jsonInputStream"
+                    })
+    })
+    /**
+     * return json representation of the file proxies associated with the specified informationResource
+     * @return
+     * @throws Exception
+     */
+    // FIXME: don't throw everything; don't always return success
+    public String listUploadedFiles() throws Exception {
+        InformationResource informationResource = getGenericService().find(InformationResource.class, getInformationResourceId());
+        List<FileProxy> fileProxies = new ArrayList<FileProxy>();
+        for (InformationResourceFile informationResourceFile : informationResource.getInformationResourceFiles()) {
+            if (!informationResourceFile.isDeleted()) {
+                fileProxies.add(new FileProxy(informationResourceFile));
+            }
+        }
+        StringWriter sw = new StringWriter();
+        xmlService.convertToJson(fileProxies, sw);
+        String json = sw.toString();
+        logger.debug("file list as json: {}", json);
+        byte[] jsonBytes = json.getBytes();
+        jsonInputStream = new ByteArrayInputStream(jsonBytes);
+        jsonContentLength = jsonBytes.length;
+
+        return SUCCESS;
+    }
+    
 
     public List<File> getUploadFile() {
         return uploadFile;
@@ -195,6 +251,26 @@ public class UploadController extends AuthenticationAware.Base {
      */
     public List<Long> getUploadFileSizes() {
         return uploadFileSizes;
+    }
+
+    public Long getInformationResourceId() {
+        return informationResourceId;
+    }
+
+    public void setInformationResourceId(Long informationResourceId) {
+        this.informationResourceId = informationResourceId;
+    }
+
+    public InputStream getJsonInputStream() {
+        return jsonInputStream;
+    }
+
+    public void setJsonInputStream(InputStream jsonInputStream) {
+        this.jsonInputStream = jsonInputStream;
+    }
+
+    public int getJsonContentLength() {
+        return jsonContentLength;
     }
 
 }

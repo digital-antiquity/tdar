@@ -50,11 +50,7 @@ public class ResourceAnnotation extends Persistable.Base implements HasResource<
         setValue(value);
     }
 
-    @ManyToOne(optional = false)
-    private Resource resource;
-
-    @ManyToOne(optional = false, cascade={CascadeType.DETACH, CascadeType.MERGE})
-    // @IndexedEmbedded
+    @ManyToOne(optional = false, cascade = { CascadeType.DETACH, CascadeType.MERGE })
     private ResourceAnnotationKey resourceAnnotationKey;
 
     @Lob
@@ -70,18 +66,9 @@ public class ResourceAnnotation extends Persistable.Base implements HasResource<
     @Column(name = "last_updated")
     private Date lastUpdated;
 
-    @XmlTransient
-    public Resource getResource() {
-        return resource;
-    }
-
     @Field
     public String getPairedValue() {
         return getResourceAnnotationKey().getKey() + ":" + getValue();
-    }
-
-    public void setResource(Resource resource) {
-        this.resource = resource;
     }
 
     @Transient
@@ -143,7 +130,6 @@ public class ResourceAnnotation extends Persistable.Base implements HasResource<
     public boolean isValidForController() {
         return true;
     }
-
 
     @Override
     protected String[] getIncludedJsonProperties() {

@@ -10,10 +10,8 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.InformationResourceFile;
-import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.statistics.FileDownloadStatistic;
-import org.tdar.core.bean.statistics.ResourceAccessStatistic;
 import org.tdar.core.dao.Dao.HibernateBase;
 
 @Component

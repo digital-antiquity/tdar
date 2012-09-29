@@ -45,5 +45,8 @@ public interface TestConstants {
 
     public static final String DOCUMENT_FIELD_TITLE = "document.title";
     public static final String DOCUMENT_FIELD_DESCRIPTION = "document.description";
+    
+    public static final String COPYRIGHT_HOLDER_TYPE = "copyrightHolderType";
+    public static final String COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME = "copyrightHolderProxy.institution.name";
 
 }

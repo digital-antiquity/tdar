@@ -215,10 +215,11 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         controller = generateNewController(AccountController.class);
         controller.prepare();
         Person p = controller.getPerson();
+        
         p.setEmail("test@tdar.org");
         assertTrue(p.getId().equals(-1L));
         controller.validate();
-        assertTrue("expecting user existing", controller.getActionErrors().contains(AccountController.ERROR_ALREADY_REGISTERED));
+        assertTrue("expecting user existing", controller.getActionErrors().contains(AccountController.ERROR_USERNAME_ALREADY_REGISTERED));
     }
 
     private String getFirstFieldError() {
@@ -327,7 +328,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         p.setPhone("212 000 0000");
         p.setContributor(true);
         p.setContributorReason(REASON);
-        p.setRpa(true);
+        p.setRpaNumber("234");
         
         //create account, making sure the controller knows we're legit.
         controller.setTimeCheck(System.currentTimeMillis() - 10000);

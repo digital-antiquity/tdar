@@ -3,7 +3,6 @@ package org.tdar.filestore.tasks;
 import java.io.File;
 import java.util.Set;
 
-import org.apache.commons.io.FileUtils;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.ResourceType;
@@ -23,7 +22,7 @@ public class ConvertDatasetTask extends AbstractTask {
     @Override
     public void run() throws Exception {
         File file = getWorkflowContext().getOriginalFile().getFile();
-        if(getWorkflowContext().getResourceType() != ResourceType.DATASET) {
+        if (getWorkflowContext().getResourceType() != ResourceType.DATASET) {
             getLogger().info("This is not actually a dataset (probably a coding sheet), returning");
             return;
         }
@@ -32,12 +31,7 @@ public class ConvertDatasetTask extends AbstractTask {
             getLogger().warn("No datasetFile specified, returning");
             return;
         }
-        // if (!datasetFile.isColumnarDataFileType() || !(datasetFile.getInformationResource() instanceof Dataset)) {
-        // getLogger().error("datasetFile had wrong file type {} or inappropriate InformationResource {}", datasetFile, datasetFile.getInformationResource());
-        // return null;
-        // }
-        // Dataset dataset = (Dataset) datasetFile.getInformationResource();
-        // execute convert-to-db code.
+
         InformationResourceFileVersion versionToConvert = getWorkflowContext().getOriginalFile();
         if (versionToConvert == null || !versionToConvert.hasValidFile()) {
             // abort!
@@ -65,14 +59,13 @@ public class ConvertDatasetTask extends AbstractTask {
         if (indexedContents != null && indexedContents.length() > 0) {
             addDerivativeFile(indexedContents, VersionType.INDEXABLE_TEXT);
         }
-        transientDataset.setDataTables(tablesToPersist);
-        transientDataset.setRelationships(databaseConverter.getRelationships());
+        transientDataset.getDataTables().addAll(tablesToPersist);
+        transientDataset.getRelationships().addAll(databaseConverter.getRelationships());
     }
 
     @Override
     public String getName() {
-        // TODO Auto-generated method stub
-        return null;
+        return "Database Conversion Task";
     }
 
 }

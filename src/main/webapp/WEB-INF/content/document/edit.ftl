@@ -1,39 +1,55 @@
+<@s.set name="theme" value="'bootstrap'" scope="request" />
 <#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
+<#macro bsip>
+<div class="alert alert-error">
+  <button type="button" class="close" data-dismiss="alert">×</button>
+  <strong>Bootsrapification in Progress</strong>
+  <p class="pull-right">
+    <i class="icon-arrow-up">  </i> bootstrapped
+    <i class="icon-arrow-down">  </i> not bootstrapped
+  </p>
+</div>
+</#macro>
+
+
 <head>
 <@edit.title />
 
 <meta name="lastModifiedDate" content="$Date$"/>
+
 </head>
 <body>
 <@edit.toolbar "${resource.urlNamespace}" "edit" />
 <div>
-<@s.form id='resourceMetadataForm' method='post' enctype='multipart/form-data' action='save'>
-<@edit.basicInformation 'document' 'document' >
-<#if linkedInformationResource??>
-<div class='info'>
-This will be linked as a <b>${linkType}</b> citation for: <b>${linkedInformationResource.title}</b>
-<@s.hidden name='linkType' value='${linkType}'/>
-<@s.hidden name='linkedResourceId' value='${linkedInformationResource.id?c}'/>
-</div>
-<!--br/-->
-</#if>
+<@s.form id='resourceMetadataForm' method='post' enctype='multipart/form-data' action='save'  cssClass="well form-horizontal">
 
-<div class="wrapper" 
-    tiplabel="Document Type" 
-    tooltipcontent="Select the document type. Appropriate citation fields will be displayed below.">
-<@s.radio name='document.documentType' id="documentType" emptyOption='false' listValue="label"  
-    list='%{documentTypes}' groupLabel="Document Type" numColumns=3 />
-</div>
-<p id="t-title2-journal" tooltipcontent="Enter the title of the book, report, or journal this document is part of" tiplabel="Additional Title">
-    <@s.textfield labelposition='left' id='journalName' label='Journal Title' 
-    title="A journal title is required"
-    name='document.journalName' cssClass="requiredIfVisible tdartext longfield" />
-</p>
-<p id="t-title2-book" tooltipcontent="Enter the title of the book, report, or journal this document is part of." tiplabel="Additional Title">
-    <@s.textfield labelposition='left' id='bookTitle' label='Book Title' 
-        title="A book title is required" name='document.bookTitle' cssClass="requiredIfVisible tdartext longfield" />
-</p>
+<@edit.basicInformation 'document' 'document' >
+    <#if linkedInformationResource??>
+    <div class='help-block'>
+    This will be linked as a <b>${linkType}</b> citation for: <b>${linkedInformationResource.title}</b>
+    <@s.hidden name='linkType' value='${linkType}'/>
+    <@s.hidden name='linkedResourceId' value='${linkedInformationResource.id?c}'/>
+    </div>
+    </#if>
+
+    <span tiplabel="Document Type"  tooltipcontent="Select the document type. Appropriate citation fields will be displayed below."></span>
+    <@s.radio name='document.documentType' id="documentType" emptyOption='false' listValue="label"  
+        list='%{documentTypes}' label="Document Type" theme="bootstrap" />
+            
+    
+    <span tiplabel="Additional Title" tooltipcontent="Enter the title of the book, report, or journal this document is part of"></span>
+    <div class="journal_article ">
+            <@s.textfield label="Journal Title" id='journalName' 
+            title="A journal title is required"
+            name='document.journalName' cssClass="requiredIfVisible tdartext longfield input-xxlarge" />
+    </div>
+    
+    <span tooltipcontent="Enter the title of the book, report, or journal this document is part of." tiplabel="Additional Title"></span>
+    
+    <div class="book_section">
+        <@s.textfield label="Book Title" id='bookTitle' title="A book title is required" name='document.bookTitle' cssClass="requiredIfVisible tdartext input-xxlarge" />
+    </div>
 
 
 </@edit.basicInformation>
@@ -43,107 +59,69 @@ This will be linked as a <b>${linkType}</b> citation for: <b>${linkedInformation
 <@edit.citationInfo "document">
 
 
-<p>
-    <span tiplabel="Language" tooltipcontent="Select the language in which the document is written.">
-        <@s.select labelposition='left' label='Language'  emptyOption='false' name='resourceLanguage'  listValue="label" list='%{languages}' cssClass="right-shortfield "/>
-    </span>
-        <span id="publisher-hints" 
-            book="Publisher" 
-            book_section="Publisher"
-            journal_article="Publisher" 
-            conference="Conference"
-            thesis="Institution"
-            other="Publisher"> &nbsp;</span>
-        <span id="publisherLocation-hints" style="display:none"
-            book="Publisher Loc." 
-            book_section="Publisher Loc." 
-            journal_article="Publisher Loc."
-            conference="Location" 
-            thesis="Department"
-            other="Publisher Loc."> &nbsp;</span>
-<br/>
+    <span tiplabel="Language" tooltipcontent="Select the language in which the document is written."></span>
+    <@s.select label='Language'  emptyOption='false' name='resourceLanguage'  listValue="label" list='%{languages}' cssClass="right-shortfield "/>
 
+    <div class="journal_article other">
+        <@s.textfield id='volume' label='Volume' name='document.volume' cssClass="shortfield"  />
+        <@s.textfield id='journalNumber' label='Issue Number' name='document.journalNumber' cssClass="right-shortfield"  />
+    </div>
     
-    <p id="t-vol">
-        <@s.textfield labelposition='left' id='volume' label='Volume' name='document.volume' cssClass="shortfield"  />
-        <@s.textfield labelposition='left' id='journalNumber' label='Issue Number' name='document.journalNumber' cssClass="right-shortfield"  />
-    </p>
+    <div class='book_section book other'>
+        <@s.textfield id='seriesName' label='Series Title' name='document.seriesName' cssClass="" />
+        <@s.textfield id='seriesNumber' label='Series #' name='document.seriesNumber' cssClass="span1" />
+        <@s.textfield id='edition' label='Edition' name='document.edition' cssClass="span1" />
+    </div>
     
-    <p id='t-series'>
-        <@s.textfield labelposition='left' id='seriesName' label='Series Title' name='document.seriesName' cssClass="longfield" />
-        <br />
-        <@s.textfield labelposition='left' id='seriesNumber' label='Series #' name='document.seriesNumber' cssClass="shortfield" />
+    <div class="book_section journal_article other">
+        <div class="control-group">
+            <label class="control-label">Start/End Page</label>
+            <div class="controls controls-row">
+                <@s.textfield theme="tdar" id='startPage' placeholder="Start#" name='document.startPage' cssClass="span1" />
+                <@s.textfield theme="tdar" id='endPage'  placeholder="End#" name='document.endPage' cssClass="span1" />
+            </div>
+        </div>    
+    </div>
 
-        <@s.textfield labelposition='left' id='edition' label='Edition' name='document.edition' cssClass="right-shortfield" />
-    </p>
+    <div class="thesis">
+        <@s.radio name='document.degree' label="Degree" id="degreeType" emptyOption='false' listValue="label"  list='%{degrees}' />
+    </div> 
+          
+    <div tooltipcontent="Actual physical location of a copy of the document, e.g. an agency, repository, or library." tiplabel="Copy Location"></div>
+        <@s.textfield id='copyLocation' label='Copy Location' name='document.copyLocation' cssClass=""/>
+
+    <span id="t-doi" tiplabel="DOI" tooltipcontent="Digital Object Identifier."></span>
+    <@s.textfield labelposition='left' id='doi' label='DOI' name='document.doi' cssClass="shortfield" />
     
-    <p id="t-start-end">
-        <@s.textfield labelposition='left' id='startPage' label='Start page' name='document.startPage' cssClass="shortfield" />
-        <@s.textfield labelposition='left' id='endPage' label='End page' name='document.endPage' cssClass="right-shortfield" />    
-    </p>
-
-    <p tiplabel="Department / Publisher Location" tooltipcontent="Department name, or City,State (and Country, if relevant)">
-        <label id="publisher-hints-label" for="publisher">Publisher</label>
-        <@s.textfield id='publisher' name='document.publisher'
-            cssClass="longfield" />
-    </p><p>
-        <label id="publisherLocation-hints-label" for="publisherLocation">Publisher Loc.</label>
-        <@s.textfield id='publisherLocation' 
-            name='document.publisherLocation'
-            cssClass='longfield' />
-    </p>
-    <div id="t-degree">
-        <@s.radio name='document.degree' id="degreeType" emptyOption='false' listValue="label"  
-    list='%{degrees}' groupLabel="Degree" numColumns=3 />
-	</div>        
-    <p id="t-located"  tooltipcontent="Actual physical location of a copy of the document, e.g. an agency, repository, 
-        or library." tiplabel="Copy Location">
-        <@s.textfield labelposition='left' id='copyLocation' label='Copy Location' name='document.copyLocation' cssClass="longfield"/>
-    </p>
-
-<p id="t-ident" class="clear">
-    <span id="t-doi" tiplabel="DOI" tooltipcontent="Digital Object Identifier.">
-        <@s.textfield labelposition='left' id='doi' label='DOI' name='document.doi' cssClass="shortfield" />
-    </span>
-    <span id="t-isbn" tiplabel="ISBN" tooltipcontent="International Standard Book Number.">
-       <@s.textfield labelposition='left' id='isbn' title="please add a valid ISBN" label='ISBN' name='document.isbn' cssClass="right-shortfield  isbn" />
-    </span>
-    <span id="t-issn" tiplabel="ISSN" tooltipcontent="International Standard Serial Number, an eight-digit number assigned to many serial publications.">
-        <@s.textfield labelposition='left' id='issn' title="please add a valid ISSN" label='ISSN' name='document.issn' cssClass="right-shortfield  issn" />
-    </span>
-</p>
+    <span id="t-isbn" tiplabel="ISBN" tooltipcontent="International Standard Book Number."></span>
+    <@s.textfield labelposition='left' id='isbn' title="please add a valid ISBN" label='ISBN' name='document.isbn' cssClass="isbn book_section book other" />
+    
+    <span id="t-issn" tiplabel="ISSN" tooltipcontent="International Standard Serial Number, an eight-digit number assigned to many serial publications."></span>
+    <@s.textfield labelposition='left' id='issn' title="please add a valid ISSN" label='ISSN' name='document.issn' cssClass="issn journal_article" />
 
 
 </@edit.citationInfo>
 
-<@edit.asyncFileUpload "${resource.resourceType}" true />
-
-
+<@edit.asyncFileUpload "Attach Document Files" true />
 
 <@edit.sharedFormComponents />
-
 </@s.form>
 
 </div>
 
-<@edit.sidebar />
-
-<@edit.resourceJavascript includeAsync=true includeInheritance=true>
-
-setupDocumentEditForm();
-
-//certain fields in the "about your document" become extraneous upon selecting a new documentType value.  Clear the value of these fields prior to 
-//submission
-$(function(){
-    $('#resourceMetadataForm').submit(function() {
-        //assumption:  divAboutYourDocument has no radio buttons, select boxes, or checkboxes. This piece wont work if our assumption becomes false
-        $(':input', '#divAboutYourDocument').filter(':hidden').val("");
+<@edit.asyncUploadTemplates />
+<script>
+    $(function(){
+        'use strict';
+        var id = $('input[name=id]').val();
+        var acceptFileTypes  = <@edit.acceptedFileTypesRegex />;
+        TDAR.fileupload.registerUpload({informationResourceId: id, acceptFileTypes: acceptFileTypes});
     });
-});
 
+    $(function(){
+        loadTdarMap();
+    });
+</script>
 
-
-
-</@edit.resourceJavascript>
 </body>
 </#escape>

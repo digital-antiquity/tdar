@@ -6,14 +6,14 @@
 <#import "oai-macros.ftl" as oai>
 <@oai.response "ListRecords">
   <#list records as record>
-  	<record>
-	    <header>
-	        <identifier>${record.identifier?html}</identifier>
-	        <datestamp>${record.datestamp?iso_utc}</datestamp>
-	    </header>
-	    <metadata>
-	    	${record.metadata.@@markup}
-	    </metadata>
-	 </record>
+      <record>
+        <header>
+            <identifier>${record.identifier?html}</identifier>
+            <datestamp>${record.datestamp?iso_utc}</datestamp>
+        </header>
+        <metadata>
+            ${record.metadata.@@markup}
+        </metadata>
+     </record>
   </#list>
 </@oai.response>

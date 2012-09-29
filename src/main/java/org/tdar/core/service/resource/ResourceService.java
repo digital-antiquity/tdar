@@ -6,11 +6,14 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.tools.ant.filters.StringInputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,11 +22,16 @@ import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
 import org.tdar.core.bean.cache.HomepageResourceCountCache;
+import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Project;
@@ -39,6 +47,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.XmlService;
 import org.tdar.search.geosearch.GeoSearchService;
@@ -90,6 +99,7 @@ public class ResourceService extends GenericService {
         return getGenericDao().find(Video.class, id) != null;
     }
 
+    @SuppressWarnings("unchecked")
     @Transactional(readOnly = true)
     public <R extends Resource> R find(Long id) {
         if (id == null)
@@ -130,7 +140,6 @@ public class ResourceService extends GenericService {
         save(log);
     }
 
-    //FIXME: I'm pretty sure @Transactional is pointless here.  you can't rollback file io
     @Transactional(readOnly = true)
     public <T extends Resource> void saveRecordToFilestore(T resource) {
         @SuppressWarnings("deprecation")
@@ -142,11 +151,7 @@ public class ResourceService extends GenericService {
         try {
             TdarConfiguration.getInstance().getFilestore().storeAndRotate(new StringInputStream(xmlService.convertToXML(resource)), version, 5);
         } catch (Exception e) {
-            //FIXME: This catch is too wide. E.g. a LazyInitializationException is arguably not a "recoverable exception" and we should throw something 
-            //       more appropriate like TdarRuntimeException so that the caller knows to (for example) rollback any DB work that happened to this record
-            //       before we tried to write it to the filestore.   On the other hand, if just a file IO issue, it may be acceptable to simply log the error 
-            //       but keep the DB transaction.
-            logger.error("something happend when converting record to XML: {}", e);
+            logger.error("something happend when converting record to XML:" + resource, e);
             throw new TdarRecoverableRuntimeException("could not save xml record");
         }
         logger.trace("done saving");
@@ -182,18 +187,25 @@ public class ResourceService extends GenericService {
         return datasetDao.countResourcesForUserAccess(user);
     }
 
-
     @Transactional
     public void processManagedKeywords(Resource resource, Collection<LatitudeLongitudeBox> allLatLongBoxes) {
-        List<String> ignoreProperties = new ArrayList<String>(Arrays.asList("approved", "selectable", "level"));
-        Set<GeographicKeyword> incomingManagedKeywords = new HashSet<GeographicKeyword>();
+        List<String> ignoreProperties = new ArrayList<String>();
+        // needed in cases like the APIController where the collection is not properly initialized
+        if (resource.getManagedGeographicKeywords() == null) {
+            resource.setManagedGeographicKeywords(new LinkedHashSet<GeographicKeyword>());
+        }
+
+        Set<GeographicKeyword> kwds = new HashSet<GeographicKeyword>();
+        ignoreProperties.add("approved");
+        ignoreProperties.add("selectable");
+        ignoreProperties.add("level");
         for (LatitudeLongitudeBox latLong : allLatLongBoxes) {
             Set<GeographicKeyword> managedKeywords = geoSearchService.extractAllGeographicInfo(latLong);
             logger.debug(resource.getId() + " :  " + managedKeywords + " " + managedKeywords.size());
-            incomingManagedKeywords.addAll(
+            kwds.addAll(
                     getGenericDao().findByExamples(GeographicKeyword.class, managedKeywords, ignoreProperties, FindOptions.FIND_FIRST_OR_CREATE));
         }
-        Persistable.Base.reconcileSet(resource.getManagedGeographicKeywords(), incomingManagedKeywords);
+        Persistable.Base.reconcileSet(resource.getManagedGeographicKeywords(), kwds);
     }
 
     @Transactional
@@ -230,21 +242,22 @@ public class ResourceService extends GenericService {
             current.clear();
         }
 
+//        incoming = getDao().merge(incoming);
         // assume everything that's incoming is valid or deduped and tied back into
         // tDAR entities/beans
         logger.debug("Current Collection of {}s ({}) : {} ", new Object[] { cls.getSimpleName(), current.size(), current });
 
-        // iterate through the current and remove unreferences beans
-        // NOTE: this assumes that we're working with @OneToMany with orphanRemoval=true
-        Iterator<H> currentIterator = current.iterator();
-        while (currentIterator.hasNext()) {
-            H current_ = currentIterator.next();
-            if (!incoming.contains(current_)) {
-                currentIterator.remove();
-                logger.debug("deleting : {} ", current_);
-            }
-        }
+        // FIXME: This is far from IDEAL, but the set management is failing. From what I can tell, the issue may be
+        // deeper in Hibernate and not in the set management as the hashCode and equalityCode that's above seems to
+        // when uncommented show that the values are calculated properly, but even then, the system is failing in
+        // executing the remove properly. remove will even report that it's successful if you call "clear()" on
+        // the collection first.
 
+//        Collection<H> retainAll = CollectionUtils.retainAll(current, incoming);
+//        current.clear();
+//        current.addAll(retainAll);
+        current.retainAll(incoming);
+        
         if (!CollectionUtils.isEmpty(incoming)) {
             logger.debug("Incoming Collection of {}s ({})  : {} ", new Object[] { cls.getSimpleName(), incoming.size(), incoming });
             Iterator<H> incomingIterator = incoming.iterator();
@@ -252,28 +265,34 @@ public class ResourceService extends GenericService {
                 H hasResource_ = incomingIterator.next();
 
                 if (hasResource_ != null) {
-                    // there are cases where we may not want to validate or where we don't want to throw an exception
-                    // setting resource, as the resource "type" may be what makes something valid or not
-                    hasResource_.setResource(resource);
 
-                    if (validateMethod != ErrorHandling.NO_VALIDATION && !hasResource_.isValid()) {
-                        hasResource_.setResource(null);
-                        logger.debug("skipping: {} - INVALID", hasResource_);
-                        if (validateMethod == ErrorHandling.VALIDATE_WITH_EXCEPTION) {
-                            throw new TdarRecoverableRuntimeException(hasResource_ + " is not valid");
+                    if (validateMethod != ErrorHandling.NO_VALIDATION) {
+                        boolean isValid = false;
+                        if (hasResource_ instanceof ResourceCreator) {
+                            isValid = ((ResourceCreator) hasResource_).isValidForResource(resource);
+                        } else {
+                            isValid = hasResource_.isValid();
                         }
-                        continue;
+
+                        if (!isValid) {
+                            logger.debug("skipping: {} - INVALID", hasResource_);
+                            if (validateMethod == ErrorHandling.VALIDATE_WITH_EXCEPTION) {
+                                throw new TdarRecoverableRuntimeException(hasResource_ + " is not valid");
+                            }
+                            continue;
+                        }
                     }
 
                     // attach the incoming notes to a hibernate session
-                    if (shouldSave) {
-                        hasResource_ = getGenericDao().merge(hasResource_);
-                    }
-                    logger.debug("adding {} to {} ", hasResource_, current);
+                    logger.trace("adding {} to {} ", hasResource_, current);
                     current.add(hasResource_);
+                    // if (shouldSave) {
+                    // getGenericDao().saveOrUpdate(hasResource_);
+                    // }
                 }
             }
         }
+        logger.debug("Resulting Collection of {}s ({}) : {} ", new Object[] { cls.getSimpleName(), current.size(), current });
     }
 
     /**
@@ -294,6 +313,114 @@ public class ResourceService extends GenericService {
 
     public Long getResourceCount(ResourceType resourceType, Status status) {
         return datasetDao.getResourceCount(resourceType, status);
+    }
+
+    @Transactional
+    public <T extends Resource> T createResourceFrom(Resource proxy, Class<T> resourceClass) {
+        try {
+            T resource = resourceClass.newInstance();
+            resource.setTitle(proxy.getTitle());
+            resource.setDescription(proxy.getDescription());
+            if (StringUtils.isEmpty(resource.getDescription())) {
+                resource.setDescription(" ");
+            }
+            resource.setDateCreated(proxy.getDateCreated());
+            resource.markUpdated(proxy.getSubmitter());
+            resource.setStatus(proxy.getStatus());
+            getDao().save(resource);
+            resource.getMaterialKeywords().addAll(proxy.getMaterialKeywords());
+            resource.getTemporalKeywords().addAll(proxy.getTemporalKeywords());
+            resource.getInvestigationTypes().addAll(proxy.getInvestigationTypes());
+            resource.getCultureKeywords().addAll(proxy.getCultureKeywords());
+            resource.getOtherKeywords().addAll(proxy.getOtherKeywords());
+            resource.getSiteNameKeywords().addAll(proxy.getSiteNameKeywords());
+            resource.getSiteTypeKeywords().addAll(proxy.getSiteTypeKeywords());
+            resource.getGeographicKeywords().addAll(proxy.getGeographicKeywords());
+            resource.getManagedGeographicKeywords().addAll(proxy.getManagedGeographicKeywords());
+            // CLONE if internal, otherwise just add
+
+            for (ResourceCollection collection : proxy.getResourceCollections()) {
+                if (collection.isInternal()) {
+                    logger.info("cloning collection: {}", collection);
+                    ResourceCollection newInternal = new ResourceCollection(CollectionType.INTERNAL);
+                    newInternal.setName(collection.getName());
+                    newInternal.markUpdated(collection.getOwner());
+                    getDao().save(newInternal);
+
+                    for (AuthorizedUser proxyAuthorizedUser : collection.getAuthorizedUsers()) {
+                        AuthorizedUser newAuthorizedUser = new AuthorizedUser(proxyAuthorizedUser.getUser(),
+                                proxyAuthorizedUser.getGeneralPermission());
+//                        newAuthorizedUser.setResourceCollection(newInternal);
+                        newInternal.getAuthorizedUsers().add(newAuthorizedUser);
+//                        getDao().save(newAuthorizedUser);
+                    }
+                    resource.getResourceCollections().add(newInternal);
+                    newInternal.getResources().add(resource);
+                } else {
+                    logger.info("adding to shared collection : {} ", collection);
+                    if (collection.isTransient()) {
+                        save(collection);
+                    }
+                    collection.getResources().add(resource);
+                    resource.getResourceCollections().add(collection);
+                }
+            }
+
+            cloneSet(resource, resource.getCoverageDates(), proxy.getCoverageDates());
+            cloneSet(resource, resource.getLatitudeLongitudeBoxes(), proxy.getLatitudeLongitudeBoxes());
+            cloneSet(resource, resource.getResourceCreators(), proxy.getResourceCreators());
+            cloneSet(resource, resource.getResourceAnnotations(), proxy.getResourceAnnotations());
+            cloneSet(resource, resource.getResourceNotes(), proxy.getResourceNotes());
+            cloneSet(resource, resource.getRelatedComparativeCollections(), proxy.getRelatedComparativeCollections());
+            cloneSet(resource, resource.getSourceCollections(), proxy.getSourceCollections());
+
+            if (resource instanceof InformationResource && proxy instanceof InformationResource) {
+                InformationResource proxyInformationResource = (InformationResource) proxy;
+                InformationResource informationResource = (InformationResource) resource;
+                informationResource.setDate(proxyInformationResource.getDate());
+                informationResource.setProject(proxyInformationResource.getProject());
+                informationResource.setPublisher(proxyInformationResource.getPublisher());
+                informationResource.setCopyrightHolder(proxyInformationResource.getCopyrightHolder());
+                informationResource.setLicenseText(proxyInformationResource.getLicenseText());
+                informationResource.setLicenseType(proxyInformationResource.getLicenseType());
+                informationResource.setPublisherLocation(proxyInformationResource.getPublisherLocation());
+                informationResource.setResourceProviderInstitution(proxyInformationResource.getResourceProviderInstitution());
+                informationResource.setResourceLanguage(proxyInformationResource.getResourceLanguage());
+                informationResource.setMetadataLanguage(proxyInformationResource.getMetadataLanguage());
+                informationResource.setInheritingCulturalInformation(proxyInformationResource.isInheritingCulturalInformation());
+                informationResource.setInheritingInvestigationInformation(proxyInformationResource.isInheritingInvestigationInformation());
+                informationResource.setInheritingMaterialInformation(proxyInformationResource.isInheritingMaterialInformation());
+                informationResource.setInheritingOtherInformation(proxyInformationResource.isInheritingOtherInformation());
+                informationResource.setInheritingSiteInformation(proxyInformationResource.isInheritingSiteInformation());
+                informationResource.setInheritingSpatialInformation(proxyInformationResource.isInheritingSpatialInformation());
+                informationResource.setInheritingTemporalInformation(proxyInformationResource.isInheritingTemporalInformation());
+                informationResource.setInheritingIdentifierInformation(proxyInformationResource.isInheritingIdentifierInformation());
+                informationResource.setInheritingNoteInformation(proxyInformationResource.isInheritingNoteInformation());
+                informationResource.setInheritingCollectionInformation(proxyInformationResource.isInheritingCollectionInformation());
+            }
+            getDao().saveOrUpdate(resource);
+            // NOTE: THIS SHOULD BE THE LAST THING DONE AS IT BRINGS EVERYTHING BACK ONTO THE SESSION PROPERLY
+            return getDao().merge(resource);
+        } catch (Exception exception) {
+            throw new TdarRuntimeException(exception);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends HasResource<Resource>> Set<T> cloneSet(Resource resource, Set<T> targetCollection, Set<T> sourceCollection) {
+        logger.debug("cloning: " + sourceCollection);
+        for (T t : sourceCollection) {
+            getDao().detachFromSession(t);
+            try {
+                T clone = (T) BeanUtils.cloneBean(t);
+                targetCollection.add(clone);
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        // getDao().save(targetCollection);
+        return targetCollection;
     }
 
 }

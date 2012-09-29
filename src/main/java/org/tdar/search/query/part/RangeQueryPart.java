@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang.NumberUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -28,6 +28,7 @@ public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
         this(field, "Value", values);
     }
 
+    @SuppressWarnings("unchecked")
     public RangeQueryPart(String field, Operator operator, List<Range<C>> values) {
         this(field, "Value");
         for (Range<C> range : values) {

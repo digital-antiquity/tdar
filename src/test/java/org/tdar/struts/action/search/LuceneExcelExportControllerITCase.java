@@ -52,10 +52,10 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
         searchIndexService.indexAll(Resource.class);
         currentUser = getBasicUser();
         controller.setSessionData(new SessionData()); // create unauthenticated session
-        getServletGetRequest().setAttribute("RequestURI", "http://www.test.com");
+        getServletRequest().setAttribute("RequestURI", "http://www.test.com");
         controller = generateNewInitializedController(AdvancedSearchController.class);
 
-        controller.setServletRequest(getServletGetRequest());
+        controller.setServletRequest(getServletRequest());
         doSearch("");
         assertEquals(TdarActionSupport.SUCCESS, controller.viewExcelReport());
         assertFalse(controller.getSearchPhrase() + " should not have bold tag", controller.getSearchPhrase().toLowerCase().contains("<b>"));
@@ -77,10 +77,10 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
         searchIndexService.indexAll(Resource.class);
         currentUser = null;
         controller.setSessionData(new SessionData()); // create unauthenticated session
-        getServletGetRequest().setAttribute("RequestURI", "http://www.test.com");
+        getServletRequest().setAttribute("RequestURI", "http://www.test.com");
         controller = generateNewInitializedController(AdvancedSearchController.class);
 
-        controller.setServletRequest(getServletGetRequest());
+        controller.setServletRequest(getServletRequest());
         doSearch("");
         assertEquals(TdarActionSupport.UNAUTHORIZED, controller.viewExcelReport());
         setIgnoreActionErrors(true);

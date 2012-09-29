@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -13,7 +12,6 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
@@ -23,7 +21,6 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Type;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.resource.dataintegration.DataValueOntologyNodeMapping;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
@@ -57,10 +54,6 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     @ManyToOne(optional = false)
     private Ontology ontology;
 
-    @Deprecated
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "ontologyNode")
-    private Set<DataValueOntologyNodeMapping> dataValueOntologyNodeMappings = new HashSet<DataValueOntologyNodeMapping>();
-
     @Column(name = "interval_start")
     private Integer intervalStart;
     @Column(name = "interval_end")
@@ -73,7 +66,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     @Type(type = "org.hibernate.type.StringClobType")
     private String description;
 
-    @ElementCollection(fetch=FetchType.LAZY)
+    @ElementCollection(fetch = FetchType.LAZY)
     @JoinTable(name = "ontology_node_synonym")
     private Set<String> synonyms;
 
@@ -145,7 +138,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     }
 
     public String toString() {
-        return String.format("label: %s url:%s id:%s",uri, iri, getId());
+        return String.format("label: %s url:%s id:%s", uri, iri, getId());
     }
 
     @Override
@@ -167,16 +160,6 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     private transient boolean parent = false;
 
     private transient boolean[] columnHasValueArray;
-    
-//    @XmlElementWrapper(name = "dataValueOntologyNodeMappings")
-//    @XmlElement(name = "dataValueOntologyNodeMapping")
-    public Set<DataValueOntologyNodeMapping> getDataValueOntologyNodeMappings() {
-        return dataValueOntologyNodeMappings;
-    }
-
-    public void setDataValueOntologyNodeMappings(Set<DataValueOntologyNodeMapping> dataValueOntologyNodeMappings) {
-        this.dataValueOntologyNodeMappings = dataValueOntologyNodeMappings;
-    }
 
     @Transient
     public String getIndentedLabel() {
@@ -250,7 +233,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
         }
         return false;
     }
-    
+
     @Transient
     public boolean isChildOf(OntologyNode parentNode) {
         return parentNode != null && parentNode.getIntervalStart() < getIntervalStart() && parentNode.getIntervalEnd() >= getIntervalEnd();

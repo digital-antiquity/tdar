@@ -45,32 +45,32 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
         }
 
         if (CollectionUtils.isNotEmpty(fns)) {
-            FieldQueryPart fqp = new FieldQueryPart("firstName", fns);
+            FieldQueryPart<String> fqp = new FieldQueryPart<String>("firstName", fns);
             fqp.setPhraseFormatters(PhraseFormatter.ESCAPED, PhraseFormatter.WILDCARD);
             group.append(fqp);
         }
 
         if (CollectionUtils.isNotEmpty(lns)) {
-            FieldQueryPart ln = new FieldQueryPart("lastName", lns);
+            FieldQueryPart<String> ln = new FieldQueryPart<String>("lastName", lns);
             ln.setPhraseFormatters(PhraseFormatter.ESCAPED, PhraseFormatter.WILDCARD);
             group.append(ln);
         }
         if (CollectionUtils.isNotEmpty(ems)) {
-            FieldQueryPart emls = new FieldQueryPart("email", ems);
+            FieldQueryPart<String> emls = new FieldQueryPart<String>("email", ems);
             emls.setPhraseFormatters(PhraseFormatter.ESCAPED, PhraseFormatter.WILDCARD);
             group.append(emls);
         }
         if (CollectionUtils.isNotEmpty(insts)) {
             QueryPartGroup group1 = new QueryPartGroup(Operator.OR);
-            group1.append(new FieldQueryPart("institution.name", insts));
-            group1.append(new FieldQueryPart("institution.name_auto", insts));
+            group1.append(new FieldQueryPart<String>("institution.name", insts));
+            group1.append(new FieldQueryPart<String>("institution.name_auto", insts));
             group.append(group1);
         }
         
         if (registered) {
             QueryPartGroup qpg = new QueryPartGroup(Operator.AND);
             qpg.append(group);
-            qpg.append(new FieldQueryPart("registered", true));
+            qpg.append(new FieldQueryPart<Boolean>("registered", Boolean.TRUE));
             return qpg.generateQueryString();
         }
 

@@ -138,9 +138,10 @@ public abstract class QueryBuilder extends QueryPartGroup {
     public String getRawQuery() {
         return rawQuery;
     }
-    
+
     @Override
     public boolean isEmpty() {
-        return StringUtils.isBlank(rawQuery) && super.isEmpty();
+        return super.isEmpty() && StringUtils.isBlank(getRawQuery());
     }
+
 }

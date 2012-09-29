@@ -1,10 +1,13 @@
 package org.tdar.utils.jaxb.converters;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ReflectionService;
 
+@Component
 public class JaxbPersistableConverter extends javax.xml.bind.annotation.adapters.XmlAdapter<String, Persistable> {
 
     private static final String NULL_REF = "NULL_REF";
@@ -29,6 +32,9 @@ public class JaxbPersistableConverter extends javax.xml.bind.annotation.adapters
 
     @Override
     public Persistable unmarshal(String id) throws Exception {
+        if (id.equals(NULL_REF) || id.equals("-1") || StringUtils.isBlank(id) || id.equals(":-1") || id.equals(":")) {
+            return null;
+        }
         String[] split = id.split(":");
         Class<Persistable> cls = reflectionService.getMatchingClassForSimpleName(split[0]);
         return (Persistable) genericService.find(cls, Long.valueOf(split[1]));

@@ -2,7 +2,6 @@ package org.tdar.core.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +25,6 @@ import org.tdar.core.bean.DeHydratable;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Validatable;
-import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -68,7 +66,6 @@ public class GenericService {
     public <T extends Persistable> List<Long> extractIds(Collection<T> persistables) {
         return Persistable.Base.extractIds(persistables);
     }
-
 
     @Transactional(readOnly = false)
     public <T> List<T> findByExample(Class<T> persistentClass, T entity, FindOptions options) {
@@ -121,6 +118,7 @@ public class GenericService {
         Map<Long, P> ids = Persistable.Base.createIdMap(sparseObjects);
         logger.info("{}", ids);
         // populate and put into a unique map
+        @SuppressWarnings("unchecked")
         Map<Long, P> skeletons = Persistable.Base.createIdMap((List<P>) genericDao.populateSparseObjectsById(ids.keySet(), cls));
 
         List<P> toReturn = new ArrayList<P>();
@@ -149,6 +147,7 @@ public class GenericService {
 
     private Map<Class<?>, List<?>> cache = new ConcurrentHashMap<Class<?>, List<?>>();
 
+    @SuppressWarnings("unchecked")
     @Transactional(readOnly = true)
     public <T> List<T> findAllWithCache(Class<T> persistentClass) {
         if (!cache.containsKey(persistentClass)) {
@@ -238,17 +237,16 @@ public class GenericService {
         enforceValidation(obj);
         genericDao.saveOrUpdate(obj);
     }
-    
+
     @Transactional
     public void saveOrUpdate(Collection<?> persistentCollection) {
         enforceValidation(persistentCollection);
         genericDao.saveOrUpdate(persistentCollection);
     }
 
-
     private void enforceValidation(Object obj) {
         if (obj instanceof Collection) {
-            for (Object item : (Collection) obj) {
+            for (Object item : (Collection<?>) obj) {
                 enforceValidation(item);
             }
         } else {
@@ -349,7 +347,6 @@ public class GenericService {
         return stats.getSessionOpenCount() - stats.getSessionCloseCount();
     }
 
-
     /**
      * Deletes all entities from the given persistent class. Use with caution!
      * 
@@ -368,4 +365,5 @@ public class GenericService {
     public void forceDelete(Object entity) {
         genericDao.forceDelete(entity);
     }
+
 }

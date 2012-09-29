@@ -1,6 +1,5 @@
 package org.tdar.core.bean.resource.datatable;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -15,7 +14,8 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 @Entity
 @Table(name = "data_table_column_relationship")
 public class DataTableColumnRelationship extends Persistable.Base {
-    // FIXME: should probably be called DataTableRelationship, since it represents a relationship between two tables, defined by a set of columns in one table matching a set of columns in the other
+    // FIXME: should probably be called DataTableRelationship, since it represents a relationship between two tables, defined by a set of columns in one table
+    // matching a set of columns in the other
     /**
      * 
      */
@@ -24,18 +24,18 @@ public class DataTableColumnRelationship extends Persistable.Base {
     /**
      * The relationship which this inter-column relationship forms part of
      */
-    @ManyToOne(optional = false, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
+    @ManyToOne(optional = false)
     @JoinColumn(name = "relationship_id")
     private DataTableRelationship relationship;
-    
-    @ManyToOne(optional = false, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
-    @JoinColumn(name="local_column_id")
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "local_column_id")
     private DataTableColumn localColumn;
 
-    @ManyToOne(optional = false, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
-    @JoinColumn(name="foreign_column_id")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "foreign_column_id")
     private DataTableColumn foreignColumn;
-    
+
     /**
      * @return the localColumn
      */
@@ -44,12 +44,15 @@ public class DataTableColumnRelationship extends Persistable.Base {
     public DataTableColumn getLocalColumn() {
         return localColumn;
     }
+
     /**
-     * @param localColumn the localColumn to set
+     * @param localColumn
+     *            the localColumn to set
      */
     public void setLocalColumn(DataTableColumn localColumn) {
         this.localColumn = localColumn;
     }
+
     /**
      * @return the foreignColumn
      */
@@ -58,12 +61,15 @@ public class DataTableColumnRelationship extends Persistable.Base {
     public DataTableColumn getForeignColumn() {
         return foreignColumn;
     }
+
     /**
-     * @param foreignColumn the foreignColumn to set
+     * @param foreignColumn
+     *            the foreignColumn to set
      */
     public void setForeignColumn(DataTableColumn foreignColumn) {
         this.foreignColumn = foreignColumn;
     }
+
     /**
      * @return the relationship
      */
@@ -71,8 +77,10 @@ public class DataTableColumnRelationship extends Persistable.Base {
     public DataTableRelationship getRelationship() {
         return relationship;
     }
+
     /**
-     * @param relationship the relationship to set
+     * @param relationship
+     *            the relationship to set
      */
     public void setRelationship(DataTableRelationship relationship) {
         this.relationship = relationship;

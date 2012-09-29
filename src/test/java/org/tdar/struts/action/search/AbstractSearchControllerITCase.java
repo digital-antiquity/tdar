@@ -95,16 +95,8 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
         assertFalse(siteType.getLabel().trim().startsWith(":"));
         assertFalse(siteType.getLabel().trim().endsWith(":"));
         genericService.saveOrUpdate(dataset);
-        ResourceCreator rc = new ResourceCreator();
-        rc.setRole(ResourceCreatorRole.CREATOR);
-        rc.setResource(dataset);
-        rc.setCreator(createAndSaveNewPerson("atest@Test.com", "abc"));
-        ResourceCreator rc2 = new ResourceCreator();
-        rc2.setRole(ResourceCreatorRole.PREPARER);
-        rc2.setResource(dataset);
-        rc2.setCreator(getUser().getInstitution());
-        genericService.save(rc);
-        genericService.save(rc2);
+        ResourceCreator rc = new ResourceCreator(createAndSaveNewPerson("atest@Test.com", "abc"), ResourceCreatorRole.CREATOR);
+        ResourceCreator rc2 = new ResourceCreator(getUser().getInstitution(), ResourceCreatorRole.PREPARER);
         dataset.getResourceCreators().add(rc);
         dataset.getResourceCreators().add(rc2);
         dataset.setStatus(status);
@@ -199,7 +191,7 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
 
     protected void setStatuses(Status... status) {
         controller.getIncludedStatuses().clear();
-        
+
         controller.getIncludedStatuses().addAll(new ArrayList<Status>(Arrays.asList(status)));
     }
 
@@ -216,7 +208,7 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
     protected void setResourceTypes(ResourceType... resourceTypes) {
         setResourceTypes(Arrays.asList(resourceTypes));
     }
-    
+
     protected void setResourceTypes(List<ResourceType> resourceTypes) {
         controller.getResourceTypes().clear();
         controller.getResourceTypes().addAll(resourceTypes);
@@ -226,16 +218,16 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
     public Person getSessionUser() {
         return null;
     }
-    
+
     protected SearchParameters firstGroup() {
-        if(controller.getG().isEmpty()) {
+        if (controller.getG().isEmpty()) {
             controller.getG().add(new SearchParameters());
         }
         return controller.getG().get(0);
     }
-    
+
     protected LatitudeLongitudeBox firstMap() {
-    	return controller.getMap();
+        return controller.getMap();
     }
-    
+
 }

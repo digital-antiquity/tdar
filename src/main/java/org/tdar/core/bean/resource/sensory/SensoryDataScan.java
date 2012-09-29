@@ -8,18 +8,13 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.StringUtils;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.SensoryData;
-import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -29,9 +24,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class SensoryDataScan extends Persistable.Sequence<SensoryDataScan> implements HasResource<SensoryData> {
 
     private static final long serialVersionUID = -310445034386268598L;
-    @ManyToOne
-    @JoinColumn(name = "sensory_data_id")
-    private SensoryData resource;
 
     @Column(nullable = false)
     private String filename;
@@ -138,18 +130,6 @@ public class SensoryDataScan extends Persistable.Sequence<SensoryDataScan> imple
 
     public void setTriangulationDetails(String triangulationDetails) {
         this.triangulationDetails = triangulationDetails;
-    }
-
-    @Override
-    @XmlElement(name = "resourceRef")
-    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
-    public SensoryData getResource() {
-        return resource;
-    }
-
-    @Override
-    public void setResource(SensoryData resource) {
-        this.resource = resource;
     }
 
     public String getTofReturn() {

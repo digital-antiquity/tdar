@@ -22,20 +22,20 @@ var g_settingsMap = {
         },
         institution:{
             tableSelector: '#dupe_datatable',
-        	sAjaxSource:'/lookup/institution',
+            sAjaxSource:'/lookup/institution',
             "bLengthChange": false,
             "bFilter": true,
             aoColumns:[
                        {sTitle:"id", bUseRendered: false, mDataProp:"id", tdarSortOption:'ID'},
                        {sTitle:"Name", mDataProp:"name", tdarSortOption:'CREATOR_NAME'}],
             sPaginationType:"full_numbers",
-        	sAjaxDataProp: 'institutions',
+            sAjaxDataProp: 'institutions',
             selectableRows: true,
             requestCallback: function(searchBoxContents) {
-            	return {
-            		minLookupLength:0,
-            		institution: $('#txtInstitution').val()
-            	};
+                return {
+                    minLookupLength:0,
+                    institution: $('#txtInstitution').val()
+                };
             },
             sDom:'<"datatabletop"ilrp>t<>' //omit the search box
        },
@@ -52,7 +52,7 @@ var g_settingsMap = {
             selectableRows: true,
             requestCallback: function(searchBoxContents) {
                 return {keywordType: getKeywordType(selEntityType.val()),
-                			term: $('#txtKeyword').val()
+                            term: $('#txtKeyword').val()
                 };
             },
             sDom:'<"datatabletop"ilrp>t<>' //omit the search box
@@ -115,19 +115,19 @@ function doSearch() {
 //FIXME: this is a dumb, hackey way to get the keywordType to send the lookup controller.
 //a better way would be to send enum value to lookupcontroller   
 function getKeywordType(enumVal) {
-	return {
-	    KEYWORD_CULTURE_KEYWORD:'CultureKeyword',
-	    KEYWORD_GEOGRAPHIC_KEYWORD:'GeographicKeyword',
-	    KEYWORD_INVESTIGATION_TYPE:'InvestigationType',
-	    KEYWORD_MATERIAL_KEYWORD:'MaterialKeyword',
-	    KEYWORD_OTHER_KEYWORD:'OtherKeyword',
-	    KEYWORD_SITE_NAME_KEYWORD:'SiteNameKeyword',
-	    KEYWORD_SITE_TYPE_KEYWORD:'SiteTypeKeyword'
-	}[enumVal];
+    return {
+        KEYWORD_CULTURE_KEYWORD:'CultureKeyword',
+        KEYWORD_GEOGRAPHIC_KEYWORD:'GeographicKeyword',
+        KEYWORD_INVESTIGATION_TYPE:'InvestigationType',
+        KEYWORD_MATERIAL_KEYWORD:'MaterialKeyword',
+        KEYWORD_OTHER_KEYWORD:'OtherKeyword',
+        KEYWORD_SITE_NAME_KEYWORD:'SiteNameKeyword',
+        KEYWORD_SITE_TYPE_KEYWORD:'SiteTypeKeyword'
+    }[enumVal];
 }
 
 function getPersonSearchData()  {
-	var data = {minLookupLength:0};
+    var data = {minLookupLength:0};
     $.each ($(':text', '#divPersonSearchControl'), function(ignored, txtElem){
         data[txtElem.name] = $(txtElem).val();
     });
@@ -157,9 +157,9 @@ function renderSelectedDupes(id, obj, isAdded) {
 }
 
 function clearDupeList() {
-	dataTable.data('selectedRows', {});
-	$('input[type=checkbox]', dataTable).prop('checked', false);
-	renderSelectedDupes(null, null, null);
+    dataTable.data('selectedRows', {});
+    $('input[type=checkbox]', dataTable).prop('checked', false);
+    renderSelectedDupes(null, null, null);
     return false;
 }
 

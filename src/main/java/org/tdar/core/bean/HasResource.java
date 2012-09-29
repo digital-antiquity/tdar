@@ -10,10 +10,7 @@ import org.tdar.core.bean.resource.Resource;
  * @author Adam Brin
  * @version $Revision$
  */
-public interface HasResource<R extends Resource> extends Validatable {
+public interface HasResource<R extends Resource> extends Validatable, Persistable {
 
-    public R getResource();
-
-    public void setResource(R resource);
 
 }

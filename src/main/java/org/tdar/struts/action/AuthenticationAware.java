@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
@@ -36,8 +37,13 @@ public interface AuthenticationAware extends SessionDataAware {
         private transient AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
 
         public Person getAuthenticatedUser() {
-            if(getSessionData() == null) return null;
-            return getSessionData().getPerson();
+            if (getSessionData() == null)
+                return null;
+            if (Persistable.Base.isNotNullOrTransient(getSessionData().getPerson())) {
+                return getGenericService().find(Person.class, getSessionData().getPerson().getId());
+            } else {
+                return null;
+            }
         }
 
         public boolean isAdministrator() {
@@ -47,7 +53,7 @@ public interface AuthenticationAware extends SessionDataAware {
         public boolean isEditor() {
             return isAuthenticated() && authenticationAndAuthorizationService.isEditor(getAuthenticatedUser());
         }
-        
+
         public boolean isAbleToFindDraftResources() {
             return isAuthenticated() && authenticationAndAuthorizationService.can(InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS, getAuthenticatedUser());
         }
@@ -71,7 +77,7 @@ public interface AuthenticationAware extends SessionDataAware {
         public boolean userCan(InternalTdarRights right) {
             return isAuthenticated() && authenticationAndAuthorizationService.can(right, getAuthenticatedUser());
         }
-        
+
         public boolean userCannot(InternalTdarRights right) {
             return isAuthenticated() && authenticationAndAuthorizationService.cannot(right, getAuthenticatedUser());
         }

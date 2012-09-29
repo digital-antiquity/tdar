@@ -68,7 +68,7 @@ public interface DatasetConverter {
 
     public List<DataTableRelationship> getRelationshipsWithTable(String tableName);
 
-    public static final String ERROR_UNABLE_TO_PROCESS = "unable to process this dataset file";
+    public static final String ERROR_UNABLE_TO_PROCESS = "The system is unable to process this dataset file";
 
     /**
      * Abstract base class for DatasetConverterS, uses template pattern to ease implementation of execute().

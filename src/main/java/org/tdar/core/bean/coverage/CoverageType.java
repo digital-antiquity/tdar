@@ -31,7 +31,10 @@ public enum CoverageType implements HasLabel {
                 return (start <= end);
             case RADIOCARBON_DATE:
                 return (start >= end && end > 0);
+            case NONE:
+                return true;
+            default:
+                return false;
         }
-        return false;
     }
 }

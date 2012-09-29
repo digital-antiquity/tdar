@@ -62,7 +62,7 @@ public class DashboardController extends AuthenticationAware.Base {
         setRecentlyEditedResources(getProjectService().findRecentlyEditedResources(getAuthenticatedUser(), maxRecentResources));
         setEmptyProjects(getProjectService().findEmptyProjects(getAuthenticatedUser()));
         setResourceCountAndStatusForUser(getResourceService().getResourceCountAndStatusForUser(getAuthenticatedUser(), Arrays.asList(ResourceType.values())));
-        getResourceCollections().addAll(getResourceCollectionService().findExplicitlyAuthorizedCollections(getAuthenticatedUser()));
+        getResourceCollections().addAll(getResourceCollectionService().findParentOwnerCollections(getAuthenticatedUser()));
         getSharedResourceCollections().addAll(getEntityService().findAccessibleResourceCollections(getAuthenticatedUser()));
         // removing duplicates
         getSharedResourceCollections().removeAll(getResourceCollections());

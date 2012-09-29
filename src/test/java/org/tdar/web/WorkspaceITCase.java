@@ -4,10 +4,11 @@ import org.junit.Test;
 import org.tdar.TestConstants;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.configuration.TdarConfiguration;
 
 public class WorkspaceITCase extends AbstractAuthenticatedWebTestCase {
 
-    // ensure that a 'deleted item no longer shows up in boomarks
+    // ensure that a 'deleted item no longer shows up in bookmarks
     @Test
     public void testDeletedBoomarkedItem() {
         String docTitle = "testing deleted bookmarked items";
@@ -15,9 +16,7 @@ public class WorkspaceITCase extends AbstractAuthenticatedWebTestCase {
 
         // create simple doc, remember name and url
         gotoPage("/document/add");
-        setInput(TestConstants.DOCUMENT_FIELD_TITLE, docTitle);
-        setInput(TestConstants.DOCUENT_DATE_CREATED, "1923");
-        setInput(TestConstants.DOCUMENT_FIELD_DESCRIPTION, docDescription);
+        setDocumentRequiredFields(docTitle, docDescription);
         submitForm();
         String viewPage = internalPage.getUrl().getPath().toLowerCase();
 
@@ -65,12 +64,12 @@ public class WorkspaceITCase extends AbstractAuthenticatedWebTestCase {
 
         // create simple doc, remember name and url
         gotoPage("/document/add");
-        setInput(TestConstants.DOCUMENT_FIELD_TITLE, docTitle);
-        setInput(TestConstants.DOCUENT_DATE_CREATED, "1923");
-        setInput(TestConstants.DOCUMENT_FIELD_DESCRIPTION, docDescription);
+        setDocumentRequiredFields(docTitle, docDescription);
+
         if (status != Status.DELETED && status != Status.FLAGGED) {
             setInput("status", status.name());
         }
+
         submitForm();
         String viewPage = internalPage.getUrl().getPath().toLowerCase();
 
@@ -99,6 +98,16 @@ public class WorkspaceITCase extends AbstractAuthenticatedWebTestCase {
         submitForm();
         clickLinkOnPage("Workspace");
         assertTextPresentInCode(docTitle);
+    }
+
+    private void setDocumentRequiredFields(String docTitle, String docDescription) {
+        setInput(TestConstants.DOCUMENT_FIELD_TITLE, docTitle);
+        setInput(TestConstants.DOCUENT_DATE_CREATED, "1923");
+        setInput(TestConstants.DOCUMENT_FIELD_DESCRIPTION, docDescription);
+        if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
+            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+            setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
+        }
     }
 
 }

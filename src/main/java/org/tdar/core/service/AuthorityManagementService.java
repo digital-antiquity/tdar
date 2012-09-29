@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -37,6 +36,7 @@ import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.request.ContributorRequest;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.ReflectionDao;
@@ -74,7 +74,7 @@ public class AuthorityManagementService {
             Person.class, Institution.class, ContributorRequest.class, AuthorizedUser.class, ResourceCollection.class);
 
     @Transactional(readOnly = true)
-    public Map<Field, ScrollableResults> getReferrers(Class<?> referredClass, List<Long> dupeIds) {
+    public Map<Field, ScrollableResults> getReferrers(Class<?> referredClass, Set<Long> dupeIds) {
         Map<Field, ScrollableResults> referrers = new HashMap<Field, ScrollableResults>();
         for (Class<?> targetClass : hostClasses) {
             Set<Field> fields = reflectionService.findAssignableFieldsRefererencingClass(targetClass, referredClass);
@@ -153,9 +153,8 @@ public class AuthorityManagementService {
      *  and setters.
      *  
      */
-    public <T extends Dedupable> void updateReferrers(Class<T> referredClass, List<Long> dupeIds_, Long authorityId) {
+    public <T extends Dedupable> void updateReferrers(Class<T> referredClass, Set<Long> dupeIds, Long authorityId, boolean shouldDelete) {
         Activity activity = new Activity();
-        List<Long> duplicateIds = new ArrayList<Long>(new HashSet<Long>(dupeIds_));
         activity.setName(String.format("update-referrers:: referredClass:%s\tauthorityId:%s", referredClass.getSimpleName(), authorityId));
         ActivityManager.getInstance().addActivityToQueue(activity);
         activity.start();
@@ -163,10 +162,10 @@ public class AuthorityManagementService {
         int maxAffectedRecordsCount = TdarConfiguration.getInstance().getAuthorityManagementMaxAffectedRecords();
         int affectedRecordCount = 0;
         // get a list of all the referrer objects and the Fields that contain the reference.
-        Map<Field, ScrollableResults> referrers = getReferrers(referredClass, duplicateIds);
+        Map<Field, ScrollableResults> referrers = getReferrers(referredClass, dupeIds);
 
         // instantiate the duplicates and the authority record
-        List<T> dupes = genericDao.findAll(referredClass, duplicateIds);
+        Set<T> dupes = new HashSet<T>(genericDao.findAll(referredClass, dupeIds));
         T authority = genericDao.find(referredClass, authorityId);
 
         // prevent 'protected' records from being deleted
@@ -182,7 +181,7 @@ public class AuthorityManagementService {
         // -if many-to-one
         // + get scalar setter and set to authority record
         // -hibsession.save() each reference
-        AuthorityManagementLog<T> authorityManagementLog = new AuthorityManagementLog<T>(authority, new HashSet<T>(dupes));
+        AuthorityManagementLog<T> authorityManagementLog = new AuthorityManagementLog<T>(authority, dupes);
         for (Map.Entry<Field, ScrollableResults> entry : referrers.entrySet()) {
             Field field = entry.getKey();
             ScrollableResults scrollableResults = entry.getValue();
@@ -226,15 +225,16 @@ public class AuthorityManagementService {
         logAndNotify(authorityManagementLog);
 
         // add the dupes to the authority as synonyms
-        processSynonyms(authority, dupes);
+        processSynonyms(authority, dupes, shouldDelete);
 
         // finally, delete each dupe
-        genericDao.delete(dupes);
+        genericDao.saveOrUpdate(dupes);
         activity.end();
     }
 
     // return number "protected" items in the dupe list. Duplicates may not be de-duped
-    public <T extends Dedupable> int countProtectedRecords(List<T> dupes) {
+    @SuppressWarnings("rawtypes")
+    public <T extends Dedupable> int countProtectedRecords(Set<T> dupes) {
         int count = 0;
         for (Dedupable d : dupes) {
             if (!d.isDedupable()) {
@@ -244,9 +244,17 @@ public class AuthorityManagementService {
         return count;
     }
 
-    private <T extends Dedupable> void processSynonyms(T authority, List<T> dupes) {
-        for (T dupe : dupes) {
-            authority.addSynonym(dupe);
+    @SuppressWarnings("rawtypes")
+    private <T extends Dedupable> void processSynonyms(T authority, Set<T> dupes, boolean delete) {
+        for (T dup : dupes) {
+            authority.getSynonyms().addAll(dup.getSynonyms());
+            dup.getSynonyms().clear();
+            if (delete) {
+                dup.setStatus(Status.DELETED);
+            } else {
+                dup.setStatus(Status.DUPLICATE);
+                authority.getSynonyms().addAll(dupes);
+            }
         }
     }
 
@@ -271,7 +279,8 @@ public class AuthorityManagementService {
         filestore.storeLog(LogType.AUTHORITY_MANAGEMENT, filename, xml);
 
         // now send a summary email
-        String subject = String.format("tDAR Authority Management Service: user %s merged %s %s records to '%s'",
+        String subject = String.format(
+                TdarConfiguration.getInstance().getSiteAcronym() + " Authority Management Service: user %s merged %s %s records to '%s'",
                 logData.getUserDisplayName(),
                 numUpdated,
                 className,

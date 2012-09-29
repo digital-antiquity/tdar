@@ -24,6 +24,7 @@ public interface JsonModel extends Serializable {
 
         private static final long serialVersionUID = -6733445049593441229L;
 
+        @XmlTransient
         protected abstract String[] getIncludedJsonProperties();
 
         // FIXME: does JsonConfig need to be instantiated a-new each time or could

@@ -27,6 +27,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.struts2.convention.ReflectionTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +41,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.utils.Pair;
 
 /**
  * @author Adam Brin
@@ -152,7 +154,8 @@ public class ReflectionService {
      */
     @SuppressWarnings("unchecked")
     public <T> T callFieldGetter(Object obj, Field field) {
-        logger.debug("calling getter on: {} {} ", obj, field.getName());
+//        logger.debug("calling getter on: {} {} ", obj, field.getName());
+        logger.trace("{}" , field.getDeclaringClass());
         Method method = ReflectionUtils.findMethod(field.getDeclaringClass(), generateGetterName(field));
         if (method.getReturnType() != Void.TYPE)
             try {
@@ -226,7 +229,9 @@ public class ReflectionService {
     }
 
     public Class<Persistable> getMatchingClassForSimpleName(String name) throws NoSuchBeanDefinitionException, ClassNotFoundException {
+        logger.trace("scanning for: {}", name);
         scanForPersistables();
+        logger.trace("scanning in: {}", persistableLookup);
         return persistableLookup.get(name);
     }
 
@@ -272,4 +277,46 @@ public class ReflectionService {
         }
         return toReturn.toArray(new Class<?>[0]);
     }
+
+
+
+
+    @SuppressWarnings("unchecked")
+    public List<Pair<Field, Class<? extends Persistable>>> findAllPersistableFields(Class<?> cls) {
+        List<Field> declaredFields = new ArrayList<Field>();
+        List<Pair<Field, Class<? extends Persistable>>> result = new ArrayList<Pair<Field, Class<? extends Persistable>>>();
+        // iterate up the package hierarchy
+        while (cls.getPackage().getName().startsWith("org.tdar.")) {
+            CollectionUtils.addAll(declaredFields, cls.getDeclaredFields());
+            cls = cls.getSuperclass();
+        }
+
+        for (Field field : declaredFields) {
+            Class<? extends Persistable> type = null;
+            // generic collections
+            if (java.lang.reflect.Modifier.isStatic(field.getModifiers()) || java.lang.reflect.Modifier.isTransient(field.getModifiers())
+                    || java.lang.reflect.Modifier.isFinal(field.getModifiers()))
+                continue;
+
+            if (Collection.class.isAssignableFrom(field.getType())) {
+                ParameterizedType stringListType = (ParameterizedType) field.getGenericType();
+                if (Persistable.class.isAssignableFrom((Class<? extends Persistable>) stringListType.getActualTypeArguments()[0])) {
+                    type = (Class<? extends Persistable>) stringListType.getActualTypeArguments()[0];
+                    logger.trace("\t -> {}", type); // class java.lang.String.
+                }
+            }
+            // singletons
+            if (Persistable.class.isAssignableFrom(field.getType())) {
+                type = (Class<? extends Persistable>) field.getType();
+                logger.trace("\t -> {}", type); // class java.lang.String.
+            }
+
+            // things to add
+            if (type != null) {
+                result.add(new Pair<Field,Class<? extends Persistable>>(field, type));
+            }
+        }
+        return result;
+    }
+
 }

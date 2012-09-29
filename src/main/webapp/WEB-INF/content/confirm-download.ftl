@@ -5,7 +5,7 @@
         <#assign download>/filestore/${informationResourceFileId?c}</#assign>
         You requested this file 
         (<a href="${download}"  onClick="registerDownload('<@s.url value='/filestore/${informationResourceFileId?c}/get'/>', '${informationResourceId?c}')" >${fileName}</a>) 
-        when you were not logged into tDAR, please click 
+        when you were not logged into ${siteAcronym}, please click 
         <a href="${download}" onClick="registerDownload('<@s.url value='/filestore/${informationResourceFileId?c}/get'/>', '${informationResourceId?c}')" >here</a> 
         to begin your download.
         <br/><br/>

@@ -14,8 +14,8 @@
     opacity:.95;
 }
 .buttontable .integrationTableNumber {
-	display:none;
-	visibility:hidden;
+    display:none;
+    visibility:hidden;
 }
 
 .integrationColumn div[table] .ontology {
@@ -30,15 +30,15 @@
 #drplist {border:1px solid #ccc;}
 
 #submitbutton {
-	right: -540px !important;
-	position: relative !important;
+    right: -540px !important;
+    position: relative !important;
 }
 
 .addAnother { margin-left:1em !important; font-weight:bold;}
 
 .addAnother img {
-	bottom: 2px !important;
-	position: relative !important;
+    bottom: 2px !important;
+    position: relative !important;
 } 
 </style>
 
@@ -72,16 +72,16 @@ Drag columns from your selected data tables onto the integration table .
 <div id="fixedList">
 <h4>Each Column Below will be a Column In Excel</h4>
 <table width="100%">
-	<tr>
-		<td>
-			<input type="checkbox" id="autoselect" />
-			<label for="autoselect">Auto-select integratable columns</label>
-		</td>
-		<td>
-			<input type="checkbox" id="clear" /> 
-			<label for="clear">Clear all columns</label>
-		</td>
-	</tr>
+    <tr>
+        <td>
+            <input type="checkbox" id="autoselect" />
+            <label for="autoselect">Auto-select integratable columns</label>
+        </td>
+        <td>
+            <input type="checkbox" id="clear" /> 
+            <label for="clear">Clear all columns</label>
+        </td>
+    </tr>
 </table>
 <table id="drplist" width="100%">
 <tr>
@@ -123,11 +123,11 @@ Drag columns from your selected data tables onto the integration table .
 <div class="tableContainer">      
   <table class="buttontable">
       <tbody>
-       	<#if leftJoinDataIntegrationFeatureEnabled>
-      		<#assign columns = table.leftJoinColumns>
-      	<#else>
-      		<#assign columns = table.sortedDataTableColumns>
-      	</#if>
+           <#if leftJoinDataIntegrationFeatureEnabled>
+              <#assign columns = table.leftJoinColumns>
+          <#else>
+              <#assign columns = table.sortedDataTableColumns>
+          </#if>
         <#assign count = 0>
             <#list columns as column>
             <#assign description = ""/>
@@ -166,7 +166,7 @@ Drag columns from your selected data tables onto the integration table .
 <script>
 
 jQuery(document).ready(function($){
-	initDataIntegration();
+    initDataIntegration();
 });
 </script>
 

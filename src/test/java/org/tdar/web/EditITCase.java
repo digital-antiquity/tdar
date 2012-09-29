@@ -17,6 +17,7 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.ResourceCreatorRoleType;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.w3c.dom.Element;
 
 import com.gargoylesoftware.htmlunit.html.HtmlOption;
@@ -102,6 +103,10 @@ public class EditITCase extends AbstractAdminAuthenticatedWebTestCase {
         setInput("dataset.title", "testMalformedAttachmentDisplaysError");
         setInput("dataset.date", "2002");
         setInput("dataset.description", "trying to save this with a malformed csv should return action errors ");
+        if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
+            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+            setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
+        }
         submitForm();
 
         // now go to the edit page and try to upload a malformed file

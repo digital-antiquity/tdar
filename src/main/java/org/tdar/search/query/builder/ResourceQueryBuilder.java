@@ -1,7 +1,6 @@
 package org.tdar.search.query.builder;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -51,11 +50,11 @@ public class ResourceQueryBuilder extends QueryBuilder {
         omits.add("resourceNotes.type");
         omits.add(".id");
     }
-    
+
     @Override
     protected Map<String, Class<? extends Analyzer>> createPartialLabelOverrides() {
         Map<String, Class<? extends Analyzer>> map = super.createPartialLabelOverrides();
-        //indicate we just want to use the default analyzer for labels that end with the following strings
+        // indicate we just want to use the default analyzer for labels that end with the following strings
         map.put("keywordType", null);
         map.put("endDate", null);
         map.put("submitter", null);
@@ -66,5 +65,5 @@ public class ResourceQueryBuilder extends QueryBuilder {
         map.put(".id", null);
         return map;
     }
-    
+
 }

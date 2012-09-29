@@ -31,7 +31,6 @@ import org.apache.http.protocol.HTTP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
@@ -277,9 +276,7 @@ public class EZIDDao implements ExternalIDProvider {
 
             buildAnvlLine(responseBuilder, DATACITE_RESOURCE_TYPE, aNVLEscape(resourceType));
             if (r instanceof InformationResource) {
-                if (r instanceof Document) {
-                    buildAnvlLine(responseBuilder, DATACITE_PUBLISHER, aNVLEscape(((Document) r).getPublisher()));
-                }
+                buildAnvlLine(responseBuilder, DATACITE_PUBLISHER, aNVLEscape(((InformationResource) r).getPublisherName()));
                 buildAnvlLine(responseBuilder, DATACITE_PUBLICATIONYEAR, (((InformationResource) r).getDate()).toString());
             }
         }

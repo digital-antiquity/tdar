@@ -38,7 +38,7 @@
     .smallauto .down-arrow {
 left: -28px !important;
 //    left: 289px !important;
-	top: 13px !important;  
+    top: 13px !important;  
     }
 </style>
 
@@ -239,18 +239,18 @@ var ontology = [
 </thead>
 <tbody>
 <tr>
-	<td>
-		<button type="button" id="autosuggest">Autosuggest Mappings</button>
-	</td><td>
-	</td><td>
-		<button type="button" id="clearAll">Clear all</button>
-	</td>
+    <td>
+        <button type="button" id="autosuggest">Autosuggest Mappings</button>
+    </td><td>
+    </td><td>
+        <button type="button" id="clearAll">Clear all</button>
+    </td>
 </tr>
 <#list codingRules as rule>
 <tr>
 <td>
-	<@s.hidden name='codingRules[${rule_index}].id' />
-	<@s.textfield name='codingRules[${rule_index}].term' size='50' readonly=true/>
+    <@s.hidden name='codingRules[${rule_index}].id' />
+    <@s.textfield name='codingRules[${rule_index}].term' size='50' readonly=true/>
 </td>
 <td><img src="<@s.url value='/images/arrow_right.png'/>"/></td>
 <td class="smallauto">
@@ -261,7 +261,7 @@ $(document).ready(function() {
 <#noescape>
 var autocomp_${rule_index}Suggestions = [
 {id:"", name:""}<#t>
-	<#list rule.suggestions as suggestion>
+    <#list rule.suggestions as suggestion>
     <#if suggestion_index == 0>,{id:"", name:" -- Suggested Values --"}</#if>
     ,{id:"${suggestion.id?c}",  name:"${suggestion.displayName?js_string}"}
     </#list>
@@ -270,7 +270,7 @@ var autocomp_${rule_index}Suggestions = [
 </script>
 <@s.hidden name="codingRules[${rule_index}].ontologyNode.id" id="ontologyNodeId_${rule_index}" />
 <@s.textfield name="codingRules[${rule_index}].ontologyNode.displayName" id="autocomp_${rule_index}"
-	 cssClass="manualAutocomplete" autocompleteIdElement="#ontologyNodeId_${rule_index}"/>
+     cssClass="manualAutocomplete" autocompleteIdElement="#ontologyNodeId_${rule_index}"/>
 <div class="down-arrow"></div>
 
 </td>
@@ -280,8 +280,8 @@ var autocomp_${rule_index}Suggestions = [
 </table>
 </div>
 
-	<@edit.submit "Save" false><br/>
-	</@edit.submit>
+    <@edit.submit "Save" false><br/>
+    </@edit.submit>
 </@s.form>
 </div>
 

@@ -15,7 +15,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.TestConstants;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
@@ -26,7 +25,6 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
-import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -135,7 +133,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         assertTrue(authorizedUsers.iterator().next().getUser().equals(getBasicUser()));
 
         // create a document and associate it w/ the project we just made
-        InformationResource testResource = generateInformationResourceWithUser();
+        InformationResource testResource = generateDocumentWithUser();
         testResource.setProject(project_);
         genericService.saveOrUpdate(testResource);
         assertEquals(getBasicUser(), testResource.getSubmitter());
@@ -298,52 +296,6 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         assertTrue(names.contains(name1));
         assertTrue(names.contains(name2));
     }
-    
-    @Test
-    @Rollback
-    //check the number of times that tdar requests indexable content (an assumption that something is being saved/indexed multiple times)
-    public void testSaveIndexCount() throws TdarActionException {
-        String ALEXANDRIA_EXCEL_FILENAME = "qrybonecatalogueeditedkk.xls";
-        
-        ProjectController controller = generateNewInitializedController();
-        Project project = controller.getProject();
-        project.setTitle("test index count");
-        project.setDescription("hi mom");
-        controller.setServletRequest(getServletPostRequest());
-        genericService.synchronize();
-        controller.save();
-        assertTrue(project.getId() > -1L);
-        
-        //okay now let's create a dataset and attach a file to it, then save the project again
-        Dataset dataset = setupAndLoadResource(ALEXANDRIA_EXCEL_FILENAME, Dataset.class, project.getId());
-        int count1 = dataset.getContentCallCount();
-        
-        assertNotNull(dataset);
-        
-        
-       //now perform a save of the project and make a note of the indexcount.
-       @SuppressWarnings("deprecation")
-       Project project2 = new Project(project.getId(), project.getTitle());
-       project2.setDescription("changed description");
-       controller = generateNewInitializedController();
-       controller.setProject(project);
-       controller.setId(project2.getId());
-       controller.setServletRequest(getServletPostRequest());
-       controller.save();
-       genericService.synchronize();
-       int count2 = dataset.getContentCallCount();
-       logger.debug("original content call count:{}\t new count:{}", count1, count2);
-//       assertTrue("expecting index content requests", count2 > count1);
-       
-       
-        
-    }
-    
-    @Override
-    protected String getTestFilePath() {
-        return TestConstants.TEST_DATA_INTEGRATION_DIR;
-    }
-    
 
     private ResourceCollection createNewEmptyCollection(String name) {
         ResourceCollection rc = new ResourceCollection(CollectionType.SHARED);
@@ -356,13 +308,6 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         assertTrue(rc.isValid());
         genericService.saveOrUpdate(rc);
         return rc;
-    }
-    
-    private ProjectController generateNewInitializedController() {
-        ProjectController controller = generateNewInitializedController(ProjectController.class);
-        init(controller, getUser());
-        controller.prepare();
-        return controller;
     }
 
 }

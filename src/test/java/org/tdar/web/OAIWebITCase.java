@@ -8,6 +8,8 @@ import java.util.HashMap;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 
+import junit.framework.Assert;
+
 import org.apache.tools.ant.filters.StringInputStream;
 import org.custommonkey.xmlunit.NamespaceContext;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
@@ -19,35 +21,29 @@ import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.tdar.core.bean.entity.Creator;
-import org.tdar.core.bean.entity.Institution;
-import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.SearchIndexService;
 import org.tdar.struts.data.oai.OAIMetadataFormat;
-import org.tdar.struts.data.oai.OAIRecordType;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import junit.framework.Assert;
 
 public class OAIWebITCase extends AbstractWebTestCase {
 
     @Autowired
     SearchIndexService indexService;
-    
+
     private XpathEngine xpathEngine;
     private String repositoryNamespaceIdentifier;
     private String firstPersonIdentifier;
     private String firstInstitutionIdentifier;
     private String firstResourceIdentifier;
-    
+
     @Before
     public void prepareOai() throws SAXException, IOException, ParserConfigurationException, XpathException {
         // reindex
         indexService.indexAll();
-        
+
         // establish namespace bindings for the XPath tests
         HashMap<String, String> namespaceBindings = new HashMap();
         namespaceBindings.put("oai", "http://www.openarchives.org/OAI/2.0/");
@@ -58,13 +54,14 @@ public class OAIWebITCase extends AbstractWebTestCase {
         namespaceBindings.put("oai-id", "http://www.openarchives.org/OAI/2.0/oai-identifier");
         NamespaceContext context = new SimpleNamespaceContext(namespaceBindings);
         XMLUnit.setXpathNamespaceContext(context);
-        
+
         // ask the repository for its namespace identifier
         xpathEngine = XMLUnit.newXpathEngine();
         gotoPage(getBase() + "Identify");
         Document response = getPageDOM();
-        repositoryNamespaceIdentifier = xpathEngine.evaluate("oai:OAI-PMH/oai:Identify/oai:description/oai-id:oai-identifier/oai-id:repositoryIdentifier", response);
-        
+        repositoryNamespaceIdentifier = xpathEngine.evaluate("oai:OAI-PMH/oai:Identify/oai:description/oai-id:oai-identifier/oai-id:repositoryIdentifier",
+                response);
+
         // list identifiers and find the identifiers of the first person, institution, and resource,
         // all of which should appear in the first page of results (because the provider performs
         // all three searches and returns a page containing the next 10 people, the next 10
@@ -78,40 +75,43 @@ public class OAIWebITCase extends AbstractWebTestCase {
         firstResourceIdentifier = xpathEngine.evaluate("oai:OAI-PMH/oai:ListIdentifiers/oai:header/oai:identifier[contains(., 'Resource')][1]", response);
         Assert.assertTrue("First page of ListIdentifier results includes a Resource", (firstResourceIdentifier.contains("Resource")));
     }
-    
+
     /**
      * Exhaustively invoke ListIdentifiers or ListRecords verb
-     * @param verb The verb to use; either "ListIdentifiers" or "ListRecords"
+     * 
+     * @param verb
+     *            The verb to use; either "ListIdentifiers" or "ListRecords"
      * @return number of records listed
-     * @throws ParserConfigurationException 
-     * @throws IOException 
-     * @throws SAXException 
-     * @throws XpathException 
-     * @throws NumberFormatException 
+     * @throws ParserConfigurationException
+     * @throws IOException
+     * @throws SAXException
+     * @throws XpathException
+     * @throws NumberFormatException
      */
-    private int listIdentifiersOrRecords(String verb, String metadataPrefix) throws SAXException, IOException, ParserConfigurationException, NumberFormatException, XpathException {
+    private int listIdentifiersOrRecords(String verb, String metadataPrefix) throws SAXException, IOException, ParserConfigurationException,
+            NumberFormatException, XpathException {
         int totalRecordCount = 0;
         int pageCount = 0;
         String resumptionToken;
-        String requestURI = getBase() + verb +"&metadataPrefix=" + metadataPrefix;
+        String requestURI = getBase() + verb + "&metadataPrefix=" + metadataPrefix;
         do {
             gotoPage(requestURI);
             // commented out the schema validation - it's too slow! Need to debug the speed issue
-            //testValidOAIResponse();
+            // testValidOAIResponse();
             Document response = getPageDOM();
             // count the number of records returned in this page
             int recordCount = Integer.valueOf(xpathEngine.evaluate("count(oai:OAI-PMH/oai:" + verb + "/*)", response));
             // must be > 0 (otherwise, repository is empty, or else the repository issued us with an unnecessary resumptionToken
             Assert.assertTrue(requestURI + " response returned > 0 records", (recordCount > 0));
             totalRecordCount += recordCount;
-            pageCount ++;
+            pageCount++;
             resumptionToken = xpathEngine.evaluate("oai:OAI-PMH/oai:" + verb + "/oai:resumptionToken", response);
             requestURI = getBase() + verb + "&resumptionToken=" + resumptionToken;
         } while (!resumptionToken.equals(""));
-        Assert.assertTrue("Harvesting " +metadataPrefix + " records with " + verb + " returned multiple pages", pageCount > 1);
+        Assert.assertTrue("Harvesting " + metadataPrefix + " records with " + verb + " returned multiple pages", pageCount > 1);
         return totalRecordCount;
     }
-    
+
     @Test
     public void testHarvest() throws NumberFormatException, XpathException, SAXException, IOException, ParserConfigurationException {
         // harvest all records using ListRecords and ListIdentifiers, in all 3 formats
@@ -130,7 +130,7 @@ public class OAIWebITCase extends AbstractWebTestCase {
         Assert.assertTrue("Number of identifiers for tDAR format greater than number of identifier for MODS format", tdarIdentifiers > modsIdentifiers);
         Assert.assertTrue("Number of harvested records > 0", modsIdentifiers > 0);
     }
-    
+
     public String getBase() {
         return getBaseUrl() + "/oai-pmh/oai?verb=";
     }
@@ -176,16 +176,10 @@ public class OAIWebITCase extends AbstractWebTestCase {
         // test for well-formed but invalid identifier
         getRecord("tdar", repositoryNamespaceIdentifier + ":Resource:0");
         assertXpathExists("oai:OAI-PMH/oai:error[@code='idDoesNotExist']");
-        
+
         // test for bogus identifier
         getRecord("tdar", repositoryNamespaceIdentifier + ":Bogus:1");
         assertXpathExists("oai:OAI-PMH/oai:error[@code='idDoesNotExist']");
-        
-        // Get Person records
-        
-        // get a person in tDAR format
-        getRecord("tdar", firstPersonIdentifier);
-        assertXpathExists("oai:OAI-PMH/oai:GetRecord/oai:record/oai:metadata/tdar:person/tdar:id");
 
         // get a person in DC format
         getRecord("oai_dc", firstPersonIdentifier);
@@ -194,16 +188,21 @@ public class OAIWebITCase extends AbstractWebTestCase {
         // try to get a person in MODS format (and fail, because Person records aren't disseminated in MODS)
         getRecord("mods", firstPersonIdentifier);
         assertXpathExists("oai:OAI-PMH/oai:error[@code='cannotDisseminateFormat']");
-        
-        // Get Institution records
 
-        // get an institution in tDAR format
-        getRecord("tdar", firstInstitutionIdentifier);
-        assertXpathExists("oai:OAI-PMH/oai:GetRecord/oai:record/oai:metadata/tdar:institution/tdar:id");
+        if (TdarConfiguration.getInstance().getEnableEntityOai()) {
+            // get a person in tDAR format
+            getRecord("tdar", firstPersonIdentifier);
+            logger.info(getPageCode());
+            assertXpathExists("oai:OAI-PMH/oai:GetRecord/oai:record/oai:metadata/tdar:person/@id");
 
-        // get an institution in DC format
-        getRecord("oai_dc", firstInstitutionIdentifier);
-        assertXpathExists("oai:OAI-PMH/oai:GetRecord/oai:record/oai:metadata/oai_dc:dc/dc:identifier");
+            // get an institution in tDAR format
+            getRecord("tdar", firstInstitutionIdentifier);
+            assertXpathExists("oai:OAI-PMH/oai:GetRecord/oai:record/oai:metadata/tdar:institution/@id");
+
+            // get an institution in DC format
+            getRecord("oai_dc", firstInstitutionIdentifier);
+            assertXpathExists("oai:OAI-PMH/oai:GetRecord/oai:record/oai:metadata/oai_dc:dc/dc:identifier");
+        }
 
         // try to get an institution in MODS format (and fail, because Institution records aren't disseminated in MODS)
         getRecord("mods", firstInstitutionIdentifier);
@@ -213,7 +212,7 @@ public class OAIWebITCase extends AbstractWebTestCase {
 
         // get a Resource in tDAR format
         getRecord("tdar", firstResourceIdentifier);
-        assertXpathExists("oai:OAI-PMH/oai:GetRecord/oai:record/oai:metadata/tdar:*/tdar:id");
+        assertXpathExists("oai:OAI-PMH/oai:GetRecord/oai:record/oai:metadata/tdar:*/@id");
 
         // get a resource in DC format
         getRecord("oai_dc", firstResourceIdentifier);
@@ -225,16 +224,16 @@ public class OAIWebITCase extends AbstractWebTestCase {
         assertXpathExists("oai:OAI-PMH/oai:GetRecord/oai:record/oai:metadata/mods:mods");
 
     }
-    
+
     private void getRecord(String metadataPrefix, String identifier) throws ConfigurationException, SAXException {
         gotoPage(getBase() + "GetRecord&metadataPrefix=" + metadataPrefix + "&identifier=" + identifier);
         testValidOAIResponse();
     }
-    
+
     private void assertXpathExists(String xpath) throws XpathException, IOException, SAXException {
         XMLAssert.assertXpathExists(xpath, getPageCode());
     }
-    
+
     private Document getPageDOM() throws SAXException, IOException, ParserConfigurationException {
         DocumentBuilder builder = XMLUnit.getTestDocumentBuilderFactory().newDocumentBuilder();
         String page = getPageCode();
@@ -243,5 +242,5 @@ public class OAIWebITCase extends AbstractWebTestCase {
         Document doc = builder.parse(inputSource);
         return doc;
     }
-    
+
 }

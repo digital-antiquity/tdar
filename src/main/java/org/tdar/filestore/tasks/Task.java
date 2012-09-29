@@ -107,9 +107,9 @@ public interface Task extends Serializable {
 
         void addDerivativeFile(File f, VersionType type) throws IOException {
             if (f.length() > 0) {
-            getLogger().info("Writing file: " + f);
-            InformationResourceFileVersion version = generateInformationResourceFileVersion(f, type);
-            getWorkflowContext().addVersion(version);
+                getLogger().info("Writing file: " + f);
+                InformationResourceFileVersion version = generateInformationResourceFileVersion(f, type);
+                getWorkflowContext().addVersion(version);
             } else {
                 logger.warn("writing empty file ... skipping " + f.getName());
             }

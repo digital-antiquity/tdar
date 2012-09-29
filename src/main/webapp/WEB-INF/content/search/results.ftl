@@ -16,9 +16,9 @@
 <#if explore && exploreKeyword?? && exploreKeyword.definition?has_content >
 <div class="glide">
     <h3>${exploreKeyword.label?html}</h3>
-	<#if exploreKeyword.definition??>
-		${exploreKeyword.definition?html}
-	</#if>
+    <#if exploreKeyword.definition??>
+        ${exploreKeyword.definition?html}
+    </#if>
 </div>
 </#if>
 
@@ -37,19 +37,19 @@ If you'd like to perform an integration:
 <a href="http://dev.tdar.org/confluence/display/TDAR/Data+Integration">visit our documentation for more details</a>
 </div>
 </#if>
-	<@search.basicPagination "Records"/>
+    <@search.basicPagination "Records"/>
 
-	<style type='text/css'>
-	ol { 
-	    list-style-type:none !important;
-	}
+    <style type='text/css'>
+    ol { 
+        list-style-type:none !important;
+    }
 
     h5 {
         display:block !important;
         border-bottom:1px solid #ccc;
     }
     
-	</style>
+    </style>
 
 <div class="limit">
 <@removeFacet facetlist=resourceTypes label="Resource Type(s)" facetParam="resourceTypes" />
@@ -62,11 +62,11 @@ If you'd like to perform an integration:
 </div>
     <#if (numPages > 1)>
 <div class="glide">
-	<@search.pagination ""/>
+    <@search.pagination ""/>
 </div>
 </#if>
 <#else>
-	<h2>No records match the query.</h2>
+    <h2>No records match the query.</h2>
 </#if>
 </div>
 
@@ -98,58 +98,64 @@ If you'd like to perform an integration:
 <#if (facetlist?? && !facetlist.empty)>
 <li><B>${label}:</B>
 <ul>
-	<#list facetlist as facet>
-		<#assign facetLabel = facet />
-	    <#if facet.plural?has_content>
-			<#assign facetLabel = facet.plural />
-	    <#elseif facet.label?has_content>
-	    	<#assign facetLabel = facet.label />
-	    </#if>
-	    <li>
-	    	<#if (facetlist?size > 1)>
-		    	<a href="<@s.url includeParams="all">
-			        <@s.param name="${facetParam}">${facet}</@s.param>
-			        <@s.param name="startRecord" value="0"/>
-			        <#if facetParam != "documentType">
-				        <@s.param name="documentType" value=""/>
-			        </#if>
-			        <#nested>
-			    </@s.url>">
-					${facetLabel}
-				</a>
-		    <#else>
-		    	${facetLabel}
-		    </#if>
- 	      (${facet.count})
-		</li>
-	</#list>
+    <#list facetlist as facet>
+        <#assign facetLabel = facet />
+        <#if facet.plural?has_content>
+            <#assign facetLabel = facet.plural />
+        <#elseif facet.label?has_content>
+            <#assign facetLabel = facet.label />
+        </#if>
+        <li>
+            <#if (facetlist?size > 1)>
+                <a href="<@s.url includeParams="all">
+                    <@s.param name="${facetParam}">${facet}</@s.param>
+                    <@s.param name="startRecord" value="0"/>
+                    <#if facetParam != "documentType">
+                        <@s.param name="documentType" value=""/>
+                    </#if>
+                    <#if facetParam != "integratableOptions">
+                        <@s.param name="integratableOptions" value=""/>
+                    </#if>
+                    <#nested>
+                </@s.url>">
+                    ${facetLabel}
+                </a>
+            <#else>
+                ${facetLabel}
+            </#if>
+           (${facet.count})
+        </li>
+    </#list>
 </ul><br/></li>
 </#if>
 
 </#macro>
 
 <#macro removeFacet facetlist="" label="Facet Label" facetParam="">
-	<#if facetlist?has_content>
-	<#if (facetlist?is_collection)>
-		<#if facetlist?size == 1>
-			<#assign facet= facetlist.get(0) />
-		</#if>
-	<#elseif (facetlist?is_string) >
-		<#assign facet= facetlist />
-	</#if>
-	<#if facet?has_content>
-    	<a href="<@s.url includeParams="all">
-	        <@s.param name="${facetParam}"value="" />
-	        <@s.param name="startRecord" value="0"/>
-	        <#if facetParam != "documentType">
-		        <@s.param name="documentType" value=""/>
-	        </#if>
-	        <#nested>
-	    </@s.url>"> [X]
-	    <#if facet.plural?has_content>${facet.plural}
-	    <#elseif facet.label?has_content>${facet.label}
-	    <#else>${facet}
-	    </#if></a>
+    <#if facetlist?has_content>
+    <#if (facetlist?is_collection)>
+        <#if facetlist?size == 1>
+            <#assign facet= facetlist.get(0) />
+        </#if>
+    <#elseif (facetlist?is_string) >
+        <#assign facet= facetlist />
+    </#if>
+    <#if facet?has_content>
+        <a href="<@s.url includeParams="all">
+            <@s.param name="${facetParam}"value="" />
+            <@s.param name="startRecord" value="0"/>
+            <#if facetParam != "documentType">
+                <@s.param name="documentType" value=""/>
+            </#if>
+            <#if facetParam != "integratableOptions">
+                <@s.param name="integratableOptions" value=""/>
+            </#if>
+            <#nested>
+        </@s.url>"> [X]
+        <#if facet.plural?has_content>${facet.plural}
+        <#elseif facet.label?has_content>${facet.label}
+        <#else>${facet}
+        </#if></a>
     </#if>
     </#if>
 </#macro>
@@ -159,6 +165,8 @@ If you'd like to perform an integration:
 <@facetBy facetlist=resourceTypeFacets label="Resource Type(s)" facetParam="resourceTypes" />
 
 <@facetBy facetlist=documentTypeFacets label="Document Type(s)" facetParam="documentType" />
+
+<@facetBy facetlist=integratableOptionFacets label="Integratable" facetParam="integratableOptions" />
 
 <@facetBy facetlist=fileAccessFacets label="File Access" facetParam="fileAccess" />
 

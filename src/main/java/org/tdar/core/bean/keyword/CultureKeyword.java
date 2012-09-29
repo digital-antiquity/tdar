@@ -4,11 +4,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.JoinTable;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -36,12 +36,13 @@ public class CultureKeyword extends HierarchicalKeyword<CultureKeyword> implemen
     private static final long serialVersionUID = -7196238088495993840L;
     private boolean approved;
 
+    @OneToMany(orphanRemoval = true,cascade=CascadeType.ALL)
+    @JoinColumn(name = "merge_keyword_id")
+    private Set<CultureKeyword> synonyms = new HashSet<CultureKeyword>();
+
+
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY, optional = true)
     private CultureKeyword parent;
-
-    @ElementCollection()
-    @JoinTable(name = "culture_keyword_synonym")
-    private Set<String> synonyms;
 
     
     @XmlAttribute
@@ -70,14 +71,16 @@ public class CultureKeyword extends HierarchicalKeyword<CultureKeyword> implemen
         return parent;
     }
 
-    public Set<String> getSynonyms() {
-        if(synonyms == null) {
-            synonyms = new HashSet<String>();
-        }
+    public Set<CultureKeyword> getSynonyms() {
         return synonyms;
     }
 
-    public void setSynonyms(Set<String> synonyms) {
+    public void setSynonyms(Set<CultureKeyword> synonyms) {
         this.synonyms = synonyms;
     }
+
+    public String getSynonymFormattedName() {
+        return getLabel();
+    }
+
 }

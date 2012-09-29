@@ -3,9 +3,9 @@
 </#if>
 {
 <#if success >
-	"success" : true
+    "success" : true
 <#else>
-	"success" : false
+    "success" : false
 </#if>
 }<#if callback??>
  );<#rt />

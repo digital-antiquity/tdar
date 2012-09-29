@@ -19,12 +19,19 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.LicenseType;
 import org.tdar.core.configuration.TdarConfiguration;
 
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 
 public class CompleteImageITCase extends AbstractAdminAuthenticatedWebTestCase {
+
+    private static final String COPYRIGHT_HOLDER_PERSON_FIRST_NAME = "copyrightHolderProxy.person.firstName";
+    private static final String COPYRIGHT_HOLDER_PERSON_LAST_NAME = "copyrightHolderProxy.person.lastName";
+    private static final List<String> VALUES_NOT_SHOWN_ON_OVERVIEW_PAGE = Arrays.asList(new String[] { COPYRIGHT_HOLDER_PERSON_FIRST_NAME,
+            COPYRIGHT_HOLDER_PERSON_LAST_NAME, TestConstants.COPYRIGHT_HOLDER_TYPE });
+
     public static HashMap<String, String> docValMap = new HashMap<String, String>();
     public static HashMap<String, List<String>> docMultiValMap = new HashMap<String, List<String>>();
     public static HashMap<String, List<String>> docMultiValMapLab = new HashMap<String, List<String>>();
@@ -53,7 +60,7 @@ public class CompleteImageITCase extends AbstractAdminAuthenticatedWebTestCase {
         docValMap.put("authorshipProxies[0].person.lastName", "Brin");
         docValMap.put("authorshipProxies[0].person.email", "aest@test.com");
         docValMap.put("authorshipProxies[0].person.institution.name", "Digital Antiquity1");
-        docValMap.put("authorshipProxies[0].personRole", ResourceCreatorRole.CREATOR.name());
+        docValMap.put("authorshipProxies[0].role", ResourceCreatorRole.CREATOR.name());
         docValMap.put("authorshipProxies[0].person.id", "");
 
         // FIXME: this is brittle
@@ -68,7 +75,7 @@ public class CompleteImageITCase extends AbstractAdminAuthenticatedWebTestCase {
         // docValMap.put("creditProxies[1].institutionRole", "COLLABORATOR");
 
         docValMap.put("creditProxies[0].institution.name", "Othr Institution");
-        docValMap.put("creditProxies[0].institutionRole", ResourceCreatorRole.SPONSOR.name());
+        docValMap.put("creditProxies[0].role", ResourceCreatorRole.SPONSOR.name());
         docValMap.put("image.url", "http://zombo.com");
 
         docValMap.put("sourceCollections[0].text", "ASU Museum Collection1");
@@ -93,19 +100,22 @@ public class CompleteImageITCase extends AbstractAdminAuthenticatedWebTestCase {
         docValMap.put("coverageDates[1].dateType", CoverageType.RADIOCARBON_DATE.name());
 
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-            docValMap.put("copyrightHolderType", "Person");
-            docValMap.put("copyrightHolderProxy.person.lastName", "Disney");
-            docValMap.put("copyrightHolderProxy.person.firstName", "Walt");
-            docValMap.put("copyrightHolderProxy.person.institution.name", "Disney Corp.");
+            docValMap.put(TestConstants.COPYRIGHT_HOLDER_TYPE, "Person");
+            docValMap.put(COPYRIGHT_HOLDER_PERSON_LAST_NAME, "Disney");
+            docValMap.put(COPYRIGHT_HOLDER_PERSON_FIRST_NAME, "Walt");
+            //docValMap.put(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Disney Corp.");
         }
-        
+
+        if (TdarConfiguration.getInstance().getLicenseEnabled()) {
+            docValMap.put("resource.licenseType", "" + LicenseType.CREATIVE_COMMONS_NONCOMMERCIAL.name());
+        }
+
         docMultiValMapLab.put("investigationTypeIds",
                 Arrays.asList(new String[] { "Archaeological Overview", "Architectural Survey", "Collections Research", "Data Recovery / Excavation" }));
         docMultiValMapLab.put("approvedSiteTypeKeywordIds", Arrays.asList(new String[] { "Agricultural or Herding", "Ancient church / religious structure" }));
         docMultiValMapLab.put("materialKeywordIds", Arrays.asList(new String[] { "Fire Cracked Rock", "Mineral", "Wood" }));
         docMultiValMapLab.put("approvedCultureKeywordIds", Arrays.asList(new String[] { "Hopewell", "Middle Woodland", "African American" }));
 
-        docValMap.put("resourceAvailability", "Embargoed");
         docValMap.put("resourceProviderInstitutionName", "Digital Antiquity4");
         docValMap.put("image.copyLocation", "test");
     }
@@ -119,7 +129,7 @@ public class CompleteImageITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         gotoPage("/image/add");
         setInput("ticketId", ticketId);
-        addFileProxyFields(0, true, TEST_IMAGE_NAME);
+        addFileProxyFields(0, FileAccessRestriction.EMBARGOED, TEST_IMAGE_NAME);
         for (String key : docValMap.keySet()) {
             setInput(key, docValMap.get(key));
         }
@@ -130,7 +140,7 @@ public class CompleteImageITCase extends AbstractAdminAuthenticatedWebTestCase {
         submitForm();
         // logger.info(getPageText());
         nextKey: for (String key : docValMap.keySet()) {
-            if ("copyrightHolderType".equals(key)) {
+            if (VALUES_NOT_SHOWN_ON_OVERVIEW_PAGE.contains(key)) {
                 // We are not showing the radio button selection result.
                 continue nextKey;
             }
@@ -139,12 +149,10 @@ public class CompleteImageITCase extends AbstractAdminAuthenticatedWebTestCase {
             if (key.startsWith("latitudeLongitudeBox")) {
                 assertTextPresentInPage(docValMap.get(key).substring(0, docValMap.get(key).indexOf(".")));
                 // these are displayed by "type" or not "displayed"
+            } else if(key.equals("resource.licenseType")) {
+                assertTextPresent(LicenseType.CREATIVE_COMMONS_NONCOMMERCIAL.getLicenseName());
             } else if (key.equals("resourceLanguage")) {
                 assertTextPresentInPage(docValMap.get(key), false);
-            } else if (key.equals("resourceAvailability")) {
-                assertTextPresent("will be released");
-            } else if (key.equals("confidential")) {
-                assertTextPresent("confidential");
             } else if (!key.equals(PROJECT_ID_FIELDNAME) && !key.contains("Ids") && !key.startsWith("individualInstitutions") && !key.contains("Email")
                     && !key.contains(".ids") && !key.contains(".email") && !key.contains(".id") && !key.contains(".dateType")
                     && !key.contains("generalPermission")
@@ -152,6 +160,7 @@ public class CompleteImageITCase extends AbstractAdminAuthenticatedWebTestCase {
                 assertTextPresentInPage(docValMap.get(key), false);
             }
         }
+        assertTextPresent("will be released");
         for (String key : docMultiValMapLab.keySet()) {
             for (String val : docMultiValMapLab.get(key)) {
                 assertTextPresent(val);

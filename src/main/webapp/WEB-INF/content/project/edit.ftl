@@ -25,7 +25,7 @@
         
         <dt>What if I change values in my project?</dt>
         <dd>
-        If you change any metadata values at the project level, tDAR will update those "inherited" values at the resource level. 
+        If you change any metadata values at the project level, ${siteAcronym} will update those "inherited" values at the resource level. 
 
 For example, if you change "Investigation Types" for your project, any resource that inherited "Investigation Types" from that project will be automatically updated.
         </dd>
@@ -36,9 +36,9 @@ For example, if you change "Investigation Types" for your project, any resource 
 
 
 <div class="glide">
-<h3>tDAR project metadata</h3>
+<h3>${siteAcronym} project metadata</h3>
 <p>
-Projects in tDAR contain and help organize a variety of different information resources such as documents,
+Projects in ${siteAcronym} contain and help organize a variety of different information resources such as documents,
  datasets, coding sheets, and images. The project also functions as a template to pass shared metadata
   (keywords) to child resources. Child resources may either inherit metadata from the parent project or 
   the child resource may have unique metadata. For instance, if you enter the keywords &quot;Southwest&quot; and 

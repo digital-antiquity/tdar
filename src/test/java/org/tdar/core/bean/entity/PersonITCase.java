@@ -17,6 +17,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.entity.Creator.CreatorType;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.GenericService;
 
 public class PersonITCase extends AbstractIntegrationTestCase {
@@ -76,7 +77,7 @@ public class PersonITCase extends AbstractIntegrationTestCase {
 
         getLogger().info("testing delete");
         genericService.delete(person);
-        assertNull(genericService.find(Person.class, id));
+        assertEquals(Status.DELETED, genericService.find(Person.class, id).getStatus());
 
     }
 

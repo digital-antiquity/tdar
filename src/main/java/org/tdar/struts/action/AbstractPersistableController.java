@@ -18,6 +18,7 @@ import org.apache.struts2.convention.annotation.Results;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.HasName;
+import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
@@ -203,24 +204,24 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
 
                 if (isNullOrNew()) {
                     isNew = true;
-                    if (persistable instanceof Updatable) {
-                        ((Updatable) persistable).markUpdated(getAuthenticatedUser());
-                    }
                 }
                 preSaveCallback();
+                if (persistable instanceof Updatable) {
+                    ((Updatable) persistable).markUpdated(getAuthenticatedUser());
+                }
+                if (persistable instanceof Indexable) {
+                    ((Indexable) persistable).setReadyToIndex(false);
+                }
                 actionReturnStatus = save(persistable);
+//                getGenericService().saveOrUpdate(persistable);
+                if (persistable instanceof Indexable) {
+                    ((Indexable) persistable).setReadyToIndex(true);
+                    getSearchIndexService().index((Indexable) persistable);
+                }
                 // who cares what the save implementation says. if there's errors return INPUT
                 if (!getActionErrors().isEmpty()) {
                     logger.debug("Action errors found; Replacing return status of {} with {}", actionReturnStatus, INPUT);
                     actionReturnStatus = INPUT;
-                } else {
-                    //FIXME: There are some situations in which hibsearch may not have detected that an @Indexed or @IndexedEmbedded getter method has changed. 
-                    //       see  TDAR-2364 for mor info.  This is a kludge where we deliberately modify an indexed member variable to mark it 'dirty' and force an index
-                    if (persistable instanceof Updatable) {
-                        logger.debug("updating updateTime for {}", persistable );
-                        ((Updatable) persistable).markUpdated(getAuthenticatedUser());
-                        getGenericService().saveOrUpdate(persistable);
-                    }
                 }
             } else {
                 throw new TdarActionException(StatusCode.BAD_REQUEST, "bad request -- expecting post");
@@ -253,9 +254,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         if (CollectionUtils.isNotEmpty(getActionErrors()) && SUCCESS.equals(actionReturnStatus)) {
             return INPUT;
         }
-
-        
-        
         return actionReturnStatus;
     }
 
@@ -399,7 +397,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
                     } else if (Persistable.Base.isNullOrTransient(persistable.getId())) {
                         // id not specified or not a number, so this is an invalid request
                         abort(StatusCode.BAD_REQUEST, String.format(
-                                "Sorry, tDAR does not recognize this type of request on a %s ", persistable.getClass().getSimpleName()));
+                                "Sorry, the system does not recognize this type of request on a %s ", persistable.getClass().getSimpleName()));
                     }
 
             }
@@ -436,6 +434,8 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
                 if (action.isDeleteable()) {
                     return;
                 }
+                break;
+            default:
                 break;
         }
         addActionError("user does not have permissions to perform the requested action");
@@ -557,7 +557,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     }
 
     protected boolean isPersistableIdSet() {
-        return !Persistable.Base.isNullOrTransient(getPersistable());
+        return Persistable.Base.isNotNullOrTransient(getPersistable());
     }
 
     public abstract Class<P> getPersistableClass();

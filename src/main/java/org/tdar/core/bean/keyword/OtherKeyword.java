@@ -3,9 +3,10 @@ package org.tdar.core.bean.keyword;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.ElementCollection;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.JoinTable;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.search.annotations.Indexed;
@@ -27,19 +28,20 @@ public class OtherKeyword extends UncontrolledKeyword.Base<OtherKeyword> {
 
     private static final long serialVersionUID = -6649756235199570108L;
 
-    @ElementCollection()
-    @JoinTable(name = "other_keyword_synonym")
-    private Set<String> synonyms;
+    @OneToMany(orphanRemoval = true,cascade=CascadeType.ALL)
+    @JoinColumn(name = "merge_keyword_id")
+    private Set<OtherKeyword> synonyms = new HashSet<OtherKeyword>();
 
-    public Set<String> getSynonyms() {
-        if(synonyms == null) {
-            synonyms = new HashSet<String>();
-        }
+    public Set<OtherKeyword> getSynonyms() {
         return synonyms;
     }
 
-    public void setSynonyms(Set<String> synonyms) {
+    public void setSynonyms(Set<OtherKeyword> synonyms) {
         this.synonyms = synonyms;
+    }
+
+    public String getSynonymFormattedName() {
+        return getLabel();
     }
 
 }

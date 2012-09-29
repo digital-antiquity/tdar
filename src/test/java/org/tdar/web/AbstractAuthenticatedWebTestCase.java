@@ -18,6 +18,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.springframework.http.HttpStatus;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.FormEncodingType;
@@ -49,7 +51,7 @@ public abstract class AbstractAuthenticatedWebTestCase extends AbstractWebTestCa
     public void login() {
         login(USERNAME, PASSWORD);
     }
-    
+
     public static String getUsername() {
         return USERNAME;
     }
@@ -71,12 +73,13 @@ public abstract class AbstractAuthenticatedWebTestCase extends AbstractWebTestCa
     }
 
     public void login(String user, String pass) {
-        login(user,pass,false);
+        login(user, pass, false);
     }
 
     public void login(String user, String pass, boolean expectingErrors) {
         gotoPage("/");
         clickLinkOnPage("Login");
+        setMainForm("loginForm");
         user = System.getProperty("tdar.user", user);
         pass = System.getProperty("tdar.pass", pass);
         // logger.info(user + ":" + pass);
@@ -115,19 +118,19 @@ public abstract class AbstractAuthenticatedWebTestCase extends AbstractWebTestCa
     public void uploadFileToPersonalFilestore(String ticketId, String path) {
         uploadFileToPersonalFilestore(ticketId, path, true);
     }
-    
-    public void addFileProxyFields(int rowNum, boolean confidential,String filename) {
-        createInput("hidden", "fileProxies["+rowNum+"].confidential", Boolean.toString(confidential));
-        createInput("hidden", "fileProxies["+rowNum+"].action", "ADD");
-        createInput("hidden", "fileProxies["+rowNum+"].fileId", "-1");
-        createInput("hidden", "fileProxies["+rowNum+"].filename", filename);
-        createInput("hidden", "fileProxies["+rowNum+"].sequenceNumber", Integer.toString(rowNum));
+
+    public void addFileProxyFields(int rowNum, FileAccessRestriction restriction, String filename) {
+        createInput("hidden", "fileProxies[" + rowNum + "].restriction", restriction.name());
+        createInput("hidden", "fileProxies[" + rowNum + "].action", FileAction.ADD.name());
+        createInput("hidden", "fileProxies[" + rowNum + "].fileId", "-1");
+        createInput("hidden", "fileProxies[" + rowNum + "].filename", filename);
+        createInput("hidden", "fileProxies[" + rowNum + "].sequenceNumber", Integer.toString(rowNum));
     }
-    
+
     public int uploadFileToPersonalFilestoreWithoutErrorCheck(String ticketId, String path) {
         return uploadFileToPersonalFilestore(ticketId, path, false);
     }
-    
+
     private int uploadFileToPersonalFilestore(String ticketId, String path, boolean assertNoErrors) {
         int code = 0;
         WebClient client = getWebClient();
@@ -136,7 +139,7 @@ public abstract class AbstractAuthenticatedWebTestCase extends AbstractWebTestCa
             WebRequest webRequest = new WebRequest(new URL(url), HttpMethod.POST);
             List<NameValuePair> parms = new ArrayList<NameValuePair>();
             parms.add(nameValuePair("ticketId", ticketId));
-            if(path!=null) {
+            if (path != null) {
                 parms.add(nameValuePair("uploadFile", new File(path)));
             }
             webRequest.setRequestParameters(parms);
@@ -146,21 +149,17 @@ public abstract class AbstractAuthenticatedWebTestCase extends AbstractWebTestCa
             Assert.assertTrue(assertNoErrors && code == HttpStatus.OK.value());
         } catch (MalformedURLException e) {
             Assert.fail("mailformed URL: are you sure you specified the right page in your test?");
-        }catch (IOException iox) {
+        } catch (IOException iox) {
             Assert.fail("IO exception occured during test");
-        }catch(FailingHttpStatusCodeException httpEx) {
-            if(assertNoErrors) {
+        } catch (FailingHttpStatusCodeException httpEx) {
+            if (assertNoErrors) {
                 Assert.fail("upload request returned code" + httpEx.getStatusCode());
             }
             code = httpEx.getStatusCode();
         }
         return code;
     }
-    
-    
-    
-    
- 
+
     public NameValuePair nameValuePair(String name, String value) {
         return new NameValuePair(name, value);
     }

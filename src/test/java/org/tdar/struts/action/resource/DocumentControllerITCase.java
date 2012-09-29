@@ -47,7 +47,6 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
     public void initControllerFields() {
         controller.prepare();
         controller.setProjectId(TestConstants.PARENT_PROJECT_ID);
-        controller.setResourceAvailability("public");
     }
 
     @Test
@@ -56,6 +55,68 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         init(dc, getUser());
         List<Status> statuses = controller.getStatuses();
         assertFalse(statuses.isEmpty());
+    }
+
+    @Ignore("Ignoring because this is an internal performance test, not really a unit-test")
+    @Test
+    @Rollback
+    public void testPerformance() throws InstantiationException, IllegalAccessException, TdarActionException {
+        // 42s -- reconcileSet + indexInterceptor @100docs
+        // 52s -- reconcileSet + w/o indexInterceptor @100docs
+        // 43s -- setter model + w/o indexInterceptor @100docs
+        // 41s -- setter model + w indexInterceptor @100docs
+        // 54s -- with clearAll + indexInterceptor @100docs
+        // 44s -- with clearAll + w/o indexInterceptor @100docs
+        Project project = new Project();
+        project.setTitle("PerfTest");
+        project.setDescription("perfTest");
+        project.markUpdated(getUser());
+        genericService.saveOrUpdate(project);
+        List<Person> fiftyPList = genericService.findRandom(Person.class, 50);
+        List<Institution> fiftyIList = genericService.findRandom(Institution.class, 50);
+        for (Person person : fiftyPList) {
+            ResourceCreator rc = new ResourceCreator(person, ResourceCreatorRole.CONTRIBUTOR);
+            genericService.saveOrUpdate(rc);
+            project.getResourceCreators().add(rc);
+        }
+        for (Institution inst : fiftyIList) {
+            ResourceCreator rc = new ResourceCreator(inst, ResourceCreatorRole.REPOSITORY);
+            genericService.saveOrUpdate(rc);
+            project.getResourceCreators().add(rc);
+        }
+        project.getCultureKeywords().addAll(genericService.findRandom(CultureKeyword.class, 10));
+        project.getMaterialKeywords().addAll(genericService.findRandom(MaterialKeyword.class, 10));
+        project.getSiteNameKeywords().addAll(genericService.findRandom(SiteNameKeyword.class, 10));
+        genericService.saveOrUpdate(project);
+        int totalNumOfRecords = 100;
+
+        for (int i = 0; i < totalNumOfRecords; i++) {
+            Document doc = createAndSaveNewInformationResource(Document.class, project, getAdminUser(), "perf doc #" + i);
+            doc.getCultureKeywords().addAll(genericService.findRandom(CultureKeyword.class, 5));
+            doc.setInheritingSiteInformation(true);
+            doc.setInheritingMaterialInformation(true);
+            for (Person person : genericService.findRandom(Person.class, 10)) {
+                ResourceCreator rc = new ResourceCreator(person, ResourceCreatorRole.AUTHOR);
+                genericService.saveOrUpdate(rc);
+                doc.getResourceCreators().add(rc);
+            }
+            File file = new File(TestConstants.TEST_DOCUMENT_DIR + TestConstants.TEST_DOCUMENT_NAME);
+            addFileToResource(doc, file);
+            genericService.saveOrUpdate(doc);
+        }
+        Long projectId = project.getId();
+        genericService.synchronize();
+        project = null;
+
+        // this the test...
+        ProjectController controller = generateNewInitializedController(ProjectController.class);
+        controller.setId(projectId);
+        controller.prepare();
+        Long time = System.currentTimeMillis();
+        controller.setServletRequest(getServletPostRequest());
+        controller.edit();
+        controller.save();
+        logger.info("total save time: " + (System.currentTimeMillis() - time));
     }
 
     @Test
@@ -97,7 +158,8 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         Assert.assertEquals(CreatorType.INSTITUTION, actualCreator.getCreator().getCreatorType());
         Assert.assertTrue(actualCreator.getCreator().getName().contains(EXPECTED_INSTITUTION_NAME));
         Assert.assertEquals(ResourceCreatorRole.REPOSITORY, actualCreator.getRole());
-        controller = generateNewInitializedController(DocumentController.class, null, getServletPostRequest());
+        setHttpServletRequest(getServletPostRequest());
+        controller = generateNewInitializedController(DocumentController.class);
         loadResourceFromId(controller, newId);
         controller.setDelete("delete");
         String deletionReason = "this is a test";
@@ -112,7 +174,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         boolean seen = false;
         for (ResourceNote note : controller.getDocument().getResourceNotes()) {
             if (note.getType() == ResourceNoteType.ADMIN && note.getNote().equals(deletionReason)) {
-            seen = true;
+                seen = true;
             }
         }
         assertTrue("a deletion note should have been added", seen);
@@ -139,7 +201,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         // now reload the document and see if the institution was saved.
         Assert.assertNotSame("resource id should be assigned after insert", originalId, newId);
 
-        controller = generateNewInitializedController(DocumentController.class, getUser(), getServletPostRequest() );
+        controller = generateNewInitializedController(DocumentController.class);
         loadResourceFromId(controller, newId);
 
         d = controller.getResource();
@@ -153,7 +215,8 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         Assert.assertEquals(CreatorType.PERSON, actualCreator.getCreator().getCreatorType());
         Assert.assertTrue(actualCreator.getCreator().getName().contains("newLast"));
         Assert.assertEquals(ResourceCreatorRole.AUTHOR, actualCreator.getRole());
-        controller = generateNewInitializedController(DocumentController.class, getUser(), getServletPostRequest());
+        setHttpServletRequest(getServletPostRequest());
+        controller = generateNewInitializedController(DocumentController.class);
         loadResourceFromId(controller, newId);
         controller.setDelete("delete");
         controller.delete();
@@ -174,7 +237,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         if (System.currentTimeMillis() % 2 == 0) {
             rcp.getInstitution().setId(-1L);
         }
-        rcp.setInstitutionRole(role);
+        rcp.setRole(role);
         return rcp;
     }
 
@@ -189,7 +252,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         Institution inst = new Institution();
         inst.setName("University of TEST");
         p.setInstitution(inst);
-        rcp.setPersonRole(role);
+        rcp.setRole(role);
         return rcp;
     }
 
@@ -249,6 +312,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         // loading the view page
         controller = generateNewInitializedController(DocumentController.class);
         loadResourceFromId(controller, newId);
+        logger.info("{}" , controller.getAuthorshipProxies());
         Assert.assertEquals("expecting size zero", 0, controller.getAuthorshipProxies().size());
         logger.debug("{}", controller.getAuthorshipProxies().size());
         Assert.assertTrue("expecting invaled proxy", controller.getAuthorshipProxies().isEmpty());
@@ -260,12 +324,10 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
     public void testForDuplicatePersonWithNoEmail() throws Exception {
         initControllerFields();
         // get person record count.
-        Person person = new Person();
-        person.setFirstName("Pamela");
-        person.setLastName("Cressey");
+        int expectedPersonCount = genericService.findAll(Person.class).size();
+
         ResourceCreatorProxy rcp = getNewResourceCreator("Cressey", "Pamela", null, null, ResourceCreatorRole.AUTHOR);
         rcp.getPerson().setInstitution(null);
-        int expectedPersonCount = genericService.findAll(Person.class).size();
 
         Long originalId = controller.getResource().getId();
         controller.getAuthorshipProxies().add(rcp);
@@ -377,68 +439,6 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         Long collectionId2 = collection2.getId();
         assertEquals(collectionId, collectionId2);
 
-    }
-
-    @Ignore("Ignoring because this is an internal performance test, not really a unit-test")
-    @Test
-    @Rollback
-    public void testPerformance() throws InstantiationException, IllegalAccessException, TdarActionException {
-        //42s -- reconcileSet + indexInterceptor @100docs
-        //52s -- reconcileSet + w/o indexInterceptor @100docs
-        //43s -- setter model + w/o indexInterceptor @100docs
-        //41s -- setter model + w indexInterceptor @100docs
-        //54s -- with clearAll + indexInterceptor @100docs
-        //44s -- with clearAll + w/o indexInterceptor @100docs
-        Project project = new Project();
-        project.setTitle("PerfTest");
-        project.setDescription("perfTest");
-        project.markUpdated(getUser());
-        genericService.saveOrUpdate(project);
-        List<Person> fiftyPList = genericService.findRandom(Person.class, 50);
-        List<Institution> fiftyIList = genericService.findRandom(Institution.class, 50);
-        for (Person person : fiftyPList) {
-            ResourceCreator rc = new ResourceCreator(project, person, ResourceCreatorRole.CONTRIBUTOR);
-            genericService.saveOrUpdate(rc);
-            project.getResourceCreators().add(rc);
-        }
-        for (Institution inst : fiftyIList) {
-            ResourceCreator rc = new ResourceCreator(project, inst, ResourceCreatorRole.REPOSITORY);
-            genericService.saveOrUpdate(rc);
-            project.getResourceCreators().add(rc);
-        }
-        project.getCultureKeywords().addAll(genericService.findRandom(CultureKeyword.class, 10));
-        project.getMaterialKeywords().addAll(genericService.findRandom(MaterialKeyword.class, 10));
-        project.getSiteNameKeywords().addAll(genericService.findRandom(SiteNameKeyword.class, 10));
-        genericService.saveOrUpdate(project);
-        int totalNumOfRecords = 100;
-        
-        for (int i=0;i < totalNumOfRecords; i++) {
-            Document doc = createAndSaveNewInformationResource(Document.class,project, getAdminUser(), "perf doc #" + i);
-            doc.getCultureKeywords().addAll(genericService.findRandom(CultureKeyword.class, 5));
-            doc.setInheritingSiteInformation(true);
-            doc.setInheritingMaterialInformation(true);
-            for (Person person : genericService.findRandom(Person.class, 10)) {
-                ResourceCreator rc = new ResourceCreator(doc, person, ResourceCreatorRole.AUTHOR);
-                genericService.saveOrUpdate(rc);
-                doc.getResourceCreators().add(rc);
-            }
-            File file = new File(TestConstants.TEST_DOCUMENT_DIR + TestConstants.TEST_DOCUMENT_NAME);
-            addFileToResource(doc, file);
-            genericService.saveOrUpdate(doc);
-        }
-        Long projectId = project.getId();
-        genericService.synchronize();
-        project = null;
-        
-        // this the test...
-        ProjectController controller = generateNewInitializedController(ProjectController.class);
-        controller.setId(projectId);
-        controller.prepare();
-        Long time = System.currentTimeMillis();
-        controller.setServletRequest(getServletPostRequest());
-        controller.edit();
-        controller.save();
-        logger.info("total save time: " + (System.currentTimeMillis() - time));
     }
 
 }

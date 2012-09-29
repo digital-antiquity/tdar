@@ -24,14 +24,15 @@ public class AutocompleteTitleQueryPart implements QueryPart<String> {
         return StringUtils.isBlank(title);
     }
 
-    protected QueryPart getQueryPart(String value) {
+    protected QueryPart<?> getQueryPart(String value) {
         if (StringUtils.isBlank(value))
             return null;
         QueryPartGroup titleGroup = new QueryPartGroup(Operator.OR);
         FieldQueryPart<String> autoPart = new FieldQueryPart<String>(QueryFieldNames.TITLE_AUTO, title).setBoost(TITLE_BOOST).setPhraseFormatters(
                 PhraseFormatter.ESCAPED);
         autoPart.setOperator(Operator.AND);
-        FieldQueryPart<String> part = new FieldQueryPart<String>(QueryFieldNames.TITLE_SORT, value).setPhraseFormatters(PhraseFormatter.ESCAPED, PhraseFormatter.WILDCARD);
+        FieldQueryPart<String> part = new FieldQueryPart<String>(QueryFieldNames.TITLE_SORT, value).setPhraseFormatters(PhraseFormatter.ESCAPED,
+                PhraseFormatter.WILDCARD);
         FieldQueryPart<String> part2 = new FieldQueryPart<String>(QueryFieldNames.TITLE, value);
         if (value.length() > 2) {
             part2.setPhraseFormatters(PhraseFormatter.ESCAPED, PhraseFormatter.WILDCARD);

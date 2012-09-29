@@ -5,6 +5,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.HashMap;
 
 import org.junit.Test;
+import org.tdar.TestConstants;
+import org.tdar.core.configuration.TdarConfiguration;
 
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlInput;
@@ -25,6 +27,10 @@ public class SensoryDataWebITCase extends AbstractAdminAuthenticatedWebTestCase 
         setInput(SDOC_FIELD_TITLE, SDOC_TITLE);
         setInput("sensoryData.date", "1943");
         setInput(SDOC_FIELD_DESCRIPTION, SDOC_DESC);
+        if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
+            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+            setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
+        }
         submitForm();
     }
 
@@ -42,7 +48,6 @@ public class SensoryDataWebITCase extends AbstractAdminAuthenticatedWebTestCase 
         sensoryHash.put("sensoryData.title", "some title");
         sensoryHash.put("sensoryData.monumentNumber", "ig88");
         sensoryHash.put("sensoryData.description", "a description goes here");
-        sensoryHash.put("resourceAvailability", "Public");
         sensoryHash.put("sensoryData.surveyDateBegin", "03/09/1974");
         sensoryHash.put("sensoryData.surveyDateEnd", "03/09/1975");
         sensoryHash.put("sensoryData.surveyConditions", "conditionsval");
@@ -91,8 +96,7 @@ public class SensoryDataWebITCase extends AbstractAdminAuthenticatedWebTestCase 
         sensoryHash.put("sensoryData.decimatedMeshOriginalTriangleCount", "12345");
         sensoryHash.put("sensoryData.decimatedMeshTriangleCount", "12345");
         sensoryHash.put("coverageDates[0].dateType", "CALENDAR_DATE");
-        sensoryHash.put("creditProxies[0].personRole", "CONTACT");
-        sensoryHash.put("creditProxies[0].institutionRole", "CONTACT");
+        sensoryHash.put("creditProxies[0].role", "CONTACT");
         sensoryHash.put("resourceNotes[0].type", "GENERAL");
         sensoryHash.put("sensoryData.pointDeletionSummary", "premeshPointDeletionSummary");
 
@@ -111,7 +115,12 @@ public class SensoryDataWebITCase extends AbstractAdminAuthenticatedWebTestCase 
         sensoryHash.put("sensoryData.meshColorEditions", "true"); // setting checkbox/radio
         sensoryHash.put("sensoryData.meshHealingDespiking", "true"); // setting checkbox/radio
         sensoryHash.put("sensoryData.rgbPreservedFromOriginal", "true"); // setting checkbox/radio
-
+        
+        if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
+            sensoryHash.put(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+            sensoryHash.put(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
+        }
+        
         // fixme: use two hashes: both hashes feed setInput() but only use one for asserts
         for (String key : sensoryHash.keySet()) {
             setInput(key, sensoryHash.get(key));
@@ -183,7 +192,7 @@ public class SensoryDataWebITCase extends AbstractAdminAuthenticatedWebTestCase 
                 e.printStackTrace();
             }
         }
-        logger.info(getPageText());
+        logger.trace(getPageText());
 
         submitForm();
         path = internalPage.getUrl().getPath().toLowerCase();

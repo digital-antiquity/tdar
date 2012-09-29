@@ -26,8 +26,6 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
-import com.thoughtworks.xstream.annotations.XStreamOmitField;
-
 /**
  * $Id$
  * 
@@ -71,14 +69,6 @@ public class CategoryVariable extends Persistable.Base implements Comparable<Cat
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
     private Set<CategoryVariable> children;
 
-    @OneToMany(mappedBy = "categoryVariable")
-    @XStreamOmitField
-    private Set<CodingSheet> codingSheets;
-
-    @OneToMany(mappedBy = "categoryVariable")
-    @XStreamOmitField
-    private Set<Ontology> ontologies;
-
     public String getName() {
         return name;
     }
@@ -109,24 +99,6 @@ public class CategoryVariable extends Persistable.Base implements Comparable<Cat
 
     public void setSynonyms(Set<String> synonyms) {
         this.synonyms = synonyms;
-    }
-
-    @XmlTransient
-    public Set<CodingSheet> getCodingSheets() {
-        return codingSheets;
-    }
-
-    public void setCodingSheets(Set<CodingSheet> codingSheets) {
-        this.codingSheets = codingSheets;
-    }
-
-    @XmlTransient
-    public Set<Ontology> getOntologies() {
-        return ontologies;
-    }
-
-    public void setOntologies(Set<Ontology> ontologies) {
-        this.ontologies = ontologies;
     }
 
     @XmlElement(name = "parentRef")

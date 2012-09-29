@@ -9,8 +9,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.ListUtils;
@@ -198,7 +196,7 @@ public class AdvancedSearchController extends
 
         QueryPartGroup qpg = new QueryPartGroup(Operator.OR);
         qpg.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_VISIBLE, "true"));
-        if (!Persistable.Base.isNullOrTransient(getAuthenticatedUser())) {
+        if (Persistable.Base.isNotNullOrTransient(getAuthenticatedUser())) {
             // if we're a "real user" and not an administrator -- make sure the user has view rights to things in the collection
             if (!getAuthenticationAndAuthorizationService().can(InternalTdarRights.VIEW_ANYTHING, getAuthenticatedUser())) {
                 qpg.append(new FieldQueryPart<Long>(QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW, getAuthenticatedUser().getId()));
@@ -224,8 +222,6 @@ public class AdvancedSearchController extends
             return INPUT;
         }
     }
-    
-    
 
     @Action(value = "rss", results = { @Result(name = "success", type = "stream", params = {
             "documentName", "rssFeed", "formatOutput", "true", "inputName",
@@ -533,6 +529,8 @@ public class AdvancedSearchController extends
     public void addFacets(FullTextQuery ftq) {
         facetOn(QueryFieldNames.RESOURCE_TYPE, QueryFieldNames.RESOURCE_TYPE,
                 ftq, resourceTypeFacets, ResourceType.class);
+        facetOn(QueryFieldNames.INTEGRATABLE, QueryFieldNames.INTEGRATABLE,
+                ftq, integratableOptionFacets, IntegratableOptions.class);
         facetOn(QueryFieldNames.DOCUMENT_TYPE, QueryFieldNames.DOCUMENT_TYPE,
                 ftq, documentTypeFacets, DocumentType.class);
         facetOn(QueryFieldNames.RESOURCE_ACCESS_TYPE,
@@ -616,9 +614,9 @@ public class AdvancedSearchController extends
             setSearchTitle(TITLE_FILTERED_BY_KEYWORD);
         }
     }
-    
+
     private void determineCollectionSearchTitle() {
-        if(StringUtils.isEmpty(query)) {
+        if (StringUtils.isEmpty(query)) {
             setSearchTitle(TITLE_ALL_COLLECTIONS);
         } else {
             setSearchTitle(query);
@@ -666,30 +664,15 @@ public class AdvancedSearchController extends
         this.letter = letter;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<String> getProjections() {
         return ListUtils.EMPTY_LIST;
     }
 
-    // convert skeleton list to sparse list
-    private <P extends Persistable> void replaceSkeletonsWithSparseObjects(
-            List<P> skeletons, Map<Long, P> sparseObjectMap) {
-        ListIterator<P> itor = skeletons.listIterator();
-        while (itor.hasNext()) {
-            P item = itor.next();
-            if (item != null) {
-                itor.set(sparseObjectMap.get(item.getId()));
-            }
-        }
-    }
-
-    // TODO: decide whether we suppport legacy projectIds field.
-
     // 'explore' is a more tailored/guided search experience. for example if
-    // searching by keyword then we want to look up the definition of a keyword
-    // and
-    // display it
-    // on the search results page.
+    // searching by keyword then we want to look up the definition of a keyword and
+    // display it on the search results page.
     private void processExploreRequest() {
         if (groups.isEmpty())
             return;

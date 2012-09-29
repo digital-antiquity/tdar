@@ -53,7 +53,6 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.core.service.external.auth.InternalTdarRights;
 import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
-import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.DynamicQueryComponent;
@@ -63,7 +62,6 @@ import org.tdar.search.query.part.AbstractHydrateableQueryPart;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.QueryGroup;
 import org.tdar.search.query.part.QueryPart;
-import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.struts.action.search.ReservedSearchParameters;
 import org.tdar.utils.Pair;
 
@@ -360,7 +358,7 @@ public class SearchService {
     /*
      * Taking the projected List<Object[]> and converting them back into something we can use; if using projection, we hydrate those field
      */
-    private List<Indexable> convertProjectedResultIntoObjects(SearchResultHandler resultHandler, List<String> projections, List list, Person user) {
+    private List<Indexable> convertProjectedResultIntoObjects(SearchResultHandler<?> resultHandler, List<String> projections, List<Object[]> list, Person user) {
         List<Indexable> toReturn = new ArrayList<Indexable>();
         // we use "projection" to add the score and possibly the explanation in... but we also use it to get back simpler results
         // so we can control things like the JSON lookups to make them superfast because we just need "certain" fields, most of these
@@ -397,7 +395,8 @@ public class SearchService {
     /*
      * Takes the projected object and list of projections and turns them back into an object we can use, often just with Id
      */
-    private Indexable createSpareObjectFromProjection(SearchResultHandler resultHandler, List<String> projections, Object[] obj, Indexable p) {
+    private Indexable createSpareObjectFromProjection(SearchResultHandler<?> resultHandler, List<String> projections, Object[] obj, Indexable p) {
+        @SuppressWarnings("unchecked")
         Class<? extends Indexable> cast = (Class<? extends Indexable>) obj[projections.indexOf(FullTextQuery.OBJECT_CLASS)];
         try {
             p = cast.newInstance();
@@ -414,7 +413,7 @@ public class SearchService {
     /*
      * This method takes the projects from the search handler (if there are any) and adds them to a projection list that we're managing
      */
-    private List<String> setupProjectionsForSearch(SearchResultHandler resultHandler, FullTextQuery ftq) {
+    private List<String> setupProjectionsForSearch(SearchResultHandler<?> resultHandler, FullTextQuery ftq) {
         List<String> projections = new ArrayList<String>();
         projections.add(FullTextQuery.THIS); // Hibernate Object
         projections.add(FullTextQuery.OBJECT_CLASS); // class to project
@@ -435,6 +434,7 @@ public class SearchService {
     /*
      * For all of the HydratableQueryParts iterate through them and do a find by id... keep the same order
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private <T extends Persistable> void hydrateQueryParts(QueryGroup q) {
         List<AbstractHydrateableQueryPart> partList = findAllHydratableParts(q);
         Map<Class, Set<T>> lookupMap = new HashMap<Class, Set<T>>();
@@ -445,8 +445,8 @@ public class SearchService {
                 lookupMap.put(cls, new HashSet<T>());
             }
             for (T fieldValue : (List<T>) partList.get(i).getFieldValues()) {
-                T cast = (T) fieldValue;
-                if (!Persistable.Base.isTransient(fieldValue)) {
+                // T cast = (T) fieldValue;
+                if (Persistable.Base.isNotTransient(fieldValue)) {
                     lookupMap.get(cls).add(fieldValue);
                 }
             }
@@ -469,7 +469,7 @@ public class SearchService {
             Class<T> cls = (Class<T>) part.getActualClass();
             for (int j = 0; j < part.getFieldValues().size(); j++) {
                 T fieldValue = (T) part.getFieldValues().get(j);
-                if (!Persistable.Base.isTransient(fieldValue)) {
+                if (Persistable.Base.isNotTransient(fieldValue)) {
                     part.getFieldValues().set(j, idLookupMap.get(cls).get(fieldValue.getId()));
                 }
             }
@@ -477,6 +477,7 @@ public class SearchService {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     private List<AbstractHydrateableQueryPart> findAllHydratableParts(QueryGroup q) {
         List<AbstractHydrateableQueryPart> partList = new ArrayList<AbstractHydrateableQueryPart>();
         for (QueryPart part : q.getParts()) {
@@ -502,17 +503,6 @@ public class SearchService {
         qb.append(new FieldQueryPart<Long>(fieldName, indexable.getId()));
 
         return qb;
-    }
-
-    private <P extends Persistable> void buildSpecialRights(String fieldName, P indexable, Person user, ResourceQueryBuilder qb, Status status,
-            InternalTdarRights right) {
-        QueryPartGroup specialRights = new QueryPartGroup(Operator.AND);
-        specialRights.append(new FieldQueryPart(QueryFieldNames.STATUS, status));
-        if (authenticationAndAuthorizationService.cannot(right, user)) {
-            specialRights.append(new FieldQueryPart(QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY, user.getId().toString()));
-        }
-        specialRights.append(new FieldQueryPart(fieldName, indexable.getId().toString()));
-        qb.append(specialRights);
     }
 
     /**
@@ -554,19 +544,18 @@ public class SearchService {
             /*
              * The <b>fields</b> list specifies all of the generic fields that
              * do not use the default analyzer.
-             * 
              */
             for (DynamicQueryComponent cmp : cmpnts) {
                 String partialLabel = qb.stringContainedInLabel(cmp.getLabel());
                 if (partialLabel != null) {
                     Class<? extends org.apache.lucene.analysis.Analyzer> overrideAnalyzerClass = qb.getPartialLabelOverrides().get(partialLabel);
-                    if(overrideAnalyzerClass != null)  {
+                    if (overrideAnalyzerClass != null) {
                         cmp.setAnalyzer(overrideAnalyzerClass);
                     } else {
                         continue;
                     }
                 }
-                
+
                 fields.add(cmp.getLabel());
                 if (cmp.getAnalyzer() != null) {
                     try {

@@ -5,15 +5,15 @@
 "tdar":"http://www.tdar.org/namespace"}>  
 <#import "oai-macros.ftl" as oai>
 <@oai.response "GetRecord">
-	<record>
-		<header>
-			<identifier>${record.identifier?html}</identifier>
-			<datestamp>${record.datestamp?iso_utc}</datestamp>
-			<!-- TODO list setSpecs here -->
-			<!--<setSpec></setSpec>-->
-		</header>
-		<metadata>
-			${record.metadata.@@markup}
-		</metadata>
+    <record>
+        <header>
+            <identifier>${record.identifier?html}</identifier>
+            <datestamp>${record.datestamp?iso_utc}</datestamp>
+            <!-- TODO list setSpecs here -->
+            <!--<setSpec></setSpec>-->
+        </header>
+        <metadata>
+            ${record.metadata.@@markup}
+        </metadata>
   </record>
 </@oai.response>

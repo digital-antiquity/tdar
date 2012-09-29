@@ -18,6 +18,7 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -97,6 +98,7 @@ public interface Persistable extends Serializable {
             this.id = id;
         }
 
+        @XmlTransient
         public boolean isTransient() {
             return isTransient(this);
         }
@@ -120,16 +122,27 @@ public interface Persistable extends Serializable {
             return false;
         }
 
+        private transient int hashCode = -1;
+
         /**
          * Returns a sensible hashCode() for persisted objects. For transient/unsaved objects, uses
          * the default Object.hashCode().
          */
         @Override
         public int hashCode() {
-            if (isTransient()) {
-                return super.hashCode();
+            Logger logger = LoggerFactory.getLogger(getClass());
+            Object[] obj = { hashCode, getClass().getSimpleName(), getId() };
+            if (hashCode == -1) {
+                if (isNullOrTransient(this)) {
+                    hashCode = super.hashCode();
+                }
+                hashCode = toHashCode(this);
+                
+                logger.trace("setting hashCode to {} ({}) {}", obj );
+            } else {
+                logger.trace("returning existing hashCode to {} ({}) {}", obj );
             }
-            return toHashCode(this);
+            return hashCode;
         }
 
         /**
@@ -205,8 +218,44 @@ public interface Persistable extends Serializable {
          * By default, use only the database ID as the implementation
          */
         @Override
+        @XmlTransient
         public List<?> getEqualityFields() {
             return Arrays.asList(getId());
+        }
+
+        /*
+         * Adds the contents of the collection to the set, and removes anything was not in the incoming collections (intersection) + add all
+         * 
+         * @return boolean representing whether the exiting set was changed in any way
+         */
+        public static <C> boolean reconcileSet(Set<C> existing, Collection<C> incoming) {
+            if (existing == null) {
+                throw new TdarRuntimeException("the existing collection should not be null");
+            }
+            if (incoming == null) {
+                if (!CollectionUtils.isEmpty(existing)) {
+                    existing.clear();
+                    return true;
+                }
+                return false;
+            }
+
+            boolean changedRetain = existing.retainAll(incoming);
+            boolean changedAddAll = existing.addAll(incoming);
+
+            return (changedRetain || changedAddAll);
+        }
+
+        public static boolean isNotTransient(Persistable persistable) {
+            return !isTransient(persistable);
+        }
+
+        public static boolean isNotNullOrTransient(Persistable persistable) {
+            return !isNullOrTransient(persistable);
+        }
+
+        public static boolean isNotNullOrTransient(Number persistable) {
+            return !isNullOrTransient(persistable);
         }
 
         public static boolean isTransient(Persistable persistable) {
@@ -254,29 +303,6 @@ public interface Persistable extends Serializable {
             }
             return ids;
         }
-        
-        /*
-         * Adds the contents of the collection to the set, and removes anything was not in the incoming collections (intersection) + add all
-         * @return boolean representing whether the exiting set was changed in any way 
-         */
-        public static <C> boolean reconcileSet(Set<C> existing, Collection<C> incoming) {
-            if (existing == null) {
-                throw new TdarRuntimeException("the existing collection should not be null");
-            }
-            if (incoming == null) {
-                if (!CollectionUtils.isEmpty(existing)) {
-                    existing.clear();
-                    return true;
-                }
-                return false;
-            }
-            
-            boolean changedRetain = existing.retainAll(incoming);
-            boolean changedAddAll = existing.addAll(incoming);
-            
-            return (changedRetain || changedAddAll);
-        }
-        
 
     }
 

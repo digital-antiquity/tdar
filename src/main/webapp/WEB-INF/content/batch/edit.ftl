@@ -10,7 +10,7 @@
 <@s.form name='BulkMetadataForm' id='BulkMetadataForm'  method='post' enctype='multipart/form-data' action='save'>
 
 <@edit.basicInformation "image" "batch" true>
-	<@s.select labelposition='left' label='Language'  name='resourceLanguage'  emptyOption='false' listValue='label' list='%{languages}'/>
+    <@s.select labelposition='left' label='Language'  name='resourceLanguage'  emptyOption='false' listValue='label' list='%{languages}'/>
 </@edit.basicInformation>
 <@edit.citationInfo "image" false />
 
@@ -34,7 +34,7 @@
 
 <@edit.asyncFileUpload "Image" true "Upload" "divFileUpload">
 
-select all of the files you'd like to add to tDAR.  Each one will be associated with a new record along with any metadata specified either in the excel spreadsheet specified above, or with any values selected on this form.
+select all of the files you'd like to add to ${siteAcronym}.  Each one will be associated with a new record along with any metadata specified either in the excel spreadsheet specified above, or with any values selected on this form.
 
 </@edit.asyncFileUpload>
 
@@ -60,15 +60,15 @@ For all of the fields below, you can select values that will apply to all of the
 <#if validFileExtensions??>
 
 $(function() {
-	var validate = $('.validateFileType');
-	if ($(validate).length > 0) {
-		$(validate).rules("add", {
-			accept : "xls|xlsx",
-			messages : {
-				accept : "Please enter a valid file (xls,xlsx)"
-			}
-		}); // end rules
-	}
+    var validate = $('.validateFileType');
+    if ($(validate).length > 0) {
+        $(validate).rules("add", {
+            accept : "xls|xlsx",
+            messages : {
+                accept : "Please enter a valid file (xls,xlsx)"
+            }
+        }); // end rules
+    }
 });
 
 </#if>

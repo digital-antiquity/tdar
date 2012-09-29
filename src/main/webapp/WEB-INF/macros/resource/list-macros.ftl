@@ -82,62 +82,63 @@ html markup) you will probably not like the results
     </#if>
 </#macro>
 
-<#macro listCreators resource_>
-	 <#assign showSubmitter=true/>
-	 <#if resource_.primaryCreators?has_content>
-	  <span class="authors">
-	    <#list resource_.primaryCreators as creatr>
-	      <#assign showSubmitter=false/>
-	      ${creatr.creator.properName}<#if creatr__has_next??>,<#else>.</#if>
-	    </#list>
-	  </span>
-	</#if>	
 
-	 <#if resource_.editors?has_content>
-	  <span class="editors">
-	    <#list resource_.editors as creatr>
-	      <#assign showSubmitter=false/>
-	      <#if creatr_index == 0><span class="editedBy">Edited by:</span></#if>
-	      ${creatr.creator.properName}<#if creatr__has_next??>,<#else>.</#if>
-	    </#list>
-	  </span>
-	</#if>
+<#macro listCreators resource_>
+     <#assign showSubmitter=true/>
+     <#if resource_.primaryCreators?has_content>
+      <span class="authors">
+        <#list resource_.primaryCreators as creatr>
+          <#assign showSubmitter=false/>
+          ${creatr.creator.properName}<#if creatr__has_next??>,<#else>.</#if>
+        </#list>
+      </span>
+    </#if>    
+
+     <#if resource_.editors?has_content>
+      <span class="editors">
+        <#list resource_.editors as creatr>
+          <#assign showSubmitter=false/>
+          <#if creatr_index == 0><span class="editedBy">Edited by:</span></#if>
+          ${creatr.creator.properName}<#if creatr__has_next??>,<#else>.</#if>
+        </#list>
+      </span>
+    </#if>
 
     <#if showSubmitter && resource_.submitter?has_content>
     <#assign label = "Created" />
     <#if resource_.resourceType?has_content>
-	    <#assign label = "Uploaded" />
+        <#assign label = "Uploaded" />
     </#if>
-	    <span class="creators"> 
-	      <span class="createdBy">${label} by:</span> ${resource_.submitter.properName}
-	    </span>
+        <span class="creators"> 
+          <span class="createdBy">${label} by:</span> ${resource_.submitter.properName}
+        </span>
     </#if>
 </#macro>
 
 <#macro bookmark _resource showLabel=true>
   <#if sessionData?? && sessionData.authenticated>
-	  <#if _resource.resourceType?has_content>
-	    <#if _resource.deleted?? && _resource.deleted>
-	        <img src='<@s.url value="/images/desaturated/bookmark.png"/>' alt='bookmark(unavailable)' title='Deleted items cannot be bookmarked.' /><#t>
-	        <#if showLabel>
-	            <span class="disabled" title='Deleted items cannot be bookmarked.'>bookmark</span><#t>
-	        </#if>
-	    <#elseif bookmarkedResourceService.isAlreadyBookmarked(_resource, authenticatedUser)>
-	        <a href="<@s.url value='/resource/removeBookmark' resourceId='${_resource.id?c}'/>" class="bookmark" onclick='removeBookmark(${_resource.id?c}, this); return false;'>
-	            <img src='<@s.url value="/images/bookmark.gif"/>'/><#t>
-	            <#if showLabel>
-	                <span class="bookmark">un-bookmark</span><#t>
-	            </#if>
-	        </a><#t>
-	    <#else>
-	        <a href="<@s.url value='/resource/bookmark' resourceId='${_resource.id?c}'/>" onclick='bookmarkResource(${_resource.id?c}, this); return false;'>
-	            <img src='<@s.url value="/images/unbookmark.gif"/>'/><#t>
-	            <#if showLabel>
-	                <span class="bookmark"> bookmark</span><#t>
-	            </#if>
-	        </a><#t>    
-	    </#if>
-	  </#if>
+      <#if _resource.resourceType?has_content>
+        <#if _resource.deleted?? && _resource.deleted>
+            <img src='<@s.url value="/images/desaturated/bookmark.png"/>' alt='bookmark(unavailable)' title='Deleted items cannot be bookmarked.' /><#t>
+            <#if showLabel>
+                <span class="disabled" title='Deleted items cannot be bookmarked.'>bookmark</span><#t>
+            </#if>
+        <#elseif bookmarkedResourceService.isAlreadyBookmarked(_resource, authenticatedUser)>
+            <a href="<@s.url value='/resource/removeBookmark' resourceId='${_resource.id?c}'/>" class="bookmark" onclick='removeBookmark(${_resource.id?c}, this); return false;'>
+                <img src='<@s.url value="/images/bookmark.gif"/>'/><#t>
+                <#if showLabel>
+                    <span class="bookmark">un-bookmark</span><#t>
+                </#if>
+            </a><#t>
+        <#else>
+            <a href="<@s.url value='/resource/bookmark' resourceId='${_resource.id?c}'/>" onclick='bookmarkResource(${_resource.id?c}, this); return false;'>
+                <img src='<@s.url value="/images/unbookmark.gif"/>'/><#t>
+                <#if showLabel>
+                    <span class="bookmark"> bookmark</span><#t>
+                </#if>
+            </a><#t>    
+        </#if>
+      </#if>
   </#if>
 </#macro>
 </#escape>

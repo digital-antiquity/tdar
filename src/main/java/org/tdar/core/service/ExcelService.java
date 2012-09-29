@@ -222,7 +222,7 @@ public class ExcelService {
         comment.setString(str);
         comment.setRow(cell.getRowIndex());
         comment.setColumn(cell.getColumnIndex());
-        comment.setAuthor("tDAR");
+        comment.setAuthor(TdarConfiguration.getInstance().getSiteAcronym());
     }
 
     /**
@@ -320,9 +320,9 @@ public class ExcelService {
         // if the startRow is something other than 0, we assume that the caller was working on this sheet prior
         boolean newSheetNeeded = startRow == 0;
         if (newSheetNeeded) {
-            sheet = workbook.createSheet(proxy.getName());
+            sheet = workbook.createSheet(sheetName);
         } else {
-            sheet = workbook.getSheet(proxy.getName());
+            sheet = workbook.getSheet(sheetName);
         }
         addHeaderRow(sheet, rowNum, proxy.getStartCol(), proxy.getHeaderLabels());
         int maxRows = version.getMaxRows();
@@ -347,10 +347,10 @@ public class ExcelService {
         proxy.postProcess();
     }
 
-    private void prepareSheet(Sheet sheet) {
-        // FIXME: maybe this should be configurable?
-        sheet.createFreezePane(ExcelService.FIRST_COLUMN, 1, 0, 1);
-    }
+//    private void prepareSheet(Sheet sheet) {
+//        // FIXME: maybe this should be configurable?
+//        sheet.createFreezePane(ExcelService.FIRST_COLUMN, 1, 0, 1);
+//    }
 
     private void cleanupSheet(Sheet sheet) {
         // auto-sizing columns

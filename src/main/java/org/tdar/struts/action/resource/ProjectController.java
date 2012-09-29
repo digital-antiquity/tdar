@@ -64,10 +64,10 @@ public class ProjectController extends AbstractResourceController<Project> imple
 
     @Override
     public void postSaveCleanup() {
+        super.postSaveCleanup();
         // reindex any child resources so that that searches will pick up any new keywords they should "inherit"
         logger.debug("reindexing project contents");
         getProject().setCachedInformationResources(new HashSet<InformationResource>(getProjectService().findAllResourcesInProject(getProject())));
-//        getSearchIndexService().index(getProject());
         if (isAsync()) {
             getSearchIndexService().indexCollectionAsync(getProject().getCachedInformationResources());
         } else {
@@ -257,6 +257,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
         return getSearchTitle();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<String> getProjections() {
         return ListUtils.EMPTY_LIST;

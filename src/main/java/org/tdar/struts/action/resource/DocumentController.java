@@ -1,6 +1,5 @@
 package org.tdar.struts.action.resource;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -9,13 +8,13 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.DegreeType;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.ResourceType;
 
 /**
@@ -63,17 +62,6 @@ public class DocumentController extends AbstractInformationResourceController<Do
     @Override
     public boolean isMultipleFileUploadEnabled() {
         return true;
-    }
-
-    protected void processUploadedFiles(List<InformationResourceFile> uploadedFiles) throws IOException {
-        // XXX: currently nothing needs to be done to process uploaded documents
-        // so this is a no-op.
-        return;
-    }
-
-    @Override
-    protected void loadCustomMetadata() {
-        super.loadCustomMetadata();
     }
 
     @Override
@@ -162,8 +150,9 @@ public class DocumentController extends AbstractInformationResourceController<Do
         this.degree = degree;
     }
     
+    @SkipValidation
     @Action("file-upload-test")
-    public String fileUploadTest() {
+    public String testFileUpload() {
         return SUCCESS;
     }
 }

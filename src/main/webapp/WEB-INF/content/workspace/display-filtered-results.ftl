@@ -30,8 +30,8 @@ The integrated data results are displayed below.<br/>
  <tr>
   <#list integrationColumns as column>
     <th>
-  	<#if column.integrationColumn>
-	    ${column.name}
+      <#if column.integrationColumn>
+        ${column.name}
     </#if>
     </th>
   </#list>
@@ -92,9 +92,9 @@ ${integrationDataResult.dataTable.dataset.title})</h2>
 
     <#list row as col>
     <td>
-    	<#if col?has_content>${col}<#else>
-	    	<#noescape>&nbsp;</#noescape>
-    	</#if>
+        <#if col?has_content>${col}<#else>
+            <#noescape>&nbsp;</#noescape>
+        </#if>
     </td>
     </#list>
 

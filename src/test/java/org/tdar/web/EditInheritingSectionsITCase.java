@@ -16,7 +16,9 @@ import net.sf.json.JSONObject;
 
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.configuration.TdarConfiguration;
 
 public class EditInheritingSectionsITCase extends AbstractAdminAuthenticatedWebTestCase {
 
@@ -56,6 +58,11 @@ public class EditInheritingSectionsITCase extends AbstractAdminAuthenticatedWebT
         // they are still checked
         for (String key : docValMap.keySet()) {
             setInput(key, docValMap.get(key));
+        }
+        if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
+            // should only be blank on records that were not created under the copyright regime, btw.
+            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+            setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
         }
         submitForm();
         logger.trace(getPageText());

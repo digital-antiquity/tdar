@@ -86,9 +86,9 @@ public class BrowseController extends AbstractLookupController {
     @Action("collections")
     public String browseCollections() throws ParseException {
         QueryBuilder qb = new ResourceCollectionQueryBuilder();
-        qb.append(new FieldQueryPart(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED));
-        qb.append(new FieldQueryPart(QueryFieldNames.COLLECTION_VISIBLE, "true"));
-        qb.append(new FieldQueryPart(QueryFieldNames.TOP_LEVEL, "true"));
+        qb.append(new FieldQueryPart<CollectionType>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED));
+        qb.append(new FieldQueryPart<Boolean>(QueryFieldNames.COLLECTION_VISIBLE, Boolean.TRUE));
+        qb.append(new FieldQueryPart<Boolean>(QueryFieldNames.TOP_LEVEL, Boolean.TRUE));
         setMode("browseCollections");
         handleSearch(qb);
         setSearchDescription(ALL_TDAR_COLLECTIONS);
@@ -98,7 +98,7 @@ public class BrowseController extends AbstractLookupController {
 
     @Action(value = "creators", results = { @Result(location = "results.ftl") })
     public String browseCreators() throws ParseException {
-        if (!Persistable.Base.isNullOrTransient(getId())) {
+        if (Persistable.Base.isNotNullOrTransient(getId())) {
             creator = getGenericService().find(Creator.class, getId());
             QueryBuilder queryBuilder = new ResourceQueryBuilder();
             queryBuilder.setOperator(Operator.AND);
@@ -191,6 +191,7 @@ public class BrowseController extends AbstractLookupController {
         this.timelineData = list;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<String> getProjections() {
         return ListUtils.EMPTY_LIST;

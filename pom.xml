@@ -2,20 +2,20 @@
 <!-- $Id$ -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<version>8-HARRIS-MATRIX</version>
+	<version>9-IN-SITU</version>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<!-- managed versions -->
-		<struts2.version>2.3.3</struts2.version>
-		<hibernate.version>4.1.2.Final</hibernate.version>
+		<struts2.version>2.3.4</struts2.version>
+		<hibernate.version>4.1.7.Final</hibernate.version>
 		<hibernate.search.version>4.1.1.Final</hibernate.search.version>
-		<spring.framework.version>3.1.1.RELEASE</spring.framework.version>
+		<spring.framework.version>3.1.2.RELEASE</spring.framework.version>
 		<spring.ldap.version>1.3.1.RELEASE</spring.ldap.version>
 		<spring.amqp.version>1.1.0.RELEASE</spring.amqp.version>
 		<!-- <postgresql.jdbc.version>8.4-701.jdbc4</postgresql.jdbc.version> -->
 		<postgresql.jdbc.version>9.1-901.jdbc4</postgresql.jdbc.version>
-		<apache.cxf.version>2.6.0</apache.cxf.version>
+		<apache.cxf.version>2.6.2</apache.cxf.version>
 		<clover.version>3.1.4</clover.version>
 		<!-- /end managed versions -->
 		<jvm.args>-Xms256m -Xmx2048m -XX:PermSize=128m -XX:MaxPermSize=512m</jvm.args>
@@ -25,8 +25,8 @@
 		<jetty.stop.port>12919</jetty.stop.port>
 		<use.test.classpath>false</use.test.classpath>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<geotools.version>8.0-M4</geotools.version>
-		<tika.version>1.1</tika.version>
+		<geotools.version>8.0</geotools.version>
+		<tika.version>1.2</tika.version>
 	</properties>
 	<prerequisites>
 		<maven>2.2.0</maven>
@@ -135,6 +135,11 @@
 	<!-- 3rd party dependencies and libraries -->
 	<dependencies>
 		<dependency>
+			<groupId>com.jgeppert.struts2.bootstrap</groupId>
+			<artifactId>struts2-bootstrap-plugin</artifactId>
+			<version>1.5.0</version>
+		</dependency>
+		<dependency>
 			<groupId>com.googlecode.webutilities</groupId>
 			<artifactId>webutilities</artifactId>
 			<version>0.0.5</version>
@@ -173,7 +178,7 @@
 		<dependency>
 			<groupId>org.apache.ant</groupId>
 			<artifactId>ant</artifactId>
-			<version>1.8.3</version>
+			<version>1.8.4</version>
 		</dependency>
 		<dependency>
 			<groupId>imageJ</groupId>
@@ -195,7 +200,7 @@
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<version>1.2.16</version>
+			<version>1.2.17</version>
 			<exclusions>
 				<exclusion>
 					<groupId>com.sun.jdmk</groupId>
@@ -251,7 +256,7 @@
 		<dependency>
 			<groupId>com.google.code.findbugs</groupId>
 			<artifactId>annotations</artifactId>
-			<version>2.0.0</version>
+			<version>2.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>gov.loc</groupId>
@@ -282,7 +287,7 @@
 		<dependency>
 			<groupId>com.thoughtworks.xstream</groupId>
 			<artifactId>xstream</artifactId>
-			<version>1.4.2</version>
+			<version>1.4.3</version>
 		</dependency>
 		<!-- Spring LDAP -->
 		<dependency>
@@ -327,7 +332,7 @@
 		<dependency>
 			<groupId>org.codehaus.jettison</groupId>
 			<artifactId>jettison</artifactId>
-			<version>1.3.1</version>
+			<version>1.3.2</version>
 		</dependency>
 		<dependency>
 			<groupId>xmlunit</groupId>
@@ -337,16 +342,35 @@
 		<dependency>
 			<groupId>net.sourceforge.htmlunit</groupId>
 			<artifactId>htmlunit</artifactId>
-			<version>2.9</version>
+			<version>2.10</version>
 			<exclusions>
 			</exclusions>
 		</dependency>
+		<!--  these are required for htmlunit 2.10 -->
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.2.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.2.1</version>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpmime</artifactId>
+			<version>4.2.1</version>
+		</dependency>
+				<!-- /these are required for htmlunit 2.10 -->
 		<dependency>
 			<groupId>com.3levers.cssselectors</groupId>
 			<artifactId>cssselectors</artifactId>
 			<version>1.0</version>
 		</dependency>
-            		
+
 		<!--<dependency> <groupId>org.seleniumhq.selenium</groupId> <artifactId>selenium-java</artifactId> 
 			<version>2.21.0</version> </dependency> <dependency> <groupId>org.seleniumhq.selenium</groupId> 
 			<artifactId>selenium-server</artifactId> <version>2.21.0</version> </dependency> -->
@@ -445,12 +469,12 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.6.4</version>
+			<version>1.6.6</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.6.4</version>
+			<version>1.6.6</version>
 		</dependency>
 		<!-- SPRING DEPENDENCIES (we're not listing them all individually, but 
 			includes orm, jdbc, aop, tx, -->
@@ -534,7 +558,7 @@
 		<dependency>
 			<groupId>com.healthmarketscience.jackcess</groupId>
 			<artifactId>jackcess</artifactId>
-			<version>1.2.7</version>
+			<version>1.2.8</version>
 		</dependency>
 		<!-- OpenCSV -->
 		<dependency>
@@ -561,7 +585,7 @@
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.3</version>
+			<version>2.4</version>
 		</dependency>
 		<dependency>
 			<groupId>xalan</groupId>
@@ -641,26 +665,41 @@
 			<artifactId>joda-time</artifactId>
 			<version>2.1</version>
 		</dependency>
-<!-- 
+		<!-- <dependency> <groupId>org.codehaus.jackson</groupId> <artifactId>jackson-mapper-asl</artifactId> 
+			<version>1.9.7</version> </dependency> <dependency> <groupId>org.codehaus.jackson</groupId> 
+			<artifactId>jackson-core-asl</artifactId> <version>1.9.7</version> </dependency> 
+        
+			<dependency> <groupId>org.codehaus.jackson</groupId> <artifactId>jackson-xc</artifactId> 
+			<version>1.9.7</version> </dependency>
+            <dependency> <groupId>org.codehaus.jackson</groupId> <artifactId>jackson-xc</artifactId> 
+            <version>1.7.3</version> </dependency>
+        -->
+        <!-- Jackson v2 (1.7.3 cannot be used because it doesnt handle @XmlJavaTypeConverter w/ collections correctly) -->
+        <dependency>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-core</artifactId>
+          <version>2.0.6</version>
+        </dependency>        
+        <dependency>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-databind</artifactId>
+          <version>2.0.6</version>
+        </dependency>
+        <dependency>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-annotations</artifactId>
+          <version>2.0.6</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-jaxb-annotations</artifactId>
+            <version>2.0.5</version>
+        </dependency> 
+       
 		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-mapper-asl</artifactId>
-			<version>1.9.7</version>
-		</dependency>
-		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-core-asl</artifactId>
-			<version>1.9.7</version>
-		</dependency>
-		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-xc</artifactId>
-			<version>1.9.7</version>
-		</dependency>
- -->		<dependency>
 			<groupId>commons-dbutils</groupId>
 			<artifactId>commons-dbutils</artifactId>
-			<version>1.4</version>
+			<version>1.5</version>
 		</dependency>
 	</dependencies>
 	<pluginRepositories>
@@ -926,7 +965,7 @@
 					<connectors>
 						<connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
 							<port>${jetty.port}</port>
-							<maxIdleTime>600000</maxIdleTime>
+							<maxIdleTime>60000</maxIdleTime>
 						</connector>
 					</connectors>
 					<contextPath>/</contextPath>
@@ -1397,6 +1436,7 @@
 						</executions>
 					</plugin>
 					<plugin>
+						<!-- mvn -PsqlExtract clean compile exec:java -->
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>exec-maven-plugin</artifactId>
 						<version>1.2.1</version>

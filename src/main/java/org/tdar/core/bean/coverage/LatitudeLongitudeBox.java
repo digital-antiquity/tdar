@@ -6,7 +6,6 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -14,10 +13,8 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.ClassBridge;
-import org.hibernate.search.annotations.ContainedIn;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.FieldBridge;
-import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.NumericField;
 import org.hibernate.search.annotations.Store;
@@ -73,10 +70,6 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     public static final int LONGITUDE = 2;
 
     public static final double ONE_MILE_IN_DEGREE_MINUTES = 0.01472d;
-
-    @ManyToOne(optional = false)
-    @ContainedIn
-    private Resource resource;
 
     // ranges from -90 (South) to +90 (North)
     @Field
@@ -266,15 +259,6 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         return longitude != null && longitude >= MIN_LONGITUDE && longitude <= MAX_LONGITUDE;
     }
 
-    @XmlTransient
-    public Resource getResource() {
-        return resource;
-    }
-
-    public void setResource(Resource resource) {
-        this.resource = resource;
-    }
-
     public boolean isValid() {
         if (isValidLatitude(maximumLatitude) && isValidLatitude(minimumLatitude) && isValidLongitude(minimumLongitude) && isValidLongitude(maximumLongitude) &&
                 maximumLatitude >= minimumLatitude && maximumLongitude >= minimumLongitude && Math.abs(maximumLatitude - minimumLatitude) < 180) {
@@ -445,7 +429,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
             toReturn++;
         }
 
-        logger.trace("scale: {} ({})" , scale, toReturn);
+        logger.trace("scale: {} ({})", scale, toReturn);
         return toReturn;
     }
 

@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.collections.ListUtils;
 import org.apache.struts2.convention.annotation.Action;
@@ -21,7 +20,6 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
-import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
@@ -39,9 +37,6 @@ import org.tdar.search.query.builder.ResourceQueryBuilder;
 @Namespace("/collection")
 public class CollectionController extends AbstractPersistableController<ResourceCollection> implements SearchResultHandler<ResourceCollection> {
 
-    //FIXME: This notification message blows.  Could somebody rephrase this to be more helpful to a user?
-    public static final String MSG_PERMISSION_REBASE_NOTIFICATION = "Note: the system has copied inherited permissions from the former parent to this collection";
-    
     private static final long serialVersionUID = 5710621983240752457L;
     private List<Resource> resources = new ArrayList<Resource>();
 
@@ -70,9 +65,8 @@ public class CollectionController extends AbstractPersistableController<Resource
      * 
      * @return
      */
-    public Set<ResourceCollection> getCandidateParentResourceCollections() {
-        Set<ResourceCollection> publicResourceCollections = 
-                getResourceCollectionService().findPotentialParentCollections(getAuthenticatedUser(),
+    public List<ResourceCollection> getCandidateParentResourceCollections() {
+        List<ResourceCollection> publicResourceCollections = getResourceCollectionService().findPotentialParentCollections(getAuthenticatedUser(),
                 getPersistable());
         return publicResourceCollections;
     }
@@ -87,10 +81,6 @@ public class CollectionController extends AbstractPersistableController<Resource
         if (persistable.getType() == null) {
             persistable.setType(CollectionType.SHARED);
         }
-        
-        //handle corner case of user losing effective permissions by converting child collection to root collection (parentId == null);
-        handlePermissionsRebase();
-        
         // FIXME: may need some potential check for recursive loops here to prevent self-referential
         // parent-child loops
         // FIXME: if persistable's parent is different from current parent; then need to reindex all of the children as well
@@ -142,25 +132,6 @@ public class CollectionController extends AbstractPersistableController<Resource
         logger.trace("{}", rehydratedIncomingResources);
         logger.debug("RESOURCES {}", persistable.getResources());
         return SUCCESS;
-    }
-
-    /** 
-     * handle a "permissions rebase", which we define as the situation where the user converts a child collection to a root collection and will lose the 
-     * inherited permissions that enable the user to edit the collection in the first place.
-     * 
-     * @return  true if any action was taken
-     */
-    private boolean handlePermissionsRebase() {
-        List<AuthorizedUser> users = getResourceCollectionService().getTransientInheritedAuthorizedUsers(getPersistable());
-        if(users.isEmpty() || !Persistable.Base.isNullOrTransient(getParentId())) return false;
-        
-        //collection is becoming a root node and has inherited authusers, copy them to the incoming list.  Also notify the user so they don't freak out
-        //when these extra users show up on the view page
-        getAuthorizedUsers().addAll(users);
-
-        addActionMessage(MSG_PERMISSION_REBASE_NOTIFICATION);
-
-        return true;
     }
 
     @Override
@@ -483,6 +454,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         return getSearchTitle();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<String> getProjections() {
         return ListUtils.EMPTY_LIST;

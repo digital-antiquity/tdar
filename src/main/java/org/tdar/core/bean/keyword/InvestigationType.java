@@ -3,9 +3,10 @@ package org.tdar.core.bean.keyword;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.ElementCollection;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.JoinTable;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.search.annotations.Indexed;
@@ -27,16 +28,19 @@ public class InvestigationType extends Keyword.Base<InvestigationType> implement
 
     private static final long serialVersionUID = 2557655317256194003L;
 
-    @ElementCollection()
-    @JoinTable(name = "investigation_type_synonym")
-    private Set<String> synonyms = new HashSet<String>();
+    @OneToMany(orphanRemoval = true,cascade=CascadeType.ALL)
+    @JoinColumn(name = "merge_keyword_id")
+    private Set<InvestigationType> synonyms = new HashSet<InvestigationType>();
 
-    public Set<String> getSynonyms() {
+    public Set<InvestigationType> getSynonyms() {
         return synonyms;
     }
 
-    public void setSynonyms(Set<String> synonyms) {
+    public void setSynonyms(Set<InvestigationType> synonyms) {
         this.synonyms = synonyms;
     }
 
+    public String getSynonymFormattedName() {
+        return getLabel();
+    }
 }

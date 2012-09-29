@@ -38,7 +38,7 @@
         <h3 class="dire-warning">WARNING</H3>
         <p>Please note that act of de-duping entities is currently <em>irreversable</em> and should only be performed by curators and administrators only 
         only after receiving approval to do so. </p>
-        <p>If you feel you may have made a mistake and de-duped the wrong enitity (or entities) please notify a tDAR administrator immediately.</p>
+        <p>If you feel you may have made a mistake and de-duped the wrong enitity (or entities) please notify a ${siteAcronym} administrator immediately.</p>
     </div>
 
 

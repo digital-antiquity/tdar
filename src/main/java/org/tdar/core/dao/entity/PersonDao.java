@@ -61,10 +61,11 @@ public class PersonDao extends Dao.HibernateBase<Person> {
     }
 
     // find people with the same firstName, lastName, or institution (if specified)
+    @SuppressWarnings("unchecked")
     public Set<Person> findByPerson(Person person) {
         // if the email address is set then all other fields are moot
         if (StringUtils.isNotBlank(person.getEmail())) {
-            Set hs = new HashSet<Person>();
+            Set<Person> hs = new HashSet<Person>();
             hs.add(findByEmail(person.getEmail()));
             return hs;
         }

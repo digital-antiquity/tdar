@@ -1,5 +1,6 @@
 package org.tdar.core.bean.resource.datatable;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -7,21 +8,18 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.resource.Dataset;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
  * This Class represents a Primary or Foreign Key relationship between two data tables
- * These relationships can represent a single column foreign key, or multiple column 
+ * These relationships can represent a single column foreign key, or multiple column
  * foreign key, as well as more basic primary keys.
  */
 @Entity
@@ -35,21 +33,7 @@ public class DataTableRelationship extends Persistable.Base {
     private DataTableColumnRelationshipType type;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "relationship")
-    private Set<DataTableColumnRelationship> columnRelationships;
-
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, optional = false)
-    @Deprecated
-    /**
-     * @deprecated  Redundant since the DataTableRelationship has columnRelationships
-     *  which link it to a Dataset.  
-     */
-    private Dataset dataset;
-
-    @ManyToOne
-    private DataTable localTable;
-
-    @ManyToOne
-    private DataTable foreignTable;
+    private Set<DataTableColumnRelationship> columnRelationships = new HashSet<DataTableColumnRelationship>();
 
     public void setType(DataTableColumnRelationshipType type) {
         this.type = type;
@@ -69,44 +53,26 @@ public class DataTableRelationship extends Persistable.Base {
         this.columnRelationships = columnRelationships;
     }
 
-    @Deprecated
-    /**
-     * @deprecated  Redundant since the DataTableRelationship has columnRelationships
-     *  which link it to DataTables  
-     */
-    public void setForeignTable(DataTable foreignTable) {
-        this.foreignTable = foreignTable;
-    }
-
     @XmlElement(name = "foreignTableRef")
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
-    @Deprecated
-    /**
-     * @deprecated  Redundant since the DataTableRelationship has columnRelationships
-     *  which link it to DataTables  
-     */
     public DataTable getForeignTable() {
-        return foreignTable;
-    }
-
-    @Deprecated
-    /**
-     * @deprecated  Redundant since the DataTableRelationship has columnRelationships
-     *  which link it to DataTables  
-     */
-    public void setLocalTable(DataTable localTable) {
-        this.localTable = localTable;
+        try {
+            DataTableColumnRelationship relationship = getColumnRelationships().iterator().next();
+            return relationship.getForeignColumn().getDataTable();
+        } catch (Exception e) {
+        }
+        return null;
     }
 
     @XmlElement(name = "localTableRef")
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
-    @Deprecated
-    /**
-     * @deprecated  Redundant since the DataTableRelationship has columnRelationships
-     *  which link it to DataTables  
-     */
     public DataTable getLocalTable() {
-        return localTable;
+        try {
+            DataTableColumnRelationship relationship = getColumnRelationships().iterator().next();
+            return relationship.getLocalColumn().getDataTable();
+        } catch (Exception e) {
+        }
+        return null;
     }
 
     @Override
@@ -123,22 +89,4 @@ public class DataTableRelationship extends Persistable.Base {
         return sb.toString();
     }
 
-    @Deprecated
-    /**
-     * @deprecated  Redundant since the DataTableRelationship has columnRelationships
-     *  which link it to a Dataset.  
-     */
-    public void setDataset(Dataset dataset) {
-        this.dataset = dataset;
-    }
-
-    @Deprecated
-    /**
-     * @deprecated  Redundant since the DataTableRelationship has columnRelationships
-     *  which link it to a Dataset.  
-     */
-    @XmlTransient
-    public Dataset getDataset() {
-        return dataset;
-    }
 }

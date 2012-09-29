@@ -16,6 +16,147 @@ ${filesize?string(",##0.00")}b
 </#if>
 </#macro>
 
+
+<#macro globalJavascript>
+<script type="text/javascript">
+
+    <@baseUriJavascript />
+    
+    <@googleAnalyticsJavascript />
+
+</script>
+</#macro>
+
+<#macro baseUriJavascript>
+function getBaseURI() {
+    return "<@s.url value='/' />";
+}
+function getURI(path) {
+    return getBaseURI() + path;
+}
+
+TDAR.uri = function(path) {
+    var uri = "<@s.url value='/' />";
+    if(path) {uri += path;}
+    return uri;
+}
+</#macro>
+
+<#macro googleAnalyticsJavascript>
+<#noescape>
+  var _gaq = _gaq || [];
+  <#if !production> 
+    _gaq.push(['_setAccount', 'UA-13102200-5']); // TEST ACCOUNT
+    _gaq.push(['_setDomainName', 'none']);
+  <#else>
+    _gaq.push(['_setAccount', '${googleAnalyticsId}']);
+  </#if>
+
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</#noescape>
+</#macro>
+
+
+<#macro bootstrapNavbar>
+            <div class="navbar">
+              <div class="navbar-inner">
+                <div class="container">
+                  <!-- display this toggle button when navbar exceeds available width and 'collapses' -->   
+                  <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                  </a>
+                  
+                  <!-- <a class="brand" href="#">Menu</a> -->
+                  <!-- everything in the nav-collapse div will be hidden at 940px or less -->
+                  <div class="nav-collapse">
+                    <ul class="nav">
+                      <li><a href="#">Home</a></li>
+                      <li class="dropdown">
+                          <a class="dropdown-toggle" data-toggle="dropdown" href="#">Search<b class="caret"></b></a>
+                          <ul class="dropdown-menu">
+                              <li><a href="<@s.url value='/search'/>">Search ${siteAcronym!""}</a></li>
+                              <li><a href="<@s.url value='/browse/explore'/>">Explore</a></li>
+                              <li><a href="<@s.url value='/search/results'/>">Browse All Resources</a></li>
+                              <li><a href="<@s.url value='/search/collections'/>">Browse All Collections</a></li>
+                          </ul>
+                      </li>
+                      <#if authenticatedUser??>
+                        <li  class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" >Workspace<b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="<@s.url value='/workspace/list'/>">Show Bookmarked Resources</a></li>
+                                <li><a href="<@s.url value='/workspace/select-tables'/>">Integrate Bookmarked Data Tables</a></li>
+                            </ul>
+                        </li>
+                
+                      <li><a href="<@s.url value='/dashboard'/>">Your Resources</a></li>
+                      <#if contributor!false>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" >New<b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                              <li><a href="<@s.url value='/project/add'/>">New...</a></li>
+                              <li><a href="<@s.url value='/project/add'/>">New Project</a></li>
+                              <li><a href="<@s.url value='/document/add'/>" class="item_line">New Document</a></li>
+                              <li><a href="<@s.url value='/image/add'/>">New Image</a></li>
+                              <#if editor!false><li><a href="<@s.url value='/video/add'/>">New Video</a></li></#if>
+                              <li><a href="<@s.url value='/dataset/add'/>">New Dataset</a></li>
+                              <li><a href="<@s.url value='/coding-sheet/add'/>" class="item_line">New Coding Sheet</a></li>
+                              <li><a href="<@s.url value='/ontology/add'/>">New Ontology</a></li>
+                              <li><a href="<@s.url value='/sensory-data/add'/>">New Sensory Data</a></li>
+                              <li><a href="<@s.url value='/collection/add'/>">New Collection</a></li>
+                              <li style="border-top: 1px solid #AAA;"><a href="<@s.url value='/batch/add'/>">Batch Upload Tool</a></li>
+                            </ul>
+                        </li>
+                        </#if>
+                        <li><a href="<@s.url value='http://www.tdar.org'/>">About</a></li>
+                        <#if editor!false>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin<b class="caret"></b>
+                            <ul class="dropdown-menu">
+                                <li><a href="<@s.url value='/admin/internal'/>">Statistics</a></li>
+                                <#if administrator!false><li><a href="<@s.url value='/admin/searchindex/build'/>">Build search index</a></li>
+                                <li><a href="<@s.url value='/admin/system/activity'/>">System Activity</a></li>
+                                
+                                </#if>
+                                <li><a href="<@s.url value='/admin/authority-management/index'/>">Merge duplicates</a></li>
+                            </ul>
+                        </li>
+                        </#if>
+                        <li><a href="<@s.url value='/logout'/>">Logout</a></li>
+                        <#else>
+                        <li><a href="<@s.url value='/login'/>">Login</a></li>
+                        </#if>
+                        <li class="dropdown">  
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Help
+                                    <b class="caret"></b>
+                                 </a>
+                          <ul class="dropdown-menu">
+                              <li><a href="${documentationUrl}">User Documentation</a></li>
+                              <li><a href="${bugReportUrl}">Report a Bug</a></li>
+                              <li><a href="${commentUrl}">Comments</a></li>
+                              <#if authenticatedUser??>
+                              <li><a href="<@s.url value='/entity/person/edit?id=${sessionData.person.id?c}'/>">Update your profile</a></li>
+                              </#if>
+                          </ul>
+                        
+                        </li>
+                      
+                    </ul>
+                  </div><!-- /.nav-collapse -->
+                </div>
+              </div><!-- /navbar-inner -->
+            </div>
+</#macro>
+
+
 <#macro resourceCollectionsRights effectiveResourceCollections_>
     <#if !effectiveResourceCollections_.empty>
     <h4>Access Permissions for this Resource</h4>
@@ -30,7 +171,7 @@ ${filesize?string(",##0.00")}b
             <#if !collection_.internal>
                <a href="<@s.url value="/collection/${collection_.id?c}"/>"> ${collection_.name!"<em>un-named</em>"}</a>
             <#else>
-            	Local resource
+                Local resource
             </#if>
           </td>
           <td>
@@ -55,62 +196,62 @@ ${filesize?string(",##0.00")}b
     
     <script>
 <#noescape>
-	var data${name} = [
-	<#assign first = true/>
-	<#assign legend = true>
+    var data${name} = [
+    <#assign first = true/>
+    <#assign legend = true>
     <#list ikeys as ikey>
       <#assign val = ilist.get(ikey) />
       <#assign label = ikey />
       <#if ikey.label??><#assign label=ikey.label ></#if>
       <#if (val?? && val > 0)>
-		<#if !first>,</#if>{ label: "${label}", key:"${ikey}",  data: ${val?c},color: 
-			<#if name !="resourceForUser">
-				"${settings.barColors[ikey_index % settings.barColors?size]}"
-			<#else>
-				"${settings.barColors[ikey.order - 1]}"	
-			</#if> }
-		<#assign first=false/>
+        <#if !first>,</#if>{ label: "${label}", key:"${ikey}",  data: ${val?c},color: 
+            <#if name !="resourceForUser">
+                "${settings.barColors[ikey_index % settings.barColors?size]}"
+            <#else>
+                "${settings.barColors[ikey.order - 1]}"    
+            </#if> }
+        <#assign first=false/>
       </#if>
       <#if (ikey_index > settings.barColors?size)>
-		<#assign legend = true>
+        <#assign legend = true>
       </#if>
     </#list>
-	];
+    ];
 </#noescape>
     $(function() {
 
-		$.plot($("#${name}"), data${name}, {
-			series: {
-				pie: { 
-					show: true,
-					radius:1,
-//					tilt:.3,
-					label : {
-						formatter: function(label, series){
-	                        return '<div style="font-size:8pt;text-align:center;padding:2px;color:black;">'+label+' ('+series.datapoints.points[1]+ ')</div>';
-	                    },
-	                    radius: 6/7
+        $.plot($("#${name}"), data${name}, {
+            series: {
+                pie: { 
+                    show: true,
+                    radius:1,
+//                    tilt:.3,
+                    label : {
+                        formatter: function(label, series){
+                            return '<div style="font-size:8pt;text-align:center;padding:2px;color:black;">'+label+' ('+series.datapoints.points[1]+ ')</div>';
+                        },
+                        radius: 6/7
                     }
-				}
-			},
-			legend: {
-				show: ${legend?string},
-				position:"sw"
-			},
-		    grid: {
-	            hoverable: true,
-	            clickable: true
+                }
+            },
+            legend: {
+                show: ${legend?string},
+                position:"sw"
+            },
+            grid: {
+                hoverable: true,
+                clickable: true
             }
-		});
-		$("#${name}").bind("plotclick",function(event, pos, obj) { 
-		for (var entry  in data${name}) {
-			if (data${name}[entry].label == obj.series.label) {
-				var key = data${name}[entry].key;
-			    var url = "<@s.url value="/search/results?"/>?<#noescape>${type}</#noescape>=" + key;
-			    document.location = url;
-			}
-		}
-	});
+        });
+        $("#${name}").bind("plotclick",function(event, pos, obj) { 
+        for (var entry  in data${name}) {
+            if (data${name}[entry].label == obj.series.label) {
+                var key = data${name}[entry].key;
+                var url = "<@s.url value="/search/results?"/>?<#noescape>${type}</#noescape>=" + key;
+                document.location = url;
+            }
+        }
+    });
 
     $("#${name}").bind("plothover", function (event, pos, item) {
             if (item) {
@@ -129,7 +270,7 @@ ${filesize?string(",##0.00")}b
 
     });
     
-    		
+            
     </script>
 
 </#macro>
@@ -142,7 +283,7 @@ ${filesize?string(",##0.00")}b
     <#-- set pointer to last space before length (len) -->
      <#local ptr=text?last_index_of(" ",len) />
      <#-- if pointer to last space is greater than 1/2 of the max length, truncate at the pointer, 
-     	  otherwise truncate at 3 before length -->
+           otherwise truncate at 3 before length -->
        <#if (ptr > len / 2)>
            ${text?substring(0,ptr)}...
        <#else>
@@ -158,15 +299,15 @@ ${filesize?string(",##0.00")}b
 <#macro barGraph  resourceCacheObjects graphWidth=360 graphHeight=800 graphLabel="" rotateColors=true labelRotation=0 minWidth=50 searchKey="resourceTypes">
 <#assign totalItems = resourceCacheObjects?size />
    <#list resourceCacheObjects?sort_by("key") as key>
-	  <#if (key.count == 0) >
-		  <#assign totalItems = totalItems - 1/>
+      <#if (key.count == 0) >
+          <#assign totalItems = totalItems - 1/>
       </#if>
     </#list>
 
-	<#if (totalItems < 1)>
-		<#assign totalItems = 1 />
-	</#if>
-	
+    <#if (totalItems < 1)>
+        <#assign totalItems = 1 />
+    </#if>
+    
 <#assign barWidth = (graphWidth  / (totalItems) -6)/>
 <div class="barGraph" style="width:${graphWidth?c}px;height:${graphHeight?c}px;" >
     <p style="margin-right: auto;margin-left: auto;text-align:center;margin-top:10px;margin-bottom:0px"><b>${graphLabel}</b></p>
@@ -174,23 +315,23 @@ ${filesize?string(",##0.00")}b
   <tr>
   <#assign resourceTypeCount = 0>
    <#list resourceCacheObjects?sort_by("key") as key>
-	  <#if (key.count > 0) >
-		<#assign calulatedValue= key.key >
-		<#if calulatedValue?is_number>
-			<#assign calulatedValue=calulatedValue?c?string/>
-		</#if>
+      <#if (key.count > 0) >
+        <#assign calulatedValue= key.key >
+        <#if calulatedValue?is_number>
+            <#assign calulatedValue=calulatedValue?c?string/>
+        </#if>
         <#assign resourceTypeCount = key.logCount + resourceTypeCount >
         <td>
-	      	<a href="<@s.url value="/search/results?${searchKey}=${calulatedValue}"/>">
-	      	<div class="label">${key.count}</div><div class="bar" id="${key.cssId}"></div></a>
+              <a href="<@s.url value="/search/results?${searchKey}=${calulatedValue}"/>">
+              <div class="barlabel">${key.count}</div><div class="bar" id="${key.cssId}"></div></a>
         </td>
-	  </#if>
+      </#if>
     </#list>
   </tr>
   <tr>
    <#list resourceCacheObjects?sort_by("key") as key>
-	  <#if (key.count > 0) >
-      <td><div class="label">${key.label}</div></td>
+      <#if (key.count > 0) >
+      <td><div class="barlabel">${key.label}</div></td>
       </#if>
    </#list>
    </tr>
@@ -199,8 +340,8 @@ ${filesize?string(",##0.00")}b
 <!--[if IE]>
 <style>
 .barGraph table {
-	position:absolute;
-	bottom:5px;
+    position:absolute;
+    bottom:5px;
 }
 </style>
 <![endif]-->
@@ -214,11 +355,11 @@ table td  {vertical-align:bottom;}
 
    <#list resourceCacheObjects?sort_by("key") as key>
     <#if (key.count > 0)>
-	   <#assign color_= settings.barColors[0] />
-	    <#if rotateColors>
-	       <#assign color_=settings.barColors[key.resourceType.order - 1] />
-	    </#if>
-	      #${key.cssId} {background-color: ${color_}; height: ${(2 * graphHeight * (key.logCount / resourceTypeCount))?floor}px }
+       <#assign color_= settings.barColors[0] />
+        <#if rotateColors>
+           <#assign color_=settings.barColors[key.resourceType.order - 1] />
+        </#if>
+          #${key.cssId} {background-color: ${color_}; height: ${(2 * graphHeight * (key.logCount / resourceTypeCount))?floor}px }
     </#if>
    </#list>
 
@@ -226,36 +367,23 @@ table td  {vertical-align:bottom;}
 
 .bar {width:${barWidth?c}px;;min-width:${minWidth?c}px }
 
-div.label {
-    top: 0;
-    z-index: 1000;
-    overflow: visible;
-    left: 0px;
-    position: relative;
-    display: block;
-    text-align: center;
-    font-size: smaller;
-    line-height: 1.2em;
-    vertical-align: top !important;
-    height: 1.5em;
- }
- td > div.label {
+ td > div.barlabel {
     <#if (labelRotation == 90) >
-	    -webkit-transform: rotate(90deg); 
-		-moz-transform: rotate(90deg);	
-		filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
-	</#if>
+        -webkit-transform: rotate(90deg); 
+        -moz-transform: rotate(90deg);    
+        filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
+    </#if>
     <#if (labelRotation == 180) >
-	    -webkit-transform: rotate(180deg); 
-		-moz-transform: rotate(180deg);	
-		filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2);
-	</#if>
+        -webkit-transform: rotate(180deg); 
+        -moz-transform: rotate(180deg);    
+        filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2);
+    </#if>
     <#if (labelRotation == 270 || labelRotation == -90) >
-	    -webkit-transform: rotate(-90deg); 
-		-moz-transform: rotate(-90deg);	
-		filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
-	</#if>
-	
+        -webkit-transform: rotate(-90deg); 
+        -moz-transform: rotate(-90deg);    
+        filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+    </#if>
+    
 }
 </style>
 <script>
@@ -279,7 +407,7 @@ $(".bar").each(function() {
 <#macro flotBarGraph  resourceCacheObjects graphWidth=368 graphHeight=800 graphLabel="" rotateColors=true labelRotation=0 minWidth=50 searchKey="g[0].creationDecade" explore=false max=100000 min=-1 minDataVal=10 >
 <#assign totalItems = resourceCacheObjects?size />
 <#if (totalItems < 1)>
-	<#assign totalItems = 1 />
+    <#assign totalItems = 1 />
 </#if>
 
 
@@ -292,46 +420,46 @@ $(".bar").each(function() {
    var data = [];
    var ticks = [];
    <#list resourceCacheObjects?sort_by("key") as key>
-	<#assign calulatedValue= key.key >
-	<#if calulatedValue?is_number>
-		<#assign calulatedValue=calulatedValue?c?string/>
-	</#if>
-	${key.label?is_number?string}
-	<#if ((min?is_number && key.label?number > min ) 
-		&& (max?is_number && key.label?number < max ) && key.count > minDataVal )>
+    <#assign calulatedValue= key.key >
+    <#if calulatedValue?is_number>
+        <#assign calulatedValue=calulatedValue?c?string/>
+    </#if>
+    ${key.label?is_number?string}
+    <#if ((min?is_number && key.label?number > min ) 
+        && (max?is_number && key.label?number < max ) && key.count > minDataVal )>
       <#assign resourceTypeCount = key.logCount + resourceTypeCount >
       data[${key_index}] = ["${key.label}",${key.count?c}];
       ticks[${key_index}] = ["${key.label}",${key.label}];
-	</#if>
+    </#if>
     </#list>
 $(function() {
-	$.plot(
-	   $("#bargraph"),
-	   [
-	    {
-	      label: "${graphLabel?js_string}",
-	      data: data,
-	      bars: {
-	        show: true,
-	        barWidth: 9,
-	        align: "center"
-	      },
-	    },
- 	 ],
-	{
-		 grid: { hoverable: true, clickable: true },
-		 legend : { show:false }
-	}
-	);
-		$("#bargraph").bind("plotclick",function(event, pos, obj) { 
-		console.log(obj);
-  	 	  if (obj) {
-  	 	    //fixme: s.url links be
-		    var url = "<@s.url escapeAmp=false value="/search/results?${explore?string('explore=true&', '')}${searchKey}"/>" + obj.datapoint[0];
-		    console.log(url);
-		    document.location = url;
-		    }
-		});
+    $.plot(
+       $("#bargraph"),
+       [
+        {
+          label: "${graphLabel?js_string}",
+          data: data,
+          bars: {
+            show: true,
+            barWidth: 9,
+            align: "center"
+          },
+        },
+      ],
+    {
+         grid: { hoverable: true, clickable: true },
+         legend : { show:false }
+    }
+    );
+        $("#bargraph").bind("plotclick",function(event, pos, obj) { 
+        console.log(obj);
+             if (obj) {
+               //fixme: s.url links be
+            var url = "<@s.url escapeAmp=false value="/search/results?${explore?string('explore=true&', '')}${searchKey}"/>" + obj.datapoint[0];
+            console.log(url);
+            document.location = url;
+            }
+        });
 });
 </script>
 <div id="bargraph" style="width:${(graphWidth -5)?c}px;height:${(graphHeight -5)?c}px"></div>
@@ -355,7 +483,7 @@ $(".bar").each(function() {
 </#macro>
 
 <#macro worldMap>
-
+<div class="mapcontainer">
 <script type="text/javascript">
 $(function() {
     $('.map').maphilight({
@@ -364,13 +492,13 @@ $(function() {
       strokeColor:'#ffffff'
     });
  
-  $("map").delegate('area', 'mouseover',function(e) {
+  $(".map").delegate('area', 'mouseover',function(e) {
         $('[iso='+$(this).attr('iso')+']').each(function(index,val) {
             hightlight(true,val);
         });
    });
 
-  $("map").delegate('area', 'mouseout',function(e) {
+  $(".map").delegate('area', 'mouseout',function(e) {
         $('[iso='+$(this).attr('iso')+']').each(function(index,val) {
             hightlight(false,val);
         });
@@ -423,7 +551,7 @@ this bit of freemarker is voodoo:
 <#assign codes= {} + templateSource?eval />
 
 </script> 
-<div style="height:353px;border:1px solid #CCC;background-color:#fff;width:550px;padding-top:5px">
+<!-- div style="height:353px;border:1px solid #CCC;background-color:#fff;width:550px;padding-top:5px" -->
 <img class=map src="<@s.url value="/images/world_550_2.png" />" width=545 height=345 usemap="#world" > 
  <div id="map_legend">
   <div><span class='legendText'>none</span> 
@@ -588,7 +716,7 @@ this bit of freemarker is voodoo:
 <@renderMap code="ZW" coords="324,267 , 326,268 , 328,271 , 328,273 , 327,275 , 323,277 , 321,276 , 319,274 , 316,270 , 319,271 , 322,268 , 324,267" title="Zimbabwe" />
 
 </map>
-</div>
+ </div> 
 
 </#macro>
 
@@ -597,9 +725,9 @@ this bit of freemarker is voodoo:
  <#assign logCode= code+'_'/>
  <#if (val > 0)>
 
-	<#if countryLogTotal == 0>
-		<#assign countryLogTotal = 0 />
-	</#if>
+    <#if countryLogTotal == 0>
+        <#assign countryLogTotal = 0 />
+    </#if>
 
     <#assign percent = ((codes[logCode]/countryLogTotal) * 100)?floor />
     <#assign color = "#ffffff" />
@@ -655,6 +783,16 @@ this bit of freemarker is voodoo:
 </#macro>
 
 
+<#macro loginMenu>
+	<ul class="subnav-rht">
+		<#if !(authenticatedUser??) > 
+				<li><a href="<@s.url value="/register" />" class="btn">Sign Up</a></li>
+				<li><a href="<@s.url value="/login" />" class="btn">Log In</a></li>
+		<#else>
+				<li><a href="<@s.url value="/logout" />" class="btn">Logout</a></li>
+		</#if>						
+	</ul>
+</#macro>
 
 </#escape>
 

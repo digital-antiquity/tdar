@@ -61,6 +61,7 @@ public class WorkflowContextService {
                 if (ctx.getTransientResource() == null) {
                     break;
                 }
+                genericDao.detachFromSession(ctx.getTransientResource());
                 logger.info(ctx.getTransientResource());
                 logger.info(((Dataset) ctx.getTransientResource()).getDataTables());
                 datasetService.reconcileDataset(irFile, dataset, (Dataset) ctx.getTransientResource());
@@ -68,6 +69,7 @@ public class WorkflowContextService {
                 break;
             default:
                 break;
+
         }
         // setting transient context for evaluation
         irFile.setWorkflowContext(ctx);
@@ -84,27 +86,14 @@ public class WorkflowContextService {
         for (InformationResourceFileVersion version : ctx.getVersions()) {
             // if the derivative's ID is null, we know that it hasn't been persisted yet, so we save.
             version.setInformationResourceFile(irFile);
-            if (version.getId() == null) {
-                informationResourceFileVersionService.save(version);
-            }
-            // if the derivative's ID is not null it has previously been saved, so we pull it onto the current hibernate session and update it.
-            else {
-                version = informationResourceFileVersionService.merge(version);
-                informationResourceFileVersionService.saveOrUpdate(version);
-            }
             irFile.addFileVersion(version);
         }
 
         logger.trace(ctx.toXML());
-        orig = informationResourceFileVersionService.merge(orig);
         orig.setInformationResourceFile(irFile);
-        genericDao.saveOrUpdate(orig);
+        // genericDao.saveOrUpdate(orig);
         irFile.setInformationResource(genericDao.find(InformationResource.class, ctx.getInformationResourceId()));
-        genericDao.saveOrUpdate(irFile);
-
-        // force update of content so it gets indexed
-        // resource.markUpdated(resource.getUpdatedBy());
-        // informationResourceService.saveOrUpdate(resource);
+        genericDao.merge(irFile);
     }
 
     /*

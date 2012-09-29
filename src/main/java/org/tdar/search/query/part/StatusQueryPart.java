@@ -30,7 +30,7 @@ public class StatusQueryPart extends FieldQueryPart<Status> {
     public String generateQueryString() {
         List<Status> localStatuses = new ArrayList<Status>(getFieldValues());
         QueryPartGroup draftSubgroup = new QueryPartGroup(Operator.AND);
-        if (!Persistable.Base.isNullOrTransient(getPerson()) && localStatuses.contains(Status.DRAFT)) {
+        if (Persistable.Base.isNotNullOrTransient(getPerson()) && localStatuses.contains(Status.DRAFT)) {
             draftSubgroup.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Status.DRAFT));
             QueryPartGroup permissionsSubgroup = new QueryPartGroup(Operator.OR);
             draftSubgroup.setOperator(Operator.AND);

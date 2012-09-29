@@ -12,6 +12,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.resource.LicenseType;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.PairtreeFilestore;
 
@@ -199,6 +200,10 @@ public class TdarConfiguration {
         return assistant.getBooleanProperty("privacy.controls.enabled", false);
 
     }
+    
+    public boolean getLicenseEnabled() {
+    	return assistant.getBooleanProperty("licenses.enabled", false);    	
+    }
 
     public boolean getCopyrightMandatory() {
         return assistant.getBooleanProperty("copyright.fields.enabled", false);
@@ -304,10 +309,14 @@ public class TdarConfiguration {
     }
 
     /**
-     * @return the theme
+     * @return the theme directory
      */
     public String getThemeDir() {
-        return assistant.getStringProperty("app.theme.dir", "/includes/themes/tdar/");
+        String dir = assistant.getStringProperty("app.theme.dir", "includes/themes/tdar/");
+        if (dir.startsWith("/")) {
+            dir = dir.substring(1);
+        }
+        return dir;
     }
 
     /**
@@ -431,12 +440,29 @@ public class TdarConfiguration {
         return assistant.getStringProperty("comment.url", "mailto:comments@tdar.org");
     }
 
-    public String getSiteAcroynm() {
-        return assistant.getStringProperty("site.acroynm", "tDAR");
+    public String getSiteAcronym() {
+        return assistant.getStringProperty("site.acronym", "tDAR");
     }
 
     public String getSiteName() {
         return assistant.getStringProperty("site.name", "the Digital Archaeological Record");
     }
 
+    public LicenseType getDefaultLicenseType() {
+        return LicenseType.valueOf(assistant.getStringProperty("default.license.type", LicenseType.CREATIVE_COMMONS_ATTRIBUTION.name()));
+    }
+
+    public Boolean isRPAEnabled() {
+    	return assistant.getBooleanProperty("rpa.enabled", true);
+    }
+
+    public String getContactEmail() {
+        return assistant.getStringProperty("app.contact.email", "info@digitalantiquity.org");
+    }
+
+    public int getEmbargoPeriod() {
+        return assistant.getIntProperty("embargo.period", 5);
+    }
+    
+    
 }

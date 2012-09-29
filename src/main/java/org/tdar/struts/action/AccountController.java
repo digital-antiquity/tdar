@@ -17,6 +17,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.request.ContributorRequest;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.auth.AuthenticationResult;
 import org.tdar.core.service.external.auth.InternalTdarRights;
@@ -44,16 +45,15 @@ public class AccountController extends AuthenticationAware.Base implements Prepa
     private static final long serialVersionUID = 1147098995283237748L;
 
     // FIXME: localize messages
-    public static final String SUCCESSFUL_REGISTRATION_MESSAGE = "Thank you for registering with tDAR! Your registration was processed successfully.";
+    public static final String SUCCESSFUL_REGISTRATION_MESSAGE = "Thank you for registering! Your registration was processed successfully.";
     public static final String COULD_NOT_AUTHENTICATE_AT_THIS_TIME = "Could not authenticate at this time";
     public static final String ERROR_PASSWORDS_DONT_MATCH = "Please make sure your passwords match.";
     public static final String ERROR_MISSING_EMAIL = "Please enter an email address";
     public static final String ERROR_DUPLICATE_EMAIL = "Email already registered";
     public static final String ERROR_EMAILS_DONT_MATCH = "Please make sure your emails match.";
-    public static final String ERROR_CONFIRM_EMAIL = "Please confirm your email to access tDAR.";
-    public static final String ERROR_CONFIRM_PASSWORD = "Please confirm your password to access tDAR.";
-    public static final String ERROR_CHOOSE_PASSWORD = "Please choose a password to access tDAR.";
-    public static final String ERROR_ALREADY_REGISTERED = "This email address is already registered in our system.";
+    public static final String ERROR_CONFIRM_EMAIL = "Please confirm your email to access the site.";
+    public static final String ERROR_CONFIRM_PASSWORD = "Please confirm your password to access the site.";
+    public static final String ERROR_CHOOSE_PASSWORD = "Please choose a password to access the site.";
     public static final String ERROR_USERNAME_ALREADY_REGISTERED = "This username  is already registered in our system.";
     public static final String ERROR_MAXLENGTH = "The '%s' field accepts a maximum of %s characters.";
     private static final int MAXLENGTH_CONTRIBUTOR = 512;
@@ -176,6 +176,7 @@ public class AccountController extends AuthenticationAware.Base implements Prepa
                 getEntityService().saveOrUpdate(getContributorRequest());
             }
             // add user to Crowd
+            person.setStatus(Status.ACTIVE);
             getEntityService().saveOrUpdate(person);
 
             getLogger().debug("Trying to add user to auth service...");
@@ -262,7 +263,7 @@ public class AccountController extends AuthenticationAware.Base implements Prepa
         // validate email + confirmation
         if (isUsernameRegistered(person.getUsername())) {
             logger.debug("username was already registered: ", person.getUsername());
-            addActionError(ERROR_ALREADY_REGISTERED);
+            addActionError(ERROR_USERNAME_ALREADY_REGISTERED);
         } else if (StringUtils.isBlank(getConfirmEmail())) {
             addActionError(ERROR_CONFIRM_EMAIL);
         } else if (!new EqualsBuilder().append(person.getEmail(), getConfirmEmail()).isEquals()) {

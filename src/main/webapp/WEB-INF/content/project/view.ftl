@@ -20,13 +20,13 @@
 <h3>There are ${totalRecords?c} Resources within this Project</h3>
 
     <#if ( results?has_content )>
-			  <@rlist.listResources resourcelist=results sortfield="RESOURCE_TYPE" expanded=true listTag="ol" headerTag="h4" />
+              <@rlist.listResources resourcelist=results sortfield="RESOURCE_TYPE" expanded=true listTag="ol" headerTag="h4" />
     </#if>
 
     <#if ( results?? && numPages > 1)>
-		<div style="border-top:1px solid #999;padding:2px 2px 2px 2px">
-			 <@search.pagination ""/>
-		</div>
+        <div style="border-top:1px solid #999;padding:2px 2px 2px 2px">
+             <@search.pagination ""/>
+        </div>
     </#if>
 
 </div>

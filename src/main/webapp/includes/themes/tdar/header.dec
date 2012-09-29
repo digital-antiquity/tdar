@@ -1,5 +1,9 @@
-	          <div id="title">
-	          	<a href="http://www.tdar.org"><img src="<@s.url value="/images/tdarnew.png"/>" alt='' 
-					width='90' /> </a></div>
-	          <div id="description"> the Digital <br/>Archaeological Record </div><!--end description--> 
-	          <div id="digant"><a id="diganttext" href="http://www.digitalantiquity.org">a service of<br/>Digital Antiquity</a></div> 
+<div id="title" class="span1">
+    <a href="http://www.tdar.org"><img src="<@s.url value="/images/tdarnew.png"/>" alt='' width='90' /></a>
+</div>
+<div id="description" class="span2"> 
+    the Digital <br/>Archaeological Record 
+</div><!--end description--> 
+<div id="digant" class="offset3 span2">
+    <a id="diganttext" href="http://www.digitalantiquity.org">a service of<br/>Digital Antiquity</a>
+</div> 

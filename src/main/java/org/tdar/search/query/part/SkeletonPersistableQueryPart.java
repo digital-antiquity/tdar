@@ -14,6 +14,7 @@ public class SkeletonPersistableQueryPart<P extends Persistable> extends Abstrac
 
     private List<P> reference;
 
+    @SuppressWarnings("unchecked")
     public SkeletonPersistableQueryPart(String fieldName, String fieldLabel, Class<P> originalClass, List<P> fieldValues_) {
         setAllowInvalid(true);
         setDisplayName(fieldLabel);
@@ -36,7 +37,7 @@ public class SkeletonPersistableQueryPart<P extends Persistable> extends Abstrac
         List<Integer> trans = new ArrayList<Integer>();
         // iterate through all of the values; if any of them are transient, put those positions off to the side
         for (int i = 0; i < getFieldValues().size(); i++) {
-            if (!Persistable.Base.isNullOrTransient(getFieldValues().get(i))) {
+            if (Persistable.Base.isNotNullOrTransient(getFieldValues().get(i))) {
                 appendPhrase(sb, i);
             } else {
                 trans.add(i);

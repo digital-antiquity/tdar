@@ -3,7 +3,6 @@ package org.tdar.core.service.external;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -80,7 +79,7 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
 
     public void updateUsername(Person person, String newUsername, String password) {
         if (personDao.findByUsername(newUsername.toLowerCase()) != null) {
-            throw new TdarRecoverableRuntimeException(String.format("Username %s already exists",newUsername));
+            throw new TdarRecoverableRuntimeException(String.format("Username %s already exists", newUsername));
         }
 
         String[] groupNames = getProvider().findGroupMemberships(person);
@@ -281,12 +280,11 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
         }
     }
 
-    
     public boolean canView(Person authenticatedUser, Persistable item) {
         if (item instanceof Resource) {
             return canViewResource(authenticatedUser, (Resource) item);
         } else if (item instanceof ResourceCollection) {
-            return canViewCollection((ResourceCollection) item,authenticatedUser);
+            return canViewCollection((ResourceCollection) item, authenticatedUser);
         } else {
             return can(InternalTdarRights.VIEW_ANYTHING, authenticatedUser);
         }
@@ -359,8 +357,7 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
     public boolean canDownload(InformationResourceFile irFile, Person person) {
         if (irFile == null)
             return false;
-        boolean fileRestricted = (irFile.isConfidential() || !irFile.getInformationResource().isAvailableToPublic());
-        if (fileRestricted && !canViewConfidentialInformation(person, irFile.getInformationResource())) {
+        if (!irFile.isPublic() && !canViewConfidentialInformation(person, irFile.getInformationResource())) {
             return false;
         } else {
             return true;
@@ -403,16 +400,15 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
             item.setViewable(viewable);
         }
     }
-    
-    
-    //normalize username to abide by our business rules
-    //TODO: replace calls to username.toLowerCase() where appropriate
+
+    // normalize username to abide by our business rules
+    // TODO: replace calls to username.toLowerCase() where appropriate
     public String normalizeUsername(String userName) {
-        //for now, we just lowercase it.
-        String normalizedUsername =  userName.toLowerCase();
+        // for now, we just lowercase it.
+        String normalizedUsername = userName.toLowerCase();
         return normalizedUsername;
     }
-    
+
     public void setTransientViewableStatus(InformationResource ir, Person p) {
         for (InformationResourceFile irf : ir.getInformationResourceFiles()) {
             boolean viewable = canDownload(irf, p);
@@ -423,5 +419,5 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
             }
         }
     }
-    
+
 }

@@ -83,7 +83,7 @@ public class LoginAction extends AuthenticationAware.Base {
             person = getEntityService().findByUsername(loginUsername);
             if (person == null) {
                 // FIXME: person exists in Crowd but not in tDAR..
-                logger.debug("Person successfully authenticated in crowd but not present in tDAR: " + loginUsername);
+                logger.debug("Person successfully authenticated by authentication service but not present in site database: " + loginUsername);
                 person = new Person();
                 person.setUsername(loginUsername);
                 // how to pass along authentication information..?

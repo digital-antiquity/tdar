@@ -4,6 +4,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.TestConstants;
+import org.tdar.core.configuration.TdarConfiguration;
 
 public class CodingSheetEditITCase extends AbstractAdminAuthenticatedWebTestCase {
 
@@ -30,6 +32,10 @@ public class CodingSheetEditITCase extends AbstractAdminAuthenticatedWebTestCase
         setInput("codingSheet.description", "description");
         setInput("codingSheet.date", "1937");
         setInput(CODING_SHEET_INPUT_METHOD_FIELD, CODING_SHEET_INPUT_METHOD_TEXT);
+        if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
+            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+            setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
+        }
         submitFormWithoutErrorCheck("Save");
         assertTextPresent("Please enter your Coding Sheet into the text area.");
         assertTextPresentInCode("action-error");

@@ -395,6 +395,7 @@ public class SpringLdapService extends BaseAuthenticationProvider {
             return dn;
         }
 
+        @SuppressWarnings("unused")
         private Name buildPersonDN(Person person) throws InvalidNameException {
             return buildPersonDN(person.getUsername());
         }
@@ -405,6 +406,7 @@ public class SpringLdapService extends BaseAuthenticationProvider {
             return dn;
         }
 
+        @SuppressWarnings("unused")
         private Name buildGroupDN(String groupName) throws InvalidNameException {
             DistinguishedName dn = new DistinguishedName(getBaseDN());
             dn.addAll(buildGroupRDN(groupName));

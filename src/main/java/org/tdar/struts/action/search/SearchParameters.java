@@ -91,6 +91,7 @@ public class SearchParameters {
     private List<String> allFields = new ArrayList<String>();
     private List<String> titles = new ArrayList<String>();
     private List<String> contents = new ArrayList<String>();
+    private List<String> filenames = new ArrayList<String>();
 
     private List<ResourceCreatorProxy> resourceCreatorProxies = new ArrayList<ResourceCreatorProxy>();
     // private List<String> creatorRoleIdentifiers = new ArrayList<String>();
@@ -297,13 +298,15 @@ public class SearchParameters {
     }
 
     // FIXME: where appropriate need to make sure we pass along the operator to any sub queryPart groups
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public QueryPartGroup toQueryPartGroup() {
 
         QueryPartGroup queryPartGroup = new QueryPartGroup(getOperator());
 
         queryPartGroup.append(new GeneralSearchResourceQueryPart(this.getAllFields()));
         queryPartGroup.append(new TitleQueryPart(this.getTitles()));
-        queryPartGroup.append(new FieldQueryPart("content", contents));
+        queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.CONTENT, contents));
+        queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.FILENAME, filenames));
 
         // freeform keywords
         appendKeywordQueryParts(queryPartGroup, OtherKeyword.class, QueryFieldNames.ACTIVE_OTHER_KEYWORDS, Arrays.asList(this.getOtherKeywords()));
@@ -358,6 +361,7 @@ public class SearchParameters {
         return queryPartGroup;
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private <P extends Persistable> SkeletonPersistableQueryPart constructSkeletonQueryPart(String fieldName, String label, String prefix, Class<P> cls,
             List<P> values) {
         SkeletonPersistableQueryPart q = new SkeletonPersistableQueryPart(fieldName, label, cls, values);
@@ -393,6 +397,7 @@ public class SearchParameters {
         }
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     protected <I, K extends Keyword> HydrateableKeywordQueryPart createKeywordQueryPart(Class<K> type, String fieldName, List<I> values) {
         List<K> kwdValues = new ArrayList<K>();
         for (I value : values) {
@@ -506,6 +511,14 @@ public class SearchParameters {
 
     public void setIntegratableOptions(List<IntegratableOptions> integratableOptions) {
         this.integratableOptions = integratableOptions;
+    }
+
+    public List<String> getFilenames() {
+        return filenames;
+    }
+
+    public void setFilenames(List<String> filenames) {
+        this.filenames = filenames;
     }
 
 }

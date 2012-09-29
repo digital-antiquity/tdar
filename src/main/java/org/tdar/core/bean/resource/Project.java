@@ -13,6 +13,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Field;
@@ -24,6 +25,7 @@ import org.tdar.core.bean.Sortable;
 import org.tdar.core.configuration.JSONTransient;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
+import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
@@ -143,6 +145,7 @@ public class Project extends Resource implements Sortable {
     }
 
     @IndexedEmbedded(prefix = "informationResources.")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public Set<InformationResource> getCachedInformationResources() {
         return cachedInformationResources;
     }

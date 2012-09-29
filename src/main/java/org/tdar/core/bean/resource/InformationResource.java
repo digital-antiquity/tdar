@@ -64,6 +64,7 @@ import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.configuration.JSONTransient;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -104,7 +105,6 @@ public abstract class InformationResource extends Resource {
             "inheritingOtherInformation", "inheritingSiteInformation", "inheritingSpatialInformation", "inheritingTemporalInformation",
             "inheritingIdentifierInformation", "inheritingNoteInformation", "inheritingCollectionInformation"
     };
-    public static final int EMBARGO_PERIOD_YEARS = 5;
 
     public InformationResource() {
 
@@ -130,11 +130,6 @@ public abstract class InformationResource extends Resource {
 
     @Transient
     private Long projectId;
-    
-    @Transient
-    transient int contentCallCount = 0;
-    
-   
 
     // @ManyToMany
     // @JoinTable(name = "information_resource_related_citation", joinColumns = @JoinColumn(name = "information_resource_id"), inverseJoinColumns = @JoinColumn(
@@ -151,28 +146,31 @@ public abstract class InformationResource extends Resource {
     @OneToMany(mappedBy = "informationResource", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
     @OrderBy("sequenceNumber asc")
     @JSONTransient
+    @IndexedEmbedded
     private Set<InformationResourceFile> informationResourceFiles = new LinkedHashSet<InformationResourceFile>();
 
     @BulkImportField(label = "Metadata Language", comment = BulkImportField.METADATA_LANGUAGE_DESCRIPTION)
     @Enumerated(EnumType.STRING)
+    @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     @Column(name = "metadata_language")
     private Language metadataLanguage;
 
     @BulkImportField(label = "Resource Language", comment = BulkImportField.RESOURCE_LANGAGE_DESCRIPTION)
     @Enumerated(EnumType.STRING)
+    @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     @Column(name = "resource_language")
     private Language resourceLanguage;
 
     @Enumerated(EnumType.STRING)
+    @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     @Column(name = "license_type")
+    @BulkImportField(label = BulkImportField.LICENSE_TYPE, required = true)
     private LicenseType licenseType;
 
     @Column(name = "license_text")
+    @BulkImportField(label = BulkImportField.LICENSE_TEXT)
     @Type(type = "org.hibernate.type.StringClobType")
     private String licenseText;
-
-    @Column(name = "available_to_public")
-    private boolean availableToPublic = true;
 
     @Column(name = "external_reference", nullable = true)
     private boolean externalReference;
@@ -184,12 +182,6 @@ public abstract class InformationResource extends Resource {
     @Column(name = "last_uploaded")
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastUploaded;
-
-    // a date in standard form that a resource will become public if availableToPublic was set to false.
-    // This date may be extended by the publisher but will not extend past the publisher's death unless
-    // special arrangements are made.
-    @Column(name = "date_made_public")
-    private Date dateMadePublic;
 
     // currently just a 4 digit year.
     @Column(name = "date_created")
@@ -204,20 +196,24 @@ public abstract class InformationResource extends Resource {
     private Integer dateNormalized = -1;
 
     // The institution providing this InformationResource
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
+    @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     @JoinColumn(name = "provider_institution_id")
     @IndexedEmbedded
     private Institution resourceProviderInstitution;
 
-    // @ManyToOne
-    // @JoinColumn(name = "publisher_id")
-    // @IndexedEmbedded
-    // private Institution publisher;
-    //
-    // private String publisherLocation;
+    @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
+    @BulkImportField(label = "Publisher")
+    @JoinColumn(name = "publisher_id")
+    @IndexedEmbedded
+    private Institution publisher;
+
+    @BulkImportField(label = "Publisher Location")
+    @Column(name = "publisher_location")
+    private String publisherLocation;
 
     @JoinColumn(name = "copyright_holder_id")
-    @ManyToOne(optional = true)
+    @BulkImportField(label = BulkImportField.COPYRIGHT_HOLDER, required = true)
+    @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     // @BulkImportField(implementedSubclasses = { Person.class, Institution.class }, label = "Primary Copyright Holder", order = 1)
     private Creator copyrightHolder;
 
@@ -285,31 +281,22 @@ public abstract class InformationResource extends Resource {
 
     public void setLicenseType(LicenseType licenseType) {
         this.licenseType = licenseType;
+        if (licenseType != LicenseType.OTHER) {
+            setLicenseText(null);
+        }
     }
 
     @XmlElement(name = "licenseText")
     public String getLicenseText() {
-        return licenseText;
+        if (licenseType == LicenseType.OTHER) {
+            return licenseText;
+        } else {
+            return null;
+        }
     }
 
     public void setLicenseText(String licenseText) {
         this.licenseText = licenseText;
-    }
-
-    public boolean isAvailableToPublic() {
-        return availableToPublic;
-    }
-
-    public void setAvailableToPublic(boolean availableToPublic) {
-        this.availableToPublic = availableToPublic;
-    }
-
-    public Date getDateMadePublic() {
-        return dateMadePublic;
-    }
-
-    public void setDateMadePublic(Date dateMadePublic) {
-        this.dateMadePublic = dateMadePublic;
     }
 
     public Integer getDate() {
@@ -369,7 +356,7 @@ public abstract class InformationResource extends Resource {
 
     @Transient
     @Fields({
-            @Field(boost = @Boost(1.5f), name=QueryFieldNames.PROJECT_TITLE),
+            @Field(boost = @Boost(1.5f), name = QueryFieldNames.PROJECT_TITLE),
             @Field(name = QueryFieldNames.PROJECT_TITLE_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)),
             @Field(name = QueryFieldNames.PROJECT_TITLE_SORT, norms = Norms.NO, store = Store.YES) })
     public String getProjectTitle() {
@@ -431,6 +418,9 @@ public abstract class InformationResource extends Resource {
     public String getFormattedSourceInformation() {
         StringBuilder sb = new StringBuilder();
 
+        appendIfNotBlank(sb, getPublisherLocation(), ".", "");
+        appendIfNotBlank(sb, getPublisherName(), ":", "");
+
         if (getDate() != null && getDate().intValue() != -1) {
             appendIfNotBlank(sb, getDate().toString(), ".", "");
         }
@@ -449,6 +439,7 @@ public abstract class InformationResource extends Resource {
     }
 
     @JSONTransient
+    @XmlTransient
     public InformationResourceFile getFirstInformationResourceFile() {
         if (getInformationResourceFiles().isEmpty()) {
             return null;
@@ -466,6 +457,7 @@ public abstract class InformationResource extends Resource {
     }
 
     @JSONTransient
+    @XmlTransient
     public Collection<InformationResourceFileVersion> getLatestVersions() {
         // FIXME: this method will become increasingly expensive as the number of files increases
         ArrayList<InformationResourceFileVersion> latest = new ArrayList<InformationResourceFileVersion>();
@@ -491,6 +483,7 @@ public abstract class InformationResource extends Resource {
     }
 
     @JSONTransient
+    @XmlTransient
     public InformationResourceFileVersion getLatestUploadedVersion() {
         Collection<InformationResourceFileVersion> latestUploadedVersions = getLatestUploadedVersions();
         if (CollectionUtils.isEmpty(latestUploadedVersions)) {
@@ -501,6 +494,7 @@ public abstract class InformationResource extends Resource {
     }
 
     @JSONTransient
+    @XmlTransient
     public Collection<InformationResourceFileVersion> getLatestUploadedVersions() {
         return getLatestVersions(VersionType.UPLOADED);
     }
@@ -513,16 +507,17 @@ public abstract class InformationResource extends Resource {
     @XmlTransient
     @JSONTransient
     public List<URI> getContent() {
-        contentCallCount++;
         logger.trace("getContent");
         List<InformationResourceFile> files = getPublicFiles();
-        if (!isAvailableToPublic() || CollectionUtils.isEmpty(files)) {
+        if (CollectionUtils.isEmpty(files)) {
             return null;
         }
         // List<InputStream> streams = new ArrayList<InputStream>();
         List<URI> fileURIs = new ArrayList<URI>();
         for (InformationResourceFile irFile : files) {
             try {
+                if (irFile.getRestriction() != FileAccessRestriction.PUBLIC)
+                    continue;
                 InformationResourceFileVersion indexableVersion = irFile.getIndexableVersion();
                 if (indexableVersion.getFile().exists()) {
                     fileURIs.add(indexableVersion.getFile().toURI());
@@ -535,15 +530,14 @@ public abstract class InformationResource extends Resource {
         return fileURIs;
     }
 
-    @Field(norms = Norms.NO, store = Store.YES, name = QueryFieldNames.RESOURCE_ACCESS_TYPE)
-    @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
+    @Field(norms = Norms.NO, store = Store.YES, name = QueryFieldNames.RESOURCE_ACCESS_TYPE, analyzer = @Analyzer(
+            impl = TdarCaseSensitiveStandardAnalyzer.class))
     @Transient
-    // FIXME: This should work properly with the analyzer above without the toLowerCase()
     public ResourceAccessType getResourceAccessType() {
         int totalFiles = getNonDeletedFiles().size();
         int publicFiles = getPublicFiles().size();
         if (totalFiles > 0) {
-            if (publicFiles == 0 || !isAvailableToPublic()) {
+            if (publicFiles == 0) {
                 return ResourceAccessType.RESTRICTED;
             }
             if (publicFiles == totalFiles) {
@@ -756,14 +750,24 @@ public abstract class InformationResource extends Resource {
     }
 
     @Transient
+    @JSONTransient
+    public boolean hasEmbargoedFiles() {
+        for (InformationResourceFile file : getConfidentialFiles()) {
+            if (file.isEmbargoed())
+                return true;
+        }
+        return false;
+    }
+
+    @Transient
     public List<InformationResourceFile> getFilesWithRestrictions(boolean confidential) {
         List<InformationResourceFile> confidentialFiles = new ArrayList<InformationResourceFile>();
         List<InformationResourceFile> publicFiles = new ArrayList<InformationResourceFile>();
         for (InformationResourceFile irFile : getNonDeletedFiles()) {
-            if (irFile.isConfidential()) {
-                confidentialFiles.add(irFile);
-            } else {
+            if (irFile.isPublic()) {
                 publicFiles.add(irFile);
+            } else {
+                confidentialFiles.add(irFile);
             }
         }
         if (confidential) {
@@ -788,6 +792,7 @@ public abstract class InformationResource extends Resource {
         if (getResourceProviderInstitution() != null) {
             sb.append(" ").append(getResourceProviderInstitution().getName());
         }
+        sb.append(" ").append(getPublisherName());
 
         if (MapUtils.isNotEmpty(relatedDatasetData)) {
             for (String v : relatedDatasetData.values()) {
@@ -956,24 +961,51 @@ public abstract class InformationResource extends Resource {
     @Transient
     public List<InformationResourceFile> getNonDeletedFiles() {
         List<InformationResourceFile> files = new ArrayList<InformationResourceFile>();
-        for( InformationResourceFile irf : getInformationResourceFiles()) {
-            if(!irf.isDeleted()) {
+        for (InformationResourceFile irf : getInformationResourceFiles()) {
+            if (!irf.isDeleted()) {
                 files.add(irf);
             }
         }
         return files;
     }
-    
+
     @Transient
     @Override
-    //we consider a record to be citation record if it doesn't have any file attachments.
+    // we consider a record to be citation record if it doesn't have any file attachments.
     public boolean isCitationRecord() {
-        return getResourceAccessType()==ResourceAccessType.CITATION;
+        return getResourceAccessType() == ResourceAccessType.CITATION;
     }
-    
-    @Transient
-    @Deprecated
-    public int getContentCallCount() {
-        return contentCallCount;
+
+    public Institution getPublisher() {
+        return publisher;
     }
+
+    public void setPublisher(Institution publisher) {
+        this.publisher = publisher;
+    }
+
+    public String getPublisherLocation() {
+        return publisherLocation;
+    }
+
+    public void setPublisherLocation(String publisherLocation) {
+        this.publisherLocation = publisherLocation;
+    }
+
+    public String getPublisherName() {
+        if (publisher != null) {
+            return publisher.getName();
+        }
+        return null;
+    }
+
+    @Override
+    public <R extends Resource> void copyImmutableFieldsFrom(R resource_) {
+        super.copyImmutableFieldsFrom(resource_);
+        InformationResource resource = (InformationResource) resource_;
+        this.getInformationResourceFiles().addAll(new HashSet<InformationResourceFile>(resource.getInformationResourceFiles()));
+        this.setPublisher(resource.getPublisher());
+        this.setResourceProviderInstitution(resource.getResourceProviderInstitution());
+
+    };
 }

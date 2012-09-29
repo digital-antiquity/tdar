@@ -2,12 +2,14 @@ package org.tdar.core.bean.entity;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -24,11 +26,10 @@ import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.Obfuscatable;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.resource.BookmarkedResource;
-import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
-import org.tdar.search.query.QueryFieldNames;
 
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
@@ -45,11 +46,15 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 @Table(name = "person")
 @Indexed(index = "Person")
 @XmlRootElement(name = "person")
-public class Person extends Creator implements Comparable<Person>, Validatable {
+public class Person extends Creator implements Comparable<Person>, Dedupable<Person>, Validatable {
 
     @Transient
-    private static final String[] IGNORE_PROPERTIES_FOR_UNIQUENESS = { "id", "institution", "dateCreated", "dateUpdated", "registered", "privileged", "rpa",
-            "contributor", "totalLogins", "lastLogin", "penultimateLogin", "emailPublic", "phonePublic" };
+    private static final String[] IGNORE_PROPERTIES_FOR_UNIQUENESS = { "id", "institution", "dateCreated", "dateUpdated", "registered",
+            "contributor", "totalLogins", "lastLogin", "penultimateLogin", "emailPublic", "phonePublic", "status", "synonyms" };
+
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+    @JoinColumn(name = "merge_creator_id")
+    private Set<Person> synonyms = new HashSet<Person>();
 
     private static final long serialVersionUID = -3863573773250268081L;
 
@@ -89,7 +94,7 @@ public class Person extends Creator implements Comparable<Person>, Validatable {
     private Boolean emailPublic = Boolean.FALSE;
 
     @IndexedEmbedded(depth = 1)
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, optional = true)
     // FIXME: this causes PersonController to throw non-unique key violations again when changing from one persistent Institution
     // to another persistent Institution. WHY
     // @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE})
@@ -114,20 +119,11 @@ public class Person extends Creator implements Comparable<Person>, Validatable {
     @Column(name = "contributor_reason", length = 512)
     private String contributorReason;
 
-    // can this user access confidential resources?
-    @Deprecated
-    private boolean privileged = false;
-
     // did this user register with the system or were they entered by someone
     // else?
     @Field
     @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
     private Boolean registered = Boolean.FALSE;
-
-    // is this person a registered professional archaeologist? See
-    // http://www.rpanet.org for more info
-    @Deprecated
-    private Boolean rpa = Boolean.FALSE;
 
     // rpanet.org number (if applicable - using String since I'm not sure if
     // it's in numeric format)
@@ -277,35 +273,13 @@ public class Person extends Creator implements Comparable<Person>, Validatable {
         this.contributor = contributor;
     }
 
-    @XmlTransient
-    @Deprecated
-    public boolean isPrivileged() {
-        return privileged;
-    }
-
-    @Deprecated
-    public void setPrivileged(Boolean privileged) {
-        this.privileged = privileged;
-    }
-
     public Boolean isRegistered() {
         return registered;
     }
 
-    public Boolean getRegistered() {
-        return registered;
-    }
 
     public void setRegistered(Boolean registered) {
         this.registered = registered;
-    }
-
-    public Boolean getRpa() {
-        return rpa;
-    }
-
-    public void setRpa(Boolean rpa) {
-        this.rpa = rpa;
     }
 
     public String getRpaNumber() {
@@ -341,6 +315,7 @@ public class Person extends Creator implements Comparable<Person>, Validatable {
         this.phonePublic = toggle;
     }
 
+    @XmlTransient
     public List<?> getEqualityFields() {
         return Arrays.asList(email);
     }
@@ -437,6 +412,16 @@ public class Person extends Creator implements Comparable<Person>, Validatable {
         return StringUtils.isNotBlank(firstName) && StringUtils.isNotBlank(lastName);
     }
 
+    @Transient
+    @Override
+    public boolean hasNoPersistableValues() {
+        if (StringUtils.isBlank(email) && (institution == null || StringUtils.isBlank(institution.getName())) && StringUtils.isBlank(lastName) &&
+                StringUtils.isBlank(firstName) && Persistable.Base.isNullOrTransient(getId())) {
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public boolean isValid() {
         return isValidForController() && getId() != null;
@@ -449,4 +434,13 @@ public class Person extends Creator implements Comparable<Person>, Validatable {
     public void setUsername(String username) {
         this.username = username;
     }
+
+    public Set<Person> getSynonyms() {
+        return synonyms;
+    }
+
+    public void setSynonyms(Set<Person> synonyms) {
+        this.synonyms = synonyms;
+    }
+
 }

@@ -18,6 +18,7 @@ import java.util.regex.Pattern;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.core.configuration.TdarConfiguration;
 
 /**
  * @author Adam Brin
@@ -41,6 +42,13 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     public static String DESCRIPTION = "A resource description";
     public static final String SPITAL_DB_NAME = "Spital Abone database.mdb";
 
+    private static void addCopyrightHolder(final HashMap<String, String> valueMap) {
+        if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
+            valueMap.put(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+            valueMap.put(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
+        }
+    }
+
     public DatasetWebITCase() {
         docValMap.put(PROJECT_ID_FIELDNAME, PROJECT_ID);
         docValMap.put("dataset.title", TITLE);
@@ -48,6 +56,8 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         docValMap.put("resourceCollections[0].name", "TESTCOLLECTIONNAME");
         docValMap.put("dataset.date", "1923");
         docValMap.put("uploadedFiles", TestConstants.TEST_DATA_INTEGRATION_DIR + TEST_DATASET_NAME);
+
+        addCopyrightHolder(docValMap);
     }
 
     @Test
@@ -55,9 +65,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     public void testCreateDatasetRecordSpitalfields() {
         // upload a file ahead of submitting the form
         docValMap.put("uploadedFiles", TestConstants.TEST_DATA_INTEGRATION_DIR + SPITAL_DB_NAME);
-
         uploadDataset();
-
     }
 
     @Test
@@ -78,9 +86,9 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertTextPresentInCode(datasetId.toString());
 
         assertTrue("Column1 should not be blank", checkInput("dataTableColumns[1].columnEncodingType", "UNCODED_VALUE"));
-        setInput("dataTableColumns[0].columnEncodingType", "UNCODED_VALUE", false);
+        setInput("dataTableColumns[0].columnEncodingType", "0UNCODED_VALUE", false);
 
-        setInput("dataTableColumns[1].columnEncodingType", "CODED_VALUE", false);
+        setInput("dataTableColumns[1].columnEncodingType", "1CODED_VALUE", false);
         setInput("dataTableColumns[1].categoryVariable.id", "1", false); // ARCHITECTURE
         setInput("dataTableColumns[1].tempSubCategoryVariable.id", "27", false); // MATERIAL
         setInput("dataTableColumns[1].description", "column description for city", false);
@@ -166,6 +174,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         if (ontologyId != null) {
             codingMap.put("ontology.id", ontologyId.toString());
         }
+        addCopyrightHolder(codingMap);
 
         String codingText = "1," + NEW_YORK_1 + ",NY\r\n" +
                 "2," + SAN_FRANCISCO_2 + ",CA\r\n" +
@@ -252,7 +261,8 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
                 "\t\t\t" + NEW_YORK_1 + "\r\n" +
                 "\t\t" + WEST_COAST_CITIES + "\r\n" +
                 "\t\t\t" + SAN_FRANCISCO_2;
-
+        addCopyrightHolder(codingMap);
+        
         setInput("fileTextInput", ontology);
         for (String key : codingMap.keySet()) {
             setInput(key, codingMap.get(key));

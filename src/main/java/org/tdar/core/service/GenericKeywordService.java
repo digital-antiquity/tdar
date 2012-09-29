@@ -25,6 +25,7 @@ import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.SuggestedKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.GenericKeywordDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.Pair;
@@ -47,6 +48,7 @@ public class GenericKeywordService extends GenericService {
 
     private Map<Class<?>, List<?>> cache = new ConcurrentHashMap<Class<?>, List<?>>();
 
+    @SuppressWarnings("unchecked")
     public synchronized <W extends SuggestedKeyword> List<W> findAllApprovedWithCache(Class<W> cls) {
         if (!cache.containsKey(cls)) {
             cache.put(cls, findAllApproved(cls));
@@ -105,6 +107,8 @@ public class GenericKeywordService extends GenericService {
             }
             keyword.setLabel(label);
             getDao().save(keyword);
+        } else {
+            keyword.setStatus(Status.ACTIVE);
         }
         return keyword;
     }

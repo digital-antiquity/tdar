@@ -74,7 +74,6 @@ public class LuceneSearchControllerSpatialITCase extends AbstractControllerITCas
         doc.setStatus(Status.ACTIVE);
         logger.debug("creating document w/latLong: {}", llb);
         doc.setLatitudeLongitudeBox(llb);
-        llb.setResource(doc);
         genericService.save(doc);
         searchIndexService.index(doc);
         return doc;

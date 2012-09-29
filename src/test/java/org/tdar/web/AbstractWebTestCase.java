@@ -7,6 +7,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.tdar.TestConstants.DEFAULT_BASE_URL;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -65,9 +67,6 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     protected HtmlPage htmlPage;
     private HtmlForm _internalForm;
     private HtmlElement documentElement;
-
-    private String regex = "&lt;(.+?)&gt;";
-    private Pattern pattern = Pattern.compile(regex);
     public static String PROJECT_ID_FIELDNAME = "projectId";
     protected Set<String> encodingErrorExclusions = new HashSet<String>();
 
@@ -216,7 +215,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         String indexedNamePattern = "(.+)\\[(\\d+)\\](\\..+)?";
         HtmlElement input = null;
         try {
-            page.getElementByName(name);
+            input = page.getElementByName(name);
         } catch (Exception e) {
             logger.trace("no element found: " + name);
         }
@@ -225,18 +224,15 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             // test for duplicating fields with the two cases we have (a) struts, or
             // (b) the non-standard file-upload
             if (name.matches(indexedNamePattern)) {
-                String zerothFieldName = name.replaceAll(indexedNamePattern, "$1[0]$3"); // $3
-                                                                                         // may
-                                                                                         // be
-                                                                                         // blank
+                // clone zeroth collection item (e.g. if we want to create element named 'person[3].firstName' we clone element named 'person[0].firstName')
+                String zerothFieldName = name.replaceAll(indexedNamePattern, "$1[0]$3");
                 if (!name.equals(zerothFieldName)) {
                     duplicateInputByName(zerothFieldName, name);
                 }
-            } else if (name.equalsIgnoreCase("uploadedFiles")) {
-                duplicateInputByName(name, name);
             }
+            input = page.getElementByName(name);
         }
-        input = page.getElementByName(name);
+        assertTrue("could not find input for name: " + name, input != null);
 
         if (input instanceof HtmlTextArea) {
             HtmlTextArea txt = (HtmlTextArea) input;
@@ -270,6 +266,9 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             HtmlCheckBoxInput chk = (HtmlCheckBoxInput) input;
             id = chk.getId();
             chk.setChecked(chk.getValueAttribute().equalsIgnoreCase(value));
+        } else if (input instanceof HtmlRadioButtonInput) {
+            // we have a collection of elements with the same name
+            id = checkRadioButton(value, page.getElementsByName(name));
         } else {
             HtmlInput inp = (HtmlInput) input;
             id = inp.getId();
@@ -277,6 +276,19 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         }
         assertTrue("could not find field: " + name, id != null);
         updateMainFormIfNull(id);
+    }
+
+    private String checkRadioButton(String value, List<HtmlElement> radioButtons) {
+        List<HtmlInput> buttonsFound = new ArrayList<HtmlInput>();
+        for (HtmlElement radioButton : radioButtons) {
+            if (radioButton.getId().toLowerCase().endsWith(value.toLowerCase())) {
+                buttonsFound.add((HtmlInput)radioButton);
+            }
+        }
+        assertTrue("found more than one candidate radiobutton for value " + value, buttonsFound.size() == 1);
+        HtmlInput radioButton = buttonsFound.get(0);
+        radioButton.setChecked(true);
+        return radioButton.getId();
     }
 
     public void createInput(String inputName, String name, String value) {
@@ -374,18 +386,18 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     }
 
     public void assertButtonPresentWithText(String buttonText) {
-        HtmlInput input = null;
-        try {
-            input = getForm().getInputByValue(buttonText);
-        } catch (Exception ex) {
-            logger.error("button element not found", ex);
-        }
+        HtmlElement input = getButtonWithName(buttonText);
         assertNotNull("button with text [" + buttonText + "] not found", input);
-        assertTrue(input.getTypeAttribute().equalsIgnoreCase("submit"));
+        assertTrue(input.getAttribute("type").equalsIgnoreCase("submit"));
     }
 
     public int submitForm() {
-        return submitForm("Save");
+        String defaultEditButton = "submitAction";
+        HtmlElement buttonWithName = getButtonWithName(defaultEditButton);
+        if (buttonWithName == null) {
+            return submitForm("Save");
+        }
+        return submitForm(defaultEditButton);
     }
 
     public int submitForm(String buttonText) {
@@ -405,9 +417,25 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     public void submitFormWithoutErrorCheck(String buttonText) {
         assertButtonPresentWithText(buttonText);
         try {
-            changePage(getForm().getInputByValue(buttonText).click());
-        } catch (Exception e) {
-            e.printStackTrace();
+            HtmlElement buttonByName = getButtonWithName(buttonText);
+            changePage(buttonByName.click());
+        } catch (IOException iox) {
+            logger.error("exception while trying to submit from via button labeled "+ buttonText, iox );
+        }
+    }
+
+    private HtmlElement getButtonWithName(String buttonText) {
+        //get all the likely suspects we consider to be a "button" and return the best match
+        List<HtmlElement> elements = new ArrayList<HtmlElement>();
+        elements.addAll(getForm().getButtonsByName(buttonText));
+        elements.addAll(getForm().getInputsByValue(buttonText));
+        elements.addAll(getHtmlPage().getElementsByName(buttonText));
+        
+        if(elements.isEmpty()) {
+            logger.error("could not find button or element with name or value '{}'", buttonText);
+            return null;
+        } else {
+            return elements.iterator().next();
         }
     }
 

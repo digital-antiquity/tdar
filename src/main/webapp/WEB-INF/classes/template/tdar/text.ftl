@@ -42,9 +42,6 @@
 <#if parameters.tabindex??>
  tabindex="${parameters.tabindex?html}"<#rt/>
 </#if>
-<#-- tDAR SPECIFIC PARAMETERS -->
-<#include "/${parameters.templateDir}/tdar/tdar-attributes.ftl" />
-<#-- -->
 <#if parameters.id??>
  id="${parameters.id?html}"<#rt/>
 </#if>

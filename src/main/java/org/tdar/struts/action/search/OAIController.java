@@ -88,6 +88,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
     private static final String SUCCESS_LIST_METADATA_FORMATS = "success-list-metadata-formats";
     private static final String SUCCESS_GET_RECORD = "success-get-record";
     private static final String SUCCESS_LIST_RECORDS = "success-list-records";
+    @SuppressWarnings("unused")
     private static final String SUCCESS_LIST_SETS = "success-list-sets";
 
     // OAI-PMH URL parameters
@@ -283,10 +284,12 @@ public class OAIController extends AbstractLookupController<Indexable> implement
 
         // now actually build the queries and execute them
         resourceQueryBuilder = new ResourceQueryBuilder();
-        resourceQueryBuilder.append(new FieldQueryPart("status", Status.ACTIVE));
+        resourceQueryBuilder.append(new FieldQueryPart<Status>("status", Status.ACTIVE));
 
         personQueryBuilder = new PersonQueryBuilder();
+        personQueryBuilder.append(new FieldQueryPart<Status>("status", Status.ACTIVE));
         institutionQueryBuilder = new InstitutionQueryBuilder();
+        institutionQueryBuilder.append(new FieldQueryPart<Status>("status", Status.ACTIVE));
 
         records = new ArrayList<OAIRecordProxy>();
         int totalPersons = 0;
@@ -331,6 +334,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
 
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private int populateResult(boolean includeRecords, OAIRecordType recordType, QueryBuilder queryBuilder, int cursor, OAIMetadataFormat metadataFormat,
             Date effectiveFrom, Date effectiveUntil)
             throws ParseException, ParserConfigurationException,
@@ -580,6 +584,8 @@ public class OAIController extends AbstractLookupController<Indexable> implement
                 case INSTITUTION:
                     oaiObjectClass = Institution.class;
                     break;
+                default:
+                    break;
             }
             setOaiObject((OaiDcProvider) getGenericService().find(oaiObjectClass, getIdentifierRecordNumber()));
             if (getOaiObject() == null)
@@ -816,6 +822,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
         this.description = description;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<String> getProjections() {
         return ListUtils.EMPTY_LIST;

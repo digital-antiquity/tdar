@@ -2,14 +2,15 @@ package org.tdar.core.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
 import java.io.Serializable;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -19,15 +20,13 @@ import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventHandler;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jettison.mapped.Configuration;
-import org.codehaus.jettison.mapped.MappedNamespaceConvention;
-import org.codehaus.jettison.mapped.MappedXMLStreamWriter;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -38,7 +37,14 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.utils.jaxb.JaxbParsingException;
+import org.tdar.utils.jaxb.JaxbValidationEvent;
+import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.w3c.dom.Document;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
 /*
  * class to help with marshalling and unmarshalling of resources
@@ -51,6 +57,9 @@ public class XmlService implements Serializable {
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private Class<?>[] jaxbClasses;
+
+    @Autowired
+    JaxbPersistableConverter persistableConverter;
 
     @Transactional(readOnly = true)
     public String convertToXML(Object object) throws Exception {
@@ -79,6 +88,7 @@ public class XmlService implements Serializable {
     @Autowired
     private UrlService urlService;
 
+    @SuppressWarnings("unchecked")
     @Transactional(readOnly = true)
     public Writer convertToXML(Object object, Writer writer) throws Exception {
         if (jaxbClasses == null) {
@@ -87,29 +97,25 @@ public class XmlService implements Serializable {
         JAXBContext jc = JAXBContext.newInstance(jaxbClasses);
         Marshaller marshaller = jc.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, urlService.getSchemaUrl());
+        marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, urlService.getPairedSchemaUrl());
         // marshaller.setProperty(Marshaller.JAXB_, urlService.getSchemaUrl());
         marshaller.marshal(object, writer);
         return writer;
     }
 
-    @Transactional(readOnly = true)
-    public Writer convertToJSON(Object object, Writer writer) throws JAXBException, NoSuchBeanDefinitionException, ClassNotFoundException, JsonGenerationException, JsonMappingException, IOException {
-        if (jaxbClasses == null) {
-            jaxbClasses = ReflectionService.scanForAnnotation(XmlElement.class, XmlRootElement.class);
-        }
-         Configuration config = new Configuration();
-         JAXBContext jc = JAXBContext.newInstance(jaxbClasses);
-         Map<String, String> xmlToJsonNamespaces = new HashMap<String, String>(1);
-         xmlToJsonNamespaces.put(UrlService.TDAR_NAMESPACE_URL, UrlService.TDAR_NAMESPACE_PREFIX);
-         config.setXmlToJsonNamespaces(xmlToJsonNamespaces);
-         config.setIgnoreNamespaces(true);
-         config.setAttributeKey("");
-         MappedNamespaceConvention con = new MappedNamespaceConvention(config);
-         XMLStreamWriter xmlStreamWriter = new MappedXMLStreamWriter(con, writer);
-         Marshaller marshaller = jc.createMarshaller();
-         marshaller.marshal(object, xmlStreamWriter);
-        return writer;
+    @Transactional
+    public void convertToJson(Object object, Writer writer) throws JsonProcessingException, IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JaxbAnnotationModule());
+        ObjectWriter objectWriter = mapper.writerWithDefaultPrettyPrinter();
+        objectWriter.writeValue(writer, object);
+    }
+
+    @Transactional
+    public String convertToJson(Object object) throws IOException {
+        StringWriter writer = new StringWriter();
+        convertToJson(object, writer);
+        return writer.toString();
     }
 
     @Transactional(readOnly = true)
@@ -121,87 +127,37 @@ public class XmlService implements Serializable {
         return document;
     }
 
-    public Object parseXml(File documentFile) throws JAXBException, JaxbParsingException {
+    public Object parseXml(Reader reader) throws Exception {
         JAXBContext jc = JAXBContext.newInstance(Resource.class, Institution.class, Person.class);
-
-        // SchemaFactory sf = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+        final List<String> lines = IOUtils.readLines(reader);
+        IOUtils.closeQuietly(reader);
+        SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        Schema schema = sf.newSchema(generateSchema());
 
         Unmarshaller unmarshaller = jc.createUnmarshaller();
+        unmarshaller.setSchema(schema);
+        unmarshaller.setAdapter(persistableConverter);
 
-        // FIXME: use schema??
-        // unmarshaller.setSchema(sf.newSchema(schemaFile));
-
-        final List<ValidationEvent> errors = new ArrayList<ValidationEvent>();
+        final List<JaxbValidationEvent> errors = new ArrayList<JaxbValidationEvent>();
         unmarshaller.setEventHandler(new ValidationEventHandler() {
 
             @Override
             public boolean handleEvent(ValidationEvent event) {
                 // TODO Auto-generated method stub
-                errors.add(event);
-                Object obj = new Object[] { event.getClass().getSimpleName(), event.getMessage(), event.getSeverity() };
-                logger.warn("an XML parsing exception occured {} , severity: {} , msg: {}", obj);
+                JaxbValidationEvent err = new JaxbValidationEvent(event, lines.get(event.getLocator().getLineNumber() - 1));
+                errors.add(err);
+                logger.warn("an XML parsing exception occured: {}", err);
                 return true;
             }
         });
 
         // separate out so that we can throw the exception
-        Object toReturn = unmarshaller.unmarshal(documentFile);// , new DefaultHandler());
+        Object toReturn = unmarshaller.unmarshal(new StringReader(StringUtils.join(lines, "\r\n")));// , new DefaultHandler());
 
         if (errors.size() > 0) {
-            throw new JaxbParsingException("could not parse file: " + documentFile.getName(), errors);
+            throw new JaxbParsingException("could not parse xml: {} ", errors);
         }
 
         return toReturn;
-        // SAXParserFactory spf = SAXParserFactory.newInstance();
-        // spf.setNamespaceAware(true);
-        // spf.setValidating(true);
-
-        // javax.xml.validation.Schema schema = sf.newSchema(new File("target/out.xsd"));
-        // unmarshaller.setSchema(schema);
-        //
-        // UnmarshallerHandler unmarshallerHandler = unmarshaller.getUnmarshallerHandler();
-        //
-        // SAXParser sp = spf.newSAXParser();
-        // XMLReader xr = sp.getXMLReader();
-        // JAXBContentAndErrorHandler contentErrorHandler = new JAXBContentAndErrorHandler(unmarshallerHandler);
-        // xr.setErrorHandler(contentErrorHandler);
-        // xr.setContentHandler(contentErrorHandler);
-        // JAXBSource source = new JAXBSource(jc, docString);
-        // Validator validator = schema.newValidator();
-        // validator.setErrorHandler(new ErrorHandler() {
-        //
-        // public void warning(SAXParseException exception) throws SAXException {
-        // System.out.println("\nWARNING");
-        // exception.printStackTrace();
-        // }
-        //
-        // public void error(SAXParseException exception) throws SAXException {
-        // System.out.println("\nERROR");
-        // exception.printStackTrace();
-        // }
-        //
-        // public void fatalError(SAXParseException exception) throws SAXException {
-        // System.out.println("\nFATAL ERROR");
-        // exception.printStackTrace();
-        // }
-        // });
-        // validator.validate(source);
-
-        // InputSource xml = new InputSource(new FileReader(docString));
-        // xr.parse(xml);
-
-        // SAXParserFactory spf = SAXParserFactory.newInstance();
-        // spf.setNamespaceAware(true);
-        // SchemaFactory sf = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
-        // Schema schema = sf.newSchema(new File("out.xsd"));
-        // spf.setSchema(schema);
-        // // unmarshaller.setSchema(schema);
-        // UnmarshallerHandler unmarshallerHandler = unmarshaller.getUnmarshallerHandler();
-        // JAXBContentAndErrorHandler contentErrorHandler = new JAXBContentAndErrorHandler(unmarshallerHandler);
-        // Document doc = (Document) unmarshaller.unmarshal(new StringReader(docString));
-        // Marshaller marshaller = jc.createMarshaller();
-        // marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        // marshaller.marshal(doc, System.out);
-
     }
 }

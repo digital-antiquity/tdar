@@ -1,8 +1,9 @@
 package org.tdar.struts.action;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -29,15 +30,14 @@ import com.opensymphony.xwork2.Preparable;
 @Component
 @Scope("prototype")
 @RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)
-public class AuthorityManagementController extends AuthenticationAware.Base implements Preparable{
+public class AuthorityManagementController extends AuthenticationAware.Base implements Preparable {
 
     private static final long serialVersionUID = -264345419370974992L;
     private DedupeableType entityType;
-    private List<Long> selectedDupeIds = new ArrayList<Long>();
+    private Set<Long> selectedDupeIds = new HashSet<Long>();
     private Long authorityId;
-    private List<Dedupable> selectedDuplicates = new ArrayList<Dedupable>();
-    
-    
+    private Set<Dedupable<?>> selectedDuplicates = new HashSet<Dedupable<?>>();
+
     public static String ERROR_NOT_ENOUGH_DUPLICATES = "No Duplicates selected. Please select at least two duplicates.";
     public static String ERROR_NO_DUPLICATES = "Please select at least two duplicates.";
     public static String ERROR_NO_ENTITY_TYPE = "Select an entity type.";
@@ -45,53 +45,51 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
     public static final String ERROR_TOO_MANY_PROTECTED_RECORDS = "Your selection contains too many protected records.  Protected records can serve as an authority record but cannot be deduped";
     public static final String ERROR_CANNOT_DEDUPE_PROTECTED_RECORDS = "At least one of your selected duplicates is a protected record.  Protected records can serve as an authority record but cannot be deduped";
     public static String FMT_TOO_MANY_DUPLICATES = "You may only select up to %s duplicates.";
-    
-    
-    
+
     @Autowired
     private AuthorityManagementService authorityManagementService;
 
     @Override
     public void validate() {
-        if(entityType == null) {
+        if (entityType == null) {
             addActionError(ERROR_NO_ENTITY_TYPE);
         }
-        if(CollectionUtils.isEmpty(selectedDupeIds)) {
+        if (CollectionUtils.isEmpty(selectedDupeIds)) {
             addActionError(ERROR_NO_DUPLICATES);
-        } else if(selectedDupeIds.size() < 2) {
+        } else if (selectedDupeIds.size() < 2) {
             addActionError(ERROR_NOT_ENOUGH_DUPLICATES);
         } else if (selectedDupeIds.size() > getDupeListMaxSize()) {
-            String message =  String.format(FMT_TOO_MANY_DUPLICATES, getDupeListMaxSize());
+            String message = String.format(FMT_TOO_MANY_DUPLICATES, getDupeListMaxSize());
             addActionError(message);
         }
     }
-    
+
     @Override
     public void prepare() {
         inflateSelectedDupes();
     }
-    
-    
-    @Action(value="index")
+
+    @Action(value = "index")
     @SkipValidation
     public String view() {
         return SUCCESS;
     }
-    
-    
+
     /**
      * Show the user all of the entities that will be effected as a result of merging the selected duplicates.
+     * 
      * @return
      */
-    @Action(value="select-authority", results={ @Result(name=SUCCESS, location="select-authority.ftl"), @Result(name=INPUT, location="index.ftl")})
+    @Action(value = "select-authority", results = { @Result(name = SUCCESS, location = "select-authority.ftl"), @Result(name = INPUT, location = "index.ftl") })
     public String selectAuthority() {
-        if(hasActionErrors()) return INPUT;
+        if (hasActionErrors())
+            return INPUT;
 
-        if(authorityManagementService.countProtectedRecords(selectedDuplicates) > 1) {
+        if (authorityManagementService.countProtectedRecords(selectedDuplicates) > 1) {
             addActionError(ERROR_TOO_MANY_PROTECTED_RECORDS);
             return INPUT;
         }
-        
+
         return SUCCESS;
     }
 
@@ -99,46 +97,44 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
      * 
      */
     private void inflateSelectedDupes() {
-        //populate the list of selected items
-        for(Long id : selectedDupeIds) {
-            Dedupable p = (Dedupable)getGenericService().find(entityType.getType(), id);
+        // populate the list of selected items
+        for (Long id : selectedDupeIds) {
+            Dedupable<?> p = (Dedupable<?>) getGenericService().find(entityType.getType(), id);
             selectedDuplicates.add(p);
         }
     }
-    
-    
-    @Action(value="merge-duplicates", results={@Result(name=SUCCESS, location="success.ftl"), @Result(name=INPUT, location="select-authority.ftl")})
+
+    @Action(value = "merge-duplicates",
+            results = { @Result(name = SUCCESS, location = "success.ftl"), @Result(name = INPUT, location = "select-authority.ftl") })
     @WriteableSession
     public String mergeDuplicates() {
-        if(authorityId == null) {
+        if (authorityId == null) {
             addActionError(ERROR_NO_AUTHORITY_RECORD);
             return INPUT;
         }
-        
-        //remove the authority record from the selected items
-        Dedupable authority = (Dedupable)getGenericService().find(entityType.getType(), authorityId);
+
+        // remove the authority record from the selected items
+        Dedupable<?> authority = (Dedupable<?>) getGenericService().find(entityType.getType(), authorityId);
         selectedDuplicates.remove(authority);
         selectedDupeIds.remove(authorityId);
-        
-        if(authorityManagementService.countProtectedRecords(selectedDuplicates) > 0) {
+
+        if (authorityManagementService.countProtectedRecords(selectedDuplicates) > 0) {
             addActionError(ERROR_CANNOT_DEDUPE_PROTECTED_RECORDS);
             selectedDuplicates.add(authority);
             return INPUT;
         }
-        
-        //so now we should have everything we need to pass to the service
+
+        // so now we should have everything we need to pass to the service
         try {
-            authorityManagementService.updateReferrers(entityType.getType(), selectedDupeIds, authorityId);
-        } catch(TdarRecoverableRuntimeException trex) {
-            addActionErrorWithException("Could not de-dupe",trex);
+            authorityManagementService.updateReferrers(entityType.getType(), selectedDupeIds, authorityId, false);
+        } catch (TdarRecoverableRuntimeException trex) {
+            addActionErrorWithException("Could not de-dupe", trex);
             return INPUT;
         }
-        
+
         return SUCCESS;
     }
-    
-    
-    
+
     public DedupeableType getEntityType() {
         return entityType;
     }
@@ -147,11 +143,11 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
         this.entityType = entityType;
     }
 
-    public List<Long> getSelectedDupeIds() {
+    public Set<Long> getSelectedDupeIds() {
         return selectedDupeIds;
     }
 
-    public void setSelectedDupeIds(List<Long> selectedIds) {
+    public void setSelectedDupeIds(Set<Long> selectedIds) {
         this.selectedDupeIds = selectedIds;
     }
 
@@ -162,13 +158,12 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
     public void setAuthorityId(long authorityId) {
         this.authorityId = authorityId;
     }
-    
+
     public List<DedupeableType> getDedupeableTypes() {
         return Arrays.asList(DedupeableType.values());
     }
 
-
-    public List<Dedupable> getSelectedDuplicates() {
+    public Set<Dedupable<?>> getSelectedDuplicates() {
         return selectedDuplicates;
     }
 
@@ -176,6 +171,4 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
         return TdarConfiguration.getInstance().getAuthorityManagementDupeListMaxSize();
     }
 
-    
-    
 }

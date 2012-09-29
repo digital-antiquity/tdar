@@ -55,12 +55,23 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
     @Test
     @Rollback
     public void testBlankExceedingRowsAndExtraColumnAtEnd() throws IOException {
-        InformationResourceFileVersion weirdColumnsDataset = makeFileVersion("Pundo_degenerate.xls", 529);
+        importSpreadsheetAndConfirmExceptionIsThrown("Pundo_degenerate.xls", "row #49 has more columns (6) than this sheet has column names (5) - Appendix 8 (2)");
+    }
+
+    @Test
+    @Rollback
+    public void testExtraColumnAtStartThrowsException() throws IOException {
+        importSpreadsheetAndConfirmExceptionIsThrown("no_first_column_name.xlsx", "row #1 has more columns (0) than this sheet has column names (1) - Sheet1");
+    }
+
+    private void importSpreadsheetAndConfirmExceptionIsThrown(String spreadsheetName, String expectedErrorMessage) throws IOException {
+        InformationResourceFileVersion weirdColumnsDataset = makeFileVersion(spreadsheetName, 529);
         ExcelConverter converter = new ExcelConverter(weirdColumnsDataset, tdarDataImportDatabase);
         try {
             converter.execute();
-        } catch (Throwable e) {
-            assertTrue(e.getMessage().contains("row #49 has more columns (6) than this sheet has column names (5) - Appendix 8 (2)"));
+            assertTrue("Should never get to this point in the code.", false);
+        } catch (TdarRecoverableRuntimeException e) {
+            assertTrue(e.getMessage() ,e.getMessage().contains(expectedErrorMessage));
         }
     }
 

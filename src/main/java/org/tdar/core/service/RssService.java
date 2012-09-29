@@ -29,6 +29,7 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.search.query.SearchResultHandler;
@@ -78,7 +79,7 @@ public class RssService implements Serializable {
             Integer recordsPerPage, Integer startRecord, Integer totalRecords, String rssUrl) throws IOException, FeedException {
         SyndFeed feed = new SyndFeedImpl();
         feed.setFeedType("atom_1.0");
-        feed.setTitle("tDAR Search Results: " + cleanStringForXML(handler.getSearchTitle()));
+        feed.setTitle(TdarConfiguration.getInstance().getSiteAcronym() + " Search Results: " + cleanStringForXML(handler.getSearchTitle()));
         OpenSearchModule osm = new OpenSearchModuleImpl();
         osm.setItemsPerPage(recordsPerPage);
         osm.setStartIndex(startRecord);

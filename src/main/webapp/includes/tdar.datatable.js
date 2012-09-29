@@ -14,12 +14,12 @@ function registerLookupDataTable(parms) {
             "bJQueryUI": false,
             "sScrollY": "350px",
             fnDrawCallback: function(){
-            	//if all checkboxes are checked, the 'select all' box should also be checked, and unchecked in all other situations
-            	if($(":checkbox:not(:checked)", $dataTable).length == 0) {
-                	$('#cbCheckAllToggle').prop('checked', true);
-            	} else {
-            		$('#cbCheckAllToggle').prop('checked', false);
-            	}
+                //if all checkboxes are checked, the 'select all' box should also be checked, and unchecked in all other situations
+                if($(":checkbox:not(:checked)", $dataTable).length == 0) {
+                    $('#cbCheckAllToggle').prop('checked', true);
+                } else {
+                    $('#cbCheckAllToggle').prop('checked', false);
+                }
             }
     };
     
@@ -41,13 +41,13 @@ function registerLookupDataTable(parms) {
             "fnServerData": function _fnServerData(sSource, aoData, fnCallback) {
                 
                 $.ajax({
-                	traditional: true, //please don't convert my arrays to php arrays.  php is dumb.
+                    traditional: true, //please don't convert my arrays to php arrays.  php is dumb.
                     dataType : 'jsonp',
                     url : sSource,
                     data : _convertRequest(aoData, options.aoColumns, options.requestCallback),
                     success : function(_data) {
                         //intercept data returned by server, translate to client format
-                    	
+                        
                         var recordInfo = {
                                 iTotalDisplayRecords: _data.status.totalRecords,
                                 iTotalRecords: _data.status.totalRecords    

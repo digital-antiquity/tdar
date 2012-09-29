@@ -16,33 +16,33 @@
 <@edit.basicInformation "coding sheet" "codingSheet"/>
 <@edit.citationInfo "codingSheet" />
 
-	<span class="hidden" id="ontologyToolTip">
-		If you would like to link this column to a tDAR ontology, make that selection here. This is important if you (or other researchers) intend to integrate this dataset with other datasets using the tDAR data integration tool. 
+    <span class="hidden" id="ontologyToolTip">
+        If you would like to link this column to a ${siteAcronym} ontology, make that selection here. This is important if you (or other researchers) intend to integrate this dataset with other datasets using the ${siteAcronym} data integration tool. 
     </span>
 
-	 <div id='divOntology' class="glide ontologyInfo" tooltipcontent="#ontologyToolTip" tiplabel="Ontology" >
-	 
-	     <@edit.categoryVariable />
-	 
-	 
-	 <!-- FIXME: This screams to be refactored into a common format; one issue in a cursory try though is the ability to do the assignments of the defaultId and Text-->
+     <div id='divOntology' class="glide ontologyInfo" tooltipcontent="#ontologyToolTip" tiplabel="Ontology" >
+     
+         <@edit.categoryVariable />
+     
+     
+     <!-- FIXME: This screams to be refactored into a common format; one issue in a cursory try though is the ability to do the assignments of the defaultId and Text-->
         <b>Map it to an Ontology:</b><br/>
-			<#assign ontologyId="" />
-			<#assign ontologyTxt="" />
-			<#if ontology??  && ontology.id??>
-				<#assign ontologyId=ontology.id?c />
-				<#assign ontologyTxt="${ontology.title} (${ontology.id?c})"/>
-			</#if>
-	        <@s.hidden name="ontology.id" value="${ontologyId}" id="oid" />
-	        <@s.textfield name="ontology.title" target="#divOntology"
-		         value="${ontologyTxt}"  
-	             watermark="Enter the name of an Ontology"
-		         autocompleteParentElement="#divOntology"
-		         autocompleteIdElement="#oid"
-		         cssClass="longfield ontologyfield" />
-			<div class="down-arrow"></div>
-			<small><a target="_blank" onclick="setAdhocTarget(this);" href='<@s.url value="/ontology/add?returnToResourceMappingId=${resource.id?c}"/>'>Create Ontology</a> </small>
-	</div>
+            <#assign ontologyId="" />
+            <#assign ontologyTxt="" />
+            <#if ontology??  && ontology.id??>
+                <#assign ontologyId=ontology.id?c />
+                <#assign ontologyTxt="${ontology.title} (${ontology.id?c})"/>
+            </#if>
+            <@s.hidden name="ontology.id" value="${ontologyId}" id="oid" />
+            <@s.textfield name="ontology.title" target="#divOntology"
+                 value="${ontologyTxt}"  
+                 watermark="Enter the name of an Ontology"
+                 autocompleteParentElement="#divOntology"
+                 autocompleteIdElement="#oid"
+                 cssClass="longfield ontologyfield" />
+            <div class="down-arrow"></div>
+            <small><a target="_blank" onclick="setAdhocTarget(this);" href='<@s.url value="/ontology/add?returnToResourceMappingId=${resource.id?c}"/>'>Create Ontology</a> </small>
+    </div>
 
 <@edit.organizeResourceSection />
 
@@ -67,8 +67,8 @@
 <@edit.resourceJavascript formId="#resourceRegistrationForm" selPrefix="#resourceRegistration" includeInheritance=true>
     setupSupportingResourceForm(${codingSheet.getTotalNumberOfFiles()?c}, "coding sheet");
     $(formId).delegate(".down-arrow", "click",autocompleteShowAll);
-	$(formId).delegate('input.ontologyfield',"focusin", function() {
-	    applyResourceAutocomplete($('input.ontologyfield'), "ONTOLOGY");
+    $(formId).delegate('input.ontologyfield',"focusin", function() {
+        applyResourceAutocomplete($('input.ontologyfield'), "ONTOLOGY");
     });
 
 </@edit.resourceJavascript>

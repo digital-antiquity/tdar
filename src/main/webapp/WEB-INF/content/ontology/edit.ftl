@@ -23,7 +23,7 @@
 </#if>
 <div class="glide">
 <h3>Categorize this Ontology</h3>
-	     <@edit.categoryVariable />
+         <@edit.categoryVariable />
 
 </div>
 <@edit.manualTextInput typeLabel="Ontology" type="ontology" />

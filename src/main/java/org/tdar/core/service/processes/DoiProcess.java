@@ -116,7 +116,7 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
         }
         if (sb.length() > 0 && total > 0) {
             logger.info("sending email");
-            emailService.send(sb.toString(), "tDAR: DOI Creation Info");
+            emailService.send(sb.toString(), emailService.getTdarConfiguration().getSiteAcronym()+ " DOI Creation Info");
         }
         batchResults.clear();
         initializeBatchResults();

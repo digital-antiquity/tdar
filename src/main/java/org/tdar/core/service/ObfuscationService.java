@@ -1,5 +1,6 @@
 package org.tdar.core.service;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -20,6 +21,13 @@ public class ObfuscationService {
     @Autowired
     private GenericDao genericDao;
 
+    @Transactional(readOnly = true)
+    public void obfuscate(Collection<? extends Obfuscatable> targets) {
+        for (Obfuscatable target : targets) {
+            obfuscate(target);
+        }
+    }
+    
     @Transactional(readOnly = true)
     public void obfuscate(Obfuscatable target) {
         /*

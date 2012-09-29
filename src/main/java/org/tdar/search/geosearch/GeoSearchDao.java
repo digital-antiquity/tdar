@@ -24,7 +24,7 @@ import org.postgis.Point;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.struts.data.SvgMapWrapper;
 
@@ -38,7 +38,7 @@ import org.tdar.struts.data.SvgMapWrapper;
 public class GeoSearchDao {
 
     private static boolean databaseEnabled;
-    private SimpleJdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
     private final Logger logger = Logger.getLogger(getClass());
     public static final Integer DEFAULT_PROJECTION = 4326;
 
@@ -75,7 +75,7 @@ public class GeoSearchDao {
     private final static String QUERY_ENVELOPE = "SELECT ST_Envelope(ST_Collect(the_geom)) as %2$s FROM \"%1$s\" where %3$s";
     private final static String QUERY_ENVELOPE_2 = "(%1$s='%2$s') ";
     private final static String POLYGON = "polygon";
-//, concat('${',%1$s,'-style?default('''')}') as style
+    // , concat('${',%1$s,'-style?default('''')}') as style
     public static final String QUERY_SVG = "select xmlelement(name g, xmlattributes( concat('a',%1$s) as id, concat('a',%1$s) as class, %2$s as name, " +
             "  %3$s as \"stroke-width\" ), xmlelement(name a,xmlattributes(concat('%4$s',%1$s,'%5$s') as \"xlink:href\")," +
             " xmlelement(name path, xmlattributes(ST_asSVG(the_geom, 1, 5) as d))) ) from %6$s where %1$s is not null";
@@ -125,6 +125,8 @@ public class GeoSearchDao {
                     return "fips_admin";
                 case COUNTY:
                     return "fips";
+                default:
+                    break;
             }
             throw new NotImplementedException();
         }
@@ -137,6 +139,8 @@ public class GeoSearchDao {
                     return "fips_cntry";
                 case COUNTY:
                     return "state_fips";
+                default:
+                    break;
             }
             throw new NotImplementedException();
         }
@@ -160,7 +164,7 @@ public class GeoSearchDao {
         List<Map<String, Object>> queryForList = new ArrayList<Map<String, Object>>();
         if (isEnabled()) {
             try {
-                queryForList = getJdbcTemplate().queryForList(sql, new HashMap<String, String>());
+                queryForList = getJdbcTemplate().queryForList(sql);
             } catch (EmptyResultDataAccessException e) {
                 logger.trace("no results found for query");
             } catch (CannotGetJdbcConnectionException e) {
@@ -180,7 +184,7 @@ public class GeoSearchDao {
     public Map<String, Object> findFirst(String sql) {
         Map<String, Object> queryForList = new HashMap<String, Object>();
         try {
-            queryForList = getJdbcTemplate().queryForMap(sql, new HashMap<String, String>());
+            queryForList = getJdbcTemplate().queryForMap(sql);
         } catch (EmptyResultDataAccessException e) {
             logger.trace("no results found for query");
         } catch (CannotGetJdbcConnectionException e) {
@@ -198,7 +202,7 @@ public class GeoSearchDao {
     public void setDataSource(DataSource dataSource) {
         try {
             setEnabled(true);
-            setJdbcTemplate(new SimpleJdbcTemplate(dataSource));
+            setJdbcTemplate(new JdbcTemplate(dataSource));
         } catch (Exception e) {
             e.printStackTrace();
             setEnabled(false);
@@ -302,11 +306,11 @@ public class GeoSearchDao {
         return latLong;
     }
 
-    public void setJdbcTemplate(SimpleJdbcTemplate template) {
+    public void setJdbcTemplate(JdbcTemplate template) {
         this.jdbcTemplate = template;
     }
 
-    public SimpleJdbcTemplate getJdbcTemplate() {
+    public JdbcTemplate getJdbcTemplate() {
         return jdbcTemplate;
     }
 
@@ -331,22 +335,22 @@ public class GeoSearchDao {
             logger.trace(poly.getGeometry().toString());
             Point firstPoint = poly.getGeometry().getPoint(0);
             Point thirdPoint = poly.getGeometry().getPoint(2);
-            wrapper.setMinX((int)firstPoint.getX());
-            wrapper.setMinY((int)firstPoint.getY());
+            wrapper.setMinX((int) firstPoint.getX());
+            wrapper.setMinY((int) firstPoint.getY());
 
-            wrapper.setWidth((int)Math.abs(Math.ceil(firstPoint.getX() - thirdPoint.getX())));
+            wrapper.setWidth((int) Math.abs(Math.ceil(firstPoint.getX() - thirdPoint.getX())));
             if (thirdPoint.getX() < firstPoint.getX()) {
-                wrapper.setMinX((int)thirdPoint.getX());
+                wrapper.setMinX((int) thirdPoint.getX());
                 logger.info("resetting x");
-                wrapper.setWidth((int)Math.abs(Math.ceil(thirdPoint.getX() - firstPoint.getX())));
+                wrapper.setWidth((int) Math.abs(Math.ceil(thirdPoint.getX() - firstPoint.getX())));
             }
-            wrapper.setHeight((int)Math.abs(Math.ceil(firstPoint.getY() - thirdPoint.getY())));
+            wrapper.setHeight((int) Math.abs(Math.ceil(firstPoint.getY() - thirdPoint.getY())));
             if (thirdPoint.getY() < firstPoint.getY()) {
-                wrapper.setMinY((int)thirdPoint.getY());
+                wrapper.setMinY((int) thirdPoint.getY());
                 logger.info("resetting y");
-                wrapper.setHeight((int)Math.abs(Math.ceil(thirdPoint.getY() - firstPoint.getY())));
+                wrapper.setHeight((int) Math.abs(Math.ceil(thirdPoint.getY() - firstPoint.getY())));
             }
-            
+
             logger.trace(String.format("%s %s ", wrapper.getMinX(), wrapper.getMinY()));
             logger.trace(String.format("%s %s ", wrapper.getWidth(), wrapper.getHeight()));
         }

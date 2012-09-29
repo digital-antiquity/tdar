@@ -2,6 +2,7 @@ package org.tdar.core.service.resource;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.ResourceType;
@@ -73,6 +75,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     }
 
     private void addInformationResourceFile(InformationResource resource, InformationResourceFile irFile) {
+        genericDao.saveOrUpdate(resource);
         irFile.setInformationResource(resource);
         genericDao.saveOrUpdate(irFile);
         resource.add(irFile);
@@ -80,7 +83,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     }
 
     private InformationResourceFile findInformationResourceFile(FileProxy proxy) {
-        InformationResourceFile irFile = informationResourceFileService.find(proxy.getFileId());
+        InformationResourceFile irFile = genericDao.find(InformationResourceFile.class, proxy.getFileId());
         if (irFile == null) {
             logger.error("{} had no findable InformationResourceFile.id set on it", proxy);
             // FIXME: throw an exception?
@@ -115,6 +118,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                 incrementVersionNumber(irFile);
                 addInformationResourceFile(informationResource, irFile);
                 createVersion(irFile, proxy);
+                setInformationResourceFileMetadata(irFile, proxy);
                 for (FileProxy additionalVersion : proxy.getAdditionalVersions()) {
                     logger.debug("Creating new version {}", additionalVersion);
                     createVersion(irFile, additionalVersion);
@@ -149,8 +153,18 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     }
 
     private void setInformationResourceFileMetadata(InformationResourceFile irFile, FileProxy fileProxy) {
-        irFile.setConfidential(fileProxy.isConfidential());
+        irFile.setRestriction(fileProxy.getRestriction());
         Integer sequenceNumber = fileProxy.getSequenceNumber();
+        if (fileProxy.getRestriction() == FileAccessRestriction.EMBARGOED) {
+            if (irFile.getDateMadePublic() == null) {
+                Calendar calendar = Calendar.getInstance();
+                // set date made public to 5 years now.
+                calendar.add(Calendar.YEAR, TdarConfiguration.getInstance().getEmbargoPeriod());
+                irFile.setDateMadePublic(calendar.getTime());
+            }
+        } else {
+            irFile.setDateMadePublic(null);
+        }
         if (sequenceNumber == null) {
             logger.warn("No sequence number set on file proxy {}, existing sequence number was {}", fileProxy, irFile.getSequenceNumber());
         }

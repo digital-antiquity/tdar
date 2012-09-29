@@ -15,26 +15,26 @@
                         " Resource res inner join res.resourceCollections as rescol inner join rescol.authorizedUsers " +
                         " as authUser where authUser.user.id=:userId and authUser.effectiveGeneralPermission > :effectivePermission and " +
                         " res.id in (:resourceIds)"),
+                        // NOTE QUERY below was modified, will need to confirm performance impact
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_IS_ALLOWED_TO_NEW, // NOTE: THIS MAY REQUIRE ADDITIONAL WORK
-                query = "SELECT distinct 1 from AuthorizedUser authUser inner join authUser.resourceCollection as rescol where authUser.user.id=:userId and authUser.effectiveGeneralPermission > :effectivePermission and "
-                        +
-                        " rescol.id in (:resourceCollectionIds)"),
+                query = "SELECT distinct 1 from ResourceCollection as rescol inner join rescol.authorizedUsers as authuser where authuser.user.id=:userId and authuser.effectiveGeneralPermission > :effectivePermission and "
+                        + " rescol.id in (:resourceCollectionIds)"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME,
                 query = "SELECT distinct resCol from ResourceCollection resCol left join resCol.authorizedUsers as authUser where (authUser.user.id=:userId or resCol.owner=:userId) and"
-                        + " resCol.type='SHARED' and resCol.name like :name "),
+                        + " resCol.type!='INTERNAL' and resCol.name like :name "),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO, // NOTE: THIS MAY REQUIRE ADDITIONAL WORK INNER JOIN WILL PRECLUDE OwnerId w/no authorized users
                 query = "SELECT distinct resCol from ResourceCollection resCol left join resCol.authorizedUsers as authUser where (authUser.user.id=:userId or resCol.owner=:userId) and"
                         +
-                        " resCol.type='SHARED'"),
+                        " resCol.type!='INTERNAL'"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_IS_ALLOWED_TO_MANAGE,
                 query = "SELECT distinct 1 from " +
                         " ResourceCollection as rescol inner join rescol.authorizedUsers " +
                         " as authUser where authUser.user.id=:userId and authUser.effectiveGeneralPermission > :effectivePermission and " +
-                        " rescol.id in (:resourceCollectionIds)"),
+                        " rescol.id in (:resourceCollectionIds) and rescol.type!='PUBLIC'"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_SPARSE_RESOURCE_LOOKUP,
                 query = "SELECT new Resource(res.id, res.title, res.resourceType, res.description, res.status) FROM Resource as res where res.id in (:ids) "),
@@ -155,20 +155,21 @@
                         "r.managedGeographicKeywords as kwd where kwd.level='ISO_COUNTRY' and r.status='ACTIVE'  group by kwd.label , kwd.level"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_ACTIVE_RESOURCE_TYPE_COUNT,
-                query = "select count(res.id) as count, res.resourceType as resourceType from Resource as res where res.status='ACTIVE' group by res.resourceType "
+                query = "select count(res.id) as count , res.resourceType as resourceType from Resource as res where res.status='ACTIVE' group by res.resourceType "
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTION_BY_PARENT,
-                query = "from ResourceCollection where (parent.id=:parent or (parent.id is NULL AND :parent is NULL)) and type in (:collectionTypes) and (visible=:visible or :visible is NULL)"
+                query = "from ResourceCollection as col where (col.parent.id=:parent or (col.parent.id is NULL AND :parent is NULL)) and col.type in (:collectionTypes) and (visible=:visible or :visible is NULL)"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTION_BY_AUTH_OWNER,
-                query = "select distinct col from ResourceCollection as col left join col.authorizedUsers as authorizedUser where "+
-                "col.type in (:collectionTypes) and (col.owner.id=:authOwnerId or (authorizedUser.user.id=:authOwnerId and authorizedUser.effectiveGeneralPermission >  :equivPerm)) order by col.name"
+                query = "select distinct col from ResourceCollection as col left join col.authorizedUsers as authorizedUser where "
+                        +
+                        "col.type in (:collectionTypes) and (col.owner.id=:authOwnerId or (authorizedUser.user.id=:authOwnerId and authorizedUser.effectiveGeneralPermission >  :equivPerm)) order by col.name"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTION_PUBLIC_WITH_HIDDEN_PARENT,
-                query = "select distinct col from ResourceCollection as col left join col.parent as parent where parent.type='SHARED' and parent.visible=false and col.visible=true and col.type='SHARED'"
+                query = "select distinct col from ResourceCollection as col left join col.parent as parent where parent.type!='INTERNAL' and parent.visible=false and col.visible=true and col.type!='INTERNAL'"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_RESOURCE_COUNT_BY_TYPE_AND_STATUS_BY_USER,

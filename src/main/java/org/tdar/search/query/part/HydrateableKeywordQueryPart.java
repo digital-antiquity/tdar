@@ -1,7 +1,6 @@
 package org.tdar.search.query.part;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -41,7 +40,7 @@ public class HydrateableKeywordQueryPart<K extends Keyword> extends AbstractHydr
             if (getFieldValues().get(i) == null) {
                 continue;
             }
-            if (!Persistable.Base.isNullOrTransient(getFieldValues().get(i))) {
+            if (Persistable.Base.isNotNullOrTransient(getFieldValues().get(i))) {
                 ids.add(getFieldValues().get(i).getId());
             } else if (StringUtils.isNotBlank(getFieldValues().get(i).getLabel())) {
                 labels.add(getFieldValues().get(i).getLabel());
@@ -51,7 +50,7 @@ public class HydrateableKeywordQueryPart<K extends Keyword> extends AbstractHydr
         labelPart.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
         FieldQueryPart<Long> idPart = new FieldQueryPart<Long>(getFieldName() + ".id", getOperator(), ids);
         QueryPartGroup field = new QueryPartGroup(getOperator(), idPart, labelPart);
-        
+
         QueryPartGroup topLevel = new QueryPartGroup(Operator.AND, field);
         if (includeChildren) {
             topLevel.setOperator(Operator.OR);

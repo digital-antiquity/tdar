@@ -11,7 +11,6 @@ import org.apache.commons.lang3.StringEscapeUtils;
  * @version $Rev$
  * 
  */
-@Deprecated
 public class FreetextQueryPart extends FieldQueryPart<String> {
 
     @Override

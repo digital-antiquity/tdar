@@ -10,8 +10,11 @@ import static org.tdar.TestConstants.TEST_DOCUMENT_NAME;
 import java.net.URL;
 
 import org.junit.Test;
+import org.tdar.TestConstants;
 import org.tdar.URLConstants;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.configuration.TdarConfiguration;
 
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
@@ -38,7 +41,12 @@ public class FirstRunITCase extends AbstractAuthenticatedWebTestCase {
         setInput("document.date", "1934");
         setInput("ticketId", ticketId);
         setInput("projectId", Long.toString(ADMIN_PROJECT_ID));
-        addFileProxyFields(0, false, TEST_DOCUMENT_NAME);
+        if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
+            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+            setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
+        }
+        
+        addFileProxyFields(0, FileAccessRestriction.PUBLIC, TEST_DOCUMENT_NAME);
         submitForm();
         HtmlPage page = (HtmlPage) internalPage;
         logger.info(page.getUrl().toString());
@@ -78,6 +86,11 @@ public class FirstRunITCase extends AbstractAuthenticatedWebTestCase {
         setInput("codingSheet.description", TEST_ABSTRACT);
         setInput("fileTextInput", codingSheetRules);
         setInput("projectId", Long.toString(ADMIN_PROJECT_ID));
+        if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
+            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+            setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
+        }
+        
         submitForm();
         assertPageTitleEquals(TEST_TITLE);
         assertTextPresentInPage(TEST_ABSTRACT);

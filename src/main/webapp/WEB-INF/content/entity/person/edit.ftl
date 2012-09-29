@@ -46,19 +46,19 @@ textarea {width:32em}
         <br /><@s.textfield cssClass="institutionAutocomplete"  labelPosition='left' label="Institution"       name="institutionName"     maxlength="255" value="${person.institution!}"/>
         
         <#if privacyControlsEnabled>
-        	<br /><@edit.boolfield label='Make email public?' name="person.emailPublic" id="email-public" value=person.emailPublic!false labelPosition='top' />
-			<p class="field"><em><b>NOTE:</b> Making your email address public will display it to anyone who visits tDAR, this includes search engines, spammers, and visitors who are not logged in.</em></p>
-		</#if>
-		    
-        <br /><@s.textfield labelPosition="left" label="RPA Number" name="person.rpaNumber" />
+            <br /><@edit.boolfield label='Make email public?' name="person.emailPublic" id="email-public" value=person.emailPublic!false labelPosition='top' />
+            <p class="field"><em><b>NOTE:</b> Making your email address public will display it to anyone who visits ${siteAcronym}, this includes search engines, spammers, and visitors who are not logged in.</em></p>
+        </#if>
+            
+        <#if RPAEnabled><br /><@s.textfield labelPosition="left" label="RPA Number" name="person.rpaNumber" /></#if>
         <br /><@s.textfield labelPosition="left" label="Phone" cssClass="phoneUS" name="person.phone" />
         
         <#if privacyControlsEnabled>
-        	<br /><@edit.boolfield label='Make phone public?' name="person.phonePublic" id="phone-public" value=person.phonePublic!false labelPosition="top"/>
-			<p class="field"><em><b>NOTE:</b> Making your phone # public will display it to anyone who visits tDAR, this includes search engines, and visitors who are not logged in.</em></p>
-		</#if>    
-		
-        <br /><@edit.boolfield label='tDAR Contributor?' name="person.contributor" id="contributor-id" value=person.contributor!false labelPosition="top" />
+            <br /><@edit.boolfield label='Make phone public?' name="person.phonePublic" id="phone-public" value=person.phonePublic!false labelPosition="top"/>
+            <p class="field"><em><b>NOTE:</b> Making your phone # public will display it to anyone who visits ${siteAcronym}, this includes search engines, and visitors who are not logged in.</em></p>
+        </#if>    
+        
+        <br /><@edit.boolfield label='${siteAcronym} Contributor?' name="person.contributor" id="contributor-id" value=person.contributor!false labelPosition="top" />
         <br />
 <br/>
         <div>

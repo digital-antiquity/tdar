@@ -130,8 +130,6 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         genericService.save(e);
         if (user != null) {
             AuthorizedUser au = new AuthorizedUser(user, permission);
-            au.setResourceCollection(e);
-            genericService.save(au);
             e.getAuthorizedUsers().add(au);
         }
         searchIndexService.index(e);

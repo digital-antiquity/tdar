@@ -143,7 +143,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     protected void addEscapedWildcardField(QueryGroup q, String field, String value) {
         if (checkMinString(value) && StringUtils.isNotBlank(value)) {
             getLogger().trace(field + ":" + value);
-            FieldQueryPart fqp = new FieldQueryPart(field, value);
+            FieldQueryPart<String> fqp = new FieldQueryPart<String>(field, value);
             fqp.setPhraseFormatters(PhraseFormatter.WILDCARD);
             q.append(fqp);
         }
@@ -152,7 +152,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     protected void addQuotedEscapedField(QueryGroup q, String field, String value) {
         if (checkMinString(value)) {
             getLogger().trace(field + ":" + value);
-            FieldQueryPart fqp = new FieldQueryPart(field, value);
+            FieldQueryPart<String> fqp = new FieldQueryPart<String>(field, value);
             fqp.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
             q.append(fqp);
         }
@@ -160,13 +160,13 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
 
     protected void appendIf(boolean test, QueryGroup q, String field, String value) {
         if (test) {
-            q.append(new FieldQueryPart(field, value));
+            q.append(new FieldQueryPart<String>(field, value));
         }
     }
 
     protected void addResourceTypeQueryPart(QueryGroup q, List<ResourceType> list) {
         if (!CollectionUtils.isEmpty(list)) {
-            FieldQueryPart fqp = new FieldQueryPart("resourceType", list.toArray(new ResourceType[0]));
+            FieldQueryPart<ResourceType> fqp = new FieldQueryPart<ResourceType>("resourceType", list.toArray(new ResourceType[0]));
             fqp.setOperator(Operator.OR);
             q.append(fqp);
         }
@@ -331,7 +331,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     public List<IntegratableOptions> getIntegratableOptions() {
         return getReservedSearchParameters().getIntegratableOptions();
     }
-
+    
     public void setIntegratableOptions(List<IntegratableOptions> integratableOptions) {
         getReservedSearchParameters().setIntegratableOptions(integratableOptions);
     }

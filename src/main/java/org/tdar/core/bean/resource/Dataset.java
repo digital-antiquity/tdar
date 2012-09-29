@@ -8,6 +8,7 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -16,7 +17,6 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.ObjectUtils;
-import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
@@ -77,11 +77,12 @@ public class Dataset extends InformationResource {
     }
 
     @XStreamOmitField
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "dataset")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "dataset", orphanRemoval = true)
     @IndexedEmbedded
     private Set<DataTable> dataTables = new LinkedHashSet<DataTable>();
 
-    @OneToMany(mappedBy = "dataset")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name="dataset_id")
     private Set<DataTableRelationship> relationships = new HashSet<DataTableRelationship>();
 
     public Dataset() {
@@ -104,7 +105,7 @@ public class Dataset extends InformationResource {
 
     @Field(norms = Norms.NO, store = Store.YES, name = QueryFieldNames.INTEGRATABLE, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     @Transient
-    public IntegratableOptions getIntegratable() {
+    public IntegratableOptions getIntegratableOptions() {
         for (DataTable dt : getDataTables()) {
             for (DataTableColumn dtc : dt.getDataTableColumns()) {
                 if (dtc.getDefaultOntology() != null)
@@ -125,6 +126,20 @@ public class Dataset extends InformationResource {
         }
         // NOTE: IF the HashCode is not implemented properly, on DataTableColumn, this may get out of sync
         return nameToTableMap.get(name);
+    }
+
+    /**
+     * @param string
+     * @return
+     */
+    @Transient
+    public DataTable getDataTableById(Long id) {
+        for (DataTable datatable : getDataTables()) {
+            if (datatable.getId() == id) {
+                return datatable;
+            }
+        }
+        return null;
     }
 
     private void initializeNameToTableMap() {

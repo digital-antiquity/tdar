@@ -16,8 +16,9 @@ import org.slf4j.LoggerFactory;
  * @author Adam Brin
  * @version $Rev$
  */
+@SuppressWarnings("rawtypes")
 public class QueryPartGroup implements QueryPart, QueryGroup {
-    private List<QueryPart> parts = new ArrayList<QueryPart>();
+    private List<QueryPart<?>> parts = new ArrayList<QueryPart<?>>();
     private Operator operator = Operator.AND;
     private boolean descriptionVisible = true;
 
@@ -52,18 +53,17 @@ public class QueryPartGroup implements QueryPart, QueryGroup {
         append(Arrays.asList(parts_));
     }
 
-    @SuppressWarnings("rawtypes")
-    public List<QueryPart> getParts() {
+    public List<QueryPart<?>> getParts() {
         return parts;
     }
 
-    public void append(List<? extends QueryPart> parts) {
-        for (QueryPart part : parts) {
+    public void append(List<? extends QueryPart<?>> parts) {
+        for (QueryPart<?> part : parts) {
             append(part);
         }
     }
 
-    public void append(QueryPart q) {
+    public void append(QueryPart<?> q) {
         if (q == null || q.isEmpty())
             return;
         if (q instanceof QueryPartGroup) {
@@ -94,7 +94,7 @@ public class QueryPartGroup implements QueryPart, QueryGroup {
     @Override
     public String generateQueryString() {
         StringBuilder buff = new StringBuilder();
-        for (QueryPart part : getParts()) {
+        for (QueryPart<?> part : getParts()) {
             String queryString = part.generateQueryString();
             logger.trace("{} -> {} ", part.getClass().getSimpleName(), queryString);
             if (StringUtils.isNotBlank(queryString) && StringUtils.isNotBlank(queryString.trim())) {
@@ -166,7 +166,7 @@ public class QueryPartGroup implements QueryPart, QueryGroup {
         return getParts().get(i);
     }
 
-    public void setParts(List<QueryPart> parts) {
+    public void setParts(List<QueryPart<?>> parts) {
         this.parts = parts;
     }
 }

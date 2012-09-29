@@ -16,18 +16,18 @@
 <#if resourceCollection.visible || viewable>
 <!-- Don't show header if header doesn't exist -->
 <#if resourceCollection.parent?? || resourceCollection.description?? || collections??>
-	<div class="glide">
-	    <#if resourceCollection.parent??><p><b>Part of:</b> <a href="${resourceCollection.parent.id?c}"/>${resourceCollection.parent.name!"(n/a)"}</a></p></#if>
-	    <p>${resourceCollection.description!"(n/a)"}</p>
-	
-	<#if (collections?has_content) >
-	<B>Collections Contained in this Collection</B>
-	<ul>
-	  <#list collections as collection_>
-	   <li><a href="<@s.url value="/collection/${collection_.id?c}"/>">${collection_.name}</a></li>
-	  </#list>
-	</ul>
-	</#if>
+    <div class="glide">
+        <#if resourceCollection.parent??><p><b>Part of:</b> <a href="${resourceCollection.parent.id?c}"/>${resourceCollection.parent.name!"(n/a)"}</a></p></#if>
+        <p>${resourceCollection.description!"(n/a)"}</p>
+    
+    <#if (collections?has_content) >
+    <B>Collections Contained in this Collection</B>
+    <ul>
+      <#list collections as collection_>
+       <li><a href="<@s.url value="/collection/${collection_.id?c}"/>">${collection_.name}</a></li>
+      </#list>
+    </ul>
+    </#if>
   </div>
 </#if>
 
@@ -36,7 +36,7 @@
     
     
 <div class="glide">
-		<@list.listResources resourcelist=results sortfield=resourceCollection.sortBy />
+        <@list.listResources resourcelist=results sortfield=resourceCollection.sortBy />
 </div>
     </#if>
 

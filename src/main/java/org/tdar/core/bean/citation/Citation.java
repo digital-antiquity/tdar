@@ -1,14 +1,11 @@
 package org.tdar.core.bean.citation;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang.StringUtils;
@@ -35,11 +32,9 @@ public abstract class Citation extends Persistable.Base implements HasResource<R
 
     private static final long serialVersionUID = 4174558394278154078L;
 
+    @SuppressWarnings("unused")
     @Transient
     private final static String[] JSON_PROPERTIES = { "id", "text" };
-
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH }, optional = false)
-    private Resource resource;
 
     @Lob
     @Type(type = "org.hibernate.type.StringClobType")
@@ -58,15 +53,6 @@ public abstract class Citation extends Persistable.Base implements HasResource<R
         this.text = text;
     }
 
-    @XmlTransient
-    public Resource getResource() {
-        return resource;
-    }
-
-    public void setResource(Resource resource) {
-        this.resource = resource;
-    }
-
     public boolean isValid() {
         if (!StringUtils.isEmpty(text)) {
             return true;
@@ -77,7 +63,7 @@ public abstract class Citation extends Persistable.Base implements HasResource<R
     public boolean isValidForController() {
         return true;
     }
-    
+
     @Override
     protected String[] getIncludedJsonProperties() {
         return getIncludedJsonProperties();

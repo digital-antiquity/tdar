@@ -3,12 +3,15 @@
 #
 site.acronym=tDAR
 site.name=the Digital Archaeological Record
+
 web.root=src/main/webapp
 run.periodic.events=true
+# Do not preface the theme directory below with a slash. See TDAR-2342 for more detail
 app.theme.dir=includes/themes/tdar/
 server.environment=production
 app.hostname=core.tdar.org
 app.port=80
+app.contact.email=info@digitalantiquity.org
 tmp.dir=/tmp
 #
 #   Email Settings

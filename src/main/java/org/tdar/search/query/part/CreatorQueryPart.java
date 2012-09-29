@@ -24,7 +24,7 @@ public class CreatorQueryPart<C extends Creator> extends AbstractHydrateableQuer
             try {
                 ResourceCreatorProxy proxy = proxyList.get(i);
                 ResourceCreator rc = proxy.getResourceCreator();
-                if (!Persistable.Base.isNullOrTransient(rc.getCreator())) {
+                if (Persistable.Base.isNotNullOrTransient(rc.getCreator())) {
                     if (proxy.isValid()) {
                         this.roles.add(rc.getRole());
                         this.getFieldValues().add((C) rc.getCreator());
@@ -44,7 +44,7 @@ public class CreatorQueryPart<C extends Creator> extends AbstractHydrateableQuer
         List<Integer> trans = new ArrayList<Integer>();
         // iterate through all of the values; if any of them are transient, put those positions off to the side
         for (int i = 0; i < getFieldValues().size(); i++) {
-            if (!Persistable.Base.isNullOrTransient(getFieldValues().get(i))) {
+            if (Persistable.Base.isNotNullOrTransient(getFieldValues().get(i))) {
                 appendPhrase(sb, i);
             } else {
                 trans.add(i);

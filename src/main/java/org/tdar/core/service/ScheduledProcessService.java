@@ -67,6 +67,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
 
     private static final long ONE_HOUR_MS = 3600000;
     private static final long ONE_MIN_MS = 60000;
+    @SuppressWarnings("unused")
     private static final long FIVE_MIN_MS = ONE_MIN_MS * 5;
     private static final long TWO_MIN_MS = ONE_MIN_MS * 2;
     public static String BAR = "\r\n========================================================\r\n";
@@ -195,7 +196,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
             end = missing.toString();
         }
 
-        String message = String.format("This is an automated message from tDAR reporting on files with issues.\r\nRun on: %s %s\n %s", TdarConfiguration
+        String message = String.format("This is an automated message from %s reporting on files with issues.\r\nRun on: %s %s\n %s", TdarConfiguration.getInstance().getSiteAcronym(),TdarConfiguration
                 .getInstance().getBaseUrl(), new Date(), end);
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         String filename = "verify-" + df.format(new Date()) + ".txt";

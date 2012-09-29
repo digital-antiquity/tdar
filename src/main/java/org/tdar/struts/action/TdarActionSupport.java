@@ -40,7 +40,6 @@ import org.tdar.core.service.resource.CategoryVariableService;
 import org.tdar.core.service.resource.CodingSheetService;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.core.service.resource.DatasetService;
-import org.tdar.core.service.resource.ImageService;
 import org.tdar.core.service.resource.InformationResourceFileService;
 import org.tdar.core.service.resource.InformationResourceFileVersionService;
 import org.tdar.core.service.resource.InformationResourceService;
@@ -119,8 +118,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     private transient InformationResourceFileVersionService informationResourceFileVersionService;
     @Autowired
     private transient UrlService urlService;
-    @Autowired
-    private transient ImageService imageService;
     @Autowired
     private transient SearchIndexService searchIndexService;
     @Autowired
@@ -226,12 +223,24 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return getTdarConfiguration().getCopyrightMandatory();
     }
 
+    public boolean isLicensesEnabled() {
+        return getTdarConfiguration().getLicenseEnabled();
+    }
+
     public String getServerEnvironmentStatus() {
         return getTdarConfiguration().getServerEnvironmentStatus();
     }
 
+    public String getHostName() {
+        return getTdarConfiguration().getHostName();
+    }
+
+    public String getContactEmail() {
+        return getTdarConfiguration().getContactEmail();
+    }
+
     public String getSiteAcronym() {
-        return getTdarConfiguration().getSiteAcroynm();
+        return getTdarConfiguration().getSiteAcronym();
     }
 
     public String getSiteName() {
@@ -240,6 +249,18 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     public String getCommentUrl() {
         return getTdarConfiguration().getCommentUrl();
+    }
+
+    public String getCommentUrlEscaped() {
+        String input = getTdarConfiguration().getCommentUrl();
+        int length = input.length();
+        StringBuffer output = new StringBuffer(length * 6);
+        for (int i = 0; i < input.length(); i++) {
+            output.append("&#");
+            output.append((int) input.charAt(i));
+            output.append(";");
+        }
+        return output.toString();
     }
 
     public String getBugReportUrl() {
@@ -264,6 +285,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     public String getCommentsUrl() {
         return getTdarConfiguration().getAboutUrl();
+    }
+
+    public Boolean isRPAEnabled() {
+        return getTdarConfiguration().isRPAEnabled();
     }
 
     public String getGMapDefaultLat() {
@@ -331,10 +356,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     public UrlService getUrlService() {
         return urlService;
-    }
-
-    public ImageService getImageService() {
-        return imageService;
     }
 
     public SearchIndexService getSearchIndexService() {

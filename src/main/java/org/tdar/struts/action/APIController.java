@@ -2,6 +2,7 @@ package org.tdar.struts.action;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,10 +12,10 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
-import org.apache.tools.ant.filters.StringInputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.VersionType;
@@ -22,6 +23,7 @@ import org.tdar.core.exception.APIException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.ImportService;
 import org.tdar.core.service.PersonalFilestoreService;
+import org.tdar.core.service.XmlService;
 import org.tdar.struts.data.FileProxy;
 
 @SuppressWarnings("serial")
@@ -43,6 +45,8 @@ public class APIController extends AuthenticationAware.Base {
 
     @Autowired
     public ImportService importService;
+    @Autowired
+    public XmlService xmlService;
 
     // on the receiving end
     private List<String> processedFileNames;
@@ -71,13 +75,15 @@ public class APIController extends AuthenticationAware.Base {
         for (int i = 0; i < uploadFileFileName.size(); i++) {
             FileProxy proxy = new FileProxy(uploadFileFileName.get(i), uploadFile.get(i), VersionType.UPLOADED, FileAction.ADD);
             if (confidentialFiles.contains(uploadFileFileName.get(i))) {
-                proxy.setConfidential(true);
+                proxy.setRestriction(FileAccessRestriction.CONFIDENTIAL);
             }
             proxies.add(proxy);
         }
 
         try {
-            Resource loadedRecord = importService.loadXMLFile(new StringInputStream(getRecord()), getAuthenticatedUser(), proxies, projectId);
+            Resource incoming = (Resource) xmlService.parseXml(new StringReader(getRecord()));
+            Resource loadedRecord = importService.bringObjectOntoSession(incoming, getAuthenticatedUser(), proxies, projectId);
+
             setImportedRecord(loadedRecord);
             setId(loadedRecord.getId());
 

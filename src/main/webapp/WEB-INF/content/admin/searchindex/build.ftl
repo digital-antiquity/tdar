@@ -1,5 +1,5 @@
 <head>
-<title>Build tDAR Index</title>
+<title>Build ${siteAcronym} Index</title>
 <script type="text/javascript">
 var $buildStatus, $buildLog, $progressbar;
 $(document).ready(function(){
@@ -22,7 +22,7 @@ function updateProgress() {
         if (data.percentDone != 100) {
             var timeString = (new Date()).toLocaleTimeString();
             $progressbar.progressbar("option", "value", data.percentDone);
-            document.title = "(" + data.percentDone + "%) Build tDAR Index";
+            document.title = "(" + data.percentDone + "%) Build ${siteAcronym} Index";
             if(data.errorHtml) {
                 $('#errors').show();
                 $('#errors').html(data.errorHtml)

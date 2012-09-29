@@ -7,6 +7,7 @@ public enum Status implements HasLabel {
     DRAFT("Draft"),
     ACTIVE("Active"),
     FLAGGED("Flagged"),
+    DUPLICATE("Duplicate"),
     DELETED("Deleted");
 
     private final String label;

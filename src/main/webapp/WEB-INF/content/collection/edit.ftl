@@ -113,16 +113,13 @@ function removeResourceClicked(id, elem) {
 <div class="glide" tiplabel="Basic Information"  tooltipcontent="Enter a name and description for this collection.  You may also choose a &quot;parent 
     collection&quot; which allows you to inherit all of the access permissions defined by the parent.">
   <#if resourceCollection.id?? &&  resourceCollection.id != -1>
-      <@s.hidden name="id"  value="${resourceCollection.id?c}" id="hdnResourceCollectionId" />
+      <@s.hidden name="id"  value="${resourceCollection.id?c}" />
   </#if>
   <@s.hidden name="startTime" value="${currentTime?c}" />
 
- <p  id="rebaseNotice" class="message-warning" style="display:none;">
-    <strong>Please Note:</strong> By changing the parent collection, you will be changing the permissions of this collection as well. 
- </p>
-<@s.select labelposition='left' label='Parent Collection' emptyOption='true' name='parentId' id="selParentId"
+<@s.select labelposition='left' label='Parent Collection' emptyOption='true' name='parentId' 
     listKey='id' listValue='name' list='%{candidateParentResourceCollections}'
-    truncate=80 title="Please select a parent collection" />
+    truncate="80" title="Please select a parent collection" />
 <br />
 <@s.textfield labelposition='left' label='Collection Name' name='resourceCollection.name'  cssClass="required descriptiveTitle longfield"  title="A title is required for all collections." maxlength="512" />
 <p class='field'>
@@ -134,9 +131,9 @@ function removeResourceClicked(id, elem) {
 </div>
 
 <div id="divBrowseOptionsTips" style="display:none">
-    <p>Choose whether this collection will be public or private, and how tDAR will sort the resources when displaying this collection to other users.</p>
+    <p>Choose whether this collection will be public or private, and how ${siteAcronym} will sort the resources when displaying this collection to other users.</p>
     <ul>
-        <li>Public collections are viewable to all tDAR users and accessible from the &quot;Browse Collections&quot page.</li>
+        <li>Public collections are viewable to all ${siteAcronym} users and accessible from the &quot;Browse Collections&quot page.</li>
         <li>Private collections are only viewable to the users specified in the <a href="#accessRights">Access Rights</a> section.</li>
     </ul>
 </div>
@@ -151,12 +148,12 @@ function removeResourceClicked(id, elem) {
 
 <@s.select labelposition='top' label='When Browsing Sort Resource By:' name='resourceCollection.sortBy' 
      listValue='label' list='%{sortOptions}'
-    truncate=80 title="Sort resource by" />
+    truncate="80" title="Sort resource by" />
 </div>
 
 <div id="divCollectionAccessRightsTips" style="display:none">
 <p>Determines who can edit a document or related metadata. Enter the first few letters of the person's last name. 
-The form will check for matches in the tDAR database and populate the related fields.</p>
+The form will check for matches in the ${siteAcronym} database and populate the related fields.</p>
 <em>Types of Permissions</em>
 <dl>
     <dt>View All</dt>
@@ -200,29 +197,6 @@ The form will check for matches in the tDAR database and populate the related fi
     This is the editing form for a Collection.
     </div>
 </div>
-
-<script type="text/javascript">
-$(function() {
-    "use strict";
-
-    //give rebase warning when editing and collection goes from child to root
-    //we assume the hidden id field is only present during /edit,  not /add
-    $("#hdnResourceCollectionId").each(function() {
-        var $selParentId = $("#selParentId");
-        //only need to show the message if going from parent to nothing
-    if($selParentId.val()!=="") {
-            //$selParentId.data("previous-value", $selParentId.val());   
-            $selParentId.change(function() {
-                if(this.value !== "" && this.value !== $selParentId.data("previous-value"))  {
-                    $("#rebaseNotice").show();
-                }
-            });
-        }
-    });
-    
-});
-    
-</script>
 
 </body>
 </#escape>

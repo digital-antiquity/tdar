@@ -147,6 +147,7 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
          */
     }
 
+    @SuppressWarnings("unused")
     private boolean isChildOf(OntologyNode parent, OntologyNode child) {
         return parent != null && parent.getIntervalStart() < child.getIntervalStart() && parent.getIntervalEnd() > child.getIntervalEnd();
     }

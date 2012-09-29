@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
@@ -25,12 +26,18 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.apache.commons.lang.WordUtils;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
+import org.hibernate.search.annotations.Analyzer;
+import org.hibernate.search.annotations.Field;
+import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.configuration.JSONTransient;
 import org.tdar.filestore.WorkflowContext;
+import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
+import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
@@ -62,13 +69,24 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
                     // user added a file but changed mind and clicked delete. NONE instructs the system to ignore the pending file
                 case NONE:
                     return true;
+                default:
+                    return false;
             }
-            return false;
         }
     }
 
     public enum FileType {
         IMAGE, DOCUMENT, COLUMNAR_DATA, FILE_ARCHIVE, OTHER
+    }
+
+    public enum FileAccessRestriction implements HasLabel {
+        PUBLIC,
+        EMBARGOED,
+        CONFIDENTIAL;
+
+        public String getLabel() {
+            return WordUtils.capitalize(this.name().toLowerCase());
+        }
     }
 
     public enum FileStatus {
@@ -80,9 +98,9 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         PROCESSING_ERROR;
     }
 
-    // CascadeType.MERGE,
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
-    @JoinColumn(name = "information_resource_id")
+    @ManyToOne(optional = false)
+    // cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
+    @JoinColumn(name = "information_resource_id", nullable = false, updatable = false)
     private InformationResource informationResource;
 
     private transient Long transientDownloadCount;
@@ -102,7 +120,14 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     @Sort(type = SortType.NATURAL)
     private SortedSet<InformationResourceFileVersion> informationResourceFileVersions = new TreeSet<InformationResourceFileVersion>();
 
-    private Boolean confidential = Boolean.FALSE;
+    @Enumerated(EnumType.STRING)
+    private FileAccessRestriction restriction = FileAccessRestriction.PUBLIC;
+
+    // a date in standard form that a resource will become public if availableToPublic was set to false.
+    // This date may be extended by the publisher but will not extend past the publisher's death unless
+    // special arrangements are made.
+    @Column(name = "date_made_public")
+    private Date dateMadePublic;
 
     @Enumerated(EnumType.STRING)
     private FileStatus status;
@@ -148,11 +173,13 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     }
 
     @Transient
+    @XmlTransient
     public InformationResourceFileVersion getTranslatedFile() {
         return getVersion(getLatestVersion(), VersionType.TRANSLATED);
     }
 
     @Transient
+    @XmlTransient
     public InformationResourceFileVersion getIndexableVersion() {
         return getVersion(getLatestVersion(), VersionType.INDEXABLE_TEXT);
     }
@@ -177,12 +204,17 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         latestVersion++;
     }
 
+    @Field(name = QueryFieldNames.FILENAME, analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class))
+    public String getFileName() {
+        return getLatestUploadedVersion().getFilename();
+    }
+
     @Transient
+    @XmlTransient
     public Collection<InformationResourceFileVersion> getLatestVersions() {
         return getVersions(getLatestVersion());
     }
 
-    @Transient
     public Collection<InformationResourceFileVersion> getVersions(int version) {
         ArrayList<InformationResourceFileVersion> files = new ArrayList<InformationResourceFileVersion>();
         for (InformationResourceFileVersion irfv : getInformationResourceFileVersions()) {
@@ -205,6 +237,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
 
     @Transient
     @Deprecated
+    @XmlTransient
     public InformationResourceFileVersion getLatestPDF() {
         for (InformationResourceFileVersion version : getInformationResourceFileVersions()) {
             if (version.getVersion().equals(getLatestVersion()) && version.getExtension().equalsIgnoreCase("pdf"))
@@ -215,6 +248,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     }
 
     @Transient
+    @XmlTransient
     public InformationResourceFileVersion getLatestThumbnail() {
         for (InformationResourceFileVersion version : getInformationResourceFileVersions()) {
             if (version.getVersion().equals(latestVersion) && version.isThumbnail())
@@ -224,6 +258,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     }
 
     @Transient
+    @XmlTransient
     public InformationResourceFileVersion getLatestArchival() {
         logger.debug("looking for latest archival version in {} with version number {}", getInformationResourceFileVersions(), latestVersion);
         for (InformationResourceFileVersion version : getInformationResourceFileVersions()) {
@@ -311,17 +346,17 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
                     break;
                 case WEB_SMALL:
                     break;
+                default:
+                    break;
             }
         }
         return currentVersion;
     }
 
+    @Transient
+    @XmlTransient
     public boolean isConfidential() {
-        return confidential;
-    }
-
-    public void setConfidential(boolean confidential) {
-        this.confidential = confidential;
+        return restriction == FileAccessRestriction.CONFIDENTIAL;
     }
 
     public FileStatus getStatus() {
@@ -333,29 +368,33 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     }
 
     @Transient
+    @XmlTransient
     public boolean isProcessed() {
         return status == FileStatus.PROCESSED;
     }
 
     @Transient
+    @XmlTransient
     public boolean isDeleted() {
         return status == FileStatus.DELETED;
     }
 
     @Transient
+    @XmlTransient
     public boolean isErrored() {
         return status == FileStatus.PROCESSING_ERROR;
     }
 
     @Transient
+    @XmlTransient
     public boolean isPublic() {
-        if (status != FileStatus.DELETED && !confidential) {
+        // this had a "DELETED" check; but it really needs to just be "is public or not"
+        if (restriction == FileAccessRestriction.PUBLIC) {
             return true;
         }
         return false;
     }
 
-    @Transient
     public void clearStatus() {
         setStatus(null);
     }
@@ -411,6 +450,26 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
 
     public void setWorkflowContext(WorkflowContext workflowContext) {
         this.workflowContext = workflowContext;
+    }
+
+    public Date getDateMadePublic() {
+        return dateMadePublic;
+    }
+
+    public void setDateMadePublic(Date dateMadePublic) {
+        this.dateMadePublic = dateMadePublic;
+    }
+
+    public FileAccessRestriction getRestriction() {
+        return restriction;
+    }
+
+    public void setRestriction(FileAccessRestriction restriction) {
+        this.restriction = restriction;
+    }
+
+    public boolean isEmbargoed() {
+        return this.restriction == FileAccessRestriction.EMBARGOED;
     }
 
 }

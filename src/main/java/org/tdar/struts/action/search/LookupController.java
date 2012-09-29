@@ -21,6 +21,7 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.InstitutionQueryBuilder;
@@ -65,9 +66,21 @@ public class LookupController extends AbstractLookupController<Indexable> {
     private String keywordType;
     private String term;
 
-    // this defines what we are looking up (people, institutions, etc)
-    // FIXME: lookupSource really should be an enum or const.
-    private String lookupSource;
+    private enum LookupSource {
+        PERSON("people"), INSTITUTION("institutions"), KEYWORD("items"), RESOURCE("resources"), COLLECTION("collections");
+
+        private String collectionName;
+
+        private LookupSource(String name) {
+            this.collectionName = name;
+        }
+
+        public String getCollectionName() {
+            return this.collectionName;
+        }
+    }
+
+    private LookupSource lookupSource;
     private Long sortCategoryId;
     private List<String> projections = new ArrayList<String>();
     private boolean includeCompleteRecord = false;
@@ -77,9 +90,9 @@ public class LookupController extends AbstractLookupController<Indexable> {
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
             results = { @Result(name = "success", location = "lookup.ftl", type = "freemarker", params = { "contentType", "application/json" }) })
     public String lookupPerson() {
-        QueryBuilder q = new PersonQueryBuilder();
+        QueryBuilder q = new PersonQueryBuilder(Operator.AND);
         boolean valid = false;
-        this.lookupSource = "people";
+        this.lookupSource = LookupSource.PERSON;
         setMode("personLookup");
         Person incomingPerson = new Person();
         if (checkMinString(firstName)) {
@@ -107,6 +120,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
         PersonQueryPart pqp = new PersonQueryPart();
         pqp.add(incomingPerson);
         q.append(pqp);
+        q.append(new FieldQueryPart<Status>("status", Status.ACTIVE));
         if (valid || getMinLookupLength() == 0) {
             if (StringUtils.isNotBlank(registered)) {
                 try {
@@ -132,10 +146,10 @@ public class LookupController extends AbstractLookupController<Indexable> {
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
             results = { @Result(name = "success", location = "lookup.ftl", type = "freemarker", params = { "contentType", "application/json" }) })
     public String lookupInstitution() {
-        QueryBuilder q = new InstitutionQueryBuilder();
+        QueryBuilder q = new InstitutionQueryBuilder(Operator.AND);
         setMode("institutionLookup");
 
-        this.lookupSource = "institutions";
+        this.lookupSource = LookupSource.INSTITUTION;
 
         if (checkMinString(this.institution)) {
             InstitutionQueryPart iqp = new InstitutionQueryPart();
@@ -144,6 +158,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
                 iqp.add(testInstitution);
                 q.append(iqp);
             }
+            q.append(new FieldQueryPart<Status>("status", Status.ACTIVE));
             try {
                 handleSearch(q);
             } catch (ParseException e) {
@@ -160,7 +175,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
             results = { @Result(name = "success", location = "lookup.ftl", type = "freemarker", params = { "contentType", "application/json" }) })
     public String lookupResource() {
         QueryBuilder q = new ResourceQueryBuilder();
-        this.lookupSource = "resources";
+        this.lookupSource = LookupSource.RESOURCE;
         setMode("resourceLookup");
         // if we're doing a coding sheet lookup, make sure that we have access to all of the information here
         if (!isIncludeCompleteRecord() || getAuthenticatedUser() == null) {
@@ -177,7 +192,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
         // FIXME: instead of guessing this way it may be better to break codingsheet/ontology autocomplete lookups to another action.
         if (getSortCategoryId() != null && getSortCategoryId() > -1) {
             // SHOULD PREFER THINGS THAT HAVE THAT CATEGORY ID
-            FieldQueryPart q2 = new FieldQueryPart(QueryFieldNames.CATEGORY_ID, getSortCategoryId().toString().trim());
+            FieldQueryPart<String> q2 = new FieldQueryPart<String>(QueryFieldNames.CATEGORY_ID, getSortCategoryId().toString().trim());
             q2.setBoost(2f);
             valueGroup.append(q2);
             valueGroup.setOperator(Operator.OR);
@@ -192,8 +207,8 @@ public class LookupController extends AbstractLookupController<Indexable> {
         if (StringUtils.isNotBlank(projectId) && StringUtils.isNumeric(projectId)) {
             QueryPartGroup group = new QueryPartGroup();
             group.setOperator(Operator.OR);
-            group.append(new FieldQueryPart(QueryFieldNames.PROJECT_ID, projectId));
-            group.append(new FieldQueryPart(QueryFieldNames.ID, projectId));
+            group.append(new FieldQueryPart<String>(QueryFieldNames.PROJECT_ID, projectId));
+            group.append(new FieldQueryPart<String>(QueryFieldNames.ID, projectId));
             q.append(group);
         }
 
@@ -227,18 +242,19 @@ public class LookupController extends AbstractLookupController<Indexable> {
         if (!checkMinString(this.term) && !checkMinString(keywordType))
             return SUCCESS;
 
-        QueryBuilder q = new KeywordQueryBuilder();
-        this.lookupSource = "items";
+        QueryBuilder q = new KeywordQueryBuilder(Operator.AND);
+        this.lookupSource = LookupSource.KEYWORD;
         QueryPartGroup group = new QueryPartGroup();
 
         group.setOperator(Operator.AND);
         addQuotedEscapedField(group, "label_auto", term);
 
         // refine search to the correct keyword type
-        group.append(new FieldQueryPart("keywordType", keywordType));
+        group.append(new FieldQueryPart<String>("keywordType", keywordType));
         setMode("keywordLookup");
 
         q.append(group);
+        q.append(new FieldQueryPart<Status>("status", Status.ACTIVE));
         try {
             handleSearch(q);
         } catch (ParseException e) {
@@ -256,7 +272,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
         setMinLookupLength(2);
         setMode("annotationLookup");
 
-        this.lookupSource = "items";
+        this.lookupSource = LookupSource.KEYWORD;
         logger.trace("looking up:'" + term + "'");
 
         // only return results if query length has enough characters
@@ -280,7 +296,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
         QueryBuilder q = new ResourceCollectionQueryBuilder();
         setMinLookupLength(0);
 
-        this.lookupSource = "collections";
+        this.lookupSource = LookupSource.COLLECTION;
         logger.trace("looking up:'" + term + "'");
         setMode("collectionLookup");
 
@@ -288,9 +304,9 @@ public class LookupController extends AbstractLookupController<Indexable> {
         if (checkMinString(term)) {
             q.append(new AutocompleteTitleQueryPart(getTerm()));
             QueryPartGroup rightsGroup = new QueryPartGroup(Operator.OR);
-            q.append(new FieldQueryPart(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED));
-            rightsGroup.append(new FieldQueryPart(QueryFieldNames.COLLECTION_VISIBLE, "true"));
-            if (!Persistable.Base.isNullOrTransient(getAuthenticatedUser())) {
+            q.append(new FieldQueryPart<CollectionType>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED));
+            rightsGroup.append(new FieldQueryPart<Boolean>(QueryFieldNames.COLLECTION_VISIBLE, Boolean.TRUE));
+            if (Persistable.Base.isNotNullOrTransient(getAuthenticatedUser())) {
                 String field = QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW;
                 switch (getPermission()) {
                     case MODIFY_RECORD:
@@ -299,8 +315,10 @@ public class LookupController extends AbstractLookupController<Indexable> {
                     case ADMINISTER_GROUP:
                         field = QueryFieldNames.COLLECTION_USERS_WHO_CAN_ADMINISTER;
                         break;
+                    default:
+                        break;
                 }
-                rightsGroup.append(new FieldQueryPart(field, getAuthenticatedUser().getId().toString()));
+                rightsGroup.append(new FieldQueryPart<Long>(field, getAuthenticatedUser().getId()));
             }
             q.append(rightsGroup);
             try {
@@ -365,7 +383,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
     // lookupSource defines the type of records contained in the jsonResults collection. To be
     // used in a ftl template /give hints to client-side javascript
     public String getLookupSource() {
-        return lookupSource;
+        return lookupSource.getCollectionName();
     }
 
     public void setProjectId(String projectId) {

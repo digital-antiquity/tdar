@@ -1,5 +1,6 @@
 package org.tdar.search.query.builder;
 
+import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
@@ -27,4 +28,8 @@ public class KeywordQueryBuilder extends QueryBuilder {
 				SiteTypeKeyword.class, });
 	}
 
+	public KeywordQueryBuilder(Operator op) {
+	    this();
+	    setOperator(op);
+	}
 }

@@ -17,6 +17,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.request.ContributorRequest;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.dao.entity.InstitutionDao;
@@ -118,19 +119,28 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
     @SuppressWarnings("unchecked")
     @Transactional(readOnly = false)
     public <C extends Creator> C findOrSaveCreator(C transientCreator) {
+        C creatorToReturn = null;
         if (transientCreator instanceof Person) {
-            return (C) findOrSavePerson((Person) transientCreator);
+            creatorToReturn =(C)findOrSavePerson((Person) transientCreator);
         }
         if (transientCreator instanceof Institution) {
-            return (C) findOrSaveInstitution((Institution) transientCreator);
+            creatorToReturn =(C) findOrSaveInstitution((Institution) transientCreator);
         }
-        return null;
+        if (creatorToReturn != null && creatorToReturn.isDeleted()) {
+            creatorToReturn.setStatus(Status.ACTIVE);
+        }
+        
+        return creatorToReturn;
     }
 
     @Transactional(readOnly = false)
     private Person findOrSavePerson(Person transientPerson) {
         // now find or save the person (if the person was found the institution field is ignored
         // entirely and replaced with the persisted person's institution
+        if (transientPerson == null || transientPerson.hasNoPersistableValues()) {
+            return null;
+        }
+
         Person blessedPerson = null;
         if (StringUtils.isNotBlank(transientPerson.getEmail())) {
             blessedPerson = findByEmail(transientPerson.getEmail());
@@ -159,9 +169,14 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
 
     @Transactional(readOnly = false)
     private Institution findOrSaveInstitution(Institution transientInstitution) {
+        if (transientInstitution == null || StringUtils.isBlank(transientInstitution.getName())) 
+            return null;
         Institution blessedInstitution = getDao().findByExample(Institution.class, transientInstitution,
                 Arrays.asList(Institution.getIgnorePropertiesForUniqueness()),
                 FindOptions.FIND_FIRST_OR_CREATE).get(0);
+        if (!blessedInstitution.isDeleted()) {
+            blessedInstitution.setStatus(Status.ACTIVE);
+        }
         return blessedInstitution;
     }
 

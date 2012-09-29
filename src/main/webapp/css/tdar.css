@@ -1952,17 +1952,12 @@ div.notice {
 	text-align: left;
 }
 
-#messages .message-error,p.message-error {
+#messages .message-error {
 	background: url(/images/div-warning.png) no-repeat scroll left 2px;
 	background-color: #fee;
 	border: 2px solid red;
 	padding-left: 40px;
 	font-size: 10pt
-}
-
-p.message-warning {
-    font-size: 10pt;
-    font-style: italic;
 }
 
 div#subtitle {
@@ -1996,7 +1991,7 @@ div#subtitle {
 	font-variant: small-caps;
 	font-size: 80%;
 	border-radius: 2px;
-    white-space: nowrap;
+	white-space: nowrap;
 }
 
 .showcase-thumbnail-container,.showcase-thumbnail-restriction {

@@ -14,7 +14,6 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.ResourceAnnotationType;
-import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 
 public class ProjectControllerResourceAnnotationITCase extends AbstractResourceControllerITCase {
@@ -60,6 +59,7 @@ public class ProjectControllerResourceAnnotationITCase extends AbstractResourceC
         Assert.assertNotSame("resource id should be assigned after insert", originalId, newId);
 
         // simulating the view action - the resource should have one annotation
+        genericService.detachFromSession(controller.getResource());
         controller = generateNewInitializedController(ProjectController.class);
         loadResourceFromId(controller, newId);
         p = controller.getResource();
@@ -89,7 +89,7 @@ public class ProjectControllerResourceAnnotationITCase extends AbstractResourceC
         controller.setResourceAnnotations(Collections.<ResourceAnnotation> emptyList());
         controller.setServletRequest(getServletPostRequest());
         controller.save();
-        Project project = genericService.merge(controller.getResource());
+        Project project = genericService.find(Project.class, id);
         Assert.assertEquals("annotations list should be empty", 0, project.getResourceAnnotations().size());
 
         // now back to the view action - we should have an empty list of resourceAnnotations
@@ -148,6 +148,7 @@ public class ProjectControllerResourceAnnotationITCase extends AbstractResourceC
         // go to the view page
 
         // go back to the edit page
+        genericService.detachFromSession(controller.getResource());
         controller = generateNewInitializedController(ProjectController.class);
         controller.setId(id);
         loadResourceFromId(controller, id);
@@ -156,7 +157,7 @@ public class ProjectControllerResourceAnnotationITCase extends AbstractResourceC
         controller.setServletRequest(getServletPostRequest());
         controller.save();
 
-        Project project = genericService.merge(controller.getResource());
+        Project project = genericService.find(Project.class, id);
         Assert.assertEquals("we should only have 2 annotations now", 2, project.getResourceAnnotations().size());
 
         // back to the view page

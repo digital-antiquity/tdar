@@ -40,8 +40,8 @@ import org.tdar.db.model.abstracts.TargetDatabase;
 public class ExcelConverter extends DatasetConverter.Base {
 
     private static final String DEFAULT_SHEET_NAME = "Sheet1";
-    private static final String ERROR_CORRUPT_FILE_TRY_RESAVING = "Cannot read some rows in this workbook, possibly due to a corrupt file. This issue can often be resolved by simply opening the file using in Microsoft Excel and then re-saving the document.";
-    private static final String ERROR_WRONG_EXCEL_FORMAT = "We could not open the Excel file you supplied.  Please try re-saving it in Excel as an Excel 97-2003 Workbook or Excel 2007 Workbook and upload it again.  If this problem persists, please contact us with a bug report.";
+    private static final String ERROR_CORRUPT_FILE_TRY_RESAVING = "The system cannot read some rows in this workbook, possibly due to a corrupt file. This issue can often be resolved by simply opening the file using in Microsoft Excel and then re-saving the document.";
+    private static final String ERROR_WRONG_EXCEL_FORMAT = "The system could not open the Excel file you supplied.  Please try re-saving it in Excel as an Excel 97-2003 Workbook or Excel 2007 Workbook and upload it again.  If this problem persists, please contact us with a bug report.";
     private static final String POI_ERROR_MISSING_ROWS = "Unexpected missing row when some rows already present";
     private static final String DB_PREFIX = "e";
     private Workbook workbook;
@@ -139,7 +139,7 @@ public class ExcelConverter extends DatasetConverter.Base {
         int endColumnIndex = columnNamesRow.getLastCellNum();
         // create the table and insert the tuples
         for (int i = 0; i < endColumnIndex; i++) {
-            String columnName = "Column #" + i + 1;
+            String columnName = "Column #" + (i + 1);
             try {
                 FormulaEvaluator evaluator = columnNamesRow.getSheet().getWorkbook().getCreationHelper().createFormulaEvaluator();
                 String cellValue = formatter.formatCellValue(columnNamesRow.getCell(i), evaluator);
@@ -184,7 +184,7 @@ public class ExcelConverter extends DatasetConverter.Base {
             dataTables.remove(dataTable);
         }
 
-        int startColumnIndex = columnNamesRow.getFirstCellNum();
+        final int startColumnIndex = columnNamesRow.getFirstCellNum();
         int endColumnIndex = columnNamesRow.getLastCellNum();
 
         logger.debug("{}", dataTable.getDataTableColumns());
@@ -207,8 +207,11 @@ public class ExcelConverter extends DatasetConverter.Base {
             Row currentRow = currentSheet.getRow(rowIndex);
             if (currentRow == null)
                 continue;
+            
+            if (currentRow.getFirstCellNum() < 0)
+                continue;
 
-            sheetEvalator.evaluateForBlankCells(currentRow);
+            sheetEvalator.evaluateForBlankCells(currentRow, startColumnIndex);
 
             Map<DataTableColumn, String> valueColumnMap = new HashMap<DataTableColumn, String>();
             for (int columnIndex = startColumnIndex; columnIndex < endColumnIndex; ++columnIndex) {

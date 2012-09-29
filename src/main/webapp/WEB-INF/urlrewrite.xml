@@ -26,6 +26,11 @@
 	</rule>
 
 	<rule>
+		<from>^/opensearch.xml$</from>
+		<to>/opensearch</to>
+	</rule>
+
+	<rule>
 		<from>^/projects/list</from>
 		<to>/dashboard/dashboard</to>
 	</rule>

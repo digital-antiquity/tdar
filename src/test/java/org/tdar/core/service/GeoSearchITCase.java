@@ -5,7 +5,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -23,6 +22,7 @@ import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword.Level;
 import org.tdar.core.bean.resource.Project;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.geosearch.GeoSearchDao;
 import org.tdar.search.geosearch.GeoSearchService;
@@ -113,8 +113,8 @@ public class GeoSearchITCase extends AbstractAdminControllerITCase {
     @SuppressWarnings("unchecked")
     @Test
     @Rollback(true)
-    //FIXME:  This test tests too many pointless things,  but it's the only thing that covers processManagedKeywords.  Remove this 
-    //        once we have a proper test for processManagedKeywords.
+    // FIXME: This test tests too many pointless things, but it's the only thing that covers processManagedKeywords. Remove this
+    // once we have a proper test for processManagedKeywords.
     public void testPersistedManagedKeyword() throws ParseException {
         Project project = genericService.find(Project.class, 3738L);
         Set<LatitudeLongitudeBox> latitudeLongitudeBoxes = project.getLatitudeLongitudeBoxes();
@@ -146,10 +146,10 @@ public class GeoSearchITCase extends AbstractAdminControllerITCase {
         Project project2 = genericService.find(Project.class, 3738L);
         logger.info("{}", project2.getManagedGeographicKeywords());
         assertEquals("managed keywords (expected " + extractedGeoInfo.size() + ")", extractedGeoInfo.size(), project2.getManagedGeographicKeywords().size());
-
+        searchIndexService.flushToIndexes();
         QueryBuilder q = new ResourceQueryBuilder();
 
-        FieldQueryPart qp = new FieldQueryPart("resourceType", "PROJECT");
+        FieldQueryPart<ResourceType> qp = new FieldQueryPart<ResourceType>("resourceType", ResourceType.PROJECT);
         q.append(qp);
 
         FreetextQueryPart ft = new FreetextQueryPart();

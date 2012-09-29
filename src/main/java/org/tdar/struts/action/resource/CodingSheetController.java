@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.InformationResourceFile;
+import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
@@ -28,6 +29,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.parser.CodingSheetParserException;
 import org.tdar.core.service.external.auth.InternalTdarRights;
 import org.tdar.struts.WriteableSession;
 import org.tdar.struts.action.TdarActionException;
@@ -138,8 +140,14 @@ public class CodingSheetController extends AbstractSupportingInformationResource
         }
         // should always be 1 based on the check above
         getLogger().debug("adding coding rules");
-        getCodingSheetService().parseUpload(getPersistable(), toProcess);
-        getGenericService().saveOrUpdate(getPersistable());
+        try {
+            getCodingSheetService().parseUpload(getPersistable(), toProcess);
+            getGenericService().saveOrUpdate(getPersistable());
+        } catch (CodingSheetParserException e) {
+            toProcess.getInformationResourceFile().setStatus(FileStatus.PROCESSING_ERROR);
+            getGenericService().saveOrUpdate(toProcess.getInformationResourceFile());
+            addActionError(e.getMessage());
+        }
     }
 
     @SkipValidation

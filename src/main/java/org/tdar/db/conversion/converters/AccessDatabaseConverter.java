@@ -186,9 +186,6 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                         continue;
                     logger.trace(relationship.getName());
                     DataTableRelationship relationshipToPersist = new DataTableRelationship();
-                    relationshipToPersist.setLocalTable(dataTableNameMap.get(tableName1));
-                    relationshipToPersist.setForeignTable(dataTableNameMap.get(tableName2));
-                    Set<DataTableColumnRelationship> columnRelationships = new HashSet<DataTableColumnRelationship>();
                     // iterate over the two lists of columns (from- and to-) and pair them up
                     Iterator<Column> fromColumns = relationship.getFromColumns().iterator();
                     Iterator<Column> toColumns = relationship.getToColumns().iterator();
@@ -200,9 +197,9 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                         DataTableColumnRelationship columnRelationship = new DataTableColumnRelationship();
                         columnRelationship.setLocalColumn(fromDataTableColumn);
                         columnRelationship.setForeignColumn(toDataTableColumn);
-                        columnRelationships.add(columnRelationship);
+                        columnRelationship.setRelationship(relationshipToPersist);
+                        relationshipToPersist.getColumnRelationships().add(columnRelationship);
                     }
-                    relationshipToPersist.setColumnRelationships(columnRelationships);
 
                     // determine the type of relationship: one-to-one, one-to-many, or many-to-one
                     if (relationship.isOneToOne()) {

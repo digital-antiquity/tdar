@@ -8,6 +8,9 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.sensory.SensoryDataImage;
 import org.tdar.core.bean.resource.sensory.SensoryDataScan;
@@ -29,7 +32,6 @@ public class SensoryDataControllerITCase extends AbstractResourceControllerITCas
 
     public void initControllerFields() {
         controller.prepare();
-        controller.setResourceAvailability("public");
     }
 
     @Before
@@ -77,20 +79,13 @@ public class SensoryDataControllerITCase extends AbstractResourceControllerITCas
             images.add(image);
             controller.getSensoryDataImages().add(image);
         }
-
-        Long id = saveAndReload(true);
+        controller.setServletRequest(getServletPostRequest());
+        controller.save();
         Assert.assertEquals("expeciting  same nuber of image records", images.size(), resource.getSensoryDataImages().size());
-        for (SensoryDataImage image : resource.getSensoryDataImages()) {
-            Assert.assertNotNull("backpointer should be saved on image", image.getResource());
-            logger.debug("{}", image.getResource());
-        }
-        for (SensoryDataImage image : images) {
-            // Assert.assertTrue("expecting image record in resource:" + image.getFilename(), resource.getSensoryDataImages().contains(image));
-        }
     }
 
     @Test
-    @Rollback
+    @Rollback(false)
     public void testSavingWithScanRecords() throws Exception {
         initControllerFields();
         SensoryData resource = controller.getResource();
@@ -100,6 +95,7 @@ public class SensoryDataControllerITCase extends AbstractResourceControllerITCas
 
         // TODO: grist for allentime mill: how to best check that a tranient object is 'similar' to to an object in my persisted list?
         List<SensoryDataScan> scans = new ArrayList<SensoryDataScan>();
+        genericService.detachFromSession(resource);
         for (int i = 0; i < 10; i++) {
             SensoryDataScan scan = new SensoryDataScan();
             scan.setFilename("file" + i);
@@ -108,14 +104,30 @@ public class SensoryDataControllerITCase extends AbstractResourceControllerITCas
             scans.add(scan);
             controller.getSensoryDataScans().add(scan);
         }
-
-        Long id = saveAndReload(true);
+        resource = null;
+        final Long id = saveAndReload(true);
+        genericService.detachFromSession(controller.getSensoryData());
         Assert.assertEquals("should have same number of scans", 10, controller.getSensoryData().getSensoryDataScans().size());
         controller.edit();
         controller.getSensoryDataScans().remove(0);
-        id = saveAndReload(false);
-        Assert.assertEquals("should have same number of scans", 9, controller.getSensoryData().getSensoryDataScans().size());
+        saveAndReload(false);
         
+        setVerifyTransactionCallback(new TransactionCallback<Image>() {
+            @Override
+            public Image doInTransaction(TransactionStatus status) {
+                SensoryData resource = genericService.find(SensoryData.class, id);
+//                resource.getSensoryDataImages();
+                logger.info("calling refresh");
+                genericService.refresh(resource);
+                logger.info("done calling refresh");
+                Assert.assertEquals("expeciting  same nuber of image records", 9, resource.getSensoryDataScans().size());
+                genericService.delete(resource);
+                return null;
+            }
+        });
+
+        Assert.assertEquals("should have same number of scans", 9, controller.getSensoryData().getSensoryDataScans().size());
+
         for (SensoryDataScan scan : scans) {
             // TODO: grist for allentime mill: how to best check that a tranient object is 'similar' to to an object in my persisted list?
             // Assert.assertTrue("expecting scan record in resource:" + scan.getFilename(), resource.getSensoryDataScans().contains(scan));
@@ -131,7 +143,7 @@ public class SensoryDataControllerITCase extends AbstractResourceControllerITCas
         controller.setId(id);
         controller.prepare();
         if (test) {
-        Assert.assertNotSame("resuorce should be assingned an id", oldid, id);
+            Assert.assertNotSame("resuorce should be assingned an id", oldid, id);
         }
         return id;
     }
