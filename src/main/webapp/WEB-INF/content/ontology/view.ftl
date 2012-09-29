@@ -27,9 +27,6 @@
 <@view.projectAssociation resourceType="ontology" />
 
 <@view.infoResourceBasicInformation />
-<@view.uploadedFileInfo >
-<@view.categoryVariables />
-</@view.uploadedFileInfo>
 
 <!--
 <fieldset>
@@ -44,14 +41,7 @@
 </div>
 <@view.ontology />
 
-<@view.keywords />
-<@view.spatialCoverage />
-<@view.temporalCoverage />
-<@view.resourceProvider />
-<@view.indvidualInstitutionalCredit />
-<@view.unapiLink resource />
-
-<@view.infoResourceAccessRights />
+<@view.sharedViewComponents resource />
 
 
 <#macro makeNode node_>
@@ -63,7 +53,6 @@
     ]}
 </#macro>
 
-<@view.relatedResourceSection label="Ontology"/>
 
 <script>
  <#if (rootElements.size()) == 1>

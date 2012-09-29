@@ -43,18 +43,29 @@ public class ReflectionService {
      * This method looks at a class like "Resource" and finds fields that contain the "classToFind",
      * e.g. GeographicKeyword. This would return [geographicKeywords,managedGeographicKeywords]
      */
-    public Set<Field> findFieldsReferencingClass(Class<?> targetClass, Class<?> classToFind) {
+    public Set<Field> findFieldsReferencingClass(Class<?> classToInspect, Class<?> classToFind) {
         Set<Field> matchingFields = new HashSet<Field>();
-        for (Field field : targetClass.getDeclaredFields()) {
+        for (Field field : classToInspect.getDeclaredFields()) {
             if (getFieldReturnType(field).equals(classToFind)) {
                 matchingFields.add(field);
             }
         }
-        logger.debug("Found Fields:{} on {}", matchingFields, targetClass.getSimpleName());
+        logger.debug("Found Fields:{} on {}", matchingFields, classToInspect.getSimpleName());
+        return matchingFields;
+    }
+    
+    //todo:  do we really need an extra function for this?
+    public Set<Field> findAssignableFieldsRefererencingClass(Class<?> classToInspect, Class<?> ancestorToFind) {
+        Set<Field> matchingFields = new HashSet<Field>();
+        for (Field field : classToInspect.getDeclaredFields()) {
+            if (getFieldReturnType(field).isAssignableFrom(ancestorToFind)) {
+                matchingFields.add(field);
+            }
+        }
+        logger.debug("Fields in {} that refer to {}:{}",  new Object[] {classToInspect.getSimpleName(), ancestorToFind.getSimpleName(), matchingFields});
         return matchingFields;
     }
 
-    @SuppressWarnings("rawtypes")
     public Set<Field> findFieldsWithAnnotation(Class<?> targetClass, List<Class<? extends Annotation>> list, boolean recursive) {
         Set<Field> set = new HashSet<Field>();
         for (Field field : targetClass.getDeclaredFields()) {
@@ -117,12 +128,18 @@ public class ReflectionService {
     }
 
     public static String generateSetterName(Field field) {
-        return generateGetterName(field.getName());
+        return generateSetterName(field.getName());
     }
+    
 
+    public static String generateSetterName(String name) {
+    	return generateName("set", name);
+    }
+    
     /*
      * Based on the field and the object passed in, call the getter and return the result
      */
+    @SuppressWarnings("unchecked")
     public <T> T callFieldGetter(Object obj, Field field) {
         logger.debug("calling getter on: {} {} ", obj, field.getName());
         Method method = ReflectionUtils.findMethod(field.getDeclaringClass(), generateGetterName(field));
@@ -141,11 +158,30 @@ public class ReflectionService {
             }
         return null;
     }
-
-    public static String generateSetterName(String name) {
-        return generateName("set", name);
+    
+    /**
+     * Call the setter of the supplied object and field with the supplied value 
+     */
+    public <T> void callFieldSetter(Object obj, Field field, T fieldValue) {
+    	String setterName = generateSetterName(field);
+    	logger.debug("Calling {}.{}({})", new Object[]{field.getDeclaringClass().getSimpleName(), setterName, fieldValue.getClass().getSimpleName()});
+        //here we assume that field's type is assignable from the fieldValue
+        Method setter = ReflectionUtils.findMethod(field.getDeclaringClass(), setterName, field.getType());  
+    	try {
+			setter.invoke(obj, fieldValue);
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
     }
-
+    
     private static String generateName(String prefix, String name) {
         return prefix + name.substring(0, 1).toUpperCase() + name.substring(1);
     }

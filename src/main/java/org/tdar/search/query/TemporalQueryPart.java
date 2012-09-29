@@ -17,8 +17,10 @@ public class TemporalQueryPart implements QueryPart {
 
     // FIXME: there's a possibility that lucene is not going to do what we think it's going to do when
     // binding to multiple values see TDAR-1163
-    private static final String TEMPORAL_QUERY_FORMAT = " activeCoverageDates.startDate:[00000000000 TO %2$s] AND activeCoverageDates.endDate:[%1$s TO 19999999999] ";
+    
+    // FIXME: no coverage type here
 	
+    private static final String TEMPORAL_QUERY_FORMAT = QueryFieldNames.ACTIVE_START_DATE+":[00000000000 TO %2$s] AND "+QueryFieldNames.ACTIVE_END_DATE+":[%1$s TO 19999999999] AND "+QueryFieldNames.ACTIVE_COVERAGE_TYPE+":%3$s ";
 	private List<TemporalLimit> temporalLimits;
 	
 	public TemporalQueryPart() {
@@ -38,7 +40,8 @@ public class TemporalQueryPart implements QueryPart {
 				String.format(
 					TEMPORAL_QUERY_FORMAT, 
 					TdarIndexNumberFormatter.format(temporalLimit.getFromYear()), 
-					TdarIndexNumberFormatter.format(temporalLimit.getToYear())
+					TdarIndexNumberFormatter.format(temporalLimit.getToYear()),
+					temporalLimit.getDateType().name()
 				)
 			);
 		}

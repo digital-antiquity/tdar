@@ -14,6 +14,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlIDREF;
 
 import org.hibernate.annotations.Type;
 import org.tdar.core.bean.Persistable;
@@ -72,6 +73,7 @@ public class DataTable extends Persistable.Base {
         setDataset(dataset);
     }
 
+    @XmlIDREF
     public Dataset getDataset() {
         return dataset;
     }
@@ -104,9 +106,12 @@ public class DataTable extends Persistable.Base {
     public List<DataTableColumn> getSortedDataTableColumns() {
         return getSortedDataTableColumns(new Comparator<DataTableColumn>() {
             public int compare(DataTableColumn a, DataTableColumn b) {
-                return a.getName().compareTo(b.getName());
+                if (a.getSequenceNumber() == null || b.getSequenceNumber() == null) {
+                    return a.getDisplayName().compareTo(b.getDisplayName());
+                }
+                return a.getSequenceNumber().compareTo(b.getSequenceNumber());
             }
-        });
+       });
     }
 
     public List<DataTableColumn> getSortedDataTableColumns(Comparator<DataTableColumn> comparator) {

@@ -11,6 +11,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -21,7 +22,7 @@ import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.resource.BookmarkedResource;
-import org.tdar.index.NonTokenizingLowercaseKeywordAnalyzer;
+import org.tdar.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
@@ -56,25 +57,25 @@ public class Person extends Creator implements Comparable<Person> {
 
     @Column(nullable = false, name = "last_name")
     @Field(name = "lastName")
-    @BulkImportField
+    @BulkImportField(label="Last Name",comment=BulkImportField.CREATOR_LNAME_DESCRIPTION,order =2)
     @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
     private String lastName;
 
     @Column(nullable = false, name = "first_name")
     @Field(name = "firstName")
-    @BulkImportField
+    @BulkImportField(label="First Name",comment=BulkImportField.CREATOR_FNAME_DESCRIPTION,order=1)
     @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
     private String firstName;
 
     @Column(unique = true, nullable = true)
     @Field(name = "email")
-    @BulkImportField
+    @BulkImportField(label="Email",order=3)
     @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
     private String email;
 
     @IndexedEmbedded(depth = 1)
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
-    @BulkImportField
+    @BulkImportField(label="Resource Creator's ",comment=BulkImportField.CREATOR_PERSON_INSTITUTION_DESCRIPTION, order=50)
     private Institution institution;
 
     // can this user contribute resources?
@@ -299,6 +300,7 @@ public class Person extends Creator implements Comparable<Person> {
         return Arrays.asList(email);
     }
 
+    @XmlTransient
     public Set<BookmarkedResource> getBookmarkedResources() {
         return bookmarkedResources;
     }
@@ -315,5 +317,20 @@ public class Person extends Creator implements Comparable<Person> {
     @Override
     public CreatorType getCreatorType() {
         return CreatorType.PERSON;
+    }
+    
+    @XmlID
+    @Transient
+    public String getXmlId() {
+        return getId().toString();
+    }
+    
+    @Transient
+    public String getInstitutionName() {
+        String name = null;
+        if(institution != null) {
+            name = institution.getName();
+        }
+        return name;
     }
 }

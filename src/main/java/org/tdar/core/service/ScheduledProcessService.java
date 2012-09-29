@@ -30,6 +30,10 @@ import org.tdar.core.bean.util.Statistic.StatisticType;
 import org.tdar.core.bean.util.UpgradeTask;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao.FindOptions;
+import org.tdar.core.service.external.EmailService;
+import org.tdar.core.service.keyword.GeographicKeywordService;
+import org.tdar.core.service.resource.InformationResourceFileVersionService;
+import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.TaintedFileException;
 import org.tdar.geosearch.GeoSearchService;
@@ -60,6 +64,8 @@ public class ScheduledProcessService {
     GeographicKeywordService geographicKeywordService;
     @Autowired
     SimpleCachingService simpleCachingService;
+    @Autowired
+    ResourceCollectionService resourceCollectionService;
 
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -75,6 +81,7 @@ public class ScheduledProcessService {
         stats.add(generateStatistics(StatisticType.NUM_ONTOLOGY, resourceService.countActiveResources(Ontology.class), ""));
         stats.add(generateStatistics(StatisticType.NUM_IMAGE, resourceService.countActiveResources(Image.class), ""));
         stats.add(generateStatistics(StatisticType.NUM_USERS, entityService.findAllRegisteredUsers().size(), ""));
+        stats.add(generateStatistics(StatisticType.NUM_COLLECTIONS, resourceCollectionService.findAllResourceCollections().size(), ""));
         genericService.save(stats);
     }
 
@@ -192,7 +199,7 @@ public class ScheduledProcessService {
         ignoreProperties.add("recordedDate");
         ignoreProperties.add("run");
 
-        List<UpgradeTask> tasks = genericService.findByExample(UpgradeTask.class, upgradeTask, ignoreProperties,FindOptions.FIND_ALL);
+        List<UpgradeTask> tasks = genericService.findByExample(UpgradeTask.class, upgradeTask, ignoreProperties, FindOptions.FIND_ALL);
         if (tasks.size() > 0 && tasks.get(0) != null) {
             return tasks.get(0);
         } else {

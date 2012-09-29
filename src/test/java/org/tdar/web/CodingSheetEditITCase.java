@@ -28,6 +28,7 @@ public class CodingSheetEditITCase extends AbstractAdminAuthenticatedWebTestCase
         setInput(PARENT_PROJECT_ID_FIELD, "" + PARENT_PROJECT_ID_VALUE);
         setInput(CODING_SHEET_TITLE_FIELD, CODING_SHEET_TITLE_VALUE);
         setInput("codingSheet.description", "description");
+        setInput("codingSheet.dateCreated", "1937");
         setInput(CODING_SHEET_INPUT_METHOD_FIELD, CODING_SHEET_INPUT_METHOD_TEXT);
         submitForm();
 

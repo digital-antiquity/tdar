@@ -6,6 +6,10 @@
  */
 package org.tdar.core.filestore;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -19,21 +23,18 @@ import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
-import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
-import org.tdar.struts.action.AbstractControllerITCase;
-import org.tdar.struts.action.DocumentController;
 import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
+import org.tdar.struts.action.resource.DocumentController;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.Pair;
-
-import static org.junit.Assert.*;
 
 /**
  * @author Adam Brin
  * 
  */
-public class FileProxyITCase extends AbstractControllerITCase {
-    
+public class FileProxyITCase extends AbstractResourceControllerITCase {
+
     @Test
     @Rollback
     public void testDegenerateFileProxy() throws Exception {
@@ -43,7 +44,7 @@ public class FileProxyITCase extends AbstractControllerITCase {
         Document document = controller.getDocument();
         document.setTitle("test title");
         document.setDescription("descr");
-        document.setDateCreated("1234");
+        document.setDateCreated(1234);
         List<File> fileList = new ArrayList<File>();
         fileList.add(new File(TestConstants.TEST_DOCUMENT_DIR + "a2-15.pdf"));
         fileList.add(new File(TestConstants.TEST_DOCUMENT_DIR + "a2-17.pdf"));
@@ -56,8 +57,9 @@ public class FileProxyITCase extends AbstractControllerITCase {
         controller.save();
         assertEquals(fileList.size(), document.getInformationResourceFiles().size());
         for (InformationResourceFile irFile : document.getInformationResourceFiles()) {
-            logger.info(irFile);
-//            assertEquals("only a2-17.pdf should be confidential", irFile.isConfidential(), irFile.getLatestUploadedVersion().getFilename().equals("a2-17.pdf"));
+            logger.info("{}", irFile);
+            // assertEquals("only a2-17.pdf should be confidential", irFile.isConfidential(),
+            // irFile.getLatestUploadedVersion().getFilename().equals("a2-17.pdf"));
             if (irFile.getLatestUploadedVersion().getFilename().equals("a2-17.pdf")) {
                 assertTrue(irFile.isConfidential());
             } else {
@@ -75,7 +77,7 @@ public class FileProxyITCase extends AbstractControllerITCase {
         Document document = controller.getDocument();
         document.setTitle("test title");
         document.setDescription("descr");
-        document.setDateCreated("1234");
+        document.setDateCreated(1234);
         List<File> fileList = new ArrayList<File>();
         fileList.add(new File(TestConstants.TEST_DOCUMENT_DIR + "a2-15.pdf"));
         fileList.add(new File(TestConstants.TEST_DOCUMENT_DIR + "a2-17.pdf"));
@@ -88,22 +90,24 @@ public class FileProxyITCase extends AbstractControllerITCase {
 
         assertEquals(fileList.size(), document.getInformationResourceFiles().size());
         for (InformationResourceFile irFile : document.getInformationResourceFiles()) {
-            logger.info(irFile);
-//            assertEquals("only a2-17.pdf should be confidential", irFile.isConfidential(), irFile.getLatestUploadedVersion().getFilename().equals("a2-17.pdf"));
-            if (irFile.getLatestUploadedVersion().getFilename().equals("a2-17.pdf")) {
-                assertTrue(irFile.isConfidential());
-            } else {
-                assertFalse(irFile.isConfidential());
-            }
+            logger.info("{}", irFile);
+            assertEquals("only a2-17.pdf should be confidential",
+                    irFile.isConfidential(),
+                    irFile.getLatestUploadedVersion().getFilename().equals("a2-17.pdf"));
+            // if (irFile.getLatestUploadedVersion().getFilename().equals("a2-17.pdf")) {
+            // assertTrue(irFile.isConfidential());
+            // } else {
+            // assertFalse(irFile.isConfidential());
+            // }
         }
         controller = generateNewInitializedController(DocumentController.class);
-        controller.setResourceId(document.getId());
+        controller.setId(document.getId());
         loadResourceFromId(controller, document.getId());
         controller.getFileProxies().get(0).setAction(FileAction.DELETE);
         String deletedFilename = controller.getFileProxies().get(0).getFilename();
-        // replace the confidential file 
+        // replace the confidential file
         FileProxy replaceConfidentialFileProxy = null;
-        for (FileProxy proxy: controller.getFileProxies()) {
+        for (FileProxy proxy : controller.getFileProxies()) {
             if (proxy.isConfidential()) {
                 replaceConfidentialFileProxy = proxy;
             }
@@ -114,18 +118,80 @@ public class FileProxyITCase extends AbstractControllerITCase {
         Pair<PersonalFilestoreTicket, List<FileProxy>> newProxyList = uploadFilesAsync(Arrays.asList(new File(TestConstants.TEST_DOCUMENT_DIR
                 + "pia-09-lame-1980.pdf")));
         controller.setTicketId(newProxyList.getFirst().getId());
-        controller.getFileProxies().addAll(newProxyList.getSecond());
         controller.save();
 
-        boolean seenDeleted = false;
         for (InformationResourceFile irFile : document.getInformationResourceFiles()) {
-            if (irFile.getLatestUploadedVersion().getFilename().equals(deletedFilename) && irFile.getStatus() != FileStatus.DELETED) {
-                seenDeleted = true;
+            if (irFile.getLatestUploadedVersion().getFilename().equals(deletedFilename)) {
+                assertTrue(irFile + " should have been flagged as deleted", irFile.isDeleted());
             }
-            assertFalse(irFile.isConfidential());
-            logger.info(irFile);
+            logger.info("{}", irFile);
+            assertFalse("there should be no confidential files", irFile.isConfidential());
         }
-        assertFalse(seenDeleted);
+    }
+
+    @Test
+    @Rollback
+    public void testReplaceFileWithSameName() throws FileNotFoundException {
+        DocumentController controller = generateNewInitializedController(DocumentController.class);
+        controller.prepare();
+        controller.add();
+        Document document = controller.getDocument();
+        document.setTitle("test title");
+        document.setDescription("descr");
+        document.setDateCreated(1234);
+        List<File> fileList = new ArrayList<File>();
+        String a2pdf = "a2-15.pdf";
+        fileList.add(new File(TestConstants.TEST_DOCUMENT_DIR + a2pdf));
+        fileList.add(new File(TestConstants.TEST_DOCUMENT_DIR + "a2-17.pdf"));
+        Pair<PersonalFilestoreTicket, List<FileProxy>> uploadFilesAsync = uploadFilesAsync(fileList);
+        controller.setTicketId(uploadFilesAsync.getFirst().getId());
+        controller.setFileProxies(uploadFilesAsync.getSecond());
+        controller.getFileProxies().get(1).setConfidential(true);
+        controller.save();
+
+        assertEquals(fileList.size(), document.getInformationResourceFiles().size());
+        for (InformationResourceFile irFile : document.getInformationResourceFiles()) {
+            logger.info("{}", irFile);
+            assertEquals("only a2-17.pdf should be confidential",
+                    irFile.isConfidential(),
+                    irFile.getLatestUploadedVersion().getFilename().equals("a2-17.pdf"));
+            // if (irFile.getLatestUploadedVersion().getFilename().equals("a2-17.pdf")) {
+            // assertTrue(irFile.isConfidential());
+            // } else {
+            // assertFalse(irFile.isConfidential());
+            // }
+        }
+        controller = generateNewInitializedController(DocumentController.class);
+        controller.setId(document.getId());
+        loadResourceFromId(controller, document.getId());
+
+        FileProxy replaceConfidentialFileProxy = null;
+        for (FileProxy proxy : controller.getFileProxies()) {
+            if (proxy.getFilename().equals(a2pdf)) {
+                replaceConfidentialFileProxy = proxy;
+            }
+        }
+        replaceConfidentialFileProxy.setAction(FileAction.REPLACE);
+        replaceConfidentialFileProxy.setConfidential(false);
+        Pair<PersonalFilestoreTicket, List<FileProxy>> newProxyList = uploadFilesAsync(Arrays.asList(new File(TestConstants.TEST_DOCUMENT_DIR
+                + a2pdf)));
+        controller.setTicketId(newProxyList.getFirst().getId());
+        controller.save();
+
+        assertEquals(2, document.getInformationResourceFiles().size());
+        for (InformationResourceFile irFile : document.getInformationResourceFiles()) {
+            logger.info("{}", irFile);
+            if (irFile.getLatestUploadedVersion().getFilename().equals(a2pdf)) {
+                assertEquals(2, irFile.getLatestVersion().intValue());
+            } else {
+                assertTrue(irFile.isConfidential());
+            }
+            // if (irFile.getLatestUploadedVersion().getFilename().equals("a2-15.pdf")) {
+            // assertTrue(irFile + " should have been flagged as deleted", irFile.isDeleted());
+            // }
+            // logger.info("{}", irFile);
+
+        }
     }
 
     /*

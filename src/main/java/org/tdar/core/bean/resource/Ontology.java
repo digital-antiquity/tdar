@@ -20,9 +20,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.search.annotations.Indexed;
+import org.tdar.core.bean.SupportsResource;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
 import com.hp.hpl.jena.ontology.OntModel;
@@ -40,7 +43,8 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 @Entity
 @Indexed
 @Table(name = "ontology")
-public class Ontology extends InformationResource {
+@XmlRootElement(name = "ontology")
+public class Ontology extends InformationResource implements SupportsResource {
 
     private static final long serialVersionUID = -5871337600253105652L;
 
@@ -79,6 +83,7 @@ public class Ontology extends InformationResource {
         return null;
     }
 
+    @XmlIDREF
     public CategoryVariable getCategoryVariable() {
         return categoryVariable;
     }

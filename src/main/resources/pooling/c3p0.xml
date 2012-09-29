@@ -13,6 +13,7 @@
         <property name="password" value="${javax.persistence.jdbc.password}" />
         <property name='minPoolSize' value="${tdarmetadata.minConnections}" />
         <property name='maxPoolSize' value="${tdarmetadata.maxConnections}" />
+        <property name='maxIdleTime' value="${tdar.database.maxIdleTimeForConnection}" />
         <property name='maxStatements' value='100' />
         <property name='idleConnectionTestPeriod' value='300' />
         <property name='preferredTestQuery' value='select 1' />

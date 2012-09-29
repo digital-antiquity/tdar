@@ -25,8 +25,6 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
 
@@ -45,11 +43,18 @@ import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
 public class InformationResourceFile extends Persistable.Sequence<InformationResourceFile> {
 
     private static final long serialVersionUID = -6957336216505367012L;
-    @Transient
-    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     public enum FileAction {
         NONE, ADD, REPLACE, DELETE, MODIFY_METADATA, ADD_DERIVATIVE;
+        public boolean shouldExpectFileHandle() {
+            switch (this) {
+                case ADD:
+                case ADD_DERIVATIVE:
+                case REPLACE:
+                    return true;
+            }
+            return false;
+        }
     }
 
     public enum FileType {
@@ -83,9 +88,6 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     private SortedSet<InformationResourceFileVersion> informationResourceFileVersions = new TreeSet<InformationResourceFileVersion>();
 
     private Boolean confidential = Boolean.FALSE;
-    //
-    // private boolean processed;
-    // private boolean queued;
 
     @Enumerated(EnumType.STRING)
     private FileStatus status;
@@ -187,15 +189,18 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     }
 
     @Transient
-    public InformationResourceFileVersion getLatestTranslated() {
+    public InformationResourceFileVersion getLatestTranslatedVersion() {
         for (InformationResourceFileVersion version : getInformationResourceFileVersions()) {
-            if (version.getVersion().equals(getLatestVersion()) && version.isTranslated())
+            if (version.getVersion().equals(getLatestVersion()) && version.isTranslated()) {
+                logger.info("version: {}", version);
                 return version;
+            }
         }
         return null;
     }
 
     @Transient
+    @Deprecated
     public InformationResourceFileVersion getLatestPDF() {
         for (InformationResourceFileVersion version : getInformationResourceFileVersions()) {
             if (version.getVersion().equals(getLatestVersion()) && version.getExtension().equalsIgnoreCase("pdf"))
@@ -256,7 +261,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
                 }
             }
         }
-        logger.debug("getVersion({}, {}) couldn't find an appropriate file version", versionNumber, Arrays.asList(types));
+        logger.trace("getVersion({}, {}) couldn't find an appropriate file version", versionNumber, Arrays.asList(types));
         return null;
     }
 

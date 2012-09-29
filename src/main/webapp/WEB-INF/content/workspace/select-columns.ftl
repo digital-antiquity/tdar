@@ -1,190 +1,317 @@
 <#import "/WEB-INF/macros/resource/list-macros.ftl" as rlist>
-<#macro listDataTables tableList>
-
-<script>
-function goto(phase,caller) {
-$(caller).parent("div").hide();
-$(caller).parents("td").find("."+phase).show();
-
-    if (phase == 'display2') {
-        $($(caller).parents("td").find("."+phase)[0]).find("select").each(function(index) {
-        var tableid = $(this).attr("id").substring(0,$(this).attr("id").indexOf("_"));
-
-          if (tableid != $(caller).val()) {
-            $(this).parent().hide();
-          } else {
-            $(this).parent().show();
-          }; 
-        });
-    }
-
-}
-
-function resetRow(row) {
-    $(row).find(".display1").hide();
-    $(row).find(".display2").hide();
-    $(row).find(".integrate").hide();
-    $(row).find(".choose").show();
-    $(row).find("span").each(function(index) { $(this).show(); $(this).val("") });
-} 
-
-$(document).ready(function() {
-    resetRow($("#column_0_"));
-    initializeRepeatRow();
-});
-
-function setIntegrate(select) {
-  var parent = $(select).parents("div")[0];
-  var hidden = $(parent).find("input[type=hidden]")[0];
-  var newval = "";
-  $(parent).find("select").each(function(index) { newval += $(this).val() + "="; });
-  $(hidden).val(newval.substring(0,newval.length -1));
-}
-
-function setDisplay(select) {
-  var parent = $(select).parents("div")[0];
-  var hidden = $(parent).find("input[type=hidden]")[0];
-  var newval = "";
-  $(parent).find("select").each(function(index) { 
-    // assume only one value replace ~ -> _ to fix issue with repeating rows
-    if ($(this).val() != undefined && $(this).val() != "") newval = $(this).val().replace(/\~/gi,"_"); });
-  $(hidden).val(newval);
-}
-
-</script>
-
-<table border="0" class="repeatLastRow tableFormat width99percent" id="integrationTable"
- addAnother="add another integration or display column"
- callback="resetRow">
-<thead>
-<th></th>
-<th></th>
-</thead>
-    <#assign row=0>
-    <tr id="column_${row}_">
-    <td>
-    <div class="choose">
-        <b>1. Choose an action below:</b><br/>
-        <input type="button" name="action_${row}_" id="action_${row}_i" value="add integration column" onClick="goto('integrate',this)">
-        <input type="button" name="action_${row}_" id="action_${row}_d" value="add display column" onClick="goto('display1',this)">
-    </div>
-    <div class="display1">
-        <b>2. Choose a table to display a value from</b><br/>
-         <select name="table_${row}_" onchange="goto('display2',this)">
-            <option value="">Select a table</option>
-            <#list tableList as table>
-              <option value="${table.id?c}">${table.dataset.title}</option>
-            </#list>
-        </select>
-    </div>
-    <div class="display2">
-        <b>3. Choose a value to display</b><br/>
-    <input type="hidden" name="displayRules[${row}]" value="" />
-            <#list tableList as table>
-            <span id="${table.id?c}_${row}_d">
-              <b>${table.dataset.title}</b>
-              <select id="${table.id?c}_${row}_" name="display" onChange="setDisplay(this)">
-                    <option value="">Select a column</option>
-                    <#list table.sortedDataTableColumns as column>
-                    <#-- replace _ with ~ to fix replace issue with repeating tables and row #s -->
-                      <option value="${column.id?c}">${column.name} - ${column.getColumnDataType()} 
-                        (<#if ! column.defaultOntology?? >None<#else>${column.getDefaultOntology().title}</#if>)
-                      </option>
-                    </#list>
-                </select>
-              </span>
-            </#list>
-    </div>
-
-    <div class="integrate">
-    <b>2. Integrate Columns</b>
-    <input type="hidden" name="integrationRules[${row}]" value="" />
-    <table>
-    <#assign tableNum = 0>
-    <#list tableList as table>
-    <#assign tableNum = tableNum+1>
-        <tr>
-        <td>    
-    ${table.dataset.title}
-    </td><td>
-      <select id="${table.name}_row" name="integrate_${tableNum}" onChange="setIntegrate(this)">
-            <option value="">Select a column</option>
-            <#list table.sortedDataTableColumns as column>
-              <#if column.defaultOntology?? >
-                <option value="${column.id?c}">${column.name} - ${column.getColumnDataType()} 
-                (${column.getDefaultOntology().title})
-              </option></#if>
-            </#list>
-        </select>
-        </td></tr>
-    </#list>
-    </table>
-    </div>
-    </td>
-    <td><@rlist.clearDeleteButton id="column"/></td>
-    </tr></table>
-</#macro>
-
 <head>
-<title>Data Integration</title>
-<meta name="lastModifiedDate" content="$Date$"/>
+ <style type="text/css">
+
+.fixed {
+    position: fixed;
+    top: 0;
+    z-index:1000;
+    width: 922px !important;
+    border: 1px solid #AAA;
+    background-color: #DEDEDE;
+    padding: 4px;
+    opacity:.9;
+}
+
+.status {
+  color:#660033;
+  font-weight:bold;
+}
+#drplist {border:1px solid #ccc;}
+</style>
 
 </head>
+ 
 <body>
-<@rlist.toolbar "select-columns" />
-<div class="glide">
-<@rlist.showControllerErrors />
-<h3>Step 2: Select Columns to Integrate or Display</h3>
-
-<#if tableIds.empty>
-    Please <a href="<@s.url value='select-tables' />">select dataset tables to integrate</a> first.
-<#else>
     <@s.form name='selectDTColForm' method='post' action='filter'>
-        <@listDataTables selectedDataTables />
-        
-        
-                <br/ >
-                <br/ >
 
+<h3>Data Integration</h3>
+<div class="glide">
+Drag columns from your selected data tables onto the integration table .
 </div>
 <div class="glide">
-        <@s.submit value='Next: filter values' onclick='processForm()'/>
-        
-        </div>
-        
-   <div class="glide">
-<h4>Table Reference</h4>
-        
-        <table border="0">
-    <tr>
-    <#list selectedDataTables as table>
-      <input type="hidden" name="tableIds[${table_index}]" value="${table.id?c}"/>
-      
-        <td valign='top'>Table Name: ${table.displayName} (ID=${table.id?c})<br>
-        <table class='tableFormat width99percent'>
-            <thead>
-            <tr>
-                <th> Column name </th>
-                <th> Column data type</th>
-                <th> Attached taxonomy</th>
-            </tr>
-            </thead>
-            <tbody>
-            <#list table.sortedDataTableColumns as column>
-                <tr>
-                <td>${column.name}</td>
-                <td>${column.getColumnDataType()}</td>
-                <td>                (<#if ! column.defaultOntology?? >None<#else>${column.getDefaultOntology().title}</#if>)
-                </td>
-                </tr>
-            </#list>
-            </tbody>
-        </table>        
-    </td>
-    </#list>
-    </tr>
-</table>
-    </@s.form>
-</#if>
+<h3>Create your Integration Table:</h3>
+
+<#macro setupIntegrationColumn column idx=0>
+<td colNum="${idx}" class="<#if column.displayColumn>displayColumn<#else>integrationColumn</#if>">
+  <div class="label">Column ${idx + 1} <span class="colType"></span>
+  <input type="hidden" name="integrationColumns[${idx}].columnType" value="<#if column.displayColumn>DISPLAY<#else>INTEGRATION</#if>" class="colTypeField"/>
+  <input type="hidden" name="integrationColumns[${idx}].sequenceNumber" value="${idx}" class="sequenceNumber" />
 </div>
+<#if column.columns.empty><span class="info">Drag variables from below into this column to setup your integration<br/><br/><br/><br/></span></#if>
+<#list column.columns as col>
+  <input type="hidden" name="integrationColumns[${idx}].columns[${col_index}].id" value="${col.id?c}" />
+  
+</#list>
+</td>
+
+</#macro>
+
+<div id="fixedList">
+<h4>Each Column Below will be a Column In Excel</h4>
+<table id="drplist" width="100%">
+<tr>
+<#if integrationColumns?? && !integrationColumns.empty >
+ <#list integrationColumns as integrationColumn>
+   <@setupIntegrationColumn integrationColumn integrationColumn_index />
+ </#list>
+<#else>
+  <@setupIntegrationColumn blankIntegrationColumn 0 />
+</#if>
+
+</tr>
+</table>
+  <div class="status"></div>
+<br/>
+<button id="addColumn">Click to add a new Column to the integration table</button>
+</div>
+</div>
+<div class="glide">
+<h2>Select Variables</h2>
+<table width="100%" class="legend">
+<tr>
+<td class="legend displayColumn">&nbsp;</td> <td><b>Display Variable</b></td>
+<td class="legend integrationColumn">&nbsp;&nbsp;</td> <td><b>Integration Variable with mapped Ontology</b></td>
+<td class="legend measurementColumn">&nbsp;&nbsp;</td> <td><b>Measurement Variable</b></td>
+<td class="legend countColumn">&nbsp;&nbsp;</td> <td><b>Count Variable</b></td>
+</tr>
+</table>
+<br/>
+
+
+      <#assign numCols = 6 />
+      <#list selectedDataTables as table>
+      <!-- setting for error condition -->
+       <input type="hidden" name="tableIds[${table_index}]" value="${table.id?c}"/>
+<div >
+          <h4 class='tablemenu'><span class="arrow ui-icon ui-icon-triangle-1-s"></span>${table.dataset.title}</h4>
+<div class="tableContainer">      
+  <table class="buttontable">
+      <tbody>
+        <#assign count = 0>
+            <#list table.sortedDataTableColumns as column>
+            <#assign description = ""/>
+            <#if column?? && column.description??>
+                <#assign description = column.description />
+            </#if>
+              <#if count % numCols == 0><tr></#if>
+              <td width="${(100 / numCols)?floor }%"><div class="drg ui-corner-all" <#if column.defaultOntology??>hasOntology="${column.defaultOntology.id?c}"</#if>
+              <#if column.measurementUnit??>hasMeasurement="${column.measurementUnit}"</#if> 
+              title="${description?html}"
+              <#if column.columnEncodingType?? && column.columnEncodingType=='COUNT'>hasCount="true"</#if> 
+              table="${table.id?c}"><span class="columnName">${column.displayName} <#if column.defaultOntology??> <span class="ontology">- ${column.defaultOntology.title}</span></#if>
+            <input type="hidden" name="integrationColumns[{COLNUM}].columns[{CELLNUM}].id"  value="${column.id?c}"/></span>
+                <#assign count = count+1 />
+             </div> </td>
+              <#if count % numCols == 0></tr></#if>
+            </#list>
+              <#if count % numCols != 0></tr></#if>
+      </tbody>
+      </table>
+</div>
+</div>
+      </#list>
+
+
+<script>
+
+$("h4").click(toggleDiv);
+
+$( ".drg" ).draggable({
+  zIndex: 2700,
+  revert: true,
+  revertDuration:0
+});
+
+function setStatus(msg) {
+  $(".status").html(msg);
+  $(".status").show();
+  $(".status").fadeIn(10,true);
+  
+  $(".status").css("background-color","lightyellow !important");
+  $(".status").css("border","1px solid red !important");
+  $(".status").delay(3000).fadeOut(3000,  function () {
+      $(".status").hide();
+  });
+}
+
+var drpOptions = {
+  drop: function(event, ui) {
+    if (ui.draggable.attr("colnum")) {
+      return false;
+    }
+  $(ui.draggable).css("z-index",100);
+  var table = ui.draggable.attr("table");
+  var ret = true;
+    var children = $(this).children("div");
+  if (children.length > 0) {
+    $(children).each(function() { if ($(this).attr("table") == table) {
+      msg = "you cannot add more than one variable from the same table to any column";
+      setStatus(msg);
+      ret = false;
+    } });
+  }
+
+if (ret == false) {
+  return false;
+}
+  
+  var newChild = $("<div/>").appendTo($(this));
+  newChild.attr("hasOntology",ui.draggable.attr("hasOntology"));
+  newChild.attr("table",ui.draggable.attr("table"));
+  $(this).find(".info").detach();
+  newChild.append(ui.draggable.html());
+  newChild.append("&nbsp;&nbsp;&nbsp;&nbsp;<button>X</button>");
+  var colNum = $(this).attr('colNum');
+  var children = $(this).find("div");
+  
+  newChild.find('*').each(function() {
+      var elem = this;
+      replaceAttribute(elem, "name", '{COLNUM}', colNum);
+      // always have one DIV to start with, so subtract 2
+      replaceAttribute(elem, "name", '{CELLNUM}', children.length -2);
+  });
+
+  $(newChild).attr("style","");
+
+  validateColumn(this);  
+  $(this).draggable( "destroy" );
+  $(newChild).css("{}");
+   
+  $( newChild).children("button").button();
+  
+  $(this).animate({opacity:.8, borderColor:"#000000"} ,200).animate({opacity:1, borderColor:"#AAAAAA"} ,200).animate({opacity:.8, borderColor:"#000000"} ,200).animate({opacity:1, borderColor:"#AAAAAA"} ,200); 
+}
+};
+
+
+function addVariable( ) {
+
+}
+
+function validateColumn(column) {
+    var integrate = $(column).find("div[hasOntology]");
+    var children = $(column).children("div");
+    console.log("children:" + children.length);
+    console.log("integrate:" + integrate.length);
+   
+   var ontology = -1;
+   $(integrate).each(function() { 
+     if (ontology == -1) {
+       ontology = $(this).attr("hasOntology");
+     } else if (ontology != $(this).attr("hasOntology")) {
+       ontology = -1000;
+     } 
+   });
+
+  if (integrate.length  == $(".buttontable").length && ontology > 0) {
+    $(column).find(".colType").html(" - integration");
+    $(column).find(".colTypeField").val("INTEGRATION");
+    $(column).addClass("integrationColumn");
+    $(column).removeClass("displayColumn");
+  } else {
+    $(column).find(".colTypeField").val("DISPLAY");
+    $(column).find(".colType").html(" - display");
+    $(column).removeClass("integrationColumn");
+    $(column).addClass("displayColumn");
+  }
+}
+var msg = "";
+
+jQuery(document).ready(function($){
+
+//$('#filter').submit(function() {
+//   jQuery.history.load("savedstate");
+//   FIXME: COOKIE PLUGIN DOES NOT HANDLE DATA LARGER THAN COOKIE SIZES
+//   $.cookie('integrationdata',$("#drplist").html());
+//   return true;
+//});
+
+/*
+//    $.history.init(function(hash){
+//        if(hash == "savedstate" && $.cookie('integrationdata') != '') {
+//           $("#drplist").html($.cookie('integrationdata'));
+//        } else {
+//           $.cookie('integrationdata','');
+//        }
+//    },
+//    { unescape: ",/" });
+*/
+
+
+$( "#drplist td" ).droppable( drpOptions );
+
+
+/*  this is the column adjustment UI, mouseenter is not always right  */
+function expandColumn(col) {
+  $(col).animate({width: "50%"});
+  $(col).removeClass("short");
+  $(col).siblings().each(function() {
+    $(this).addClass("short");
+    var tds = $("#drplist td").length;
+    var small = 80 / tds ;
+    if (tds > 8) {
+       small = 150 / tds;
+    };       
+    $(this).animate({width: small + "%"});
+  });
+
+}; 
+
+$("#drplist").delegate("td", "mouseenter", function(){
+  expandColumn(this);
+});
+
+$('#drplist').delegate('button','click',function() {
+    var column = $(this).parent().parent();
+    $(this).parent().remove();
+    validateColumn(column);
+    return false;
+});
+
+$( "#addColumn" ).button().click(function() {
+  var colNum = $("#drplist tr").children().length +1;
+  $( "<td colNum="+(colNum -1)+" class='displayColumn'><div class='label'>Column " + colNum + "<span class='colType'></span> <input type='hidden' name='integrationColumns["+(colNum -1)+"].columnType' value='DISPLAY' class='colTypeField'/><input type='hidden' name='integrationColumns["+(colNum -1)+"].sequenceNumber' value='"+(colNum -1)+"' class='sequenceNumber'/><button class='removeColumn'>X</button></div></td>" ).droppable( drpOptions ).appendTo( "#drplist tr" );
+    var chld = $("#drplist td");
+    $("button.removeColumn",$(chld[chld.length -1])).button().click(function() {
+    $(this).parent().parent().remove();
+    return false;
+  });
+    expandColumn($(chld[chld.length -1]));
+    return false;
+});
+
+//autosize the height of the div
+$('.buttontable tr').each(function() { 
+  var pheight = $(this).height(); $('.drg',this).css('height',pheight) 
+});
+
+
+
+  var top = $('#fixedList').offset().top - parseFloat($('#fixedList').css('marginTop').replace(/auto/, 0));
+  $(window).scroll(function (event) {
+    // what the y position of the scroll is
+    var y = $(this).scrollTop();
+  
+    // whether that's below the form
+    if (y >= top - 80) {
+      // if so, ad the fixed class
+      $('#fixedList').addClass('fixed');
+    } else {
+      // otherwise remove it
+      $('#fixedList').removeClass('fixed');
+    }
+  });
+
+
+});
+
+
+</script>
+<br/><br/>
+        <@s.submit value='Next: filter values' id="submitbutton" />
+
+
+</div>
+</@s.form>
 </body>

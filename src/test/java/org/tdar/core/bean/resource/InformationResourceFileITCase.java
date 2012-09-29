@@ -1,5 +1,11 @@
 package org.tdar.core.bean.resource;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,11 +17,9 @@ import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
-import org.tdar.core.service.InformationResourceFileService;
-import org.tdar.core.service.InformationResourceService;
-import org.tdar.core.service.ResourceService;
-
-import static org.junit.Assert.*;
+import org.tdar.core.service.resource.InformationResourceFileService;
+import org.tdar.core.service.resource.InformationResourceService;
+import org.tdar.core.service.resource.ResourceService;
 
 public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
 
@@ -96,12 +100,12 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
 
         assertEquals(0, ir.getInformationResourceFiles().size());
     }
-    
+
     @Test
     @Rollback
     public void testFileStatus() throws Exception {
         InformationResource ir = generateInformationResourceWithFile();
-        for (InformationResourceFile file: ir.getInformationResourceFiles()) {
+        for (InformationResourceFile file : ir.getInformationResourceFiles()) {
             file.setStatus(FileStatus.QUEUED);
             assertFalse(file.isProcessed());
             genericService.save(file);

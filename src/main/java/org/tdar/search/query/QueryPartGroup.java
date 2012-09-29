@@ -12,23 +12,25 @@ import org.apache.lucene.queryParser.QueryParser.Operator;
  * @author Adam Brin
  * 
  */
-public class QueryPartGroup implements QueryPart {
+public class QueryPartGroup implements QueryPart, QueryGroup {
     List<QueryPart> parts = new ArrayList<QueryPart>();
     Operator operator = Operator.AND;
+
+    public QueryPartGroup() {};
+
+    public QueryPartGroup(Operator or) {
+        this.operator = or;
+    };
 
     public List<QueryPart> getParts() {
         return parts;
     }
 
-    public void setParts(List<QueryPart> parts) {
-        this.parts = parts;
-    }
-
-    public void addPart(List<QueryPart> parts) {
+    public void append(List<QueryPart> parts) {
         this.parts.addAll(parts);
     }
 
-    public void addPart(QueryPart part) {
+    public void append(QueryPart part) {
         this.parts.add(part);
     }
 

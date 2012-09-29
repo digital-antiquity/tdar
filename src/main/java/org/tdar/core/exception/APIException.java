@@ -11,23 +11,23 @@ public class APIException extends Exception {
 
     private static final long serialVersionUID = -6383202970353307213L;
 
-    private ErrorStatusCode code;
+    private StatusCode code;
 
-    public APIException(String msg, Throwable e, ErrorStatusCode code) {
+    public APIException(String msg, Throwable e, StatusCode code) {
         super(msg, e);
         this.setCode(code);
     }
 
-    public APIException(String msg, ErrorStatusCode code) {
+    public APIException(String msg, StatusCode code) {
         super(msg);
         this.setCode(code);
     }
 
-    public void setCode(ErrorStatusCode code) {
+    public void setCode(StatusCode code) {
         this.code = code;
     }
 
-    public ErrorStatusCode getCode() {
+    public StatusCode getCode() {
         return code;
     }
 }

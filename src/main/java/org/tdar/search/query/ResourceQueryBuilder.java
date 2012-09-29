@@ -10,7 +10,8 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.SensoryData;
-import org.tdar.index.NonTokenizingLowercaseKeywordAnalyzer;
+import org.tdar.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
+import org.tdar.index.analyzer.TdarStandardAnalyzer;
 
 /**
  * 
@@ -26,14 +27,15 @@ public class ResourceQueryBuilder extends QueryBuilder {
         this.setClasses(new Class[] { InformationResource.class, Document.class, Dataset.class, Ontology.class, CodingSheet.class, Project.class,
                 SensoryData.class });
         List<DynamicQueryComponent> dqc = new ArrayList<DynamicQueryComponent>();
-        dqc.add(new DynamicQueryComponent("activeCultureKeywords.label", NonTokenizingLowercaseKeywordAnalyzer.class, ""));
-        dqc.add(new DynamicQueryComponent("informationResources.activeCultureKeywords.label", NonTokenizingLowercaseKeywordAnalyzer.class, ""));
-        dqc.add(new DynamicQueryComponent("activeSiteTypeKeywords.label", NonTokenizingLowercaseKeywordAnalyzer.class, ""));
-        dqc.add(new DynamicQueryComponent("informationResources.activeSiteTypeKeywords.label", NonTokenizingLowercaseKeywordAnalyzer.class, ""));
+        dqc.add(new DynamicQueryComponent(QueryFieldNames.ACTIVE_CULTURE_KEYWORDS_LABEL, NonTokenizingLowercaseKeywordAnalyzer.class, ""));
+        dqc.add(new DynamicQueryComponent(QueryFieldNames.IR_ACTIVE_CULTURE_KEYWORDS_LABEL, NonTokenizingLowercaseKeywordAnalyzer.class, ""));
+        dqc.add(new DynamicQueryComponent(QueryFieldNames.ACTIVE_SITE_TYPE_KEYWORDS_LABEL, NonTokenizingLowercaseKeywordAnalyzer.class, ""));
+        dqc.add(new DynamicQueryComponent(QueryFieldNames.IR_ACTIVE_SITE_TYPE_KEYWORDS_LABEL, NonTokenizingLowercaseKeywordAnalyzer.class, ""));
         setOverrides(dqc);
         List<String> omits = new ArrayList<String>();
         addResourceOmits(omits);
         setOmitContainedLabels(omits);
+        getOverrides().add(new DynamicQueryComponent(QueryFieldNames.RESOURCE_ACCESS_TYPE, TdarStandardAnalyzer.class, ""));
     }
 
     public void addResourceOmits(List<String> omits) {

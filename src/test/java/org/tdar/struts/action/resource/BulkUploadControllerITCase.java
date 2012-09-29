@@ -1,0 +1,526 @@
+package org.tdar.struts.action.resource;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import junit.framework.Assert;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Transformer;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.cxf.common.util.StringUtils;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
+import org.tdar.TestConstants;
+import org.tdar.core.bean.PersonalFilestoreTicket;
+import org.tdar.core.bean.citation.Citation;
+import org.tdar.core.bean.citation.RelatedComparativeCollection;
+import org.tdar.core.bean.citation.SourceCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
+import org.tdar.core.bean.entity.AuthorizedUser;
+import org.tdar.core.bean.entity.ResourceCreator;
+import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.keyword.MaterialKeyword;
+import org.tdar.core.bean.keyword.SiteTypeKeyword;
+import org.tdar.core.bean.resource.Dataset;
+import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.Image;
+import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.Project;
+import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceNote;
+import org.tdar.core.bean.resource.ResourceNoteType;
+import org.tdar.core.bean.resource.Status;
+import org.tdar.core.dao.resource.ResourceCollectionDao;
+import org.tdar.core.service.BulkUploadService;
+import org.tdar.core.service.resource.ResourceService;
+import org.tdar.struts.action.AbstractAdminControllerITCase;
+import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts.data.FileProxy;
+import org.tdar.utils.Pair;
+
+/**
+ * $Id$
+ * 
+ * 
+ * @author Adam Brin
+ * @version $Rev$
+ */
+public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
+
+    @Autowired
+    BulkUploadService bulkUploadService;
+
+    @Autowired
+    ResourceService resourceService;
+
+    @Autowired
+    ResourceCollectionDao resourceCollectionDao;
+
+    @Test
+    @Rollback
+    public void testExcelTemplate() throws FileNotFoundException, IOException {
+        BulkUploadController bulkUploadController = generateNewInitializedController(BulkUploadController.class);
+        bulkUploadController.prepare();
+        File file = File.createTempFile("tempTemplate", ".xls");
+        String downloadBulkTemplate = bulkUploadController.downloadBulkTemplate();
+        logger.info(bulkUploadController.getTemplateFile().getCanonicalPath());
+        assertEquals(TdarActionSupport.SUCCESS, downloadBulkTemplate);
+        FileInputStream templateInputStream = bulkUploadController.getTemplateInputStream();
+        assertFalse(null == templateInputStream);
+        FileOutputStream fos = new FileOutputStream(file);
+        IOUtils.copy(templateInputStream, fos);
+        logger.info(file.getCanonicalPath());
+        fos.close();
+        assertTrue(file.exists());
+        assertTrue(file.length() > 0);
+    }
+
+    @Test
+    @Rollback
+    public void testBulkUpload() throws Exception {
+        BulkUploadController bulkUploadController = generateNewInitializedController(BulkUploadController.class);
+        bulkUploadController.prepare();
+
+        // setup images to upload
+        File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
+        assertTrue(testImagesDirectory.isDirectory());
+        List<File> uploadFiles = new ArrayList<File>();
+        uploadFiles.addAll(FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, true));
+
+        Pair<PersonalFilestoreTicket, List<FileProxy>> proxyPair = uploadFilesAsync(uploadFiles);
+        final Long ticketId = proxyPair.getFirst().getId();
+        bulkUploadController.setTicketId(ticketId);
+        bulkUploadController.setProjectId(TestConstants.ADMIN_INDEPENDENT_PROJECT_ID);
+        // setup controller
+        bulkUploadController.setUploadedFiles(Arrays.asList(new File(TestConstants.TEST_BULK_DIR + "image_manifest.xlsx")));
+        bulkUploadController.setUploadedFilesFileName(Arrays.asList("image_manifest.xlsx"));
+        List<Long> materialKeywordIds = genericService.findRandomIds(MaterialKeyword.class, 3);
+        Collections.sort(materialKeywordIds);
+        bulkUploadController.setMaterialKeywordIds(materialKeywordIds);
+        List<Long> siteTypeKeywordIds = genericService.findRandomIds(SiteTypeKeyword.class, 3);
+        Collections.sort(siteTypeKeywordIds);
+        bulkUploadController.setApprovedSiteTypeKeywordIds(siteTypeKeywordIds);
+        ResourceNote note = new ResourceNote(ResourceNoteType.GENERAL, "A harrowing tale of note");
+        bulkUploadController.setResourceNotes(Arrays.asList(note));
+        
+        //add some source/ comparative collections
+        addComparitiveCollections(bulkUploadController);
+        
+        bulkUploadController.setFileProxies(proxyPair.getSecond());
+        bulkUploadController.setAsync(false);
+        // saving
+        assertEquals(TdarActionSupport.SUCCESS_ASYNC, bulkUploadController.save());
+        bulkUploadController.checkStatus();
+        assertEquals(new Float(100), bulkUploadController.getPercentDone());
+
+        List<Pair<Long, String>> details = bulkUploadController.getDetails();
+        boolean manifest_gc = false;
+        boolean manifest_book = false;
+        logger.info("{}", details);
+        assertTrue(StringUtils.isEmpty(bulkUploadController.getAsyncErrors()));
+        for (Pair<Long, String> detail : details) {
+            Resource resource = resourceService.find(detail.getFirst());
+            logger.info("{}", resource);
+            List<Long> ids = genericService.extractIds(resource.getMaterialKeywords());
+            Collections.sort(ids);
+            assertEquals(materialKeywordIds, ids);
+            ids = genericService.extractIds(resource.getSiteTypeKeywords());
+            Collections.sort(ids);
+            assertEquals(siteTypeKeywordIds, ids);
+            assertEquals(1, resource.getResourceNotes().size());
+            ResourceNote resourceNote = resource.getResourceNotes().iterator().next();
+            assertEquals(note.getType(), resourceNote.getType());
+            assertEquals(note.getNote(), resourceNote.getNote());
+            assertFalse(resource.getResourceCreators().isEmpty());
+            assertEquals(TestConstants.ADMIN_INDEPENDENT_PROJECT_ID, ((InformationResource) resource).getProjectId());
+            if (resource.getTitle().equals("Grand Canyon")) {
+                assertEquals("A photo of the grand canyon", resource.getDescription());
+                assertEquals(1, resource.getResourceCreators().size());
+                ResourceCreator creator = resource.getResourceCreators().iterator().next();
+                assertEquals(ResourceCreatorRole.CREATOR, creator.getRole());
+                assertEquals(TestConstants.USER_ID, creator.getCreator().getId());
+                manifest_gc = true;
+            }
+            if (resource.getTitle().equals("Handbooks of Archaeology and Antiqvities")) {
+                assertEquals("old book", resource.getDescription());
+                assertEquals(2, resource.getResourceCreators().size());
+                // test resource.getResourceCreators() OrderBy.
+                // Iterator<ResourceCreator> iterator = resource.getResourceCreators().iterator();
+                // ResourceCreator rc = iterator.next();
+                // assertEquals(ResourceCreatorRole.SPONSOR, rc.getRole());
+                // assertEquals(TestConstants.TEST_INSTITUTION_ID, rc.getCreator().getId());
+                // rc = iterator.next();
+                // assertEquals(ResourceCreatorRole.LAB_DIRECTOR, rc.getRole());
+                // assertEquals(TestConstants.ADMIN_USER_ID, rc.getCreator().getId());
+                //
+                HashMap<Integer, ResourceCreator> map = new HashMap<Integer, ResourceCreator>();
+                for (ResourceCreator rc : resource.getResourceCreators()) {
+                    map.put(rc.getSequenceNumber(), rc);
+                }
+                assertEquals(ResourceCreatorRole.SPONSOR, map.get(0).getRole());
+                assertEquals(TestConstants.TEST_INSTITUTION_ID, map.get(0).getCreator().getId());
+                assertEquals(ResourceCreatorRole.LAB_DIRECTOR, map.get(1).getRole());
+                assertEquals(TestConstants.ADMIN_USER_ID, map.get(1).getCreator().getId());
+                manifest_book = true;
+            }
+            assertSourceAndComparitiveCollections(resource);
+        }
+        assertTrue("handbook of archaeology not found", manifest_book);
+        assertTrue("grand canyon photo not found", manifest_gc);
+
+    }
+    
+    private void addComparitiveCollections(BulkUploadController bulkUploadController) {
+        bulkUploadController.getRelatedComparativeCollections().add(createComparitiveColleciton("one"));
+        bulkUploadController.getRelatedComparativeCollections().add(createComparitiveColleciton("two"));
+        bulkUploadController.getRelatedComparativeCollections().add(createComparitiveColleciton("three"));
+        
+        bulkUploadController.getSourceCollections().add(createSourceCollection("sc one"));
+        bulkUploadController.getSourceCollections().add(createSourceCollection("sc two"));
+        bulkUploadController.getSourceCollections().add(createSourceCollection("sc three"));
+    }
+    
+    private void assertSourceAndComparitiveCollections(Resource resource) {
+        assertTrue(resource.getRelatedComparativeCollections().size() == 3);
+        assertTrue(resource.getSourceCollections().size() == 3);
+        
+        Set<String>rccs = new HashSet<String>();
+        Set<String>scs  = new HashSet<String>();
+        
+        Transformer t = new Transformer() {
+            public Object transform(Object input) {
+                Citation c = (Citation) input;
+                return c.getText();
+            }
+        };
+        
+        CollectionUtils.collect(resource.getRelatedComparativeCollections(), t, rccs);
+        CollectionUtils.collect(resource.getSourceCollections(), t, scs);
+        
+        assertTrue(scs.contains("sc one"));
+        assertTrue(scs.contains("sc two"));
+        assertTrue(scs.contains("sc three"));
+
+        assertTrue(rccs.contains("one"));
+        assertTrue(rccs.contains("two"));
+        assertTrue(rccs.contains("three"));
+    }
+    
+    private RelatedComparativeCollection createComparitiveColleciton(String text) {
+        RelatedComparativeCollection rcc = new RelatedComparativeCollection();
+        rcc.setText(text);
+        return rcc;
+    }
+    
+    private SourceCollection createSourceCollection(String text) {
+        SourceCollection sc = new SourceCollection();
+        sc.setText(text);
+        return sc;
+    }
+   
+
+    @Test
+    @Rollback
+    public void testBadBulkUpload() throws Exception {
+        BulkUploadController bulkUploadController = setupBasicBulkUploadTest("image_manifest2.xlsx");
+        assertEquals(new Float(100), bulkUploadController.getPercentDone());
+
+        List<Pair<Long, String>> details = bulkUploadController.getDetails();
+        logger.info("{}", details);
+        logger.debug(bulkUploadController.getAsyncErrors());
+        assertFalse(StringUtils.isEmpty(bulkUploadController.getAsyncErrors()));
+        assertTrue(bulkUploadController.getAsyncErrors().contains("resource creator is not valid"));
+    }
+
+    @Test
+    @Rollback
+    public void testBulkUploadWithFloat() throws Exception {
+        BulkUploadController bulkUploadController = setupBasicBulkUploadTest("image_manifest_float_date.xls");
+        assertEquals(new Float(100), bulkUploadController.getPercentDone());
+        // testing that an Float that is effectively an int 120.00 is ok in an int field
+        List<Pair<Long, String>> details = bulkUploadController.getDetails();
+        logger.info("{}", details);
+        logger.debug(bulkUploadController.getAsyncErrors());
+        assertTrue(StringUtils.isEmpty(bulkUploadController.getAsyncErrors()));
+        assertTrue(resourceService.find(details.get(0).getFirst()).isActive());
+        assertTrue(resourceService.find(details.get(1).getFirst()).isActive());
+        assertEquals(new Integer(1234),((InformationResource)resourceService.find(details.get(0).getFirst())).getDateCreated());
+        assertEquals(new Integer(2222),((InformationResource)resourceService.find(details.get(1).getFirst())).getDateCreated());
+    }
+
+    @Test
+    @Rollback
+    public void testBadBulkUploadNewFormat() throws Exception {
+        BulkUploadController bulkUploadController = setupBasicBulkUploadTest("bulk_upload_newer_ok.xls");
+        assertEquals(new Float(100), bulkUploadController.getPercentDone());
+
+        List<Pair<Long, String>> details = bulkUploadController.getDetails();
+        logger.info("{}", details);
+        logger.debug(bulkUploadController.getAsyncErrors());
+        assertFalse(StringUtils.isEmpty(bulkUploadController.getAsyncErrors()));
+        assertTrue(bulkUploadController.getAsyncErrors().contains("the fieldname  Book Title is not valid for the resource type"));
+        // should be two results, one deleted b/c of errors
+        assertEquals(2, bulkUploadController.getDetails().size());
+        assertEquals(Status.DELETED, resourceService.find(details.get(0).getFirst()).getStatus());
+        assertEquals(Status.ACTIVE, resourceService.find(details.get(1).getFirst()).getStatus());
+    }
+
+    @Test
+    @Rollback
+    public void testBadBulkUploadMissingDates() throws Exception {
+        BulkUploadController bulkUploadController = setupBasicBulkUploadTest("image_manifest_no_dates.xlsx");
+        assertEquals(new Float(100), bulkUploadController.getPercentDone());
+
+        List<Pair<Long, String>> details = bulkUploadController.getDetails();
+        logger.info("{}", details);
+        logger.debug(bulkUploadController.getAsyncErrors());
+        assertFalse(StringUtils.isEmpty(bulkUploadController.getAsyncErrors()));
+        assertTrue(bulkUploadController.getAsyncErrors().contains("The following required fields have not been provided: Date Created"));
+    }
+
+    @Test
+    @Rollback
+    public void testBadBulkUploadMissingDatesAndDescription() throws Exception {
+        BulkUploadController bulkUploadController = setupBasicBulkUploadTest("image_manifest_no_description_or_date.xlsx");
+        assertEquals(new Float(100), bulkUploadController.getPercentDone());
+
+        List<Pair<Long, String>> details = bulkUploadController.getDetails();
+        logger.info("{}", details);
+        logger.debug(bulkUploadController.getAsyncErrors());
+        assertFalse(StringUtils.isEmpty(bulkUploadController.getAsyncErrors()));
+        assertTrue(bulkUploadController.getAsyncErrors().contains("The following required fields have not been provided: Description,  Date Created "));
+    }
+
+    private BulkUploadController setupBasicBulkUploadTest(String manifestName) throws FileNotFoundException {
+        BulkUploadController bulkUploadController = generateNewInitializedController(BulkUploadController.class);
+        bulkUploadController.prepare();
+
+        // setup images to upload
+        File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
+        assertTrue(testImagesDirectory.isDirectory());
+        List<File> uploadFiles = new ArrayList<File>();
+        uploadFiles.addAll(FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, true));
+
+        Pair<PersonalFilestoreTicket, List<FileProxy>> proxyPair = uploadFilesAsync(uploadFiles);
+        final Long ticketId = proxyPair.getFirst().getId();
+        bulkUploadController.setTicketId(ticketId);
+        bulkUploadController.setProjectId(TestConstants.ADMIN_INDEPENDENT_PROJECT_ID);
+        // setup controller
+        bulkUploadController.setUploadedFiles(Arrays.asList(new File(TestConstants.TEST_BULK_DIR + manifestName)));
+        bulkUploadController.setUploadedFilesFileName(Arrays.asList(manifestName));
+        bulkUploadController.setFileProxies(proxyPair.getSecond());
+        bulkUploadController.setAsync(false);
+        // saving
+        assertEquals(TdarActionSupport.SUCCESS_ASYNC, bulkUploadController.save());
+        bulkUploadController.checkStatus();
+        return bulkUploadController;
+    }
+
+    @Test
+    @Rollback
+    public void testCloneInformationResourceWithNotes() throws Exception {
+        Dataset dataset = new Dataset();
+        dataset.setTitle("Test dataset becoming document");
+        dataset.setDateRegistered(new Date());
+        dataset.setSubmitter(getUser());
+        ResourceNote note = new ResourceNote();
+        note.setResource(dataset);
+        note.setNote("This is a note, hello");
+        note.setType(ResourceNoteType.GENERAL);
+        dataset.setResourceNotes(new HashSet<ResourceNote>(Arrays.asList(note)));
+        genericService.saveOrUpdate(dataset);
+        Document document = informationResourceService.createResourceFrom(dataset, Document.class);
+        assertFalse(document.getResourceNotes().isEmpty());
+        assertEquals(1, document.getResourceNotes().size());
+        ResourceNote documentNote = document.getResourceNotes().iterator().next();
+        assertEquals(document.getId(), documentNote.getResource().getId());
+        logger.debug("documentNote.resource.id: " + documentNote.getResource().getId() + " vs dataset.id: " + dataset.getId());
+    }
+    
+    @Test
+    @Rollback
+    public void testCloneImageInheritanceSettings() {
+        Image expected = new Image();
+        expected.setTitle("test image");
+        expected.setDateRegistered(new Date());
+        expected.setSubmitter(getUser());
+        expected.setProject(Project.NULL);
+        //assuming all inheritance flags are false by default.
+        
+        expected.setInheritingCulturalInformation(true);
+        Image image1 = informationResourceService.createResourceFrom(expected, Image.class);
+        assertEquals(expected.isInheritingCulturalInformation(), image1.isInheritingCulturalInformation());
+        
+        expected.setInheritingInvestigationInformation(true);
+        Image image2 = informationResourceService.createResourceFrom(expected, Image.class);
+        assertEquals(expected.isInheritingInvestigationInformation(), image2.isInheritingInvestigationInformation());
+        
+        expected.setInheritingMaterialInformation(true);
+        Image image3 = informationResourceService.createResourceFrom(expected, Image.class);
+        assertEquals(expected.isInheritingMaterialInformation(), image3.isInheritingMaterialInformation());
+        
+        expected.setInheritingOtherInformation(true);
+        Image image4 = informationResourceService.createResourceFrom(expected, Image.class);
+        assertEquals(expected.isInheritingOtherInformation(), image4.isInheritingOtherInformation());
+        
+        expected.setInheritingSiteInformation(true);
+        Image image5 = informationResourceService.createResourceFrom(expected, Image.class);
+        assertEquals(expected.isInheritingSiteInformation(), image5.isInheritingSiteInformation());
+        
+        expected.setInheritingSpatialInformation(true);
+        Image image6 = informationResourceService.createResourceFrom(expected, Image.class);
+        assertEquals(expected.isInheritingSpatialInformation(), image6.isInheritingSpatialInformation());
+        
+        expected.setInheritingTemporalInformation(true);
+        Image image8 = informationResourceService.createResourceFrom(expected, Image.class);
+        assertEquals(expected.isInheritingTemporalInformation(), image8.isInheritingTemporalInformation());
+    }
+    
+    
+    @Test
+    @Rollback
+    public void testCloneImageWithRelatedCollections() {
+        Image expected = new Image();
+        expected.setTitle("test image");
+        expected.setDateRegistered(new Date());
+        expected.setSubmitter(getUser());
+        expected.setProject(Project.NULL);
+        
+        RelatedComparativeCollection rcc = new RelatedComparativeCollection();
+        rcc.setText("rcc text");
+        expected.getRelatedComparativeCollections().add(rcc);
+        
+        Image image = informationResourceService.createResourceFrom(expected, Image.class);
+        assertEquals(expected.getRelatedComparativeCollections().iterator().next().getText(), 
+                image.getRelatedComparativeCollections().iterator().next().getText());
+    }
+    
+    @Test
+    @Rollback
+    public void testCloneImageWithSourceCollections() {
+        Image expected = new Image();
+        expected.setTitle("test image");
+        expected.setDateRegistered(new Date());
+        expected.setSubmitter(getUser());
+        expected.setProject(Project.NULL);
+        
+        SourceCollection sc = new SourceCollection();
+        
+        sc.setText("source collection text");
+        expected.getSourceCollections().add(sc);
+        
+        Image image = informationResourceService.createResourceFrom(expected, Image.class);
+        assertEquals(expected.getSourceCollections().iterator().next().getText(), 
+                image.getSourceCollections().iterator().next().getText());
+    }
+    
+    
+    
+
+    @Test
+    @Rollback
+    /*
+     * When loading N many resources and creating an adhoc collection, ensure:
+     * -the controller only creates one shared collection
+     * -the shared collection contains all N resources
+     * -the controller creates N internal collections, each containing a single resource w/ edit rights to the creator
+     */
+    public void testAddingAdHocCollectionToBulkUpload() throws FileNotFoundException {
+        // start by getting the original count of public/private collections
+        int origInternalCount = getCollectionCount(CollectionType.INTERNAL);
+        int origSharedCount = getCollectionCount(CollectionType.SHARED);
+        int origImageCount = genericService.findAll(Image.class).size();
+
+        BulkUploadController bulkUploadController = generateNewInitializedController(BulkUploadController.class);
+        bulkUploadController.prepare();
+
+        // setup images to upload
+        File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
+        assertTrue(testImagesDirectory.isDirectory());
+        List<File> uploadFiles = new ArrayList<File>();
+        uploadFiles.addAll(FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, true));
+
+        Pair<PersonalFilestoreTicket, List<FileProxy>> proxyPair = uploadFilesAsync(uploadFiles);
+        final Long ticketId = proxyPair.getFirst().getId();
+        bulkUploadController.setTicketId(ticketId);
+        bulkUploadController.setProjectId(TestConstants.ADMIN_INDEPENDENT_PROJECT_ID);
+
+        // setup controller
+        bulkUploadController.setUploadedFiles(Arrays.asList(new File(TestConstants.TEST_BULK_DIR + "image_manifest.xlsx")));
+        bulkUploadController.setUploadedFilesFileName(Arrays.asList("image_manifest.xlsx"));
+        bulkUploadController.setFileProxies(proxyPair.getSecond());
+        bulkUploadController.setAsync(false);
+
+        // specify an adhoc collection
+        ResourceCollection adHocCollection = new ResourceCollection();
+        // NEED TO SET THE TYPE OF THE ADHOC COLLECTION
+        adHocCollection.setType(CollectionType.SHARED);
+        adHocCollection.setName("collection of bulk-uploaded resource collections");
+        bulkUploadController.getAuthorizedUsers().add(new AuthorizedUser(getUser(), GeneralPermissions.MODIFY_RECORD));
+        bulkUploadController.getResourceCollections().add(adHocCollection);
+
+        // saving
+        assertEquals(TdarActionSupport.SUCCESS_ASYNC, bulkUploadController.save());
+        bulkUploadController.checkStatus();
+        assertEquals(new Float(100), bulkUploadController.getPercentDone());
+
+        int newInternalCount = getCollectionCount(CollectionType.INTERNAL);
+        int newSharedCount = getCollectionCount(CollectionType.SHARED);
+        int newImageCount = genericService.findAll(Image.class).size();
+        Assert.assertNotSame(origImageCount, newImageCount);
+        assertTrue((newImageCount - origImageCount) > 0);
+        // ensure one shared collection created
+        // genericService.synchronize();
+
+        List<Pair<Long, String>> details = bulkUploadController.getDetails();
+        logger.info("{}", details);
+        Set<ResourceCollection> collections = new HashSet<ResourceCollection>();
+
+        for (Pair<Long, String> detail : details) {
+            Resource resource = resourceService.find(detail.getFirst());
+            collections.addAll(resource.getResourceCollections());
+        }
+        assertEquals("we should have a total of 3 collections (2 internal and one shared", 3, collections.size());
+
+        assertEquals("we should have one new adhoc collection", 1, newSharedCount - origSharedCount);
+        // ensure N internal collections created
+        // String msg = String.format("We should have %s new internal collections.  newcount:%s oldcount:%s", uploadFiles.size(),
+        // newInternalCount, origInternalCount);
+        // assertEquals(msg, uploadFiles.size(), newInternalCount - origInternalCount );
+
+    }
+
+    private int getCollectionCount(CollectionType type) {
+        List<ResourceCollection> col = resourceCollectionDao.findCollectionsOfParent(null, null, type);
+        if (type == CollectionType.INTERNAL) {
+            logger.info("INTERNAL COLLECTIONS: {} ", col);
+        }
+        return col.size();
+    }
+
+    @Override
+    protected TdarActionSupport getController() {
+        return null;
+    }
+
+}

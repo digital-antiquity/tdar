@@ -37,6 +37,9 @@ import org.tdar.db.model.abstracts.TargetDatabase;
  */
 public class ExcelConverter extends DatasetConverter.Base {
 
+    private static final String ERROR_CORRUPT_FILE_TRY_RESAVING = "tDAR cannot read some rows in this workbook, possibly due to a corrupt file. This issue can often be resolved by simply opening the file using in Microsoft Excel and then re-saving the document.";
+    private static final String ERROR_WRONG_EXCEL_FORMAT = "We could not open the Excel file you supplied.  Please try re-saving it in Excel as an Excel 97-2003 Workbook or Excel 2007 Workbook and upload it again.  If this problem persists, please contact us with a bug report.";
+    private static final String POI_ERROR_MISSING_ROWS = "Unexpected missing row when some rows already present";
     private Workbook workbook;
     private DataFormatter formatter = new HSSFDataFormatter();
 
@@ -74,8 +77,15 @@ public class ExcelConverter extends DatasetConverter.Base {
             exception.printStackTrace();
             logger.error("Couldn't create workbook, likely due to invalid Excel file or Excel 2003 file.");
             throw new TdarRecoverableRuntimeException(
-                    "We could not open the Excel file you supplied.  Please try re-saving it in Excel as an Excel 97-2003 Workbook or Excel 2007 Workbook and upload it again.  If this problem persists, please contact us with a bug report.",
+                    ERROR_WRONG_EXCEL_FORMAT,
                     exception);
+        } catch (RuntimeException rex) {
+           //if this is a "missing rows" issue, the user might be able to work around it by resaving the excel spreadsheet;
+            if(rex.getMessage().equals(POI_ERROR_MISSING_ROWS)) {
+                throw new TdarRecoverableRuntimeException(ERROR_CORRUPT_FILE_TRY_RESAVING);
+            } else {
+                throw rex;
+            }
         }
         setIrFileId(informationResourceFileVersion.getId());
     }
@@ -188,7 +198,6 @@ public class ExcelConverter extends DatasetConverter.Base {
 
         for (int rowIndex = startRow; rowIndex <= endRow; ++rowIndex) {
             Row currentRow = currentSheet.getRow(rowIndex);
-            int count = 0;
             if (currentRow == null)
                 continue;
 
@@ -206,7 +215,6 @@ public class ExcelConverter extends DatasetConverter.Base {
             Map<DataTableColumn, String> valueColumnMap = new HashMap<DataTableColumn, String>();
             for (int columnIndex = startColumnIndex; columnIndex < endColumnIndex; ++columnIndex) {
                 Cell currentCell = currentRow.getCell(columnIndex);
-                count++;
                 if (currentCell != null) {
                     // XXX: adding all Excel types as the String representation
                     // of how they appear in the Excel sheet

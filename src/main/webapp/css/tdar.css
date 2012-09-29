@@ -18,10 +18,15 @@
 	width: 980px
 }
 
-#facets li {
-list-style:none !important;
-margin-left: 0em !important;
+.facets h2 {
+  padding-bottom: 1em !important;	
 }
+
+.facets li {
+	list-style: none !important;
+	margin-left: 0em !important;
+}
+
 #noticecontent {
 	font-size: 120% !important
 }
@@ -75,7 +80,7 @@ h3 {
 	border-bottom: 1px solid #E1D7BC;
 	padding-bottom: 1em;
 	margin-bottom: 1em;
-	color: #606030;
+	color: #2C4D56;
 	text-shadow: 0 2px 3px #E1D7BC;
 }
 
@@ -83,7 +88,7 @@ h4 {
 	font-size: 107% !important;
 	padding-bottom: 1em;
 	font-variant: small-caps;
-	color: #606030;
+	color: #4B514D;
 	text-shadow: 0 2px 3px #E1D7BC;
 }
 
@@ -118,14 +123,32 @@ label {
 	font-weight: bold;
 }
 
+/**override label, radio buttons when inside of a datatable-style table **/
+label.datatable-cell-unstyled, .datatable-cell-unstyled label {
+	position:relative;
+	text-align:inherit;
+	min-width: 0;
+	font-weight: normal;
+}
+
+td.datatable-cell-unstyled {
+}
+
+.datatable-cell-unstyled input[type=radio] {
+	margin:0;
+}
+
+
 .glide {
 	background-color: #FEFAE6;
 	padding: 1em;
 	border: 1px solid #E1D7BC;
 	margin-bottom: 1em;
-	filter: progid :       DXImageTransform.Microsoft.gradient (     
-		 startColorstr =   
-		   '#FEFAE6', endColorstr =       '#F6F2DE' ); /* for IE */
+	filter: progid :               DXImageTransform.Microsoft.gradient ( 
+		       
+		     startColorstr =       
+		       '#FEFAE6', endColorstr =               '#F6F2DE' );
+	/* for IE */
 	background: -webkit-gradient(linear, left top, left bottom, from(#FEFAE6),
 		to(#F6F2DE) ); /* for webkit browsers */
 	background: -moz-linear-gradient(top, #FEFAE6, #F6F2DE);
@@ -169,6 +192,7 @@ td .addAnother {
 label+input[type=radio],label+input[type=checkbox],label+button {
 	margin-left: 12em;
 }
+
 input.field[type=checkbox] {
 	margin-left: 9.2em;
 }
@@ -190,11 +214,11 @@ input.field[type=checkbox] {
 }
 
 input[type=radio]+label,input[type=checkbox]+label,input[type=checkbox]+input[type=hidden]+label
-  {
-  margin-left: 0em;
-  margin-top: -0.15em;
-  text-align: left;
-  white-space: nowrap;
+	{
+	margin-left: 0em;
+	margin-top: -0.15em;
+	text-align: left;
+	white-space: nowrap;
 }
 
 input[type=checkbox] {
@@ -227,44 +251,50 @@ button img {
 	background-repeat: no-repeat
 }
 
-input.error,textarea.error,select.error, span.error {
+input.error,textarea.error,select.error,span.error {
 	border: 1px solid #990000;
 	background-image: url(../images/exclamation.gif);
 	background-repeat: no-repeat;
 	background-position: top right;
 }
-span.error {padding-right: 3em;}
+
+.error:focus {
+   background-image: none !important;
+}
+
+span.error {
+	padding-right: 3em;
+}
 
 select.error { /* error image obstructs spinner on select box */
 	background-image: none;
 }
 
 .action-errors {
-   background-color: #ffc;
-    margin: -0.5em 10px 1em 0;
-    padding: 1em;
-    text-align: left;
-    border: 1px solid red;
+	background-color: #ffc;
+	margin: -0.5em 10px 1em 0;
+	padding: 1em;
+	text-align: left;
+	border: 1px solid red;
 }
 
 #pToggleStackTrace {
-    font-size:smaller;
-    font-style:normal;
-    color: brown   ;
-    text-align:right;
+	font-size: smaller;
+	font-style: normal;
+	color: brown;
+	text-align: right;
 }
 
 #stackTraceList {
-    font-style:normal;
-    color:brown;
-    height: 100pt;
-    overflow: auto;
-    border-top: 1px solid #444;
-    text-align: left;
-    font: monospace;
-    font-size: smaller;
+	font-style: normal;
+	color: brown;
+	height: 100pt;
+	overflow: auto;
+	border-top: 1px solid #444;
+	text-align: left;
+	font: monospace;
+	font-size: smaller;
 }
-
 
 /* if input is inside a div.field, then on every new line and the first, remove the extra left border */
 .field>input:first-child,.field>br+input {
@@ -281,7 +311,7 @@ table.hideHeader tr th {
 	display: none;
 }
 
-em + .field,label + .field, label + em  {
+em+.field,label+.field,label+em {
 	margin-left: 8.5em;
 }
 
@@ -313,6 +343,7 @@ div.grippie {
 .shortfield {
 	width: 12.4em;
 }
+
 /* HACK: make right border of shortfields textboxes end at the same position as the long text boxes */
 .right-shortfield {
 	width: 13.8em;
@@ -350,10 +381,8 @@ input[type=radio] {
 	margin-left: 0em
 }
 
-
 div.grippie {
-	background: #EEEEEE url(/images/grippie.png)
-		no-repeat scroll center 2px;
+	background: #EEEEEE url(/images/grippie.png) no-repeat scroll center 2px;
 	border-color: #DDDDDD;
 	border-style: solid;
 	border-width: 0pt 1px 1px;
@@ -367,7 +396,7 @@ div.grippie {
 	display: block;
 	margin-bottom: 0pt;
 	height: 6em;
-	font-size:1em;
+	font-size: 1em;
 }
 
 #content .proj ul,#content .proj ul li {
@@ -390,33 +419,32 @@ div.grippie {
 }
 
 #sidebar code {
-    background-color:inherit;
-    font-weight:normal;
-    font-size:inherit;
-}	
-	
-#sidebar ul li{
+	background-color: inherit;
+	font-weight: normal;
+	font-size: inherit;
+}
+
+#sidebar ul li {
 	list-style: disc;
-	font-weight:normal;
+	font-weight: normal;
 	margin-left: 1em;
 }
 
 #notice {
-    border: 1px solid #CCC;
-    background: #ffffCC;
-    padding: 5px
+	border: 1px solid #CCC;
+	background: #ffffCC;
+	padding: 5px
 }
 
 #noticecontent {
-    font-size: 80%;
-    font-weight: bold;
-    background: #FFFFCC;
+	font-size: 80%;
+	font-weight: bold;
+	background: #FFFFCC;
 }
+
 #noticecontent aside {
-    font-weight: normal;
+	font-weight: normal;
 }
-
-
 
 .wwgrp br {
 	display: none;
@@ -509,8 +537,8 @@ label.toplabel {
 .ui-menu .ui-menu-item a.ui-state-hover,.ui-menu .ui-menu-item a.ui-state-active
 	{
 	background-color: #eee;
-    font-weight: normal;
-    margin: inherit !important;
+	font-weight: normal;
+	margin: inherit !important;
 }
 
 div.notice {
@@ -522,28 +550,27 @@ div.notice {
 	width: 93%;
 }
 
-
 .width50percent2 input[type=text],.width50percent input[type=password],.width50percent input[type=select]
-  {
-  width: 48.6%;
+	{
+	width: 48.6%;
 }
 
 .width30percent input[type=text],.width30percent input[type=password],.width30percent input[type=select]
-  {
-  width: 30%;
-  margin-right: 1%;
+	{
+	width: 30%;
+	margin-right: 1%;
 }
 
 .width32percent input[type=text],.width30percent input[type=password],.width30percent input[type=select]
-  {
-  width: 32%;
+	{
+	width: 32%;
 }
 
-.width15percent input[type="text"], .width30percent input[type="password"], .width30percent input[type="select"] {
-width: 15%;
-margin-right: 1%;
+.width15percent input[type="text"],.width30percent input[type="password"],.width30percent input[type="select"]
+	{
+	width: 15%;
+	margin-right: 1%;
 }
-
 
 .width50percent input[type=text],.width50percent input[type=password],.width50percent input[type=select]
 	{
@@ -558,29 +585,29 @@ margin-right: 1%;
 }
 
 .width70percent input[type=text],.width70percent input[type=password],.width70percent input[type=select]
-  {
-  width: 73%;
-  margin-right: 1%;
+	{
+	width: 73%;
+	margin-right: 1%;
 }
 
-.width70percent>input  ~ input {
-  width: 25%;
-  margin-right: 1%;
+.width70percent>input      ~ input {
+	width: 25%;
+	margin-right: 1%;
 }
 
 .width60percent input[type=text],.width60percent input[type=password],.width60percent input[type=select]
-  {
-  width: 63%;
-  margin-right: 1%;
+	{
+	width: 63%;
+	margin-right: 1%;
 }
 
-.width60percent>input  ~ input {
-  width: 37%;
-  margin-right: 1%;
+.width60percent>input      ~ input {
+	width: 37%;
+	margin-right: 1%;
 }
 
 .weight-normal {
-    font-weight: normal;
+	font-weight: normal;
 }
 
 .manualAutocomplete {
@@ -620,12 +647,13 @@ margin-right: 1%;
 }
 
 .accordion .head {
-    cursor: pointer;
+	cursor: pointer;
 }
+
 .resource-list {
-    list-style: none;
-    margin: 0 0 0 0;
-    padding: 0 0 0 0;
+	list-style: none;
+	margin: 0 0 0 0;
+	padding: 0 0 0 0;
 }
 
 .entry ol li div.listItem {
@@ -705,9 +733,12 @@ input[type="submit"],input[type="button"] {
 	/* firefox */
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #eeeeee),
 		color-stop(100%, #cccccc) ); /* webkit */
-	filter: progid :     DXImageTransform.Microsoft.gradient (     
-		 startColorstr =  
-		  '#eeeeee', endColorstr =     '#cccccc', GradientType =     0 );
+	filter: progid :             DXImageTransform.Microsoft.gradient (
+		        
+		     startColorstr =      
+		      '#eeeeee', endColorstr =             '#cccccc', GradientType = 
+		        
+		  0 );
 	/* ie */
 	padding: 5px 5px 2px 5px;
 	margin: 0px 0px 5px 0px !important;
@@ -763,9 +794,12 @@ input[type="submit"],input[type="button"] {
 	/* firefox */
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #1E5799),
 		color-stop(100%, #207cca) ); /* webkit */
-	filter: progid :   DXImageTransform.Microsoft.gradient (    
-		startColorstr = 
-		 '#1E5799', endColorstr =   '#207cca', GradientType =   0 ); /* ie */
+	filter: progid :           DXImageTransform.Microsoft.gradient (        
+		    startColorstr =     
+		     '#1E5799', endColorstr =           '#207cca', GradientType =
+		        
+		 0 );
+	/* ie */
 	border: 1px solid #999;
 	font-weight: bold;
 	margin: 0px;
@@ -790,14 +824,18 @@ input[type="submit"],input[type="button"] {
 	border: 1px solid #999;
 	padding: 3px 5px 2px;
 	cursor: pointer;
-	filter: progid :   DXImageTransform.Microsoft.gradient (    
-		startColorstr = 
-		 '#eeeeee', endColorstr =   '#cccccc', GradientType =   0 ); /* ie */
+	filter: progid :           DXImageTransform.Microsoft.gradient (        
+		    startColorstr =     
+		     '#eeeeee', endColorstr =           '#cccccc', GradientType =
+		        
+		 0 );
+	/* ie */
 	border: 1px solid #999;
 	padding: 3px 5px 2px;
 	font-weight: bold;
 }
 
+/*
 tr.even td.sorting_1 {
 	background-color: #EDEDED !important;
 }
@@ -806,14 +844,20 @@ tr.odd td.sorting_1 {
 	background-color: #DDD !important;
 }
 
+*/
+
 tr.odd {
-	background-color: #EEE !important;
+	background-color: #F2E8CD !important;
 }
 
+tr.even {
+    background-color: #F9F0DE !important;
+}
+
+
 div.dataTables_scroll {
-	background: #CCC;
-	border-left: 1px solid #AAA;
-	border-right: 1px solid #AAA;
+	background: #E1D7BC;
+	border: 1px solid #AAA;
 }
 
 .dataTables_processing {
@@ -824,7 +868,7 @@ input.disabled,textarea.disabled,label.disabled {
 	color: #998;
 }
 
-#toolbar li.disabled span{
+#toolbar li.disabled span, li span.disabled {
 	color: #9AA2AB;
 }
 
@@ -832,7 +876,7 @@ input.disabled,textarea.disabled,label.disabled {
 	opacity: 0.6;
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
 	/** IE8 opacity, must appear before next line **/
-	filter: alpha(opacity =   60); /** IE6-7 **/
+	filter: alpha(opacity =           60); /** IE6-7 **/
 }
 
 div.inheritlabel {
@@ -881,77 +925,103 @@ img.icon {
 	margin-left: 10px;
 }
 
-
 /* prettier rendering of term/definition lists */
-dt, dd { margin-left:1em}
-dt {font-weight: bold; font-style: italic;}
-dd {margin-bottom: 1em; font-weight: normal;}
+dt,dd {
+	margin-left: 1em
+}
 
+dt {
+	font-weight: bold;
+	font-style: italic;
+}
+
+dd {
+	margin-bottom: 1em;
+	font-weight: normal;
+}
 
 /* callouts for deleted resources */
-.resource-deleted, .resource-flagged {
+.resource-deleted,.resource-flagged {
 	background-color: #EDD87B;
 	margin: -0.5em 10px 1em 0;
 	padding: 1em;
-	font-style:italic;
+	font-style: italic;
 	text-align: center;
 }
-.resource-deleted p, .resource-flagged p{
+
+.resource-deleted p,.resource-flagged p {
 	margin: 0px;
 }
+
 .deleted-file {
-    background-color: #EDD87B;
-    text-decoration: line-through;
+	background-color: #EDD87B;
+	text-decoration: line-through;
 }
+.view-deleted-file {
+  background-color: #EDD87B;
+  text-decoration: line-through;
+  display:none;
+}
+
 .line-through {
 	text-decoration: line-through;
 }
-.search-result-title-active {}
-.search-result-title-draft {font-style:italic;}
-.search-result-title-deleted {text-decoration: line-through;}
 
-div.file_upload {
-	background:#CDEB8B !important;
+.search-result-title-active {
+	
 }
 
+.search-result-title-draft {
+	font-style: italic;
+}
 
-/*FIXME: hack to make the combobox spinner look right in FF*/ 
-@-moz-document url-prefix() {
-    
-//#divOntology-1 {border: 1px solid green;
-//overflow: visible;
-//}
+.search-result-title-deleted {
+	text-decoration: line-through;
+}
 
-.ui-button-icon {//margin-top: -14px !important; 
-  //border: 1px solid blue;
-  padding-bottom: 0px;
-  top: -5px !important;
-  overflow: visible;
+div.file_upload {
+	background: #CDEB8B !important;
+}
+
+/*FIXME: hack to make the combobox spinner look right in FF*/
+@
+-moz-document url-prefix    () { //# divOntology-1 {
+	border: 1px solid green; //
+	overflow: visible;
+	//
+}
+
+.ui-button-icon { //
+	margin-top: -14px !important; //
+	border: 1px solid blue;
+	padding-bottom: 0px;
+	top: -5px !important;
+	overflow: visible;
 }
 
 .ui-icon-triangle-1-s {
-   height: 20px !important;
-  top: 0 !important;
-}      
-
-.manualAutocomplete {
-    width: 88% !important;
-}      
+	height: 20px !important;
+	top: 0 !important;
 }
 
+.manualAutocomplete {
+	width: 88% !important;
+}
+
+}
 a.external {
-	padding-right:13px;
-	background: url(/images/external-link-ltr-icon.png) center right no-repeat;
+	padding-right: 13px;
+	background: url(/images/external-link-ltr-icon.png) center right
+		no-repeat;
 }
 
 .errorDialog {
-	position:fixed !important;
+	position: fixed !important;
 }
 
 .replaceWithMe {
-	margin-left:12em;
+	margin-left: 12em;
 }
-
 
 .coverageDescription {
 	width: 12em !important;
@@ -962,66 +1032,303 @@ label.datatableListItem {
 }
 
 #nav {
-	z-index:1000 !important; 
-  position: relative !important;
- }
+	z-index: 1000 !important;
+	position: relative !important;
+}
 
 #files {
-	background-color:#F2E8CD;
+	background-color: #F2E8CD;
 	border: 1px solid #CCC;
-    margin-top:0px !important;
+	margin-top: 0px !important;
 }
 
 .glide .ui-button-text {
-    font-size:85% !important;
+	font-size: 85% !important;
 }
 
 #files tr {
-    border-bottom: solid 1px #ccc;
+	border-bottom: solid 1px #ccc;
 }
 
 .file-button {
-    width: 8em;
+	width: 8em;
 }
 
 #files .newrow {
-	background-color:#F0E8DE
+	background-color: #F0E8DE
 }
 
 #uploadFiles {
-	display:inline;
+	display: inline;
 }
 
 .collapsible {
-    cursor: pointer;
-    background-color: #F0E8DE;
+	cursor: pointer;
+	background-color: #F0E8DE;
 }
 
 .tdar-ui-icon {
-    float:left; 
-    margin-top: 3px;
+	float: left;
+	margin-top: 3px;
 }
 
-.coverageEndYear, .coverageStartYear {
-width: 6em !important;
+.coverageEndYear,.coverageStartYear {
+	width: 6em !important;
 }
 
-#overlay{ 
-  z-index: 1100 !important;
+#overlay {
+	z-index: 1100 !important;
 }
 
-#lightbox { 
-  z-index: 1101 !important;
+#lightbox {
+	z-index: 1101 !important;
 }
 
 .charfield10 {
-  width: 7em !important;
+	width: 7em !important;
 }
 
-table label {
-	text-align: initial !important;
+.entry ul li,.cbody ul li,.c-body ul li {
+	list-style-position: outside;
+	list-style-type: disc;
+	background: none;
 }
 
+.entry ul,.cbody ul {
+	list-style: disc;
+}
+
+.c-body ol,.entry ol,.cbody ol {
+	list-style-position: outside;
+//	margin-left: 35px;
+}
+
+#drplist .ui-droppable {
+	min-height: 100px;
+	position: relative;
+}
+
+.legend {
+	line-height: 1.2em;
+}
+
+table.legend {
+	border-top: 1px solid #AAA;
+	border-bottom: 1px solid #AAA;
+}
+
+.buttontable div,.displayColumn {
+	background: #eeeeee; /* Old browsers */
+	background: -moz-linear-gradient(top, #eeeeee 0%, #cccccc 100%);
+	/* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #eeeeee),
+		color-stop(100%, #cccccc) ); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, #eeeeee 0%, #cccccc 100%);
+	/* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, #eeeeee 0%, #cccccc 100%);
+	/* Opera11.10+ */
+	background: -ms-linear-gradient(top, #eeeeee 0%, #cccccc 100%);
+	/* IE10+ */
+	filter: progid :     DXImageTransform.Microsoft.gradient (     
+		 startColorstr =  
+		  '#eeeeee', endColorstr =     '#cccccc', GradientType =     0 );
+	/* IE6-9 */
+	background: linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* W3C */
+	margin: 3px;
+	padding: 3px;
+	border: 1px solid #999999;
+}
+
+.buttontable td,.integrationColumn,.displayColumn {
+	vertical-align: top;
+}
+
+.countColumn,.buttontable div[hasCount] {
+	background: #e5e696; /* Old browsers */
+	background: -moz-linear-gradient(top, #e5e696 0%, #d1d360 100%);
+	/* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #e5e696),
+		color-stop(100%, #d1d360) ); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, #e5e696 0%, #d1d360 100%);
+	/* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, #e5e696 0%, #d1d360 100%);
+	/* Opera11.10+ */
+	background: -ms-linear-gradient(top, #e5e696 0%, #d1d360 100%);
+	/* IE10+ */
+	filter: progid : DXImageTransform.Microsoft.gradient (   startColorstr =
+		'#e5e696', endColorstr = '#d1d360', GradientType = 0 ); /* IE6-9 */
+	background: linear-gradient(top, #e5e696 0%, #d1d360 100%); /* W3C */;
+	border: 1px solid #999999;
+}
+
+.measurementColumn,.buttontable div[hasMeasurement] {
+	background: #deefff; /* Old browsers */
+	background: -moz-linear-gradient(top, #deefff 0%, #98bede 100%);
+	/* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #deefff),
+		color-stop(100%, #98bede) ); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, #deefff 0%, #98bede 100%);
+	/* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, #deefff 0%, #98bede 100%);
+	/* Opera11.10+ */
+	background: -ms-linear-gradient(top, #deefff 0%, #98bede 100%);
+	/* IE10+ */
+	filter: progid :     DXImageTransform.Microsoft.gradient (     
+		 startColorstr =  
+		  '#deefff', endColorstr =     '#98bede', GradientType =     0 );
+	/* IE6-9 */
+	background: linear-gradient(top, #deefff 0%, #98bede 100%); /* W3C */
+	border: 1px solid #999999;
+}
+
+.integrationColumn,.buttontable div[hasOntology] {
+	background: #e4efc0; /* Old browsers */
+	background: -moz-linear-gradient(top, #e4efc0 0%, #abbd73 100%);
+	/* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #e4efc0),
+		color-stop(100%, #abbd73) ); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, #e4efc0 0%, #abbd73 100%);
+	/* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, #e4efc0 0%, #abbd73 100%);
+	/* Opera11.10+ */
+	background: -ms-linear-gradient(top, #e4efc0 0%, #abbd73 100%);
+	/* IE10+ */
+	filter: progid :     DXImageTransform.Microsoft.gradient (     
+		 startColorstr =  
+		  '#e4efc0', endColorstr =     '#abbd73', GradientType =     0 );
+	/* IE6-9 */
+	background: linear-gradient(top, #e4efc0 0%, #abbd73 100%); /* W3C */;
+	border: 1px solid #999999;
+}
+
+.buttontable {
+	border-spacing: 0px;
+	border: 1px solid #CCC;
+}
+
+.buttontable .columnName {
+	font-weight: bold !important;
+}
+
+.buttontable .ontology {
+	font-weight: normal !important;
+}
+
+#drplist button {
+    bottom: 10px;
+    font-size: 80%;
+    position: absolute;
+    right: 5px;
+}
+
+#drplist td div {
+	position: relative !important;
+	border-bottom: 1px solid #AEAEAE;
+	height: 3.2em;
+}
+
+.short .columnName {
+	width: 100px;
+	overflow: hidden;
+}
+
+.short button {
+	visibility: hidden;
+}
+
+.short .ontology {
+	display: none;
+}
+
+.tableContainer {
+	background-color: #BEBEBE;
+}
+
+.arrow {
+	display: inline-block !important;
+}
+
+.tablemenu {
+	cursor:pointer;
+}
 .checkboxtable {
 width: 100% !important;
+}
+
+td.nowrap {
+	white-space: nowrap;
+}
+
+/* javascript:javascript:$('.luceneScore').fadeIn('fast') */
+.luceneScore {
+	display:none;
+}
+
+/*make sortable rows look more sortable */
+tr.sortable  {
+	cursor:move; 
+}
+tr.sortable td.fileinfo {
+    border-spacing: 2px; 
+    border-left-style: double; 
+    border-left-width: 8px; 
+    border-left-color: #CCC;	
+}
+
+.new-collection-indicator {
+    padding-right: 16px;
+    background: url(/images/new.png) center right
+        no-repeat;
+}
+
+
+.showcase-button-wrapper { visibility:hidden;display:none}
+
+
+.dataTables_paginate {
+float: none;
+text-align: right;
+clear:none;
+position: absolute;
+right: 0px;
+padding-top: 4px;
+}
+
+.datatabletop {
+  margin-top: 10px;
+  clear:none;
+  font-weight: bold;
+}
+#resource_datatable_paginate span {
+  border:0px solid !important;
+  font-weight: bold !important;
+  background:none !important;
+  color: #4265A7 !important;
+}
+
+#resource_datatable_paginate .paginate_button_disabled {
+  visibility:hidden;
+  display:none;
+}
+
+.dataTables_processing {
+  position: absolute !important;
+}
+
+.tdarCommentDescription { /* do not remove */
+	display:none; visibility:hidden !important;
+	
+}
+
+
+.dataTables_length { 
+     width: 40%; 
+     top: 2.3em ; 
+     position: absolute !important; 
+     margin-left: 35%; 
+     z-index: 500 !important; 
+}
+
+.dataTables_wrapper table tr th {
+    text-align: left;	
 }

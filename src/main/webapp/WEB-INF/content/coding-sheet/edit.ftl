@@ -8,44 +8,6 @@
 </#if>
 <meta name="lastModifiedDate" content="$Id$"/>
 
-<@edit.resourceJavascript formId="#resourceRegistrationForm" selPrefix="#resourceRegistration">
-    $('#resourceRegistrationDateCreated').rules("add", {
-        rangelength: [4,4],
-        messages: {
-            digits: "Please enter a four digit number for the year.",
-            rangelength: "The year should be four digits long."
-        }
-    });
-    $.ajaxSetup({ 
-        cache: false 
-    });
-    
-    var totalNumberOfFiles = ${codingSheet.getTotalNumberOfFiles()?c};
-
-    //the coding rule textarea or file upload field is required whenever it is visible AND
-    //no cocding sheet rules are already present from a previous upload
-
-    $('#fileInputTextArea').rules("add", {
-        required: {depends:isFieldRequired},
-        messages: {required: "No coding rules entered. Please enter them manually or upload a coding rule file."}
-    });
-
-    $('#resourceRegistrationForm_uploadedFiles').rules("add", {
-        required: {depends:isFieldRequired},
-        messages: {required: "No coding rule file selected. Please select a file or upload coding rules manually."}
-    });
-    
-    function isFieldRequired(elem) {
-        var noRulesExist =  !( (totalNumberOfFiles > 0) || 
-        ($("#fileInputTextArea").val().length > 0 ) ||
-        ($("#resourceRegistrationForm_uploadedFiles").val().length > 0));
-        return noRulesExist && $(elem).is(":visible");
-    }
-
-
-    refreshInputDisplay();
-</@edit.resourceJavascript>
-
 </head>
 <body>
 
@@ -58,11 +20,17 @@
     tiplabel="Title"
     tooltipcontent="Enter the entire title, including sub-title, if appropriate."
 >
-<@s.textfield labelposition='left' id="resourceRegistrationTitle" label='Title' title="A title is required for all coding sheets" name='codingSheet.title' cssClass="required longfield" required=true maxlength="512"/>
+<@s.textfield labelposition='left' id="resourceRegistrationTitle" label='Title' title="A title is required for all coding sheets" name='codingSheet.title' cssClass="required descriptiveTitle longfield" required=true maxlength="512"/>
 </span>
 <br/>
-<span tiplabel="Year" tooltipcontent="Four digit year, e.g. 1966 or 2005. If your document does not have a date published, please leave this field blank">
-<@s.textfield labelposition='left' id='resourceRegistrationDateCreated' label='Year Created' name='codingSheet.dateCreated' cssClass="reasonableDate" />
+<span tiplabel="Year" tooltipcontent="Four digit year, e.g. 1966 or 2005.">
+       <#assign dateVal = ""/>
+       <#if codingSheet.dateCreated?? && codingSheet.dateCreated != -1>
+         <#assign dateVal = codingSheet.dateCreated?c />
+      </#if>
+        <@s.textfield labelposition='left' id='dateCreated' label='Year' name='codingSheet.dateCreated' value="${dateVal}" cssClass="shortfield reasonableDate required" required=true
+          title="Please enter the year this coding sheet was created" />
+
 </span>
 <p id="t-abstract" class="new-group"
     tiplabel="Abstract / Description"
@@ -72,26 +40,23 @@
 </p>
 </@edit.basicInformation>
 
+<#-- <@edit.fullAccessRights /> -->
 <div class="glide">
 <@view.codingRules />
 </div>
-
 <@edit.manualTextInput typeLabel="Coding Sheet" type="coding" />
 
 <@edit.resourceCreators 'Coding Sheet Creators' authorshipProxies 'authorship' />
 
 <@edit.resourceNoteSection />
 
-<@edit.fullAccessRights /> 
-
 <@edit.submit  fileReminder=false  />
 </@s.form>
 
-<div id="sidebar" parse="true">
-    <div id="notice">
-    <h3>Introduction</h3>
-    This is the page editing form for a project.
-    </div>
-</div>
+<@edit.sidebar />
+
+<@edit.resourceJavascript formId="#resourceRegistrationForm" selPrefix="#resourceRegistration">
+    setupSupportingResourceForm(${codingSheet.getTotalNumberOfFiles()?c}, "coding sheet");
+</@edit.resourceJavascript>
 
 </body>

@@ -31,9 +31,13 @@ log4j.appender.smtp.layout.ConversionPattern=%d{MMM-dd HH:mm:ss} %-5p %t %c - %m
 # Add packages to log
 log4j.logger.org.tdar=DEBUG
 log4j.logger.uk.org=DEBUG
+log4j.logger.org.hibernate.util.JDBCExceptionReporter=DEBUG
 
 #log4j.logger.org.apache.struts2=DEBUG
 
 #log4j.logger.org.springframework=DEBUG
 #log4j.logger.org.hibernate=DEBUG
 #log4j.logger.org.apache.struts2.convention=DEBUG
+
+#log4j.logger.org.hibernate.SQL=DEBUG  #log parameterized sql
+#log4j.logger.org.hibernate.type=TRACE #log bindings

@@ -20,8 +20,6 @@ public class AdsExcelToXmlImportUtility {
     AdsTemplateProcessor processor = new AdsTemplateProcessor();
     SensoryDataExporter exporter = new SensoryDataExporter();
     
-    Long projectId;
-    
     public static void main(String[] args) {
         
     }
@@ -30,9 +28,6 @@ public class AdsExcelToXmlImportUtility {
     public void extractExcelToXml(File excelFile, File outFile) throws FileNotFoundException {
         try {
             SensoryData sensoryData = processor.getSensoryDataFromAdsTemplate(excelFile);
-            if(projectId != null) {
-                sensoryData.setProjectId(projectId);
-            }
             
             FileOutputStream fileOutputStream = new FileOutputStream(outFile);
             PrintWriter pw = new PrintWriter(fileOutputStream);
@@ -63,16 +58,6 @@ public class AdsExcelToXmlImportUtility {
             extractExcelToXml(file);
         }
         
-    }
-
-
-    public Long getProjectId() {
-        return projectId;
-    }
-
-
-    public void setProjectId(Long projectId) {
-        this.projectId = projectId;
     }
     
 }

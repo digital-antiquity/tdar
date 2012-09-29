@@ -3,57 +3,11 @@ package org.tdar.core.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.tdar.utils.Pair;
 
 public interface AsyncUpdateReceiver {
 
-    public final static AsyncUpdateReceiver DEFAULT_RECEIVER = new AsyncUpdateReceiver() {
-        private Logger log = Logger.getLogger(AsyncUpdateReceiver.class);
-
-        public void setPercentComplete(float complete) {
-            log.trace("% complete:" + complete);
-        }
-
-        public void setStatus(String status) {
-            log.debug("index status:" + status);
-        }
-
-        public void addError(Throwable t) {
-            log.error(t);
-        }
-        
-        public String getAsyncErrors() {
-            return "";
-        }
-
-        public String getHtmlAsyncErrors() {
-            return "";
-        }
-
-        public void setDetails(List<Pair<Long, String>> details) {
-            log.trace("set details");
-        }
-
-        public List<Pair<Long, String>> getDetails() {
-            return new ArrayList<Pair<Long, String>>();
-        }
-
-        public void addDetail(Pair<Long, String> detail) {
-            log.trace(detail);
-        }
-
-        @Override
-        public float getPercentComplete() {
-            return 0;
-        }
-
-        @Override
-        public String getStatus() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-    };
+    public final static AsyncUpdateReceiver DEFAULT_RECEIVER = new DefaultReceiver();
 
     public void setPercentComplete(float complete);
 
@@ -74,6 +28,8 @@ public interface AsyncUpdateReceiver {
     public String getStatus();
 
     public void addError(Throwable t);
+    
+    public void setCompleted();
 
     public class DefaultReceiver implements AsyncUpdateReceiver {
         private float percentComplete;
@@ -137,5 +93,18 @@ public interface AsyncUpdateReceiver {
             return sb.toString();
         }
 
+        public void update(float percent, String status) {
+            setStatus(status);
+            setPercentComplete(percent);
+        }
+
+        public void setCompleted() {
+            setPercentComplete(100f);
+            setStatus("Complete");
+        }
+
+
     }
+
+    public void update(float percent, String status);
 }

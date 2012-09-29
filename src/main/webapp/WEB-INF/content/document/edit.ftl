@@ -6,108 +6,6 @@
 <title>Editing: ${resource.title}</title>
 </#if>
 <meta name="lastModifiedDate" content="$Date$"/>
-<@edit.resourceJavascript includeAsync=true includeInheritance=true>
-
-//wire up document-type selection to dependent fields
-$(document).ready(function(){
-    $("#showmorecite").hide('slow');
-    $("#show-more-types").hide();
-    $("#link-more").click(function() { $('#showmorecite').show('show'); $('#showCite').hide(); return false; });
-    $('#documentTypeBOOK').click(function(){switchType("book")});
-    $('#documentTypeBOOK_SECTION').click(function(){switchType("book_section")});
-    $('#documentTypeJOURNAL_ARTICLE').click(function(){switchType("journal_article")});
-    $('#documentTypeMANUSCRIPT').click(function(){switchType("journal_article")}); //TODO:remove 
-    $('#documentTypeTHESIS').click(function(){switchType("thesis")});
-    $('#documentTypeCONFERENCE_PRESENTATION').click(function(){switchType("conference")});
-    $('#documentTypeOTHER').click(function(){switchType("other")});
-    switchType($("input[@name='document.documentType']:radio:checked").val());
-       
-});
-
-function switchType(doctype) {
-    try{doctype=doctype.toLowerCase()}catch(ex){}
-    console.debug('switchType:start:' + doctype);
-    
-    $("#t-title2-journal").hide();
-    $("#t-title2-book").hide();
-    $("#t-series").hide();
-    $("#t-jtitle").hide();
-    $("#t-isbn").hide();
-    $("#t-issn").hide();
-    $("#t-pub").hide();
-    $("#t-vol").hide();
-    $("#t-start-end").hide();
-    $("#t-edition").hide();
-    $("#t-institution").hide();
- 
-    if(doctype == 'book_section') {$("#t-title2-book").show();}
-    if(doctype == 'journal_article') {$("#t-title2-journal").show();}
-    switchLabel($("#publisher-hints"),doctype);
-    switchLabel($("#publisherLocation-hints"),doctype);
- 
- 
-    if (doctype == 'book_section') {
-        $("#t-title2").show();
-        $("#t-isbn").show();
-        $("#t-start-end").show();
-    }
-    if (doctype == 'book_section' || doctype == 'book' || doctype== 'book_section') {
-        $("#t-series").show();
-        $("#t-isbn").show();
-        $("#t-pub").show();
-        $("#t-edition").show();
-    }
- 
-    if ( doctype == 'book_section' || doctype == 'book_section') {
-        $("#t-start-end").show();
-    }
-     
-    if (doctype == 'journal_article') {
-        $("#t-title2").show();
-        $("#t-issn").show();
-        $("#t-vol").show();
-        $("#t-start-end").show();
-    }
- 
-    if (doctype == 'thesis') {
-        $("#t-pub").show();
-    }
- 
-    if (doctype == 'conference') {
-        $("#t-pub").show();
-    }
- 
-    if (doctype == 'other') {
-        $("#t-series").show();
-        $("#t-isbn").show();
-        $("#t-pub").show();
-        $("#t-vol").show();
-        $("#t-start-end").show();
-        $("#t-edition").show();
-    }
- 
-    if (!$('#title2').is(':hidden')) {
-        $('#title2').addClass("required");
-    } else {
-        $('#title2').removeClass("required");
-    }    
-    
-    //console.debug('switchType:end:' + doctype);
-    
-}
-
-
-
-function switchLabel(field,type) {
-    //console.debug('switchLabel('+field+','+type+')');        
-    var label = "#" + $(field).attr('id') + '-label';
-    if($(field).attr(type) != undefined && $(label) != undefined) {
-        $(label).text($(field).attr(type));
-    }
-}
-
-</@edit.resourceJavascript>
-
 </head>
 <body>
 <@edit.toolbar "${resource.urlNamespace}" "edit" />
@@ -123,13 +21,23 @@ This will be linked as a <b>${linkType}</b> citation for: <b>${linkedInformation
 <!--br/-->
 </#if>
 <p id="t-title" tooltipcontent="Enter the entire title, including sub-title, if appropriate." tiplabel="Title"> 
-    <@s.textfield labelposition='left' id='resourceTitle' label='Title' required='true' name='document.title' size="75" cssClass="required longfield"  title="A title is required for all documents." maxlength="512" />
+    <@s.textfield labelposition='left' id='resourceTitle' label='Title' required='true' name='document.title' size="75" cssClass="required descriptiveTitle longfield"  title="A title is required for all documents." maxlength="512" />
 </p>
 
+<p id="t-year" >
+    <span tooltipcontent="Four digit year, e.g. 1966 or 2005. " tiplabel="Year">
+      <#assign dateVal = ""/>
+       <#if resource.dateCreated?? && resource.dateCreated != -1>
+         <#assign dateVal = resource.dateCreated?c />
+      </#if>
+        <@s.textfield labelposition='left' id='dateCreated' label='Year' name='resource.dateCreated' value="${dateVal}" cssClass="shortfield reasonableDate required" required=true
+         title="Please enter the year this document was created" />
+    </span>
+</p>
 
 <div class="wrapper" 
     tiplabel="Document Type" 
-    tooltipcontent="Select the document type, appropriate citation fields will be displayed below.">
+    tooltipcontent="Select the document type. Appropriate citation fields will be displayed below.">
 <@s.radio name='document.documentType' id="documentType" emptyOption='false' listValue="label"  
     list='%{documentTypes}' groupLabel="Document Type" numColumns=3 />
 </div>
@@ -172,10 +80,7 @@ This will be linked as a <b>${linkType}</b> citation for: <b>${linkedInformation
     </span>
 </p>
 
-<p id="t-year" >
-    <span tooltipcontent="Four digit year, e.g. 1966 or 2005. If your document does not have  a date published, please leave this field blank" tiplabel="Year">
-        <@s.textfield labelposition='left' id='dateCreated' label='Year' name='resource.dateCreated' cssClass="shortfield reasonableDate" />
-    </span>
+<p>
     <span tiplabel="Language" tooltipcontent="Select the language in which the document is written.">
         <@s.select labelposition='left' label='Language'  emptyOption='false' name='resourceLanguage'  listValue="label" list='%{languages}' cssClass="right-shortfield "/>
     </span>
@@ -188,7 +93,7 @@ This will be linked as a <b>${linkType}</b> citation for: <b>${linkedInformation
 </p>
 
 <p> 
-    <h3>complete the citation for your document</h3> 
+    <h3>Complete the Citation for your Document</h3> 
     <p class="comment" id="showCite">add publisher, edition information, etc... 
     <button type="button" id="link-more" name="show" value="show fields">show fields</button>
 </p> 
@@ -256,10 +161,10 @@ This will be linked as a <b>${linkType}</b> citation for: <b>${linkedInformation
 
 </div>
 
-<div id="sidebar" parse="true">
-    <div id="notice">
-    <h3>Introduction</h3>
-    This is the page editing form for a project.
-    </div>
-</div>
+<@edit.sidebar />
+
+<@edit.resourceJavascript includeAsync=true includeInheritance=true>
+
+setupDocumentEditForm();
+</@edit.resourceJavascript>
 </body>

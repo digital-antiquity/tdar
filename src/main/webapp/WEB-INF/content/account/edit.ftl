@@ -102,6 +102,14 @@ function switchContributorReasonDisplay(shouldDisplay) {
     <div class='info'>By submitting the following form you <a href='#terms'>signify your
     consent to the above terms and conditions.</a></div>
     <div id="error"></div>
+    
+<#--    <#if recaptcha_public_key??>
+        <script type="text/javascript" src="http://api.recaptcha.net/challenge?k=${recaptcha_public_key}"><br /></script>
+    </#if> -->
+    
+    
+    <@s.hidden name="timeCheck" />
+    <textarea name="comment" class="tdarCommentDescription"></textarea>
     <@s.submit cssStyle='margin-left: 16em;' value="Save" />
     </div>
 </@s.form>

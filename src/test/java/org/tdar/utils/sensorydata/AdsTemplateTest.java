@@ -91,10 +91,10 @@ public class AdsTemplateTest {
     @Test
     public void testSensoryDataProjectInfo() throws Exception{
         SensoryData sensoryData = loadThenProcess(PATH_ADS_TEMPLATE1);
-        assertEquals("Ark_HM_0060: A Mississippi Plain jar", sensoryData.getTitle() );
+        assertEquals("Ark_HM_0060", sensoryData.getTitle() );
         assertEquals(new Double(0.377), sensoryData.getEstimatedDataResolution());
         assertEquals("NA", sensoryData.getAdditionalProjectNotes());
-        assertEquals("survey date should be 2008",  "2008", sensoryData.getDateCreated());
+        assertTrue("survey date should be 2008",  sensoryData.getDateCreated().equals(2008));
         for(SensoryDataScan scan : sensoryData.getSensoryDataScans()) {
             assertEquals(ScannerTechnologyType.TRIANGULATION, scan.getScannerTechnology());
         }
@@ -111,23 +111,6 @@ public class AdsTemplateTest {
         
     }
     
-//    @Test
-    public void testExportFile() throws Exception {
-        File path = new File("/data/uark-import");
-        File excelFile = new File(path, "Ark_HM_1299/Ark_HM_1299.xlsx");
-        assertTrue(excelFile.exists());
-        AdsExcelToXmlImportUtility utility = new AdsExcelToXmlImportUtility();
-        utility.extractExcelToXml(excelFile);
-    }
-    
-//    @Test
-    public void processAllFiles() throws Exception {
-        File rootDir = new File("/data/uark-import-xls");
-        AdsExcelToXmlImportUtility utility = new AdsExcelToXmlImportUtility();
-        utility.setProjectId(4242L);  //leap
-        utility.extractExcelFiles(rootDir);
-        
-    }
     
     
     

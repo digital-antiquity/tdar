@@ -26,7 +26,7 @@ public class PDFWorkflow extends BaseWorkflow {
 
 	public PDFWorkflow() {
 		registerFileExtension("pdf",ResourceType.DOCUMENT);
-		addTask(new PDFDerivativeTask(), WorkflowPhase.CREATE_DERIVATIVE);
+		addTask(PDFDerivativeTask.class, WorkflowPhase.CREATE_DERIVATIVE);
 	}
 
 	public boolean isEnabled() {

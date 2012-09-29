@@ -11,14 +11,15 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
 
+import org.apache.lucene.search.Explanation;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Indexed;
+import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
-import org.tdar.index.AutocompleteAnalyzer;
+import org.tdar.index.analyzer.AutocompleteAnalyzer;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
 /**
@@ -31,93 +32,111 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
  * @version $Rev$
  */
 @Entity
-@Table(name="resource_annotation_key")
+@Table(name = "resource_annotation_key")
 @Indexed(index = "AnnotationKey")
-@XStreamAlias("resourceAnnotationKey")
-public class ResourceAnnotationKey extends Persistable.Base {
-	
-	private static final long serialVersionUID = 6596067112791213904L;
+public class ResourceAnnotationKey extends Persistable.Base implements Indexable {
+
+    private static final long serialVersionUID = 6596067112791213904L;
 
     @Transient
-    private final static String[] JSON_PROPERTIES = { "id", "key"};
-	
-	@Enumerated(EnumType.STRING)
-	@XStreamAsAttribute
-	@Column(name="resource_annotation_type")
-	private ResourceAnnotationType resourceAnnotationType;
-	
-	// FIXME: convert to enum for control?  if we want to eventually add
-	// format strings then we need to capture that format string, e.g., "###-###-####" for phone numbers 
-	// or "xxx-xx" for arbitrary strings... maybe we can avoid this entirely.
-	@Enumerated(EnumType.STRING)
-	@Column(name="annotation_data_type")
-	@XStreamAsAttribute
-	private ResourceAnnotationDataType annotationDataType;
-	
-	@Column(length=128, unique = true)
-    @Fields({ @Field(name = "annotationkey_auto", analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)),  @Field})
-	private String key;
-	
-	@Column(length=128, name="format_string")
-	@XStreamAsAttribute
-	private String formatString;
+    private final static String[] JSON_PROPERTIES = { "id", "key" };
 
-	@XmlAttribute
-	public ResourceAnnotationType getResourceAnnotationType() {
-		return resourceAnnotationType;
-	}
+    @Enumerated(EnumType.STRING)
+    @XStreamAsAttribute
+    @Column(name = "resource_annotation_type")
+    private ResourceAnnotationType resourceAnnotationType;
 
-	public void setResourceAnnotationType(ResourceAnnotationType resourceAnnotationType) {
-		this.resourceAnnotationType = resourceAnnotationType;
-	}
+    // FIXME: convert to enum for control? if we want to eventually add
+    // format strings then we need to capture that format string, e.g., "###-###-####" for phone numbers
+    // or "xxx-xx" for arbitrary strings... maybe we can avoid this entirely.
+    @Enumerated(EnumType.STRING)
+    @Column(name = "annotation_data_type")
+    @XStreamAsAttribute
+    private ResourceAnnotationDataType annotationDataType;
 
-	public String getKey() {
-		return key;
-	}
+    @Column(length = 128, unique = true)
+    @Fields({ @Field(name = "annotationkey_auto", analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)), @Field })
+    private String key;
 
-	public void setKey(String key) {
-		this.key = key;
-	}
+    @Column(length = 128, name = "format_string")
+    @XStreamAsAttribute
+    private String formatString;
+
+    private transient Float score = -1f;
+    private transient Explanation explanation;
 
     @XmlAttribute
-	public ResourceAnnotationDataType getAnnotationDataType() {
-		return annotationDataType;
-	}
+    public ResourceAnnotationType getResourceAnnotationType() {
+        return resourceAnnotationType;
+    }
 
-	public void setAnnotationDataType(ResourceAnnotationDataType annotationDataType) {
-		this.annotationDataType = annotationDataType;
-	}
+    
+    public void setResourceAnnotationType(ResourceAnnotationType resourceAnnotationType) {
+        this.resourceAnnotationType = resourceAnnotationType;
+    }
 
-	public String format(String value) {
-		// FIXME: not applying format strings yet.
-		return value;
-	}
+    public String getKey() {
+        return key;
+    }
 
-	public String getFormatString() {
-		return formatString;
-	}
+    public void setKey(String key) {
+        this.key = key;
+    }
 
-	public void setFormatString(String formatString) {
-		this.formatString = formatString;
-	}
-	
-	@Override
-	public String toString() {
-	    return "[key:'" + key + "' id:" + getId() + "]";
-	}
-	
-	@Override
-	protected String[] getIncludedJsonProperties() {
-	    return JSON_PROPERTIES;
-	}
+    @XmlAttribute
+    public ResourceAnnotationDataType getAnnotationDataType() {
+        return annotationDataType;
+    }
 
+    public void setAnnotationDataType(ResourceAnnotationDataType annotationDataType) {
+        this.annotationDataType = annotationDataType;
+    }
+
+    public String format(String value) {
+        // FIXME: not applying format strings yet.
+        return value;
+    }
+
+    public String getFormatString() {
+        return formatString;
+    }
+
+    public void setFormatString(String formatString) {
+        this.formatString = formatString;
+    }
+
+    @Override
+    public String toString() {
+        return "[key:'" + key + "' id:" + getId() + "]";
+    }
+
+    @Override
+    protected String[] getIncludedJsonProperties() {
+        return JSON_PROPERTIES;
+    }
 
     @Override
     public List<?> getEqualityFields() {
         return Arrays.asList(key);
     }
-    
-    
-    
+
+    @Transient
+    public Float getScore() {
+        return score;
+    }
+
+    public void setScore(Float score) {
+        this.score = score;
+    }
+
+    @Transient
+    public Explanation getExplanation() {
+        return explanation;
+    }
+
+
+    public void setExplanation(Explanation explanation) {
+        this.explanation = explanation;
+    }
 
 }

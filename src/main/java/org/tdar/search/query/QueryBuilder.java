@@ -5,17 +5,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.util.Version;
 import org.tdar.core.service.SearchService;
-import org.tdar.index.LowercaseWhiteSpaceStandardAnalyzer;
+import org.tdar.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 
 /**
  * 
@@ -25,18 +27,32 @@ import org.tdar.index.LowercaseWhiteSpaceStandardAnalyzer;
  * @version $Rev$
  * 
  */
-public abstract class QueryBuilder {
+public abstract class QueryBuilder implements QueryGroup {
     protected final Logger logger = Logger.getLogger(getClass());
     private List<QueryPart> queryParts;
     private Class<?>[] classes;
     private List<DynamicQueryComponent> overrides;
     private List<String> omitContainedLabels = new ArrayList<String>();
+    private Operator operator = Operator.AND;
+
+    public boolean isEmpty() {
+        return CollectionUtils.isEmpty(queryParts);
+    }
 
     public QueryBuilder() {
         this.queryParts = new ArrayList<QueryPart>();
     }
 
+    public void append(List<QueryPart> parts) {
+        this.queryParts.addAll(parts);
+    }
+
     public void append(QueryPart q) {
+        if (q instanceof QueryPartGroup) {
+            if (((QueryPartGroup) q).isEmpty()) {
+                return;
+            }
+        }
         if (!StringUtils.isEmpty(q.toString()) && !q.toString().equals("()")) {
             this.queryParts.add(q);
         }
@@ -118,7 +134,7 @@ public abstract class QueryBuilder {
         for (QueryPart part : this.queryParts) {
             if (!StringUtils.isEmpty(part.generateQueryString()) && !part.generateQueryString().equals("()")) {
                 if (queryString.length() > 0)
-                    queryString.append(" AND ");
+                    queryString.append(" " + getOperator() + " ");
 
                 queryString.append('(').append(part.generateQueryString()).append(')');
             }
@@ -164,4 +180,13 @@ public abstract class QueryBuilder {
         }
         return false;
     }
+
+    public Operator getOperator() {
+        return operator;
+    }
+
+    public void setOperator(Operator or) {
+        this.operator = or;
+    }
+
 }

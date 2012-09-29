@@ -2,6 +2,12 @@
  * FIXME:  this jQuery plugin has been modified to support the indexed field naming we use in tDAR (see changelog). Don't upgrade unless these modifications
  * are duplicated or, preferebly, workarounds are made to make these modifications unnecessary.
  */
+/**
+ * FIXME:  this jQuery plugin has been modified to support the indexed field naming we use in tDAR (see changelog). Don't upgrade unless these modifications
+ * are duplicated or, preferebly, workarounds are made to make these modifications unnecessary.
+ * 
+ * Original location: http://www.keyframesandcode.com/resources/javascript/jQuery/demos/populate-demo.html
+ */
 jQuery.fn.populate = function(obj, options) {
 	
 	
@@ -23,7 +29,13 @@ jQuery.fn.populate = function(obj, options) {
 					{
 						for(var prop in obj)
 						{
-							var name	= path + (path == '' ? prop : '[' +prop+ ']');
+							//jtd: adding support for 'struts' naming when using hierarchical json
+							if(options.strutsNaming) {
+								var name = path + (path == '' ? prop : '.' + prop );
+							} else {
+								var name = path + (path == '' ? prop : '[' +prop+ ']');
+							}
+							
 							parseJSON(obj[prop], name);
 						}
 					}
@@ -32,13 +44,13 @@ jQuery.fn.populate = function(obj, options) {
 					{
 						for(var i = 0; i < obj.length; i++)
 						{
-							var index	= options.useIndices ? i : '';
+							var index	= options.phpIndices ? i : '';
 							index		= options.phpNaming ? '[' +index+']' : index;
-							//jtd: adding support for repeatFields option, which allows caller to specify array of fieldnames that follow indexed fieldname convention
-							if(jQuery.inArray(path, options.repeatFields)>-1) {
-                                index = '[' + i +']';
-                            }
-							var name	= path + index;
+							//jtd: adding support to exclude specific fields from index notation via noIndicesFor
+							var name = path;
+							if(($.inArray(path, options.noIndicesFor) == -1)) {
+								name = path + index;
+							}
 							parseJSON(obj[i], name);
 						}
 					}
@@ -220,9 +232,11 @@ jQuery.fn.populate = function(obj, options) {
 				{
 					phpNaming:			true,
 					phpIndices:			false,
+					noIndicesFor:		[],
 					resetForm:			true,
 					identifier:			'id',
-					debug:				false
+					debug:				false,
+					strutsNaming:		false
 				},
 				options
 			);

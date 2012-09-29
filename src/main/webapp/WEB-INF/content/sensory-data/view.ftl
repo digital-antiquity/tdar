@@ -51,7 +51,7 @@
 
 <#if !resource.sensoryDataScans.isEmpty()>
 <h3>Scan Information</h3>
-<table class="zebracolors">
+<table class="zebracolors tableFormat">
     <thead>
         <tr>
             <th>Filename</th>
@@ -97,7 +97,7 @@
 
 <#if !resource.sensoryDataImages.isEmpty()>
 <h3>Sensory Data Image Information</h3>
-<table class="zebracolors">
+<table class="zebracolors tableFormat">
     <thead>
         <tr><th>Filename</th><th>Description</th></tr>
     </thead>
@@ -154,9 +154,4 @@
 <@fieldvalbool      _val=resource.rgbPreservedFromOriginal            _show=resource.rgbPreservedFromOriginal??            _label="RGB Color" />
 </table>
 
-<@view.keywords />
-<@view.spatialCoverage />
-<@view.temporalCoverage />
-<@view.resourceProvider />
-<@view.indvidualInstitutionalCredit />
-
+<@view.sharedViewComponents resource />

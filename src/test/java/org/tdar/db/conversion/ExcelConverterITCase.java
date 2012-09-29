@@ -10,18 +10,20 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.core.bean.AbstractDataIntegrationTestCase;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.dataTable.DataTable;
+import org.tdar.core.bean.resource.dataTable.DataTableColumn;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.db.conversion.converters.ExcelConverter;
+import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 
 public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
 
@@ -39,10 +41,17 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
         converter.execute();
         Set<DataTable> dataTables = converter.getDataTables();
         assertEquals(1, dataTables.size());
-        assertEquals(5, dataTables.iterator().next().getDataTableColumns().size());
-        
+        DataTable table = dataTables.iterator().next();
+        List<DataTableColumn> dataTableColumns = table.getDataTableColumns();
+        assertEquals(5, dataTableColumns.size());
+        int i = 0;
+        for (DataTableColumn col : table.getSortedDataTableColumns()) {
+            logger.debug("{} : {}", col.getSequenceNumber(), col);
+            assertEquals(new Integer(i), col.getSequenceNumber());
+            i++;
+        }
     }
-    
+
     @Test
     @Rollback
     public void testColumnNameFormatIssues() throws IOException {
@@ -61,7 +70,7 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
         assertNotNull(dataTable.getColumnByName("c1_00"));
         assertNotNull(dataTable.getColumnByName("abc"));
     }
-    
+
     @Test
     @Rollback
     public void testConverterAllStrings() throws Exception {

@@ -57,6 +57,18 @@ public class GenericDao {
             return null;
         return cls.cast(getCurrentSession().get(cls, id));
     }
+    
+    public <E> List<E> find(Class<E> cls, List<? extends Number> idlist) {
+        List<E> list = new ArrayList<E>();
+        for(Number id: idlist) {
+            E item = find(cls, id);
+            if(item == null) {
+                logger.warn("{} not found with id:{}", cls.getSimpleName(), id);
+            }
+            list.add(item);
+        }
+        return list;
+    }
 
     public Number count(Class<?> persistentClass) {
         Query query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_SQL_COUNT, persistentClass.getSimpleName()));
@@ -91,8 +103,6 @@ public class GenericDao {
 
     public <E> List<E> findAll(Class<E> cls) {
         return findAll(cls, -1, -1);
-
-        // return findByCriteria(cls, getDetachedCriteria(cls));
     }
 
     @SuppressWarnings("unchecked")
@@ -319,4 +329,9 @@ public class GenericDao {
         session.flush();
     }
 
+    public void refresh(Object object) {
+        getCurrentSession().refresh(object);
+    }
+
+    
 }

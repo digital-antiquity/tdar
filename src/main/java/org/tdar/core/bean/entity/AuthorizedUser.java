@@ -6,6 +6,9 @@
  */
 package org.tdar.core.bean.entity;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -14,8 +17,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 
 /**
  * @author Adam Brin
@@ -23,20 +28,9 @@ import org.tdar.core.bean.collection.ResourceCollection;
  */
 @Table(name = "authorized_user")
 @Entity
-public class AuthorizedUser extends Base {
+public class AuthorizedUser extends Base implements Persistable {
 
     private static final long serialVersionUID = -6747818149357146542L;
-
-    enum ViewPermissions {
-        VIEW_CITATION,
-        VIEW_ALL_METADATA,
-        VIEW_ALL
-    }
-
-    enum ModifyPermissions {
-        NONE,
-        MODIFY_RECORD
-    }
 
     enum AdminPermissions {
         NONE,
@@ -46,13 +40,11 @@ public class AuthorizedUser extends Base {
     }
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "view_permission")
-    private ViewPermissions viewPermission;
+    @Column(name = "general_permission")
+    private GeneralPermissions generalPermission;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "modify_permission")
-    private ModifyPermissions modifyPermission;
-
+    @Column(name = "general_permission_int")
+    private Integer effectiveGeneralPermission;
     @Enumerated(EnumType.STRING)
     @Column(name = "admin_permission")
     private AdminPermissions adminPermission;
@@ -65,20 +57,16 @@ public class AuthorizedUser extends Base {
     @JoinColumn(nullable = false, name = "resource_collection_id")
     private ResourceCollection resourceCollection;
 
-    public ViewPermissions getViewPermission() {
-        return viewPermission;
+    /**
+     * @param person
+     * @param modifyRecord
+     */
+    public AuthorizedUser() {
     }
 
-    public void setViewPermission(ViewPermissions viewPermission) {
-        this.viewPermission = viewPermission;
-    }
-
-    public ModifyPermissions getModifyPermission() {
-        return modifyPermission;
-    }
-
-    public void setModifyPermission(ModifyPermissions modifyPermission) {
-        this.modifyPermission = modifyPermission;
+    public AuthorizedUser(Person person, GeneralPermissions permission) {
+        this.user = person;
+        setGeneralPermission(permission);
     }
 
     public AdminPermissions getAdminPermission() {
@@ -105,8 +93,82 @@ public class AuthorizedUser extends Base {
         this.resourceCollection = resourceCollection;
     }
 
+    /**
+     * @param generalPermission
+     *            the generalPermission to set
+     */
+    public void setGeneralPermission(GeneralPermissions generalPermission) {
+        this.generalPermission = generalPermission;
+        this.setEffectiveGeneralPermission(generalPermission.getEffectivePermissions());
+    }
+
+    /**
+     * @return the generalPermission
+     */
+    public GeneralPermissions getGeneralPermission() {
+        return generalPermission;
+    }
+
+    @Override
+    public boolean equals(Object candidate) {
+        if (this == candidate) {
+            return true;
+        }
+        if (candidate instanceof AuthorizedUser && getClass().isInstance(candidate)) {
+            return getUser().equals(((AuthorizedUser) candidate).getUser());
+        }
+        return false;
+    }
+
+    public boolean isValidWithoutCollection() {
+        // TODO Auto-generated method stub
+        if (user == null || generalPermission == null) {
+        return false;
+        } return true;
+    }
+
     public boolean isValid() {
-        return (user != null);
+        if (resourceCollection == null || !isValidWithoutCollection()) {
+            return false;
+        }
+        return true;
+    }
+
+    public List<?> getEqualityFields() {
+        logger.info("{}", getUser().getId());
+        return Arrays.asList(getUser().getId());
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s (%s)", getUser(), generalPermission);
+    }
+
+    @Override
+    public int hashCode() {
+        if (getUser() != null) {
+            return getUser().hashCode();
+
+        } else if (Persistable.Base.isTransient(this)) {
+            return super.hashCode();
+        }
+        return Persistable.Base.toHashCode(this);
+    }
+
+    /**
+     * @param effectiveGeneralPermission
+     *            the effectiveGeneralPermission to set
+     */
+    // I should only be called internally
+    private void setEffectiveGeneralPermission(Integer effectiveGeneralPermission) {
+        this.effectiveGeneralPermission = effectiveGeneralPermission;
+    }
+
+    /**
+     * @return the effectiveGeneralPermission
+     */
+    public Integer getEffectiveGeneralPermission() {
+        return effectiveGeneralPermission;
     }
 
 }

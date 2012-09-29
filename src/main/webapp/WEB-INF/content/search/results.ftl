@@ -1,7 +1,7 @@
 <#import "/WEB-INF/macros/resource/list-macros.ftl" as rlist>
 <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
 <head>
-  <title>Search Results: ${searchSubtitle?html}</title>
+  <title>Search Results: <#if searchSubtitle??>${searchSubtitle?html}</#if></title>
   <meta name="totalResults" content="${totalRecords}" />
   <meta name="startIndex" content="${startRecord}" />
   <meta name="itemsPerPage" content="${recordsPerPage}" />
@@ -103,11 +103,6 @@ ${searchPhrase}</em></p>
 <#if (totalRecords > 0)>
 <div class="glide">
 	<div id="recordTotal">Records ${firstRec} - ${lastRec} of ${totalRecords}
-        <div style="float:right"><@searchLink "advanced" "Refine Search" />
-	<form action=''>
-        <@search.sortFields true/>
-        </form>
-        </div>
 	</div> 
 	${pagination}
 
@@ -141,7 +136,7 @@ If you'd like to perform an integration:
 </#if>
 
 <div class="glide">
-		<@rlist.informationResources iterable="resources" editable=false bookmarkable=authenticated showTitle=false/>
+		<@rlist.informationResources iterable="results" editable=false bookmarkable=authenticated showTitle=false/>
 </div>
     <#if (numPages > 1)>
 <div class="glide">
@@ -153,14 +148,28 @@ If you'd like to perform an integration:
 </#if>
 </div>
 
+
+
 <#macro cleanupEnum enumvalue>
     <#assign ret = enumvalue?replace("_"," ") />
-    <#assign ret = ret?lower_case />
-    ${ret?cap_first}
+    ${ret?capitalize}
 </#macro>
  <div id="sidebar" parse="true">
- <div style="height:200px"></div>
-<ul id="facets">
+ <div style="height:110px"></div>
+<h2>Search Options</h2>
+<ul class="facets">
+<li>        <B><@searchLink "advanced" "Modify Search" /></b>
+</li>
+      <li>  <form action=''>
+        <b>Sort By:</b> <@search.sortFields true/>
+        </form>
+      </li>
+  </ul>
+  <br/>
+<h2>Limit Your Search</h2>
+<ul class="facets" id="facets">
+
+<#if (resourceTypeFacets?? && !resourceTypeFacets.empty)>
 <li><B>Resource Type:</B>
 <ul>
     <@s.iterator status='rowStatus' value='resourceTypeFacets' var='facet'>
@@ -170,10 +179,10 @@ If you'd like to perform an integration:
         <@s.param name="startRecord" value="0"/>
         <@s.param name="documentType" value=""/>
     </@s.url>">
-    <@cleanupEnum value/></a> (${count})</li>
+    <@cleanupEnum value /></a> (${count})</li>
     </@s.iterator>
-</ul></li>
-
+</ul><br/></li>
+</#if>
 <#if (documentTypeFacets?? && !documentTypeFacets.empty)>
 <li><B>Document Type:</B>
 <ul>
@@ -185,8 +194,48 @@ If you'd like to perform an integration:
     </@s.url>">
      <@cleanupEnum value/></a> (${count})</li>
     </@s.iterator>
+</ul><br/></li>
+</#if>
+
+<#if (fileAccessFacets?? && !fileAccessFacets.empty)>
+<li><B>File Access:</B>
+<ul>
+    <@s.iterator status='rowStatus' value='fileAccessFacets' var='facet'>
+    <li>
+        <a href="<@s.url includeParams="all">
+        <@s.param name="startRecord" value="0"/>
+        <@s.param name="fileAccess" value="value"/>
+    </@s.url>">
+     <@cleanupEnum value/></a> (${count})</li>
+    </@s.iterator>
+</ul><br/></li>
+</#if>
+<#--
+<#if (dateCreatedFacets?? && !dateCreatedFacets.empty)>
+
+<li><B>Date Created:</B>
+<ul>
+    <@s.iterator status='rowStatus' value='dateCreatedFacets' var='facet'>
+<#if (count > 0) >
+    <li> 
+    <a href="<@s.url includeParams="all">
+        <@s.param name="startRecord" value="0"/>
+        <@s.param name="dateCreated">${facet.facetQuery}</@s.param>
+    </@s.url>">
+    <#assign val = facet.value?replace("]","") />
+    <#assign val = val?replace("[","") />
+    <#assign val = val?replace("(","") />
+    <#assign val = val?replace(", ","-") />
+    <#if (val?starts_with('-') )>Before </#if>
+    <#if (val?ends_with('-') )>After 
+      <#assign val = val?replace("-","") />
+    </#if>
+    ${val}
+    (${count})</li></#if>
+    </@s.iterator>
 </ul></li>
 </#if>
+-->
 <#--
 <li>Culture Keywords:
 <ul>

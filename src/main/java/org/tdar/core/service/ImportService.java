@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -30,22 +29,25 @@ import org.springframework.context.annotation.ClassPathScanningCandidateComponen
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.SupportsResource;
+import org.tdar.core.bean.citation.RelatedComparativeCollection;
+import org.tdar.core.bean.citation.SourceCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
-import org.tdar.core.bean.entity.FullUser;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.entity.ReadUser;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
-import org.tdar.core.bean.keyword.GeographicKeyword.Level;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
+import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
 import org.tdar.core.bean.resource.Project;
@@ -61,8 +63,19 @@ import org.tdar.core.bean.resource.sensory.SensoryDataScan;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.exception.APIException;
-import org.tdar.core.exception.ErrorStatusCode;
-import org.tdar.core.service.ResourceService.ErrorHandling;
+import org.tdar.core.exception.StatusCode;
+import org.tdar.core.service.keyword.CultureKeywordService;
+import org.tdar.core.service.keyword.GeographicKeywordService;
+import org.tdar.core.service.keyword.InvestigationTypeService;
+import org.tdar.core.service.keyword.MaterialKeywordService;
+import org.tdar.core.service.keyword.OtherKeywordService;
+import org.tdar.core.service.keyword.SiteNameKeywordService;
+import org.tdar.core.service.keyword.SiteTypeKeywordService;
+import org.tdar.core.service.keyword.TemporalKeywordService;
+import org.tdar.core.service.resource.InformationResourceService;
+import org.tdar.core.service.resource.ProjectService;
+import org.tdar.core.service.resource.ResourceService;
+import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.geosearch.GeoSearchService;
 import org.tdar.struts.data.FileProxy;
@@ -98,6 +111,8 @@ public class ImportService {
     FileAnalyzer fileAnalyzer;
     @Autowired
     ResourceService resourceService;
+    @Autowired
+    ResourceCollectionService resourceCollectionService;
     @Autowired
     EntityService entityService;
     @Autowired
@@ -160,9 +175,11 @@ public class ImportService {
                 String ext = FilenameUtils.getExtension(filePair.getFirst()).toLowerCase();
                 if (!extensionsForType.contains(ext))
                     throw new APIException("invalid file type " + ext + " for resource type -- acceptable:"
-                            + StringUtils.join(extensionsForType, ", "), ErrorStatusCode.NOT_ALLOWED);
+                            + StringUtils.join(extensionsForType, ", "), StatusCode.NOT_ALLOWED);
                 FileProxy proxy = new FileProxy(filePair.getFirst(), filePair.getSecond(), VersionType.UPLOADED, FileAction.ADD);
                 informationResourceService.processFileProxy((InformationResource) incomingResource, proxy);
+                // informationResourceService.addOrReplaceInformationResourceFile((InformationResource) r, file.getSecond(), file.getFirst(),
+                // FileAction.REPLACE, VersionType.UPLOADED);
             }
             genericService.saveOrUpdate(incomingResource);
         }
@@ -170,6 +187,7 @@ public class ImportService {
         return incomingResource;
     }
 
+    @SuppressWarnings("deprecation")
     @Transactional
     public Resource loadXMLFile(InputStream inputStream, Person person, Long projectOverrideId) throws ClassNotFoundException, FileNotFoundException,
             APIException {
@@ -188,42 +206,25 @@ public class ImportService {
         initializeBasicMetadata(person, xstreamResource);
 
         logger.info("{} UPDATING record {} ", person, xstreamResource.getId());
-        created = populateFromExistingResource(xstreamResource, person);
+        created = populateFromExistingResource(person, xstreamResource);
 
         logger.debug("can edit record");
         for (ResourceCreator resourceCreator : xstreamResource.getResourceCreators()) {
             entityService.findOrSaveResourceCreator(resourceCreator);
         }
 
-        saveSharedChildMetadata(xstreamResource);
+        saveSharedChildMetadata(xstreamResource,person);
+
+        if (xstreamResource instanceof SupportsResource) {
+            CategoryVariable categoryVariable = ((SupportsResource) xstreamResource).getCategoryVariable();
+            ((SupportsResource) xstreamResource).setCategoryVariable(genericService.findByExample(CategoryVariable.class, categoryVariable,
+                    FindOptions.FIND_FIRST).get(0));
+        }
 
         xstreamResource = genericService.merge(xstreamResource);
 
-        // FIXME: this is a hack for child collections that are unique to SensoryData. Extend this to handle other InformationResource types
         if (xstreamResource instanceof SensoryData) {
             saveCustomChildren((SensoryData) xstreamResource);
-        }
-
-        // FIXME: also add handling for codingsheet/ontology category variable
-
-        // FIXME: THIS IS A HACK FOR NADB, should remove when NADB IS LOADED
-        List<String> fips = new ArrayList<String>();
-        for (GeographicKeyword kwd : xstreamResource.getGeographicKeywords()) {
-            if (kwd.getLevel() == Level.FIPS_CODE) {
-                fips.add(kwd.getLabel().substring(0, kwd.getLabel().indexOf("(")).trim());
-            }
-        }
-
-        if (fips.size() > 0) {
-            if (xstreamResource.getLatitudeLongitudeBoxes() == null) {
-                xstreamResource.setLatitudeLongitudeBoxes(new LinkedHashSet<LatitudeLongitudeBox>());
-            }
-            LatitudeLongitudeBox extractedLatLong = geoSearchService.extractLatLongFromFipsCode(fips.toArray(new String[fips.size()]));
-            xstreamResource.getLatitudeLongitudeBoxes().clear();
-            if (extractedLatLong != null) {
-                xstreamResource.setLatitudeLongitudeBox(extractedLatLong);
-                resourceService.processManagedKeywords(xstreamResource, xstreamResource.getLatitudeLongitudeBoxes());
-            }
         }
 
         if (xstreamResource instanceof InformationResource) {
@@ -233,67 +234,21 @@ public class ImportService {
         }
 
         resourceService.saveOrUpdate(xstreamResource);
+
+        resourceService.saveRecordToFilestore(xstreamResource);
+        String logMessage = String.format("%s edited and saved by %s:\ttdar id:%s\ttitle:[%s]", xstreamResource.getResourceType().getLabel(),
+                person, xstreamResource.getId(), StringUtils.left(xstreamResource.getTitle(), 100));
+        resourceService.logResourceModification(xstreamResource, person, logMessage);
+
         xstreamResource.setCreated(created);
         return xstreamResource;
     }
 
     /**
-     * @param person
      * @param xstreamResource
+     * @throws APIException
      */
-    private void initializeBasicMetadata(Person person, Resource xstreamResource) {
-        xstreamResource.setAccessCounter(0L);
-        xstreamResource.setStatus(Status.ACTIVE);
-        xstreamResource.markUpdated(person);
-        xstreamResource.setFullUsers(new HashSet<FullUser>());
-        xstreamResource.setReadUsers(new HashSet<ReadUser>());
-    }
-
-    // if incomingresource id already exists, populate certain values from existing record into incoming record. Return false if updating, true if creating.
-    private boolean populateFromExistingResource(Resource xstreamResource, Person person) throws APIException {
-        Long id = xstreamResource.getId();
-        boolean created = true;
-
-        if (id != null && id > 0) {
-            created = false;
-            Resource oldRecord = resourceService.find(id);
-            // there was an id and the record wasn't found
-            if (oldRecord == null) {
-                throw new APIException("Resource not found", ErrorStatusCode.NOT_FOUND);
-            }
-
-            // check if the user can modify the record
-            if (!entityService.canEditResource(person, oldRecord)) {
-                throw new APIException("Permission Denied", ErrorStatusCode.UNAUTHORIZED);
-            }
-            logger.debug("updating existing record " + xstreamResource.getId());
-            // remove old keywords ... and carry over values
-            xstreamResource.setAccessCounter(oldRecord.getAccessCounter());
-            xstreamResource.setDateRegistered(oldRecord.getDateRegistered());
-            xstreamResource.setSubmitter(oldRecord.getSubmitter());
-
-            for (FullUser user : oldRecord.getFullUsers()) {
-                // FIXME: something weird here that we have to completely duplicate and cannot just reset Resource and "copy"
-                // user.setResource(r);
-                // r.getFullUsers().add(user);
-                FullUser user_ = new FullUser();
-                user_.setResource(xstreamResource);
-                user_.setPerson(user.getPerson());
-                xstreamResource.getFullUsers().add(user_);
-            }
-            for (ReadUser user : oldRecord.getReadUsers()) {
-                ReadUser user_ = new ReadUser();
-                user_.setResource(xstreamResource);
-                user_.setPerson(user.getPerson());
-                xstreamResource.getReadUsers().add(user_);
-            }
-            genericService.detachFromSession(oldRecord);
-            oldRecord = null;
-        }
-        return created;
-    }
-
-    private void saveSharedChildMetadata(Resource xstreamResource) throws APIException {
+    private void saveSharedChildMetadata(Resource xstreamResource,Person user) throws APIException {
         List<String> ignoreProperties = new ArrayList<String>(Arrays.asList("approved", "selectable"));
 
         // fixme if we have to do this for more ... we should make this nice and generic
@@ -316,19 +271,28 @@ public class ImportService {
                     FindOptions.FIND_FIRST_OR_CREATE).get(0));
         }
 
-        resourceService.saveHasResources(xstreamResource, false, ErrorHandling.VALIDATE_SKIP_ERRORS, xstreamResource.getResourceCreators(),
+        // xstreamResource = genericService.merge(xstreamResource);
+
+        resourceService.saveHasResources(xstreamResource, false, ErrorHandling.VALIDATE_WITH_EXCEPTION, xstreamResource.getResourceCreators(),
                 xstreamResource.getResourceCreators(), ResourceCreator.class);
+        resourceService.saveHasResources(xstreamResource, false, ErrorHandling.VALIDATE_WITH_EXCEPTION, xstreamResource.getSourceCollections(),
+                xstreamResource.getSourceCollections(), SourceCollection.class);
+        resourceService.saveHasResources(xstreamResource, false, ErrorHandling.VALIDATE_WITH_EXCEPTION, xstreamResource.getRelatedComparativeCollections(),
+                xstreamResource.getRelatedComparativeCollections(), RelatedComparativeCollection.class);
 
         // overloading this method in order to reuse it and take advantage of the validation
-        resourceService.saveHasResources(xstreamResource, false, ErrorHandling.VALIDATE_SKIP_ERRORS, xstreamResource.getResourceNotes(),
+        resourceService.saveHasResources(xstreamResource, false, ErrorHandling.VALIDATE_WITH_EXCEPTION, xstreamResource.getResourceNotes(),
                 xstreamResource.getResourceNotes(), ResourceNote.class);
-        // FIXME: onetime change for NADB, switch back to reporting errors
-        resourceService.saveHasResources(xstreamResource, false, ErrorHandling.VALIDATE_SKIP_ERRORS, xstreamResource.getCoverageDates(),
+        resourceService.saveHasResources(xstreamResource, false, ErrorHandling.VALIDATE_WITH_EXCEPTION, xstreamResource.getCoverageDates(),
                 xstreamResource.getCoverageDates(), CoverageDate.class);
-        resourceService.saveHasResources(xstreamResource, false, ErrorHandling.VALIDATE_SKIP_ERRORS, xstreamResource.getLatitudeLongitudeBoxes(),
+        resourceService.saveHasResources(xstreamResource, false, ErrorHandling.VALIDATE_WITH_EXCEPTION, xstreamResource.getLatitudeLongitudeBoxes(),
                 xstreamResource.getLatitudeLongitudeBoxes(), LatitudeLongitudeBox.class);
-        resourceService.saveHasResources(xstreamResource, false, ErrorHandling.VALIDATE_SKIP_ERRORS, xstreamResource.getResourceAnnotations(),
+        resourceService.saveHasResources(xstreamResource, false, ErrorHandling.VALIDATE_WITH_EXCEPTION, xstreamResource.getResourceAnnotations(),
                 xstreamResource.getResourceAnnotations(), ResourceAnnotation.class);
+
+        resourceCollectionService.saveSharedResourceCollections(xstreamResource, xstreamResource.getResourceCollections(), xstreamResource.getResourceCollections(),
+                user, false, ErrorHandling.VALIDATE_WITH_EXCEPTION);
+
     }
 
     private void saveCustomChildren(SensoryData sensoryData) {
@@ -336,6 +300,62 @@ public class ImportService {
                 sensoryData.getSensoryDataScans(), SensoryDataScan.class);
         resourceService.saveHasResources(sensoryData, false, ErrorHandling.VALIDATE_WITH_EXCEPTION, sensoryData.getSensoryDataImages(),
                 sensoryData.getSensoryDataImages(), SensoryDataImage.class);
+    }
+
+    /**
+     * @param person
+     * @param xstreamResource
+     */
+    private void initializeBasicMetadata(Person person, Resource xstreamResource) {
+        xstreamResource.setAccessCounter(0L);
+        xstreamResource.setStatus(Status.ACTIVE);
+        xstreamResource.markUpdated(person);
+    }
+
+    private boolean populateFromExistingResource(Person person, Resource xstreamResource) throws APIException {
+        Long id = xstreamResource.getId();
+        boolean created = true;
+        // grab the ID and check whether it's valid
+        if (id != null && id > 0) {
+            logger.info("{} UPDATING record {} ", person, xstreamResource.getId());
+            Resource oldRecord = resourceService.find(id);
+            // there was an id and the record wasn't found
+            if (oldRecord == null) {
+                throw new APIException("Resource not found", StatusCode.NOT_FOUND);
+            }
+
+            if (!xstreamResource.getResourceType().equals(oldRecord.getResourceType())) {
+                throw new APIException("incoming and existing resource types are different", StatusCode.NOT_ALLOWED);
+            }
+
+            // check if the user can modify the record
+            if (!entityService.canEditResource(person, oldRecord)) {
+                throw new APIException("Permission Denied", StatusCode.UNAUTHORIZED);
+            }
+            logger.debug("updating existing record " + xstreamResource.getId());
+            // remove old keywords ... and carry over values
+            xstreamResource.setAccessCounter(oldRecord.getAccessCounter());
+            xstreamResource.setDateRegistered(oldRecord.getDateRegistered());
+            xstreamResource.setSubmitter(oldRecord.getSubmitter());
+
+            for (ResourceCollection internalResourceCollection : oldRecord.getResourceCollections()) { 
+                oldRecord.getResourceCollections().remove(internalResourceCollection);
+                xstreamResource.getResourceCollections().add(internalResourceCollection);
+            }
+
+            if (oldRecord instanceof InformationResource) {
+                Set<InformationResourceFile> files = new HashSet<InformationResourceFile>(((InformationResource) oldRecord).getInformationResourceFiles());
+                ((InformationResource) oldRecord).getInformationResourceFiles().clear();
+                ((InformationResource) xstreamResource).getInformationResourceFiles().addAll(files);
+            }
+
+            genericService.detachFromSession(oldRecord);
+            oldRecord = null;
+            created = false;
+        } else {
+            logger.info("{} CREATING new record  ", person);
+        }
+        return created;
     }
 
     public <G> void resolveManyToMany(Class<G> incomingClass, Collection<G> incomingCollection, List<String> ignoreProperties, boolean create)
@@ -350,7 +370,7 @@ public class ImportService {
             for (G incoming : incomingCollection) {
                 List<G> found = genericService.findByExample(incomingClass, incoming, ignoreProperties, FindOptions.FIND_FIRST);
                 if (CollectionUtils.isEmpty(found)) {
-                    throw new APIException(incomingClass.getSimpleName() + " " + incoming + " is not valid", ErrorStatusCode.NOT_ALLOWED);
+                    throw new APIException(incomingClass.getSimpleName() + " " + incoming + " is not valid", StatusCode.NOT_ALLOWED);
                 } else {
                     toPersist.add(found.get(0));
                 }
@@ -368,7 +388,7 @@ public class ImportService {
             return;
         Project project = projectService.find(informationResource.getProjectId());
         if (project == null) {
-            throw new APIException("Project not found:" + informationResource.getProjectId(), ErrorStatusCode.NOT_FOUND);
+            throw new APIException("Project not found:" + informationResource.getProjectId(), StatusCode.NOT_FOUND);
         }
         project.getInformationResources().add(informationResource);
         informationResource.setProject(project);

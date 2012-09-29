@@ -12,6 +12,7 @@ hibernate.search.default.indexBase=/home/tdar/indexes
 tdargisdata.connection.url=jdbc:postgresql_postGIS://localhost/tdargis
 postgis.driver.class=org.postgis.DriverWrapper
 
+tdar.database.maxIdleTimeForConnection=600
 
 tdarmetadata.minConnections=25
 tdarmetadata.maxConnections=50

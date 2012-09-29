@@ -52,7 +52,7 @@ $(document).ready(function(){
 		$("#yearTypeSelect").val("NONE");
 		prepareTemporalFields();
 		$("select,input[type=hidden],input[type=text]").val("");
-		$("input[type=checkbox]").prop("checked",false)
+		$("input[type=checkbox]").prop("checked",false);
 		$("#resourceTypes_Document").prop("checked",true);
 		$("#resourceTypes_Dataset").prop("checked",true);
 		
@@ -62,11 +62,4 @@ $(document).ready(function(){
 	});
 });
 
-
-
-//add/remove validation rules depending on which temporal terms the user has chosen
-$(function() {
-    //this will need to be revisited after we add more kinds of date types
-    
-});
 

@@ -1,10 +1,13 @@
 package org.tdar.web;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.HashMap;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import com.gargoylesoftware.htmlunit.html.HtmlElement;
+import com.gargoylesoftware.htmlunit.html.HtmlInput;
 
 public class SensoryDataWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
@@ -20,6 +23,7 @@ public class SensoryDataWebITCase extends AbstractAdminAuthenticatedWebTestCase 
     public void testCreateSensoryDocumentMinimal() {
         gotoPage("/sensory-data/add");
         setInput(SDOC_FIELD_TITLE, SDOC_TITLE);
+        setInput("sensoryData.dateCreated", "1943");
         setInput(SDOC_FIELD_DESCRIPTION, SDOC_DESC);
         submitForm();
     }
@@ -42,6 +46,7 @@ public class SensoryDataWebITCase extends AbstractAdminAuthenticatedWebTestCase 
         sensoryHash.put("sensoryData.surveyDateBegin", "03/09/1974");
         sensoryHash.put("sensoryData.surveyDateEnd", "03/09/1975");
         sensoryHash.put("sensoryData.surveyConditions", "conditionsval");
+        sensoryHash.put("sensoryData.dateCreated", "1943");
         sensoryHash.put("sensoryData.scannerDetails", "scannerdetails val");
         sensoryHash.put("sensoryData.companyName", "companyname val");
         sensoryHash.put("sensoryData.estimatedDataResolution", "12345");
@@ -89,11 +94,9 @@ public class SensoryDataWebITCase extends AbstractAdminAuthenticatedWebTestCase 
         sensoryHash.put("creditProxies[0].personRole", "CONTACT");
         sensoryHash.put("creditProxies[0].institutionRole", "CONTACT");
         sensoryHash.put("resourceNotes[0].type", "GENERAL");
-        sensoryHash.put("fullUserIds[0]", "-1");
-        sensoryHash.put("readUserIds[0]", "-1");
         sensoryHash.put("sensoryData.pointDeletionSummary", "premeshPointDeletionSummary");
 
-//        sensoryHash.put("confidential", "true"); // setting checkbox/radio
+        // sensoryHash.put("confidential", "true"); // setting checkbox/radio
         sensoryHash.put("sensoryData.turntableUsed", "true"); // setting checkbox/radio
         sensoryHash.put("sensoryDataScans[0].matrixApplied", "true"); // setting checkbox/radio
         sensoryHash.put("sensoryDataScans[1].matrixApplied", "true"); // setting checkbox/radio
@@ -117,10 +120,9 @@ public class SensoryDataWebITCase extends AbstractAdminAuthenticatedWebTestCase 
         // confirm we landed on the view page
         String path = internalPage.getUrl().getPath().toLowerCase();
         logger.debug("path is:" + path);
-        assertTrue("expecting to be on view page. Actual path:" + path, path.matches(REGEX_SENSORY_DATA_VIEW));
+        assertTrue("expecting to be on view page. Actual path:" + path + " \n" + getPageText(), path.matches(REGEX_SENSORY_DATA_VIEW));
 
         clickLinkWithText("edit");
-        logger.info(getPageText());
         for (String key : sensoryHash.keySet()) {
             String val = sensoryHash.get(key);
             if (key.contains("Ids") || key.contains("upload") || val.toUpperCase().equals(val))
@@ -134,22 +136,24 @@ public class SensoryDataWebITCase extends AbstractAdminAuthenticatedWebTestCase 
         }
 
         // modify some of the fields, make sure they changed
-         sensoryHash.put("status", "DRAFT");
-         sensoryHash.put("sensoryData.title", "some titlea");
-         sensoryHash.put("sensoryData.monumentNumber", "ig88a");
-         sensoryHash.put("sensoryData.description", "a description goes herea");
-         sensoryHash.put("sensoryData.surveyDateBegin", "11/03/1974");
-         sensoryHash.put("sensoryData.surveyDateEnd", "11/01/2002");
-         sensoryHash.put("sensoryData.surveyConditions", "conditionsvala");
-         sensoryHash.put("sensoryData.scannerDetails", "scannerdetails vala");
-         sensoryHash.put("sensoryData.companyName", "companyname vala");
-         sensoryHash.put("sensoryData.planimetricMapFilename", "planmap_filenamea");
-         sensoryHash.put("sensoryData.controlDataFilename", "controldata_filenamea");
-         sensoryHash.put("sensoryData.rgbDataCaptureInfo", "rgb datacap vala");
-         sensoryHash.put("sensoryData.finalDatasetDescription", "finaldatasetsarchive vala");
+        sensoryHash.put("status", "DRAFT");
+        sensoryHash.put("sensoryData.title", "some titlea");
+        sensoryHash.put("sensoryData.monumentNumber", "ig88a");
+        sensoryHash.put("sensoryData.description", "a description goes herea");
+        sensoryHash.put("sensoryData.surveyDateBegin", "11/03/1974");
+        sensoryHash.put("sensoryData.surveyDateEnd", "11/01/2002");
+        sensoryHash.put("sensoryData.surveyConditions", "conditionsvala");
+        sensoryHash.put("sensoryData.scannerDetails", "scannerdetails vala");
+        sensoryHash.put("sensoryData.companyName", "companyname vala");
+        sensoryHash.put("sensoryData.planimetricMapFilename", "planmap_filenamea");
+        sensoryHash.put("sensoryData.controlDataFilename", "controldata_filenamea");
+        sensoryHash.put("sensoryData.rgbDataCaptureInfo", "rgb datacap vala");
+        sensoryHash.put("sensoryData.finalDatasetDescription", "finaldatasetsarchive vala");
 
         // remvove a scan and confirm it's gone
         HashMap<String, String> sensoryHash2 = new HashMap<String, String>();
+        HtmlInput htmlInput = (HtmlInput) htmlPage.getElementByName("sensoryDataScans[1].filename");
+        String removedName = htmlInput.getValueAttribute();
         sensoryHash2.put("sensoryDataScans[1].id", "");
         sensoryHash2.put("sensoryDataScans[1].filename", "");
         sensoryHash2.put("sensoryDataScans[1].transformationMatrix", "");
@@ -164,27 +168,29 @@ public class SensoryDataWebITCase extends AbstractAdminAuthenticatedWebTestCase 
         sensoryHash2.put("sensoryDataScans[1].tofReturn", "");
         sensoryHash2.put("sensoryDataScans[1].phaseFrequencySettings", "");
         sensoryHash2.put("sensoryDataScans[1].phaseNoiseSettings", "");
+        sensoryHash2.put("sensoryDataScans[1].scanNotes", "");
         sensoryHash2.put("sensoryDataScans[1].cameraExposureSettings", "");
-
         for (String key : sensoryHash.keySet()) {
             setInput(key, sensoryHash.get(key));
         }
 
         for (String key : sensoryHash2.keySet()) {
             try {
-            getInput(key).remove();
+                HtmlElement input = getInput(key);
+                logger.debug("removing: {}" ,input.asXml());
+                getInput(key).remove();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-
+        logger.info(getPageText());
 
         submitForm();
         path = internalPage.getUrl().getPath().toLowerCase();
         logger.debug("path is:" + path);
         assertTrue("expecting to be on view page. Actual path:" + path, path.matches(REGEX_SENSORY_DATA_VIEW));
 
-        assertTextNotPresent("filename1");
+        assertTextNotPresent(removedName);
         assertTextPresent("some titlea");
         // confirm we landed on the view page
     }

@@ -20,7 +20,7 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
-import org.tdar.core.service.OntologyService;
+import org.tdar.core.service.resource.OntologyService;
 
 /**
  * $Id$

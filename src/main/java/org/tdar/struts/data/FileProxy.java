@@ -33,7 +33,7 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy> {
     private String filename = "";
     private VersionType versionType = VersionType.UPLOADED;
     private boolean confidential;
-    private Integer sequenceNumber;
+    private Integer sequenceNumber = 0;
 
     private List<FileProxy> additionalVersions = new ArrayList<FileProxy>();
 

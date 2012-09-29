@@ -24,7 +24,7 @@ public class FileArchiveWorkflow extends BaseWorkflow {
         registerFileExtension("tar", ResourceType.SENSORY_DATA);
         registerFileExtension("zip", ResourceType.SENSORY_DATA);
 
-        addTask(new ListArchiveTask(), WorkflowPhase.PRE_PROCESS);
+        addTask(ListArchiveTask.class, WorkflowPhase.PRE_PROCESS);
     }
 
     @Override

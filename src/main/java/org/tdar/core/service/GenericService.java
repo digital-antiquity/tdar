@@ -78,6 +78,33 @@ public class GenericService {
         return toReturn;
     }
 
+    
+    /*
+     * Takes a list of persistable items in and tries to get them back by looking up the id
+     */
+    @Transactional
+    public <P extends Persistable> List<P> rehydrateSparseIdBeans(List<P> incoming, Class<P> cls) {
+        List<P> toReturn = new ArrayList<P>();
+        for (P item : incoming) {
+            P tmp = rehydrateSparseIdBean(item, cls);
+            if (tmp != null) {
+                toReturn.add(tmp);
+            }
+        }
+        return toReturn;
+    }
+
+    /*
+     * takes a persistable in and tries to get it back by looking up the id
+     */
+    @Transactional
+    public <P extends Persistable> P rehydrateSparseIdBean(P item, Class<P> cls) {
+        if (item != null && item.getId() != null && item.getId() > 0) {
+            return find(cls, item.getId());
+        }
+        return null;
+    }
+
     @Transactional
     public <E extends Persistable> E findOrCreateById(Class<E> persistentClass, E entity) {
         return genericDao.findOrCreateById(persistentClass, entity);
@@ -106,6 +133,20 @@ public class GenericService {
     @Transactional(readOnly = true)
     public <T> T find(Class<T> persistentClass, Number id) {
         return (T) genericDao.find(persistentClass, id);
+    }
+    
+    @Transactional(readOnly = true)
+    public <T> List<T> find(Class<T> persistentClass, List<? extends Number> idlist) {
+        return genericDao.find(persistentClass, idlist);
+    }
+
+    @Transactional(readOnly = true)
+    public <T> List<T> findAll(Class<T> persistentClass, List<Number> ids) {
+        List<T> results = new ArrayList<T>();
+        for (Number id : ids) {
+            results.add(genericDao.find(persistentClass, id));
+        }
+        return results;
     }
 
     @Transactional(readOnly = true)
@@ -174,6 +215,10 @@ public class GenericService {
 
     protected GenericDao getGenericDao() {
         return genericDao;
+    }
+
+    public void refresh(Object object) {
+        genericDao.refresh(object);
     }
 
 }

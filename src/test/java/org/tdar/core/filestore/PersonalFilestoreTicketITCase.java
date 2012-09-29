@@ -11,6 +11,7 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.PersonalFilestoreTicket;
@@ -36,6 +37,7 @@ public class PersonalFilestoreTicketITCase extends AbstractIntegrationTestCase {
     private static final String PATH = TestConstants.TEST_ROOT_DIR;
 
     @Test
+    @Rollback
     public void testNewFileGroup() {
         // make sure hibernate is serving up a new id
         PersonalFilestoreTicket fileGroup = new PersonalFilestoreTicket();
@@ -49,6 +51,7 @@ public class PersonalFilestoreTicketITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
+    @Rollback
     public void testNewFileGroupFromService() {
         PersonalFilestoreTicket fileGroup = new PersonalFilestoreTicket();
 
@@ -62,6 +65,7 @@ public class PersonalFilestoreTicketITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
+    @Rollback
     public void testStore() throws IOException {
 
         PersonalFilestoreTicket ticket = filestoreService.createPersonalFilestoreTicket(getPerson());
@@ -69,9 +73,9 @@ public class PersonalFilestoreTicketITCase extends AbstractIntegrationTestCase {
         File storedFile = filestore.store(ticket, new File(PATH + "images/handbook_of_archaeology.jpg"), "handbook_of_archaeology.jpg");
         Assert.assertTrue("filestore exists", storedFile.exists());
         storedFile = filestore.store(ticket, new File(PATH + "documents/schoenwetter1963a with space.pdf"), "schoenwetter1963a with space.pdf");
-        logger.info(storedFile);
+        logger.info("{}", storedFile);
         Assert.assertTrue("filestore exists", storedFile.exists());
-    
+
     }
 
     // save some under a single ticket and then retrieve them to make sure they're still there
@@ -109,11 +113,13 @@ public class PersonalFilestoreTicketITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
+    @Rollback
     public void testSaveFiles() throws Exception {
         saveFiles();
     }
 
     @Test
+    @Rollback
     public void testPurge() throws Exception {
         PersonalFilestoreTicket ticket = saveFiles();
         PersonalFilestore filestore = filestoreService.getPersonalFilestore(getPerson());

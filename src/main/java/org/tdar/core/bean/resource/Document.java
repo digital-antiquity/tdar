@@ -14,8 +14,8 @@ import org.hibernate.search.annotations.Boost;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 import org.tdar.core.bean.BulkImportField;
-import org.tdar.index.NonTokenizingLowercaseKeywordAnalyzer;
-import org.tdar.index.TdarStandardAnalyzer;
+import org.tdar.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
+import org.tdar.index.analyzer.TdarStandardAnalyzer;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -38,7 +38,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @Indexed
 @Table(name = "document")
 @XStreamAlias("document")
-@XmlRootElement
+@XmlRootElement(name = "document")
 public class Document extends InformationResource {
 
     private static final long serialVersionUID = 7895887664126751989L;
@@ -47,75 +47,74 @@ public class Document extends InformationResource {
     @Column(name = "document_type")
     @Field
     @Analyzer(impl = TdarStandardAnalyzer.class)
-    @BulkImportField
+    @BulkImportField(label="Document Type")
     private DocumentType documentType;
 
-    @BulkImportField
+    @BulkImportField(label="Series Name")
     @Column(name = "series_name")
     @Field
     private String seriesName;
 
-    @BulkImportField
+    @BulkImportField(label="Series Number")
     @Column(name = "series_number")
     private String seriesNumber;
 
-    @BulkImportField
     @Column(name = "number_of_pages")
     private Integer numberOfPages;
 
-    @BulkImportField
+    @BulkImportField(label="Edition")
     private String edition;
 
-    @BulkImportField
+    @BulkImportField(label="Publisher Location")
     @Column(name = "publisher_location")
     private String publisherLocation;
 
-    @BulkImportField
+    @BulkImportField(label="Publisher Name")
     @Field
     @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
     private String publisher;
 
-    @BulkImportField
+    @BulkImportField(label="ISBN")
     @Field
     @Analyzer(impl = KeywordAnalyzer.class)
     private String isbn;
 
-    @BulkImportField
+    @BulkImportField(label="Book Title")
     @Column(name = "book_title")
     @Field(boost = @Boost(1.5f))
     private String bookTitle;
 
-    @BulkImportField
+    @BulkImportField(label="ISSN")
     @Field
     @Analyzer(impl = KeywordAnalyzer.class)
     private String issn;
 
-    @BulkImportField
+    @BulkImportField(label="DOI")
     @Field
     @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
     private String doi;
 
-    @BulkImportField
+    @BulkImportField(label="Start Page",order=10)
     @Column(name = "start_page")
     private String startPage;
 
-    @BulkImportField
+    @BulkImportField(label="End Page",order=11)
     @Column(name = "end_page")
     private String endPage;
 
-    @BulkImportField
+    @BulkImportField(label="Journal Name")
     @Column(name = "journal_name")
     @Field
     private String journalName;
 
-    @BulkImportField
+    @BulkImportField(label="Volume")
     private String volume;
 
-    @BulkImportField
+    @BulkImportField(label="# of Volumes")
     @Column(name = "number_of_volumes")
     private Integer numberOfVolumes;
 
-    @BulkImportField
+    @BulkImportField(label="Journal Number")
     @Column(name = "journal_number")
     private String journalNumber;
 
@@ -274,4 +273,12 @@ public class Document extends InformationResource {
         return "This method is currently stubbed out.";
     }
 
+    @Override
+    public String getAdditonalKeywords() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(super.getAdditonalKeywords()).append(" ").append(getBookTitle()).append(" ").append(getDoi()).
+        append(" ").append(getIssn()).append(" ").append(getIsbn()).append(" ").append(getPublisher()).append(" ").
+        append(getSeriesName());
+        return sb.toString();
+    }
 }

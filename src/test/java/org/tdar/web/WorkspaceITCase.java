@@ -14,6 +14,7 @@ public class WorkspaceITCase extends AbstractAdminAuthenticatedWebTestCase {
         // create simple doc, remember name and url
         gotoPage("/document/add");
         setInput(TestConstants.DOCUMENT_FIELD_TITLE, docTitle);
+        setInput(TestConstants.DOCUENT_DATE_CREATED, "1923");
         setInput(TestConstants.DOCUMENT_FIELD_DESCRIPTION, docDescription);
         submitForm();
         String viewPage = internalPage.getUrl().getPath().toLowerCase();

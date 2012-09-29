@@ -1,7 +1,15 @@
 <#if callback??>${callback}(</#if>
 {"${lookupSource}":[
-<@s.iterator value="jsonResults" var="jsonResult" status="status">
+<@s.iterator value="results" var="jsonResult" status="status">
 ${jsonResult.toJSON().toString()}<@s.if test="!#status.last">,</@s.if>
 </@s.iterator>
-]}
+],
+"status": {
+   "recordsPerPage" : ${recordsPerPage?c},
+   "startRecord" : ${startRecord?c},
+   "totalRecords" : ${totalRecords?c},
+   "sortField" : "${sortField!}"
+}
+
+}
 <#if callback??>);</#if>

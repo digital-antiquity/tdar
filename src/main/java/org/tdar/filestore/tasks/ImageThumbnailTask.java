@@ -84,14 +84,14 @@ public class ImageThumbnailTask extends AbstractTask {
         ijSource = new Opener().openImage(sourceFile.getAbsolutePath());
         if (ijSource == null) {
             getLogger().debug("Unable to load source image: " + sourceFile);
-        }
-
-        try {
-            createJpegDerivative(ijSource, origFileName, MEDIUM, false);
-            createJpegDerivative(ijSource, origFileName, LARGE, false);
-            createJpegDerivative(ijSource, origFileName, SMALL, false);
-        } catch (Throwable e) {
-            e.printStackTrace();
+        } else {
+            try {
+                createJpegDerivative(ijSource, origFileName, MEDIUM, false);
+                createJpegDerivative(ijSource, origFileName, LARGE, false);
+                createJpegDerivative(ijSource, origFileName, SMALL, false);
+            } catch (Throwable e) {
+                getLogger().warn("Failed to create jpeg derivative",e);
+            }
         }
     }
 

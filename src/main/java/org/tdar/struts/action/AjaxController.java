@@ -1,11 +1,11 @@
 package org.tdar.struts.action;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
-import org.apache.struts2.convention.annotation.Result;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.CategoryVariable;
@@ -30,16 +30,13 @@ public class AjaxController extends TdarActionSupport {
     private Long categoryVariableId;
     private Integer index;
     
-    private String logMessage;
-    
-    
     @Action("column-metadata-subcategories")
     public String columnMetadataSubcategories() {
         if (categoryVariableId == null || categoryVariableId == -1L) {
-            logger.error("Invalid category variable: " + categoryVariableId);
+            logger.warn("Invalid category variable: " + categoryVariableId);
         }
         if (index == null) {
-            logger.error(String.format("Didn't specify subcategory index [%d] ", index));
+            logger.warn(String.format("Didn't specify subcategory index [%d] ", index));
         }
         return SUCCESS;
     }
@@ -48,14 +45,6 @@ public class AjaxController extends TdarActionSupport {
     public String subcategories() {
         return SUCCESS;
     }
-    
-
-    @Action(value = "log-debug", results = {@Result(name=SUCCESS, type="httpheader", params={"status", "200"})})
-    public String logDebug() {
-        logger.debug(logMessage);
-        return SUCCESS;
-    }
-
     
     public CategoryVariable getCategoryVariable() {
         return getCategoryVariableService().find(categoryVariableId);
@@ -69,7 +58,7 @@ public class AjaxController extends TdarActionSupport {
         if (categoryVariableId == null || categoryVariableId == -1L) {
             return Collections.emptyList();
         }
-        return getCategoryVariableService().findAllSubcategories(categoryVariableId);
+        return new ArrayList<CategoryVariable>(getCategoryVariable().getSortedChildren());
     }
 
     public void setCategoryVariableId(Long categoryVariableId) {
@@ -82,15 +71,6 @@ public class AjaxController extends TdarActionSupport {
 
     public void setIndex(Integer index) {
         this.index = index;
-    }
-    
-    
-    public String getLogMessage() {
-        return logMessage;
-    }
-
-    public void setLogMessage(String logMessage) {
-        this.logMessage = logMessage;
     }
 
 

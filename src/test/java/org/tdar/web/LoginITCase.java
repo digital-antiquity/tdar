@@ -19,7 +19,6 @@ public class LoginITCase extends AbstractAuthenticatedWebTestCase {
 	@Test
 	public void testSecondLogin() {
 		gotoPage("/login");
-		assertTextPresentInPage("Limit by");
 		assertTextPresentInPage("Search");
 	}
 

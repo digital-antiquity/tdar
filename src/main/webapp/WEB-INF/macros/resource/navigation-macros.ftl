@@ -45,6 +45,9 @@ $(document).ready(function() {
     }
   });
   $('#loginEmail').focus();
+  $('#loginEmail').bind("focusout",function() {
+    var fld = $('#loginEmail');
+    fld.val($.trim(fld.val()))});
 });
 </script>
 <style type='text/css'>
@@ -60,6 +63,7 @@ $(document).ready(function() {
     <#if Parameters.url??>
         <input type="hidden" name="url" value="${Parameters.url}"/>
 </#if>
+  <textarea name="comment" style="color:red;display:none;"></textarea>
 </@s.form>
 <div id="error" style="border:1px solid red;display:none; margin:.1em;padding:.1em"></div>
 <p style="margin-left: 9.2em;">
@@ -74,7 +78,7 @@ $(document).ready(function() {
     <#-- FIXME: this is a bit of a hack, but we need a queuedFileTemplate table
     outside of the form for file uploads.  Consider renaming this to ..?-->
     <#if resource.resourceType != "PROJECT" && current == "edit">
-    <table style="display:none;visibility:hidden" id="queuedFileTemplate">
+    <table class="tdarCommentDescription" id="queuedFileTemplate">
         <@edit.fileProxyRow />
     </table>
     </#if>
@@ -85,12 +89,15 @@ $(document).ready(function() {
   <#if sessionData?? && sessionData.authenticated>
     <div id="toolbars" parse="true">
       <ul id="toolbar" class="fg-toolbar ui-toolbar ui-widget-header ui-corner-tl ui-corner-bl ui-corner-br  ui-corner-tr ui-helper-clearfix">
-       <#if resource??>
+       <#if persistable??>
         <@makeViewLink namespace current />
         <#if editable>
           <@makeEditLink namespace current />
+        </#if>
+        <#if editable>
           <@makeDeleteLink namespace current />
         </#if>
+        <#if persistable.resourceType??>
         <li><@list.bookmark resource /></li>
         <#if resource.resourceType == "PROJECT">                
           <@makeLink "resource" "add?projectId=${resource.id?c}" "add new resource to project" "add" "" false>
@@ -98,9 +105,11 @@ $(document).ready(function() {
           </@makeLink>
         </#if>
         <#if editable && resource.resourceType == 'DATASET'>
+        <#--
           <@makeLink "dataset" "citations" "manage citations" "citations" current>
             <@img "/images/book_edit.png" />
           </@makeLink>
+         -->
         <#if ! resource.dataTables.isEmpty() >
             <@makeLink "dataset" "columns" "map columns" "columns" current>
             <@img "/images/database_table.png" />
@@ -111,6 +120,7 @@ $(document).ready(function() {
             <@makeLink "dataset" "column-ontology" "link ontology" "column-ontology" current>
                 <@img "/images/database_key.png" />
             </@makeLink>
+        </#if>
         </#if>
         </#if>
 
@@ -140,7 +150,7 @@ $(document).ready(function() {
 <#else>
 <li>
 <#if includeResourceId>
-<a href='<@s.url value="/${namespace}/${action}" resourceId="${resource.id?c}" />'><#nested> ${label}</a>
+<a href='<@s.url value="/${namespace}/${action}"><@s.param name="id" value="${persistable.id?c}" /></@s.url>'><#nested> ${label}</a>
 <#else>
 <a href='<@s.url value="/${namespace}/${action}" />'><#nested> ${label}</a>
 </#if>
@@ -158,14 +168,14 @@ $(document).ready(function() {
 </#macro>
 
 <#macro makeDeleteLink namespace current url="delete" label="delete">
-<#if resource.status.toString().toLowerCase().equals('deleted')>
-<@makeLink namespace url label "delete" current true true >
-<@img "/images/desaturated/delete.png" />
-</@makeLink>
+<#if persistable.status?? && persistable.status.toString().toLowerCase().equals('deleted')>
+  <@makeLink namespace url label "delete" current true true >
+    <@img "/images/desaturated/delete.png" />
+  </@makeLink>
 <#else>
-<@makeLink namespace url label "delete" current true false >
-<@img "/images/delete.png" />
-</@makeLink>
+  <@makeLink namespace url label "delete" current true false >
+    <@img "/images/delete.png" />
+  </@makeLink>
 </#if>
 </#macro>
 
@@ -184,21 +194,15 @@ FIXME: add alt text?
 </#macro>
 
 
-<#macro clearDeleteInputButton id="">
+<#macro clearDeleteButton id="" disabled="false">
+<#assign disabledText = ""/>
+<#if disabled="true">
+  <#assign disabledText>disabled="disabled"</#assign>
+</#if>
     <#if !rowStatus??>
-        <input type='button' value='Clear / Remove' onclick='clearRow("${"#" + id + "_0"}");' />
-    <#elseif rowStatus.index == 0>
-        <input type='button' value='Clear / Remove' title='Remove the information stored in this field' onclick='clearRow("${"#" + id + "_" + rowStatus.index}");' />
+        <button ${disabledText} class="addAnother minus" type="button" tabindex="-1" onclick='deleteParentRow(this)'><img src="/images/minus.gif"></button>
     <#else>
-        <input type='button' value='Delete' onclick='deleteRow("${"#" + id + "_" + rowStatus.index}");'/>
-    </#if>
-</#macro>
-
-<#macro clearDeleteButton id="">
-    <#if !rowStatus??>
-        <button class="addAnother minus" type="button" tabindex="-1" onclick='deleteParentRow(this)'><img src="/images/minus.gif"></button>
-    <#else>
-        <button class="addAnother minus" type="button" tabindex="-1" onclick='deleteParentRow(this)'><img src="/images/minus.gif" class="minus"></button>
+        <button ${disabledText} class="addAnother minus" type="button" tabindex="-1" onclick='deleteParentRow(this)'><img src="/images/minus.gif" class="minus"></button>
     </#if>
 </#macro>
 

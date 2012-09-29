@@ -3,7 +3,9 @@ package org.tdar.core.bean.resource;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -20,8 +22,6 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.configuration.TdarConfiguration;
 
@@ -31,12 +31,10 @@ import org.tdar.core.configuration.TdarConfiguration;
 // That is, only one archival version, translated version, etc...
 @Table(name = "information_resource_file_version", uniqueConstraints = {
         @UniqueConstraint(columnNames = { "information_resource_file_id", "file_version", "internal_type" })
-        })
+})
 public class InformationResourceFileVersion extends Persistable.Base implements Comparable<InformationResourceFileVersion> {
 
     private static final long serialVersionUID = 3768354809654162949L;
-    @Transient
-    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     public enum VersionType {
         UPLOADED, UPLOADED_TEXT, UPLOADED_ARCHIVAL, ARCHIVAL, WEB_SMALL, WEB_MEDIUM, WEB_LARGE,
@@ -91,6 +89,9 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
     private Long informationResourceId;
     @Transient
     private Long informationResourceFileId;
+
+    @Transient
+    private File file;
 
     /*
      * This constructor exists only for Hibernate ... another constructor should
@@ -269,10 +270,15 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
     }
 
     @Transient
+    // Ultimately, this may need to be converted into a URI, or something that can be converted directly
+    // into a reader due to the indexing requirment.
     public File getFile() {
+        if (file != null) {
+            return file;
+        }
+
         if (filestoreId == null && path == null)
             return null;
-        File file = null;
         try {
             file = TdarConfiguration.getInstance().getFilestore().retrieveFile(this);
         } catch (FileNotFoundException e) {
@@ -389,7 +395,7 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
     }
 
     public String toString() {
-        return String.format("%s (%s, #%d)", filename, fileVersionType, version);
+        return String.format("%s (%s, #%d | %d)", filename, fileVersionType, version, getInformationResourceFileId());
     }
 
     @Override
@@ -409,6 +415,40 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
         }
         logger.trace("result: " + comparison);
         return comparison;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.bean.Persistable.Base#getEqualityFields()
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<?> getEqualityFields() {
+        return Arrays.asList(informationResourceFileId, version, fileVersionType, getId());
+    }
+
+    @Override
+    public boolean equals(Object candidate) {
+        if (this == candidate) {
+            return true;
+        }
+        try {
+            return Persistable.Base.isEqual(this, getClass().cast(candidate));
+        } catch (ClassCastException e) {
+            logger.debug("{} <==> {} ", candidate.getClass(), getClass());
+            logger.debug("{}", e);
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        if (isTransient()) {
+            return super.hashCode();
+        }
+        return Persistable.Base.toHashCode(this);
     }
 
 }

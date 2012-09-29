@@ -30,9 +30,7 @@ import org.tdar.filestore.Filestore.BaseFilestore;
  */
 public class PairtreeFilestore extends BaseFilestore {
 
-    /**
-	 * 
-	 */
+    public static final String CONTAINER_NAME = "rec";
     public static final String DERIV = "deriv";
     public static final String ARCHIVAL = "archival";
     private static final Logger logger = Logger.getLogger(PairtreeFilestore.class);
@@ -86,7 +84,12 @@ public class PairtreeFilestore extends BaseFilestore {
                 throw new TdarRuntimeException(errorMessage + "Can't write to: " + outFile.getAbsolutePath());
             }
             updateVersionInfo(outFile, version);
-        } finally {
+        } catch (IOException iox) {
+            //this exception may be swallowed if the finally block itself throws an exception, so we explicitly log the error and then rethrow
+            logger.error(errorMessage, iox);
+            throw iox;
+        }
+        finally {
             if (content != null) {
                 IOUtils.closeQuietly(content);
             }
@@ -120,7 +123,7 @@ public class PairtreeFilestore extends BaseFilestore {
             out.append(s.substring(i));
             out.append(File.separator);
         }
-        out.append(Filestore.CONTAINER_NAME);
+        out.append(PairtreeFilestore.CONTAINER_NAME);
         out.append(File.separator);
         return out.toString();
     }

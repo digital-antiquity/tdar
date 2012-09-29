@@ -3,15 +3,14 @@
 <label for="queryField">${freeTextLabel}:</label>    <@s.textfield id='queryField' name='query' size='81' value="${query!}" cssClass="longfield"/> 
 <#if showAdvancedLink><a style="padding-left:10px" href="<@s.url value="/search/advanced"/>">advanced search</a></#if>
 
-<br/>
-<br/>
-
 <#nested>
-
-<div>
-<label>Limit by<br/> resource type:</label> 
-<@resourceTypeLimits />
-</div>
+<#if !showAdvancedLink>
+<br/>
+    <div>
+    <label>Limit by<br/> resource type:</label> 
+    <@resourceTypeLimits />
+    </div>
+</#if>
 <br/>
 </#macro>
 
@@ -25,7 +24,7 @@
 </#macro>
 
 <#macro resourceTypeLimits>
-<div class="field col3">
+<div class="field col3 resourceTypeLimits">
     <input type="checkbox" name="resourceTypes"  <@typeSelected "PROJECT" /> value="PROJECT"  id="resourceTypes_Project" />
     <label for="resourceTypes_Project">Projects</label>
     <input type="checkbox" name="resourceTypes" <@typeSelected "DOCUMENT" /> value="DOCUMENT" id="resourceTypes_Document" />
@@ -47,20 +46,10 @@
 </#macro>
 
 <#macro sortFields javascriptOn=false>
-  <#assign sortFld = ""/>
-  <#if sortField??>
-    <#assign sortFld = sortField />
-    <#if (sortOrder?? && sortOrder)>
-      <#assign sortFld = "-"+sortFld />
-    </#if>
-  </#if>
-    <select name="sortField" id="sortField">
-        <option value="relevance" <#if sortFld=='relevance'>selected</#if>>Relevance</option>
-        <option value="title_sort" <#if sortFld=='title_sort'>selected</#if>>Title (A-Z)</option>
-        <option value="-title_sort" <#if sortFld=='-title_sort'>selected</#if>>Title (Z-A)</option>
-        <option value="dateCreated" <#if sortFld=='dateCreated'>selected</#if>>Year (A-Z)</option>
-        <option value="-dateCreated" <#if sortFld=='-dateCreated'>selected</#if>>Year (Z-A)</option>
-    </select>
+
+<@s.select value="sortField" name='sortField'  
+        emptyOption='false' listValue='label' list='%{sortOptions}'/>
+
     <#if javascriptOn>
       <script type='text/javascript'>
       $("#sortField").change(function() {

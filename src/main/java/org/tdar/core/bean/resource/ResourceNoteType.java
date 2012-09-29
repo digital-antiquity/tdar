@@ -10,7 +10,9 @@ package org.tdar.core.bean.resource;
  */
 public enum ResourceNoteType { 
     GENERAL("General Note"),
-    REDACTION("Redaction Note");
+    REDACTION("Redaction Note"),
+    RIGHTS_ATTRIBUTION("Rights & Attribution"),
+    ADMIN("Administration Note");
     
     private final String label;
     

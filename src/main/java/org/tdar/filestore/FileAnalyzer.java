@@ -15,7 +15,7 @@ import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.service.MessageService;
+import org.tdar.core.service.fileProcessing.MessageService;
 import org.tdar.filestore.workflows.Workflow;
 
 /**
@@ -92,16 +92,16 @@ public class FileAnalyzer {
         */
     }
 
-    public void processFile(InformationResourceFileVersion irFileVersion) throws Exception {
+    public boolean processFile(InformationResourceFileVersion irFileVersion) throws Exception {
         Workflow workflow = getWorkflow(irFileVersion);
         if (workflow == null)
-            return;
+            return false; //technically not sure if this should be true or not
         logger.debug("using workflow: {}", workflow);
-        messageService.sendFileProcessingRequest(irFileVersion, workflow);
+        return messageService.sendFileProcessingRequest(irFileVersion, workflow);
     }
 
-    public void processFile(InformationResourceFile irFile) throws Exception {
-        processFile(irFile.getLatestUploadedVersion());
+    public boolean processFile(InformationResourceFile irFile) throws Exception {
+        return processFile(irFile.getLatestUploadedVersion());
     }
 
     @Autowired

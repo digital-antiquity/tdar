@@ -7,14 +7,6 @@
 <title>Editing Image Metadata for ${image.title} (tDAR id: ${image.id?c})</title>
 </#if>
 <meta name="lastModifiedDate" content="$Date$"/>
-<@edit.resourceJavascript formId="#ImageMetadataForm" selPrefix="#image" includeAsync=true includeInheritance=true>
-    $('#ImageDescription').rules("add", {
-        required: true,
-        messages: {
-            required: "Please enter a description.",
-        }
-    });
-</@edit.resourceJavascript>
 
 </head>
 <body>
@@ -26,17 +18,24 @@
 
 <@edit.basicInformation>
 <div tiplabel="Title" tooltipcontent="Enter the entire title, including sub-title, if appropriate.">
-<@s.textfield labelposition='left' id='ImageTitle' label='Title' name='image.title' required=true cssClass="required tdartext longfield"
+<@s.textfield labelposition='left' id='ImageTitle' label='Title' name='image.title' required=true cssClass="required tdartext descriptiveTitle longfield"
 title="A title is required for all Images" />
 </div>
 <br/>
 <@s.select labelposition='left' label='Language'  name='resourceLanguage'  emptyOption='false' listValue='label' list='%{languages}'/>
 <br/>
-<@s.textfield labelposition='left' id='dateCreated' label='Year Created' name='image.dateCreated' cssClass="reasonableDate" />
+       <#assign dateVal = ""/>
+       <#if image.dateCreated?? && image.dateCreated != -1>
+         <#assign dateVal = image.dateCreated?c />
+      </#if>
+        <@s.textfield labelposition='left' id='dateCreated' label='Year' name='image.dateCreated' value="${dateVal}" cssClass="shortfield reasonableDate required" required=true 
+         title="Please enter the year this image was created" />
+
+
 <p id="t-abstract" class='new-group' tiplabel="Abstract / Description" tooltipcontent="Short description of the image. Often comes from the resource itself, but sometimes will include additional information from the contributor."> 
 
     <@s.textarea label='Abstract / Description' labelposition='top' id='ImageDescription' required=true name='image.description' rows="5"
-       title="A basic description is required for all images"  cssClass='resizable' />
+       title="A basic description is required for all images"  cssClass='resizable required' />
 
     <p id="t-located"  tooltipcontent="Actual physical location of a copy of the image, e.g. an agency, repository, 
         or library." tiplabel="Copy Location">
@@ -55,11 +54,8 @@ title="A title is required for all Images" />
 <@edit.sharedFormComponents />
 
 </@s.form>
-<div id="sidebar" parse="true">
-    <div id="notice">
-    <h3>Introduction</h3>
-    This is the page editing form for a project.
-    </div>
-</div>
 
+<@edit.sidebar />
+
+<@edit.resourceJavascript formId="#ImageMetadataForm" selPrefix="#image" includeAsync=true includeInheritance=true />
 </body>

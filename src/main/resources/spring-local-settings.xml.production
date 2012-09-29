@@ -10,8 +10,8 @@ vim:sts=2:sw=2:
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
        ">
 
-  <import resource="pooling/dbcp.xml" />
+  <import resource="pooling/c3p0.xml" />
 
-  <!--  <import resource="pooling/c3p0.xml" />  -->
+  <!--  <import resource="pooling/dbcp.xml" />  -->
 
 </beans>

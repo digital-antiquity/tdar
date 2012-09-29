@@ -17,36 +17,36 @@ import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.BookmarkedResourceService;
-import org.tdar.core.service.CategoryVariableService;
-import org.tdar.core.service.CodingSheetService;
-import org.tdar.core.service.CultureKeywordService;
 import org.tdar.core.service.DataIntegrationService;
-import org.tdar.core.service.DataTableService;
-import org.tdar.core.service.DatasetService;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
-import org.tdar.core.service.GeographicKeywordService;
-import org.tdar.core.service.ImageService;
-import org.tdar.core.service.InformationResourceFileService;
-import org.tdar.core.service.InformationResourceFileVersionService;
-import org.tdar.core.service.InformationResourceService;
-import org.tdar.core.service.InvestigationTypeService;
-import org.tdar.core.service.MaterialKeywordService;
-import org.tdar.core.service.OntologyNodeService;
-import org.tdar.core.service.OntologyService;
-import org.tdar.core.service.OtherKeywordService;
-import org.tdar.core.service.ProjectService;
-import org.tdar.core.service.ReflectionService;
 import org.tdar.core.service.ResourceCollectionService;
-import org.tdar.core.service.ResourceService;
 import org.tdar.core.service.SearchIndexService;
 import org.tdar.core.service.SearchService;
 import org.tdar.core.service.SimpleCachingService;
-import org.tdar.core.service.SiteNameKeywordService;
-import org.tdar.core.service.SiteTypeKeywordService;
-import org.tdar.core.service.TemporalKeywordService;
 import org.tdar.core.service.UrlService;
+import org.tdar.core.service.keyword.CultureKeywordService;
+import org.tdar.core.service.keyword.GeographicKeywordService;
+import org.tdar.core.service.keyword.InvestigationTypeService;
+import org.tdar.core.service.keyword.MaterialKeywordService;
+import org.tdar.core.service.keyword.OtherKeywordService;
+import org.tdar.core.service.keyword.SiteNameKeywordService;
+import org.tdar.core.service.keyword.SiteTypeKeywordService;
+import org.tdar.core.service.keyword.TemporalKeywordService;
+import org.tdar.core.service.resource.CategoryVariableService;
+import org.tdar.core.service.resource.CodingSheetService;
+import org.tdar.core.service.resource.DataTableService;
+import org.tdar.core.service.resource.DatasetService;
+import org.tdar.core.service.resource.ImageService;
+import org.tdar.core.service.resource.InformationResourceFileService;
+import org.tdar.core.service.resource.InformationResourceFileVersionService;
+import org.tdar.core.service.resource.InformationResourceService;
+import org.tdar.core.service.resource.OntologyNodeService;
+import org.tdar.core.service.resource.OntologyService;
+import org.tdar.core.service.resource.ProjectService;
+import org.tdar.core.service.resource.ResourceService;
 import org.tdar.utils.Pair;
 import org.tdar.web.SessionData;
 
@@ -67,6 +67,9 @@ public abstract class TdarActionSupport extends ActionSupport {
 
     public static final String WAIT = "wait";
     public static final String SUCCESS_ASYNC = "SUCCESS_ASYNC";
+
+    public static final String NOT_FOUND = "not found";
+    public static final String GONE = "gone";
 
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -128,8 +131,6 @@ public abstract class TdarActionSupport extends ActionSupport {
     private transient SearchIndexService searchIndexService;
     @Autowired
     private transient ResourceCollectionService resourceCollectionService;
-    @Autowired
-    private transient ReflectionService reflectionService;
 
     private transient List<String> stackTraces = new ArrayList<String>();
 
@@ -155,7 +156,7 @@ public abstract class TdarActionSupport extends ActionSupport {
         return simpleCachingService.getHomepageCache().getResourceCount();
     }
 
-    public Map<GeographicKeyword, Long> getISOCountryCount() {
+    public Map<GeographicKeyword, Pair<Long, Double>> getISOCountryCount() {
         return simpleCachingService.getHomepageCache().getCountryCount();
     }
 
@@ -306,12 +307,15 @@ public abstract class TdarActionSupport extends ActionSupport {
 
     protected void addActionErrorWithException(String message, Throwable exception) {
         String trace = getStackTrace(exception);
-        getLogger().error("{} -- {}", message + " : " + exception, trace);
-        super.addActionError(message);
+        getLogger().error("{}: {} -- {}", new Object[] { message, exception, trace });
+        if (exception instanceof TdarRecoverableRuntimeException) {
+            super.addActionError(exception.getMessage());
+        } else {
+            super.addActionError(message);
+        }
         stackTraces.add(trace);
-
     }
-
+    
     @Override
     public void addActionError(String message) {
         logger.debug("ACTIONERROR:: {}",message);
@@ -335,13 +339,6 @@ public abstract class TdarActionSupport extends ActionSupport {
      */
     public ResourceCollectionService getResourceCollectionService() {
         return resourceCollectionService;
-    }
-
-    /**
-     * @return the reflectionService
-     */
-    public ReflectionService getReflectionService() {
-        return reflectionService;
     }
 
 }

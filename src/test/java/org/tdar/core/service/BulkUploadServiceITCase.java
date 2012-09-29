@@ -14,7 +14,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -28,6 +27,7 @@ import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.util.CellMetadata;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.AsyncUpdateReceiver.DefaultReceiver;
 
@@ -42,15 +42,15 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testBulkUploadService() {
-        LinkedHashSet<String> importFields = bulkUploadService.getImportFieldNamesForType(ResourceType.DOCUMENT);
-        assertTrue("testing local field", importFields.contains("documentType"));
-        assertTrue("testing parent class", importFields.contains("description"));
-        logger.info(importFields);
+    public void testLookupMaps() {
+        LinkedHashSet<CellMetadata> importFields = bulkUploadService.getImportFieldNamesForType(ResourceType.DOCUMENT);
+        Map<String, CellMetadata> cellLookupMap = bulkUploadService.getCellLookupMap(importFields);
+        assertTrue("testing local field", cellLookupMap.containsKey("documentType"));
+        assertTrue("testing parent class", cellLookupMap.containsKey("description"));
+        logger.info("{}", importFields);
 
-        List<String> fieldnames = bulkUploadService.getAllValidFieldNames();
-        for (String name : fieldnames) {
-            logger.info(name);
+        for (CellMetadata name : importFields) {
+            logger.info("{}", name);
         }
     }
 
@@ -62,7 +62,7 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
         filenameResourceMap.put("test3.pdf", new Document());
         filenameResourceMap.get("test2.pdf").setTitle("bad title");
         for (Resource r : filenameResourceMap.values()) {
-            r.markUpdated(getTestPerson());
+            r.markUpdated(getUser());
         }
         return filenameResourceMap;
     }
@@ -76,7 +76,7 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
         bulkUploadService.readExcelFile(inputStream, filenameResourceMap, receiver);
 
         for (Resource resource : filenameResourceMap.values()) {
-            logger.info(resource);
+            logger.info("{}", resource);
             logger.info("title:" + resource.getTitle());
             logger.info("description:" + resource.getDescription());
             if (resource instanceof Document) {
@@ -84,7 +84,7 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
                 logger.info("documentType:" + doc.getDocumentType());
                 logger.info("seriesNumber:" + doc.getSeriesNumber());
                 logger.info("isbn:" + doc.getIsbn());
-                logger.info("numberOfPages:" + doc.getNumberOfPages());
+//                logger.info("numberOfPages:" + doc.getNumberOfPages());
             }
         }
 
@@ -93,7 +93,7 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
         assertEquals("Janson's History of Art", doc.getDescription());
         assertEquals("Fifth Edition", doc.getSeriesNumber());
         assertEquals("1234-5312", doc.getIsbn());
-        assertEquals(1234, doc.getNumberOfPages().intValue());
+//        assertEquals(1234, doc.getNumberOfPages().intValue());
         assertEquals(DocumentType.OTHER, doc.getDocumentType());
 
         doc = (Document) filenameResourceMap.get("test2.pdf");
@@ -101,7 +101,7 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
         assertEquals("whistler, etc", doc.getDescription());
         assertEquals(null, doc.getSeriesNumber());
         assertEquals(null, doc.getIsbn());
-        assertEquals(null, doc.getNumberOfPages());
+//        assertEquals(null, doc.getNumberOfPages());
         assertEquals(DocumentType.BOOK, doc.getDocumentType());
 
         doc = (Document) filenameResourceMap.get("test3.pdf");
@@ -109,7 +109,7 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
         assertEquals("\"V&A\"", doc.getDescription());
         assertEquals(null, doc.getSeriesNumber());
         assertEquals(null, doc.getIsbn());
-        assertEquals(null, doc.getNumberOfPages());
+//        assertEquals(null, doc.getNumberOfPages());
         assertEquals(DocumentType.THESIS, doc.getDocumentType());
 
     }
@@ -158,7 +158,7 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
 
         AsyncUpdateReceiver receiver = new DefaultReceiver();
         bulkUploadService.readExcelFile(inputStream, filenameResourceMap, receiver);
-        assertTrue(receiver.getAsyncErrors().contains("a resource with the filename"));
+        assertTrue(receiver.getAsyncErrors().contains("skipping line in excel file as resource with the filename"));
     }
 
     @Test
@@ -194,7 +194,7 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
         filenameResourceMap.put("5127663428_42ef7f4463_b.jpg", new Image());
         filenameResourceMap.put("handbook_of_archaeology.jpg", new Image());
         for (Resource r : filenameResourceMap.values()) {
-            r.markUpdated(getTestPerson());
+            r.markUpdated(getUser());
         }
         boolean noException = true;
         try {
@@ -205,5 +205,12 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
         }
         assertTrue(noException);
     }
+    
+    @Test
+    @Rollback
+    public void testInheritanceSelections() {
+        
+    }
+    
 
 }

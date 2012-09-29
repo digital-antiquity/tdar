@@ -22,8 +22,6 @@ import org.tdar.core.exception.TdarRuntimeException;
 
 public interface Filestore {
 
-    public static final String CONTAINER_NAME = "rec";
-
     /**
      * Write content to the filestore.
      * 
@@ -74,6 +72,7 @@ public interface Filestore {
         protected static final Logger logger = Logger.getLogger(BaseFilestore.class);
 
         protected InformationResourceFileVersion updateVersionInfo(File f, InformationResourceFileVersion version) {
+            @SuppressWarnings("deprecation")
             String mimeType = mimes.getMimeType(f).toString();
             if (StringUtils.isEmpty(version.getFilename()))
                 version.setFilename(f.getName());

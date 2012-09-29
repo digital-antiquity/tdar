@@ -19,6 +19,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.exception.APIException;
+import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.FilestoreService;
 import org.tdar.core.service.ImportService;
 import org.tdar.utils.Pair;
@@ -30,13 +31,6 @@ import org.tdar.utils.Pair;
 @ParentPackage("secured")
 public class APIController extends AuthenticationAware.Base {
 
-    public static final String NOT_FOUND = "notfound";
-    public static final String CREATED = "created";
-    public static final String UPDATED = "updated";
-    public static final String BAD_REQUEST = "badrequest";
-    public static final String NOTALLOWED = "notallowed";
-    public static final String UNKNOWN_ERROR = "unknownerror";
-
     @Autowired
     FilestoreService filestoreService;
 
@@ -46,7 +40,6 @@ public class APIController extends AuthenticationAware.Base {
     private String msg;
     private String status;
     private Long projectId;  //note this will override projectId value specified in record
-    
 
     @Autowired
     public ImportService importService;
@@ -55,23 +48,19 @@ public class APIController extends AuthenticationAware.Base {
     private List<String> processedFileNames;
 
     private Resource importedRecord;
-    private String errorMessage;
+    private String message;
+    private Long id;
 
     @Action(value = "upload", results = {
-            @Result(name = APIController.NOT_FOUND,  location = "/WEB-INF/content/apierror.ftl" , type = "freemarker", params = { "contentType", "text/plain", "status", "404" }),// params = { },type = "httpheader",
-            @Result(name = CREATED,  location = "/WEB-INF/content/apierror.ftl" , type = "httpheader", params = { "contentType", "text/plain", "error", "201", "errorMessage", "${errorMessage}" }),// params = { "status", "201" },type = "httpheader",
-            @Result(name = UPDATED,  location = "/WEB-INF/content/apierror.ftl" , type = "httpheader", params = { "contentType", "text/plain", "status", "204" }),// params = { },type = "httpheader",
-            @Result(name = APIController.BAD_REQUEST,  location = "/WEB-INF/content/apierror.ftl" , type = "httpheader", params = { "contentType", "text/plain","error", "400" , "errorMessage","${errorMessage}"}),// params = { },type = "httpheader",
-            @Result(name = APIController.NOTALLOWED,  location = "/WEB-INF/content/apierror.ftl" , type = "httpheader", params = { "contentType", "text/plain","error", "403", "errorMessage","${errorMessage}" }), // params = {  },type = "httpheader",
-            @Result(name = APIController.UNKNOWN_ERROR,  location = "/WEB-INF/content/apierror.ftl" , type = "httpheader", params = { "contentType", "text/plain","error", "500", "errorMessage","${errorMessage}" }) // params = {  },type = "httpheader",
-            })
+            @Result(name = SUCCESS, type = "freemarker", location = "/WEB-INF/content/api.ftl", params = { "contentType", "text/plain" }),
+            @Result(name = ERROR, type = "freemarker", location = "/WEB-INF/content/api.ftl", params = { "contentType", "text/plain" }) })
     public String upload() throws ClassNotFoundException, IOException {
         if (StringUtils.isEmpty(getRecord())) {
             logger.info("you must define a record");
-            status = APIController.BAD_REQUEST;
-            return APIController.BAD_REQUEST;
+            status = StatusCode.BAD_REQUEST.getResultString();
+            getServletResponse().setStatus(StatusCode.BAD_REQUEST.getStatusCode());
+            return ERROR;
         }
-
         List<Pair<String, InputStream>> filePairs = new ArrayList<Pair<String, InputStream>>();
         for (int i = 0; i < uploadFileFileName.size(); i++) {
             filePairs.add(new Pair<String, InputStream>(uploadFileFileName.get(i), new FileInputStream(uploadFile.get(i))));
@@ -80,33 +69,36 @@ public class APIController extends AuthenticationAware.Base {
         try {
             Resource loadedRecord = importService.loadXMLFile(new StringInputStream(getRecord()), getAuthenticatedUser(), filePairs, projectId);
             setImportedRecord(loadedRecord);
-            
-            //FIXME: this appears to not be accurate
-            //FIXME2: should we pass back the tDAR ID?
+            setId(loadedRecord.getId());
+
             if (loadedRecord.isCreated()) {
-                status = CREATED;
-                String fmt = "Created %s with %s attachments";
-                errorMessage = String.format(fmt, loadedRecord, uploadFileFileName.size());
-                return CREATED;
+                status = StatusCode.CREATED.getResultString();
+                message = "created:" + loadedRecord.getId();
+                getServletResponse().setStatus(StatusCode.CREATED.getStatusCode());
+                return SUCCESS;
             }
-            status = UPDATED;
-            return UPDATED;
+            status = StatusCode.UPDATED.getResultString();
+            getServletResponse().setStatus(StatusCode.UPDATED.getStatusCode());
+            return SUCCESS;
         } catch (Exception e) {
-            getLogger().debug("an exception occured when processing the xml import",e);
+            getLogger().debug("an exception occured when processing the xml import", e);
             e.printStackTrace();
             StringBuilder error = new StringBuilder();
             error.append(e.getMessage());
             error.append("\r\n");
             error.append(ExceptionUtils.getStackTrace(e));
-            errorMessage = error.toString();
-            
+            message = error.toString();
+
             if (e instanceof APIException) {
-                status = ((APIException) e).getCode().getResultString();
-                return status;
+                StatusCode code = ((APIException) e).getCode();
+                status = code.getResultString();
+                getServletResponse().setStatus(code.getStatusCode());
+                return ERROR;
             }
         }
-        status = APIController.UNKNOWN_ERROR;
-        return APIController.UNKNOWN_ERROR;
+        status = StatusCode.UNKNOWN_ERROR.getResultString();
+        getServletResponse().setStatus(StatusCode.UNKNOWN_ERROR.getStatusCode());
+        return ERROR;
     }
 
     public List<File> getUploadFile() {
@@ -180,11 +172,19 @@ public class APIController extends AuthenticationAware.Base {
     }
 
     public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
+        this.message = errorMessage;
     }
 
     public String getErrorMessage() {
-        return errorMessage;
+        return message;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public Long getProjectId() {

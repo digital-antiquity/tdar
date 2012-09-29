@@ -24,7 +24,7 @@ public class DatasetConversionFactory {
             return new ExcelConverter(dataset,targetDatabase);
         } else if (dataset.getExtension().equalsIgnoreCase("CSV")) {
             return new CsvConverter(dataset,targetDatabase);
-        } else if (dataset.getExtension().equalsIgnoreCase("mdb")) {
+        } else if (dataset.getExtension().equalsIgnoreCase("mdb") || dataset.getExtension().equalsIgnoreCase("accdb")) {
             return new AccessDatabaseConverter(dataset,targetDatabase);
         }
         throw new IllegalArgumentException("No converter defined for format: " + dataset.getExtension());

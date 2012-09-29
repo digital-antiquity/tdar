@@ -16,6 +16,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlIDREF;
 
 import org.tdar.core.bean.Persistable;
 
@@ -68,10 +69,7 @@ public class CategoryVariable extends Persistable.Base implements Comparable<Cat
     @OneToMany(mappedBy = "categoryVariable")
     @XStreamOmitField
     private Set<Ontology> ontologies;
-
-    @Column(name = "encoded_parent_ids")
-    private String encodedParentIds;
-
+    
     public String getName() {
         return name;
     }
@@ -90,7 +88,7 @@ public class CategoryVariable extends Persistable.Base implements Comparable<Cat
 
     @Transient
     public SortedSet<String> getSortedSynonyms() {
-        return new TreeSet<String>(synonyms);
+        return new TreeSet<String>(getSynonyms());
     }
 
     @Transient
@@ -104,6 +102,7 @@ public class CategoryVariable extends Persistable.Base implements Comparable<Cat
         this.synonyms = synonyms;
     }
 
+    @XmlIDREF
     public Set<CodingSheet> getCodingSheets() {
         return codingSheets;
     }
@@ -112,22 +111,13 @@ public class CategoryVariable extends Persistable.Base implements Comparable<Cat
         this.codingSheets = codingSheets;
     }
 
+    @XmlIDREF
     public Set<Ontology> getOntologies() {
         return ontologies;
     }
 
     public void setOntologies(Set<Ontology> ontologies) {
         this.ontologies = ontologies;
-    }
-
-    @Transient
-    public Long getRootParentId() {
-        if (encodedParentIds == null) {
-            return null;
-        }
-        int dotIndex = encodedParentIds.indexOf(".");
-        String rootParentId = (dotIndex == -1) ? encodedParentIds : encodedParentIds.substring(0, dotIndex);
-        return Long.valueOf(rootParentId);
     }
 
     public CategoryVariable getParent() {
@@ -178,33 +168,13 @@ public class CategoryVariable extends Persistable.Base implements Comparable<Cat
     public boolean isCategory() {
         return type.equals(CategoryType.CATEGORY);
     }
-
+    
+    
     @Transient
-    public SortedSet<CategoryVariable> getAllChildren() {
-        TreeSet<CategoryVariable> allChildren = new TreeSet<CategoryVariable>();
-        allChildren.addAll(children);
-        for (CategoryVariable child : children) {
-            allChildren.addAll(child.getAllChildren());
-        }
-        return allChildren;
-    }
-
-    @Transient
-    public Integer[] getParentIds() {
-        String[] parentStringIds = encodedParentIds.split("\\.");
-        Integer[] parentIds = new Integer[parentStringIds.length];
-        for (int i = 0; i < parentStringIds.length; i++) {
-            parentIds[i] = Integer.valueOf(parentStringIds[i]);
-        }
-        return parentIds;
-    }
-
-    public String getEncodedParentIds() {
-        return encodedParentIds;
-    }
-
-    public void setEncodedParentIds(String encodedParentIds) {
-        this.encodedParentIds = encodedParentIds;
+    public SortedSet<CategoryVariable> getSortedChildren() {
+        TreeSet<CategoryVariable> sortedChildren = new TreeSet<CategoryVariable>();
+        sortedChildren.addAll(this.getChildren());
+        return sortedChildren;
     }
 
     public String getLabel() {
@@ -214,5 +184,5 @@ public class CategoryVariable extends Persistable.Base implements Comparable<Cat
     public void setLabel(String label) {
         this.label = label;
     }
-
+    
 }

@@ -17,21 +17,21 @@ import org.tdar.core.bean.resource.ResourceType;
  */
 public class HomepageCache {
 
-    private Map<GeographicKeyword, Long> countryCount;
+    private Map<GeographicKeyword, Pair<Long, Double>> countryCount;
     private Map<ResourceType, Pair<Long,Double>> resourceCount;
 
     /**
      * @param countryCount
      *            the countryCount to set
      */
-    public void setCountryCount(Map<GeographicKeyword, Long> countryCount) {
+    public void setCountryCount(Map<GeographicKeyword, Pair<Long, Double>> countryCount) {
         this.countryCount = countryCount;
     }
 
     /**
      * @return the countryCount
      */
-    public Map<GeographicKeyword, Long> getCountryCount() {
+    public Map<GeographicKeyword, Pair<Long, Double>> getCountryCount() {
         return countryCount;
     }
 

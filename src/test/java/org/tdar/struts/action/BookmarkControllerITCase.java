@@ -71,7 +71,7 @@ public class BookmarkControllerITCase extends AbstractAdminControllerITCase {
 
     public Document createNewDocument() {
         Document document = new Document();
-        document.markUpdated(getTestPerson());
+        document.markUpdated(getUser());
         document.setTitle("test");
         document.setDescription("bacd");
         genericService.save(document);

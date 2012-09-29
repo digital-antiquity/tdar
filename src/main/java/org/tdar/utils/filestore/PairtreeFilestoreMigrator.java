@@ -16,7 +16,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.service.WorkflowContextService;
+import org.tdar.core.service.fileProcessing.WorkflowContextService;
 import org.tdar.filestore.FilesystemFilestore;
 import org.tdar.filestore.PairtreeFilestore;
 import org.tdar.filestore.TaintedFileException;

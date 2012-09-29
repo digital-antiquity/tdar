@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -44,11 +43,13 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.KeywordAnalyzer;
+import org.apache.lucene.search.Explanation;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Boost;
+import org.hibernate.search.annotations.DateBridge;
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.DynamicBoost;
 import org.hibernate.search.annotations.Field;
@@ -56,35 +57,49 @@ import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Index;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.annotations.Resolution;
 import org.hibernate.search.annotations.Store;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 import org.tdar.core.bean.BulkImportField;
+import org.tdar.core.bean.HasName;
+import org.tdar.core.bean.HasStatus;
+import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.JsonModel;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.SimpleSearch;
+import org.tdar.core.bean.Updatable;
+import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
-import org.tdar.core.bean.entity.FullUser;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.entity.ReadUser;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
+import org.tdar.core.bean.keyword.HierarchicalKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
+import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.SuggestedKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
-import org.tdar.index.NonTokenizingLowercaseKeywordAnalyzer;
-import org.tdar.index.TdarStandardAnalyzer;
-import org.tdar.search.query.boost.InformationResourceBoostStrategy;
+import org.tdar.core.configuration.JSONTransient;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
+import org.tdar.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
+import org.tdar.index.analyzer.PatternTokenAnalyzer;
+import org.tdar.index.analyzer.TdarStandardAnalyzer;
+import org.tdar.index.boost.InformationResourceBoostStrategy;
+import org.tdar.search.query.QueryFieldNames;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
@@ -94,8 +109,7 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
  * 
  * Contains metadata common to all Resources.
  * 
- * Projects, Datasets, Documents, CodingSheets, Ontologies, DataTables,
- * DataTableColumns
+ * Projects, Datasets, Documents, CodingSheets, Ontologies, SensoryData
  * 
  * @author <a href='Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
@@ -111,21 +125,18 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
         Dataset.class, Ontology.class, Image.class, SensoryData.class })
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @XmlType(name = "resource", propOrder = {})
-public class Resource extends JsonModel.Base implements Persistable {
+public class Resource extends JsonModel.Base implements Persistable, Comparable<Resource>, HasName, Updatable, Indexable, Validatable, HasStatus {
 
     private static final long serialVersionUID = -230400285817185637L;
 
     // TODO: anything that gets returned in a tdar search should be included in
     // json results
     @Transient
-    private static final String[] JSON_PROPERTIES = { "id", "title", "resourceType", "dateRegistered", "description", "submitter",
-            // properties in resourceType
-            "label",
-            // properties in submitter (Person)
-            "firstName", "lastName", "institution", "email" };
-
+    private static final String[] JSON_PROPERTIES = { "id", "title", "resourceType", "dateRegistered", "description", "status", "resourceTypeLabel", "urlNamespace" };
+    // properties in resourceType
+    // properties in submitter (Person)
+    // "firstName", "lastName", "institution", "email","label","submitter",
     protected final static transient Logger logger = LoggerFactory.getLogger(Resource.class);
-
     public Resource() {
     }
 
@@ -146,38 +157,32 @@ public class Resource extends JsonModel.Base implements Persistable {
     @DocumentId
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "resource_sequence")
     @SequenceGenerator(name = "resource_sequence", allocationSize = 1, sequenceName = "resource_sequence")
-    @Field(store = Store.YES)
-    @Analyzer(impl = KeywordAnalyzer.class)
     private Long id = -1L;
 
-    @BulkImportField
+    @BulkImportField(label = "Title", required = true, order = -100,comment=BulkImportField.TITLE_DESCRIPTION)
     @Column(nullable = false, length = 512)
-    @Fields({ @Field(boost = @Boost(1.5f)), @Field(name = "title_sort", index = Index.UN_TOKENIZED, store = Store.YES) })
     private String title;
 
     @Lob
-    @BulkImportField
+    @BulkImportField(label = "Description", required = true, order = -50,comment=BulkImportField.DESCRIPTION_DESCRIPTION)
     @Type(type = "org.hibernate.type.StringClobType")
-    @Field(boost = @Boost(1.2f))
     private String description;
 
     @Field(boost = @Boost(.5f), index = Index.UN_TOKENIZED, store = Store.YES)
     @Column(nullable = false, name = "date_registered")
+    @DateBridge(resolution = Resolution.DAY)
     private Date dateRegistered;
 
     private String url;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "resource_type")
-    @Field(index = Index.UN_TOKENIZED)
+    @Field(index = Index.UN_TOKENIZED, store = Store.YES)
     @Analyzer(impl = TdarStandardAnalyzer.class)
     private ResourceType resourceType;
 
     @Column(nullable = false, name = "access_counter")
     private Long accessCounter = 0L;
-
-    // FIXME: REMOVE
-    private boolean confidential;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
@@ -221,11 +226,11 @@ public class Resource extends JsonModel.Base implements Persistable {
     private Set<ResourceAnnotation> resourceAnnotations = new LinkedHashSet<ResourceAnnotation>();
 
     @IndexedEmbedded
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "resource")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "resource", fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<SourceCollection> sourceCollections = new LinkedHashSet<SourceCollection>();
 
     @IndexedEmbedded
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "resource")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "resource", fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<RelatedComparativeCollection> relatedComparativeCollections = new LinkedHashSet<RelatedComparativeCollection>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "resource", fetch = FetchType.LAZY, orphanRemoval = true)
@@ -285,53 +290,19 @@ public class Resource extends JsonModel.Base implements Persistable {
     private Set<ResourceRevisionLog> resourceRevisionLog = new HashSet<ResourceRevisionLog>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
-    @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
-            name = "collection_id") })
+    @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(name = "resource_id") }, 
+    inverseJoinColumns = { @JoinColumn(name = "collection_id") })
+    @XmlTransient
+    @IndexedEmbedded(depth=1)
     private Set<ResourceCollection> resourceCollections = new LinkedHashSet<ResourceCollection>();
-
-    @XStreamOmitField
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "resource", orphanRemoval = true)
-    private Set<ReadUser> readUsers = new HashSet<ReadUser>();
-
-    @XStreamOmitField
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "resource", orphanRemoval = true)
-    private Set<FullUser> fullUsers = new HashSet<FullUser>();
 
     // used by the import service to determine whether a record has been "created" or updated
     // does not persist
     private transient boolean created = false;
 
-    public Set<ReadUser> getReadUsers() {
-        return readUsers;
-    }
+    private transient Float score = -1f;
 
-    public void setReadUsers(Set<ReadUser> readUsers) {
-        this.readUsers = readUsers;
-    }
-
-    public Set<FullUser> getFullUsers() {
-        return fullUsers;
-    }
-
-    @Transient
-    public List<FullUser> getSortedFullUsers() {
-        return getSortedFullUsers(new Comparator<FullUser>() {
-            public int compare(FullUser a, FullUser b) {
-                return a.getPerson().compareTo(b.getPerson());
-            }
-        });
-    }
-
-    @Transient
-    public List<FullUser> getSortedFullUsers(Comparator<FullUser> comparator) {
-        ArrayList<FullUser> sortedFullUsers = new ArrayList<FullUser>(getFullUsers());
-        Collections.sort(sortedFullUsers, comparator);
-        return sortedFullUsers;
-    }
-
-    public void setFullUsers(Set<FullUser> fullUsers) {
-        this.fullUsers = fullUsers;
-    }
+    private transient Explanation explanation;
 
     @XmlElementWrapper(name = "cultureKeywords")
     @XmlElement(name = "cultureKeyword")
@@ -340,6 +311,54 @@ public class Resource extends JsonModel.Base implements Persistable {
             this.cultureKeywords = new LinkedHashSet<CultureKeyword>();
         }
         return cultureKeywords;
+    }
+
+    /*
+     * this function should introduce into the index all of the people who can modify a record
+     * which is useful for limiting things on the project page
+     */
+    @Field(name = QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY)
+    @Analyzer(impl = PatternTokenAnalyzer.class)
+    @Transient
+    @JSONTransient
+    public String getUsersWhoCanModify() {
+        StringBuilder sb = new StringBuilder();
+        HashSet<Person> writable = new HashSet<Person>();
+        writable.add(getSubmitter());
+        writable.add(getUpdatedBy());
+        for (ResourceCollection collection : getResourceCollections()) {
+            writable.addAll(collection.getUsersWhoCan(GeneralPermissions.MODIFY_RECORD, true));
+        }
+        for (Person p : writable) {
+            if (p == null || p.getId() == null)
+                continue;
+            sb.append(p.getId()).append("|");
+        }
+        //FIXME: decide whether right should inherit from projects (1) of (2) change see authorizedUserDao
+        //sb.append(getAdditionalUsersWhoCanModify());
+        logger.trace("effectiveUsers:" + sb.toString());
+        return sb.toString();
+    }
+    
+    protected String getAdditionalUsersWhoCanModify() {
+        return "";
+    }
+
+    @Field(name = QueryFieldNames.RESOURCE_COLLECTION_PUBLIC_IDS)
+    @Analyzer(impl = PatternTokenAnalyzer.class)
+    @Transient
+    @JSONTransient
+    public String getPublicCollectionsContaining() {
+        StringBuilder sb = new StringBuilder();
+        for (ResourceCollection collection : getResourceCollections()) {
+            if (collection.isShared()) {
+                sb.append(collection.getId()).append("|");
+            }
+        }
+        if (sb.length() > 0) {
+            logger.trace("partOfPublicResourceCollection:" + sb.toString());
+        }
+        return sb.toString();
     }
 
     @IndexedEmbedded
@@ -485,11 +504,7 @@ public class Resource extends JsonModel.Base implements Persistable {
         this.investigationTypes = investigationTypes;
     }
 
-    @XmlID
-    public String getXmlId() {
-        return getId().toString();
-    }
-
+    @Field(store = Store.YES, analyzer=@Analyzer(impl = KeywordAnalyzer.class), name=QueryFieldNames.ID)
     public Long getId() {
         return id;
     }
@@ -498,8 +513,27 @@ public class Resource extends JsonModel.Base implements Persistable {
         this.id = id;
     }
 
+    @Field(store = Store.YES, analyzer=@Analyzer(impl = KeywordAnalyzer.class), name=QueryFieldNames.ID)
+    public Long getIndexedId() {
+        return getId();
+    }
+
+    @XmlID
+    @Transient
+    public String getXmlId() {
+        return getId().toString();
+    }
+
+    @Field(boost = @Boost(1.5f))
     public String getTitle() {
         return title;
+    }
+
+    @Field(name = QueryFieldNames.TITLE_SORT, index = Index.UN_TOKENIZED, store = Store.YES)
+    public String getTitleSort() {
+        if (getTitle() == null)
+            return "";
+        return getTitle().replaceAll(SimpleSearch.TITLE_SORT_REGEX, "");
     }
 
     public void setTitle(String title) {
@@ -526,6 +560,7 @@ public class Resource extends JsonModel.Base implements Persistable {
         this.submitter = submitter;
     }
 
+    @Field(boost = @Boost(1.2f))
     public String getDescription() {
         return description;
     }
@@ -669,6 +704,11 @@ public class Resource extends JsonModel.Base implements Persistable {
         return resourceType;
     }
 
+    @Transient
+    public String getResourceTypeLabel() {
+        return resourceType.getLabel();
+    }
+    
     public void setResourceType(ResourceType resourceType) {
         this.resourceType = resourceType;
     }
@@ -676,6 +716,9 @@ public class Resource extends JsonModel.Base implements Persistable {
     @XmlElementWrapper(name = "sourceCollections")
     @XmlElement(name = "sourceCollection")
     public Set<SourceCollection> getSourceCollections() {
+        if (sourceCollections == null) {
+            sourceCollections = new LinkedHashSet<SourceCollection>();
+        }
         return sourceCollections;
     }
 
@@ -708,6 +751,9 @@ public class Resource extends JsonModel.Base implements Persistable {
     @XmlElementWrapper(name = "relatedComparativeCollections")
     @XmlElement(name = "relatedComparativeCollection")
     public Set<RelatedComparativeCollection> getRelatedComparativeCollections() {
+        if (relatedComparativeCollections == null) {
+            relatedComparativeCollections = new LinkedHashSet<RelatedComparativeCollection>();
+        }
         return relatedComparativeCollections;
     }
 
@@ -756,8 +802,10 @@ public class Resource extends JsonModel.Base implements Persistable {
     /**
      * Returns the alphanumeric comparison of resource.title.
      */
+    @Override
     public int compareTo(Resource resource) {
-        return title.compareTo(resource.title);
+        int comparison = getTitle().compareTo(resource.getTitle());
+        return (comparison == 0) ? getId().compareTo(resource.getId()) : comparison;
     }
 
     public String getUrl() {
@@ -830,7 +878,7 @@ public class Resource extends JsonModel.Base implements Persistable {
     }
 
     /**
-     * @return the resourceCreators
+     * @return the set of all resourceCreators associated with this Resource
      */
     @XmlElementWrapper(name = "resourceCreators")
     @XmlElement(name = "resourceCreator")
@@ -839,7 +887,7 @@ public class Resource extends JsonModel.Base implements Persistable {
     }
 
     /**
-     * @return the resourceCreators
+     * @return the resourceCreators with the given ResourceCreatorRole
      */
     public Set<ResourceCreator> getResourceCreators(ResourceCreatorRole role) {
         Set<ResourceCreator> creators = new HashSet<ResourceCreator>();
@@ -939,12 +987,16 @@ public class Resource extends JsonModel.Base implements Persistable {
             return true;
         }
         try {
-            return Persistable.Base.isEqual(this, getClass().cast(candidate));
+            return Persistable.Base.isEqual(this, Resource.class.cast(candidate));
         } catch (ClassCastException e) {
+            logger.debug("{} <==> {} ", candidate.getClass(), getClass());
+            logger.debug("{}", e);
+            e.printStackTrace();
             return false;
         }
     }
 
+    @Override
     public int hashCode() {
         if (isTransient()) {
             return super.hashCode();
@@ -968,6 +1020,73 @@ public class Resource extends JsonModel.Base implements Persistable {
             coverageDates = new LinkedHashSet<CoverageDate>();
         }
         return coverageDates;
+    }
+
+    public String getAdditonalKeywords() {
+        return "";
+    }
+
+    @JSONTransient
+    @Fields({ @Field(name = QueryFieldNames.ALL_PHRASE, analyzer = @Analyzer(impl = TdarStandardAnalyzer.class)),
+        @Field(name = QueryFieldNames.ALL, analyzer = @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)) })
+    public String getKeywords() {
+        // note, consider using a transient field here, as the getter is called multiple items (once for each @Field annotation)
+        logger.trace("get keyword contents: {}", getId());
+        StringBuilder sb = new StringBuilder();
+        sb.append(getTitle()).append(" ").append(getDescription()).append(" ").append(getAdditonalKeywords()).append(" ");
+
+        for (Keyword kwd : getIndexedGeographicKeywords()) {
+            sb.append(kwd.getLabel()).append(" ");
+        }
+        for (Keyword kwd : getActiveInvestigationTypes()) {
+            sb.append(kwd.getLabel()).append(" ");
+        }
+        for (Keyword kwd : getActiveMaterialKeywords()) {
+            sb.append(kwd.getLabel()).append(" ");
+        }
+        for (Keyword kwd : getActiveOtherKeywords()) {
+            sb.append(kwd.getLabel()).append(" ");
+        }
+        for (Keyword kwd : getActiveSiteNameKeywords()) {
+            sb.append(kwd.getLabel()).append(" ");
+        }
+
+        for (HierarchicalKeyword<CultureKeyword> kwd : getActiveCultureKeywords()) {
+            sb.append(kwd.getLabel()).append(" ");
+            for (String label : kwd.getParentLabelList()) {
+                sb.append(label).append(" ");
+            }
+        }
+
+        for (HierarchicalKeyword<SiteTypeKeyword> kwd : getActiveSiteTypeKeywords()) {
+            sb.append(kwd.getLabel()).append(" ");
+            for (String label : kwd.getParentLabelList()) {
+                sb.append(label).append(" ");
+            }
+        }
+
+        for (Keyword kwd : getActiveTemporalKeywords()) {
+            sb.append(kwd.getLabel()).append(" ");
+        }
+        for (ResourceNote note : getResourceNotes()) {
+            sb.append(note.getNote()).append(" ");
+        }
+        for (ResourceCreator creator : getResourceCreators()) {
+            sb.append(creator.getCreator().getName()).append(" ");
+            sb.append(creator.getCreator().getProperName()).append(" ");
+        }
+        for (ResourceAnnotation ann : getResourceAnnotations()) {
+            sb.append(ann.getPairedValue()).append(" ");
+        }
+
+        for (RelatedComparativeCollection rcc : getRelatedComparativeCollections()) {
+            sb.append(rcc.getText()).append(" ");
+        }
+
+        for (SourceCollection src : getSourceCollections()) {
+            sb.append(src.getText()).append(" ");
+        }
+        return sb.toString();
     }
 
     /**
@@ -1008,8 +1127,123 @@ public class Resource extends JsonModel.Base implements Persistable {
     }
 
     @Transient
+    public ResourceCollection getInternalResourceCollection() {
+        for (ResourceCollection collection : getResourceCollections()) {
+            if (collection.getType() == CollectionType.INTERNAL) {
+                return collection;
+            }
+        }
+        return null;
+    }
+
+    @Transient
     public boolean isDeleted() {
         return status == Status.DELETED;
     }
 
+    @Transient
+    public boolean isActive() {
+        return status == Status.ACTIVE;
+    }
+
+    @Transient
+    public boolean isDraft() {
+        return status == Status.DRAFT;
+    }
+
+    @Transient
+    public boolean isFlagged() {
+        return status == Status.FLAGGED;
+    }
+
+    @Transient
+    public String getName() {
+        return getTitle();
+    }
+
+    @Transient
+    public Float getScore() {
+        return score;
+    }
+
+    public void setScore(Float score) {
+        this.score = score;
+    }
+
+    @JSONTransient
+    public boolean isValid() {
+        if (isValidForController() == true) {
+            if (getSubmitter() == null) {
+                throw new TdarRecoverableRuntimeException("A submitter is required for this " + getResourceType());
+            }
+            if (getDateRegistered() == null) {
+                throw new TdarRecoverableRuntimeException("The registered date is required for this " + getResourceType());
+            }
+            return true;
+        }
+        return false;
+    }
+
+    @JSONTransient
+    public boolean isValidForController() {
+        if (StringUtils.isEmpty(getTitle())) {
+            throw new TdarRecoverableRuntimeException("A title is required for this " + getResourceType());
+        }
+        if (StringUtils.isEmpty(getDescription())) {
+            throw new TdarRecoverableRuntimeException("A description is required for this " + getResourceType());
+        }
+        return true;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.bean.Indexable#getExplanation()
+     */
+    @Override
+    public Explanation getExplanation() {
+        return explanation;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.bean.Indexable#setExplanation(org.apache.lucene.search.Explanation)
+     */
+    @Override
+    public void setExplanation(Explanation ex) {
+        this.explanation = ex;
+    }
+    
+    @Transient
+    public Set<ResourceCollection> getSharedResourceCollections() {
+        Set<ResourceCollection> sharedCollections = new LinkedHashSet<ResourceCollection>();
+        for(ResourceCollection collection : getResourceCollections()) {
+            if(collection.isShared()) {
+                sharedCollections.add(collection);
+            }
+        }
+        return sharedCollections;
+    }
+    
+    @Transient
+    public Set<ResourceCollection> getSharedVisibleResourceCollections() {
+        Set<ResourceCollection> sharedCollections = new LinkedHashSet<ResourceCollection>();
+        for(ResourceCollection collection : getResourceCollections()) {
+            if(collection.isShared() && collection.isVisible()) {
+                sharedCollections.add(collection);
+            }
+        }
+        return sharedCollections;
+    }
+
+//    @Transient
+//    @Field(index = Index.UN_TOKENIZED, store = Store.YES, analyzer=@Analyzer(impl = TdarStandardAnalyzer.class), name=QueryFieldNames.SEARCH_TYPE)
+//    public SimpleSearchType getSimpleSearchType() {
+//        return SimpleSearchType.RESOURCE; 
+//    }
+//
+//    public Status getStatusForSearch() {
+//        return getStatus();
+//    }
 }

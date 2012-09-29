@@ -8,14 +8,9 @@
 </head>
 
 <script type='text/javascript'>
-function selectAllChildren(id, value) {
-    $("input[id*='" + id + "']").attr('checked', value);
-}
-function selectChildren(index, value) {
-    $("input[id$='" + index + "']").attr('checked', value);
-    $("input[id*='" + index + "\\.']").attr('checked', value);
-}
-$(applyZebraColors);
+$(document).ready(function() {
+  applyZebraColors();
+  });
 </script>
 
 <div class="glide">
@@ -25,9 +20,47 @@ The integrated data results are displayed below.<br/>
 </p>
 </div>
 
-<@s.iterator value='integrationDataResults' var='integrationDataResult'>
 <div class="glide">
 <@rlist.showControllerErrors />
+
+<h2>Summary of Integration Results</h2>
+
+<table  class="tableFormat width99percent zebracolors">
+<thead>
+ <tr>
+  <#list integrationColumns as column>
+    <th>${column.name}</th>
+  </#list>
+  <#list selectedDataTables as table>
+    <th>${table.displayName}</th>
+  </#list>
+  <th>Total</th>
+  </tr>
+</thead>
+<tbody>
+ <#assign keys = pivotData?keys >
+  <#list keys?sort as key >
+  <tr>
+   <#list key as node >
+        <td><#if node??>
+           ${node.displayName!''}</#if></td>
+       </#list>
+       <#assign totals = 0/>
+       <#list selectedDataTables as table>
+        <td>  <#if pivotData.get(key)?? && pivotData.get(key).get(table)??>
+            ${pivotData.get(key).get(table)}
+            <#assign totals = totals + pivotData.get(key).get(table) />
+             <#else>0</#if></td>
+  </#list>
+  <td>${totals}</td>
+  </tr>
+  </#list>
+</tbody>
+</table>
+</div>
+
+<@s.iterator value='integrationDataResults' var='integrationDataResult'>
+<div class="glide">
 
 <h2>Integration results for ${integrationDataResult.dataTable.displayName} (from
 ${integrationDataResult.dataTable.dataset.title})</h2>
@@ -36,37 +69,28 @@ ${integrationDataResult.dataTable.dataset.title})</h2>
 <tr>
 <th>Table</th>
 
-<@s.iterator value='#integrationDataResult.integrationColumns' var='integrationColumn'>
-    <th>${integrationColumn.displayName}</th>
-</@s.iterator>
+<#list integrationDataResult.integrationColumns as integrationColumn>
+    <th>${integrationColumn.name}</th>
+    <#if !integrationColumn.displayColumn>
+    <th>Mapped ontology value for ${integrationColumn.name}</th>
+    </#if>
+</#list>
 
-<@s.iterator value='#integrationDataResult.columnsToDisplay' var='displayColumn'>
-    <th>${displayColumn.displayName}</th>
-</@s.iterator>
-
-<@s.iterator value='#integrationDataResult.integrationColumns' var='integrationColumn'>
-    <th>Mapped ontology value for ${integrationColumn.displayName}</th>
-</@s.iterator>
 
 </tr>
 </thead>
 <tbody>
 
 <#assign count=0>
-<@s.iterator value='#integrationDataResult.rowData' var='rowData' status='rowStatus'>
-    <#if (count < 100) >
+<#list integrationDataResult.rowData as row>
+    <#if (row_index < 100) >
     <tr>
     <td><small>${integrationDataResult.dataTable.dataset.title}</small></td>
 
-    <@s.iterator value='#rowData.dataValues' var='dataValue'>
-    <td>${dataValue!""}</td>
-    </@s.iterator>
+    <#list row as col>
+    <td>${col!"&nbsp;"}</td>
+    </#list>
 
-    <@s.iterator value='#rowData.ontologyValues' var='ontologyValue'>
-    <#if ontologyValue??>
-    <td>${ontologyValue.displayName}</td>
-    </#if>
-    </@s.iterator>
     </tr>
     </#if>
     <#if count == 100 >
@@ -75,7 +99,7 @@ ${integrationDataResult.dataTable.dataset.title})</h2>
     </tr>    
     </#if>
     <#assign count=count+1>
-</@s.iterator>
+</#list>
     <#if count == 0 >
     <tr>
     <td colspan="100">There was no data.</td>

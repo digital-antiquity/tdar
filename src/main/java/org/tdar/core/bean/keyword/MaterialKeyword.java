@@ -18,7 +18,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @Table(name="material_keyword")
 @XStreamAlias("materialKeyword")
 @Indexed(index = "Keyword")
-public class MaterialKeyword extends ControlledKeyword.Base {
+public class MaterialKeyword extends ControlledKeyword.Base<MaterialKeyword> {
 	
 	private static final long serialVersionUID = -8439705822874264175L;
 	

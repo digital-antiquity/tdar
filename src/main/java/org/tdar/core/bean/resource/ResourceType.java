@@ -32,6 +32,17 @@ public enum ResourceType {
         this.dcmiTypeString = dcmiTypeString;
         this.resourceClass = resourceClass;
     }
+    
+    public String getPlural() {
+        switch(this) {
+            case ONTOLOGY:
+                return "Ontologies";
+            case SENSORY_DATA:
+                return SENSORY_DATA.label;
+            default:
+                return this.label.concat("s");
+        }
+    }
 
     public boolean isDataset() {
         return this == DATASET;

@@ -13,19 +13,20 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinTable;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Indexed;
 import org.tdar.core.bean.BulkImportField;
-import org.tdar.index.AutocompleteAnalyzer;
-import org.tdar.index.NonTokenizingLowercaseKeywordAnalyzer;
+import org.tdar.index.analyzer.AutocompleteAnalyzer;
+import org.tdar.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 
 /**
  * $Id$
@@ -58,7 +59,7 @@ public class Institution extends Creator implements Comparable<Institution> {
     private static final String ACRONYM_REGEX = "(?:.+)(?:[\\(\\[\\{])(.+)(?:[\\)\\]\\}])(?:.*)";
 
     @Column(nullable = false, unique = true)
-    @BulkImportField
+    @BulkImportField(label="Institution Name",comment=BulkImportField.CREATOR_INSTITUTION_DESCRIPTION,order=10)
     private String name;
 
     private String url;
@@ -69,7 +70,7 @@ public class Institution extends Creator implements Comparable<Institution> {
         return name.compareTo(candidate.name);
     }
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY, optional = true)
     private Institution parentInstitution;
 
     @ElementCollection()
@@ -77,8 +78,9 @@ public class Institution extends Creator implements Comparable<Institution> {
     private Set<String> alternateNames;
 
     @XmlElement
+    //FIXME: this seemingly conflicts w/ @Field annotations on Creator.getName(). Figure out which declaration is working
     @Fields({ @Field(name = "name_auto", analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)),
-            @Field(analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)) })
+            @Field(analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)) }) 
     public String getName() {
         if (parentInstitution != null) {
             return parentInstitution.getName() + " : " + name;
@@ -144,6 +146,7 @@ public class Institution extends Creator implements Comparable<Institution> {
     /**
      * @return the alternateNames
      */
+    @XmlTransient
     public Set<String> getAlternateNames() {
         return alternateNames;
     }

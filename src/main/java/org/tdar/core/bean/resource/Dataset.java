@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
@@ -32,6 +33,7 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 @Indexed
 @Table(name = "dataset")
 @XStreamAlias("dataset")
+@XmlRootElement(name = "dataset")
 public class Dataset extends InformationResource {
 
     private static final long serialVersionUID = -5796154884019127904L;
@@ -65,7 +67,7 @@ public class Dataset extends InformationResource {
         }
         return Boolean.FALSE;
     }
-
+    
     /**
      * @param string
      * @return

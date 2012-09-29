@@ -18,7 +18,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @Table(name="other_keyword")
 @XStreamAlias("otherKeyword")
 @Indexed(index = "Keyword")
-public class OtherKeyword extends UncontrolledKeyword.Base {
+public class OtherKeyword extends UncontrolledKeyword.Base<OtherKeyword> {
 
     private static final long serialVersionUID = -6649756235199570108L;
 

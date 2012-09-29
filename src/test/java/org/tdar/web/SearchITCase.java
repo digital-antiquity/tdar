@@ -1,11 +1,19 @@
 package org.tdar.web;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
+import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.SensoryData;
+import org.tdar.core.bean.resource.Status;
+import org.tdar.core.service.SearchIndexService;
+import org.tdar.search.query.SortOption;
 
 import com.gargoylesoftware.htmlunit.html.HtmlCheckBoxInput;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
@@ -18,13 +26,8 @@ import com.gargoylesoftware.htmlunit.html.HtmlElement;
  */
 public class SearchITCase extends AbstractAdminAuthenticatedWebTestCase {
 
-    @Test
-    public void testBasicSearchAll() {
-        // FIXME: see thisTestIsBroken()
-        gotoPage("/search/basic");
-        selectAllResourceTypes();
-        submitForm("Search");
-    }
+    @Autowired
+    SearchIndexService indexService;
 
     private void selectAllResourceTypes() {
         ArrayList<HtmlCheckBoxInput> checkboxes = new ArrayList<HtmlCheckBoxInput>();
@@ -69,7 +72,7 @@ public class SearchITCase extends AbstractAdminAuthenticatedWebTestCase {
     }
 
     @Test
-    public void testAdvanceSearchWithCultureKeywords()  {
+    public void testAdvanceSearchWithCultureKeywords() {
         reindex();
         super.testAdvancedSearchView();
         selectAllResourceTypes();
@@ -82,49 +85,74 @@ public class SearchITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertTextPresent("2008 New Philadelphia Archaeology Report");
 
     }
-    
-     
-     private void reindex() {
-         gotoPage("/searchindex/build");
-         gotoPage("/searchindex/checkstatus");
-         logger.info(getPageCode());
-         int count = 0;
-         while (!getPageCode().contains("\"percentDone\" : 100")) {
-             try {
+
+    private void reindex() {
+        gotoPage("/admin/searchindex/build");
+        gotoPage("/admin/searchindex/checkstatus");
+        logger.info(getPageCode());
+        int count = 0;
+        while (!getPageCode().contains("\"percentDone\" : 100")) {
+            try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 fail("InterruptedException during reindex.  sorry.");
             }
-             gotoPage("/searchindex/checkstatus");
-             logger.info(getPageCode());
-             if (count == 1000) {
-                 fail("we went through 1000 iterations of waiting for the search index to build... assuming something is wrong");
-             }
-             count++;
-         }
-     }
-     
-     @Test
-     public void testUncontrolledSiteTypeKeywords() {
-         reindex();
-         gotoPage("/project/add");
-         String title = "testing uncontrolled site type keywords";
-         String keyword = "uncontrolledsitetypeone";
-         setInput("project.title", title);
-         setInput("project.description", "testing uncontrolled site type keywords");
-         setInput("status", "ACTIVE");
-         setInput("uncontrolledSiteTypeKeywords[0]", keyword);
-         submitForm();
-         gotoPage("/search/advanced");
-         selectAllResourceTypes();
-         setInput("uncontrolledSiteTypeKeywords[0]", keyword);
-         submitForm("Search");
-         assertTextPresent(title);
-         
-     }
-     
-     
-        
-    
+            gotoPage("/admin/searchindex/checkstatus");
+            logger.info(getPageCode());
+            if (count == 1000) {
+                fail("we went through 1000 iterations of waiting for the search index to build... assuming something is wrong");
+            }
+            count++;
+        }
+    }
+
+    @Test
+    public void testUncontrolledSiteTypeKeywords() {
+        reindex();
+        gotoPage("/project/add");
+        String title = "testing uncontrolled site type keywords";
+        String keyword = "uncontrolledsitetypeone";
+        setInput("project.title", title);
+        setInput("project.description", "testing uncontrolled site type keywords");
+        setInput("status", "ACTIVE");
+        setInput("uncontrolledSiteTypeKeywords[0]", keyword);
+        submitForm();
+        gotoPage("/search/advanced");
+        selectAllResourceTypes();
+        setInput("uncontrolledSiteTypeKeywords[0]", keyword);
+        submitForm("Search");
+        assertTextPresent(title);
+
+    }
+
+    @Test
+    public void testSorting() {
+        for (SortOption option : SortOption.getOptionsForContext(Resource.class)) {
+            gotoPage("/search/results?query=&sortField=" + option.name());
+        }
+    }
+
+    @Test
+    @Rollback
+    public void testFacets() {
+        SensoryData data = new SensoryData();
+        data.markUpdated(getAdminUser());
+        data.setTitle("test");
+        data.setDescription("test");
+        data.setStatus(Status.ACTIVE);
+        genericService.save(data);
+        indexService.index(data);
+        for (ResourceType type : ResourceType.values()) {
+            gotoPage("/search/results?");
+            clickLinkOnPage(type.getLabel());
+//            if (type == ResourceType.DOCUMENT) {
+//                String url = internalPage.getUrl().toString();
+//                for (DocumentType docType : DocumentType.values()) {
+//                    clickLinkOnPage(docType.getLabel());
+//                    gotoPage(url);
+//                }
+//            }
+        }
+    }
 
 }
