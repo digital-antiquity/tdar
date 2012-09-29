@@ -27,6 +27,9 @@
 </table>
 </div>
 
+<@admin.statsTable historicalRepositorySizes "Repository Size" "repositorySize" "filesize" />
+
+
 <div class="glide">
 <h3>Recent Logins </h3>
 <table class="tableFormat">

@@ -5,7 +5,8 @@
                         namespaceURI = org.tdar.core.service.UrlService.TDAR_NAMESPACE_URL)
         },
         elementFormDefault = XmlNsForm.QUALIFIED)
-package org.tdar.core.bean.resource.dataTable;
+package org.tdar.core.bean.resource.datatable;
  
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;
+

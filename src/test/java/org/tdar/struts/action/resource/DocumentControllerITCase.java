@@ -4,12 +4,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -20,7 +22,13 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.bean.keyword.CultureKeyword;
+import org.tdar.core.bean.keyword.MaterialKeyword;
+import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.Project;
+import org.tdar.core.bean.resource.ResourceNote;
+import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
@@ -67,6 +75,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         d.setTitle("doc title");
         d.setDescription("desc");
         d.markUpdated(getUser());
+        controller.setServletRequest(getServletPostRequest());
         controller.save();
         Long newId = controller.getResource().getId();
 
@@ -88,10 +97,11 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         Assert.assertEquals(CreatorType.INSTITUTION, actualCreator.getCreator().getCreatorType());
         Assert.assertTrue(actualCreator.getCreator().getName().contains(EXPECTED_INSTITUTION_NAME));
         Assert.assertEquals(ResourceCreatorRole.REPOSITORY, actualCreator.getRole());
-        setHttpServletRequest(getServletPostRequest());
-        controller = generateNewInitializedController(DocumentController.class);
+        controller = generateNewInitializedController(DocumentController.class, null, getServletPostRequest());
         loadResourceFromId(controller, newId);
         controller.setDelete("delete");
+        String deletionReason = "this is a test";
+        controller.setDeletionReason(deletionReason);
         controller.delete();
 
         controller = generateNewInitializedController(DocumentController.class);
@@ -99,6 +109,13 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 
         Assert.assertEquals("expecting document status to be deleted", Status.DELETED, controller.getDocument().getStatus());
         Assert.assertEquals("expecting controller status to be deleted", Status.DELETED, controller.getStatus());
+        boolean seen = false;
+        for (ResourceNote note : controller.getDocument().getResourceNotes()) {
+            if (note.getType() == ResourceNoteType.ADMIN && note.getNote().equals(deletionReason)) {
+            seen = true;
+            }
+        }
+        assertTrue("a deletion note should have been added", seen);
     }
 
     @Test
@@ -115,13 +132,14 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         d.setTitle("doc title");
         d.setDescription("desc");
         d.markUpdated(getUser());
+        controller.setServletRequest(getServletPostRequest());
         controller.save();
         Long newId = controller.getResource().getId();
 
         // now reload the document and see if the institution was saved.
         Assert.assertNotSame("resource id should be assigned after insert", originalId, newId);
 
-        controller = generateNewInitializedController(DocumentController.class);
+        controller = generateNewInitializedController(DocumentController.class, getUser(), getServletPostRequest() );
         loadResourceFromId(controller, newId);
 
         d = controller.getResource();
@@ -135,8 +153,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         Assert.assertEquals(CreatorType.PERSON, actualCreator.getCreator().getCreatorType());
         Assert.assertTrue(actualCreator.getCreator().getName().contains("newLast"));
         Assert.assertEquals(ResourceCreatorRole.AUTHOR, actualCreator.getRole());
-        setHttpServletRequest(getServletPostRequest());
-        controller = generateNewInitializedController(DocumentController.class);
+        controller = generateNewInitializedController(DocumentController.class, getUser(), getServletPostRequest());
         loadResourceFromId(controller, newId);
         controller.setDelete("delete");
         controller.delete();
@@ -193,6 +210,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         d.setTitle("doc title");
         d.setDescription("desc");
         d.markUpdated(getUser());
+        controller.setServletRequest(getServletPostRequest());
         controller.save();
         Long newId = controller.getResource().getId();
 
@@ -225,6 +243,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         loadResourceFromId(controller, newId);
         controller.setAuthorshipProxies(new ArrayList<ResourceCreatorProxy>());
         // deleting all authorship resource creators
+        controller.setServletRequest(getServletPostRequest());
         controller.save();
 
         // loading the view page
@@ -254,6 +273,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         d.setTitle("doc title");
         d.setDescription("testing to see if the system created a person record when it shouldn't have");
         d.markUpdated(getUser());
+        controller.setServletRequest(getServletPostRequest());
         controller.save();
         Long newId = controller.getResource().getId();
 
@@ -277,6 +297,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         d.setTitle("Testing Resource Creator Sort Order");
         d.setDescription("Resource Creator sort order");
         d.markUpdated(getUser());
+        controller.setServletRequest(getServletPostRequest());
         controller.save();
         Long documentId = controller.getResource().getId();
         controller = generateNewInitializedController(DocumentController.class);
@@ -288,7 +309,6 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         }
     }
 
-    
     @Test
     @Rollback
     // create a simple document, using a pre-existing author with no email address. make sure that we didn't create a new person record.
@@ -309,14 +329,15 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         d.setTitle("doc title");
         d.setDescription("testing to see if the system created a person record when it shouldn't have");
         d.markUpdated(getUser());
+        controller.setServletRequest(getServletPostRequest());
         controller.save();
         Long newId = controller.getResource().getId();
 
         // now reload the document and see if the institution was saved.
         Assert.assertNotSame("resource id should be assigned after insert", originalId, newId);
-        
+
         Set<Person> findByFullName = entityService.findByFullName("Pamela Cressey");
-        logger.debug("people: {} " , findByFullName);
+        logger.debug("people: {} ", findByFullName);
         int actualPersonCount = genericService.findAll(Person.class).size();
         Assert.assertEquals("Person count should not be the same after creating new document with an author that already exists", expectedPersonCount + 1,
                 actualPersonCount);
@@ -357,5 +378,67 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         assertEquals(collectionId, collectionId2);
 
     }
-    
+
+    @Ignore("Ignoring because this is an internal performance test, not really a unit-test")
+    @Test
+    @Rollback
+    public void testPerformance() throws InstantiationException, IllegalAccessException, TdarActionException {
+        //42s -- reconcileSet + indexInterceptor @100docs
+        //52s -- reconcileSet + w/o indexInterceptor @100docs
+        //43s -- setter model + w/o indexInterceptor @100docs
+        //41s -- setter model + w indexInterceptor @100docs
+        //54s -- with clearAll + indexInterceptor @100docs
+        //44s -- with clearAll + w/o indexInterceptor @100docs
+        Project project = new Project();
+        project.setTitle("PerfTest");
+        project.setDescription("perfTest");
+        project.markUpdated(getUser());
+        genericService.saveOrUpdate(project);
+        List<Person> fiftyPList = genericService.findRandom(Person.class, 50);
+        List<Institution> fiftyIList = genericService.findRandom(Institution.class, 50);
+        for (Person person : fiftyPList) {
+            ResourceCreator rc = new ResourceCreator(project, person, ResourceCreatorRole.CONTRIBUTOR);
+            genericService.saveOrUpdate(rc);
+            project.getResourceCreators().add(rc);
+        }
+        for (Institution inst : fiftyIList) {
+            ResourceCreator rc = new ResourceCreator(project, inst, ResourceCreatorRole.REPOSITORY);
+            genericService.saveOrUpdate(rc);
+            project.getResourceCreators().add(rc);
+        }
+        project.getCultureKeywords().addAll(genericService.findRandom(CultureKeyword.class, 10));
+        project.getMaterialKeywords().addAll(genericService.findRandom(MaterialKeyword.class, 10));
+        project.getSiteNameKeywords().addAll(genericService.findRandom(SiteNameKeyword.class, 10));
+        genericService.saveOrUpdate(project);
+        int totalNumOfRecords = 100;
+        
+        for (int i=0;i < totalNumOfRecords; i++) {
+            Document doc = createAndSaveNewInformationResource(Document.class,project, getAdminUser(), "perf doc #" + i);
+            doc.getCultureKeywords().addAll(genericService.findRandom(CultureKeyword.class, 5));
+            doc.setInheritingSiteInformation(true);
+            doc.setInheritingMaterialInformation(true);
+            for (Person person : genericService.findRandom(Person.class, 10)) {
+                ResourceCreator rc = new ResourceCreator(doc, person, ResourceCreatorRole.AUTHOR);
+                genericService.saveOrUpdate(rc);
+                doc.getResourceCreators().add(rc);
+            }
+            File file = new File(TestConstants.TEST_DOCUMENT_DIR + TestConstants.TEST_DOCUMENT_NAME);
+            addFileToResource(doc, file);
+            genericService.saveOrUpdate(doc);
+        }
+        Long projectId = project.getId();
+        genericService.synchronize();
+        project = null;
+        
+        // this the test...
+        ProjectController controller = generateNewInitializedController(ProjectController.class);
+        controller.setId(projectId);
+        controller.prepare();
+        Long time = System.currentTimeMillis();
+        controller.setServletRequest(getServletPostRequest());
+        controller.edit();
+        controller.save();
+        logger.info("total save time: " + (System.currentTimeMillis() - time));
+    }
+
 }

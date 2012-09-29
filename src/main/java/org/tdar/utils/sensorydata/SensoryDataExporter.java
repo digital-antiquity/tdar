@@ -1,6 +1,5 @@
 package org.tdar.utils.sensorydata;
 
-import java.io.OutputStream;
 import java.io.PrintWriter;
 
 import org.tdar.core.bean.resource.SensoryData;

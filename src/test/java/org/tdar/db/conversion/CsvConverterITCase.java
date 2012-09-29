@@ -20,7 +20,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.dataTable.DataTable;
+import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.db.conversion.converters.DatasetConverter;
@@ -28,7 +28,7 @@ import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 
 public class CsvConverterITCase extends AbstractDataIntegrationTestCase {
 
-    public String[] getDatabaseList() {
+    public String[] getDataImportDatabaseTables() {
         String[] databases = { "csv_503_workbook1", "csv_505_malformed_csv_dataset", "csv_504_word_formed_csv_dataset" };
         return databases;
     }
@@ -119,7 +119,7 @@ public class CsvConverterITCase extends AbstractDataIntegrationTestCase {
         converter.execute();
 
         for (DataTable table : converter.getDataTables()) {
-            assertTrue("didn't find " + table.getName(), ArrayUtils.contains(getDatabaseList(), table.getName()));
+            assertTrue("didn't find " + table.getName(), ArrayUtils.contains(getDataImportDatabaseTables(), table.getName()));
         }
 
         tdarDataImportDatabase.selectAllFromTable(converter.getDataTableByName("csv_503_workbook1"),

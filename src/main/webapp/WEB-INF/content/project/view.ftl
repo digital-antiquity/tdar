@@ -6,6 +6,7 @@
 <meta name="lastModifiedDate" content="$Date$"/>
 <@view.googleScholar />
 </@view.htmlHeader>
+ <@search.headerLinks includeRss=false />
 
 <@view.toolbar "${resource.urlNamespace}" "view" />
 
@@ -16,19 +17,20 @@
 <#if (totalRecords > 0)>
 
 <br/>
-<h3>There are ${project.informationResources.size()} Resources within this Project</h3>
+<h3>There are ${totalRecords?c} Resources within this Project</h3>
 
-    <#if ( results?? && results.size() > 0 )>
-                      <@rlist.listResources results 'RESOURCE_TYPE' false true true "ol" "h4" />
+    <#if ( results?has_content )>
+			  <@rlist.listResources resourcelist=results sortfield="RESOURCE_TYPE" expanded=true listTag="ol" headerTag="h4" />
     </#if>
 
     <#if ( results?? && numPages > 1)>
-<div style="border-top:1px solid #999;padding:2px 2px 2px 2px">
-         <@search.pagination ""/>
-</div>
+		<div style="border-top:1px solid #999;padding:2px 2px 2px 2px">
+			 <@search.pagination ""/>
+		</div>
     </#if>
 
 </div>
 <#else>
     No resources have been associated with this project.
 </#if>
+

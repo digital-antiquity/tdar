@@ -27,6 +27,7 @@
         <property name="password" value="${javax.persistence.jdbc.password}" />
         <property name='minPoolSize' value="${tdardata.minConnections}" />
         <property name='maxPoolSize' value="${tdardata.maxConnections}" />
+        <!-- number of prepared statements to cache -->
         <property name='maxStatements' value='50' />
         <property name='idleConnectionTestPeriod' value='300' />
         <property name='preferredTestQuery' value='select 1' />

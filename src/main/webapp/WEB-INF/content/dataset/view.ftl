@@ -1,7 +1,6 @@
 <#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
 <@view.htmlHeader resourceType="dataset">
-    <script type='text/javascript' src='<@s.url value="/includes/datatable-support.js"/>'></script>
 <meta name="lastModifiedDate" content="$Date$"/>
 <@view.googleScholar />
 </@view.htmlHeader>
@@ -11,11 +10,12 @@
 <@view.infoResourceBasicInformation />
 <@view.sharedViewComponents resource>
 
-<#if (dataset.dataTables.size() > 0)>
+<#if (dataset.dataTables?has_content)>
 
 <#if authenticatedUser??  && ((resource.latestUploadedVersion?? && resource.latestUploadedVersion.informationResourceFile.public && resource.availableToPublic) || allowedToViewConfidentialFiles)>
 
 <h3>Browse the Data Set</h3>
+<#if (dataset.dataTables?size > 1)>
 <form>
 	<label for="table_select">Choose Table:</label>
 	<select id="table_select" name="dataTableId" onChange="window.location =  '?dataTableId=' + $(this).val()">
@@ -25,6 +25,7 @@
 	</#list>
 	</select>
 </form>
+</#if>
 
 <table id="dataTable" ></table>
 
@@ -107,7 +108,9 @@ $(document).ready(function() {
 		<#if column.defaultOntology??><#assign typeLabel = "integration"/></#if>
 		<#if column.columnEncodingType?? && column.columnEncodingType == 'COUNT'><#assign typeLabel = "count"/></#if>
 		<#if column.mappingColumn??><#assign typeLabel = "mapped"/></#if>
-		<td nowrap><span class="columnSquare ${typeLabel}"></span><b>${column.displayName}</b> </td>
+		<td nowrap><span class="columnSquare ${typeLabel}"></span><b>
+			${column.displayName}
+		</b> </td>
 		 <td><#if column.columnDataType??>${column.columnDataType.label}&nbsp;</#if></td>
 		<td><#if column.columnEncodingType??>${column.columnEncodingType.label}</#if>
 		<#if column.measurementUnit??> (${column.measurementUnit.label})</#if> </td>

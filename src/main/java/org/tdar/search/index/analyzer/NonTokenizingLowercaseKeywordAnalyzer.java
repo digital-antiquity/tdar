@@ -22,7 +22,7 @@ public final class NonTokenizingLowercaseKeywordAnalyzer extends Analyzer {
     @Override
     public TokenStream tokenStream(String fieldName, Reader reader) {
         KeywordTokenizer kt = new KeywordTokenizer(reader);
-        LowerCaseFilter stream = new LowerCaseFilter(Version.LUCENE_31,kt);
+        LowerCaseFilter stream = new LowerCaseFilter(Version.LUCENE_35, kt);
         ASCIIFoldingFilter filter = new ASCIIFoldingFilter(stream);
         TrimFilter trimFilter = new TrimFilter(filter, true);
         return trimFilter;

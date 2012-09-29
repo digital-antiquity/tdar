@@ -22,24 +22,17 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.SensoryData;
-import org.tdar.core.service.fileProcessing.MessageService;
+import org.tdar.core.service.workflow.FileArchiveWorkflow;
+import org.tdar.core.service.workflow.MessageService;
+import org.tdar.core.service.workflow.Workflow;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.PairtreeFilestore;
-import org.tdar.filestore.workflows.FileArchiveWorkflow;
-import org.tdar.filestore.workflows.Workflow;
 
 /**
  * @author Adam Brin
  * 
  */
 public class FileArchiveITCase extends AbstractIntegrationTestCase {
-
-    public static final Long INFORMATION_RESOURCE_ID = 12345l;
-    public static final Long INFORMATION_RESOURCE_FILE_ID = 1234l;
-    public static final Long INFORMATION_RESOURCE_FILE_VERSION_ID = 1112l;
-    private static final Integer VERSION = 1;
-    public static String baseIrPath = File.separator + "12" + File.separator + "34" + File.separator + "5" + File.separator + PairtreeFilestore.CONTAINER_NAME
-            + File.separator;
 
     @Autowired
     private FileAnalyzer fileAnalyzer;
@@ -80,7 +73,7 @@ public class FileArchiveITCase extends AbstractIntegrationTestCase {
 
         for (InformationResourceFileVersion version : informationResourceFile.getLatestVersions()) {
             logger.info(version);
-            if (!version.isUploaded()) {
+            if (version.isTranslated()) {
                 String contents = FileUtils.readFileToString(version.getFile());
                 assertTrue(contents.contains("Ark_HM_Headpot_01.txt"));
                 assertTrue(contents.contains("Ark_HM_Headpot_mtrx_01.txt"));

@@ -6,35 +6,28 @@
  */
 package org.tdar.struts.action.search;
 
-import static org.tdar.core.service.external.auth.InternalTdarRights.SEARCH_FOR_DELETED_RECORDS;
-import static org.tdar.core.service.external.auth.InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS;
-import static org.tdar.core.service.external.auth.InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.functors.NotNullPredicate;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.hibernate.search.FullTextQuery;
 import org.tdar.core.bean.Indexable;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.resource.Dataset.IntegratableOptions;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.search.query.FieldQueryPart;
-import org.tdar.search.query.QueryDescriptionBuilder;
-import org.tdar.search.query.QueryFieldNames;
-import org.tdar.search.query.QueryGroup;
-import org.tdar.search.query.QueryPartGroup;
+import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
-import org.tdar.search.query.queryBuilder.QueryBuilder;
+import org.tdar.search.query.builder.QueryBuilder;
+import org.tdar.search.query.part.FieldQueryPart;
+import org.tdar.search.query.part.PhraseFormatter;
+import org.tdar.search.query.part.QueryGroup;
+import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.struts.action.AuthenticationAware;
-import org.tdar.struts.search.query.SearchResultHandler;
 
 /**
  * @author Adam Brin
@@ -53,14 +46,12 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     private SortOption sortField = SortOption.RELEVANCE;
     private SortOption secondarySortField;
     private boolean debug = false;
+    private ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
     public static final String ERROR_MINIMUM_LENGTH = "Search term shorter than minimum length";
-    private List<ResourceType> resourceTypes = new ArrayList<ResourceType>();
-    private List<Status> includedStatuses = new ArrayList<Status>();
-    private String title;
     private Long id = null;
-    private boolean useSubmitterContext = false;
     private String mode;
-
+    private String searchTitle;
+    private String searchDescription;
     // execute a query even if query is empty
     private boolean showAll = false;
 
@@ -152,17 +143,8 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     protected void addEscapedWildcardField(QueryGroup q, String field, String value) {
         if (checkMinString(value) && StringUtils.isNotBlank(value)) {
             getLogger().trace(field + ":" + value);
-            FieldQueryPart fqp = new FieldQueryPart(field);
-            fqp.setEscapeWildcardValue(value);
-            q.append(fqp);
-        }
-    }
-
-    protected void addEscapedField(QueryGroup q, String field, String value) {
-        if (checkMinString(value)) {
-            getLogger().trace(field + ":" + value);
-            FieldQueryPart fqp = new FieldQueryPart(field);
-            fqp.setEscapedValue(value);
+            FieldQueryPart fqp = new FieldQueryPart(field, value);
+            fqp.setPhraseFormatters(PhraseFormatter.WILDCARD);
             q.append(fqp);
         }
     }
@@ -170,8 +152,8 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     protected void addQuotedEscapedField(QueryGroup q, String field, String value) {
         if (checkMinString(value)) {
             getLogger().trace(field + ":" + value);
-            FieldQueryPart fqp = new FieldQueryPart(field);
-            fqp.setQuotedEscapeValue(value);
+            FieldQueryPart fqp = new FieldQueryPart(field, value);
+            fqp.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
             q.append(fqp);
         }
     }
@@ -184,70 +166,27 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
 
     protected void addResourceTypeQueryPart(QueryGroup q, List<ResourceType> list) {
         if (!CollectionUtils.isEmpty(list)) {
-            QueryPartGroup grp = new QueryPartGroup();
-            grp.setOperator(Operator.OR);
-            for (ResourceType resourceType : list) {
-                if (resourceType != null) {
-                    grp.append(new FieldQueryPart("resourceType", resourceType));
-                }
-            }
-            if (!grp.isEmpty()) {
-                q.append(grp);
-            }
+            FieldQueryPart fqp = new FieldQueryPart("resourceType", list.toArray(new ResourceType[0]));
+            fqp.setOperator(Operator.OR);
+            q.append(fqp);
         }
     }
 
-    protected void addTitlePart(QueryGroup q, String title_) {
-        if (StringUtils.isNotEmpty(title_)) {
-            QueryPartGroup titleGroup = new QueryPartGroup(Operator.OR);
-            titleGroup.append(new FieldQueryPart(QueryFieldNames.TITLE_AUTO).setBoost(6f).setQuotedEscapeValue(title_));
-            titleGroup.append(new FieldQueryPart(QueryFieldNames.TITLE, title_).setBoost(4f));
-            q.append(titleGroup);
-        }
-    }
-
-    protected void appendStatusInformation(QueryBuilder q, QueryDescriptionBuilder queryDescriptionBuilder, List<Status> statuses, Person user) {
-        logger.trace("initial status for {} : {}", user, statuses);
-        CollectionUtils.filter(statuses, NotNullPredicate.INSTANCE);
-        // selecting nothing is the same as selecting everything
-        if (CollectionUtils.isEmpty(statuses)) {
-            statuses.addAll(Arrays.asList(Status.values()));
-        }
-
-        // remove invalid, inappropriate selections
-        getAuthenticationAndAuthorizationService().removeIfNotAllowed(statuses, Status.DELETED, SEARCH_FOR_DELETED_RECORDS, user);
-        getAuthenticationAndAuthorizationService().removeIfNotAllowed(statuses, Status.FLAGGED, SEARCH_FOR_FLAGGED_RECORDS, user);
-        getAuthenticationAndAuthorizationService().removeIfNotAllowed(statuses, Status.DRAFT, SEARCH_FOR_DRAFT_RECORDS, user, isUseSubmitterContext());
-
-        if (CollectionUtils.isEmpty(statuses)) {
-            throw new TdarRecoverableRuntimeException("no valid statuses were specified");
-        }
-
-        if (queryDescriptionBuilder != null && !(statuses.size() == 1 && statuses.contains(Status.ACTIVE))) {
-            queryDescriptionBuilder.append(QueryDescriptionBuilder.WITH_STATUSES, statuses);
-        }
-
-        logger.trace("ending status for {} : {}", user, statuses);
-        appendStatusTypes(q, statuses);
-    }
-
-    protected void appendStatusTypes(QueryGroup q, List<Status> includedStatuses) {
-        QueryPartGroup group = new QueryPartGroup();
-        group.setOperator(Operator.OR);
-        if (includedStatuses != null) {
-            for (Status status : includedStatuses) {
-                if (status != null) {
-                    group.append(new FieldQueryPart(QueryFieldNames.STATUS, status));
-                }
-            }
-        }
-        if (!group.isEmpty()) {
-            q.append(group);
-        }
+    // deal with the terms that correspond w/ the "narrow your search" section
+    // and from facets
+    protected QueryPartGroup processReservedTerms() {
+        getAuthenticationAndAuthorizationService()
+                .initializeReservedSearchParameters(getReservedSearchParameters(),
+                        getAuthenticatedUser());
+        return getReservedSearchParameters().toQueryPartGroup();
     }
 
     public int getNextPageStartRecord() {
         return startRecord + recordsPerPage;
+    }
+
+    public int getPrevPageStartRecord() {
+        return startRecord - recordsPerPage;
     }
 
     /**
@@ -289,36 +228,6 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     }
 
     /**
-     * @return the resourceTypes
-     */
-    public List<ResourceType> getResourceTypes() {
-        return resourceTypes;
-    }
-
-    /**
-     * @param resourceTypes
-     *            the resourceTypes to set
-     */
-    public void setResourceTypes(List<ResourceType> resourceTypes) {
-        this.resourceTypes = resourceTypes;
-    }
-
-    /**
-     * @return the title
-     */
-    public String getTitle() {
-        return title;
-    }
-
-    /**
-     * @param title
-     *            the title to set
-     */
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    /**
      * @return the id
      */
     public Long getId() {
@@ -331,22 +240,6 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
      */
     public void setId(Long id) {
         this.id = id;
-    }
-
-    /**
-     * @return the includedStatuses
-     */
-    public List<Status> getIncludedStatuses() {
-        return includedStatuses;
-    }
-
-    /**
-     * @param includedStatuses
-     *            the includedStatuses to set
-     */
-    public void setIncludedStatuses(List<Status> includedStatuses) {
-        // we need a list we can mutate
-        this.includedStatuses = new ArrayList<Status>(includedStatuses);
     }
 
     /**
@@ -369,14 +262,14 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
      *            the useSubmitterContext to set
      */
     public void setUseSubmitterContext(boolean useSubmitterContext) {
-        this.useSubmitterContext = useSubmitterContext;
+        getReservedSearchParameters().setUseSubmitterContext(useSubmitterContext);
     }
 
     /**
      * @return the useSubmitterContext
      */
     public boolean isUseSubmitterContext() {
-        return useSubmitterContext;
+        return getReservedSearchParameters().isUseSubmitterContext();
     }
 
     /**
@@ -390,7 +283,62 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
      * @param mode
      *            the mode to set
      */
+    // TODO: method needs better name... this is just metadata used to describe the caller of handleSearch()
     public void setMode(String mode) {
         this.mode = mode;
     }
+
+    public String getSearchDescription() {
+        return searchDescription;
+    }
+
+    public void setSearchDescription(String searchDescription) {
+        this.searchDescription = searchDescription;
+    }
+
+    public String getSearchTitle() {
+        return searchTitle;
+    }
+
+    public void setSearchTitle(String searchTitle) {
+        this.searchTitle = searchTitle;
+    }
+
+    public ReservedSearchParameters getReservedSearchParameters() {
+        return reservedSearchParameters;
+    }
+
+    public void setReservedSearchParameters(ReservedSearchParameters reservedSearchParameters) {
+        this.reservedSearchParameters = reservedSearchParameters;
+    }
+
+    public List<Status> getAllStatuses() {
+        return new ArrayList<Status>(Arrays.asList(Status.values()));
+    }
+
+    public List<Status> getIncludedStatuses() {
+        return getReservedSearchParameters().getStatuses();
+    }
+
+    public void setIncludedStatuses(List<Status> statuses) {
+        getReservedSearchParameters().setStatuses(statuses);
+    }
+
+    public List<ResourceType> getResourceTypes() {
+        return getReservedSearchParameters().getResourceTypes();
+    }
+
+    public List<IntegratableOptions> getIntegratableOptions() {
+        return getReservedSearchParameters().getIntegratableOptions();
+    }
+
+    public void setIntegratableOptions(List<IntegratableOptions> integratableOptions) {
+        getReservedSearchParameters().setIntegratableOptions(integratableOptions);
+    }
+
+    // REQUIRED IF YOU WANT FACETING TO ACTUALLY WORK
+    public void setResourceTypes(List<ResourceType> resourceTypes) {
+        getReservedSearchParameters().setResourceTypes(resourceTypes);
+    }
+
 }

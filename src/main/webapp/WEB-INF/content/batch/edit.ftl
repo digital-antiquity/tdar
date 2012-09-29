@@ -4,45 +4,15 @@
 <title>Batch Upload Documents or Images</title>
 <meta name="lastModifiedDate" content="$Date$"/>
 
-<@edit.resourceJavascript formId='#BulkMetadataForm' includeAsync=true includeInheritance=true/>
-
 </head>
 <body>
 
 <@s.form name='BulkMetadataForm' id='BulkMetadataForm'  method='post' enctype='multipart/form-data' action='save'>
 
-<@edit.basicInformation>
-<@s.hidden name='image.title' value="placeholder title" />
-
-<br/>
-<@s.select labelposition='left' label='Language'  name='resourceLanguage'  emptyOption='false' listValue='label' list='%{languages}'/>
-<br/>
-<@s.hidden labelposition='left' id='dateCreated' label='Year Created' name='image.date' cssClass="" value="-100"/>
-
-<@s.hidden id='ImageDescription' name='image.description' value="placeholder description"/>
-
+<@edit.basicInformation "image" "batch" true>
+	<@s.select labelposition='left' label='Language'  name='resourceLanguage'  emptyOption='false' listValue='label' list='%{languages}'/>
 </@edit.basicInformation>
-
-<script>
-<#if validFileExtensions??>
-   $(function() {
-    var validate = $('.validateFileType');
-     if ($(validate).length > 0) {
-        $(validate).rules("add", {
-            accept: "xls|xlsx",
-            messages: {
-                accept: "Please enter a valid file (xls,xlsx)"
-            }
-        }); // end rules
-      }; 
-    });
-</#if>
-
-$(function(){
-    $('#fileAsyncUpload').rules('add', 'asyncFilesRequired');
-});
-
-</script>
+<@edit.citationInfo "image" false />
 
 
 <div class="glide">
@@ -72,7 +42,7 @@ select all of the files you'd like to add to tDAR.  Each one will be associated 
 <h3>Note</h3>
 For all of the fields below, you can select values that will apply to all of the files you've chosen to upload above.
 </div>
-<@edit.resourceCreators 'Creators' authorshipProxies 'authorship' />
+<@edit.allCreators 'Creators' authorshipProxies 'authorship' />
 
 <@edit.sharedFormComponents  fileReminder=false/>
 
@@ -86,5 +56,27 @@ For all of the fields below, you can select values that will apply to all of the
     <table style="display:none;visibility:hidden" id="queuedFileTemplate">
         <@edit.fileProxyRow />
     </table>
+<@edit.resourceJavascript formId='#BulkMetadataForm' includeAsync=true includeInheritance=true>
+<#if validFileExtensions??>
+
+$(function() {
+	var validate = $('.validateFileType');
+	if ($(validate).length > 0) {
+		$(validate).rules("add", {
+			accept : "xls|xlsx",
+			messages : {
+				accept : "Please enter a valid file (xls,xlsx)"
+			}
+		}); // end rules
+	}
+});
+
+</#if>
+
+$(function(){
+    $('#fileAsyncUpload').rules('add', 'asyncFilesRequired');
+});
+</@edit.resourceJavascript>
+
 
 </body>

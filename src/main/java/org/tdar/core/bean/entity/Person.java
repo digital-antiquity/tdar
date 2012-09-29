@@ -26,7 +26,9 @@ import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.resource.BookmarkedResource;
+import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
+import org.tdar.search.query.QueryFieldNames;
 
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
@@ -76,11 +78,13 @@ public class Person extends Creator implements Comparable<Person>, Validatable {
     private String firstName;
 
     @Column(unique = true, nullable = true)
-    @Field(name = "email")
+    @Field(name = "email", analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class))
     @BulkImportField(label = "Email", order = 3)
-    @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
     private String email;
-    
+
+    @Column(unique = true, nullable = true)
+    private String username;
+
     @Column(nullable = false, name = "email_public", columnDefinition = "boolean default FALSE")
     private Boolean emailPublic = Boolean.FALSE;
 
@@ -104,7 +108,7 @@ public class Person extends Creator implements Comparable<Person>, Validatable {
     private Long totalLogins = 0l;
 
     // can this user contribute resources?
-    @Column(name= "contributor", nullable = false, columnDefinition = "boolean default FALSE")
+    @Column(name = "contributor", nullable = false, columnDefinition = "boolean default FALSE")
     private Boolean contributor = Boolean.FALSE;;
 
     @Column(name = "contributor_reason", length = 512)
@@ -134,8 +138,6 @@ public class Person extends Creator implements Comparable<Person>, Validatable {
 
     @Column(nullable = false, name = "phone_public", columnDefinition = "boolean default FALSE")
     private Boolean phonePublic = Boolean.FALSE;
-    
-    private String password;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "person")
     @XStreamOmitField
@@ -227,14 +229,14 @@ public class Person extends Creator implements Comparable<Person>, Validatable {
     }
 
     public Boolean getEmailPublic() {
-    	return emailPublic;
-    
+        return emailPublic;
+
     }
-    
+
     public void setEmailPublic(Boolean toggle) {
-    	this.emailPublic = toggle;
+        this.emailPublic = toggle;
     }
-    
+
     public Institution getInstitution() {
         return institution;
     }
@@ -332,20 +334,11 @@ public class Person extends Creator implements Comparable<Person>, Validatable {
     }
 
     public Boolean getPhonePublic() {
-    	return phonePublic;
-    }
-    
-    public void setPhonePublic(Boolean toggle) {
-    	this.phonePublic = toggle;
-    }
-    
-    @XmlTransient
-    public String getPassword() {
-        return password;
+        return phonePublic;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPhonePublic(Boolean toggle) {
+        this.phonePublic = toggle;
     }
 
     public List<?> getEqualityFields() {
@@ -424,13 +417,12 @@ public class Person extends Creator implements Comparable<Person>, Validatable {
     public List<Obfuscatable> obfuscate() {
         setObfuscated(true);
         // check if email and phone are actually confidential
-        if (! getEmailPublic()) {
+        if (!getEmailPublic()) {
             setEmail(null);
         }
-        if (! getPhonePublic()) {
+        if (!getPhonePublic()) {
             setPhone(null);
         }
-        setPassword(null);
         setRegistered(false);
         setContributor(false);
         setRpaNumber(null);
@@ -447,6 +439,14 @@ public class Person extends Creator implements Comparable<Person>, Validatable {
 
     @Override
     public boolean isValid() {
-    	return isValidForController() && getId() != null;
+        return isValidForController() && getId() != null;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

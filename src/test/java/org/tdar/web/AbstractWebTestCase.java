@@ -1,8 +1,17 @@
 package org.tdar.web;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.tdar.TestConstants.DEFAULT_BASE_URL;
+
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,8 +27,10 @@ import org.slf4j.LoggerFactory;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.w3c.dom.Element;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
+import com.gargoylesoftware.htmlunit.ElementNotFoundException;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.TextPage;
 import com.gargoylesoftware.htmlunit.UnexpectedPage;
@@ -37,10 +48,9 @@ import com.gargoylesoftware.htmlunit.html.HtmlRadioButtonInput;
 import com.gargoylesoftware.htmlunit.html.HtmlSelect;
 import com.gargoylesoftware.htmlunit.html.HtmlTextArea;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
+import com.google.common.collect.Lists;
 import com.opensymphony.module.sitemesh.HTMLPage;
-
-import static org.junit.Assert.*;
-import static org.tdar.TestConstants.*;
+import com.threelevers.css.Selector;
 
 /**
  * @author Adam Brin
@@ -48,37 +58,32 @@ import static org.tdar.TestConstants.*;
  */
 public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
-    final Logger logger = LoggerFactory.getLogger(AbstractAnonymousWebTestCase.class);
-
-    final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_3_6);
+    public static final String TABLE_METADATA = "table metadata";
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    protected final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_3_6);
     protected Page internalPage;
     protected HtmlPage htmlPage;
-    private HtmlForm internalForm;
-    public static final String TABLE_METADATA = "table metadata";
-    public static String PROJECT_ID_FIELDNAME = "projectId";
+    private HtmlForm _internalForm;
+    private HtmlElement documentElement;
 
-    String regex = "&lt;(.+?)&gt;";
-    Pattern pattern = Pattern.compile(regex);
-    
-    //using linked hash for consistent execution order
+    private String regex = "&lt;(.+?)&gt;";
+    private Pattern pattern = Pattern.compile(regex);
+    public static String PROJECT_ID_FIELDNAME = "projectId";
+    protected Set<String> encodingErrorExclusions = new HashSet<String>();
+
     @SuppressWarnings("serial")
-    Map<String,String> encodingErrorRegexes = new LinkedHashMap<String, String>() {{
-        //note that braces are java regex meta instructions and must be escaped (oh and don't forget to escape the escape character... man I hate you java)
-        put("possible html encoding inside json, open-brace", "\\{&quot;");
-        put("possible html encoding inside json, close-brace", "&quot;\\}");
-        put("possible html encoding inside json, quoted-key", "\\{&quot;:");
-        put("double-encoded html tag", "&lt;(.+?)&gt;");
-        put("double-encoded html attribute pair", "\\w+\\s?=\\s?&quot;\\w+&quot;");
-    }};
-    
-    Map<String, Pattern> encodingErrorPatterns = new LinkedHashMap<String, Pattern>();
-    
-    public AbstractWebTestCase() {
-        for(Map.Entry<String, String> entry  : encodingErrorRegexes.entrySet()) {
-            Pattern pattern = Pattern.compile(entry.getValue());
-            encodingErrorPatterns.put(entry.getKey(), pattern);
+    private Map<String, Pattern> encodingErrorPatterns = new LinkedHashMap<String, Pattern>() {
+        {
+            // note that braces are java regex meta instructions and must be escaped (oh and don't forget to escape the escape character... man I hate you java)
+            put("possible html encoding inside json, open-brace", Pattern.compile("\\{&quot;"));
+            put("possible html encoding inside json, close-brace", Pattern.compile("&quot;\\}"));
+            put("possible html encoding inside json, quoted-key", Pattern.compile("\\{&quot;:"));
+            put("double-encoded html tag", Pattern.compile("&lt;(.+?)&gt;"));
+            put("double-encoded html attribute pair", Pattern.compile("\\w+\\s?=\\s?&quot;\\w+&quot;"));
         }
-    }
+    };
+
+    // disregard an encoding error if it's in the exclusions set;
 
     /*
      * override to test with different URL can use this to point at another
@@ -97,6 +102,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            logger.error("couldn't find page at " + localPath, e);
         }
         return null;
     }
@@ -238,6 +244,23 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             txt.setText(value);
         } else if (input instanceof HtmlSelect) {
             HtmlSelect sel = (HtmlSelect) input;
+            HtmlOption option = null;
+            for (HtmlOption option_ : sel.getSelectedOptions()) {
+                option_.setSelected(false);
+
+            }
+            try {
+                option = sel.getOptionByValue(value);
+            } catch (ElementNotFoundException enfe) {
+
+            }
+            if (option == null) {
+                logger.warn("option value " + value + " did not exist, creating it");
+                option = (HtmlOption) ((HtmlPage) internalPage).createElement("option");
+                option.setValueAttribute(value);
+                sel.appendChild(option);
+                option.setSelected(true);
+            }
             sel.setSelectedAttribute(value, true);
             // assertTrue(sel.getSelectedOptions().get(0).getAttributes().getNamedItem("value").getTextContent() + " should equal " +
             // value,sel.getSelectedOptions().get(0).getAttributes().getNamedItem("value").getTextContent().equals(value));
@@ -253,11 +276,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             inp.setValueAttribute(value);
         }
         assertTrue("could not find field: " + name, id != null);
-        for (HtmlForm form : page.getForms()) {
-            if (form.hasHtmlElementWithId(id)) {
-                internalForm = form;
-            }
-        }
+        updateMainFormIfNull(id);
     }
 
     public void createInput(String inputName, String name, String value) {
@@ -265,24 +284,32 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         createdElement.setAttribute("type", inputName);
         createdElement.setAttribute("name", name);
         createdElement.setAttribute("value", value);
-        if (internalForm != null) {
-            internalForm.appendChild(createdElement);
-        } else {
-            logger.warn("internalPage was null - element will be added to all forms on the page");
-            HtmlPage page = (HtmlPage) internalPage;
-            List<HtmlForm> forms = page.getForms();
-            if (forms.isEmpty()) {
-                Assert.fail("cannot create input element because page does not have any forms");
-            }
-            for (HtmlForm form : page.getForms()) {
-                form.appendChild(createdElement);
-                logger.debug("appending name:'{}'\t value:'{}'\t to form:'{}'", new Object[] { name, value, form.getId() });
-            }
+        if (getForm() != null) {
+            getForm().appendChild(createdElement);
         }
     }
 
     public void createInput(String inputName, String name, Number value) {
         createInput(inputName, name, value.toString());
+    }
+
+    public <T> void createTextInput(String name, T value) {
+        // treat null as empty string
+        String strValue = "" + value;
+        createInput("text", name, strValue);
+    }
+
+    // create several text inputs. element name will be String.format(nameFormat, listIndex);
+    public <T> void createTextInput(String nameFormat, List<T> values) {
+        createTextInputs(nameFormat, values, 0);
+    }
+
+    public <T> void createTextInputs(String nameFormat, List<T> values, int startingIndex) {
+        for (int i = startingIndex; i < startingIndex + values.size(); i++) {
+            T value = values.get(i);
+            String name = String.format(nameFormat, i);
+            createTextInput(name, value);
+        }
     }
 
     public boolean removeElementsByName(String elementName) {
@@ -343,20 +370,13 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
                 }
             }
         }
-        for (HtmlForm form : page.getForms()) {
-            if (form.hasHtmlElementWithId(id)) {
-                internalForm = form;
-            }
-        }
+        updateMainFormIfNull(id);
     }
 
     public void assertButtonPresentWithText(String buttonText) {
-        if (internalForm == null && getHtmlPage().getForms().size() > 0) {
-            internalForm = getHtmlPage().getForms().get(0);
-        }
         HtmlInput input = null;
         try {
-            input = internalForm.getInputByValue(buttonText);
+            input = getForm().getInputByValue(buttonText);
         } catch (Exception ex) {
             logger.error("button element not found", ex);
         }
@@ -385,10 +405,14 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     public void submitFormWithoutErrorCheck(String buttonText) {
         assertButtonPresentWithText(buttonText);
         try {
-            changePage(internalForm.getInputByValue(buttonText).click());
+            changePage(getForm().getInputByValue(buttonText).click());
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void assertErrorsPresent() {
+        assertTextPresent("The following errors were found with your submission");
     }
 
     public void assertTextNotPresent(String text) {
@@ -402,7 +426,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             contents = page.getWebResponse().getContentAsString();
         }
         if (contents.contains(text)) {
-            logger.debug("text " + text + " found in " + contents);
+            logger.trace("text " + text + " found in " + contents);
         }
         assertFalse("text should not be present [" + text + "] in page:" + internalPage.getUrl(), contents.contains(text));
     }
@@ -411,23 +435,38 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
      * Assert that the page is not an error page and does or contain any inline stacktraces
      */
     public void assertNoErrorTextPresent() {
-        assertTextNotPresent("Exception stack trace:" + getPageText()); // inline stacktrace (ftl compiles but dies partway through rendering)
+        assertTextNotPresent("Exception stack trace: " + getCurrentUrlPath() + ":" + getPageText()); // inline stacktrace (ftl compiles but dies partway through
+                                                                                                     // rendering)
         assertTextNotPresentIgnoreCase("HTTP ERROR");
-        assertTextNotPresentIgnoreCase("Exception" + getPageText()); // inline stacktrace (ftl compiles but dies partway through rendering)
-        assertFalse("page shouldn't contain action errors" + getPageText(), getPageCode().contains("class=\"action-error\""));
+        assertTextNotPresentIgnoreCase("Exception " + getCurrentUrlPath() + ":" + getPageText()); // inline stacktrace (ftl compiles but dies partway through
+                                                                                                  // rendering)
+        assertFalse("page shouldn't contain action errors " + getCurrentUrlPath() + ":" + getPageText(), getPageCode().contains("class=\"action-error\""));
     }
 
     public void assertNoEscapeIssues() {
         String html = getPageCode().toLowerCase();
-        for(Map.Entry<String, Pattern> entry : encodingErrorPatterns.entrySet()) {
+        for (Map.Entry<String, Pattern> entry : encodingErrorPatterns.entrySet()) {
             Matcher matcher = entry.getValue().matcher(html);
-            if(matcher.find()) {
+            if (matcher.find()) {
                 String msg = "encoding issue \"%s\" found at pos[%s,%s] : '%s'";
-                Assert.fail(String.format(msg, entry.getKey(), matcher.start(), matcher.end(), matcher.group()));
+                int start = matcher.start() - 100;
+                int end = matcher.end() + 100;
+                int max = getPageCode().length();
+                if (start < 0) {
+                    start = 0;
+                }
+                if (end > max) {
+                    end = max;
+                }
+                String matchAndContext = getPageCode().subSequence(start, end).toString();
+                String exactMatch = getPageCode().subSequence(matcher.start(), matcher.end()).toString();
+
+                if (!encodingErrorExclusions.contains(exactMatch)) {
+                    Assert.fail(String.format(msg, entry.getKey(), matcher.start(), matcher.end(), matchAndContext));
+                }
             }
         }
     }
-    
 
     public HtmlPage getHtmlPage() {
         assertTrue("page is not a HtmlPage", internalPage instanceof HtmlPage);
@@ -437,7 +476,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
     public HtmlAnchor findPageLink(String text) {
         HtmlAnchor anchor = getHtmlPage().getAnchorByText(text);
-        assertNotNull("link with text [" + text + "] not found", anchor);
+        assertNotNull(String.format("link with text [%s] not found on page %s", text, getPageCode()), anchor);
         return anchor;
     }
 
@@ -446,11 +485,16 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     }
 
     public void changePage(Page page) {
+        if (page == null) {
+            fail("changed to a null page for some reason");
+            return;
+        }
         internalPage = page;
-        internalForm = null;
+        _internalForm = null;
         logger.info("CHANGING url TO: " + internalPage.getUrl());
         if (internalPage instanceof HtmlPage) {
             htmlPage = (HtmlPage) internalPage;
+            documentElement = htmlPage.getDocumentElement();
             assertNoEscapeIssues();
         }
     }
@@ -482,12 +526,11 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     }
 
     public String getCurrentUrlPath() {
-        return internalPage.getUrl().getPath();
+        return internalPage.getUrl().getPath() + "?" + internalPage.getUrl().getQuery();
     }
 
     @Before
     public void prepare() {
-
         // FIXME: This is far less than ideal, but there's a problem with how
         // the MAC is handling memory
         // and appears to be 'leaking' with jwebunit and gooogle maps. Hence, we
@@ -497,6 +540,11 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         webClient.setJavaScriptEnabled(false);
         webClient.setTimeout(0);
         webClient.setJavaScriptTimeout(0);
+
+        // reset encoding error exclusions for each test
+        encodingErrorExclusions = new HashSet<String>();
+        // <generated> gets emitted by cglib methods in stacktrace, let's not consider it to be a double encoding error.
+        encodingErrorExclusions.add("&lt;generated&gt;");
     }
 
     public void testOntologyView() {
@@ -518,7 +566,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         searchIndexService.indexAll();
 
         gotoPage("/project/3805");
-        logger.debug(getPageText());
+        logger.trace(getPageText());
         assertTextPresentInPage("New Philadelphia Archaeology Project");
         assertTextPresentInPage("Block 3, Lot 4");
     }
@@ -533,7 +581,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
     public void testDatasetView() {
         gotoPage("/dataset/3088");
-        logger.info("content of dataset view page: {}", getPageText());
+        logger.trace("content of dataset view page: {}", getPageText());
         assertTextPresentInPage("Knowth Stage 8 Fauna Dataset");
         assertTextPresentInPage("Dataset");
         assertTextPresentInPage("dataset_3088_knowthstage8.xls");
@@ -546,11 +594,9 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
     public void testAdvancedSearchView() {
         gotoPage("/search/advanced");
-        assertTextPresentInPage("TDAR id:");
-        assertTextPresentInPage("Temporal Limits");
-        assertTextPresentInPage("Investigation Types");
-        assertTextPresentInPage("Material Type(s)");
-        assertTextPresentInPage("Cultural Term(s)");
+        assertTextPresentInPage("Limit by geographic region");
+        assertTextPresentInPage("Choose Search Terms");
+        assertTextPresentInPage("All Fields");
     }
 
     @After
@@ -581,6 +627,61 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         String msg = String.format("actual page: %s; assumed page should have in URL: %s; status: %s", internalPage.getUrl(), url, internalPage
                 .getWebResponse().getStatusCode());
         assertTrue(msg, internalPage.getUrl().toString().contains(url));
+    }
+
+    // get the "main" form. it's pretty much a guess, so if you encounter a page w/ multiple forms you might wanna specify it outright
+    public HtmlForm getForm() {
+        if (_internalForm == null) {
+            HtmlForm htmlForm = null;
+            if (getHtmlPage().getForms().size() == 1) {
+                htmlForm = getHtmlPage().getForms().get(0);
+            } else {
+                for (HtmlForm form : getHtmlPage().getForms()) {
+                    if (!form.getNameAttribute().equalsIgnoreCase("autosave")) {
+                        htmlForm = form;
+                        break;
+                    }
+                }
+            }
+            _internalForm = htmlForm;
+        }
+
+        return _internalForm;
+    }
+
+    public HtmlForm getForm(String formName) {
+        return getHtmlPage().getFormByName(formName);
+    }
+
+    protected void setMainForm(HtmlForm form) {
+        _internalForm = form;
+    }
+
+    protected void setMainForm(String formName) {
+        _internalForm = getHtmlPage().getFormByName(formName);
+    }
+
+    // set the main form to be first form that contains a child element with the specified id
+    private void updateMainFormIfNull(String id) {
+        if (_internalForm != null)
+            return;
+        for (HtmlForm form : getHtmlPage().getForms()) {
+            if (form.hasHtmlElementWithId(id)) {
+                setMainForm(form);
+                return;
+            }
+        }
+        logger.warn("No form found containing id '{}'", id);
+    }
+
+    protected List<Element> querySelectorAll(String cssSelector) {
+        Iterable<Element> elements = Selector.from(documentElement).select(cssSelector);
+        List<Element> elementList = Lists.newArrayList(elements);
+        return elementList;
+    }
+
+    protected Element querySelector(String cssSelector) {
+        return Selector.from(documentElement).select(cssSelector).iterator().next();
     }
 
 }

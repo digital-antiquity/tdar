@@ -1,5 +1,7 @@
 package org.tdar.filestore;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -7,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +18,9 @@ import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.service.fileProcessing.MessageService;
-import org.tdar.filestore.workflows.Workflow;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.workflow.MessageService;
+import org.tdar.core.service.workflow.Workflow;
 
 /**
  * $Id$
@@ -80,22 +84,24 @@ public class FileAnalyzer {
 
     public Workflow getWorkflow(InformationResourceFileVersion irFileVersion) throws Exception {
         return fileExtensionToWorkflowMap.get(irFileVersion.getExtension());
-        /*
-        for (Workflow w : workflows) {
-            logger.trace("evaluating workflow: {} on file {}", w, irFileVersion);
-            if (w.isEnabled() && w.canProcess(irFileVersion.getExtension())) {
-                logger.debug("choosing workflow: {}",  w.getClass().getSimpleName());
-                return w;
-            }
-        }
-        return null;
-        */
     }
 
     public boolean processFile(InformationResourceFileVersion irFileVersion) throws Exception {
         Workflow workflow = getWorkflow(irFileVersion);
         if (workflow == null)
             return false; //could argue that this is true
+        if (irFileVersion == null) {
+            throw new TdarRecoverableRuntimeException("File version was null, this should not happen");
+        }
+        
+        File file = file = irFileVersion.getFile();
+        
+        if (file == null) {
+            throw new FileNotFoundException(irFileVersion + " -- file does not exist");
+        }
+        if (!file.exists()) {
+            throw new FileNotFoundException(file.getCanonicalPath() + " does not exist");
+        }
         logger.debug("using workflow: {}", workflow);
         return messageService.sendFileProcessingRequest(irFileVersion, workflow);
     }

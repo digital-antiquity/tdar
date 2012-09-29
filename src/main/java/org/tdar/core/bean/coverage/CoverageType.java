@@ -30,7 +30,7 @@ public enum CoverageType implements HasLabel {
             case CALENDAR_DATE:
                 return (start <= end);
             case RADIOCARBON_DATE:
-                return (start >= end && start > 0 && end > 0);
+                return (start >= end && end > 0);
         }
         return false;
     }

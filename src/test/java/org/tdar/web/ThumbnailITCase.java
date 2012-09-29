@@ -60,7 +60,8 @@ public class ThumbnailITCase extends AbstractAdminAuthenticatedWebTestCase {
         logger.debug("view:" + viewPage);
         logger.debug("edit:" + editPage);
         logger.info(getPageText());
-        assertTextPresent("/thumbnail");
+        // we're dealing with a confidential file, should not be there
+        assertTextNotPresent("/thumbnail");
         String pageCode = getPageCode();
         Pattern p = Pattern.compile("/filestore/(\\d+)(/?)");
         Matcher m = p.matcher(pageCode);

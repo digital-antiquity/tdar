@@ -1,40 +1,26 @@
-<#import "/WEB-INF/macros/resource/list-macros.ftl" as rlist>
-<#import "/WEB-INF/macros/search/search-macros.ftl" as search>
+<#import "/WEB-INF/macros/resource/list-macros.ftl" as rlist />
+<#import "/WEB-INF/macros/search/search-macros.ftl" as search />
 <head>
   <title>Search Results: <#if searchSubtitle??>${searchSubtitle?html}</#if></title>
-  <meta name="totalResults" content="${totalRecords}" />
-  <meta name="startIndex" content="${startRecord}" />
-  <meta name="itemsPerPage" content="${recordsPerPage}" />
-  <link rel="alternate" type="application/atom+xml" title="Atom 1.0" href="${rssUrl}" />
+  <@search.headerLinks includeRss=(actionName=="results") />
 </head>
 <body>
 <div>
 <@search.initResultPagination/>
-<#if searchPhrase??>
-	<p id="searchPhrase">
-	<em>
-		${searchPhrase!""}
-	</em></p>
+<#if searchPhrase?? && !explore>
+    ${searchPhrase}
 </#if>
 
 <#if (totalRecords > 0)>
+
+<#if explore && exploreKeyword?? && exploreKeyword.definition?has_content >
 <div class="glide">
-	<div id="recordTotal">Records ${firstRec} - ${lastRec} of ${totalRecords}
-	</div> 
-	<@search.pagination "results"/>
-
+    <h3>${exploreKeyword.label?html}</h3>
+	<#if exploreKeyword.definition??>
+		${exploreKeyword.definition?html}
+	</#if>
 </div>
-	<style type='text/css'>
-	ol { 
-	    list-style-type:none !important;
-	}
-
-    h5 {
-        display:block !important;
-        border-bottom:1px solid #ccc;
-    }
-    
-	</style>
+</#if>
 
 <#if (referrer?? && referrer == 'TAG')>
 <div class="glide">
@@ -51,13 +37,32 @@ If you'd like to perform an integration:
 <a href="http://dev.tdar.org/confluence/display/TDAR/Data+Integration">visit our documentation for more details</a>
 </div>
 </#if>
+	<@search.basicPagination "Records"/>
 
+	<style type='text/css'>
+	ol { 
+	    list-style-type:none !important;
+	}
+
+    h5 {
+        display:block !important;
+        border-bottom:1px solid #ccc;
+    }
+    
+	</style>
+
+<div class="limit">
+<@removeFacet facetlist=resourceTypes label="Resource Type(s)" facetParam="resourceTypes" />
+<@removeFacet facetlist=documentType label="Document Type(s)" facetParam="documentType" />
+<@removeFacet facetlist=fileAccess label="File Access" facetParam="fileAccess" />
+
+</div>
 <div class="glide">
-		<@rlist.informationResources iterable="results" editable=useSubmitterContext bookmarkable=authenticated showTitle=false/>
+    <@rlist.listResources resourcelist=results sortfield=sortField expanded=true listTag="ol" titleTag="h5"/>
 </div>
     <#if (numPages > 1)>
 <div class="glide">
-	<@search.pagination "results"/>
+	<@search.pagination ""/>
 </div>
 </#if>
 <#else>
@@ -66,16 +71,6 @@ If you'd like to perform an integration:
 </div>
 
 
-
-<#macro cleanupEnum enumvalue>
-    <#assign ret = enumvalue?replace("_"," ") />
-    <#-- FIXME: this is not sustainable, but there's no access to the enum -->
-    <#if enumvalue == 'BOOK'>
-        <#assign ret = 'Book / Report'/>
-    </#if>
-    ${ret?capitalize}
-</#macro>
-
  <div id="sidebar" parse="true">
  <div style="height:110px"></div>
 <h2>Search Options</h2>
@@ -83,7 +78,7 @@ If you'd like to perform an integration:
 <li>        <B>Search Options:</b>
     <ul>
         <li><b>Refine:</b><@search.searchLink "advanced" "Modify Search" /> </li>
-    <#if sessionData?? && sessionData.authenticated && (totalRecords > 0)>
+    <#if sessionData?? && sessionData.authenticated && (totalRecords > 0) && (actionName=="results")>
         <li><b>Download:</b>
         <@search.searchLink "download" "to Excel" />
         <#if totalRecords &gt; maxDownloadRecords>
@@ -99,99 +94,74 @@ If you'd like to perform an integration:
       </li>
   </ul>
   <br/>
+<#macro facetBy facetlist label="Facet Label" facetParam="">
+<#if (facetlist?? && !facetlist.empty)>
+<li><B>${label}:</B>
+<ul>
+	<#list facetlist as facet>
+		<#assign facetLabel = facet />
+	    <#if facet.plural?has_content>
+			<#assign facetLabel = facet.plural />
+	    <#elseif facet.label?has_content>
+	    	<#assign facetLabel = facet.label />
+	    </#if>
+	    <li>
+	    	<#if (facetlist?size > 1)>
+		    	<a href="<@s.url includeParams="all">
+			        <@s.param name="${facetParam}">${facet}</@s.param>
+			        <@s.param name="startRecord" value="0"/>
+			        <#if facetParam != "documentType">
+				        <@s.param name="documentType" value=""/>
+			        </#if>
+			        <#nested>
+			    </@s.url>">
+					${facetLabel}
+				</a>
+		    <#else>
+		    	${facetLabel}
+		    </#if>
+ 	      (${facet.count})
+		</li>
+	</#list>
+</ul><br/></li>
+</#if>
+
+</#macro>
+
+<#macro removeFacet facetlist="" label="Facet Label" facetParam="">
+	<#if facetlist?has_content>
+	<#if (facetlist?is_collection)>
+		<#if facetlist?size == 1>
+			<#assign facet= facetlist.get(0) />
+		</#if>
+	<#elseif (facetlist?is_string) >
+		<#assign facet= facetlist />
+	</#if>
+	<#if facet?has_content>
+    	<a href="<@s.url includeParams="all">
+	        <@s.param name="${facetParam}"value="" />
+	        <@s.param name="startRecord" value="0"/>
+	        <#if facetParam != "documentType">
+		        <@s.param name="documentType" value=""/>
+	        </#if>
+	        <#nested>
+	    </@s.url>"> [X]
+	    <#if facet.plural?has_content>${facet.plural}
+	    <#elseif facet.label?has_content>${facet.label}
+	    <#else>${facet}
+	    </#if></a>
+    </#if>
+    </#if>
+</#macro>
+
 <h2>Limit Your Search</h2>
 <ul class="facets" id="facets">
+<@facetBy facetlist=resourceTypeFacets label="Resource Type(s)" facetParam="resourceTypes" />
 
-<#if (resourceTypeFacets?? && !resourceTypeFacets.empty)>
-<li><B>Resource Type:</B>
-<ul>
-    <@s.iterator status='rowStatus' value='resourceTypeFacets' var='facet'>
-    <li> 
-    <a href="<@s.url includeParams="all">
-        <@s.param name="resourceTypes" value="value"/>
-        <@s.param name="startRecord" value="0"/>
-        <@s.param name="documentType" value=""/>
-    </@s.url>">
-    <@cleanupEnum value /></a> (${count})</li>
-    </@s.iterator>
-</ul><br/></li>
-</#if>
-<#if (documentTypeFacets?? && !documentTypeFacets.empty)>
-<li><B>Document Type:</B>
-<ul>
-    <@s.iterator status='rowStatus' value='documentTypeFacets' var='facet'>
-    <li>
-        <a href="<@s.url includeParams="all">
-        <@s.param name="startRecord" value="0"/>
-        <@s.param name="documentType" value="value"/>
-    </@s.url>">
-     <@cleanupEnum value/></a> (${count})</li>
-    </@s.iterator>
-</ul><br/></li>
-</#if>
+<@facetBy facetlist=documentTypeFacets label="Document Type(s)" facetParam="documentType" />
 
-<#if (fileAccessFacets?? && !fileAccessFacets.empty)>
-<li><B>File Access:</B>
-<ul>
-    <@s.iterator status='rowStatus' value='fileAccessFacets' var='facet'>
-    <li>
-        <a href="<@s.url includeParams="all">
-        <@s.param name="startRecord" value="0"/>
-        <@s.param name="fileAccess" value="value"/>
-    </@s.url>">
-     <@cleanupEnum value/></a> (${count})</li>
-    </@s.iterator>
-</ul><br/></li>
-</#if>
-<#-- 
-<#if (dateCreatedFacets?? && !dateCreatedFacets.empty)>
+<@facetBy facetlist=fileAccessFacets label="File Access" facetParam="fileAccess" />
 
-<li><B>Date Created:</B>
-<ul>
-    <@s.iterator status='rowStatus' value='dateCreatedFacets' var='facet'>
-<#if (count > 0) >
-    <li> 
-<#assign dateCreatedMin = minDateValue />
-<#assign dateCreatedMax = maxDateValue />
-<#if facet.getMin()??> 
-  <#assign dateCreatedMin = facet.getMin() />
-</#if>
-<#if facet.getMax()??> 
-  <#assign dateCreatedMax = facet.getMax() />
-</#if>
-    <a href="<@s.url includeParams="all">
-        <@s.param name="startRecord" value="0"/>
-        <@s.param name="dateCreatedMin">${dateCreatedMin?c}</@s.param>
-        <@s.param name="dateCreatedMax">${dateCreatedMax?c}</@s.param>
-    </@s.url>">
-    <#assign val = facet.value?replace("]","") />
-    <#assign val = val?replace("[","") />
-    <#assign val = val?replace("(","") />
-    <#assign val = val?replace(", ","-") />
-    <#if (val?starts_with('-') )>Before </#if>
-    <#if (val?ends_with('-') )>After 
-      <#assign val = val?replace("-","") />
-    </#if>
-    ${val} 
-    (${count})</li></#if>
-    </@s.iterator>
-</ul></li>
-</#if>
--->
-<#--
-<li>Culture Keywords:
-<ul>
-    <@s.iterator status='rowStatus' value='cultureFacets' var='facet'>
-    <li> ${value} (${count})</li>
-    </@s.iterator>
-</ul></li>
-<li>Geographic Keywords:
-<ul>
-    <@s.iterator status='rowStatus' value='locationFacets' var='facet'>
-    <li> ${value} (${count})</li>
-    </@s.iterator>
-</ul></li>
- -->
 </ul>
 </div>
 

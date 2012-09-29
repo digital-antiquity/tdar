@@ -22,8 +22,9 @@
  */
 -->
 <!DOCTYPE validators PUBLIC
-        "-//OpenSymphony Group//XWork Validator Config 1.0//EN"
-        "http://www.opensymphony.com/xwork/xwork-validator-config-1.0.dtd">
+        "-//Apache Struts//XWork Validator Definition 1.0//EN"
+        "http://struts.apache.org/dtds/xwork-validator-definition-1.0.dtd">
+
 <validators>
     <validator name="uniqueemail" class="org.tdar.struts.validation.UniqueEmailValidator"/>
     <validator name="accountexists" class="org.tdar.struts.validation.AccountExistsValidator"/>

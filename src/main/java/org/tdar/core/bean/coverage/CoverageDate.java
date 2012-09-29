@@ -9,12 +9,14 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.apache.commons.lang3.Range;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.FieldBridge;
 import org.hibernate.search.annotations.Store;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.index.bridge.TdarPaddedNumberBridge;
@@ -34,7 +36,7 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 @Entity
 @Table(name = "coverage_date")
 @XStreamAlias("coverageDate")
-public class CoverageDate extends Persistable.Base implements HasResource<Resource> {
+public class CoverageDate extends Persistable.Base implements HasResource<Resource>, Validatable {
 
     private static final long serialVersionUID = -5878760394443928287L;
 
@@ -115,15 +117,15 @@ public class CoverageDate extends Persistable.Base implements HasResource<Resour
 
     @Transient
     public boolean isValid() {
-        return isValid(startDate, endDate);
+        return validate(startDate, endDate) && resource != null;
     }
 
     @Transient
-    public boolean isValid(Integer start, Integer end) {
-        if (dateType == null || start == null || end == null) {
+    public boolean isValidForController() {
+        if (dateType == null || startDate == null || endDate == null) {
             return false;
         } else
-            return validate(start, end);
+            return validate(startDate, endDate);
     }
 
     protected boolean validate(Integer start, Integer end) {
@@ -134,12 +136,16 @@ public class CoverageDate extends Persistable.Base implements HasResource<Resour
         this.dateType = dateType;
     }
 
+    public void setDateType(String dateType) {
+        this.dateType = CoverageType.valueOf(dateType);
+    }
+
     public CoverageType getDateType() {
         return dateType;
     }
 
     public String toString() {
-        return String.format("%s: %s - %s", getDateType(), getStartDate(), getEndDate());
+        return String.format("%s: %s - %s", getDateType().getLabel(), getStartDate(), getEndDate());
     }
 
     /**
@@ -187,7 +193,29 @@ public class CoverageDate extends Persistable.Base implements HasResource<Resour
         return description;
     }
 
-    public boolean isValidForController() {
+    //package private
+    Range<Integer> getRange() {
+        Range<Integer> range = Range.between(startDate, endDate);
+        return range;
+    }
+    
+    //return true if the supplied covereageDate completely falls within this date range
+    public boolean contains(CoverageDate coverageDate) {
+        return dateType == coverageDate.getDateType()
+         && getRange().containsRange(coverageDate.getRange());
+    }
+    
+    //return true if start or end (or both) falls within this coverageDate
+    public boolean overlaps(CoverageDate coverageDate) {
+        return dateType  == coverageDate.getDateType() 
+                && getRange().isOverlappedBy(coverageDate.getRange());
+    }
+    
+    // is this date even worth 'evaluating'
+    public boolean isInitialized() {
+        if (getStartDate() == null && getEndDate() == null) {
+            return false;
+        }
         return true;
     }
 }

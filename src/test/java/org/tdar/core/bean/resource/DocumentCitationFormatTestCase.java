@@ -49,15 +49,14 @@ public class DocumentCitationFormatTestCase {
     public void testThesis() {
         Document doc = new Document();
         setupDocumentWithAllFields(doc, DocumentType.THESIS);
-        assertEquals("Thesis or Dissertation. publisher, publisherLocation. 1234", doc.getFormattedSourceInformation());
+        assertEquals("Masters Thesis. publisher, publisherLocation. 1234", doc.getFormattedSourceInformation());
     }
 
     public static void setupDocumentWithAllFields(Document document, DocumentType type) {
         document.getResourceCreators().add(new ResourceCreator(document, new Person("First", "Last", "first@last"), ResourceCreatorRole.AUTHOR));
         document.getResourceCreators().add(new ResourceCreator(document, new Institution("institution auth"), ResourceCreatorRole.AUTHOR));
         document.getResourceCreators().add(new ResourceCreator(document, new Person("First2", "Last2", "first2@last"), ResourceCreatorRole.EDITOR));
-        document.getResourceCreators().add(new ResourceCreator(document, new Person("First3", "Last3", "first3@last"), ResourceCreatorRole.COLLABORATOR));
-
+        document.getResourceCreators().add(new ResourceCreator(document, new Institution("Collaborating institution"), ResourceCreatorRole.COLLABORATOR));
         document.setDocumentType(type);
         document.setDate(1234);
         if (document.getId() == null || document.getId() == -1) {
@@ -65,6 +64,7 @@ public class DocumentCitationFormatTestCase {
         }
         document.setDescription("description");
         document.setBookTitle("bookTitle");
+        document.setDegree(DegreeType.MASTERS);
         document.setDoi("doi");
         document.setEdition("edition");
         document.setEndPage("endPage");

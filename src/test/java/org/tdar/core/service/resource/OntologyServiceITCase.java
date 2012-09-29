@@ -42,6 +42,7 @@ public class OntologyServiceITCase extends AbstractControllerITCase {
         controller.setFileInputMethod(AbstractInformationResourceController.FILE_INPUT_METHOD);
         String ontologyText = IOUtils.toString(new FileInputStream(new File(TestConstants.TEST_ONTOLOGY_DIR, "degenerateTabOntologyFile.txt")));
         controller.setFileTextInput(ontologyText);
+        controller.setServletRequest(getServletPostRequest());
         assertEquals(TdarActionSupport.INPUT, controller.save());
         Throwable e = null;
         try {
@@ -64,6 +65,13 @@ public class OntologyServiceITCase extends AbstractControllerITCase {
     protected TdarActionSupport getController() {
         // TODO Auto-generated method stub
         return null;
+    }
+    
+    @Test
+    public void testTimeFormat() {
+        String timeString = OntologyController.formatTime(1000*60*60*1 + 1000*60*2 + 1000*3 + 456);
+        logger.debug("time: {}", timeString);
+        assertEquals("expecting 1h 2m 3s 456ms", "01:02:03.456", timeString);
     }
 
 }

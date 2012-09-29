@@ -9,13 +9,16 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.search.annotations.Indexed;
 import org.tdar.core.bean.resource.sensory.SensoryDataImage;
 import org.tdar.core.bean.resource.sensory.SensoryDataScan;
+import org.tdar.core.configuration.JSONTransient;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -529,6 +532,12 @@ public class SensoryData extends InformationResource {
 
     public void setRegistrationMethod(String registrationMethod) {
         this.registrationMethod = registrationMethod;
+    }
+
+    @Override
+    @Transient
+    public boolean isSupportsThumbnails() {
+        return true;
     }
 
 }

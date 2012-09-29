@@ -8,14 +8,12 @@
         <title>Add a new user</title>
     </#if>
     
-    <script type='text/javascript' src='<@s.url value="/includes/jquery.FormNavigate.js"/>'></script> 
-    <script type='text/javascript' src='<@s.url value="/includes/jquery.watermark-3.1.3.min.js"/>'></script> 
     
     <script type="text/javascript">
         var $frmPerson;
         $(function() {
             $frmPerson = $('#frmPerson');
-            applyInstitutionAutoComplete('.institutionAutocomplete', true);
+            applyInstitutionAutocomplete($('.institutionAutocomplete'), true);
             initializeView();
             setupEditForm('#frmPerson');
             
@@ -37,9 +35,6 @@ textarea {width:32em}
 <body>
 <@nav.creatorToolbar "edit" />
 
-<div class="actionErrors">
-<@s.actionerror />
-</div>
 <@s.form name='personForm' id='frmPerson'  method='post' enctype='multipart/form-data' action='save'>
 
 <div class="glide">

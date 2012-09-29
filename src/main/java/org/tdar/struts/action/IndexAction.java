@@ -1,6 +1,7 @@
 package org.tdar.struts.action;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
@@ -11,10 +12,12 @@ import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.cache.HomepageFeaturedItemCache;
+import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
+import org.tdar.core.bean.cache.HomepageResourceCountCache;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
-import org.tdar.core.bean.util.HomepageGeographicKeywordCache;
-import org.tdar.core.bean.util.HomepageResourceCountCache;
+import org.tdar.core.bean.resource.Resource;
 
 /**
  * $Id$
@@ -40,32 +43,42 @@ public class IndexAction extends AuthenticationAware.Base {
 
     private List<HomepageGeographicKeywordCache> geographicKeywordCache = new ArrayList<HomepageGeographicKeywordCache>();
     private List<HomepageResourceCountCache> homepageResourceCountCache = new ArrayList<HomepageResourceCountCache>();
-    private InformationResource featuredResource;
+    private Resource featuredResource;
 
     @Override
-    @Action(results = {
-            @Result(name = "success", location = "about.ftl")
-    })
-    public String execute() {
-        return about();
-    }
-
     @Actions({
             @Action("terms"),
             @Action("contact"),
             @Action(value = "page-not-found", results = { @Result(name = SUCCESS, location = "errors/page-not-found.ftl") }),
             @Action(value = "access-denied", results = { @Result(name = SUCCESS, location = "errors/access-denied.ftl") })
     })
-    public String passThrough() {
+    public String execute() {
         return SUCCESS;
     }
 
-    @Action("about")
+    @Actions({
+            @Action("about"),
+            @Action(results = {
+                    @Result(name = "success", location = "about.ftl")
+            })
+    })
     public String about() {
-        // setFeaturedProject(getGenericService().findRandom(Project.class, 1).get(0));
-        getGeographicKeywordCache().addAll(getGenericService().findAll(HomepageGeographicKeywordCache.class));
-        getHomepageResourceCountCache().addAll(getGenericService().findAll(HomepageResourceCountCache.class));
-        // setFeaturedResource((InformationResource) getInformationResourceService().findRandomFeaturedResource(true, 1).get(0));
+        setGeographicKeywordCache(getGenericService().findAll(HomepageGeographicKeywordCache.class));
+        setHomepageResourceCountCache(getGenericService().findAll(HomepageResourceCountCache.class));
+        try {
+            setFeaturedResource(getGenericService().findAll(HomepageFeaturedItemCache.class).get(0).getKey());
+        } catch (IndexOutOfBoundsException ioe) {
+            logger.debug("no featured resources found");
+        }
+        if (getFeaturedResource() instanceof InformationResource) {
+            getAuthenticationAndAuthorizationService().setTransientViewableStatus((InformationResource) getFeaturedResource(), null);
+        }
+        Iterator<HomepageResourceCountCache> iterator = homepageResourceCountCache.iterator();
+        while (iterator.hasNext()) {
+            if (iterator.next().getResourceType().isSupporting()) {
+                iterator.remove();
+            }
+        }
         return SUCCESS;
     }
 
@@ -98,11 +111,11 @@ public class IndexAction extends AuthenticationAware.Base {
         this.featuredProject = featuredProject;
     }
 
-    public InformationResource getFeaturedResource() {
+    public Resource getFeaturedResource() {
         return featuredResource;
     }
 
-    public void setFeaturedResource(InformationResource featuredResource) {
+    public void setFeaturedResource(Resource featuredResource) {
         this.featuredResource = featuredResource;
     }
 

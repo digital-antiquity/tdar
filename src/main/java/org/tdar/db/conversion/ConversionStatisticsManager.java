@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.tdar.core.bean.resource.dataTable.DataTableColumn;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.db.conversion.analyzers.CharAnalyzer;
 import org.tdar.db.conversion.analyzers.ColumnAnalyzer;
 import org.tdar.db.conversion.analyzers.DoubleAnalyzer;

@@ -1,14 +1,17 @@
 package org.tdar.struts.action.entity;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.exception.StatusCode;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.external.auth.InternalTdarRights;
 import org.tdar.struts.action.AbstractPersistableController;
@@ -25,16 +28,18 @@ public class PersonController extends AbstractPersistableController<Person> {
 
     private String institutionName;
     private boolean passwordResetRequested;
-
+    private String newUsername;
     private String password;
     private String confirmPassword;
-    
     @Autowired
     ObfuscationService obfuscationService;
 
     @Override
     protected String save(Person person) {
         validateAndProcessPasswordChange();
+        if (validateAndProcessUsernameChange()) {
+            // FIXME: logout?
+        }
         if (hasActionErrors())
             return INPUT;
         logger.debug("saving person: {} with institution {} ", person, institutionName);
@@ -81,6 +86,30 @@ public class PersonController extends AbstractPersistableController<Person> {
             // FIXME: we currently have no way to indicate success because we are redirecting to success page, So the message below is lost.
             addActionMessage("Password successfully changed");
         }
+    }
+
+    
+    // check whether password change was requested and whether it was valid
+    private boolean validateAndProcessUsernameChange() {
+        // no change requested
+        if (StringUtils.isBlank(newUsername))
+            return false;
+        
+        if (StringUtils.isBlank(password)) {
+            throw new TdarRecoverableRuntimeException("you must re-enter your password to change your username");
+        }
+            
+        if (!StringUtils.equals(password, confirmPassword)) {
+            // change requested, passwords don't match
+            addActionError(AccountController.ERROR_PASSWORDS_DONT_MATCH);
+        } else {
+            // passwords match, change the password
+            getAuthenticationAndAuthorizationService().updateUsername(getPerson(), newUsername, password);
+            // FIXME: we currently have no way to indicate success because we are redirecting to success page, So the message below is lost.
+            addActionMessage("Username successfully changed, please logout");
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -160,6 +189,14 @@ public class PersonController extends AbstractPersistableController<Person> {
         String path = "/browse/creators";
         getLogger().debug("{}?id={}", path, getId());
         return path;
+    }
+
+    public String getNewUsername() {
+        return newUsername;
+    }
+
+    public void setNewUsername(String newUserName) {
+        this.newUsername = newUserName;
     }
 
 }

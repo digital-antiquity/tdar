@@ -18,11 +18,11 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.SensoryData;
-import org.tdar.core.service.fileProcessing.MessageService;
+import org.tdar.core.service.workflow.ImageWorkflow;
+import org.tdar.core.service.workflow.MessageService;
+import org.tdar.core.service.workflow.Workflow;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.PairtreeFilestore;
-import org.tdar.filestore.workflows.ImageWorkflow;
-import org.tdar.filestore.workflows.Workflow;
 
 /**
  * @author Adam Brin

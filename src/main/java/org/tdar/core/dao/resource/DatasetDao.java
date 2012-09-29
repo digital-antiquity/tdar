@@ -26,7 +26,9 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.bean.resource.dataTable.DataTableColumn;
+import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.core.bean.statistics.ResourceAccessStatistic;
 import org.tdar.core.dao.NamedNativeQueries;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ReflectionService;
@@ -111,6 +113,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
      * @param days
      * @return List<Resource>
      */
+    @SuppressWarnings("unchecked")
     public List<Long> findRecentlyUpdatedItemsInLastXDaysForExternalIdLookup(int days) {
         Query query = getCurrentSession().getNamedQuery(QUERY_EXTERNAL_ID_SYNC);
         query.setDate("updatedDate", new Date(System.currentTimeMillis() - 86400000 * days));
@@ -131,8 +134,8 @@ public class DatasetDao extends ResourceDao<Dataset> {
         Query query = getCurrentSession().getNamedQuery(QUERY_MATCHING_FILES);
         query.setParameterList("filenamesToMatch", filenames);
         query.setParameter("projectId", column.getDataTable().getDataset().getProject().getId());
-        query.setParameterList("versionTypes", Arrays.asList(InformationResourceFileVersion.VersionType.UPLOADED,
-                InformationResourceFileVersion.VersionType.ARCHIVAL, InformationResourceFileVersion.VersionType.UPLOADED_ARCHIVAL));
+        query.setParameterList("versionTypes", Arrays.asList(VersionType.UPLOADED,
+                VersionType.ARCHIVAL, VersionType.UPLOADED_ARCHIVAL));
         List<InformationResource> toReturn = new ArrayList<InformationResource>();
         for (InformationResourceFileVersion version : (List<InformationResourceFileVersion>) query.list()) {
             // add checks for (a) latest version (b) matching is correct
@@ -170,8 +173,8 @@ public class DatasetDao extends ResourceDao<Dataset> {
                 }
             }
             String rawsql = NamedNativeQueries.updateDatasetMappings(project, column, columnValue, valuesToMatch,
-                    Arrays.asList(InformationResourceFileVersion.VersionType.UPLOADED,
-                            InformationResourceFileVersion.VersionType.ARCHIVAL, InformationResourceFileVersion.VersionType.UPLOADED_ARCHIVAL));
+                    Arrays.asList(VersionType.UPLOADED,
+                            VersionType.ARCHIVAL, VersionType.UPLOADED_ARCHIVAL));
             logger.trace(rawsql);
             Query query = getCurrentSession().createSQLQuery(rawsql);
             int executeUpdate = query.executeUpdate();
@@ -193,9 +196,10 @@ public class DatasetDao extends ResourceDao<Dataset> {
         logger.debug("{} resources unmapped", executeUpdate);
     }
 
-    @SuppressWarnings("unchecked")
-    public List<Long> findAllIds() {
-        return getCurrentSession().createQuery("select id from Dataset").list();
+    public Number getAccessCount(Resource resource) {
+        Criteria createCriteria = getCriteria(ResourceAccessStatistic.class).setProjection(Projections.rowCount())
+                .add(Restrictions.eq("reference", resource));
+        return (Number) createCriteria.list().get(0);
     }
 
 }

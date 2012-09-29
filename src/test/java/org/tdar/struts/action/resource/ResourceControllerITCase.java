@@ -1,5 +1,6 @@
 package org.tdar.struts.action.resource;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 
 import java.util.SortedMap;
@@ -7,12 +8,25 @@ import java.util.SortedMap;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.struts.action.TdarActionSupport;
 
 public class ResourceControllerITCase extends AbstractResourceControllerITCase {
 
+    
+    @Test
+    @Rollback
+    public <R extends Resource> void testFindProject() {
+        R r = (R) projectService.find(1L);
+        logger.info("Resource: {} ", r);
+        assertNotNull(r);
+        r = resourceService.find(1L);
+        logger.info("Resource: {} ", r);
+        assertNotNull(r);
+    }
+    
     @Test
     @Rollback
     public void testEdit() {
@@ -56,5 +70,7 @@ public class ResourceControllerITCase extends AbstractResourceControllerITCase {
     protected TdarActionSupport getController() {
         return null;
     }
+
+
 
 }

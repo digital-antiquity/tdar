@@ -2,9 +2,8 @@ package org.tdar.core.service;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
-import org.tdar.core.bean.entity.Creator;
+import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 
 /*
@@ -14,9 +13,10 @@ import org.tdar.core.configuration.TdarConfiguration;
 @Service
 public class UrlService {
 
-    private String baseUrl;
     public static final String TDAR_NAMESPACE_URL = "http://www.tdar.org/namespace";
     public static final String TDAR_NAMESPACE_PREFIX = "tdar";
+
+    private String baseUrl;
 
     public String getBaseUrl() {
         if (baseUrl == null) {
@@ -25,18 +25,14 @@ public class UrlService {
         return baseUrl;
     }
 
-    public String absoluteUrl(Resource resource) {
+    public String absoluteUrl(Addressable resource) {
         return String.format("%s%s", StringUtils.stripEnd(getBaseUrl(), "/"),
                 relativeUrl(resource));
     }
 
-    public String relativeUrl(Resource resource) {
+    public String relativeUrl(Addressable resource) {
         return String.format("/%s/%s", resource.getUrlNamespace(),
                 resource.getId());
-    }
-
-    public String relativeUrl(Creator creator) {
-        return String.format("/browse/creators/%s", creator.getId());
     }
 
     public String downloadUrl(InformationResourceFileVersion version) {
@@ -44,6 +40,6 @@ public class UrlService {
     }
 
     public String getSchemaUrl() {
-        return String.format("%s/schema/current",getBaseUrl());
+        return String.format("%s/schema/current", getBaseUrl());
     }
 }

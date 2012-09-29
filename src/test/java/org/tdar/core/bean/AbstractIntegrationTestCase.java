@@ -1,11 +1,7 @@
 package org.tdar.core.bean;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -31,6 +27,8 @@ import org.hibernate.SessionFactory;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.TestName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +40,7 @@ import org.springframework.test.context.junit4.AbstractTransactionalJUnit4Spring
 import org.springframework.test.context.transaction.AfterTransaction;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.tdar.TestConstants;
@@ -58,15 +57,17 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.BookmarkedResourceService;
+import org.tdar.core.service.DataIntegrationService;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
+import org.tdar.core.service.MockMailSender;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.SearchIndexService;
@@ -74,6 +75,8 @@ import org.tdar.core.service.SearchService;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.XmlService;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.core.service.external.EmailService;
+import org.tdar.core.service.resource.DataTableService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ProjectService;
@@ -85,16 +88,19 @@ import org.tdar.struts.data.FileProxy;
 import org.tdar.web.SessionData;
 import org.xml.sax.SAXException;
 
+import com.gargoylesoftware.htmlunit.HttpMethod;
 import com.opensymphony.xwork2.ActionSupport;
+
+import static org.junit.Assert.*;
 
 @ContextConfiguration(locations = { "classpath:/applicationContext.xml" })
 @SuppressWarnings("rawtypes")
 public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJUnit4SpringContextTests {
 
-    protected HttpServletRequest defaultHttpServletRequest = new MockHttpServletRequest();
 
-    protected HttpServletRequest httpServletRequest = defaultHttpServletRequest;
-    protected HttpServletRequest httpServletPostRequest = new MockHttpServletRequest("POST", "/");
+    // These uri's are not accurate, but are currently unused since we invoke action methods directly.
+    protected HttpServletRequest httpServletGetRequest = new MockHttpServletRequest("GET", "");
+    protected HttpServletRequest httpServletPostRequest = new MockHttpServletRequest("POST", "");
     protected HttpServletResponse httpServletResponse = new MockHttpServletResponse();
 
     protected PlatformTransactionManager transactionManager;
@@ -107,6 +113,10 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     protected ProjectService projectService;
     @Autowired
     protected DatasetService datasetService;
+    @Autowired
+    protected DataTableService dataTableService;
+    @Autowired
+    protected DataIntegrationService dataIntegrationService;
     @Autowired
     protected GenericService genericService;
     @Autowired
@@ -128,39 +138,52 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     @Autowired
     protected AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
     @Autowired
-    XmlService xmlService;
+    private XmlService xmlService;
     @Autowired
     protected ResourceCollectionService resourceCollectionService;
-    
+
+    @Autowired
+    protected EmailService emailService;
 
     private List<ActionSupport> controllers = new ArrayList<ActionSupport>();
     private boolean ignoreActionErrors = false;
-    protected Logger logger = LoggerFactory.getLogger(getClass());
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    protected MockMailSender mockMailSender = new MockMailSender();
     private SessionData sessionData;
 
+    @Rule
+    public TestName testName = new TestName();
+
+
     @Before
-    public final void initControllerErrorChecking() {
+    public final void announceTestStarting() {
+        String fmt = " ***   RUNNING TEST: {}.{}() ***";
+        logger.info(fmt, getClass().getSimpleName(), testName.getMethodName());
+
+        emailService.setMailSender(mockMailSender);
+
         getControllers().clear();
         setIgnoreActionErrors(false);
-        logger.info(" *** RUNNING TEST: " + getClass().getCanonicalName().toUpperCase() + " ***");
     }
 
     @After
-    public void checkForActionErrors() {
+    public final void announceTestOver() {
+
         int errorCount = 0;
         if (!isIgnoreActionErrors()) {
             for (ActionSupport controller : getControllers()) {
                 if (controller != null && !controller.getActionErrors().isEmpty()) {
-                    logger.error("{}", controller.getActionErrors());
+                    logger.error("action errors {}", controller.getActionErrors());
                     errorCount += controller.getActionErrors().size();
                 }
             }
         }
+        String fmt = " *** COMPLETED TEST: {}.{}() ***";
+        logger.info(fmt, getClass().getCanonicalName(), testName.getMethodName());
 
         if (errorCount > 0) {
-            Assert.fail("There were action errors.");
+            Assert.fail(String.format("There were %d action errors", errorCount));
         }
-        logger.info(" *** COMPLETED TEST: " + getClass().getCanonicalName().toUpperCase() + " ***");
     }
 
     public Person createAndSaveNewPerson() {
@@ -240,7 +263,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     public InformationResource addFileToResource(InformationResource ir, File file) {
         try {
-            FileProxy proxy = new FileProxy(file.getName(), new FileInputStream(file), VersionType.UPLOADED, FileAction.ADD);
+            FileProxy proxy = new FileProxy(file.getName(), file, VersionType.UPLOADED, FileAction.ADD);
             informationResourceService.processFileProxy(ir, proxy);
             // informationResourceService.addOrReplaceInformationResourceFile(ir, new FileInputStream(file), file.getName(), FileAction.ADD,
             // VersionType.UPLOADED);
@@ -270,55 +293,42 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return createAndSaveNewInformationResource(cls, submitter);
     }
 
-    public <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls, Person persistentPerson) throws InstantiationException,
-            IllegalAccessException {
+    public <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls, Person persistentPerson)
+            throws InstantiationException, IllegalAccessException {
         return createAndSaveNewInformationResource(cls, persistentPerson, "TEST TITLE");
     }
-    
-    public <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls, Person persistentPerson, String resourceTitle) 
+
+    public <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls, Person persistentPerson, String resourceTitle)
             throws InstantiationException, IllegalAccessException {
         Project project = new Project();
         project.markUpdated(persistentPerson);
         project.setTitle("PROJECT " + resourceTitle);
+        project.setDescription("test description");
         projectService.save(project);
 
         R iResource = cls.newInstance();
         iResource.setTitle(resourceTitle);
-        iResource.markUpdated(persistentPerson);
         iResource.setDescription("test description");
+        iResource.markUpdated(persistentPerson);
         iResource.setProject(project);
         iResource.setDate(2012);
         informationResourceService.save(iResource);
         return iResource;
     }
 
-    public <R extends Resource> R createAndSaveNewResource(Class<R> cls, Person persistentPerson, String resourceTitle) {
-        R resource = null;
-        try {
-            resource = cls.newInstance();
-            resource.markUpdated(persistentPerson);
-            resource.setTitle(resourceTitle);
-            resource.setDescription("description for " + resourceTitle);
-            if(resource instanceof InformationResource) {
-                ((InformationResource)resource).setDate(2012);
-            }
-            genericService.save(resource);
-        } catch (Exception e) {
-            Assert.fail("failed to create/save test" + cls.getSimpleName() + " record" );
-        }
+    public <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls, Project project, Person persistentPerson, String resourceTitle)
+            throws InstantiationException, IllegalAccessException {
 
-        return resource;
+        R iResource = cls.newInstance();
+        iResource.setTitle(resourceTitle);
+        iResource.setDescription("test description");
+        iResource.markUpdated(persistentPerson);
+        iResource.setProject(project);
+        iResource.setDate(2012);
+        informationResourceService.save(iResource);
+        return iResource;
     }
-    
-    public <R extends Resource> R createAndSaveNewResource(Class<R> cls) {
-        Person persistentPerson = entityService.findByEmail("test@user.com");
-        if(persistentPerson == null) {
-            persistentPerson = createAndSaveNewPerson("test@user.com", "");
-        }
-        String resourceTitle = "Sample " + cls.getSimpleName() + " record";
-        return createAndSaveNewResource(cls, persistentPerson, resourceTitle);
-    }
-    
+
     protected Dataset createAndSaveNewDataset() {
         Dataset dataset = new Dataset();
         Person testPerson = getUser();
@@ -331,7 +341,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         datasetService.save(dataset);
         return dataset;
     }
-    
+
     protected Project createAndSaveNewProject() {
         return createAndSaveNewProject("PROJECT TEST TITLE");
     }
@@ -345,6 +355,46 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         project.setStatus(Status.ACTIVE);
         projectService.save(project);
         return project;
+    }
+
+    public <R extends Resource> R createAndSaveNewResource(Class<R> cls, Person persistentPerson, String resourceTitle) {
+        R resource = null;
+        try {
+            resource = cls.newInstance();
+            resource.markUpdated(persistentPerson);
+            resource.setTitle(resourceTitle);
+            resource.setDescription("description for " + resourceTitle);
+            if (resource instanceof InformationResource) {
+                ((InformationResource) resource).setDate(2012);
+            }
+            genericService.save(resource);
+        } catch (Exception e) {
+            Assert.fail("failed to create/save test" + cls.getSimpleName() + " record");
+        }
+
+        return resource;
+    }
+
+    public <R extends Resource> R createAndSaveNewResource(Class<R> cls) {
+        Person persistentPerson = entityService.findByEmail("test@user.com");
+        if (persistentPerson == null) {
+            persistentPerson = createAndSaveNewPerson("test@user.com", "");
+        }
+        String resourceTitle = "Sample " + cls.getSimpleName() + " record";
+        return createAndSaveNewResource(cls, persistentPerson, resourceTitle);
+    }
+    
+    //create new, public, collection with the getUser() as the owner and no resources
+    public ResourceCollection createAndSaveNewResourceCollection(String name) {
+        ResourceCollection resourceCollection = new ResourceCollection();
+        resourceCollection.setName(name);
+        resourceCollection.setDescription(name);
+        resourceCollection.setType(CollectionType.SHARED);
+        resourceCollection.setViewable(true);
+        resourceCollection.setVisible(true);
+        resourceCollection.setOwner(getUser());
+        genericService.saveOrUpdate(resourceCollection);
+        return resourceCollection;
     }
 
     @Override
@@ -367,7 +417,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     protected <T> T generateNewController(Class<T> controllerClass) {
         T controller = (T) applicationContext.getBean(controllerClass);
         if (controller instanceof AuthenticationAware.Base) {
-            ((TdarActionSupport) controller).setServletRequest(getServletRequest());
+            ((TdarActionSupport) controller).setServletRequest(getServletGetRequest());
             ((TdarActionSupport) controller).setServletResponse(getServletResponse());
         }
         return controller;
@@ -392,15 +442,20 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     }
 
     protected <T extends ActionSupport> T generateNewInitializedController(Class<T> controllerClass, Person user) {
+        return generateNewInitializedController(controllerClass, user, getServletGetRequest());
+    }
+
+    protected <T extends ActionSupport> T generateNewInitializedController(Class<T> controllerClass, Person user, HttpServletRequest request) {
         T controller = generateNewController(controllerClass);
         if (controller instanceof TdarActionSupport) {
+            ((TdarActionSupport) controller).setServletRequest(request);
             if (user != null) {
                 init((TdarActionSupport) controller, user);
             } else {
                 init((TdarActionSupport) controller);
             }
         }
-        getControllers().add((ActionSupport) controller);
+        getControllers().add(controller);
         return controller;
     }
 
@@ -457,24 +512,12 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return TestConstants.ADMIN_USER_ID;
     }
 
-    public void setHttpServletRequest(HttpServletRequest httpServletRequest) {
-        this.httpServletRequest = httpServletRequest;
-    }
-
-    public HttpServletRequest getServletRequest() {
-        return httpServletRequest;
+    public HttpServletRequest getServletGetRequest() {
+        return httpServletGetRequest;
     }
 
     public HttpServletRequest getServletPostRequest() {
         return httpServletPostRequest;
-    }
-
-    public HttpServletRequest getDefaultHttpServletRequest() {
-        return defaultHttpServletRequest;
-    }
-
-    public void setHttpServletResponse(HttpServletResponse httpServletResponse) {
-        this.httpServletResponse = httpServletResponse;
     }
 
     public HttpServletResponse getServletResponse() {
@@ -545,16 +588,15 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     }
 
     protected <V> V runInNewTransaction(TransactionCallback<V> action) {
-        logger.debug("running in new transaction  after {}", action);
+        logger.debug("starting new transaction");
         return transactionTemplate.execute(action);
     }
 
     protected void runInNewTransactionWithoutResult(TransactionCallback<Object> action) {
         runInNewTransaction(action);
     }
-    
-    @SuppressWarnings("unchecked")
-    @AfterTransaction
+
+    @AfterTransaction @SuppressWarnings("unchecked")
     public void verifyTransactionCallback() {
         if (verifyTransactionCallback != null) {
             runInNewTransaction(verifyTransactionCallback);
@@ -638,7 +680,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
                     new File(TestConstants.TEST_XML_DIR, "schemaCache/oaidc.xsd"));
             addSchemaToValidatorWithLocalFallback(v, "http://www.loc.gov/standards/mods/v3/mods-3-3.xsd", new File(TestConstants.TEST_XML_DIR,
                     "schemaCache/mods3.3.xsd"));
-            addSchemaToValidatorWithLocalFallback(v, "http://www.openarchives.org/OAI/2.0/oai-identifier.xsd", new File(TestConstants.TEST_XML_DIR, 
+            addSchemaToValidatorWithLocalFallback(v, "http://www.openarchives.org/OAI/2.0/oai-identifier.xsd", new File(TestConstants.TEST_XML_DIR,
                     "schemaCache/oai-identifier.xsd"));
 
             try {
@@ -673,9 +715,23 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     public <T> void setVerifyTransactionCallback(TransactionCallback<T> verifyTransactionCallback) {
         this.verifyTransactionCallback = verifyTransactionCallback;
     }
-    
+
     public TdarConfiguration getTdarConfiguration() {
         return TdarConfiguration.getInstance();
+    }
+
+    /**
+     * @return the dataTableService
+     */
+    public DataTableService getDataTableService() {
+        return dataTableService;
+    }
+
+    /**
+     * @return the dataIntegrationService
+     */
+    public DataIntegrationService getDataIntegrationService() {
+        return dataIntegrationService;
     }
 
 }

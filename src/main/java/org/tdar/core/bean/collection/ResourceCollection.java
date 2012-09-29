@@ -9,12 +9,15 @@ package org.tdar.core.bean.collection;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -35,28 +38,32 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.search.Explanation;
 import org.hibernate.annotations.Type;
+import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Boost;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Fields;
-import org.hibernate.search.annotations.Index;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Store;
+import org.tdar.core.bean.DeHydratable;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.SimpleSearch;
+import org.tdar.core.bean.Sortable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
+import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.JSONTransient;
 import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
-import org.tdar.search.index.analyzer.PatternTokenAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
@@ -75,11 +82,13 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 @Entity
 @Indexed(index = "Collection")
 @Table(name = "collection")
-public class ResourceCollection extends Persistable.Base implements HasName, Updatable, Indexable, Validatable, Comparable<ResourceCollection> {
+public class ResourceCollection extends Persistable.Base implements HasName, Updatable, Indexable, Validatable, Addressable, Comparable<ResourceCollection>,
+        SimpleSearch, Sortable, Viewable, DeHydratable {
+
+    private transient boolean viewable;
 
     public enum CollectionType {
         INTERNAL("Internal"),
-        // PERSONAL("Personal"),
         SHARED("Shared");
 
         private String label;
@@ -98,8 +107,9 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     private transient Explanation explanation;
 
     @Column
-    @Fields({ @Field(name = QueryFieldNames.COLLECTION_NAME_AUTO, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class))
-            , @Field(name = QueryFieldNames.COLLECTION_NAME, analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)) })
+    @Fields({
+            @Field(name = QueryFieldNames.COLLECTION_NAME_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class))
+            , @Field(name = QueryFieldNames.COLLECTION_NAME, boost = @Boost(1.5f)) })
     private String name;
 
     @Lob
@@ -114,7 +124,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @Enumerated(EnumType.STRING)
     @Column(name = "sort_order")
-    private SortOption sortBy;
+    private SortOption sortBy = SortOption.TITLE;
 
     @Field(name = QueryFieldNames.COLLECTION_TYPE)
     @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
@@ -142,6 +152,20 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     public ResourceCollection() {
         setDateCreated(new Date());
+    }
+
+    public ResourceCollection(Long id, String title, String description, SortOption sortBy, CollectionType type, boolean visible) {
+        this(title, description, sortBy, type, visible, null);
+        setId(id);
+    }
+
+    public ResourceCollection(String title, String description, SortOption sortBy, CollectionType type, boolean visible, Person creator) {
+        setName(title);
+        setDescription(description);
+        setSortBy(sortBy);
+        setType(type);
+        setVisible(visible);
+        setOwner(creator);
     }
 
     public ResourceCollection(CollectionType type) {
@@ -234,10 +258,12 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @Field()
     public boolean isTopLevel() {
-        if (getParent() == null || getParent().isVisible() == false) {
-            return true;
-        }
-        return false;
+        return getParent() == null || !getParent().isVisible();
+    }
+    
+    @Transient @XmlTransient @JSONTransient
+    public boolean isRoot() {
+        return parent == null;
     }
 
     public void setVisible(boolean visible) {
@@ -334,7 +360,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @Override
     public String toString() {
-        return String.format("%s Resource collection %s: %s (creator: %s) [%s]", getType(), getId(), getName(), owner, getResources());
+        return String.format("%s Resource collection %s: %s (creator: %s)", getType(), getId(), getName(), owner);
     }
 
     @Transient
@@ -353,21 +379,44 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
      * used for populating the Lucene Index with users that have appropriate rights to modify things in the collection
      */
     @Field(name = QueryFieldNames.COLLECTION_USERS_WHO_CAN_MODIFY)
-    @Analyzer(impl = PatternTokenAnalyzer.class)
     @Transient
     @JSONTransient
-    public String getUsersWhoCanModify() {
-        StringBuilder sb = new StringBuilder();
+    @ElementCollection
+    @IndexedEmbedded
+    public List<Long> getUsersWhoCanModify() {
+        return toUserList(GeneralPermissions.MODIFY_RECORD);
+    }
+
+    private List<Long> toUserList(GeneralPermissions permission) {
+        ArrayList<Long> users = new ArrayList<Long>();
         HashSet<Person> writable = new HashSet<Person>();
         writable.add(getOwner());
-        writable.addAll(getUsersWhoCan(GeneralPermissions.MODIFY_RECORD, true));
+        writable.addAll(getUsersWhoCan(permission, true));
         for (Person p : writable) {
-            if (p == null || p.getId() == null)
+            if (Persistable.Base.isTransient(p))
                 continue;
-            sb.append(p.getId()).append("|");
+            users.add(p.getId());
         }
-        logger.trace("effectiveUsers:" + sb.toString());
-        return sb.toString();
+        return users;
+    }
+
+    @Field(name = QueryFieldNames.COLLECTION_USERS_WHO_CAN_ADMINISTER)
+    @Transient
+    @JSONTransient
+    @ElementCollection
+    @IndexedEmbedded
+    public List<Long> getUsersWhoCanAdminister() {
+        return toUserList(GeneralPermissions.ADMINISTER_GROUP);
+    }
+
+
+    @Field(name = QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW)
+    @Transient
+    @JSONTransient
+    @ElementCollection
+    @IndexedEmbedded
+    public List<Long> getUsersWhoCanView() {
+        return toUserList(GeneralPermissions.VIEW_ALL);
     }
 
     /*
@@ -391,19 +440,32 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     }
 
     /*
-     * Get all of the resource collections via a tree (actually list of lists)
+     * Return list of the resource collection "lineage", starting with topmost collection in the hierarchy and ending with current collection
      */
     @Transient
     public List<ResourceCollection> getHierarchicalResourceCollections() {
-        ArrayList<ResourceCollection> parentTree = new ArrayList<ResourceCollection>();
-        parentTree.add(this);
+        LinkedList<ResourceCollection> ancestorChain = new LinkedList<ResourceCollection>();
+        ancestorChain.add(this);
         ResourceCollection collection = this;
         while (collection.getParent() != null) {
             collection = collection.getParent();
-            parentTree.add(0, collection);
+            ancestorChain.push(collection);
         }
-        return parentTree;
+        return ancestorChain;
+    }
+    
 
+    @Transient
+    public List<ResourceCollection> getVisibleParents() {
+        List<ResourceCollection> hierarchicalResourceCollections = getHierarchicalResourceCollections();
+        Iterator<ResourceCollection> iterator = hierarchicalResourceCollections.iterator();
+        while (iterator.hasNext()) {
+            ResourceCollection collection = iterator.next();
+            if (!collection.isShared() || !collection.isVisible()) {
+                iterator.remove();
+            }
+        }
+        return hierarchicalResourceCollections;
     }
 
     /*
@@ -446,7 +508,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         return false;
     }
 
-    @Field(name = QueryFieldNames.TITLE_SORT, index = Index.UN_TOKENIZED, store = Store.YES)
+    @Field(name = QueryFieldNames.TITLE_SORT, norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     public String getTitleSort() {
         if (getTitle() == null)
             return "";
@@ -462,23 +524,17 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         return "collection";
     }
 
-    /*
-     * commenting out for Fluvial, but would enable ResourceCollections and Resources to share the same index
-     * 
-     * @Transient
-     * 
-     * @Field(index = Index.UN_TOKENIZED, store = Store.YES, analyzer=@Analyzer(impl = TdarStandardAnalyzer.class), name=QueryFieldNames.SEARCH_TYPE)
-     * public SimpleSearchType getSimpleSearchType() {
-     * return SimpleSearchType.COLLECTION;
-     * }
-     * 
-     * 
-     * @Field(name = QueryFieldNames.STATUS, analyzer = @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class))
-     * public Status getStatusForSearch() {
-     * if (getType() == CollectionType.SHARED && visible) {
-     * return Status.ACTIVE;
-     * }
-     * return null;
-     * }
-     */
+    public boolean isViewable() {
+        return viewable;
+    }
+
+    public void setViewable(boolean viewable) {
+        this.viewable = viewable;
+    }
+
+    @Transient
+    public Person getSubmitter() {
+        return owner;
+    }
+    
 }

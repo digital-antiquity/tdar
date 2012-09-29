@@ -15,7 +15,7 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.Project;
-import org.tdar.core.bean.resource.dataTable.DataTableColumn;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
@@ -33,8 +33,9 @@ public class DatasetResourceMappingITCase extends AbstractDataIntegrationTestCas
 
     Dataset sharedDataset = null;
     List<Long> sharedImageIds;
+
     @Test
-    @Rollback
+    @Rollback(false)
     public void testDatasetMapping() throws Exception {
 
         Project project = new Project();
@@ -53,14 +54,15 @@ public class DatasetResourceMappingITCase extends AbstractDataIntegrationTestCas
         File file = new File(TestConstants.TEST_DATA_INTEGRATION_DIR + "/tab_mapping_dataset.tab");
         controller.setUploadedFiles(Arrays.asList(file));
         controller.setUploadedFilesFileName(Arrays.asList(file.getName()));
+        controller.setServletRequest(getServletPostRequest());
         controller.save();
         Long image1_id = uploadImage("5127663428_42ef7f4463_b.jpg", project).getId();
         Long image2_id = uploadImage("handbook_of_archaeology.jpg", project).getId();
         sharedDataset = dataset;
+        // do search for something in another column
+        sharedImageIds = Arrays.asList(image1_id, image2_id);
 
-        genericService.synchronize();
-        genericService.refresh(project);
-        assertEquals(3, project.getInformationResources().size());
+        assertEquals(3, projectService.findAllResourcesInProject(project).size());
 
         controller = generateNewInitializedController(DatasetController.class);
         controller.setId(dataset.getId());
@@ -84,23 +86,21 @@ public class DatasetResourceMappingITCase extends AbstractDataIntegrationTestCas
         assertTrue(seenMappingColumn);
         controller.saveColumnMetadata();
         // FIXME: replace with verifyTransactionCallback
-        genericService.synchronize();
 
-        Image image1 = genericService.find(Image.class, image1_id);
-        Image image2 = genericService.find(Image.class, image2_id);
-
-        logger.info(String.format("image mapping: %s - %s", image1.getMappedDataKeyColumn(), image1.getMappedDataKeyValue()));
-        logger.info(String.format("image mapping: %s - %s", image2.getMappedDataKeyColumn(), image2.getMappedDataKeyValue()));
-
-        assertFalse(image1.getMappedDataKeyColumn() == null);
-        assertFalse(image1.getMappedDataKeyValue() == null);
-        assertFalse(image2.getMappedDataKeyColumn() == null);
-        assertFalse(image2.getMappedDataKeyValue() == null);
-        // do search for something in another column
-        sharedImageIds = Arrays.asList(image1.getId(), image2.getId());
+        setVerifyTransactionCallback(new TransactionCallback<Image>() {
+            @Override
+            public Image doInTransaction(TransactionStatus status) {
+                for (Long imageId : sharedImageIds) {
+                    Image image = genericService.find(Image.class, imageId);
+                    logger.info(String.format("image mapping: %s - %s", image.getMappedDataKeyColumn(), image.getMappedDataKeyValue()));
+                    assertFalse(image.getMappedDataKeyColumn() == null);
+                    assertFalse(image.getMappedDataKeyValue() == null);
+                }
+                return null;
+            }
+        });
     }
 
-    
     @Test
     @Rollback(false)
     public void testDatasetMappingWithReplace() throws Exception {
@@ -114,11 +114,12 @@ public class DatasetResourceMappingITCase extends AbstractDataIntegrationTestCas
         controller.setUploadedFiles(Arrays.asList(file));
         controller.setUploadedFilesFileName(Arrays.asList(file.getName()));
 
+        controller.setServletRequest(getServletPostRequest());
         controller.save();
         setVerifyTransactionCallback(new TransactionCallback<Image>() {
             @Override
             public Image doInTransaction(TransactionStatus status) {
-                for (Long imageId: sharedImageIds) {
+                for (Long imageId : sharedImageIds) {
                     Image image = genericService.find(Image.class, imageId);
                     assertNull(image.getMappedDataKeyColumn());
                     assertNull(image.getMappedDataKeyValue());
@@ -141,13 +142,9 @@ public class DatasetResourceMappingITCase extends AbstractDataIntegrationTestCas
         // controller.setUploadedFiles(Arrays.asList(file));
         // controller.setUploadedFilesFileName(Arrays.asList(filename));
 
+        controller.setServletRequest(getServletPostRequest());
         controller.save();
         return image;
     }
 
-    @Override
-    public String[] getDatabaseList() {
-        // TODO Auto-generated method stub
-        return null;
-    }
 }

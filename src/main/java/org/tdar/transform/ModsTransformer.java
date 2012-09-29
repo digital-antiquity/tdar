@@ -32,7 +32,9 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.SensoryData;
+import org.tdar.core.bean.resource.Video;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.transform.DcTransformer.VideoTransformer;
 
 import edu.asu.lib.mods.ModsDocument;
 import edu.asu.lib.mods.ModsElementContainer;
@@ -392,6 +394,9 @@ public abstract class ModsTransformer<R extends Resource> implements
     public static class ProjectTransformer extends ModsTransformer<Project> {
     }
 
+    public static class VideoTransformer extends ModsTransformer<Video> {
+    }
+    
     public static class DcmiModsTypeMapper {
 
         private static final Map<String, TypeOfResourceValue> typeMap = initTypeMap();
@@ -434,6 +439,8 @@ public abstract class ModsTransformer<R extends Resource> implements
                 return new ProjectTransformer().transform((Project) resource);
             case SENSORY_DATA:
                 return new SensoryDataTransformer().transform((SensoryData) resource);
+            case VIDEO:
+                return new VideoTransformer().transform((Video)resource);
             default:
                 break;
         }

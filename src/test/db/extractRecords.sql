@@ -5,9 +5,9 @@
 --- 
 --- INSTRUCTIONS:
 --- 1. edit the extractRecords.sql file to make sure that all tables are represented in the select statements
---- 2. download a production copy of tDAR's database
---- 3. run the maven profile sqlExtract < mvn -PsqlExtract clean initialize compile exec:java
---- 4. take the output and completely replace extractRecords.sql
+--- 2. unzip src/main/db/tdarmetadata.zip  and load it into tdarmetadata tdatabase
+--- 3. update with upgrade-db.sql 
+--- 4. run the maven profile sqlExtract < mvn -PsqlExtract clean initialize compile exec:java
 --- 5. test tDAR
 ---
 --- PostgreSQL database dump
@@ -35,8 +35,8 @@
 --DONT-PROCESS-- INSERT INTO person (id, contributor, email, first_name, last_name, privileged, registered, rpa, rpa_number, phone, password, contributor_reason, institution_id) VALUES (8093, true, 'admin@tdar.org', 'admin', 'user', true, true, false, NULL, '', '44f8309043ad4ac22af60fc43dd4403116f28750', NULL, 12088);
 
 
---DONT-PROCESS-- INSERT INTO resource (status, id, access_counter, date_registered, description, resource_type, title, submitter_id, url) VALUES ('ACTIVE',1, 0,   '2008-04-15 13:33:21.962',  N'This project contains all of your independent data resources.  These are data resources that you have not explicitly associated with any project.',  N'PROJECT',  N'Admin''s Independent Resources', 8093, NULL);
---DONT-PROCESS-- INSERT INTO resource (status, id, access_counter, date_registered, description, resource_type, title, submitter_id, url) VALUES ('ACTIVE',3, 0,   '2008-04-15 13:33:21.962',  N'This project contains all of your independent data resources.  These are data resources that you have not explicitly associated with any project.',  N'PROJECT',  N'Test''s Independent Resources', 8092, NULL);
+--DONT-PROCESS-- INSERT INTO resource (status, id, date_registered, description, resource_type, title, submitter_id, url) VALUES ('ACTIVE',1,   '2008-04-15 13:33:21.962',  N'This project contains all of your independent data resources.  These are data resources that you have not explicitly associated with any project.',  N'PROJECT',  N'Admin''s Independent Resources', 8093, NULL);
+--DONT-PROCESS-- INSERT INTO resource (status, id, date_registered, description, resource_type, title, submitter_id, url) VALUES ('ACTIVE',3,   '2008-04-15 13:33:21.962',  N'This project contains all of your independent data resources.  These are data resources that you have not explicitly associated with any project.',  N'PROJECT',  N'Test''s Independent Resources', 8092, NULL);
 --DONT-PROCESS-- INSERT INTO project (id) VALUES (1);
 --DONT-PROCESS-- INSERT INTO project (id) VALUES (3);
 
@@ -48,8 +48,8 @@ insert into test (id) VALUES(4),(3794),(191),(322),(140),(627),(626),(141),(142)
 select * from category_variable where type = 'CATEGORY' order by id;
 select * from category_variable where type = 'SUBCATEGORY' order by id asc;
 select * from category_variable_synonyms;
-select * from culture_keyword where approved is true; 
-select * from site_type_keyword where approved is true; 
+select * from culture_keyword where approved is true order by parent_id desc, id asc;   
+select * from site_type_keyword where approved is true order by index asc; 
 select * from investigation_type; 
 select * from material_keyword; 
 
@@ -89,20 +89,59 @@ select * from person where id in (select submitter_id from resource where id in 
 
 
 
-select * from site_type_keyword where id in (select site_type_keyword_id from resource_site_type_keyword where resource_id in (select id from test)) and approved=false; 
-select * from culture_keyword where id in (select culture_keyword_id from resource_culture_keyword where resource_id in (select id from test)) and approved=false; 
-select * from temporal_keyword where id in (select temporal_keyword_id from resource_temporal_keyword where resource_id in (select id from test));
+select * from site_type_keyword where id in (select site_type_keyword_id from resource_site_type_keyword where resource_id in (select id from test)) and approved=false order by id asc; 
+select * from culture_keyword where id in (select culture_keyword_id from resource_culture_keyword where resource_id in (select id from test)) and approved=false order by id asc; 
+select * from temporal_keyword where id in (select temporal_keyword_id from resource_temporal_keyword where resource_id in (select id from test)) order by id asc;
 select * from geographic_keyword where id in (select geographic_keyword_id from resource_geographic_keyword where resource_id in (select id from test)
-    UNION select geographic_keyword_id from resource_managed_geographic_keyword where resource_id in (select id from test));
-select * from other_keyword where id in (select other_keyword_id from resource_other_keyword where resource_id in (select id from test));
-select * from site_name_keyword where id in (select site_name_keyword_id from resource_site_name_keyword where resource_id in (select id from test));
+    UNION select geographic_keyword_id from resource_managed_geographic_keyword where resource_id in (select id from test)) order by id asc;
+select * from other_keyword where id in (select other_keyword_id from resource_other_keyword where resource_id in (select id from test)) order by id asc;
+select * from site_name_keyword where id in (select site_name_keyword_id from resource_site_name_keyword where resource_id in (select id from test)) order by id asc;
      
 select * from resource where id in (select id from test) or 
         id in (select default_coding_sheet_id from data_table_column where data_table_id in (select id from data_table where dataset_id in (select id from test))) or
         id in (select default_ontology_id from data_table_column where data_table_id in (select id from data_table where dataset_id in (select id from test))) or
-        id in (select project_id from information_resource where id in (select id from test));
+        id in (select project_id from information_resource where id in (select id from test))
+;
 
-select * from collection where collection.id in (select distinct collection_id from collection_resource where collection.id=collection_resource.collection_id and resource_id in (select id from test));
+--todo: end this madness and find a solution that handles collections of arbitrary depth
+--grandparent collections
+select
+    *
+from
+    collection
+where
+    exists(
+        select
+            *
+        from
+            test t 
+                join collection_resource cr on (cr.resource_id = t.id)
+                    join collection c2 on (c2.id = cr.collection_id)
+                        join collection c3 on (c3.id = c2.parent_id)
+        where
+            collection.id = c3.parent_id
+    )
+;        
+
+--parent collections
+select
+    *
+from
+    collection
+where
+    exists(
+        select
+            *
+        from
+            test t 
+                join collection_resource cr on (cr.resource_id = t.id)
+                    join collection c2 on (c2.id = cr.collection_id)
+        where
+            collection.id = c2.parent_id
+    )
+;        
+        
+select * from collection where collection.id in                               (select distinct collection_id from collection_resource where resource_id in (select id from test));
 select * from collection_resource where resource_id in (select id from test);
 select * from authorized_user where authorized_user.resource_collection_id in (select distinct collection_id from collection_resource where resource_id in (select id from test));
 select * from project where id in (select id from test) or
@@ -117,7 +156,8 @@ select * from project where id in (select id from test) or
 --        resource_id in (select default_coding_sheet_id from data_table_column where data_table_id in (select id from data_table where dataset_id in (select id from test))) or
 --        resource_id in (select default_ontology_id from data_table_column where data_table_id in (select id from data_table where dataset_id in (select id from test))) or
 --        resource_id in (select project_id from information_resource where id in (select id from test));
-        
+
+
 select * from authorized_user where resource_collection_id in (select id from collection_resource where resource_id in (select id from test) or 
         resource_id in (select default_coding_sheet_id from data_table_column where data_table_id in (select id from data_table where dataset_id in (select id from test))) or
         resource_id in (select default_ontology_id from data_table_column where data_table_id in (select id from data_table where dataset_id in (select id from test))) or
@@ -163,7 +203,8 @@ select * from data_value_ontology_node_mapping where data_table_column_id in (se
 
 select * from resource_creator where resource_id in (select id from test);
 
-
+select * from resource_access_statistics where resource_id in (select id from test);
+select * from information_resource_file_download_statistics where information_resource_file_id in (select id from information_resource_file where information_resource_id in (select id from test));
 select * from resource_annotation where resource_id in (select id from test);
 
 select resource_annotation_key.* from resource_annotation_key,resource_annotation where resourceannotationkey_id=resource_annotation_key.id and resource_id in (select id from test);
@@ -220,6 +261,12 @@ drop table test;
 --DONT-PROCESS-- set constraints all immediate;
 --DONT-PROCESS-- update data_table_column set column_encoding_type=NULL where column_encoding_type='NUMERIC' or column_encoding_type='TEXT' or column_encoding_type='';
 --DONT-PROCESS-- insert into authorized_user (general_permission_int,general_permission,resource_collection_id, user_id) values (500,'MODIFY_RECORD',1391,60);
+--DONT-PROCESS-- update information_resource set date_created=-1 where date_created is null;
+--DONT-PROCESS-- update information_resource set date_created_normalized= round(date_created / 10) * 10 ; 
+--DONT-PROCESS-- update resource set description='this should not be null' where description is null or description ='';
+--DONT-PROCESS-- update resource set date_updated=date_registered where date_updated is null;
+--DONT-PROCESS-- update resource set updater_id=submitter_id where updater_id is null;
 --DONT-PROCESS-- update data_table_column set mappingcolumn=false where mappingcolumn is null;
 --DONT-PROCESS-- update data_table_column set visible=true where visible is null;
 --DONT-PROCESS-- update data_table_column set ignorefileextension=true where ignorefileextension is null;
+--DONT-PROCESS-- update person set username=email where registered=true;

@@ -8,6 +8,7 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.CategoryVariable;
 
 /**
@@ -31,7 +32,7 @@ public class AjaxController extends TdarActionSupport {
     
     @Action("column-metadata-subcategories")
     public String columnMetadataSubcategories() {
-        if (categoryVariableId == null || categoryVariableId == -1L) {
+        if (Persistable.Base.isNullOrTransient(categoryVariableId)){
             logger.error("Invalid category variable: " + categoryVariableId);
         }
         return SUCCESS;
@@ -46,7 +47,7 @@ public class AjaxController extends TdarActionSupport {
      * @return
      */
     public List<CategoryVariable> getSubcategories() {
-        if (categoryVariableId == null || categoryVariableId == -1L) {
+        if (Persistable.Base.isNullOrTransient(categoryVariableId)){
             return Collections.emptyList();
         }
         return new ArrayList<CategoryVariable>(getCategoryVariable().getSortedChildren());

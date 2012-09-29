@@ -1,25 +1,33 @@
 package org.tdar.struts.action.search;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.commons.collections.ListUtils;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
-import org.apache.struts2.convention.annotation.Results;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.cache.BrowseYearCountCache;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Creator;
-import org.tdar.core.bean.entity.Institution;
-import org.tdar.core.bean.resource.Status;
-import org.tdar.search.query.FieldQueryPart;
+import org.tdar.core.bean.keyword.CultureKeyword;
+import org.tdar.core.bean.keyword.InvestigationType;
+import org.tdar.core.bean.keyword.MaterialKeyword;
+import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.search.query.QueryFieldNames;
-import org.tdar.search.query.QueryPartGroup;
 import org.tdar.search.query.SortOption;
-import org.tdar.search.query.queryBuilder.QueryBuilder;
-import org.tdar.search.query.queryBuilder.ResourceCollectionQueryBuilder;
-import org.tdar.search.query.queryBuilder.ResourceQueryBuilder;
+import org.tdar.search.query.builder.QueryBuilder;
+import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
+import org.tdar.search.query.builder.ResourceQueryBuilder;
+import org.tdar.search.query.part.FieldQueryPart;
+import org.tdar.struts.data.ResourceCreatorProxy;
 
 /**
  * $Id$
@@ -31,23 +39,34 @@ import org.tdar.search.query.queryBuilder.ResourceQueryBuilder;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Rev$
  */
+@SuppressWarnings("rawtypes")
 @Namespace("/browse")
 @ParentPackage("default")
 @Component
 @Scope("prototype")
-@Results({ @Result(name = "authenticated", type = "redirect", location = "/") })
 public class BrowseController extends AbstractLookupController {
 
+    private static final String ALL_TDAR_COLLECTIONS = "All Collections";
     private static final long serialVersionUID = -128651515783098910L;
     private Creator creator;
 
+    private List<InvestigationType> investigationTypes = new ArrayList<InvestigationType>();
+    private List<CultureKeyword> cultureKeywords = new ArrayList<CultureKeyword>();
+    private List<SiteTypeKeyword> siteTypeKeywords = new ArrayList<SiteTypeKeyword>();
+    private List<MaterialKeyword> materialTypes = new ArrayList<MaterialKeyword>();
+    private List<String> alphabet = new ArrayList<String>(Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q",
+            "R", "S", "T", "U", "V", "W", "X", "Y", "Z"));
+    private List<BrowseYearCountCache> timelineData;
+
     // private Keyword keyword;
 
-    @Override
-    @Action(results = {
-            @Result(name = "success", location = "about.ftl")
-    })
-    public String execute() {
+    @Action("explore")
+    public String explore() {
+        setMaterialTypes(getGenericKeywordService().findAllWithCache(MaterialKeyword.class));
+        setInvestigationTypes(getGenericKeywordService().findAllWithCache(InvestigationType.class));
+        setCultureKeywords(getGenericKeywordService().findAllApprovedWithCache(CultureKeyword.class));
+        setSiteTypeKeywords(getGenericKeywordService().findAllApprovedWithCache(SiteTypeKeyword.class));
+        setTimelineData(getGenericService().findAll(BrowseYearCountCache.class));
         return SUCCESS;
     }
 
@@ -72,37 +91,32 @@ public class BrowseController extends AbstractLookupController {
         qb.append(new FieldQueryPart(QueryFieldNames.TOP_LEVEL, "true"));
         setMode("browseCollections");
         handleSearch(qb);
-
+        setSearchDescription(ALL_TDAR_COLLECTIONS);
+        setSearchTitle(ALL_TDAR_COLLECTIONS);
         return SUCCESS;
     }
 
     @Action(value = "creators", results = { @Result(location = "results.ftl") })
     public String browseCreators() throws ParseException {
-        if (getId() == null || getId() == -1) {
-            // setResults(getResourceService().findResourceLinkedValues(Creator.class));
-        } else {
+        if (!Persistable.Base.isNullOrTransient(getId())) {
             creator = getGenericService().find(Creator.class, getId());
             QueryBuilder queryBuilder = new ResourceQueryBuilder();
             queryBuilder.setOperator(Operator.AND);
 
-            QueryPartGroup queryPartGroup = new QueryPartGroup();
-            queryPartGroup.setOperator(Operator.OR);
-            if (creator instanceof Institution) {
-                // institution: return all active resources that list this institution as a creator or resource provider
-                queryPartGroup.append(new FieldQueryPart(QueryFieldNames.RESOURCE_PROVIDER_ID, getId().toString()));
-                queryPartGroup.append(new FieldQueryPart(QueryFieldNames.RESOURCE_CREATORS_CREATOR_ID, getId().toString()));
-            } else {
-                // person: return all resources that list this person as a creator
-                queryPartGroup.append(new FieldQueryPart(QueryFieldNames.RESOURCE_CREATORS_CREATOR_ID, getId().toString()));
-                queryPartGroup.append(new FieldQueryPart(QueryFieldNames.RESOURCE_OWNER, getId().toString()));
-            }
-            queryBuilder.append(queryPartGroup);
-            queryBuilder.append(new FieldQueryPart(QueryFieldNames.STATUS, Status.ACTIVE.toString()));
+            SearchParameters params = new SearchParameters(Operator.OR);
+            params.getResourceCreatorProxies().add(new ResourceCreatorProxy(creator, null));
+
+            queryBuilder.append(params);
+            ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
+            getAuthenticationAndAuthorizationService().initializeReservedSearchParameters(reservedSearchParameters, getAuthenticatedUser());
+            queryBuilder.append(reservedSearchParameters);
 
             setMode("browseCreators");
             setSortField(SortOption.RESOURCE_TYPE);
             String descr = String.format("All Resources from %s", creator.getProperName());
-            setRecordsPerPage(100);
+            setSearchDescription(descr);
+            setSearchTitle(descr);
+            setRecordsPerPage(50);
             handleSearch(queryBuilder);
         }
         // setResults(getResourceService().findResourceLinkedValues(Creator.class));
@@ -129,13 +143,56 @@ public class BrowseController extends AbstractLookupController {
         this.creator = creator;
     }
 
-    //
-    // public Keyword getKeyword() {
-    // return keyword;
-    // }
-    //
-    // public void setKeyword(Keyword keyword) {
-    // this.keyword = keyword;
-    // }
+    public List<SiteTypeKeyword> getSiteTypeKeywords() {
+        return siteTypeKeywords;
+    }
 
+    public void setSiteTypeKeywords(List<SiteTypeKeyword> siteTypeKeywords) {
+        this.siteTypeKeywords = siteTypeKeywords;
+    }
+
+    public List<CultureKeyword> getCultureKeywords() {
+        return cultureKeywords;
+    }
+
+    public void setCultureKeywords(List<CultureKeyword> cultureKeywords) {
+        this.cultureKeywords = cultureKeywords;
+    }
+
+    public List<InvestigationType> getInvestigationTypes() {
+        return investigationTypes;
+    }
+
+    public void setInvestigationTypes(List<InvestigationType> investigationTypes) {
+        this.investigationTypes = investigationTypes;
+    }
+
+    public List<MaterialKeyword> getMaterialTypes() {
+        return materialTypes;
+    }
+
+    public void setMaterialTypes(List<MaterialKeyword> materialTypes) {
+        this.materialTypes = materialTypes;
+    }
+
+    public List<String> getAlphabet() {
+        return alphabet;
+    }
+
+    public void setAlphabet(List<String> alphabet) {
+        this.alphabet = alphabet;
+    }
+
+    public List<BrowseYearCountCache> getTimelineData() {
+        return timelineData;
+    }
+
+    public void setTimelineData(List<BrowseYearCountCache> list) {
+        this.timelineData = list;
+    }
+
+    @Override
+    public List<String> getProjections() {
+        return ListUtils.EMPTY_LIST;
+    }
 }

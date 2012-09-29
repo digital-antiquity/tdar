@@ -12,6 +12,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
 import au.com.bytecode.opencsv.CSVReader;
 
@@ -37,6 +38,7 @@ public class CsvCodingSheetParser implements CodingSheetParser {
     public List<CodingRule> parse(CodingSheet codingSheet, InputStream stream) throws CodingSheetParserException {
         List<CodingRule> codingRules = new ArrayList<CodingRule>();
         CSVReader reader = getReader(stream);
+        boolean emptyBecauseOfParseIssues = true;
         try {
             for (String[] ruleArray : reader.readAll()) {
                 if (ruleArray.length < 2) {
@@ -44,12 +46,17 @@ public class CsvCodingSheetParser implements CodingSheetParser {
                             ruleArray.length));
                     continue;
                 }
+                emptyBecauseOfParseIssues = false;
                 String code = ruleArray[CODE_INDEX];
                 String term = ruleArray[TERM_INDEX];
-                if (StringUtils.isBlank(code) || StringUtils.isBlank(term)) {
-                    logger.warn("Null code or term, skipping");
+                if (StringUtils.isBlank(code) && StringUtils.isBlank(term)) {
+                    logger.warn("Null code and term, skipping");
                     continue;
                 }
+                if (StringUtils.isBlank(code) || StringUtils.isBlank(term)) {
+                    throw new TdarRecoverableRuntimeException(String.format("Null code (%s) or term(%s)",code,term));
+                }
+
                 CodingRule codingRule = new CodingRule();
                 codingRule.setCode(code);
                 codingRule.setTerm(term);
@@ -66,6 +73,9 @@ public class CsvCodingSheetParser implements CodingSheetParser {
             logger.error("Invalid CSV format for coding sheets.", e);
             throw new CodingSheetParserException(
                     "We couldn't parse your coding rules properly.  Please enter at least 2 columns and make sure your input is well-formed.", e);
+        }
+        if (emptyBecauseOfParseIssues) {
+            throw new CodingSheetParserException("We couldn't parse your coding sheet properly, it does not appear to be in comma-separated-value format");
         }
         return codingRules;
     }

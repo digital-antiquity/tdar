@@ -1,5 +1,6 @@
 package org.tdar.db.conversion.converters;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -12,11 +13,11 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.dataTable.DataTable;
-import org.tdar.core.bean.resource.dataTable.DataTableColumn;
-import org.tdar.core.bean.resource.dataTable.DataTableColumnEncodingType;
-import org.tdar.core.bean.resource.dataTable.DataTableColumnType;
-import org.tdar.core.bean.resource.dataTable.DataTableRelationship;
+import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
+import org.tdar.core.bean.resource.datatable.DataTableColumnType;
+import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.db.conversion.analyzers.ColumnAnalyzer;
 import org.tdar.db.model.abstracts.TargetDatabase;
@@ -31,6 +32,10 @@ public interface DatasetConverter {
      * @return
      */
     public List<String> getTableNames();
+
+    void setIndexedContentsFile(File indexedContentsFile);
+
+    File getIndexedContentsFile();
 
     public void setTargetDatabase(TargetDatabase targetDatabase);
 
@@ -57,14 +62,19 @@ public interface DatasetConverter {
 
     public void setInformationResourceFileVersion(InformationResourceFileVersion version);
 
+    public void setFilename(String filename);
+
+    public String getFilename();
+
     public List<DataTableRelationship> getRelationshipsWithTable(String tableName);
+
+    public static final String ERROR_UNABLE_TO_PROCESS = "unable to process this dataset file";
 
     /**
      * Abstract base class for DatasetConverterS, uses template pattern to ease implementation of execute().
      */
     public abstract static class Base implements DatasetConverter {
 
-        public static final String ERROR_UNABLE_TO_PROCESS = "tDAR is unable to process this dataset file";
         private String filename = "";
         private Long irFileId;
         private Database database = null;
@@ -101,6 +111,8 @@ public interface DatasetConverter {
         public Set<DataTable> getDataTables() {
             return dataTables;
         }
+
+        private File indexedContentsFile;
 
         public DataTable createDataTable(String name) {
             DataTable dataTable = new DataTable();
@@ -167,8 +179,8 @@ public interface DatasetConverter {
                 // with a friendly-yet-generic error message.
                 throw tex;
             } catch (Exception e) {
-                logger.error(ERROR_UNABLE_TO_PROCESS, e);
-                throw new TdarRecoverableRuntimeException(ERROR_UNABLE_TO_PROCESS, e);
+                logger.error(ERROR_UNABLE_TO_PROCESS + "  " + getInformationResourceFileVersion().getFilename(), e);
+                throw new TdarRecoverableRuntimeException(ERROR_UNABLE_TO_PROCESS + "  " + getInformationResourceFileVersion().getFilename(), e);
             }
         }
 
@@ -262,6 +274,14 @@ public interface DatasetConverter {
          */
         public InformationResourceFileVersion getInformationResourceFileVersion() {
             return informationResourceFileVersion;
+        }
+
+        public File getIndexedContentsFile() {
+            return indexedContentsFile;
+        }
+
+        public void setIndexedContentsFile(File indexedContentsFile) {
+            this.indexedContentsFile = indexedContentsFile;
         }
 
     }

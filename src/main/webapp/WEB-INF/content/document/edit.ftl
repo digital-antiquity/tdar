@@ -1,18 +1,15 @@
 <#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 <head>
-<#if resource.id == -1>
-<title>Create a Document</title>
-<#else>
-<title>Editing: ${resource.title}</title>
-</#if>
+<@edit.title />
+
 <meta name="lastModifiedDate" content="$Date$"/>
 </head>
 <body>
 <@edit.toolbar "${resource.urlNamespace}" "edit" />
 <div>
 <@s.form id='resourceMetadataForm' method='post' enctype='multipart/form-data' action='save'>
-<@edit.basicInformation 'document' >
+<@edit.basicInformation 'document' 'document' >
 <#if linkedInformationResource??>
 <div class='info'>
 This will be linked as a <b>${linkType}</b> citation for: <b>${linkedInformationResource.title}</b>
@@ -21,20 +18,6 @@ This will be linked as a <b>${linkType}</b> citation for: <b>${linkedInformation
 </div>
 <!--br/-->
 </#if>
-<p id="t-title" tooltipcontent="Enter the entire title, including sub-title, if appropriate." tiplabel="Title"> 
-    <@s.textfield labelposition='left' id='resourceTitle' label='Title' required='true' name='document.title' size="75" cssClass="required descriptiveTitle longfield"  title="A title is required for all documents." maxlength="512" />
-</p>
-
-<p id="t-year" >
-    <span tooltipcontent="Four digit year, e.g. 1966 or 2005. " tiplabel="Year">
-      <#assign dateVal = ""/>
-       <#if resource.date?? && resource.date!= -1>
-         <#assign dateVal = resource.date?c />
-      </#if>
-        <@s.textfield labelposition='left' id='dateCreated' label='Year' name='resource.date' value="${dateVal}" cssClass="shortfield reasonableDate required" required=true
-         title="Please enter the year this document was created" />
-    </span>
-</p>
 
 <div class="wrapper" 
     tiplabel="Document Type" 
@@ -52,50 +35,19 @@ This will be linked as a <b>${linkType}</b> citation for: <b>${linkedInformation
         title="A book title is required" name='document.bookTitle' cssClass="requiredIfVisible tdartext longfield" />
 </p>
 
-<p id="t-abstract" class="clear"
-    tiplabel="Abstract / Description"
-    tooltipcontent="Short description of the document. Often comes from the document itself, but sometimes will include additional information from the contributor."
-    >
-    <@s.textarea label='Abstract / Description' labelposition='top' id='resourceDescription'  name='resource.description' rows="5" cssClass='required resizable tdartext' required=true title="A description is required" />
-</p>
-
 
 </@edit.basicInformation>
 
+<@edit.allCreators "Authors / Editors" authorshipProxies 'authorship' false />
 
-<@edit.asyncFileUpload "Document" true />
+<@edit.citationInfo "document">
 
-<@edit.resourceCreators "Authors / Editors" authorshipProxies 'authorship' false />
-
-<div class="glide" id="divAboutYourDocument">
-<h3>About Your Document</h3>
-
-<p id="t-ident" class="clear">
-    <span id="t-doi" tiplabel="DOI" tooltipcontent="Digital Object Identifier.">
-        <@s.textfield labelposition='left' id='doi' label='DOI' name='document.doi' cssClass="shortfield" />
-    </span>
-    <span id="t-isbn" tiplabel="ISBN" tooltipcontent="International Standard Book Number.">
-       <@s.textfield labelposition='left' id='isbn' title="please add a valid ISBN" label='ISBN' name='document.isbn' cssClass="right-shortfield  isbn" />
-    </span>
-    <span id="t-issn" tiplabel="ISSN" tooltipcontent="International Standard Serial Number, an eight-digit number assigned to many serial publications.">
-        <@s.textfield labelposition='left' id='issn' title="please add a valid ISSN" label='ISSN' name='document.issn' cssClass="right-shortfield  issn" />
-    </span>
-</p>
 
 <p>
     <span tiplabel="Language" tooltipcontent="Select the language in which the document is written.">
         <@s.select labelposition='left' label='Language'  emptyOption='false' name='resourceLanguage'  listValue="label" list='%{languages}' cssClass="right-shortfield "/>
     </span>
-</p>
-
-<p> 
-    <h3>Complete the Citation for your Document</h3> 
-    <p class="comment" id="showCite">add publisher, edition information, etc... 
-    <button type="button" id="link-more" name="show" value="show fields">show fields</button>
-</p> 
-
-<div id="showmorecite"> 
-        <span id="publisher-hints" style="display:none"
+        <span id="publisher-hints" 
             book="Publisher" 
             book_section="Publisher"
             journal_article="Publisher" 
@@ -111,9 +63,6 @@ This will be linked as a <b>${linkType}</b> citation for: <b>${linkedInformation
             other="Publisher Loc."> &nbsp;</span>
 <br/>
 
-    <p id="t-edition">
-        <@s.textfield labelposition='left' id='edition' label='Edition' name='document.edition' cssClass="shortfield" />
-    </p>
     
     <p id="t-vol">
         <@s.textfield labelposition='left' id='volume' label='Volume' name='document.volume' cssClass="shortfield"  />
@@ -124,6 +73,8 @@ This will be linked as a <b>${linkType}</b> citation for: <b>${linkedInformation
         <@s.textfield labelposition='left' id='seriesName' label='Series Title' name='document.seriesName' cssClass="longfield" />
         <br />
         <@s.textfield labelposition='left' id='seriesNumber' label='Series #' name='document.seriesNumber' cssClass="shortfield" />
+
+        <@s.textfield labelposition='left' id='edition' label='Edition' name='document.edition' cssClass="right-shortfield" />
     </p>
     
     <p id="t-start-end">
@@ -141,14 +92,32 @@ This will be linked as a <b>${linkType}</b> citation for: <b>${linkedInformation
             name='document.publisherLocation'
             cssClass='longfield' />
     </p>
-        
+    <div id="t-degree">
+        <@s.radio name='document.degree' id="degreeType" emptyOption='false' listValue="label"  
+    list='%{degrees}' groupLabel="Degree" numColumns=3 />
+	</div>        
     <p id="t-located"  tooltipcontent="Actual physical location of a copy of the document, e.g. an agency, repository, 
         or library." tiplabel="Copy Location">
         <@s.textfield labelposition='left' id='copyLocation' label='Copy Location' name='document.copyLocation' cssClass="longfield"/>
     </p>
-        
- </div>
-</div>
+
+<p id="t-ident" class="clear">
+    <span id="t-doi" tiplabel="DOI" tooltipcontent="Digital Object Identifier.">
+        <@s.textfield labelposition='left' id='doi' label='DOI' name='document.doi' cssClass="shortfield" />
+    </span>
+    <span id="t-isbn" tiplabel="ISBN" tooltipcontent="International Standard Book Number.">
+       <@s.textfield labelposition='left' id='isbn' title="please add a valid ISBN" label='ISBN' name='document.isbn' cssClass="right-shortfield  isbn" />
+    </span>
+    <span id="t-issn" tiplabel="ISSN" tooltipcontent="International Standard Serial Number, an eight-digit number assigned to many serial publications.">
+        <@s.textfield labelposition='left' id='issn' title="please add a valid ISSN" label='ISSN' name='document.issn' cssClass="right-shortfield  issn" />
+    </span>
+</p>
+
+
+</@edit.citationInfo>
+
+<@edit.asyncFileUpload "${resource.resourceType}" true />
+
 
 
 <@edit.sharedFormComponents />

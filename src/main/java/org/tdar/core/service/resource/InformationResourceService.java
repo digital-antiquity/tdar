@@ -1,6 +1,5 @@
 package org.tdar.core.service.resource;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -12,25 +11,21 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.HasResource;
+import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.cache.BrowseYearCountCache;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
-import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.AuthorizedUser;
-import org.tdar.core.bean.keyword.CultureKeyword;
-import org.tdar.core.bean.keyword.GeographicKeyword;
-import org.tdar.core.bean.keyword.InvestigationType;
-import org.tdar.core.bean.keyword.MaterialKeyword;
-import org.tdar.core.bean.keyword.OtherKeyword;
-import org.tdar.core.bean.keyword.SiteNameKeyword;
-import org.tdar.core.bean.keyword.SiteTypeKeyword;
-import org.tdar.core.bean.keyword.TemporalKeyword;
+import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.ResourceNote;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.resource.InformationResourceDao;
+import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.exception.TdarRuntimeException;
+import org.tdar.core.service.EntityService;
 import org.tdar.core.service.SearchIndexService;
 
 /**
@@ -49,13 +44,19 @@ public class InformationResourceService extends AbstractInformationResourceServi
     private SearchIndexService searchIndexService;
 
     @Autowired
-    public void setDao(InformationResourceDao dao) {
-        super.setDao(dao);
-    }
+    private EntityService entityService;
+
+    @Autowired
+    private ResourceCollectionDao resourceCollectionDao;
 
     @Transactional(readOnly = true)
     public List<InformationResource> findAllResources() {
         return getDao().findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public List<BrowseYearCountCache> findResourcesByDecade(Status... statuses) {
+        return getDao().findResourcesByDecade(statuses);
     }
 
     @Transactional(readOnly = true)
@@ -72,25 +73,27 @@ public class InformationResourceService extends AbstractInformationResourceServi
             resource.markUpdated(proxy.getSubmitter());
             resource.setStatus(proxy.getStatus());
             saveOrUpdate(resource);
-            resource.setCultureKeywords(new HashSet<CultureKeyword>(proxy.getCultureKeywords()));
-            resource.setInvestigationTypes(new HashSet<InvestigationType>(proxy.getInvestigationTypes()));
-            resource.setOtherKeywords(new HashSet<OtherKeyword>(proxy.getOtherKeywords()));
-            resource.setSiteNameKeywords(new HashSet<SiteNameKeyword>(proxy.getSiteNameKeywords()));
-            resource.setSiteTypeKeywords(new HashSet<SiteTypeKeyword>(proxy.getSiteTypeKeywords()));
-            resource.setGeographicKeywords(new HashSet<GeographicKeyword>(proxy.getGeographicKeywords()));
-            resource.setManagedGeographicKeywords(new HashSet<GeographicKeyword>(proxy.getManagedGeographicKeywords()));
+            resource.getMaterialKeywords().addAll(proxy.getMaterialKeywords());
+            resource.getTemporalKeywords().addAll(proxy.getTemporalKeywords());
+            resource.getInvestigationTypes().addAll(proxy.getInvestigationTypes());
+            resource.getCultureKeywords().addAll(proxy.getCultureKeywords());
+            resource.getOtherKeywords().addAll(proxy.getOtherKeywords());
+            resource.getSiteNameKeywords().addAll(proxy.getSiteNameKeywords());
+            resource.getSiteTypeKeywords().addAll(proxy.getSiteTypeKeywords());
+            resource.getGeographicKeywords().addAll(proxy.getGeographicKeywords());
+            resource.getManagedGeographicKeywords().addAll(proxy.getManagedGeographicKeywords());
             // CLONE if internal, otherwise just add
-
             for (ResourceCollection collection : proxy.getResourceCollections()) {
-                logger.info("cloning collection: {}", collection);
                 if (collection.isInternal()) {
+                    logger.info("cloning collection: {}", collection);
                     ResourceCollection newInternal = new ResourceCollection(CollectionType.INTERNAL);
                     newInternal.setName(collection.getName());
                     newInternal.markUpdated(collection.getOwner());
                     getDao().save(newInternal);
 
-                    for(AuthorizedUser proxyAuthorizedUser : collection.getAuthorizedUsers())  {
-                        AuthorizedUser newAuthorizedUser = new AuthorizedUser(proxyAuthorizedUser.getUser(), proxyAuthorizedUser.getGeneralPermission());
+                    for (AuthorizedUser proxyAuthorizedUser : collection.getAuthorizedUsers()) {
+                        AuthorizedUser newAuthorizedUser = new AuthorizedUser(proxyAuthorizedUser.getUser(),
+                                proxyAuthorizedUser.getGeneralPermission());
                         newAuthorizedUser.setResourceCollection(newInternal);
                         newInternal.getAuthorizedUsers().add(newAuthorizedUser);
                         getDao().save(newAuthorizedUser);
@@ -98,24 +101,23 @@ public class InformationResourceService extends AbstractInformationResourceServi
                     resource.getResourceCollections().add(newInternal);
                     newInternal.getResources().add(resource);
                 } else {
-                    logger.info("shared collection : {} ", collection);
+                    logger.info("adding to shared collection : {} ", collection);
                     if (collection.isTransient()) {
                         save(collection);
                     }
+
                     collection.getResources().add(resource);
                     resource.getResourceCollections().add(collection);
                 }
             }
-            resource.setMaterialKeywords(new HashSet<MaterialKeyword>(proxy.getMaterialKeywords()));
-            resource.setTemporalKeywords(new HashSet<TemporalKeyword>(proxy.getTemporalKeywords()));
 
-            resource.setCoverageDates(cloneSet(resource, proxy.getCoverageDates()));
-            resource.setLatitudeLongitudeBoxes(cloneSet(resource, proxy.getLatitudeLongitudeBoxes()));
-            resource.setResourceCreators(cloneSet(resource, proxy.getResourceCreators()));
-            resource.setResourceAnnotations(cloneSet(resource, proxy.getResourceAnnotations()));
-            resource.setResourceNotes(cloneSet(resource, proxy.getResourceNotes()));
-            resource.setRelatedComparativeCollections(cloneSet(resource, proxy.getRelatedComparativeCollections()));
-            resource.setSourceCollections(cloneSet(resource, proxy.getSourceCollections()));
+            resource.getCoverageDates().addAll(cloneSet(resource, proxy.getCoverageDates()));
+            resource.getLatitudeLongitudeBoxes().addAll(cloneSet(resource, proxy.getLatitudeLongitudeBoxes()));
+            resource.getResourceCreators().addAll(cloneSet(resource, proxy.getResourceCreators()));
+            resource.getResourceAnnotations().addAll(cloneSet(resource, proxy.getResourceAnnotations()));
+            resource.getResourceNotes().addAll(cloneSet(resource, proxy.getResourceNotes()));
+            resource.getRelatedComparativeCollections().addAll(cloneSet(resource, proxy.getRelatedComparativeCollections()));
+            resource.getSourceCollections().addAll(cloneSet(resource, proxy.getSourceCollections()));
 
             if (resource instanceof InformationResource) {
                 InformationResource ires = (InformationResource) resource;
@@ -133,13 +135,19 @@ public class InformationResourceService extends AbstractInformationResourceServi
                 ires.setInheritingSiteInformation(proxy.isInheritingSiteInformation());
                 ires.setInheritingSpatialInformation(proxy.isInheritingSpatialInformation());
                 ires.setInheritingTemporalInformation(proxy.isInheritingTemporalInformation());
+                ires.setInheritingIdentifierInformation(proxy.isInheritingIdentifierInformation());
+                ires.setInheritingNoteInformation(proxy.isInheritingNoteInformation());
+                ires.setInheritingCollectionInformation(proxy.isInheritingCollectionInformation());
             }
+            
+            // NOTE: THIS SHOULD BE THE LAST THING DONE AS IT BRINGS EVERYTHING BACK ONTO THE SESSION PROPERLY
+            getDao().merge(resource);
             return resource;
         } catch (Exception exception) {
             throw new TdarRuntimeException(exception);
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     public <T extends HasResource<Resource>> Set<T> cloneSet(Resource resource, Collection<T> resourceCollection) {
         logger.debug("cloning collection: " + resourceCollection);
@@ -148,22 +156,13 @@ public class InformationResourceService extends AbstractInformationResourceServi
             getDao().detachFromSession(t);
             try {
                 T clone = (T) BeanUtils.cloneBean(t);
-                // FIXME: can replace this with a common interface (setResource/getResource) on ResourceAnnotation/Notes/Read/FullUsers
                 clone.setResource(resource);
+//                if (clone instanceof ResourceCreator) {
+//                    ResourceCreator creator = (ResourceCreator)clone;
+//                    creator.setCreator(getDao().merge(creator.getCreator()));
+//                }
                 clonedSet.add(clone);
-                if (clone instanceof ResourceNote) {
-                    logger.debug("resource note has resource: " + ((ResourceNote) clone).getResource());
-                }
-            } catch (IllegalAccessException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (InstantiationException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (NoSuchMethodException e) {
+            } catch (Exception e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
@@ -178,6 +177,23 @@ public class InformationResourceService extends AbstractInformationResourceServi
             return;
         logger.debug("re-indexing project: {}", projectId);
         searchIndexService.index(getDao().find(Project.class, projectId));
+    }
+
+    public <E> List<E> findRandomFeaturedResource(boolean restrictToFiles, int maxResults) {
+        return getDao().findRandomFeaturedResource(restrictToFiles, maxResults);
+    }
+
+    public <E> List<E> findRandomFeaturedResourceInProject(boolean restrictToFiles, Project project, int maxResults) {
+        return getDao().findRandomFeaturedResourceInProject(restrictToFiles, project, maxResults);
+    }
+
+    public <E> List<E> findRandomFeaturedResourceInCollection(boolean restrictToFiles, Long collectionId, int maxResults) {
+        List<ResourceCollection> collections = null;
+        if (!Persistable.Base.isNullOrTransient(collectionId)) {
+            collections = resourceCollectionDao.findCollectionsOfParent(collectionId, true, CollectionType.SHARED);
+            return getDao().findRandomFeaturedResourceInCollection(restrictToFiles, collections, maxResults);
+        }
+        return findRandomFeaturedResource(restrictToFiles, maxResults);
     }
 
 }

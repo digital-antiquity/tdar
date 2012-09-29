@@ -6,7 +6,7 @@ import java.sql.Types;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
-import org.tdar.core.bean.resource.dataTable.DataTableColumnType;
+import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 
 public class DataTableColumnTest {
 

@@ -73,8 +73,8 @@ public class JaxbDocumentResult implements Result {
             resp.setContentType("application/xml");
             JaxbDocumentWriter.write(jaxbDocument, writer, formatOutput);
 
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Serving Jaxb result [" + documentName + "]");
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("Serving Jaxb result [" + documentName + "]");
             }
             
         } finally {

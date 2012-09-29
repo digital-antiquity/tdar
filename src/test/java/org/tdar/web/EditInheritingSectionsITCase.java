@@ -16,33 +16,26 @@ import net.sf.json.JSONObject;
 
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.core.bean.resource.InformationResource;
 
 public class EditInheritingSectionsITCase extends AbstractAdminAuthenticatedWebTestCase {
 
+    private static final String INHERITING_CULTURAL_INFORMATION_FIELDNAME = "resource.inheritingCulturalInformation";
+    private static final String INHERITING_INVESTIGATION_INFORMATION_FIELDNAME = "resource.inheritingInvestigationInformation";
     private static long PARENT_PROJECT_ID = 3805;
-    // private static String PARENT_PROJECT_TITLE = "New Philadelphia Archaeology Project";
     private static String[] PARENT_PROJECT_CULTURE_KEYWORDS = { "Archaic", "Historic" };
     private static String DOCUMENT_EDIT_URL = "/document/4230/edit";
-    private static String INHERITING_CULTURAL_INFORMATION_FIELDNAME = "resource.inheritingCulturalInformation";
-    private static String INHERITING_INVESTIGATION_INFORMATION_FIELDNAME = "resource.inheritingInvestigationInformation";
-    private static String INHERITING_SITE_INFORMATION_FIELDNAME = "resource.inheritingSiteInformation";
-    private static String INHERITING_MATERIAL_INFORMATION_FIELDNAME = "resource.inheritingMaterialInformation";
-    private static String INHERITING_TEMPORAL_INFORMATION_FIELDNAME = "resource.inheritingTemporalInformation";
-    private static String INHERITING_OTHER_INFORMATION_FIELDNAME = "resource.inheritingOtherInformation";
-    private static String INHERITING_SPATIAL_INFORMATION_FIELDNAME = "resource.inheritingSpatialInformation";
 
     private Map<String, String> docValMap = new HashMap<String, String>();
 
     public EditInheritingSectionsITCase() {
-        docValMap.put(INHERITING_CULTURAL_INFORMATION_FIELDNAME, "true");
-        docValMap.put(INHERITING_INVESTIGATION_INFORMATION_FIELDNAME, "true");
-        docValMap.put(INHERITING_SITE_INFORMATION_FIELDNAME, "true");
-        docValMap.put(INHERITING_INVESTIGATION_INFORMATION_FIELDNAME, "true");
-        docValMap.put(INHERITING_SITE_INFORMATION_FIELDNAME, "true");
-        docValMap.put(INHERITING_MATERIAL_INFORMATION_FIELDNAME, "true");
-        docValMap.put(INHERITING_TEMPORAL_INFORMATION_FIELDNAME, "true");
-        docValMap.put(INHERITING_OTHER_INFORMATION_FIELDNAME, "true");
-        docValMap.put(INHERITING_SPATIAL_INFORMATION_FIELDNAME, "true");
+        for (String inherit : InformationResource.JSON_PROPERTIES) {
+            if (inherit.equals("inheritingCollectionInformation")) {
+                //not on project page
+                continue;
+            }
+            docValMap.put("resource." + inherit, "true");
+        }
     }
 
     @Test

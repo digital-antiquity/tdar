@@ -12,8 +12,15 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.ClassBridge;
 import org.hibernate.search.annotations.ContainedIn;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.FieldBridge;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.Norms;
+import org.hibernate.search.annotations.NumericField;
+import org.hibernate.search.annotations.Store;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
@@ -22,6 +29,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.JSONTransient;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.search.index.bridge.LatLongClassBridge;
+import org.tdar.search.index.bridge.TdarPaddedNumberBridge;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -51,8 +59,9 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
 
     private static final String PSQL_POLYGON = "POLYGON((%1$s %2$s,%3$s %2$s,%3$s %4$s,%1$s %4$s,%1$s %2$s))";
 
-      private static final String PSQL_MULTIPOLYGON_DATELINE = "MULTIPOLYGON(((%1$s %2$s,%1$s %3$s,  180 %3$s,  180 %2$s,%1$s %2$s)), ((-180 %3$s, %4$s %3$s,%4$s %2$s,-180 %2$s,-180 %3$s)))";
-//    private static final String PSQL_MULTIPOLYGON_DATELINE = "MULTIPOLYGON(((%1$s %2$s,%1$s %3$s, -180 %3$s, -180 %2$s,%1$s %2$s)), (( 180 %3$s, %4$s %3$s,%4$s %2$s, 180 %2$s, 180 %3$s)))";
+    private static final String PSQL_MULTIPOLYGON_DATELINE = "MULTIPOLYGON(((%1$s %2$s,%1$s %3$s,  180 %3$s,  180 %2$s,%1$s %2$s)), ((-180 %3$s, %4$s %3$s,%4$s %2$s,-180 %2$s,-180 %3$s)))";
+    // private static final String PSQL_MULTIPOLYGON_DATELINE =
+    // "MULTIPOLYGON(((%1$s %2$s,%1$s %3$s, -180 %3$s, -180 %2$s,%1$s %2$s)), (( 180 %3$s, %4$s %3$s,%4$s %2$s, 180 %2$s, 180 %3$s)))";
     private static final long serialVersionUID = 2605563277326422859L;
 
     public static final double MAX_LATITUDE = 90d;
@@ -70,16 +79,24 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     private Resource resource;
 
     // ranges from -90 (South) to +90 (North)
+    @Field
+    @NumericField(precisionStep = 6)
     @Column(nullable = false, name = "minimum_latitude")
     private Double minimumLatitude;
 
+    @Field
+    @NumericField(precisionStep = 6)
     @Column(nullable = false, name = "maximum_latitude")
     private Double maximumLatitude;
 
     // ranges from -180 (West) to +180 (East)
+    @Field
+    @NumericField(precisionStep = 6)
     @Column(nullable = false, name = "minimum_longitude")
     private Double minimumLongitude;
 
+    @Field
+    @NumericField(precisionStep = 6)
     @Column(nullable = false, name = "maximum_longitude")
     private Double maximumLongitude;
 
@@ -94,7 +111,6 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         this.minimumLatitude = minyOrMinLat;
         this.maximumLatitude = maxyOrMaxLat;
         this.maximumLongitude = maxxOrMaxLong;
-        isValid();
     }
 
     @Deprecated
@@ -260,7 +276,8 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     public boolean isValid() {
-        if (isValidLatitude(maximumLatitude) && isValidLatitude(minimumLatitude) && isValidLongitude(minimumLongitude) && isValidLongitude(maximumLongitude)) {
+        if (isValidLatitude(maximumLatitude) && isValidLatitude(minimumLatitude) && isValidLongitude(minimumLongitude) && isValidLongitude(maximumLongitude) &&
+                maximumLatitude >= minimumLatitude && maximumLongitude >= minimumLongitude && Math.abs(maximumLatitude - minimumLatitude) < 180) {
             return true;
         }
         return false;
@@ -296,7 +313,15 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     public double getArea() {
-        return Math.abs((getMaxObfuscatedLatitude() - getMinObfuscatedLatitude()) * (getMaxObfuscatedLongitude() - getMinimumLongitude()));
+        return getAbsoluteLatLength() * getAbsoluteLongLength();
+    }
+
+    public double getAbsoluteLatLength() {
+        return Math.abs(getMaxObfuscatedLatitude() - getMinObfuscatedLatitude());
+    }
+
+    public double getAbsoluteLongLength() {
+        return Math.abs(getMaxObfuscatedLongitude() - getMinObfuscatedLongitude());
     }
 
     /**
@@ -317,9 +342,9 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
          * and breaks it in two over the IDL instead of choosing the smaller box.
          * return (getMinObfuscatedLongitude() < -100f && getMaxObfuscatedLongitude() > 100f);
          */
-         if (minLongitude > 0f && maxLongitude < 0f) {
-         return true;
-         } 
+        if (minLongitude > 0f && maxLongitude < 0f) {
+            return true;
+        }
 
         return false;
     }
@@ -356,22 +381,22 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     @Transient
-    public void setMinX(Double minX) {
+    public void setMinx(Double minX) {
         this.minimumLongitude = minX;
     }
 
     @Transient
-    public void setMaxX(Double maxX) {
+    public void setMaxx(Double maxX) {
         this.maximumLongitude = maxX;
     }
 
     @Transient
-    public void setMinY(Double minY) {
+    public void setMiny(Double minY) {
         this.minimumLatitude = minY;
     }
 
     @Transient
-    public void setMaxY(Double maxY) {
+    public void setMaxy(Double maxY) {
         this.maximumLatitude = maxY;
     }
 
@@ -387,4 +412,47 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         this.geographicKeywords = geographicKeywords;
     }
 
+    @FieldBridge(impl = TdarPaddedNumberBridge.class)
+    @Field(norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
+    @Transient
+    public Integer getScale() {
+        Integer toReturn = -1;
+        if (!isInitialized()) {
+            return toReturn;
+        }
+        double scale = getAbsoluteLatLength();
+        if (getAbsoluteLongLength() > scale) {
+            scale = getAbsoluteLongLength();
+        }
+        if (scale < 1.0) {
+            toReturn += 2;
+        }
+        if (scale >= 1.0) {
+            toReturn++;
+        }
+
+        if (scale > 4.0) {
+            toReturn++;
+        }
+        if (scale > 9.0) {
+            toReturn++;
+        }
+        if (scale > 14.0) {
+            toReturn++;
+        }
+
+        if (scale > 19.0) {
+            toReturn++;
+        }
+
+        logger.trace("scale: {} ({})" , scale, toReturn);
+        return toReturn;
+    }
+
+    public boolean isInitialized() {
+        if (maximumLatitude == null || minimumLatitude == null || maximumLongitude == null || minimumLongitude == null) {
+            return false;
+        }
+        return true;
+    }
 }

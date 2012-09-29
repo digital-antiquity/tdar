@@ -1,4 +1,4 @@
-package org.tdar.core.bean.resource.dataTable;
+package org.tdar.core.bean.resource.datatable;
 
 import org.tdar.core.bean.HasLabel;
 

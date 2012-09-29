@@ -10,8 +10,10 @@ import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.Indexable;
+import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 
 public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
@@ -90,14 +92,25 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
+    @Rollback(true)
     public void testPersonWithInstitution() {
-        searchIndexService.indexAll(Person.class);
-        controller.setEmail("test@tdar.org");
-        controller.setInstitution("University of TEST");
+        String institution = "University of TEST is fun";
+        String email = "test1234@tdar.org";
+        Person person = new Person("a", "test", email);
+        Institution inst = new Institution(institution);
+        genericService.save(person);
+        genericService.save(inst);
+        person.setInstitution(inst);
+        genericService.saveOrUpdate(person);
+        genericService.saveOrUpdate(inst);
+
+        searchIndexService.index(person);
+        controller.setEmail(email);
+        controller.setInstitution(institution);
         String result = controller.lookupPerson();
         assertEquals("result should be success", LookupController.SUCCESS, result);
         List<Indexable> people = controller.getResults();
-        assertEquals("person list should have exactly one item", 1, people.size());
+        assertTrue("person list should contain the persion created", people.contains(person));
     }
 
     @Test

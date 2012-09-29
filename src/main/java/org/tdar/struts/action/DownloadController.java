@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
@@ -17,7 +18,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
+import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.bean.statistics.FileDownloadStatistic;
 import org.tdar.core.service.PdfService;
 
 @ParentPackage("secured")
@@ -74,7 +76,7 @@ public class DownloadController extends AuthenticationAware.Base {
             getLogger().debug("no informationResourceFiles associated with this id [" + informationResourceFileId + "]");
             return ERROR;
         }
-        if (!getEntityService().canDownload(irFileVersion, getSessionData().getPerson())) {
+        if (!getAuthenticationAndAuthorizationService().canDownload(irFileVersion, getSessionData().getPerson())) {
             String msg = String.format("user %s does not have permissions to download %s", getSessionData().getPerson(), irFileVersion);
             getLogger().warn(msg);
             return FORBIDDEN;
@@ -104,7 +106,7 @@ public class DownloadController extends AuthenticationAware.Base {
         // .isAvailableToPublic()) && !getEntityService().canViewConfidentialInformation(getSessionData().getPerson(),
         // irFileVersion.getInformationResourceFile().getInformationResource())
         // must not be confidential/embargoed
-        if (!getEntityService().canDownload(irFileVersion, getSessionData().getPerson())) {
+        if (!getAuthenticationAndAuthorizationService().canDownload(irFileVersion, getSessionData().getPerson())) {
             getLogger().warn("thumbail request: resource is confidential/embargoed:" + informationResourceFileId);
             return FORBIDDEN;
         }
@@ -125,10 +127,9 @@ public class DownloadController extends AuthenticationAware.Base {
             // If it's a PDF, add the cover page if we can, if we fail, just send the original file
             if (irFileVersion.getExtension().equalsIgnoreCase("PDF")) {
                 try {
-                    resourceFile = pdfService.mergeCoverPage(getAuthenticatedUser(),irFileVersion);
+                    resourceFile = pdfService.mergeCoverPage(getAuthenticatedUser(), irFileVersion);
                 } catch (Exception e) {
                     getLogger().error("Error occured while merging cover page onto " + irFileVersion, e);
-//                    e.printStackTrace();
                 }
             }
             try {
@@ -141,8 +142,8 @@ public class DownloadController extends AuthenticationAware.Base {
             inputStream = new FileInputStream(resourceFile);
             if (!irFileVersion.isDerivative()) {
                 InformationResourceFile irFile = irFileVersion.getInformationResourceFile();
-                irFile.incrementDownloadCount();
-                getInformationResourceService().save(irFile);
+                FileDownloadStatistic stat = new FileDownloadStatistic(new Date(), irFile);
+                getInformationResourceService().save(stat);
             }
         } catch (FileNotFoundException e) {
             addActionErrorWithException("File not found", e);
@@ -199,6 +200,5 @@ public class DownloadController extends AuthenticationAware.Base {
     public Long getInformationResourceId() {
         return informationResourceId;
     }
-
 
 }

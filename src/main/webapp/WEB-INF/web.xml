@@ -35,7 +35,7 @@ vim:sts=2:sw=2
 		that will be used at the time of the request. -->
   <filter>
     <filter-name>osiv-filter</filter-name>
-    <filter-class>org.springframework.orm.hibernate3.support.OpenSessionInViewFilter</filter-class>
+    <filter-class>org.springframework.orm.hibernate4.support.OpenSessionInViewFilter</filter-class>
   </filter>
   
   <filter>
@@ -135,6 +135,31 @@ vim:sts=2:sw=2
     <servlet-name>cxf</servlet-name>
     <url-pattern>/services/*</url-pattern>
   </servlet-mapping>
+
+ <servlet>
+        <servlet-name>JSCSSMergeServlet</servlet-name>
+        <servlet-class>com.googlecode.webutilities.servlets.JSCSSMergeServlet</servlet-class>
+        <!-- This init param is optional and default value is minutes for 7 days in future. To expire in the past use negative value. --> 
+        <init-param>
+                <param-name>expiresMinutes</param-name>
+                <param-value>7200</param-value> <!-- 5 days -->
+        </init-param>
+        <!-- This init param is also optional and default value is true. Set it false to override.-->
+        <init-param>
+                <param-name>useCache</param-name>
+                <param-value>true</param-value> 
+        </init-param>
+        <init-param>
+                <param-name>autoCorrectUrlsInCSS</param-name>
+                <param-value>false</param-value> 
+        </init-param>
+ </servlet>
+<servlet-mapping>
+   <servlet-name>JSCSSMergeServlet</servlet-name>
+   <url-pattern>*.js</url-pattern>
+   <url-pattern>*.css</url-pattern>
+</servlet-mapping>  
+
   
   <servlet>
     <servlet-name>sitemesh-freemarker</servlet-name>
@@ -149,5 +174,6 @@ vim:sts=2:sw=2
     <servlet-name>sitemesh-freemarker</servlet-name>
     <url-pattern>*.dec</url-pattern>
   </servlet-mapping>
-  
+
+
 </web-app>

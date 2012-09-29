@@ -1,8 +1,9 @@
 package org.tdar.core.dao;
 
 public interface TdarNamedQueries {
-    public static final String QUERY_IS_ONTOLOGY_MAPPED = "ontology.isMapped";
-    public static final String QUERY_IS_ONTOLOGY_MAPPED_TO_COLUMN = "ontology.isMappedToColumn";
+    public static final String QUERY_DELETE_INFORMATION_RESOURCE_FILE_DERIVATIVES = "informationResourceFileVersion.deleteDerivatives";
+    public static final String QUERY_NUMBER_OF_MAPPED_DATA_VALUES_FOR_ONTOLOGY = "ontology.isMapped";
+    public static final String QUERY_NUMBER_OF_MAPPED_DATA_VALUES_FOR_COLUMN = "ontology.isMappedToColumn";
     public static final String QUERY_READ_ONLY_FULLUSER_PROJECTS = "fullUser.projects";
     public static final String QUERY_FULLUSER_RESOURCES = "fullUser.resources";
     public static final String QUERY_FULLUSER_DATASET = "fullUser.datasets";
@@ -13,7 +14,6 @@ public interface TdarNamedQueries {
     public static final String QUERY_BOOKMARKEDRESOURCE_REMOVE_BOOKMARK = "bookmarkedResource.removeBookmark";
     public static final String QUERY_BOOKMARKEDRESOURCE_FIND_RESOURCE_BY_PERSON = "bookmarkedResource.findResourcesByPerson";
     public static final String QUERY_DATASET_CAN_LINK_TO_ONTOLOGY = "dataset.canLinkToOntology";
-    public static final String QUERY_DATATABLE_IDLIST = "dataTable.idlist";
     public static final String QUERY_DATATABLE_RELATED_ID = "dataTable.relatedId";
     public static final String QUERY_DATATABLECOLUMN_WITH_DEFAULT_ONTOLOGY = "dataTableColumn.withDefaultOntology";
     public static final String QUERY_INFORMATIONRESOURCE_FIND_BY_FILENAME = "informationResource.findByFileName";
@@ -67,17 +67,22 @@ public interface TdarNamedQueries {
     public static final String QUERY_MATCHING_FILES = "datasetRelated.Files";
     public static final String QUERY_USAGE_STATS = "adminStats.usage";
     public static final String QUERY_FILE_STATS = "adminStats.fileDetails";
+    public static final String QUERY_MAPPED_CODING_RULES = "dataTableColumn.mappedCodingRules";
+    public static final String QUERY_RESOURCES_IN_PROJECT = "resources.inProject";
+    public static final String QUERY_RESOURCES_IN_PROJECT_WITH_STATUS = "project.informationResourcesWithStatus";
     public static final String QUERY_DASHBOARD = "dashboard.sql";
- 
-
+    public static final String QUERY_RESOURCES_BY_DECADE = "resources.byDecade";
+    public static final String QUERY_SPARSE_RESOURCE_LOOKUP = "resource.sparseLookup";
+    public static final String QUERY_SPARSE_COLLECTION_LOOKUP = "resourceCollection.sparseLookup";
     // raw SQL/HQL queries
-    public static final String QUERY_SQL_DASHBOARD = 
+
+    public static final String QUERY_SQL_DASHBOARD =
             "select id, status, resource_type from resource " +
-            "where id in " +
-            "(select resource_id from collection_resource,collection, authorized_user " +
-            "where collection.id=collection_resource.collection_id and collection.id=authorized_user.resource_collection_id " +
-            "and user_id=:submitterId and general_permission_int > :effectivePermissions " +
-            "union select id from resource where updater_id=:submitterId or submitter_id=:submitterId)";
+                    "where id in " +
+                    "(select resource_id from collection_resource,collection, authorized_user " +
+                    "where collection.id=collection_resource.collection_id and collection.id=authorized_user.resource_collection_id " +
+                    "and user_id=:submitterId and general_permission_int > :effectivePermissions " +
+                    "union select id from resource where updater_id=:submitterId or submitter_id=:submitterId)";
     public static final String QUERY_SQL_COUNT = "SELECT COUNT(*) FROM %1$s";
     public static final String QUERY_FIND_ALL_WITH_IDS = "FROM %s WHERE id in (:ids)";
     public static final String QUERY_SQL_COUNT_ACTIVE_RESOURCE = "SELECT COUNT(*) FROM %1$s where status='ACTIVE'";
@@ -111,8 +116,10 @@ public interface TdarNamedQueries {
 
     public static final String HQL_EDITABLE_RESOURCE_SUFFIX = "FROM Resource as res  where " +
             " (TRUE=:allResourceTypes or res.resourceType in (:resourceTypes)) and (TRUE=:allStatuses or res.status in (:statuses) )  AND " +
-               "(res.submitter.id=:userId or res in (" +
-               " select elements(rescol.resources) from ResourceCollection rescol join rescol.authorizedUsers  as authUser " +
-               " where (TRUE=:admin or authUser.user.id=:userId and authUser.effectiveGeneralPermission > :effectivePermission))) ";
+            "(res.submitter.id=:userId or res in (" +
+            " select elements(rescol.resources) from ResourceCollection rescol join rescol.authorizedUsers  as authUser " +
+            " where (TRUE=:admin or authUser.user.id=:userId and authUser.effectiveGeneralPermission > :effectivePermission))) ";
+    public static final String QUERY_CLEAR_REFERENCED_ONTOLOGYNODE_RULES = "update.clearOntologyNodeReferences";
+    public static final String UPDATE_DATATABLECOLUMN_ONTOLOGIES = "update.dataTableColumnOntologies";
 
 }

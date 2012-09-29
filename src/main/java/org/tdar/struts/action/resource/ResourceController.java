@@ -9,6 +9,7 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.ResourceType;
@@ -140,7 +141,7 @@ public class ResourceController extends AuthenticationAware.Base {
     }
 
     public Long getProjectId() {
-        if (projectId == null || projectId == -1L) {
+        if (Persistable.Base.isNullOrTransient(projectId)) {
             getProject();
         }
         return projectId;

@@ -16,10 +16,10 @@ import org.hibernate.Session;
 import org.hibernate.type.StandardBasicTypes;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.dataTable.DataTableColumn;
+import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
 
 /**
  * @author Adam Brin
@@ -33,7 +33,7 @@ public final class NamedNativeQueries {
     }
 
     public static String updateDatasetMappings(Project project, DataTableColumn column, String value, List<String> filenames,
-            List<InformationResourceFileVersion.VersionType> types) {
+            List<VersionType> types) {
         // SQL escape all incoming filenames
         for (int i = 0; i < filenames.size(); i++) {
             filenames.set(i, StringEscapeUtils.escapeSql(filenames.get(i)));
@@ -75,11 +75,11 @@ public final class NamedNativeQueries {
                         user.getId(), (permission.getEffectivePermissions() -1), user.getId(), user.getId());
     }
 
-    public static SQLQuery generateDashboardGraphQuery(Session currentSession) {
-        return currentSession
-            .createSQLQuery(TdarNamedQueries.QUERY_SQL_DASHBOARD)
-            .addScalar("id", StandardBasicTypes.LONG)
-            .addScalar("status", StandardBasicTypes.STRING)
-            .addScalar("resource_type", StandardBasicTypes.STRING);
-    }
+	public static SQLQuery generateDashboardGraphQuery(Session currentSession) {
+		return currentSession
+				.createSQLQuery(TdarNamedQueries.QUERY_SQL_DASHBOARD)
+				.addScalar("id", StandardBasicTypes.LONG)
+				.addScalar("status", StandardBasicTypes.STRING)
+				.addScalar("resource_type", StandardBasicTypes.STRING);
+	}
 }

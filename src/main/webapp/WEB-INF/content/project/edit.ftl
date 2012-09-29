@@ -4,11 +4,8 @@
 <#assign hideInherited=true > <#-- //TODO: remove hideInherited if safe-->
 
 <head>
-<#if project.id == -1>
-<title>Register a new project with tDAR</title>
-<#else>
-<title>Editing metadata for ${project.title} (tDAR id: ${project.id?c})</title>
-</#if>
+<@edit.title />
+
 <style type="text/css">
 #projectTitle {width:95% !important}
 </style>
@@ -51,29 +48,18 @@ Projects in tDAR contain and help organize a variety of different information re
 </p>
 </div>
 
-<#if ! project.informationResources.isEmpty() >
+<#if (totalRecords > 0) >
 <div class='glide'>
-<h3>There are ${project.informationResources.size()} Resources within this Project</h3>
+<h3>There are ${totalRecords?c} Resources within this Project</h3>
 <a class="field" href="<@s.url value="/project/${project.id?c}" />">view all items in this project</a>
 </div>
 </#if>
 
 
 <@s.form name='projectMetadataForm' id='projectMetadataForm' method='post' action='save'>
-<@edit.showControllerErrors/>
 
-<@edit.basicInformation>
-<div tiplabel="Title" tooltipcontent="Name for this project.">
-<@s.textfield labelposition='left' id='resourceTitle' label='Title' required='true' name='project.title' size="75" 
-    cssClass="required descriptiveTitle longfield"  title="A title is required for all documents." maxlength="512" />
-</div>
-<div tiplabel="Description" tooltipcontent="Short description of the resource. Often comes from the resource itself, but sometimes will include additional information from the contributor.">
-    <p id='t-description' class='new-group'>
-        <@s.textarea id='projectDescription' labelposition='top' label='Description' name='project.description' rows=5 cssClass='resizable tdartext required' required="true"
-        title="A basic description is required for all projects" />
-    </p>
-</div>
-</@edit.basicInformation>
+<@edit.basicInformation "project" "project" />
+<@edit.citationInfo "project" />
 
 
 <@edit.sharedFormComponents showInherited=false />

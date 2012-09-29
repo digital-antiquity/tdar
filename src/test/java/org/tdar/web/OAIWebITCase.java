@@ -91,6 +91,7 @@ public class OAIWebITCase extends AbstractWebTestCase {
      */
     private int listIdentifiersOrRecords(String verb, String metadataPrefix) throws SAXException, IOException, ParserConfigurationException, NumberFormatException, XpathException {
         int totalRecordCount = 0;
+        int pageCount = 0;
         String resumptionToken;
         String requestURI = getBase() + verb +"&metadataPrefix=" + metadataPrefix;
         do {
@@ -103,9 +104,11 @@ public class OAIWebITCase extends AbstractWebTestCase {
             // must be > 0 (otherwise, repository is empty, or else the repository issued us with an unnecessary resumptionToken
             Assert.assertTrue(requestURI + " response returned > 0 records", (recordCount > 0));
             totalRecordCount += recordCount;
+            pageCount ++;
             resumptionToken = xpathEngine.evaluate("oai:OAI-PMH/oai:" + verb + "/oai:resumptionToken", response);
             requestURI = getBase() + verb + "&resumptionToken=" + resumptionToken;
         } while (!resumptionToken.equals(""));
+        Assert.assertTrue("Harvesting " +metadataPrefix + " records with " + verb + " returned multiple pages", pageCount > 1);
         return totalRecordCount;
     }
     

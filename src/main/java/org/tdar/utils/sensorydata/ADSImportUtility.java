@@ -1,8 +1,8 @@
 package org.tdar.utils.sensorydata;
 
-import static junit.framework.Assert.assertTrue;
-
 import java.io.File;
+
+import static junit.framework.Assert.*;
 
 
 public class ADSImportUtility {

@@ -17,6 +17,7 @@ public interface CrudAction<P extends Persistable> {
 
     public abstract Person getAuthenticatedUser();
 
+    @SuppressWarnings("hiding")
     public <P> Persistable getPersistable();
 
     public Class<P> getPersistableClass();

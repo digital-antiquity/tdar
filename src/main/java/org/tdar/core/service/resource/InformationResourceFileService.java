@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.resource.InformationResourceFileDao;
 import org.tdar.core.service.ServiceInterface;
 
@@ -17,12 +18,7 @@ import org.tdar.core.service.ServiceInterface;
 public class InformationResourceFileService extends ServiceInterface.TypedDaoBase<InformationResourceFile, InformationResourceFileDao> {
 
     @Autowired
-    public void setDao(InformationResourceFileDao dao) {
-        super.setDao(dao);
-    }
-
-    @Autowired
-    public InformationResourceFileVersionService informationResourceFileVersionService;
+    private InformationResourceFileVersionService informationResourceFileVersionService;
 
     /**
      * Deletes this information resource file from the filestore, database. Also
@@ -38,7 +34,7 @@ public class InformationResourceFileService extends ServiceInterface.TypedDaoBas
     @Transactional(readOnly = false)
     public void delete(InformationResourceFileVersion file) {
         InformationResourceFile irFile = file.getInformationResourceFile();
-        getInformationResourceFileVersionService().delete(file);
+        informationResourceFileVersionService.delete(file);
         saveOrUpdate(irFile);
     }
 
@@ -64,14 +60,6 @@ public class InformationResourceFileService extends ServiceInterface.TypedDaoBas
         return getDao().findByFilestoreId(filestoreId);
     }
 
-    public InformationResourceFileVersionService getInformationResourceFileVersionService() {
-        return informationResourceFileVersionService;
-    }
-
-    public void setInformationResourceFileVersionService(InformationResourceFileVersionService informationResourceFileVersionService) {
-        this.informationResourceFileVersionService = informationResourceFileVersionService;
-    }
-
     /**
      * @param irVersion
      */
@@ -91,4 +79,10 @@ public class InformationResourceFileService extends ServiceInterface.TypedDaoBas
     public Map<String, Float> getAdminFileExtensionStats() {
         return getDao().getAdminFileExtensionStats();
     }
+    
+    @Transactional(readOnly = true)
+    public void updateTransientDownloadCount(InformationResourceFile irFile) {
+        irFile.setTransientDownloadCount(getDao().getDownloadCount(irFile).longValue());
+    }
+
 }

@@ -4,3 +4,4 @@ web.root=src/main/webapp
 app.theme.dir=includes/themes/tdar/
 privacy.controls.enabled=false
 search.excel.export.recordMax=1000
+run.periodic.events=false

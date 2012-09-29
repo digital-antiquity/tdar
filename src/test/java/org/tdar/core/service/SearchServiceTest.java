@@ -7,7 +7,8 @@ import java.util.HashSet;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.search.query.queryBuilder.DynamicQueryComponent;
+import org.tdar.core.bean.resource.Project;
+import org.tdar.search.query.builder.DynamicQueryComponent;
 
 public class SearchServiceTest {
 
@@ -58,6 +59,19 @@ public class SearchServiceTest {
         boolean found = false;
         for (DynamicQueryComponent dqc : createFields) {
             if (dqc.getLabel().equalsIgnoreCase("activeOtherKeywords.label"))
+                found = true;
+        }
+        assertTrue("Child @Field annotation not found on: activeOtherKeywords.label", found);
+    }
+
+    
+    @Test
+    public void testEmbeddedPrefixedChildAnnotation() {
+        boolean found = false;
+        HashSet<DynamicQueryComponent> createFields2 = SearchService.createFields(Project.class, "");
+        for (DynamicQueryComponent dqc : createFields2) {
+            logger.info(dqc.getLabel() + "{}" + dqc.getParent());
+            if (dqc.getLabel().contains("informationResources.activeOtherKeywords.label"))
                 found = true;
         }
         assertTrue("Child @Field annotation not found on: activeOtherKeywords.label", found);

@@ -12,6 +12,7 @@ public class PostgresDatabaseTest {
         PostgresDatabase tdarDataImportDatabase = new PostgresDatabase();
 
         assertEquals("col_blank", tdarDataImportDatabase.normalizeTableOrColumnNames(""));
+        assertEquals("__", tdarDataImportDatabase.normalizeTableOrColumnNames("()"));
         assertEquals("col_select", tdarDataImportDatabase.normalizeTableOrColumnNames("SELECT"));
         assertEquals("ab_cd123__________asd", tdarDataImportDatabase.normalizeTableOrColumnNames("AB_cd123~@# &*()\\ asd   "));
         assertEquals("c123456789012345678901234567890123456789012345678901234567890123",

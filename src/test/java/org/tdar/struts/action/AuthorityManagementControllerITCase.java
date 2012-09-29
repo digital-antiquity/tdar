@@ -39,19 +39,6 @@ public class AuthorityManagementControllerITCase extends AbstractAdminController
     @Before 
     public void setup() {
         controller = generateNewInitializedController(AuthorityManagementController.class);
-        
-        //replace mailsender with stub that does nothing
-        emailService.setMailSender(new MailSender() {
-
-			@Override
-			public void send(SimpleMailMessage simpleMessage)
-					throws MailException {
-			}
-
-			@Override
-			public void send(SimpleMailMessage[] simpleMessages)
-					throws MailException {
-			}});
     }
     
     @Override

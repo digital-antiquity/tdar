@@ -6,6 +6,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -31,11 +32,13 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 public class ResourceNote extends Persistable.Sequence<ResourceNote> implements HasResource<Resource> {
 
     private static final long serialVersionUID = 8517883471101372051L;
+    @Transient
+    private final static String[] JSON_PROPERTIES = { "id", "note", "type" };
 
     @ManyToOne(optional = false)
     private Resource resource;
 
-    @Column(length = 2048)
+    @Column(length = 5000)
     @Field
     private String note;
 
@@ -98,5 +101,10 @@ public class ResourceNote extends Persistable.Sequence<ResourceNote> implements 
     @Override
     public boolean isValidForController() {
         return true;
+    }
+
+    @Override
+    protected String[] getIncludedJsonProperties() {
+        return getIncludedJsonProperties();
     }
 }

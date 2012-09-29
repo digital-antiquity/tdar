@@ -2,7 +2,6 @@ package org.tdar.core.service.resource;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.CategoryVariable;
@@ -19,11 +18,6 @@ import org.tdar.core.service.ServiceInterface;
  */
 @Service
 public class CategoryVariableService extends ServiceInterface.TypedDaoBase<CategoryVariable, CategoryVariableDao> {
-
-    @Autowired
-    public void setDao(CategoryVariableDao dao) {
-        super.setDao(dao);
-    }
 
     @Transactional(readOnly = true)
     public List<CategoryVariable> findAllCategories() {

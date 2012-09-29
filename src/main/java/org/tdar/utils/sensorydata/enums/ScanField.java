@@ -3,7 +3,9 @@ package org.tdar.utils.sensorydata.enums;
 import java.util.HashMap;
 import java.util.Map;
 
-public enum ScanField {
+import org.tdar.core.bean.HasLabel;
+
+public enum ScanField implements HasLabel {
     SCAN_FILENAME("Scan Filename")
     ,SCAN_TRANSFORMATION_MATRIX("Scan Transformation Matrix")
     ,MATRIX_APPLIED_TO_SCANS("Matrix Applied to Scans?")
@@ -32,6 +34,10 @@ public enum ScanField {
     
     public static ScanField fromLabel(String label) {
         return labelsToEnums.get(label);
+    }
+
+    public String getLabel() {
+        return label;
     }
     
 }

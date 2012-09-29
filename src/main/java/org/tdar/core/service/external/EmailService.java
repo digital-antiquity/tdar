@@ -1,6 +1,10 @@
 package org.tdar.core.service.external;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,10 +12,10 @@ import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-
-import freemarker.template.Configuration;
+import org.tdar.core.service.FreemarkerService;
 
 /**
  * $Id$
@@ -33,28 +37,37 @@ public class EmailService {
     private MailSender mailSender;
 
     @Autowired
-    private Configuration freemarkerConfiguration;
-    
-    public void sendTemplate(String templateName, Object dataModel, String subject, String ... recipients) {
-        send(render(templateName, dataModel), subject, recipients);
+    FreemarkerService freemarkerService;
+
+    public void sendTemplate(String templateName, Object dataModel, String subject, Person... recipients) {
+        send(freemarkerService.render(templateName, dataModel), subject, recipients);
     }
 
     /**
-     * Sends an email message to the given recipients.  If no recipients are passed in, defaults to TdarConfiguration.getSystemAdminEmail().
+     * Sends an email message to the given recipients. If no recipients are passed in, defaults to TdarConfiguration.getSystemAdminEmail().
+     * 
      * @param emailMessage
      * @param subject
-     * @param recipients set of String varargs 
+     * @param recipients
+     *            set of String varargs
      */
-    public void send(String emailMessage, String subject, String ... recipients) {
+    public void send(String emailMessage, String subject, Person... recipients) {
+        List<String> toAddresses = new ArrayList<String>();
         if (ArrayUtils.isEmpty(recipients)) {
             // if we don't receive any recipients, admin email is our default.
-            recipients = new String[] { getTdarConfiguration().getSystemAdminEmail() };
+            toAddresses.add(getTdarConfiguration().getSystemAdminEmail());
+        } else {
+            for (Person recipient : recipients) {
+                if (StringUtils.isNotEmpty(recipient.getEmail())) {
+                    toAddresses.add(recipient.getEmail());
+                }
+            }
         }
         SimpleMailMessage message = new SimpleMailMessage();
         // Message message = new MimeMessage(session);
         message.setFrom(getFromEmail());
         message.setSubject(subject);
-        message.setTo(recipients);
+        message.setTo(toAddresses.toArray(new String[0]));
         // message.addRecipient(RecipientType.TO, toAddress);
         // FIXME: send HTML and plaintext email? Will need to use JavaMailMessage and MimeMessages instead
         // see http://java.sun.com/products/javamail/FAQ.html#sendmpa
@@ -72,16 +85,6 @@ public class EmailService {
         return TdarConfiguration.getInstance();
     }
 
-    public String render(String templateName, Object dataModel) {
-        try {
-            return FreeMarkerTemplateUtils.processTemplateIntoString(
-                    freemarkerConfiguration.getTemplate(templateName), dataModel);
-        } catch (Exception e) {
-            logger.error("Unable to process template " + templateName, e);
-            throw new TdarRecoverableRuntimeException(e);
-        }
-    }
-
     /**
      * @return the mailSender
      */
@@ -90,7 +93,8 @@ public class EmailService {
     }
 
     /**
-     * @param mailSender the mailSender to set
+     * @param mailSender
+     *            the mailSender to set
      */
     public void setMailSender(MailSender mailSender) {
         this.mailSender = mailSender;

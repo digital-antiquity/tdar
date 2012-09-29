@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.apache.lucene.search.SortField;
 import org.tdar.core.bean.Indexable;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.keyword.Keyword;
@@ -20,11 +21,13 @@ public enum SortOption {
     RELEVANCE(null, "Relevance", null, SortField.SCORE,false ),
     ID(null, "ID", QueryFieldNames.ID, SortField.INT, false),
     ID_REVERSE(null, "ID (Reversed)", QueryFieldNames.ID, SortField.INT, true),
+    COLLECTION_TITLE(ResourceCollection.class, "Title", QueryFieldNames.TITLE_SORT),
+    COLLECTION_TITLE_REVERSE(ResourceCollection.class, "Title (Z-A)", QueryFieldNames.TITLE_SORT, true),
     TITLE(Resource.class, "Title", QueryFieldNames.TITLE_SORT),
     TITLE_REVERSE(Resource.class, "Title (Z-A)", QueryFieldNames.TITLE_SORT, true),
     PROJECT(Resource.class, "Project", QueryFieldNames.PROJECT_TITLE_SORT),
-    DATE(Resource.class, "Date", QueryFieldNames.DATE, SortField.INT, false),
-    DATE_REVERSE(Resource.class, "Date (Reversed)", QueryFieldNames.DATE, SortField.INT, true),
+    DATE(Resource.class, "Date", QueryFieldNames.DATE, SortField.STRING, false),
+    DATE_REVERSE(Resource.class, "Date (Reversed)", QueryFieldNames.DATE, SortField.STRING, true),
     DATE_UPDATED(Resource.class, "Date Updated", QueryFieldNames.DATE_UPDATED, SortField.STRING, false),
     DATE_UPDATED_REVERSE(Resource.class, "Date Updated (Reversed)", QueryFieldNames.DATE_UPDATED, SortField.STRING, true),
     RESOURCE_TYPE(Resource.class, "Resource Type", QueryFieldNames.RESOURCE_TYPE_SORT),
@@ -136,5 +139,15 @@ public enum SortOption {
      */
     public Class<? extends Indexable> getContext() {
         return context;
+    }
+    
+    public static  <I extends Indexable> List<SortOption> getApplicableSortOptions(Class<I> context) {
+        List<SortOption> sortOptions = new ArrayList<SortOption>();
+        for(SortOption sortOption : SortOption.values()) {
+            if(sortOption.context == null || context.equals(sortOption.context)) {
+                sortOptions.add(sortOption);
+            }
+        }
+        return sortOptions;
     }
 }

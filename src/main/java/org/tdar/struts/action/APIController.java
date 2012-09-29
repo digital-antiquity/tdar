@@ -1,7 +1,6 @@
 package org.tdar.struts.action;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,8 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
-import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.exception.APIException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.ImportService;
@@ -40,7 +39,7 @@ public class APIController extends AuthenticationAware.Base {
     private String record;
     private String msg;
     private String status;
-    private Long projectId;  //note this will override projectId value specified in record
+    private Long projectId; // note this will override projectId value specified in record
 
     @Autowired
     public ImportService importService;
@@ -54,7 +53,6 @@ public class APIController extends AuthenticationAware.Base {
     private Long id;
     public final static String msg_ = "%s is %s %s (%s): %s";
 
-    
     private void logMessage(String action_, Class<?> cls, Long id_, String name_) {
         logger.info(String.format(msg_, getAuthenticatedUser().getEmail(), action_, cls.getSimpleName().toUpperCase(), id_, name_));
     }
@@ -71,7 +69,7 @@ public class APIController extends AuthenticationAware.Base {
         }
         List<FileProxy> proxies = new ArrayList<FileProxy>();
         for (int i = 0; i < uploadFileFileName.size(); i++) {
-            FileProxy proxy = new FileProxy(uploadFileFileName.get(i), new FileInputStream(uploadFile.get(i)), VersionType.UPLOADED,FileAction.ADD);
+            FileProxy proxy = new FileProxy(uploadFileFileName.get(i), uploadFile.get(i), VersionType.UPLOADED, FileAction.ADD);
             if (confidentialFiles.contains(uploadFileFileName.get(i))) {
                 proxy.setConfidential(true);
             }

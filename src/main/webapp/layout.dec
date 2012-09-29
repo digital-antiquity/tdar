@@ -1,92 +1,40 @@
+<#import "WEB-INF/macros/resource/common.ftl" as common>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
 <!-- 
 vim:sts=2:sw=2:filetype=xhtml
 -->
+<#compress>
+	<#import "/WEB-INF/macros/header.ftl" as header>
+	<#import "/${themeDir}/settings.ftl" as settings>
 
-  <#assign jquery_version="1.6.1">
-  <#assign jquery_ui_version="1.8.13">
+  <#assign jquery_version="1.7.2">
+  <#assign jquery_ui_version="1.8.19">
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"> 
 <head> 
+	<#global documentColor =  settings.barColors[0] />
+	<#global imageColor = settings.barColors[1] />
+	<#global datasetColor = settings.barColors[2] />
+	<#global videoColor = settings.barColors[3] />
+	<#global projectColor = settings.barColors[4] />
+	<#global sensoryDataColor =settings.barColors[5] />
+	<#global ontologyColor = settings.barColors[6] />
+	<#global codingSheetColor = settings.barColors[7] />
+	<#global resourcecollectionColor = settings.barColors[8] />
+
+	<#include "${themeDir}/head.dec" />
     <title>${title!'The Digital Archaeological Record'}</title> 
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/> 
     <link rel="unapi-server" type="application/xml" title="unAPI" href="<@s.url value='/unapi'/>" />
-    <link rel='icon' href='<@s.url value="/images/tdar-favicon.ico"/>'/>
     <link rel="search" type="application/opensearchdescription+xml" href='<@s.url value="/includes/opensearch.xml"/>' title="Search tDAR" /> 
-    <link href='<@s.url value="/css/tdar.css"/>' type="text/css" rel="stylesheet" />
-    <link href="<@s.url value="/css/tdar-print.css"/>" type="text/css" rel="stylesheet"    media="print" />
-    <#include "${themeDir}/head.dec" />
-    <#-- FIXME: are we using a custom jQuery-ui theme? Replace with Google CDN jquery ui CSS if not.
-    <link rel="stylesheet" type="text/css" href='https://ajax.googleapis.com/ajax/libs/jqueryui/{{jquery_ui_version}}/themes/base/jquery-ui.css'>/> 
-    -->
-    <link rel="stylesheet" type="text/css" href='<@s.url value="/css/jquery-ui/jquery-ui-1.8.11.custom.css"/>'/>
-    <link rel="stylesheet" type="text/css" href='<@s.url value="/includes/datatables.css"/>'/>
-    <link rel="stylesheet" type="text/css" href='<@s.url value="/includes/jquery-treeview/jquery.treeview.css"/>'/> 
-    <link rel="stylesheet" type="text/css" href="<@s.url value="/includes/jquery.aw-showcase.1.1.1/jquery.aw-showcase/css/style.css"/>" /> 
 
-<script>
+    <link rel="stylesheet" type="text/css" href='https://ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_version}/themes/base/jquery-ui.css'></link> 
 
-//disabling remote error reporting until it gets fleshed out
-/**
-var maxExceptions = 1000;
-
-window.onerror = function onError(message, file, linenumber) {
-    var oldOnError = window.onerror
-    if (maxExceptions > 0) {
-        var prefix = "http://www.tdar.org/errors";
-        var browser_ = encodeURI(navigator.appVersion);
-        var error_ = encodeURI("msg:"+ message + "\n\tfile:"+file+"\n\tln:"+linenumber);
-        var user_ = encodeURI("");
-    	 
-        var url_ = prefix + "?" + "browser=" + browser_ + "&" + "error="+error_ + "&" + "user=" + user_;
-        var scrpt =document.createElement("script");
-        scrpt.src = url_;
-        document.getElementsByTagName("head")[0].appendChild(scrpt);
-        maxExceptions--;
-    }
-    return true;
-}
-*/
-
-</script>
+	<@header.css production/>
+	<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/${jquery_version}/jquery.min.js'></script>
 
 
-    <script type='text/javascript' src="<@s.url value='/includes/googlemaps-api-key.js'/>"></script>
-    <script type='text/javascript' src="<@s.url value='/includes/gzoom_uncompressed.js'/>"></script>
-    <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/${jquery_version}/jquery.min.js'></script>
-    <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_version}/jquery-ui.min.js'></script>
-    <script type="text/javascript" src="<@s.url value="/includes/jquery.metadata.2.1/jquery.metadata.js"/>"></script> 
-    <script type="text/javascript" src="<@s.url value="/includes/jquery.maphighlight.local.js"/>"></script> 
-    <script type='text/javascript' src='<@s.url value="/includes/jquery.cookie.js"/>'></script> 
-    <script type='text/javascript' src='<@s.url value="/includes/jquery.history.js"/>'></script> 
-    <script type='text/javascript' src='<@s.url value="/includes/jquery.xcolor-1.5.js"/>'></script> 
-    <script type='text/javascript' src='<@s.url value="/includes/jquery-validation-1.8.1/jquery.validate.min.js"/>'></script> 
-    <script type='text/javascript' src='<@s.url value="/includes/jquery-treeview/jquery.treeview.js"/>'></script> 
-    <script type='text/javascript' src='<@s.url value="/includes/jquery.datatables-1.8.2/media/js/jquery.dataTables.js"/>'></script>
-    <script type='text/javascript' src='<@s.url value="/includes/common.js"/>'></script>
-    <script type='text/javascript' src='<@s.url value="/includes/bindWithDelay.js"/>'></script>
-    <script type='text/javascript' src="<@s.url value='/includes/jquery.aw-showcase.1.1.1/jquery.aw-showcase/jquery.aw-showcase.js'/>"></script>
-
-
-    <script type="text/javascript">
-        function getBaseURI() {
-          return "<@s.url value='/' />";
-        }
-        function getURI(path) {
-            return getBaseURI() + path;
-        }
-
-        var currentTime = 0;
-
-        <#assign uri = request.requestURI />
-        <#if authenticatedUser?? && (uri?index_of("add") > 0 ||
-          uri?index_of("edit") > 0 || uri?index_of("workspace") > 0 || uri?index_of("column") > 0 )>
-          // ENABLING TIMEOUT WARNING - USER INPUT PAGE
-          var sessionTimeout = ${sessionTimeout?c};
-          setTimeout(sessionTimeoutWarning,60000);
-        </#if>
-  </script>
     <!--Scripts--> 
     
     <!--[if IE]>
@@ -110,6 +58,8 @@ window.onerror = function onError(message, file, linenumber) {
     <![endif]-->
 
 
+
+
     <!--[if !IE]>
     <style type='text/css'>
        .addAnother {position:relative;}
@@ -126,12 +76,35 @@ window.onerror = function onError(message, file, linenumber) {
 
     ${head}
 <script type="text/javascript">
-    //FIXME: jquerytree 'lastExpandable' nodes do not render with +/- symbols. Removing the 'lastExpandable-hitarea' class looks better but is still odd.
-    $(function() {
-        $('.lastExpandable-hitarea').removeClass('lastExpandable-hitarea');
-    });
-</script>
-  <script type="text/javascript">
+
+//disabling remote error reporting until it gets fleshed out
+/**
+var maxExceptions = 1000;
+
+window.onerror = function onError(message, file, linenumber) {
+    var oldOnError = window.onerror
+    if (maxExceptions > 0) {
+        var prefix = "http://www.tdar.org/errors";
+        var browser_ = encodeURI(navigator.appVersion);
+        var error_ = encodeURI("msg:"+ message + "\n\tfile:"+file+"\n\tln:"+linenumber);
+        var user_ = encodeURI("");
+    	 
+        var url_ = prefix + "?" + "browser=" + browser_ + "&" + "error="+error_ + "&" + "user=" + user_;
+        var scrpt =document.createElement("script");
+        scrpt.src = url_;
+        document.getElementsByTagName("head")[0].appendChild(scrpt);
+        maxExceptions--;
+    }
+    return true;
+}
+*/
+
+        function getBaseURI() {
+          return "<@s.url value='/' />";
+        }
+        function getURI(path) {
+            return getBaseURI() + path;
+        }
 
   var _gaq = _gaq || [];
   <#if !production> 
@@ -151,11 +124,61 @@ window.onerror = function onError(message, file, linenumber) {
 
 </script>
 
+<style type='text/css'>
+h1 .cartouche {
+	font-size:75% !important;
+	padding: 0px 4px 0px 4px;
+}
+
+.image-color.cartouche {
+	background-color: ${imageColor};
+	color: #FEFEFE;
+}
+
+.dataset-color.cartouche {
+	background-color: ${datasetColor};
+	color: #FEFEFE;
+}
+
+.document-color.cartouche {
+	background-color: ${documentColor};
+	color: #333;
+}
+
+.sensorydata-color.cartouche {
+	background-color: ${sensoryDataColor};
+	color: #FEFEFE;
+}
+
+.codingsheet-color.cartouche {
+	background-color: ${codingSheetColor};
+	color: #333;
+}
+
+.collection-color.cartouche {
+	background-color: ${resourcecollectionColor};
+	color: #FEFEFE;
+}
+
+.project-color.cartouche {
+	background-color: ${projectColor};
+	color: #FEFEFE;
+}
+
+.video-color.cartouche {
+	background-color: ${videoColor};
+	color: #FEFEFE;
+}
+
+.ontology-color.cartouche {
+	background-color: ${ontologyColor};
+	color: #FEFEFE;
+}
+
 <#if !production>
-     <style type='text/css'>
           body.page { background-color:#efffff !important;border:1px solid blue}
-    </style>
 </#if> 
+    </style>
 
 </head> 
 <body class="page <#if page.properties["div.sidebar"]?? && page.properties["div.sidebar"] != "">twoColumn<#else>singleColumn</#if>" id="docBody"> 
@@ -168,10 +191,12 @@ window.onerror = function onError(message, file, linenumber) {
           <div id="navigation"> 
             <ul id="nav"> 
               <li class="page_item page-item-1"><a href="<@s.url value='/'/>">Home</a></li>
-              <li class="page_item"><a href="<@s.url value='/search/basic'/>">Search</a>
+	          <li class="page_item"><a href="<@s.url value='/search'/>">Search</a>
               <ul>
-                <li class="page_item"><a href="<@s.url value='/search/basic'/>">Basic Search</a></li>
-                <li class="page_item"><a href="<@s.url value='/search/advanced'/>">Advanced Search</a></li>
+	          <li class="page_item"><a href="<@s.url value='/search'/>">Search ${siteAcronym!""}</a></li>
+                <li class="page_item"><a href="<@s.url value='/browse/explore'/>">Explore</a></li>
+                <li class="page_item"><a href="<@s.url value='/search/results'/>">Browse All Resources</a></li>
+                <li class="page_item"><a href="<@s.url value='/search/collections'/>">Browse All Collections</a></li>
               </ul>
               </li>
       <#if authenticatedUser??>
@@ -189,6 +214,9 @@ window.onerror = function onError(message, file, linenumber) {
               <li class="page_item"><a href="<@s.url value='/project/add'/>">New Project</a></li>
               <li class="page_item"><a href="<@s.url value='/document/add'/>" class="item_line">New Document</a></li>
               <li class="page_item"><a href="<@s.url value='/image/add'/>">New Image</a></li>
+        <#if editor!false>
+              <li class="page_item"><a href="<@s.url value='/video/add'/>">New Video</a></li>
+		</#if>
               <li class="page_item"><a href="<@s.url value='/dataset/add'/>">New Dataset</a></li>
               <li class="page_item"><a href="<@s.url value='/coding-sheet/add'/>" class="item_line">New Coding Sheet</a></li>
               <li class="page_item"><a href="<@s.url value='/ontology/add'/>">New Ontology</a></li>
@@ -220,12 +248,12 @@ window.onerror = function onError(message, file, linenumber) {
 <!--        <li class="page_item"><a href="<@s.url value='http://www.tdar.org'/>">Contribute</a></li>-->
         </#if>
         <li class="page_item">  
-        <a href="<@s.url value='http://dev.tdar.org/confluence/display/TDAR/User+Documentation'/>">Help</a>
+        <a href="<@s.url value='${documentationUrl}'/>">Help</a>
         
           <ul>
-              <li class="page_item"><a href="<@s.url value='http://dev.tdar.org/confluence/display/TDAR/User+Documentation'/>">User Documentation</a></li>
-              <li class="page_item"><a href="<@s.url value='http://dev.tdar.org/jira'/>">Report a Bug</a></li>
-              <li class="page_item"><a href="mailto:comments@tdar.org">Comments</a></li>
+              <li class="page_item"><a href="${documentationUrl}">User Documentation</a></li>
+              <li class="page_item"><a href="${bugReportUrl}">Report a Bug</a></li>
+              <li class="page_item"><a href="${commentUrl}">Comments</a></li>
               <#if authenticatedUser??>
               <li class="page_item"><a href="<@s.url value='/entity/person/edit?id=${sessionData.person.id?c}'/>">Update your profile</a></li>
               </#if>
@@ -250,12 +278,38 @@ window.onerror = function onError(message, file, linenumber) {
     ${page.properties["div.messages"]}
 </#if>
 
-                <h1 class="pagetitle">${title}<#if  page.properties["div.subtitle"]?? && page.properties["div.subtitle"] != "">${page.properties["div.subtitle"]}
-</span></#if></h1> 
+	<div class="tdar-title-section field-unit"><h1 class="pagetitle">
+    <#if (persistable?? && request.requestURI?contains("view"))><@common.cartouch persistable /></#if> ${title} 
+                <#if  page.properties["div.subtitle"]?? && page.properties["div.subtitle"] != "">${page.properties["div.subtitle"]}
+</span></#if> 
+	</h1></div>
         <div class="entry page clear"> 
-
+</#compress>
+<div id="errors">
+<#if (actionErrors?has_content)>
+   <div class="action-errors ui-corner-all">
+     <b>The following errors were found with your submission</b> <br />
+     <ul>
+     <#list actionErrors as err>
+      <li class="action-error">${err!"unknown error"}</li>
+     </#list>
+     </ul>
+     <#if stackTraces?has_content >
+     <a href="#" id="pToggleStackTrace" onclick="$('#stackTraceList').toggle();return false;">Show/Hide Detailed Error Information</a>
+     <div id="stackTraceList" class="hidden">
+        <#list stackTraces as _stacktrace>
+        <p>
+        <em>Stacktrace ${_stacktrace_index + 1} of ${stackTraces?size}</em><br />
+        ${_stacktrace?html}
+        </p>
+        </#list>
+     </div>
+     </#if>
+   </div>
+</#if>
+</div>
 ${body}
-
+<#compress>
     </div><!--end content--> 
  </div>
 <#if  page.properties["div.sidebar"]?? && page.properties["div.sidebar"] != "">
@@ -265,6 +319,41 @@ ${body}
 </div> 
 </div><!--end wrapper--> 
 </div><!--end content-background--> 
+
+
+<#if request.parameterMap.get("fbl")??>
+  <!--[if lt IE 10]>
+  <script type="text/javascript" src="https://getfirebug.com/firebug-lite.js"></script>
+ <![endif]--> 
+</#if>
+
+<script type='text/javascript' src="http://maps.google.com/maps?file=api&v=2&key=${googleMapsApiKey}"></script>
+	<@header.scripts production/>
+
+<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_version}/jquery-ui.min.js'></script>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
+
+<script>
+        var currentTime = 0;
+
+        <#assign uri = request.requestURI />
+        <#if authenticatedUser?? && (uri?index_of("add") > 0 ||
+          uri?index_of("edit") > 0 || uri?index_of("workspace") > 0 || uri?index_of("column") > 0 )>
+          // ENABLING TIMEOUT WARNING - USER INPUT PAGE
+          var sessionTimeout = ${sessionTimeout?c};
+          setTimeout(sessionTimeoutWarning,60000);
+        </#if>
+        
+        var GMapDefaultLat = ${GMapDefaultLat};
+        var GMapDefaultLng = ${GMapDefaultLng};
+
+        //are we monkeypatching jquery functions?
+        TDAR.MONKEYPATCHES_IN_EFFECT = false;
+        
+  </script>
+
+
 <div id="footer"> 
     <div class="wrapper clear"> 
     <#include "${themeDir}/footer.dec" />
@@ -274,14 +363,26 @@ ${body}
 </#if>
     </div><!--end wrapper--> 
 </div><!--end footer--> 
-
-
-<#if request.parameterMap.get("fbl")??>
-  <!--[if lt IE 10]>
-  <script type="text/javascript" src="https://getfirebug.com/firebug-lite.js"></script>
- <![endif]--> 
-</#if>
-
+</#compress>
+    <!--[if lte IE 8]>
+    <script language="jscript">
+        //monkeypatch for jquery bug: http://bugs.jquery.com/ticket/11500 (IE8 does not fire change event when checkbox clicked)
+        if($.fn.jquery.indexOf("1.8")===0) {
+            //jquery bug 11500 is slated to be fixed in jquery 1.8.  don't monkeypatch if we are at this version
+            console.error("REMOVE IE8 CHANGE EVENT MONKEYPATCH");
+        } else {
+            var oldmethod = $.prototype["click"];
+            $.prototype["click"] = function() {
+                var ret = oldmethod.apply(this, arguments);
+                if($(this).is(":checkbox")) {
+                    $.prototype["change"].apply(this, arguments);
+                }
+                return ret;
+            };
+            TDAR.MONKEYPATCHES_IN_EFFECT = true;
+        }
+    </script>
+    <![endif]-->
 
 </body> 
 </html>

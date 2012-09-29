@@ -6,9 +6,10 @@ import static org.tdar.core.service.external.auth.InternalTdarRights.SEARCH_FOR_
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.commons.collections.ListUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -21,7 +22,6 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
@@ -29,9 +29,9 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.auth.InternalTdarRights;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
-import org.tdar.search.query.queryBuilder.ResourceQueryBuilder;
-import org.tdar.struts.search.query.SearchResultHandler;
+import org.tdar.search.query.builder.ResourceQueryBuilder;
 
 @Component
 @Scope("prototype")
@@ -39,11 +39,13 @@ import org.tdar.struts.search.query.SearchResultHandler;
 @Namespace("/collection")
 public class CollectionController extends AbstractPersistableController<ResourceCollection> implements SearchResultHandler<ResourceCollection> {
 
+    //FIXME: This notification message blows.  Could somebody rephrase this to be more helpful to a user?
+    public static final String MSG_PERMISSION_REBASE_NOTIFICATION = "Note: the system has copied inherited permissions from the former parent to this collection";
+    
     private static final long serialVersionUID = 5710621983240752457L;
     private List<Resource> resources = new ArrayList<Resource>();
 
     private List<Long> selectedResourceIds = new ArrayList<Long>();
-    private List<Resource> toReindex = new ArrayList<Resource>();
     private Long parentId;
     private List<Resource> fullUserProjects;
     private List<ResourceCollection> collections;
@@ -60,7 +62,7 @@ public class CollectionController extends AbstractPersistableController<Resource
     public boolean isEditable() {
         if (isNullOrNew())
             return false;
-        return getEntityService().canEditCollection(getAuthenticatedUser(), getPersistable());
+        return getAuthenticationAndAuthorizationService().canEditCollection(getAuthenticatedUser(), getPersistable());
     }
 
     /**
@@ -68,15 +70,16 @@ public class CollectionController extends AbstractPersistableController<Resource
      * 
      * @return
      */
-    public List<ResourceCollection> getCandidateParentResourceCollections() {
-        List<ResourceCollection> publicResourceCollections = getResourceCollectionService().findPotentialParentCollections(getAuthenticatedUser(),
+    public Set<ResourceCollection> getCandidateParentResourceCollections() {
+        Set<ResourceCollection> publicResourceCollections = 
+                getResourceCollectionService().findPotentialParentCollections(getAuthenticatedUser(),
                 getPersistable());
         return publicResourceCollections;
     }
 
     @Override
     public boolean isViewable() {
-        return isEditable() || getEntityService().canViewCollection(getResourceCollection(), getAuthenticatedUser());
+        return isEditable() || getAuthenticationAndAuthorizationService().canViewCollection(getResourceCollection(), getAuthenticatedUser());
     }
 
     @Override
@@ -84,36 +87,53 @@ public class CollectionController extends AbstractPersistableController<Resource
         if (persistable.getType() == null) {
             persistable.setType(CollectionType.SHARED);
         }
+        
+        //handle corner case of user losing effective permissions by converting child collection to root collection (parentId == null);
+        handlePermissionsRebase();
+        
         // FIXME: may need some potential check for recursive loops here to prevent self-referential
         // parent-child loops
-
+        // FIXME: if persistable's parent is different from current parent; then need to reindex all of the children as well
         persistable.setParent(getResourceCollectionService().find(parentId));
         getGenericService().saveOrUpdate(persistable);
         getResourceCollectionService().saveAuthorizedUsersForResourceCollection(persistable, getAuthorizedUsers(), shouldSaveResource());
 
-        List<Resource> rehydratedIncomingResources = getGenericService().rehydrateSparseIdBeans(resources, Resource.class);
+        List<Resource> rehydratedIncomingResources = getGenericService().loadFromSparseEntities(resources, Resource.class);
+        List<Resource> toRemove = new ArrayList<Resource>();
         for (Resource resource : persistable.getResources()) {
             if (!rehydratedIncomingResources.contains(resource)) {
                 resource.getResourceCollections().remove(persistable);
-                toReindex.add(resource);
+                toRemove.add(resource);
             }
         }
-        persistable.getResources().removeAll(toReindex);
+        // set the deleted resources aside first
+        List<Resource> deletedResources = new ArrayList<Resource>();
+        for (Resource resource : persistable.getResources()) {
+            if (resource.isDeleted()) {
+                deletedResources.add(resource);
+            }
+        }
+        persistable.getResources().removeAll(toRemove);
         getGenericService().saveOrUpdate(persistable);
         List<Resource> ineligibleResources = new ArrayList<Resource>();
         for (Resource resource : rehydratedIncomingResources) {
+
             logger.info(getAuthenticatedUser().toString());
             if (!getAuthenticationAndAuthorizationService().canEditResource(getAuthenticatedUser(), resource)) {
                 ineligibleResources.add(resource);
                 logger.info("{}", resource);
             } else {
                 resource.getResourceCollections().add(persistable);
-                // getGenericService().saveOrUpdate(resource);
-                toReindex.add(resource);
             }
         }
+
+        // remove all of the undesirable resources that that the user just tried to add
         rehydratedIncomingResources.removeAll(ineligibleResources);
+//        getResourceCollectionService().findAllChildCollectionsRecursive(persistable, CollectionType.SHARED);
         persistable.getResources().addAll(rehydratedIncomingResources);
+
+        // add all the deleted resources that were already in the colleciton
+        persistable.getResources().addAll(deletedResources);
         getGenericService().saveOrUpdate(persistable);
         if (ineligibleResources.size() > 0) {
             throw new TdarRecoverableRuntimeException(
@@ -124,15 +144,42 @@ public class CollectionController extends AbstractPersistableController<Resource
         return SUCCESS;
     }
 
+    /** 
+     * handle a "permissions rebase", which we define as the situation where the user converts a child collection to a root collection and will lose the 
+     * inherited permissions that enable the user to edit the collection in the first place.
+     * 
+     * @return  true if any action was taken
+     */
+    private boolean handlePermissionsRebase() {
+        List<AuthorizedUser> users = getResourceCollectionService().getTransientInheritedAuthorizedUsers(getPersistable());
+        if(users.isEmpty() || !Persistable.Base.isNullOrTransient(getParentId())) return false;
+        
+        //collection is becoming a root node and has inherited authusers, copy them to the incoming list.  Also notify the user so they don't freak out
+        //when these extra users show up on the view page
+        getAuthorizedUsers().addAll(users);
+
+        addActionMessage(MSG_PERMISSION_REBASE_NOTIFICATION);
+
+        return true;
+    }
+
     @Override
     public void postSaveCleanup() {
-        //This is apparently necessary in order to force indexing of transient fields.
-        getSearchIndexService().indexCollection(toReindex);
+        /*
+         * if we want to be really "aggressive" we only need to do this if
+         * (a) permissions change
+         * (b) visibility changes
+         */
+        if (isAsync()) {
+            getSearchIndexService().indexAllResourcesInCollectionSubTreeAsync(getPersistable());
+        } else {
+            getSearchIndexService().indexAllResourcesInCollectionSubTree(getPersistable());
+        }
     }
 
     @Override
     public List<? extends Persistable> getDeleteIssues() {
-        List<ResourceCollection> findAllChildCollections = getResourceCollectionService().findAllChildCollections(getId(), null, CollectionType.SHARED);
+        List<ResourceCollection> findAllChildCollections = getResourceCollectionService().findAllDirectChildCollections(getId(), null, CollectionType.SHARED);
         logger.info("we still have children: {}", findAllChildCollections);
         return findAllChildCollections;
     }
@@ -173,7 +220,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         options.add(1, SortOption.RESOURCE_TYPE_REVERSE);
         return options;
     }
-    
+
     public List<SortOption> getResourceDatatableSortOptions() {
         return SortOption.getOptionsForContext(Resource.class);
     }
@@ -182,6 +229,9 @@ public class CollectionController extends AbstractPersistableController<Resource
     public String loadMetadata() {
         getAuthorizedUsers().addAll(getPersistable().getAuthorizedUsers());
         resources.addAll(getPersistable().getResources());
+        for (Resource resource : getPersistable().getResources()) {
+            getAuthenticationAndAuthorizationService().applyTransientViewableFlag(resource, getAuthenticatedUser());
+        }
         setParentId(getPersistable().getParentId());
         return SUCCESS;
     }
@@ -200,43 +250,49 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     private List<Resource> getRetainedResources() {
         List<Resource> retainedResources = new ArrayList<Resource>();
-        for(Resource resource: getPersistable().getResources()) {
+        for (Resource resource : getPersistable().getResources()) {
             boolean canEdit = getAuthenticationAndAuthorizationService().canEditResource(getAuthenticatedUser(), resource);
-            if(!canEdit) {
+            if (!canEdit) {
                 retainedResources.add(resource);
             }
         }
-        return retainedResources; 
+        return retainedResources;
     }
-    
-    
+
     public void loadExtraViewMetadata() {
-        if (getId() == null || getId() == -1)
+        if (Persistable.Base.isNullOrTransient(getId()))
             return;
         List<ResourceCollection> findAllChildCollections;
         if (isAuthenticated()) {
-            findAllChildCollections = getResourceCollectionService().findAllChildCollections(getId(), null, CollectionType.SHARED);
+            findAllChildCollections = getResourceCollectionService().findAllDirectChildCollections(getId(), null, CollectionType.SHARED);
             // FIXME: not needed?
-            boolean granularPermissions = false;
-            if (granularPermissions) {
-                Iterator<ResourceCollection> iterator = findAllChildCollections.iterator();
-                while (iterator.hasNext()) {
-                    ResourceCollection nextcollection = iterator.next();
-                    if (!nextcollection.getAuthorizedUsers().contains(new AuthorizedUser(getAuthenticatedUser(), GeneralPermissions.VIEW_ALL)) &&
-                            !nextcollection.getOwner().equals(getAuthenticatedUser()) &&
-                            getAuthenticationAndAuthorizationService().cannot(InternalTdarRights.VIEW_ANYTHING, getAuthenticatedUser())) {
-                        iterator.remove();
-                    }
-                }
-            }
+            // boolean granularPermissions = false;
+            // if (granularPermissions) {
+            // Iterator<ResourceCollection> iterator = findAllChildCollections.iterator();
+            // while (iterator.hasNext()) {
+            // ResourceCollection nextcollection = iterator.next();
+            // if (!nextcollection.getAuthorizedUsers().contains(new AuthorizedUser(getAuthenticatedUser(), GeneralPermissions.VIEW_ALL)) &&
+            // !nextcollection.getOwner().equals(getAuthenticatedUser()) &&
+            // getAuthenticationAndAuthorizationService().cannot(InternalTdarRights.VIEW_ANYTHING, getAuthenticatedUser())) {
+            // iterator.remove();
+            // }
+            // }
+            // }
         } else {
-            findAllChildCollections = getResourceCollectionService().findAllChildCollections(getId(), true, CollectionType.SHARED);
+            findAllChildCollections = getResourceCollectionService().findAllDirectChildCollections(getId(), true, CollectionType.SHARED);
         }
         setCollections(findAllChildCollections);
         Collections.sort(collections);
 
         if (getPersistable() != null) {
-            ResourceQueryBuilder qb = getSearchService().buildResourceContainedInSearch(QueryFieldNames.RESOURCE_COLLECTION_PUBLIC_IDS,
+            //FIXME: logic is right here, but this feels "wrong"
+            
+            // if this collection is public, it will appear in a resource's public collection id list, otherwise it'll be in the shared collection id list
+//            String collectionListFieldName = getPersistable().isVisible() ? QueryFieldNames.RESOURCE_COLLECTION_PUBLIC_IDS
+//                    : QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS;
+
+            // the visibilty fence should take care of visible vs. shared above
+            ResourceQueryBuilder qb = getSearchService().buildResourceContainedInSearch(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS,
                     getResourceCollection(), getAuthenticatedUser());
             setSortField(getPersistable().getSortBy());
             if (getSortField() != SortOption.RELEVANCE) {
@@ -245,7 +301,7 @@ public class CollectionController extends AbstractPersistableController<Resource
             try {
                 getSearchService().handleSearch(qb, this);
             } catch (Exception e) {
-                addActionErrorWithException("something happend", e);
+                addActionErrorWithException("error occurred while searching for collection contents", e);
             }
         }
     }
@@ -413,4 +469,22 @@ public class CollectionController extends AbstractPersistableController<Resource
         return startRecord + recordsPerPage;
     }
 
+    public int getPrevPageStartRecord() {
+        return startRecord - recordsPerPage;
+    }
+
+    @Override
+    public String getSearchTitle() {
+        return String.format("Resources in the %s Collection", getPersistable().getTitle());
+    }
+
+    @Override
+    public String getSearchDescription() {
+        return getSearchTitle();
+    }
+
+    @Override
+    public List<String> getProjections() {
+        return ListUtils.EMPTY_LIST;
+    }
 }

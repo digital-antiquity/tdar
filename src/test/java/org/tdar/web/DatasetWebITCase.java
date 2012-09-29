@@ -35,8 +35,8 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     public static HashMap<String, List<String>> docMultiValMap = new HashMap<String, List<String>>();
     public static HashMap<String, List<String>> docMultiValMapLab = new HashMap<String, List<String>>();
     public static final String TEST_DATASET_NAME = "dataset_with_ints.xls";
-    public static String PROJECT_ID = "1";
 
+    public static String PROJECT_ID = "1";
     public static String TITLE = "My Sample Dataset";
     public static String DESCRIPTION = "A resource description";
     public static final String SPITAL_DB_NAME = "Spital Abone database.mdb";
@@ -59,7 +59,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         uploadDataset();
 
     }
-    
+
     @Test
     @Rollback(true)
     public void testCreateDatasetRecord() {
@@ -69,8 +69,8 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         assertTextPresentInPage(TEST_DATASET_NAME);
         Long datasetId = extractTdarIdFromCurrentURL();
-        Long codingSheetId = testCodingSheetCreation();
         Long ontologyId = testOntologyCreation();
+        Long codingSheetId = testCodingSheetCreation(ontologyId);
 
         gotoPage("/dataset/" + datasetId);
         clickLinkWithText(TABLE_METADATA);
@@ -82,42 +82,16 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         setInput("dataTableColumns[1].columnEncodingType", "CODED_VALUE", false);
         setInput("dataTableColumns[1].categoryVariable.id", "1", false); // ARCHITECTURE
-        setInput("dataTableColumns[1].tempSubCategoryVariable.id", "25", false); // MATERIAL
+        setInput("dataTableColumns[1].tempSubCategoryVariable.id", "27", false); // MATERIAL
         setInput("dataTableColumns[1].description", "column description for city", false);
         setInput("dataTableColumns[1].defaultCodingSheet.id", Long.toString(codingSheetId), false);
         setInput("dataTableColumns[1].defaultOntology.id", Long.toString(ontologyId), false);
-        setInput("postSaveAction", "SAVE_MAP_NEXT");
+//        setInput("postSaveAction", "SAVE_MAP_NEXT");
         logger.debug("coding sheet id: {} ", codingSheetId);
         logger.debug("ontology id: {} ", ontologyId);
         submitForm("Save");
         assertFalse(internalPage.getUrl().toString().contains("save-column-metadata"));
-        assertCurrentUrlContains("ontology");
-        assertTextPresent(EAST_COAST_CITIES);
-        assertTextPresent(WEST_COAST_CITIES);
 
-        int indexOfOntology = getPageCode().indexOf("var ontology");
-        String ontologyNodeInfo = getPageCode().substring(indexOfOntology, getPageCode().indexOf("];", indexOfOntology));
-        logger.debug("ONTOLOGY NODE TEXT: {}", ontologyNodeInfo);
-
-        String regex = "id:\"(\\d+)\",(?:\\s+)name:\\\"(.+)\\\"";
-        Pattern p = Pattern.compile(regex);
-
-        HashMap<String, Long> ontology = new HashMap<String, Long>();
-        for (String line : ontologyNodeInfo.split("([{]|(}\\s?,?))")) {
-            logger.info(line);
-            Matcher matcher = p.matcher(line);
-            if (matcher.matches()) {
-                String key = matcher.group(2).replaceAll("[\\|\\-]", "").trim().toLowerCase();
-                logger.info("{} : {}", matcher.group(1), key);
-                ontology.put(key, Long.parseLong(matcher.group(1)));
-            }
-        }
-        assertTrue(ontology.containsKey("united states"));
-        setInput("ontologyNodeIds[0]", ontology.get(NEW_YORK_1).toString(), false);
-        setInput("ontologyNodeIds[1]", ontology.get(SAN_FRANCISCO_2).toString(), false);
-        setInput("ontologyNodeIds[2]", ontology.get(WASHINGTON_3).toString(), false);
-        setInput("postSaveAction", "SAVE_VIEW");
-        submitForm("Save");
         assertTrue(internalPage.getUrl().toString().endsWith("/dataset/" + datasetId));
         assertTextPresentIgnoreCase("translated");
 
@@ -180,7 +154,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         }
     }
 
-    public Long testCodingSheetCreation() {
+    public Long testCodingSheetCreation(Long ontologyId) {
         gotoPage("/coding-sheet/add");
         HashMap<String, String> codingMap = new HashMap<String, String>();
         codingMap.put(PROJECT_ID_FIELDNAME, PROJECT_ID);
@@ -188,7 +162,11 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         codingMap.put("codingSheet.description", DESCRIPTION);
         codingMap.put("codingSheet.date", "1923");
         codingMap.put("categoryId", "1"); // ARCHITECTURE
-        codingMap.put("subcategoryId", "25"); // MATERIAL
+        codingMap.put("subcategoryId", "27"); // MATERIAL
+        if (ontologyId != null) {
+            codingMap.put("ontology.id", ontologyId.toString());
+        }
+
         String codingText = "1," + NEW_YORK_1 + ",NY\r\n" +
                 "2," + SAN_FRANCISCO_2 + ",CA\r\n" +
                 "3," + WASHINGTON_3 + ",DC\r\n";
@@ -196,9 +174,10 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         for (String key : codingMap.keySet()) {
             setInput(key, codingMap.get(key));
         }
+        logger.info(getInput("subcategoryId").asXml());
         logger.trace(getPageText());
         submitForm();
-        // logger.info(getPageText());
+         logger.info(getPageText());
         for (String key : codingMap.keySet()) {
             // avoid the issue of the fuzzy distances or truncation... use just the
             // top of the lat/long
@@ -207,11 +186,13 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
                     && !key.contains("generalPermission")
                     && !key.contains(".type") && !key.contains("Role") && !key.contains("person.institution.name") && !key.contains("person.id"))
                 continue;
-            assertTextPresentInPage(codingMap.get(key), false);
+            if (!key.contains("ontology.id")) {
+                assertTextPresentInPage(codingMap.get(key), false);
+            }
         }
         assertTextPresent(NEW_YORK_1);
         assertTextPresent("Architecture");
-        assertTextPresentIgnoreCase("Material");
+        assertTextPresent("Style/Type");
         assertTextPresent(WASHINGTON_3);
         assertTextPresent(SAN_FRANCISCO_2);
         assertTextPresent("NY");
@@ -219,6 +200,39 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertTextPresent("DC");
         assertTextNotPresentIgnoreCase("translated");
 
+        clickLinkOnPage("map ontology");
+
+//        assertTextPresent(EAST_COAST_CITIES);
+//        assertTextPresent(WEST_COAST_CITIES);
+
+        int indexOfOntology = getPageCode().indexOf("var ontology");
+        String ontologyNodeInfo = getPageCode().substring(indexOfOntology, getPageCode().indexOf("];", indexOfOntology));
+        logger.debug("ONTOLOGY NODE TEXT: {}", ontologyNodeInfo);
+
+        String regex = "id:\"(\\d+)\",(?:\\s+)name:\\\"(.+)\\\"";
+        Pattern p = Pattern.compile(regex);
+
+        HashMap<String, Long> ontologyMap = new HashMap<String, Long>();
+        for (String line : ontologyNodeInfo.split("([{]|(}\\s?,?))")) {
+            logger.info(line);
+            Matcher matcher = p.matcher(line);
+            if (matcher.matches()) {
+                String key = matcher.group(2).replaceAll("[\\|\\-]", "").trim().toLowerCase();
+                logger.info("{} : {}", matcher.group(1), key);
+                ontologyMap.put(key, Long.parseLong(matcher.group(1)));
+            }
+        }
+        assertTrue(ontologyMap.containsKey("united states"));
+        setInput("codingRules[0].ontologyNode.id", ontologyMap.get(NEW_YORK_1).toString(), false);
+        setInput("codingRules[1].ontologyNode.id", ontologyMap.get(SAN_FRANCISCO_2).toString(), false);
+        setInput("codingRules[2].ontologyNode.id", ontologyMap.get(WASHINGTON_3).toString(), false);
+        submitForm("Save");
+
+//        assertTextPresent(EAST_COAST_CITIES);
+//        assertTextPresent(WEST_COAST_CITIES);
+        assertTextPresent(NEW_YORK_1);
+        assertTextPresent(WASHINGTON_3);
+        assertTextPresent(SAN_FRANCISCO_2);
         return extractTdarIdFromCurrentURL();
     }
 
@@ -230,7 +244,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         codingMap.put("ontology.description", DESCRIPTION);
         codingMap.put("ontology.date", "1923");
         codingMap.put("categoryId", "1"); // ARCHITECTURE
-        codingMap.put("subcategoryId", "25"); // MATERIAL
+        codingMap.put("subcategoryId", "27"); // MATERIAL
         String ontology = "North America\r\n" +
                 "\tUnited States\r\n" +
                 "\t\t" + EAST_COAST_CITIES + "\r\n" +
@@ -261,7 +275,9 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertTextPresent(SAN_FRANCISCO_2);
         assertTextNotPresentIgnoreCase("translated");
 
-        return extractTdarIdFromCurrentURL();
+        Long tdarId = extractTdarIdFromCurrentURL();
+
+        return tdarId;
     }
 
 }

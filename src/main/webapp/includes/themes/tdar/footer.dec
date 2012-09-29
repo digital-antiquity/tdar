@@ -21,16 +21,16 @@
  
         <div id="footer-search" class="footer-column"> 
             <h2>Contact</h2> 
-<div> 
-Questions, comments, feedback?<br/> 
-<ul>
-	<li><a href="mailto:&#99;&#111;&#109;&#109;&#101;&#110;&#116;&#115;&#64;&#116;&#100;&#97;&#114;&#46;&#111;&#114;&#103;?subject=tDAR%20comments&amp;">&#99;&#111;&#109;&#109;&#101;&#110;&#116;&#115;&#64;&#116;&#100;&#97;&#114;&#46;&#111;&#114;&#103;</a> </li>
-	<li><a href="https://twitter.com/DigArcRec" class="twitter-follow-button" data-show-count="false">Follow @DigArcRec on twitter</a></li>
-<li><a href="http://facebook.com/digarcrec">Follow tDAR on Facebook</a></li>
+				<div> 
+				Questions, comments, feedback?<br/> 
+				<ul>
+					<li><a href="mailto:&#99;&#111;&#109;&#109;&#101;&#110;&#116;&#115;&#64;&#116;&#100;&#97;&#114;&#46;&#111;&#114;&#103;?subject=tDAR%20comments">&#99;&#111;&#109;&#109;&#101;&#110;&#116;&#115;&#64;&#116;&#100;&#97;&#114;&#46;&#111;&#114;&#103;</a> </li>
+					<li><a href="https://twitter.com/DigArcRec" class="twitter-follow-button" data-show-count="false">Follow @DigArcRec on twitter</a></li>
+					<li><a href="http://facebook.com/digarcrec">Follow tDAR on Facebook</a></li>
 
-</ul>
-</div> 
- 
+				</ul>
+				</div> 
+				 
         </div> 
         <div id="copyright"> 
             <p class="copyright-notice"> 
@@ -57,3 +57,86 @@ for the Humanities or the Joint Information Systems Committee.
         </div><!--end copyright--> 
         
 
+
+    
+    <script type="text/javascript" src="http://www.tdar.org/wp-content/themes/paperpunch_pro/javascripts/cufon.js"></script> 
+    <script type="text/javascript" src="http://www.tdar.org/images/bank_gothic400.js"></script> 
+    <script type="text/javascript" src="http://www.tdar.org/images/agency_fb_400-700.js"></script> 
+
+    <script>
+        Cufon.replace( '#title', { fontFamily: 'AgencyFB' });
+        Cufon.replace( '#description', { fontFamily: 'AgencyFB' });
+        Cufon.replace( '#digant', { fontFamily: 'bankgothic' });
+    </script>
+    
+    
+<style>
+#header {
+    background-color:#dbd0bc !important;
+}
+
+#digant {
+    display: block;
+    font-size: 11pt;
+    font-weight: 100;
+    line-height: 130%;
+    position: absolute;
+    bottom: 4px;
+    right: 25px;
+    text-align: right;
+    z-index: 200;
+}
+
+#description {
+    margin-left:110px !important;
+    line-height:125%;
+    position:absolute;
+    bottom:4px;
+    font-size:17pt;
+    display:block;
+    color:#555;
+    font-weight:100;
+}
+
+#title {
+    clear:none;
+    margin:0px 5px 0px 10px;
+    position:absolute;
+    bottom:4px;
+}
+
+#title img {
+    vertical-align: bottom;
+}
+
+#topsection {
+    border-bottom:1px solid #bbb;
+    position: relative;
+    display: block;
+    height: 65px;
+
+background: #eae1ce; /* Old browsers */
+background: -moz-linear-gradient(top, #eae1ce 0%, #dbd0bc 99%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#eae1ce), color-stop(99%,#dbd0bc)); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top, #eae1ce 0%,#dbd0bc 99%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top, #eae1ce 0%,#dbd0bc 99%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top, #eae1ce 0%,#dbd0bc 99%); /* IE10+ */
+background: linear-gradient(top, #eae1ce 0%,#dbd0bc 99%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eae1ce', endColorstr='#dbd0bc',GradientType=0 ); /* IE6-9 */
+}
+
+#diganttext {
+    font-family:"Bank Gothic";
+    text-shadow: 1px 1px 1px #666;
+    position:absolute;
+    bottom:0px;
+    right:0px;
+    width:170px;
+}
+
+.singleColumn #content, .singleColumn #content .entry {
+    width: 98% !important;
+}
+
+
+</style>

@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.SearchIndexService;
 import org.tdar.web.SessionData;
 import org.xml.sax.SAXException;
@@ -29,7 +30,7 @@ import org.xml.sax.SAXException;
 public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
 
     @Autowired
-    private LuceneSearchController controller;
+    private AdvancedSearchController controller;
 
     @Autowired
     SearchIndexService searchIndexService;
@@ -79,7 +80,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
 
     @Test
     @Rollback(true)
-    public void testRSSDefaultSortOrder() throws InstantiationException, IllegalAccessException {
+    public void testRssDefaultSortOrder() throws InstantiationException, IllegalAccessException {
         InformationResource document = generateInformationResourceWithUser();
         searchIndexService.index(document);
         controller.setSessionData(new SessionData()); // create unauthenticated session
@@ -91,7 +92,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
 
     @Test
     @Rollback(true)
-    public void testRSSInvalidCharacters() throws InstantiationException, IllegalAccessException {
+    public void testRssInvalidCharacters() throws InstantiationException, IllegalAccessException {
         InformationResource document = generateInformationResourceWithUser();
         document.setDescription("\u0001");
         genericService.saveOrUpdate(document);
@@ -108,10 +109,13 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
     
     @Test
     @Rollback(true)
-    public void testFindResourceBuiIdRSS() throws XpathException, SAXException, IOException {
-        searchIndexService.indexAll(Resource.class);
-        controller.setId(3074L);
-        controller.setResourceTypes(Arrays.asList(ResourceType.DATASET));
+    public void testFindResourceBuiIdRss() throws XpathException, SAXException, IOException {
+        Resource r = genericService.find(Resource.class, 3074L);
+        r.setStatus(Status.ACTIVE);
+        genericService.saveOrUpdate(r);
+        searchIndexService.index(r);
+        controller.setId(r.getId());
+        controller.getResourceTypes().addAll(Arrays.asList(ResourceType.DATASET));
         controller.setSessionData(new SessionData()); // create unauthenticated session
         doSearch("");
         controller.viewRss();
@@ -119,7 +123,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
 
         assertTrue(resultsContainId(3074l));
         logger.info(rssFeed);
-        assertTrue(rssFeed.contains("3074"));
+        assertTrue(rssFeed.contains(r.getId().toString()));
         assertTrue(rssFeed.contains("Durrington Walls Humerus Dataset"));
         assertXpathEvaluatesTo("Durrington Walls Humerus Dataset", "/atom:feed/atom:entry/atom:title", rssFeed);
     }

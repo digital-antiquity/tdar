@@ -22,12 +22,15 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
+import org.tdar.core.bean.Viewable;
+import org.tdar.core.configuration.JSONTransient;
+import org.tdar.filestore.WorkflowContext;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
@@ -42,9 +45,11 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
  */
 @Entity
 @Table(name = "information_resource_file")
-public class InformationResourceFile extends Persistable.Sequence<InformationResourceFile> {
+public class InformationResourceFile extends Persistable.Sequence<InformationResourceFile> implements Viewable {
 
     private static final long serialVersionUID = -6957336216505367012L;
+
+    private transient WorkflowContext workflowContext;
 
     public enum FileAction {
         NONE, ADD, REPLACE, DELETE, MODIFY_METADATA, ADD_DERIVATIVE;
@@ -54,7 +59,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
                 case ADD:
                 case ADD_DERIVATIVE:
                 case REPLACE:
-                    //user added a file but changed mind and clicked delete. NONE instructs the system to ignore the pending file
+                    // user added a file but changed mind and clicked delete. NONE instructs the system to ignore the pending file
                 case NONE:
                     return true;
             }
@@ -75,12 +80,12 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         PROCESSING_ERROR;
     }
 
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
+    // CascadeType.MERGE,
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
     @JoinColumn(name = "information_resource_id")
     private InformationResource informationResource;
 
-    @Column(name = "download_count")
-    private Integer downloadCount = 0;
+    private transient Long transientDownloadCount;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "general_type")
@@ -89,6 +94,10 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     @Column(name = "latest_version")
     private Integer latestVersion = 0;
 
+    @Column(name = "number_of_parts")
+    private Integer numberOfParts = 0;
+
+    // FIXME: cascade "delete" ?
     @OneToMany(mappedBy = "informationResourceFile", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
     @Sort(type = SortType.NATURAL)
     private SortedSet<InformationResourceFileVersion> informationResourceFileVersions = new TreeSet<InformationResourceFileVersion>();
@@ -104,8 +113,8 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         return informationResource;
     }
 
-    private transient boolean accessible = false;
-    
+    private transient boolean viewable = false;
+
     public void setInformationResource(InformationResource informationResource) {
         this.informationResource = informationResource;
     }
@@ -138,14 +147,6 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         this.informationResourceFileVersions = informationResourceFileVersions;
     }
 
-    public Integer getDownloadCount() {
-        return downloadCount;
-    }
-
-    public void setDownloadCount(Integer downloadCount) {
-        this.downloadCount = downloadCount;
-    }
-
     @Transient
     public InformationResourceFileVersion getTranslatedFile() {
         return getVersion(getLatestVersion(), VersionType.TRANSLATED);
@@ -167,13 +168,6 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
 
     public void addFileVersion(InformationResourceFileVersion version) {
         getInformationResourceFileVersions().add(version);
-    }
-
-    public void incrementDownloadCount() {
-        if (downloadCount == null) {
-            downloadCount = 0;
-        }
-        downloadCount++;
     }
 
     public void incrementVersionNumber() {
@@ -349,6 +343,11 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     }
 
     @Transient
+    public boolean isErrored() {
+        return status == FileStatus.PROCESSING_ERROR;
+    }
+
+    @Transient
     public boolean isPublic() {
         if (status != FileStatus.DELETED && !confidential) {
             return true;
@@ -379,12 +378,39 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         return getInformationResourceFileType() == FileType.COLUMNAR_DATA;
     }
 
-    public boolean isAccessible() {
-        return accessible;
+    public boolean isViewable() {
+        return viewable;
     }
 
-    public void setAccessible(boolean accessible) {
-        this.accessible = accessible;
+    public void setViewable(boolean accessible) {
+        this.viewable = accessible;
+    }
+
+    public Long getTransientDownloadCount() {
+        return transientDownloadCount;
+    }
+
+    public void setTransientDownloadCount(Long transientDownloadCount) {
+        this.transientDownloadCount = transientDownloadCount;
+    }
+
+    public Integer getNumberOfParts() {
+        return numberOfParts;
+    }
+
+    public void setNumberOfParts(Integer numberOfParts) {
+        this.numberOfParts = numberOfParts;
+    }
+
+    @Transient
+    @JSONTransient
+    @XmlTransient
+    public WorkflowContext getWorkflowContext() {
+        return workflowContext;
+    }
+
+    public void setWorkflowContext(WorkflowContext workflowContext) {
+        this.workflowContext = workflowContext;
     }
 
 }

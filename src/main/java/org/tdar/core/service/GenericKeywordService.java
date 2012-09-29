@@ -1,9 +1,10 @@
 package org.tdar.core.service;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -24,7 +25,6 @@ import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.SuggestedKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
-import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.GenericKeywordDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.Pair;
@@ -38,24 +38,30 @@ public class GenericKeywordService extends GenericService {
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    GenericDao genericDao;
-
-    @Autowired
     @Qualifier("genericKeywordDao")
     GenericKeywordDao genericKeywordDao;
 
     public <W extends SuggestedKeyword> List<W> findAllApproved(Class<W> cls) {
-        return genericDao.findAllByProperty(cls, "approved", true);
+        return getDao().findAllByProperty(cls, "approved", true);
     }
+
+    private Map<Class<?>, List<?>> cache = new ConcurrentHashMap<Class<?>, List<?>>();
+
+    public synchronized <W extends SuggestedKeyword> List<W> findAllApprovedWithCache(Class<W> cls) {
+        if (!cache.containsKey(cls)) {
+            cache.put(cls, findAllApproved(cls));
+        }
+        return (List<W>) cache.get(cls);
+    }
+
+    // @Cacheable(value = "tdarCache", key = "#cls.canonicalName")
+    // @CachePut(value = "tdarCache" , key="#cls.canonicalName")
+    // public <W extends SuggestedKeyword> List<W> findAllApprovedWithCache(Class<W> cls) {
+    // return getDao().findAllByProperty(cls, "approved", true);
+    // }
 
     public <H extends HierarchicalKeyword<H>> List<H> findAllDescendants(Class<H> cls, H keyword) {
         return genericKeywordDao.findAllDescendants(cls, keyword);
-    }
-
-    public <K extends Keyword> Set<K> findByIds(Class<K> cls, List<Long> ids) {
-        if (ids == null || CollectionUtils.isEmpty(ids))
-            return Collections.emptySet();
-        return new HashSet<K>(genericDao.findAllFromList(cls, "id", ids));
     }
 
     @Transactional(readOnly = false)
@@ -98,7 +104,7 @@ public class GenericKeywordService extends GenericService {
                 throw new TdarRecoverableRuntimeException("could not create keyword class");
             }
             keyword.setLabel(label);
-            genericDao.save(keyword);
+            getDao().save(keyword);
         }
         return keyword;
     }

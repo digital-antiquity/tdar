@@ -6,18 +6,15 @@ x * $Id$
  */
 package org.tdar.struts.action;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
 
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.resource.Dataset;
-import org.tdar.core.bean.resource.dataTable.DataTable;
+import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.struts.data.ResultMetadataWrapper;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Adam Brin
@@ -26,21 +23,8 @@ import org.tdar.struts.data.ResultMetadataWrapper;
 public class DataSetBrowseITCase extends AbstractDataIntegrationTestCase {
 
     private static final int RESULTS_PER_PAGE = 2;
-    /**
-     * 
-     */
-    private static final String DOUBLE_DATASET = "../coding sheet/double_translation_test_dataset.xlsx";
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tdar.core.bean.AbstractDataIntegrationTestCase#getDatabaseList()
-     */
-    @Override
-    public String[] getDatabaseList() {
-        String[] databases = {};
-        return databases;
-    }
+    private static final String DOUBLE_DATASET = "../coding sheet/double_translation_test_dataset.xlsx";
 
     @Test
     @Rollback

@@ -6,8 +6,21 @@
 
 package org.tdar.web;
 
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertThat;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Test;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.bean.entity.ResourceCreatorRoleType;
+import org.tdar.core.bean.resource.ResourceType;
+import org.w3c.dom.Element;
+
+import com.gargoylesoftware.htmlunit.html.HtmlOption;
+
 
 public class EditITCase extends AbstractAdminAuthenticatedWebTestCase {
 
@@ -19,7 +32,7 @@ public class EditITCase extends AbstractAdminAuthenticatedWebTestCase {
     public static String AUTHOR_EMAIL_FIELDNAME = "authorEmails";
     public static String AUTHOR_INSTITUTION_FIELDNAME = "authorInstitutions";
     public static String AUTHOR_ROLE_FIELDNAME = "authorRoles";
-    public static String DESCRIPTION_FIELDNAME = "resource.description";
+    public static String DESCRIPTION_FIELDNAME = "document.description";
 
     public static String PROJECT_ID = "3805";
     public static String DOCUMENT_TITLE = "My Sample Document";
@@ -58,7 +71,7 @@ public class EditITCase extends AbstractAdminAuthenticatedWebTestCase {
     public void testDocumentView() {
         super.testDocumentView();
         clickLinkWithText("edit");
-        logger.info(getPageText());
+        logger.trace(getPageText());
         assertButtonPresentWithText("Save");
     }
 
@@ -82,6 +95,7 @@ public class EditITCase extends AbstractAdminAuthenticatedWebTestCase {
     // an malformed file should take you back to save.action and contain an action error
     @Test
     public void testMalformedAttachmentDisplaysError() {
+        
         // create a new dataset resource w/o a file
         gotoPage("/dataset/add");
         setInput("projectId", "-1");
@@ -97,7 +111,29 @@ public class EditITCase extends AbstractAdminAuthenticatedWebTestCase {
         // we should still be on the edit page
         assertTextPresentInPage("Editing Dataset");
         // we should have an action error
+        assertTextPresent("has more columns");
         assertTextPresentInCode("action-errors");
+    }
+    
+    @Test
+    public void testFakeRolesShouldNotAppearInEditSelects() {
+    	//FIXME: there's a more automagical way to create this list, yeah?
+    	List<String> urls = new ArrayList<String>();
+    	for(ResourceType resourceType : ResourceType.values()) {
+    	    String url = String.format("/%s/add", resourceType.getUrlNamespace());
+    		assertNoFakeRoles(url);
+    	}
+    }
+    
+    private void assertNoFakeRoles(String editPage) {
+    	gotoPage(editPage);
+    	List<Element> selectElements = querySelectorAll(".creator-role-select option");
+    	for(Element element : selectElements) {
+    		HtmlOption option = (HtmlOption) element;
+    		logger.debug("looking for fake roles in {}", option);
+			ResourceCreatorRole role = ResourceCreatorRole.valueOf(option.getValueAttribute());
+			assertThat("OTHER role should not appear on this page", role.getType(), not(ResourceCreatorRoleType.OTHER));
+    	}
     }
 
 }

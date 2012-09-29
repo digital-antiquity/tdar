@@ -11,7 +11,7 @@ my  $msg = Mail::Send->new;
   $msg->to('tdar-dev@LISTS.ASU.EDU, abrin@asu.edu');
   $msg->subject($ENV{'USER'} . ' restarted tDAR on ' . $hostname . ' [' . $svnversion . ']');
   $msg->set('From','release@tdar.org');
-my $fh = $msg->open;   
+my $fh = $msg->open;
 my $date = scalar(localtime);
 print $fh "Date: $date \r\n";
 print $fh "Host: $hostname \r\n";

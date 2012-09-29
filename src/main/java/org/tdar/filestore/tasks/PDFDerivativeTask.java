@@ -9,14 +9,10 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.pdfbox.exceptions.CryptographyException;
-import org.apache.pdfbox.exceptions.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFImageWriter;
-import org.apache.pdfbox.util.PDFTextStripper;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
+import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.WorkflowContext;
 
@@ -26,10 +22,14 @@ import org.tdar.filestore.WorkflowContext;
 
 public class PDFDerivativeTask extends ImageThumbnailTask {
 
+    private static final String ENCRYPTION_WARNING = "This document is encrypted, please remove the encryption before uploading it to tDAR";
+    private static final String PROCESSING_ERROR = "An error occurred when processing your PDF";
+    private static final long serialVersionUID = -1138753863662695849L;
+
     public static void main(String[] args) {
         PDFDerivativeTask task = new PDFDerivativeTask();
-        String baseDir = "C:\\Users\\Adam Brin\\Downloads\\";
-        String orig = "dpctw08-01.pdf";
+        String baseDir = "C:\\Users\\abrin\\Desktop\\";
+        String orig = "SCIDD_Storage_Basin_Phase_2DR_redacted_pages.pdf";
         File origFile = new File(baseDir, orig);
         WorkflowContext ctx = new WorkflowContext();
         ctx.setWorkingDirectory(new File(
@@ -37,17 +37,13 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
                 System.getProperty("java.io.tmpdir")
                 ));
         task.setWorkflowContext(ctx);
-
-        InformationResourceFileVersion vers = task.generateInformationResourceFileVersion(origFile, VersionType.UPLOADED);
+        InformationResourceFileVersion vers = new InformationResourceFileVersion(VersionType.UPLOADED, origFile.getName(), 1, -1L, -1L);
         ctx.setOriginalFile(vers);
         try {
             task.run(origFile);
         } catch (Throwable e) {
-            e.printStackTrace();
-            throw new TdarRecoverableRuntimeException("processing error");
+            throw new TdarRecoverableRuntimeException(PROCESSING_ERROR, e);
         }
-        String outXML = task.getWorkflowContext().toXML();
-        System.out.println(outXML);
     }
 
     @Override
@@ -61,32 +57,14 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
         try {
             PDDocument document = openPDF("", originalFile);
             File imageFile = new File(extractPage(1, originalFile, document));
-            extractText(originalFile, document);
+            // extractText(originalFile, document);
             closePDF(document);
-            processImage(imageFile);
+            if (imageFile.exists()) {
+                processImage(imageFile);
+            }
         } catch (Throwable t) {
-            throw new TdarRecoverableRuntimeException("processing error", t);
+            throw new TdarRecoverableRuntimeException(PROCESSING_ERROR, t);
         }
-    }
-
-    /**
-     * @param document
-     */
-    private void extractText(File name, PDDocument document) {
-        try {
-            getLogger().debug("beginning PDF text extraction");
-            PDFTextStripper stripper = new PDFTextStripper();
-            File f = new File(getWorkflowContext().getWorkingDirectory(), name.getName() + ".txt");
-            getLogger().info("Writing contents to PDF: " + f);
-            mkParentDirs(f);
-            f.createNewFile();
-            FileUtils.writeStringToFile(f, stripper.getText(document));
-            InformationResourceFileVersion version = generateInformationResourceFileVersion(f, VersionType.INDEXABLE_TEXT);
-            getWorkflowContext().addVersion(version);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
     }
 
     protected String extractPage(int pageNum, File pdfFile, PDDocument document) {
@@ -135,20 +113,25 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
         PDDocument document = null;
         try {
             document = PDDocument.load(pdfFile);
+
             if (document.isEncrypted()) {
-                try {
-                    document.decrypt(password);
-                } catch (InvalidPasswordException e) {
-                    getLogger().debug("Error: The document is encrypted.");
-                }
+                getLogger().info("access permissions: " + document.getCurrentAccessPermission());
+                getLogger().info("security manager: " + document.getSecurityHandler());
+                throw new TdarRecoverableRuntimeException(ENCRYPTION_WARNING);
             }
+
+            // try {
+            // document.decrypt(password);
+            // } catch (InvalidPasswordException e) {
+            // getLogger().debug("Error: The document is encrypted.");
+            // }
+            // }
             getWorkflowContext().setNumPages(document.getNumberOfPages());
         } catch (IOException e) {
-            getLogger().info(e);
-            e.printStackTrace();
-        } catch (CryptographyException ce) {
-            getLogger().info(ce);
-            ce.printStackTrace();
+            getLogger().info("IO Exception ocurred", e);
+            // } catch (CryptographyException ce) {
+            // getLogger().info(ce);
+            // ce.printStackTrace();
         }
         return document;
     }

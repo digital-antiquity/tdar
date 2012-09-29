@@ -2,6 +2,7 @@ package org.tdar.core.bean.resource;
 
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
@@ -10,16 +11,14 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Field;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
-import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
+import org.tdar.core.configuration.JSONTransient;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -40,6 +39,9 @@ public class ResourceAnnotation extends Persistable.Base implements HasResource<
 
     private static final long serialVersionUID = 8517883471101372051L;
 
+    @Transient
+    private final static String[] JSON_PROPERTIES = { "id", "value", "resourceAnnotationKey" };
+
     public ResourceAnnotation() {
     }
 
@@ -51,7 +53,7 @@ public class ResourceAnnotation extends Persistable.Base implements HasResource<
     @ManyToOne(optional = false)
     private Resource resource;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, cascade={CascadeType.DETACH, CascadeType.MERGE})
     // @IndexedEmbedded
     private ResourceAnnotationKey resourceAnnotationKey;
 
@@ -83,6 +85,8 @@ public class ResourceAnnotation extends Persistable.Base implements HasResource<
     }
 
     @Transient
+    @JSONTransient
+    @XmlTransient
     public String getFormattedValue() {
         ResourceAnnotationDataType annotationDataType = resourceAnnotationKey.getAnnotationDataType();
         if (annotationDataType.isFormatString()) {
@@ -138,6 +142,12 @@ public class ResourceAnnotation extends Persistable.Base implements HasResource<
     @Override
     public boolean isValidForController() {
         return true;
+    }
+
+
+    @Override
+    protected String[] getIncludedJsonProperties() {
+        return getIncludedJsonProperties();
     }
 
 }

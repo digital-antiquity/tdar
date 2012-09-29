@@ -10,14 +10,14 @@ import java.util.Map;
 import org.hibernate.Query;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.bean.util.Statistic;
-import org.tdar.core.bean.util.Statistic.StatisticType;
+import org.tdar.core.bean.statistics.AggregateStatistic;
+import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 
 @Component
-public class StatisticDao extends Dao.HibernateBase<Statistic> {
+public class StatisticDao extends Dao.HibernateBase<AggregateStatistic> {
 
     public StatisticDao() {
-        super(Statistic.class);
+        super(AggregateStatistic.class);
     }
 
     @SuppressWarnings("unchecked")
@@ -27,7 +27,7 @@ public class StatisticDao extends Dao.HibernateBase<Statistic> {
         query.setDate("toDate", toDate);
         query.setParameterList("statTypes", types);
         Map<Date, Map<StatisticType,Long>> toReturn = new HashMap<Date, Map<StatisticType,Long>>();
-        for (Statistic result : (List<Statistic>) query.list()) {
+        for (AggregateStatistic result : (List<AggregateStatistic>) query.list()) {
             Date date = result.getRecordedDate();
             if (!toReturn.containsKey(date)) {
                 toReturn.put(date, new HashMap<StatisticType, Long>());
@@ -56,6 +56,7 @@ public class StatisticDao extends Dao.HibernateBase<Statistic> {
         return toReturn;
     }
 
+    @SuppressWarnings("unchecked")
     public Map<String, List<Number>> getFileAverageStats() {
         Query query = getCurrentSession().getNamedQuery(QUERY_FILE_STATS);
         Map<String, List<Number>> toReturn = new HashMap<String, List<Number>>();

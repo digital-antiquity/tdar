@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFDataFormatter;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -19,10 +20,11 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.dataTable.DataTable;
-import org.tdar.core.bean.resource.dataTable.DataTableColumn;
-import org.tdar.core.bean.resource.dataTable.DataTableColumnType;
+import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.excel.SheetEvaluator;
 import org.tdar.db.conversion.ConversionStatisticsManager;
 import org.tdar.db.model.abstracts.TargetDatabase;
 
@@ -37,7 +39,8 @@ import org.tdar.db.model.abstracts.TargetDatabase;
  */
 public class ExcelConverter extends DatasetConverter.Base {
 
-    private static final String ERROR_CORRUPT_FILE_TRY_RESAVING = "tDAR cannot read some rows in this workbook, possibly due to a corrupt file. This issue can often be resolved by simply opening the file using in Microsoft Excel and then re-saving the document.";
+    private static final String DEFAULT_SHEET_NAME = "Sheet1";
+    private static final String ERROR_CORRUPT_FILE_TRY_RESAVING = "Cannot read some rows in this workbook, possibly due to a corrupt file. This issue can often be resolved by simply opening the file using in Microsoft Excel and then re-saving the document.";
     private static final String ERROR_WRONG_EXCEL_FORMAT = "We could not open the Excel file you supplied.  Please try re-saving it in Excel as an Excel 97-2003 Workbook or Excel 2007 Workbook and upload it again.  If this problem persists, please contact us with a bug report.";
     private static final String POI_ERROR_MISSING_ROWS = "Unexpected missing row when some rows already present";
     private static final String DB_PREFIX = "e";
@@ -48,13 +51,13 @@ public class ExcelConverter extends DatasetConverter.Base {
         return DB_PREFIX;
     }
 
-
-    public ExcelConverter() {}
+    public ExcelConverter() {
+    }
 
     public ExcelConverter(InformationResourceFileVersion version, TargetDatabase targetDatabase) {
         setTargetDatabase(targetDatabase);
         this.setInformationResourceFileVersion(version);
-
+        this.setFilename(version.getFilename());
     }
 
     protected void openInputDatabase()
@@ -83,8 +86,8 @@ public class ExcelConverter extends DatasetConverter.Base {
                     ERROR_WRONG_EXCEL_FORMAT,
                     exception);
         } catch (RuntimeException rex) {
-           //if this is a "missing rows" issue, the user might be able to work around it by resaving the excel spreadsheet;
-            if(rex.getMessage().equals(POI_ERROR_MISSING_ROWS)) {
+            // if this is a "missing rows" issue, the user might be able to work around it by resaving the excel spreadsheet;
+            if (rex.getMessage().equals(POI_ERROR_MISSING_ROWS)) {
                 throw new TdarRecoverableRuntimeException(ERROR_CORRUPT_FILE_TRY_RESAVING);
             } else {
                 throw rex;
@@ -103,7 +106,8 @@ public class ExcelConverter extends DatasetConverter.Base {
         int numberOfSheets = workbook.getNumberOfSheets();
 
         List<Exception> exceptions = new ArrayList<Exception>();
-        for (int sheetIndex = 0; sheetIndex < numberOfSheets; ++sheetIndex) {
+        int numberOfActualSheets = 0;
+        for (int sheetIndex = numberOfSheets -1; sheetIndex >= 0; sheetIndex--) {
             // skip empty sheets
             Sheet currentSheet = workbook.getSheetAt(sheetIndex);
             String sheetName = workbook.getSheetName(sheetIndex);
@@ -114,7 +118,11 @@ public class ExcelConverter extends DatasetConverter.Base {
                         currentSheet.getPhysicalNumberOfRows()));
                 continue;
             }
+            numberOfActualSheets++;
             try {
+                if (numberOfActualSheets == 1 && sheetName.equals(DEFAULT_SHEET_NAME)) {
+                    sheetName = FilenameUtils.getBaseName(informationResourceFileVersion.getFile().getName());
+                }
                 processSheet(currentSheet, sheetName);
             } catch (Exception e) {
                 exceptions.add(e);
@@ -164,16 +172,13 @@ public class ExcelConverter extends DatasetConverter.Base {
         logger.info("processing Worksheet:" + sheetName);
         // extract schema from the current sheet.
         // assume first row contains column names
-        Row columnNamesRow = currentSheet.getRow(currentSheet.getFirstRowNum());
+
+        SheetEvaluator sheetEvalator = new SheetEvaluator();
+        sheetEvalator.evaluateBeginning(currentSheet, 25);
+
+        Row columnNamesRow = currentSheet.getRow(sheetEvalator.getFirstNonHeaderRow());
         generateDataTableColumns(columnNamesRow, dataTable);
-        if (dataTable.getDataTableColumns() == null || dataTable.getDataTableColumns().isEmpty()) {
-            try {
-                columnNamesRow = currentSheet.getRow(currentSheet.getFirstRowNum() + 1);
-                generateDataTableColumns(columnNamesRow, dataTable);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+
         if (dataTable.getDataTableColumns() == null || dataTable.getDataTableColumns().isEmpty()) {
             logger.info(sheetName + " appears to be empty or have non-tabular data, skipping data table");
             dataTables.remove(dataTable);
@@ -190,31 +195,21 @@ public class ExcelConverter extends DatasetConverter.Base {
 
         // insert data into the table.
 
-        int startRow = currentSheet.getFirstRowNum() + 1;
+        int startRow = sheetEvalator.getFirstNonHeaderRow() + 1;
         // the last row is the size of the column names list instead of
         // currentSheet.getLastRowNum()
         // we ignore data that doesn't have a column heading).
         int endRow = currentSheet.getLastRowNum();
         // we also assume that no blanks exist between any consecutive
         // columns.
-        FormulaEvaluator evaluator = currentSheet.getWorkbook().getCreationHelper().createFormulaEvaluator();
 
         for (int rowIndex = startRow; rowIndex <= endRow; ++rowIndex) {
             Row currentRow = currentSheet.getRow(rowIndex);
             if (currentRow == null)
                 continue;
 
-            if (columnNamesRow.getLastCellNum() < currentRow.getLastCellNum()) {
-                for (int i=columnNamesRow.getLastCellNum(); i<= currentRow.getLastCellNum();i++) {
-                    String value = formatter.formatCellValue(currentRow.getCell(i), evaluator);
-                    if (!StringUtils.isEmpty(value)) {
-                        throw new TdarRecoverableRuntimeException("row #" + rowIndex + " has more columns  (" + currentRow.getLastCellNum()
-                                + ") than this sheet has column names (" + columnNamesRow.getLastCellNum()
-                                + ") - " + currentSheet.getSheetName());
-                    }
-                }
+            sheetEvalator.evaluateForBlankCells(currentRow);
 
-            }
             Map<DataTableColumn, String> valueColumnMap = new HashMap<DataTableColumn, String>();
             for (int columnIndex = startColumnIndex; columnIndex < endColumnIndex; ++columnIndex) {
                 Cell currentCell = currentRow.getCell(columnIndex);
@@ -224,7 +219,7 @@ public class ExcelConverter extends DatasetConverter.Base {
                     // in order to avoid issues with parsing numeric fields.
                     // Otherwise currentCell.getNumericCellValue()
                     // will return a double like 3.0 instead of the number 3
-                    String cellValue = formatter.formatCellValue(currentCell, evaluator);
+                    String cellValue = sheetEvalator.getCellValueAsString(currentCell);
                     if (StringUtils.isEmpty(cellValue)) {
                         cellValue = null;
                     }

@@ -5,7 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -23,23 +23,19 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.tdar.core.bean.PersonalFilestoreTicket;
-import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
-import org.tdar.core.bean.resource.Document;
-import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
-import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.SensoryData;
-import org.tdar.core.bean.resource.dataTable.DataTable;
-import org.tdar.core.bean.resource.dataTable.DataTableColumn;
+import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.PersonalFilestoreService;
-import org.tdar.filestore.personalFilestore.PersonalFilestoreFile;
+import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.struts.data.IntegrationColumn;
 import org.tdar.struts.data.IntegrationColumn.ColumnType;
 import org.tdar.struts.data.IntegrationDataResult;
-import org.tdar.struts.data.PartitionedResourceResult;
 import org.tdar.utils.Pair;
 
 /**
@@ -59,7 +55,6 @@ public class WorkspaceController extends AuthenticationAware.Base {
     private static final long serialVersionUID = -3538370664425794045L;
 
     private List<Resource> bookmarkedResources;
-    private PartitionedResourceResult partitionedBookmarkedResources;
     private List<IntegrationColumn> integrationColumns;
     private List<Long> tableIds;
     private List<DataTable> selectedDataTables;
@@ -71,6 +66,7 @@ public class WorkspaceController extends AuthenticationAware.Base {
     private PersonalFilestoreService filestoreService;
     private List<IntegrationDataResult> integrationDataResults = new ArrayList<IntegrationDataResult>();
     private String integrationDataResultsFilename;
+    private long integrationDataResultsContentLength;
     private transient InputStream integrationDataResultsInputStream;
 
     private Map<List<OntologyNode>, Map<DataTable, Integer>> pivotData;
@@ -102,6 +98,11 @@ public class WorkspaceController extends AuthenticationAware.Base {
         return SUCCESS;
     }
 
+    // TODO: remove feature toggle when feature complete
+    public boolean getLeftJoinDataIntegrationFeatureEnabled() {
+        return TdarConfiguration.getInstance().getLeftJoinDataIntegrationFeatureEnabled();
+    }
+
     /*
      * figure out which data table columns were selected in the previous page as the integration condition, and then which columns were selected as display
      * attributes selectedDataTableColumnIds etc. should have integration_condition and display_attribute parameters each string in integration_condition is of
@@ -115,12 +116,6 @@ public class WorkspaceController extends AuthenticationAware.Base {
     public String filterDataValues() {
 
         try {
-            // getLogger().debug("processing " + integrationColumnIds + " column ids.");
-            // if (CollectionUtils.isEmpty(integrationColumnIds)) {
-            // getLogger().warn("returning to select columns, no integration conditions supplied.");
-            // addActionError("returning to select columns, no integration conditions supplied.");
-            // return INPUT;
-            // }
             // each column could have its own distinct ontology in the future. at the moment we assume that
             // each pair of columns has a shared common ontology
             logger.debug("integration columns: {}", getIntegrationColumns());
@@ -130,15 +125,8 @@ public class WorkspaceController extends AuthenticationAware.Base {
                     continue;
                 }
 
-                // OntologyDataFilter dataFilter = new OntologyDataFilter();
-                logger.info("total columns : {}", integrationColumn.getColumns());
-                for (DataTableColumn column : integrationColumn.getColumns()) {
-                    if (column != null && column.getId() != null && column.getId() > 0) {
-                        logger.info("dehydrate: {}", column);
-                    }
-                }
                 // rehydrate all of the resources being passed in, we just had empty beans with ids
-                List<DataTableColumn> hydrated = getGenericService().rehydrateSparseIdBeans(integrationColumn.getColumns(), DataTableColumn.class);
+                List<DataTableColumn> hydrated = getGenericService().loadFromSparseEntities(integrationColumn.getColumns(), DataTableColumn.class);
                 integrationColumn.setColumns(hydrated);
                 logger.info("hydrated columns {}", hydrated);
                 Ontology defaultOntology = null;
@@ -146,18 +134,18 @@ public class WorkspaceController extends AuthenticationAware.Base {
                 // for each DataTableColumn, grab the shared ontology if it exists; setup mappings
                 for (DataTableColumn column : hydrated) {
                     logger.info("{} ({})", column, column.getDefaultOntology());
+                    logger.info("{} ({})", column, column.getDefaultCodingSheet());
                     defaultOntology = column.getDefaultOntology();
                     if (defaultOntology != null) {
                         getLogger().debug("default ontology: {}", defaultOntology.getTitle());
                         integrationColumn.setSharedOntology(defaultOntology);
                     }
-                    List<String> distinctValues = getDataTableService().findAllDistinctValues(column);
-                    getLogger().debug("distinct values for column: " + distinctValues);
-                    integrationColumn.put(column, distinctValues);
+
+                    getDataIntegrationService().updateMappedCodingRules(column);
                 }
-                // generate distinct value maps in integration data list
             }
-            logger.debug("intermediate: {}", getDataIntegrationService().serializeIntegrationContext(getIntegrationColumns(), getGenericService().merge(getAuthenticatedUser())));
+            logger.trace("intermediate: {}",
+                    getDataIntegrationService().serializeIntegrationContext(getIntegrationColumns(), getGenericService().merge(getAuthenticatedUser())));
         } catch (Exception e) {
             addActionErrorWithException(e.getMessage(), e);
             return INPUT;
@@ -174,7 +162,8 @@ public class WorkspaceController extends AuthenticationAware.Base {
         getLogger().trace("XXX: DISPLAYING FILTERED RESULTS :XXX");
         String integrationContextXml = "";
         try {
-            integrationContextXml = getDataIntegrationService().serializeIntegrationContext(getIntegrationColumns(), getGenericService().merge(getAuthenticatedUser()));
+            integrationContextXml = getDataIntegrationService().serializeIntegrationContext(getIntegrationColumns(),
+                    getGenericService().merge(getAuthenticatedUser()));
             logResourceModification(null, "display filtered results (payload: tableToDisplayColumns)", integrationContextXml);
         } catch (Exception e) {
             logger.error("could not serialize to XML", e);
@@ -192,8 +181,8 @@ public class WorkspaceController extends AuthenticationAware.Base {
             // return INPUT;
             // }
             //
-            Pair<List<IntegrationDataResult>, Map<List<OntologyNode>, Map<DataTable, Integer>>> generatedIntegrationData = getDataIntegrationService()
-                    .generateIntegrationData(getIntegrationColumns(), getSelectedDataTables());
+            Pair<List<IntegrationDataResult>, Map<List<OntologyNode>, Map<DataTable, Integer>>> generatedIntegrationData = 
+                    getDataIntegrationService().generateIntegrationData(getIntegrationColumns(), getSelectedDataTables());
 
             integrationDataResults = generatedIntegrationData.getFirst();
             setPivotData(generatedIntegrationData.getSecond());
@@ -211,8 +200,6 @@ public class WorkspaceController extends AuthenticationAware.Base {
         return SUCCESS;
     }
 
-    private long integrationDataResultsContentLength;
-
     @Action(value = "download", results = {
             @Result(name = SUCCESS, type = "stream",
                     params = {
@@ -227,14 +214,14 @@ public class WorkspaceController extends AuthenticationAware.Base {
         // create temporary file
         try {
             List<PersonalFilestoreFile> files = filestoreService.retrieveAllPersonalFilestoreFiles(getTicketId());
-            for(PersonalFilestoreFile target : files ){
-            	if(target.getFile().getName().endsWith(".xls")){
-            		integrationDataResultsInputStream = new FileInputStream(target.getFile());
+            for (PersonalFilestoreFile target : files) {
+                if (target.getFile().getName().endsWith(".xls")) {
+                    integrationDataResultsInputStream = new FileInputStream(target.getFile());
                     integrationDataResultsContentLength = target.getFile().length();
                     integrationDataResultsFilename = target.getFile().getName();
-            	}
+                }
             }
-            
+
         } catch (IOException exception) {
             addActionErrorWithException("Unable to access file.", exception);
         }
@@ -244,48 +231,20 @@ public class WorkspaceController extends AuthenticationAware.Base {
 
     public List<Resource> getBookmarkedResources() {
         if (bookmarkedResources == null) {
-            bookmarkedResources = getBookmarkedResourceService().findResourcesByPerson(getAuthenticatedUser());
+            bookmarkedResources = getBookmarkedResourceService().findResourcesByPerson(getAuthenticatedUser(), Arrays.asList(Status.ACTIVE, Status.DRAFT));
+        }
+
+        for (Resource res : bookmarkedResources) {
+            getAuthenticationAndAuthorizationService().applyTransientViewableFlag(res, getAuthenticatedUser());
         }
         return bookmarkedResources;
     }
 
-    public PartitionedResourceResult getPartitionedBookmarkedResources() {
-        if (partitionedBookmarkedResources == null) {
-            partitionedBookmarkedResources = new PartitionedResourceResult(getBookmarkedResources());
-        }
-        return partitionedBookmarkedResources;
-    }
-
-    public List<Document> getBookmarkedDocuments() {
-        return getPartitionedBookmarkedResources().getResourcesOfType(Document.class);
-    }
-
-    public List<CodingSheet> getBookmarkedCodingSheets() {
-        return getPartitionedBookmarkedResources().getResourcesOfType(CodingSheet.class);
-    }
-
-    public List<SensoryData> getBookmarkedSensoryData() {
-        return getPartitionedBookmarkedResources().getResourcesOfType(SensoryData.class);
-    }
-
-    public List<Project> getBookmarkedProjects() {
-        return getPartitionedBookmarkedResources().getResourcesOfType(Project.class);
-    }
-
-    public List<Image> getBookmarkedImages() {
-        return getPartitionedBookmarkedResources().getResourcesOfType(Image.class);
-    }
-
-    public List<Ontology> getBookmarkedOntologies() {
-        return getPartitionedBookmarkedResources().getResourcesOfType(Ontology.class);
-    }
-
     public List<Dataset> getBookmarkedDatasets() {
         List<Dataset> datasets = new ArrayList<Dataset>();
-        for (Dataset dataset : getPartitionedBookmarkedResources().getResourcesOfType(Dataset.class)) {
-            if (getEntityService().canViewConfidentialInformation(getAuthenticatedUser(), dataset)) {
-                datasets.add(dataset);
-            } else if (!dataset.hasConfidentialFiles()) {
+        for (Resource resource : getBookmarkedResources()) {
+            if (resource instanceof Dataset && resource.isActive()) {
+                Dataset dataset = (Dataset) resource;
                 datasets.add(dataset);
             }
         }
@@ -310,7 +269,7 @@ public class WorkspaceController extends AuthenticationAware.Base {
 
     public List<DataTable> getSelectedDataTables() {
         if (selectedDataTables == null) {
-            selectedDataTables = getDataTableService().findAllFromIdList(tableIds);
+            selectedDataTables = getDataTableService().findAll(tableIds);
         }
         return selectedDataTables;
     }
@@ -331,53 +290,8 @@ public class WorkspaceController extends AuthenticationAware.Base {
         return integrationDataResultsContentLength;
     }
 
-    private HashMap<Ontology, List<DataTableColumn>> dataTableAutoMap = new HashMap<Ontology, List<DataTableColumn>>();
-
     public List<List<DataTableColumn>> getDataTableColumnIntegrationSuggestions() {
-
-        // iterate through all of the columns and get a map of the ones associated
-        // with any ontology.
-
-        for (DataTable table : getSelectedDataTables()) {
-            for (DataTableColumn column : table.getDataTableColumns()) {
-                if (column.getDefaultOntology() != null) {
-                    if (!dataTableAutoMap.containsKey(column.getDefaultOntology())) {
-                        dataTableAutoMap.put(column.getDefaultOntology(), new ArrayList<DataTableColumn>());
-                    }
-                    dataTableAutoMap.get(column.getDefaultOntology()).add(column);
-                }
-            }
-        }
-
-        // okay now we have a map of the data table columns,
-        List<List<DataTableColumn>> columnAutoList = new ArrayList<List<DataTableColumn>>();
-        for (Ontology key : dataTableAutoMap.keySet()) {
-            ArrayList<Long> seen = new ArrayList<Long>();
-            ArrayList<Long> seen2 = new ArrayList<Long>();
-            List<DataTableColumn> columnList = new ArrayList<DataTableColumn>();
-            List<DataTableColumn> columnList2 = new ArrayList<DataTableColumn>();
-            // go through the hashMap and try and pair out by set of rules
-            // assuming that there is one column per table at a time
-            // and there might be a case where there are more than one
-            for (DataTableColumn column : dataTableAutoMap.get(key)) {
-                if (!seen.contains(column.getDataTable().getId())) {
-                    columnList.add(column);
-                    seen.add(column.getDataTable().getId());
-                } else if (!seen2.contains(column.getDataTable().getId())) {
-                    columnList2.add(column);
-                    seen2.add(column.getDataTable().getId());
-                } // give up
-            }
-
-            // might want to tune this to some logic like:
-            // if just one table, then anything with an ontology
-            // if more than one, just show lists with at least two ontologies
-            if (columnList.size() > 0)
-                columnAutoList.add(columnList);
-            if (columnList2.size() > 0)
-                columnAutoList.add(columnList2);
-        }
-        return columnAutoList;
+        return getDataIntegrationService().getIntegrationColumnSuggestions(getSelectedDataTables());
     }
 
     /**

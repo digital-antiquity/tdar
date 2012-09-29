@@ -1,5 +1,4 @@
 <head>
-<link rel="stylesheet" href="/includes/jquery-fileupload-3.8.2/jquery.fileupload-ui.css">
 </head>
 
 <h2>New School Way - using jquery file upload</h2>
@@ -23,8 +22,6 @@
     <input type="hidden" name="ticketId" id="retrievalTicketId" value="" />
     <@s.submit value="list my files" />
 </@s.form>
-<script src="/includes/jquery-fileupload-3.8.1/jquery.fileupload.js"></script>
-<script src="/includes/jquery-fileupload-3.8.1/jquery.fileupload-ui.js"></script>
 <script>
 /*global $ */
 $(function () {

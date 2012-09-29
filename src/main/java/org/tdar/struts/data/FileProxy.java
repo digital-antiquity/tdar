@@ -1,20 +1,19 @@
 package org.tdar.struts.data;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
+import org.tdar.core.bean.resource.VersionType;
 
 /**
  * $Id$
@@ -31,7 +30,7 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy> {
     private FileAction action = FileAction.NONE;
     private Long fileId = -1L;
     private Long originalFileVersionId = -1L;
-    private InputStream inputStream;
+    private File file;
     private Long size;
     private String filename = "";
     private VersionType versionType = VersionType.UPLOADED;
@@ -59,13 +58,13 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy> {
         }
     }
 
-    public FileProxy(String filename, InputStream inputStream, VersionType versionType) {
-        this(filename, inputStream, versionType, FileAction.ADD);
+    public FileProxy(String filename, File file, VersionType versionType) {
+        this(filename, file, versionType, FileAction.ADD);
     }
 
-    public FileProxy(String filename, InputStream inputStream, VersionType versionType, FileAction action) {
+    public FileProxy(String filename, File file, VersionType versionType, FileAction action) {
         this.filename = filename;
-        this.inputStream = inputStream;
+        this.file = file;
         this.versionType = versionType;
         this.action = action;
 
@@ -85,8 +84,8 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy> {
      * @param version
      */
     public FileProxy(InformationResourceFileVersion version) throws IOException {
-    	this(version.getFilename(), new FileInputStream(version.getFile()), VersionType.UPLOADED, FileAction.ADD);
-    	setFileId(version.getInformationResourceFileId());
+        this(version.getFilename(), version.getFile(), VersionType.UPLOADED, FileAction.ADD);
+        setFileId(version.getInformationResourceFileId());
     }
 
     public FileAction getAction() {
@@ -116,7 +115,7 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy> {
 
     public void setFilename(String filename) {
         // strips out quotes
-//        this.filename = filename.replaceAll("\"", "");
+        // this.filename = filename.replaceAll("\"", "");
         this.filename = filename;
     }
 
@@ -139,20 +138,6 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy> {
         return additionalVersions;
     }
 
-    /**
-     * Returns the InputStream representation of this FileProxy. Currently, this could be from the uploaded file or
-     * generated from text input in the case of CodingSheetS and OntologyS.
-     * 
-     * @return an InputStream representing the file contents of this FileProxy.
-     */
-    public InputStream getInputStream() {
-        return inputStream;
-    }
-
-    public void setInputStream(InputStream inputStream) {
-        this.inputStream = inputStream;
-    }
-
     public VersionType getVersionType() {
         return versionType;
     }
@@ -167,7 +152,8 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy> {
     }
 
     public String toString() {
-        return String.format("%s %s (confidential: %s, size: %d, fileId: %d, InputStream: %s, sequence number: %d)", action, filename, confidential, size, fileId, inputStream, sequenceNumber);
+        return String.format("%s %s (confidential: %s, size: %d, fileId: %d, InputStream: %s, sequence number: %d)", action, filename, confidential, size,
+                fileId, file, sequenceNumber);
     }
 
     public boolean isConfidential() {
@@ -193,6 +179,26 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy> {
     @Override
     public int compareTo(FileProxy other) {
         return sequenceNumber.compareTo(other.sequenceNumber);
+    }
+
+    /**
+     * @return the file
+     */
+    public File getFile() {
+        return file;
+    }
+
+    /**
+     * @param file the file to set
+     */
+    public void setFile(File file) {
+        this.file = file;
+    }
+
+    public static File createTempFileFromString(String fileTextInput) throws IOException {
+        File tempFile = File.createTempFile("textInput", ".txt");
+        FileUtils.writeStringToFile(tempFile, fileTextInput);
+        return tempFile;
     }
 
 }

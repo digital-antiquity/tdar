@@ -6,9 +6,6 @@
  */
 package org.tdar.utils.sensorydata;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.apache.commons.lang.StringUtils.isNotBlank;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -28,7 +25,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.resource.InformationResource;
@@ -41,6 +37,8 @@ import org.tdar.utils.sensorydata.enums.MeshField;
 import org.tdar.utils.sensorydata.enums.ProjectField;
 import org.tdar.utils.sensorydata.enums.RegistrationField;
 import org.tdar.utils.sensorydata.enums.ScanField;
+
+import static org.apache.commons.lang.StringUtils.*;
 
 public class AdsTemplateProcessor {
     

@@ -11,7 +11,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.tdar.core.bean.entity.Person;
-import org.tdar.filestore.personalFilestore.PersonalFileType;
+import org.tdar.filestore.personal.PersonalFileType;
 
 /**
  * $Id$

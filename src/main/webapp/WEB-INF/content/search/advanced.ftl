@@ -1,272 +1,393 @@
 <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
-<#import "/WEB-INF/macros/resource/common.ftl" as common> 
-<#macro selectYearType yearTypeOption>
-	<#if yearType?? && (yearType == yearTypeOption)>
-		selected="selected"
+<#import "/WEB-INF/macros/resource/common.ftl" as common>
+<#include "/WEB-INF/macros/resource/navigation-macros.ftl">
+
+
+
+<head>
+<title>Search ${siteAcronym}</title>
+<style type="text/css">
+    
+    #searchTemplate {
+        background-color: lightgreen
+    }
+    
+    .searchfor {width:70%}
+    
+    tr.template {display:none}
+    
+    /*FIXME: the difference in the widths of checkboxlabels (and hence the need for these hacks) is because (i think) ie8 has different size 'em' unit */
+    .checkboxtable tr > td {
+		width: 60%;
+	}
+	.ie8-cbt-hack > .checkboxtable tr > td {
+	   width: inherit !important;
+	}
+	.ie8-cbt-hack label {
+	   position: static;
+	}
+	.ie8-cbt-hack table.checkboxtable {
+	   width: 400px !important;
+	}
+	
+	
+	
+
+    td.searchTypeCell {vertical-align:top}
+    /* fdf8e4 */
+    tr.termrow, tr.termrow td {background-color:#ddc;}
+    
+    table label+input{
+        margin-left:11em;
+    }
+    
+
+.addAnother {
+	font-weight:bold;
+	font-size:90%;
+}
+     
+</style>
+
+</head>
+<body>
+<div class="usual">
+<ul id="idtab"> 
+  <li><a href="#resource">Resource</a></li> 
+  <li><a href="#collection">Collection</a></li> 
+</ul> 
+<div id="resource" >
+
+<@s.form action="results" method="GET" id="searchGroups">
+    <div class="glide searchgroup" >
+        <h3>Choose Search Terms</h3>
+<#assign currentIndex = 0 />
+<#if (g?size > 0) >
+ <#list g as group>
+	<#assign currentIndex = currentIndex + 1 />
+	 	
+ 	<@searchGroup group_index group />
+ </#list>
+<#else>
+ 	<@searchGroup 0 "" />
+</#if>
+    </div>
+
+    <div class="glide"  id="searchFilter">
+	<@search.narrowAndSort />
+    </div>
+
+    <div>
+        <div id="error"></div>
+        <@s.submit id="searchButton" value="Search"  /> 
+<!--        <input type='button' value='Reset' id='formResetButton'/> -->
+    </div>
+        
+    </div>
+
+</@s.form>
+    <div id="collection" style="display:none;">
+        <div class="glide">
+        <h3>Search For Collections By Name</h3>
+    	<@s.form action="collections" method="GET" id='searchForm2'>
+    		<@search.queryField freeTextLabel="Collection Name" showLimits=false showAdvancedLink=false />
+    	</@s.form>
+    	</div>
+    	<div id="collection-spacer" style="height:850px"></div>
+    </div>
+    
+</div> 
+</div>
+<script>
+$(document).ready(function(){
+    //switch to the correct tab if coming from collection search
+    var tabindex = 0;
+    if($('#queryField').val() !='') {
+        tabindex = 1;
+    }
+	$("#idtab").idTabs({start:tabindex});
+
+	//other view init stuff;
+    loadTdarMap();
+
+    serializeFormState();
+
+    if ($("#autosave").val() != '') {
+    	$("#searchGroups").html($("#autosave").val());
+    }
+    initAdvancedSearch();
+    loadTdarMap();
+    
+
+});
+</script>
+
+<form name="autosave" style="display:none;visibility:hidden">
+<textarea  id="autosave"></textarea>
+</form>
+
+<table id="template" style="display:none;visibility:hidden">
+        <tr class="basicTemplate termrow">
+            <td class="searchTypeCell">
+                <@searchTypeSelect "{termid}" />
+            </td>
+            <td class="searchfor"> 
+            </td>
+            <td> <@removeRowButton /> </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td class="searchfor">
+    <#list allSearchFieldTypes as fieldType>
+        <@fieldTemplate fieldType=fieldType fieldIndex="{termid}" groupid="{groupid}" />
+    </#list>
+    </td>
+    </tr>
+</table>        
+</body>
+<#macro fieldTemplate fieldType="NONE" fieldIndex=0 groupid=0>
+    <#assign proxy_index="0"/>
+    <#assign prefix="tmpl"/>
+	<#if fieldType?is_hash>
+	    <#if fieldType="TDAR_ID">
+             <div class="term retain  ${fieldType}">
+                <@s.textfield type="text" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}]" cssClass="number" />
+             </div>
+		<#elseif fieldType.simple>
+    	     <div class="term retain  ${fieldType}">
+                <@s.textfield type="text" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}]" cssClass="longfield" />
+   			 </div>
+        <#elseif fieldType="COVERAGE_DATE_RADIOCARBON" || fieldType="COVERAGE_DATE_CALENDAR" >
+    	     <div class="term ${fieldType}">
+	        	<#assign type="CALENDAR_DATE">
+				<#if fieldType !="COVERAGE_DATE_CALENDAR">
+		        	<#assign type="RADIOCARBON_DATE">
+				</#if>
+	            <@s.hidden name="groups[${groupid}].coverageDates[${fieldIndex}].dateType" value="${type}" cssClass="coverageDateType" />
+	
+	            <@s.textfield  watermark="Start Year" cssClass="coverageStartYear" name="groups[${groupid}].coverageDates[${fieldIndex}].startDate" maxlength="10" /> 
+	            <@s.textfield  watermark="End Year" cssClass="coverageEndYear" name="groups[${groupid}].coverageDates[${fieldIndex}].endDate" maxlength="10" />
+			</div>
+		<#elseif fieldType="KEYWORD_INVESTIGATION">        
+	        <div class="term KEYWORD_INVESTIGATION">
+	            <table id="groups[${groupid}].investigationTypeTable[${fieldIndex}]" class="field">
+	            <tbody>
+	                <tr><td>
+	                    <@s.checkboxlist name='groups[${groupid}].investigationTypeIdLists[${fieldIndex}]' list='allInvestigationTypes' listKey='id' listValue='label'  numColumns=2  cssClass="smallIndent" />
+	                </td></tr>
+	            </tbody>
+	            </table>
+	        </div>
+		<#elseif fieldType="KEYWORD_SITE">        
+	        <div class="term KEYWORD_SITE">
+	            <table id="groups[${groupid}].siteTypeKeywordTable[${fieldIndex}]" class="field">
+	            <tbody>
+	                <tr><td><@s.checkboxlist theme="hier" id="myid" name="groups[${groupid}].approvedSiteTypeIdLists[${fieldIndex}]" keywordList="allApprovedSiteTypeKeywords" /></td></tr>
+	            </tbody>
+	            </table>
+	        </div>
+		<#elseif fieldType="KEYWORD_MATERIAL">        
+	        <div class="term KEYWORD_MATERIAL">
+	            <table id="groups[${groupid}].materialTypeTable[${fieldIndex}]" class="field">
+	            <tbody>
+	                <tr><td>
+	                    <@s.checkboxlist name='groups[${groupid}].materialKeywordIdLists[${fieldIndex}]' list='allMaterialKeywords' listKey='id' listValue='label'  numColumns=2  cssClass="smallIndent" />
+	                </td></tr>
+	            </tbody>
+	            </table>
+	        </div>
+		<#elseif fieldType="KEYWORD_CULTURAL">        
+    	    <div class="term KEYWORD_CULTURAL">
+	            <table id="groups[${groupid}].siteTypeKeywordTable[${fieldIndex}]" class="field">
+	            <tbody>
+	                <tr><td><@s.checkboxlist theme="hier" id="myid" name="groups[${groupid}].approvedCultureKeywordIdLists[${fieldIndex}]" keywordList="allApprovedCultureKeywords" /></td></tr>
+	            </tbody>
+	            </table>
+    	    </div>
+        </div>
+        <#elseif fieldType ="RESOURCE_CREATOR_PERSON">
+        <div class="term RESOURCE_CREATOR_PERSON">
+		<!-- FIXME: REPLACE WITH REFERENCE TO EDIT-MACROS -->
+            <span class="creatorPerson "  id="group_${groupid}_row_${fieldIndex}_parent">
+            <div class="tableFormat">
+            <div class="width30percent marginLeft10" >
+                <@s.hidden name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.id" id="group_${groupid}_${fieldIndex}_person_id" onchange="this.valid()"  autocompleteParentElement="#group_${groupid}_row_${fieldIndex}_parent"  />
+                <@s.textfield cssClass="nameAutoComplete" watermark="Last Name"
+                     autocompleteName="lastName" autocompleteIdElement="#group_${groupid}_${fieldIndex}_person_id" autocompleteParentElement="#group_${groupid}_row_${fieldIndex}_parent"
+                    name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.lastName" maxlength="255" /> 
+                <@s.textfield cssClass="nameAutoComplete" watermark="First Name" 
+                     autocompleteName="firstName" autocompleteIdElement="#group_${groupid}_${fieldIndex}_person_id" autocompleteParentElement="#group_${groupid}_row_${fieldIndex}_parent"
+                    name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.firstName" maxlength="255" />
+                <#if authenticated>
+                <@s.textfield cssClass="nameAutoComplete" watermark="Email"
+                     autocompleteName="email" autocompleteIdElement="#group_${groupid}_${fieldIndex}_person_id" autocompleteParentElement="#group_${groupid}_row_${fieldIndex}_parent"
+                    name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.email" maxlength="255"/>
+                <br />
+                </#if>
+            </div>
+            <div class="width60percent marginLeft10">
+                <@s.textfield cssClass="nameAutoComplete" watermark="Institution Name"
+                     autocompleteName="institution" autocompleteIdElement="#group_${groupid}_${fieldIndex}_person_id" autocompleteParentElement="group_${groupid}_row_${fieldIndex}_parent"
+                    name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.institution.name" maxlength="255" />
+                <@s.select name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].personRole" emptyOption=true listValue='label' label="Role" list=relevantPersonRoles  />
+            </div>
+            </div>
+            </span>
+        </div>
+        
+     <#elseif fieldType="RESOURCE_CREATOR_INSTITUTION">
+	<!-- FIXME: REPLACE WITH REFERENCE TO EDIT-MACROS -->
+        <div class="term retain RESOURCE_CREATOR_INSTITUTION">
+            <span class="creatorInstitution" id="group_${groupid}_${fieldIndex}_institution_parent">
+            <div class="tableFormat">
+                <@s.hidden name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].institution.id" id="group_${groupid}_${fieldIndex}_institution_id"/>
+            <div class="width60percent marginLeft10">
+                <@s.textfield cssClass="institutionAutoComplete institution" watermark="Institution Name"
+                     autocompleteName="name" autocompleteIdElement="#group_${groupid}_${fieldIndex}_institution_id" autocompleteParentElement="#group_${groupid}_${fieldIndex}_institution_parent"
+                    name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].institution.name" maxlength="255" />
+                <@s.select name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].institutionRole" emptyOption=true listValue='label' label="Role " list=relevantInstitutionRoles />
+            </div>
+            </div>
+            </span>
+        </div>
+	
+	<!-- FIXME: refactor to not repeat the same block -->
+	<#elseif fieldType = 'DATE_CREATED'>
+        <div class="term retain ${fieldType}">
+            <@s.textfield cssClass="watermarked number" watermark='yyyy' labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].start" label="After"/>
+            <@s.textfield cssClass="watermarked number" watermark='yyyy'labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].end" label ="Before"/>
+        </div>            
+	
+    <#elseif fieldType?starts_with("DATE_")>
+        <div class="term retain ${fieldType}">
+            <@s.textfield cssClass="watermarked datepicker" watermark="m/d/yy" labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].start" label="After"/>
+            <@s.textfield cssClass="watermarked datepicker" watermark="m/d/yy" labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].end" label ="Before"/>
+        </div>            
+    <#elseif fieldType="PROJECT">
+	<!-- FIXME: refactor to not repeat the same block -->
+        <@templateProject fieldIndex groupid />
+    <#elseif fieldType="COLLECTION">
+	<!-- FIXME: refactor to not repeat the same block -->
+        <@templateCollection fieldIndex groupid />
+        
+    </#if>
 	</#if>
 </#macro>
 
-<#macro userAutoCompleteTable namePrefix='user' label="User" registeredUser=true nameFieldsOnly=false>
-<#assign _autocompleteType = 'userAutoComplete' />
-<#if !registeredUser>
-<#assign _autocompleteType='nameAutoComplete'>
-</#if>
 
-<h4>${label}</h4>
-<table id="${namePrefix}SearchTable" class="tableFormat width99percent" >
-<tbody>
-<tr id='${namePrefix}_0_'>
-<td>
-    <div class="width30percent marginLeft10" >
-        <@s.hidden name='${namePrefix}Ids[0]' id="${namePrefix}id_0_" cssClass="" onchange="this.valid()"  />
-        <@s.textfield cssClass="watermarked ${_autocompleteType}" watermark="Last Name"  autocompleteParentElement="#${namePrefix}_0_" autocompleteName="lastName"
-        autocompleteIdElement="#${namePrefix}id_0_"
-            name="${namePrefix}.lastName" maxlength="255"  /> 
-        <@s.textfield cssClass="watermarked ${_autocompleteType}" watermark="First Name" autocompleteParentElement="#${namePrefix}_0_" autocompleteName="firstName"
-         autocompleteIdElement="#${namePrefix}id_0_"   name="${namePrefix}.firstName" maxlength="255"  />
-        <#if !nameFieldsOnly>
-        <@s.textfield cssClass="watermarked ${_autocompleteType}" watermark="Email" autocompleteParentElement="#${namePrefix}_0_" autocompleteName="email"
-           autocompleteIdElement="#${namePrefix}id_0_" name="${namePrefix}.email" maxlength="255"/>
-        <br />
-        </#if>
-    </div>
-    <#if !nameFieldsOnly>
-    <div class="width99percent marginLeft10">
-        <@s.textfield cssClass="watermarked ${_autocompleteType}" watermark="Institution Name" autocompleteParentElement="#${namePrefix}_0_" autocompleteName="institution"
-           autocompleteIdElement="#${namePrefix}id_0_" name="${namePrefix}.institution.name" maxlength="255"  />
-    </div>
-    </#if>
-</td>
-<td>
-<@edit.clearDeleteButton id="readUserRow" />
-</td>
-</tr>
-</tbody>
-</table>
-<script>
-<#if authenticated>
-$(document).ready(function() {
-    delegateCreator("#${namePrefix}SearchTable",${registeredUser?string},false);
-});
-</#if>
-$(window).bind("pageshow", function() {
-  $("#searchButton").removeAttr('disabled');
-});
 
-</script>
+<#macro option value="" label="" init="" disabled="" >
+	<option <#if disabled?has_content>disabled="${disabled}"</#if> value="${value}" <#if (value == init)>selected=selected</#if>>${label}</option>
 </#macro>
 
-<head>
-<title>Advanced Search</title>
-<script type="text/javascript" src="<@s.url value='/includes/advanced-search.js'/>"></script>
-<script type="text/javascript">
-    $(document).ready(function() {
-        //necessary for users that get to this page via the back button
-        $("#searchButton").removeAttr('disabled');
-    });
-
-</script>
-<style type="text/css">
-    h3 {font-weight:bold; color:#333; margin-top:2em}
-</style>
-
-<@edit.resourceJavascript "#searchForm" />
-
-</head>
-
-
-<body>
-
-<@edit.showControllerErrors />
-
-<div class="glide">
-       
+<#macro searchTypeSelect id="0" init="" groupid="0" >
+    <select id="group${id}searchType" name="groups[${groupid}].fieldTypes[${id}]" class="searchType">
+		<#assign groupName = ""/>
+		<#list allSearchFieldTypes as fieldType>
+			<#if !fieldType.hidden>
+				<#if groupName != (fieldType.fieldGroup!"NONE") >
+				<#if groupName != "">
+					</optgroup>
+				</#if>
+				<#assign groupName="${fieldType.fieldGroup}" />
+					<optgroup label="${fieldType.fieldGroup.label}">
+				</#if>
+                <@option value="${fieldType}" label="${fieldType.label}" init="${init}" />
+			</#if>
+		</#list>
+		</optgroup>
+    </select>
+</#macro>
 
 
-    <@s.form id='searchForm' method='GET' action='results'>
-    <p>Find resources in tDAR by providing information in the fields below and clicking the &quot;Search&quot; button. </p>
-    <@search.queryField freeTextLabel="Search all fields" showAdvancedLink=false>
-    <br/>
-      <label for="title_s">Title:</label> <input id="title_s" type="text" name="title" value="${title!}" class="longfield" />
-      <br/>
-      <label for="tdarid">TDAR id:</label><input id="tdarid" type="text" class="number" name="id" value="<@common.safenum id/>" />
-      <br/>
-      <label for="projectList">Project:</label>
-      <select name="projectIds[0]" id="projectList">
-          <option value="" selected='selected'>All Projects</option>
-          <@s.iterator value='projects' status='projectRowStatus' var='project'>
-            <option value="${project.id?c}"><@common.truncate project.title 70 /></option>
-          </@s.iterator>
-      </select>
-      <br/>
-    </@search.queryField>
-    <br/>
-    
-    
-        <div id="divTemporalLimits" tiplabel="Temporal Limits" tooltipcontent="#divTemporalLimitTooltip">
-        	<h3>Temporal Limits</h3>
-        	
-            <@edit.coverageDatesSection false />
-            
-    	</div>
-    
-        <div id="divTemporalLimitTooltip" class="hidden">
-            <div>
-                Limit search results to a date range.
-                <dl>
-                    <dt>Calendar Date</dt>
-                    <dd>Enter a beginning and ending Julian calendar year.  Use negative numbers for BC dates</dd>
-                    <dt>Radiocarbon Date </dt>
-                    <dd>Enter a maximum/minimum radiocarbon age.</dd>
-                </dl>
-            </div>
+
+<#macro searchGroup groupid group_ >
+        <div class="groupingSelectDiv" style="display:none">
+            <label>Grouping</label>
+			<#assign defaultOperator = "AND"/>
+			<#if (group_?is_hash && group_.or ) >
+				<#assign defaultOperator="OR" />
+			</#if>
+			
+            <select name="groups[${groupid}].operator" >
+                <option value="AND" <#if defaultOperator=="AND">selected</#if>>Show results that match ALL the terms below</option>
+                <option value="OR" <#if defaultOperator=="OR">selected</#if>>Show results that match ANY of the terms below</option>
+            </select>
         </div>
-        <br/>   
-    
-    	<h3>Spatial Limits</h3>
-        <@s.textfield name='geographicKeywords[0]' cssClass="longfield" label="Geographic term" labelposition="left" />
-    	<div><#-- placeholder div to make sitemesh parser not pickup div id to replace -->
-    	<div id='large-google-map' style="height:450px;"></div> 	
-    	<input type="hidden" name="minx" id="minx" value="${(minx?c)!}">
-    	<input type="hidden" name="maxx" id="maxx" value="${(maxx?c)!}">
-    	<input type="hidden" name="miny" id="miny" value="${(miny?c)!}">
-    	<input type="hidden" name="maxy" id="maxy" value="${(maxy?c)!}">
-        </div>
-    
-    <h3>Investigation Types</h3>
-    <@s.checkboxlist name='investigationTypeIds' list='allInvestigationTypes' listKey='id' listValue='label' numColumns=2 cssClass="smallIndent" 
-        listTitle="definition" />
+        <br />        
+        <table id="groupTable0" class="grouptable" style="width:100%" callback="setDefaultTerm" data-groupnum="0">
         
-        
-    <h3>Site Information</h3>
-    <div id="divSiteInformation" 
-            tiplabel="About Your Site(s)" 
-            tooltipcontent="Keyword list: Enter site name(s) and select feature types discussed in the document. Use the Other field if needed.">
-        <label>Site Name</label>
-        <table id="siteNameKeywordTable" class="field" addAnother="add another site name">
-        <tbody>
-        <@s.iterator status='rowStatus' value='siteNameKeywords'>
-        <tr id='siteNameKeywordRow_${rowStatus.index}_'>
-        <td>
-        <@s.textfield name='siteNameKeywords[${rowStatus.index}]' cssClass="longfield"/>
-        </td><td>
-        </td>
-        </tr>
-        </@s.iterator>
-        </tbody>
+			<#if group_?is_hash >
+				<#list group_.fieldTypes as fieldType >
+				<#if fieldType??>
+		            <tr id="grouptablerow_0_" class="termrow">
+		                <td class="searchTypeCell"> 
+		                    <@searchTypeSelect id="${fieldType_index}" init="${fieldType}" groupid="${groupid}" />
+		                </td>
+		                <td class="searchfor" > 
+								<@fieldTemplate fieldType=fieldType fieldIndex=fieldType_index groupid=groupid />
+		                </td>
+		                <td> <@removeRowButton /> </td>
+		            </tr>
+		        </#if>
+				</#list>
+			<#else>
+				<@blankRow />
+			</#if>
         </table>
-        
-        <br/>
-        <label>Site Type</label>
-        
-        
-        <table id="siteTypeKeywordTable" class="field">
-        <tbody>
-            <tr><td><@s.checkboxlist theme="hier" name="approvedSiteTypeKeywordIds" keywordList="approvedSiteTypeKeywords" /></td></tr>
-        </tbody>
-        </table>
-        
-        <label>Other</label>
-        <@s.iterator status='rowStatus' value='uncontrolledSiteTypeKeywords'>
-        <@s.textfield name='uncontrolledSiteTypeKeywords[${rowStatus.index}]' cssClass="longfield"/>
-        </@s.iterator>
-    </div>
-     
-        
-        
-    
-    <h3>Material Type(s)</h3>
-    <@s.checkboxlist name='materialKeywordIds' list='allMaterialKeywords' listKey='id' listValue='label' listTitle="definition"
-        numColumns=3 cssClass="smallIndent" />
-    
-    <div 
-        tiplabel="Cultural Terms"
-        tooltipcontent="Keyword list: Select the archaeological &quot;cultures&quot; discussed in the document. Use the Other field if needed.">
-        <h3>Cultural Term(s)</h3>
-        <div id="divCulturalInformation">
-            <label>Culture</label>
-            <table id="cultureKeywordTable" class="field">
-                <tbody>
-                <tr><td><@s.checkboxlist theme="hier" name="approvedCultureKeywordIds" keywordList="approvedCultureKeywords" /></td></tr>
-                </tbody>
-            </table>
-            
-            <br />
-            <label>Other</label>
-            <@s.iterator status='rowStatus' value='uncontrolledCultureKeywords'>
-            <@s.textfield name='uncontrolledCultureKeywords[${rowStatus.index}]' cssClass='longfield' />
-            </@s.iterator>
-        </div>
-    </div>
-    
+        <button type="button" class="addAnother " onclick="addRowFromTemplate('#groupTable0')" >
+            <img src="<@s.url value='/images/add.gif'/>">Add another search term
+        </button>
+</#macro>
 
-    <h3>Temporal Information</h3>
-    <@s.textfield name='temporalKeywords[0]' cssClass="longfield" label="Keyword" labelposition="left" />
-    
-    
-    <h3>General Keywords</h3>
-    <@s.textfield name='otherKeywords[0]' cssClass="longfield" label="Keyword" labelposition="left" />
-    
-    
-    <br/>
-    <div id="divPersonSearch">
-        <h3>Search by Submitter / Author / Contributor</h3>
-        <@userAutoCompleteTable label="Submitter" namePrefix="searchSubmitter"  />
-        <br />
-        <@userAutoCompleteTable label="Author or Contributor" namePrefix="searchContributor" registeredUser=false nameFieldsOnly=!authenticated />
-    </div>
-    
-    <#if editor!false>
-    <div id="divAdminSearchOptions">
-        <h3 tiplabel="Curator Specific"   
-            tooltipcontent="The search options in this section are only available to digital curators and administrators"
-            >Curator-specific Search Options</h3>
-        
-        <h4>Status</h4>
-        <@s.checkboxlist name='includedStatuses' list='allStatuses'  listValue='label' numColumns=4 />
-        
-        <div id="divCuratorDateFilters" tiplabel="Registration/Updated Dates" tooltipcontent="#divCuratorDateFiltersTip">
-        <h4>Registration Date</h4>
-        <@s.textfield cssClass="watermarked datepicker" watermark="m/d/yy" labelposition="left" name="dateRegisteredStart" label="After"/>
-        <@s.textfield cssClass="watermarked datepicker" watermark="m/d/yy" labelposition="left" name="dateRegisteredEnd" label ="Before"/>
+<#macro blankRow groupid=0 fieldType_index=0>
+	            <tr id="grouptablerow_${groupid}_" class="termrow">
+	                <td class="searchTypeCell"> 
+	                    <@searchTypeSelect />
+	                </td>
+	                <td class="searchfor" > 
+	                    <div class="term retain  ALL_FIELDS">
+	                        <input type="text" name="groups[${groupid}].allFields[${fieldType_index}]" class="longfield" />
+	                    </div>
+	                </td>
+	                <td> <@removeRowButton /> </td>
+	            </tr>
+</#macro>
 
-        <h4>Updated Date</h4>    
-        <@s.textfield cssClass="watermarked datepicker" watermark="m/d/yy" labelposition="left" name="dateUpdatedStart" label="After"/>
-        <@s.textfield cssClass="watermarked datepicker" watermark="m/d/yy" labelposition="left" name="dateUpdatedEnd" label="Before"/>
-        </div>
-        <div class="hidden" id="divCuratorDateFiltersTip">
-            <dl>
-                <dt>Date Registered</dt>
-                <dd>This is the date that the user created DAR Resource.  Not to be confused with <em>Date Created</em>, 
-                which is the creation date of the object that the tDAR resource describes</dd>
-                
-                <dt>Date Updated</dt>
-                <dd>The most recent date that a user updated the metadata of the tDAR resource</dd>
-            </dl>
-            
-        </div>
-        
-        
-    </div>
-    </#if>
-    
-    <h3>Sorting Options and Submit</h3>
-    <label for="sortField">Sort By:</label>
-     <@search.sortFields />
-    <br/>
-    <div id="error">
-    </div>
-    <div>
-        <@s.submit id="searchButton" value="Search" /> <input type='button' value='Reset' id='formResetButton' />
-    </div>
-    </@s.form>
-</div>
+<#macro removeRowButton>
+<button class="addAnother minus" type="button" tabindex="-1" onclick="removeRow($(this))">
+    <img src="<@s.url value='/images/minus.gif'/>" class="minus" alt="delete row" />
+</button>
+</#macro>
 
-<div id="sidebar" parse="true">
-    <div id="notice">
-    <h3>Introduction</h3>
-    This is the advanced search page.  Hover over a specific field for more information.
-    </div>
-</div>
+
+<#-- TODO: replace elseif block w/ dynamic macro calls -->
+<#macro dynamic_call macroName fieldIndex="{termid}" groupid="{groupid}">
+    <#local macrocall = .vars[macroName] />
+    <@macrocall fieldIndex groupid />
+</#macro>
+
+<!-- FIXME: refactor to not repeat the same block -->
+<#macro templateProject fieldIndex="{termid}" groupid="{groupid}">
+        <div class="term PROJECT">
+            <@s.hidden name="groups[${groupid}].projects[${fieldIndex}].id" id="projects_${groupid}_${fieldIndex}_id" />
+            <@s.textfield cssClass="longfield projectcombo" name="groups[${groupid}].projects[${fieldIndex}].title" 
+                autocompleteIdElement="#projects_${groupid}_${fieldIndex}_id" />
+            <div class="down-arrow"></div>
+        </div>
+</#macro>
+
+<!-- FIXME: refactor to not repeat the same block -->
+<#macro templateCollection fieldIndex="{termid}" groupid="{groupid}">
+        <div class="term COLLECTION">
+            <@s.hidden name="groups[${groupid}].collections[${fieldIndex}].id" id="collections_${groupid}_${fieldIndex}_id" />
+            <@s.textfield name="groups[${groupid}].collections[${fieldIndex}].name" id="collections_${groupid}_${fieldIndex}_name"  
+                cssClass="longfield collectioncombo" autocompleteIdElement="#collections_${groupid}_${fieldIndex}_id" />
+            <div class="down-arrow"></div>
+        </div>
+</#macro>
+
+
+
 

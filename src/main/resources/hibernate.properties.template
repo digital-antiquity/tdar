@@ -1,28 +1,28 @@
-hibernate.search.default.directory_provider=org.hibernate.search.store.FSDirectoryProvider
 hibernate.search.default.indexBase=indexes
 hibernate.search.analyzer=org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer
 hibernate.generate_statistics=true
+tdar.database.host=localhost:5432
 
 javax.persistence.jdbc.user=tdar
 javax.persistence.jdbc.password=
-javax.persistence.jdbc.url=jdbc:postgresql://localhost/tdarmetadata
+javax.persistence.jdbc.url=jdbc:postgresql://${tdar.database.host}/tdarmetadata
 javax.persistence.jdbc.driver=org.postgresql.Driver
 hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
 
-tdardata.connection.url=jdbc:postgresql://localhost/tdardata
+tdardata.connection.url=jdbc:postgresql://${tdar.database.host}/tdardata
 
 
 tdar.database.maxIdleTimeForConnection=600
 
-tdargisdata.connection.url=jdbc:postgresql_postGIS://localhost/tdargis
+tdargisdata.connection.url=jdbc:postgresql_postGIS://${tdar.database.host}/tdargis
 postgis.driver.class=org.postgis.DriverWrapper
 
 tdarmetadata.minConnections=5
-tdarmetadata.maxConnections=10
+tdarmetadata.maxConnections=50
 
 tdardata.minConnections=5
-tdardata.maxConnections=10
+tdardata.maxConnections=50
 
 tdargis.minConnections=5
-tdargis.maxConnections=10
+tdargis.maxConnections=30
 

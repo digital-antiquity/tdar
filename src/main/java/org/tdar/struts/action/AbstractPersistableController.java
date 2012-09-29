@@ -1,9 +1,14 @@
 package org.tdar.struts.action;
 
+import static org.tdar.core.bean.Persistable.Base.isNullOrTransient;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.struts2.convention.annotation.Action;
@@ -13,14 +18,12 @@ import org.apache.struts2.convention.annotation.Results;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.HasName;
-import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
-import org.tdar.core.bean.resource.Status;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.auth.InternalTdarRights;
@@ -28,8 +31,6 @@ import org.tdar.struts.WriteableSession;
 import org.tdar.struts.action.resource.AbstractResourceController;
 
 import com.opensymphony.xwork2.Preparable;
-
-import static org.tdar.core.bean.Persistable.Base.*;
 
 /**
  * $Id$
@@ -65,6 +66,14 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     private boolean asyncSave = true;
     private List<AuthorizedUser> authorizedUsers;
 
+    public static String formatTime(long millis) {
+        Date dt = new Date(millis);
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
+        //SimpleDateFormat sdf = new SimpleDateFormat("H'h, 'm'm, 's's, 'S'ms'");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC")); //no offset
+        return sdf.format(dt);
+    }
+    
     protected P loadFromId(final Long id) {
         return getGenericService().find(getPersistableClass(), id);
     }
@@ -116,12 +125,12 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
 
     @SkipValidation
     @Action(value = "view",
-        interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
-        results = {
-            @Result(name = SUCCESS, location = "view.ftl"),
-            @Result(name = INPUT, type="httpheader", params={"error", "404"}),
-            @Result(name = "draft", location = "/WEB-INF/content/errors/resource-in-draft.ftl")
-    })
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
+            results = {
+                    @Result(name = SUCCESS, location = "view.ftl"),
+                    @Result(name = INPUT, type = "httpheader", params = { "error", "404" }),
+                    @Result(name = "draft", location = "/WEB-INF/content/errors/resource-in-draft.ftl")
+            })
     public String view() throws TdarActionException {
         String resultName = SUCCESS;
         // ensureValidViewRequest();
@@ -140,47 +149,30 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     }
 
     @SkipValidation
-    @Action(value = "add", results = { @Result(name = SUCCESS, location = "edit.ftl"),
-            @Result(name = INPUT, type = "redirect", location = "edit") })
-    public String add() throws TdarActionException {
-        checkValidRequest(RequestType.CREATE, this, InternalTdarRights.EDIT_ANY_RESOURCE);
-        logAction("CREATING");
-        return SUCCESS;
-    }
-
-    @SkipValidation
     @Action(value = DELETE_CONSTANT, results = { @Result(name = SUCCESS, type = "redirect", location = URLConstants.DASHBOARD),
             @Result(name = CONFIRM, location = "/WEB-INF/content/confirm-delete.ftl") })
     @WriteableSession
     public String delete() throws TdarActionException {
         if (isPostRequest() && DELETE_CONSTANT.equals(getDelete())) {
-        	try {
-        		checkValidRequest(RequestType.DELETE, this, InternalTdarRights.DELETE_RESOURCES);
-        		if (CollectionUtils.isNotEmpty(getDeleteIssues())) {
-        			addActionError("cannot delete item because references still exist");
-        			return CONFIRM;
-        		}
-        		logAction("DELETING");
-        		// FIXME: deleteCustom might as well just return a boolean in this current implementation
-        		// should we return the result name specified by deleteCustom() instead?
-        		if (deleteCustom() != SUCCESS)
-        			return ERROR;
+            try {
+                checkValidRequest(RequestType.DELETE, this, InternalTdarRights.DELETE_RESOURCES);
+                if (CollectionUtils.isNotEmpty(getDeleteIssues())) {
+                    addActionError("cannot delete item because references still exist");
+                    return CONFIRM;
+                }
+                logAction("DELETING");
+                // FIXME: deleteCustom might as well just return a boolean in this current implementation
+                // should we return the result name specified by deleteCustom() instead?
+                if (deleteCustom() != SUCCESS)
+                    return ERROR;
 
-        		delete(persistable);
-        		// FIXME: push this logic to the service layer
-        		if (persistable instanceof HasStatus) {
-        			((HasStatus) persistable).setStatus(Status.DELETED);
-        			getGenericService().saveOrUpdate(persistable);
-        		} else {
-        			getGenericService().delete(persistable);
-        		}
-        	}
-        	catch (TdarActionException exception) {
-        		throw exception;
-        	}
-        	catch (Exception e) {
-        		addActionErrorWithException("could not delete " + getPersistableClass().getSimpleName(), e);
-        	}
+                delete(persistable);
+                getGenericService().delete(persistable);
+            } catch (TdarActionException exception) {
+                throw exception;
+            } catch (Exception e) {
+                addActionErrorWithException("could not delete " + getPersistableClass().getSimpleName(), e);
+            }
             return SUCCESS;
         }
         return CONFIRM;
@@ -206,25 +198,39 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         long currentTimeMillis = System.currentTimeMillis();
         boolean isNew = false;
         try {
-            checkValidRequest(RequestType.SAVE, this, InternalTdarRights.EDIT_ANYTHING);
+            if (isPostRequest()) {
+                checkValidRequest(RequestType.SAVE, this, InternalTdarRights.EDIT_ANYTHING);
 
-            if (isNullOrNew()) {
-                isNew = true;
+                if (isNullOrNew()) {
+                    isNew = true;
+                    if (persistable instanceof Updatable) {
+                        ((Updatable) persistable).markUpdated(getAuthenticatedUser());
+                    }
+                }
+                preSaveCallback();
+                actionReturnStatus = save(persistable);
+                // who cares what the save implementation says. if there's errors return INPUT
+                if (!getActionErrors().isEmpty()) {
+                    logger.debug("Action errors found; Replacing return status of {} with {}", actionReturnStatus, INPUT);
+                    actionReturnStatus = INPUT;
+                } else {
+                    //FIXME: There are some situations in which hibsearch may not have detected that an @Indexed or @IndexedEmbedded getter method has changed. 
+                    //       see  TDAR-2364 for mor info.  This is a kludge where we deliberately modify an indexed member variable to mark it 'dirty' and force an index
+                    if (persistable instanceof Updatable) {
+                        logger.debug("updating updateTime for {}", persistable );
+                        ((Updatable) persistable).markUpdated(getAuthenticatedUser());
+                        getGenericService().saveOrUpdate(persistable);
+                    }
+                }
+            } else {
+                throw new TdarActionException(StatusCode.BAD_REQUEST, "bad request -- expecting post");
             }
-            preSaveCallback();
-            if (persistable instanceof Updatable) {
-                ((Updatable) persistable).markUpdated(getAuthenticatedUser());
-            }
-            actionReturnStatus = save(persistable);
-        }
-        catch (TdarActionException exception) {
-        	throw exception;
-        }
-        catch (Exception exception) {
-        	addActionErrorWithException("Sorry, we were unable to save: " + getPersistable(), exception);
+        } catch (TdarActionException exception) {
+            throw exception;
+        } catch (Exception exception) {
+            addActionErrorWithException("Sorry, we were unable to save: " + getPersistable(), exception);
             return INPUT;
-        }
-        finally {
+        } finally {
             // FIXME: make sure this doesn't cause issues with SessionSecurityInterceptor now handling TdarActionExceptions
             postSaveCleanup();
         }
@@ -233,15 +239,23 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         } catch (TdarRecoverableRuntimeException tex) {
             addActionErrorWithException(tex.getMessage(), tex);
         }
-        currentTimeMillis -= System.currentTimeMillis();
-        Long editTime = System.currentTimeMillis() - getStartTime();
+        long saveTime = System.currentTimeMillis() - currentTimeMillis;
+        long editTime = System.currentTimeMillis() - getStartTime();
         if (getStartTime() == -1L) {
             editTime = -1L;
         }
         if (isNew && getPersistable() != null) {
             logger.debug("Created Id: {}", getPersistable().getId());
         }
-        logger.debug("EDIT TOOK: {} SAVE TOOK: {}", editTime, Math.abs(currentTimeMillis));
+        logger.debug("EDIT TOOK: {} SAVE TOOK: {} (edit:{}  save:{})", new Object[] {editTime, saveTime, formatTime(editTime), formatTime(saveTime)});
+
+        // don't allow SUCCESS response if there are actionErrors, but give the other callbacks leeway in setting their own error message.
+        if (CollectionUtils.isNotEmpty(getActionErrors()) && SUCCESS.equals(actionReturnStatus)) {
+            return INPUT;
+        }
+
+        
+        
         return actionReturnStatus;
     }
 
@@ -281,9 +295,18 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     }
 
     @SkipValidation
+    @Action(value = "add", results = {
+            @Result(name = SUCCESS, location = "edit.ftl")
+    })
+    public String add() throws TdarActionException {
+        checkValidRequest(RequestType.CREATE, this, InternalTdarRights.EDIT_ANY_RESOURCE);
+        logAction("CREATING");
+        return SUCCESS;
+    }
+
+    @SkipValidation
     @Action(value = "edit", results = {
-            @Result(name = SUCCESS, location = "edit.ftl"),
-            @Result(name = INPUT, location = "add", type = "redirect")
+            @Result(name = SUCCESS, location = "edit.ftl")
     })
     public String edit() throws TdarActionException {
         // ensureValidEditRequest();
@@ -293,18 +316,18 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         return loadMetadata();
     }
 
-//    @SuppressWarnings("unused")
-//    private void ensureValidEditRequest() throws TdarActionException {
-//        // first make sure the user is even authenticated
-//        if (!getSessionData().isAuthenticated()) {
-//            abort(StatusCode.OK.withResultName(LOGIN), "Unauthenticated edit request.");
-//        }
-//        if (!isEditable()) {
-//            // we performed an authz check that failed (not a structural issue with the persistable)
-//            abort(StatusCode.UNAUTHORIZED,
-//                    String.format("You do not have permissions to edit %s (id: %s)", getPersistableClass().getSimpleName(), getPersistable().getId()));
-//        }
-//    }
+    // @SuppressWarnings("unused")
+    // private void ensureValidEditRequest() throws TdarActionException {
+    // // first make sure the user is even authenticated
+    // if (!getSessionData().isAuthenticated()) {
+    // abort(StatusCode.OK.withResultName(LOGIN), "Unauthenticated edit request.");
+    // }
+    // if (!isEditable()) {
+    // // we performed an authz check that failed (not a structural issue with the persistable)
+    // abort(StatusCode.UNAUTHORIZED,
+    // String.format("You do not have permissions to edit %s (id: %s)", getPersistableClass().getSimpleName(), getPersistable().getId()));
+    // }
+    // }
 
     protected enum RequestType {
         EDIT(true),
@@ -356,10 +379,10 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
                 abort(StatusCode.OK.withResultName(LOGIN), "could not load item, no user on session");
             }
         }
-        
+
         Persistable persistable = action.getPersistable();
         if (isNullOrTransient(persistable)) {
-        // deal with the case that we have a new or not found resource
+            // deal with the case that we have a new or not found resource
             logger.debug("Dealing with transient persistable {}", persistable);
             switch (userAction) {
                 case CREATE:
@@ -373,7 +396,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
                     if (persistable == null) {
                         // persistable is null, so the lookup failed (aka not found)
                         abort(StatusCode.NOT_FOUND, String.format("Sorry, the page you requested cannot be found"));
-                    } else if (persistable.getId() == -1) {
+                    } else if (Persistable.Base.isNullOrTransient(persistable.getId())) {
                         // id not specified or not a number, so this is an invalid request
                         abort(StatusCode.BAD_REQUEST, String.format(
                                 "Sorry, tDAR does not recognize this type of request on a %s ", persistable.getClass().getSimpleName()));
@@ -416,13 +439,14 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
                 break;
         }
         addActionError("user does not have permissions to perform the requested action");
-        abort(StatusCode.FORBIDDEN.withResultName(GONE), "could not load requested item (insufficient permissions -- may not be able to view deleted resources)");
+        abort(StatusCode.FORBIDDEN.withResultName(GONE),
+                "could not load requested item (insufficient permissions -- may not be able to view deleted resources)");
 
     }
-    
+
     protected void abort(StatusCode statusCode, String errorMessage) throws TdarActionException {
-    	getServletResponse().setStatus(statusCode.getHttpStatusCode());
-    	throw new TdarActionException(statusCode, errorMessage);
+        getServletResponse().setStatus(statusCode.getHttpStatusCode());
+        throw new TdarActionException(statusCode, errorMessage);
     }
 
     /**
@@ -519,7 +543,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         if (isPersistableIdSet()) {
             logger.error("item id should not be set yet -- persistable.id:{}\t controller.id:{}", getPersistable().getId(), getId());
         }
-        if (getId() == null || getId() == -1L) {
+        if (Persistable.Base.isNullOrTransient(getId())) {
             setPersistable(createPersistable());
         } else {
 
@@ -533,7 +557,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     }
 
     protected boolean isPersistableIdSet() {
-        return getPersistable() != null && (getPersistable().getId() != null && getPersistable().getId() != -1L);
+        return !Persistable.Base.isNullOrTransient(getPersistable());
     }
 
     public abstract Class<P> getPersistableClass();
@@ -545,7 +569,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     public abstract String loadMetadata();
 
     protected boolean isNullOrNew() {
-        return getPersistable() == null || getPersistable().getId() == null || getPersistable().getId() == -1L;
+        return !isPersistableIdSet();
     }
 
     /**

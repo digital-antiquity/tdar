@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.tdar.core.bean.JsonModel;
-import org.tdar.core.bean.resource.dataTable.DataTableColumn;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
 
 public class ResultMetadataWrapper extends JsonModel.Base {
 

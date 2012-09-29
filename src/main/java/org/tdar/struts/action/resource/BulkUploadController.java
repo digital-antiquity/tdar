@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.AsyncUpdateReceiver;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.InformationResourceFile;
@@ -26,7 +27,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.BulkUploadService;
 import org.tdar.filestore.FileAnalyzer;
-import org.tdar.filestore.personalFilestore.PersonalFilestore;
+import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.Pair;
 
@@ -85,7 +86,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
     protected String save(Image image) {
         logger.info("saving batches...");
 
-        if (getTicketId() == null || getTicketId() == -1) {
+        if (Persistable.Base.isNullOrTransient(getTicketId())) {
             addActionError("The system has not received any files.");
             return INPUT;
         }
@@ -97,7 +98,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
         logger.info("{} and names {}", getUploadedFiles(), getUploadedFilesFileName());
         if (!CollectionUtils.isEmpty(getUploadedFilesFileName())) {
             PersonalFilestoreTicket ticket = filestoreService.findPersonalFilestoreTicket(getTicketId());
-            PersonalFilestore personalFilestore = filestoreService.getPersonalFilestore(ticket);
+            PersonalFilestore personalFilestore = filestoreService.getPersonalFilestore(getTicketId());
             try {
                 String filename = getUploadedFilesFileName().get(0);
                 excelManifest = personalFilestore.store(ticket, getUploadedFiles().get(0), filename);
@@ -109,6 +110,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
         handleAsyncUploads();
         Collection<FileProxy> fileProxiesToProcess = getFileProxiesToProcess();
 
+        getGenericService().markReadOnly(getPersistable());
         if (isAsync()) {
             logger.info("running asyncronously");
             bulkUploadService.saveAsync(image, getAuthenticatedUser(), getTicketId(), excelManifest, fileProxiesToProcess);
@@ -116,6 +118,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
             logger.info("running inline");
             bulkUploadService.save(image, getAuthenticatedUser(), getTicketId(), excelManifest, fileProxiesToProcess);
         }
+        getGenericService().detachFromSession(getPersistable());
         setPersistable(null);
         return SUCCESS_ASYNC;
     }
@@ -188,7 +191,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
 
     @Override
     public Collection<String> getValidFileExtensions() {
-        return analyzer.getExtensionsForTypes(ResourceType.IMAGE, ResourceType.DOCUMENT);
+        return analyzer.getExtensionsForTypes(ResourceType.IMAGE, ResourceType.DOCUMENT,ResourceType.VIDEO);
     }
 
     @Override

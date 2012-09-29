@@ -2,6 +2,7 @@ package org.tdar.struts.action;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -11,13 +12,16 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.interceptor.ServletRequestAware;
 import org.apache.struts2.interceptor.ServletResponseAware;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -58,7 +62,8 @@ import com.opensymphony.xwork2.ActionSupport;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
  */
-@Configuration
+@Scope("prototype")
+@Controller
 public abstract class TdarActionSupport extends ActionSupport implements ServletRequestAware, ServletResponseAware {
 
     private static final long serialVersionUID = 7084489869489013998L;
@@ -186,35 +191,91 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     }
 
     public String getThemeDir() {
-        return TdarConfiguration.getInstance().getThemeDir();
+        return getTdarConfiguration().getThemeDir();
+    }
+
+    public String getCulturalTermsHelpUrl() {
+        return getTdarConfiguration().getCulturalTermsHelpURL();
+    }
+
+    public String getInvestigationTypesHelpUrl() {
+        return getTdarConfiguration().getInvestigationTypesHelpURL();
+    }
+
+    public String getMaterialTypesHelpUrl() {
+        return getTdarConfiguration().getMaterialTypesHelpURL();
+    }
+
+    public String getSiteTypesHelpUrl() {
+        return getTdarConfiguration().getSiteTypesHelpURL();
+    }
+
+    public String getGoogleMapsApiKey() {
+        return getTdarConfiguration().getGoogleMapsApiKey();
     }
 
     public String getGoogleAnalyticsId() {
-        return TdarConfiguration.getInstance().getGoogleAnalyticsId();
+        return getTdarConfiguration().getGoogleAnalyticsId();
     }
 
     public boolean getPrivacyControlsEnabled() {
-        return TdarConfiguration.getInstance().getPrivacyControlsEnabled();
+        return getTdarConfiguration().getPrivacyControlsEnabled();
+    }
+
+    public boolean isCopyrightMandatory() {
+        return getTdarConfiguration().getCopyrightMandatory();
     }
 
     public String getServerEnvironmentStatus() {
-        return TdarConfiguration.getInstance().getServerEnvironmentStatus();
+        return getTdarConfiguration().getServerEnvironmentStatus();
+    }
+
+    public String getSiteAcronym() {
+        return getTdarConfiguration().getSiteAcroynm();
+    }
+
+    public String getSiteName() {
+        return getTdarConfiguration().getSiteName();
+    }
+
+    public String getCommentUrl() {
+        return getTdarConfiguration().getCommentUrl();
+    }
+
+    public String getBugReportUrl() {
+        return getTdarConfiguration().getBugReportUrl();
+    }
+
+    public String getDocumentationUrl() {
+        return getTdarConfiguration().getDocumentationUrl();
     }
 
     public boolean isProduction() {
-        return TdarConfiguration.getInstance().getServerEnvironmentStatus().equalsIgnoreCase(TdarConfiguration.PRODUCTION);
+        return getTdarConfiguration().getServerEnvironmentStatus().equalsIgnoreCase(TdarConfiguration.PRODUCTION);
     }
 
     public String getHelpUrl() {
-        return TdarConfiguration.getInstance().getHelpUrl();
+        return getTdarConfiguration().getHelpUrl();
     }
 
     public String getAboutUrl() {
-        return TdarConfiguration.getInstance().getAboutUrl();
+        return getTdarConfiguration().getAboutUrl();
     }
 
     public String getCommentsUrl() {
-        return TdarConfiguration.getInstance().getAboutUrl();
+        return getTdarConfiguration().getAboutUrl();
+    }
+
+    public String getGMapDefaultLat() {
+        DecimalFormat latlong = new DecimalFormat("0.00");
+        latlong.setGroupingUsed(false);
+        return latlong.format(getTdarConfiguration().getGmapDefaultLat());
+    }
+
+    public String getGMapDefaultLng() {
+        DecimalFormat latlong = new DecimalFormat("0.00");
+        latlong.setGroupingUsed(false);
+        return latlong.format(getTdarConfiguration().getGmapDefaultLng());
     }
 
     protected void clearAuthenticationToken() {
@@ -312,7 +373,19 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
         getLogger().error("{}: {} -- {}", new Object[] { message, exception, trace });
         if (exception instanceof TdarRecoverableRuntimeException) {
-            super.addActionError(exception.getMessage());
+            int maxDepth = 4;
+            Throwable thrw = exception;
+            StringBuilder sb = new StringBuilder(exception.getMessage());
+
+            while (thrw.getCause() != null && maxDepth > -1) {
+                thrw = thrw.getCause();
+                if (StringUtils.isNotBlank(thrw.getMessage())) {
+                    sb.append(": ").append(thrw.getMessage());
+                }
+                maxDepth--;
+            }
+
+            super.addActionError(sb.toString());
         } else {
             super.addActionError(message);
         }
@@ -362,11 +435,18 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     }
 
     protected final boolean isPostRequest() {
-        return "post".equalsIgnoreCase(servletRequest.getMethod());
+        return "POST".equals(servletRequest.getMethod());
     }
 
     protected final boolean isGetRequest() {
-        return !isPostRequest();
+        return "GET".equals(servletRequest.getMethod());
+    }
+
+    public List<CoverageType> getAllCoverageTypes() {
+        List<CoverageType> coverageTypes = new ArrayList<CoverageType>();
+        coverageTypes.add(CoverageType.CALENDAR_DATE);
+        coverageTypes.add(CoverageType.RADIOCARBON_DATE);
+        return coverageTypes;
     }
 
 }

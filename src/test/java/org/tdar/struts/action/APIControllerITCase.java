@@ -61,19 +61,22 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     @Rollback(true)
     public void testAPIController() throws Exception {
         Resource old = resourceService.find(TEST_ID);
+        old.setDescription(old.getTitle());
         old.getInvestigationTypes().clear();
         old.getInvestigationTypes().add(genericKeywordService.find(InvestigationType.class, 1L));
-        old.setAccessCounter(100l);
+        resourceService.updateTransientAccessCount(old);
+        Long viewCount = old.getTransientAccessCount();
         Date creationDate = old.getDateCreated();
         ResourceNote note = new ResourceNote();
         note.setResource(old);
         note.setNote("test");
         note.setType(ResourceNoteType.GENERAL);
         addAuthorizedUser(old, getUser(), GeneralPermissions.MODIFY_RECORD);
-        
+
         old.getResourceCollections().addAll(getSomeResourceCollections());
 
         CoverageDate cd = new CoverageDate(CoverageType.CALENDAR_DATE, 0, 1000);
+        cd.setResource(old);
         old.getCoverageDates().add(cd);
 
         old.getResourceNotes().add(note);
@@ -95,7 +98,9 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         assertEquals(2, importedRecord.getResourceNotes().size());
 
         assertEquals(1, importedRecord.getInternalResourceCollection().getAuthorizedUsers().size());
-        assertEquals(Long.valueOf(100L), importedRecord.getAccessCounter());
+        resourceService.updateTransientAccessCount(importedRecord);
+        assertEquals(viewCount, importedRecord.getTransientAccessCount());
+
         assertEquals(creationDate, importedRecord.getDateCreated());
         assertEquals(old.getSubmitter(), importedRecord.getSubmitter());
         assertEquals(getUser(), importedRecord.getUpdatedBy());
@@ -110,14 +115,14 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         assertEquals(APIController.SUCCESS, uploadStatus);
         assertEquals(StatusCode.UPDATED.getResultName(), controller.getStatus());
     }
-    
-    //return some public resource collections
+
+    // return some public resource collections
     private List<ResourceCollection> getSomeResourceCollections() throws InstantiationException, IllegalAccessException {
         int count = 5;
         List<ResourceCollection> resourceCollections = new ArrayList<ResourceCollection>();
-        for(int i = 0; i < count; i++) {
-            Document document = createAndSaveNewInformationResource(Document.class, 
-                    createAndSaveNewPerson("someperson" + i + "@mailinator.com" , "someperson"));
+        for (int i = 0; i < count; i++) {
+            Document document = createAndSaveNewInformationResource(Document.class,
+                    createAndSaveNewPerson("someperson" + i + "@mailinator.com", "someperson"));
             ResourceCollection rc = new ResourceCollection(document, getAdminUser());
             rc.setName("test collection " + i);
             rc.setSortBy(SortOption.TITLE);
@@ -133,6 +138,18 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         APIController controller = generateNewInitializedController(APIController.class);
         String document = FileUtils.readFileToString(new File(TestConstants.TEST_XML_DIR + "/documentImport.xml"));
         document = document.replace("<id>" + TEST_ID + "</id>", "");
+        controller.setRecord(document);
+        String uploadStatus = controller.upload();
+        logger.info(controller.getErrorMessage());
+        assertEquals(APIController.SUCCESS, uploadStatus);
+        assertEquals(StatusCode.CREATED.getResultName(), controller.getStatus());
+    }
+
+    @Test
+    @Rollback
+    public void testTrivialImageRecord() throws IOException, ClassNotFoundException {
+        APIController controller = generateNewInitializedController(APIController.class);
+        String document = FileUtils.readFileToString(new File(TestConstants.TEST_XML_DIR + "/trivialImage.xml"));
         controller.setRecord(document);
         String uploadStatus = controller.upload();
         logger.info(controller.getErrorMessage());

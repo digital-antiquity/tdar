@@ -52,6 +52,7 @@ public class PersonControllerSavingITCase extends AbstractAdminControllerITCase 
 
         Assert.assertEquals(PERSON_FIRST_NAME_EXPECTED, controller.getPerson().getFirstName());
         controller.getPerson().setFirstName(PERSON_FIRST_NAME_UPDATED);
+        controller.setServletRequest(getServletPostRequest());
         String result = controller.save();
         Assert.assertFalse("basic user shouldn't be able to save changes to another user's person record", TdarActionSupport.SUCCESS.equals(result));
         setVerifyTransactionCallback(new TransactionCallback<Person>() {
@@ -84,6 +85,7 @@ public class PersonControllerSavingITCase extends AbstractAdminControllerITCase 
         controller.prepare();
         Assert.assertEquals(PERSON_FIRST_NAME_EXPECTED, controller.getPerson().getFirstName());
         controller.getPerson().setFirstName(PERSON_FIRST_NAME_UPDATED);
+        controller.setServletRequest(getServletPostRequest());
         String result = controller.save();
         Assert.assertEquals("admin user should be able to save changes to another user's person record", TdarActionSupport.SUCCESS, result);
         Assert.assertTrue(controller.getActionErrors().isEmpty());

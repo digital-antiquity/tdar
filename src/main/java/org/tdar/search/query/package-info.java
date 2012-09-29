@@ -9,3 +9,4 @@ package org.tdar.search.query;
  
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;
+

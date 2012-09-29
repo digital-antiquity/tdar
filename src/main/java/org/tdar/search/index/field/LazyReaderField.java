@@ -1,5 +1,7 @@
 package org.tdar.search.index.field;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -11,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.AbstractField;
 import org.apache.lucene.document.Field;
@@ -66,13 +69,8 @@ public class LazyReaderField extends AbstractField implements Fieldable {
         }
         SequenceInputStream stream = new SequenceInputStream(Collections.enumeration(streams));
         logger.trace("returning stream reader {}", streams);
-        // try {
-        // return IOUtils.toString(stream);
-        // } catch (IOException e) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // }
-        reader = new InputStreamReader(stream);
+
+        reader = new BufferedReader(new InputStreamReader(stream));
         return reader;
     }
 
@@ -88,7 +86,7 @@ public class LazyReaderField extends AbstractField implements Fieldable {
     protected void finalize() throws Throwable {
         if (reader != null) {
             logger.trace("closing reader");
-            reader.close();
+            IOUtils.closeQuietly(reader);
         }
         super.finalize();
     }

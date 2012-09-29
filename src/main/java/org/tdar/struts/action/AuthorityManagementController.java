@@ -20,6 +20,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.AuthorityManagementService;
 import org.tdar.core.service.external.auth.TdarGroup;
 import org.tdar.struts.RequiresTdarUserGroup;
+import org.tdar.struts.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -107,6 +108,7 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
     
     
     @Action(value="merge-duplicates", results={@Result(name=SUCCESS, location="success.ftl"), @Result(name=INPUT, location="select-authority.ftl")})
+    @WriteableSession
     public String mergeDuplicates() {
         if(authorityId == null) {
             addActionError(ERROR_NO_AUTHORITY_RECORD);

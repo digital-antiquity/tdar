@@ -4,47 +4,39 @@
 <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
 <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
 <@search.initResultPagination/>
+<@search.headerLinks includeRss=false />
 
 <head>
 <title>${resourceCollection.name!"untitled collection"}</title>
 <meta name="lastModifiedDate" content="$Date$"/>
 
-<script type='text/javascript'>
-    $(initializeView);
-</script>
-
 </head>
 <body>
 <@view.toolbar "collection" "view" />
 <#if resourceCollection.visible || viewable>
-<div class="glide">
-    <#if resourceCollection.parent??><p><b>Part of:</b> <a href="${resourceCollection.parent.id?c}"/>${resourceCollection.parent.name!"(n/a)"}</a></p></#if>
-    <p>${resourceCollection.description!"(n/a)"}</p>
-
-<#if (collections?? && collections.size() > 0) >
-<B>Collections Contained in this Collection</B>
-<ul>
-  <#list collections as collection_>
-   <li><a href="<@s.url value="/collection/${collection_.id?c}"/>">${collection_.name}</a></li>
-  </#list>
-</ul>
+<!-- Don't show header if header doesn't exist -->
+<#if resourceCollection.parent?? || resourceCollection.description?? || collections??>
+	<div class="glide">
+	    <#if resourceCollection.parent??><p><b>Part of:</b> <a href="${resourceCollection.parent.id?c}"/>${resourceCollection.parent.name!"(n/a)"}</a></p></#if>
+	    <p>${resourceCollection.description!"(n/a)"}</p>
+	
+	<#if (collections?has_content) >
+	<B>Collections Contained in this Collection</B>
+	<ul>
+	  <#list collections as collection_>
+	   <li><a href="<@s.url value="/collection/${collection_.id?c}"/>">${collection_.name}</a></li>
+	  </#list>
+	</ul>
+	</#if>
+  </div>
 </#if>
 
-</div>
-
-<#if (totalRecords > 0)>
-<div class="glide">
-	<div id="recordTotal">Records ${firstRec} - ${lastRec} of ${totalRecords}
-	</div> 
-	<@search.pagination ""/>
-
-</div>
-</#if>  
-    <#if ( results?? && results.size() > 0 )>
+    <#if ( results?has_content )>
+<@search.basicPagination "Records" />
     
     
 <div class="glide">
-      <@list.listResources results resourceCollection.sortBy editable=editable />
+		<@list.listResources resourcelist=results sortfield=resourceCollection.sortBy />
 </div>
     </#if>
 
@@ -63,5 +55,12 @@
 <#else>
 This collection is not accessible
 </#if>
+<script type='text/javascript'>
+$(document).ready(function(){
+    $(initializeView);
+});
+</script>
+
+
 </body>
 </#escape>

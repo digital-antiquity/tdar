@@ -53,6 +53,7 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         uploadFilesAsync.getSecond().remove(0);
         controller.setFileProxies(uploadFilesAsync.getSecond());
         controller.getFileProxies().get(0).setConfidential(true);
+        controller.setServletRequest(getServletPostRequest());
         String save = controller.save();
         assertEquals(TdarActionSupport.SUCCESS,save);
         assertEquals(fileList.size(), document.getInformationResourceFiles().size());
@@ -67,7 +68,7 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
             }
         }
     }
-
+    
     @Test
     @Rollback
     public void testSameFileName() throws Exception {
@@ -80,7 +81,7 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         document.setDate(1234);
         List<File> fileList = new ArrayList<File>();
         for (String subdir: Arrays.asList("t1", "t2", "t3")) {
-            File file = new File(TestConstants.TEST_DOCUMENT_DIR + subdir, "test.txt");
+            File file = new File(TestConstants.TEST_DOCUMENT_DIR + subdir, "test.pdf");
             assertTrue(file.exists());
             fileList.add(file);
         }
@@ -97,9 +98,7 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
             logger.info("{}", irFile);
         }
     }
-    
-    
-    
+
     @Test
     @Rollback
     public void testReplace() throws Exception {
@@ -118,6 +117,7 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         controller.setTicketId(uploadFilesAsync.getFirst().getId());
         controller.setFileProxies(uploadFilesAsync.getSecond());
         controller.getFileProxies().get(1).setConfidential(true);
+        controller.setServletRequest(getServletPostRequest());
         controller.save();
 
         assertEquals(fileList.size(), document.getInformationResourceFiles().size());
@@ -150,6 +150,7 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         Pair<PersonalFilestoreTicket, List<FileProxy>> newProxyList = uploadFilesAsync(Arrays.asList(new File(TestConstants.TEST_DOCUMENT_DIR
                 + "pia-09-lame-1980.pdf")));
         controller.setTicketId(newProxyList.getFirst().getId());
+        controller.setServletRequest(getServletPostRequest());
         controller.save();
 
         for (InformationResourceFile irFile : document.getInformationResourceFiles()) {
@@ -179,6 +180,7 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         controller.setTicketId(uploadFilesAsync.getFirst().getId());
         controller.setFileProxies(uploadFilesAsync.getSecond());
         controller.getFileProxies().get(1).setConfidential(true);
+        controller.setServletRequest(getServletPostRequest());
         controller.save();
 
         assertEquals(fileList.size(), document.getInformationResourceFiles().size());
@@ -208,6 +210,7 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         Pair<PersonalFilestoreTicket, List<FileProxy>> newProxyList = uploadFilesAsync(Arrays.asList(new File(TestConstants.TEST_DOCUMENT_DIR
                 + a2pdf)));
         controller.setTicketId(newProxyList.getFirst().getId());
+        controller.setServletRequest(getServletPostRequest());
         controller.save();
 
         assertEquals(2, document.getInformationResourceFiles().size());

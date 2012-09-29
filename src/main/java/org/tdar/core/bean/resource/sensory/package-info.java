@@ -9,3 +9,4 @@ package org.tdar.core.bean.resource.sensory;
  
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;
+

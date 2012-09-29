@@ -1,8 +1,5 @@
 package org.tdar.struts.action.resource;
 
-import static org.tdar.core.service.external.auth.InternalTdarRights.SEARCH_FOR_DELETED_RECORDS;
-import static org.tdar.core.service.external.auth.InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -18,6 +15,7 @@ import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -45,6 +43,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.exception.StatusCode;
+import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.external.auth.InternalTdarRights;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.struts.action.AbstractPersistableController;
@@ -53,7 +52,6 @@ import org.tdar.struts.data.KeywordNode;
 import org.tdar.struts.data.ResourceCreatorProxy;
 import org.tdar.transform.DcTransformer;
 import org.tdar.transform.ModsTransformer;
-import org.tdar.core.service.ObfuscationService;
 
 import edu.asu.lib.dc.DublinCoreDocument;
 import edu.asu.lib.mods.ModsDocument;
@@ -128,7 +126,9 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     @Autowired
     private ObfuscationService obfuscationService;
-    
+
+    private List<ResourceCollection> viewableResourceCollections;
+
     // protected abstract R loadResourceFromId(final Long resourceId);
 
     private void initializeResourceCreatorProxyLists() {
@@ -138,9 +138,9 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         creditProxies = new ArrayList<ResourceCreatorProxy>();
 
         for (ResourceCreator rc : getPersistable().getResourceCreators()) {
-        	if(rc.getCreatorType() == CreatorType.PERSON && !isAuthenticated()){
-        		obfuscationService.obfuscate(rc.getCreator());
-        	}
+            if (rc.getCreatorType() == CreatorType.PERSON && !isAuthenticated()) {
+                obfuscationService.obfuscate(rc.getCreator());
+            }
             ResourceCreatorProxy proxy = new ResourceCreatorProxy(rc);
             if (ResourceCreatorRole.getAuthorshipRoles().contains(rc.getRole())) {
                 authorshipProxies.add(proxy);
@@ -150,7 +150,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         }
     }
 
-       
     protected void loadCustomMetadata() {
     };
 
@@ -178,16 +177,16 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     public void delete(R resource) {
-		String reason =  getDeletionReason();
+        String reason = getDeletionReason();
         getResourceService().saveRecordToFilestore(resource);
-		if (StringUtils.isNotEmpty(reason)) {
-	        ResourceNote note = new ResourceNote(ResourceNoteType.ADMIN, getDeletionReason());
-	        resource.getResourceNotes().add(note);
-	        note.setResource(resource);
-	        getGenericService().save(note);
-		} else {
-			reason = "reason not specified";
-		}
+        if (StringUtils.isNotEmpty(reason)) {
+            ResourceNote note = new ResourceNote(ResourceNoteType.ADMIN, getDeletionReason());
+            resource.getResourceNotes().add(note);
+            note.setResource(resource);
+            getGenericService().save(note);
+        } else {
+            reason = "reason not specified";
+        }
         String logMessage = String.format("%s id:%s deleted by:%s reason: ", resource.getResourceType().getLabel(), resource.getId(),
                 getAuthenticatedUser(), reason);
 
@@ -201,12 +200,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         getPersistable().setStatus(status);
     }
 
-    /**
-     * override if needed
-     */
-    protected void postSaveCleanup() {
-    }
-
+ 
     protected void postSaveCallback() {
         if (shouldSaveResource() && getResource() != null) {
             getResourceService().saveRecordToFilestore(getPersistable());
@@ -248,7 +242,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     @Override
     public boolean isViewable() throws TdarActionException {
         if (getResource().isActive()
-                || userCan(InternalTdarRights.VIEW_ANYTHING)
+                || userCan(InternalTdarRights.VIEW_ANYTHING) || getAuthenticationAndAuthorizationService().canView(getAuthenticatedUser(), getPersistable())
                 || isEditable()) {
             logger.trace("{} is viewable: {}", getId(), getPersistableClass().getSimpleName());
             return true;
@@ -273,26 +267,26 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         logger.debug("otherKeywords=" + otherKeywords);
         logger.debug("investigationTypes=" + investigationTypeIds);
 
-        getPersistable().setSiteNameKeywords(getGenericKeywordService().findOrCreateByLabels(SiteNameKeyword.class, siteNameKeywords));
+        reconcileSet(getPersistable().getSiteNameKeywords(), getGenericKeywordService().findOrCreateByLabels(SiteNameKeyword.class, siteNameKeywords));
 
         Set<CultureKeyword> culKeys = getGenericKeywordService().findOrCreateByLabels(CultureKeyword.class, uncontrolledCultureKeywords);
-        culKeys.addAll(getGenericKeywordService().findByIds(CultureKeyword.class, approvedCultureKeywordIds));
-        getPersistable().setCultureKeywords(culKeys);
+        culKeys.addAll(getGenericKeywordService().findAll(CultureKeyword.class, approvedCultureKeywordIds));
+        reconcileSet(getPersistable().getCultureKeywords(), culKeys);
 
         Set<SiteTypeKeyword> siteTypeKeys = getGenericKeywordService().findOrCreateByLabels(SiteTypeKeyword.class, uncontrolledSiteTypeKeywords);
-        siteTypeKeys.addAll(getGenericKeywordService().findByIds(SiteTypeKeyword.class, approvedSiteTypeKeywordIds));
-        getPersistable().setSiteTypeKeywords(siteTypeKeys);
+        siteTypeKeys.addAll(getGenericKeywordService().findAll(SiteTypeKeyword.class, approvedSiteTypeKeywordIds));
+        reconcileSet(getPersistable().getSiteTypeKeywords(),siteTypeKeys);
 
-        getPersistable().setOtherKeywords(getGenericKeywordService().findOrCreateByLabels(OtherKeyword.class, otherKeywords));
-        getPersistable().setMaterialKeywords(getGenericKeywordService().findByIds(MaterialKeyword.class, materialKeywordIds));
-        getPersistable().setInvestigationTypes(getGenericKeywordService().findByIds(InvestigationType.class, investigationTypeIds));
+        reconcileSet(getPersistable().getOtherKeywords(), getGenericKeywordService().findOrCreateByLabels(OtherKeyword.class, otherKeywords));
+        reconcileSet(getPersistable().getMaterialKeywords(), getGenericService().findAll(MaterialKeyword.class, materialKeywordIds));
+        reconcileSet(getPersistable().getInvestigationTypes(), getGenericService().findAll(InvestigationType.class, investigationTypeIds));
     }
 
     protected void saveTemporalContext() {
         // calendar and radiocarbon dates are null for Ontologies
         getResourceService().saveHasResources((Resource) getPersistable(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, coverageDates,
                 getResource().getCoverageDates(), CoverageDate.class);
-        getPersistable().setTemporalKeywords(getGenericKeywordService().findOrCreateByLabels(TemporalKeyword.class, temporalKeywords));
+        reconcileSet(getPersistable().getTemporalKeywords(), getGenericKeywordService().findOrCreateByLabels(TemporalKeyword.class, temporalKeywords));
     }
 
     protected void saveSpatialContext() {
@@ -300,8 +294,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
         getResourceService().saveHasResources((Resource) getPersistable(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, latitudeLongitudeBoxes,
                 getResource().getLatitudeLongitudeBoxes(), LatitudeLongitudeBox.class);
-        getPersistable().setGeographicKeywords(getGenericKeywordService().findOrCreateByLabels(GeographicKeyword.class, geographicKeywords));
-        getPersistable().getManagedGeographicKeywords().clear();
+        reconcileSet(getPersistable().getGeographicKeywords(), getGenericKeywordService().findOrCreateByLabels(GeographicKeyword.class, geographicKeywords));
         getResourceService().processManagedKeywords(getPersistable(), getPersistable().getLatitudeLongitudeBoxes());
     }
 
@@ -321,7 +314,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         if (shouldSaveResource()) {
             getResourceService().saveOrUpdate(getPersistable());
         }
-
         getResourceCollectionService().saveAuthorizedUsersForResource(getResource(), getAuthorizedUsers(), shouldSaveResource());
         saveKeywords();
         saveTemporalContext();
@@ -356,7 +348,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         // convert the list of proxies to a list of resource creators
         for (ResourceCreatorProxy proxy : allProxies) {
             if (proxy != null && proxy.isValid()) {
-                ResourceCreator resourceCreator = proxy.resolveResourceCreator();
+                ResourceCreator resourceCreator = proxy.getResourceCreator();
                 resourceCreator.setSequenceNumber(sequence++);
                 logger.trace("{} - {}", resourceCreator, resourceCreator.getCreatorType());
 
@@ -378,6 +370,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
         setMaterialKeywordIds(toIdList(getResource().getMaterialKeywords()));
         setInvestigationTypeIds(toIdList(getResource().getInvestigationTypes()));
+
+        getResourceService().updateTransientAccessCount(getResource());
 
         setUncontrolledCultureKeywords(toSortedStringList(getResource().getUncontrolledCultureKeywords()));
         setApprovedCultureKeywordIds(toIdList(getResource().getApprovedCultureKeywords()));
@@ -474,7 +468,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public List<MaterialKeyword> getAllMaterialKeywords() {
         if (CollectionUtils.isEmpty(allMaterialKeywords)) {
-            allMaterialKeywords = getGenericKeywordService().findAll(MaterialKeyword.class);
+            allMaterialKeywords = getGenericKeywordService().findAllWithCache(MaterialKeyword.class);
             Collections.sort(allMaterialKeywords);
         }
         return allMaterialKeywords;
@@ -518,12 +512,12 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     public boolean isAbleToViewConfidentialFiles() {
-        return getEntityService().canViewConfidentialInformation(getAuthenticatedUser(), getPersistable());
+        return getAuthenticationAndAuthorizationService().canViewConfidentialInformation(getAuthenticatedUser(), getPersistable());
     }
 
     public List<InvestigationType> getAllInvestigationTypes() {
         if (CollectionUtils.isEmpty(allInvestigationTypes)) {
-            allInvestigationTypes = getGenericKeywordService().findAll(InvestigationType.class);
+            allInvestigationTypes = getGenericKeywordService().findAllWithCache(InvestigationType.class);
             Collections.sort(allInvestigationTypes);
         }
         return allInvestigationTypes;
@@ -538,14 +532,14 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public KeywordNode<SiteTypeKeyword> getApprovedSiteTypeKeywords() {
         if (approvedSiteTypeKeywords == null) {
-            approvedSiteTypeKeywords = KeywordNode.organizeKeywords(getGenericKeywordService().findAllApproved(SiteTypeKeyword.class));
+            approvedSiteTypeKeywords = KeywordNode.organizeKeywords(getGenericKeywordService().findAllApprovedWithCache(SiteTypeKeyword.class));
         }
         return approvedSiteTypeKeywords;
     }
 
     public KeywordNode<CultureKeyword> getApprovedCultureKeywords() {
         if (approvedCultureKeywords == null) {
-            approvedCultureKeywords = KeywordNode.organizeKeywords(getGenericKeywordService().findAllApproved(CultureKeyword.class));
+            approvedCultureKeywords = KeywordNode.organizeKeywords(getGenericKeywordService().findAllApprovedWithCache(CultureKeyword.class));
         }
         return approvedCultureKeywords;
     }
@@ -622,8 +616,10 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public List<Status> getStatuses() {
         List<Status> toReturn = new ArrayList<Status>(getResourceService().findAllStatuses());
-        getAuthenticationAndAuthorizationService().removeIfNotAllowed(toReturn, Status.DELETED, SEARCH_FOR_DELETED_RECORDS, getAuthenticatedUser());
-        getAuthenticationAndAuthorizationService().removeIfNotAllowed(toReturn, Status.FLAGGED, SEARCH_FOR_FLAGGED_RECORDS, getAuthenticatedUser());
+        getAuthenticationAndAuthorizationService().removeIfNotAllowed(toReturn, Status.DELETED, InternalTdarRights.SEARCH_FOR_DELETED_RECORDS,
+                getAuthenticatedUser());
+        getAuthenticationAndAuthorizationService().removeIfNotAllowed(toReturn, Status.FLAGGED, InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS,
+                getAuthenticatedUser());
         return toReturn;
     }
 
@@ -656,13 +652,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         // FIXME: move impl to service
         // FIXME: change to SortedSet
         return ResourceCreatorRole.getAll();
-    }
-
-    public List<CoverageType> getAllCoverageTypes() {
-        List<CoverageType> coverageTypes = new ArrayList<CoverageType>();
-        coverageTypes.add(CoverageType.CALENDAR_DATE);
-        coverageTypes.add(CoverageType.RADIOCARBON_DATE);
-        return coverageTypes;
     }
 
     public void setSiteNameKeywords(List<String> siteNameKeywords) {
@@ -721,6 +710,10 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     public ResourceCreatorProxy getBlankCreatorProxy() {
+        return new ResourceCreatorProxy();
+    }
+
+    public ResourceCreatorProxy getBlankCreatorProxy2() {
         return new ResourceCreatorProxy();
     }
 
@@ -813,6 +806,33 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
      */
     public void setEffectiveResourceCollections(List<ResourceCollection> effectiveResourceCollections) {
         this.effectiveResourceCollections = effectiveResourceCollections;
+    }
+
+    // return all of the collections that the currently-logged-in user is allowed to view. We define viewable as either shared+visible, or
+    // shared+invisible+canEdit
+    public List<ResourceCollection> getViewableResourceCollections() {
+        if (viewableResourceCollections != null) {
+            return viewableResourceCollections;
+        }
+
+        // if nobody logged in, just get the shared+visible collections
+        Set<ResourceCollection> collections = new HashSet<ResourceCollection>(getResource().getSharedVisibleResourceCollections());
+
+        // if authenticated, also add the collections that the user can modify
+        if (isAuthenticated()) {
+            for (ResourceCollection resourceCollection : getResource().getSharedResourceCollections()) {
+                if (getAuthenticationAndAuthorizationService().canViewCollection(resourceCollection, getAuthenticatedUser())) {
+                    collections.add(resourceCollection);
+                }
+            }
+        }
+
+        viewableResourceCollections = new ArrayList<ResourceCollection>(collections);
+        return viewableResourceCollections;
+    }
+    
+    private static <C> boolean reconcileSet(Set<C> existing, Collection<C> incoming) {
+        return Persistable.Base.reconcileSet(existing, incoming);
     }
 
 }

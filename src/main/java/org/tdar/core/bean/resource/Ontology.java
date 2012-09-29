@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.WeakHashMap;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -27,6 +28,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
+import org.springframework.util.CollectionUtils;
 import org.tdar.core.bean.SupportsResource;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
@@ -57,6 +59,22 @@ public class Ontology extends InformationResource implements SupportsResource {
 
     @OneToMany(mappedBy = "ontology", cascade = CascadeType.ALL)
     private List<OntologyNode> ontologyNodes = new ArrayList<OntologyNode>();
+    
+    private transient Map<Long, OntologyNode> idMap = new WeakHashMap<Long, OntologyNode>();
+    private transient Map<String, OntologyNode> iriMap = new WeakHashMap<String, OntologyNode>();
+    private transient Map<String, OntologyNode> nameMap = new WeakHashMap<String, OntologyNode>();
+    
+    private final static Comparator<OntologyNode> IMPORT_ORDER_COMPARATOR = new Comparator<OntologyNode>() {
+        @Override
+        public int compare(OntologyNode o1, OntologyNode o2) {
+            int comparison = o1.getImportOrder().compareTo(o2.getImportOrder());
+            if (comparison == 0) {
+                // use default comparison by index
+                return o1.compareTo(o2);
+            }
+            return comparison;
+        }
+    };
 
     public Ontology() {
         setResourceType(ResourceType.ONTOLOGY);
@@ -111,11 +129,12 @@ public class Ontology extends InformationResource implements SupportsResource {
         List<OntologyNode> sortedOntologyNodes = getSortedOntologyNodes();
         TreeMap<Integer, List<OntologyNode>> map = new TreeMap<Integer, List<OntologyNode>>();
         for (OntologyNode node : sortedOntologyNodes) {
+            Integer intervalStart = node.getIntervalStart();
             String index = node.getIndex();
             for (String indexId : StringUtils.split(index, '.')) {
                 Integer parentId = Integer.valueOf(indexId);
-                // FIXME: don't include this node if the parent id is equivalent to the other guy
-                if (parentId.equals(node.getIntervalStart()))
+                // don't include this node if the parent id is the same as this node's interval start
+                if (parentId.equals(intervalStart))
                     continue;
                 List<OntologyNode> children = map.get(parentId);
                 if (children == null) {
@@ -130,12 +149,25 @@ public class Ontology extends InformationResource implements SupportsResource {
 
     @Transient
     public OntologyNode getNodeByName(String name) {
-        for (OntologyNode node : getOntologyNodes()) {
-            if (node.getDisplayName().equals(name)) {
-                return node;
-            }
+        if (CollectionUtils.isEmpty(nameMap)) {
+            initializeNameAndIriMaps();
         }
-        return null;
+        return nameMap.get(name);
+    }
+    
+    @Transient
+    public OntologyNode getNodeByIri(String iri) {
+        if (CollectionUtils.isEmpty(iriMap)) {
+            initializeNameAndIriMaps();
+        }
+        return iriMap.get(iri);
+    }
+    
+    private void initializeNameAndIriMaps() {
+        for (OntologyNode node: getOntologyNodes()) {
+            nameMap.put(node.getDisplayName(), node);
+            iriMap.put(node.getIri(), node);
+        }
     }
 
     @Transient
@@ -149,11 +181,12 @@ public class Ontology extends InformationResource implements SupportsResource {
     }
 
     public List<OntologyNode> getSortedOntologyNodes() {
-        return getSortedOntologyNodes(new Comparator<OntologyNode>() {
-            public int compare(OntologyNode a, OntologyNode b) {
-                return a.getIndex().compareTo(b.getIndex());
-            }
-        });
+        // return ontology nodes by natural order.
+        return getSortedOntologyNodes(null);
+    }
+    
+    public List<OntologyNode> getSortedOntologyNodesByImportOrder() {
+        return getSortedOntologyNodes(IMPORT_ORDER_COMPARATOR);
     }
 
     public List<OntologyNode> getSortedOntologyNodes(Comparator<OntologyNode> comparator) {
@@ -162,14 +195,35 @@ public class Ontology extends InformationResource implements SupportsResource {
         return sortedNodes;
     }
 
-    @XmlElementWrapper(name="ontologyNodes")
-    @XmlElement(name="ontologyNode")
+    @XmlElementWrapper(name = "ontologyNodes")
+    @XmlElement(name = "ontologyNode")
     public List<OntologyNode> getOntologyNodes() {
         return ontologyNodes;
     }
 
     public void setOntologyNodes(List<OntologyNode> ontologyNodes) {
         this.ontologyNodes = ontologyNodes;
+    }
+
+    public OntologyNode getOntologyNodeById(Long id) {
+        if (idMap.isEmpty()) {
+            for (OntologyNode node : getOntologyNodes()) {
+                idMap.put(node.getId(), node);
+            }
+        }
+        return idMap.get(id);
+    }
+
+    @Override
+    public String getAdditonalKeywords() {
+        StringBuilder sb = new StringBuilder();
+        if (getCategoryVariable() != null) {
+            sb.append(getCategoryVariable().getLabel()).append(" ");
+            if (getCategoryVariable().getParent() != null) {
+                sb.append(getCategoryVariable().getParent().getLabel());
+            }
+        }
+        return sb.toString();
     }
 
 }

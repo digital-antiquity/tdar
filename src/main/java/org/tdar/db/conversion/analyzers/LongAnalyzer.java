@@ -1,6 +1,6 @@
 package org.tdar.db.conversion.analyzers;
 
-import org.tdar.core.bean.resource.dataTable.DataTableColumnType;
+import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 
 public class LongAnalyzer implements ColumnAnalyzer {
 

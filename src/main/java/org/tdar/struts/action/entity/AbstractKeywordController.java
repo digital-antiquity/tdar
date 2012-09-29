@@ -4,6 +4,7 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.keyword.HierarchicalKeyword;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.SuggestedKeyword;
@@ -53,7 +54,7 @@ public abstract class AbstractKeywordController<K extends Keyword> extends Abstr
     @Override
     public String loadMetadata() {
         // lets avoid the implications of creating a new keyword (for now)
-        if (getPersistable().getId() == -1)
+        if (Persistable.Base.isNullOrTransient(getPersistable()))
             return REDIRECT_HOME;
         return SUCCESS;
     }

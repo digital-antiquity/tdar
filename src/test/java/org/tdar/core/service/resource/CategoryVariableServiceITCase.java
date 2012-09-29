@@ -78,9 +78,15 @@ public class CategoryVariableServiceITCase extends AbstractIntegrationTestCase{
     //based on our test data load, some categoryVariables should have at least one related coding sheet, related ontology, and/or synonym
     public void testRelatedEntities() {
         List<CategoryVariable> allCats = categoryVariableService.findAll();
+        allCats.get(0).getSynonyms().add("test");
+        allCats.get(0).getSynonyms().add("other");
+        allCats.get(0).getSynonyms().add("another");
+        categoryVariableService.saveOrUpdate(allCats.get(0));
         List<CodingSheet> codingSheets = new ArrayList<CodingSheet>();
         List<Ontology> ontologies = new ArrayList<Ontology>();
         List<String> synonyms = new ArrayList<String>();
+        allCats = categoryVariableService.findAll();
+        logger.info("{}", allCats);
         for(CategoryVariable cat : allCats) {
             assertNotNull(cat.getOntologies());
             assertNotNull(cat.getCodingSheets());

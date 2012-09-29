@@ -9,24 +9,43 @@ import java.io.InputStream;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.detect.DefaultDetector;
 import org.apache.tika.detect.Detector;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
 
 public interface Filestore {
+
+    public enum LogType {
+        FILESTORE_VERIFICATION("verify"),
+        AUTHORITY_MANAGEMENT("authmgmt"),
+        OTHER("other");
+        private String dir;
+
+        private LogType(String dir) {
+            this.dir = dir;
+        }
+
+        public String getDir() {
+            return dir;
+        }
+    }
 
     /**
      * Write content to the filestore.
@@ -40,6 +59,10 @@ public interface Filestore {
     long getSizeInBytes();
 
     String getSizeAsReadableString();
+
+    File getLogFile(LogType type, Integer year, String filename);
+
+    List<File> listLogFiles(LogType type, Integer year);
 
     /**
      * Write content to the filestore.
@@ -61,7 +84,7 @@ public interface Filestore {
 
     public abstract String storeAndRotate(File content, InformationResourceFileVersion version, int maxRotations) throws IOException;
 
-    public abstract void storeLog(String filename, String message);
+    public abstract void storeLog(LogType type, String filename, String message);
 
     /**
      * Retrieve the file with the given ID from the store.
@@ -89,8 +112,9 @@ public interface Filestore {
     public abstract boolean verifyFile(InformationResourceFileVersion version) throws FileNotFoundException, TaintedFileException;
 
     public abstract static class BaseFilestore implements Filestore {
+        private static final String LOG_DIR = "logs";
         // protected static final MimeTypes mimes = TikaConfig.getDefaultConfig().getMimeRepository();
-        protected static final Logger logger = Logger.getLogger(BaseFilestore.class);
+        protected static final Logger logger = LoggerFactory.getLogger(BaseFilestore.class);
 
         /*
          * This method extracts out the MimeType from the file using Tika, the previous version tried to parse the file
@@ -117,7 +141,7 @@ public interface Filestore {
 
         protected InformationResourceFileVersion updateVersionInfo(File file, InformationResourceFileVersion version) throws IOException {
             String mimeType = getContentType(file, "UNKNOWN/UNKNOWN");
-            logger.info("MIMETYPE:" + mimeType);
+            logger.trace("MIMETYPE: {}", mimeType);
             if (StringUtils.isEmpty(version.getFilename()))
                 version.setFilename(file.getName());
             if (StringUtils.isEmpty(version.getMimeType()))
@@ -132,6 +156,10 @@ public interface Filestore {
                 MessageDigest digest = createDigest(file);
                 version.setChecksumType(digest.getAlgorithm());
                 version.setChecksum(formatDigest(digest));
+                if (version.isArchival() || version.isUploaded()) {
+                    File checksum = new File(file.getParentFile(), String.format("%s.%s", file.getName(), digest.getAlgorithm()));
+                    FileUtils.write(checksum, version.getChecksum());
+                }
             }
             if (version.getDateCreated() == null)
                 version.setDateCreated(new Date());
@@ -145,8 +173,9 @@ public interface Filestore {
             return Hex.encodeHexString(digest.digest());
         }
 
-        public void storeLog(String filename, String message) {
-            File logdir = new File(FilenameUtils.concat(getFilestoreLocation(), "logs"));
+        public void storeLog(LogType type, String filename, String message) {
+            File logdir = new File(FilenameUtils.concat(getFilestoreLocation(),
+                    String.format("%s/%s/%s", LOG_DIR, type.getDir(), Calendar.getInstance().get(Calendar.YEAR))));
             if (!logdir.exists()) {
                 logdir.mkdirs();
             }
@@ -154,37 +183,46 @@ public interface Filestore {
             try {
                 FileUtils.writeStringToFile(logFile, message);
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("Unable to write logfile", e);
             }
         }
 
-        public boolean verifyFile(InformationResourceFileVersion version) throws FileNotFoundException, TaintedFileException {
+        public List<File> listLogFiles(LogType type, Integer year) {
+            String subdir = String.format("%s/%s", LOG_DIR, type.getDir());
+            if (year != null) {
+                subdir = String.format("%s/%s/%s", LOG_DIR, type.getDir(), year);
+            }
+            File logDir = new File(FilenameUtils.concat(getFilestoreLocation(), subdir));
+            return Arrays.asList(logDir.listFiles());
+        }
+
+        public File getLogFile(LogType type, Integer year, String filename) {
+            String subdir = String.format("%s/%s/%s/%s", LOG_DIR, type.getDir(), year, filename);
+            File logDir = new File(FilenameUtils.concat(getFilestoreLocation(), subdir));
+            return logDir;
+        }
+
+        public boolean verifyFile(InformationResourceFileVersion version) throws FileNotFoundException {
             File toVerify = retrieveFile(version);
             MessageDigest newDigest = createDigest(toVerify);
             String hex = formatDigest(newDigest);
-            logger.debug("Verifying file: " + version.getFilename());
-            logger.trace("\told: " + version.getChecksum());
-            logger.info(version.getChecksum());
-            logger.trace("\tnew: " + hex + " (" + hex.trim().equalsIgnoreCase(version.getChecksum().trim()) + ")");
-            if (hex.trim().equalsIgnoreCase(version.getChecksum().trim())) {
-                return true;
-            } else {
-                throw new TaintedFileException("Digest for " + version.getFilename() + " does not match the checksum stored for it");
-            }
+            logger.debug("Verifying file: {}", version.getFilename());
+            logger.trace("\told: {} new: {}", version.getChecksum(), hex);
+            return hex.trim().equalsIgnoreCase(version.getChecksum().trim());
         }
 
         public DigestInputStream appendMessageDigestStream(InputStream content) {
-            DigestInputStream in = null;
-            MessageDigest digest = null;
+            DigestInputStream digestInputStream = null;
+            MessageDigest messageDigest = null;
             try {
-                digest = MessageDigest.getInstance("MD5");
-                in = new DigestInputStream(content, digest);
+                messageDigest = MessageDigest.getInstance("MD5");
+                digestInputStream = new DigestInputStream(content, messageDigest);
             } catch (NoSuchAlgorithmException e) {
-                String error = "MD5 does not appear to be a valid digest format" + "in this environment.";
+                String error = "MD5 does not appear to be a valid digest format in this environment.";
                 logger.error(error, e);
                 throw new TdarRuntimeException(error, e);
             }
-            return in;
+            return digestInputStream;
         }
 
         public MessageDigest createDigest(File f) {
@@ -222,7 +260,6 @@ public interface Filestore {
         public String getSizeAsReadableString() {
             return FileUtils.byteCountToDisplaySize(FileUtils.sizeOfDirectory(new File(getFilestoreLocation())));
         }
-
-    }
+}
 
 }

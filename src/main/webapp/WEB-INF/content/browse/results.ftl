@@ -4,6 +4,7 @@
 <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
 <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
 <@search.initResultPagination/>
+ <@search.headerLinks includeRss=false />
 
 
 <@nav.creatorToolbar "view" />
@@ -24,6 +25,8 @@
                 	<td>
 	                	<#if creator.rpaNumber??>
 	                		<B>Registered Public Archaeologist</B>:${creator.rpaNumber}
+                		<#else>
+		                    <@view.boolean "Registered Public Archaeologist" creator.rpa  true />
 	                	</#if>
 					</td><td>
 					<#if creator.registered && (editor || id == authenticatedUser.id)>
@@ -71,15 +74,8 @@
 <br/>    
 </#if>
 
-<h2>${creator.properName}'s Resources</h2>
-<#if (totalRecords > 0 && nextPageStartRecord > lastRec)>
-<div class="glide">
-	<div id="recordTotal">Records ${firstRec} - ${lastRec} of ${totalRecords}
-	</div> 
-	<@search.pagination ""/>
+<@search.basicPagination "Records"/>
 
-</div>
-</#if>  
 <div class="glide">
 <#if results??>
 <@list.listResources results "RESOURCE_TYPE" />

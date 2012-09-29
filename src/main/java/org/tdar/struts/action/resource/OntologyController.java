@@ -1,8 +1,6 @@
 package org.tdar.struts.action.resource;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Set;
 
@@ -11,10 +9,10 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.InformationResourceFile;
-import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.VersionType;
 import org.tdar.struts.data.FileProxy;
 
 /**
@@ -37,13 +35,13 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
     private List<Ontology> allSubmittedOntologies;
 
     @Override
-    protected FileProxy createUploadedFileProxy(String fileTextInput) throws UnsupportedEncodingException {
+    protected FileProxy createUploadedFileProxy(String fileTextInput) throws IOException {
         String filename = getPersistable().getTitle() + ".owl";
         // convert text input to OWL XML text and use that as our archival version
         String owlXml = getOntologyService().toOwlXml(getPersistable().getId(), fileTextInput);
         getLogger().trace("owl xml is: \n{}", owlXml);
         return new FileProxy(filename,
-                new ByteArrayInputStream(owlXml.getBytes("UTF-8")),
+                FileProxy.createTempFileFromString(owlXml),
                 VersionType.UPLOADED);
 
     }

@@ -39,6 +39,8 @@ import org.tdar.core.service.AuthorityManagementService.AuthorityManagementLog;
 
 public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCase {
 
+    boolean oldActuallySend;
+
     @Autowired
     AuthorityManagementService authorityManagementService;
 
@@ -50,9 +52,10 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
 
     @Autowired
     GenericKeywordService genericKeywordService;
-    
+
     @Autowired
-    XmlService xmlService;
+    private XmlService xmlService;
+    
 
     @Test
     public void testCreatorPersonReferrers() {
@@ -201,18 +204,18 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
     @Test
     @Rollback
     public void testDedupeKeywordsSynonyms() throws InstantiationException, IllegalAccessException {
-        //ensure the service adds synonyms to authority when deduping
-        testDedupeKeywordSynonyms(GeographicKeyword.class);        
-        testDedupeKeywordSynonyms(InvestigationType.class);        
-        testDedupeKeywordSynonyms(MaterialKeyword.class);        
-        testDedupeKeywordSynonyms(OtherKeyword.class);        
-        testDedupeKeywordSynonyms(SiteNameKeyword.class);        
+        // ensure the service adds synonyms to authority when deduping
+        testDedupeKeywordSynonyms(GeographicKeyword.class);
+        testDedupeKeywordSynonyms(InvestigationType.class);
+        testDedupeKeywordSynonyms(MaterialKeyword.class);
+        testDedupeKeywordSynonyms(OtherKeyword.class);
+        testDedupeKeywordSynonyms(SiteNameKeyword.class);
         testDedupeKeywordSynonyms(TemporalKeyword.class);
         testDedupeKeywordSynonyms(CultureKeyword.class);
         testDedupeKeywordSynonyms(SiteTypeKeyword.class);
-        
+
     }
-    
+
     @Test
     @Rollback
     public void testDedupeInstitutionSynonyms() {
@@ -220,7 +223,7 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
         Institution dupe = new Institution("Department of Redundancy Department");
         saveAndTestDedupeSynonym(Institution.class, authority, dupe);
     }
-    
+
     @Test
     @Rollback
     public void testLogSerialization() throws SecurityException, NoSuchFieldException {
@@ -242,9 +245,8 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
             Assert.fail();
         }
     }
-    
-    
-    private  <K extends Keyword> void testDedupeKeywordSynonyms(Class<K> type) throws InstantiationException, IllegalAccessException {
+
+    private <K extends Keyword> void testDedupeKeywordSynonyms(Class<K> type) throws InstantiationException, IllegalAccessException {
         K authority = type.newInstance();
         K dupe = type.newInstance();
         authority.setDefinition("auth def");
@@ -253,7 +255,7 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
         dupe.setLabel("dupe label");
         saveAndTestDedupeSynonym(type, authority, dupe);
     }
-    
+
     private <T extends Keyword> T createAndSaveKeyword(Class<T> type, String label, String definition) {
         T keyword;
         try {
@@ -267,14 +269,14 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
         }
         return keyword;
     }
-    
-    
-    private <D extends Dedupable & Persistable > void saveAndTestDedupeSynonym (Class<D> type, D authority, D dupe) {
+
+    private <D extends Dedupable & Persistable> void saveAndTestDedupeSynonym(Class<D> type, D authority, D dupe) {
         genericService.save(authority);
         genericService.save(dupe);
         String dupeName = dupe.getSynonymFormattedName();
         authorityManagementService.updateReferrers(type, Arrays.asList(dupe.getId()), authority.getId());
         dupe = null;
-        Assert.assertTrue("authority should have synonym '" + dupeName + "' after deduping " + type.getSimpleName() + " record", authority.getSynonyms().contains(dupeName));
+        Assert.assertTrue("authority should have synonym '" + dupeName + "' after deduping " + type.getSimpleName() + " record", authority.getSynonyms()
+                .contains(dupeName));
     }
 }

@@ -32,7 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.SupportsResource;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
-import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Person;
@@ -48,8 +47,6 @@ import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
-import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotation;
@@ -60,7 +57,6 @@ import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.sensory.SensoryDataImage;
 import org.tdar.core.bean.resource.sensory.SensoryDataScan;
-import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.exception.APIException;
 import org.tdar.core.exception.StatusCode;
@@ -70,9 +66,7 @@ import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.filestore.FileAnalyzer;
-import org.tdar.search.geosearch.GeoSearchService;
 import org.tdar.struts.data.FileProxy;
-import org.tdar.utils.Pair;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -86,28 +80,23 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @Transactional
 @Service
 public class ImportService {
+
     @Autowired
-    GenericKeywordService genericKeywordService;
+    private FileAnalyzer fileAnalyzer;
     @Autowired
-    FileAnalyzer fileAnalyzer;
+    private ResourceService resourceService;
     @Autowired
-    ResourceService resourceService;
+    private ResourceCollectionService resourceCollectionService;
     @Autowired
-    ResourceCollectionService resourceCollectionService;
+    private EntityService entityService;
     @Autowired
-    EntityService entityService;
+    private AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
     @Autowired
-    AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
+    private GenericService genericService;
     @Autowired
-    GenericService genericService;
+    private InformationResourceService informationResourceService;
     @Autowired
-    GeoSearchService geoSearchService;
-    @Autowired
-    InformationResourceService informationResourceService;
-    @Autowired
-    GenericDao genericDao;
-    @Autowired
-    ProjectService projectService;
+    private ProjectService projectService;
 
     public transient Logger logger = LoggerFactory.getLogger(getClass());
     private XStream xs;
@@ -160,8 +149,6 @@ public class ImportService {
                     throw new APIException("invalid file type " + ext + " for resource type -- acceptable:"
                             + StringUtils.join(extensionsForType, ", "), StatusCode.FORBIDDEN);
                 informationResourceService.processFileProxy((InformationResource) incomingResource, proxy);
-                // informationResourceService.addOrReplaceInformationResourceFile((InformationResource) r, file.getSecond(), file.getFirst(),
-                // FileAction.REPLACE, VersionType.UPLOADED);
             }
             genericService.saveOrUpdate(incomingResource);
         }
@@ -256,7 +243,6 @@ public class ImportService {
         }
 
         // xstreamResource = genericService.merge(xstreamResource);
-
         resourceService.saveHasResources(xstreamResource, false, ErrorHandling.VALIDATE_WITH_EXCEPTION, xstreamResource.getResourceCreators(),
                 xstreamResource.getResourceCreators(), ResourceCreator.class);
         resourceService.saveHasResources(xstreamResource, false, ErrorHandling.VALIDATE_WITH_EXCEPTION, xstreamResource.getSourceCollections(),
@@ -292,7 +278,6 @@ public class ImportService {
      * @param xstreamResource
      */
     private void initializeBasicMetadata(Person person, Resource xstreamResource) {
-        xstreamResource.setAccessCounter(0L);
         xstreamResource.setStatus(Status.ACTIVE);
         xstreamResource.markUpdated(person);
     }
@@ -319,17 +304,16 @@ public class ImportService {
             }
             logger.debug("updating existing record " + xstreamResource.getId());
             // remove old keywords ... and carry over values
-            xstreamResource.setAccessCounter(oldRecord.getAccessCounter());
             xstreamResource.setDateCreated(oldRecord.getDateCreated());
             xstreamResource.setSubmitter(oldRecord.getSubmitter());
 
             xstreamResource.getResourceCollections().addAll(oldRecord.getResourceCollections());
-            //it is probably not necessary to clear the collections of from the orig. resource, but uncomment if I'm wrong
-            //oldRecord.getResourceCollections().clear();
+            // it is probably not necessary to clear the collections of from the orig. resource, but uncomment if I'm wrong
+            // oldRecord.getResourceCollections().clear();
 
             if (oldRecord instanceof InformationResource) {
                 Set<InformationResourceFile> files = new HashSet<InformationResourceFile>(((InformationResource) oldRecord).getInformationResourceFiles());
-                //((InformationResource) oldRecord).getInformationResourceFiles().clear();
+                // ((InformationResource) oldRecord).getInformationResourceFiles().clear();
                 ((InformationResource) xstreamResource).getInformationResourceFiles().addAll(files);
             }
 
@@ -378,7 +362,7 @@ public class ImportService {
         if (project == null) {
             throw new APIException("Project not found:" + informationResource.getProjectId(), StatusCode.NOT_FOUND);
         }
-        project.getInformationResources().add(informationResource);
+        // project.getInformationResources().add(informationResource);
         informationResource.setProject(project);
         logger.trace("resolved {} to project: {}", informationResource, project);
     }

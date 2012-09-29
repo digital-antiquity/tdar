@@ -19,9 +19,9 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.GenericService;
-import org.tdar.filestore.personalFilestore.PersonalFileType;
-import org.tdar.filestore.personalFilestore.PersonalFilestore;
-import org.tdar.filestore.personalFilestore.PersonalFilestoreFile;
+import org.tdar.filestore.personal.PersonalFileType;
+import org.tdar.filestore.personal.PersonalFilestore;
+import org.tdar.filestore.personal.PersonalFilestoreFile;
 
 public class PersonalFilestoreTicketITCase extends AbstractIntegrationTestCase {
 

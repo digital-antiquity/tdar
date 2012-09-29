@@ -6,9 +6,9 @@
 <@admin.header/>
 
 
-<@admin.statsTable historicalResourceStats "Resource Statistics" />
+<@admin.statsTable historicalResourceStats "Resource Statistics" "resourceStats" />
 
-<@admin.statsTable historicalCollectionStats "Collection Statistics" />
+<@admin.statsTable historicalCollectionStats "Collection Statistics" "collectionStats" />
 
 
 <div class="glide">

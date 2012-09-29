@@ -6,27 +6,24 @@
  */
 package org.tdar.core.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-
-import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
+import org.tdar.core.bean.cache.HomepageResourceCountCache;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword.Level;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.bean.util.HomepageGeographicKeywordCache;
-import org.tdar.core.bean.util.HomepageResourceCountCache;
 import org.tdar.core.service.processes.RebuildHomepageCache;
 import org.tdar.core.service.resource.CodingSheetService;
-import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.TdarActionSupport;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Adam Brin
@@ -34,14 +31,12 @@ import org.tdar.struts.action.TdarActionSupport;
  */
 public class CachingServiceITCase extends AbstractControllerITCase {
 
-    @Autowired
-    ResourceService resourceService;
 
     @Autowired
-    RebuildHomepageCache cache;
+    private RebuildHomepageCache cacheRebuilder;
 
     @Autowired
-    CodingSheetService codingSheetService;
+    private CodingSheetService codingSheetService;
 
     public Long countActive() {
         int count = 0;
@@ -56,7 +51,7 @@ public class CachingServiceITCase extends AbstractControllerITCase {
     @Rollback
     public void testCachingService() throws Exception {
         Long count = countActive();
-        cache.processBatch(Arrays.asList(-1L));
+        cacheRebuilder.execute();
         Long count_ = -1l;
         count_ = updateCodingSheetCount(genericService.findAll(HomepageResourceCountCache.class));
         assertEquals(count, count_);
@@ -65,7 +60,7 @@ public class CachingServiceITCase extends AbstractControllerITCase {
         count_ = updateCodingSheetCount(genericService.findAll(HomepageResourceCountCache.class));
         assertEquals(count, count_);
 
-        cache.processBatch(Arrays.asList(-1L));
+        cacheRebuilder.execute();
         count_ = updateCodingSheetCount(genericService.findAll(HomepageResourceCountCache.class));
         assertFalse(count.equals(count_));
 
@@ -86,7 +81,7 @@ public class CachingServiceITCase extends AbstractControllerITCase {
     @Test
     @Rollback
     public void testCachingServiceGeo() throws Exception {
-        cache.processBatch(Arrays.asList(-1L));
+        cacheRebuilder.execute();
         List<HomepageGeographicKeywordCache> findAll = genericService.findAll(HomepageGeographicKeywordCache.class);
         final Long count = new Long(findAll.size());
         Long count_ = count;
@@ -101,7 +96,7 @@ public class CachingServiceITCase extends AbstractControllerITCase {
         count_ = new Long(findAll.size());
         assertEquals(count, count_);
         logger.info("list: {} ", findAll);
-        cache.processBatch(Arrays.asList(-1L));
+        cacheRebuilder.execute();
         findAll = genericService.findAll(HomepageGeographicKeywordCache.class);
         count_ = new Long(findAll.size());
         logger.info("list: {} ", findAll);

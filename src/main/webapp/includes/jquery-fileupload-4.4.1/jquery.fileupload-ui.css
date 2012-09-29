@@ -58,7 +58,7 @@
 }
 
 .ui-progressbar-value {
-  background: url(pbar-ani.gif);
+  background: url(/includes/jquery-fileupload-4.4.1/pbar-ani.gif);
 }
 
 .fileupload-progressbar {

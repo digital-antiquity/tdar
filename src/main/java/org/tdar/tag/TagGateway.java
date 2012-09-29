@@ -1,7 +1,5 @@
 package org.tdar.tag;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -14,30 +12,28 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.hibernate.search.FullTextQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.bean.resource.Dataset.IntegratableOptions;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.service.SearchService;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.resource.ProjectService;
-import org.tdar.search.query.FieldQueryPart;
-import org.tdar.search.query.FreetextQueryPart;
-import org.tdar.search.query.KeywordQueryPart;
 import org.tdar.search.query.QueryFieldNames;
-import org.tdar.search.query.QueryPartGroup;
-import org.tdar.search.query.SpatialQueryPart;
-import org.tdar.search.query.TemporalLimit;
-import org.tdar.search.query.TemporalQueryPart;
-import org.tdar.search.query.queryBuilder.ResourceQueryBuilder;
+import org.tdar.search.query.builder.ResourceQueryBuilder;
+import org.tdar.search.query.part.FieldQueryPart;
+import org.tdar.search.query.part.FreetextQueryPart;
+import org.tdar.search.query.part.KeywordQueryPart;
+import org.tdar.search.query.part.SpatialQueryPart;
+import org.tdar.search.query.part.TemporalQueryPart;
 import org.tdar.tag.Query.What;
 import org.tdar.tag.Query.When;
 import org.tdar.tag.Query.Where;
@@ -115,14 +111,14 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
         }
         if (when != null) {
             TemporalQueryPart tqp = new TemporalQueryPart();
-            tqp.addTemporalLimit(new TemporalLimit(CoverageType.CALENDAR_DATE,
+            tqp.add(new CoverageDate(CoverageType.CALENDAR_DATE,
                     when.getMinDate(), when.getMaxDate()));
             logger.debug("Temporal query clause:" + tqp.generateQueryString());
             qb.append(tqp);
         }
         if (where != null) {
             SpatialQueryPart sqp = new SpatialQueryPart();
-            sqp.addSpatialLimit(new LatitudeLongitudeBox(
+            sqp.add(new LatitudeLongitudeBox(
                     where.getMinLongitude().doubleValue(),
                     where.getMaxLongitude().doubleValue(),
                     where.getMinLatitude().doubleValue(),
@@ -132,7 +128,7 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
         }
         if (StringUtils.isNotBlank(freetext)) {
             FreetextQueryPart qp = new FreetextQueryPart();
-            qp.setFieldValue(freetext);
+            qp.add(freetext);
             qb.append(qp);
         }
 
@@ -146,6 +142,7 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
         // actually perform the search against the index
         try {
             q = searchService.search(qb);
+            logger.info(qb.generateQueryString());
         } catch (ParseException e) {
             logger.warn("Could not parse supplied query.", e);
         }
@@ -263,21 +260,11 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
     }
 
     private String buildIntegratableDatasetUrl(List<Long> projIds) {
-        QueryPartGroup projQg = new QueryPartGroup();
-        projQg.setOperator(Operator.OR);
-        for (Long id : projIds) {
-            FieldQueryPart projpart = new FieldQueryPart(PROJECT_ID, id.toString());
-            projQg.append(projpart);
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < projIds.size(); i++) {
+            sb.append("groups[").append(i).append("].projects.id=").append(projIds.get(i)).append("&");
         }
-        try {
-            return String.format(
-                    "%s/search/search?query=%s&resourceTypes=DATASET&referrer=TAG",
-                    urlService.getBaseUrl(),
-                    URLEncoder.encode(projQg.generateQueryString() + " integratable:true", "UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            String msg = "We live in a odd world where Java does not understand UTF-8";
-            logger.error(msg, e);
-            throw new TdarRuntimeException(msg, e);
-        }
+        return String.format("%s/search/search?query=%s&integratableOptions=%s&resourceTypes=DATASET&referrer=TAG",
+                urlService.getBaseUrl(), sb.toString(), IntegratableOptions.YES);
     }
 }

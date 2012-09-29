@@ -2,7 +2,6 @@ package org.tdar.struts.action;
 
 import java.util.Date;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.struts2.convention.annotation.Action;
@@ -11,14 +10,14 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.request.ContributorRequest;
-import org.tdar.core.service.ObfuscationService;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.auth.AuthenticationResult;
 import org.tdar.core.service.external.auth.InternalTdarRights;
 
@@ -42,23 +41,27 @@ import com.opensymphony.xwork2.Preparable;
 @Result(name = "new", type = "redirect", location = "new")
 public class AccountController extends AuthenticationAware.Base implements Preparable {
 
-    // @Autowired
-    // RecaptchaService recaptchaService;
+    private static final long serialVersionUID = 1147098995283237748L;
 
+    // FIXME: localize messages
+    public static final String SUCCESSFUL_REGISTRATION_MESSAGE = "Thank you for registering with tDAR! Your registration was processed successfully.";
     public static final String COULD_NOT_AUTHENTICATE_AT_THIS_TIME = "Could not authenticate at this time";
     public static final String ERROR_PASSWORDS_DONT_MATCH = "Please make sure your passwords match.";
     public static final String ERROR_MISSING_EMAIL = "Please enter an email address";
+    public static final String ERROR_DUPLICATE_EMAIL = "Email already registered";
     public static final String ERROR_EMAILS_DONT_MATCH = "Please make sure your emails match.";
     public static final String ERROR_CONFIRM_EMAIL = "Please confirm your email to access tDAR.";
     public static final String ERROR_CONFIRM_PASSWORD = "Please confirm your password to access tDAR.";
     public static final String ERROR_CHOOSE_PASSWORD = "Please choose a password to access tDAR.";
     public static final String ERROR_ALREADY_REGISTERED = "This email address is already registered in our system.";
+    public static final String ERROR_USERNAME_ALREADY_REGISTERED = "This username  is already registered in our system.";
     public static final String ERROR_MAXLENGTH = "The '%s' field accepts a maximum of %s characters.";
     private static final int MAXLENGTH_CONTRIBUTOR = 512;
 
-    private static final long serialVersionUID = 1147098995283237748L;
     public static final long ONE_HOUR_IN_MS = 3600000;
     public static final long FIVE_SECONDS_IN_MS = 5000;
+
+    private static final String ERROR_MISSING_USERNAME = "Please enter a username";
 
     private Long timeCheck;
     private Long personId;
@@ -72,12 +75,13 @@ public class AccountController extends AuthenticationAware.Base implements Prepa
     private String comment; // for simple spam protection
     private String passwordResetURL;
     private ContributorRequest contributorRequest;
+
     // private String recaptcha_challenge_field;
     // private String recaptcha_response_field;
     // private String recaptcha_public_key;
-
-    @Autowired
-    ObfuscationService obfuscationService;
+    //
+    // @Autowired
+    // private ObfuscationService obfuscationService;
 
     @Action(value = "new", interceptorRefs = @InterceptorRef("basicStack"),
             results = {
@@ -93,7 +97,7 @@ public class AccountController extends AuthenticationAware.Base implements Prepa
         return SUCCESS;
     }
 
-    @Action(value = "recover", interceptorRefs = @InterceptorRef("basicStack"), 
+    @Action(value = "recover", interceptorRefs = @InterceptorRef("basicStack"),
             results = { @Result(name = SUCCESS, type = "redirect", location = "${passwordResetURL}") })
     @SkipValidation
     public String recover() {
@@ -101,7 +105,7 @@ public class AccountController extends AuthenticationAware.Base implements Prepa
         return SUCCESS;
     }
 
-    @Action(value="edit", results={ @Result(name=SUCCESS, type="redirect", location="/entity/person/${person.id}/edit")})
+    @Action(value = "edit", results = { @Result(name = SUCCESS, type = "redirect", location = "/entity/person/${person.id}/edit") })
     @SkipValidation
     public String edit() {
         if (isAuthenticated()) {
@@ -114,9 +118,12 @@ public class AccountController extends AuthenticationAware.Base implements Prepa
     @Action("view")
     @SkipValidation
     public String view() {
-        if(!isAuthenticated()) return "new";
-        if(getAuthenticatedUser().equals(person)) return SUCCESS;
-        logger.warn("User {}(id:{}) attempted to access account view page for {}(id:{})", new Object[]{getAuthenticatedUser(), getAuthenticatedUser().getId(), person, personId});
+        if (!isAuthenticated())
+            return "new";
+        if (getAuthenticatedUser().equals(person))
+            return SUCCESS;
+        logger.warn("User {}(id:{}) attempted to access account view page for {}(id:{})", new Object[] { getAuthenticatedUser(),
+                getAuthenticatedUser().getId(), person, personId });
         return UNAUTHORIZED;
     }
 
@@ -140,21 +147,12 @@ public class AccountController extends AuthenticationAware.Base implements Prepa
     @Action(value = "register", results = { @Result(name = "success", type = "redirect", location = "view?personId=${person.id}"),
             @Result(name = "input", location = "edit.ftl") })
     public String create() {
-        if (person == null) {
+        if (person == null || !isPostRequest()) {
             return INPUT;
         }
-        // recaptchaService.checkResponse(recaptcha_challenge_field, recaptcha_response_field);
         try {
-            Person person_ = getEntityService().findByEmail(person.getEmail());
-
-            if (person_ != null) {
-                if (person_.isRegistered()) {
-                    addActionError(ERROR_ALREADY_REGISTERED);
-                    return ERROR;
-                }
-                person.setId(person_.getId());
-                person = getEntityService().merge(person);
-            }
+            reconcilePersonWithTransient(getEntityService().findByUsername(person.getUsername()), ERROR_USERNAME_ALREADY_REGISTERED);
+            reconcilePersonWithTransient(getEntityService().findByEmail(person.getEmail()), ERROR_DUPLICATE_EMAIL);
             person.setRegistered(true);
             Institution institution = getEntityService().findInstitutionByName(institutionName);
             if (institution == null && !StringUtils.isBlank(institutionName)) {
@@ -163,8 +161,6 @@ public class AccountController extends AuthenticationAware.Base implements Prepa
                 getEntityService().save(institution);
             }
             person.setInstitution(institution);
-            // set password to hash of password + email
-            person.setPassword(DigestUtils.shaHex(password + person.getEmail()));
 
             getEntityService().saveOrUpdate(person);
             // after the person has been saved, create a contributor request for
@@ -186,19 +182,20 @@ public class AccountController extends AuthenticationAware.Base implements Prepa
 
             boolean success = getAuthenticationAndAuthorizationService().getAuthenticationProvider().addUser(person, password);
             if (success) {
-                getLogger().debug("Added user to auth service successfully.");
+                getLogger().info("Added user to auth service successfully.");
             } else {
-                getLogger().debug("user already existed in auth service.  moving on to authentication");
+                //we assume that the add operation failed because user was already in crowd. Common scenario for dev/alpha, but not prod.
+                getLogger().error("user {} already existed in auth service.  Not unusual unless it happens in prod context ", person);
             }
             // log person in.
             AuthenticationResult result = getAuthenticationAndAuthorizationService().getAuthenticationProvider().authenticate(getServletRequest(),
-                    getServletResponse(), person.getEmail(),
-                    password);
+                    getServletResponse(), person.getUsername(), password);
 
             if (result.isValid()) {
                 getLogger().debug("Authenticated successfully with auth service.");
                 getEntityService().registerLogin(person);
                 createAuthenticationToken(person);
+                addActionMessage(SUCCESSFUL_REGISTRATION_MESSAGE);
                 return SUCCESS;
             }
 
@@ -213,24 +210,42 @@ public class AccountController extends AuthenticationAware.Base implements Prepa
             addActionError(result.toString());
         } catch (Throwable t) {
             logger.debug("authentication error", t);
-            addActionErrorWithException("Count not create account", t);
+            addActionErrorWithException("Could not create account", t);
         }
         return ERROR;
     }
 
-    public boolean isEmailRegistered(String email) {
-        logger.trace("testing email:", email);
-        if (StringUtils.isBlank(email)) {
-            addActionError(ERROR_MISSING_EMAIL);
+    private void reconcilePersonWithTransient(Person person_, String error) {
+        if (person_ != null && Persistable.Base.isNullOrTransient(person)) {
+            if (person_.isRegistered()) {
+                throw new TdarRecoverableRuntimeException(error);
+            }
+            person.setId(person_.getId());
+            person = getEntityService().merge(person);
+        }
+    }
+
+    public boolean isUsernameRegistered(String username) {
+        logger.trace("testing username:", username);
+        if (StringUtils.isBlank(username)) {
+            addActionError(ERROR_MISSING_USERNAME);
             return true;
         }
-        Person person = getEntityService().findByEmail(email);
+        Person person = getEntityService().findByUsername(username);
         return (person != null && person.isRegistered());
     }
 
     @Override
     public void validate() {
         logger.trace("calling validate");
+        
+        if(person != null && person.getUsername() != null) {
+            String normalizedUsername =  getAuthenticationAndAuthorizationService().normalizeUsername(person.getUsername());
+            if(!normalizedUsername.equals(person.getUsername())) {
+                logger.info("normalizing username; was:{} \t now:{}", person.getUsername(), normalizedUsername);
+                person.setUsername(normalizedUsername);
+            }
+        }
 
         if (StringUtils.length(person.getContributorReason()) > MAXLENGTH_CONTRIBUTOR) {
             // FIXME: should we really be doing this? Or just turn contributorReason into a text field instead?
@@ -245,8 +260,8 @@ public class AccountController extends AuthenticationAware.Base implements Prepa
             addActionError("Please enter your last name");
         }
         // validate email + confirmation
-        if (isEmailRegistered(person.getEmail())) {
-            logger.debug("email was already registered: ", person.getEmail());
+        if (isUsernameRegistered(person.getUsername())) {
+            logger.debug("username was already registered: ", person.getUsername());
             addActionError(ERROR_ALREADY_REGISTERED);
         } else if (StringUtils.isBlank(getConfirmEmail())) {
             addActionError(ERROR_CONFIRM_EMAIL);
@@ -261,10 +276,10 @@ public class AccountController extends AuthenticationAware.Base implements Prepa
         } else if (!new EqualsBuilder().append(password, confirmPassword).isEquals()) {
             addActionError(ERROR_PASSWORDS_DONT_MATCH);
         }
-
+        
         checkForSpammers();
     }
-
+    
     /**
      * 
      */
@@ -313,12 +328,6 @@ public class AccountController extends AuthenticationAware.Base implements Prepa
     }
 
     public Person getPerson() {
-        // THIS DOES NOT WORK BECAUSE YOU'VE DETACHED THE PERSON FROM BOTH THE SPRING
-        // AND HIBERNATE SESSIONS...
-        // ALSO, THIS IS NOT A PLACE WHERE ANYONE BUT THE "user" WHO JUST REGISTERED
-        // WOULD SEE ANYTHING BUT THEIR OWN INFO... I WOULD ARGUE THIS IS A CARE WHERE
-        // WE WOULD SHOW EVERYTHING
-        // if(!isEditable()) {obfuscationService.obfuscate(person); }
         return person;
     }
 
@@ -348,7 +357,7 @@ public class AccountController extends AuthenticationAware.Base implements Prepa
     }
 
     public void prepare() {
-        if (personId == null || personId == -1L) {
+        if (Persistable.Base.isNullOrTransient(personId)){
             getLogger().debug("prepare: creating new person");
             person = new Person();
         } else {
@@ -460,9 +469,9 @@ public class AccountController extends AuthenticationAware.Base implements Prepa
         return getAuthenticatedUser().equals(person)
                 || getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_PERSONAL_ENTITES, getAuthenticatedUser());
     }
-    
-    //if form submittal takes too long we assume spambot.   expose the timeout value to view layer so that we can make sure
-    //actual humans get a form that is never too old while still locking out spambots.
+
+    // if form submittal takes too long we assume spambot. expose the timeout value to view layer so that we can make sure
+    // actual humans get a form that is never too old while still locking out spambots.
     public long getRegistrationTimeout() {
         return ONE_HOUR_IN_MS;
     }

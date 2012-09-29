@@ -27,12 +27,13 @@ import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.SearchIndexService;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.struts.action.search.LuceneSearchController;
+import org.tdar.struts.action.search.AdvancedSearchController;
+import org.tdar.struts.action.search.SearchParameters;
 
 public class SearchRelevancyITCase extends AbstractResourceControllerITCase {
 
     @Autowired
-    private LuceneSearchController controller;
+    private AdvancedSearchController controller;
     @Autowired
     private GenericKeywordService genericKeywordService;
     @Autowired
@@ -101,7 +102,7 @@ public class SearchRelevancyITCase extends AbstractResourceControllerITCase {
 
         Assert.assertFalse(resourceWithAttachmentMatch.getInformationResourceFiles().isEmpty());
         Assert.assertEquals(1, resourceWithAttachmentMatch.getInformationResourceFiles().size());
-        Assert.assertEquals(5, resourceWithAttachmentMatch.getInformationResourceFiles().iterator().next().getInformationResourceFileVersions().size());
+        Assert.assertEquals(6, resourceWithAttachmentMatch.getInformationResourceFiles().iterator().next().getInformationResourceFileVersions().size());
     }
 
     // assert title match appears before keywordmatch, and keywordmatch before docmatch and docmatch
@@ -165,8 +166,10 @@ public class SearchRelevancyITCase extends AbstractResourceControllerITCase {
         p.getMaterialKeywords().addAll(materialKeywords);
         genericService.saveOrUpdate(p);
         searchIndexService.index(p);
-        controller.setMaterialKeywordIds(Arrays.asList(materialKeywords.get(0).getId()));
-        controller.setResourceTypes(Arrays.asList(ResourceType.DOCUMENT, ResourceType.PROJECT));
+        SearchParameters sp = new SearchParameters();
+        controller.getGroups().add(sp);
+        sp.getMaterialKeywordIdLists().add(Arrays.asList(materialKeywords.get(0).getId().toString()));
+        controller.getResourceTypes().addAll((Arrays.asList(ResourceType.DOCUMENT, ResourceType.PROJECT)));
         controller.search();
 
         logger.debug("{}", controller.getResults());

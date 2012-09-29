@@ -13,7 +13,7 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
+import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.service.EntityService;
 import org.tdar.struts.action.DownloadController;
 import org.tdar.struts.action.TdarActionSupport;
@@ -35,14 +35,14 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
         Document doc = (Document) generateInformationResourceWithFile();
         doc.getInformationResourceFiles().iterator().next().setConfidential(true);
         entityService.save(doc);
-        assertFalse(entityService.canViewConfidentialInformation(getUser(), doc));
+        assertFalse(authenticationAndAuthorizationService.canViewConfidentialInformation(getUser(), doc));
     }
 
     @Test
     @Rollback
     public void testEmbargoed() throws InstantiationException, IllegalAccessException {
         Document doc = setupEmbargoedDoc();
-        assertFalse(entityService.canViewConfidentialInformation(getUser(), doc));
+        assertFalse(authenticationAndAuthorizationService.canViewConfidentialInformation(getUser(), doc));
     }
 
     private Document setupEmbargoedDoc() throws InstantiationException, IllegalAccessException {
@@ -58,14 +58,14 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
         Document doc = setupEmbargoedDoc();
         doc.getInformationResourceFiles().iterator().next().setConfidential(true);
         entityService.save(doc);
-        assertFalse(entityService.canViewConfidentialInformation(getUser(), doc));
+        assertFalse(authenticationAndAuthorizationService.canViewConfidentialInformation(getUser(), doc));
     }
 
     @Test
     @Rollback
     public void testReadUser() throws InstantiationException, IllegalAccessException {
         Document doc = setupReadUserDoc();
-        assertTrue(entityService.canViewConfidentialInformation(getUser(), doc));
+        assertTrue(authenticationAndAuthorizationService.canViewConfidentialInformation(getUser(), doc));
     }
 
     @Test
@@ -73,14 +73,14 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
     public void testBadReadUser() throws InstantiationException, IllegalAccessException {
         logger.info("test bad read user");
         Document doc = setupBadReadUserDoc();
-        assertFalse(entityService.canViewConfidentialInformation(getUser(), doc));
+        assertFalse(authenticationAndAuthorizationService.canViewConfidentialInformation(getUser(), doc));
     }
 
     @Test
     @Rollback
     public void testBadFullUser() throws InstantiationException, IllegalAccessException {
         Document doc = setupBadFullUserDoc();
-        assertFalse(entityService.canViewConfidentialInformation(getUser(), doc));
+        assertFalse(authenticationAndAuthorizationService.canViewConfidentialInformation(getUser(), doc));
     }
 
     private Document setupReadUserDoc() throws InstantiationException, IllegalAccessException {
@@ -103,7 +103,7 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
     @Rollback
     public void testFullUser() throws InstantiationException, IllegalAccessException {
         Document doc = setupFullUserDoc();
-        assertTrue(entityService.canViewConfidentialInformation(getUser(), doc));
+        assertTrue(authenticationAndAuthorizationService.canViewConfidentialInformation(getUser(), doc));
     }
 
     private Document setupFullUserDoc() throws InstantiationException, IllegalAccessException {

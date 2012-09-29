@@ -1,27 +1,40 @@
 package org.tdar.struts.action.search;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Indexable;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
-import org.tdar.search.query.FieldQueryPart;
+import org.tdar.core.bean.entity.Institution;
+import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.search.query.QueryFieldNames;
-import org.tdar.search.query.QueryPartGroup;
 import org.tdar.search.query.SortOption;
-import org.tdar.search.query.queryBuilder.InstitutionQueryBuilder;
-import org.tdar.search.query.queryBuilder.KeywordQueryBuilder;
-import org.tdar.search.query.queryBuilder.PersonQueryBuilder;
-import org.tdar.search.query.queryBuilder.QueryBuilder;
-import org.tdar.search.query.queryBuilder.ResourceAnnotationKeyQueryBuilder;
-import org.tdar.search.query.queryBuilder.ResourceCollectionQueryBuilder;
-import org.tdar.search.query.queryBuilder.ResourceQueryBuilder;
+import org.tdar.search.query.builder.InstitutionQueryBuilder;
+import org.tdar.search.query.builder.KeywordQueryBuilder;
+import org.tdar.search.query.builder.PersonQueryBuilder;
+import org.tdar.search.query.builder.QueryBuilder;
+import org.tdar.search.query.builder.ResourceAnnotationKeyQueryBuilder;
+import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
+import org.tdar.search.query.builder.ResourceQueryBuilder;
+import org.tdar.search.query.part.AutocompleteTitleQueryPart;
+import org.tdar.search.query.part.FieldQueryPart;
+import org.tdar.search.query.part.InstitutionQueryPart;
+import org.tdar.search.query.part.PersonQueryPart;
+import org.tdar.search.query.part.QueryPartGroup;
 
 /**
  * $Id$
@@ -47,6 +60,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
     private String url;
     private String projectId;
     private String collectionId;
+    private String title;
 
     private String keywordType;
     private String term;
@@ -54,33 +68,49 @@ public class LookupController extends AbstractLookupController<Indexable> {
     // this defines what we are looking up (people, institutions, etc)
     // FIXME: lookupSource really should be an enum or const.
     private String lookupSource;
-
     private Long sortCategoryId;
+    private List<String> projections = new ArrayList<String>();
+    private boolean includeCompleteRecord = false;
+    private GeneralPermissions permission = GeneralPermissions.VIEW_ALL;
 
     @Action(value = "person",
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
             results = { @Result(name = "success", location = "lookup.ftl", type = "freemarker", params = { "contentType", "application/json" }) })
     public String lookupPerson() {
         QueryBuilder q = new PersonQueryBuilder();
-
+        boolean valid = false;
         this.lookupSource = "people";
         setMode("personLookup");
-        addEscapedWildcardField(q, "firstName", firstName);
-        addEscapedWildcardField(q, "lastName", lastName);
-        addEscapedWildcardField(q, "email", email);
-
-        if (checkMinString(institution) && StringUtils.isNotBlank(institution)) {
-            FieldQueryPart fqp = new FieldQueryPart("institution.name_auto", institution);
-            if (institution.contains(" ")) {
-                fqp.setQuotedEscapeValue(institution);
-            }
-            q.append(fqp);
+        Person incomingPerson = new Person();
+        if (checkMinString(firstName)) {
+            incomingPerson.setFirstName(firstName);
+            valid = true;
+        }
+        if (checkMinString(lastName)) {
+            incomingPerson.setLastName(lastName);
+            valid = true;
+        }
+        if (checkMinString(institution)) {
+            valid = true;
+            Institution incomingInstitution = new Institution(institution);
+            incomingPerson.setInstitution(incomingInstitution);
+            getGenericService().detachFromSession(incomingInstitution);
         }
 
-        if (!q.isEmpty() || getMinLookupLength() == 0) {
+        // ignore email field for unauthenticated users.
+        if (isAuthenticated() && checkMinString(email)) {
+            incomingPerson.setEmail(email);
+            valid = true;
+        }
+        getGenericService().detachFromSession(incomingPerson);
+
+        PersonQueryPart pqp = new PersonQueryPart();
+        pqp.add(incomingPerson);
+        q.append(pqp);
+        if (valid || getMinLookupLength() == 0) {
             if (StringUtils.isNotBlank(registered)) {
                 try {
-                    Boolean.parseBoolean(registered);
-                    q.append(new FieldQueryPart("registered", registered));
+                    pqp.setRegistered(Boolean.parseBoolean(registered));
                 } catch (Exception e) {
                     addActionErrorWithException("Invalid query syntax, please try using simpler terms without special characters.", e);
                     return ERROR;
@@ -89,6 +119,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
 
             try {
                 handleSearch(q);
+                // sanitize results if the user is not logged in
             } catch (ParseException e) {
                 addActionErrorWithException("Invalid query syntax, please try using simpler terms without special characters.", e);
                 return ERROR;
@@ -98,6 +129,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
     }
 
     @Action(value = "institution",
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
             results = { @Result(name = "success", location = "lookup.ftl", type = "freemarker", params = { "contentType", "application/json" }) })
     public String lookupInstitution() {
         QueryBuilder q = new InstitutionQueryBuilder();
@@ -105,18 +137,13 @@ public class LookupController extends AbstractLookupController<Indexable> {
 
         this.lookupSource = "institutions";
 
-        // only return results if query length has enough characters
-        QueryPartGroup group = new QueryPartGroup();
         if (checkMinString(this.institution)) {
-            group.setOperator(Operator.OR);
-
-            // even if we allow zero-length strings, we dont want to append them to the queryBuilder. Just gimme all the institutions
-            if (StringUtils.isNotBlank(institution)) {
-                addQuotedEscapedField(group, "name_auto", institution);
-                addQuotedEscapedField(group, "acronym", institution);
-                q.append(group);
+            InstitutionQueryPart iqp = new InstitutionQueryPart();
+            Institution testInstitution = new Institution(this.institution);
+            if(StringUtils.isNotBlank(this.institution)) {
+                iqp.add(testInstitution);
+                q.append(iqp);
             }
-
             try {
                 handleSearch(q);
             } catch (ParseException e) {
@@ -129,30 +156,36 @@ public class LookupController extends AbstractLookupController<Indexable> {
     }
 
     @Action(value = "resource",
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
             results = { @Result(name = "success", location = "lookup.ftl", type = "freemarker", params = { "contentType", "application/json" }) })
     public String lookupResource() {
         QueryBuilder q = new ResourceQueryBuilder();
         this.lookupSource = "resources";
         setMode("resourceLookup");
-
-        addResourceTypeQueryPart(q, getResourceTypes());
-
-        appendStatusInformation(q, null, getIncludedStatuses(), getAuthenticatedUser());
-
-        try {
-            appendIf(isUseSubmitterContext(), q, QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY, getAuthenticatedUser().getId().toString());
-        } catch (IllegalStateException e) {
-            addActionError("you must be logged in");
+        // if we're doing a coding sheet lookup, make sure that we have access to all of the information here
+        if (!isIncludeCompleteRecord() || getAuthenticatedUser() == null) {
+            logger.info("using projection {}, {}", isIncludeCompleteRecord(), getAuthenticatedUser());
+            projections.add("id");
         }
-        QueryPartGroup valueGroup = new QueryPartGroup();
-        addTitlePart(valueGroup, getTerm());
 
+        QueryPartGroup valueGroup = new QueryPartGroup();
+        if (StringUtils.isNotBlank(getTerm())) {
+            valueGroup.append(new AutocompleteTitleQueryPart(getTerm()));
+        }
+
+        // assumption: if sortCategoryId is set, we assume we are serving a coding-sheet/ontology autocomplete
+        // FIXME: instead of guessing this way it may be better to break codingsheet/ontology autocomplete lookups to another action.
         if (getSortCategoryId() != null && getSortCategoryId() > -1) {
             // SHOULD PREFER THINGS THAT HAVE THAT CATEGORY ID
             FieldQueryPart q2 = new FieldQueryPart(QueryFieldNames.CATEGORY_ID, getSortCategoryId().toString().trim());
-            q2.setBoost(5f);
+            q2.setBoost(2f);
             valueGroup.append(q2);
             valueGroup.setOperator(Operator.OR);
+
+            // if searching by category AND title, a relevancy sort makes more sense
+            if (StringUtils.isNotBlank(term)) {
+                setSortField(SortOption.RELEVANCE);
+            }
         }
         q.append(valueGroup);
 
@@ -164,13 +197,19 @@ public class LookupController extends AbstractLookupController<Indexable> {
             q.append(group);
         }
 
-        appendIf(StringUtils.isNotBlank(collectionId) && StringUtils.isNumeric(collectionId), q, QueryFieldNames.RESOURCE_COLLECTION_PUBLIC_IDS, collectionId);
+        // FIXME: SHOULD I BE "SHARED" OR PUBLIC
+        appendIf(StringUtils.isNotBlank(collectionId) && StringUtils.isNumeric(collectionId), q, QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, collectionId);
 
         if (getSortField() != SortOption.RELEVANCE) {
             setSecondarySortField(SortOption.TITLE);
         }
+
+        q.append(processReservedTerms());
         try {
             handleSearch(q);
+            if (CollectionUtils.isNotEmpty(getProjections())) {
+                setResults(getGenericService().populateSparseObjectsById(getResults(), Resource.class));
+            }
             logger.trace("jsonResults:" + getResults());
         } catch (ParseException e) {
             addActionErrorWithException("Invalid query syntax, please try using simpler terms without special characters.", e);
@@ -181,6 +220,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
     }
 
     @Action(value = "keyword",
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
             results = { @Result(name = "success", location = "lookup.ftl", type = "freemarker", params = { "contentType", "application/json" }) })
     public String lookupKeyword() {
         // only return results if query length has enough characters
@@ -234,10 +274,11 @@ public class LookupController extends AbstractLookupController<Indexable> {
     }
 
     @Action(value = "collection",
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
             results = { @Result(name = "success", location = "lookup.ftl", type = "freemarker", params = { "contentType", "application/json" }) })
     public String lookupResourceCollection() {
         QueryBuilder q = new ResourceCollectionQueryBuilder();
-        setMinLookupLength(2);
+        setMinLookupLength(0);
 
         this.lookupSource = "collections";
         logger.trace("looking up:'" + term + "'");
@@ -245,15 +286,23 @@ public class LookupController extends AbstractLookupController<Indexable> {
 
         // only return results if query length has enough characters
         if (checkMinString(term)) {
-            addQuotedEscapedField(q, QueryFieldNames.COLLECTION_NAME_AUTO, term);
-            FieldQueryPart fqp = new FieldQueryPart(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED);
-            q.append(fqp);
-            try {
-                appendIf(isUseSubmitterContext(), q, QueryFieldNames.COLLECTION_USERS_WHO_CAN_MODIFY, getAuthenticatedUser().getId().toString());
-            } catch (IllegalStateException e) {
-                addActionError("you must be logged in");
+            q.append(new AutocompleteTitleQueryPart(getTerm()));
+            QueryPartGroup rightsGroup = new QueryPartGroup(Operator.OR);
+            q.append(new FieldQueryPart(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED));
+            rightsGroup.append(new FieldQueryPart(QueryFieldNames.COLLECTION_VISIBLE, "true"));
+            if (!Persistable.Base.isNullOrTransient(getAuthenticatedUser())) {
+                String field = QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW;
+                switch (getPermission()) {
+                    case MODIFY_RECORD:
+                        field = QueryFieldNames.COLLECTION_USERS_WHO_CAN_MODIFY;
+                        break;
+                    case ADMINISTER_GROUP:
+                        field = QueryFieldNames.COLLECTION_USERS_WHO_CAN_ADMINISTER;
+                        break;
+                }
+                rightsGroup.append(new FieldQueryPart(field, getAuthenticatedUser().getId().toString()));
             }
-
+            q.append(rightsGroup);
             try {
                 handleSearch(q);
             } catch (ParseException e) {
@@ -270,7 +319,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
     }
 
     public void setFirstName(String firstName) {
-        this.firstName = firstName;
+        this.firstName = StringUtils.trim(firstName);
     }
 
     public String getLastName() {
@@ -278,7 +327,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
     }
 
     public void setLastName(String lastName) {
-        this.lastName = lastName;
+        this.lastName = StringUtils.trim(lastName);
     }
 
     public String getInstitution() {
@@ -286,7 +335,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
     }
 
     public void setInstitution(String institution) {
-        this.institution = institution;
+        this.institution = StringUtils.trim(institution);
     }
 
     public String getEmail() {
@@ -294,7 +343,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        this.email = StringUtils.trim(email);
     }
 
     public String getRegistered() {
@@ -332,7 +381,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
      *            the term to set
      */
     public void setTerm(String term) {
-        this.term = term;
+        this.term = StringUtils.trim(term);
     }
 
     /**
@@ -371,6 +420,43 @@ public class LookupController extends AbstractLookupController<Indexable> {
 
     public void setSortCategoryId(Long sortCategoryId) {
         this.sortCategoryId = sortCategoryId;
+    }
+
+    /**
+     * @return the title
+     */
+    public String getTitle() {
+        return title;
+    }
+
+    /**
+     * @param title
+     *            the title to set
+     */
+    public void setTitle(String title) {
+
+        this.title = StringUtils.trim(title);
+    }
+
+    @Override
+    public List<String> getProjections() {
+        return projections;
+    }
+
+    public boolean isIncludeCompleteRecord() {
+        return includeCompleteRecord;
+    }
+
+    public void setIncludeCompleteRecord(boolean includeCompleteRecord) {
+        this.includeCompleteRecord = includeCompleteRecord;
+    }
+
+    public GeneralPermissions getPermission() {
+        return permission;
+    }
+
+    public void setPermission(GeneralPermissions permission) {
+        this.permission = permission;
     }
 
 }

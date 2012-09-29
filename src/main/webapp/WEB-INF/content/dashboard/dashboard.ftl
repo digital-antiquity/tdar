@@ -9,7 +9,6 @@
 <meta name="lastModifiedDate" content="$Date$"/>
 
 
-<script type='text/javascript' src='<@s.url value="/includes/datatable-support.js"/>'></script>
 <script type='text/javascript'>
 try {
     $(function() {
@@ -25,12 +24,6 @@ try {
 
 <@edit.resourceDataTableJavascript />
 
-<style type="text/css">
-    div.recent-title {display:inline-block; width:600pt;}
-    div.recent-nav {display:inline-block; float:right;}
-    #recentlyEditedResources li:hover{background-color: #eee9d5} 
-    #emptyProjects li:hover{background-color: #eee9d5} 
-</style>
 </head>
 
 <div id="messages" style="margin:2px">
@@ -48,12 +41,12 @@ Welcome back, ${authenticatedUser.firstName}!
 </#if>
 <br/>
 </div>
-<!--
+
 <div class="glide news">
-<B>FIXME: ADD NEW BLOG POST</B>
-We just upgraded tDAR with a bunch of additional features, a list of features are available <a href="http://www.tdar.org/news/2011/10/tdar-software-update-fluvial/">here</a> on the tDAR website. 
+<B>tDAR Update:</B>
+We just upgraded tDAR with a bunch of additional features, a list of features are available <a href="http://www.tdar.org/news/2012/07/tdar-software-update-harris/">here</a> on the tDAR website. 
 </div>
--->
+
 <#if contributor>
 <#if (activeResourceCount == 0)>
 <div class="glide">
@@ -69,24 +62,24 @@ We just upgraded tDAR with a bunch of additional features, a list of features ar
 <div class="glide">
 <h3>At a glance</h3>
 
-    <div style="float:right"><@common.pieChart statusCountForUser "statusForUser" "includedStatuses" /></div>
-    <@common.pieChart resourceCountForUser "resourceForUser" "resourceTypes" />
+    <div style="float:right"><@common.pieChart statusCountForUser "statusForUser" "userSubmitterContext=true&includedStatuses" /></div>
+    <@common.pieChart resourceCountForUser "resourceForUser" "useSubmitterContext=true&resourceTypes" />
 
 
 </div>
 
 <div class="glide">
 <h3>Item(s) You've Recently Updated</h3>
-<ol style='list-style-position:inside' id='recentlyEditedResources'>
-    <@s.iterator value='recentlyEditedResources' status='recentEditStatus' var='res'>
+<ol id='recentlyEditedResources'>
+    <#list recentlyEditedResources as res>
     <li id="li-recent-resource-${res.id?c}">
         <div class="recent-nav">
             <a href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>">edit</a> |
             <a href="<@s.url value='/${res.urlNamespace}/delete'><@s.param name="id" value="${res.id?c}"/></@s.url>">delete</a>
         </div>
-           <span class="fixed"> [${res.resourceType.label}] <a href="<@s.url value='/${res.urlNamespace}/view'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@common.truncate res.title 65 /></a></span>
+           <span class="fixed"> <span class="${res.resourceType.fieldName?lower_case}-color cartouche">${res.resourceType.label}</span> <a href="<@s.url value='/${res.urlNamespace}/view'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@common.truncate res.title 65 /></a></span>
     </li>
-    </@s.iterator>
+    </#list>
 </ol>
 </div>
 
@@ -114,7 +107,7 @@ We just upgraded tDAR with a bunch of additional features, a list of features ar
 
 
 <div class="glide" id="project-list">
-<h3>Browse Resources By Project</h3>
+<h3>Browse Resources</h3>
 <form action=''>
 <@edit.resourceDataTable />
 </form>
@@ -128,7 +121,7 @@ We just upgraded tDAR with a bunch of additional features, a list of features ar
 
    <div class="glide"><h3>Collections You Created </h3>
       <@listCollections resourceCollections>
-        <#if (resourceCollections?? && resourceCollections.size() == 0)>
+        <#if (!resourceCollections?has_content )>
           <li><a href="<@s.url value="/collection/add"/>">create one</a></li>
         </#if>
       </@listCollections>
@@ -154,7 +147,7 @@ We just upgraded tDAR with a bunch of additional features, a list of features ar
       <ul>
       <#assign currentIndent =1 />
         <#list resourceCollections_ as collection>
-          <#assign itemIndent = collection.parentNameList.size() />
+          <#assign itemIndent = collection.parentNameList?size />
           <#if itemIndent != currentIndent>
             <#if (itemIndent > currentIndent) >
               <@repeat (itemIndent - currentIndent) "<ul>"/>

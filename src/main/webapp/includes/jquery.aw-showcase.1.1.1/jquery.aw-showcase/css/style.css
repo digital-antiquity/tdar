@@ -37,7 +37,7 @@
 	.showcase-arrow-previous, .showcase-arrow-next
 	{
 		position: absolute;
-		background: url('../images/arrows.png');
+		background: url('/includes/jquery.aw-showcase.1.1.1/jquery.aw-showcase/images/arrows.png');
 		width: 33px;
 		height: 33px;
 		top: 220px;
@@ -84,7 +84,7 @@
 		/* Styling the tooltips */
 		.showcase-plus-anchor
 		{
-			background-image: url('../images/plus.png');
+			background-image: url('/includes/jquery.aw-showcase.1.1.1/jquery.aw-showcase/images/plus.png');
 			background-repeat: no-repeat;
 		}
 		
@@ -99,7 +99,7 @@
 			color: #000;
 			text-align: left;
 			padding: 5px 8px;
-			background-image: url(../images/white-opacity-80.png);
+			background-image: url(/includes/jquery.aw-showcase.1.1.1/jquery.aw-showcase/images/white-opacity-80.png);
 		}
 		
 		/* Styling the caption */
@@ -111,7 +111,7 @@
 			position: absolute;
 			bottom: 10px; left: 10px; right: 10px;
 			display: none;
-			background-image: url(../images/white-opacity-80.png);
+			background-image: url(/includes/jquery.aw-showcase.1.1.1/jquery.aw-showcase/images/white-opacity-80.png);
 		}
 		
 	.showcase-onepage .showcase-content
@@ -179,7 +179,7 @@
 			
 			.showcase-thumbnail-cover
 			{
-				background-image: url(../images/black-opacity-40.png);
+				background-image: url(/includes/jquery.aw-showcase.1.1.1/jquery.aw-showcase/images/black-opacity-40.png);
 				position: absolute;
 				top: 0; bottom: 0; left: 0; right: 0;
 			}
@@ -243,7 +243,7 @@
 		.showcase-thumbnail-button-forward .showcase-thumbnail-horizontal,
 		.showcase-thumbnail-button-backward .showcase-thumbnail-horizontal
 		{
-			background-image: url(../images/arrows-small.png);
+			background-image: url(/includes/jquery.aw-showcase.1.1.1/jquery.aw-showcase/images/arrows-small.png);
 			background-repeat: no-repeat;
 			display: block;
 			width: 17px;

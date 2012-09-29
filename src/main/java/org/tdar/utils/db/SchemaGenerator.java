@@ -19,6 +19,8 @@ import javax.persistence.NamedQuery;
 import org.apache.log4j.Logger;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
+import org.hibernate.tool.hbm2ddl.SchemaExport.Type;
+import org.hibernate.tool.hbm2ddl.Target;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
@@ -63,7 +65,7 @@ public class SchemaGenerator {
         File f = new File(filename);
         new File(f.getParent()).mkdirs();
         export.setOutputFile(filename);
-        export.execute(false, false, false, true);
+        export.execute(Target.SCRIPT, Type.CREATE);
     }
 
     /**

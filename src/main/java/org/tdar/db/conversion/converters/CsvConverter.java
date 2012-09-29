@@ -8,9 +8,9 @@ import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.dataTable.DataTable;
-import org.tdar.core.bean.resource.dataTable.DataTableColumn;
-import org.tdar.core.bean.resource.dataTable.DataTableColumnType;
+import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.db.conversion.ConversionStatisticsManager;
 import org.tdar.db.model.abstracts.TargetDatabase;

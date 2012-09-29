@@ -2,20 +2,21 @@ package org.tdar.struts.action.search;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import junit.framework.Assert;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.lucene.queryParser.ParseException;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -28,8 +29,6 @@ import org.tdar.core.service.SearchIndexService;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.web.SessionData;
 
-import de.schlichtherle.io.FileInputStream;
-
 @Transactional
 public class LuceneExcelExportControllerITCase extends AbstractSearchControllerITCase {
 	
@@ -37,7 +36,7 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
 	private static final int EXCEL_EXPORT_HEADER_ROWCOUNT = 5; 
 
     @Autowired
-    private LuceneSearchController controller;
+    private AdvancedSearchController controller;
 
     @Autowired
     SearchIndexService searchIndexService;
@@ -53,25 +52,23 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
         searchIndexService.indexAll(Resource.class);
         currentUser = getBasicUser();
         controller.setSessionData(new SessionData()); // create unauthenticated session
-        getServletRequest().setAttribute("RequestURI", "http://www.test.com");
-        controller = generateNewInitializedController(LuceneSearchController.class);
+        getServletGetRequest().setAttribute("RequestURI", "http://www.test.com");
+        controller = generateNewInitializedController(AdvancedSearchController.class);
 
-        controller.setServletRequest(getServletRequest());
+        controller.setServletRequest(getServletGetRequest());
         doSearch("");
         assertEquals(TdarActionSupport.SUCCESS, controller.viewExcelReport());
-        assertFalse(controller.getDescBuilder().toString() + " should not have bold tag", controller.getDescBuilder().toString().toLowerCase().contains("<b>"));
+        assertFalse(controller.getSearchPhrase() + " should not have bold tag", controller.getSearchPhrase().toLowerCase().contains("<b>"));
         File tempFile = File.createTempFile("report", ".xls");
         FileOutputStream fileOutputStream = new FileOutputStream(tempFile);
         long copyLarge = IOUtils.copyLarge(controller.getInputStream(), fileOutputStream);
         
         fileOutputStream.close();
-        logger.debug("{}", tempFile);
+        logger.debug("tempFile: {}", tempFile);
 
         Workbook workbook = WorkbookFactory.create(new FileInputStream(tempFile));
         Sheet sheet = workbook.getSheet("results");
         Assert.assertEquals(TdarConfiguration.getInstance().getSearchExcelExportRecordMax(), sheet.getLastRowNum() - EXCEL_EXPORT_HEADER_ROWCOUNT);
-        
-        
     }
 
     @Test
@@ -80,10 +77,10 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
         searchIndexService.indexAll(Resource.class);
         currentUser = null;
         controller.setSessionData(new SessionData()); // create unauthenticated session
-        getServletRequest().setAttribute("RequestURI", "http://www.test.com");
-        controller = generateNewInitializedController(LuceneSearchController.class);
+        getServletGetRequest().setAttribute("RequestURI", "http://www.test.com");
+        controller = generateNewInitializedController(AdvancedSearchController.class);
 
-        controller.setServletRequest(getServletRequest());
+        controller.setServletRequest(getServletGetRequest());
         doSearch("");
         assertEquals(TdarActionSupport.UNAUTHORIZED, controller.viewExcelReport());
         setIgnoreActionErrors(true);

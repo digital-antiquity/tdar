@@ -11,6 +11,7 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.resource.DegreeType;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.InformationResource;
@@ -36,6 +37,7 @@ public class DocumentController extends AbstractInformationResourceController<Do
     private static final long serialVersionUID = -2757927125067486814L;
     // incoming data
     private DocumentType documentType;
+    private DegreeType degree;
 
     private List<DocumentType> documentTypes = Arrays.asList(DocumentType.values());
 
@@ -43,6 +45,7 @@ public class DocumentController extends AbstractInformationResourceController<Do
 
     // either "source" or "related". kind of hacky. should be a better way to do this.
     private String linkType;
+    private List<DegreeType> degrees = Arrays.asList(DegreeType.values());
 
     @Actions({
             @Action("related"),
@@ -71,8 +74,6 @@ public class DocumentController extends AbstractInformationResourceController<Do
     @Override
     protected void loadCustomMetadata() {
         super.loadCustomMetadata();
-        loadInformationResourceProperties();
-        loadResourceProviderInformation();
     }
 
     @Override
@@ -85,6 +86,7 @@ public class DocumentController extends AbstractInformationResourceController<Do
         // handleLinkedInformationResource();
         getGenericService().saveOrUpdate(document);
         return SUCCESS;
+
     }
 
     // private void handleLinkedInformationResource() {
@@ -124,6 +126,10 @@ public class DocumentController extends AbstractInformationResourceController<Do
         return documentTypes;
     }
 
+    public List<DegreeType> getDegrees() {
+        return degrees;
+    }
+
     public String getLinkType() {
         return linkType;
     }
@@ -146,5 +152,18 @@ public class DocumentController extends AbstractInformationResourceController<Do
 
     public Class<Document> getPersistableClass() {
         return Document.class;
+    }
+
+    public DegreeType getDegree() {
+        return degree;
+    }
+
+    public void setDegree(DegreeType degree) {
+        this.degree = degree;
+    }
+    
+    @Action("file-upload-test")
+    public String fileUploadTest() {
+        return SUCCESS;
     }
 }

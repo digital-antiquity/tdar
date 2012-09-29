@@ -1,28 +1,36 @@
 package org.tdar.struts.action.resource;
 
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
+import static org.tdar.core.bean.Persistable.Base.isNullOrTransient;
+
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedMap;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
+import org.tdar.core.bean.resource.Ontology;
+import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.bean.resource.dataTable.DataTable;
+import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.parser.CodingSheetParserException;
+import org.tdar.core.service.external.auth.InternalTdarRights;
+import org.tdar.struts.WriteableSession;
+import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FileProxy;
 
 /**
@@ -46,6 +54,20 @@ public class CodingSheetController extends AbstractSupportingInformationResource
 
     private List<CodingSheet> allSubmittedCodingSheets;
 
+    private List<OntologyNode> ontologyNodes;
+
+    private List<CodingRule> codingRules;
+
+    private Ontology ontology;
+
+    private SortedMap<String, List<OntologyNode>> suggestions;
+
+    @Override
+    protected void loadCustomMetadata() {
+        super.loadCustomMetadata();
+        setOntology(getCodingSheet().getDefaultOntology());
+    };
+
     /**
      * Save basic metadata of the registering concept.
      * 
@@ -53,10 +75,18 @@ public class CodingSheetController extends AbstractSupportingInformationResource
      */
     @Override
     protected String save(CodingSheet codingSheet) {
+        if (!isNullOrTransient(ontology)) {
+            // load the full hibernate entity and set it back on the incoming column
+            ontology = getGenericService().find(Ontology.class, ontology.getId());
+        }
+
+        getCodingSheetService().reconcileOntologyReferencesOnRulesAndDataTableColumns(codingSheet, ontology);
+
         super.saveBasicResourceMetadata();
         super.saveInformationResourceProperties();
         super.saveCategories();
-        getCodingSheetService().saveOrUpdate(codingSheet);
+
+        getGenericService().saveOrUpdate(codingSheet);
         handleUploadedFiles();
         // datatables associated with this coding sheet need to be updated
         refreshAssociatedData(codingSheet);
@@ -75,10 +105,10 @@ public class CodingSheetController extends AbstractSupportingInformationResource
     }
 
     @Override
-    protected FileProxy createUploadedFileProxy(String fileTextInput) throws UnsupportedEncodingException {
+    protected FileProxy createUploadedFileProxy(String fileTextInput) throws IOException {
         String filename = getPersistable().getTitle() + ".csv";
         // ensure csv conversion
-        return new FileProxy(filename, new ByteArrayInputStream(fileTextInput.getBytes("UTF-8")), VersionType.UPLOADED);
+        return new FileProxy(filename, FileProxy.createTempFileFromString(fileTextInput), VersionType.UPLOADED);
     }
 
     @Override
@@ -108,23 +138,60 @@ public class CodingSheetController extends AbstractSupportingInformationResource
         }
         // should always be 1 based on the check above
         getLogger().debug("adding coding rules");
-        addCodingRules(toProcess.getFilename(), new FileInputStream(toProcess.getFile()));
-
-        getCodingSheetService().saveOrUpdate(getPersistable());
+        getCodingSheetService().parseUpload(getPersistable(), toProcess);
+        getGenericService().saveOrUpdate(getPersistable());
     }
 
-    /**
-     * The uploading file stream of coding rules is converted and saved into the
-     * database.
-     * 
-     * Errors caused during parsing are rethrown up to the controller method that
-     * can best handle it and return a useful error message to the user.
-     * 
-     * @param filename
-     * @param inputCodingRulesStream
-     */
-    private void addCodingRules(final String filename, final InputStream inputCodingRulesStream) throws IOException, CodingSheetParserException {
-        getCodingSheetService().parseUpload(getPersistable(), filename, inputCodingRulesStream);
+    @SkipValidation
+    @Action(value = "mapping", results = {
+            @Result(name = SUCCESS, location = "mapping.ftl"),
+            @Result(name = INPUT, type = "redirect", location = "view?id=${resource.id}")
+    })
+    public String loadOntologyMappedColumns() throws TdarActionException {
+        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+        getLogger().debug("loading ontology mapped columns for {}", getPersistable());
+        Ontology ontology = getCodingSheet().getDefaultOntology();
+        setOntologyNodes(ontology.getSortedOntologyNodesByImportOrder());
+        logger.debug("{}", getOntologyNodes());
+        setCodingRules(new ArrayList<CodingRule>(getCodingSheet().getSortedCodingRules()));
+        // List<String> distinctColumnValues = getDistinctColumnValues();
+        // generate suggestions for all distinct column values or only those
+        // columns that aren't already mapped?
+        suggestions = getOntologyService().applySuggestions(getCodingSheet().getCodingRules(), getOntologyNodes());
+        // load existing ontology mappings
+
+        return SUCCESS;
+    }
+
+    @WriteableSession
+    @SkipValidation
+    @Action(value = "save-mapping", results = {
+            @Result(name = SUCCESS, type = "redirect", location = "view?id=${resource.id}"),
+            @Result(name = INPUT, location = "mapping.ftl") })
+    public String saveValueOntologyNodeMapping() throws TdarActionException {
+        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+        try {
+            getLogger().debug("saving coding rule -> ontology node mappings for {} - this will generate a new default coding sheet!");
+            for (CodingRule transientRule : getCodingRules()) {
+                getLogger().debug(" matching column values: {} -> node ids {}", transientRule, transientRule.getOntologyNode());
+                CodingRule rule = getCodingSheet().getCodingRuleById(transientRule.getId());
+                Ontology ontology = getCodingSheet().getDefaultOntology();
+                if (transientRule.getOntologyNode() != null) {
+                    OntologyNode node = ontology.getOntologyNodeById(transientRule.getOntologyNode().getId());
+                    rule.setOntologyNode(node);
+                }
+            }
+            getGenericService().save(getCodingSheet().getCodingRules());
+        } catch (Throwable tde) {
+            logger.error(tde.getMessage(), tde);
+            addActionErrorWithException(tde.getMessage(), tde);
+            return INPUT;
+        }
+        return SUCCESS;
+    }
+
+    public List<CodingRule> getCodingRules() {
+        return codingRules;
     }
 
     /**
@@ -171,5 +238,32 @@ public class CodingSheetController extends AbstractSupportingInformationResource
 
     public Class<CodingSheet> getPersistableClass() {
         return CodingSheet.class;
+    }
+
+    public void setCodingRules(List<CodingRule> codingRules) {
+        this.codingRules = codingRules;
+    }
+
+    public List<OntologyNode> getOntologyNodes() {
+        return ontologyNodes;
+    }
+
+    public void setOntologyNodes(List<OntologyNode> ontologyNodes) {
+        this.ontologyNodes = ontologyNodes;
+    }
+
+    /**
+     * @return the suggestions
+     */
+    public SortedMap<String, List<OntologyNode>> getSuggestions() {
+        return suggestions;
+    }
+
+    public Ontology getOntology() {
+        return ontology;
+    }
+
+    public void setOntology(Ontology ontology) {
+        this.ontology = ontology;
     }
 }

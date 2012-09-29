@@ -45,6 +45,7 @@ public class InstitutionControllerITCase extends AbstractAdminControllerITCase {
         controller.setId(inst.getId());
         controller.prepare();
         controller.getInstitution().setName(newName);
+        controller.setServletRequest(getServletPostRequest());
         controller.save();
         
         //ensure stuff was changed

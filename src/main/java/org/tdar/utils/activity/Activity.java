@@ -9,6 +9,7 @@ import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.web.SessionData;
 
 public class Activity implements Serializable {
 
@@ -29,14 +30,25 @@ public class Activity implements Serializable {
 
     private String message;
 
+    private String browser;
+    private String host;
+
     public Activity() {
+        start();
     }
 
     public Activity(HttpServletRequest httpServletRequest) {
-        start();
+        this();
         HttpServletRequest request = ServletActionContext.getRequest();
         this.name = String.format("%s:%s?%s [%s]", request.getMethod(), request.getServletPath(),
                 request.getQueryString() == null ? "" : request.getQueryString(), request.getHeader("User-Agent"));
+
+        this.setBrowser(request.getHeader("User-Agent"));
+        this.setHost(request.getRemoteHost());
+        SessionData sessionData = (SessionData) request.getSession().getAttribute("scopedTarget.sessionData");
+        if (sessionData != null) {
+            setUser(sessionData.getPerson());
+        }
     }
 
     public Date getStartDate() {
@@ -123,5 +135,32 @@ public class Activity implements Serializable {
 
     public void setTotalTime(Long totalTime) {
         this.totalTime = totalTime;
+    }
+
+    public boolean hasEnded() {
+        return (this.endDate == null);
+    }
+
+    public String getBrowser() {
+        return browser;
+    }
+
+    public void setBrowser(String browser) {
+        this.browser = browser;
+    }
+
+    public boolean hasExpired(long since) {
+        if (endDate == null) {
+            return false;
+        }
+        return endDate.getTime() < since;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
     }
 }

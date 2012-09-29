@@ -73,53 +73,44 @@ public class PairtreeFilestore extends BaseFilestore {
      * @see org.tdar.filestore.Filestore#store(java.io.InputStream)
      */
     public String storeAndRotate(InputStream content, InformationResourceFileVersion version, int maxRotations) throws IOException {
-        OutputStream outstream = null;
+        OutputStream outputStream = null;
         String path = getAbsoluteFilePath(version);
-        logger.info("storing at: " + path);
+        logger.info("storing at: {}", path);
         File outFile = new File(path);
         if (outFile.exists() && maxRotations > 0) {
             rotate(outFile, maxRotations);
         }
         String errorMessage = "Unable to write content to filestore.";
-        DigestInputStream in = appendMessageDigestStream(content);
+        DigestInputStream digestInputStream = appendMessageDigestStream(content);
         try {
             FileUtils.forceMkdir(outFile.getParentFile());
             if (outFile.canWrite() || outFile.createNewFile()) {
-                outstream = new FileOutputStream(outFile);
-                IOUtils.copy(in, outstream);
+                outputStream = new FileOutputStream(outFile);
+                IOUtils.copy(digestInputStream, outputStream);
             } else {
                 logger.error(errorMessage);
                 throw new TdarRuntimeException(errorMessage + "Can't write to: " + outFile.getAbsolutePath());
             }
             updateVersionInfo(outFile, version);
+            MessageDigest digest = digestInputStream.getMessageDigest();
+            if (StringUtils.isEmpty(version.getChecksum())) {
+                version.setChecksumType(digest.getAlgorithm());
+                version.setChecksum(formatDigest(digest));
+            }
+            return outFile.getCanonicalPath();
         } catch (IOException iox) {
-            //this exception may be swallowed if our finally block itself throws an exception, so we log it here first
+            // this exception may be swallowed if our finally block itself throws an exception, so we log it here first
             logger.error(errorMessage, iox);
             throw iox;
+        } finally {
+            IOUtils.closeQuietly(content);
+            IOUtils.closeQuietly(digestInputStream);
+            IOUtils.closeQuietly(outputStream);
         }
-        
-        finally {
-            if (content != null) {
-                IOUtils.closeQuietly(content);
-            }
-            if (in != null) {
-                IOUtils.closeQuietly(in);
-            }
-            if (outstream != null) {
-                IOUtils.closeQuietly(outstream);
-            }
-        }
-        MessageDigest digest = in.getMessageDigest();
-        if (StringUtils.isEmpty(version.getChecksum())) {
-            version.setChecksumType(digest.getAlgorithm());
-            version.setChecksum(formatDigest(digest));
-        }
-
-        return outFile.getCanonicalPath();
     }
 
     private void rotate(File outFile, Integer maxRotations) {
-        logger.trace("rotating file: " + outFile.getName());
+        logger.trace("rotating file: {}", outFile.getName());
         File parentDir = outFile.getParentFile();
         for (int i = maxRotations; i > 0; i--) {
             String baseName = FilenameUtils.getBaseName(outFile.getName());
@@ -132,7 +123,7 @@ public class PairtreeFilestore extends BaseFilestore {
             rotationTarget = String.format("%s%s%s", baseName, rotationTarget, ext);
             rotationParent = String.format("%s%s%s", baseName, rotationParent, ext);
 
-            logger.trace("rotating from: " + rotationParent + " to " + rotationTarget);
+            logger.trace("rotating from: {} to {}", rotationParent, rotationTarget);
 
             File parentFile = new File(parentDir, rotationParent);
             File targetFile = new File(parentDir, rotationTarget);
@@ -180,7 +171,7 @@ public class PairtreeFilestore extends BaseFilestore {
      */
     public String storeAndRotate(File content, InformationResourceFileVersion version, int maxRotations) throws IOException {
         if (content == null || !content.isFile()) {
-            logger.warn("Trying to store null or empty content: " + content);
+            logger.warn("Trying to store null or non-file content: {}", content);
             return "";
         }
         return storeAndRotate(new FileInputStream(content), version, maxRotations);
@@ -191,9 +182,9 @@ public class PairtreeFilestore extends BaseFilestore {
      */
     public File retrieveFile(InformationResourceFileVersion version) throws FileNotFoundException {
         File file = new File(getAbsoluteFilePath(version));
-        logger.debug("file requested:" + file);
+        logger.debug("file requested: {}", file);
         if (!file.isFile())
-            throw new FileNotFoundException();
+            throw new FileNotFoundException("Could not find file: " + file.getAbsolutePath());
         return file;
     }
 
@@ -314,8 +305,9 @@ public class PairtreeFilestore extends BaseFilestore {
                 // if archival, need to go up one more
                 if (version.isArchival())
                     file = file.getParentFile();
-                logger.debug("renaming:" + file.getParentFile().getAbsolutePath() + " ->"
-                        + new File(file.getParentFile().getCanonicalPath() + DELETED_SUFFIX).getAbsoluteFile());
+                logger.debug("renaming: {} -> {}", 
+                        file.getParentFile().getAbsolutePath(),
+                        new File(file.getParentFile().getCanonicalPath() + DELETED_SUFFIX).getAbsoluteFile());
                 FileUtils.moveDirectory(file.getParentFile(), new File(file.getParentFile().getCanonicalPath() + DELETED_SUFFIX));
             } catch (Exception e) {
                 e.printStackTrace();

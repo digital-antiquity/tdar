@@ -2,11 +2,11 @@ package org.tdar.struts.action.search;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import net.sf.json.JSONArray;
@@ -19,7 +19,11 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.JsonModel;
+import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.resource.CategoryVariable;
@@ -35,7 +39,6 @@ import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.resource.ProjectController;
 
-
 public class LookupControllerITCase extends AbstractIntegrationTestCase {
 
     @Autowired
@@ -45,6 +48,94 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
     public void initController() {
         controller = generateNewInitializedController(LookupController.class);
         controller.setRecordsPerPage(99);
+    }
+
+    String[] collectionNames = new String[] { "Kalaupapa National Historical Park, Hawaii", "Kaloko-Honokohau National Historical Park, Hawaii", "Kapsul",
+            "KBP Artifact Photographs", "KBP Field Notes", "KBP Level Maps", "KBP Maps", "KBP Profiles", "KBP Reports", "KBP Site Photographs",
+            "Kharimkotan 1", "Kienuka", "Kintigh - Carp Fauna Coding Sheets", "Kintigh - Cibola Excavation", "Kintigh - Cibola Research",
+            "Kintigh - Cibola Survey Projects", "Kintigh - Context Ontologies", "Kintigh - Fauna Ontologies", "Kintigh - HARP Coding Sheets",
+            "Kintigh - Quantitative and Formal Methods Class - Assignments & Data", "Kleis", "Klinko", "Kokina 1", "Kompaneyskyy 1",
+            "Kuril Biocomplexity Research", "Kuybyshevskaya 1",
+            "Spielmann/Kintigh - Fauna Ontologies - Current" };
+
+    @Test
+    @Rollback(true)
+    public void testCollectionLookup() {
+        List<ResourceCollection> collections = new ArrayList<ResourceCollection>();
+        for (String collectionName : collectionNames) {
+            ResourceCollection e = new ResourceCollection(collectionName, collectionName, SortOption.TITLE, CollectionType.SHARED, true, getBasicUser());
+            collections.add(e);
+            e.markUpdated(getBasicUser());
+
+        }
+        genericService.save(collections);
+        searchIndexService.index(collections.toArray(new ResourceCollection[0]));
+        controller.setTerm("Kin");
+        controller.lookupResourceCollection();
+        for (Indexable collection_ : controller.getResults()) {
+            ResourceCollection collection = (ResourceCollection) collection_;
+            logger.info("{}", collection);
+            if (collection != null) {
+                assertFalse(collection.getTitle().equals("Kleis"));
+            }
+        }
+        initController();
+        controller.setTerm("Kintigh - C");
+        controller.lookupResourceCollection();
+        for (Indexable collection_ : controller.getResults()) {
+            ResourceCollection collection = (ResourceCollection) collection_;
+            logger.info("{}", collection);
+            if (collection != null) {
+                assertTrue(collection.getTitle().contains("Kintigh - C"));
+            }
+        }
+
+    }
+
+    @Test
+    @Rollback(true)
+    public void testInvisibleCollectionLookupFoundByBasicOwner() {
+        ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(), GeneralPermissions.VIEW_ALL);
+        controller.setTerm("test");
+        controller.lookupResourceCollection();
+        assertTrue(controller.getResults().contains(e));
+    }
+
+
+    @Test
+    @Rollback(true)
+    public void testInvisibleCollectionLookupFoundByBasicUser() {
+        ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(), GeneralPermissions.VIEW_ALL);
+        init(controller, getBasicUser());
+        controller.setTerm("test");
+        controller.lookupResourceCollection();
+        assertTrue(controller.getResults().contains(e));
+    }
+
+    @Test
+    @Rollback(true)
+    public void testInvisibleCollectionLookupFoundByBasicUserForModification() {
+        ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(), GeneralPermissions.VIEW_ALL);
+        init(controller, getBasicUser());
+        controller.setTerm("test");
+        controller.setPermission(GeneralPermissions.ADMINISTER_GROUP);
+        controller.lookupResourceCollection();
+        assertFalse(controller.getResults().contains(e));
+    }
+
+    private ResourceCollection setupResourceCollectionForPermissionsTests(Person owner, boolean visible, Person user, GeneralPermissions permission) {
+        assertFalse(getSessionUser().equals(getAdminUser()));
+        ResourceCollection e = new ResourceCollection("a test", "a Name", SortOption.TITLE, CollectionType.SHARED, visible, owner);
+        e.markUpdated(owner);
+        genericService.save(e);
+        if (user != null) {
+            AuthorizedUser au = new AuthorizedUser(user, permission);
+            au.setResourceCollection(e);
+            genericService.save(au);
+            e.getAuthorizedUsers().add(au);
+        }
+        searchIndexService.index(e);
+        return e;
     }
 
     @Test
@@ -170,7 +261,8 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
                 "Soil Systems, Inc. Flotation/Botanical Analysis Type Coding Sheet", "Raw Material Guide", "Soil Systems, Inc. Presence/Absence Coding Sheet",
                 "Soil Systems, Inc. True/False Coding Sheet", "Soil Systems, Inc. Cremation Grave Shape Coding Sheet",
                 "Soil Systems, Inc. Inhumation Skeletal Completeness Codes", "EMAP - Ceramics Data Sheet", "EMAP - Analytic Unit Coding Sheet",
-                "EMAP - Projectile Points - Material Coding Sheet", "EMAP - Projectile Points - Form Coding Sheet", "Tosawihi Bifaces Material Color Codes","Taxonomic Level 1" };
+                "EMAP - Projectile Points - Material Coding Sheet", "EMAP - Projectile Points - Form Coding Sheet", "Tosawihi Bifaces Material Color Codes",
+                "Taxonomic Level 1" };
         Integer[] cats = new Integer[] { 83, 67, 79, 81, 72, 75, 70, 63, 76, 79, 73, 70, 85, 73, 67, 78, 73, 85, 83, 6, 6, 85, 6, 85, 85, 83, 83, 6, 64, 73,
                 null, null, 70, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 198, null,
                 null, 75, 75, 85, 70, 70, 70, 75, 70, 85, 85, 85, 73, 76, 79, null, 67, null, 191, 70, 72, 73, 75, 64, 82, 78, 81, 83, 192, 85, 67, 78, null,
@@ -180,23 +272,24 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
                 238, 198, 196, 198, 198, 198, 214, 191, 78, null, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11,
                 11, 11, 11, 11, 11, 11, 11, 11, null, null, null, null, null, null, 223, null, 223, 85, 73, 81, 198, 81, 62, 198, 72, 214, 214, 73, 83, 82, 73,
                 61, 67, 70, 78, 63, 6, 53, 56, 52, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 166, null, 11, 11, 11, 11, 73, 52, 170, 250, 250, 250, 250, null,
-                null, null, 11, 11, 36, null, 53, 52, 56, 85,85 };
+                null, null, 11, 11, 36, null, 53, 52, 56, 85, 85 };
+
         List<CodingSheet> sheets = new ArrayList<CodingSheet>();
+        List<CodingSheet> allSheets = new ArrayList<CodingSheet>();
         for (int i = 0; i < titles.length; i++) {
             String title = titles[i];
             Integer cat = cats[i];
             CodingSheet cs = createAndSaveNewInformationResource(CodingSheet.class, getUser(), title);
+            allSheets.add(cs);
             if (cat != null) {
                 cs.setCategoryVariable(genericService.find(CategoryVariable.class, (long) cat));
                 genericService.saveOrUpdate(cs);
             }
             if (title.contains("Taxonomic Level")) {
-                logger.info("{} {}", cs , cs.getCategoryVariable().getId());
+                logger.info("{} {}", cs, cs.getCategoryVariable().getId());
                 sheets.add(cs);
             }
         }
-        
-        
         searchIndexService.indexAll(Resource.class);
         controller.setResourceTypes(Arrays.asList(ResourceType.CODING_SHEET));
         controller.setTerm("Taxonomic Level");
@@ -205,7 +298,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         logger.info("{}", controller.getResults());
         logger.info("{}", sheets);
         assertTrue(controller.getResults().containsAll(sheets));
-        
+
         controller = generateNewInitializedController(LookupController.class, getBasicUser());
         controller.setRecordsPerPage(10);
         controller.setResourceTypes(Arrays.asList(ResourceType.CODING_SHEET));
@@ -214,6 +307,8 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         controller.lookupResource();
         logger.info("{}", controller.getResults());
         assertTrue(controller.getResults().containsAll(sheets));
+        Resource col = ((Resource) controller.getResults().get(0));
+        assertEquals("Taxonomic Level 1", col.getName());
 
         controller = generateNewInitializedController(LookupController.class, getBasicUser());
         controller.setRecordsPerPage(1000);
@@ -222,7 +317,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         controller.lookupResource();
         logger.info("{}", controller.getResults());
         assertTrue(controller.getResults().containsAll(sheets));
-}
+    }
 
     @Test
     public void testResourceLookupByType() {
@@ -254,28 +349,6 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
-    public void testCodingSheetLookup() throws InstantiationException, IllegalAccessException {
-        CodingSheet cs = createAndSaveNewInformationResource(CodingSheet.class, getBasicUser(),"Taxonomic Level 1");
-        List<CategoryVariable> findRandom = genericService.findRandom(CategoryVariable.class, 10);
-        for (CategoryVariable random : findRandom) {
-            if (random.getId() != 85l) {
-                cs.setCategoryVariable(random);
-                break;
-            }
-        }
-        genericService.saveOrUpdate(cs);
-        searchIndexService.index(cs);
-        controller.setResourceTypes(Arrays.asList(ResourceType.CODING_SHEET));
-        controller.setSortCategoryId(85l);
-        controller.setTerm("Taxonomic Level 1");
-        controller.lookupResource();
-        List<Indexable> resources = controller.getResults();
-        logger.info("resources: {} ", resources);
-        assertTrue("at least one document", resources.size() >= 1);
-        assertTrue(resources.contains(cs));
-    }
-
-    @Test
     public void testAnnotationLookup() {
         ResourceAnnotationKey key = new ResourceAnnotationKey();
         key.setKey("ISSN");
@@ -300,70 +373,69 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
-    @Rollback(value=true)
+    @Rollback(value = true)
     public void testDeletedResourceFilteredForNonAdmins() throws Exception {
         initControllerForDashboard();
 
         searchIndexService.indexAll(Resource.class);
         controller.setUseSubmitterContext(true);
-        Project proj  = createProjectViaProjectController("project to be deleted");
+        Project proj = createProjectViaProjectController("project to be deleted");
 
         searchIndexService.index(proj);
 
         controller.lookupResource();
         assertTrue(controller.getResults().contains(proj));
-        
-        //now delete the resource and makes sure it doesn't show up for the common rabble
+
+        // now delete the resource and makes sure it doesn't show up for the common rabble
         logger.debug("result contents before delete: {}", controller.getResults());
         proj.setStatus(Status.DELETED);
         genericService.saveOrUpdate(proj);
         initController();
         controller.setUseSubmitterContext(true);
-        
+
         searchIndexService.index(proj);
         controller.lookupResource();
         logger.debug("result contents after delete: {}", controller.getResults());
         assertFalse(controller.getResults().contains(proj));
 
-        //now pretend that it's an admin visiting the dashboard.  Even though they can view/edit everything, deleted items 
-        //won't show up in their dashboard unless they are the submitter or have explicitly been given access rights, so we update the project's submitter
+        // now pretend that it's an admin visiting the dashboard. Even though they can view/edit everything, deleted items
+        // won't show up in their dashboard unless they are the submitter or have explicitly been given access rights, so we update the project's submitter
         proj.setSubmitter(getAdminUser());
         genericService.saveOrUpdate(proj);
         searchIndexService.index(proj);
         controller = generateNewController(LookupController.class);
         init(controller, getAdminUser());
-        controller.setUseSubmitterContext(false); 
+        controller.setUseSubmitterContext(false);
         controller.setIncludedStatuses(new ArrayList<Status>(Arrays.asList(Status.values())));
         controller.setRecordsPerPage(10000000);
         controller.lookupResource();
         assertTrue(controller.getResults().contains(proj));
     }
-    
-    //setup the controller similar to how struts will do it when receiving an ajax call from the dashboard
+
+    // setup the controller similar to how struts will do it when receiving an ajax call from the dashboard
     private void initControllerForDashboard() {
         controller.getResourceTypes().add(null);
         controller.getIncludedStatuses().add(null);
         controller.setSortField(SortOption.RELEVANCE);
         controller.setTerm(null);
-        controller.setProjectId((String)null);
+        controller.setProjectId((String) null);
         controller.setCollectionId(null);
-    }    
-    
+    }
 
-    //more accurately model how struts will create a project by having the controller do it
+    // more accurately model how struts will create a project by having the controller do it
     private Project createProjectViaProjectController(String title) throws TdarActionException {
         ProjectController projectController = generateNewInitializedController(ProjectController.class);
         projectController.prepare();
         Project project = projectController.getProject();
         project.setTitle(title);
         project.setDescription(title);
+        projectController.setServletRequest(getServletPostRequest());
         projectController.save();
         Assert.assertNotNull(project.getId());
         assertTrue(project.getId() != -1L);
         return project;
     }
 
-    
     // TODO: need filtered test (e.g. only ontologies in a certain project)
 
     public void initControllerFields() {
@@ -398,31 +470,107 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
-    @Rollback(value=true)
-    public void testAdminDashboardAnyStatus() throws Exception{
-        //have a regular user create a document in each status (except deleted)that should be visible when an admin looks for document with "any" status
-        Document activeDoc = createAndSaveNewInformationResource(Document.class, getUser(), "testActiveDoc");
-        activeDoc.setStatus(Status.ACTIVE); //probably unnecessary
-        Document draftDoc = createAndSaveNewInformationResource(Document.class, getUser(), "testDraftDoc");
+    @Rollback(value = true)
+    public void testAdminDashboardAnyStatus() throws Exception {
+        // have a regular user create a document in each status (except deleted)that should be visible when an admin looks for document with "any" status
+        Document activeDoc = createAndSaveNewInformationResource(Document.class, getUser());
+        activeDoc.setTitle("testActiveDoc");
+        activeDoc.setStatus(Status.ACTIVE); // probably unnecessary
+        Document draftDoc = createAndSaveNewInformationResource(Document.class, getUser());
+        draftDoc.setTitle("testDraftDoc");
         draftDoc.setStatus(Status.DRAFT);
-        Document flaggedDoc = createAndSaveNewInformationResource(Document.class, getUser(), "testFlaggedaDoc");
+        Document flaggedDoc = createAndSaveNewInformationResource(Document.class, getUser());
+        flaggedDoc.setTitle("testFlaggedaDoc");
         flaggedDoc.setStatus(Status.FLAGGED);
         List<Document> docs = Arrays.asList(activeDoc, draftDoc, flaggedDoc);
         entityService.saveOrUpdateAll(docs);
         searchIndexService.indexAll(Resource.class);
-        
-        //login as an admin
+
+        // login as an admin
         controller = generateNewController(LookupController.class);
         init(controller, getAdminUser());
         controller.setRecordsPerPage(Integer.MAX_VALUE);
-        for(Document doc : docs) {
+        for (Document doc : docs) {
             controller.setTitle(doc.getTitle());
-            controller.setIncludedStatuses(Collections.<Status>emptyList());
+            controller.lookupResource();
+            if (doc.isActive() || doc.isDraft()) {
+                assertTrue(String.format("looking for '%s' when filtering by %s", doc, controller.getIncludedStatuses()), controller.getResults().contains(doc));
+            } else {
+                assertFalse(String.format("looking for '%s' when filtering by %s", doc, controller.getIncludedStatuses()), controller.getResults()
+                        .contains(doc));
+
+            }
+        }
+
+        for (Document doc : docs) {
+            controller.setTitle(doc.getTitle());
+            controller.setIncludedStatuses(controller.getAllStatuses());
             controller.lookupResource();
             assertTrue(String.format("looking for '%s' when filtering by %s", doc, controller.getIncludedStatuses()), controller.getResults().contains(doc));
         }
-        
+
+    }
+
+    @Test
+    @Rollback
+    public void testSanitizedPersonRecords() {
+
+        // important! normally the SessionSecurityInterceptor would mark the session as readonly, but we need to do it manually in a test
+        genericService.markReadOnly();
+
+        searchIndexService.indexAll(Person.class);
+        // "log out"
+        controller = generateNewController(LookupController.class);
+        initAnonymousUserinit(controller);
+        controller.setRecordsPerPage(Integer.MAX_VALUE);
+        controller.setMinLookupLength(0);
+        controller.lookupPerson();
+        assertTrue(controller.getResults().size() > 0);
+        for (Indexable result : controller.getResults()) {
+            assertNull(((Person) result).getEmail());
+        }
+
+        // normally these two requests would belong to separate hibernate sessions. We flush the session here so that the we don't get back the
+        // same cached objects that the controller sanitized in the previous lookup.
+        genericService.clearCurrentSession();
+        genericService.markReadOnly();
+
+        // okay now "log in" and make sure that email lookup is still working
+        controller = generateNewInitializedController(LookupController.class);
+        controller.setRecordsPerPage(Integer.MAX_VALUE);
+        controller.setMinLookupLength(0);
+        String email = "james.t.devos@asu.edu";
+        controller.setEmail(email);
+        controller.lookupPerson();
+        assertEquals(1, controller.getResults().size());
+        Person jim = (Person) controller.getResults().get(0);
+        assertEquals(email, jim.getEmail());
+
+    }
+    
+    @Test
+    @Rollback
+    //special characters need to be escaped or stripped prior to search
+    public void testLookupWithSpecialCharactors() {
+        setTextFields("l[]bl aw\\");
+        controller.setMinLookupLength(0);
+        controller.lookupPerson();
+        controller.lookupInstitution();
+        controller.lookupKeyword();
+        controller.lookupResource();
+        controller.lookupResourceCollection();
     }
     
     
+    //we don't care about making sense,  we just want to catch parsing errors.
+    private void setTextFields(String str) {
+        controller.setFirstName(str);
+        controller.setLastName(str);
+        controller.setInstitution(str);
+        controller.setEmail(str);
+        controller.setTerm(str);
+        controller.setTitle(str);
+    }
+    
+
 }

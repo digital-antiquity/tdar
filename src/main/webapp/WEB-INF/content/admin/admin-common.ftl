@@ -1,5 +1,6 @@
 <#escape _untrusted as _untrusted?html >
 <#import "/${themeDir}/settings.ftl" as settings>
+<#import "/WEB-INF/macros/resource/common.ftl" as common>
 
 
 <title>Admin Pages</title>
@@ -21,91 +22,96 @@
 
 
 
-<#macro statsTable statsObj header>
+<#macro statsTable statsObj header="HEADER" cssid="CSS_ID" valueFormat="number">
+  <#assign width=900/>
+  <#assign height=225/>
 <div class="glide">
     <h3>${header}</h3>
-    <#assign maxGraphCount = 50>
-    <#assign statsObjKeys = statsObj?keys?sort?reverse />
-    <#assign start = ""/> <#assign end = ""/>
-    <#assign labels= ""/> <#assign p1= ""/> <#assign p2= ""/> <#assign p3= ""/> <#assign p4= ""/> <#assign p5= ""/>
-    <#assign p6= ""/> <#assign p7= ""/> <#assign p8= ""/> <#assign p9= ""/> <#assign max = 0/>
-    
-    <#assign output>
+<div id="graph${cssid}" style="width:${width}px;height:${height}px"></div>
+<#assign statsObjKeys = statsObj?keys?sort?reverse />
+<#assign numSets = 0/>
+<#assign totalRows = 0/>
     <table class="tableFormat">
         <#assign first = true/>
-       <#assign graphCount =0>
         <#list statsObjKeys as key>
             <#assign vals = statsObj.get(key) />
             <#assign valsKeys = vals?keys />
-            <#if first>
-     <#noescape>
+             <#if first>
              <thead>
               <tr>
                 <th>Date</th>
-	</#noescape>
                 <#list valsKeys as key_>
-                         <#noescape><th></#noescape>
+                         <th>
                     ${key_.label}
-                         <#noescape></th></#noescape>
-                    <#if key__index == 0 >
-                        <#assign labels=  key_.label?url /> 
-                    <#else>
-                        <#assign labels= labels + "|" + key_.label?url /> 
-                    </#if>
+                         </th>
+	            <#if (numSets < key__index )>
+		            <#assign numSets = key__index />
+	            </#if>
                 </#list>
-     <#noescape>
               </tr>
              </thead>
-     </#noescape>
-             <#assign end=key?date/>
-            </#if>
-            <#assign first=false/>
-     <#noescape>
+             <#else>
+             <#assign totalRows = totalRows +1 />
+             </#if>
+             <#assign first = false/>
              <tr>
                <td>
-     </#noescape>
                 ${key?date}
-    <#noescape></td></#noescape>
+		      </td>
     
                 <#list valsKeys as key_>
-    <#noescape><td></#noescape>
+               <td>
+               	<#if valueFormat == "number">
                    ${vals.get(key_)?default("0")}
-    <#noescape></td></#noescape>
-		                <#if graphCount &lt; maxGraphCount>
-	                    <#if vals.get(key_) &gt; max ><#assign max= vals.get(key_)/></#if>
-	                    <#if key_index == 0 >
-	                      <#if key__index == 0> <#assign p1= vals.get(key_)?c /></#if> 
-	                      <#if key__index == 1> <#assign p2= vals.get(key_)?c /></#if> 
-	                      <#if key__index == 2> <#assign p3= vals.get(key_)?c /></#if> 
-	                      <#if key__index == 3> <#assign p4= vals.get(key_)?c /></#if> 
-	                      <#if key__index == 4> <#assign p5= vals.get(key_)?c /></#if> 
-	                      <#if key__index == 5> <#assign p6= vals.get(key_)?c /></#if> 
-	                      <#if key__index == 6> <#assign p7= vals.get(key_)?c /></#if> 
-	                      <#if key__index == 7> <#assign p8= vals.get(key_)?c /></#if> 
-	                      <#if key__index == 8> <#assign p9= vals.get(key_)?c /></#if> 
-	                    <#else> 
-	                      <#if key__index == 0> <#assign p1= vals.get(key_)?c + "," + p1 /></#if> 
-	                      <#if key__index == 1> <#assign p2= vals.get(key_)?c + "," + p2 /></#if> 
-	                      <#if key__index == 2> <#assign p3= vals.get(key_)?c + "," + p3 /></#if> 
-	                      <#if key__index == 3> <#assign p4= vals.get(key_)?c + "," + p4 /></#if> 
-	                      <#if key__index == 4> <#assign p5= vals.get(key_)?c + "," + p5 /></#if> 
-	                      <#if key__index == 5> <#assign p6= vals.get(key_)?c + "," + p6 /></#if> 
-	                      <#if key__index == 6> <#assign p7= vals.get(key_)?c + "," + p7 /></#if> 
-	                      <#if key__index == 7> <#assign p8= vals.get(key_)?c + "," + p8 /></#if> 
-	                      <#if key__index == 8> <#assign p9= vals.get(key_)?c + "," + p9 /></#if> 
-	                    </#if>
-			             <#assign start=key?date/>
-                    </#if>
+                <#elseif valueFormat == "filesize">
+	                <@common.convertFileSize filesize=vals.get(key_)?default("0") />
+                </#if>
+		      </td>
                 </#list>
-				<#assign graphCount=graphCount + 1 />
-    <#noescape></tr></#noescape>
+    		</tr>
         </#list>
-    <#noescape></table></#noescape>
-    </#assign>
-    <#assign width=700/>
-    <#assign height=225/>
-<img src="http://chart.apis.google.com/chart?chxt=x,y&chxr=1,0,${max }&chxl=0:|${start?url}|${end?url}&chs=${width}x${height}&chdlp=t&cht=lc&chco=<@settings.themeColors separator=","/>&chds=a&chf=bg,s,0000FF00&chd=t:<@append p1 ""/><@append p2 "|"/><@append p3 "|"/><@append p4 "|"/><@append p5 "|"/><@append p6 "|"/><@append p7 "|"/><@append p8 "|"/><@append p9 "|"/>&chdl=${labels}&chg=14.3,-1,1,1&chls=2,4,0|1&chma=|2,4&&chtt=${header}">
-<#noescape>${output}</#noescape>
+    </table>
+
+<#noescape>
+<script>
+$(function() {
+
+<#list 0..numSets as i>
+var d${i} = [];
+</#list>
+<#assign ticks = "" />
+<#assign total = (totalRows / 10 )?ceiling />
+
+     <#list statsObjKeys as key>
+        <#assign vals = statsObj.get(key) />
+        <#assign valsKeys = vals?keys />
+	    <#list valsKeys as key_>
+	    	d${key__index}.push([${(key.time)?c}, ${vals.get(key_)?default("0")?c}]);
+	    	d${key__index}.label = "${key_.label}";
+	    	d${key__index}.color = "${settings.barColors[key__index % settings.barColors?size ]}";
+	        </#list>
+        </#list>
+
+    $.plot($("#graph${cssid}"), [ <#list 0..numSets as i><#if i != 0>,</#if>{label: d${i}.label, data: d${i},color: d${i}.color }</#list> ],{
+    	xaxis: {
+    		mode:"date",
+		  tickFormatter: function (val, axis) {
+		    var d = new Date(val);
+		    return  d.getFullYear() + "-" + (d.getUTCMonth() + 1) + '-' + d.getUTCDate();
+		  }
+    	},
+    	yaxis: {
+	   //		transform: function (v) { return Math.log(v); },
+    		inverseTransform: function (v) { return Math.exp(v); }
+    	},
+    	legend : {
+	    	show:true,
+	    	position:"nw"
+    	}
+    });
+});
+</script>
+</#noescape>
 </div>
 
 </#macro>

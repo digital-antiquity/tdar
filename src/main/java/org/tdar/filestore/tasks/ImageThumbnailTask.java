@@ -19,7 +19,7 @@ import java.net.URLEncoder;
 import javax.imageio.ImageIO;
 
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
+import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.tasks.Task.AbstractTask;
@@ -30,6 +30,7 @@ import org.tdar.filestore.tasks.Task.AbstractTask;
  */
 public class ImageThumbnailTask extends AbstractTask {
 
+    private static final long serialVersionUID = -108766461810056577L;
     private static final String JPG_FILE_EXT = ".jpg";
     public static final int LARGE = 600;
     public static final int MEDIUM = 300;
@@ -50,10 +51,8 @@ public class ImageThumbnailTask extends AbstractTask {
         try {
             task.run(origFile);
         } catch (Exception e) {
-            throw new TdarRecoverableRuntimeException("processing error", e);
+            throw new TdarRecoverableRuntimeException("an image processing error ocurred", e);
         }
-        String outXML = task.getWorkflowContext().toXML();
-        System.out.println(outXML);
     }
 
     @Override

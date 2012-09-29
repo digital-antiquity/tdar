@@ -3,16 +3,13 @@
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 <head>
     <title>Authority Management - Merge Duplicates</title>
-    <script type='text/javascript' src='<@s.url value="/includes/authority-management.js"/>'></script>
-    <script type='text/javascript' src='<@s.url value="/includes/datatable-support.js"/>'></script>
-    <script type='text/javascript' src='<@s.url value="/includes/jquery.watermark-3.1.3.min.js"/>'></script> 
     <script type='text/javascript'>
     $(function() {
         var selEntityType = $("#selEntityType");
         if (selEntityType != undefined) {
             searchControls = $('.searchControl');
             selEntityType.change(updateSearchControl).change();
-            applyWatermarks();
+            applyWatermarks(document);
             $('span.button').button().click(clearDupeList);
         }
         $("#txtInstitution, #txtFirstName, #txtLastName, #txtInstitution, #txtEmail, #txtKeyword").bindWithDelay("keyup", 
@@ -37,10 +34,6 @@
 </style>
 </head>
 <body>
-    <div id="errors">
-    <@view.showControllerErrors />
-    </div>
-
     <div class="glide">
         <h3 class="dire-warning">WARNING</H3>
         <p>Please note that act of de-duping entities is currently <em>irreversable</em> and should only be performed by curators and administrators only 
