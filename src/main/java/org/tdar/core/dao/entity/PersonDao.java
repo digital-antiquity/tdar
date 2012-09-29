@@ -50,28 +50,32 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         return (Person) getCriteria().add(Restrictions.eq("email", email.toLowerCase())).uniqueResult();
     }
 
+    public Person findByUsername(final String username) {
+        return (Person) getCriteria().add(Restrictions.eq("username", username.toLowerCase())).uniqueResult();
+    }
+
     @SuppressWarnings("unchecked")
     public Set<Person> findByLastName(String lastName) {
         Criteria criteria = getCriteria().add(Restrictions.eq("lastName", lastName));
         return new HashSet<Person>(criteria.list());
     }
-    
-    //find people with the same firstName, lastName, or institution (if specified)
+
+    // find people with the same firstName, lastName, or institution (if specified)
     public Set<Person> findByPerson(Person person) {
-        //if the email address is set then all other fields are moot
-        if(StringUtils.isNotBlank(person.getEmail())) {
+        // if the email address is set then all other fields are moot
+        if (StringUtils.isNotBlank(person.getEmail())) {
             Set hs = new HashSet<Person>();
             hs.add(findByEmail(person.getEmail()));
             return hs;
         }
         Criteria criteria = getCriteria();
-        if(StringUtils.isNotBlank(person.getFirstName())) {
+        if (StringUtils.isNotBlank(person.getFirstName())) {
             criteria.add(Restrictions.eq("firstName", person.getFirstName()));
         }
-        if(StringUtils.isNotBlank(person.getLastName())) {
+        if (StringUtils.isNotBlank(person.getLastName())) {
             criteria.add(Restrictions.eq("lastName", person.getLastName()));
         }
-        if(StringUtils.isNotBlank(person.getInstitutionName())) {
+        if (StringUtils.isNotBlank(person.getInstitutionName())) {
             criteria.createCriteria("institution").add(Restrictions.eq("name", person.getInstitutionName()));
         }
         return new HashSet<Person>(criteria.list());
@@ -121,7 +125,7 @@ public class PersonDao extends Dao.HibernateBase<Person> {
 
     public Long findNumberOfActualContributors() {
         Criteria criteria = getCriteria(Resource.class);
-                criteria.setProjection(Projections.projectionList().add(Projections.countDistinct("submitter.id")));
+        criteria.setProjection(Projections.projectionList().add(Projections.countDistinct("submitter.id")));
         return (Long) ((criteria.list()).get(0));
     }
 }

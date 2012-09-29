@@ -12,6 +12,7 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -31,6 +32,7 @@ import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -45,9 +47,13 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.search.Explanation;
+import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.FetchProfile;
+import org.hibernate.annotations.FetchProfile.FetchOverride;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Type;
+import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Boost;
 import org.hibernate.search.annotations.DateBridge;
@@ -55,15 +61,16 @@ import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.DynamicBoost;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Fields;
-import org.hibernate.search.annotations.Index;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Resolution;
 import org.hibernate.search.annotations.Store;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 import org.tdar.core.bean.BulkImportField;
+import org.tdar.core.bean.DeHydratable;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Indexable;
@@ -74,6 +81,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.SimpleSearch;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
+import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -100,7 +108,6 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
 import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
-import org.tdar.search.index.analyzer.PatternTokenAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.index.boost.InformationResourceBoostStrategy;
 import org.tdar.search.query.QueryFieldNames;
@@ -126,25 +133,35 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 @XStreamAlias("resource")
 @Inheritance(strategy = InheritanceType.JOINED)
 @XmlRootElement
-@XmlSeeAlso({ Document.class, InformationResource.class, Project.class, CodingSheet.class,
-        Dataset.class, Ontology.class, Image.class, SensoryData.class })
+@XmlSeeAlso({ Document.class, InformationResource.class, Project.class,
+        CodingSheet.class, Dataset.class, Ontology.class, Image.class,
+        SensoryData.class, Video.class })
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @XmlType(name = "resource")
-public class Resource extends JsonModel.Base implements Persistable, Comparable<Resource>, HasName, Updatable, Indexable, Validatable, HasStatus,
-        OaiDcProvider, Obfuscatable {
+@FetchProfile(name = "resource-with-people", fetchOverrides = {
+        @FetchOverride(association = "resourceCreators", mode = FetchMode.JOIN, entity = Resource.class),
+        @FetchOverride(association = "submitter", mode = FetchMode.JOIN, entity = Resource.class) })
+public class Resource extends JsonModel.Base implements Persistable,
+        Comparable<Resource>, HasName, Updatable, Indexable, Validatable, SimpleSearch,
+        HasStatus, OaiDcProvider, Obfuscatable, Viewable, Addressable,
+        DeHydratable {
 
     private static final long serialVersionUID = -230400285817185637L;
 
     private transient boolean obfuscated;
+    private transient boolean viewable;
+    private transient Long transientAccessCount;
     // TODO: anything that gets returned in a tdar search should be included in
     // json results
     @Transient
-    private static final String[] JSON_PROPERTIES = { "id", "title", "resourceType", "dateCreated", "description", "status", "resourceTypeLabel",
-            "urlNamespace" };
+    private static final String[] JSON_PROPERTIES = { "id", "title",
+            "resourceType", "dateCreated", "description", "status",
+            "resourceTypeLabel", "urlNamespace" };
     // properties in resourceType
     // properties in submitter (Person)
     // "firstName", "lastName", "institution", "email","label","submitter",
-    protected final static transient Logger logger = LoggerFactory.getLogger(Resource.class);
+    protected final static transient Logger logger = LoggerFactory
+            .getLogger(Resource.class);
 
     public Resource() {
     }
@@ -157,9 +174,15 @@ public class Resource extends JsonModel.Base implements Persistable, Comparable<
 
     @Deprecated
     public Resource(Long id, String title, ResourceType type) {
-        setId(id);
-        setTitle(title);
+        this(id, title);
         setResourceType(type);
+    }
+
+    public Resource(Long id, String title, ResourceType resourceType,
+            String description, Status status) {
+        this(id, title, resourceType);
+        setDescription(description);
+        setStatus(status);
     }
 
     @Id
@@ -169,16 +192,19 @@ public class Resource extends JsonModel.Base implements Persistable, Comparable<
     private Long id = -1L;
 
     @BulkImportField(label = "Title", required = true, order = -100, comment = BulkImportField.TITLE_DESCRIPTION)
-    @Column(nullable = false, length = 512)
+    @NotNull
+    @Column(length = 512)
     private String title;
 
     @Lob
     @BulkImportField(label = "Description", required = true, order = -50, comment = BulkImportField.DESCRIPTION_DESCRIPTION)
+    // @NotNull
     @Type(type = "org.hibernate.type.StringClobType")
     private String description;
 
-    @Field(boost = @Boost(.5f), index = Index.UN_TOKENIZED, store = Store.YES)
-    @Column(nullable = false, name = "date_registered")
+    @Field(boost = @Boost(.5f), norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
+    @NotNull
+    @Column(name = "date_registered")
     @DateBridge(resolution = Resolution.DAY)
     private Date dateCreated;
 
@@ -186,12 +212,9 @@ public class Resource extends JsonModel.Base implements Persistable, Comparable<
 
     @Enumerated(EnumType.STRING)
     @Column(name = "resource_type")
-    @Field(index = Index.UN_TOKENIZED, store = Store.YES)
+    @Field(norms = Norms.NO, store = Store.YES)
     @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     private ResourceType resourceType;
-
-    @Column(nullable = false, name = "access_counter")
-    private Long accessCounter = 0L;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
@@ -201,18 +224,21 @@ public class Resource extends JsonModel.Base implements Persistable, Comparable<
 
     @Boost(.5f)
     @IndexedEmbedded
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     @JoinColumn(nullable = false, name = "submitter_id")
+    @NotNull
     private Person submitter;
 
     @Boost(.5f)
     @IndexedEmbedded
-    @ManyToOne()
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     @JoinColumn(name = "updater_id")
+    @NotNull
     private Person updatedBy;
 
-    @Field(index = Index.UN_TOKENIZED, store = Store.YES)
-    @Column(nullable = true, name = "date_updated")
+    @Field(norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
+    @NotNull
+    @Column(name = "date_updated")
     @DateBridge(resolution = Resolution.MILLISECOND)
     private Date dateUpdated;
 
@@ -228,19 +254,15 @@ public class Resource extends JsonModel.Base implements Persistable, Comparable<
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "resource", fetch = FetchType.LAZY, orphanRemoval = true)
     @OrderBy("sequenceNumber ASC")
-    @IndexedEmbedded
     @IndexColumn(name = "id")
     private Set<ResourceNote> resourceNotes = new LinkedHashSet<ResourceNote>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "resource", fetch = FetchType.LAZY, orphanRemoval = true)
-    @IndexedEmbedded
     private Set<ResourceAnnotation> resourceAnnotations = new LinkedHashSet<ResourceAnnotation>();
 
-    @IndexedEmbedded
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "resource", fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<SourceCollection> sourceCollections = new LinkedHashSet<SourceCollection>();
 
-    @IndexedEmbedded
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "resource", fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<RelatedComparativeCollection> relatedComparativeCollections = new LinkedHashSet<RelatedComparativeCollection>();
 
@@ -300,14 +322,15 @@ public class Resource extends JsonModel.Base implements Persistable, Comparable<
     @XmlTransient
     private Set<ResourceRevisionLog> resourceRevisionLog = new HashSet<ResourceRevisionLog>();
 
-    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
-    @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(name = "resource_id") },
-            inverseJoinColumns = { @JoinColumn(name = "collection_id") })
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH,
+            CascadeType.MERGE }, fetch = FetchType.LAZY)
+    @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(name = "resource_id") }, inverseJoinColumns = { @JoinColumn(name = "collection_id") })
     @XmlTransient
     @IndexedEmbedded(depth = 1)
     private Set<ResourceCollection> resourceCollections = new LinkedHashSet<ResourceCollection>();
 
-    // used by the import service to determine whether a record has been "created" or updated
+    // used by the import service to determine whether a record has been
+    // "created" or updated
     // does not persist
     private transient boolean created = false;
 
@@ -328,51 +351,97 @@ public class Resource extends JsonModel.Base implements Persistable, Comparable<
     }
 
     /*
-     * this function should introduce into the index all of the people who can modify a record
-     * which is useful for limiting things on the project page
+     * this function should introduce into the index all of the people who can
+     * modify a record which is useful for limiting things on the project page
      */
     @Field(name = QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY)
-    @Analyzer(impl = PatternTokenAnalyzer.class)
-    @Transient
+    @IndexedEmbedded
+    @ElementCollection
     @JSONTransient
-    public String getUsersWhoCanModify() {
-        StringBuilder sb = new StringBuilder();
+    public List<Long> getUsersWhoCanModify() {
+        List<Long> users = new ArrayList<Long>();
         HashSet<Person> writable = new HashSet<Person>();
         writable.add(getSubmitter());
         writable.add(getUpdatedBy());
         for (ResourceCollection collection : getResourceCollections()) {
-            writable.addAll(collection.getUsersWhoCan(GeneralPermissions.MODIFY_RECORD, true));
+            writable.addAll(collection.getUsersWhoCan(
+                    GeneralPermissions.MODIFY_RECORD, true));
         }
         for (Person p : writable) {
             if (p == null || p.getId() == null)
                 continue;
-            sb.append(p.getId()).append("|");
+            users.add(p.getId());
         }
-        // FIXME: decide whether right should inherit from projects (1) of (2) change see authorizedUserDao
+        // FIXME: decide whether right should inherit from projects (1) of (2)
+        // change see authorizedUserDao
         // sb.append(getAdditionalUsersWhoCanModify());
-        logger.trace("effectiveUsers:" + sb.toString());
-        return sb.toString();
+        logger.info("effectiveUsers:" + users);
+        return users;
     }
 
-    protected String getAdditionalUsersWhoCanModify() {
-        return "";
-    }
-
-    @Field(name = QueryFieldNames.RESOURCE_COLLECTION_PUBLIC_IDS)
-    @Analyzer(impl = PatternTokenAnalyzer.class)
-    @Transient
+    /*
+     * this function should introduce into the index all of the people who can
+     * modify a record which is useful for limiting things on the project page
+     */
+    @Field(name = QueryFieldNames.RESOURCE_USERS_WHO_CAN_VIEW)
+    @IndexedEmbedded
+    @ElementCollection
     @JSONTransient
-    public String getPublicCollectionsContaining() {
-        StringBuilder sb = new StringBuilder();
+    public List<Long> getUsersWhoCanView() {
+        List<Long> users = new ArrayList<Long>();
+        HashSet<Person> writable = new HashSet<Person>();
+        writable.add(getSubmitter());
+        writable.add(getUpdatedBy());
+        for (ResourceCollection collection : getResourceCollections()) {
+            writable.addAll(collection.getUsersWhoCan(
+                    GeneralPermissions.VIEW_ALL, true));
+        }
+        for (Person p : writable) {
+            if (Persistable.Base.isNullOrTransient(p))
+                continue;
+            users.add(p.getId());
+        }
+        // FIXME: decide whether right should inherit from projects (1) of (2)
+        // change see authorizedUserDao
+        // sb.append(getAdditionalUsersWhoCanModify());
+        logger.trace("effectiveUsers:" + users);
+        return users;
+    }
+
+    // @Field(name = QueryFieldNames.RESOURCE_COLLECTION_PUBLIC_IDS)
+    // @IndexedEmbedded
+    // @ElementCollection
+    // @XmlTransient
+    // @JSONTransient
+    // public List<Long> getPublicCollectionsContaining() {
+    // Set<Long> collectionIds = new HashSet<Long>();
+    //
+    // for (ResourceCollection collection : getResourceCollections()) {
+    // if (collection.isShared() && collection.isVisible()) {
+    // collectionIds.add(collection.getId());
+    // collectionIds.addAll(Persistable.Base.extractIds(collection.getVisibleParents()));
+    // }
+    // }
+    // logger.trace("partOfPublicResourceCollection:" + collectionIds);
+    // return new ArrayList<Long>(collectionIds);
+    // }
+
+    @Field(name = QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS)
+    @IndexedEmbedded
+    @ElementCollection
+    @XmlTransient
+    @JSONTransient
+    public List<Long> getSharedCollectionsContaining() {
+        Set<Long> collectionIds = new HashSet<Long>();
         for (ResourceCollection collection : getResourceCollections()) {
             if (collection.isShared()) {
-                sb.append(collection.getId()).append("|");
+                collectionIds.add(collection.getId());
+                collectionIds.addAll(collection.getParentIdList());
             }
         }
-        if (sb.length() > 0) {
-            logger.trace("partOfPublicResourceCollection:" + sb.toString());
-        }
-        return sb.toString();
+        logger.trace("partOfPublicResourceCollection:" + collectionIds);
+        return new ArrayList<Long>(collectionIds);
+
     }
 
     @IndexedEmbedded
@@ -419,7 +488,8 @@ public class Resource extends JsonModel.Base implements Persistable, Comparable<
     }
 
     @Transient
-    private <K extends SuggestedKeyword> Set<K> getUncontrolledSuggestedKeyword(Collection<K> keywords) {
+    private <K extends SuggestedKeyword> Set<K> getUncontrolledSuggestedKeyword(
+            Collection<K> keywords) {
         Set<K> uncontrolledKeys = new HashSet<K>();
         for (K key : keywords) {
             if (!key.isApproved())
@@ -429,7 +499,8 @@ public class Resource extends JsonModel.Base implements Persistable, Comparable<
     }
 
     @Transient
-    private <K extends SuggestedKeyword> Set<K> getApprovedSuggestedKeyword(Collection<K> keywords) {
+    private <K extends SuggestedKeyword> Set<K> getApprovedSuggestedKeyword(
+            Collection<K> keywords) {
         Set<K> approvedKeys = new HashSet<K>();
         for (K key : keywords) {
             if (key.isApproved())
@@ -527,22 +598,24 @@ public class Resource extends JsonModel.Base implements Persistable, Comparable<
         this.id = id;
     }
 
-    // @Field(store = Store.YES, analyzer = @Analyzer(impl = KeywordAnalyzer.class), name = QueryFieldNames.ID)
+    // @Field(store = Store.YES, analyzer = @Analyzer(impl =
+    // KeywordAnalyzer.class), name = QueryFieldNames.ID)
     // public Long getIndexedId() {
     // return getId();
     // }
 
-    @Fields({ @Field(boost = @Boost(1.5f)),
-            @Field(name = QueryFieldNames.TITLE_AUTO, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)) })
+    @Fields({
+            @Field(boost = @Boost(1.5f)),
+            @Field(name = QueryFieldNames.TITLE_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)) })
     public String getTitle() {
         return title;
     }
 
-    @Field(name = QueryFieldNames.TITLE_SORT, index = Index.UN_TOKENIZED, store = Store.YES)
+    @Field(name = QueryFieldNames.TITLE_SORT, norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     public String getTitleSort() {
         if (getTitle() == null)
             return "";
-        return getTitle().replaceAll(SimpleSearch.TITLE_SORT_REGEX, "");
+        return getTitle().replaceAll(SimpleSearch.TITLE_SORT_REGEX, "").toLowerCase();
     }
 
     public void setTitle(String title) {
@@ -563,6 +636,7 @@ public class Resource extends JsonModel.Base implements Persistable, Comparable<
 
     @XmlAttribute(name = "submitterRef")
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    @NotNull
     public Person getSubmitter() {
         return submitter;
     }
@@ -606,7 +680,8 @@ public class Resource extends JsonModel.Base implements Persistable, Comparable<
      * 
      * @param latitudeLongitudeBox
      */
-    public void setLatitudeLongitudeBox(LatitudeLongitudeBox latitudeLongitudeBox) {
+    public void setLatitudeLongitudeBox(
+            LatitudeLongitudeBox latitudeLongitudeBox) {
         if (latitudeLongitudeBox == null || !latitudeLongitudeBox.isValid()) {
             getLatitudeLongitudeBoxes().clear();
             return;
@@ -641,7 +716,8 @@ public class Resource extends JsonModel.Base implements Persistable, Comparable<
         return latitudeLongitudeBoxes.iterator().next();
     }
 
-    public void setLatitudeLongitudeBoxes(Set<LatitudeLongitudeBox> latitudeLongitudeBoxes) {
+    public void setLatitudeLongitudeBoxes(
+            Set<LatitudeLongitudeBox> latitudeLongitudeBoxes) {
         this.latitudeLongitudeBoxes = latitudeLongitudeBoxes;
     }
 
@@ -661,7 +737,8 @@ public class Resource extends JsonModel.Base implements Persistable, Comparable<
 
     @IndexedEmbedded(prefix = "activeGeographicKeywords.")
     public Set<GeographicKeyword> getIndexedGeographicKeywords() {
-        Set<GeographicKeyword> indexed = new HashSet<GeographicKeyword>(getGeographicKeywords());
+        Set<GeographicKeyword> indexed = new HashSet<GeographicKeyword>(
+                getGeographicKeywords());
         if (!CollectionUtils.isEmpty(managedGeographicKeywords)) {
             indexed.addAll(managedGeographicKeywords);
         }
@@ -707,7 +784,8 @@ public class Resource extends JsonModel.Base implements Persistable, Comparable<
         return resourceRevisionLog;
     }
 
-    public void setResourceRevisionLog(Set<ResourceRevisionLog> resourceRevisionLog) {
+    public void setResourceRevisionLog(
+            Set<ResourceRevisionLog> resourceRevisionLog) {
         this.resourceRevisionLog = resourceRevisionLog;
     }
 
@@ -715,7 +793,7 @@ public class Resource extends JsonModel.Base implements Persistable, Comparable<
         return resourceType;
     }
 
-    @Field(index = Index.UN_TOKENIZED, store = Store.YES, name = QueryFieldNames.RESOURCE_TYPE_SORT)
+    @Field(norms = Norms.NO, store = Store.YES, name = QueryFieldNames.RESOURCE_TYPE_SORT, analyze = Analyze.NO)
     @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     public String getResourceTypeSort() {
         return resourceType.getSortName();
@@ -774,21 +852,9 @@ public class Resource extends JsonModel.Base implements Persistable, Comparable<
         return relatedComparativeCollections;
     }
 
-    public void setRelatedComparativeCollections(Set<RelatedComparativeCollection> relatedComparativeCollections) {
+    public void setRelatedComparativeCollections(
+            Set<RelatedComparativeCollection> relatedComparativeCollections) {
         this.relatedComparativeCollections = relatedComparativeCollections;
-    }
-
-    @XmlTransient
-    public Long getAccessCounter() {
-        return accessCounter;
-    }
-
-    public void setAccessCounter(Long accessCounter) {
-        this.accessCounter = accessCounter;
-    }
-
-    public void incrementAccessCounter() {
-        accessCounter++;
     }
 
     public String toString() {
@@ -822,7 +888,8 @@ public class Resource extends JsonModel.Base implements Persistable, Comparable<
     @Override
     public int compareTo(Resource resource) {
         int comparison = getTitle().compareTo(resource.getTitle());
-        return (comparison == 0) ? getId().compareTo(resource.getId()) : comparison;
+        return (comparison == 0) ? getId().compareTo(resource.getId())
+                : comparison;
     }
 
     public String getUrl() {
@@ -847,8 +914,12 @@ public class Resource extends JsonModel.Base implements Persistable, Comparable<
      */
     @Transient
     public String getUrlNamespace() {
-        String urlToReturn = getResourceType().name();
-        return urlToReturn.toLowerCase().replaceAll("_", "-");
+        return getResourceType().getUrlNamespace();
+    }
+
+    @Transient
+    public String getAbsoluteUrl() {
+        return getUrlNamespace() + "/" + getId();
     }
 
     @Override
@@ -924,7 +995,8 @@ public class Resource extends JsonModel.Base implements Persistable, Comparable<
      * @param resourceAnnotations
      *            the resourceAnnotations to set
      */
-    public void setResourceAnnotations(Set<ResourceAnnotation> resourceAnnotations) {
+    public void setResourceAnnotations(
+            Set<ResourceAnnotation> resourceAnnotations) {
         this.resourceAnnotations = resourceAnnotations;
     }
 
@@ -944,7 +1016,8 @@ public class Resource extends JsonModel.Base implements Persistable, Comparable<
         List<ResourceCreator> authors = new ArrayList<ResourceCreator>();
 
         // get the applicable resource roles for this resource type
-        Set<ResourceCreatorRole> primaryRoles = ResourceCreatorRole.getPrimaryCreatorRoles(getResourceType());
+        Set<ResourceCreatorRole> primaryRoles = ResourceCreatorRole
+                .getPrimaryCreatorRoles(getResourceType());
         if (resourceCreators != null) {
             for (ResourceCreator creator : resourceCreators) {
                 if (primaryRoles.contains(creator.getRole()))
@@ -958,7 +1031,8 @@ public class Resource extends JsonModel.Base implements Persistable, Comparable<
 
     @Transient
     public Collection<ResourceCreator> getEditors() {
-        List<ResourceCreator> editors = new ArrayList<ResourceCreator>(this.getResourceCreators(ResourceCreatorRole.EDITOR));
+        List<ResourceCreator> editors = new ArrayList<ResourceCreator>(
+                this.getResourceCreators(ResourceCreatorRole.EDITOR));
         Collections.sort(editors);
         return editors;
     }
@@ -967,7 +1041,8 @@ public class Resource extends JsonModel.Base implements Persistable, Comparable<
      * @param managedGeographicKeywords
      *            the managedGeographicKeywords to set
      */
-    public void setManagedGeographicKeywords(Set<GeographicKeyword> managedGeographicKeywords) {
+    public void setManagedGeographicKeywords(
+            Set<GeographicKeyword> managedGeographicKeywords) {
         this.managedGeographicKeywords = managedGeographicKeywords;
     }
 
@@ -977,6 +1052,9 @@ public class Resource extends JsonModel.Base implements Persistable, Comparable<
     @XmlElementWrapper(name = "managedGeographicKeywords")
     @XmlElement(name = "managedGeographicKeyword")
     public Set<GeographicKeyword> getManagedGeographicKeywords() {
+        if (managedGeographicKeywords == null) {
+            managedGeographicKeywords = new LinkedHashSet<GeographicKeyword>();
+        }
         return managedGeographicKeywords;
     }
 
@@ -1003,7 +1081,8 @@ public class Resource extends JsonModel.Base implements Persistable, Comparable<
             return false;
         }
         try {
-            return Persistable.Base.isEqual(this, Resource.class.cast(candidate));
+            return Persistable.Base.isEqual(this,
+                    Resource.class.cast(candidate));
         } catch (ClassCastException e) {
             logger.debug("{} <==> {} ", candidate.getClass(), getClass());
             logger.debug("{}", e);
@@ -1029,6 +1108,26 @@ public class Resource extends JsonModel.Base implements Persistable, Comparable<
         return getCoverageDates();
     }
 
+    @IndexedEmbedded
+    public Set<ResourceAnnotation> getActiveResourceAnnotations() {
+        return getResourceAnnotations();
+    }
+
+    @IndexedEmbedded
+    public Set<SourceCollection> getActiveSourceCollections() {
+        return getSourceCollections();
+    }
+
+    @IndexedEmbedded
+    public Set<RelatedComparativeCollection> getActiveRelatedComparativeCollections() {
+        return getRelatedComparativeCollections();
+    }
+
+    @IndexedEmbedded
+    public Set<ResourceNote> getActiveResourceNotes() {
+        return getResourceNotes();
+    }
+
     @XmlElementWrapper(name = "coverageDates")
     @XmlElement(name = "coverageDate")
     public Set<CoverageDate> getCoverageDates() {
@@ -1043,13 +1142,16 @@ public class Resource extends JsonModel.Base implements Persistable, Comparable<
     }
 
     @JSONTransient
-    @Fields({ @Field(name = QueryFieldNames.ALL_PHRASE, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)),
+    @Fields({
+            @Field(name = QueryFieldNames.ALL_PHRASE, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)),
             @Field(name = QueryFieldNames.ALL, analyzer = @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)) })
     public String getKeywords() {
-        // note, consider using a transient field here, as the getter is called multiple items (once for each @Field annotation)
+        // note, consider using a transient field here, as the getter is called
+        // multiple items (once for each @Field annotation)
         logger.trace("get keyword contents: {}", getId());
         StringBuilder sb = new StringBuilder();
-        sb.append(getTitle()).append(" ").append(getDescription()).append(" ").append(getAdditonalKeywords()).append(" ");
+        sb.append(getTitle()).append(" ").append(getDescription()).append(" ")
+                .append(getAdditonalKeywords()).append(" ");
 
         for (Keyword kwd : getIndexedGeographicKeywords()) {
             sb.append(kwd.getLabel()).append(" ");
@@ -1084,14 +1186,14 @@ public class Resource extends JsonModel.Base implements Persistable, Comparable<
         for (Keyword kwd : getActiveTemporalKeywords()) {
             sb.append(kwd.getLabel()).append(" ");
         }
-        for (ResourceNote note : getResourceNotes()) {
+        for (ResourceNote note : getActiveResourceNotes()) {
             sb.append(note.getNote()).append(" ");
         }
         for (ResourceCreator creator : getResourceCreators()) {
             sb.append(creator.getCreator().getName()).append(" ");
             sb.append(creator.getCreator().getProperName()).append(" ");
         }
-        for (ResourceAnnotation ann : getResourceAnnotations()) {
+        for (ResourceAnnotation ann : getActiveResourceAnnotations()) {
             sb.append(ann.getPairedValue()).append(" ");
         }
 
@@ -1130,7 +1232,8 @@ public class Resource extends JsonModel.Base implements Persistable, Comparable<
      * @param resourceCollections
      *            the resourceCollections to set
      */
-    public void setResourceCollections(Set<ResourceCollection> resourceCollections) {
+    public void setResourceCollections(
+            Set<ResourceCollection> resourceCollections) {
         this.resourceCollections = resourceCollections;
     }
 
@@ -1200,10 +1303,13 @@ public class Resource extends JsonModel.Base implements Persistable, Comparable<
     public boolean isValid() {
         if (isValidForController() == true) {
             if (getSubmitter() == null) {
-                throw new TdarRecoverableRuntimeException("A submitter is required for this " + getResourceType());
+                throw new TdarRecoverableRuntimeException(
+                        "A submitter is required for this " + getResourceType());
             }
             if (getDateCreated() == null) {
-                throw new TdarRecoverableRuntimeException("The registered date is required for this " + getResourceType());
+                throw new TdarRecoverableRuntimeException(
+                        "The registered date is required for this "
+                                + getResourceType());
             }
             return true;
         }
@@ -1213,10 +1319,12 @@ public class Resource extends JsonModel.Base implements Persistable, Comparable<
     @JSONTransient
     public boolean isValidForController() {
         if (StringUtils.isEmpty(getTitle())) {
-            throw new TdarRecoverableRuntimeException("A title is required for this " + getResourceType());
+            throw new TdarRecoverableRuntimeException(
+                    "A title is required for this " + getResourceType());
         }
         if (StringUtils.isEmpty(getDescription())) {
-            throw new TdarRecoverableRuntimeException("A description is required for this " + getResourceType());
+            throw new TdarRecoverableRuntimeException(
+                    "A description is required for this " + getResourceType());
         }
         return true;
     }
@@ -1235,7 +1343,9 @@ public class Resource extends JsonModel.Base implements Persistable, Comparable<
     /*
      * (non-Javadoc)
      * 
-     * @see org.tdar.core.bean.Indexable#setExplanation(org.apache.lucene.search.Explanation)
+     * @see
+     * org.tdar.core.bean.Indexable#setExplanation(org.apache.lucene.search.
+     * Explanation)
      */
     @Override
     public void setExplanation(Explanation ex) {
@@ -1304,9 +1414,19 @@ public class Resource extends JsonModel.Base implements Persistable, Comparable<
 
     }
 
+    @Transient
+    public boolean isViewable() {
+        return viewable;
+    }
+
+    public void setViewable(boolean viewable) {
+        this.viewable = viewable;
+    }
+
     /*
-     * This method is used to capture people who upload things without any ResourceCreators, this makes the resource show up
-     * in the browse page for that creator
+     * This method is used to capture people who upload things without any
+     * ResourceCreators, this makes the resource show up in the browse page for
+     * that creator
      */
     @Field(name = QueryFieldNames.RESOURCE_OWNER, store = Store.YES, analyzer = @Analyzer(impl = KeywordAnalyzer.class))
     @JSONTransient
@@ -1319,7 +1439,8 @@ public class Resource extends JsonModel.Base implements Persistable, Comparable<
     }
 
     // @Transient
-    // @Field(index = Index.UN_TOKENIZED, store = Store.YES, analyzer=@Analyzer(impl = TdarStandardAnalyzer.class), name=QueryFieldNames.SEARCH_TYPE)
+    // @Field(norms = Norms.NO, store = Store.YES, analyzer=@Analyzer(impl =
+    // TdarStandardAnalyzer.class), name=QueryFieldNames.SEARCH_TYPE)
     // public SimpleSearchType getSimpleSearchType() {
     // return SimpleSearchType.RESOURCE;
     // }
@@ -1327,4 +1448,94 @@ public class Resource extends JsonModel.Base implements Persistable, Comparable<
     // public Status getStatusForSearch() {
     // return getStatus();
     // }
+
+    @JSONTransient
+    public String getFormattedAuthorList() {
+        StringBuilder sb = new StringBuilder();
+        List<ResourceCreator> primaryCreators = new ArrayList<ResourceCreator>(
+                getPrimaryCreators());
+        Collections.sort(primaryCreators);
+        for (ResourceCreator creator : primaryCreators) {
+            if (creator.getRole() == ResourceCreatorRole.AUTHOR
+                    || creator.getRole() == ResourceCreatorRole.CREATOR) {
+                appendIfNotBlank(sb, creator.getCreator().getProperName(), ",",
+                        "");
+            }
+        }
+        for (ResourceCreator creator : primaryCreators) {
+            if (creator.getRole() == ResourceCreatorRole.EDITOR) {
+                appendIfNotBlank(sb, creator.getCreator().getProperName(), ",",
+                        "");
+            }
+        }
+        return sb.toString();
+    }
+
+    @JSONTransient
+    public String getFormattedTitleInfo() {
+        StringBuilder sb = new StringBuilder();
+        appendIfNotBlank(sb, getTitle(), "", "");
+        return sb.toString();
+    }
+
+    // FIXME: ADD IS?N
+    @JSONTransient
+    public String getFormattedSourceInformation() {
+        StringBuilder sb = new StringBuilder();
+        return sb.toString();
+    }
+
+    @Field(name = QueryFieldNames.CREATOR_ROLE_IDENTIFIER, analyzer = @Analyzer(impl = KeywordAnalyzer.class))
+    @IndexedEmbedded
+    @ElementCollection
+    @XmlTransient
+    @JSONTransient
+    // This field facilitates unified lucene search for submitter, updater,
+    // resourceProvider, and resourceCreators
+    // should be in the form {creartorType}{creatorId}{creatorRole}
+    public List<String> getCreatorRoleIdentifiers() {
+        List<String> list = new ArrayList<String>();
+        for (ResourceCreator resourceCreator : resourceCreators) {
+            list.add(resourceCreator.getCreatorRoleIdentifier());
+        }
+        list.add(ResourceCreator.getCreatorRoleIdentifier(getSubmitter(),
+                ResourceCreatorRole.SUBMITTER));
+        list.add(ResourceCreator.getCreatorRoleIdentifier(getUpdatedBy(),
+                ResourceCreatorRole.UPDATER));
+        return list;
+    }
+
+    protected StringBuilder appendIfNotBlank(StringBuilder sb, String str,
+            String prefixIfNotAtStart, String textPrefixIfNotBlank) {
+        if (StringUtils.isNotBlank(str)) {
+            if (sb.length() > 0) {
+                sb.append(prefixIfNotAtStart).append(" ");
+            }
+            if (StringUtils.isNotBlank(textPrefixIfNotBlank)) {
+                sb.append(textPrefixIfNotBlank);
+            }
+            sb.append(str);
+        }
+        return sb;
+    }
+
+    public Long getTransientAccessCount() {
+        return transientAccessCount;
+    }
+
+    public void setTransientAccessCount(Long l) {
+        this.transientAccessCount = l;
+    }
+
+    @Transient
+    public boolean isSupportsThumbnails() {
+        return false;
+    }
+
+    @Transient
+    public boolean isCitationRecord() {
+        // resources don't have files, but should still not be considered citation records because they *can't* have files.
+        return false;
+    }
+
 }

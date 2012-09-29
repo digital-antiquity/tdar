@@ -6,20 +6,17 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-
-import net.sourceforge.htmlunit.corejs.javascript.IRFactory;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.LanguageEnum;
+import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
@@ -37,7 +34,7 @@ import org.tdar.struts.data.FileProxy;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Rev$
  */
-@Service
+
 public abstract class AbstractInformationResourceService<T extends InformationResource, R extends ResourceDao<T>> extends ServiceInterface.TypedDaoBase<T, R> {
 
     // FIXME: this should be injected
@@ -48,6 +45,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     @Autowired
     private FileAnalyzer analyzer;
     @Autowired
+    @Qualifier("genericDao")
     private GenericDao genericDao;
 
     @Transactional(readOnly = true)
@@ -163,7 +161,6 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
 
     private void incrementVersionNumber(InformationResourceFile irFile) {
         irFile.incrementVersionNumber();
-        irFile.setDownloadCount(0);
         irFile.clearStatus();
         logger.info("incremented version number and reset download and status for irfile: {}", irFile, irFile.getLatestVersion());
     }
@@ -200,7 +197,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         InformationResourceFileVersion version = new InformationResourceFileVersion(fileProxy.getVersionType(), filename, irFile);
         setInformationResourceFileMetadata(irFile, fileProxy);
         irFile.addFileVersion(version);
-        filestore.store(fileProxy.getInputStream(), version);
+        filestore.store(fileProxy.getFile(), version);
         genericDao.save(version);
         switch (fileProxy.getVersionType()) {
             case UPLOADED:
@@ -264,8 +261,8 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         return informationResourceFileService;
     }
 
-    public List<LanguageEnum> findAllLanguages() {
-        return Arrays.asList(LanguageEnum.values());
+    public List<Language> findAllLanguages() {
+        return Arrays.asList(Language.values());
     }
 
 }

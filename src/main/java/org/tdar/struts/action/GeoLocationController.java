@@ -3,8 +3,6 @@ package org.tdar.struts.action;
 import java.io.InputStream;
 import java.util.Set;
 
-import javax.xml.bind.JAXBException;
-
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -48,10 +46,10 @@ public class GeoLocationController extends TdarActionSupport {
     public String lookup() {
         logger.debug("beginning external latLong lookup");
         LatitudeLongitudeBox latLongBox = new LatitudeLongitudeBox();
-        latLongBox.setMinX(minX);
-        latLongBox.setMinY(minY);
-        latLongBox.setMaxX(maxX);
-        latLongBox.setMaxY(maxY);
+        latLongBox.setMinx(minX);
+        latLongBox.setMiny(minY);
+        latLongBox.setMaxx(maxX);
+        latLongBox.setMaxy(maxY);
         try {
             Set<GeographicKeyword> allGeographicInfo = geoSearchService.extractAllGeographicInfo(latLongBox);
             latLongBox.addGeographicKeywords(allGeographicInfo);

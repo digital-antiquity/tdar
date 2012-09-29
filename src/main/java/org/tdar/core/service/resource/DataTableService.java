@@ -1,6 +1,7 @@
 package org.tdar.core.service.resource;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -10,8 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.dataTable.DataTable;
-import org.tdar.core.bean.resource.dataTable.DataTableColumn;
+import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.dao.resource.DataTableColumnDao;
 import org.tdar.core.dao.resource.DataTableDao;
 import org.tdar.core.service.ServiceInterface;
@@ -35,20 +36,10 @@ public class DataTableService extends ServiceInterface.TypedDaoBase<DataTable, D
     private DataTableColumnDao dataTableColumnDao;
     @Autowired
     private PostgresDatabase tdarDataImportDatabase;
-
-    @Autowired
-    public void setDao(DataTableDao dao) {
-        super.setDao(dao);
-    }
-
+    
     @Transactional(readOnly = true)
     public DataTable findByName(final String name) {
         return getDao().findByName(name);
-    }
-
-    @Transactional(readOnly = true)
-    public List<DataTable> findAllFromIdList(List<Long> ids) {
-        return getDao().findAllFromIdList(ids);
     }
 
     @Transactional(readOnly = true)
@@ -82,6 +73,10 @@ public class DataTableService extends ServiceInterface.TypedDaoBase<DataTable, D
 
     public void setTdarDataImportDatabase(PostgresDatabase tdarDataImportDatabase) {
         this.tdarDataImportDatabase = tdarDataImportDatabase;
+    }
+
+    public Map<String, Long> findAllDistinctValuesWithCounts(DataTableColumn dataTableColumn) {
+        return tdarDataImportDatabase.selectDistinctValuesWithCounts(dataTableColumn);
     }
 
 }

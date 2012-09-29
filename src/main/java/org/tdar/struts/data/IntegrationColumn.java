@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,14 +24,17 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Sequenceable;
+import org.tdar.core.bean.resource.CodingRule;
+import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
-import org.tdar.core.bean.resource.dataTable.DataTable;
-import org.tdar.core.bean.resource.dataTable.DataTableColumn;
+import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
 
 /**
  * ProxyClass to help with passing integration data back and forth from Struts
@@ -49,10 +51,10 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
     private transient Logger logger = LoggerFactory.getLogger(getClass());
     private String name;
     private Ontology sharedOntology;
-    private LinkedHashMap<DataTableColumn, List<String>> distinctColumnValueMap = new LinkedHashMap<DataTableColumn, List<String>>();
     private List<DataTableColumn> columns = new ArrayList<DataTableColumn>();
     private List<OntologyNode> filteredOntologyNodes = new ArrayList<OntologyNode>();
     private Set<OntologyNode> ontologyNodesForSelect = new HashSet<OntologyNode>();
+    private HashMap<OntologyNode, OntologyNode> parentMap = new HashMap<OntologyNode, OntologyNode>();
     private Integer sequenceNumber;
 
     public enum ColumnType {
@@ -65,7 +67,7 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
      * whether NULLS get pulled back with the integration results
      */
     private boolean nullIncluded = true;
-    private ArrayList<OntologyNodeData> flattenedOntologyNodeList;
+    private List<OntologyNode> flattenedOntologyNodeList;
 
     public IntegrationColumn() {
     }
@@ -115,6 +117,19 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
         return columns;
     }
 
+    @XmlElementWrapper(name = "mappingRules")
+    @XmlElement(name = "mappingRule")
+    public List<CodingRule> getCodingRules() {
+        List<CodingRule> rules = new ArrayList<CodingRule>();
+        for (DataTableColumn column : getColumns()) {
+            if (column.getDefaultCodingSheet() == null) {
+                continue;
+            }
+            rules.addAll(column.getDefaultCodingSheet().getCodingRules());
+        }
+        return rules;
+    }
+
     @XmlElementWrapper(name = "filteredOntologyNodes")
     @XmlElement(name = "ontologyNode")
     public List<OntologyNode> getFilteredOntologyNodes() {
@@ -136,27 +151,26 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
         return parent != null && parent.getIntervalStart() < child.getIntervalStart() && parent.getIntervalEnd() > child.getIntervalEnd();
     }
 
-    protected Map<OntologyNode, OntologyNode> getNearestParentMap() {
-        HashMap<OntologyNode, OntologyNode> parentMap = new HashMap<OntologyNode, OntologyNode>();
-
-        /*
-         * loop through all of the ontology nodes from the select statement
-         * if the node has a parent inside the filtered node set, then evaluate the distance betwee
-         * the intervals (shorter is better). maintain the parent as the shortest.
-         */
-        for (OntologyNode node : getOntologyNodesForSelect()) {
-            int distance = 1000000;
-            for (OntologyNode filter : getFilteredOntologyNodes()) {
-                if (isChildOf(filter, node)) {
-                    int localDistance = filter.getIntervalEnd() - filter.getIntervalStart();
-                    if (distance > localDistance) {
-                        parentMap.put(node, filter);
-                        distance = localDistance;
+    public Map<OntologyNode, OntologyNode> getNearestParentMap() {
+        if (parentMap.isEmpty()) {
+            /*
+             * loop through all of the ontology nodes from the select statement
+             * if the node has a parent inside the filtered node set, then evaluate the distance betwee
+             * the intervals (shorter is better). maintain the parent as the shortest.
+             */
+            for (OntologyNode node : getOntologyNodesForSelect()) {
+                int distance = 1000000;
+                for (OntologyNode filteredOntologyNode : getFilteredOntologyNodes()) {
+                    if (node.isChildOf(filteredOntologyNode)) {
+                        int localDistance = filteredOntologyNode.getIntervalEnd() - filteredOntologyNode.getIntervalStart();
+                        if (distance > localDistance) {
+                            parentMap.put(node, filteredOntologyNode);
+                            distance = localDistance;
+                        }
                     }
                 }
             }
         }
-
         return parentMap;
     }
 
@@ -194,18 +208,28 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
      * Merlot -> RedWine
      * Cabernet -> RedWine
      * 
+     * Returns the OntologyNode that the given value in the given DataTableColumn has been mapped to. If the node has been
+     * explicitly selected during the filter process, it will return it directly.
+     * Otherwise if the node is a child node of an explicitly selected OntologyNode, it will return the first explicitly selected parent node.
      * 
-     * @param hierarchyMap
+     * 
      * @return
      */
     public OntologyNode getMappedOntologyNode(String value, DataTableColumn column) {
         // Find the node that matches the string from the select statement
         OntologyNode child = null;
-        for (OntologyNode node : getOntologyNodesForSelect()) {
-            if (node.getMappedDataValues(column).contains(value)) {
-                child = node;
-            }
+        Map<String, OntologyNode> termToNodeMap = column.getDefaultCodingSheet().getTermToOntologyNodeMap();
+        // Map<OntologyNode, List<String>> mappedDataValues = column.getNodeToDataValueMap();
+        OntologyNode node = termToNodeMap.get(value);
+        if (getOntologyNodesForSelect().contains(node)) {
+            child = node;
         }
+        // for (OntologyNode node : getOntologyNodesForSelect()) {
+        // List<String> mappedValues = mappedDataValues.get(node);
+        // if (mappedValues != null && mappedValues.contains(value)) {
+        // child = node;
+        // }
+        // }
 
         if (child == null) {
             return null;
@@ -281,20 +305,7 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
         return sharedOntology;
     }
 
-    public void setDistinctColumnValueMap(LinkedHashMap<DataTableColumn, List<String>> distinctColumnValueMap) {
-        this.distinctColumnValueMap = distinctColumnValueMap;
-    }
-
-    @XmlTransient
-    public LinkedHashMap<DataTableColumn, List<String>> getDistinctColumnValueMap() {
-        return distinctColumnValueMap;
-    }
-    
-    public void put(DataTableColumn column, List<String> distinctValues) {
-        distinctColumnValueMap.put(column, distinctValues);
-    }
-
-    public List<OntologyNodeData> getFlattenedOntologyNodeList() {
+    public List<OntologyNode> getFlattenedOntologyNodeList() {
         if (flattenedOntologyNodeList == null) {
             flatten();
         }
@@ -302,45 +313,45 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
     }
 
     public void flatten() {
-        SortedMap<Integer, List<OntologyNode>> ontologyNodeMap = sharedOntology.toOntologyNodeMap();
-        // logger.debug("ontology node map: " + ontologyNodeMap);
-        ArrayList<OntologyNode> ontologyNodes = new ArrayList<OntologyNode>(sharedOntology.getSortedOntologyNodes());
-        flattenedOntologyNodeList = new ArrayList<OntologyNodeData>(ontologyNodes.size());
-        // generate OntologyNodeData with extra metadata for the page
-        // FIXME: first pass naive algorithm, should iterate over the
-        // DataTableColumns instead?
+        if (sharedOntology == null || isDisplayColumn())
+            return;
+        List<OntologyNode> ontologyNodes = sharedOntology.getSortedOntologyNodes();
+        SortedMap<Integer, List<OntologyNode>> ontologyNodeParentChildMap = sharedOntology.toOntologyNodeMap();
+
         for (OntologyNode ontologyNode : ontologyNodes) {
-            OntologyNodeData nodeData = new OntologyNodeData(ontologyNode);
             boolean[] columnHasValueArray = new boolean[columns.size()];
             // assume integrationColumns and data value maps have already been
             // populated
             for (int index = 0; index < columns.size(); index++) {
+                columnHasValueArray[index] = false;
                 DataTableColumn column = columns.get(index);
+                CodingSheet codingSheet = column.getDefaultCodingSheet();
+                if (codingSheet == null) {
+                    continue;
+                }
                 // check mapping first to see if the value should be translated a second
-                // time
-                // to the common ontology format.
-                List<String> mappedDataValues = ontologyNode.getMappedDataValues(column);
-                List<String> distinctValues = distinctColumnValueMap.get(column);
-                // check if distinctValues has any values in common with mapped data
-                // values
+                // time to the common ontology format.
+
+                // check if distinctValues has any values in common with mapped data values
                 // if the two lists are disjoint (nothing in common), then there is no
-                // data value
-                // if one of the distinct values is already equivalent to the ontology
+                // data value if one of the distinct values is already equivalent to the ontology
                 // node label, go with that.
-                // logger.debug("distinct values: " + distinctValues);
-                // logger.debug("mapped data values: " + mappedDataValues);
-                // logger.debug("node label: " + ontologyNode.getLabel());
-                columnHasValueArray[index] = distinctValues.contains(ontologyNode.getIri()) || !Collections.disjoint(mappedDataValues, distinctValues);
+
+                List<CodingRule> rules = codingSheet.findRuleMappedToOntologyNode(ontologyNode);
+                if (CollectionUtils.isNotEmpty(rules)) {
+                    for (CodingRule rule : rules) {
+                        if (rule != null && rule.isMappedToData(column)) {
+                            columnHasValueArray[index] = true;
+                        }
+                    }
+                }
+
             }
-            nodeData.setColumnHasValueArray(columnHasValueArray);
-            List<OntologyNode> children = ontologyNodeMap.get(Integer.valueOf(nodeData.getIntervalStart()));
-            nodeData.setParent(children != null && children.size() > 1);
-            // nodeData.setParent(ontologyNodeMap.containsKey(
-            // ontologyNode.getIntervalStart()) );
-
-            flattenedOntologyNodeList.add(nodeData);
+            List<OntologyNode> children = ontologyNodeParentChildMap.get(Integer.valueOf(ontologyNode.getIntervalStart()));
+            ontologyNode.setParent(CollectionUtils.isNotEmpty(children));
+            ontologyNode.setColumnHasValueArray(columnHasValueArray);
         }
+        flattenedOntologyNodeList = ontologyNodes;
     }
-
 
 }

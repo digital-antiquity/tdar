@@ -17,8 +17,8 @@ import org.springframework.util.CollectionUtils;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.service.PersonalFilestoreService;
-import org.tdar.filestore.personalFilestore.PersonalFilestore;
-import org.tdar.filestore.personalFilestore.PersonalFilestoreFile;
+import org.tdar.filestore.personal.PersonalFilestore;
+import org.tdar.filestore.personal.PersonalFilestoreFile;
 
 @SuppressWarnings("serial")
 @Namespace("/upload")

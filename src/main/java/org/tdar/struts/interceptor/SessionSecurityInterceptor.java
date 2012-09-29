@@ -2,16 +2,18 @@ package org.tdar.struts.interceptor;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.NDC;
 import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.AnnotationUtils;
+import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.GenericService;
-import org.tdar.core.service.ScheduledProcessService;
+import org.tdar.core.service.ReflectionService;
 import org.tdar.struts.WriteableSession;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.utils.activity.Activity;
+import org.tdar.utils.activity.IgnoreActivity;
 
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.ActionProxy;
@@ -42,24 +44,29 @@ public class SessionSecurityInterceptor implements Interceptor {
         Object action = invocation.getAction();
         ActionProxy proxy = invocation.getProxy();
         String methodName = proxy.getMethod();
+        //create a tag for this action so that we can (when paired w/ thread name) track its lifecycle in the logs 
+        String actionTag =  "" + proxy.getNamespace() + "/" + proxy.getActionName();
         if (methodName == null) {
             methodName = "execute";
         }
-        WriteableSession writeableClass = AnnotationUtils.findAnnotation(action.getClass(), WriteableSession.class);
-        WriteableSession writeableMethod = AnnotationUtils.findAnnotation(action.getClass().getMethod(methodName), WriteableSession.class);
 
-        Activity activity = new Activity(ServletActionContext.getRequest());
-        // scheduledProcessService.addActivityToQueue(activity);
+        Activity activity = null;
+        if (!ReflectionService.classOrMethodContainsAnnotation(action.getClass().getMethod(methodName), IgnoreActivity.class)) {
+            activity = new Activity(ServletActionContext.getRequest());
+            ActivityManager.getInstance().addActivityToQueue(activity);
+        }
 
         String mark = "READ ONLY";
-        if (writeableClass != null || writeableMethod != null) {
+        if (ReflectionService.classOrMethodContainsAnnotation(action.getClass().getMethod(methodName), WriteableSession.class)) {
             genericService.markWritable();
             mark = "WRITEABLE";
         } else {
             genericService.markReadOnly();
         }
-        logger.trace(String.format("marking %s/%s session %s", action.getClass().getSimpleName(), methodName, mark));
         try {
+            //ASSUMPTION: this interceptor and the invoked action run in the _same_ thread.  We tag the NDC  so we can follow this action in the logfile
+            NDC.push(actionTag);
+            logger.trace(String.format("marking %s/%s session %s", action.getClass().getSimpleName(), methodName, mark));
             return invocation.invoke();
         } catch (TdarActionException exception) {
             logger.warn("caught TdarActionException", exception);
@@ -69,8 +76,17 @@ public class SessionSecurityInterceptor implements Interceptor {
             genericService.clearCurrentSession();
             return exception.getResultName();
         } finally {
-            activity.end();
-            logger.debug("activity: {} ", activity);
+            try {
+                if (activity != null) {
+                    activity.end();
+                    logger.debug("activity: {} ", activity);
+                }
+            }
+            finally {
+                //overkill perhaps, but we need to be absolutely certain that we pop the NDC.
+                NDC.pop();
+            }
+            
         }
     }
 

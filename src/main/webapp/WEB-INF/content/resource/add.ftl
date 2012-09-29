@@ -35,9 +35,15 @@
             <dl class='fancy-clickable'>
                 <dt><@link "document" "Document" /></dt>
                 <dd>A written, printed record of information, evidence, or analysis. Examples from archaeology include published articles, books, excavation reports, field notes, or doctoral dissertations. </dd>
+
                 <dt><@link "dataset" "Dataset" /></dt>
                 <dd>A collection of data, usually in tabular form with columns representing variables and rows representing cases. A database usually refers to a set of linked or related datasets. Examples from archaeology include small spreadsheets documenting measurements and/or analysis of artifacts, as well as large databases cataloging all artifacts from a site. </dd>
-            
+
+		         <#if editor!false>
+		                <dt><@link "video" "Video" /></dt>
+		                <dd>A video</dd>
+				</#if>
+				            
                 <dt><@link "ontology" "Ontology"/></dt>
                 <dd>In tDAR, an ontology is a small file used with a dataset column (and/or coding sheet) to hierarchically organize values in the data in order to facilitate integrating datasets from different sources. (Please see the tutorials on data integration for a complete explanation).</dd>
             
@@ -77,8 +83,8 @@
         </div>
         <div class="right">
             <dl class='fancy-clickable'>
-                <dt><@link "collection" "Resource Collection"/></dt>
-                <dd>n tDAR, a collection is an organizational tool with two purposes. The first is to allow contributors and users to create groups and 
+                <dt><@link "collection" "Collection"/></dt>
+                <dd>In tDAR, a collection is an organizational tool with two purposes. The first is to allow contributors and users to create groups and 
                 hierarchies of resources in any way they find useful. A secondary use of collections allows users to easily administer view and edit 
                 permissions for large numbers of persons and resources.</dd>
             </dl>

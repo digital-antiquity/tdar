@@ -2,16 +2,21 @@
 <!-- $Id$ -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<version>8-HARRIS-MATRIX</version>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<!-- managed versions -->
-		<struts2.version>2.2.3</struts2.version>
-		<hibernate.version>3.6.6.Final</hibernate.version>
-		<org.springframework.version>3.0.5.RELEASE</org.springframework.version>
-		<postgresql.jdbc.version>8.4-701.jdbc4</postgresql.jdbc.version>
-		<spring.amqp.version>1.0.0.RELEASE</spring.amqp.version>
-		<clover.version>3.1.3</clover.version>
+		<struts2.version>2.3.3</struts2.version>
+		<hibernate.version>4.1.2.Final</hibernate.version>
+		<hibernate.search.version>4.1.1.Final</hibernate.search.version>
+		<spring.framework.version>3.1.1.RELEASE</spring.framework.version>
+		<spring.ldap.version>1.3.1.RELEASE</spring.ldap.version>
+		<spring.amqp.version>1.1.0.RELEASE</spring.amqp.version>
+		<!-- <postgresql.jdbc.version>8.4-701.jdbc4</postgresql.jdbc.version> -->
+		<postgresql.jdbc.version>9.1-901.jdbc4</postgresql.jdbc.version>
+		<apache.cxf.version>2.6.0</apache.cxf.version>
+		<clover.version>3.1.4</clover.version>
 		<!-- /end managed versions -->
 		<jvm.args>-Xms256m -Xmx2048m -XX:PermSize=128m -XX:MaxPermSize=512m</jvm.args>
 		<generated.schema.dir>target/generated/db</generated.schema.dir>
@@ -19,7 +24,13 @@
 		<jetty.port>8080</jetty.port>
 		<jetty.stop.port>12919</jetty.stop.port>
 		<use.test.classpath>false</use.test.classpath>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<geotools.version>8.0-M4</geotools.version>
+		<tika.version>1.1</tika.version>
 	</properties>
+	<prerequisites>
+		<maven>2.2.0</maven>
+	</prerequisites>
 	<organization>
 		<name>The Digital Archaeological Record</name>
 		<url>http://www.tdar.org</url>
@@ -101,6 +112,18 @@
 				<enabled>true</enabled>
 			</releases>
 		</repository>
+		<!-- <repository> <id>maven2-repository.dev.java.net</id> <name>Java.net 
+			repository</name> <url>http://download.java.net/maven/2</url> </repository> -->
+		<repository>
+			<id>osgeo</id>
+			<name>Open Source Geospatial Foundation Repository</name>
+			<url>http://download.osgeo.org/webdav/geotools/</url>
+		</repository>
+		<!-- To pull Log4J e-mail throttler: https://github.com/reaktor/log4j-email-throttle -->
+		<repository>
+			<id>Laughing Panda</id>
+			<url>http://maven.laughingpanda.org/maven2</url>
+		</repository>
 	</repositories>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.tdar</groupId>
@@ -112,9 +135,9 @@
 	<!-- 3rd party dependencies and libraries -->
 	<dependencies>
 		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>10.0.1</version>
+			<groupId>com.googlecode.webutilities</groupId>
+			<artifactId>webutilities</artifactId>
+			<version>0.0.5</version>
 		</dependency>
 		<!-- postgres jdbc -->
 		<dependency>
@@ -126,11 +149,6 @@
 			<groupId>org.postgis</groupId>
 			<artifactId>postgis-jdbc</artifactId>
 			<version>1.3.3</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.pdfbox</groupId>
-			<artifactId>pdfbox</artifactId>
-			<version>1.6.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
@@ -155,7 +173,7 @@
 		<dependency>
 			<groupId>org.apache.ant</groupId>
 			<artifactId>ant</artifactId>
-			<version>1.8.2</version>
+			<version>1.8.3</version>
 		</dependency>
 		<dependency>
 			<groupId>imageJ</groupId>
@@ -203,6 +221,12 @@
 			<artifactId>commons-cli</artifactId>
 			<version>1.2</version>
 		</dependency>
+		<!-- Log4J e-mail throttling: https://github.com/reaktor/log4j-email-throttle -->
+		<dependency>
+			<groupId>fi.reaktor.log4j</groupId>
+			<artifactId>log4j-email-throttle</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 		<!-- crowd integration -->
 		<dependency>
 			<groupId>com.atlassian.crowd</groupId>
@@ -227,12 +251,12 @@
 		<dependency>
 			<groupId>com.google.code.findbugs</groupId>
 			<artifactId>annotations</artifactId>
-			<version>1.3.9</version>
+			<version>2.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>gov.loc</groupId>
 			<artifactId>bagit</artifactId>
-			<version>3.13</version>
+			<version>4.0</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>commons-codec</artifactId>
@@ -264,12 +288,18 @@
 		<dependency>
 			<groupId>org.springframework.ldap</groupId>
 			<artifactId>spring-ldap-core</artifactId>
-			<version>1.3.1.RELEASE</version>
+			<version>${spring.ldap.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.ldap</groupId>
 			<artifactId>spring-ldap-core-tiger</artifactId>
-			<version>1.3.1.RELEASE</version>
+			<version>${spring.ldap.version}</version>
+		</dependency>
+		<!-- ANDS PID Client -->
+		<dependency>
+			<groupId>net.sourceforge.andspidclient</groupId>
+			<artifactId>ands-pid-client</artifactId>
+			<version>1.0.07</version>
 		</dependency>
 		<!-- Junit -->
 		<dependency>
@@ -277,11 +307,17 @@
 			<artifactId>junit</artifactId>
 			<version>4.10</version>
 		</dependency>
+		<!-- <dependency> <groupId>junit</groupId> <artifactId>junit</artifactId> 
+			<version>3.8.1</version> <scope>test</scope> </dependency> -->
 		<dependency>
-			<groupId>com.jayway.awaitility</groupId>
-			<artifactId>awaitility</artifactId>
-			<version>1.3.3</version>
-			<scope>test</scope>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-shapefile</artifactId>
+			<version>${geotools.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-swing</artifactId>
+			<version>${geotools.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>stax</groupId>
@@ -291,7 +327,7 @@
 		<dependency>
 			<groupId>org.codehaus.jettison</groupId>
 			<artifactId>jettison</artifactId>
-			<version>1.3</version>
+			<version>1.3.1</version>
 		</dependency>
 		<dependency>
 			<groupId>xmlunit</groupId>
@@ -305,6 +341,15 @@
 			<exclusions>
 			</exclusions>
 		</dependency>
+		<dependency>
+			<groupId>com.3levers.cssselectors</groupId>
+			<artifactId>cssselectors</artifactId>
+			<version>1.0</version>
+		</dependency>
+            		
+		<!--<dependency> <groupId>org.seleniumhq.selenium</groupId> <artifactId>selenium-java</artifactId> 
+			<version>2.21.0</version> </dependency> <dependency> <groupId>org.seleniumhq.selenium</groupId> 
+			<artifactId>selenium-server</artifactId> <version>2.21.0</version> </dependency> -->
 		<dependency>
 			<groupId>org.apache.struts</groupId>
 			<artifactId>struts2-core</artifactId>
@@ -349,19 +394,17 @@
 		<dependency>
 			<groupId>org.freemarker</groupId>
 			<artifactId>freemarker</artifactId>
-			<version>2.3.18</version>
+			<version>2.3.19</version>
 		</dependency>
 		<dependency>
 			<groupId>org.owasp</groupId>
 			<artifactId>antisamy</artifactId>
 			<version>1.4</version>
 		</dependency>
-		<!-- Apache POI / HSSF -->
-		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi-ooxml</artifactId>
-			<version>3.7</version>
-		</dependency>
+		<!-- Apache POI / HSSF - included via tika <dependency> <groupId>org.apache.poi</groupId> 
+			<artifactId>poi-ooxml</artifactId> <version>3.7</version> </dependency> <dependency> 
+			<groupId>org.apache.pdfbox</groupId> <artifactId>pdfbox</artifactId> <version>1.6.0</version> 
+			</dependency> -->
 		<!-- hibernate and JPA persistence -->
 		<dependency>
 			<groupId>org.hibernate.javax.persistence</groupId>
@@ -387,64 +430,76 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-search</artifactId>
-			<version>3.4.1.Final</version>
+			<version>${hibernate.search.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>c3p0</groupId>
-			<artifactId>c3p0</artifactId>
-			<version>0.9.1.2</version>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>4.3.0.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-c3p0</artifactId>
+			<version>4.1.4.Final</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.5.8</version>
+			<version>1.6.4</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.5.8</version>
+			<version>1.6.4</version>
 		</dependency>
 		<!-- SPRING DEPENDENCIES (we're not listing them all individually, but 
 			includes orm, jdbc, aop, tx, -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
-			<version>${org.springframework.version}</version>
+			<version>${spring.framework.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
-			<version>${org.springframework.version}</version>
+			<version>${spring.framework.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
-			<version>${org.springframework.version}</version>
+			<version>${spring.framework.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
-			<version>${org.springframework.version}</version>
+			<version>${spring.framework.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context-support</artifactId>
-			<version>${org.springframework.version}</version>
+			<version>${spring.framework.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
-			<version>${org.springframework.version}</version>
+			<version>${spring.framework.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-orm</artifactId>
-			<version>${org.springframework.version}</version>
+			<version>${spring.framework.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-jdbc</artifactId>
-			<version>${org.springframework.version}</version>
+			<version>${spring.framework.version}</version>
+		</dependency>
+		<dependency>
+			<!-- needed by spring for @Transactional calls -->
+			<groupId>cglib</groupId>
+			<artifactId>cglib</artifactId>
+			<version>2.2.2</version>
+			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>javax.transaction</groupId>
@@ -467,7 +522,7 @@
 		<dependency>
 			<groupId>javax.mail</groupId>
 			<artifactId>mail</artifactId>
-			<version>1.4.4</version>
+			<version>1.4.5</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>activation</artifactId>
@@ -479,7 +534,7 @@
 		<dependency>
 			<groupId>com.healthmarketscience.jackcess</groupId>
 			<artifactId>jackcess</artifactId>
-			<version>1.2.6</version>
+			<version>1.2.7</version>
 		</dependency>
 		<!-- OpenCSV -->
 		<dependency>
@@ -506,7 +561,7 @@
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.1</version>
+			<version>2.3</version>
 		</dependency>
 		<dependency>
 			<groupId>xalan</groupId>
@@ -523,12 +578,12 @@
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-transports-http</artifactId>
-			<version>2.3.1</version>
+			<version>${apache.cxf.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-frontend-jaxws</artifactId>
-			<version>2.3.1</version>
+			<version>${apache.cxf.version}</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>asm</artifactId>
@@ -555,7 +610,12 @@
 		<dependency>
 			<groupId>org.apache.tika</groupId>
 			<artifactId>tika-core</artifactId>
-			<version>1.0</version>
+			<version>${tika.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tika</groupId>
+			<artifactId>tika-parsers</artifactId>
+			<version>${tika.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.tuckey</groupId>
@@ -579,10 +639,29 @@
 		<dependency>
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>
-			<version>2.0</version>
+			<version>2.1</version>
 		</dependency>
-		<!-- <dependency> <groupId>org.codehaus.jackson</groupId> <artifactId>jackson-mapper-asl</artifactId> 
-			<version>1.8.0-SNAPSHOT</version> </dependency> -->
+<!-- 
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-mapper-asl</artifactId>
+			<version>1.9.7</version>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-core-asl</artifactId>
+			<version>1.9.7</version>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-xc</artifactId>
+			<version>1.9.7</version>
+		</dependency>
+ -->		<dependency>
+			<groupId>commons-dbutils</groupId>
+			<artifactId>commons-dbutils</artifactId>
+			<version>1.4</version>
+		</dependency>
 	</dependencies>
 	<pluginRepositories>
 		<pluginRepository>
@@ -651,7 +730,7 @@
 			<plugin>
 				<groupId>org.pitest</groupId>
 				<artifactId>pitest-maven</artifactId>
-				<version>0.23</version>
+				<version>0.26</version>
 				<configuration>
 					<inScopeClasses>
 						<param>org.tdar.*</param>
@@ -664,7 +743,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
-				<version>1.2</version>
+				<version>1.2.1</version>
 				<dependencies>
 					<dependency>
 						<groupId>javax.servlet</groupId>
@@ -693,7 +772,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>sql-maven-plugin</artifactId>
-				<version>1.4</version>
+				<version>1.5</version>
 				<dependencies>
 					<!-- specify the dependent jdbc driver here -->
 					<dependency>
@@ -772,7 +851,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.6.1</version>
+				<version>2.8.1</version>
 				<configuration>
 					<links>
 						<link>http://commons.apache.org/lang/api-release/</link>
@@ -787,7 +866,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
-				<version>2.1.1</version>
+				<version>2.2</version>
 				<configuration>
 					<!-- <webappDirectory>${webapp.deploy.dir}</webappDirectory> -->
 					<outputDirectory>${webapp.deploy.dir}</outputDirectory>
@@ -803,7 +882,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.2</version>
+				<version>2.4</version>
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
@@ -811,6 +890,7 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.7</version>
 				<executions>
 					<execution>
 						<phase>compile</phase>
@@ -839,20 +919,20 @@
 			<plugin>
 				<groupId>org.mortbay.jetty</groupId>
 				<artifactId>maven-jetty-plugin</artifactId>
-				<version>6.1.24</version>
+				<version>6.1.26</version>
 				<configuration>
 					<testClassesDirectory>src/test/resources/</testClassesDirectory>
 					<useTestClasspath>${use.test.classpath}</useTestClasspath>
 					<connectors>
 						<connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
 							<port>${jetty.port}</port>
-							<maxIdleTime>60000</maxIdleTime>
+							<maxIdleTime>600000</maxIdleTime>
 						</connector>
 					</connectors>
 					<contextPath>/</contextPath>
 					<webDefaultXml>src/main/resources/webdefault.xml</webDefaultXml>
 					<scanIntervalSeconds>0</scanIntervalSeconds>
-					<stopKey>tdar${jetty.port}</stopKey>
+					<stopKey>tdar</stopKey>
 					<stopPort>${jetty.stop.port}</stopPort>
 				</configuration>
 				<executions>
@@ -897,7 +977,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-report-plugin</artifactId>
-				<version>2.8.1</version>
+				<version>2.11</version>
 				<configuration>
 					<outputDirectory>${basedir}/target/site</outputDirectory>
 				</configuration>
@@ -905,7 +985,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.8.1</version>
+				<version>2.12</version>
 				<configuration>
 					<forkMode>never</forkMode>
 					<skip>${maven.test.skip}</skip>
@@ -931,7 +1011,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
-				<version>2.8</version>
+				<version>2.9</version>
 				<configuration>
 					<downloadSources>true</downloadSources>
 					<downloadJavadocs>true</downloadJavadocs>
@@ -940,7 +1020,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
-				<version>2.8.1</version>
+				<version>2.11</version>
 				<executions>
 					<execution>
 						<id>integration-test</id>
@@ -1026,7 +1106,7 @@
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>exec-maven-plugin</artifactId>
-						<version>1.2</version>
+						<version>1.2.1</version>
 						<executions>
 							<execution>
 								<phase>compile</phase>
@@ -1119,6 +1199,7 @@
 					<plugin>
 						<groupId>net.alchim31.maven</groupId>
 						<artifactId>yuicompressor-maven-plugin</artifactId>
+						<version>1.3.0</version>
 						<executions>
 							<execution>
 								<goals>
@@ -1167,6 +1248,7 @@
 				<plugins>
 					<plugin>
 						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.7</version>
 						<executions>
 							<execution>
 								<phase>process-resources</phase>
@@ -1234,7 +1316,7 @@
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>versions-maven-plugin</artifactId>
-						<version>1.2</version>
+						<version>1.3.1</version>
 					</plugin>
 				</plugins>
 			</build>
@@ -1264,7 +1346,7 @@
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>exec-maven-plugin</artifactId>
-						<version>1.2</version>
+						<version>1.2.1</version>
 						<dependencies>
 							<dependency>
 								<groupId>javax.servlet</groupId>
@@ -1317,7 +1399,7 @@
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>exec-maven-plugin</artifactId>
-						<version>1.2</version>
+						<version>1.2.1</version>
 						<dependencies>
 							<dependency>
 								<groupId>javax.servlet</groupId>
@@ -1368,15 +1450,11 @@
 											tofile="src/main/resources/log4j.properties" />
 										<copy file="src/main/resources/tdar.properties.template"
 											tofile="src/main/resources/tdar.properties" />
+										<copy file="src/main/webapp/robots.txt.template" tofile="src/main/webapp/robots.txt" />
 										<copy file="src/main/resources/struts-local-settings.xml.template"
 											tofile="src/main/resources/struts-local-settings.xml" />
 										<copy file="src/main/resources/spring-local-settings.xml.template"
 											tofile="src/main/resources/spring-local-settings.xml" />
-										<copy
-											file="src/main/webapp/includes/googlemaps-api-key.js.template"
-											tofile="src/main/webapp/includes/googlemaps-api-key.js" />
-										<echo
-											message="remember to put your API key in src/main/webapp/includes/googlemaps-api-key.js" />
 									</tasks>
 								</configuration>
 							</execution>
@@ -1392,6 +1470,5 @@
 		<developerConnection>scm:hg:file://${basedir}</developerConnection>
 
 	</scm>
-	<version>7-GRID</version>
 </project>
 

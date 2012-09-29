@@ -49,28 +49,44 @@ public abstract class AbstractAuthenticatedWebTestCase extends AbstractWebTestCa
     public void login() {
         login(USERNAME, PASSWORD);
     }
+    
+    public static String getUsername() {
+        return USERNAME;
+    }
+
+    public static String getPassword() {
+        return PASSWORD;
+    }
 
     public void loginAdmin() {
         login(getAdminUsername(), getAdminPassword());
     }
 
-    public String getAdminUsername() {
+    public static String getAdminUsername() {
         return ADMIN_USERNAME;
     }
 
-    public String getAdminPassword() {
+    public static String getAdminPassword() {
         return ADMIN_PASSWORD;
     }
 
     public void login(String user, String pass) {
+        login(user,pass,false);
+    }
+
+    public void login(String user, String pass, boolean expectingErrors) {
         gotoPage("/");
         clickLinkOnPage("Login");
         user = System.getProperty("tdar.user", user);
         pass = System.getProperty("tdar.pass", pass);
         // logger.info(user + ":" + pass);
-        setInput("loginEmail", user);
+        setInput("loginUsername", user);
         setInput("loginPassword", pass);
-        submitForm("Login");
+        if (expectingErrors) {
+            submitFormWithoutErrorCheck("Login");
+        } else {
+            submitForm("Login");
+        }
     }
 
     @After

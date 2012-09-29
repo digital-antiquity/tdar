@@ -1,28 +1,22 @@
 package org.tdar.core.bean.resource;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Boost;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.BulkImportField;
-import org.tdar.core.bean.entity.ResourceCreator;
-import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.configuration.JSONTransient;
-import org.tdar.core.service.GenericService;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 
@@ -58,6 +52,13 @@ public class Document extends InformationResource {
     @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     @BulkImportField(label = "Document Type")
     private DocumentType documentType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "degree")
+    @Field
+    @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
+    @BulkImportField(label = "Degree")
+    private DegreeType degree;
 
     @BulkImportField(label = "Series Name")
     @Column(name = "series_name")
@@ -208,7 +209,23 @@ public class Document extends InformationResource {
         this.numberOfVolumes = numberOfVolumes;
     }
 
+    @Deprecated
     public Integer getNumberOfPages() {
+        return numberOfPages;
+    }
+
+    public Integer getTotalNumberOfPages() {
+        Integer count = 0;
+        if (CollectionUtils.isNotEmpty(getInformationResourceFiles())) {
+            for (InformationResourceFile file : getInformationResourceFiles()) {
+                if (!file.isDeleted() && file.getNumberOfParts() != null) {
+                    count += file.getNumberOfParts();
+                }
+            }
+            if (count > 0) {
+                return count;
+            }
+        }
         return numberOfPages;
     }
 
@@ -272,24 +289,8 @@ public class Document extends InformationResource {
         this.journalNumber = journalNumber;
     }
 
-    public String getFormattedAuthorList() {
-        StringBuilder sb = new StringBuilder();
-        List<ResourceCreator> primaryCreators = new ArrayList<ResourceCreator>(getPrimaryCreators());
-        Collections.sort(primaryCreators);
-        for (ResourceCreator creator : primaryCreators) {
-            if (creator.getRole() == ResourceCreatorRole.AUTHOR) {
-                appendIfNotBlank(sb, creator.getCreator().getProperName(), ",", "");
-            }
-        }
-        for (ResourceCreator creator : primaryCreators) {
-            if (creator.getRole() == ResourceCreatorRole.EDITOR) {
-                appendIfNotBlank(sb, creator.getCreator().getProperName(), ",", "");
-            }
-        }
-        return sb.toString();
-    }
-
     @JSONTransient
+    @Override
     public String getFormattedTitleInfo() {
         StringBuilder sb = new StringBuilder();
         appendIfNotBlank(sb, getTitle(), "", "");
@@ -297,8 +298,9 @@ public class Document extends InformationResource {
         return sb.toString();
     }
 
-    //FIXME: ADD IS?N
+    // FIXME: ADD IS?N
     @JSONTransient
+    @Override
     public String getFormattedSourceInformation() {
         StringBuilder sb = new StringBuilder();
         switch (getDocumentType()) {
@@ -328,27 +330,19 @@ public class Document extends InformationResource {
             case OTHER:
                 break;
             case THESIS:
-                appendIfNotBlank(sb, getPublisher(), "", "Thesis or Dissertation. ");
+                String degreetext = "";
+                if (getDegree() != null) {
+                    degreetext = getDegree().getLabel();
+                }
+                appendIfNotBlank(sb, degreetext + ".", "", "");
+                appendIfNotBlank(sb, getPublisher(), "", "");
                 appendIfNotBlank(sb, getPublisherLocation(), ",", "");
                 break;
         }
-        if (getDate() != null) {
+        if (getDate() != null && getDate() != -1) {
             appendIfNotBlank(sb, getDate().toString(), ".", "");
         }
         return sb.toString();
-    }
-
-    private StringBuilder appendIfNotBlank(StringBuilder sb, String str, String prefixIfNotAtStart, String textPrefixIfNotBlank) {
-        if (StringUtils.isNotBlank(str)) {
-            if (sb.length() > 0) {
-                sb.append(prefixIfNotAtStart).append(" ");
-            }
-            if (StringUtils.isNotBlank(textPrefixIfNotBlank)) {
-                sb.append(textPrefixIfNotBlank);
-            }
-            sb.append(str);
-        }
-        return sb;
     }
 
     @Override
@@ -367,4 +361,17 @@ public class Document extends InformationResource {
         return sb.toString().replaceAll("\\s", "");
     }
 
+    public DegreeType getDegree() {
+        return degree;
+    }
+
+    public void setDegree(DegreeType degree) {
+        this.degree = degree;
+    }
+
+    @Override
+    @Transient
+    public boolean isSupportsThumbnails() {
+        return true;
+    }
 }

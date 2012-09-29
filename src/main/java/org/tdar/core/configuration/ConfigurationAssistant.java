@@ -135,7 +135,17 @@ public class ConfigurationAssistant implements Serializable {
         }
         return defaultValue;
     }
-    
+
+    public long getLongProperty(String key, long defaultValue) {
+        if (properties.containsKey(key)) {
+            try {
+                return Long.parseLong(properties.getProperty(key));
+            }
+            catch (NumberFormatException fallthrough) {}
+        }
+        return defaultValue;
+    }
+
     public boolean getBooleanProperty(String key) {
         return getBooleanProperty(key, false);
     }

@@ -1,11 +1,13 @@
-package org.tdar.core.bean.resource.dataTable;
+package org.tdar.core.bean.resource.datatable;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -19,6 +21,7 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.ObjectUtils;
@@ -76,6 +79,7 @@ public class DataTable extends Persistable.Base {
     private List<DataTableColumn> dataTableColumns = new ArrayList<DataTableColumn>();
 
     private transient Map<String, DataTableColumn> nameToColumnMap;
+    private transient Map<Long, DataTableColumn> idToColumnMap;
     private transient Map<String, DataTableColumn> displayNameToColumnMap;
     private transient int dataTableColumnHashCode = -1;
 
@@ -125,9 +129,49 @@ public class DataTable extends Persistable.Base {
     }
 
     public List<DataTableColumn> getSortedDataTableColumns(Comparator<DataTableColumn> comparator) {
-        ArrayList<DataTableColumn> sortedDataTableColumns = new ArrayList<DataTableColumn>(getDataTableColumns());
+        ArrayList<DataTableColumn> sortedDataTableColumns = new ArrayList<DataTableColumn>(dataTableColumns);
         Collections.sort(sortedDataTableColumns, comparator);
         return sortedDataTableColumns;
+    }
+
+    /**
+     * List all the columns in this table and any left-joined tables (including recursively left-joined)
+     * 
+     * @return list of columns
+     */
+    @XmlTransient
+    public List<DataTableColumn> getLeftJoinColumns() {
+        ArrayList<DataTableColumn> leftJoinColumns = new ArrayList<DataTableColumn>(getSortedDataTableColumns());
+        for (DataTableRelationship r : getRelationships()) {
+            // FIXME getForeignTable() could use getColumnRelationships().iterator().next().getForeignColumn().getDataTable()
+            // Include fields from related tables unless they're on the "many" side of a one-to-many relationship
+            if (this.equals(r.getLocalTable()) && r.getType() == DataTableColumnRelationshipType.MANY_TO_ONE) {
+                // this is the "local" table in a many-to-one relationship, so this is the "many" side, and we can include the "foreign" table's fields
+                leftJoinColumns.addAll(r.getForeignTable().getLeftJoinColumns());
+            } else if (this.equals(r.getForeignTable()) && r.getType() == DataTableColumnRelationshipType.ONE_TO_MANY) {
+                // this is the "foreign" table in a one-to-many relationship, so this is the "many" side, and we can include the "local" table's fields
+                leftJoinColumns.addAll(r.getLocalTable().getLeftJoinColumns());
+            }
+        }
+        return leftJoinColumns;
+    }
+
+    /**
+     * The relationships in which this dataset is the local table
+     * 
+     * @return the set of relationships
+     */
+    private Set<DataTableRelationship> getRelationships() {
+        Set<DataTableRelationship> relationships = new HashSet<DataTableRelationship>();
+        for (DataTableRelationship r : dataset.getRelationships()) {
+            DataTable localTable = r.getLocalTable();
+            DataTable foreignTable = r.getForeignTable();
+            // return the relationship if this table is either the relationship's foreign or local table
+            if (this.equals(r.getLocalTable()) || this.equals(r.getForeignTable())) {
+                relationships.add(r);
+            }
+        }
+        return relationships;
     }
 
     public boolean isAggregated() {
@@ -187,11 +231,14 @@ public class DataTable extends Persistable.Base {
     private void initializeNameToColumnMap() {
         nameToColumnMap = new HashMap<String, DataTableColumn>();
         displayNameToColumnMap = new HashMap<String, DataTableColumn>();
+        idToColumnMap = new HashMap<Long, DataTableColumn>();
+
         // using the HashCode to detect changes to the map, and thus rebuid
         dataTableColumnHashCode = getDataTableColumns().hashCode();
         for (DataTableColumn column : getDataTableColumns()) {
             nameToColumnMap.put(column.getName(), column);
             displayNameToColumnMap.put(column.getDisplayName(), column);
+            idToColumnMap.put(column.getId(), column);
         }
         nameToColumnMap.put(DataTableColumn.TDAR_ROW_ID.getName(), DataTableColumn.TDAR_ROW_ID);
         displayNameToColumnMap.put(DataTableColumn.TDAR_ROW_ID.getDisplayName(), DataTableColumn.TDAR_ROW_ID);
@@ -207,11 +254,10 @@ public class DataTable extends Persistable.Base {
 
     @Transient
     public DataTableColumn getColumnById(Long id) {
-        for (DataTableColumn column : getDataTableColumns()) {
-            if (column.getId().equals(id))
-                return column;
+        if (idToColumnMap == null || ObjectUtils.notEqual(dataTableColumnHashCode, getDataTableColumns().hashCode())) {
+            initializeNameToColumnMap();
         }
-        return null;
+        return idToColumnMap.get(id);
     }
 
     public void setDisplayName(String displayName) {
@@ -222,4 +268,7 @@ public class DataTable extends Persistable.Base {
         return displayName;
     }
 
+    public String getInternalName() {
+        return getName().replaceAll("^((\\w+)_)(\\d+)(_?)", "");
+    }
 }

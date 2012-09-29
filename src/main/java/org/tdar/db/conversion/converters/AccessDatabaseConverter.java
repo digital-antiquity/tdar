@@ -1,28 +1,37 @@
 package org.tdar.db.conversion.converters;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.BufferUnderflowException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.dataTable.DataTable;
-import org.tdar.core.bean.resource.dataTable.DataTableColumn;
-import org.tdar.core.bean.resource.dataTable.DataTableColumnRelationshipType;
-import org.tdar.core.bean.resource.dataTable.DataTableColumnType;
-import org.tdar.core.bean.resource.dataTable.DataTableRelationship;
+import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.core.bean.resource.datatable.DataTableColumnRelationship;
+import org.tdar.core.bean.resource.datatable.DataTableColumnRelationshipType;
+import org.tdar.core.bean.resource.datatable.DataTableColumnType;
+import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.db.model.abstracts.TargetDatabase;
 
 import com.healthmarketscience.jackcess.Column;
 import com.healthmarketscience.jackcess.Database;
+import com.healthmarketscience.jackcess.Index;
+import com.healthmarketscience.jackcess.IndexData.ColumnDescriptor;
 import com.healthmarketscience.jackcess.PropertyMap;
 import com.healthmarketscience.jackcess.Relationship;
 import com.healthmarketscience.jackcess.Table;
@@ -37,15 +46,16 @@ import com.healthmarketscience.jackcess.Table;
  */
 public class AccessDatabaseConverter extends DatasetConverter.Base {
     private static final String DB_PREFIX = "d";
-    private static final String ERROR_CORRUPT_DB = "tDAR was unable to read portions of this Access database. It is possible this issue may be resolved By using the \"Compact and Repair \" feature in Microsoft Access.";
+    private static final String ERROR_CORRUPT_DB = "The system was unable to read portions of this Access database. It is possible this issue may be resolved By using the \"Compact and Repair \" feature in Microsoft Access.";
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
     public String getDatabasePrefix() {
         return DB_PREFIX;
     }
 
-    public AccessDatabaseConverter() {}
-    
+    public AccessDatabaseConverter() {
+    }
+
     public AccessDatabaseConverter(InformationResourceFileVersion version, TargetDatabase targetDatabase) {
         setTargetDatabase(targetDatabase);
         setInformationResourceFileVersion(version);
@@ -54,7 +64,8 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
     protected void openInputDatabase()
             throws IOException {
         File databaseFile = getInformationResourceFileVersion().getFile();
-        setDatabase(Database.open(databaseFile));
+        // if we use ReadOnly Mode here we have the ability to open older files... http://jira.pentaho.com/browse/PDI-5111
+        setDatabase(Database.open(databaseFile, true));
         this.setIrFileId(getInformationResourceFileVersion().getId());
         this.setFilename(databaseFile.getName());
     }
@@ -68,6 +79,9 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
     public void dumpData() throws Exception {
         // start dumping ...
         Map<String, DataTable> dataTableNameMap = new HashMap<String, DataTable>();
+        setIndexedContentsFile(new File(FileUtils.getTempDirectory(), String.format("%s.%s.%s", getFilename(), "index", "txt")));
+        FileOutputStream fileOutputStream = new FileOutputStream(getIndexedContentsFile());
+        BufferedOutputStream indexedFileOutputStream = new BufferedOutputStream(fileOutputStream);
         for (String tableName : getDatabase().getTableNames()) {
             // generate and sanitize new table name
             DataTable dataTable = createDataTable(tableName);
@@ -132,29 +146,36 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
 
             try {
                 int rowCount = getDatabase().getTable(tableName).getRowCount();
-                for (int i = 0; i < rowCount; ++i) {
+                for (int i = 0; i < rowCount; i++) {
                     HashMap<DataTableColumn, String> valueColumnMap = new HashMap<DataTableColumn, String>();
                     Map<String, Object> currentRow = currentTable.getNextRow();
                     int j = 0;
                     if (currentRow == null)
                         continue;
+                    StringBuilder sb = new StringBuilder();
                     for (Object currentObject : currentRow.values()) {
                         if (currentObject == null) {
-                            ++j;
+                            j++;
                             continue;
                         }
                         String currentObjectAsString = currentObject.toString();
+                        sb.append(currentObjectAsString).append(" ");
+
                         valueColumnMap.put(dataTable.getDataTableColumns().get(j), currentObjectAsString);
-                        ++j;
+                        j++;
                     }
+                    sb.append("\r\n");
                     targetDatabase.addTableRow(dataTable, valueColumnMap);
+                    IOUtils.write(sb.toString(), indexedFileOutputStream);
                 }
-            } catch(BufferUnderflowException bex) {
+            } catch (BufferUnderflowException bex) {
+                throw new TdarRecoverableRuntimeException(ERROR_CORRUPT_DB);
+            } catch (IllegalStateException iex) {
                 throw new TdarRecoverableRuntimeException(ERROR_CORRUPT_DB);
             }
         }
         completePreparedStatements();
-
+        IOUtils.closeQuietly(indexedFileOutputStream);
         Set<DataTableRelationship> relationships = new HashSet<DataTableRelationship>();
         for (String tableName1 : getDatabase().getTableNames()) {
             for (String tableName2 : getDatabase().getTableNames()) {
@@ -163,22 +184,39 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                 for (Relationship relationship : getDatabase().getRelationships(getDatabase().getTable(tableName1), getDatabase().getTable(tableName2))) {
                     if (!tableName1.equals(relationship.getFromTable().getName()))
                         continue;
-                    logger.debug(relationship.getName());
+                    logger.trace(relationship.getName());
                     DataTableRelationship relationshipToPersist = new DataTableRelationship();
                     relationshipToPersist.setLocalTable(dataTableNameMap.get(tableName1));
                     relationshipToPersist.setForeignTable(dataTableNameMap.get(tableName2));
-                    Set<DataTableColumn> fromColumns = new HashSet<DataTableColumn>();
-                    for (Column col : relationship.getFromColumns()) {
-                        DataTableColumn fromCol = dataTableNameMap.get(tableName1).getColumnByDisplayName(col.getName());
-                        fromColumns.add(fromCol);
+                    Set<DataTableColumnRelationship> columnRelationships = new HashSet<DataTableColumnRelationship>();
+                    // iterate over the two lists of columns (from- and to-) and pair them up
+                    Iterator<Column> fromColumns = relationship.getFromColumns().iterator();
+                    Iterator<Column> toColumns = relationship.getToColumns().iterator();
+                    while (fromColumns.hasNext() && toColumns.hasNext()) {
+                        Column fromColumn = fromColumns.next();
+                        Column toColumn = toColumns.next();
+                        DataTableColumn fromDataTableColumn = dataTableNameMap.get(tableName1).getColumnByDisplayName(fromColumn.getName());
+                        DataTableColumn toDataTableColumn = dataTableNameMap.get(tableName2).getColumnByDisplayName(toColumn.getName());
+                        DataTableColumnRelationship columnRelationship = new DataTableColumnRelationship();
+                        columnRelationship.setLocalColumn(fromDataTableColumn);
+                        columnRelationship.setForeignColumn(toDataTableColumn);
+                        columnRelationships.add(columnRelationship);
                     }
-                    Set<DataTableColumn> toColumns = new HashSet<DataTableColumn>();
-                    for (Column col : relationship.getToColumns()) {
-                        DataTableColumn toCol = dataTableNameMap.get(tableName2).getColumnByDisplayName(col.getName());
-                        toColumns.add(toCol);
+                    relationshipToPersist.setColumnRelationships(columnRelationships);
+
+                    // determine the type of relationship: one-to-one, one-to-many, or many-to-one
+                    if (relationship.isOneToOne()) {
+                        relationshipToPersist.setType(DataTableColumnRelationshipType.ONE_TO_ONE);
+                    } else {
+                        // The relationship is a one-to-many or many-to-one, but which?
+                        // The "one" side of the relationship is the side whose key columns are a superset of the columns of a unique index on that table.
+                        List<Column> possiblyUniqueKeyColumns = relationship.getFromColumns();
+                        if (isUniqueKey(possiblyUniqueKeyColumns)) {
+                            relationshipToPersist.setType(DataTableColumnRelationshipType.ONE_TO_MANY);
+                        } else {
+                            relationshipToPersist.setType(DataTableColumnRelationshipType.MANY_TO_ONE);
+                        }
                     }
-                    relationshipToPersist.setLocalColumns(fromColumns);
-                    relationshipToPersist.setForeignColumns(toColumns);
 
                     logger.trace(relationship.isLeftOuterJoin() + " left outer join");
                     logger.trace(relationship.isRightOuterJoin() + " right outer join");
@@ -187,12 +225,43 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                     logger.trace(relationship.cascadeUpdates() + " cascade updates");
                     logger.trace(relationship.getFlags() + " :flags");
                     logger.trace("++++++++++++++++++++++++++++++++++++++++++++++++++++");
-                    relationshipToPersist.setType(DataTableColumnRelationshipType.FOREIGN_KEY);
                     logger.info("{}", relationshipToPersist);
                     relationships.add(relationshipToPersist);
                 }
                 setRelationships(relationships);
             }
         }
+    }
+
+    /**
+     * Determine whether the set of columns in this Access database table would consistute a unique key,
+     * by looking for corresponding unique key indexes in the table.
+     * 
+     * @param possiblyUniqueKeyColumns
+     * @return
+     */
+    private boolean isUniqueKey(List<Column> possiblyUniqueKeyColumns) {
+        // an empty list of columns is bogus
+        if (possiblyUniqueKeyColumns.isEmpty())
+            return false;
+
+        // search through the table's indexes...
+        for (Index index : possiblyUniqueKeyColumns.get(0).getTable().getIndexes()) {
+            // if the index is unique then it may provide proof that the relationship's key is also unique
+            if (index.isUnique()) {
+                // assemble a list of the columns
+                List<Column> uniqueKeyColumns = new ArrayList<Column>();
+                for (ColumnDescriptor descriptor : index.getColumns()) {
+                    uniqueKeyColumns.add(descriptor.getColumn());
+                }
+                // check if the relationship's columns include all the unique key's columns
+                if (possiblyUniqueKeyColumns.containsAll(uniqueKeyColumns)) {
+                    return true;
+                }
+            }
+        }
+
+        // our set of columns did not match any unique indexes
+        return false;
     }
 }

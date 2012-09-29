@@ -16,26 +16,5 @@ vim:sts=2:sw=2:
        http://www.springframework.org/schema/aop
        http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
 
-  <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
-    <property name="sessionFactory" ref="sessionFactory"/>
-  </bean>
-  <tx:annotation-driven proxy-target-class='true'/>
-
-<!-- Spring JPA support, adds PersistenceContext?  
-  <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
-  <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-    <property name="dataSource" ref="tdarMetadataDataSource" />
-    <property name="jpaVendorAdapter">
-      <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
-        <property name="database" value="POSTGRESQL" />
-        <property name="showSql" value="true" />
-      </bean>
-    </property>
-  </bean>
-  <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
-    <property name="entityManagerFactory" ref="entityManagerFactory" />
-  </bean>
-  <tx:annotation-driven transaction-manager="transactionManager" />
-  -->
 
 </beans>

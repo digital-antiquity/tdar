@@ -13,7 +13,7 @@ import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.dataTable.DataTable;
+import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
 public abstract class AbstractSupportingInformationResourceController<R extends InformationResource> extends AbstractInformationResourceController<R> {
@@ -54,7 +54,7 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
 
     @Override
     protected void loadCustomMetadata() {
-        loadInformationResourceProperties();
+        super.loadCustomMetadata();
         if (getPersistable() instanceof SupportsResource) {
             SupportsResource supporting = (SupportsResource) getPersistable();
             CategoryVariable categoryVariable = supporting.getCategoryVariable();
@@ -74,7 +74,7 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
     protected void saveCategories() {
         if (getPersistable() instanceof SupportsResource) {
             SupportsResource supporting = (SupportsResource) getPersistable();
-            if (subcategoryId == null || subcategoryId == -1L) {
+            if (Persistable.Base.isNullOrTransient(subcategoryId)) {
                 supporting.setCategoryVariable(getCategoryVariableService().find(categoryId));
             } else {
                 supporting.setCategoryVariable(getCategoryVariableService().find(subcategoryId));
@@ -129,4 +129,8 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
         return SUCCESS;
     }
 
+    @Override
+    public boolean supportsMultipleFileUpload() {
+        return false;
+    }
 }

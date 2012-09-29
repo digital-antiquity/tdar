@@ -52,6 +52,5 @@ function updateProgress() {
 <br/>
 <span id="buildStatus"></span>
 <div id="buildLog" style="height:20em; border: 0px dotted #495251; overflow:auto; font-family:sans-serif"></div>
-<div id="errors" class="action-errors" style="display:none"></div>
 </div>
 </body>

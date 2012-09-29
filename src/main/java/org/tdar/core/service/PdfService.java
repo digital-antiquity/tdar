@@ -222,7 +222,7 @@ public class PdfService implements Serializable {
 
         cursorPositionFromBottom = writeOnPage(content, document.getTitle(), FontHelper.HELVETICA_SIXTEEN_POINT, true, LEFT_MARGIN, cursorPositionFromBottom);
         cursorPositionFromBottom = writeOnPage(content, "", FontHelper.HELVETICA_SIXTEEN_POINT, true, LEFT_MARGIN, cursorPositionFromBottom);
-        cursorPositionFromBottom = writeLabelPairOnPage(content, "Author(s): ", document.getFormattedAuthorList(), FontHelper.HELVETICA_TWELVE_POINT,
+        cursorPositionFromBottom = writeLabelPairOnPage(content, "Author(s) / Editor(s): ", document.getFormattedAuthorList(), FontHelper.HELVETICA_TWELVE_POINT,
                 LEFT_MARGIN,
                 cursorPositionFromBottom);
         cursorPositionFromBottom = writeLabelPairOnPage(content, "Published: ", document.getFormattedSourceInformation(), FontHelper.HELVETICA_TWELVE_POINT,

@@ -1,9 +1,5 @@
 package org.tdar.db.conversion;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -18,18 +14,22 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.dataTable.DataTable;
-import org.tdar.core.bean.resource.dataTable.DataTableColumn;
+import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.db.conversion.converters.ExcelConverter;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 
+import static org.junit.Assert.*;
+
 public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
 
-    public String[] getDatabaseList() {
+    @Override
+    public String[] getDataImportDatabaseTables() {
         String[] databases = { "e_500_sheet1", "e_501_sheet1", "e_502_sheet1", "e_503_englands_woods_catalog", "e_503_roster",
-                "e_509_about", "e_509_ifti_context_codes", "e_509_pfraa_ifti_data", "e_509_pfraa_inveontory_data", "d_1124_pgm_tdr_test_docs_mdb_spec_test" };
+                "e_509_about", "e_509_ifti_context_codes", "e_509_pfraa_ifti_data", "e_509_pfraa_inveontory_data", "d_1124_pgm_tdr_test_docs_mdb_spec_test",
+                "e_529_appendix_8__2_" };
         return databases;
     };
 
@@ -44,11 +44,23 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
         DataTable table = dataTables.iterator().next();
         List<DataTableColumn> dataTableColumns = table.getDataTableColumns();
         assertEquals(5, dataTableColumns.size());
-        int i = 1; //0 is the tDAR ID Column which may not be returned
+        int i = 1; // 0 is the tDAR ID Column which may not be returned
         for (DataTableColumn col : table.getSortedDataTableColumns()) {
             logger.debug("{} : {}", col.getSequenceNumber(), col);
             assertEquals(new Integer(i), col.getSequenceNumber());
             i++;
+        }
+    }
+
+    @Test
+    @Rollback
+    public void testBlankExceedingRowsAndExtraColumnAtEnd() throws IOException {
+        InformationResourceFileVersion weirdColumnsDataset = makeFileVersion("Pundo_degenerate.xls", 529);
+        ExcelConverter converter = new ExcelConverter(weirdColumnsDataset, tdarDataImportDatabase);
+        try {
+            converter.execute();
+        } catch (Throwable e) {
+            assertTrue(e.getMessage().contains("row #49 has more columns (6) than this sheet has column names (5) - Appendix 8 (2)"));
         }
     }
 
@@ -81,7 +93,7 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
         ExcelConverter converter = new ExcelConverter(datasetTextOnly, tdarDataImportDatabase);
         converter.execute();
         DataTable table = converter.getDataTables().iterator().next();
-        assertTrue("table created", table.getName().indexOf("sheet1") > 0);
+        assertTrue("table created", table.getName().indexOf("dataset_all_text") > 0);
 
         // confirm that all the columns in the new table are varchar
         tdarDataImportDatabase.selectAllFromTable(table,
@@ -109,7 +121,8 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
 
         converter.execute();
         DataTable table = converter.getDataTables().iterator().next();
-        assertTrue("table created", table.getName().indexOf("sheet1") > 0);
+        assertTrue("table created", table.getName().indexOf("sheet1") == -1);
+        assertTrue("table created", table.getName().indexOf("dataset_with_ints") > 0);
 
         // confirm that all the columns in the new table are ints
         tdarDataImportDatabase.selectAllFromTable(table,
@@ -136,7 +149,7 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
         DatasetConverter converter = DatasetConversionFactory.getConverter(datasetWithFloats, tdarDataImportDatabase);
         converter.execute();
         DataTable table = converter.getDataTables().iterator().next();
-        assertTrue("table created", table.getName().indexOf("sheet1") > 0);
+        assertTrue("table created", table.getName().indexOf("dataset_with_floats") > 0);
 
         // confirm that all the columns in the new table are ints
         tdarDataImportDatabase.selectAllFromTable(table,
@@ -198,7 +211,7 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
             converter.execute();
         } catch (TdarRecoverableRuntimeException ex) {
             logger.debug("caught exception", ex);
-            assertTrue(ex.getMessage().contains("row #5 has more columns") || ex.getCause().getMessage().contains("row #5 has more columns"));
+            assertTrue(ex.getMessage().contains("row #8 has more columns") || ex.getCause().getMessage().contains("row #8 has more columns"));
             assertTrue(ex.getMessage().contains("IFTI Context codes") || ex.getCause().getMessage().contains("IFTI Context codes"));
         }
         DataTable about = converter.getDataTableByName("e_509_about");
@@ -208,7 +221,7 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
         assertEquals(35, inventory.getColumnNames().size());
 
         DataTable context = converter.getDataTableByName("e_509_ifti_context_codes");
-        assertEquals(5, context.getColumnNames().size());
+        assertEquals(10, context.getColumnNames().size());
 
         DataTable data = converter.getDataTableByName("e_509_pfraa_ifti_data");
         assertEquals(17, data.getColumnNames().size());

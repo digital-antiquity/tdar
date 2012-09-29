@@ -1,8 +1,5 @@
 package org.tdar.db.conversion;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -27,14 +24,16 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
-import org.tdar.core.bean.resource.dataTable.DataTable;
-import org.tdar.core.bean.resource.dataTable.DataTableRelationship;
+import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 
+import static org.junit.Assert.*;
+
 public class AccessConverterITCase extends AbstractDataIntegrationTestCase {
 
-    public String[] getDatabaseList() {
+    public String[] getDataImportDatabaseTables() {
         String[] databases = { "d_503_spital_abone_database_mdb_basic_int", "d_503_spital_abone_database_mdb_bone_modification",
                 "d_503_spital_abone_database_mdb_context_data", "d_503_spital_abone_database_mdb_element_codes",
                 "d_503_spital_abone_database_mdb_modification_codes", "d_503_spital_abone_database_mdb_environmental_sample_number",
@@ -69,8 +68,8 @@ public class AccessConverterITCase extends AbstractDataIntegrationTestCase {
         assertEquals(1, listRelationshipsForColumns.size());
         assertEquals("d_503_spital_abone_database_mdb_basic_int", listRelationshipsForColumns.get(0).getLocalTable().getName());
         assertEquals("d_503_spital_abone_database_mdb_context_data", listRelationshipsForColumns.get(0).getForeignTable().getName());
-        assertEquals("basic_int", listRelationshipsForColumns.get(0).getLocalColumns().iterator().next().getName());
-        assertEquals("basic_int", listRelationshipsForColumns.get(0).getForeignColumns().iterator().next().getName());
+        assertEquals("basic_int", listRelationshipsForColumns.get(0).getColumnRelationships().iterator().next().getLocalColumn().getName());
+        assertEquals("basic_int", listRelationshipsForColumns.get(0).getColumnRelationships().iterator().next().getForeignColumn().getName());
     }
 
     @Test
@@ -99,7 +98,7 @@ public class AccessConverterITCase extends AbstractDataIntegrationTestCase {
         DatasetConverter converter = setupSpitalfieldAccessDatabase();
 
         for (DataTable table : converter.getDataTables()) {
-            assertTrue("didn't find " + table.getName(), ArrayUtils.contains(getDatabaseList(), table.getName()));
+            assertTrue("didn't find " + table.getName(), ArrayUtils.contains(getDataImportDatabaseTables(), table.getName()));
         }
 
         Set<DataTableRelationship> rels = converter.getRelationships();
@@ -107,8 +106,8 @@ public class AccessConverterITCase extends AbstractDataIntegrationTestCase {
         DataTableRelationship rel = converter.getRelationshipsWithTable("d_503_spital_abone_database_mdb_basic_int").get(0);
         assertEquals("d_503_spital_abone_database_mdb_basic_int", rel.getLocalTable().getName());
         assertEquals("d_503_spital_abone_database_mdb_context_data", rel.getForeignTable().getName());
-        assertEquals("basic_int", rel.getLocalColumns().iterator().next().getName());
-        assertEquals("basic_int", rel.getForeignColumns().iterator().next().getName());
+        assertEquals("basic_int", rel.getColumnRelationships().iterator().next().getLocalColumn().getName());
+        assertEquals("basic_int", rel.getColumnRelationships().iterator().next().getForeignColumn().getName());
 
         tdarDataImportDatabase.selectAllFromTable(converter.getDataTableByName("d_503_spital_abone_database_mdb_main_table"),
                 new ResultSetExtractor<Object>() {
@@ -222,7 +221,9 @@ public class AccessConverterITCase extends AbstractDataIntegrationTestCase {
                 }, false);
 
     }
+
     
+
 
     @Test
     @Rollback(true)

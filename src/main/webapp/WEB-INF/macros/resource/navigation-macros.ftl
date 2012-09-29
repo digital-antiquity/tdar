@@ -6,29 +6,6 @@ navigation freemarker macros
 <#import "list-macros.ftl" as list>
 <#import "edit-macros.ftl" as edit>
 
-<#macro showControllerErrors>
-<#if (actionErrors?? && actionErrors.size() > 0)>
-   <div class="action-errors ui-corner-all">
-     <b>The following errors were found with your submission</b> <br />
-     <ul>
-     <@s.iterator var='err' value='actionErrors'>
-      <li class="action-error">${err!"unknown error"}</li>
-     </@s.iterator>
-     </ul>
-     <#if (stackTraces?? && stackTraces.size() > 0)>
-     <a href="#" id="pToggleStackTrace" onclick="$('#stackTraceList').toggle();return false;">Show/Hide Detailed Error Information</a>
-     <div id="stackTraceList" class="hidden">
-        <#list stackTraces as _stacktrace>
-        <p>
-        <em>Stacktrace ${_stacktrace_index + 1} of ${stackTraces.size()}</em><br />
-        ${_stacktrace?html}
-        </p>
-        </#list>
-     </div>
-     </#if>
-   </div>
-</#if>
-</#macro>
 
 <#macro loginForm>
 <script type="text/javascript">
@@ -36,8 +13,8 @@ $(document).ready(function() {
   $('#loginForm').validate({
     errorLabelContainer: $("#error"),
     messages: {
-      loginEmail: {
-        email: "Please enter a valid email address.",
+      loginUsername: {
+        email: "Please enter a valid username or email address.",
         required: "Please enter a valid email address."
       },
       loginPassword: {
@@ -45,9 +22,9 @@ $(document).ready(function() {
       }
     }
   });
-  $('#loginEmail').focus();
-  $('#loginEmail').bind("focusout",function() {
-    var fld = $('#loginEmail');
+  $('#loginUsername').focus();
+  $('#loginUsername').bind("focusout",function() {
+    var fld = $('#loginUsername');
     fld.val($.trim(fld.val()))});
 });
 </script>
@@ -56,7 +33,7 @@ $(document).ready(function() {
 </style>
 
 <@s.form id='loginForm' method="post" action="%{#request.contextPath}/login/process">
-    <@s.textfield spellcheck="false" id='loginEmail' label="Email" name="loginEmail" cssClass="required email" /><br/>
+    <@s.textfield spellcheck="false" id='loginUsername' label="Username" name="loginUsername" cssClass="required" /><br/>
     <@s.password id='loginPassword' label="Password" name="loginPassword" cssClass="required" /><br/>
 <div class="field"></div>
  <label for="loginForm_userCookieSet">Remember me?</label><@s.checkbox name='userCookieSet' cssClass="overrideCheckbox"/><br/>
@@ -104,23 +81,31 @@ $(document).ready(function() {
             <@img "/images/database_add.png"/> 
           </@makeLink>
         </#if>
-        <#if editable && resource.resourceType == 'DATASET'>
-        <#--
-          <@makeLink "dataset" "citations" "manage citations" "citations" current>
-            <@img "/images/book_edit.png" />
-          </@makeLink>
-         -->
-        <#if ! resource.dataTables.isEmpty() >
-            <@makeLink "dataset" "columns" "table metadata" "columns" current>
-            <@img "/images/database_table.png" />
-            </@makeLink>
-        </#if>
+        <#if editable>
+        	<#if resource.resourceType == 'DATASET'>
+		        <#--
+		          <@makeLink "dataset" "citations" "manage citations" "citations" current>
+		            <@img "/images/book_edit.png" />
+		          </@makeLink>
+		         -->
+		        	<#assign disabled = true />
+			        <#if ! resource.dataTables.isEmpty() >
+			        	<#assign disabled = false />
+			        </#if>
+		            <@makeLink "dataset" "columns" "table metadata" "columns" current true disabled>
+		            <@img "/images/database_table.png" />
+		            </@makeLink>
+
+		        <#elseif resource.resourceType=='CODING_SHEET'>
+		        	<#assign disabled = true />
+		        	<#if resource.defaultOntology?has_content >
+			        	<#assign disabled = false />
+			        </#if>
+		            <@makeLink "coding-sheet" "mapping" "map ontology" "mapping"   current true disabled>
+		                <@img "/images/database_key.png" />
+		            </@makeLink>
+		        </#if>
     
-        <#if ontologyLinked>
-            <@makeLink "dataset" "column-ontology" "link ontology" "column-ontology" current>
-                <@img "/images/database_key.png" />
-            </@makeLink>
-        </#if>
         </#if>
         </#if>
        <#elseif creator??>
@@ -176,26 +161,26 @@ $(document).ready(function() {
 
 
 <#macro makeLink namespace action label name current includeResourceId=true disabled=false>
-<#if disabled>
-<li class='disabled'>
-<span><#nested> ${label}</span>
-<#elseif current?string == name?string>
-<li class='highlight'>
-<span><#nested> ${label}</span>
-<#else>
-<li>
-<#if includeResourceId>
-    <#if persistable??>
-        <#local _id = persistable.id />
-    <#else>
-        <#local _id = creator.id />
-    </#if>
-<a href='<@s.url value="/${namespace}/${action}"><@s.param name="id" value="${_id?c}" /></@s.url>'><#nested> ${label}</a>
-<#else>
-<a href='<@s.url value="/${namespace}/${action}" />'><#nested> ${label}</a>
-</#if>
-</#if>
-</li>
+	<#if disabled>
+		<li class='disabled'>
+		<span><#nested> ${label}</span>
+	<#elseif current?string == name?string>
+		<li class='highlight'>
+		<span><#nested> ${label}</span>
+		<#else>
+			<li>
+			<#if includeResourceId>
+			    <#if persistable??>
+			        <#local _id = persistable.id />
+			    <#else>
+			        <#local _id = creator.id />
+			    </#if>
+				<a href='<@s.url value="/${namespace}/${action}"><@s.param name="id" value="${_id?c}" /></@s.url>'><#nested> ${label}</a>
+			<#else>
+				<a href='<@s.url value="/${namespace}/${action}" />'><#nested> ${label}</a>
+			</#if>
+		</#if>
+	</li>
 </#macro>
 
 <#macro makeUploadLink namespace current url="upload" label="upload">

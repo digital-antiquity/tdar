@@ -1,20 +1,26 @@
 package org.tdar.core.service.processes;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.util.HomepageGeographicKeywordCache;
-import org.tdar.core.bean.util.HomepageResourceCountCache;
+import org.tdar.core.bean.cache.BrowseYearCountCache;
+import org.tdar.core.bean.cache.HomepageFeaturedItemCache;
+import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
+import org.tdar.core.bean.cache.HomepageResourceCountCache;
+import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.util.ScheduledProcess;
+import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
 
 /**
  * $Id$
  * 
- * ScheduledProcess to reprocess all datasets.
+ * ScheduledProcess to rebuild geographic keyword and resource count caches.
+ * 
+ * How often should this be run?
  * 
  * 
  * @author <a href='mailto:allen.lee@asu.edu'>Allen Lee</a>
@@ -28,6 +34,9 @@ public class RebuildHomepageCache extends ScheduledProcess.Base<HomepageGeograph
     @Autowired
     private ResourceService resourceService;
 
+    @Autowired
+    private InformationResourceService informationResourceService;
+
     @Override
     public String getDisplayName() {
         return "Reprocess homepage cache";
@@ -39,33 +48,47 @@ public class RebuildHomepageCache extends ScheduledProcess.Base<HomepageGeograph
     }
 
     @Override
-    public boolean isShouldRunOnce() {
+    public boolean isSingleRunProcess() {
         return false;
     }
 
     @Override
-    public void process(HomepageGeographicKeywordCache cache) {
+    public boolean shouldRunAtStartup() {
+        return true;
+    }
+
+    @Override
+    public void execute() {
         logger.info("rebuilding homepage cache");
         resourceService.deleteAll(HomepageGeographicKeywordCache.class);
         resourceService.save(resourceService.getISOGeographicCounts());
         resourceService.deleteAll(HomepageResourceCountCache.class);
         resourceService.save(resourceService.getResourceCounts());
-        logger.info("done cache");
+        resourceService.deleteAll(BrowseYearCountCache.class);
+        resourceService.save(informationResourceService.findResourcesByDecade(Status.ACTIVE));
+        resourceService.deleteAll(HomepageFeaturedItemCache.class);
+        // cache?
+        List<HomepageFeaturedItemCache> hfic = new ArrayList<HomepageFeaturedItemCache>();
+        for (Object res : informationResourceService.findRandomFeaturedResourceInCollection(true,
+                getTdarConfiguration().getFeaturedCollectionId(), 1)) {
+            hfic.add(new HomepageFeaturedItemCache((InformationResource)res));
+        }
+        resourceService.save(hfic);
+
+        logger.info("done caching");
     }
 
+    /**
+     * This ScheduledProcess is finished to completion after execute().
+     */
     @Override
-    public boolean isConfigured() {
+    public boolean isCompleted() {
         return true;
     }
 
     @Override
-    public List<Long> getPersistableIdQueue() {
-        return new ArrayList<Long>(Arrays.asList(-1L));
-    }
-
-    @Override
-    public void processBatch(List<Long> batch) throws Exception {
-        process(null);
+    public boolean isEnabled() {
+        return true;
     }
 
 }

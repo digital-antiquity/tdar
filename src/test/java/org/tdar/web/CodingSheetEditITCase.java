@@ -30,8 +30,9 @@ public class CodingSheetEditITCase extends AbstractAdminAuthenticatedWebTestCase
         setInput("codingSheet.description", "description");
         setInput("codingSheet.date", "1937");
         setInput(CODING_SHEET_INPUT_METHOD_FIELD, CODING_SHEET_INPUT_METHOD_TEXT);
-        submitForm();
-
+        submitFormWithoutErrorCheck("Save");
+        assertTextPresent("Please enter your Coding Sheet into the text area.");
+        assertTextPresentInCode("action-error");
         // we should be dumped back to the edit page with (at least) an error
         // message re: the blank coding rules
         logger.info(getPageText());

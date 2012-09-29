@@ -11,13 +11,6 @@ label.error {display:block;}
 </style>
 </head>
 <body>
-<#if (actionErrors?? && actionErrors.size() gt 0) >
-   <div class="errors action-errors">
-     <@s.iterator var='err' value='actionErrors'>
-      ${err}<br/>
-     </@s.iterator>
-   </div>
-</#if>
 <@s.actionmessage />
 <#if sessionData.returnUrl?? && sessionData.returnUrl.contains("/filestore/") >
 <div class="infoNote">

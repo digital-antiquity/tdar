@@ -15,8 +15,10 @@
   </#if>
 <#if persistable.resourceType??>
 <#assign whatamideleting = persistable.resourceType.label?lower_case />
+<#elseif persistable.urlNamespace="collection">
+<#assign whatamideleting = "collection" />
 <#else>
-<#assign whatamideleting = persistableClass.simpleName />
+<#assign whatamideleting = "item" />
 </#if>
   <h2>Confirm deletion of ${whatamideleting}: ${persistable.name?html}</h2>
   
@@ -38,7 +40,7 @@
   <#else>
     <@s.form name='deleteForm' id='deleteForm'  method='post' action='delete'>
     <h4>Please explain why you are deleting this record</h4>
-      <input type="textarea" name="deletionReason"                   cols='60' rows='3' maxlength='255' />
+      <textarea name="deletionReason" cols='60' rows='3' maxlength='255'></textarea>
     
       <h4>Are you sure you want to delete this <#if persistable.resourceType??>${persistable.resourceType.label?lower_case}</#if>?</h4>
 

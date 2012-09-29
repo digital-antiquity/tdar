@@ -5,6 +5,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -14,6 +19,7 @@ import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.request.ContributorRequest;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.web.SessionData;
 
 /**
  * $Id$
@@ -25,26 +31,59 @@ import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
  */
 public class UserRegistrationITCase extends AbstractControllerITCase {
 
-    private static final String REASON = "because";
+    static final String REASON = "because";
     private static final String TESTING_EMAIL = "test2asd@test2.com";
-    private static final String TESTING_AUTH_INSTIUTION = "testing auth instiution";
+    static final String TESTING_AUTH_INSTIUTION = "testing auth instiution";
 
     @Autowired
-    private AccountController controller;
+    AccountController controller;
 
     @Autowired
-    private AuthenticationAndAuthorizationService authService;
+    AuthenticationAndAuthorizationService authService;
+    
+    private List<Person> crowdPeople = new ArrayList<Person>();
+    
+    
+    @After
+    public void deleteCreateUsersFromCrowd() {
+        for(Person person : crowdPeople) {
+            if(StringUtils.isNotBlank(person.getEmail())) {
+                if(!authService.getAuthenticationProvider().deleteUser(person)) {
+                    logger.warn("Could not remove user {} after running test {}.{}()", new Object[] {person, getClass().getSimpleName(), testName.getMethodName()});
+                }
+            }
+        }
+        crowdPeople.clear();
+    }
+    
 
     @Test
     @Rollback
     public void testDuplicateUser() {
         Person p = new Person();
-        p.setEmail("allen.lee@asu.edu");
+        p.setUsername("allen.lee@asu.edu");
+        p.setEmail("allen.lee1@asu.edu");
         controller.setPerson(p);
+        controller.setServletRequest(getServletPostRequest());
         String execute = controller.create();
         assertEquals("Expected controller to return an error, email exists", TdarActionSupport.ERROR, execute);
         logger.info(execute + " : " + controller.getActionMessages());
-        assertEquals("expecting valid message", controller.getActionErrors().iterator().next(), AccountController.ERROR_ALREADY_REGISTERED);
+        assertEquals("expecting valid message", AccountController.ERROR_USERNAME_ALREADY_REGISTERED, controller.getActionErrors().iterator().next());
+
+    }
+
+    @Test
+    @Rollback
+    public void testDuplicateEmail() {
+        Person p = new Person();
+        p.setUsername("allen.lee");
+        p.setEmail("allen.lee@asu.edu");
+        controller.setPerson(p);
+        controller.setServletRequest(getServletPostRequest());
+        String execute = controller.create();
+        assertEquals("Expected controller to return an error, email exists", TdarActionSupport.ERROR, execute);
+        logger.info(execute + " : " + controller.getActionMessages());
+        assertEquals("expecting valid message", AccountController.ERROR_DUPLICATE_EMAIL, controller.getActionErrors().iterator().next());
 
     }
 
@@ -53,6 +92,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     public void testExistingAuthorWithoutLogin() {
         Person p = new Person();
         p.setEmail("tiffany.clark@asu.edu");
+        p.setUsername("tiffany.clark@asu.edu");
         p.setFirstName("Tiffany");
         p.setLastName("Clark");
 
@@ -61,7 +101,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
 
         controller.setPassword("password");
         controller.setPerson(p);
-        controller.setServletRequest(getServletRequest());
+        controller.setServletRequest(getServletPostRequest());
         controller.setServletResponse(getServletResponse());
         String execute = controller.create();
         assertEquals(TdarActionSupport.SUCCESS, execute);
@@ -74,7 +114,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     @Rollback
     public void testNewUser() {
         controller.setTimeCheck(System.currentTimeMillis() - 10000);
-        String execute = setupValidUserInController();
+        String execute = setupValidUserInController(controller);
         Person p = controller.getPerson();
         assertEquals("expecting result to be 'success'", "success", execute);
         assertNotNull("person id should not be null", p.getId());
@@ -90,7 +130,14 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     @Rollback(false)
     public void testEmailWithPlusSign() {
         controller.setTimeCheck(System.currentTimeMillis() - 10000);
-        String execute = setupValidUserInController("test+user@gmail.com");
+        String email = "test+user@gmail.com";
+        Person findByEmail = entityService.findByEmail(email);
+        if (findByEmail != null) { // this should rarely happen, but it'll clear out the test before we run it if the last time it failed...
+            genericService.delete(entityService.findContributorRequest(findByEmail));
+            genericService.delete(findByEmail);
+            authService.getAuthenticationProvider().deleteUser(findByEmail);
+        }
+        String execute = setupValidUserInController(controller, email);
         final Person p = controller.getPerson();
         final ContributorRequest request = controller.getContributorRequest();
         final AuthenticationToken token = controller.getSessionData().getAuthenticationToken();
@@ -109,15 +156,15 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
             @Override
             public Person doInTransaction(TransactionStatus status) {
                 LoginAction loginAction = generateNewInitializedController(LoginAction.class);
-                loginAction.setLoginEmail(p.getEmail());
+                loginAction.setLoginUsername(p.getEmail());
                 loginAction.setLoginPassword("password");
+                loginAction.setServletRequest(getServletPostRequest());
                 assertEquals(TdarActionSupport.AUTHENTICATED, loginAction.authenticate());
                 Person person = genericService.find(Person.class, p.getId());
                 boolean deleteUser = authService.getAuthenticationProvider().deleteUser(person);
                 assertTrue("could not delete user", deleteUser);
                 genericService.delete(genericService.findAll(AuthenticationToken.class));
                 genericService.delete(request);
-                genericService.synchronize();
                 genericService.delete(person);
                 return null;
             }
@@ -128,7 +175,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     @Rollback
     public void testUserCreatedTooFast() {
         controller.setTimeCheck(System.currentTimeMillis() - 1000);
-        String execute = setupValidUserInController();
+        String execute = setupValidUserInController(controller);
         assertEquals("expecting result to be 'success'", "success", execute);
         String firstError = getFirstFieldError();
         assertTrue(firstError.equals(AccountController.COULD_NOT_AUTHENTICATE_AT_THIS_TIME));
@@ -138,7 +185,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     @Rollback
     public void testUserCreatedTooSlow() {
         controller.setTimeCheck(System.currentTimeMillis() + 1000 * 61);
-        String execute = setupValidUserInController();
+        String execute = setupValidUserInController(controller);
         assertEquals("expecting result to be 'success'", "success", execute);
         String firstError = getFirstFieldError();
         assertTrue(firstError.equals(AccountController.COULD_NOT_AUTHENTICATE_AT_THIS_TIME));
@@ -149,48 +196,17 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     public void testUserCreatedFallsIntoHoneypot() {
         controller.setTimeCheck(System.currentTimeMillis() - 10000);
         controller.setComment("could you help me?  I love your site");
-        String execute = setupValidUserInController();
+        String execute = setupValidUserInController(controller);
         assertEquals("expecting result to be 'success'", "success", execute);
         String firstError = getFirstFieldError();
         assertTrue(firstError.equals(AccountController.COULD_NOT_AUTHENTICATE_AT_THIS_TIME));
     }
 
-    private String setupValidUserInController() {
-        return setupValidUserInController("testuser@example.com");
-    }
-
-    private String setupValidUserInController(String email) {
-        Person p = new Person();
-        p.setEmail(email);
-        p.setFirstName("Testing auth");
-        p.setLastName("User");
-        p.setPhone("212 000 0000");
-        p.setContributor(true);
-        p.setContributorReason(REASON);
-        p.setRpa(true);
-
-        // cleanup crowd if we need to...
-        authService.getAuthenticationProvider().deleteUser(p);
-
-        controller.setRequestingContributorAccess(true);
-        controller.setInstitutionName(TESTING_AUTH_INSTIUTION);
-        controller.setPassword("password");
-        controller.setConfirmPassword("password");
-        controller.setConfirmEmail(p.getEmail());
-        controller.setPerson(p);
-        controller.setServletRequest(getServletRequest());
-        controller.setServletResponse(getServletResponse());
-        controller.validate();
-        String execute = controller.create();
-
-        return execute;
-    }
-
     @Test
     public void testEmailRegistration() {
-        assertFalse("email should not exist", controller.isEmailRegistered("testuser@testuser.com"));
-        assertFalse("email should exist but not be registered", controller.isEmailRegistered("tiffany.clark@asu.edu"));
-        assertTrue("email should exist and be registered", controller.isEmailRegistered("admin@tdar.org"));
+        assertFalse("email should not exist", controller.isUsernameRegistered("testuser@testuser.com"));
+        assertFalse("email should exist but not be registered", controller.isUsernameRegistered("tiffany.clark@asu.edu"));
+        assertTrue("email should exist and be registered", controller.isUsernameRegistered("admin@tdar.org"));
     }
 
     @Test
@@ -229,6 +245,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         controller.prepare();
         Person p = controller.getPerson();
         p.setEmail(TESTING_EMAIL);
+        p.setUsername(TESTING_EMAIL);
         controller.setPassword("password");
         controller.validate();
         assertTrue("expecting confirm email", controller.getActionErrors().contains(AccountController.ERROR_CONFIRM_EMAIL));
@@ -271,6 +288,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         controller.prepare();
         Person p = controller.getPerson();
         p.setEmail(TESTING_EMAIL);
+        p.setUsername(TESTING_EMAIL);
         p.setFirstName("First");
         p.setLastName("last");
         controller.setTimeCheck(System.currentTimeMillis() - 5000);
@@ -290,5 +308,47 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     @Override
     protected Person getUser() {
         return null;
+    }
+    
+    
+    @Test
+    @Rollback
+    //register new account with mixed-case username, and ensure that user can successfully login
+    public void testMixedCaseUsername() {
+        String username = "BobLoblaw";
+        String password = "super.secret";
+        
+        Person p = newPerson();
+        
+        p.setEmail("foo.bar@mailinator.com");
+        p.setUsername(username);
+        p.setFirstName("Testing auth");
+        p.setLastName("User");
+        p.setPhone("212 000 0000");
+        p.setContributor(true);
+        p.setContributorReason(REASON);
+        p.setRpa(true);
+        
+        //create account, making sure the controller knows we're legit.
+        controller.setTimeCheck(System.currentTimeMillis() - 10000);
+        String  accountResponse = setupValidUserInController(controller, p, "super.secret");
+        assertEquals("user should have been successfully created", AccountController.SUCCESS, accountResponse);
+        
+        //okay,  now try to "login": mock a  POST request with empty session
+        LoginAction loginAction = generateNewController(LoginAction.class);
+        loginAction.setLoginUsername(p.getUsername());
+        loginAction.setLoginPassword(password);
+        loginAction.setServletRequest(httpServletPostRequest);
+        loginAction.setSessionData(new SessionData());
+        
+       String loginResponse = loginAction.authenticate();
+        assertEquals("login should have been successful",  LoginAction.AUTHENTICATED, loginResponse);
+    }
+    
+    //return a new person reference. an @after method will try to delete this person from crowd
+    private Person newPerson() {
+        Person person = new Person();
+        crowdPeople.add(person);
+        return person;
     }
 }

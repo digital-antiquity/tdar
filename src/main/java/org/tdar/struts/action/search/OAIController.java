@@ -16,18 +16,21 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.OaiDcProvider;
 import org.tdar.core.bean.Obfuscatable;
+import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
@@ -37,14 +40,15 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.OAIException;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.XmlService;
-import org.tdar.search.query.FieldQueryPart;
 import org.tdar.search.query.QueryFieldNames;
-import org.tdar.search.query.RangeQueryPart;
 import org.tdar.search.query.SortOption;
-import org.tdar.search.query.queryBuilder.InstitutionQueryBuilder;
-import org.tdar.search.query.queryBuilder.PersonQueryBuilder;
-import org.tdar.search.query.queryBuilder.QueryBuilder;
-import org.tdar.search.query.queryBuilder.ResourceQueryBuilder;
+import org.tdar.search.query.builder.InstitutionQueryBuilder;
+import org.tdar.search.query.builder.PersonQueryBuilder;
+import org.tdar.search.query.builder.QueryBuilder;
+import org.tdar.search.query.builder.ResourceQueryBuilder;
+import org.tdar.search.query.part.FieldQueryPart;
+import org.tdar.search.query.part.RangeQueryPart;
+import org.tdar.struts.data.DateRange;
 import org.tdar.struts.data.oai.OAIMetadataFormat;
 import org.tdar.struts.data.oai.OAIParameter;
 import org.tdar.struts.data.oai.OAIRecordProxy;
@@ -227,7 +231,7 @@ public class OAIController extends AbstractLookupController<Indexable> implement
      * Create a list of the identifiers and (optionally also include metadata records)
      * The method generates three distinct queries; one for people, one for institutions, and one for resources,
      * and populates the results list with (a page from) the result of each of those queries.
-     * This means that the resumptionTokens must contain three distinct cursors; one for each of the queries.
+     * This means that the cursor encoded in the resumptionTokens applies equally to all of the queries.
      * This means that each response sent to a harvester will typically contain a mixture of the different types of records.
      * Typically the last page of results which a harvester receives will consist just of Resource records, as the other entities
      * will have a lower cardinality and will run out more quickly.
@@ -255,18 +259,18 @@ public class OAIController extends AbstractLookupController<Indexable> implement
         // see http://docs.jboss.org/hibernate/search/3.4/reference/en-US/html_single/#d0e3510
         // but in OAI-PMH, date parameters are ISO8601 dates, so we must remove the punctuation.
         String effectiveMetadataPrefix = metadataPrefix;
-        String effectiveFrom = "1900";
-        String effectiveUntil = "3000";
+        Date effectiveFrom = new DateTime("1900").toDate();
+        Date effectiveUntil = new DateTime("3000").toDate();
         if (from != null) {
-            effectiveFrom = from.replaceAll("[-:TZ]", "");
+            effectiveFrom = new DateTime(from).toDate();
         }
         if (until != null) {
-            effectiveUntil = until.replaceAll("[-:TZ]", "");
+            effectiveUntil = new DateTime(until).toDate();
         }
         // start record number (cursor)
         int cursor = 0;
         if (resumptionToken != null) {
-            // ... then is the second or subsequent page of results.
+            // ... then this is the second or subsequent page of results.
             // In this case there are no separate "from" and "until" parameters passed by the client;
             // instead all the parameters come packed into a resumption token.
             cursor = resumptionToken.getCursor();
@@ -328,15 +332,17 @@ public class OAIController extends AbstractLookupController<Indexable> implement
     }
 
     private int populateResult(boolean includeRecords, OAIRecordType recordType, QueryBuilder queryBuilder, int cursor, OAIMetadataFormat metadataFormat,
-            String effectiveFrom, String effectiveUntil)
+            Date effectiveFrom, Date effectiveUntil)
             throws ParseException, ParserConfigurationException,
             JAXBException, OAIException {
         setStartRecord(cursor);
-        queryBuilder.append(new RangeQueryPart(QueryFieldNames.DATE_UPDATED, effectiveFrom, effectiveUntil));
+        queryBuilder.append(new RangeQueryPart(QueryFieldNames.DATE_UPDATED, new DateRange(effectiveFrom, effectiveUntil)));
 
         super.handleSearch(queryBuilder);
         int total = getTotalRecords();
         for (Indexable i : getResults()) {
+            if (i instanceof Viewable && !((Viewable) i).isViewable())
+                continue;
             OaiDcProvider resource = (OaiDcProvider) i;
             // create OAI metadata for the record
             OAIRecordProxy proxy = new OAIRecordProxy(
@@ -810,4 +816,8 @@ public class OAIController extends AbstractLookupController<Indexable> implement
         this.description = description;
     }
 
+    @Override
+    public List<String> getProjections() {
+        return ListUtils.EMPTY_LIST;
+    }
 }

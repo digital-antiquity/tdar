@@ -37,7 +37,7 @@ public class LoginAction extends AuthenticationAware.Base {
 
     private static final long serialVersionUID = -1219398494032484272L;
 
-    private String loginEmail;
+    private String loginUsername;
     private String loginPassword;
     private Person person;
     private boolean userCookieSet;
@@ -66,22 +66,26 @@ public class LoginAction extends AuthenticationAware.Base {
             })
     @WriteableSession
     public String authenticate() {
-        logger.debug("Trying to authenticate.");
+        logger.debug("Trying to authenticate username:{}",  getLoginUsername());
         if (StringUtils.isNotBlank(getComment())) {
-            logger.debug(String.format("we think this user was a spammer: %s  -- %s", getLoginEmail(), getComment()));
+            logger.debug(String.format("we think this user was a spammer: %s  -- %s", getLoginUsername(), getComment()));
             addActionError("Could not authenticate");
             return INPUT;
         }
+        if (!isPostRequest()) {
+            logger.warn("Returning INPUT because login requested via GET request for user:{}", getLoginUsername());
+            return INPUT;
+        }
+
         AuthenticationResult result = getAuthenticationAndAuthorizationService().getAuthenticationProvider().authenticate(getServletRequest(),
-                getServletResponse(), loginEmail, loginPassword);
+                getServletResponse(), loginUsername, loginPassword);
         if (result.isValid()) {
-            person = getEntityService().findByEmail(loginEmail);
+            person = getEntityService().findByUsername(loginUsername);
             if (person == null) {
                 // FIXME: person exists in Crowd but not in tDAR..
-                logger.debug("Person successfully authenticated in crowd but not present in tDAR: " + loginEmail);
+                logger.debug("Person successfully authenticated in crowd but not present in tDAR: " + loginUsername);
                 person = new Person();
-                person.setEmail(loginEmail);
-                person.setPassword(loginPassword);
+                person.setUsername(loginUsername);
                 // how to pass along authentication information..?
                 // username was in Crowd but not in tDAR? Redirect them to the account creation page
                 return "new";
@@ -95,7 +99,7 @@ public class LoginAction extends AuthenticationAware.Base {
                 logger.info("url {} ", url);
                 setReturnUrl(UrlUtils.urlDecode(url));
             }
-            logger.debug(loginEmail.toUpperCase() + " logged in from " + getServletRequest().getRemoteAddr() + " using: "
+            logger.debug(loginUsername.toUpperCase() + " logged in from " + getServletRequest().getRemoteAddr() + " using: "
                     + getServletRequest().getHeader("User-Agent"));
             createAuthenticationToken(person);
             getEntityService().registerLogin(person);
@@ -120,19 +124,19 @@ public class LoginAction extends AuthenticationAware.Base {
             return AUTHENTICATED;
         } else {
             addActionError(result.getMessage());
-            getLogger().debug(String.format("Couldn't authenticate %s - (reason: %s)", loginEmail, result));
+            getLogger().debug(String.format("Couldn't authenticate %s - (reason: %s)", loginUsername, result));
             return INPUT;
         }
     }
 
-    public String getLoginEmail() {
-        return loginEmail;
+    public String getLoginUsername() {
+        return loginUsername;
     }
 
     // FIXME: messages should be localized
     @RequiredStringValidator(type = ValidatorType.FIELD, message = "Please enter your login email.", shortCircuit = true)
-    public void setLoginEmail(String loginEmail) {
-        this.loginEmail = loginEmail;
+    public void setLoginUsername(String username) {
+        this.loginUsername = username;
     }
 
     public String getLoginPassword() {

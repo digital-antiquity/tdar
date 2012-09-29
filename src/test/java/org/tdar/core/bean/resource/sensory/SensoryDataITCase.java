@@ -31,10 +31,9 @@ public class SensoryDataITCase extends AbstractIntegrationTestCase {
 
         sensoryData.setTitle("test sensory data");
         sensoryData.setDescription("test description");
-        sensoryData.setDateCreated(new Date());
         Person submitter = genericService.find(Person.class, 1L);
-        sensoryData.setSubmitter(submitter);
-
+        sensoryData.markUpdated(submitter);
+        sensoryData.setDate(1234);
         // add some scans
         SensoryDataScan scan = new SensoryDataScan();
         scan.setFilename("filename");

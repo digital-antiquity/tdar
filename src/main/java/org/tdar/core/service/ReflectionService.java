@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.core.type.filter.AssignableTypeFilter;
 import org.springframework.stereotype.Service;
@@ -229,21 +230,7 @@ public class ReflectionService {
         return persistableLookup.get(name);
     }
 
-    public static Class<?>[] scanForAnnotation(Class<? extends Annotation>... annots) throws NoSuchBeanDefinitionException, ClassNotFoundException {
-        List<Class<?>> toReturn = new ArrayList<Class<?>>();
-        ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
-        for (Class<? extends Annotation> annot : annots) {
-            scanner.addIncludeFilter(new AnnotationTypeFilter(annot));
-        }
-        String basePackage = "org/tdar/";
-        for (BeanDefinition bd : scanner.findCandidateComponents(basePackage)) {
-            String beanClassName = bd.getBeanClassName();
-            Class<?> cls = Class.forName(beanClassName);
-            toReturn.add(cls);
-        }
-        return toReturn.toArray(new Class<?>[0]);
-    }
-    
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private void scanForPersistables() throws NoSuchBeanDefinitionException, ClassNotFoundException {
         if (persistableLookup != null)
             return;
@@ -263,5 +250,26 @@ public class ReflectionService {
             persistableLookup.put(cls.getSimpleName(), cls);
         }
 
+    }
+
+    public static boolean classOrMethodContainsAnnotation(Method method, Class<? extends Annotation> annotationClass) {
+        Object class_ = AnnotationUtils.findAnnotation(method.getDeclaringClass(), annotationClass);
+        Object method_ = AnnotationUtils.findAnnotation(method, annotationClass);
+        return (class_ != null || method_ != null);
+    }
+
+    public static Class<?>[] scanForAnnotation(Class<? extends Annotation>... annots) throws NoSuchBeanDefinitionException, ClassNotFoundException {
+        List<Class<?>> toReturn = new ArrayList<Class<?>>();
+        ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
+        for (Class<? extends Annotation> annot : annots) {
+            scanner.addIncludeFilter(new AnnotationTypeFilter(annot));
+        }
+        String basePackage = "org/tdar/";
+        for (BeanDefinition bd : scanner.findCandidateComponents(basePackage)) {
+            String beanClassName = bd.getBeanClassName();
+            Class<?> cls = Class.forName(beanClassName);
+            toReturn.add(cls);
+        }
+        return toReturn.toArray(new Class<?>[0]);
     }
 }

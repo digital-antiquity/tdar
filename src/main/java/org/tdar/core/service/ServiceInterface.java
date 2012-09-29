@@ -38,6 +38,8 @@ public interface ServiceInterface<T, S extends Dao<T>> {
     public List<T> findAll();
 
     public List<T> findAll(int start, int numberOfRecords);
+    
+    public List<T> findAll(List<Long> ids);
 
     public List<T> findAllSorted();
 
@@ -77,6 +79,11 @@ public interface ServiceInterface<T, S extends Dao<T>> {
         @Transactional(readOnly = true)
         public List<E> findAll() {
             return dao.findAll();
+        }
+        
+        @Transactional(readOnly = true)
+        public List<E> findAll(List<Long> ids) {
+            return dao.findAll(ids);
         }
 
         @Transactional(readOnly = true)
@@ -139,6 +146,26 @@ public interface ServiceInterface<T, S extends Dao<T>> {
             if (entity == null)
                 return;
             dao.delete(entity);
+        }
+
+        /**
+         * Returns a new collection containing the results of merge()-ing every entity in the entity collection passed into this method.
+         * 
+         * @param collection
+         * @return
+         */
+        @Transactional(readOnly = false)
+        public Collection<E> mergeAll(Collection<E> collection) {
+            if (CollectionUtils.isEmpty(collection)) {
+                return Collections.emptyList();
+            }
+            ArrayList<E> mergedEntities = new ArrayList<E>();
+            for (E entity : collection) {
+                mergedEntities.add(dao.merge(entity));
+            }
+            // collection.clear();
+            // collection.addAll(mergedEntities);
+            return mergedEntities;
         }
 
         @Transactional(readOnly = false)

@@ -1,5 +1,0 @@
-// var gmapsKey = "ABQIAAAA9NaKjBJpcVyUYJMRSYQl8xS0DQCUA87cCG9n-o92VKwf-4ptwhSBrQY9Wnb4P_utINrjb3QZf1KuBw"; //dev.tdar.org
-// var gmapsKey = "ABQIAAAAgOrSouxKx-DxYNcejbXwnRT2yXp_ZAY8_ufC3CFXhHIE1NvwkxST0Tl8eBQIbJPK-94wuQTYa0mxSw"; //localhost
- var gmapsKey = "ABQIAAAAal6xQr0pdyWFeFG0R5WSAhT2yXp_ZAY8_ufC3CFXhHIE1NvwkxTFc368pSmrNP9x-vUH3PkIFIiCeA";
-
-document.write("<script src=\"http://maps.google.com/maps?file=api&amp;v=2&amp;key=" + gmapsKey + "\" type=\"text/javascript\"></script>");

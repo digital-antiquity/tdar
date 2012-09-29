@@ -21,9 +21,9 @@ public final class TdarCaseSensitiveStandardAnalyzer extends Analyzer {
      */
     @Override
     public TokenStream tokenStream(String fieldName, Reader reader) {
-        StandardTokenizer st = new StandardTokenizer(Version.LUCENE_31, reader);
+        StandardTokenizer st = new StandardTokenizer(Version.LUCENE_35, reader);
         TrimFilter trimFilter = new TrimFilter(st, true);
-        StopFilter stopFilter = new StopFilter(Version.LUCENE_31, trimFilter, TdarConfiguration.getInstance().getStopWords());
+        StopFilter stopFilter = new StopFilter(Version.LUCENE_35, trimFilter, TdarConfiguration.getInstance().getStopWords());
         ASCIIFoldingFilter filter = new ASCIIFoldingFilter(stopFilter);
         return filter;
     }

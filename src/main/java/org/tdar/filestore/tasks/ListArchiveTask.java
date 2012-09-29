@@ -10,7 +10,7 @@ import java.io.File;
 
 import org.apache.commons.io.FileUtils;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
+import org.tdar.core.bean.resource.VersionType;
 import org.tdar.filestore.tasks.Task.AbstractTask;
 
 import de.schlichtherle.io.ArchiveDetector;
@@ -21,13 +21,16 @@ import de.schlichtherle.io.ArchiveDetector;
  */
 public class ListArchiveTask extends AbstractTask {
 
+    private static final long serialVersionUID = 5392550508417818439L;
+
     /*
      * (non-Javadoc)
      * 
      * @see org.tdar.filestore.tasks.Task#run(java.io.File)
      */
     @Override
-    public void run(File f_) throws Exception {
+    public void run() throws Exception {
+        File f_ = getWorkflowContext().getOriginalFile().getFile();
         // take the file
         getLogger().debug("listing contents of: " + f_.getName());
         File f = new File(getWorkflowContext().getWorkingDirectory(), f_.getName() + ".contents.txt");
@@ -45,11 +48,6 @@ public class ListArchiveTask extends AbstractTask {
         FileUtils.writeStringToFile(f, archiveContents.toString());
         InformationResourceFileVersion version = generateInformationResourceFileVersion(f, VersionType.TRANSLATED);
         getWorkflowContext().addVersion(version);
-    }
-
-    @Override
-    public void run() throws Exception {
-        run(getWorkflowContext().getOriginalFile().getFile());
     }
 
     public void listFiles(StringBuilder archiveContents, File archiveFile, File originalFile) {

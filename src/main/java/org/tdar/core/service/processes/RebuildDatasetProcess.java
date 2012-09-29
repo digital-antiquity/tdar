@@ -3,7 +3,7 @@ package org.tdar.core.service.processes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Dataset;
-import org.tdar.core.bean.util.ScheduledProcess;
+import org.tdar.core.bean.util.ScheduledBatchProcess;
 import org.tdar.core.service.resource.DatasetService;
 
 /**
@@ -17,7 +17,7 @@ import org.tdar.core.service.resource.DatasetService;
  */
 
 @Component
-public class RebuildDatasetProcess extends ScheduledProcess.Base<Dataset> {
+public class RebuildDatasetProcess extends ScheduledBatchProcess<Dataset> {
 
     private static final long serialVersionUID = -7637484880673479889L;
     
@@ -35,15 +35,10 @@ public class RebuildDatasetProcess extends ScheduledProcess.Base<Dataset> {
     }
 
     @Override
-    public boolean isShouldRunOnce() {
+    public boolean isSingleRunProcess() {
         return true;
     }
 
-    @Override
-    public boolean isConfigured() {
-        return false;
-    }
-    
     @Override
     public void process(Dataset dataset) {
         datasetService.reprocess(dataset);
@@ -51,7 +46,12 @@ public class RebuildDatasetProcess extends ScheduledProcess.Base<Dataset> {
 
     @Override
     public int getBatchSize() {
-        return 10;
+        return 5;
+    }
+    
+    @Override
+    public boolean isEnabled() {
+        return false;
     }
 
 }

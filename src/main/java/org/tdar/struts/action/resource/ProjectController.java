@@ -1,9 +1,10 @@
 package org.tdar.struts.action.resource;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
+import org.apache.commons.collections.ListUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -13,12 +14,14 @@ import org.hibernate.search.FullTextQuery;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
-import org.tdar.search.query.queryBuilder.ResourceQueryBuilder;
-import org.tdar.struts.search.query.SearchResultHandler;
+import org.tdar.search.query.builder.ResourceQueryBuilder;
 
 /**
  * $Id$
@@ -52,11 +55,10 @@ public class ProjectController extends AbstractResourceController<Project> imple
     @Override
     protected String save(Project resource) {
         getLogger().trace("saving a project");
-        super.saveBasicResourceMetadata();
+        saveBasicResourceMetadata();
         getLogger().trace("saved metadata -- about to call saveOrUPdate");
         getProjectService().saveOrUpdate(resource);
         getLogger().trace("finished calling saveorupdate");
-
         return SUCCESS;
     }
 
@@ -64,7 +66,13 @@ public class ProjectController extends AbstractResourceController<Project> imple
     public void postSaveCleanup() {
         // reindex any child resources so that that searches will pick up any new keywords they should "inherit"
         logger.debug("reindexing project contents");
-        getSearchIndexService().indexCollection(getProject().getInformationResources());
+        getProject().setCachedInformationResources(new HashSet<InformationResource>(getProjectService().findAllResourcesInProject(getProject())));
+//        getSearchIndexService().index(getProject());
+        if (isAsync()) {
+            getSearchIndexService().indexCollectionAsync(getProject().getCachedInformationResources());
+        } else {
+            getSearchIndexService().indexCollection(getProject().getCachedInformationResources());
+        }
     }
 
     // FIXME: this belongs in the abstractResourcController, and there should be an abstract method that returns gives hints to json() on which fields to
@@ -84,21 +92,13 @@ public class ProjectController extends AbstractResourceController<Project> imple
 
     @Override
     public Collection<? extends Persistable> getDeleteIssues() {
-        List<Resource> issues = new ArrayList<Resource>();
-        if (getProject() != null && getProject().getInformationResources() != null) {
-            for (Resource resource : getProject().getInformationResources()) {
-                if (!resource.isDeleted()) {
-                    issues.add(resource);
-                }
-            }
-        }
-        return issues;
+        return getProjectService().findAllResourcesInProject(getProject(), Status.ACTIVE, Status.DRAFT);
     }
 
     protected void loadCustomMetadata() {
         if (getPersistable() != null) {
             ResourceQueryBuilder qb = getSearchService().buildResourceContainedInSearch(QueryFieldNames.PROJECT_ID, getProject(), getAuthenticatedUser());
-            setSortField(SortOption.RESOURCE_TYPE);
+            setSortField(getProject().getSortBy());
             setSecondarySortField(SortOption.TITLE);
             try {
                 getSearchService().handleSearch(qb, this);
@@ -201,9 +201,9 @@ public class ProjectController extends AbstractResourceController<Project> imple
     }
 
     @Override
-    public void setResults(List<Resource> toReturn) {
-        logger.trace("setResults: {}", toReturn);
-        this.results = toReturn;
+    public void setResults(List<Resource> results) {
+        logger.trace("setResults: {}", results);
+        this.results = results;
     }
 
     @Override
@@ -243,4 +243,22 @@ public class ProjectController extends AbstractResourceController<Project> imple
         return startRecord + recordsPerPage;
     }
 
+    public int getPrevPageStartRecord() {
+        return startRecord - recordsPerPage;
+    }
+
+    @Override
+    public String getSearchTitle() {
+        return String.format("Resources in %s", getPersistable().getTitle());
+    }
+
+    @Override
+    public String getSearchDescription() {
+        return getSearchTitle();
+    }
+
+    @Override
+    public List<String> getProjections() {
+        return ListUtils.EMPTY_LIST;
+    }
 }

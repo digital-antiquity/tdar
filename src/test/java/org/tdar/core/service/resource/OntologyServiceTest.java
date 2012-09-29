@@ -1,12 +1,14 @@
 package org.tdar.core.service.resource;
 
-import static org.junit.Assert.*;
+import junit.framework.Assert;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import static org.junit.Assert.*;
 
 /**
  * Test case for OntologyService.
@@ -42,11 +44,11 @@ public class OntologyServiceTest {
             assertFalse(badMatch + " should not be similar enough to " + target, ontologyService.isSimilarEnough(target, ontologyService.normalize(badMatch)));
         }
         String[] goodMatches = { "eel", "peel", "wheel", "Happy meel", "electric eel", "unhappy meel", "even keeled", "well heeled",
-        "eelectric light orchestra" };
+                "eelectric light orchestra" };
         for (String goodMatch : goodMatches) {
             assertTrue(goodMatch + " should be similar enough to " + target, ontologyService.isSimilarEnough(target, ontologyService.normalize(goodMatch)));
         }
-        
+
         // added from TDAR-626 and TDAR-642
         assertFalse(ontologyService.isSimilarEnough(ontologyService.normalize("Ilium"), ontologyService.normalize("Distal")));
         assertFalse(ontologyService.isSimilarEnough(ontologyService.normalize("Ischium"), ontologyService.normalize("Shaft")));
@@ -54,21 +56,30 @@ public class OntologyServiceTest {
         assertTrue(ontologyService.isSimilarEnough("cattle", ontologyService.normalize("Cattle")));
     }
 
-
     @Test
     public void testInvalidCharactersRegex() {
         // FIXME: construct exhaustive list of invalid characters dynamically?
         String[] hasInvalidCharacters = { "@!@#", "!!", "^^\t", "*", "&", "^", "$$", "(ab)", "this is a % test" };
         for (String invalidCharacterString : hasInvalidCharacters) {
-            assertNotSame(invalidCharacterString + " has invalid characters", invalidCharacterString,
+            Assert.assertNotSame(invalidCharacterString + " has invalid characters", invalidCharacterString,
                     ontologyService.labelToFragmentId(invalidCharacterString));
+        }
+    }
+
+    @Test
+    public void testSanitizeOntologyLabel() {
+        String[] ontologyLabels = { "   \t\t  Some string wit~h-.%A90F (parentheses in the mix)", "\tAnother (string (with (parentheses)))\t" };
+        for (String label : ontologyLabels) {
+            String sanitizedLabel = ontologyService.labelToFragmentId(label);
+            logger.info("sanitized label: " + sanitizedLabel);
+            Assert.assertFalse(sanitizedLabel.matches(OntologyService.IRI_INVALID_CHARACTERS_REGEX));
         }
     }
 
     @Test
     public void testTrim() {
         String s = "\t\t   what  \t\t ";
-        assertEquals("what", s.trim());
+        Assert.assertEquals("what", s.trim());
     }
 
     @Test
@@ -76,7 +87,7 @@ public class OntologyServiceTest {
         for (int i = 0; i < 64; i++) {
             String repeatedTabs = StringUtils.repeat("\t", i);
             String tabInput = repeatedTabs + " test \t input" + repeatedTabs + " decrescendo boogers\t";
-            assertEquals(i, ontologyService.getNumberOfPrefixTabs(tabInput));
+            Assert.assertEquals(i, ontologyService.getNumberOfPrefixTabs(tabInput));
         }
     }
 

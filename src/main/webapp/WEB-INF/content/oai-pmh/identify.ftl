@@ -24,7 +24,7 @@
 	        <scheme>oai</scheme>
 	        <repositoryIdentifier>${repositoryNamespaceIdentifier}</repositoryIdentifier>
 	        <delimiter>:</delimiter>
-	        <sampleIdentifier>oai:${repositoryNamespaceIdentifier}:Person:1</sampleIdentifier>
+	        <sampleIdentifier>oai:${repositoryNamespaceIdentifier}:Record:1</sampleIdentifier>
 	      </oai-identifier>
       </description>
 </@oai.response>

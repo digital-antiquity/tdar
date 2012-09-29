@@ -6,7 +6,9 @@ import java.io.Serializable;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -17,11 +19,18 @@ import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventHandler;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jettison.mapped.Configuration;
+import org.codehaus.jettison.mapped.MappedNamespaceConvention;
+import org.codehaus.jettison.mapped.MappedXMLStreamWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,13 +60,13 @@ public class XmlService implements Serializable {
     }
 
     // FIXME: I should cache this file and use it!!!
-    public File generateSchema() throws IOException, JAXBException {
-        final File tempFile = File.createTempFile("tdar-schema", "xsd");
+    public File generateSchema() throws IOException, JAXBException, NoSuchBeanDefinitionException, ClassNotFoundException {
+        final File tempFile = File.createTempFile("tdar-schema", ".xsd");
         JAXBContext jc = JAXBContext.newInstance(Resource.class, Institution.class, Person.class);
-        
+
         // WRITE OUT SCHEMA
         jc.generateSchema(new SchemaOutputResolver() {
-            
+
             @Override
             public Result createOutput(String namespaceUri, String suggestedFileName) throws IOException {
                 return new StreamResult(tempFile);
@@ -68,7 +77,7 @@ public class XmlService implements Serializable {
     }
 
     @Autowired
-    UrlService urlService;
+    private UrlService urlService;
 
     @Transactional(readOnly = true)
     public Writer convertToXML(Object object, Writer writer) throws Exception {
@@ -81,6 +90,25 @@ public class XmlService implements Serializable {
         marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, urlService.getSchemaUrl());
         // marshaller.setProperty(Marshaller.JAXB_, urlService.getSchemaUrl());
         marshaller.marshal(object, writer);
+        return writer;
+    }
+
+    @Transactional(readOnly = true)
+    public Writer convertToJSON(Object object, Writer writer) throws JAXBException, NoSuchBeanDefinitionException, ClassNotFoundException, JsonGenerationException, JsonMappingException, IOException {
+        if (jaxbClasses == null) {
+            jaxbClasses = ReflectionService.scanForAnnotation(XmlElement.class, XmlRootElement.class);
+        }
+         Configuration config = new Configuration();
+         JAXBContext jc = JAXBContext.newInstance(jaxbClasses);
+         Map<String, String> xmlToJsonNamespaces = new HashMap<String, String>(1);
+         xmlToJsonNamespaces.put(UrlService.TDAR_NAMESPACE_URL, UrlService.TDAR_NAMESPACE_PREFIX);
+         config.setXmlToJsonNamespaces(xmlToJsonNamespaces);
+         config.setIgnoreNamespaces(true);
+         config.setAttributeKey("");
+         MappedNamespaceConvention con = new MappedNamespaceConvention(config);
+         XMLStreamWriter xmlStreamWriter = new MappedXMLStreamWriter(con, writer);
+         Marshaller marshaller = jc.createMarshaller();
+         marshaller.marshal(object, xmlStreamWriter);
         return writer;
     }
 
@@ -110,7 +138,7 @@ public class XmlService implements Serializable {
             public boolean handleEvent(ValidationEvent event) {
                 // TODO Auto-generated method stub
                 errors.add(event);
-                Object obj = new Object[] {event.getClass().getSimpleName(), event.getMessage(), event.getSeverity() };
+                Object obj = new Object[] { event.getClass().getSimpleName(), event.getMessage(), event.getSeverity() };
                 logger.warn("an XML parsing exception occured {} , severity: {} , msg: {}", obj);
                 return true;
             }

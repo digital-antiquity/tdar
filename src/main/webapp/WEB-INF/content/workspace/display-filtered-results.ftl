@@ -22,15 +22,18 @@ The integrated data results are displayed below.<br/>
 </div>
 
 <div class="glide">
-<@rlist.showControllerErrors />
 
-<h2>Summary of Integration Results</h2>
+<h2>Summary of Integration Results (counts of integration column values)</h2>
 
 <table  class="tableFormat width99percent zebracolors">
 <thead>
  <tr>
   <#list integrationColumns as column>
-    <th>${column.name}</th>
+    <th>
+  	<#if column.integrationColumn>
+	    ${column.name}
+    </#if>
+    </th>
   </#list>
   <#list selectedDataTables as table>
     <th>${table.displayName}</th>
@@ -86,10 +89,13 @@ ${integrationDataResult.dataTable.dataset.title})</h2>
 <#list integrationDataResult.rowData as row>
     <#if (row_index < 100) >
     <tr>
-    <td><small>${integrationDataResult.dataTable.dataset.title}</small></td>
 
     <#list row as col>
-    <td>${col!"&nbsp;"}</td>
+    <td>
+    	<#if col?has_content>${col}<#else>
+	    	<#noescape>&nbsp;</#noescape>
+    	</#if>
+    </td>
     </#list>
 
     </tr>

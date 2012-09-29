@@ -10,20 +10,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.SimpleExpression;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
+import org.tdar.core.bean.cache.HomepageResourceCountCache;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.keyword.GeographicKeyword.Level;
+import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.bean.util.HomepageGeographicKeywordCache;
-import org.tdar.core.bean.util.HomepageResourceCountCache;
 import org.tdar.core.dao.Dao;
 import org.tdar.core.dao.NamedNativeQueries;
 import org.tdar.core.dao.TdarNamedQueries;
@@ -153,24 +159,28 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         Query query = getCurrentSession().getNamedQuery(QUERY_ACTIVE_RESOURCE_TYPE_COUNT);
 
         List<ResourceType> types = new ArrayList<ResourceType>(Arrays.asList(ResourceType.values()));
-
+        types.remove(ResourceType.CODING_SHEET);
+        types.remove(ResourceType.ONTOLOGY);
         for (Object o : query.list()) {
             try {
                 Object[] objs = (Object[]) o;
                 if (objs == null || objs[0] == null)
                     continue;
                 ResourceType resourceType = (ResourceType) objs[1];
-                resourceTypeCounts.add(new HomepageResourceCountCache(resourceType, (Long) objs[0]));
+                Long count = (Long) objs[0];
+                if (count > 0) {
+                    resourceTypeCounts.add(new HomepageResourceCountCache(resourceType, count));
+                }
                 types.remove(resourceType);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        
+
         for (ResourceType remainingType : types) {
             resourceTypeCounts.add(new HomepageResourceCountCache(remainingType, 0l));
         }
-        
+
         return resourceTypeCounts;
     }
 
@@ -215,4 +225,45 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         return toReturn;
     }
 
+
+
+    /*
+     * This method is the combined method for finding a random resource in a collection or a project or in all of tDAR. Due to the nature of the 
+     * database queries that are actually performed, it's split into two parts (a) find the random resource.id and (b) retrieve the resource
+     */
+    @SuppressWarnings("hiding")
+    protected <E> List<E> findRandomFeaturedResource(boolean restrictToFiles, List<ResourceCollection> collections, Project project, int maxResults) {
+        logger.trace("find random resource start");
+
+        // use projection to just get the ID of the resource back -- less crazy binding in database queries
+        Criteria criteria = getCriteria(persistentClass);
+        criteria.setProjection(Projections.projectionList().add(Projections.property("id")));
+        criteria.add(Restrictions.eq("status", Status.ACTIVE));
+        if (restrictToFiles) {
+            criteria.createCriteria("informationResourceFiles");
+        }
+
+        if (!Persistable.Base.isNullOrTransient(project)) {
+            criteria.createCriteria("project").add(Restrictions.eq("id", project.getId()));
+        }
+
+        if (CollectionUtils.isNotEmpty(collections)) {
+            List<Long> idList = new ArrayList<Long>();
+            for (ResourceCollection collection : collections) {
+                idList.add(collection.getId());
+            }
+            criteria.createCriteria("resourceCollections").add(Restrictions.in("id", idList));
+        }
+
+        criteria.add(Restrictions.sqlRestriction("1=1 order by random()"));
+        criteria.setMaxResults(maxResults);
+
+        // find the resource by ID using the projected version
+        List<Long> ids = new ArrayList<Long>();
+        for (Object result : criteria.list()) {
+            ids.add((Long)result);
+        }
+        logger.trace("find random resource end");
+        return (List<E>) findAll(ids);
+    }
 }

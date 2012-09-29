@@ -3,8 +3,6 @@ package org.tdar.utils.sensorydata.enums;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.tdar.utils.sensorydata.AdsImportException;
-
 public enum MeshField {
 
 	PREMESH_NAME_OF_PREMESH_DATASET("Name of Pre-Mesh Dataset")

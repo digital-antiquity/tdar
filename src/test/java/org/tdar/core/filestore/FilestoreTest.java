@@ -24,7 +24,7 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
+import org.tdar.core.bean.resource.VersionType;
 import org.tdar.filestore.PairtreeFilestore;
 
 import com.opensymphony.xwork2.interceptor.annotations.Before;
@@ -190,6 +190,7 @@ public class FilestoreTest {
         version.setVersion(2);
         version.setFileVersionType(VersionType.UPLOADED);
         store.store(new File(TEST_IMAGE), version);
+        assertTrue(store.verifyFile(version));
         File f = new File(store.getAbsoluteFilePath(version));
         assertTrue("file exists: " + f.getCanonicalPath(), f.exists());
         String expectedPath = store.getFilestoreLocation() + baseIrPath + INFORMATION_RESOURCE_FILE_ID + File.separator + "v2";

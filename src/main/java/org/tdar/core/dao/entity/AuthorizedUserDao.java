@@ -6,8 +6,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.hibernate.Query;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
@@ -41,13 +43,13 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
      */
     public boolean isAllowedTo(Person person, Resource resource, GeneralPermissions permission) {
         Set<Long> ids = new HashSet<Long>();
-        
-        //FIXME: push business logic up to service layer?
+
+        // FIXME: push business logic up to service layer?
         if (resource.isDeleted()) {
             return false;
         }
         // if the user is the owner, don't go any further
-        if (resource.getSubmitter().equals(person)) {
+        if (ObjectUtils.equals(resource.getSubmitter(), person)) {
             return true;
         }
 
@@ -60,14 +62,14 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
     }
 
     public boolean isAllowedTo(Person person, GeneralPermissions permission, ResourceCollection collection) {
-        if (collection.getOwner() != null && collection.getOwner().equals(person)) {
+        if (ObjectUtils.equals(collection.getOwner(), person)) {
             return true;
         }
         return isAllowedTo(person, permission, collection.getParentIdList());
     }
 
     public boolean isAllowedTo(Person person, GeneralPermissions permission, Collection<Long> collectionIds) {
-        if (collectionIds.isEmpty() || person == null || person.getId() == -1) {
+        if (collectionIds.isEmpty() || Persistable.Base.isNullOrTransient(person)) {
             return false;
         }
 

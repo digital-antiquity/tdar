@@ -46,6 +46,7 @@ public class SensoryDataControllerITCase extends AbstractResourceControllerITCas
 
         resource.setTitle(TEST_TITLE);
         resource.setDescription(TEST_DESC);
+        controller.setServletRequest(getServletPostRequest());
         controller.save();
         Long id = resource.getId();
         Assert.assertNotSame("should have valid resource id", INVALID_RESOURCE_ID, id);
@@ -123,6 +124,7 @@ public class SensoryDataControllerITCase extends AbstractResourceControllerITCas
 
     private Long saveAndReload(boolean test) throws TdarActionException {
         Long oldid = controller.getResource().getId();
+        controller.setServletRequest(getServletPostRequest());
         controller.save();
         Long id = controller.getResource().getId();
         controller = generateNewInitializedController(SensoryDataController.class);

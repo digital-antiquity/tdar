@@ -3,7 +3,9 @@ package org.tdar.core.dao;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -24,7 +26,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -32,8 +36,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 /**
  * $Id$
  * 
- * Performs most DAO tasks with an explicit type / class parameter. Mainly used
- * by GenericService.
+ * Provides base DAO support with an explicit type (class) parameter.
  * 
  * 
  * @author <a href='mailto:allen.lee@asu.edu'>Allen Lee</a>
@@ -57,18 +60,24 @@ public class GenericDao {
         // FIXME: push guard checks into Service layer.
         if (id == null)
             return null;
-        return cls.cast(getCurrentSession().get(cls, id));
+        logger.trace("{}", getCurrentSession().get(cls, id));
+        E obj = cls.cast(getCurrentSession().get(cls, id));
+        logger.trace("object: {}", obj);
+        return obj;
     }
 
     @SuppressWarnings("unchecked")
     public <E> List<E> findAll(Class<E> persistentClass, List<Long> ids) {
-        Query query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_FIND_ALL_WITH_IDS, persistentClass.getSimpleName()));
+        if (CollectionUtils.isEmpty(ids)) {
+            return Collections.emptyList();
+        }
+        Query query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_FIND_ALL_WITH_IDS, persistentClass.getName()));
         return query.setParameterList("ids", ids).list();
     }
 
     @SuppressWarnings("unchecked")
     public <E> List<Long> findAllIds(Class<E> persistentClass) {
-        return getCurrentSession().createQuery("select id from " + persistentClass.getName() + " ORDER by id asc").list();
+        return getCurrentSession().createQuery("select id from " + persistentClass.getName()).list();
     }
 
     @SuppressWarnings("unchecked")
@@ -79,7 +88,7 @@ public class GenericDao {
     }
 
     public Number count(Class<?> persistentClass) {
-        Query query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_SQL_COUNT, persistentClass.getSimpleName()));
+        Query query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_SQL_COUNT, persistentClass.getName()));
         return (Number) query.uniqueResult();
     }
 
@@ -121,6 +130,30 @@ public class GenericDao {
             executableCriteria.setFirstResult(start);
         }
         return (List<E>) executableCriteria.list();
+    }
+
+    public <P extends Persistable> List<P> loadFromSparseEntities(Collection<P> incoming, Class<P> cls) {
+        return findAll(cls, Persistable.Base.extractIds(incoming));
+    }
+
+    @SuppressWarnings("unchecked")
+    public <P extends Persistable> List<P> populateSparseObjectsById(Collection<Long> ids, Class<?> cls) {
+        if (CollectionUtils.isEmpty(ids))
+            return Collections.emptyList();
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_SPARSE_RESOURCE_LOOKUP);
+        if (cls.isAssignableFrom(ResourceCollection.class)) {
+            query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_SPARSE_COLLECTION_LOOKUP);
+        }
+        query.setParameterList("ids", ids);
+        query.setReadOnly(true);
+        return query.list();
+    }
+
+    public <P extends Persistable> P loadFromSparseEntity(P item, Class<P> cls) {
+        if (item == null) {
+            return null;
+        }
+        return find(cls, item.getId());
     }
 
     public <E> List<E> findAll(Class<E> cls) {
@@ -185,7 +218,7 @@ public class GenericDao {
 
     public <E> List<E> findByExample(Class<E> persistentClass, E entity, List<String> ignoredProperties, FindOptions option) {
         List<E> toReturn = new ArrayList<E>();
-        logger.trace("find by example for {}: {}", persistentClass.getSimpleName(), entity);
+        logger.trace("find by example for {}: {}", persistentClass.getName(), entity);
         logger.trace("  ignoring {} [{}]", ignoredProperties, option);
         List<E> found = findByExampleLike(persistentClass, entity, MatchMode.EXACT, ignoredProperties);
         logger.trace("found: {} ", found);
@@ -206,6 +239,30 @@ public class GenericDao {
                 break;
         }
         logger.trace("returning: {} ", toReturn);
+        return toReturn;
+    }
+
+    /**
+     * NOTE: This method, while convenient, can become extremely inefficient. Use with care.
+     * 
+     * @param classToCreate
+     * @param incomingCollection
+     * @param ignoreProperties
+     * @param options
+     * @return
+     */
+    public <T> Set<T> findByExamples(Class<T> classToCreate, Collection<T> incomingCollection, List<String> ignoreProperties, FindOptions options) {
+        Set<T> toReturn = new HashSet<T>();
+        if (CollectionUtils.isEmpty(incomingCollection)) {
+            return toReturn;
+        }
+        for (T incomingElement : incomingCollection) {
+            if (incomingElement == null) {
+                logger.debug("Skipping null example");
+                continue;
+            }
+            toReturn.addAll(findByExample(classToCreate, incomingElement, ignoreProperties, options));
+        }
         return toReturn;
     }
 
@@ -254,9 +311,14 @@ public class GenericDao {
     }
 
     public void save(Collection<?> persistentEntities) {
-        Session session = getCurrentSession();
         for (Object o : persistentEntities) {
-            session.save(o);
+            save(o);
+        }
+    }
+
+    public void saveOrUpdate(Collection<?> persistentEntities) {
+        for (Object o : persistentEntities) {
+            saveOrUpdate(o);
         }
     }
 
@@ -285,14 +347,28 @@ public class GenericDao {
         return (E) session.merge(entity);
     }
 
-    public <P extends Persistable> P merge(P incomingEntity, P existingEntity) {
-        logger.trace("exchanging incoming {} with {}", incomingEntity, existingEntity);
-        incomingEntity.setId(existingEntity.getId());
-        detachFromSession(existingEntity);
-        return merge(incomingEntity);
+    public <P extends Persistable> P merge(P incomingUnmanagedEntity, P existingManagedEntity) {
+        logger.trace("exchanging incoming {} with {}", incomingUnmanagedEntity, existingManagedEntity);
+        detachFromSession(existingManagedEntity);
+        detachFromSession(incomingUnmanagedEntity);
+        incomingUnmanagedEntity.setId(existingManagedEntity.getId());
+        P entity = merge(incomingUnmanagedEntity);
+        // FIXME: this shouldn't be necessary to bring the entity onto the session, need to get the tests to simulate 
+        // transaction boundary semantics similar to web requests.
+        saveOrUpdate(entity);
+        return entity;
     }
 
     public void delete(Object entity) {
+        if (entity instanceof HasStatus) {
+            ((HasStatus) entity).setStatus(Status.DELETED);
+            saveOrUpdate(entity);
+        } else {
+            forceDelete(entity);
+        }
+    }
+
+    public void forceDelete(Object entity) {
         Session session = getCurrentSession();
         session.delete(entity);
     }
@@ -400,19 +476,6 @@ public class GenericDao {
 
     public Statistics getSessionStatistics() {
         return getCurrentSession().getSessionFactory().getStatistics();
-    }
-
-    public <O> Collection<O> mergeAll(Collection<O> collection) {
-        if (CollectionUtils.isEmpty(collection)) {
-            return Collections.emptyList();
-        }
-        ArrayList<O> mergedEntities = new ArrayList<O>();
-        for (O entity : collection) {
-            mergedEntities.add(merge(entity));
-        }
-        // collection.clear();
-        // collection.addAll(mergedEntities);
-        return mergedEntities;
     }
 
 }

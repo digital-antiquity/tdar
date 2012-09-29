@@ -11,7 +11,6 @@
 <meta name="lastModifiedDate" content="$Date$"/>
 
 <@edit.resourceJavascript formId="#MetadataForm" />
-<script type='text/javascript' src='<@s.url value="/includes/datatable-support.js"/>'></script>
 <@edit.resourceDataTableJavascript false true />
 <script type="text/javascript">
 
@@ -110,16 +109,18 @@ function removeResourceClicked(id, elem) {
 
 <div>
 <@s.form name='MetadataForm' id='MetadataForm'  method='post' enctype='multipart/form-data' action='save'>
-<@edit.showControllerErrors/>
 
 <div class="glide" tiplabel="Basic Information"  tooltipcontent="Enter a name and description for this collection.  You may also choose a &quot;parent 
     collection&quot; which allows you to inherit all of the access permissions defined by the parent.">
   <#if resourceCollection.id?? &&  resourceCollection.id != -1>
-      <@s.hidden name="id"  value="${resourceCollection.id?c}" />
+      <@s.hidden name="id"  value="${resourceCollection.id?c}" id="hdnResourceCollectionId" />
   </#if>
   <@s.hidden name="startTime" value="${currentTime?c}" />
 
-<@s.select labelposition='left' label='Parent Collection' emptyOption='true' name='parentId' 
+ <p  id="rebaseNotice" class="message-warning" style="display:none;">
+    <strong>Please Note:</strong> By changing the parent collection, you will be changing the permissions of this collection as well. 
+ </p>
+<@s.select labelposition='left' label='Parent Collection' emptyOption='true' name='parentId' id="selParentId"
     listKey='id' listValue='name' list='%{candidateParentResourceCollections}'
     truncate=80 title="Please select a parent collection" />
 <br />
@@ -199,6 +200,29 @@ The form will check for matches in the tDAR database and populate the related fi
     This is the editing form for a Collection.
     </div>
 </div>
+
+<script type="text/javascript">
+$(function() {
+    "use strict";
+
+    //give rebase warning when editing and collection goes from child to root
+    //we assume the hidden id field is only present during /edit,  not /add
+    $("#hdnResourceCollectionId").each(function() {
+        var $selParentId = $("#selParentId");
+        //only need to show the message if going from parent to nothing
+    if($selParentId.val()!=="") {
+            //$selParentId.data("previous-value", $selParentId.val());   
+            $selParentId.change(function() {
+                if(this.value !== "" && this.value !== $selParentId.data("previous-value"))  {
+                    $("#rebaseNotice").show();
+                }
+            });
+        }
+    });
+    
+});
+    
+</script>
 
 </body>
 </#escape>

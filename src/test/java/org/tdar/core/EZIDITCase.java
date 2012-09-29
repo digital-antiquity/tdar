@@ -36,7 +36,7 @@ public class EZIDITCase extends AbstractSearchControllerITCase {
     public static final String TEST_PASSWORD = "apitest";
 
     @Autowired
-    ExternalIDProvider ezidDao;
+    EZIDDao ezidDao;
 
     @Autowired
     UrlService urlService;
@@ -94,11 +94,8 @@ public class EZIDITCase extends AbstractSearchControllerITCase {
             metadata = ezidDao.getMetadata(doi);
             assertEquals(ark, metadata.get("_shadowedby"));
             // should now be blank
-            assertFalse(r.getTitle().equals(metadata.get(EZIDDao.DATACITE_TITLE)));
-            assertTrue(StringUtils.isEmpty(metadata.get(EZIDDao.DATACITE_CREATOR)));
-            assertTrue(StringUtils.isEmpty(metadata.get(EZIDDao.DATACITE_TITLE)));
-            assertTrue(StringUtils.isEmpty(metadata.get(EZIDDao.DATACITE_PUBLISHER)));
-            assertTrue(StringUtils.isEmpty(metadata.get(EZIDDao.DATACITE_PUBLICATIONYEAR)));
+            assertTrue(r.getTitle().equals(metadata.get(EZIDDao.DATACITE_TITLE)));
+            assertTrue(EZIDDao._STATUS_UNAVAILABLE.equals(metadata.get(EZIDDao._STATUS)));
 
         } catch (ClientProtocolException e) {
             e.printStackTrace();

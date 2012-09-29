@@ -6,6 +6,7 @@
  */
 package org.tdar.search.geosearch;
 
+import java.sql.SQLXML;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +15,9 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.postgis.PGgeometry;
 import org.postgis.Point;
@@ -22,6 +26,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
+import org.tdar.struts.data.SvgMapWrapper;
 
 /**
  * This is a DAO to manage access to postGIS. It's attempted to manage this by hiding all of the PostGIS info at this layer
@@ -70,32 +75,78 @@ public class GeoSearchDao {
     private final static String QUERY_ENVELOPE = "SELECT ST_Envelope(ST_Collect(the_geom)) as %2$s FROM \"%1$s\" where %3$s";
     private final static String QUERY_ENVELOPE_2 = "(%1$s='%2$s') ";
     private final static String POLYGON = "polygon";
+//, concat('${',%1$s,'-style?default('''')}') as style
+    public static final String QUERY_SVG = "select xmlelement(name g, xmlattributes( concat('a',%1$s) as id, concat('a',%1$s) as class, %2$s as name, " +
+            "  %3$s as \"stroke-width\" ), xmlelement(name a,xmlattributes(concat('%4$s',%1$s,'%5$s') as \"xlink:href\")," +
+            " xmlelement(name path, xmlattributes(ST_asSVG(the_geom, 1, 5) as d))) ) from %6$s where %1$s is not null";
 
-    private static final String TABLE_COUNTRY = "country_wgs84";
-    private static final String TABLE_ADMIN = "admin1_wgs84";
-    private static final String TABLE_CONTINENTS = "continents_wgs84";
-    private static final String TABLE_COUNTIES = "us_counties_wgs84";
-    // private final String TOWNSHIP_TABLE = "TownRange2_WGS84";
+    public enum SpatialTables {
+        COUNTRY("country_wgs84", "long_name", "iso_2digit"),
+        COUNTY("us_counties_wgs84", "cnty_name", "state_name"),
+        ADMIN("admin1_wgs84", "admin_name", "type_eng"),
+        CONTINENT("continents_wgs84", "continent");
 
-    // continent
-    private static final String COL_CONTINENT_NAME = "continent";
+        private String tableName;
+        private String[] columns;
 
-    // country
-    private static final String COL_COUNTRY_LONG_NAME = "long_name";
-    private static final String COL_ISO_2DIGITS = "iso_2digit";
-    private static final String COLUMNS_COUNTRY = COL_ISO_2DIGITS + ", " + COL_COUNTRY_LONG_NAME;
+        private SpatialTables(String tableName, String... columns) {
+            this.setTableName(tableName);
+            this.setColumns(columns);
+        }
 
-    // admin (state)
-    private static final String COL_ADMIN_NAME = "admin_name";
-    private static final String COL_ADMIN_TYPE = "type_eng";
-    @SuppressWarnings("unused")
-    private static final String COLUMNS_ADMIN = COL_ADMIN_NAME + ", " + COL_ADMIN_TYPE;
+        public String getTableName() {
+            return tableName;
+        }
 
-    // us_counties (county)
-    private static final String COL_COUNTY_NAME = "cnty_name";
-    private static final String COL_STATE_NAME = "state_name";
-    @SuppressWarnings("unused")
-    private static final String COLUMNS_COUNTIES = COL_COUNTY_NAME + ", " + COL_STATE_NAME;
+        public void setTableName(String tableName) {
+            this.tableName = tableName;
+        }
+
+        public String[] getColumns() {
+            return columns;
+        }
+
+        public void setColumns(String[] columns) {
+            this.columns = columns;
+        }
+
+        public String getPrimaryColumn() {
+            if (this == COUNTRY) {
+                return StringUtils.join(columns, ",");
+            }
+            return getColumns()[0];
+        }
+
+        public String getIdColumn() {
+            switch (this) {
+                case COUNTRY:
+                    return columns[columns.length - 1];
+                case ADMIN:
+                    return "fips_admin";
+                case COUNTY:
+                    return "fips";
+            }
+            throw new NotImplementedException();
+        }
+
+        public String getLimitColumn() {
+            switch (this) {
+                case COUNTRY:
+                    return columns[columns.length - 1];
+                case ADMIN:
+                    return "fips_cntry";
+                case COUNTY:
+                    return "state_fips";
+            }
+            throw new NotImplementedException();
+        }
+
+        public String getLabelColumn() {
+            return columns[0];
+        }
+
+    }
+
     private static final String COL_FIPS = "fips";
 
     private static final int FIPS_ALL_COUNTIES_SUFFIX = 999;
@@ -162,27 +213,27 @@ public class GeoSearchDao {
         return databaseEnabled;
     }
 
-    private String constructGeomQuery(String columns, String tableName, String polygon) {
+    private String constructGeomQuery(SpatialTables table, String polygon) {
         String coverage = String.format(QUERY_GEOM_PART, polygon, DEFAULT_PROJECTION);
-        String toReturn = String.format(QUERY_COVERAGE_NEW, columns, tableName, coverage, ".3", ".8");
+        String toReturn = String.format(QUERY_COVERAGE_NEW, table.getPrimaryColumn(), table.getTableName(), coverage, ".3", ".8");
         logger.trace(toReturn);
         return toReturn;
     }
 
     public List<Map<String, Object>> findAllAdminMatching(LatitudeLongitudeBox latLong) {
-        String sql = constructGeomQuery(COL_ADMIN_NAME, TABLE_ADMIN, latLong.convertToPolygonBox());
+        String sql = constructGeomQuery(SpatialTables.ADMIN, latLong.convertToPolygonBox());
         logger.trace(sql);
         return findAll(sql);
     }
 
     public List<Map<String, Object>> findAllContinentsMatching(LatitudeLongitudeBox latLong) {
-        String sql = constructGeomQuery(COL_CONTINENT_NAME, TABLE_CONTINENTS, latLong.convertToPolygonBox());
+        String sql = constructGeomQuery(SpatialTables.CONTINENT, latLong.convertToPolygonBox());
         logger.trace(sql);
         return findAll(sql);
     }
 
     public List<Map<String, Object>> findAllCountiesMatching(LatitudeLongitudeBox latLong) {
-        String sql = constructGeomQuery(COL_COUNTY_NAME, TABLE_COUNTIES, latLong.convertToPolygonBox());
+        String sql = constructGeomQuery(SpatialTables.COUNTY, latLong.convertToPolygonBox());
         logger.trace(sql);
         return findAll(sql);
     }
@@ -192,7 +243,7 @@ public class GeoSearchDao {
      * @return
      */
     public List<Map<String, Object>> findAllCountriesMatching(LatitudeLongitudeBox latLong) {
-        String sql = constructGeomQuery(COLUMNS_COUNTRY, TABLE_COUNTRY, latLong.convertToPolygonBox());
+        String sql = constructGeomQuery(SpatialTables.COUNTRY, latLong.convertToPolygonBox());
         logger.trace(sql);
         return findAll(sql);
     }
@@ -231,7 +282,7 @@ public class GeoSearchDao {
                 suffix.append(" OR ");
         }
 
-        String sql = String.format(QUERY_ENVELOPE, TABLE_COUNTIES, POLYGON, suffix.toString());
+        String sql = String.format(QUERY_ENVELOPE, SpatialTables.COUNTY.getTableName(), POLYGON, suffix.toString());
         logger.trace(sql);
         Map<String, Object> fipsResults = findFirst(sql);
         if (fipsResults == null || fipsResults.get(POLYGON) == null)
@@ -258,4 +309,56 @@ public class GeoSearchDao {
     public SimpleJdbcTemplate getJdbcTemplate() {
         return jdbcTemplate;
     }
+
+    public SvgMapWrapper getMapSvg(double strokeWidth, String searchPrefix, String searchSuffix, SpatialTables table, String limit) {
+        String sql = constructSVGQuery(strokeWidth, searchPrefix, searchSuffix, table, limit);
+        SvgMapWrapper wrapper = new SvgMapWrapper();
+        List<Map<String, Object>> findAll = findAll(sql);
+        for (Map<String, Object> row : findAll) {
+            for (Object val : row.values()) {
+                wrapper.getSqlXml().add((SQLXML) val);
+            }
+        }
+
+        sql = String.format(QUERY_ENVELOPE, table.getTableName(), POLYGON, table.getIdColumn() + " is not NULL ");
+        if (StringUtils.isNotBlank(limit)) {
+            sql += String.format(" and %s='%s'", table.getLimitColumn(), StringEscapeUtils.escapeSql(limit));
+        }
+        logger.info(sql);
+        Map<String, Object> envelope = findFirst(sql);
+        if (envelope != null && envelope.get(POLYGON) != null) {
+            PGgeometry poly = (PGgeometry) envelope.get(POLYGON);
+            logger.trace(poly.getGeometry().toString());
+            Point firstPoint = poly.getGeometry().getPoint(0);
+            Point thirdPoint = poly.getGeometry().getPoint(2);
+            wrapper.setMinX((int)firstPoint.getX());
+            wrapper.setMinY((int)firstPoint.getY());
+
+            wrapper.setWidth((int)Math.abs(Math.ceil(firstPoint.getX() - thirdPoint.getX())));
+            if (thirdPoint.getX() < firstPoint.getX()) {
+                wrapper.setMinX((int)thirdPoint.getX());
+                logger.info("resetting x");
+                wrapper.setWidth((int)Math.abs(Math.ceil(thirdPoint.getX() - firstPoint.getX())));
+            }
+            wrapper.setHeight((int)Math.abs(Math.ceil(firstPoint.getY() - thirdPoint.getY())));
+            if (thirdPoint.getY() < firstPoint.getY()) {
+                wrapper.setMinY((int)thirdPoint.getY());
+                logger.info("resetting y");
+                wrapper.setHeight((int)Math.abs(Math.ceil(thirdPoint.getY() - firstPoint.getY())));
+            }
+            
+            logger.trace(String.format("%s %s ", wrapper.getMinX(), wrapper.getMinY()));
+            logger.trace(String.format("%s %s ", wrapper.getWidth(), wrapper.getHeight()));
+        }
+        return wrapper;
+    }
+
+    public static String constructSVGQuery(double strokeWidth, String searchPrefix, String searchSuffix, SpatialTables table, String limit) {
+        String ret = String.format(QUERY_SVG, table.getIdColumn(), table.getLabelColumn(), strokeWidth, searchPrefix, searchSuffix, table.getTableName());
+        if (StringUtils.isNotBlank(limit)) {
+            ret += String.format(" and %s='%s'", table.getLimitColumn(), StringEscapeUtils.escapeSql(limit));
+        }
+        return ret;
+    }
+
 }

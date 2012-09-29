@@ -1,5 +1,6 @@
 <#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
+
 <@view.htmlHeader resourceType="ontology">
 <meta name="lastModifiedDate" content="$Date$"/>
 <style type='text/css'>
@@ -18,8 +19,7 @@
   }
 </style>
 <!-- JIT Library File --> 
-<!--[if IE]><script language="javascript" type="text/javascript" src="<@s.url value="/includes/Jit-2.0.0b/Extras/excanvas.js"/>"></script><![endif]--> 
-<script language="javascript" type="text/javascript" src="<@s.url value="/includes/Jit-2.0.0b/jit-yc-min.js"/>"></script> 
+<@view.datatableChildJavascript />
 <@view.googleScholar />
 </@view.htmlHeader>
 <@view.toolbar "${resource.urlNamespace}" "view" />
@@ -29,11 +29,11 @@
 
 <@view.infoResourceBasicInformation />
 
-<!--
-<fieldset>
-<legend>Ontology:</legend>
--->
 <h3>Ontology</h3>
+
+
+<@view.datatableChild />
+
 <div id="infovis">
 </div>
 <!--</fieldset> -->
@@ -56,7 +56,7 @@
 
 
 <script>
- <#if (rootElements.size()) == 1>
+ <#if rootElements?size == 1>
    var json =     <@s.iterator value="rootElements" var="root_" status="stat">
       <@makeNode root_ />
     </@s.iterator>;
@@ -68,6 +68,8 @@
    </@s.iterator>
    ]};
  </#if>
+
+jQuery(document).ready(function($){
 
 //Create a new ST instance  
 var st = new $jit.ST({  
@@ -100,14 +102,6 @@ var st = new $jit.ST({
     Edge: {  
         type: 'bezier',  
         overridable: true  
-    },  
-      
-    onBeforeCompute: function(node){  
-        console.log("loading " + node.name);  
-    },  
-      
-    onAfterCompute: function(){  
-        console.log("done");  
     },  
       
     //This method is called on DOM label creation.  
@@ -196,5 +190,6 @@ st.compute();
 //st.geom.translate(new $jit.Complex(-200, 0), "current");  
 //emulate a click on the root node.  
 st.onClick(st.root);  
+});
 </script>
 </#escape>

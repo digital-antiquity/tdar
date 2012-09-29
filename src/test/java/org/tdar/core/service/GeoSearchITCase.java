@@ -13,6 +13,7 @@ import javax.sql.DataSource;
 
 import org.apache.lucene.queryParser.ParseException;
 import org.hibernate.search.FullTextQuery;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -25,10 +26,10 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.geosearch.GeoSearchDao;
 import org.tdar.search.geosearch.GeoSearchService;
-import org.tdar.search.query.FieldQueryPart;
-import org.tdar.search.query.FreetextQueryPart;
-import org.tdar.search.query.queryBuilder.QueryBuilder;
-import org.tdar.search.query.queryBuilder.ResourceQueryBuilder;
+import org.tdar.search.query.builder.QueryBuilder;
+import org.tdar.search.query.builder.ResourceQueryBuilder;
+import org.tdar.search.query.part.FieldQueryPart;
+import org.tdar.search.query.part.FreetextQueryPart;
 import org.tdar.struts.action.AbstractAdminControllerITCase;
 import org.tdar.struts.action.TdarActionSupport;
 
@@ -53,6 +54,13 @@ public class GeoSearchITCase extends AbstractAdminControllerITCase {
 
     @Test
     @Rollback(true)
+    public void testInvalidLatLong() {
+        LatitudeLongitudeBox latLong = new LatitudeLongitudeBox(1d, 1d, -1d, -1d);
+        assertFalse(latLong.isValid());
+    }
+
+    @Test
+    @Rollback(true)
     public void testQuietRun() {
         assertNotNull(geoSearchService);
         geoSearchDao.setDataSource(new SingleConnectionDataSource("jdbc:postgresql://localhost/postgis_broken", true));
@@ -70,9 +78,9 @@ public class GeoSearchITCase extends AbstractAdminControllerITCase {
     public void testNoCounties() {
         LatitudeLongitudeBox latLong = new LatitudeLongitudeBox();
         latLong.setMinimumLatitude(37.222d);
-        latLong.setMinimumLongitude(-121.31d);
         latLong.setMaximumLatitude(38.865d);
-        latLong.setMaximumLongitude(-124.43d);
+        latLong.setMaximumLongitude(-121.31d);
+        latLong.setMinimumLongitude(-124.43d);
         Set<GeographicKeyword> countryInfo = geoSearchService.extractAllGeographicInfo(latLong);
         for (GeographicKeyword kwd : countryInfo) {
             logger.info("{}", kwd);
@@ -105,10 +113,12 @@ public class GeoSearchITCase extends AbstractAdminControllerITCase {
     @SuppressWarnings("unchecked")
     @Test
     @Rollback(true)
+    //FIXME:  This test tests too many pointless things,  but it's the only thing that covers processManagedKeywords.  Remove this 
+    //        once we have a proper test for processManagedKeywords.
     public void testPersistedManagedKeyword() throws ParseException {
         Project project = genericService.find(Project.class, 3738L);
         Set<LatitudeLongitudeBox> latitudeLongitudeBoxes = project.getLatitudeLongitudeBoxes();
-        project.setManagedGeographicKeywords(Collections.EMPTY_SET);
+        project.getManagedGeographicKeywords().clear();
         genericService.save(project);
         assertNotNull(latitudeLongitudeBoxes);
         assertEquals("managed keywords (expected 0)", 0, project.getManagedGeographicKeywords().size());
@@ -139,13 +149,11 @@ public class GeoSearchITCase extends AbstractAdminControllerITCase {
 
         QueryBuilder q = new ResourceQueryBuilder();
 
-        FieldQueryPart qp = new FieldQueryPart();
-        qp.setFieldName("resourceType");
-        qp.setFieldValue("PROJECT");
+        FieldQueryPart qp = new FieldQueryPart("resourceType", "PROJECT");
         q.append(qp);
 
         FreetextQueryPart ft = new FreetextQueryPart();
-        ft.setFieldValue("Virginia");
+        ft.add("Virginia");
         q.append(ft);
 
         FullTextQuery ftq = searchService.search(q);
@@ -292,8 +300,10 @@ public class GeoSearchITCase extends AbstractAdminControllerITCase {
 
     @Test
     @Rollback
+    @Ignore
+    /* THIS TEST IS NOT VALID BECAUSE OF THE VALIDATION RULES ON LATLONGBOX, but it is, nonetheless, a good test to document */
     public void testMicronesia() {
-        LatitudeLongitudeBox latLong = new LatitudeLongitudeBox(146.154, -14.602, -171.142, 20.617);
+        LatitudeLongitudeBox latLong = new LatitudeLongitudeBox(-171.142, -14.602, 146.154, 20.617);
 
         Set<GeographicKeyword> extractAllGeographicInfo = geoSearchService.extractAllGeographicInfo(latLong);
         int found = 0;

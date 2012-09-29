@@ -1,19 +1,24 @@
 package org.tdar.core.bean.resource;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.hibernate.search.annotations.ContainedIn;
 import org.hibernate.search.annotations.Field;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.core.configuration.JSONTransient;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
@@ -25,19 +30,9 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
  */
 @Entity
 @Table(name = "coding_rule")
-public class CodingRule extends Persistable.Base
-        implements Comparable<CodingRule> {
+public class CodingRule extends Persistable.Base implements Comparable<CodingRule> {
 
     private static final long serialVersionUID = -577936920767925065L;
-
-    public CodingRule() {
-    }
-
-    public CodingRule(String code, String term, String description) {
-        setCode(code);
-        setTerm(term);
-        setDescription(description);
-    }
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "coding_sheet_id")
@@ -54,6 +49,42 @@ public class CodingRule extends Persistable.Base
 
     @Column(length = 2000)
     private String description;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ontology_node_id")
+    private OntologyNode ontologyNode;
+
+    private transient long count = -1L;
+
+    private transient List<Long> mappedToData = new ArrayList<Long>();
+
+    private transient List<OntologyNode> suggestions = new ArrayList<OntologyNode>();
+
+    public CodingRule() {
+    }
+
+    public CodingRule(CodingSheet codingSheet, String value) {
+        this(codingSheet, value, value, "", null);
+    }
+
+    public CodingRule(CodingSheet codingSheet, String code, String term, String description) {
+        this(codingSheet, code, term, description, null);
+    }
+
+    public CodingRule(CodingSheet codingSheet, String code, String term, String description, OntologyNode node) {
+        setCodingSheet(codingSheet);
+        codingSheet.getCodingRules().add(this);
+        setCode(code);
+        setTerm(term);
+        setDescription(description);
+        setOntologyNode(node);
+    }
+
+    public CodingRule(String unmappedValue, Long count) {
+        setTerm(term);
+        setCount(count);
+        setOntologyNode(OntologyNode.NULL);
+    }
 
     public String getCode() {
         return code;
@@ -110,7 +141,7 @@ public class CodingRule extends Persistable.Base
     }
 
     public String toString() {
-        return String.format("{%s, %s, %s}", code, term, description);
+        return String.format("{%s, %s, %s, %s}", code, term, description, getOntologyNode());
     }
 
     /**
@@ -125,4 +156,51 @@ public class CodingRule extends Persistable.Base
         }
     }
 
+    /**
+     * @return the ontologyNode
+     */
+    public OntologyNode getOntologyNode() {
+        return ontologyNode;
+    }
+
+    /**
+     * @param ontologyNode
+     *            the ontologyNode to set
+     */
+    public void setOntologyNode(OntologyNode ontologyNode) {
+        this.ontologyNode = ontologyNode;
+    }
+
+    /**
+     * @return the count
+     */
+    public long getCount() {
+        return count;
+    }
+
+    /**
+     * @param count
+     *            the count to set
+     */
+    public void setCount(long count) {
+        this.count = count;
+    }
+
+    public void setSuggestions(List<OntologyNode> suggestions) {
+        this.suggestions = suggestions;
+    }
+
+    @XmlTransient
+    @JSONTransient
+    public List<OntologyNode> getSuggestions() {
+        return suggestions;
+    }
+
+    public boolean isMappedToData(DataTableColumn col) {
+        return mappedToData.contains(col.getId());
+    }
+
+    public void setMappedToData(DataTableColumn col) {
+        this.mappedToData.add(col.getId());
+    }
 }

@@ -1,7 +1,12 @@
 package org.tdar.core.service;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.CacheMode;
 import org.hibernate.FlushMode;
@@ -11,12 +16,14 @@ import org.hibernate.search.FullTextSession;
 import org.hibernate.search.Search;
 import org.hibernate.search.SearchFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.keyword.CultureKeyword;
@@ -28,11 +35,14 @@ import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.HibernateSearchDao;
 import org.tdar.core.service.resource.DatasetService;
+import org.tdar.core.service.resource.ProjectService;
+import org.tdar.utils.activity.Activity;
 
 @Service
 @Transactional(readOnly = true)
@@ -49,6 +59,12 @@ public class SearchIndexService {
     @Autowired
     private DatasetService datasetService;
 
+    @Autowired
+    private ResourceCollectionService resourceCollectionService;
+
+    @Autowired
+    private ProjectService projectService;
+
     private static final int FLUSH_EVERY = TdarConfiguration.getInstance().getIndexerFlushSize();
 
     private static final int INDEXER_BATCH_SIZE_TO_LOAD_OBJECTS = 50;
@@ -57,6 +73,8 @@ public class SearchIndexService {
     private Class<?>[] defaultClassesToIndex = { Resource.class, Person.class, Institution.class, GeographicKeyword.class,
             CultureKeyword.class, InvestigationType.class, MaterialKeyword.class, SiteNameKeyword.class, SiteTypeKeyword.class, TemporalKeyword.class,
             OtherKeyword.class, ResourceAnnotationKey.class, ResourceCollection.class };
+
+    public static final String BUILD_LUCENE_INDEX_ACTIVITY_NAME = "Build Lucene Search Index";
 
     public void indexAll(AsyncUpdateReceiver updateReceiver) {
         indexAll(updateReceiver, defaultClassesToIndex);
@@ -67,6 +85,12 @@ public class SearchIndexService {
         if (updateReceiver == null) {
             updateReceiver = getDefaultUpdateReceiver();
         }
+        Activity activity = new Activity();
+        activity.setName(BUILD_LUCENE_INDEX_ACTIVITY_NAME);
+        activity.setMessage(String.format("reindexing %s", StringUtils.join(classesToIndex, ", ")));
+        activity.start();
+        ActivityManager.getInstance().addActivityToQueue(activity);
+
         try {
             genericService.synchronize();
             updateReceiver.setPercentComplete(0);
@@ -120,6 +144,7 @@ public class SearchIndexService {
             updateReceiver.setStatus("index all complete");
             updateReceiver.setPercentComplete(100f);
             fullTextSession.setFlushMode(previousFlushMode);
+            activity.end();
         } catch (ObjectNotFoundException ex) {
             updateReceiver.addError(ex);
         }
@@ -129,12 +154,41 @@ public class SearchIndexService {
         if (item instanceof InformationResource) {
             datasetService.assignMappedDataForInformationResource(((InformationResource) item));
         }
+
+        if (item instanceof Project) {
+            Project project = (Project) item;
+            if (CollectionUtils.isEmpty(project.getCachedInformationResources())) {
+                projectService.findAllResourcesInProject(project);
+            }
+        }
         fullTextSession.index(item);
+    }
+
+    public void indexAllResourcesInCollectionSubTree(ResourceCollection collectionToReindex) {
+        log.info("indexing collection async");
+        List<ResourceCollection> collections = resourceCollectionService.findAllChildCollectionsRecursive(collectionToReindex, CollectionType.SHARED);
+        collections.add(collectionToReindex);
+        Set<Resource> resources = new HashSet<Resource>();
+        for (ResourceCollection collection : collections) {
+            resources.addAll(collection.getResources());
+        }
+
+        indexCollection(resources);
+    }
+
+    @Async
+    public void indexAllResourcesInCollectionSubTreeAsync(final ResourceCollection collectionToReindex) {
+        indexAllResourcesInCollectionSubTree(collectionToReindex);
+    }
+
+    @Async
+    public <C extends Indexable> void indexCollectionAsync(final Collection<C> collectionToReindex) {
+        indexCollection(collectionToReindex);
     }
 
     @SuppressWarnings("deprecation")
     public <H extends Indexable & Persistable> void index(H... obj) {
-        log.debug("manual indexing ... " + obj.length);
+        log.debug("MANUAL INDEXING ... " + obj.length);
         genericService.synchronize();
 
         FullTextSession fullTextSession = getFullTextSession();
@@ -169,12 +223,21 @@ public class SearchIndexService {
         return divisor;
     }
 
-    public <C> void indexCollection(Collection<C> indexable) {
+    public <C extends Indexable> void indexCollection(Collection<C> indexable) {
         log.debug("manual indexing ... " + indexable.size());
         if (indexable != null) {
             FullTextSession fullTextSession = getFullTextSession();
+
             for (C toIndex : indexable) {
+                // fullTextSession.purge(toIndex.getClass(), toIndex.getId());
                 index(fullTextSession, toIndex);
+                log.debug("indexing: " + toIndex);
+                try {
+                    fullTextSession.purge(toIndex.getClass(), toIndex.getId());
+                    index(fullTextSession, genericService.merge(toIndex));
+                } catch (Exception e) {
+                    log.error("exception in indexing", e);
+                }
             }
             fullTextSession.flushToIndexes();
         }

@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
@@ -37,6 +36,7 @@ public interface AuthenticationAware extends SessionDataAware {
         private transient AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
 
         public Person getAuthenticatedUser() {
+            if(getSessionData() == null) return null;
             return getSessionData().getPerson();
         }
 
@@ -130,9 +130,6 @@ public interface AuthenticationAware extends SessionDataAware {
         public int getSessionTimeout() {
             return getServletRequest().getSession().getMaxInactiveInterval();
         }
-        
-        
-        
     }
 
 }

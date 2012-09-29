@@ -74,10 +74,6 @@
     });
 </script>
 
-<div id="errors">
-<@view.showControllerErrors />
-</div>
-
 
 
 

@@ -44,7 +44,7 @@ public class SensoryDataController extends AbstractInformationResourceController
 
     @Override
     protected void loadCustomMetadata() {
-        loadInformationResourceProperties();
+        super.loadCustomMetadata();
         sensoryDataScans = new ArrayList<SensoryDataScan>(getPersistable().getSensoryDataScans());
         sensoryDataImages = new ArrayList<SensoryDataImage>(getPersistable().getSensoryDataImages());
         Collections.sort(sensoryDataImages);

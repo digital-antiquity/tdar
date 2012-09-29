@@ -10,17 +10,14 @@ public interface QueryFieldNames {
     public static final String DATE = "date";
     public static final String DATE_UPDATED = "dateUpdated";
     public static final String DATE_CREATED = "dateCreated";
-    public static final String MAXX = "maxx";
-    public static final String MAXY = "maxy";
-    public static final String MINY = "miny";
-    public static final String MINX = "minx";
-    public static final String MINXPRIME = "minxPrime";
-    public static final String MAXXPRIME = "maxxPrime";
     public static final String LABEL = "label";
-    static final String DOT_LABEL = "." + LABEL;
+    public static final String DOT = ".";
+    static final String DOT_LABEL = DOT + LABEL;
     static final String IR = "informationResources.";
     public static final String TITLE = "title";
     public static final String TITLE_AUTO = "title_auto";
+    public static final String PROJECT_TITLE = "project.title";
+    public static final String PROJECT_TITLE_AUTO = "project.title_auto";
     public static final String TITLE_SORT = "title_sort";
     public static final String DOCUMENT_TYPE = "documentType";
     public static final String INTEGRATABLE = "integratable";
@@ -34,6 +31,16 @@ public interface QueryFieldNames {
     public static final String ACTIVE_INVESTIGATION_TYPES = "activeInvestigationTypes";
     public static final String ACTIVE_GEOGRAPHIC_KEYWORDS = "activeGeographicKeywords";
     public static final String ACTIVE_OTHER_KEYWORDS = "activeOtherKeywords";
+    public static final String ACTIVE_LATITUDE_LONGITUDE_BOXES = "activeLatitudeLongitudeBoxes";
+    
+    public static final String MAXX = ACTIVE_LATITUDE_LONGITUDE_BOXES + DOT + "maxx";
+    public static final String MAXY = ACTIVE_LATITUDE_LONGITUDE_BOXES + DOT + "maxy";
+    public static final String MINY = ACTIVE_LATITUDE_LONGITUDE_BOXES + DOT + "miny";
+    public static final String MINX = ACTIVE_LATITUDE_LONGITUDE_BOXES + DOT + "minx";
+    public static final String SCALE = ACTIVE_LATITUDE_LONGITUDE_BOXES + DOT + "scale";
+    public static final String MINXPRIME = ACTIVE_LATITUDE_LONGITUDE_BOXES + DOT + "minxPrime";
+    public static final String MAXXPRIME = ACTIVE_LATITUDE_LONGITUDE_BOXES + DOT + "maxxPrime";
+
     public static final String ACTIVE_TEMPORAL_KEYWORDS = "activeTemporalKeywords";
     public static final String ACTIVE_SITE_TYPE_KEYWORDS_LABEL = ACTIVE_SITE_TYPE_KEYWORDS + DOT_LABEL;
     public static final String ACTIVE_CULTURE_KEYWORDS_LABEL = ACTIVE_CULTURE_KEYWORDS + DOT_LABEL;
@@ -56,12 +63,16 @@ public interface QueryFieldNames {
     public static final String LAST_NAME_SORT = "lastName_sort";
     public static final String CREATOR_NAME_SORT = "creator_name_sort";
 
-    public static final String COLLECTION_NAME = "name";
-    public static final String COLLECTION_NAME_AUTO = "name_auto";
+    public static final String COLLECTION_NAME = TITLE;
+    public static final String COLLECTION_NAME_AUTO = TITLE_AUTO;
     public static final String COLLECTION_TYPE = "type";
-    public static final String COLLECTION_USERS_WHO_CAN_MODIFY = "usersWhoCan";
-    public static final String RESOURCE_USERS_WHO_CAN_MODIFY = "usersWhoCan";
-    public static final String RESOURCE_COLLECTION_PUBLIC_IDS = "publicCollectionIds";
+    public static final String RESOURCE_USERS_WHO_CAN_VIEW = "usersWhoCanView";
+    public static final String RESOURCE_USERS_WHO_CAN_MODIFY = "usersWhoCanModify";
+    public static final String COLLECTION_USERS_WHO_CAN_ADMINISTER = "usersWhoCanAdminister";
+    public static final String COLLECTION_USERS_WHO_CAN_VIEW = RESOURCE_USERS_WHO_CAN_VIEW;
+    public static final String COLLECTION_USERS_WHO_CAN_MODIFY = RESOURCE_USERS_WHO_CAN_MODIFY;
+//    public static final String RESOURCE_COLLECTION_PUBLIC_IDS = "publicCollectionIds";
+    public static final String RESOURCE_COLLECTION_SHARED_IDS = "sharedCollectionIds";
     public static final String RESOURCE_ACCESS_TYPE = "resourceAccessType";
     public static final String PROPER_NAME = "properName";
     public static final String RESOURCE_CREATORS_PROPER_NAME = "resourceCreators.creator." + PROPER_NAME;
@@ -71,6 +82,8 @@ public interface QueryFieldNames {
     public static final String COLLECTION_VISIBLE = "visible";
     public static final String TOP_LEVEL = "topLevel";
     public static final String RESOURCE_TYPE_SORT = "resourceTypeSort";
-    public static final String RESOURCE_OWNER = "resource.owner";
-
+    public static final String RESOURCE_OWNER = "resourceOwner";
+    public static final String DATE_CREATED_DECADE = "decadeCreated";
+    public static final String CREATOR_ROLE_IDENTIFIER = "crid";
+    
 }

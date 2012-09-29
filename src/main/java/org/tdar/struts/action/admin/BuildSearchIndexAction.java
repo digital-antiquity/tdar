@@ -13,11 +13,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.AsyncUpdateReceiver;
+import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.SearchIndexService;
 import org.tdar.core.service.external.auth.TdarGroup;
 import org.tdar.struts.RequiresTdarUserGroup;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.utils.Pair;
+import org.tdar.utils.activity.Activity;
+import org.tdar.utils.activity.IgnoreActivity;
 
 @Component
 @Scope("prototype")
@@ -26,6 +29,7 @@ import org.tdar.utils.Pair;
 @RequiresTdarUserGroup(TdarGroup.TDAR_ADMIN)
 public class BuildSearchIndexAction extends AuthenticationAware.Base implements AsyncUpdateReceiver {
 
+
     private static final long serialVersionUID = -8927970945627420725L;
 
     private int percentDone;
@@ -33,6 +37,7 @@ public class BuildSearchIndexAction extends AuthenticationAware.Base implements 
     private String callback;
     
     LinkedList<Throwable> errors = new LinkedList<Throwable>();
+    
 
     @Autowired
     private transient SearchIndexService searchIndexService;
@@ -41,6 +46,7 @@ public class BuildSearchIndexAction extends AuthenticationAware.Base implements 
         this.searchIndexService = searchIndexService;
     }
 
+    @IgnoreActivity
     @Action(value = "checkstatus", results = {
             @Result(name = "wait", type = "freemarker", location = "checkstatus-wait.ftl", params = { "contentType", "application/json" }),
             @Result(name = "success", type = "freemarker", location = "checkstatus-done.ftl", params = { "contentType", "application/json" }) },
@@ -56,7 +62,6 @@ public class BuildSearchIndexAction extends AuthenticationAware.Base implements 
     public String build() {
         return SUCCESS;
     }
-
 
     private void buildIndex() {
         searchIndexService.indexAll(this);
@@ -143,6 +148,11 @@ public class BuildSearchIndexAction extends AuthenticationAware.Base implements 
     public void update(float percent, String status) {
         setStatus(status);
         setPercentComplete(percent);
+    }
+    
+    
+    public boolean isAlreadyRunning() {
+        return ActivityManager.getInstance().findActivity(SearchIndexService.BUILD_LUCENE_INDEX_ACTIVITY_NAME) == null;
     }
 
 }

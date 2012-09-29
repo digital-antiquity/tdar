@@ -1,10 +1,10 @@
 package org.tdar.struts.action.entity;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.service.external.auth.InternalTdarRights;
 import org.tdar.struts.action.AbstractPersistableController;
@@ -23,11 +23,10 @@ public class InstitutionController extends AbstractPersistableController<Institu
         if (hasActionErrors())
             return INPUT;
 
-        if (persistable.getId() == -1L) {
+        if (Persistable.Base.isNullOrTransient(persistable)) {
             getGenericService().save(persistable);
         } else {
-            // reattach the institution to the session
-            getGenericService().merge(persistable);
+            getGenericService().update(persistable);
         }
         return SUCCESS;
     }

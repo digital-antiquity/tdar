@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -27,11 +28,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Dedupable;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
+import org.tdar.core.bean.request.ContributorRequest;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -40,6 +43,7 @@ import org.tdar.core.dao.ReflectionDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.filestore.Filestore;
+import org.tdar.filestore.Filestore.LogType;
 import org.tdar.utils.activity.Activity;
 import org.tdar.utils.jaxb.IdList;
 import org.tdar.utils.jaxb.converters.JaxbMapConverter;
@@ -58,16 +62,16 @@ public class AuthorityManagementService {
 
     @Autowired
     private GenericDao genericDao;
-    
+
     @Autowired
     private XmlService xmlService;
-    
+
     @Autowired
     private EmailService emailService;
- 
+
     // List of classes we will evaluate when looking for references.
     private static List<Class<?>> hostClasses = Arrays.<Class<?>> asList(Resource.class, InformationResource.class, ResourceCreator.class,
-            Person.class, Institution.class, AuthorizedUser.class);
+            Person.class, Institution.class, ContributorRequest.class, AuthorizedUser.class, ResourceCollection.class);
 
     @Transactional(readOnly = true)
     public Map<Field, ScrollableResults> getReferrers(Class<?> referredClass, List<Long> dupeIds) {
@@ -149,23 +153,25 @@ public class AuthorityManagementService {
      *  and setters.
      *  
      */
-    public <T extends Dedupable> void updateReferrers(Class<T> referredClass, List<Long> dupeIds, Long authorityId) {
+    public <T extends Dedupable> void updateReferrers(Class<T> referredClass, List<Long> dupeIds_, Long authorityId) {
         Activity activity = new Activity();
+        List<Long> duplicateIds = new ArrayList<Long>(new HashSet<Long>(dupeIds_));
         activity.setName(String.format("update-referrers:: referredClass:%s\tauthorityId:%s", referredClass.getSimpleName(), authorityId));
+        ActivityManager.getInstance().addActivityToQueue(activity);
         activity.start();
 
         int maxAffectedRecordsCount = TdarConfiguration.getInstance().getAuthorityManagementMaxAffectedRecords();
         int affectedRecordCount = 0;
         // get a list of all the referrer objects and the Fields that contain the reference.
-        Map<Field, ScrollableResults> referrers = getReferrers(referredClass, dupeIds);
+        Map<Field, ScrollableResults> referrers = getReferrers(referredClass, duplicateIds);
 
         // instantiate the duplicates and the authority record
-        List<T> dupes = genericDao.findAll(referredClass, dupeIds);
+        List<T> dupes = genericDao.findAll(referredClass, duplicateIds);
         T authority = genericDao.find(referredClass, authorityId);
 
         // prevent 'protected' records from being deleted
         if (countProtectedRecords(dupes) > 0) {
-        	activity.end();
+            activity.end();
             throw new TdarRecoverableRuntimeException("This de-dupe operation is not allowed because at least one of the selected duplicates is protected");
         }
 
@@ -216,7 +222,7 @@ public class AuthorityManagementService {
             String msg = String.format(fmt, NumberFormat.getNumberInstance().format(maxAffectedRecordsCount));
             throw new TdarRecoverableRuntimeException(msg);
         }
-        
+
         logAndNotify(authorityManagementLog);
 
         // add the dupes to the authority as synonyms
@@ -226,7 +232,7 @@ public class AuthorityManagementService {
         genericDao.delete(dupes);
         activity.end();
     }
-    
+
     // return number "protected" items in the dupe list. Duplicates may not be de-duped
     public <T extends Dedupable> int countProtectedRecords(List<T> dupes) {
         int count = 0;
@@ -243,55 +249,53 @@ public class AuthorityManagementService {
             authority.addSynonym(dupe);
         }
     }
-    
+
     private <T extends Dedupable> void logAndNotify(AuthorityManagementLog<T> logData) {
         logger.debug("{}", logData);
         String bar = "\r\n========================================================\r\n";
-        
-        //log the xml to filestore/logs
+
+        // log the xml to filestore/logs
         Filestore filestore = TdarConfiguration.getInstance().getFilestore();
         String xml = "";
         String className = logData.getAuthority().getClass().getSimpleName();
-        int numUpdated = logData.getUpdatedReferrers().keySet().size(); //number of records affected, not total reference count
+        int numUpdated = logData.getUpdatedReferrers().keySet().size(); // number of records affected, not total reference count
         try {
             xml = xmlService.convertToXML(logData);
         } catch (Exception e) {
-           xml = "xml conversion failure";
-           logger.warn("could not completely log authmgmt operation", e);
+            xml = "xml conversion failure";
+            logger.warn("could not completely log authmgmt operation", e);
         }
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-H-m-s");
         String datePart = dateFormat.format(new Date());
-        String filename =  className.toLowerCase() + "-" + datePart + ".txt";
-        filestore.storeLog(filename, xml);
-        
-        //now send a summary email
-        String to = TdarConfiguration.getInstance().getSystemAdminEmail();
-        String subject = String.format("tDAR Authority Management Service: user %s merged %s %s records to '%s'", 
-                logData.getUserDisplayName(), 
+        String filename = className.toLowerCase() + "-" + datePart + ".txt";
+        filestore.storeLog(LogType.AUTHORITY_MANAGEMENT, filename, xml);
+
+        // now send a summary email
+        String subject = String.format("tDAR Authority Management Service: user %s merged %s %s records to '%s'",
+                logData.getUserDisplayName(),
                 numUpdated,
                 className,
                 logData.getAuthority().toString());
-        
-        
+
         StringBuffer body = new StringBuffer(String.format("User %s performed a dedupe operation.\r\n\r\n", logData.getUserDisplayName()));
-        //String fmt = "%1$-20s %2$s\r\n";  //key:        value
-        String fmt  = "%1$s %2$s\r\n";
-        body.append(String.format(fmt,  "Authority:", logData.getAuthority()));
-        body.append(String.format(fmt,  "Record Type:", className));
-        body.append(String.format(fmt,  "Records Updated:", numUpdated));
-        
+        // String fmt = "%1$-20s %2$s\r\n"; //key: value
+        String fmt = "%1$s %2$s\r\n";
+        body.append(String.format(fmt, "Authority:", logData.getAuthority()));
+        body.append(String.format(fmt, "Record Type:", className));
+        body.append(String.format(fmt, "Records Updated:", numUpdated));
+
         body.append(bar);
         body.append("records merged");
         body.append(bar);
-        
-        for(Object p : logData.getUpdatedReferrers().keySet()) {
+
+        for (Object p : logData.getUpdatedReferrers().keySet()) {
             body.append("\r\n  -");
             body.append(p);
         }
         logger.debug(body.toString());
-        emailService.send(body.toString(), subject, to);
+        emailService.send(body.toString(), subject);
     }
-    
+
     @XmlRootElement
     @XmlAccessorType(XmlAccessType.PROPERTY)
     @XmlType(name = "logPart")
@@ -336,7 +340,7 @@ public class AuthorityManagementService {
 
         public AuthorityManagementLog() {
         }
-        
+
         public AuthorityManagementLog(R authority, Set<R> dupes) {
             this.authority = authority;
             this.dupes = dupes;
@@ -400,7 +404,7 @@ public class AuthorityManagementService {
         public void setUserDisplayName(String userDisplayName) {
             this.userDisplayName = userDisplayName;
         }
-        
+
     }
 
 }

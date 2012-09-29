@@ -1,6 +1,5 @@
-package org.tdar.core.bean.resource.dataTable;
+package org.tdar.core.bean.resource.datatable;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -8,35 +7,42 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Dataset;
+import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
+/**
+ * This Class represents a Primary or Foreign Key relationship between two data tables
+ * These relationships can represent a single column foreign key, or multiple column 
+ * foreign key, as well as more basic primary keys.
+ */
 @Entity
 @Table(name = "data_table_relationship")
 public class DataTableRelationship extends Persistable.Base {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 7389360675412671860L;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "relationship_type")
     private DataTableColumnRelationshipType type;
 
-    //FIXME: I think we need two join tables --one for localcolumns, one for foreigncolumns -- but hibernate creates one table w/ three fields.  don't think this will work.
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE}, fetch = FetchType.LAZY)
-    private Set<DataTableColumn> localColumns;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "relationship")
+    private Set<DataTableColumnRelationship> columnRelationships;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE}, fetch = FetchType.LAZY)
-    private Set<DataTableColumn> foreignColumns;
-
-    @ManyToOne
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, optional = false)
+    @Deprecated
+    /**
+     * @deprecated  Redundant since the DataTableRelationship has columnRelationships
+     *  which link it to a Dataset.  
+     */
     private Dataset dataset;
 
     @ManyToOne
@@ -53,40 +59,52 @@ public class DataTableRelationship extends Persistable.Base {
         return type;
     }
 
-    public void setLocalColumns(Set<DataTableColumn> localColumns) {
-        this.localColumns = localColumns;
+    @XmlElementWrapper(name = "columnRelationships")
+    @XmlElement(name = "columnRelationship")
+    public Set<DataTableColumnRelationship> getColumnRelationships() {
+        return columnRelationships;
     }
 
-    public Set<DataTableColumn> getLocalColumns() {
-        if (localColumns == null) {
-            localColumns = new HashSet<DataTableColumn>();
-        }
-        return localColumns;
+    public void setColumnRelationships(Set<DataTableColumnRelationship> columnRelationships) {
+        this.columnRelationships = columnRelationships;
     }
 
-    public void setForeignColumns(Set<DataTableColumn> foreignColumns) {
-        this.foreignColumns = foreignColumns;
-    }
-
-    public Set<DataTableColumn> getForeignColumns() {
-        if (foreignColumns == null) {
-            foreignColumns = new HashSet<DataTableColumn>();
-        }
-        return foreignColumns;
-    }
-
+    @Deprecated
+    /**
+     * @deprecated  Redundant since the DataTableRelationship has columnRelationships
+     *  which link it to DataTables  
+     */
     public void setForeignTable(DataTable foreignTable) {
         this.foreignTable = foreignTable;
     }
 
+    @XmlElement(name = "foreignTableRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    @Deprecated
+    /**
+     * @deprecated  Redundant since the DataTableRelationship has columnRelationships
+     *  which link it to DataTables  
+     */
     public DataTable getForeignTable() {
         return foreignTable;
     }
 
+    @Deprecated
+    /**
+     * @deprecated  Redundant since the DataTableRelationship has columnRelationships
+     *  which link it to DataTables  
+     */
     public void setLocalTable(DataTable localTable) {
         this.localTable = localTable;
     }
 
+    @XmlElement(name = "localTableRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    @Deprecated
+    /**
+     * @deprecated  Redundant since the DataTableRelationship has columnRelationships
+     *  which link it to DataTables  
+     */
     public DataTable getLocalTable() {
         return localTable;
     }
@@ -95,24 +113,31 @@ public class DataTableRelationship extends Persistable.Base {
     public String toString() {
         StringBuilder sb = new StringBuilder(getType().name());
         sb.append(" - ").append(getLocalTable().getName()).append(" (");
-        for (DataTableColumn col : getLocalColumns()) {
-            sb.append(col.getName());
+        for (DataTableColumnRelationship rel : getColumnRelationships()) {
+            sb.append(rel.getLocalColumn().getName());
+            sb.append("<==>");
+            sb.append(rel.getForeignColumn().getName());
+            sb.append(" ");
         }
         sb.append(")");
-        if (getType() == DataTableColumnRelationshipType.FOREIGN_KEY) {
-            sb.append(" <==> ").append(getForeignTable().getName()).append(" (");
-            for (DataTableColumn col : getForeignColumns()) {
-                sb.append(col.getName());
-            }
-            sb.append(")");
-        }
         return sb.toString();
     }
 
+    @Deprecated
+    /**
+     * @deprecated  Redundant since the DataTableRelationship has columnRelationships
+     *  which link it to a Dataset.  
+     */
     public void setDataset(Dataset dataset) {
         this.dataset = dataset;
     }
 
+    @Deprecated
+    /**
+     * @deprecated  Redundant since the DataTableRelationship has columnRelationships
+     *  which link it to a Dataset.  
+     */
+    @XmlTransient
     public Dataset getDataset() {
         return dataset;
     }

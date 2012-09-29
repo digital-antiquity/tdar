@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -17,6 +18,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -33,14 +35,14 @@ import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.bean.resource.dataTable.DataTableColumn;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.dao.resource.OntologyDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
@@ -59,15 +61,14 @@ import org.tdar.utils.Pair;
 @Transactional
 public class OntologyService extends AbstractInformationResourceService<Ontology, OntologyDao> {
 
-    // FIXME: allow all valid characters for ifragments in http://www.ietf.org/rfc/rfc3987.txt ?  
+    // FIXME: allow all valid characters for ifragments in http://www.ietf.org/rfc/rfc3987.txt ?
     // some of these throw errors out from the OWLParser, (e.g., / and ?)
-    // IRI            = scheme ":" ihier-part [ "?" iquery ] [ "#" ifragment ]
-    // ipchar         = iunreserved / pct-encoded / sub-delims / ":"
-    // iunreserved    = ALPHA / DIGIT / "-" / "." / "_" / "~" / ucschar
-    // ifragment      = *( ipchar / "/" / "?" ) 
+    // IRI = scheme ":" ihier-part [ "?" iquery ] [ "#" ifragment ]
+    // ipchar = iunreserved / pct-encoded / sub-delims / ":"
+    // iunreserved = ALPHA / DIGIT / "-" / "." / "_" / "~" / ucschar
+    // ifragment = *( ipchar / "/" / "?" )
     // regex that matches if String contains one or more characters invalid in an IRI
     public final static String IRI_INVALID_CHARACTERS_REGEX = "[^\\w~.-]";
-
     public final static Pattern TAB_PREFIX_PATTERN = Pattern.compile("^(\\t+).*$");
     public static final String SYNONYM_SPLIT_REGEX = ";";
     public final static Pattern SYNONYM_PATTERN = Pattern.compile("^(.+)[\\(\\[](.+)[\\)\\]](.*)$");
@@ -111,14 +112,14 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
     public void testOntologyNodesUnique(ArrayList<String> nodeList) {
         Set<String> uniqueSet = new HashSet<String>(nodeList);
 
-        logger.debug("unique: {} incoming: {}",uniqueSet.size(),nodeList.size());
+        logger.debug("unique: {} incoming: {}", uniqueSet.size(), nodeList.size());
         if (nodeList.size() != uniqueSet.size()) {
             throw new TdarRecoverableRuntimeException(String.format("Ontology node names must be unique, %s incoming %s unique names",
                     nodeList.size(), uniqueSet.size()));
         }
-   
+
     }
-    
+
     /**
      * Parses the OWL file associated with the given Ontology and indexes them
      * in the database.
@@ -148,8 +149,10 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
                 getLogger().debug("had mapped values, reconciling {} with {}", existingOntologyNodes, incomingOntologyNodes);
                 reconcile(existingOntologyNodes, incomingOntologyNodes);
             }
-            delete(existingOntologyNodes);
-            save(incomingOntologyNodes);
+            getDao().removeReferencesToOntologyNodes(existingOntologyNodes);
+            getDao().delete(existingOntologyNodes);
+            getDao().saveOrUpdate(incomingOntologyNodes);
+            logger.debug("existing ontology nodes: {}", ontology.getOntologyNodes());
             ontology.getOntologyNodes().addAll(incomingOntologyNodes);
             // ontology.setOntologyNodes(incomingOntologyNodes);
             owlOntologyManager.removeOntology(parser.getOwlOntology());
@@ -263,7 +266,7 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
                 }
             }
             try {
-                tempFile = File.createTempFile("temp", "xml");
+                tempFile = File.createTempFile("temp", ".xml");
                 FileUtils.writeStringToFile(tempFile, stringWriter.toString());
                 getLogger().trace("{}", stringWriter);
             } catch (IOException e) {
@@ -306,10 +309,10 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
     }
 
     public String labelToFragmentId(String label) {
-	    if (StringUtils.isBlank(label))
-	        return "";
-	    return label.trim().replaceAll(IRI_INVALID_CHARACTERS_REGEX, "_");
-	}
+        if (StringUtils.isBlank(label))
+            return "";
+        return label.trim().replaceAll(IRI_INVALID_CHARACTERS_REGEX, "_");
+    }
 
     /**
      * Returns the number of tabs at the beginning of this string.
@@ -337,6 +340,7 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
     public String toOwlXml(Long ontologyId, String inputString) {
         if (StringUtils.isBlank(inputString))
             return "";
+        
         String startStr = String.format(ONTOLOGY_START_STRING_FORMAT, ontologyId, ontologyId);
 
         // XXX: rough guesstimate that XML verbosity will increase input string
@@ -347,7 +351,7 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
 
         ArrayList<String> parentList = new ArrayList<String>();
         ArrayList<String> nodeList = new ArrayList<String>();
-        
+
         String line;
         BufferedReader reader = new BufferedReader(new StringReader(inputString));
         try {
@@ -415,9 +419,11 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
                 parentList.add(currentDepth, line);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new TdarRecoverableRuntimeException("there was an error processing your ontology");
+        } finally {
+            IOUtils.closeQuietly(reader);
         }
-        
+
         testOntologyNodesUnique(nodeList);
         return builder.append(ONTOLOGY_END_STRING).toString();
     }
@@ -428,38 +434,42 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
      * 
      * @param ontologyNodes
      *            the ontology nodes to be used in the mapping
-     * @param distinctColumnValues
+     * @param codingRules
      * @return
      */
-    public SortedMap<String, List<OntologyNode>> generateSuggestions(List<String> distinctColumnValues, List<OntologyNode> ontologyNodes) {
+    private static final Comparator<Pair<OntologyNode, Integer>> ONTOLOGY_NODE_COMPARATOR = new Comparator<Pair<OntologyNode, Integer>>() {
+        @Override
+        public int compare(Pair<OntologyNode, Integer> a, Pair<OntologyNode, Integer> b) {
+            // Do not use a case insensitive sort here as this will lose elements (Tibia + tibia -> tibia)
+            int comparison = a.getSecond().compareTo(b.getSecond());
+            if (comparison == 0) {
+                return a.getFirst().getDisplayName().compareTo(b.getFirst().getDisplayName());
+            }
+            return comparison;
+        }
+    };
+
+    public SortedMap<String, List<OntologyNode>> applySuggestions(Collection<CodingRule> codingRules, List<OntologyNode> ontologyNodes) {
+        // FIXME: need to figure out if we are going to place the suggestions on the coding rules only or populate the returned Map as well.
         TreeMap<String, List<OntologyNode>> suggestions = new TreeMap<String, List<OntologyNode>>(new Comparator<String>() {
             @Override
             public int compare(String o1, String o2) {
                 if (o1.equalsIgnoreCase(o2)) {
+                    // when two strings are equalsIgnoreCase, we want lowercase before uppercase, so
+                    // reverse the comparison
                     return o2.compareTo(o1);
                 }
                 return String.CASE_INSENSITIVE_ORDER.compare(o1, o2);
             }
         });
-        // Do not use a case insensitive sort here as this will lose elements (Tibia + tibia -> tibia)
-        Comparator<Pair<OntologyNode, Integer>> ontologyNodeComparator = new Comparator<Pair<OntologyNode, Integer>>() {
-            @Override
-            public int compare(Pair<OntologyNode, Integer> a, Pair<OntologyNode, Integer> b) {
-                int comparison = a.getSecond().compareTo(b.getSecond());
-                if (comparison == 0) {
-                    return a.getFirst().getDisplayName().compareTo(b.getFirst().getDisplayName());
-                }
-                return comparison;
-            }
-        };
-        for (String columnValue : distinctColumnValues) {
-            if (StringUtils.isBlank(columnValue)) {
+
+        for (CodingRule codingRule : codingRules) {
+            if (StringUtils.isBlank(codingRule.getTerm())) {
                 getLogger().warn("found blank column value while generating suggestions, shouldn't happen");
                 continue;
             }
-
             List<Pair<OntologyNode, Integer>> rankedOntologyNodes = new ArrayList<Pair<OntologyNode, Integer>>();
-            String normalizedColumnValue = normalize(columnValue);
+            String normalizedColumnValue = normalize(codingRule.getTerm());
             for (OntologyNode ontologyNode : ontologyNodes) {
                 String displayName = ontologyNode.getDisplayName();
                 if (StringUtils.isBlank(displayName)) {
@@ -492,9 +502,11 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
                     }
                 }
             }
-            Collections.sort(rankedOntologyNodes, ontologyNodeComparator);
-            suggestions.put(columnValue, Pair.allFirsts(rankedOntologyNodes));
-            getLogger().trace("{} {}", columnValue, suggestions.get(columnValue));
+            Collections.sort(rankedOntologyNodes, ONTOLOGY_NODE_COMPARATOR);
+            // FIXME: case sensitivity change above
+            codingRule.setSuggestions(Pair.allFirsts(rankedOntologyNodes));
+            suggestions.put(codingRule.getTerm(), codingRule.getSuggestions());
+            getLogger().trace("{} {}", codingRule, codingRule.getSuggestions());
         }
         return suggestions;
     }
@@ -549,24 +561,6 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
         return calculateSimilarity(columnValue, ontologyLabel) != -1;
     }
 
-    public static void sortOntologyNodesByImportOrder(List<OntologyNode> ontologyNodes) {
-        Collections.sort(ontologyNodes, new Comparator<OntologyNode>() {
-            @Override
-            public int compare(OntologyNode o1, OntologyNode o2) {
-                if (!o1.getImportOrder().equals(o2.getImportOrder())) {
-                    return o1.getImportOrder().compareTo(o2.getImportOrder());
-                } else {
-                    return o1.getIndex().compareTo(o2.getIndex());
-                }
-            }
-        });
-    }
-
-    @Autowired
-    public void setDao(OntologyDao dao) {
-        super.setDao(dao);
-    }
-
     public List<OntologyNode> getChildren(List<OntologyNode> allNodes, OntologyNode parent) {
         List<OntologyNode> toReturn = new ArrayList<OntologyNode>();
         for (OntologyNode currentNode : allNodes) {
@@ -586,8 +580,12 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
         return toReturn;
     }
 
-    public int isOntologyMappedToDataTableColumn(DataTableColumn dataTableColumn) {
-        return getDao().getNumberOfMappedDataValuesToDataTableColumn(dataTableColumn);
+    public int getNumberOfMappedDataValues(DataTableColumn dataTableColumn) {
+        return getDao().getNumberOfMappedDataValues(dataTableColumn);
+    }
+
+    public boolean isOntologyMapped(DataTableColumn dataTableColumn) {
+        return getDao().getNumberOfMappedDataValues(dataTableColumn) > 0;
     }
 
 }

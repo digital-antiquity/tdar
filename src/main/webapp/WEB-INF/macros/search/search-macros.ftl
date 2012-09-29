@@ -1,21 +1,48 @@
-<#macro queryField freeTextLabel="Search" showAdvancedLink=true>
+<#macro queryField freeTextLabel="Search" showAdvancedLink=true showLimits=false>
 
 <label for="queryField">${freeTextLabel}:</label>    <@s.textfield id='queryField' name='query' size='81' value="${query!}" cssClass="longfield"/> 
 <#if showAdvancedLink><a style="padding-left:10px" href="<@s.url value="/search/advanced"/>">advanced search</a></#if>
 
-<#nested>
-<#if !showAdvancedLink>
 <br/>
-    <div>
-    <label>Limit by<br/> resource type:</label> 
-    <@resourceTypeLimits />
-    </div>
+		<@s.submit value="Search" />
+<#nested>
+<#if showLimits>
+<br/>
+<@narrowAndSort />
 </#if>
 <br/>
 </#macro>
 
+<#macro narrowAndSort>
+        <h3>Narrow Your Search</h3>
+        <div>
+            <label>Limit by<br/> resource type:</label> 
+            <@resourceTypeLimits />
+        </div>
+
+        <#if editor!false>
+        <h4>Status</h4>
+        <span class="ie8-cbt-hack">
+        <@s.checkboxlist id="myincludedstatuses" name='includedStatuses' list='allStatuses'  listValue='label' numColumns=4 />
+        </span>
+        </#if>
+        
+        <h4>Limit by geographic region:</h4>
+        <div>
+            <div id='large-google-map' style="height:450px;"></div>     
+            <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].maximumLongitude" id="maxx" />
+            <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].minimumLatitude"  id="miny" />
+            <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].minimumLongitude" id="minx" />
+            <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].maximumLatitude"  id="maxy" />
+        </div>
+        
+    <h3>Sorting Options and Submit</h3>
+    <label for="sortField">Sort By:</label>
+     <@search.sortFields />
+    <br/>
+</#macro>
+
 <#macro typeSelected type>
-    <#if searchProjects?? && searchProjects><#return></#if>
     <#if !resourceTypes??>
        <#if type == 'DOCUMENT' || type == 'DATASET'>checked="checked"</#if>
     <#else>
@@ -54,7 +81,9 @@
       <script type='text/javascript'>
       $("#sortField").change(function() {
         var url = window.location.href.replace(/(&+)sortField=([^&]+)/,"");
-        url += "&sortField="+$('#sortField').val();
+        //are we adding a querystring or merely appending a name/value pair, i.e. do we need a '?' or '&'? 
+        var delim = (url.indexOf('?')>=0) ? '&' : '?';
+        url += delim + "sortField="+$('#sortField').val();
         window.location = url;
         });
       </script>
@@ -62,7 +91,20 @@
 </#macro>
 
 
-
+<#macro headerLinks includeRss=false>
+  <meta name="totalResults" content="${totalRecords}" />
+  <meta name="startIndex" content="${startRecord}" />
+  <meta name="itemsPerPage" content="${recordsPerPage}" />
+  <#if includeRss>
+  <link rel="alternate" type="application/atom+xml" title="Atom 1.0" href="${rssUrl}" />
+  </#if>
+  <#if (nextPageStartRecord < totalRecords) >
+	  <link rel="next" href="<@s.url value="" includeParams="all" ><@s.param name="startRecord" value="${nextPageStartRecord}"/></@s.url>"/>
+  </#if>
+  <#if (prevPageStartRecord > 0) >
+	  <link rel="previous" href="<@s.url value="" includeParams="all" ><@s.param name="startRecord" value="${prevPageStartRecord}" /></@s.url>"/>
+  </#if>
+</#macro>
 
 <#macro initResultPagination>
 <#global firstRec = (startRecord + 1) />
@@ -154,4 +196,20 @@
 
 <#macro bcad _year>
   <#if (_year < 0)>BC<#else>AD</#if><#t/>
+</#macro>
+
+
+<#macro basicPagination label="Records">
+<#if (totalRecords > 0 && numPages > 1)>
+  <div class="glide">
+	<div id="recordTotal">${label} ${firstRec} - ${lastRec} of ${totalRecords}
+	</div> 
+	<@pagination ""/> 
+  </div>
+<#elseif (totalRecords > 0)>
+  <div class="glide">
+  Displaying ${label} ${firstRec} - ${totalRecords} of ${totalRecords}
+  </div>
+
+</#if>
 </#macro>

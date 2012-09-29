@@ -7,12 +7,14 @@ import static org.junit.Assert.assertNull;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.StringWriter;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.exceptions.ConfigurationException;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.TestConstants;
@@ -33,6 +35,17 @@ public class JAXBITCase extends AbstractSearchControllerITCase {
         Document document = genericService.find(Document.class, 4232l);
         String xml = xmlService.convertToXML(document);
         logger.info(xml);
+    }
+
+    @Ignore
+    @Test
+    public void testJson() throws Exception {
+        Document document = genericService.find(Document.class, 4232l);
+        StringWriter sw = (StringWriter)xmlService.convertToJSON(document, new StringWriter());
+        logger.info(sw.toString());
+        Project project = genericService.find(Project.class, 3805l);
+        sw = (StringWriter)xmlService.convertToJSON(project, new StringWriter());
+        logger.info(sw.toString());
     }
 
     @Test

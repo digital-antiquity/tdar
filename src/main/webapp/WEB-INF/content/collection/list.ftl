@@ -3,7 +3,7 @@
 
 <head>
 <title><#if collection??>${collection.name}<#else>All Collections</#if></title>
-</head>
+ </head>
 <body>
 <#if collection??>
 <p>${collection.description!""}</p>
@@ -15,7 +15,7 @@
   </#list>
 </ul>
 <#if collection??>
-<@list.listResources results collection.sortBy  />
+  <@list.listResources resourcelist=results sortfield=collection.sortBy />
 </#if>
 </body>
 </#escape>

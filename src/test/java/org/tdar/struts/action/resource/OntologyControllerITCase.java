@@ -1,15 +1,20 @@
 package org.tdar.struts.action.resource;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 
 import org.apache.commons.io.IOUtils;
@@ -17,17 +22,23 @@ import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.core.bean.resource.DataValueOntologyNodeMapping;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.tdar.core.bean.resource.CodingRule;
+import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
+import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
-import org.tdar.core.bean.resource.dataTable.DataTable;
-import org.tdar.core.bean.resource.dataTable.DataTableColumn;
-import org.tdar.core.bean.resource.dataTable.DataTableColumnType;
+import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
+import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.core.service.resource.OntologyService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.utils.Pair;
 
 /**
  * $Id$
@@ -58,7 +69,7 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
     @Test
     @Rollback
     public void testControllerLoadsTabText() throws Exception {
-        controller = super.generateNewInitializedController(OntologyController.class);
+        controller = generateNewInitializedController(OntologyController.class);
         controller.prepare();
         Ontology ont = controller.getOntology();
         ont.setTitle("test ontology for ordering");
@@ -68,6 +79,7 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
         assertNotNull("input should be the same", ontText);
         controller.setFileInputMethod("text");
         controller.setFileTextInput(ontText);
+        controller.setServletRequest(getServletPostRequest());
         controller.save();
         Long id = ont.getId();
         controller = generateNewInitializedController(OntologyController.class);
@@ -78,6 +90,7 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
         controller.loadCustomMetadata();
         controller.setFileInputMethod("text");
         assertEquals(ontText, controller.getFileTextInput());
+        controller.setServletRequest(getServletPostRequest());
         controller.save();
         assertEquals("versions should be the same", currentVersions, controller.getResource().getLatestVersions());
         controller = generateNewInitializedController(OntologyController.class);
@@ -87,6 +100,7 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
         controller.loadCustomMetadata();
         controller.setFileInputMethod("text");
         controller.setFileTextInput(controller.getFileTextInput() + "a");
+        controller.setServletRequest(getServletPostRequest());
         controller.save();
         assertFalse("versions should not be the same", currentVersions.equals(controller.getResource().getLatestVersions()));
     }
@@ -111,53 +125,74 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
     }
 
     @Test
-    @Rollback
+    @Rollback(false)
     public void testMappedOntologyUpdate() throws Exception {
         String ontText = IOUtils.toString(getClass().getResourceAsStream(TAB_ONTOLOGY_FILE));
-        int originalFileLength = ontText.split("([\r\n]+)").length;
-        Long id = loadOntologyFromText(ontText);
+        final int originalFileLength = ontText.split("([\r\n]+)").length;
+        final Long id = loadOntologyFromText(ontText);
         Ontology ont = ontologyService.find(id);
         logger.debug(ont.getTitle());
-        List<OntologyNode> ontologyNodes = new ArrayList<OntologyNode>(ont.getOntologyNodes());
+        final List<OntologyNode> ontologyNodes = new ArrayList<OntologyNode>(ont.getOntologyNodes());
         assertNotNull(ontologyNodes);
-        logger.info("{}", ontologyNodes);
-        setupMappingsForTest(ontologyNodes);
-        Collection<InformationResourceFileVersion> latestVersions = ont.getLatestVersions();
+        logger.info("ontology nodes: {}", ontologyNodes);
+        final Pair<Dataset,CodingSheet> returned = setupMappingsForTest(ont);
+        final CodingSheet generatedSheet = returned.getSecond();
+        final Collection<InformationResourceFileVersion> latestVersions = ont.getLatestVersions();
         controller = super.generateNewInitializedController(OntologyController.class);
         controller.setId(id);
         controller.prepare();
         ont = controller.getOntology();
         ontText = IOUtils.toString(getClass().getResourceAsStream(UPDATED_TAB_ONTOLOGY_FILE));
-        int updatedFileLength = ontText.split("([\r\n]+)").length;
+        final int updatedFileLength = ontText.split("([\r\n]+)").length;
         assertNotNull(ontText);
         controller.setFileInputMethod("text");
         controller.setFileTextInput(ontText);
+        controller.setServletRequest(getServletPostRequest());
         controller.save();
-        ont = ontologyService.find(id);
-        logger.debug(ont.getTitle());
-        List<OntologyNode> updatedOntologyNodes = ont.getOntologyNodes();
-        logger.debug("previous ontology nodes: " + ontologyNodes);
-        logger.debug("updated ontology nodes: " + updatedOntologyNodes);
-        Map<String, OntologyNode> displayNameToNode = new HashMap<String, OntologyNode>();
-        Map<String, OntologyNode> updatedDisplayNameToNode = new HashMap<String, OntologyNode>();
-        for (OntologyNode node : ontologyNodes) {
-            displayNameToNode.put(node.getDisplayName(), node);
-        }
-        for (OntologyNode updatedNode : updatedOntologyNodes) {
-            updatedDisplayNameToNode.put(updatedNode.getDisplayName(), updatedNode);
-        }
-        getLogger().debug("displayNameToNode: " + displayNameToNode);
-        getLogger().debug("updatedDisplayNameToNode: " + updatedDisplayNameToNode);
-        logger.info(ontologyNodes.size() + " (" + originalFileLength + ")" + " - " + updatedOntologyNodes.size() + " (" + updatedFileLength + ")");
-        assertEquals("original file matches same number of parsed ontologyNodes", originalFileLength, ontologyNodes.size());
-        assertEquals("updated file matches same number of parsed ontologyNodes", updatedFileLength, updatedOntologyNodes.size());
-        assertSame("Original id was transferred for exact match",
-                displayNameToNode.get("Tool").getId(),
-                updatedDisplayNameToNode.get("Tool").getId());
-        assertSame("Original id was transferred for exact match",
-                displayNameToNode.get("Core").getId(), updatedDisplayNameToNode.get("Core").getId());
-        assertThat(displayNameToNode.get("Other Tool").getImportOrder(), is(not(updatedDisplayNameToNode.get("Unknown Tool").getImportOrder())));
-        assertFalse(latestVersions.equals(ont.getLatestUploadedVersions()));
+        setVerifyTransactionCallback(new TransactionCallback<Object>() {
+            @Override
+            public Object doInTransaction(TransactionStatus status) {
+                Ontology ont = ontologyService.find(id);
+                logger.debug(ont.getTitle());
+                List<OntologyNode> updatedOntologyNodes = ont.getOntologyNodes();
+                logger.debug("previous ontology nodes: {}", ontologyNodes);
+                logger.debug("updated ontology nodes: {}", updatedOntologyNodes);
+                assertFalse(new TreeSet<OntologyNode>(updatedOntologyNodes).equals(new TreeSet<OntologyNode>(ontologyNodes)));
+                Map<String, OntologyNode> displayNameToNode = new HashMap<String, OntologyNode>();
+                Map<String, OntologyNode> updatedDisplayNameToNode = new HashMap<String, OntologyNode>();
+                for (OntologyNode node : ontologyNodes) {
+                    displayNameToNode.put(node.getDisplayName(), node);
+                }
+                for (OntologyNode updatedNode : updatedOntologyNodes) {
+                    updatedDisplayNameToNode.put(updatedNode.getDisplayName(), updatedNode);
+                }
+                getLogger().debug("displayNameToNode: {}", displayNameToNode);
+                getLogger().debug("updatedDisplayNameToNode: {}", updatedDisplayNameToNode);
+                logger.info(ontologyNodes.size() + " (" + originalFileLength + ")" + " - " + updatedOntologyNodes.size() + " (" + updatedFileLength + ")");
+                assertEquals("original file matches same number of parsed ontologyNodes", originalFileLength, ontologyNodes.size());
+                assertEquals("updated file matches same number of parsed ontologyNodes", updatedFileLength, updatedOntologyNodes.size());
+                assertEquals("Original id was transferred for exact match",
+                        displayNameToNode.get("Tool").getId(),
+                        updatedDisplayNameToNode.get("Tool").getId());
+                assertEquals("Original id was transferred for exact match",
+                        displayNameToNode.get("Core").getId(), updatedDisplayNameToNode.get("Core").getId());
+                assertThat(displayNameToNode.get("Other Tool").getImportOrder(), is(not(updatedDisplayNameToNode.get("Unknown Tool").getImportOrder())));
+                assertFalse(latestVersions.equals(ont.getLatestUploadedVersions()));
+                assertEquals("Uploading new ontology didn't preserve coding rule -> ontology node references properly", ont.getNodeByName("Tool"), generatedSheet.getCodingRuleByCode("Tool").getOntologyNode());
+
+                for (InformationResourceFile file : ont.getInformationResourceFiles()) {
+                    for (InformationResourceFileVersion version : file.getInformationResourceFileVersions()) {
+                        genericService.delete(version);
+                    }
+                    genericService.delete(file);
+                }
+                genericService.forceDelete(returned.getFirst());
+                genericService.forceDelete(generatedSheet);
+                genericService.forceDelete(ont);
+                return null;
+            }
+        });
+
     }
 
     private Long loadOntologyFromText(String ontText) throws TdarActionException {
@@ -170,13 +205,14 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
         assertNotNull(ontText);
         controller.setFileInputMethod("text");
         controller.setFileTextInput(ontText);
+        controller.setServletRequest(getServletPostRequest());
         controller.save();
         Long id = ont.getId();
         return id;
     }
 
     @Test
-    @Rollback(true)
+    @Rollback
     public void testUnMappedOntologyUpdate() throws Exception {
         controller = super.generateNewInitializedController(OntologyController.class);
         controller.prepare();
@@ -188,6 +224,7 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
         assertNotNull(ontText);
         controller.setFileInputMethod("text");
         controller.setFileTextInput(ontText);
+        controller.setServletRequest(getServletPostRequest());
         controller.save();
         Long id = ont.getId();
         ont = ontologyService.find(id);
@@ -205,6 +242,7 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
         assertNotNull(ontText);
         controller.setFileInputMethod("text");
         controller.setFileTextInput(ontText);
+        controller.setServletRequest(getServletPostRequest());
         controller.save();
         ont = ontologyService.find(id);
         logger.debug(ont.getTitle());
@@ -229,10 +267,12 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
         assertThat(displayNameToNode.get("Other Tool").getImportOrder(), is(not(updatedDisplayNameToNode.get("Unknown Tool").getImportOrder())));
     }
 
-    public void setupMappingsForTest(List<OntologyNode> ontologyNodes) {
+    public Pair<Dataset,CodingSheet> setupMappingsForTest(Ontology ontology) {
         // create dataset
         Dataset dataset = new Dataset();
         dataset.setTitle("test");
+        dataset.setDate(2134);
+        dataset.setDescription("test");
         dataset.markUpdated(getUser());
         genericService.save(dataset);
         // create data table
@@ -245,22 +285,33 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
         dataTableColumn.setName("test");
         dataTableColumn.setDisplayName("test");
         dataTableColumn.setColumnDataType(DataTableColumnType.VARCHAR);
+        dataTableColumn.setColumnEncodingType(DataTableColumnEncodingType.UNCODED_VALUE);
         dataTableColumn.setDataTable(dataTable);
         genericService.save(dataTableColumn);
+        dataTable.getDataTableColumns().add(dataTableColumn);
+        dataset.getDataTables().add(dataTable);
+        // FIXME: this won't work since it expects the DataTableColumn to be a real column with data in the data import db
+//        CodingSheet codingSheet = dataIntegrationService.createGeneratedCodingSheet(dataTableColumn, getUser(), ontology);
+        CodingSheet codingSheet = new CodingSheet();
+        codingSheet.setTitle("generated coding sheet for test column");
+        codingSheet.setDescription("system generated identity coding sheet");
+        codingSheet.markUpdated(getUser());
+        codingSheet.setGenerated(true);
+        codingSheet.setDefaultOntology(ontology);
+        dataTableColumn.setDefaultCodingSheet(codingSheet);
+        genericService.save(codingSheet);
+        genericService.save(dataTableColumn);
         // create mapping
-        DataValueOntologyNodeMapping dataValueOntologyNodeMapping = new DataValueOntologyNodeMapping();
-        dataValueOntologyNodeMapping.setDataTableColumn(dataTableColumn);
-        dataValueOntologyNodeMapping.setDataValue("Tool");
-        dataValueOntologyNodeMapping.setOntologyNode(ontologyNodes.get(0));
-        genericService.save(dataValueOntologyNodeMapping);
-        HashSet<DataValueOntologyNodeMapping> mappings = new HashSet<DataValueOntologyNodeMapping>();
-        mappings.add(dataValueOntologyNodeMapping);
-        ontologyNodes.get(0).setDataValueOntologyNodeMappings(mappings);
-        genericService.save(ontologyNodes);
+        OntologyNode toolNode = ontology.getNodeByName("Tool");
+        CodingRule rule = new CodingRule(codingSheet, "Tool");
+        rule.setOntologyNode(toolNode);
+        genericService.save(rule);
+        codingSheet.getCodingRules().add(rule);
+        return Pair.create(dataset, codingSheet);
     }
 
     @Test
-    @Rollback(true)
+    @Rollback
     public void createOntologyOrderTest() throws Exception {
         controller = super.generateNewInitializedController(OntologyController.class);
         controller.prepare();
@@ -272,15 +323,15 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
         assertNotNull(ontText);
         controller.setFileInputMethod("text");
         controller.setFileTextInput(ontText);
+        controller.setServletRequest(getServletPostRequest());
         controller.save();
         Long id = ont.getId();
         ont = ontologyService.find(id);
         logger.debug(ont.getTitle());
         String[] split = ontText.split("[\\r|\\n+]");
-        List<OntologyNode> ontologyNodes = ont.getOntologyNodes();
+        List<OntologyNode> ontologyNodes = ont.getSortedOntologyNodesByImportOrder();
         assertNotNull(ontologyNodes);
-        OntologyService.sortOntologyNodesByImportOrder(ontologyNodes);
-        logger.trace("{}", ont.getOntologyNodes());
+        logger.trace("{}", ontologyNodes);
         int i = 0;
         for (String line : split) {
             if (!StringUtils.isBlank(line)) {

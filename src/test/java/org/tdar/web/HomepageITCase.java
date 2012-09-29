@@ -7,12 +7,13 @@
 package org.tdar.web;
 
 import org.junit.Test;
+import org.tdar.core.configuration.TdarConfiguration;
 
 
 public class HomepageITCase extends AbstractAnonymousWebTestCase {
 
 	@Test
-	public void testSuccessfulLogin() throws Exception {
-		assertTextPresentInPage("the Digital Archaeological Record");
+	public void testSuccessfulHomepageLoad() throws Exception {
+		assertTextPresentInPage(TdarConfiguration.getInstance().getSiteName());
 	}
 }

@@ -14,32 +14,18 @@
 
 <@s.form name='sensoryDataForm' id='frmSensoryData' method='post' action='save' enctype='multipart/form-data'>
 
-<@edit.basicInformation>
-    <@s.textfield maxLength=255 labelposition='left' id="resourceRegistrationTitle" label='Title' 
-        title="The name of this Object / Monument." name='sensoryData.title' cssClass="required descriptiveTitle longfield" required=true maxlength="512"    />
+<@edit.basicInformation "sensory object" "sensoryData">
     <br/>
-         <#assign dateVal = ""/>
-       <#if sensoryData.date?? && sensoryData.date != -1>
-         <#assign dateVal = sensoryData.date?c />
-      </#if>
-        <@s.textfield maxLength=255 labelposition='left' id='dateCreated' label='Year' name='sensoryData.date' value="${dateVal}" cssClass="shortfield reasonableDate required" required=true 
-         title="Please enter the year this sensory object was created" />
-
-    <br />
-    
     <span tiplabel="Object / Monument Number" tooltipcontent="The ID number or code, if applicable, of the object or monument">
+    
         <@s.textfield maxLength=255 name="sensoryData.monumentNumber" cssClass="reallylongfield" label="Object / Monument #" labelposition="top" />
     </span>
-    <br />
-    <span tiplabel="Abstract / Description" tooltipcontent="Brief description of the monument/object being scanned">
-    <@s.textarea label='Abstract / Description' labelposition='top' id="resourceRegistrationDescription" rows='5' maxlength=100 title="A description is required" name='sensoryData.description' 
-        cssClass="resizable required" required=true />
-    </span>
 </@edit.basicInformation>
+<@edit.citationInfo "sensoryData" />
 
 <@edit.asyncFileUpload "Sensory Data Files" true />
 
-<@edit.resourceCreators 'Sensory Data Creators' authorshipProxies 'authorship' />
+<@edit.allCreators 'Sensory Data Creators' authorshipProxies 'authorship' />
 
 
 <div class="glide" id="divSurveyInfo">
@@ -66,7 +52,7 @@
     <br />
     <span tiplabel="Company / Operator Name" tooltipcontent="Details of company and scan operator name"><@s.textfield maxLength=255 name="sensoryData.companyName" cssClass="longfield" label="Company Name" labelposition="left" /></span>
     <br />
-    <span tiplabel="Estimated Data Resolution" tooltipcontent="The estimated data resolution across the monument or object"><@s.textfield maxLength=255 name="sensoryData.estimatedDataResolution" cssClass="shortfield" label="Data Resolution" labelposition="left" /></span>
+    <span tiplabel="Estimated Data Resolution" tooltipcontent="The estimated data resolution across the monument or object"><@s.textfield maxLength=255 name="sensoryData.estimatedDataResolution" cssClass="shortfield number" label="Data Resolution" labelposition="left" /></span>
     <span tiplabel="Total Number of Scans in Project" tooltipcontent="Total number of scans"><@s.textfield maxLength=255 name="sensoryData.totalScansInProject" cssClass="right-shortfield number" label="# Scans" labelposition="left" /></span>
     <br />
     <span tiplabel="Turntable used" tooltipcontent="Check this box if a turntable was used for this survey.">
@@ -90,7 +76,7 @@
     </div>
     <br />
     <span tiplabel="Description of Final Datasets for Archive" tooltipcontent="What datasets will be archived (include file names if possible).">
-        <@s.textarea name="sensoryData.finalDatasetDescription" cssClass="resizable" label="Description of Final Datasets for Archive" labelposition="top" rows="5"  />
+        <@s.textarea name="sensoryData.finalDatasetDescription" cssClass="resizable" label="Description of Final Datasets for Archive" labelposition="top" rows="5" />
     </span>
 
 </div>
@@ -122,7 +108,7 @@
                 </#if>
                 <span tiplabel="Scan Date" tooltipcontent="Date the object/monument was scanned"><@s.textfield maxLength=255    name="sensoryDataScans[${_scan_index}].scanDate" value="${_scanDate}" watermark="mm/dd/yyyy" cssClass="watermarked  date" /> </span>
                 <span tiplabel="Data Resolution"  tooltipcontent="Fixed resolution or data resolution at specific range.">
-                    <@s.textfield maxLength=255    name="sensoryDataScans[${_scan_index}].resolution" watermark="Resolution" cssClass="watermarked" />
+                    <@s.textfield maxLength=255    name="sensoryDataScans[${_scan_index}].resolution" watermark="Resolution" cssClass="watermarked number" />
                 </span>
                 <span tiplabel="Number of Points in Scan" tooltipcontent="Number of points generated in scan"><@s.textfield maxLength=255    name="sensoryDataScans[${_scan_index}].pointsInScan" watermark="# points" cssClass="watermarked shortfield number" /></span>
           </div>
@@ -312,7 +298,7 @@
 </div>
 
 
-<@edit.sharedFormComponents />
+<@edit.sharedFormComponents prefix="sensoryData"/>
 
 
 </@s.form>

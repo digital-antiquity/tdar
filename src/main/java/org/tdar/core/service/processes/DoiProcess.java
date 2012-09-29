@@ -3,29 +3,26 @@ package org.tdar.core.service.processes;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.client.ClientProtocolException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.bean.util.ScheduledProcess;
-import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.bean.util.ScheduledBatchProcess;
 import org.tdar.core.dao.ExternalIDProvider;
-import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.resource.DatasetDao;
-import org.tdar.core.service.AbstractConfigurableService;
+import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.utils.Pair;
 
 @Component
-public class DoiProcess extends AbstractConfigurableService<ExternalIDProvider> implements ScheduledProcess<InformationResource> {
+public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
 
     private static final long serialVersionUID = 6004534173920064945L;
 
@@ -39,15 +36,10 @@ public class DoiProcess extends AbstractConfigurableService<ExternalIDProvider> 
     @Autowired
     private DatasetDao datasetDao;
     @Autowired
-    private GenericDao genericDao;
-    @Autowired
     private EmailService emailService;
 
+    private List<ExternalIDProvider> allServices;
     private Map<String, List<Pair<Long, String>>> batchResults = new HashMap<String, List<Pair<Long, String>>>();
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
-    private transient Long lastId = -1L;
 
     public DoiProcess() {
         initializeBatchResults();
@@ -59,14 +51,6 @@ public class DoiProcess extends AbstractConfigurableService<ExternalIDProvider> 
         batchResults.put(CREATED, new ArrayList<Pair<Long, String>>());
     }
 
-    public ExternalIDProvider getIdProvider() {
-        return getProvider();
-    }
-
-    public boolean isConfigured() {
-        return true;
-    }
-
     public String getDisplayName() {
         return "DOI Update Process";
     }
@@ -75,34 +59,35 @@ public class DoiProcess extends AbstractConfigurableService<ExternalIDProvider> 
         return InformationResource.class;
     }
 
-    public List<Long> getPersistableIdQueue() {
+    @Override
+    public List<Long> findAllIds() {
         return datasetDao.findRecentlyUpdatedItemsInLastXDaysForExternalIdLookup(2);
     }
 
-    public void processBatch(List<Long> ids) throws ClientProtocolException, IOException {
-        // FIXME: can this guard go into isConfigured instead?
-        ExternalIDProvider idProvider = getIdProvider();
-        if (idProvider == null || !idProvider.isConfigured()) {
-            return;
+    @Override
+    public void execute() {
+        ExternalIDProvider idProvider = getProvider();
+//        if (idProvider == null || !idProvider.isConfigured()) {
+//            return;
+//        }
+        try {
+            idProvider.connect();
+            processBatch(getNextBatch());
+            idProvider.logout();
+        } catch (IOException e) {
+            logger.error("connection issues with idProvider " + idProvider, e);
+            throw new TdarRuntimeException(e);
         }
-        getProvider().connect();
-        for (InformationResource resource : genericDao.findAll(getPersistentClass(), ids)) {
-            try {
-                process(resource);
-            } catch (Exception e) {
-                logger.error("Error while creating a DOI for resource " + resource, e);
-            }
-        }
-        getIdProvider().logout();
     }
 
+    @Override
     public void process(InformationResource resource) throws Exception {
         ExternalIDProvider idProvider = getProvider();
         if (resource.getStatus() == Status.ACTIVE) {
             if (StringUtils.isEmpty(resource.getExternalId())) {
                 Map<String, String> createdIds = idProvider.create(resource, urlService.absoluteUrl(resource));
                 resource.setExternalId(createdIds.get(DOI_KEY));
-                genericDao.saveOrUpdate(resource);
+                datasetDao.saveOrUpdate(resource);
                 batchResults.get(CREATED).add(new Pair<Long, String>(resource.getId(), resource.getExternalId()));
             } else {
                 idProvider.modify(resource, urlService.absoluteUrl(resource), resource.getExternalId());
@@ -117,7 +102,8 @@ public class DoiProcess extends AbstractConfigurableService<ExternalIDProvider> 
         }
     }
 
-    public void cleanup() {
+    @Override
+    protected void batchCleanup() {
         StringBuilder sb = new StringBuilder();
         long total = 0;
         if (batchResults != null) {
@@ -130,37 +116,46 @@ public class DoiProcess extends AbstractConfigurableService<ExternalIDProvider> 
         }
         if (sb.length() > 0 && total > 0) {
             logger.info("sending email");
-            emailService.send(sb.toString(), "tDAR: DOI Creation Info", TdarConfiguration.getInstance().getSystemAdminEmail());
+            emailService.send(sb.toString(), "tDAR: DOI Creation Info");
         }
         batchResults.clear();
         initializeBatchResults();
-    }
-
-    @Override
-    public boolean isShouldRunOnce() {
-        return false;
-    }
-
-    public String toString() {
-        return getDisplayName();
-    }
-
-    @Override
-    public Long getLastId() {
-        return lastId;
-    }
-
-    @Override
-    public void setLastId(Long lastId) {
-        this.lastId = lastId;
     }
 
     public Map<String, List<Pair<Long, String>>> getBatchResults() {
         return batchResults;
     }
 
+    public List<ExternalIDProvider> getAllServices() {
+        return allServices;
+    }
+
+    @Autowired
+    public void setAllServices(List<ExternalIDProvider> providers) {
+        allServices = providers;
+        Iterator<ExternalIDProvider> iterator = allServices.iterator();
+        while (iterator.hasNext()) {
+            ExternalIDProvider provider = iterator.next();
+            if (provider.isConfigured()) {
+                logger.debug("enabling {} provider: {} will use first", getClass().getSimpleName(), provider.getClass().getSimpleName());
+            } else {
+                logger.debug("disabling unconfigured {} provider: {}", getClass().getSimpleName(), provider.getClass().getSimpleName());
+                iterator.remove();
+            }
+        }
+    }
+
+    public ExternalIDProvider getProvider() {
+        if (CollectionUtils.isEmpty(allServices)) {
+            logger.warn("no available provider found for DoiProcess");
+            return null;
+        }
+        return allServices.get(0);
+    }
+
     @Override
-    public int getBatchSize() {
-        return TdarConfiguration.getInstance().getScheduledProcessBatchSize();
+    public boolean isEnabled() {
+        ExternalIDProvider idProvider = getProvider();
+        return idProvider != null && idProvider.isConfigured();
     }
 }

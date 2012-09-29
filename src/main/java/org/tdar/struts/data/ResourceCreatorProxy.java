@@ -1,7 +1,10 @@
 package org.tdar.struts.data;
 
+import javax.persistence.Transient;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.Institution;
@@ -45,11 +48,11 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
             this.institution = (Institution) creator;
             this.institutionRole = role;
         }
-        resolveResourceCreator();
     }
 
     public ResourceCreatorProxy(ResourceCreator rc) {
         this.resourceCreator = rc;
+        initialized = true;
         if (rc.getCreator() instanceof Person) {
             this.person = (Person) rc.getCreator();
             this.personRole = rc.getRole();
@@ -57,12 +60,10 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
             this.institution = (Institution) rc.getCreator();
             this.institutionRole = rc.getRole();
         }
-        // FIXME: should continue to refactor to avoid duplicate checks on person/institution in resolveResourceCreator
-        // in this case
-        resolveResourceCreator();
     }
 
-    public ResourceCreator resolveResourceCreator() {
+    //properly set the state of the resourceCreator field by determining if the proxy represents a person or an institution
+    private void resolveResourceCreator() {
         if (!initialized) {
             if (getActualCreatorType() == CreatorType.PERSON) {
                 resourceCreator.setCreator(person);
@@ -80,7 +81,6 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
             }
             initialized = true;
         }
-        return resourceCreator;
     }
 
     public Person getPerson() {
@@ -100,11 +100,8 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
     }
 
     public ResourceCreator getResourceCreator() {
+        if(!initialized) resolveResourceCreator();
         return resourceCreator;
-    }
-
-    public void setResourceCreator(ResourceCreator resourceCreator) {
-        this.resourceCreator = resourceCreator;
     }
 
     public CreatorType getActualCreatorType() {

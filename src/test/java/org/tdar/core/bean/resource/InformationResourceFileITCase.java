@@ -6,11 +6,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -18,7 +20,6 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFile.FileType;
-import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
 import org.tdar.core.service.resource.InformationResourceFileService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
@@ -66,18 +67,19 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
         InformationResourceFile irFile = ir.getInformationResourceFiles().iterator().next();
         assertNotNull("IrFile is null", irFile);
         assertEquals(1, irFile.getLatestVersion().intValue());
-        assertEquals(irFile.getLatestVersions().size(), 5);
+        assertEquals(irFile.getLatestVersions().size(), 6);
         InformationResourceFileVersion irFileVersion = irFile.getLatestVersions().iterator().next();
         assertNotNull("IrFileVersion is null", irFileVersion);
         assertEquals(1, irFile.getLatestVersion().intValue());
 
         assertEquals(irFile.getInformationResourceFileType(), FileType.DOCUMENT);
 
-        Map<VersionType, InformationResourceFileVersion> map = new HashMap<InformationResourceFileVersion.VersionType, InformationResourceFileVersion>();
+        Map<VersionType, InformationResourceFileVersion> map = new HashMap<VersionType, InformationResourceFileVersion>();
         for (InformationResourceFileVersion irfv : irFile.getInformationResourceFileVersions()) {
             map.put(irfv.getFileVersionType(), irfv);
         }
         assertTrue(map.containsKey(VersionType.UPLOADED));
+        assertTrue(map.containsKey(VersionType.METADATA));
         assertTrue(map.containsKey(VersionType.WEB_LARGE));
         assertTrue(map.containsKey(VersionType.WEB_MEDIUM));
         assertTrue(map.containsKey(VersionType.WEB_SMALL));
@@ -86,6 +88,22 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
         assertEquals(map.get(VersionType.UPLOADED).getFilename(), TestConstants.TEST_DOCUMENT_NAME);
     }
 
+    @Test
+    @Rollback(true)
+    public void testIndexableTextExtractionInPDF() throws InstantiationException, IllegalAccessException, IOException {
+        InformationResource ir = generateInformationResourceWithFileAndUser();
+        List<Long> irfvids = new ArrayList<Long>();
+        InformationResourceFile irFile = ir.getInformationResourceFiles().iterator().next();
+        Map<VersionType, InformationResourceFileVersion> map = new HashMap<VersionType, InformationResourceFileVersion>();
+        for (InformationResourceFileVersion irfv : irFile.getInformationResourceFileVersions()) {
+            map.put(irfv.getFileVersionType(), irfv);
+            irfvids.add(irfv.getId());
+        }
+        assertTrue(map.containsKey(VersionType.INDEXABLE_TEXT));
+        InformationResourceFileVersion fileVersion = map.get(VersionType.INDEXABLE_TEXT);
+        String text = FileUtils.readFileToString(fileVersion.getFile());
+        assertTrue(text.contains("Tree-Ring Research, University of Arizona, Tucson"));
+    }
     
     @Test
     @Rollback(true)
@@ -96,18 +114,19 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
         InformationResourceFile irFile = ir.getInformationResourceFiles().iterator().next();
         assertNotNull("IrFile is null", irFile);
         assertEquals(1, irFile.getLatestVersion().intValue());
-        assertEquals(irFile.getLatestVersions().size(), 5);
+        assertEquals(6, irFile.getLatestVersions().size());
         InformationResourceFileVersion irFileVersion = irFile.getLatestVersions().iterator().next();
         assertNotNull("IrFileVersion is null", irFileVersion);
         assertEquals(1, irFile.getLatestVersion().intValue());
 
         assertEquals(irFile.getInformationResourceFileType(), FileType.DOCUMENT);
         List<Long> irfvids = new ArrayList<Long>();
-        Map<VersionType, InformationResourceFileVersion> map = new HashMap<InformationResourceFileVersion.VersionType, InformationResourceFileVersion>();
+        Map<VersionType, InformationResourceFileVersion> map = new HashMap<VersionType, InformationResourceFileVersion>();
         for (InformationResourceFileVersion irfv : irFile.getInformationResourceFileVersions()) {
             map.put(irfv.getFileVersionType(), irfv);
             irfvids.add(irfv.getId());
         }
+        assertTrue(map.containsKey(VersionType.METADATA));
         assertTrue(map.containsKey(VersionType.UPLOADED));
         assertTrue(map.containsKey(VersionType.WEB_LARGE));
         assertTrue(map.containsKey(VersionType.WEB_MEDIUM));
@@ -118,8 +137,8 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
 
         genericService.synchronize();
         informationResourceService.reprocessInformationResourceFiles(ir.getInformationResourceFiles());
-    
-        map = new HashMap<InformationResourceFileVersion.VersionType, InformationResourceFileVersion>();
+
+        map = new HashMap<VersionType, InformationResourceFileVersion>();
         for (InformationResourceFileVersion irfv : irFile.getInformationResourceFileVersions()) {
             logger.debug("version: {}", irfv);
             map.put(irfv.getFileVersionType(), irfv);
@@ -139,7 +158,6 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
 
     }
 
-    
     @Test
     @Rollback(true)
     public void testDeleteInformationResourceFile() throws InstantiationException, IllegalAccessException {

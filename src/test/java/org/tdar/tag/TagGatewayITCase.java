@@ -13,8 +13,11 @@ import javax.xml.namespace.QName;
 import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractWithIndexIntegrationTestCase;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.tag.Query.What;
 import org.tdar.tag.Query.When;
@@ -29,16 +32,26 @@ public class TagGatewayITCase extends AbstractWithIndexIntegrationTestCase {
     private static final String SERVICE_NAME = "TagGatewayService";
     private TagGatewayPort port;
 
+    @Autowired
+    TagGateway gateway;
+
     @Before
     public void setupServiceClient() throws MalformedURLException {
-
-        TagGatewayService service = new TagGatewayService(
-                new URL(WSDL_LOCATION),
-                new QName(SERVICE_NAMESPACE, SERVICE_NAME));
-        port = service.getTagGateway();
+        getSearchIndexService().indexAll(Resource.class);
+        // use this to run the TAG Gateway with a direct connection, not a socket connection
+        boolean runLocal = false;
+        if (!runLocal) {
+            TagGatewayService service = new TagGatewayService(
+                    new URL(WSDL_LOCATION),
+                    new QName(SERVICE_NAMESPACE, SERVICE_NAME));
+            port = service.getTagGateway();
+        } else {
+            port = gateway;
+        }
     }
 
     @Test
+    @Rollback(true)
     public void testGetVersion() {
         assertEquals("0.8", port.getVersion());
     }
@@ -48,6 +61,7 @@ public class TagGatewayITCase extends AbstractWithIndexIntegrationTestCase {
      * so it doesn't really matter what the stylesheet does.
      */
     @Test
+    @Rollback(true)
     public void testGetXsltTemplate() {
         GetXsltTemplate params = new GetXsltTemplate();
         GetXsltTemplateResponse resp = port.getXsltTemplate(params);
@@ -56,7 +70,8 @@ public class TagGatewayITCase extends AbstractWithIndexIntegrationTestCase {
     }
 
     @Test
-    public void testGetTopRecords() {
+    @Rollback(true)
+    public void getTopRecords() {
 
         SearchResults results;
         Meta meta;
@@ -69,7 +84,7 @@ public class TagGatewayITCase extends AbstractWithIndexIntegrationTestCase {
         results = port.getTopRecords(sessionId, query, 5);
         meta = results.getMeta();
         assertEquals(sessionId, meta.getSessionID());
-        assertTrue(meta.getTotalRecords() > 0); //we are absolutely 100% positive that there are maybe some records that should come back.
+        assertTrue(meta.getTotalRecords() > 0); // we are absolutely 100% positive that there are maybe some records that should come back.
         assertEquals(5, results.getResults().getResult().size());
 
         What domestic = new What();
@@ -123,6 +138,7 @@ public class TagGatewayITCase extends AbstractWithIndexIntegrationTestCase {
     }
 
     @Test
+    @Rollback(true)
     public void testSubjectType() {
         SubjectType type = SubjectType.valueOf("GARDENS_PARKS_AND_URBAN_SPACES");
         assertEquals(SubjectType.GARDENS_PARKS_AND_URBAN_SPACES, type);

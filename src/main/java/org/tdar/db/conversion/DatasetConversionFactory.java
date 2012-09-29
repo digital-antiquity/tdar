@@ -1,9 +1,9 @@
 package org.tdar.db.conversion;
 
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.service.workflow.GenericColumnarDataWorkflow;
 import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.db.model.abstracts.TargetDatabase;
-import org.tdar.filestore.workflows.GenericColumnarDataWorkflow;
 
 public class DatasetConversionFactory {
 

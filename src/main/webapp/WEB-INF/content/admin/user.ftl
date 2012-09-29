@@ -3,7 +3,6 @@
 <#import "admin-common.ftl" as admin>
 <head>
 <title>User Info Pages</title>
-<script type='text/javascript' src='<@s.url value="/includes/datatable-support.js"/>'></script>
 <script type="text/javascript">
 $(function() {
     var settings  = {
@@ -33,7 +32,7 @@ $(function() {
 
 <@admin.header />
 
-<@admin.statsTable historicalUserStats "User Statistics" />
+<@admin.statsTable historicalUserStats "User Statistics" "userstats" />
 
 
 

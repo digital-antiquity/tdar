@@ -1,27 +1,20 @@
 package org.tdar.core.service.processes;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.util.ScheduledProcess;
+import org.tdar.core.bean.util.ScheduledBatchProcess;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.search.geosearch.GeoSearchService;
 
 @Component
-public class RebuildGeographicKeywordProcess extends ScheduledProcess.Base<Resource> {
+public class RebuildGeographicKeywordProcess extends ScheduledBatchProcess<Resource> {
 
     private static final long serialVersionUID = -1389096329990660324L;
 
     @Autowired
-    private GeoSearchService geoSearchService;
-
-    @Autowired
     private ResourceService resourceService;
 
-    private final Logger logger = Logger.getLogger(getClass());
-
-    public boolean isShouldRunOnce() {
+    public boolean isSingleRunProcess() {
         return true;
     }
 
@@ -34,9 +27,8 @@ public class RebuildGeographicKeywordProcess extends ScheduledProcess.Base<Resou
     }
 
     @Override
-    public boolean isConfigured() {
-        return false;
-//geoSearchService.isEnabled();
+    public boolean isEnabled() {
+        return false;//geoSearchService.isEnabled();
     }
 
     @Override

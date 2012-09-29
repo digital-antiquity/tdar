@@ -5,11 +5,14 @@ Tool
 Flake
 	Utilized
 	Unutilized
+	Underutilized
+	Overutilized
 End Scraper
 	Side Scraper
 		Unknown Tool (Other Tool;Miscellaneous Tool; Toolish; Toolosity   ; Tool of May )
 Axe
 	Double Headed Axe
 	Golden Axe
+	Question Axe
 
 

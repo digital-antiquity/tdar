@@ -11,10 +11,10 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.tdar.TestConstants;
@@ -28,7 +28,20 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
 
     @Test
     public void testInvalidBulkUpload() {
-        testBulkUploadController("image_manifest2.xlsx", null);
+        File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
+        Collection<File> listFiles = FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, true);
+        Map<String, String> extra = new HashMap<String, String>();
+        extra.put("resourceCollections[0].name", "template name");
+        testBulkUploadController("image_manifest2.xlsx", listFiles, extra);
+        assertTrue(getPageCode().contains("resource creator is not"));
+
+    }
+
+    @Test
+    public void testBulkUploadDups() {
+        File testImagesDirectory = new File(TestConstants.TEST_BULK_DIR + "/" + "TDAR-2380");
+        Collection<File> listFiles = FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, true);
+        testBulkUploadController("TDAR-2380/tdar-bulk-upload-template.xls", listFiles, null);
     }
 
     @Test
@@ -40,11 +53,14 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         extra.put("latitudeLongitudeBoxes[0].minimumLatitude", "41.82608370627639");
         extra.put("latitudeLongitudeBoxes[0].minimumLongitude", "-71.41018867492676");
         extra.put(PROJECT_ID_FIELDNAME, "3805");
-        extra.put("resource.inheritingInvestigationInformation","true");
-        testBulkUploadController("image_manifest.xlsx", extra);
+        extra.put("resource.inheritingInvestigationInformation", "true");
+        extra.put("resourceProviderInstitutionName", "Digital Antiquity");
+        File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
+        Collection<File> listFiles = FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, true);
+        testBulkUploadController("image_manifest.xlsx", listFiles, extra);
+        assertFalse(getPageCode().contains("resource creator is not"));
     }
 
-    
     @Test
     public void testValidBulkUpload2() {
         Map<String, String> extra = new HashMap<String, String>();
@@ -55,6 +71,9 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         extra.put("resourceNotes[0].type", "GENERAL");
         extra.put("resourceNotes[0].note", "A Moose once bit my sister...");
         extra.put("resourceProviderInstitutionName", "Digital Antiquity4");
+        extra.put("authorshipProxies[0].person.id", "1");
+        extra.put("authorshipProxies[0].person.lastName", "Lee");
+        extra.put("authorshipProxies[0].person.firstName", "Allen");
         extra.put("sourceCollections[0].text", "ASU Museum Collection1");
         extra.put("sourceCollections[1].text", "test Museum Collection1");
         extra.put("latitudeLongitudeBoxes[0].maximumLatitude", "41.83228739643032");
@@ -62,15 +81,19 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         extra.put("latitudeLongitudeBoxes[0].minimumLatitude", "41.82608370627639");
         extra.put("latitudeLongitudeBoxes[0].minimumLongitude", "-71.41018867492676");
         extra.put(PROJECT_ID_FIELDNAME, "3805");
-//        extra.put("resource.inheritingInvestigationInformation","true");
-        testBulkUploadController("image_manifest.xlsx", extra);
+        // extra.put("resource.inheritingInvestigationInformation","true");
+        File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
+        Collection<File> listFiles = FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, true);
+        testBulkUploadController("image_manifest.xlsx", listFiles, extra);
+        assertFalse(getPageCode().contains("could not save xml record"));
+        assertFalse(getPageCode().contains("resource creator is not"));
+
     }
 
-    public void testBulkUploadController(String filename, Map<String, String> extra) {
+    public void testBulkUploadController(String filename, Collection<File> listFiles, Map<String, String> extra) {
 
         String ticketId = getPersonalFilestoreTicketId();
-        File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
-        for (File uploadedFile : FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, true)) {
+        for (File uploadedFile : listFiles) {
             uploadFileToPersonalFilestore(ticketId, uploadedFile.getAbsolutePath());
         }
 
@@ -82,12 +105,13 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
                 setInput(key, extra.get(key));
             }
         }
-        if (extra != null && !extra.containsKey(PROJECT_ID_FIELDNAME)) {
-            setInput("projectId", "");
-            }
-     
+        if ((extra != null && !extra.containsKey(PROJECT_ID_FIELDNAME)) || extra == null) {
+            setInput("projectId", "-1");
+        }
+        
+
         int i = 0;
-        for (File uploadedFile : FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, true)) {
+        for (File uploadedFile : listFiles) {
             addFileProxyFields(i, false, uploadedFile.getName());
             i++;
         }
@@ -97,13 +121,14 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         setInput("ticketId", ticketId);
         submitForm();
         assertTrue(internalPage.getUrl().toString().contains("save.action"));
-        assertTextPresentIgnoreCase("Processing bulk upload");
-        assertTextPresentInCode("getJSON(\"checkstatus");
+        assertTextPresentIgnoreCase("Bulk Upload Status");
+        assertTextPresentInCode("$.ajax");
         String statusPage = "/batch/checkstatus?ticketId=" + ticketId;
         gotoPage(statusPage);
         logger.info(getPageCode());
         int count = 0;
-        while (!getPageCode().contains("\"percentDone\" : 100")) {
+        // fixme: parse this json and get the actual number,
+        while (!getPageCode().contains("\"percentDone\":100")) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -115,11 +140,6 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
                 fail("we went through 1000 iterations of waiting for the upload to be imported... assuming something is wrong");
             }
             count++;
-        }
-        if (filename.contains("2")) {
-            assertTrue(getPageCode().contains("resource creator is not"));
-        } else {
-            assertFalse(getPageCode().contains("resource creator is not"));
         }
     }
 }

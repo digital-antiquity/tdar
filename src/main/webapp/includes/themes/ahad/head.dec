@@ -1,6 +1,7 @@
 	<script type="text/javascript" src="http://www.tdar.org/wp-content/themes/paperpunch_pro/javascripts/cufon.js"></script> 
     <script type="text/javascript" src="http://www.tdar.org/images/bank_gothic400.js"></script> 
     <script type="text/javascript" src="http://www.tdar.org/images/agency_fb_400-700.js"></script> 
+    <link rel='shortcut icon' href='<@s.url value="/includes/themes/ahad/images/ahad.ico"/>'/>
 
     <script>
         Cufon.replace( '#title', { fontFamily: 'Agency FB' });
@@ -68,7 +69,8 @@ div.skip-content { display: none; }
 	border-width: 1px;
 	border-style: solid;
 	border-color: #888888 !important;
-	background: #443B31 url(../images/nav-background.gif) repeat-x bottom left;
+	background: #443B31 url(/images/nav-background.gif) repeat-x bottom left;
+	
 }
 h1#title a:link, h1#title a:visited, div#title a:link, div#title a:visited { color: #e9e5e0; }
 h1#title a:hover, div#title a:hover { text-decoration: none; }
@@ -281,6 +283,7 @@ div.c-head {
 }
 div.reply { padding-bottom: 10px; }
 div.reply a:link, div.reply a:visited { color: #beaa99; }
+.barGraph table { bottom:-55px !important; }
 /*Form
 ---------------------------------------*/
 form#commentform { margin: 0 0 20px 131px; }
@@ -472,10 +475,10 @@ img.border {
 }
 
 #topsection {
-	border-bottom:1px solid #bbb;
+	border-bottom:1px solid #bbb !important;
 	position: relative;
 	display: block;
-	height: 105px;
+	height: 105px !important;
 
 background: #eae1ce; /* Old browsers */
 background: -moz-linear-gradient(top, #eae1ce 0%, #dbd0bc 99%); /* FF3.6+ */
@@ -502,8 +505,14 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eae1ce', end
 
 .glide {
 	border-radius: 15px;
-	background: -moz-linear-gradient(center top , #FFF7EB, #DCCEA7) repeat scroll 0 0 transparent;
-    border: 1px solid #104F53;
+	background: -moz-linear-gradient(center top , #FFF7EB, #DCCEA7) repeat scroll 0 0 transparent !important;
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#FFF7EB), color-stop(99%,#DCCEA7)) !important; /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, #FFF7EB 0%,#DCCEA7 99%) !important; /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, #FFF7EB 0%,#DCCEA7 99%) !important; /* Opera 11.10+ */
+	background: -ms-linear-gradient(top, #FFF7EB 0%,#DCCEA7 99%) !important; /* IE10+ */
+	background: linear-gradient(top, #FFF7EB 0%,#DCCEA7 99%) !important; /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#FFF7EB', endColorstr='#DCCEA7',GradientType=0 ) !important; /* IE6-9 */
+    border: 1px solid #104F53 !important;
 } 
 
 #sidebar .glide {
@@ -518,4 +527,9 @@ th, td, p, h3, h4, b, span, input, label {
     color: #104F53;
 }
 
+.info {
+	font-size: 12px;
+}
+
 </style>
+    

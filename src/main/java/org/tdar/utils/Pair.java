@@ -3,6 +3,10 @@ package org.tdar.utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
@@ -16,31 +20,36 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
  * @param <R>
  * @param <S>
  */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.PROPERTY)
 public class Pair<R, S> {
-    
+
     private R first;
     private S second;
-    
+
+    private Pair() {
+    }
+
     public Pair(R first, S second) {
         setFirst(first);
         setSecond(second);
     }
-    
+
     public static <T, U> Pair<T, U> create(T first, U second) {
         return new Pair<T, U>(first, second);
     }
-    
+
     public static <T, U> List<T> allFirsts(List<Pair<T, U>> pairList) {
         ArrayList<T> firsts = new ArrayList<T>();
-        for (Pair<T, U> pair: pairList) {
+        for (Pair<T, U> pair : pairList) {
             firsts.add(pair.getFirst());
         }
         return firsts;
     }
-    
+
     public static <T, U> List<U> allSeconds(List<Pair<T, U>> pairList) {
         ArrayList<U> seconds = new ArrayList<U>();
-        for (Pair<T, U> pair: pairList) {
+        for (Pair<T, U> pair : pairList) {
             seconds.add(pair.getSecond());
         }
         return seconds;
@@ -61,7 +70,7 @@ public class Pair<R, S> {
     public void setSecond(S second) {
         this.second = second;
     }
-    
+
     @Override
     public String toString() {
         return String.format("[%s, %s]", first, second);
@@ -70,16 +79,16 @@ public class Pair<R, S> {
     @SuppressWarnings("unchecked")
     @Override
     public boolean equals(Object object) {
-        if (object == this) return true;
+        if (object == this)
+            return true;
         try {
             Pair<R, S> other = (Pair<R, S>) object;
-            return new EqualsBuilder().append(first, other.first).append(second, other.second).isEquals();            
-        }
-        catch (ClassCastException e) {
+            return new EqualsBuilder().append(first, other.first).append(second, other.second).isEquals();
+        } catch (ClassCastException e) {
             return false;
         }
     }
-    
+
     @Override
     public int hashCode() {
         return new HashCodeBuilder(7, 43).append(first).append(second).toHashCode();

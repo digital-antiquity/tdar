@@ -21,11 +21,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tdar.core.bean.Indexable;
+import org.tdar.core.bean.OaiDcProvider;
+import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.search.query.SearchResultHandler;
 
 import com.sun.syndication.feed.atom.Link;
 import com.sun.syndication.feed.module.Module;
@@ -55,25 +61,24 @@ public class RssService implements Serializable {
 
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
     public static final Pattern INVALID_XML_CHARS = Pattern.compile("[\u0001\u0009\\u000A\\u000D\uD800\uDFFF]");
-    //\uDC00-\uDBFF\u0020-\uD7FF\uE000-\uFFFD
+    // \uDC00-\uDBFF -\uD7FF\uE000-\uFFFD
 
     @Autowired
     private UrlService urlService;
 
     @Autowired
-    private EntityService entityService;
-
+    private AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
 
     public static String cleanStringForXML(String input) {
         return INVALID_XML_CHARS.matcher(input).replaceAll("");
     }
-    
+
     @SuppressWarnings("unused")
-    public ByteArrayInputStream createRssFeedFromResourceList(Person user, String subtitle, String searchPhrase, List<Resource> results,
+    public <I extends Indexable> ByteArrayInputStream createRssFeedFromResourceList(Person user, SearchResultHandler<I> handler,
             Integer recordsPerPage, Integer startRecord, Integer totalRecords, String rssUrl) throws IOException, FeedException {
         SyndFeed feed = new SyndFeedImpl();
         feed.setFeedType("atom_1.0");
-        feed.setTitle("tDAR Search Results: " + cleanStringForXML(subtitle));
+        feed.setTitle("tDAR Search Results: " + cleanStringForXML(handler.getSearchTitle()));
         OpenSearchModule osm = new OpenSearchModuleImpl();
         osm.setItemsPerPage(recordsPerPage);
         osm.setStartIndex(startRecord);
@@ -88,39 +93,51 @@ public class RssService implements Serializable {
         modules.add(osm);
         feed.setModules(modules);
         feed.setLink(rssUrl);
-        feed.setDescription(searchPhrase);
+        feed.setDescription(handler.getSearchDescription());
         List<SyndEntry> entries = new ArrayList<SyndEntry>();
-        for (Resource resource : results) {
+        for (I resource_ : handler.getResults()) {
+            if (resource_ instanceof Viewable && !((Viewable) resource_).isViewable())
+                continue;
+
             SyndEntry entry = new SyndEntryImpl();
-            entry.setTitle(cleanStringForXML(resource.getTitle()));
-            SyndContent description = new SyndContentImpl();
+            if (resource_ instanceof OaiDcProvider) {
+                OaiDcProvider oaiResource = (OaiDcProvider) resource_;
+                entry.setTitle(cleanStringForXML(oaiResource.getTitle()));
+                SyndContent description = new SyndContentImpl();
 
-            if (StringUtils.isEmpty(resource.getDescription())) {
-                description.setValue("no description");
-            } else {
-                description.setValue(cleanStringForXML(resource.getDescription()));
-            }
-            List<SyndPerson> authors = new ArrayList<SyndPerson>();
-            for (ResourceCreator creator : resource.getPrimaryCreators()) {
-                SyndPerson person = new SyndPersonImpl();
-                person.setName(cleanStringForXML(creator.getCreator().getProperName()));
-                authors.add(person);
-            }
-            if (authors.size() > 0) {
-                entry.setAuthors(authors);
-            }
-            if (resource instanceof InformationResource && ((InformationResource) resource).getLatestUploadedVersions().size() > 0) {
-                for (InformationResourceFileVersion version : ((InformationResource) resource).getLatestUploadedVersions()) {
-                    logger.trace("enclosure:" + version);
-                    addEnclosure(user, entry, version);
-                    addEnclosure(user, entry, version.getInformationResourceFile().getLatestThumbnail());
+                if (StringUtils.isEmpty(oaiResource.getDescription())) {
+                    description.setValue("no description");
+                } else {
+                    description.setValue(cleanStringForXML(oaiResource.getDescription()));
                 }
+                List<SyndPerson> authors = new ArrayList<SyndPerson>();
+                if (resource_ instanceof Resource) {
+                    Resource resource = (Resource) resource_;
+                    for (ResourceCreator creator : resource.getPrimaryCreators()) {
+                        SyndPerson person = new SyndPersonImpl();
+                        person.setName(cleanStringForXML(creator.getCreator().getProperName()));
+                        authors.add(person);
+                    }
+                    if (authors.size() > 0) {
+                        entry.setAuthors(authors);
+                    }
+                    if (resource_ instanceof InformationResource && ((InformationResource) resource_).getLatestUploadedVersions().size() > 0) {
+                        for (InformationResourceFile file : ((InformationResource) resource_).getVisibleFiles()) {
+                            addEnclosure(user, entry, file.getLatestUploadedVersion());
+                            InformationResourceFileVersion thumb = file.getLatestThumbnail();
+                            if (thumb != null) {
+                                addEnclosure(user, entry, thumb);
+                            }
+                        }
+                    }
+                }
+                entry.setDescription(description);
+                entry.setLink(urlService.absoluteUrl(oaiResource));
+                entry.setPublishedDate(oaiResource.getDateCreated());
+                entries.add(entry);
+            } else {
+                throw new TdarRecoverableRuntimeException("Can't handle rss for this");
             }
-
-            entry.setDescription(description);
-            entry.setLink(urlService.absoluteUrl(resource));
-            entry.setPublishedDate(resource.getDateCreated());
-            entries.add(entry);
         }
         feed.setEntries(entries);
         feed.setPublishedDate(new Date());
@@ -137,11 +154,12 @@ public class RssService implements Serializable {
         Pattern INVALID_XML_CHARS = Pattern.compile("[^\\u0009\\u000A\\u000D\\u0020-\\uD7FF\\uE000-\\uFFFD\uD800\uDC00-\uDBFF\uDFFF]");
         return INVALID_XML_CHARS.matcher(text).replaceAll("");
     }
-    
+
     @SuppressWarnings("unchecked")
     private void addEnclosure(Person user, SyndEntry entry, InformationResourceFileVersion version) {
-        if(version==null) return;
-        if (user != null && entityService.canDownload(version, user)) {
+        if (version == null)
+            return;
+        if (user != null && authenticationAndAuthorizationService.canDownload(version, user)) {
             logger.info("allowed:" + version);
             SyndEnclosure enclosure = new SyndEnclosureImpl();
             enclosure.setLength(version.getSize());

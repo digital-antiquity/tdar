@@ -16,11 +16,11 @@ import org.tdar.core.bean.resource.ResourceType;
  * $Id$
  * 
  * <p>
- * Manages requests to create/delete/edit an CodingSheet and its associated metadata.
+ * Manages requests to create/delete/edit an Image and its associated metadata.
  * </p>
  * 
  * 
- * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
+ * @author <a href='mailto:Adam.Brin@asu.edu'>Adam Brin</a>
  * @version $Revision$
  */
 @ParentPackage("secured")
@@ -32,17 +32,12 @@ public class ImageController extends AbstractInformationResourceController<Image
     private static final long serialVersionUID = 377533801938016848L;
 
     @Override
-    protected void loadCustomMetadata() {
-        loadInformationResourceProperties();
-    }
-
-    @Override
     protected String save(Image image) {
         saveBasicResourceMetadata();
         saveInformationResourceProperties();
-        getImageService().saveOrUpdate(image);
+        getGenericService().saveOrUpdate(image);
         handleUploadedFiles();
-        getImageService().saveOrUpdate(image);
+        getGenericService().saveOrUpdate(image);
         return SUCCESS;
     }
 
@@ -72,4 +67,5 @@ public class ImageController extends AbstractInformationResourceController<Image
     public Class<Image> getPersistableClass() {
         return Image.class;
     }
+
 }

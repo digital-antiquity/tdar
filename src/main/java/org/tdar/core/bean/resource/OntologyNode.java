@@ -1,8 +1,6 @@
 package org.tdar.core.bean.resource;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -11,6 +9,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
@@ -18,15 +17,13 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Type;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.resource.dataTable.DataTableColumn;
+import org.tdar.core.bean.resource.dataintegration.DataValueOntologyNodeMapping;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
@@ -47,10 +44,20 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
 
     private static final long serialVersionUID = 6997306639142513872L;
 
-    @ManyToOne(optional = false)
+    public static final OntologyNode NULL = new OntologyNode() {
+        private static final long serialVersionUID = 2863511954419520195L;
+
+        @Override
+        public String getDisplayName() {
+            return "";
+        }
+    };
+
     @XStreamOmitField
+    @ManyToOne(optional = false)
     private Ontology ontology;
 
+    @Deprecated
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "ontologyNode")
     private Set<DataValueOntologyNodeMapping> dataValueOntologyNodeMappings = new HashSet<DataValueOntologyNodeMapping>();
 
@@ -66,7 +73,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     @Type(type = "org.hibernate.type.StringClobType")
     private String description;
 
-    @ElementCollection()
+    @ElementCollection(fetch=FetchType.LAZY)
     @JoinTable(name = "ontology_node_synonym")
     private Set<String> synonyms;
 
@@ -138,7 +145,7 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     }
 
     public String toString() {
-        return "label: " + iri + ", uri: " + uri;
+        return String.format("label: %s url:%s id:%s",uri, iri, getId());
     }
 
     @Override
@@ -154,39 +161,21 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
     }
 
     public int compareTo(OntologyNode other) {
-        return index.compareTo(other.index);
+        return ObjectUtils.compare(index, other.getIndex());
     }
 
-    @XmlElementWrapper(name = "dataValueOntologyNodeMappings")
-    @XmlElement(name = "dataValueOntologyNodeMapping")
+    private transient boolean parent = false;
+
+    private transient boolean[] columnHasValueArray;
+    
+//    @XmlElementWrapper(name = "dataValueOntologyNodeMappings")
+//    @XmlElement(name = "dataValueOntologyNodeMapping")
     public Set<DataValueOntologyNodeMapping> getDataValueOntologyNodeMappings() {
         return dataValueOntologyNodeMappings;
     }
 
     public void setDataValueOntologyNodeMappings(Set<DataValueOntologyNodeMapping> dataValueOntologyNodeMappings) {
         this.dataValueOntologyNodeMappings = dataValueOntologyNodeMappings;
-    }
-
-    /**
-     * Returns a List<String> representing the actual data value strings within
-     * the DataTableColumn that have been mapped to this OntologyNode.
-     * 
-     * @param column
-     * @return
-     */
-    @Transient
-    public List<String> getMappedDataValues(DataTableColumn column) {
-        if (CollectionUtils.isEmpty(dataValueOntologyNodeMappings)) {
-            return Collections.emptyList();
-        }
-        ArrayList<String> mappedValues = new ArrayList<String>();
-        Long columnId = column.getId();
-        for (DataValueOntologyNodeMapping mapping : dataValueOntologyNodeMappings) {
-            if (columnId.equals(mapping.getDataTableColumn().getId())) {
-                mappedValues.add(mapping.getDataValue());
-            }
-        }
-        return mappedValues;
     }
 
     @Transient
@@ -261,17 +250,26 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
         }
         return false;
     }
-
-
-    public static final OntologyNode NULL = new OntologyNode() {
-
-        private static final long serialVersionUID = 2863511954419520195L;
-        
-        @Override
-        public String getDisplayName() {
-            return "";
-        }
-    };
-
     
+    @Transient
+    public boolean isChildOf(OntologyNode parentNode) {
+        return parentNode != null && parentNode.getIntervalStart() < getIntervalStart() && parentNode.getIntervalEnd() >= getIntervalEnd();
+    }
+
+    public boolean isParent() {
+        return parent;
+    }
+
+    public void setParent(boolean parent) {
+        this.parent = parent;
+    }
+
+    public boolean[] getColumnHasValueArray() {
+        return columnHasValueArray;
+    }
+
+    public void setColumnHasValueArray(boolean[] columnsWithValue) {
+        this.columnHasValueArray = columnsWithValue;
+    }
+
 }

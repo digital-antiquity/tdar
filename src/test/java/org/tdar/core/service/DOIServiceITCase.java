@@ -1,18 +1,10 @@
-/**
- * $Id$
- * 
- * @author $Author$
- * @version $Revision$
- */
 package org.tdar.core.service;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.http.client.ClientProtocolException;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -22,39 +14,36 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.ExternalIDProvider;
 import org.tdar.core.service.processes.DoiProcess;
-import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.utils.Pair;
 
 import static org.junit.Assert.*;
 
 /**
- * @author Adam Brin
+ * $Id$
  * 
+ * @author Adam Brin
  */
 public class DOIServiceITCase extends AbstractIntegrationTestCase {
 
     @Autowired
-    ResourceService resourceService;
-    @Autowired
-    InformationResourceService informationResourceService;
+    private ResourceService resourceService;
     @Autowired
     private DoiProcess doiProcess;
 
-    public Map<String, List<Pair<Long, String>>> processDois() throws ClientProtocolException, IOException {
+    public Map<String, List<Pair<Long, String>>> processDois() throws Exception {
         // using mock DAO instead of real service
         List<ExternalIDProvider> providers = new ArrayList<ExternalIDProvider>();
         providers.add(new MockIdentifierDao());
         doiProcess.setAllServices(providers);
         // run it once, make sure all are "create", no deletes or updates
-        List<Long> ids = doiProcess.getPersistableIdQueue();
-        doiProcess.processBatch(ids);
+        doiProcess.execute();
         return doiProcess.getBatchResults();
     }
 
     @Test
     @Rollback
-    public void testDOIService() throws ClientProtocolException, IOException, InstantiationException, IllegalAccessException {
+    public void testDOIService() throws Exception {
         Map<String, List<Pair<Long, String>>> createAndUpdateDoiInfo = processDois();
         List<Pair<Long, String>> created = createAndUpdateDoiInfo.get(DoiProcess.CREATED);
         List<Pair<Long, String>> updated = createAndUpdateDoiInfo.get(DoiProcess.UPDATED);
@@ -63,8 +52,8 @@ public class DOIServiceITCase extends AbstractIntegrationTestCase {
         logger.debug("updated:" + updated.size());
         logger.debug("deleted:" + deleted.size());
         assertTrue(created.size() > 0);
-        assertTrue(updated.size() == 0);
-        assertTrue(deleted.size() == 0);
+        assertSame(0, updated.size());
+        assertSame(0, deleted.size());
         doiProcess.cleanup();
         // mark one record as deleted, and mark one as updated
         Resource toBeDeleted = resourceService.find(created.get(0).getFirst());
@@ -72,6 +61,10 @@ public class DOIServiceITCase extends AbstractIntegrationTestCase {
         toBeDeleted.setStatus(Status.DELETED);
         toBeDeleted.markUpdated(getAdminUser());
         toBeUpdated.markUpdated(getAdminUser());
+        toBeDeleted.setDescription(toBeDeleted.getTitle());
+        toBeUpdated.setDescription(toBeUpdated.getTitle());
+        ((InformationResource)toBeUpdated).setDate(1243);
+        ((InformationResource)toBeDeleted).setDate(1243);
         resourceService.saveOrUpdate(toBeUpdated);
         resourceService.saveOrUpdate(toBeDeleted);
 

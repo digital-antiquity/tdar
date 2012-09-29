@@ -12,18 +12,11 @@
 </#if>
 
 
-<#if (totalRecords > 0)>
-<div class="glide">
-	<div id="recordTotal">Collections ${firstRec} - ${lastRec} of ${totalRecords}
-	</div> 
-	<@search.pagination ""/>
-
-</div>
-</#if>  
+<@search.basicPagination "Collections"/>
 <div class="glide">
 <ul>
   <#list results as collection_>
-   <li><a href="<@s.url value="/collection/${collection_.id?c}"/>">${collection_.name}</a></li>
+   <li><a href="<@s.url value="/collection/${collection_.id?c}"/>">${collection_.name?default("no name")}</a></li>
   </#list>
 </ul>
 </div>

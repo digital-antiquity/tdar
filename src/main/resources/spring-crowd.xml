@@ -6,8 +6,6 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
-    <!-- Used to retrieve password reset url by CrowdSoapService -->
-    <context:property-placeholder location="classpath:crowd.properties" ignore-unresolvable="true" />
 
     <bean id="resourceLocator" class="com.atlassian.crowd.integration.service.soap.client.ClientResourceLocator">
         <constructor-arg value="crowd.properties"/>

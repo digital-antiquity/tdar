@@ -115,12 +115,12 @@ public class BagitTest {
         Assert.assertTrue(true);
 
         CompleteVerifier completeVerifier = new CompleteVerifierImpl();
-        completeVerifier.setMissingBagItTolerant(false);
-        completeVerifier.setAdditionalDirectoriesInBagDirTolerant(false);
+//        completeVerifier.setMissingBagItTolerant(false);
+//        completeVerifier.setAdditionalDirectoriesInBagDirTolerant(false);
         ValidVerifier verifier = new ValidVerifierImpl(completeVerifier, new ParallelManifestChecksumVerifier());
         
         //assert the bag is valid (baginfo.txt matches contents) then iterate over the bag contents.  
-        Bag bagOut = this.getBag(bagHome, Version.V0_96, LoadOption.BY_PAYLOAD_MANIFESTS);
+        Bag bagOut = this.getBag(bagHome, Version.V0_96, LoadOption.BY_MANIFESTS);
         SimpleResult result = verifier.verify(bagOut);
         Assert.assertTrue("Bag contents valid", result.isSuccess());
         Logger logger = Logger.getLogger(getClass());

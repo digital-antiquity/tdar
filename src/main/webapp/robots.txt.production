@@ -1,0 +1,5 @@
+User-agent: *
+Crawl-Delay: 10
+Disallow: /search/rss
+Disallow: /search/download
+Disallow: /filestore/

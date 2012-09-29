@@ -15,17 +15,13 @@ import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.request.ContributorRequest;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.dao.entity.InstitutionDao;
 import org.tdar.core.dao.entity.PersonDao;
 import org.tdar.core.dao.request.ContributorRequestDao;
-import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
-import org.tdar.core.service.external.auth.InternalTdarRights;
 
 /**
  * $Id$
@@ -43,21 +39,11 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
     public final static String BEAN_ID = "personService";
 
     @Autowired
-    public void setDao(PersonDao dao) {
-        super.setDao(dao);
-    }
-
-    @Autowired
     private InstitutionDao institutionDao;
     @Autowired
     private AuthorizedUserDao authorizedUserDao;
     @Autowired
     private ContributorRequestDao contributorRequestDao;
-    @Autowired
-    private GenericService genericService;
-
-    @Autowired
-    private AuthenticationAndAuthorizationService authenticationService;
 
     public Person findPerson(Long id) {
         return find(id);
@@ -87,85 +73,14 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         return contributorRequestDao.findAll();
     }
 
+    public ContributorRequest findContributorRequest(Person p) {
+        return contributorRequestDao.findByPerson(p);
+    }
+
     public List<ContributorRequest> findAllPendingContributorRequests() {
         return contributorRequestDao.findAllPending();
     }
 
-    /**
-     * Returns true if the person is privileged or is a member of the full team read access.
-     * 
-     * @param person
-     * @return
-     */
-    public boolean canViewConfidentialInformation(Person person, Resource resource) {
-        // This function used to pre-test on the resource, but it doesn't have to and is now more granular
-        if (resource == null)
-            return false;
-
-        if (person == null) {
-            logger.trace("person is null");
-            return false;
-        }
-
-        if (resource.getSubmitter().equals(person)) {
-            logger.debug("person was submitter");
-            return true;
-        }
-
-        if (authenticationService.can(InternalTdarRights.VIEW_AND_DOWNLOAD_CONFIDENTIAL_INFO, person)) {
-            return true;
-        }
-
-        if (authorizedUserDao.isAllowedTo(person, resource, GeneralPermissions.VIEW_ALL)) {
-            logger.debug("person is an authorized user");
-            return true;
-        }
-
-        logger.debug("returning false... access denied");
-        return false;
-    }
-
-    /**
-     * This is a fairly expensive operation.
-     * 
-     * Returns true iff
-     * <ol>
-     * <li>the person and resource parameters are not null
-     * <li>resource.submitter is the same as the person parameter
-     * <li>the person has curator privileges (signified in crowd)
-     * <li>the person has full user privileges on the resource
-     * </ol>
-     * 
-     * @param person
-     * @param resource
-     * @return true if person has write permissions on resource according to the above policies, false otherwise.
-     */
-//    @Deprecated
-//    public boolean canEditResource(Person person, Resource resource) {
-//        return person != null
-//                && resource != null
-//                && (resource.getSubmitter().equals(person) || authenticationService.can(InternalTdarRights.EDIT_RESOURCES, person) || authorizedUserDao
-//                        .isAllowedTo(person, resource,
-//                                GeneralPermissions.MODIFY_RECORD));
-//    }
-
-    public boolean canDownload(InformationResourceFileVersion irFileVersion, Person person) {
-        if (irFileVersion == null)
-            return false;
-        boolean fileRestricted = (irFileVersion.getInformationResourceFile().isConfidential() ||
-                !irFileVersion.getInformationResourceFile().getInformationResource().isAvailableToPublic());
-        if (fileRestricted && !canViewConfidentialInformation(person, irFileVersion.getInformationResourceFile().getInformationResource())) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    public boolean canViewCollection(ResourceCollection collection, Person person) {
-        if (collection.isShared() && collection.isVisible())
-            return true;
-        return authorizedUserDao.isAllowedTo(person, GeneralPermissions.VIEW_ALL, collection);
-    }
 
     public Person findByEmail(String email) {
         if (email == null || email.isEmpty()) {
@@ -173,6 +88,14 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         }
         return getDao().findByEmail(email);
     }
+
+    public Person findByUsername(String username) {
+        if (username == null || username.isEmpty()) {
+            return null;
+        }
+        return getDao().findByUsername(username);
+    }
+
 
     public Set<Person> findByFullName(String fullName) {
         return getDao().findByFullName(fullName);
@@ -212,7 +135,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         if (StringUtils.isNotBlank(transientPerson.getEmail())) {
             blessedPerson = findByEmail(transientPerson.getEmail());
         } else {
-            transientPerson.setEmail(null);//make sure it's null and not just blank or empty
+            transientPerson.setEmail(null);// make sure it's null and not just blank or empty
         }
 
         // didn't find by email? cast the net a little wider...
@@ -221,14 +144,14 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
                 transientPerson.setInstitution(findOrSaveInstitution(transientPerson.getInstitution()));
             }
             Set<Person> people = getDao().findByPerson(transientPerson);
-            if(!people.isEmpty()) {
+            if (!people.isEmpty()) {
                 blessedPerson = people.iterator().next();
             }
         }
-        
-        //still didn't find anything?  Fair enough, let's save it
-        if(blessedPerson == null) {
-            genericService.save(transientPerson);
+
+        // still didn't find anything? Fair enough, let's save it
+        if (blessedPerson == null) {
+            getDao().save(transientPerson);
             blessedPerson = transientPerson;
         }
         return blessedPerson;
@@ -236,7 +159,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
 
     @Transactional(readOnly = false)
     private Institution findOrSaveInstitution(Institution transientInstitution) {
-        Institution blessedInstitution = genericService.findByExample(Institution.class, transientInstitution,
+        Institution blessedInstitution = getDao().findByExample(Institution.class, transientInstitution,
                 Arrays.asList(Institution.getIgnorePropertiesForUniqueness()),
                 FindOptions.FIND_FIRST_OR_CREATE).get(0);
         return blessedInstitution;
@@ -250,24 +173,6 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         resourceCreator.setCreator(findOrSaveCreator(resourceCreator.getCreator()));
     }
 
-    /**
-     * @param authenticatedUser
-     * @param persistable
-     * @return
-     */
-    @Transactional(readOnly = false)
-    public boolean canEditCollection(Person authenticatedUser, ResourceCollection persistable) {
-        if (authenticatedUser == null) {
-            logger.debug("person is null");
-            return false;
-        }
-
-        if (authenticationService.can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, authenticatedUser) || authenticatedUser.equals(persistable.getOwner())) {
-            return true;
-        }
-
-        return authorizedUserDao.isAllowedTo(authenticatedUser, GeneralPermissions.ADMINISTER_GROUP, persistable);
-    }
 
     @Transactional
     public List<ResourceCollection> findAccessibleResourceCollections(Person user) {

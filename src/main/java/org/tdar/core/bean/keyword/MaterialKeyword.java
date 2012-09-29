@@ -15,26 +15,23 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * $Id$
  * 
- *
+ * 
  * @author Matt Cordial
  * @version $Rev$
  */
 @Entity
-@Table(name="material_keyword")
+@Table(name = "material_keyword")
 @XStreamAlias("materialKeyword")
 @Indexed(index = "Keyword")
-public class MaterialKeyword extends ControlledKeyword.Base<MaterialKeyword> {
-	
-	private static final long serialVersionUID = -8439705822874264175L;
+public class MaterialKeyword extends Keyword.Base<MaterialKeyword> implements ControlledKeyword {
+
+    private static final long serialVersionUID = -8439705822874264175L;
 
     @ElementCollection()
     @JoinTable(name = "material_keyword_synonym")
-    private Set<String> synonyms;
+    private Set<String> synonyms = new HashSet<String>();
 
     public Set<String> getSynonyms() {
-        if(synonyms == null) {
-            synonyms = new HashSet<String>();
-        }
         return synonyms;
     }
 

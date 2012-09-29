@@ -4,7 +4,7 @@
  * @author $Author$
  * @version $Revision$
  */
-package org.tdar.core.bean.resource.dataTable;
+package org.tdar.core.bean.resource.datatable;
 
 import java.sql.Types;
 

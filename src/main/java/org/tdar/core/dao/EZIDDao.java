@@ -21,6 +21,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -60,12 +61,16 @@ public class EZIDDao implements ExternalIDProvider {
     public static final String DATACITE_TITLE = DATACITE_PROFILE_NAME + ".title";
     public static final String DATACITE_CREATOR = DATACITE_PROFILE_NAME + ".creator";
     public static final String DATACITE_PUBLISHER = DATACITE_PROFILE_NAME + ".publisher";
+    public static final String DATACITE_RESOURCE_TYPE = DATACITE_PROFILE_NAME + ".resourceType";
     public static final String DATACITE_PUBLICATIONYEAR = DATACITE_PROFILE_NAME + ".publicationyear";
     public static final String _PROFILE = "_profile";
     public static final String _TARGET = "_target";
     public static final String SUCCESS = "success";
     public static final String DOI_ARK_CREATION_REGEX = "\\s((\\w+)\\:(?:[^\\s]+))";
     public static final String _SHADOWED_BY = "_shadowedby";
+    public static final String _STATUS = "_status";
+    public static final String _STATUS_UNAVAILABLE = "unavailable";
+    private static final String _STATUS_AVAILABLE = "public";
     public final Logger logger = LoggerFactory.getLogger(getClass());
 
     DefaultHttpClient httpclient = new DefaultHttpClient();
@@ -211,23 +216,20 @@ public class EZIDDao implements ExternalIDProvider {
      */
     @Override
     public Map<String, String> delete(Resource r, String resourceUrl, String identifier) throws ClientProtocolException, IOException {
-        return createOrModify(r, resourceUrl, getDOIProviderHostname(), "id", identifier);
+        return createOrModify(r, resourceUrl, getDOIProviderHostname(), "id", identifier, true);
     }
 
-    protected Map<String, String> createOrModify(Resource r, String resourceUrl, String hostname, String path, String shoulder) throws ClientProtocolException,
-            IOException {
-        Map<String, String> typeMap = new HashMap<String, String>();
+    public Map<String, String> forceDelete(Resource r, String resourceUrl, String identifier) throws ClientProtocolException, IOException {
+        HttpDelete post = new HttpDelete(getDOIProviderHostname() + "/id/" + identifier);
+        return processRequest(post);
+    }
 
-        HttpPost post = new HttpPost(hostname + "/" + path + "/" + shoulder);
-        String anvlContent = generateAnvlMetadata(r, resourceUrl);
-        StringEntity entity_ = new StringEntity(anvlContent, "text/plain", HTTP.UTF_8);
-        post.setEntity(entity_);
-        logger.trace("sending content:to {} \n{}", post.getURI(), anvlContent);
+    private Map<String, String> processRequest(HttpRequestBase post) throws IOException, ClientProtocolException {
+        Map<String, String> typeMap = new HashMap<String, String>();
         String result = processHttpRequest(post);
         logger.trace("result: {}", result);
         Pattern pattern = Pattern.compile(DOI_ARK_CREATION_REGEX);
         Matcher m = pattern.matcher(result);
-
         while (m.find()) {
             typeMap.put(m.group(2).toUpperCase().trim(), m.group(1).trim());
         }
@@ -239,30 +241,67 @@ public class EZIDDao implements ExternalIDProvider {
         return typeMap;
     }
 
-    protected String generateAnvlMetadata(Resource r, String url) {
+    protected Map<String, String> createOrModify(Resource r, String resourceUrl, String hostname, String path, String shoulder) throws ClientProtocolException,
+            IOException {
+        return createOrModify(r, resourceUrl, hostname, path, shoulder, false);
+    }
+
+    protected Map<String, String> createOrModify(Resource r, String resourceUrl, String hostname, String path, String shoulder, boolean delete)
+            throws ClientProtocolException,
+            IOException {
+        HttpPost post = new HttpPost(hostname + "/" + path + "/" + shoulder);
+        String anvlContent = generateAnvlMetadata(r, resourceUrl, delete);
+        logger.trace("sending content:to {} \n{}", post.getURI(), anvlContent);
+        StringEntity entity_ = new StringEntity(anvlContent, "text/plain", HTTP.UTF_8);
+        post.setEntity(entity_);
+        return processRequest(post);
+    }
+
+    @SuppressWarnings("incomplete-switch")
+    protected String generateAnvlMetadata(Resource r, String url, boolean delete) {
         StringBuilder responseBuilder = new StringBuilder();
         DublinCoreDocument doc = DcTransformer.transformAny(r);
+        String status = _STATUS_AVAILABLE;
 
         if (r.getStatus() == Status.ACTIVE) {
-            responseBuilder.append(DATACITE_CREATOR).append(": ").append(aNVLEscape(StringUtils.join(doc.getCreator(), "; "))).append("\n");
-            responseBuilder.append(DATACITE_TITLE).append(": ").append(aNVLEscape(r.getTitle())).append("\n");
+            buildAnvlLine(responseBuilder, DATACITE_CREATOR, aNVLEscape(StringUtils.join(doc.getCreator(), "; ")));
+            buildAnvlLine(responseBuilder, DATACITE_TITLE, aNVLEscape(r.getTitle()));
+
+            String resourceType = r.getResourceType().toDcmiTypeString();
+            // as PER API-DOC, http://n2t.net/ezid/doc/apidoc.html , a subset of these do not exactly MATCH DCMI TYPES?
+            switch (r.getResourceType()) {
+                case VIDEO:
+                    resourceType = "Film";
+                    break;
+            }
+
+            buildAnvlLine(responseBuilder, DATACITE_RESOURCE_TYPE, aNVLEscape(resourceType));
             if (r instanceof InformationResource) {
                 if (r instanceof Document) {
-                    responseBuilder.append(DATACITE_PUBLISHER).append(": ").append(((Document) r).getPublisher()).append("\n");
+                    buildAnvlLine(responseBuilder, DATACITE_PUBLISHER, aNVLEscape(((Document) r).getPublisher()));
                 }
-                responseBuilder.append(DATACITE_PUBLICATIONYEAR).append(": ").append(((InformationResource) r).getDate()).append("\n");
+                buildAnvlLine(responseBuilder, DATACITE_PUBLICATIONYEAR, (((InformationResource) r).getDate()).toString());
             }
-        } else {
-            // EZID does not support DELETION, instead SETTING ALL VALUES TO EMPTY
-            responseBuilder.append(DATACITE_CREATOR).append(":").append("\n");
-            responseBuilder.append(DATACITE_TITLE).append(":").append("\n");
-            responseBuilder.append(DATACITE_PUBLISHER).append(":").append("\n");
-            responseBuilder.append(DATACITE_PUBLICATIONYEAR).append(":").append("\n");
         }
 
-        responseBuilder.append(_TARGET).append(": ").append(url).append("\n");
-        responseBuilder.append(_PROFILE).append(": ").append(DATACITE_PROFILE_NAME).append("\n");
+        if (r.getStatus() != Status.ACTIVE || delete) {
+            // EZID does not support DELETION, instead SETTING ALL VALUES TO EMPTY
+            // responseBuilder.append(DATACITE_CREATOR).append(":").append("\n");
+            // responseBuilder.append(DATACITE_RESOURCE_TYPE).append(":").append("\n");
+            // responseBuilder.append(DATACITE_TITLE).append(":").append("\n");
+            // responseBuilder.append(DATACITE_PUBLISHER).append(":").append("\n");
+            // responseBuilder.append(DATACITE_PUBLICATIONYEAR).append(":").append("\n");
+            status = _STATUS_UNAVAILABLE;
+        }
+
+        buildAnvlLine(responseBuilder, _STATUS, status);
+        buildAnvlLine(responseBuilder, _TARGET, url);
+        buildAnvlLine(responseBuilder, _PROFILE, DATACITE_PROFILE_NAME);
         return responseBuilder.toString();
+    }
+
+    public StringBuilder buildAnvlLine(StringBuilder sb, String key, String val) {
+        return sb.append(key).append(": ").append(val).append("\n");
     }
 
     protected String aNVLEscape(String s) {

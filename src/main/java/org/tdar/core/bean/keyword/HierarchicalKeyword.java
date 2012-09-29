@@ -3,6 +3,7 @@ package org.tdar.core.bean.keyword;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.ElementCollection;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -12,8 +13,8 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Fields;
+import org.hibernate.search.annotations.IndexedEmbedded;
 import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
-import org.tdar.search.index.analyzer.PatternTokenAnalyzer;
 
 import com.sun.xml.txw2.annotation.XmlElement;
 
@@ -58,23 +59,11 @@ public abstract class HierarchicalKeyword<T extends HierarchicalKeyword<T>> exte
     @XmlTransient
     public abstract T getParent();
 
-    @Fields({ @Field(name = "label", analyzer = @Analyzer(impl = PatternTokenAnalyzer.class)),
+    @Fields({ @Field(name = "label"),
             @Field(name = "labelKeyword", analyzer = @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)) })
-    public String getParentLabels() {
-        if (getParent() == null)
-            return "";
-        // labelKeyword : "Woodland : Upper Woodland"
-        // label : "Woodland"
-        // label : "Upper Woodland"
-        StringBuilder parentString = new StringBuilder(StringUtils.trim(getParent().getParentLabels()));
-        if (parentString.length() > 1) {
-            parentString.append(" : ");
-        }
-        parentString.append(StringUtils.trim(getParent().getLabel()));
-        return parentString.toString();
-    }
-
     @Transient
+    @ElementCollection
+    @IndexedEmbedded
     public List<String> getParentLabelList() {
         List<String> list = new ArrayList<String>();
         if (getParent() == null)
@@ -83,17 +72,17 @@ public abstract class HierarchicalKeyword<T extends HierarchicalKeyword<T>> exte
         list.addAll(getParent().getParentLabelList());
         return list;
     }
-    
+
     @Override
     public boolean isDedupable() {
         return getParent() == null;
     }
-    
-    
+
     @Transient
     public int getLevel() {
-        //get the level without visiting the ancestors
-        if(StringUtils.isBlank(index)) return 0;
+        // get the level without visiting the ancestors
+        if (StringUtils.isBlank(index))
+            return 0;
         return 1 + StringUtils.countMatches(index, ".");
     }
 

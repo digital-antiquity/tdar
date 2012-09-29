@@ -34,6 +34,9 @@ $(function() {
       password: {
         minlength: 3
       },
+      username: {
+        minlength: 5
+      },
       confirmPassword: {
         minlength: 3,
         equalTo: "#password"
@@ -58,13 +61,16 @@ $(function() {
       },
     },
   });
+
+  $('#firstName').focus();
+  
 });
 function switchContributorReasonDisplay(shouldDisplay) {
   $('#contributorReasonTextArea').toggle(shouldDisplay);
   $('#contributorReasonId').attr("disabled", ! shouldDisplay);
-  if (shouldDisplay) {
-    $('#contributorReasonId').focus();
-  }
+//  if (shouldDisplay) {
+//    $('#contributorReasonId').focus();
+//  }
 }
 </script>
 </head>
@@ -75,13 +81,12 @@ function switchContributorReasonDisplay(shouldDisplay) {
 <hr/>
 <@s.form id="accountForm" method="post" action="register">
 
-<@nav.showControllerErrors/>
-
 <div class="glide">
     <@s.hidden name='personId' value='${person.id!-1}'/>
     
     <@s.textfield spellcheck="false" required='true' labelposition='left' label='First name' id='firstName' name='person.firstName' cssClass="required" size='25'/><br/>
     <@s.textfield spellcheck="false" required='true' labelposition='left' id='lastName' label='Last name' name='person.lastName' cssClass="required" size='25'/><br/>
+    <@s.textfield spellcheck="false" required='true' labelposition='left' id='username' label="Username" name="person.username" cssClass="required username" size='25'/><br/>
     <@s.textfield spellcheck="false" required='true' labelposition='left' id='emailAddress' label="Email address" name="person.email" cssClass="required email" size='25'/><br/>
     <@s.textfield spellcheck="false" required='true' labelposition='left' id='confirmEmail' label="Confirm email address" name="confirmEmail" cssClass="required email" size='25'/><br/> 
 

@@ -6,7 +6,7 @@
                 <thead>
                     <tr>
                         <th></th>
-                        <th>Dataset</th>
+                        <th>Active Dataset</th>
                         <th>Table</th>
                     <tr>
                 </thead>
@@ -21,6 +21,7 @@
 </#macro>
 
 <#macro listDataTables dataset>
+	<#if dataset?? && (!dataset.viewable?has_content || dataset.viewable)>
         <#list dataset.getDataTables() as table>
         <tr>
             <td>
@@ -35,6 +36,7 @@
             </td>
         </tr>
         </#list>
+    </#if>
 </#macro>
 
 <#macro listDataTableColumns tableColumnList>        
@@ -82,7 +84,6 @@ applyZebraColors();
 
     <div class="glide">
 
-<@rlist.showControllerErrors />
 
 <#if bookmarkedDataTables.empty >
     <p>

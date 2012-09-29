@@ -4,6 +4,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -33,6 +34,9 @@ import org.tdar.core.bean.resource.Resource;
 public abstract class Citation extends Persistable.Base implements HasResource<Resource> {
 
     private static final long serialVersionUID = 4174558394278154078L;
+
+    @Transient
+    private final static String[] JSON_PROPERTIES = { "id", "text" };
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH }, optional = false)
     private Resource resource;
@@ -72,5 +76,10 @@ public abstract class Citation extends Persistable.Base implements HasResource<R
 
     public boolean isValidForController() {
         return true;
+    }
+    
+    @Override
+    protected String[] getIncludedJsonProperties() {
+        return getIncludedJsonProperties();
     }
 }

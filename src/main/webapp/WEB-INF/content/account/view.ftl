@@ -55,11 +55,12 @@ Now that you've successfully registered an account with tDAR.  Here are some nic
 </#if>
 <tr>
 <td>RPA?</td>
-<#if person.rpa>
-<td>Yes</td>
-<#else>
-<td>No</td>
+<td>
+<#if person.rpaNumber?has_content>
+	${person.rpaNumber}
 </#if>
+	</td>
+
 </tr>
 </table>
 <a href="<@s.url value='/entity/person/edit?id=${sessionData.person.id?c}'/>">Edit your Account Settings</a>

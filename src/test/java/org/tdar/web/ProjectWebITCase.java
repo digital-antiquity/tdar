@@ -15,8 +15,8 @@ public class ProjectWebITCase extends AbstractAdminAuthenticatedWebTestCase{
         
         gotoPage("/document/add");
         setInput("document.title", resourceName);
-        setInput("resource.description",  "hi mom");
-        setInput("resource.date", "1999");
+        setInput("document.description",  "hi mom");
+        setInput("document.date", "1999");
         setInput("projectId", TestConstants.PARENT_PROJECT_ID.toString());
         submitForm();
         //get the id of the new resource

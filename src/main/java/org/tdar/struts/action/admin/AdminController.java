@@ -21,11 +21,10 @@ import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.bean.request.ContributorRequest;
-import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.bean.util.Statistic.StatisticType;
+import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 import org.tdar.core.service.external.auth.TdarGroup;
 import org.tdar.struts.RequiresTdarUserGroup;
 import org.tdar.struts.action.AuthenticationAware;
@@ -43,12 +42,10 @@ import org.tdar.utils.Pair;
 @Namespace("/admin")
 @Component
 @Scope("prototype")
-@RequiresTdarUserGroup(TdarGroup.TDAR_ADMIN)
+@RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)
 public class AdminController extends AuthenticationAware.Base {
 
     private static final long serialVersionUID = 4385039298623767568L;
-
-    private List<Project> allProjects;
 
     private List<ContributorRequest> pendingContributorRequests;
 
@@ -72,6 +69,7 @@ public class AdminController extends AuthenticationAware.Base {
     private Map<Date, Map<StatisticType, Long>> historicalResourceStats;
     private Map<Date, Map<StatisticType, Long>> historicalCollectionStats;
     private Map<Date, Map<StatisticType, Long>> historicalUserStats;
+    private Map<Date, Map<StatisticType, Long>> historicalRepositorySizes;
     private List<Person> recentLogins;
 
     private Map<String, List<Number>> fileAverageStats;
@@ -83,6 +81,7 @@ public class AdminController extends AuthenticationAware.Base {
     })
     public String execute() {
         setCurrentResourceStats(getStatisticService().getCurrentResourceStats());
+        setHistoricalRepositorySizes(getStatisticService().getRepositorySizes());
         setRecentlyUpdatedResources(getDatasetService().findRecentlyUpdatedItemsInLastXDays(7));
         setRecentLogins(getEntityService().showRecentLogins());
         return SUCCESS;
@@ -102,13 +101,6 @@ public class AdminController extends AuthenticationAware.Base {
         setHistoricalUserStats(getStatisticService().getUserStatistics());
         setRecentUsers(getEntityService().findAllRegisteredUsers(10));
         return SUCCESS;
-    }
-
-    public List<Project> getAllProjects() {
-        if (allProjects == null) {
-            allProjects = getProjectService().findAllSorted();
-        }
-        return allProjects;
     }
 
     public List<ContributorRequest> getPendingContributorRequests() {
@@ -270,6 +262,14 @@ public class AdminController extends AuthenticationAware.Base {
 
     public void setFileAverageStats(Map<String, List<Number>> fileAverageStats) {
         this.fileAverageStats = fileAverageStats;
+    }
+
+    public Map<Date, Map<StatisticType, Long>> getHistoricalRepositorySizes() {
+        return historicalRepositorySizes;
+    }
+
+    public void setHistoricalRepositorySizes(Map<Date, Map<StatisticType, Long>> historicalRepositorySizes) {
+        this.historicalRepositorySizes = historicalRepositorySizes;
     }
 
 }

@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.tdar.core.bean.resource.dataTable.DataTable;
+import org.tdar.core.bean.resource.datatable.DataTable;
 
 /**
  * $Id$
@@ -19,14 +19,14 @@ public class IntegrationDataResult implements Serializable {
     private static final long serialVersionUID = 4923542129590685653L;
 
     private DataTable dataTable;
-    private List<List<String>> rowData = new ArrayList<List<String>>();
+    private List<String[]> rowData = new ArrayList<String[]>();
     private List<IntegrationColumn> integrationColumns;
 
-    public List<List<String>> getRowData() {
+    public List<String[]> getRowData() {
         return rowData;
     }
 
-    public void setRowData(List<List<String>> rowData) {
+    public void setRowData(List<String[]> rowData) {
         this.rowData = rowData;
     }
 
@@ -44,5 +44,9 @@ public class IntegrationDataResult implements Serializable {
 
     public List<IntegrationColumn> getIntegrationColumns() {
         return integrationColumns;
+    }
+    
+    public String toString() {
+        return String.format("integration data result for %s and columns %s", dataTable, integrationColumns); 
     }
 }

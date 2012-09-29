@@ -1,84 +1,20 @@
-<?xml version="1.0"?>
-<!--
-vim:sts=2:sw=2:
--->
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- FIXME: this file is only used for hibernate-tool support in Eclipse, it isn't needed by our spring + hibernate
+     configuration -->
 <!DOCTYPE hibernate-configuration PUBLIC
-    "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
-    "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+		"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+		"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
-  <session-factory>  
-    <mapping package="org.tdar.core.bean.resource"/>
-    <mapping package="org.tdar.core.dao"/>
-    <!-- project/dataset/information resource related beans -->
-    <mapping class="org.tdar.core.bean.resource.Dataset"/>
-    <mapping class="org.tdar.core.bean.resource.DataValueOntologyNodeMapping"/>
-    <mapping class="org.tdar.core.bean.resource.Document"/>
-    <mapping class="org.tdar.core.bean.resource.Image"/>
-    <mapping class="org.tdar.core.bean.resource.InformationResource"/>
-    <mapping class="org.tdar.core.bean.resource.InformationResourceFile"/>
-    <mapping class="org.tdar.core.bean.resource.InformationResourceFileVersion"/>
-    <mapping class="org.tdar.core.bean.resource.OntologyNode"/>
-    <mapping class="org.tdar.core.bean.resource.Project"/>
-    <mapping class="org.tdar.core.bean.resource.Resource"/>
-    <mapping class="org.tdar.core.bean.resource.SensoryData"/>
-    <mapping class="org.tdar.core.bean.resource.ResourceAnnotation"/>
-    <mapping class="org.tdar.core.bean.resource.ResourceAnnotationKey"/>
-    <mapping class="org.tdar.core.bean.resource.ResourceNote"/>
-    <mapping class="org.tdar.core.bean.entity.Creator"/>
-    <mapping class="org.tdar.core.bean.entity.ResourceCreator"/>
-    <!-- resource metadata beans--><!--     
-    <mapping class="org.tdar.core.bean.resource.Language"/>
-    <mapping class='org.tdar.core.bean.resource.DcmiType'/> -->
-    <mapping class='org.tdar.core.bean.resource.Ontology'/>
-    <mapping class='org.tdar.core.bean.resource.CodingSheet'/>
-    <mapping class='org.tdar.core.bean.resource.CodingRule'/>
-    <mapping class='org.tdar.core.bean.resource.DataTable'/>
-    <mapping class='org.tdar.core.bean.resource.DataTableColumn'/>
-    <mapping class='org.tdar.core.bean.resource.ColumnEncodingType'/>
-    <mapping class='org.tdar.core.bean.resource.MeasurementUnit'/>
-    <mapping class='org.tdar.core.bean.resource.CategoryVariable'/>
-    <!-- support bean for storing user bookmarked resources -->
-    <mapping class='org.tdar.core.bean.resource.BookmarkedResource'/>
-    <!-- maintains action log for resource revision -->
-    <mapping class='org.tdar.core.bean.resource.ResourceRevisionLog'/>
-    <mapping class='org.tdar.core.bean.resource.ResourceRelationship'/>
-
-    <!-- keyword beans -->
-    <mapping package='org.tdar.core.bean.keyword'/>
-    <mapping class='org.tdar.core.bean.keyword.CultureKeyword'/>
-    <mapping class='org.tdar.core.bean.keyword.OtherKeyword'/>
-    <mapping class='org.tdar.core.bean.keyword.SiteNameKeyword'/>
-    <mapping class='org.tdar.core.bean.keyword.SiteTypeKeyword'/>
-    <mapping class='org.tdar.core.bean.keyword.TemporalKeyword'/>
-    <mapping class='org.tdar.core.bean.keyword.GeographicKeyword'/>
-    <mapping class='org.tdar.core.bean.keyword.MaterialKeyword'/>
-    <mapping class='org.tdar.core.bean.keyword.InvestigationType'/>
-
-    <!-- coverage beans -->
-    <mapping package='org.tdar.core.bean.coverage'/>
-    <mapping class='org.tdar.core.bean.coverage.CalendarDate'/>
-    <mapping class='org.tdar.core.bean.coverage.RadiocarbonDate'/>
-    <mapping class='org.tdar.core.bean.coverage.LatitudeLongitudeBox'/>
-    
-    <!-- citation beans -->
-    <mapping package='org.tdar.core.bean.citation'/>
-    <mapping class='org.tdar.core.bean.citation.RelatedComparativeCollection'/>
-    <mapping class='org.tdar.core.bean.citation.SourceCollection'/>
-
-    <!-- entity (person/individual) beans -->
-    <mapping package='org.tdar.core.bean.entity'/>
-    <mapping class='org.tdar.core.bean.entity.AuthenticationToken'/>
-    <mapping class="org.tdar.core.bean.entity.FullUser"/>
-    <mapping class='org.tdar.core.bean.entity.Institution'/>
-    <mapping class='org.tdar.core.bean.entity.Person'/>
-    <mapping class="org.tdar.core.bean.entity.ReadUser"/>
-
-    <!-- 
-    request beans, currently only the Contributor Request, eventually may
-    have publish requests, privileged requests, etc?
-    -->
-    <mapping class='org.tdar.core.bean.request.ContributorRequest'/>
-    
-  </session-factory>
+    <session-factory name="sessionFactory">
+        <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+        <property name="hibernate.connection.url">jdbc:postgresql://localhost/tdarmetadata</property>
+        <property name="hibernate.connection.username">tdar</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+        <mapping package="org.tdar.core.bean.resource"/>
+        <!--
+        <mapping class="org.tdar.core.bean.resource.dataintegration.DataValueOntologyNodeMapping"/>
+        <mapping class="org.tdar.core.bean.resource.datatable.DataTableColumn"/>
+        <mapping class="org.tdar.core.bean.resource.OntologyNode"/>
+        -->
+    </session-factory>
 </hibernate-configuration>
-

@@ -21,11 +21,14 @@ import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.Norms;
+import org.hibernate.search.annotations.Store;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
+import org.tdar.search.query.QueryFieldNames;
 
 /**
  * $Id$
@@ -77,7 +80,8 @@ public class Institution extends Creator implements Comparable<Institution>, Val
 
     @XmlElement
     // FIXME: this seemingly conflicts w/ @Field annotations on Creator.getName(). Figure out which declaration is working
-    @Fields({ @Field(name = "name_auto", analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)),
+    @Fields({
+            @Field(name = "name_auto", norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)),
             @Field(analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)) })
     public String getName() {
         if (parentInstitution != null) {
@@ -158,13 +162,12 @@ public class Institution extends Creator implements Comparable<Institution>, Val
 
     @Override
     public boolean isValidForController() {
-    	return StringUtils.isNotBlank(name);
+        return StringUtils.isNotBlank(name);
     }
 
     @Override
     public boolean isValid() {
-    	return isValidForController() && getId() != null;
+        return isValidForController() && getId() != null;
     }
-
 
 }

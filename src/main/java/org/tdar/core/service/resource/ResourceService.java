@@ -4,20 +4,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.tools.ant.filters.StringInputStream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.HasResource;
+import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
+import org.tdar.core.bean.cache.HomepageResourceCountCache;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.keyword.GeographicKeyword;
@@ -31,8 +32,9 @@ import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.bean.util.HomepageGeographicKeywordCache;
-import org.tdar.core.bean.util.HomepageResourceCountCache;
+import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.bean.resource.Video;
+import org.tdar.core.bean.statistics.ResourceAccessStatistic;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.dao.resource.DatasetDao;
@@ -57,8 +59,6 @@ public class ResourceService extends GenericService {
 
     @Autowired
     private GeoSearchService geoSearchService;
-
-    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Transactional(readOnly = true)
     public boolean isOntology(Long id) {
@@ -86,15 +86,20 @@ public class ResourceService extends GenericService {
     }
 
     @Transactional(readOnly = true)
-    public Resource find(Long id) {
+    public boolean isVideo(Long id) {
+        return getGenericDao().find(Video.class, id) != null;
+    }
+
+    @Transactional(readOnly = true)
+    public <R extends Resource> R find(Long id) {
         if (id == null)
             return null;
         ResourceType rt = datasetDao.findResourceType(id);
-        logger.trace("finding resource " + id + " type:" + rt);
+        logger.info("finding resource " + id + " type:" + rt);
         if (rt == null) {
             return null;
         }
-        return getGenericDao().find(rt.getResourceClass(), id);
+        return (R) getGenericDao().find(rt.getResourceClass(), id);
     }
 
     /**
@@ -125,16 +130,22 @@ public class ResourceService extends GenericService {
         save(log);
     }
 
+    //FIXME: I'm pretty sure @Transactional is pointless here.  you can't rollback file io
     @Transactional(readOnly = true)
     public <T extends Resource> void saveRecordToFilestore(T resource) {
         @SuppressWarnings("deprecation")
         InformationResourceFileVersion version = new InformationResourceFileVersion();
         version.setFilename("record.xml");
         version.setExtension("xml");
+        version.setFileVersionType(VersionType.RECORD);
         version.setInformationResourceId(resource.getId());
         try {
             TdarConfiguration.getInstance().getFilestore().storeAndRotate(new StringInputStream(xmlService.convertToXML(resource)), version, 5);
         } catch (Exception e) {
+            //FIXME: This catch is too wide. E.g. a LazyInitializationException is arguably not a "recoverable exception" and we should throw something 
+            //       more appropriate like TdarRuntimeException so that the caller knows to (for example) rollback any DB work that happened to this record
+            //       before we tried to write it to the filestore.   On the other hand, if just a file IO issue, it may be acceptable to simply log the error 
+            //       but keep the DB transaction.
             logger.error("something happend when converting record to XML: {}", e);
             throw new TdarRecoverableRuntimeException("could not save xml record");
         }
@@ -147,7 +158,13 @@ public class ResourceService extends GenericService {
 
     @Transactional(readOnly = false)
     public void incrementAccessCounter(Resource r) {
-        datasetDao.incrementAccessCounter(r);
+        ResourceAccessStatistic rac = new ResourceAccessStatistic(new Date(), r);
+        save(rac);
+    }
+
+    @Transactional(readOnly = true)
+    public void updateTransientAccessCount(Resource resource) {
+        resource.setTransientAccessCount(datasetDao.getAccessCount(resource).longValue());
     }
 
     @Transactional(readOnly = true)
@@ -165,23 +182,18 @@ public class ResourceService extends GenericService {
         return datasetDao.countResourcesForUserAccess(user);
     }
 
+
     @Transactional
     public void processManagedKeywords(Resource resource, Collection<LatitudeLongitudeBox> allLatLongBoxes) {
-        List<String> ignoreProperties = new ArrayList<String>();
-        // needed in cases like the APIController where the collection is not properly initialized
-        if (resource.getManagedGeographicKeywords() != null) {
-            resource.getManagedGeographicKeywords().clear();
-        }
-        resource.setManagedGeographicKeywords(new LinkedHashSet<GeographicKeyword>());
-        ignoreProperties.add("approved");
-        ignoreProperties.add("selectable");
-        ignoreProperties.add("level");
+        List<String> ignoreProperties = new ArrayList<String>(Arrays.asList("approved", "selectable", "level"));
+        Set<GeographicKeyword> incomingManagedKeywords = new HashSet<GeographicKeyword>();
         for (LatitudeLongitudeBox latLong : allLatLongBoxes) {
             Set<GeographicKeyword> managedKeywords = geoSearchService.extractAllGeographicInfo(latLong);
             logger.debug(resource.getId() + " :  " + managedKeywords + " " + managedKeywords.size());
-            resource.getManagedGeographicKeywords().addAll(
-                    findByExamples(GeographicKeyword.class, managedKeywords, ignoreProperties, FindOptions.FIND_FIRST_OR_CREATE));
+            incomingManagedKeywords.addAll(
+                    getGenericDao().findByExamples(GeographicKeyword.class, managedKeywords, ignoreProperties, FindOptions.FIND_FIRST_OR_CREATE));
         }
+        Persistable.Base.reconcileSet(resource.getManagedGeographicKeywords(), incomingManagedKeywords);
     }
 
     @Transactional
@@ -201,7 +213,7 @@ public class ResourceService extends GenericService {
             Collection<H> incoming_,
             Set<H> current, Class<H> cls) {
         if (CollectionUtils.isEmpty(incoming_) && CollectionUtils.isEmpty(current)) {
-            //skip a complete no-op
+            // skip a complete no-op
             return;
         }
 
@@ -255,7 +267,7 @@ public class ResourceService extends GenericService {
 
                     // attach the incoming notes to a hibernate session
                     if (shouldSave) {
-                        hasResource_ = merge(hasResource_);
+                        hasResource_ = getGenericDao().merge(hasResource_);
                     }
                     logger.debug("adding {} to {} ", hasResource_, current);
                     current.add(hasResource_);

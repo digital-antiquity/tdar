@@ -2,8 +2,6 @@ package org.tdar.struts.action.search;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.tdar.core.bean.resource.ResourceType.DOCUMENT;
-import static org.tdar.core.bean.resource.ResourceType.IMAGE;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,7 +37,7 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
 
     @Autowired
     // FIXME: MAKE GENERIC
-    protected LuceneSearchController controller;
+    protected AdvancedSearchController controller;
 
     // FIXME:these counts will change often - need to figure a better way to keep it in sync
     /*
@@ -68,9 +66,9 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
     protected static List<ResourceType> allResourceTypes = Arrays.asList(ResourceType.values());
 
     @Autowired
-    SearchIndexService searchIndexService;
+    protected SearchIndexService searchIndexService;
     @Autowired
-    GenericKeywordService genericKeywordService;
+    protected GenericKeywordService genericKeywordService;
 
     public TdarActionSupport getController() {
         return controller;
@@ -79,7 +77,7 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
     @Before
     public void reset() {
         searchIndexService.purgeAll();
-        controller = generateNewInitializedController(LuceneSearchController.class);
+        controller = generateNewInitializedController(AdvancedSearchController.class);
         controller.setRecordsPerPage(50);
     }
 
@@ -98,7 +96,7 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
         assertFalse(siteType.getLabel().trim().endsWith(":"));
         genericService.saveOrUpdate(dataset);
         ResourceCreator rc = new ResourceCreator();
-        rc.setRole(ResourceCreatorRole.AUTHOR);
+        rc.setRole(ResourceCreatorRole.CREATOR);
         rc.setResource(dataset);
         rc.setCreator(createAndSaveNewPerson("atest@Test.com", "abc"));
         ResourceCreator rc2 = new ResourceCreator();
@@ -141,10 +139,10 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
         CultureKeyword label = genericKeywordService.findByLabel(CultureKeyword.class, "Folsom");
         CultureKeyword label2 = genericKeywordService.findByLabel(CultureKeyword.class, "Early Archaic");
         LatitudeLongitudeBox latLong = new LatitudeLongitudeBox();
+        latLong.setMinimumLongitude(-117.124);
+        latLong.setMaximumLongitude(-117.101);
         latLong.setMaximumLatitude(35.791);
-        latLong.setMaximumLongitude(-117.124);
         latLong.setMinimumLatitude(33.354);
-        latLong.setMinimumLongitude(-117.101);
         img.setLatitudeLongitudeBox(latLong);
         assertNotNull(label.getId());
         img.getCultureKeywords().add(label);
@@ -183,8 +181,8 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
 
     protected List<ResourceType> getInheritingTypes() {
         List<ResourceType> list = new ArrayList<ResourceType>();
-        list.add(IMAGE);
-        list.add(DOCUMENT);
+        list.add(ResourceType.IMAGE);
+        list.add(ResourceType.DOCUMENT);
         return list;
     }
 
@@ -194,21 +192,19 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
         logger.info("search (" + controller.getQuery() + ") found: " + controller.getTotalRecords());
     }
 
-    protected void doSearch() {
-        doSearch("");
-    }
-
     protected void reindex() {
         searchIndexService.purgeAll();
         searchIndexService.indexAll(Resource.class);
     }
 
     protected void setStatuses(Status... status) {
-        controller.setIncludedStatuses(new ArrayList<Status>(Arrays.asList(status)));
+        controller.getIncludedStatuses().clear();
+        
+        controller.getIncludedStatuses().addAll(new ArrayList<Status>(Arrays.asList(status)));
     }
 
     protected void setStatusAll() {
-        controller.setIncludedStatuses(new ArrayList<Status>(Arrays.asList(Status.values())));
+        setStatuses(Status.values());
     }
 
     protected void logResults() {
@@ -218,28 +214,28 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
     }
 
     protected void setResourceTypes(ResourceType... resourceTypes) {
-        controller.setResourceTypes(Arrays.asList(resourceTypes));
+        setResourceTypes(Arrays.asList(resourceTypes));
+    }
+    
+    protected void setResourceTypes(List<ResourceType> resourceTypes) {
+        controller.getResourceTypes().clear();
+        controller.getResourceTypes().addAll(resourceTypes);
     }
 
     @Override
     public Person getSessionUser() {
         return null;
     }
-
     
-    protected Document createDocumentWithContributorAndSubmitter() throws InstantiationException, IllegalAccessException {
-        Document doc = createAndSaveNewInformationResource(Document.class);
-        Person contributor = new Person("Kelly", "deVos", "kellyd@mailinator.com");
-        genericService.save(contributor);
-        ResourceCreator rc = new ResourceCreator(doc, contributor, ResourceCreatorRole.AUTHOR);
-        Person submitter = new Person("Evelyn", "deVos", "ecd@mailinator.com");
-        genericService.save(submitter);
-        doc.setSubmitter(submitter);
-        genericService.saveOrUpdate(rc);
-        doc.getResourceCreators().add(rc);
-        genericService.saveOrUpdate(doc);
-        reindex();
-        return doc;
+    protected SearchParameters firstGroup() {
+        if(controller.getG().isEmpty()) {
+            controller.getG().add(new SearchParameters());
+        }
+        return controller.getG().get(0);
     }
-
+    
+    protected LatitudeLongitudeBox firstMap() {
+    	return controller.getMap();
+    }
+    
 }

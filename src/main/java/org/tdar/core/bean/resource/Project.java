@@ -2,36 +2,28 @@ package org.tdar.core.bean.resource;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
-import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Index;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Store;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.Sortable;
 import org.tdar.core.configuration.JSONTransient;
 import org.tdar.search.query.QueryFieldNames;
-import org.tdar.struts.data.PartitionedResourceResult;
-import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
+import org.tdar.search.query.SortOption;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
@@ -48,14 +40,14 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 @Indexed
 @XStreamAlias("project")
 @XmlRootElement(name = "project")
-public class Project extends Resource {
+public class Project extends Resource implements Sortable {
 
     private static final long serialVersionUID = -3339534452963234622L;
 
     // FIXME: remove redundant fields, perhaps implement jsonmodel in these other classes (keywords, coveragedate, etc..)
     private static final String[] JSON_PROPERTIES = {
             // keyword properties
-            "label", "approved", "id",
+            "label", "approved", "id", "note", "key", "type", "value", "text",
 
             // resource properties
             "title", "description",
@@ -72,7 +64,13 @@ public class Project extends Resource {
 
             // latlongbox properties
             "minObfuscatedLongitude", "maxObfuscatedLongitude",
-            "minObfuscatedLatitude", "maxObfuscatedLatitude"
+            "minObfuscatedLatitude", "maxObfuscatedLatitude",
+
+            "relatedComparativeCollections",
+            "sourceCollections",
+            "resourceNotes",
+            "resourceAnnotations",
+            "resourceAnnotationKey"
     };
 
     public static final Project NULL = new Project() {
@@ -84,15 +82,6 @@ public class Project extends Resource {
         }
 
         @Override
-        public String getTitleSort() {
-            return "";
-        }
-        @Override
-        public boolean isActive() {
-            return false;
-        }
-        
-        @Override
         public Long getId() {
             return -1L;
         }
@@ -100,6 +89,16 @@ public class Project extends Resource {
         @Override
         public String getTitle() {
             return "No Associated Project";
+        }
+
+        @Override
+        public String getTitleSort() {
+            return "";
+        }
+
+        @Override
+        public boolean isActive() {
+            return false;
         }
     };
 
@@ -111,156 +110,18 @@ public class Project extends Resource {
         setResourceType(ResourceType.PROJECT);
     }
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "project", fetch = FetchType.LAZY)
-    @IndexedEmbedded
     @XStreamOmitField
     @JSONTransient
-    @XmlTransient
-    private Set<InformationResource> informationResources = new HashSet<InformationResource>();
-
-    // XXX: currently used to more easily split up the generic InformationResources into categories.
     @Transient
-    @XStreamOmitField
-    @JSONTransient
-    private List<Document> documents;
-    @Transient
-    @XStreamOmitField
-    @JSONTransient
-    private List<Dataset> datasets;
-    @Transient
-    @XStreamOmitField
-    @JSONTransient
-    private List<CodingSheet> codingSheets;
-    @Transient
-    @JSONTransient
-    @XStreamOmitField
-    private List<Ontology> ontologies;
-    @Transient
-    @JSONTransient
-    @XStreamOmitField
-    private List<Image> images;
-
-    @Transient
-    @JSONTransient
-    @XStreamOmitField
-    private List<SensoryData> sensoryDataDocuments;
+    private transient Set<InformationResource> cachedInformationResources = new HashSet<InformationResource>();
 
     public Project() {
         setResourceType(ResourceType.PROJECT);
     }
 
-    @JSONTransient
-    private synchronized void partitionInformationResources() {
-        PartitionedResourceResult p = new PartitionedResourceResult(getInformationResources());
-        codingSheets = p.getResourcesOfType(CodingSheet.class);
-        datasets = p.getResourcesOfType(Dataset.class);
-        documents = p.getResourcesOfType(Document.class);
-        ontologies = p.getResourcesOfType(Ontology.class);
-        images = p.getResourcesOfType(Image.class);
-        sensoryDataDocuments = p.getResourcesOfType(SensoryData.class);
-
-        Collections.sort(codingSheets);
-        Collections.sort(datasets);
-        Collections.sort(documents);
-        Collections.sort(ontologies);
-        Collections.sort(images);
-        Collections.sort(sensoryDataDocuments);
-    }
-
-    @XmlElementWrapper(name = "codingSheets")
-    @XmlElement(name = "codingSheetRef")
-    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
-    @JSONTransient
-    public synchronized List<CodingSheet> getCodingSheets() {
-        if (codingSheets == null) {
-            partitionInformationResources();
-        }
-        return codingSheets;
-    }
-
-    @XmlElementWrapper(name = "datasets")
-    @XmlElement(name = "datasetRef")
-    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
-    @JSONTransient
-    public synchronized List<Dataset> getDatasets() {
-        if (datasets == null) {
-            partitionInformationResources();
-        }
-        return datasets;
-    }
-
-    @XmlElementWrapper(name = "documents")
-    @XmlElement(name = "documentRef")
-    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
-    @JSONTransient
-    public synchronized List<Document> getDocuments() {
-        if (documents == null) {
-            partitionInformationResources();
-        }
-        return documents;
-    }
-
-    @XmlElementWrapper(name = "ontologies")
-    @XmlElement(name = "ontologyRef")
-    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
-    @JSONTransient
-    public synchronized List<Ontology> getOntologies() {
-        if (ontologies == null) {
-            partitionInformationResources();
-        }
-        return ontologies;
-    }
-
-    @XmlElementWrapper(name = "images")
-    @XmlElement(name = "imageRef")
-    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
-    @JSONTransient
-    public synchronized List<Image> getImages() {
-        if (images == null) {
-            partitionInformationResources();
-        }
-        return images;
-    }
-
-    @XmlElementWrapper(name = "sensoryDataDocuments")
-    @XmlElement(name = "sensoryDataRef")
-    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
-    @JSONTransient
-    public synchronized List<SensoryData> getSensoryDataDocuments() {
-        if (sensoryDataDocuments == null) {
-            partitionInformationResources();
-        }
-        return sensoryDataDocuments;
-    }
-
-    @XmlTransient
-    @JSONTransient
-    public Set<InformationResource> getInformationResources() {
-        return informationResources;
-    }
-
-    @Transient
-    @JSONTransient
-    public SortedSet<InformationResource> getSortedInformationResources() {
-        return getSortedInformationResources(new Comparator<InformationResource>() {
-            @Override
-            public int compare(InformationResource a, InformationResource b) {
-                int comparison = a.getTitle().compareTo(b.getTitle());
-                return (comparison == 0) ? a.getId().compareTo(b.getId()) : comparison;
-            }
-        });
-    }
-
-    @Transient
-    public synchronized SortedSet<InformationResource> getSortedInformationResources(Comparator<InformationResource> comparator) {
-        TreeSet<InformationResource> sortedDatasets = new TreeSet<InformationResource>(comparator);
-        sortedDatasets.addAll(getInformationResources());
-        return sortedDatasets;
-    }
-
-    public synchronized void setInformationResources(Set<InformationResource> informationResources) {
-        this.informationResources = informationResources;
-    }
+    @Enumerated(EnumType.STRING)
+    @Column(name = "sort_order", columnDefinition = "varchar(50) default 'RESOURCE_TYPE'")
+    private SortOption sortBy = SortOption.RESOURCE_TYPE;
 
     @Override
     protected String[] getIncludedJsonProperties() {
@@ -270,15 +131,32 @@ public class Project extends Resource {
     }
 
     @Transient
-    @Field(name = QueryFieldNames.PROJECT_TITLE_SORT, index = Index.UN_TOKENIZED, store = Store.YES)
+    @Field(name = QueryFieldNames.PROJECT_TITLE_SORT, norms = Norms.NO, store = Store.YES, analyze=Analyze.NO)
     public String getProjectTitle() {
         return getTitleSort();
     }
-    
+
     @Transient
-    //return the title without "The" as a prefix  or "Project" as suffix
+    // return the title without "The" as a prefix or "Project" as suffix
     public String getCoreTitle() {
         return getTitle().trim().replaceAll("^[T|t]he\\s", "").replaceAll("\\s[P|p]roject$", "");
+    }
+
+    @IndexedEmbedded(prefix = "informationResources.")
+    public Set<InformationResource> getCachedInformationResources() {
+        return cachedInformationResources;
+    }
+
+    public void setCachedInformationResources(Set<InformationResource> cachedInformationResources) {
+        this.cachedInformationResources = cachedInformationResources;
+    }
+
+    public SortOption getSortBy() {
+        return sortBy;
+    }
+
+    public void setSortBy(SortOption sortBy) {
+        this.sortBy = sortBy;
     }
 
 }

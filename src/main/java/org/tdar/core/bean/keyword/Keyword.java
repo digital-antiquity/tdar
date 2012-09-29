@@ -9,10 +9,11 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.apache.lucene.search.Explanation;
 import org.hibernate.annotations.Type;
+import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Fields;
-import org.hibernate.search.annotations.Index;
+import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Store;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Indexable;
@@ -54,9 +55,9 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
 
         @Column(nullable = false, unique = true)
         @Fields({ @Field(name = "label", analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
-                @Field(name = "label_auto", analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)),
+                @Field(name = "label_auto", norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)),
                 @Field(name = "labelKeyword", analyzer = @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)),
-                @Field(name = QueryFieldNames.LABEL_SORT, index = Index.UN_TOKENIZED, store = Store.YES) })
+                @Field(name = QueryFieldNames.LABEL_SORT, norms = Norms.NO, store = Store.YES, analyze=Analyze.NO) })
         private String label;
 
         @Lob
@@ -95,8 +96,9 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
             this.definition = definition;
         }
 
+        @Override
         public String toString() {
-            return label;
+            return getLabel();
         }
 
         @Override
@@ -130,7 +132,7 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
         }
 
         public <D extends Dedupable> void addSynonym(D synonym) {
-            for(String name : synonym.getSynonyms()) {
+            for (String name : synonym.getSynonyms()) {
                 getSynonyms().add(name);
             }
             getSynonyms().add(synonym.getSynonymFormattedName());

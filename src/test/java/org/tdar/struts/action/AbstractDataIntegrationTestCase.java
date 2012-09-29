@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.sql.DataSource;
 
@@ -25,23 +26,26 @@ import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.Persistable.Base;
+import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
-import org.tdar.core.bean.resource.dataTable.DataTable;
-import org.tdar.core.bean.resource.dataTable.DataTableColumn;
+import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.db.conversion.DatasetConversionFactory;
 import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.db.model.PostgresDatabase;
 import org.tdar.filestore.Filestore;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
+import org.tdar.struts.action.resource.CodingSheetController;
 import org.tdar.struts.action.resource.DatasetController;
 import org.tdar.struts.data.IntegrationColumn;
 import org.tdar.struts.data.IntegrationDataResult;
-import org.tdar.struts.data.OntologyNodeData;
 
 public abstract class AbstractDataIntegrationTestCase extends AbstractAdminControllerITCase {
 
@@ -153,18 +157,15 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         tdarDataImportDatabase.setDataSource(dataSource);
     }
 
-    public abstract String[] getDatabaseList();
+    public String[] getDataImportDatabaseTables() {
+        return new String[0];
+    }
 
     @Before
-    public void prepareFiles() throws Exception {
-        // have the filestore put our sample files... wherever it puts files
-        String[] list = new String[0];
-        if (getDatabaseList() != null) {
-            list = getDatabaseList();
-        };
-        for (String database : list) {
+    public void dropDataImportDatabaseTables() throws Exception {
+        for (String table : getDataImportDatabaseTables()) {
             try {
-                tdarDataImportDatabase.dropTable(database);
+                tdarDataImportDatabase.dropTable(table);
             } catch (Exception ignored) {
             }
         }
@@ -172,36 +173,38 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
     }
 
     protected void mapDataOntologyValues(DataTable dataTable, String columnName, Map<String, String> valueMap, Ontology ontology) throws TdarActionException {
-        DatasetController controller = generateNewInitializedController(DatasetController.class);
+        CodingSheetController controller = generateNewInitializedController(CodingSheetController.class);
         DataTableColumn column = dataTable.getColumnByName(columnName);
-        AbstractResourceControllerITCase.loadResourceFromId(controller, dataTable.getDataset().getId());
-        controller.setDataTableId(dataTable.getId());
-        controller.setColumnId(column.getId());
+        AbstractResourceControllerITCase.loadResourceFromId(controller, column.getDefaultCodingSheet().getId());
         controller.loadOntologyMappedColumns();
-        List<String> dataColumnValues = controller.getDistinctColumnValues();
-        List<String> ontologyNodeNames = controller.getOntologyNodeNames();
-        List<Long> ontologyNodeIds = controller.getOntologyNodeIds();
-        logger.info("mapping ontology values for: " + dataTable.getName() + " [" + columnName + "]");
-        for (int i = 0; i < dataColumnValues.size(); i++) {
-            String name = dataColumnValues.get(i);
-            if (valueMap.get(name) != null) {
-                OntologyNode node = ontology.getNodeByNameIgnoreCase(valueMap.get(name));
+        Set<CodingRule> rules = column.getDefaultCodingSheet().getCodingRules();
+        // List<OntologyNode> ontologyNodes = column.getDefaultOntology().getOntologyNodes();
+        // List<String> dataColumnValues = dataTableService.findAllDistinctValues(column);
+        logger.info("mapping ontology values for: {} [{}]", dataTable.getName(), columnName);
+        logger.info("ontology nodes: {}", ontology.getOntologyNodes());
+        List<CodingRule> toSave = new ArrayList<CodingRule>();
+        for (CodingRule rule : rules) {
+            String value = valueMap.get(rule.getTerm());
+            if (value != null) {
+                OntologyNode node = ontology.getNodeByNameIgnoreCase(value);
                 if (node != null) {
-                    logger.info("setting " + name + " ->" + valueMap.get(name) + " (" + node.getId() + ")");
-                    ontologyNodeIds.set(i, node.getId());
-                } else {
-                    logger.info("ontology does not contain: " + name);
+                    logger.info(String.format("setting %s -> %s (%s)", rule.getTerm(), value, node));
+                    rule.setOntologyNode(node);
+                    toSave.add(rule);
                 }
+            } else {
+                logger.info("ontology does not contain: " + rule.getTerm());
             }
         }
-        controller.setDataColumnValues(dataColumnValues);
-        controller.setOntologyNodeNames(ontologyNodeNames);
-        controller.setOntologyNodeIds(ontologyNodeIds);
-        controller.saveDataValueOntologyNodeMapping();
-        assertTrue(column.getValueToOntologyNodeMap().size() > 0);
-        Long columnId = dataTable.getColumnByName(columnName).getId();
-        column = genericService.find(DataTableColumn.class, columnId);
-        assertNotNull(column.getValueToOntologyNodeMap());
+        controller.setCodingRules(toSave);
+        controller.saveValueOntologyNodeMapping();
+
+        Set<Long> idSet = Base.createIdMap(toSave).keySet();
+        for (Long toCheck : idSet) {
+            CodingRule find = genericService.find(CodingRule.class, toCheck);
+            assertNotNull(find.getOntologyNode());
+        }
+        Assert.assertNotSame(0, toSave.size());
     }
 
     public void mapColumnsToDataset(Dataset dataset, DataTable dataTable, DataTableColumn... mappings) throws TdarActionException {
@@ -222,9 +225,8 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
 
     public List<IntegrationDataResult> performActualIntegration(List<Long> tableIds, List<IntegrationColumn> integrationColumns,
             HashMap<Ontology, String[]> nodeSelectionMap) throws IOException {
-        WorkspaceController controller;
+        WorkspaceController controller = generateNewInitializedController(WorkspaceController.class);
         performIntegrationFiltering(integrationColumns, nodeSelectionMap);
-        controller = generateNewInitializedController(WorkspaceController.class);
         controller.setTableIds(tableIds);
         controller.setIntegrationColumns(integrationColumns);
         controller.displayFilteredResults();
@@ -232,16 +234,21 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         logger.info("Testing Integration Results");
         assertNotNull(controller.getIntegrationDataResults());
         for (IntegrationDataResult integrationDataResult : controller.getIntegrationDataResults()) {
-            int colCount = integrationDataResult.getIntegrationColumns().size();
+
+            // expected colcount includes one table name, integration column count, and display column count
+            int colCount = 1;
+
+            colCount += integrationDataResult.getIntegrationColumns().size();
 
             for (IntegrationColumn col : integrationColumns) { // adding ontology mapping entry
                 if (!col.isDisplayColumn())
                     colCount++;
             }
+
             int size = 0;
-            for (List<String> data : integrationDataResult.getRowData()) {
+            for (String[] data : integrationDataResult.getRowData()) {
                 size++;
-                assertEquals("row " + size + " didn't match expected # of columns " + colCount, data.size(), colCount);
+                assertEquals("row " + size + " didn't match expected # of columns " + colCount, colCount, data.length);
             }
         }
         logger.info("{}", controller.getIntegrationColumns());
@@ -266,7 +273,7 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
                 continue;
             if (nodeSelectionMap.get(integrationColumn.getSharedOntology()) != null) {
                 int foundNodeCount = 0;
-                for (OntologyNodeData nodeData : integrationColumn.getFlattenedOntologyNodeList()) {
+                for (OntologyNode nodeData : integrationColumn.getFlattenedOntologyNodeList()) {
                     if (ArrayUtils.contains(nodeSelectionMap.get(integrationColumn.getSharedOntology()), nodeData.getDisplayName())) {
                         logger.trace("comparing " + nodeData.getDisplayName() + " <-> "
                                 + StringUtils.join(nodeSelectionMap.get(integrationColumn.getSharedOntology()), "|"));

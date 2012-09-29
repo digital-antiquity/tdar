@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.tdar.web;
 
 import java.util.HashMap;
@@ -24,7 +21,7 @@ public class RegistrationWebITCase extends AbstractWebTestCase {
 
         if (deleteFirst) {
             Person p = new Person();
-            p.setEmail(values.get("person.email"));
+            p.setUsername(values.get("person.username"));
             authService.getAuthenticationProvider().deleteUser(p);
         }
         gotoPage("/");
@@ -70,6 +67,7 @@ public class RegistrationWebITCase extends AbstractWebTestCase {
         personmap.put("person.lastName", prefix + "lastName");
         personmap.put("person.email", prefix + "aaaaa@bbbbb.com");
         personmap.put("confirmEmail", prefix + "aaaaa@bbbbb.com");
+        personmap.put("person.username", prefix + "aaaaa@bbbbb.com");
         personmap.put("password", "secret");
         personmap.put("confirmPassword", "secret");
         personmap.put("institutionName", "institution");

@@ -44,6 +44,7 @@ public class DashboardControllerITCase extends AbstractResourceControllerITCase 
         // used for setting up project
         Project projectWithDifferentSubmitterAndFullUser = new Project();
         projectWithDifferentSubmitterAndFullUser.setTitle("test");
+        projectWithDifferentSubmitterAndFullUser.setDescription("test");
         projectWithDifferentSubmitterAndFullUser.setStatus(Status.ACTIVE);
         projectWithDifferentSubmitterAndFullUser.markUpdated(getBasicUser());
         Person testPerson = createAndSaveNewPerson();
@@ -54,6 +55,7 @@ public class DashboardControllerITCase extends AbstractResourceControllerITCase 
 
         Project projectWithSameFullUserAndSubmitter = new Project();
         projectWithSameFullUserAndSubmitter.setTitle("test2");
+        projectWithSameFullUserAndSubmitter.setDescription("test2");
         projectWithSameFullUserAndSubmitter.setStatus(Status.ACTIVE);
         projectWithSameFullUserAndSubmitter.markUpdated(testPerson);
         genericService.save(projectWithSameFullUserAndSubmitter);

@@ -2,7 +2,10 @@
 	<#include "/${parameters.templateDir}/simple/checkboxlist.ftl" />
 <#else>
 <#assign itemCount = 0/>
-<#assign targetList = stack.findValue(parameters.name) />
+<#assign targetList = [] />
+<#if stack.findValue(parameters.name)??>
+    <#assign targetList = stack.findValue(parameters.name) />
+</#if>
 <#if parameters.keywordList??>
 	<#assign root = stack.findValue(parameters.keywordList) />	
 	<@listKeywords root />
@@ -17,7 +20,12 @@
 </#if>
 
 <#macro listKeywords node>
- 	<ul<#if itemCount < 1> id=${parameters.name?html}_Treeview</#if>>
+    <#local ulid = "${parameters.name?html}_Treeview" />
+    <#if parameters.id??>
+    <#local ulid = "${parameters.id}" />
+    </#if>
+    
+ 	<ul<#if itemCount < 1> id="${ulid}"</#if> class="treeview">
 	<#list node.children?keys as kid>
  		<#assign itemCount = itemCount + 1/>
  		<#assign kidnode = node.children.get(kid) />
@@ -31,7 +39,7 @@
 		<li>
 		<#if kidnode.keyword.selectable>
 <input type="checkbox" name="${parameters.name?html}" value="${itemKeyStr?html}" id="${parameters.name?html}-${itemCount}"<#rt/>
-        <#if targetList.contains(itemKey) >
+        <#if targetList?seq_contains(itemKey) || targetList?seq_contains(itemKey?string) >
  checked="checked"<#rt/>
         </#if>
         <#if parameters.disabled?default(false)>

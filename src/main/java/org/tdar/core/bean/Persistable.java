@@ -1,9 +1,13 @@
 package org.tdar.core.bean;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
@@ -17,6 +21,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.lucene.analysis.KeywordAnalyzer;
@@ -25,6 +30,7 @@ import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Store;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.search.query.QueryFieldNames;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -146,16 +152,24 @@ public interface Persistable extends Serializable {
          * @return
          */
         public static boolean isEqual(Persistable a, Persistable b) {
+
+            if (a == null || b == null) {
+                return false;
+            }
+
             Logger logger = LoggerFactory.getLogger(a.getClass());
+
             if (isTransient(a) && isTransient(b)) {
                 // if both objects are transient then these two objects aren't safely comparable outside of
                 // object pointer equality, which should already have been tested via equals(Object).
                 return false;
             }
+
             // short-circuit when ids are equal.
-            if (a.getId().equals(b.getId())) {
+            if (ObjectUtils.equals(a.getId(), b.getId())) {
                 return true;
             }
+
             EqualsBuilder equalsBuilder = new EqualsBuilder();
             List<?> selfEqualityFields = a.getEqualityFields();
             List<?> candidateEqualityFields = b.getEqualityFields();
@@ -168,6 +182,16 @@ public interface Persistable extends Serializable {
                 equalsBuilder.append(selfEqualityFields.get(i), candidateEqualityFields.get(i));
             }
             return equalsBuilder.isEquals();
+        }
+
+        public static <P extends Persistable> Map<Long, P> createIdMap(Collection<P> items) {
+            Map<Long, P> map = new HashMap<Long, P>();
+            for (P item : items) {
+                if (item == null)
+                    continue;
+                map.put(item.getId(), item);
+            }
+            return map;
         }
 
         public static int toHashCode(Persistable persistable) {
@@ -186,11 +210,16 @@ public interface Persistable extends Serializable {
         }
 
         public static boolean isTransient(Persistable persistable) {
-            return persistable.getId() == null || persistable.getId() == -1L;
+            // object==primative only works for certain primative values (see http://stackoverflow.com/a/3815760/103814)
+            return persistable.getId() == null || isNullOrTransient(persistable.getId());
         }
 
         public static boolean isNullOrTransient(Persistable persistable) {
             return persistable == null || isTransient(persistable);
+        }
+
+        public static boolean isNullOrTransient(Number val) {
+            return val == null || val.longValue() == -1L;
         }
 
         @Override
@@ -198,16 +227,67 @@ public interface Persistable extends Serializable {
             return DEFAULT_JSON_PROPERTIES;
         }
 
+        public static <T extends Persistable> List<Long> extractIds(Collection<T> persistables) {
+            List<Long> ids = new ArrayList<Long>();
+            for (T persistable : persistables) {
+                if (persistable != null) {
+                    ids.add(persistable.getId());
+                } else {
+                    ids.add(null);
+                }
+            }
+            return ids;
+        }
+
+        public static <T extends Persistable> List<Long> extractIds(Collection<T> persistables, int max) {
+            List<Long> ids = new ArrayList<Long>();
+            int count = 0;
+            for (T persistable : persistables) {
+                if (persistable != null) {
+                    ids.add(persistable.getId());
+                } else {
+                    ids.add(null);
+                }
+                count++;
+                if (count == max)
+                    break;
+            }
+            return ids;
+        }
+        
+        /*
+         * Adds the contents of the collection to the set, and removes anything was not in the incoming collections (intersection) + add all
+         * @return boolean representing whether the exiting set was changed in any way 
+         */
+        public static <C> boolean reconcileSet(Set<C> existing, Collection<C> incoming) {
+            if (existing == null) {
+                throw new TdarRuntimeException("the existing collection should not be null");
+            }
+            if (incoming == null) {
+                if (!CollectionUtils.isEmpty(existing)) {
+                    existing.clear();
+                    return true;
+                }
+                return false;
+            }
+            
+            boolean changedRetain = existing.retainAll(incoming);
+            boolean changedAddAll = existing.addAll(incoming);
+            
+            return (changedRetain || changedAddAll);
+        }
+        
+
     }
 
     @MappedSuperclass
-    public abstract class Sequence<E extends Sequence<E>> extends Persistable.Base implements Sequenceable<E> {
+    public abstract static class Sequence<E extends Sequence<E>> extends Persistable.Base implements Sequenceable<E> {
         private static final long serialVersionUID = -2667067170953144064L;
 
         @XStreamAsAttribute
         @XStreamAlias("sequence")
         @Column(name = "sequence_number")
-        private Integer sequenceNumber = 0;
+        protected Integer sequenceNumber = 0;
 
         @Override
         public final int compareTo(E other) {

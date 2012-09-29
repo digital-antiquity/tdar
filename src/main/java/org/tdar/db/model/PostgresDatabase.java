@@ -19,13 +19,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import javax.sql.DataSource;
 
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -34,7 +38,6 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.support.DatabaseMetaDataCallback;
 import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.jdbc.support.MetaDataAccessException;
@@ -42,14 +45,15 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.OntologyNode;
-import org.tdar.core.bean.resource.dataTable.DataTable;
-import org.tdar.core.bean.resource.dataTable.DataTableColumn;
-import org.tdar.core.bean.resource.dataTable.DataTableColumnEncodingType;
-import org.tdar.core.bean.resource.dataTable.DataTableColumnType;
+import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
+import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.struts.data.IntegrationColumn;
-import org.tdar.struts.data.IntegrationDataResult;
+import org.tdar.struts.data.IntegrationContext;
+import org.tdar.struts.data.ModernIntegrationDataResult;
 import org.tdar.utils.Pair;
 
 /**
@@ -69,9 +73,11 @@ public class PostgresDatabase implements TargetDatabase {
     private static final String SELECT_ROW_COUNT = "SELECT COUNT(0) FROM %s";
     private static final String SELECT_ALL_FROM_COLUMN = "SELECT \"%s\" FROM %s";
     private static final String SELECT_ALL_FROM_TABLE_WHERE = "SELECT %s FROM %s WHERE \"%s\"=?";
-    //private static final String SELECT_ALL_FROM_TABLE_WHERE = "SELECT %s FROM %s WHERE \"%s\"=\'%s\'";
+    // private static final String SELECT_ALL_FROM_TABLE_WHERE = "SELECT %s FROM %s WHERE \"%s\"=\'%s\'";
     private static final String DROP_TABLE = "DROP TABLE IF EXISTS %s";
     private static final String SELECT_DISTINCT = "SELECT DISTINCT \"%s\" FROM %s ORDER BY \"%s\"";
+    private static final String SELECT_DISTINCT_WITH_COUNT = "SELECT DISTINCT \"%s\", count(" + TargetDatabase.TDAR_ID_COLUMN
+            + ") FROM %s group by \"%s\" ORDER BY \"%s\"";
     private static final String SELECT_DISTINCT_NOT_BLANK = "SELECT DISTINCT \"%s\" FROM %s WHERE \"%s\" IS NOT NULL AND \"%s\" !='' ORDER BY \"%s\"";
     private static final String SELECT_DISTINCT_NOT_BLANK_NUM = "SELECT DISTINCT \"%s\" FROM %s WHERE \"%s\" IS NOT NULL ORDER BY \"%s\"";
     private static final String ALTER_DROP_COLUMN = "ALTER TABLE %s DROP COLUMN \"%s\"";
@@ -83,26 +89,31 @@ public class PostgresDatabase implements TargetDatabase {
     private static final String ORIGINAL_KEY = "_original_";
     private static final String INSERT_STATEMENT = "INSERT INTO %1$s (%2$s) VALUES(%3$s)";
     private static final String CREATE_TABLE = "CREATE TABLE %1$s (" + TDAR_ID_COLUMN + " bigserial, %2$s)";
+    private static final String CREATE_TEMPORARY_TABLE = "CREATE TEMPORARY TABLE %1$s (" + TDAR_ID_COLUMN + " bigserial, %2$s)";
     private static final String SQL_ALTER_TABLE = "ALTER TABLE \"%1$s\" ALTER \"%2$s\" TYPE %3$s USING \"%2$s\"::%3$s";
     private static final HashSet<String> RESERVED_COLUMN_NAMES = new HashSet<String>(
             Arrays.asList("all", "analyse", "analyze", "and", "any", "array", "as", "asc", "asymmetric", "both", "case", "cast",
-                "check", "collate", "column", "constraint", "create", "current_date", "current_role", "current_time", "current_timestamp", "current_user",
-                "default", "deferrable", "desc", "distinct", "do", "double", "else", "end", "except", "for", "foreign", "from", "grant", "group", "having", "in",
-                "initially", "intersect", "into", "leading", "limit", "localtime", "localtimestamp", "new", "not", "null", "off", "offset", "old", "on", "only",
-                "or", "order", "placing", "primary", "references", "select", "session_user", "some", "symmetric", "table", "then", "to", "trailing", "union",
-                "unique", "user", "using", "when", "where", "false", "true", "authorization", "between", "binary", "cross", "freeze", "full", "ilike", "inner",
-                "is", "isnull", "join", "left", "like", "natural", "notnull", "outer", "overlaps", "right", "similar", "verbose")
+                    "check", "collate", "column", "constraint", "create", "current_date", "current_role", "current_time", "current_timestamp", "current_user",
+                    "default", "deferrable", "desc", "distinct", "do", "double", "else", "end", "except", "for", "foreign", "from", "grant", "group", "having",
+                    "in",
+                    "initially", "intersect", "into", "leading", "limit", "localtime", "localtimestamp", "new", "not", "null", "off", "offset", "old", "on",
+                    "only",
+                    "or", "order", "placing", "primary", "references", "select", "session_user", "some", "symmetric", "table", "then", "to", "trailing",
+                    "union",
+                    "unique", "user", "using", "when", "where", "false", "true", "authorization", "between", "binary", "cross", "freeze", "full", "ilike",
+                    "inner",
+                    "is", "isnull", "join", "left", "like", "natural", "notnull", "outer", "overlaps", "right", "similar", "verbose")
             );
     private static final String DEFAULT_TYPE = "text";
     private static final String SCHEMA_NAME = "public";
     private static final int BATCH_SIZE = 5000;
     private static final int MAX_NAME_SIZE = 63;
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    // FIXME: synchronized but still potentially unsafe access if not intended to be
-    // accessed across multiple threads
-    private Map<DataTable, Pair<PreparedStatement, Integer>> preparedStatementMap = Collections.synchronizedMap(new HashMap<DataTable, Pair<PreparedStatement, Integer>>());
+    // FIXME: replace with LoadingCache for simpler usage (and better concurrent performance)
+    private ConcurrentMap<DataTable, Pair<PreparedStatement, Integer>> preparedStatementMap =
+            new ConcurrentHashMap<DataTable, Pair<PreparedStatement, Integer>>();
 
     private JdbcTemplate jdbcTemplate;
 
@@ -135,8 +146,10 @@ public class PostgresDatabase implements TargetDatabase {
 
     public void addOrExecuteBatch(DataTable dataTable, boolean force) {
         Pair<PreparedStatement, Integer> statementPair = preparedStatementMap.get(dataTable);
+        logger.trace("adding or executing batch for {} with statement pair {}", dataTable, statementPair);
         if (statementPair == null)
             return;
+
         PreparedStatement statement = statementPair.getFirst();
         int batchNum = statementPair.getSecond().intValue() + 1;
 
@@ -222,6 +235,25 @@ public class PostgresDatabase implements TargetDatabase {
         }
         String distinctSql = String.format(SELECT_DISTINCT, dataTableColumn.getName(), dataTableColumn.getDataTable().getName(), dataTableColumn.getName());
         return jdbcTemplate.queryForList(distinctSql, String.class);
+    }
+
+    public Map<String, Long> selectDistinctValuesWithCounts(DataTableColumn dataTableColumn) {
+        if (dataTableColumn == null) {
+            return Collections.emptyMap();
+        }
+        String distinctSql = String.format(SELECT_DISTINCT_WITH_COUNT, dataTableColumn.getName(), dataTableColumn.getDataTable().getName(),
+                dataTableColumn.getName(),
+                dataTableColumn.getName());
+
+        final Map<String, Long> toReturn = new HashMap<String, Long>();
+        query(distinctSql, new RowMapper<Object>() {
+            @Override
+            public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+                toReturn.put(rs.getString(0), rs.getLong(1));
+                return null;
+            }
+        });
+        return toReturn;
     }
 
     public List<String> selectNonNullDistinctValues(
@@ -364,7 +396,7 @@ public class PostgresDatabase implements TargetDatabase {
             default:
                 str = getDefaultTypeDeclaration();
         }
-        logger.trace("creating definition: " + str);
+        logger.trace("creating definition: {}", str);
         return str;
     }
 
@@ -396,13 +428,12 @@ public class PostgresDatabase implements TargetDatabase {
         }
 
         String sql = String.format(createTable, dataTable.getName(), tableColumnBuilder.toString());
-        logger.info("creating table:" + dataTable.getName());
-        logger.trace(sql);
+        logger.info("creating table: {}", dataTable.getName());
+        logger.debug(sql);
         getJdbcTemplate().execute(sql);
     }
 
-    public void createPreparedStatement(DataTable dataTable,
-            List<DataTableColumn> list) throws SQLException {
+    public PreparedStatement createPreparedStatement(DataTable dataTable, List<DataTableColumn> list) throws SQLException {
         String insertSQL = INSERT_STATEMENT;
 
         List<String> columnNameList = dataTable.getColumnNames();
@@ -411,8 +442,28 @@ public class PostgresDatabase implements TargetDatabase {
         String sql = String.format(insertSQL, dataTable.getName(), columnNames, valuePlaceHolder);
         logger.trace(sql);
 
-        PreparedStatement preparedStatement = getConnection().prepareStatement(sql);
-        preparedStatementMap.put(dataTable, new Pair<PreparedStatement, Integer>(preparedStatement, 0));
+        return getConnection().prepareStatement(sql);
+    }
+
+    private <K, V> V getOrCreate(K key, ConcurrentMap<K, V> concurrentMap, Callable<V> newValueCreator) throws Exception {
+        V value = concurrentMap.get(key);
+        if (value == null) {
+            V newValue = newValueCreator.call();
+            value = concurrentMap.putIfAbsent(key, newValue);
+            if (value == null) {
+                value = newValue;
+            }
+        }
+        return value;
+    }
+
+    private Callable<Pair<PreparedStatement, Integer>> createPreparedStatementPairCallable(final DataTable dataTable) {
+        return new Callable<Pair<PreparedStatement, Integer>>() {
+            @Override
+            public Pair<PreparedStatement, Integer> call() throws Exception {
+                return Pair.create(createPreparedStatement(dataTable, dataTable.getDataTableColumns()), 0);
+            }
+        };
     }
 
     @Override
@@ -420,13 +471,9 @@ public class PostgresDatabase implements TargetDatabase {
         if (MapUtils.isEmpty(valueColumnMap))
             return;
 
-        if (preparedStatementMap.get(dataTable) == null) {
-            createPreparedStatement(dataTable, dataTable.getDataTableColumns());
-        }
-
-        PreparedStatement preparedStatement = preparedStatementMap.get(
-                dataTable).getFirst();
-        logger.trace(valueColumnMap);
+        Pair<PreparedStatement, Integer> statementPair = getOrCreate(dataTable, preparedStatementMap, createPreparedStatementPairCallable(dataTable));
+        PreparedStatement preparedStatement = statementPair.getFirst();
+        logger.trace("{}", valueColumnMap);
 
         int i = 1;
 
@@ -461,12 +508,12 @@ public class PostgresDatabase implements TargetDatabase {
                         java.sql.Date.valueOf(colValue);
                         date = dateFormat.parse(colValue);
                     } catch (Exception e) {
-                        logger.trace(e);
+                        logger.trace("couldn't parse " + colValue, e);
                     }
                     try {
                         date = accessDateFormat.parse(colValue);
                     } catch (Exception e) {
-                        logger.trace(e);
+                        logger.trace("couldn't parse " + colValue, e);
                     }
                     if (date != null) {
                         java.sql.Timestamp sqlDate = new java.sql.Timestamp(date.getTime());
@@ -484,7 +531,7 @@ public class PostgresDatabase implements TargetDatabase {
         }
     }
 
-    private String getResultSetValueAsString(ResultSet result, int i, DataTableColumn column) throws SQLException {
+    public String getResultSetValueAsString(ResultSet result, int i, DataTableColumn column) throws SQLException {
         try {
             switch (column.getColumnDataType()) {
                 case BOOLEAN:
@@ -636,68 +683,53 @@ public class PostgresDatabase implements TargetDatabase {
         jdbcTemplate.execute(sqlRename);
     }
 
-    @SuppressWarnings("unchecked")
-    public IntegrationDataResult generateIntegrationResult(final DataTable table, final List<IntegrationColumn> integrationColumns,
-            final Map<List<OntologyNode>, Map<DataTable, Integer>> pivot) {
-        // formulate a SELECT statement
-        String selectSql = generateOntologyEnhancedSelect(table, integrationColumns, pivot);
+    public void executeUpdateOrDelete(final String createTableStatement) {
+        logger.debug(createTableStatement);
+        jdbcTemplate.execute(createTableStatement);
+    }
 
-        IntegrationDataResult integrationDataResult = new IntegrationDataResult();
-        integrationDataResult.setDataTable(table);
-        integrationDataResult.setIntegrationColumns(integrationColumns);
-        logger.debug(selectSql);
-
-        List<List<String>> rowDataList = new ArrayList<List<String>>();
-        // if we have a "WHERE clause, then we can actually do something (otherwise, we probably have an empty filter list
-        if (selectSql.toLowerCase().contains(" where ")) {
-            rowDataList = query(selectSql, new ParameterizedRowMapper<List<String>>() {
-                @Override
-                public List<String> mapRow(ResultSet resultSet, int rowNumber) throws SQLException {
-                    // grab the data from this result set, populate the IntegrationDataResult
-                    ArrayList<String> values = new ArrayList<String>();
-                    ArrayList<OntologyNode> ontologyNodes = new ArrayList<OntologyNode>();
-                    int resultSetPosition = 1;
-                    for (IntegrationColumn integrationColumn : integrationColumns) {
-                        // note SQL iterator is 1 based; java iterator is 0 based
-                        DataTableColumn column = table.getColumnByName(resultSet.getMetaData().getColumnName(resultSetPosition));
-                        String value = "";
-                        if (column != null) { // RAW VALUE
-                            value = getResultSetValueAsString(resultSet, resultSetPosition, column);
-                        }
-                        if (column != null && !integrationColumn.isDisplayColumn() && StringUtils.isEmpty(value)) {
-                            value = NULL_EMPTY_INTEGRATION_VALUE;
-                        }
-                        values.add(value);
-                        ontologyNodes.add(OntologyNode.NULL); // initialize the array so we have columns line up
-                        if (column != null && !integrationColumn.isDisplayColumn()) { // MAPPED VALUE if not display column
-                            String mappedVal = null;
-                            OntologyNode mappedOntologyNode = integrationColumn.getMappedOntologyNode(value, column);
-                            if (mappedOntologyNode != null) {
-                                mappedVal = mappedOntologyNode.getDisplayName();
-                                ontologyNodes.set(ontologyNodes.size() - 1, mappedOntologyNode);
-                            }
-                            if (mappedVal == null) {
-                                mappedVal = NULL_EMPTY_MAPPED_VALUE;
-                            }
-                            values.add(mappedVal);
-                        }
-                        resultSetPosition++;
-                    }
-                    if (pivot.get(ontologyNodes) == null) {
-                        pivot.put(ontologyNodes, new HashMap<DataTable, Integer>());
-                    }
-                    Integer groupCount = pivot.get(ontologyNodes).get(table);
-                    if (groupCount == null) {
-                        pivot.get(ontologyNodes).put(table, 0);
-                        groupCount = 0;
-                    }
-                    pivot.get(ontologyNodes).put(table, groupCount + 1);
-                    return values;
-                }
-            });
+    public ModernIntegrationDataResult generateModernIntegrationResult(IntegrationContext proxy) {
+        ModernIntegrationDataResult result = new ModernIntegrationDataResult();
+        createTable(String.format(CREATE_TEMPORARY_TABLE, proxy.getTempTableName()));
+        for (IntegrationColumn column : proxy.getIntegrationColumns()) {
+            String deflt = NULL_EMPTY_INTEGRATION_VALUE;
+            if (column.isDisplayColumn()) {
+                deflt = NULL_EMPTY_MAPPED_VALUE;
+            }
+            executeUpdateOrDelete(String.format(ADD_COLUMN + " DEFAULT %s", column.getName(), deflt));
         }
-        integrationDataResult.setRowData(rowDataList);
-        return integrationDataResult;
+
+        for (DataTable table : proxy.getDataTables()) {
+            generateModernIntegrationResult(proxy, table);
+        }
+
+        List<Pair<DataTableColumn, List<String>>> updates = new ArrayList<Pair<DataTableColumn, List<String>>>();
+        /*
+         * instead of doing this, create a separate lookup table for value -> mapped value
+         * then do update bound on those values
+         */
+        for (IntegrationColumn integrationColumn : proxy.getIntegrationColumns()) {
+            for (OntologyNode node : integrationColumn.getOntologyNodesForSelect()) {
+                for (DataTableColumn column : integrationColumn.getColumns()) {
+                    updates.add(new Pair<DataTableColumn, List<String>>(column, column.getMappedDataValues(node)));
+                }
+            }
+            // update each column separately
+        }
+
+        // figure out how to handle pivots
+        result.setResultSet(null);
+        return result;
+    }
+
+    public void generateModernIntegrationResult(final IntegrationContext proxy, final DataTable table) {
+        String selectSql = generateModernOntologyEnhancedSelect(table, proxy);
+
+        if (!selectSql.toLowerCase().contains(" where ")) {
+            throw new TdarRecoverableRuntimeException("something happend, no where clause in integration");
+        }
+
+        executeUpdateOrDelete(selectSql);
     }
 
     private String quote(String term) {
@@ -712,15 +744,14 @@ public class PostgresDatabase implements TargetDatabase {
         return " " + chr + term + chr + " ";
     }
 
-    private String generateOntologyEnhancedSelect(DataTable table, List<IntegrationColumn> integrationColumns,
-            final Map<List<OntologyNode>, Map<DataTable, Integer>> pivot) {
+    private String generateModernOntologyEnhancedSelect(DataTable table, IntegrationContext proxy) {
         StringBuilder selectPart = new StringBuilder("SELECT ");
         StringBuilder wherePart = new StringBuilder(" WHERE ");
         boolean firstWhere = true;
         List<String> colNames = new ArrayList<String>();
 
         // FOR EACH COLUMN, grab the value, for the table or use '' to keep the spacing correct
-        for (IntegrationColumn integrationColumn : integrationColumns) {
+        for (IntegrationColumn integrationColumn : proxy.getIntegrationColumns()) {
             logger.info("table:" + table + " column: " + integrationColumn);
             DataTableColumn column = integrationColumn.getColumnForTable(table);
             String name = "''";
@@ -734,9 +765,65 @@ public class PostgresDatabase implements TargetDatabase {
             if (!integrationColumn.isDisplayColumn() && column != null) {
                 Set<String> whereVals = new HashSet<String>();
                 for (OntologyNode node : integrationColumn.getOntologyNodesForSelect()) {
-                    for (String val : node.getMappedDataValues(column)) {
+                    for (String val : column.getMappedDataValues(node)) {
                         whereVals.add(quote(StringEscapeUtils.escapeSql(val), false));
                     }
+                }
+                if (whereVals.isEmpty()) {
+                    continue;
+                }
+
+                if (!firstWhere) {
+                    wherePart.append(" AND ");
+                } else {
+                    firstWhere = false;
+                }
+                if (integrationColumn.isNullIncluded()) {
+                    wherePart.append(" (");
+                }
+                wherePart.append(name).append(" IN (").append(StringUtils.join(whereVals, ",")).append(") ");
+                if (integrationColumn.isNullIncluded()) {
+                    wherePart.append("OR ").append(name).append(" IS NULL) ");
+                }
+            }
+        }
+        selectPart.append(StringUtils.join(colNames, ",")).append(" FROM ").append(table.getName());
+        if (!firstWhere) {
+            selectPart.append(wherePart);
+        }
+        return selectPart.toString();
+    }
+
+    public String generateOntologyEnhancedSelect(DataTable table, List<IntegrationColumn> integrationColumns,
+            final Map<List<OntologyNode>, Map<DataTable, Integer>> pivot) {
+        StringBuilder selectPart = new StringBuilder("SELECT ");
+        StringBuilder wherePart = new StringBuilder(" WHERE ");
+        boolean firstWhere = true;
+        List<String> colNames = new ArrayList<String>();
+
+        // FOR EACH COLUMN, grab the value, for the table or use '' to keep the spacing correct
+        for (IntegrationColumn integrationColumn : integrationColumns) {
+            logger.info("table: {} column: {}", table, integrationColumn);
+            DataTableColumn column = integrationColumn.getColumnForTable(table);
+            String name = "''";
+            if (column != null) {
+                name = quote(column.getName());
+            }
+            colNames.add(name);
+
+            // if we're an integration column, quote and grab all of the ontology nodes for the select
+            // these are the "hierarchical" values
+            if (!integrationColumn.isDisplayColumn() && column != null) {
+                Set<String> whereVals = new HashSet<String>();
+                for (OntologyNode node : integrationColumn.getOntologyNodesForSelect()) {
+                    for (String val: column.getMappedDataValues(node)) {
+                        whereVals.add(quote(StringEscapeUtils.escapeSql(val), false));                        
+                    }
+
+//                     FIXME: need to verify / replace this logic at some point
+//                    for (String val : node.getMappedDataValues(column)) {
+//
+//                    }
                 }
                 if (whereVals.isEmpty()) {
                     continue;
@@ -777,7 +864,7 @@ public class PostgresDatabase implements TargetDatabase {
         column.setName(newName);
         jdbcTemplate.execute(sql);
     }
-    
+
     public List<String> getColumnNames(ResultSet resultSet) throws SQLException {
         List<String> columnNames = new ArrayList<String>();
         ResultSetMetaData metadata = resultSet.getMetaData();

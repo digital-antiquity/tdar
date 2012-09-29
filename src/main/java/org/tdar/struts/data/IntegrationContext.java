@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -17,6 +18,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.resource.datatable.DataTable;
 
 /**
  * Helper class to corral all of the integration info in one place
@@ -32,6 +34,8 @@ public class IntegrationContext implements Serializable {
     private Person creator;
     private Date dateCreated = new Date();
     private List<IntegrationColumn> integrationColumns;
+    private List<DataTable> dataTables;
+    
     
     public IntegrationContext() {}
     
@@ -63,6 +67,24 @@ public class IntegrationContext implements Serializable {
 
     public void setIntegrationColumns(List<IntegrationColumn> integrationColumns) {
         this.integrationColumns = integrationColumns;
+    }
+    
+    @Transient
+    public String getTempTableName() {
+        StringBuilder sb = new StringBuilder();
+        for (DataTable dataTable : dataTables) {
+            sb.append(dataTable.getInternalName()).append("_");
+        }
+        sb.append("_").append(System.currentTimeMillis());
+        return sb.toString();
+    }
+
+    public List<DataTable> getDataTables() {
+        return dataTables;
+    }
+
+    public void setDataTables(List<DataTable> dataTables) {
+        this.dataTables = dataTables;
     }
 
 }

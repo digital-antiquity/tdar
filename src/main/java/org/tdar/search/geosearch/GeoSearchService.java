@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword.Level;
+import org.tdar.search.geosearch.GeoSearchDao.SpatialTables;
+import org.tdar.struts.data.SvgMapWrapper;
 
 /**
  * @author Adam Brin
@@ -147,5 +149,9 @@ public class GeoSearchService {
 
     public boolean isEnabled() {
         return geoSearchDao.isEnabled();
+    }
+
+    public SvgMapWrapper toSvg(double strokeWidth, String searchPrefix, String searchSuffix, SpatialTables table, String limit) {
+        return geoSearchDao.getMapSvg(strokeWidth, searchPrefix, searchSuffix, table, limit);
     }
 }

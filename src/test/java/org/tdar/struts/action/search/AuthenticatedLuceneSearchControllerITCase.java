@@ -1,5 +1,7 @@
 package org.tdar.struts.action.search;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -37,30 +39,34 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
     @Before
     public void reset() {
         reindex();
-        controller = generateNewInitializedController(LuceneSearchController.class, getAdminUser());
+        controller = generateNewInitializedController(AdvancedSearchController.class, getUser());
         controller.setRecordsPerPage(50);
     }
 
     @Test
     @Rollback(true)
     public void testForInheritedCulturalInformationFromProject1() {
+        logger.info("{}", getUser());
         Long imgId = setupImage();
         searchIndexService.indexAll(Resource.class);
-        controller.setResourceTypes(getInheritingTypes());
-        List<Long> approvedCultureKeywordIds = new ArrayList<Long>();
-        approvedCultureKeywordIds.add(9l);
+        setResourceTypes(getInheritingTypes());
+        List<String> approvedCultureKeywordIds = new ArrayList<String>();
+        approvedCultureKeywordIds.add("9");
         setStatuses(Status.DRAFT);
-        controller.setApprovedCultureKeywordIds(approvedCultureKeywordIds);
+        firstGroup().getApprovedCultureKeywordIdLists().add(approvedCultureKeywordIds);
         doSearch("");
         assertTrue("'Archaic' defined in parent project should be found in information resource", resultsContainId(imgId));
+        // fail("Um, actually this test doesn't do anything close to what it says it's doing");
     }
 
     @Test
     @Rollback(true)
     public void testDeletedMaterialsAreIndexed() {
+        controller = generateNewInitializedController(AdvancedSearchController.class, getAdminUser());
+        controller.setRecordsPerPage(50);
         Long datasetId = setupDataset();
         searchIndexService.indexAll(Resource.class);
-        controller.setResourceTypes(allResourceTypes);
+        setResourceTypes(allResourceTypes);
         setStatuses(Status.DELETED);
         doSearch("precambrian");
         assertTrue(resultsContainId(datasetId));
@@ -68,13 +74,26 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
 
     @Test
     @Rollback(true)
+    public void testDeletedMaterialsAreNotVisible() {
+        Long datasetId = setupDataset();
+        searchIndexService.indexAll(Resource.class);
+        setResourceTypes(allResourceTypes);
+        setStatuses(Status.DELETED);
+        doSearch("precambrian");
+        assertFalse(resultsContainId(datasetId));
+        setIgnoreActionErrors(true);
+        assertEquals(1, controller.getActionErrors().size());
+    }
+
+    @Test
+    @Rollback(true)
     public void testDeletedMaterialsAreIndexedButYouCantSee() {
-        controller = generateNewInitializedController(LuceneSearchController.class, getBasicUser());
+        controller = generateNewInitializedController(AdvancedSearchController.class, getBasicUser());
         setIgnoreActionErrors(true);
         controller.setRecordsPerPage(50);
         Long datasetId = setupDataset();
         searchIndexService.index(genericService.find(Dataset.class, datasetId));
-        controller.setResourceTypes(allResourceTypes);
+        setResourceTypes(allResourceTypes);
         setStatuses(Status.DELETED);
         doSearch("precambrian");
         assertTrue(controller.getActionErrors().size() > 0);
@@ -85,7 +104,7 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
     public void testDraftMaterialsAreIndexed() {
         Long imgId = setupImage();
         searchIndexService.indexAll(Resource.class);
-        controller.setResourceTypes(allResourceTypes);
+        setResourceTypes(allResourceTypes);
         setStatuses(Status.DRAFT);
         doSearch("description");
         assertTrue(resultsContainId(imgId));
@@ -97,7 +116,7 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
         Long imgId = setupImage();
         logger.info("Created new image: " + imgId);
         searchIndexService.indexAll(Resource.class);
-        controller.setResourceTypes(allResourceTypes);
+        setResourceTypes(allResourceTypes);
         setStatusAll();
         doSearch("PaleoIndian");
         assertTrue(resultsContainId(imgId));

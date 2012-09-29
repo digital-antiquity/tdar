@@ -10,9 +10,9 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.context.annotation.Scope;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Dataset;
-import org.tdar.core.bean.resource.ResourceAccessType;
-import org.tdar.core.bean.resource.dataTable.DataTable;
+import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.struts.data.ResultMetadataWrapper;
 
 @ParentPackage("secured")
@@ -34,12 +34,12 @@ public class DataTableBrowseController extends AuthenticationAware.Base {
     @Action(value = "browse",
             results = { @Result(name = "success", location = "browse.ftl", type = "freemarker", params = { "contentType", "application/json" }) })
     public String getDataResults() {
-        if (id == null || id == -1) {
+        if (Persistable.Base.isNullOrTransient(id)){
             return ERROR;
         }
         DataTable dataTable = getDataTableService().find(getId());
         Dataset dataset = dataTable.getDataset();
-        if (dataset.isPublicallyAccessible() || getEntityService().canViewConfidentialInformation(getAuthenticatedUser(), dataset)) {
+        if (dataset.isPublicallyAccessible() || getAuthenticationAndAuthorizationService().canViewConfidentialInformation(getAuthenticatedUser(), dataset)) {
             ResultMetadataWrapper selectAllFromDataTable = ResultMetadataWrapper.NULL;
             try {
                 selectAllFromDataTable = getDatasetService().selectAllFromDataTable(dataTable, getStartRecord(), getRecordsPerPage(), true);

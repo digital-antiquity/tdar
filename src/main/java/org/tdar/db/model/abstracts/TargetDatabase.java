@@ -4,9 +4,9 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.springframework.jdbc.core.ResultSetExtractor;
-import org.tdar.core.bean.resource.dataTable.DataTable;
-import org.tdar.core.bean.resource.dataTable.DataTableColumn;
-import org.tdar.core.bean.resource.dataTable.DataTableColumnType;
+import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 
 /**
  * A base class for target Databases that can be written to via a

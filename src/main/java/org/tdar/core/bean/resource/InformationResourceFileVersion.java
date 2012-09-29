@@ -24,6 +24,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.Viewable;
 import org.tdar.core.configuration.TdarConfiguration;
 
 @Entity
@@ -33,14 +34,9 @@ import org.tdar.core.configuration.TdarConfiguration;
 @Table(name = "information_resource_file_version", uniqueConstraints = {
         @UniqueConstraint(columnNames = { "information_resource_file_id", "file_version", "internal_type" })
 })
-public class InformationResourceFileVersion extends Persistable.Base implements Comparable<InformationResourceFileVersion> {
+public class InformationResourceFileVersion extends Persistable.Base implements Comparable<InformationResourceFileVersion>, Viewable {
 
     private static final long serialVersionUID = 3768354809654162949L;
-
-    public enum VersionType {
-        UPLOADED, UPLOADED_TEXT, UPLOADED_ARCHIVAL, ARCHIVAL, WEB_SMALL, WEB_MEDIUM, WEB_LARGE,
-        TRANSLATED, INDEXABLE_TEXT, METADATA, LOG;
-    }
 
     @ManyToOne(optional = false, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
     @JoinColumn(name = "information_resource_file_id")
@@ -82,6 +78,9 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
 
     private Integer height;
 
+    @Column(name = "total_time")
+    private Long totalTime;
+    
     private Long size;
 
     private String path;
@@ -93,6 +92,8 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
 
     @Transient
     private File file;
+
+    private transient boolean viewable = false;
 
     /*
      * This constructor exists only for Hibernate ... another constructor should
@@ -274,8 +275,8 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
     @Transient
     // Ultimately, this may need to be converted into a URI, or something that can be converted directly
     // into a reader due to the indexing requirment.
-    // FIXME: consider injecting this as a transient variable when loaded 
-    // instead of doing a lookup using the TdarConfiguration singleton's Filestore.  Otherwise
+    // FIXME: consider injecting this as a transient variable when loaded
+    // instead of doing a lookup using the TdarConfiguration singleton's Filestore. Otherwise
     // we will have difficulty converting TdarConfiguration + Filestore into spring managed beans
     public File getFile() {
         if (file != null) {
@@ -317,20 +318,21 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
      * @return
      */
     public boolean isDerivative() {
-        switch (getFileVersionType()) {
-            case INDEXABLE_TEXT:
-            case WEB_SMALL:
-            case WEB_MEDIUM:
-            case WEB_LARGE:
-            case METADATA:
-            case TRANSLATED:
-                return true;
-            default:
-                return false;
-        }
-        // return (getFileVersionType() == VersionType.INDEXABLE_TEXT
-        // || getFileVersionType() == VersionType.WEB_SMALL
-        // || getFileVersionType() == VersionType.WEB_MEDIUM || getFileVersionType() == VersionType.WEB_LARGE);
+        return getFileVersionType().isDerivative();
+//        switch (getFileVersionType()) {
+//            case INDEXABLE_TEXT:
+//            case WEB_SMALL:
+//            case WEB_MEDIUM:
+//            case WEB_LARGE:
+//            case METADATA:
+//            case TRANSLATED:
+//                return true;
+//            default:
+//                return false;
+//        }
+//        // return (getFileVersionType() == VersionType.INDEXABLE_TEXT
+//        // || getFileVersionType() == VersionType.WEB_SMALL
+//        // || getFileVersionType() == VersionType.WEB_MEDIUM || getFileVersionType() == VersionType.WEB_LARGE);
     }
 
     /**
@@ -438,6 +440,22 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
 
     public boolean hasValidFile() {
         return getFile() != null && getFile().exists();
+    }
+
+    public boolean isViewable() {
+        return viewable;
+    }
+
+    public void setViewable(boolean viewable) {
+        this.viewable = viewable;
+    }
+
+    public Long getTotalTime() {
+        return totalTime;
+    }
+
+    public void setTotalTime(Long totalTime) {
+        this.totalTime = totalTime;
     }
 
 }

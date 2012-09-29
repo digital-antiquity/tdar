@@ -1,6 +1,7 @@
 package org.tdar.core.service.resource;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -9,8 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.dao.resource.ProjectDao;
 import org.tdar.core.service.ServiceInterface;
@@ -29,11 +32,6 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
 
     @Autowired
     private AuthorizedUserDao authorizedUserDao;
-
-    @Autowired
-    public void setDao(ProjectDao dao) {
-        super.setDao(dao);
-    }
 
     @Transactional(readOnly = true)
     public Project find(Long id) {
@@ -90,11 +88,13 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
         return getDao().findAllOtherProjects(person);
     }
 
-    // @Transactional(readOnly = true)
-    // public List<Project> findViewableProjects(Person person) {
-    // return getDao().findViewableProjects(person);
-    // }
-
+    @Transactional(readOnly=true)
+    public List<InformationResource> findAllResourcesInProject(Project p, Status ... statuses) {
+        List<InformationResource> informationResources = getDao().findAllResourcesInProject(p, statuses);
+        p.setCachedInformationResources(new HashSet<InformationResource>(informationResources));
+        return informationResources;
+    }
+    
     @Transactional(readOnly = true)
     public List<Resource> findRecentlyEditedResources(Person updater, int maxResults) {
         return getDao().findSparseRecentlyEditedResources(updater, maxResults);

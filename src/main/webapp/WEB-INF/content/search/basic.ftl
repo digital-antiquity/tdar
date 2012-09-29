@@ -2,16 +2,27 @@
 
 <h2>Basic Search</h2>
 <hr/>
-<@s.form action="results" method="GET" id='searchForm'>
-<@search.queryField />
-<@s.submit value="Search" />
-</@s.form>
-<script type="text/javascript">
-    //SEARCH: if shift key down when checking a resource type, uncheck  siblings
-    //FIXME: add this to common.js unless Adam really hates this feature.
-    $('input[type=checkbox]', '.resourceTypeLimits').click(function(evt) {
-        if(evt.shiftKey) {
-            $('input[type=checkbox]', '.resourceTypeLimits').not($(this)).prop("checked", false);
-        }
-    }); 
+<div class="usual glide">
+<ul class="idTabs" id="idtab"> 
+  <li><a href="#resource">Resource</a></li> 
+  <li><a href="#collection">Collection</a></li> 
+</ul> 
+<div id="resource" style="display:none;">
+	<@s.form action="results" method="GET" id='searchForm'>
+		<@search.queryField showLimits=true />
+		<@s.submit value="Search" />
+	</@s.form>
+</div> 
+<div id="collection" style="display:none;">
+	<@s.form action="collections" method="GET" id='searchForm2'>
+		<@search.queryField showLimits=false showAdvancedLink=false />
+	</@s.form>
+</div>
+</div>
+<script>
+$(document).ready(function(){
+	$("#idtab").idTabs();
+	//other view init stuff;
+    loadTdarMap();
+});
 </script>

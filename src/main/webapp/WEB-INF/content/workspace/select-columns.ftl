@@ -11,20 +11,41 @@
     border: 1px solid #AAA;
     background-color: #DEDEDE;
     padding: 4px;
-    opacity:.9;
+    opacity:.95;
+}
+.buttontable .integrationTableNumber {
+	display:none;
+	visibility:hidden;
+}
+
+.integrationColumn div[table] .ontology {
+ display:none !important;
 }
 
 .status {
   color:#660033;
   font-weight:bold;
 }
+
 #drplist {border:1px solid #ccc;}
+
+#submitbutton {
+	right: -540px !important;
+	position: relative !important;
+}
+
+.addAnother { margin-left:1em !important; font-weight:bold;}
+
+.addAnother img {
+	bottom: 2px !important;
+	position: relative !important;
+} 
 </style>
 
 </head>
  
 <body>
-    <@s.form name='selectDTColForm' method='post' action='filter'>
+    <@s.form name='selectDTColForm' method='post' action='filter' id="selectDTColForm">
 
 <h3>Data Integration</h3>
 <div class="glide">
@@ -50,6 +71,18 @@ Drag columns from your selected data tables onto the integration table .
 
 <div id="fixedList">
 <h4>Each Column Below will be a Column In Excel</h4>
+<table width="100%">
+	<tr>
+		<td>
+			<input type="checkbox" id="autoselect" />
+			<label for="autoselect">Auto-select integratable columns</label>
+		</td>
+		<td>
+			<input type="checkbox" id="clear" /> 
+			<label for="clear">Clear all columns</label>
+		</td>
+	</tr>
+</table>
 <table id="drplist" width="100%">
 <tr>
 <#if integrationColumns?? && !integrationColumns.empty >
@@ -63,8 +96,9 @@ Drag columns from your selected data tables onto the integration table .
 </tr>
 </table>
   <div class="status"></div>
-<br/>
-<button id="addColumn">Click to add a new Column to the integration table</button>
+<button class="addAnother" id="addColumn"><img src='/images/add.gif'> Add a new Column</button>
+<@s.submit value='Next: filter values' id="submitbutton" class="submitbutton" />
+
 </div>
 </div>
 <div class="glide">
@@ -85,12 +119,17 @@ Drag columns from your selected data tables onto the integration table .
       <!-- setting for error condition -->
        <input type="hidden" name="tableIds[${table_index}]" value="${table.id?c}"/>
 <div >
-          <h4 class='tablemenu'><span class="arrow ui-icon ui-icon-triangle-1-s"></span>${table.dataset.title}</h4>
+          <h4 class='tablemenu'><span class="arrow ui-icon ui-icon-triangle-1-s"></span>${table_index  +1}: ${table.dataset.title}</h4>
 <div class="tableContainer">      
   <table class="buttontable">
       <tbody>
+       	<#if leftJoinDataIntegrationFeatureEnabled>
+      		<#assign columns = table.leftJoinColumns>
+      	<#else>
+      		<#assign columns = table.sortedDataTableColumns>
+      	</#if>
         <#assign count = 0>
-            <#list table.sortedDataTableColumns as column>
+            <#list columns as column>
             <#assign description = ""/>
             <#if column?? && column.description??>
                 <#assign description = column.description />
@@ -100,7 +139,7 @@ Drag columns from your selected data tables onto the integration table .
               <#if column.measurementUnit??>hasMeasurement="${column.measurementUnit}"</#if> 
               title="${description?html}"
               <#if column.columnEncodingType?? && column.columnEncodingType=='COUNT'>hasCount="true"</#if> 
-              table="${table.id?c}"><span class="columnName">${column.displayName} <#if column.defaultOntology??> <span class="ontology">- ${column.defaultOntology.title}</span></#if>
+              table="${table.id?c}"><span class="columnName"><span class="integrationTableNumber">T${table_index +1}. </span>${column.displayName} <#if column.defaultOntology??> <span class="ontology">- ${column.defaultOntology.title}</span></#if>
             <input type="hidden" name="integrationColumns[{COLNUM}].columns[{CELLNUM}].id"  value="${column.id?c}"/></span>
                 <#assign count = count+1 />
              </div> </td>
@@ -114,207 +153,22 @@ Drag columns from your selected data tables onto the integration table .
 </div>
       </#list>
 
-
-<script>
-
-$("h4").click(toggleDiv);
-
-$( ".drg" ).draggable({
-  zIndex: 2700,
-  revert: true,
-  revertDuration:0
-});
-
-function setStatus(msg) {
-  $(".status").html(msg);
-  $(".status").show();
-  $(".status").fadeIn(10,true);
-  
-  $(".status").css("background-color","lightyellow !important");
-  $(".status").css("border","1px solid red !important");
-  $(".status").delay(3000).fadeOut(3000,  function () {
-      $(".status").hide();
-  });
-}
-
-var drpOptions = {
-  drop: function(event, ui) {
-    if (ui.draggable.attr("colnum")) {
-      return false;
-    }
-  $(ui.draggable).css("z-index",100);
-  var table = ui.draggable.attr("table");
-  var ret = true;
-    var children = $(this).children("div");
-  if (children.length > 0) {
-    $(children).each(function() { if ($(this).attr("table") == table) {
-      msg = "you cannot add more than one variable from the same table to any column";
-      setStatus(msg);
-      ret = false;
-    } });
-  }
-
-if (ret == false) {
-  return false;
-}
-  
-  var newChild = $("<div/>").appendTo($(this));
-  newChild.attr("hasOntology",ui.draggable.attr("hasOntology"));
-  newChild.attr("table",ui.draggable.attr("table"));
-  $(this).find(".info").detach();
-  newChild.append(ui.draggable.html());
-  newChild.append("&nbsp;&nbsp;&nbsp;&nbsp;<button>X</button>");
-  var colNum = $(this).attr('colNum');
-  var children = $(this).find("div");
-  
-  newChild.find('*').each(function() {
-      var elem = this;
-      replaceAttribute(elem, "name", '{COLNUM}', colNum);
-      // always have one DIV to start with, so subtract 2
-      replaceAttribute(elem, "name", '{CELLNUM}', children.length -2);
-  });
-
-  $(newChild).attr("style","");
-
-  validateColumn(this);  
-  $(this).draggable( "destroy" );
-  $(newChild).css("{}");
-   
-  $( newChild).children("button").button();
-  
-  $(this).animate({opacity:.8, borderColor:"#000000"} ,200).animate({opacity:1, borderColor:"#AAAAAA"} ,200).animate({opacity:.8, borderColor:"#000000"} ,200).animate({opacity:1, borderColor:"#AAAAAA"} ,200); 
-}
-};
-
-
-function addVariable( ) {
-
-}
-
-function validateColumn(column) {
-    var integrate = $(column).find("div[hasOntology]");
-    var children = $(column).children("div");
-    console.log("children:" + children.length);
-    console.log("integrate:" + integrate.length);
-   
-   var ontology = -1;
-   $(integrate).each(function() { 
-     if (ontology == -1) {
-       ontology = $(this).attr("hasOntology");
-     } else if (ontology != $(this).attr("hasOntology")) {
-       ontology = -1000;
-     } 
-   });
-
-  if (integrate.length  == $(".buttontable").length && ontology > 0) {
-    $(column).find(".colType").html(" - integration");
-    $(column).find(".colTypeField").val("INTEGRATION");
-    $(column).addClass("integrationColumn");
-    $(column).removeClass("displayColumn");
-  } else {
-    $(column).find(".colTypeField").val("DISPLAY");
-    $(column).find(".colType").html(" - display");
-    $(column).removeClass("integrationColumn");
-    $(column).addClass("displayColumn");
-  }
-}
-var msg = "";
-
-jQuery(document).ready(function($){
-
-//$('#filter').submit(function() {
-//   jQuery.history.load("savedstate");
-//   FIXME: COOKIE PLUGIN DOES NOT HANDLE DATA LARGER THAN COOKIE SIZES
-//   $.cookie('integrationdata',$("#drplist").html());
-//   return true;
-//});
-
-/*
-//    $.history.init(function(hash){
-//        if(hash == "savedstate" && $.cookie('integrationdata') != '') {
-//           $("#drplist").html($.cookie('integrationdata'));
-//        } else {
-//           $.cookie('integrationdata','');
-//        }
-//    },
-//    { unescape: ",/" });
-*/
-
-
-$( "#drplist td" ).droppable( drpOptions );
-
-
-/*  this is the column adjustment UI, mouseenter is not always right  */
-function expandColumn(col) {
-  $(col).animate({width: "50%"});
-  $(col).removeClass("short");
-  $(col).siblings().each(function() {
-    $(this).addClass("short");
-    var tds = $("#drplist td").length;
-    var small = 80 / tds ;
-    if (tds > 8) {
-       small = 150 / tds;
-    };       
-    $(this).animate({width: small + "%"});
-  });
-
-}; 
-
-$("#drplist").delegate("td", "mouseenter", function(){
-  expandColumn(this);
-});
-
-$('#drplist').delegate('button','click',function() {
-    var column = $(this).parent().parent();
-    $(this).parent().remove();
-    validateColumn(column);
-    return false;
-});
-
-$( "#addColumn" ).button().click(function() {
-  var colNum = $("#drplist tr").children().length +1;
-  $( "<td colNum="+(colNum -1)+" class='displayColumn'><div class='label'>Column " + colNum + "<span class='colType'></span> <input type='hidden' name='integrationColumns["+(colNum -1)+"].columnType' value='DISPLAY' class='colTypeField'/><input type='hidden' name='integrationColumns["+(colNum -1)+"].sequenceNumber' value='"+(colNum -1)+"' class='sequenceNumber'/><button class='removeColumn'>X</button></div></td>" ).droppable( drpOptions ).appendTo( "#drplist tr" );
-    var chld = $("#drplist td");
-    $("button.removeColumn",$(chld[chld.length -1])).button().click(function() {
-    $(this).parent().parent().remove();
-    return false;
-  });
-    expandColumn($(chld[chld.length -1]));
-    return false;
-});
-
-//autosize the height of the div
-$('.buttontable tr').each(function() { 
-  var pheight = $(this).height(); $('.drg',this).css('height',pheight) 
-});
-
-
-
-  var top = $('#fixedList').offset().top - parseFloat($('#fixedList').css('marginTop').replace(/auto/, 0));
-  $(window).scroll(function (event) {
-    // what the y position of the scroll is
-    var y = $(this).scrollTop();
-  
-    // whether that's below the form
-    if (y >= top - 80) {
-      // if so, ad the fixed class
-      $('#fixedList').addClass('fixed');
-    } else {
-      // otherwise remove it
-      $('#fixedList').removeClass('fixed');
-    }
-  });
-
-
-});
-
-
-</script>
 <br/><br/>
-        <@s.submit value='Next: filter values' id="submitbutton" />
+<@s.submit value='Next: filter values' class="submitbutton" />
 
 
 </div>
 </@s.form>
+<form name="autosave" style="display:none;visibility:hidden">
+<textarea  id="autosave"></textarea>
+</form>
+
+<script>
+
+jQuery(document).ready(function($){
+	initDataIntegration();
+});
+</script>
+
 </body>
 </#escape>

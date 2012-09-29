@@ -15,6 +15,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.TestConstants;
+import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -24,9 +26,14 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceAnnotation;
+import org.tdar.core.bean.resource.ResourceAnnotationKey;
+import org.tdar.core.bean.resource.ResourceNote;
+import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.TdarActionException;
@@ -44,11 +51,23 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         ProjectController controller = generateNewInitializedController(ProjectController.class);
         controller.setId(3805L);
         controller.prepare();
+        RelatedComparativeCollection rcc = new RelatedComparativeCollection();
+        rcc.setText("old philadelphia museum");
+        controller.getProject().getRelatedComparativeCollections().add(rcc);
+        controller.getProject().getResourceNotes().add(new ResourceNote(ResourceNoteType.REDACTION, "redacted"));
+        ResourceAnnotationKey key = new ResourceAnnotationKey();
+        key.setKey("key23123");
+        controller.getProject().getResourceAnnotations().add(new ResourceAnnotation(key, "21234"));
         String projectAsJson = controller.getProjectAsJson();
         logger.info(projectAsJson);
         assertTrue(projectAsJson.contains("approved"));
         assertTrue(projectAsJson.contains("Domestic Structure or Architectural Complex"));
         assertTrue(projectAsJson.contains("New Philadelphia"));
+        assertTrue(projectAsJson.contains("redacted"));
+        assertTrue(projectAsJson.contains("old philadelphia"));
+        assertTrue(projectAsJson.contains(ResourceNoteType.REDACTION.name()));
+        assertTrue(projectAsJson.contains("21234"));
+        assertTrue(projectAsJson.contains("key23123"));
     }
 
     @Test
@@ -75,6 +94,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         controller.setCreditProxies(creditProxies);
         controller.getProject().setTitle("test");
         controller.getProject().setDescription("test");
+        controller.setServletRequest(getServletPostRequest());
         controller.save();
         Project project = controller.getProject();
         project = genericService.merge(project);
@@ -106,7 +126,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         Long id = project.getId();
         project = null;
         Project project_ = genericService.find(Project.class, id);
-        assertTrue(project_.getUsersWhoCanModify().contains(getBasicUser().getId().toString()));
+        assertTrue(project_.getUsersWhoCanModify().contains(getBasicUser().getId()));
         assertNotNull(project_.getInternalResourceCollection());
         Set<AuthorizedUser> authorizedUsers = project_.getInternalResourceCollection().getAuthorizedUsers();
 
@@ -171,7 +191,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         List<Resource> potentialParents = controller.getPotentialParents();
         logger.info("potential parents: {}", potentialParents);
         assertTrue("potential parents should always at least have one item (the null project)", potentialParents.size() >= 1);
-        //first element should always be the null project
+        // first element should always be the null project
         assertEquals(Project.NULL, potentialParents.get(0));
 
         int originalParentCount = potentialParents.size();
@@ -181,9 +201,8 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         init(controller, getBasicUser());
         potentialParents = controller.getPotentialParents();
         int newParentCount = potentialParents.size();
-        
-        assertEquals(2, newParentCount-originalParentCount);
-        
+
+        assertEquals(2, newParentCount - originalParentCount);
 
         controller = generateNewController(SensoryDataController.class);
         init(controller, getAdminUser());
@@ -224,6 +243,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         assertNotNull(detachedCollection.getOwner());
         assertTrue(detachedCollection.isValid());
         controller.validate();
+        controller.setServletRequest(getServletPostRequest());
         assertEquals(TdarActionSupport.SUCCESS, controller.save());
         Long id = project.getId();
         assertTrue("project should have been saved", id != null && id != -1L);
@@ -246,14 +266,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         ProjectController controller = generateNewInitializedController(ProjectController.class);
         init(controller, getUser());
         controller.prepare();
-        try {
-        	controller.edit();
-        	Assert.fail("Edit should be unsuccessful");
-        }
-        catch (TdarActionException exception) {
-        	// FIXME: ???
-        	assertTrue("Edit was unsuccessful", controller.getActionErrors().isEmpty());
-        }
+
         Project project = controller.getProject();
         project.setTitle("testing adhoc collection creation");
         project.setDescription("test");
@@ -263,12 +276,13 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
 
         ResourceCollection collection = new ResourceCollection();
         collection.setName(name1);
-        project.getResourceCollections().add(collection);
+        controller.getResourceCollections().add(collection);
 
         collection = new ResourceCollection();
         collection.setName(name2);
-        project.getResourceCollections().add(collection);
+        controller.getResourceCollections().add(collection);
 
+        controller.setServletRequest(getServletPostRequest());
         controller.save();
         Long id = project.getId();
         assertFalse(project.isTransient());
@@ -284,6 +298,52 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         assertTrue(names.contains(name1));
         assertTrue(names.contains(name2));
     }
+    
+    @Test
+    @Rollback
+    //check the number of times that tdar requests indexable content (an assumption that something is being saved/indexed multiple times)
+    public void testSaveIndexCount() throws TdarActionException {
+        String ALEXANDRIA_EXCEL_FILENAME = "qrybonecatalogueeditedkk.xls";
+        
+        ProjectController controller = generateNewInitializedController();
+        Project project = controller.getProject();
+        project.setTitle("test index count");
+        project.setDescription("hi mom");
+        controller.setServletRequest(getServletPostRequest());
+        genericService.synchronize();
+        controller.save();
+        assertTrue(project.getId() > -1L);
+        
+        //okay now let's create a dataset and attach a file to it, then save the project again
+        Dataset dataset = setupAndLoadResource(ALEXANDRIA_EXCEL_FILENAME, Dataset.class, project.getId());
+        int count1 = dataset.getContentCallCount();
+        
+        assertNotNull(dataset);
+        
+        
+       //now perform a save of the project and make a note of the indexcount.
+       @SuppressWarnings("deprecation")
+       Project project2 = new Project(project.getId(), project.getTitle());
+       project2.setDescription("changed description");
+       controller = generateNewInitializedController();
+       controller.setProject(project);
+       controller.setId(project2.getId());
+       controller.setServletRequest(getServletPostRequest());
+       controller.save();
+       genericService.synchronize();
+       int count2 = dataset.getContentCallCount();
+       logger.debug("original content call count:{}\t new count:{}", count1, count2);
+//       assertTrue("expecting index content requests", count2 > count1);
+       
+       
+        
+    }
+    
+    @Override
+    protected String getTestFilePath() {
+        return TestConstants.TEST_DATA_INTEGRATION_DIR;
+    }
+    
 
     private ResourceCollection createNewEmptyCollection(String name) {
         ResourceCollection rc = new ResourceCollection(CollectionType.SHARED);
@@ -296,6 +356,13 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         assertTrue(rc.isValid());
         genericService.saveOrUpdate(rc);
         return rc;
+    }
+    
+    private ProjectController generateNewInitializedController() {
+        ProjectController controller = generateNewInitializedController(ProjectController.class);
+        init(controller, getUser());
+        controller.prepare();
+        return controller;
     }
 
 }

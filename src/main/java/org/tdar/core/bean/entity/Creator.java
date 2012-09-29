@@ -31,7 +31,7 @@ import org.hibernate.search.annotations.DateBridge;
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Fields;
-import org.hibernate.search.annotations.Index;
+import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Resolution;
 import org.hibernate.search.annotations.Store;
 import org.tdar.core.bean.HasName;
@@ -41,6 +41,7 @@ import org.tdar.core.bean.OaiDcProvider;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Updatable;
+import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.configuration.JSONTransient;
 import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
@@ -61,14 +62,18 @@ import org.tdar.search.query.QueryFieldNames;
 @Inheritance(strategy = InheritanceType.JOINED)
 @XmlSeeAlso({ Person.class, Institution.class })
 @XmlAccessorType(XmlAccessType.PROPERTY)
-public abstract class Creator extends JsonModel.Base implements Persistable, HasName, Indexable, Dedupable, Updatable, OaiDcProvider, Obfuscatable {
+public abstract class Creator extends JsonModel.Base implements Persistable, HasName, Indexable, Dedupable, Updatable, OaiDcProvider, Obfuscatable, Addressable {
 
     private transient boolean obfuscated;
 
     private static final long serialVersionUID = 2296217124845743224L;
 
     public enum CreatorType {
-        PERSON, INSTITUTION;
+        PERSON("P"), INSTITUTION("I");
+        private String code;
+        private CreatorType(String code) {
+            this.code = code;
+        }
         public static CreatorType valueOf(Class<? extends Creator> cls) {
             if (cls.equals(Person.class)) {
                 return CreatorType.PERSON;
@@ -76,6 +81,10 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
                 return CreatorType.INSTITUTION;
             }
             return null;
+        }
+        
+        public String getCode() {
+            return this.code;
         }
     }
 
@@ -95,7 +104,7 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
      * @JoinColumn(name = "updater_id")
      * private Person updatedBy;
      */
-    @Field(index = Index.UN_TOKENIZED, store = Store.YES)
+    @Field(norms = Norms.NO, store = Store.YES)
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "last_updated", nullable = true)
     @DateBridge(resolution = Resolution.MILLISECOND)
@@ -131,7 +140,7 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
 
     @Fields({ @Field(name = "name", analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
             @Field(name = "name_kwd", analyzer = @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)),
-            @Field(name = QueryFieldNames.CREATOR_NAME_SORT, index = Index.UN_TOKENIZED, store = Store.YES) })
+            @Field(name = QueryFieldNames.CREATOR_NAME_SORT, norms = Norms.NO, store = Store.YES) })
     public abstract String getName();
 
     @Fields({ @Field(name = QueryFieldNames.PROPER_NAME, analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)) })
@@ -164,7 +173,7 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
      * 
      * @XmlTransient
      * 
-     * @Field(index = Index.UN_TOKENIZED, store = Store.YES)
+     * @Field(norms = Norms.NO, store = Store.YES)
      * public Integer getReferenceCount() {
      * if (CollectionUtils.isEmpty(getResourceCreators())) {
      * return 0;
@@ -328,4 +337,7 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
         this.obfuscated = obfuscated;
     }
 
+    public String getUrlNamespace() {
+        return "browse/creator";
+    }
 }

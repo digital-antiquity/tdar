@@ -1,8 +1,7 @@
-package org.tdar.core.bean.resource.dataTable;
+package org.tdar.core.bean.resource.datatable;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,12 +17,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Type;
@@ -32,10 +29,11 @@ import org.hibernate.search.annotations.Field;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.resource.CategoryVariable;
+import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
-import org.tdar.core.bean.resource.DataValueOntologyNodeMapping;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
+import org.tdar.core.bean.resource.dataintegration.DataValueOntologyNodeMapping;
 import org.tdar.core.configuration.JSONTransient;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.db.model.abstracts.TargetDatabase;
@@ -81,7 +79,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
 
         @Override
         public Long getId() {
-            return -1l;
+            return -1L;
         }
     };
 
@@ -103,7 +101,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, name = "column_data_type")
-    private DataTableColumnType columnDataType;
+    private DataTableColumnType columnDataType = DataTableColumnType.VARCHAR;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "column_encoding_type")
@@ -112,8 +110,6 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     @ManyToOne
     @JoinColumn(name = "category_variable_id")
     private CategoryVariable categoryVariable;
-
-    private transient CategoryVariable tempSubCategoryVariable;
 
     @ManyToOne
     @JoinColumn(name = "default_ontology_id")
@@ -127,6 +123,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     @Column(name = "measurement_unit")
     private MeasurementUnit measurementUnit;
 
+    @Deprecated
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dataTableColumn")
     private List<DataValueOntologyNodeMapping> valueToOntologyNodeMapping = new ArrayList<DataValueOntologyNodeMapping>();
 
@@ -148,8 +145,9 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     @Transient
     private Integer length = -1;
 
-    public DataTableColumn() {
-    }
+    // XXX: only used for data transfer from the web layer.
+    @Transient
+    private transient CategoryVariable tempSubCategoryVariable;
 
     @XmlElement(name = "dataTableRef")
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
@@ -201,6 +199,9 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
 
     public void setDefaultOntology(Ontology defaultOntology) {
         this.defaultOntology = defaultOntology;
+        if (defaultOntology != null) {
+            setColumnEncodingType(DataTableColumnEncodingType.CODED_VALUE);
+        }
     }
 
     @XmlElement(name = "codingSheetRef")
@@ -211,6 +212,9 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
 
     public void setDefaultCodingSheet(CodingSheet defaultCodingSheet) {
         this.defaultCodingSheet = defaultCodingSheet;
+        if (defaultCodingSheet != null) {
+            setColumnEncodingType(DataTableColumnEncodingType.CODED_VALUE);
+        }
     }
 
     public MeasurementUnit getMeasurementUnit() {
@@ -221,8 +225,8 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
         this.measurementUnit = measurementUnit;
     }
 
-    @XmlElementWrapper(name = "dataValueOntologyNodeMappings")
-    @XmlElement(name = "dataValueOntologyNodeMapping")
+//    @XmlElementWrapper(name = "dataValueOntologyNodeMappings")
+//    @XmlElement(name = "dataValueOntologyNodeMapping")
     public List<DataValueOntologyNodeMapping> getValueToOntologyNodeMapping() {
         return valueToOntologyNodeMapping;
     }
@@ -232,41 +236,21 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     }
 
     @Transient
-    public Map<String, Long> getValueToOntologyNodeIdMap() {
-        if (CollectionUtils.isEmpty(valueToOntologyNodeMapping)) {
+    public Map<String, OntologyNode> getValueToOntologyNodeMap() {
+        CodingSheet codingSheet = getDefaultCodingSheet();
+        if (codingSheet == null) {
             return Collections.emptyMap();
         }
-        HashMap<String, Long> map = new HashMap<String, Long>();
-        for (DataValueOntologyNodeMapping mapping : valueToOntologyNodeMapping) {
-            map.put(mapping.getDataValue(), mapping.getOntologyNode().getId());
-        }
-        return map;
+        return codingSheet.getTermToOntologyNodeMap();
     }
 
     @Transient
-    public Map<String, OntologyNode> getValueToOntologyNodeMap() {
-        HashMap<String, OntologyNode> map = new HashMap<String, OntologyNode>();
-        for (DataValueOntologyNodeMapping mapping : valueToOntologyNodeMapping) {
-            map.put(mapping.getDataValue(), mapping.getOntologyNode());
+    public Map<String, List<Long>> getValueToOntologyNodeIdMap() {
+        CodingSheet codingSheet = getDefaultCodingSheet();
+        if (codingSheet == null) {
+            return Collections.emptyMap();
         }
-        return map;
-    }
-
-    @Transient
-    public Map<Long, List<String>> getOntologyNodeIdToValuesMap() {
-        if (ontologyNodeIdToValuesMap == null) {
-            HashMap<Long, List<String>> map = new HashMap<Long, List<String>>();
-            for (DataValueOntologyNodeMapping mapping : valueToOntologyNodeMapping) {
-                Long nodeId = mapping.getOntologyNode().getId();
-                List<String> mappedValues = map.get(nodeId);
-                if (mappedValues == null) {
-                    mappedValues = new ArrayList<String>();
-                    map.put(nodeId, mappedValues);
-                }
-                mappedValues.add(mapping.getDataValue());
-            }
-        }
-        return ontologyNodeIdToValuesMap;
+        return codingSheet.getTermToOntologyNodeIdMap();
     }
 
     public void setDescription(String description) {
@@ -278,11 +262,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     }
 
     public String toString() {
-        StringBuilder builder = new StringBuilder(name == null ? "null" : name).append(" - ")
-                .append(columnDataType == null ? "null" : columnDataType)
-                .append(' ')
-                .append(getId() == null ? -1 : getId());
-        return builder.toString();
+        return String.format("%s - %s %s", name, columnDataType, getId());
     }
 
     public String getDisplayName() {
@@ -302,7 +282,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     }
 
     public String getDelimiterValue() {
-        if (delimiterValue == "") {
+        if (StringUtils.isEmpty(delimiterValue)) {
             return null;
         }
         return delimiterValue;
@@ -406,9 +386,8 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
         logger.trace("delim: '{}' - '{}'", getDelimiterValue(), column.getDelimiterValue());
         logger.trace("mapping: {} - {}", isMappingColumn(), column.isMappingColumn());
         logger.trace("extension: {} - {}", isIgnoreFileExtension(), column.isIgnoreFileExtension());
-        return ! (StringUtils.equals(getDelimiterValue(), column.getDelimiterValue()) &&
-                ObjectUtils.equals(isIgnoreFileExtension(), column.isIgnoreFileExtension()) &&
-                ObjectUtils.equals(isMappingColumn(), column.isMappingColumn()));
+        return !(StringUtils.equals(getDelimiterValue(), column.getDelimiterValue()) &&
+                ObjectUtils.equals(isIgnoreFileExtension(), column.isIgnoreFileExtension()) && ObjectUtils.equals(isMappingColumn(), column.isMappingColumn()));
     }
 
     @Transient
@@ -417,4 +396,15 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     public String getJsSimpleName() {
         return getName().replaceAll("[\\s\\,\"\']", "_");
     }
+
+    public List<String> getMappedDataValues(OntologyNode node) {
+        ArrayList<String> values = new ArrayList<String>();
+        for (CodingRule rule: getDefaultCodingSheet().getCodingRules()) {
+            if (ObjectUtils.equals(node, rule.getOntologyNode())) {
+                values.add(rule.getTerm());
+            }
+        }
+        return values;
+    }
+
 }

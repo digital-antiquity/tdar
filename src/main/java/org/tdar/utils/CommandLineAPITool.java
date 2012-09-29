@@ -64,7 +64,7 @@ public class CommandLineAPITool {
 
     Logger logger = Logger.getLogger(getClass());
     DefaultHttpClient httpclient = new DefaultHttpClient();
-    private String hostname = CORE_TDAR_ORG;
+    private String hostname = ALPHA_TDAR_ORG; // DEFAULT SHOULD NOT BE CORE
     private String username = "";
     private String password = "";
     private Long projectId;
@@ -207,7 +207,7 @@ public class CommandLineAPITool {
             // make tdar authentication call
             HttpPost tdarAuth = new HttpPost("http://" + getHostname() + "/login/process");
             List<NameValuePair> postNameValuePairs = new ArrayList<NameValuePair>();
-            postNameValuePairs.add(new BasicNameValuePair("loginEmail", getUsername()));
+            postNameValuePairs.add(new BasicNameValuePair("loginUsername", getUsername()));
             postNameValuePairs.add(new BasicNameValuePair("loginPassword", getPassword()));
 
             tdarAuth.setEntity(new UrlEncodedFormEntity(postNameValuePairs, HTTP.UTF_8));
@@ -304,13 +304,13 @@ public class CommandLineAPITool {
             logger.debug("setting projectId:" + projectId);
             reqEntity.addPart("projectId", new StringBody(projectId.toString()));
         }
-
         if (!CollectionUtils.isEmpty(attachments)) {
             for (int i = 0; i < attachments.size(); i++) {
                 reqEntity.addPart("uploadFile", new FileBody(attachments.get(i)));
             }
         }
         apicall.setEntity(reqEntity);
+        logger.debug("      files: " + StringUtils.join(attachments, ", "));
 
         HttpResponse response = httpclient.execute(apicall);
         int statusCode = response.getStatusLine().getStatusCode();

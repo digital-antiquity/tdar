@@ -4,6 +4,7 @@
 package org.tdar.web;
 
 import org.junit.Test;
+import org.tdar.core.service.external.auth.AuthenticationResult;
 
 /**
  * @author Adam Brin
@@ -26,7 +27,8 @@ public class LoginITCase extends AbstractAuthenticatedWebTestCase {
 	@Test
 	public void testInvalidLogin() {
 		logout();
-		login("BAD USERNAME","BAD PASSWORD");
+		login("BAD USERNAME","BAD PASSWORD",true);
+		assertTextPresent(AuthenticationResult.INVALID_PASSWORD.getMessage());
 		assertTextNotPresent("Your submitted projects");
 	}
 	

@@ -33,7 +33,7 @@ public class TdarSitemeshPageParser extends HTMLPageParser {
                 String id = tag.getAttributeValue("id", false);
                 String parse = tag.getAttributeValue("parse", false);
                 if (depth == 0 && id != null && parse != null && parse.equalsIgnoreCase("true")) {
-                    currentBuffer().append("<sitemesh:multipass id=\"div." + id + "\"/>");
+//                    currentBuffer().append("<sitemesh:multipass id=\"div." + id + "\"/>");
                     blockId = id;
                     context.pushBuffer(new CharArray(512));
                 }

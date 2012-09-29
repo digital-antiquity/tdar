@@ -37,6 +37,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
      */
     @SuppressWarnings("unchecked")
     public List<ResourceCollection> findCollectionsOfParent(Long parent, Boolean visible, CollectionType... collectionTypes) {
+        // FIXME: nesting...
         Query namedQuery = getCurrentSession().getNamedQuery(QUERY_COLLECTION_BY_PARENT);
         namedQuery.setParameter("parent", parent);
         namedQuery.setParameterList("collectionTypes", collectionTypes);
@@ -51,7 +52,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
     }
 
     @SuppressWarnings("unchecked")
-    public List<ResourceCollection> findParentOwnerCollections(Person person, List<CollectionType> types) {
+    public List<ResourceCollection> findExplicitlyAuthorizedCollections(Person person, CollectionType ... types) {
         Query namedQuery = getCurrentSession().getNamedQuery(QUERY_COLLECTION_BY_AUTH_OWNER);
         namedQuery.setParameter("authOwnerId", person.getId());
         namedQuery.setParameterList("collectionTypes", types);
