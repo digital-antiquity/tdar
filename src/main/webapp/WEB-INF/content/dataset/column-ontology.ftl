@@ -63,7 +63,7 @@ function applyLocalAutoComplete(selector, db) {
                 }), $.map(ontology, function(item) {
                 if(matcher.test(item.name)){
                     return {
-                       value : item.name.replace(/^([\|\-\s]|&nbsp;)*/ig,""),
+                       value : item.name.replace(/^([\|\-\s])*/ig,""),
                        label : item.name,
                        id : item.id
                     }
@@ -191,7 +191,7 @@ please remember to use the links below to select the other columns.
 </div>
 <div id='display' class="glide">
 <@s.form method='post' id="mapontologyform" action='save-data-ontology-mapping'>
-<@s.hidden name='resourceId' value='${resource.id?c}'/>
+<@s.hidden name='id' value='${resource.id?c}'/>
 <@s.hidden name='columnId' value='${dataTableColumn.id?c}'/>
 <#assign isLast = false/>
 <#assign count = 0/>

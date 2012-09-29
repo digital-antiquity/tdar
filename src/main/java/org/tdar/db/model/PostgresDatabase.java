@@ -20,9 +20,9 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.dao.DataAccessException;
@@ -47,8 +47,8 @@ import org.tdar.core.bean.resource.dataTable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.dataTable.DataTableColumnType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.struts.data.IntegrationColumn;
 import org.tdar.struts.data.IntegrationDataResult;
-import org.tdar.struts.data.IntegrationRowData;
 import org.tdar.utils.Pair;
 
 /**
@@ -62,9 +62,6 @@ import org.tdar.utils.Pair;
  */
 public class PostgresDatabase implements TargetDatabase {
 
-    private static final String SELECT_FROM_WHERE_PARAM1 = "SELECT \"%s\" FROM %s WHERE ";
-    private static final String IN_CLAUSE = " \"%s\" IN ( '%s' ) ";
-    private static final String IN_CLAUSE_WITH_NULLS = " ( \"%s\" IN ( '%s' ) OR \"%s\" is NULL)";
     private static final String SELECT_ALL_FROM_TABLE = "SELECT %s FROM %s";
     private static final String DROP_TABLE = "DROP TABLE IF EXISTS %s";
     private static final String SELECT_DISTINCT = "SELECT DISTINCT \"%s\" FROM %s ORDER BY \"%s\"";
@@ -100,13 +97,17 @@ public class PostgresDatabase implements TargetDatabase {
     private final Logger logger = Logger.getLogger(getClass());
 
     public static final int MAX_VARCHAR_LENGTH = 500;
-    public static final int MAX_NAME_SIZE = 60;
+    private static final int MAX_NAME_SIZE = 63;
 
     DateFormat dateFormat = new SimpleDateFormat();
     DateFormat accessDateFormat = new SimpleDateFormat("EEE MMM dd hh:mm:ss z yyyy");
 
     private Map<DataTable, Pair<PreparedStatement, Integer>> preparedStatementMap = new HashMap<DataTable, Pair<PreparedStatement, Integer>>();
 
+    
+    public int getMaxTableLength() {
+        return MAX_NAME_SIZE;
+    }
     public DatabaseType getDatabaseType() {
         return DatabaseType.POSTGRES;
     }
@@ -179,164 +180,6 @@ public class PostgresDatabase implements TargetDatabase {
 
     private boolean isAcceptableException(SQLException exception) {
         return exception.getSQLState().equals(getSqlDropStateError());
-    }
-
-    /**
-	 */
-    // FIXME: THERE HAS TO BE A BETTER WAY TO DO THIS
-    private String generateOntologyEnhancedSelect(DataTable table,
-            List<DataTableColumn> columns, List<DataTableColumn> displayColumnNames,
-            Collection<OntologyNode> ontologyNodes) {
-        if (columns == null)
-            columns = Collections.emptyList();
-        if (displayColumnNames == null)
-            displayColumnNames = Collections.emptyList();
-        if (ontologyNodes == null)
-            ontologyNodes = Collections.emptyList();
-
-        // map quote to column names
-        ArrayList<String> columnNames = new ArrayList<String>();
-        for (DataTableColumn column : columns) {
-            columnNames.add(column.getName());
-        }
-        for (DataTableColumn column : displayColumnNames) {
-            columnNames.add(column.getName());
-        }
-
-        String columnNames_ = StringUtils.join(columnNames, "\",\"");
-
-        ArrayList<String> whereParts = new ArrayList<String>();
-
-        // now generate the where condition based on the ontology nodes
-        logger.debug("ontology nodes: " + ontologyNodes);
-        logger.debug("data table columns: " + columns);
-        HashMap<Long, Set<String>> columnIdToIncludedValuesMap = generateIncludedValuesForIntegration(columns, ontologyNodes);
-        // at this point columnIdToIncludedValuesMap should have all the values
-        // that need to be selected.
-        logger.debug("column id to included values map: " + columnIdToIncludedValuesMap);
-        // finally, go through all of the integration columns and generate the
-        // where condition for each column
-        for (DataTableColumn column : columns) {
-            String columnName = column.getName();
-            Set<String> includedValues = columnIdToIncludedValuesMap.get(column.getId());
-            if (CollectionUtils.isEmpty(includedValues)) {
-                // no values to include
-                logger.warn("No included values found while integrating column: " + columnName);
-                continue;
-            }
-            whereParts.add(constructInClause(columnName, includedValues, true));
-        }
-
-        String sql = SELECT_FROM_WHERE_PARAM1 + StringUtils.join(whereParts, " AND ");
-        sql = String.format(sql, columnNames_, table.getName());
-        logger.debug(sql);
-        return sql;
-    }
-
-    /**
-     * @param columnName
-     * @param includedValues
-     * @return
-     */
-    private String constructInClause(String columnName, Set<String> includedValues, boolean includeNulls) {
-        StringBuffer sb = new StringBuffer();
-        Iterator<String> iter = includedValues.iterator();
-        while (iter.hasNext()) {
-            String val = iter.next();
-            sb.append(StringUtils.replace(val, "'", "''"));
-            if (iter.hasNext())
-                sb.append("','");
-        }
-        String format = IN_CLAUSE;
-        if (includeNulls)
-            format = IN_CLAUSE_WITH_NULLS;
-        return String.format(format, columnName, sb.toString(), columnName);
-    }
-
-    @SuppressWarnings("unchecked")
-    public IntegrationDataResult generateIntegrationResult(final DataTable table, final List<DataTableColumn> integrationColumns,
-            List<DataTableColumn> columnsToDisplay, final Map<OntologyNode, OntologyNode> aggregatedOntologyNodeMap, Set<OntologyNode> allOntologyNodes) {
-        String selectSql = generateOntologyEnhancedSelect(table, integrationColumns, columnsToDisplay, allOntologyNodes);
-
-        IntegrationDataResult integrationDataResult = new IntegrationDataResult();
-        integrationDataResult.setDataTable(table);
-        integrationDataResult.setIntegrationColumns(integrationColumns);
-        integrationDataResult.setColumnsToDisplay(columnsToDisplay);
-        logger.debug("integration columns: " + integrationColumns);
-        logger.debug("columns to display: " + columnsToDisplay);
-
-        final int numberOfColumns = integrationColumns.size() + columnsToDisplay.size();
-        logger.debug("number of columns to display: " + numberOfColumns);
-        // based on the selected ontology nodes, generate a mapping between all selected ontology nodes (including implicitly selected child nodes)
-        // and the ontology node that they should be aggregated towards (always upwards).
-
-        final HashMap<String, OntologyNode> valuesToOntologyNodeMap = new HashMap<String, OntologyNode>();
-        for (DataTableColumn column : integrationColumns) {
-            valuesToOntologyNodeMap.putAll(column.getValueToOntologyNodeMap());
-        }
-        List<IntegrationRowData> rowDataList = new ArrayList<IntegrationRowData>();
-        if (!selectSql.trim().toLowerCase().endsWith("where")) {
-            rowDataList = query(selectSql, new ParameterizedRowMapper<IntegrationRowData>() {
-                @Override
-                public IntegrationRowData mapRow(ResultSet resultSet, int rowNumber) throws SQLException {
-                    // grab the data from this result set, populate the IntegrationDataResult
-                    IntegrationRowData rowData = new IntegrationRowData();
-                    ArrayList<String> values = new ArrayList<String>();
-                    for (int i = 1; i <= numberOfColumns; i++) {
-                        // note SQL iterator is 1 based; java iterator is 0 based
-                        DataTableColumn column = table.getColumnByName(resultSet.getMetaData().getColumnName(i));
-                        String value = getResultSetValueAsString(resultSet, i, column);
-                        if (integrationColumns.contains(column) && StringUtils.isEmpty(value)) {
-                            value = NULL_EMPTY_INTEGRATION_VALUE;
-                        }
-                        values.add(value);
-                    }
-                    ArrayList<OntologyNode> ontologyValues = new ArrayList<OntologyNode>();
-                    // add the ontology value mapping for this integration value
-                    for (int index = 0; index < integrationColumns.size(); index++) {
-                        // the integration column values are the first values selected in the table
-                        // so we iterate over the integration columns and grab the values at indices 0 .. integrationColumns.size
-                        String integrationValue = values.get(index);
-                        logger.trace("integration value: " + integrationValue);
-                        // then find their associated ontology value.
-                        OntologyNode node = valuesToOntologyNodeMap.get(integrationValue);
-                        // now check to see if this node should be aggregated
-                        ontologyValues.add(aggregatedOntologyNodeMap.get(node));
-                        logger.trace("associated ontology node: " + valuesToOntologyNodeMap.get(integrationValue));
-                    }
-                    rowData.setDataValues(values);
-                    rowData.setOntologyValues(ontologyValues);
-                    return rowData;
-                }
-            });
-        }
-        integrationDataResult.setRowData(rowDataList);
-        return integrationDataResult;
-    }
-
-    private HashMap<Long, Set<String>> generateIncludedValuesForIntegration(
-            List<DataTableColumn> columns,
-            Collection<OntologyNode> ontologyNodes) {
-        HashMap<Long, Set<String>> columnIdToIncludedValuesMap = new HashMap<Long, Set<String>>();
-
-        // FIXME: SIMPLIFY
-        for (OntologyNode node : ontologyNodes) {
-            logger.trace(node.getIri());
-            // for each data table column, find the values that have been mapped to this node. All of those values should be included in the WHERE condition for
-            // this column.
-            for (DataTableColumn column : columns) {
-                List<String> mappedDataValues = node.getMappedDataValues(column);
-                // all of these Strings should be included in the where condition where <column-name> in ("foo", "bar", "baz", "quux");
-                logger.trace(mappedDataValues);
-                Set<String> includedValues = columnIdToIncludedValuesMap.get(column.getId());
-                if (includedValues == null) {
-                    includedValues = new HashSet<String>();
-                    columnIdToIncludedValuesMap.put(column.getId(), includedValues);
-                }
-                includedValues.addAll(mappedDataValues);
-            }
-        }
-        return columnIdToIncludedValuesMap;
     }
 
     @SuppressWarnings("all")
@@ -776,5 +619,132 @@ public class PostgresDatabase implements TargetDatabase {
         JdbcTemplate jdbcTemplate = getJdbcTemplate();
         jdbcTemplate.execute(sqlDrop);
         jdbcTemplate.execute(sqlRename);
+    }
+
+    @SuppressWarnings("unchecked")
+    public IntegrationDataResult generateIntegrationResult(final DataTable table, final List<IntegrationColumn> integrationColumns,
+            final Map<List<OntologyNode>, Map<DataTable, Integer>> pivot) {
+        // formulate a SELECT statement
+        String selectSql = generateOntologyEnhancedSelect(table, integrationColumns, pivot);
+
+        IntegrationDataResult integrationDataResult = new IntegrationDataResult();
+        integrationDataResult.setDataTable(table);
+        integrationDataResult.setIntegrationColumns(integrationColumns);
+        logger.debug(selectSql);
+
+        List<List<String>> rowDataList = new ArrayList<List<String>>();
+        // if we have a "WHERE clause, then we can actually do something (otherwise, we probably have an empty filter list
+        if (selectSql.toLowerCase().contains(" where ")) {
+            rowDataList = query(selectSql, new ParameterizedRowMapper<List<String>>() {
+                @Override
+                public List<String> mapRow(ResultSet resultSet, int rowNumber) throws SQLException {
+                    // grab the data from this result set, populate the IntegrationDataResult
+                    ArrayList<String> values = new ArrayList<String>();
+                    ArrayList<OntologyNode> ontologyNodes = new ArrayList<OntologyNode>();
+                    int resultSetPosition = 1;
+                    for (IntegrationColumn integrationColumn : integrationColumns) {
+                        // note SQL iterator is 1 based; java iterator is 0 based
+                        DataTableColumn column = table.getColumnByName(resultSet.getMetaData().getColumnName(resultSetPosition));
+                        String value = "";
+                        if (column != null) { // RAW VALUE
+                            value = getResultSetValueAsString(resultSet, resultSetPosition, column);
+                        }
+                        if (column != null && !integrationColumn.isDisplayColumn() && StringUtils.isEmpty(value)) {
+                            value = NULL_EMPTY_INTEGRATION_VALUE;
+                        }
+                        values.add(value);
+                        ontologyNodes.add(OntologyNode.NULL); // initialize the array so we have columns line up
+                        if (column != null && !integrationColumn.isDisplayColumn()) { // MAPPED VALUE if not display column
+                            String mappedVal = null;
+                            OntologyNode mappedOntologyNode = integrationColumn.getMappedOntologyNode(value, column);
+                            if (mappedOntologyNode != null) {
+                                mappedVal = mappedOntologyNode.getDisplayName();
+                                ontologyNodes.set(ontologyNodes.size() - 1, mappedOntologyNode);
+                            }
+                            if (mappedVal == null) {
+                                mappedVal = NULL_EMPTY_MAPPED_VALUE;
+                            }
+                            values.add(mappedVal);
+                        }
+                        resultSetPosition++;
+                    }
+                    if (pivot.get(ontologyNodes) == null) {
+                        pivot.put(ontologyNodes, new HashMap<DataTable, Integer>());
+                    }
+                    Integer groupCount = pivot.get(ontologyNodes).get(table);
+                    if (groupCount == null) {
+                        pivot.get(ontologyNodes).put(table, 0);
+                        groupCount = 0;
+                    }
+                    pivot.get(ontologyNodes).put(table, groupCount + 1);
+                    return values;
+                }
+            });
+        }
+        integrationDataResult.setRowData(rowDataList);
+        return integrationDataResult;
+    }
+
+    private String quote(String term) {
+        return quote(term, true);
+    }
+
+    private String quote(String term, boolean doubleQuote) {
+        String chr = "\'";
+        if (doubleQuote) {
+            chr = "\"";
+        }
+        return " " + chr + term + chr + " ";
+    }
+
+    private String generateOntologyEnhancedSelect(DataTable table, List<IntegrationColumn> integrationColumns,
+            final Map<List<OntologyNode>, Map<DataTable, Integer>> pivot) {
+        StringBuilder selectPart = new StringBuilder("SELECT ");
+        StringBuilder wherePart = new StringBuilder(" WHERE ");
+        boolean firstWhere = true;
+        List<String> colNames = new ArrayList<String>();
+
+        // FOR EACH COLUMN, grab the value, for the table or use '' to keep the spacing correct
+        for (IntegrationColumn integrationColumn : integrationColumns) {
+            logger.info("table:" + table + " column: " + integrationColumn);
+            DataTableColumn column = integrationColumn.getColumnForTable(table);
+            String name = "''";
+            if (column != null) {
+                name = quote(column.getName());
+            }
+            colNames.add(name);
+
+            // if we're an integration column, quote and grab all of the ontology nodes for the select
+            // these are the "hierarchical" values
+            if (!integrationColumn.isDisplayColumn() && column != null) {
+                Set<String> whereVals = new HashSet<String>();
+                for (OntologyNode node : integrationColumn.getOntologyNodesForSelect()) {
+                    for (String val : node.getMappedDataValues(column)) {
+                        whereVals.add(quote(StringEscapeUtils.escapeSql(val), false));
+                    }
+                }
+                if (whereVals.isEmpty()) {
+                    continue;
+                }
+
+                if (!firstWhere) {
+                    wherePart.append(" AND ");
+                } else {
+                    firstWhere = false;
+                }
+                if (integrationColumn.isNullIncluded()) {
+                    wherePart.append(" (");
+                }
+                wherePart.append(name).append(" IN (").append(StringUtils.join(whereVals, ",")).append(") ");
+                if (integrationColumn.isNullIncluded()) {
+                    wherePart.append("OR ").append(name).append(" IS NULL) ");
+                }
+            }
+        }
+        selectPart.append(StringUtils.join(colNames, ",")).append(" FROM ").append(table.getName());
+        if (!firstWhere) {
+            selectPart.append(wherePart);
+        }
+        return selectPart.toString();
     }
 }

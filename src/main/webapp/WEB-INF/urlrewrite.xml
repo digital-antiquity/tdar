@@ -8,10 +8,21 @@
 		<from>^/services$</from>
 		<to>/services/</to>
 	</rule>
+	
+	<rule>
+	   <from>^/browse/(.+)/(\d+)</from>
+	   <to>/browse/$1?id=$2</to>
+	</rule>
+  <outbound-rule>
+    <from>^/browse/(.+)?id=(\d+)$</from>
+    <to>/browse/$1/$2</to>
+  </outbound-rule>
+
 	<rule>
 		<from>^/services//(.*)</from>
 		<to>/services/$1</to>
 	</rule>
+
 	<rule>
 		<condition type="request-uri" operator="equal">^/[^(services)].*$</condition>
 		<from>^/(.+)/$</from>
@@ -22,33 +33,53 @@
             <to>/search/results$1</to>
         </rule>
 	<rule>
-		<from>^/(project|dataset|ontology|image|document|sensory-data|coding-sheet)/([0-9]+)/(view|edit|upload|delete|columns|citations|dc|mods|json|xml)$</from>
-		<to>/$1/$3?resourceId=$2</to>
+		<from>^/(project|dataset|ontology|image|document|sensory-data|coding-sheet|collection)/([0-9]+)/(view|edit|upload|delete|columns|citations|dc|mods|json|xml)$</from>
+		<to>/$1/$3?id=$2</to>
 	</rule>
 	<outbound-rule>
-		<from>^/(project|dataset|ontology|image|document|sensory-data|coding-sheet)/(view|edit|xml|upload|delete|columns|citations|dc|mods)\?resourceId=([0-9]+)$</from>
+		<from>^/(project|dataset|ontology|image|document|sensory-data|coding-sheet|collection)/(view|edit|xml|upload|delete|columns|citations|dc|mods)\?id=([0-9]+)$</from>
 		<to>/$1/$3/$2</to>
 	</outbound-rule>
 
 	<!-- XXX: could use this instead to deal with relative links (maybe) -->
 	<!-- <outbound-rule> -->
-	<!-- <from>(view|edit|upload|delete|columns|citations)\?resourceId=([0-9]+)$</from> -->
+	<!-- <from>(view|edit|upload|delete|columns|citations)\?id=([0-9]+)$</from> -->
 	<!-- <to>$2/$1</to> -->
 	<!-- </outbound-rule> -->
 
 	<!-- all requests for a resource supplying just an id should go to it's 
 		view action -->
 	<rule>
-		<from>^/(project|dataset|ontology|image|document|sensory-data|coding-sheet)/([0-9]+)$</from>
-		<to>/$1/view?resourceId=$2</to>
+		<from>^/(project|dataset|ontology|image|document|sensory-data|coding-sheet|collection)/([0-9]+)$</from>
+		<to>/$1/view?id=$2</to>
 	</rule>
+  <outbound-rule>
+    <from>^/(project|dataset|ontology|image|document|sensory-data|coding-sheet|collection)/([0-9]+)/view$</from>
+    <to>/$1/$2</to>
+  </outbound-rule>
 
-	<outbound-rule>
-		<from>^/(project|dataset|ontology|image|document|sensory-data|coding-sheet)/([0-9]+)/view$</from>
-		<to>/$1/$2</to>
-	</outbound-rule>
 
-	<rule>
+    <rule>
+        <from>^/(collection)$</from>
+        <to>/$1/list</to>
+    </rule>
+    <outbound-rule>
+        <from>^/(collection)/list$</from>
+        <to>/$1</to>
+    </outbound-rule>
+
+
+  <rule>
+    <from>^/(dashboard)/?$</from>
+    <to>/$1/$1</to>
+  </rule>
+
+  <outbound-rule>
+    <from>^/(dashboard)/dashboard/?$</from>
+    <to>/$1</to>
+  </outbound-rule>
+
+<!-- <rule>
 		<from>^/document/add/([A-Z_]+)$</from>
 		<to>/document/add?documentType=$1</to>
 	</rule>
@@ -57,7 +88,7 @@
 		<from>^/document/add\?documentType=([A-Z_]+)$</from>
 		<to>/document/add/$1</to>
 	</outbound-rule>
-
+-->
 	<rule>
 		<from>^/document/(source|related)/([0-9]+)$</from>
 		<to>/document/$1?linkedResourceId=$2</to>

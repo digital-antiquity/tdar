@@ -18,27 +18,13 @@ console.trace = function(){};
 // function() {};
 // or simply turn off the mundane console messages
 // console.debug = function(){};
+//
+if(!window.JSON) JSON={}; 
+JSON.stringify = JSON.stringify || function(){};
 
 
-var g_consoleLogRemoteCount = 0;
-console.logRemote = console.logRemote || function(msg) {
-    try {
-        if(g_consoleLogRemoteCount++ < 10) { //let's not DDOS tDAR just because jim wrote an infinite loop.
-            console.log("sending to server:" + msg);
-            $.post(getBaseURI() + 'resource/ajax/log-debug', {logMessage: msg});
-        } else {
-            console.error("Too many remote log messages. not sending:" + msg);
-        }
-    }catch(ignored) {}
-};
 
-// add trim() support for browsers such as IE
 var TDAR = {};
-// FIXME: jquery does this already
-TDAR.trim = function(str) {
-    return str.replace(/^\s+|\s+$/g, '');
-};
-
 TDAR.ellipsify = function(str, maxlength) {
     var newString = str;
     if(str.length > maxlength-3) {
@@ -73,7 +59,6 @@ jQuery.extend({
     }
 });
 
-//I'm assuming this function fails if function body has blocks? Probably not a big concern since event attributes are one-liners that rarely use them.
 function getFunctionBody(func) {
     var m = func.toString().match(/\{([\s\S]*)\}/m)[1];
     return m;
@@ -98,7 +83,13 @@ function replaceAttribute(elem, attrName, str, rep) {
     }
 }
 
-function repeatRow(tableId,rowAddedCallback) {
+function repeatRow(tableId,rowAddedCallback, resetRights) {
+	 //FIXME: this business of optionally enabling the cloned row is screwing up existing stuff.  remove this option and break it out into a separate function.
+	var _resetRights = true;
+	if(typeof resetRights != 'undefined') {
+		 _resetRights = resetRights;
+	}
+	
     var rowReference = $('#' + tableId + " > tbody > tr:last");
     var clonedRow = rowReference.clone();
 
@@ -130,15 +121,15 @@ function repeatRow(tableId,rowAddedCallback) {
     clonedRow.attr('id', newRowId);
 
     /*
-	 * Now that we've cloned the row, certain element attributes may need to be
-	 * renamed (for example, input tags with name attributes of the form
-	 * "fieldval[0]" should be renamed "fieldval[1]". Our assumption is that
-	 * every ID or NAME attribute that contains either "_num_" or "[num]" will
-	 * renamed.
-	 * 
-	 * However, we do not modify any tags that that have the css
-	 * class"repeatRowSkip".
-	 */
+     * Now that we've cloned the row, certain element attributes may need to be
+     * renamed (for example, input tags with name attributes of the form
+     * "fieldval[0]" should be renamed "fieldval[1]". Our assumption is that
+     * every ID or NAME attribute that contains either "_num_" or "[num]" will
+     * renamed.
+     * 
+     * However, we do not modify any tags that that have the css
+     * class"repeatRowSkip".
+     */
     // console.debug("about to find each elment in clonedrow:" + currentId);
     // TODO: ensure that this section works in IE6-- there may be issues with
 	// changing ID attribute programatically
@@ -159,11 +150,10 @@ function repeatRow(tableId,rowAddedCallback) {
     rowReference.after(clonedRow);
     // FIXME: uniformly name forms tdarForm to add tdarForm context?
     // clear all input fields from the cloned row (except buttons)
-    clearRow('#' + newRowId);
+    clearRow('#' + newRowId, _resetRights);
     // set focus on the first input field.
-    $(":input:first", clonedRow).focus();
-
-    repeatRowPostCloneActions(clonedRow);   
+    
+    repeatRowPostCloneActions(clonedRow);
     
     if(rowAddedCallback) {
         var clonedRowId = clonedRow.attr("id");
@@ -175,50 +165,24 @@ function repeatRow(tableId,rowAddedCallback) {
         console.log("about to execute callback");
     	try {
     		eval($('#' + tableId).attr('callback') + "("+ clonedRow.attr("id") + ")");
-    	} catch (e) {console.log(e)}
+    	} catch (e) {console.log(e);}
     }
     
+    $("input[type=text]:first", clonedRow).focus();
     return false;
 }
 
 function repeatRowPostCloneActions(clonedRow) {
-    // TODO: instead of explicitly adding these 'post-clone' actions, maybe add
-	// an event listener model (somehow)
-    // wire up autocomplete to any auto-complete-able fields in the new row
-    $.each(clonedRow.find(".nameAutoComplete, .userAutoComplete"),
-          function(k,v) {applyAutoComplete('#'+v.id);
-      });
     
     $.each(clonedRow.find("[watermark]"), 
         function(k,v) { $(this).watermark($(this).attr("watermark"));
       });
 
     
-    // wire up any institution auto-complete-able fields
-    // console.debug('post-clone action for:' + clonedRow);
-    $.each(clonedRow.find(".institution"),
-            function(k,v) {
-                applyInstitutionAutoComplete('#'+v.id);
-                // console.debug('applying autocomplete to:' + v.id);
-        });
-    
-    $.each(clonedRow.find(".annotationAutoComplete"),
-            function(k,v) {
-                applyKeywordAutocomplete('#'+v.id, 'annotationkey');
-    });
-    
-    $.each(clonedRow.find(".sitenameAutoComplete"), function(k,v) { applyKeywordAutocomplete('#'+v.id, 'keyword', {keywordType: 'SiteNameKeyword'}); });
-    $.each(clonedRow.find(".siteTypeKeywordAutocomplete"), function(k,v) { applyKeywordAutocomplete('#'+v.id, 'keyword', {keywordType: 'SiteTypeKeyword'}); });
-    $.each(clonedRow.find(".cultureKeywordAutocomplete"), function(k,v) { applyKeywordAutocomplete('#'+v.id, 'keyword', {keywordType: 'CultureKeyword'}); });
-    $.each(clonedRow.find(".temporalKeywordAutocomplete"), function(k,v) { applyKeywordAutocomplete('#'+v.id, 'keyword', {keywordType: 'TemporalKeyword'}); });
-    $.each(clonedRow.find(".otherKeywordAutocomplete"), function(k,v) { applyKeywordAutocomplete('#'+v.id, 'keyword', {keywordType: 'OtherKeyword'}); });
-    $.each(clonedRow.find(".geographicKeywordAutocomplete"), function(k,v) { applyKeywordAutocomplete('#'+v.id, 'keyword', {keywordType: 'GeographicKeyword'}); });
-
-    
 }
 
 function initializeRepeatRow() {
-	$(".repeatLastRow").each(function(index) {
+	$("table.repeatLastRow").each(function(index) {
 		var msg = "add another";
 		if ($(this).attr('addAnother') != undefined) msg = $(this).attr('addAnother');
 		var extraClass= "";
@@ -227,24 +191,32 @@ function initializeRepeatRow() {
 	});
     // create sidebar tooltips for any elements that have tooltipcontent
 	// attribute
-	$('[tooltipcontent*=]').each(function(index) {
-		$(this).bind('mouseenter',function() {setToolTipContents(this);});
-		$(this).bind('focusin',function() {setToolTipContents(this);});
-	});
-    /*
-	 * $('.accordion .head').click(function() { $(this).next().toggle('fast');
-	 * return false; }).next().hide();
-	 */
-
 }
 
-function clearRow(rowId) {
+//FIXME: this business of optionally enabling the cloned row is screwing up existing stuff.  remove this option and break it out into a separate function.
+function clearRow(rowId,resetRights) {
+	if (resetRights == undefined) {
+		resetRights = true;
+	}
 	try {
 	      if (global_formNavigate != undefined) { global_formNavigate = false; }
 		} catch(e){}
     // FIXME: do we need to renumber IDs afterwards if they delete from the
 	// middle?
-    $("input[type!=button],textarea", rowId).not('input[type=checkbox],input[type=radio]').val("");
+    $("input[type!=button],textarea", rowId).not('input[type=checkbox],input[type=radio]').each(function() {
+    	$(this).val("");
+    	if (resetRights) {
+    		$(this).attr("readonly",false);
+    		$(this).attr("disabled",false);
+		}
+    });
+    
+    $("button,input[type=button],select").each(function() {
+    	if (resetRights) {
+    		$(this).attr("readonly",false);
+    		$(this).attr("disabled",false);
+		}
+    });
     // uncheck any checkboxes/radios
     // FIXME: original fixme asked for radio:first to be selected, but I think a
 	// safer bet is to have them all unselected (thoughts?)
@@ -257,14 +229,14 @@ function clearRow(rowId) {
     	    // FIXME: push this callback call up to deleteRow. Otherwise
 			// callbacks get called twice each time user adds a row.
     		eval($(parent).attr('callback') + "('"+ rowId + "')");
-    	} catch (e) {console.log(e)}
+    	} catch (e) {console.log(e);}
     }
     
 }
 
 function deleteRow(rowId) {
 	try {
-      if (global_formNavigate != undefined) { global_formNavigate = false; }
+      if (typeof global_formNavigate != 'undefined') { global_formNavigate = false; }
 	} catch(e){}
 	if ($(rowId).parent().children().size() > 1) {
 		// FIXME: do we need to renumber IDs afterwards if they delete from the
@@ -319,8 +291,9 @@ function getPersId(element) {
     // FIXME: depending on the element, the id field either matches 'ids' or
 	// 'person.id'. we should consolidate to one field
     if(sib=='') sib = getSiblingElement(element, 'person.id');
+    if(sib=='') sib = getSiblingElement(element, 'user.id');
+    
     console.debug("getPersId result:");
-    console.debug(sib);
     return sib;
 }
 
@@ -375,7 +348,12 @@ function setCalcUserVal(element) {
     // and the mouse, thus causing a brief moment where the userid is invalid
 	// and causing validation
     // to fail. So, we just delay a bit and run validation on userid again.
-    setTimeout(function() {e.valid();}, 200);
+    setTimeout(function() {
+    	if ($(":focus", $(e).parent().parent()).size() == 0) {
+    	e.valid();
+    }
+    	
+    }, 200);
 }
 
 
@@ -394,51 +372,32 @@ function institutionAdded(id) {
 
 
 
-function setToolTipContents(targetElem, tooltipElem) {
-	var fieldOff = $(targetElem).offset();
+function setToolTipContents(targetElem) {
+	$targetElem = $(targetElem);
+	var fieldOff = $targetElem.offset();
 	var noteOff = $('#notice').offset();
 	$('#notice').offset({left: noteOff.left,top: fieldOff.top});
-	var label, content;
-	// where is the tooltip content, in the 'tooltipcontent' attribute or in a
-	// separate div?
-	if(tooltipElem) {
-        label = $(tooltipElem).find('h2').html();
-        if(!label) label = $(targetElem).find('h3').html(); // try to re-use the
-															// h3 of the target,
-															// if it exists, as
-															// the label
-        content = $(tooltipElem).find('div').html();
-	} else if($(targetElem).attr('tooltipcontent')) {
-	    label = $(targetElem).attr('tiplabel');
-	    content = $(targetElem).attr('tooltipcontent');
+
+	// tooltip content can either be in  'tooltipcontent' attribute or in a separate div
+	var label = "";
+	var content = "";
+	if($targetElem.attr('tooltipcontent')) {
+	    content = $targetElem.attr('tooltipcontent');
+	    //tooltip label can either be in atttribute, otherwise will be set to the first h2
+	    label = $targetElem.attr('tiplabel') || "";
+	    if(label) {
+	    	label = "<h2>" + label + "</h2>";
+	    } 
+	    if (content[0] == "#") {
+	    	content = $(content).html();
+	    }
 	} else {
-	    console.error("unable to bind tooltip - no tooltip element orr tooltipcontent found")
+	    console.error("unable to bind tooltip - no tooltip element orr tooltipcontent found");
 	}
-	$('#notice').html("<h2>" + label + "</h2><div id='noticecontent'>" +  content + "</div>");
+	$('#notice').html(label + "<div id='noticecontent'>" +  content + "</div>");
 }
 
 
-// find any standalone tooltip divs
-function initializeTooltips() {
-    $('[tooltipfor*=]').each(
-            function(index) {
-                // console.debug('found tooltip');
-                var tooltipElem = this;
-                $(tooltipElem).addClass("hidden");
-                // in case you want to use the same toolitip for multiple
-                // elements (e.g. "tooltipfor='id1,id2,id3'")
-                var targetElems = $.map($(tooltipElem).attr('tooltipfor')
-                        .split(','), function(str) {
-                    return $('#' + str);
-                });
-                // bind targets to tooltips
-                $.each(targetElems, function(i, targetElem) {
-                    $(targetElem).bind('mouseenter',function() {setToolTipContents(targetElem, tooltipElem);});
-                    $(targetElem).bind('focusin',function() {setToolTipContents(targetElem, tooltipElem);});
-                });
-            });
-    console.trace('done binding tooltips');
-};
 
 // expand those nodes where children are selected
 $(function(){
@@ -479,8 +438,8 @@ $.validator.addMethod("latLong", function(value, element) {
 }, "a valid lat/long in the format DEG.Min/Sec (eg. -67.892068) required");
 
 $.validator.addMethod("reasonableDate", function(value, element) {
-	// FIXME: not just 4 digits... > ???
-	return value.match(/^(((\d{4}))|)$/);
+	var intVal = parseInt(value);
+	return (intVal == value && intVal > 1000 && intVal < 3000 );
 }, "a date in the last millenia is expected");
 
 $.validator.addMethod("isbn", function(value, element) {
@@ -491,6 +450,9 @@ $.validator.addMethod("issn", function(value, element) {
 	return value.match(/^((\d{4})-?(\d{3})(\d|X|x)|)$/);
 }, "you must include a valid 8 Digit ISSN");
 
+$.validator.addMethod("descriptiveTitle",function(value, element) {
+	return !value.match(/^(\s*)(dataset|collection|project|document|image|coding sheet|ontology)(\s*)$/i);
+}, "please select a more descriptive title");
 
 $.validator.addMethod("float", function(value, element) {
 	return value.match(/^(((\-?)(\d+)(\.?)(\d*))|)$/);
@@ -506,7 +468,7 @@ $.validator.addMethod("rowNotEmpty", function(value, element) {
         return false;
     }
     return true;
-}, "valid user required");
+}, "A valid user record must contain a \"First Name\" and \"Last Name\".  If you do not wish to add or specify a user, leave all fields in this section blank.");
 
 // http://stackoverflow.com/questions/1260984/jquery-validate-less-than
 $.validator.addMethod('lessThanEqual', function(value, element, param) {
@@ -523,10 +485,10 @@ $.validator.addMethod('greaterThanEqual', function(value, element, param) {
     return i >= j;
 }, "This value must be greater than the minimum value");
 
+
 $.validator.addMethod('asyncFilesRequired', function(value, elem) {
     return $('tr', '#files').not('.noFiles').size() > 0; 
 }, "At least one file upload is required.");
-
 
 // $.validator.addClassRules("radiocarbonDate", {range:[0,100000]});
 // $.validator.addClassRules("julianYear", {range:[-99900, 2100]});
@@ -538,26 +500,18 @@ function prepareDateFields(selectElem){
     $(startElem).rules("remove");
     $(endElem).rules("remove");
     switch ($(selectElem).val()) {
-    case "CALENDAR_DATE":
-        $(startElem).rules("add", {range:[-99900, 2100], lessThanEqual:endElem, required:function(){return $(endElem).val()!= "";}});
-        $(endElem).rules("add", {range:[-99900, 2100], required:function(){return $(startElem).val()!= "";}});
-        break;
-    case "RADIOCARBON_DATE":
-        $(startElem).rules("add", {range:[0,100000], greaterThanEqual:endElem, required:function(){return $(endElem).val()!= "";}});
-        $(endElem).rules("add", {range:[0,100000], required:function(){return $(startElem).val()!= "";}});
-        break;
-    case "none":
-        break;
-    }
+	    case "CALENDAR_DATE":
+	        $(startElem).rules("add", {range:[-99900, 2100], lessThanEqual:endElem, required:function(){return $(endElem).val()!= "";}});
+	        $(endElem).rules("add", {range:[-99900, 2100], required:function(){return $(startElem).val()!= "";}});
+	        break;
+	    case "RADIOCARBON_DATE":
+	        $(startElem).rules("add", {range:[0,100000], greaterThanEqual:endElem, required:function(){return $(endElem).val()!= "";}});
+	        $(endElem).rules("add", {range:[0,100000], required:function(){return $(startElem).val()!= "";}});
+	        break;
+	    case "none":
+	        break;
+	    }
 }
-$(function() {
-    $('.coverageTypeSelect').change(function(){prepareDateFields(this);});
-});
-
-function coverageRowAdded(rowElem) {
-    var selectElem = $('.coverageTypeSelect', rowElem).change(function(){prepareDateFields(this);}).change();
-}
-
 
 function bookmarkResource(resourceId, link) {
 	$.getJSON(getBaseURI() + "resource/bookmarkAjax?resourceId=" + resourceId, function(data) {
@@ -618,10 +572,12 @@ function formSubmitDisable(optionalMsg) {
     $('#submitButton').attr('disabled', 'disabled');
 }
 
-//enable the save button and replace it's former label (e.g. from 'please wait' to 'save')
+// enable the save button and replace it's former label (e.g. from 'please wait'
+// to 'save')
 function formSubmitEnable() {
     var oldVal = $('#submitButton').data('oldVal');
-    //it's likely formSubmitDisable was called at least once before now, but don't assume
+    // it's likely formSubmitDisable was called at least once before now, but
+	// don't assume
     if(oldVal) {
         $('#submitButton').val($('#submitButton').data('oldVal'));
     }
@@ -634,7 +590,8 @@ $("[watermark]").each(function() {
   });
 }
 
-// show the access rights reminder if any files are marked as confidential or if the resource is embargoed
+// show the access rights reminder if any files are marked as confidential or if
+// the resource is embargoed
 function showAccessRightsLinkIfNeeded() {
     if($('#cbConfidential').is(':checked') || $(".fileProxyConfidential:checked").length > 0 || $('#resourceAvailability').val() == 'Embargoed') {
         $('#divConfidentialAccessReminder').removeClass("hidden");
@@ -648,12 +605,11 @@ function showAccessRightsLinkIfNeeded() {
 /*
  * downward inheritance support
  */
-var repeatFields = ['uncontrolledCultureKeywords','siteNameKeywords', 'uncontrolledSiteTypeKeywords',
-    'geographicKeywords', 'otherKeywords', 'temporalKeywords'];
-
+var indexExclusions = ['investigationTypeIds', 'approvedSiteTypeKeywordIds', 'materialKeywordIds', 'approvedCultureKeywordIds'];
 
 function populateSection(elem, formdata) {
-    $(elem).populate(formdata, {resetForm:false, phpNaming:false, repeatFields: repeatFields});
+	
+    $(elem).populate(formdata, {resetForm:false, phpNaming:false, phpIndices:true, strutsNaming:true, noIndicesFor: indexExclusions});
 }
 
 // convert a serialized project into the json format needed by the form.
@@ -689,26 +645,12 @@ function convertToFormJson(rawJson) {
             },
             temporalInformation: {
                 temporalKeywords: $.map(rawJson.temporalKeywords, function(v) {return v.label;}),
-                'calendarDate.startDate': null,
-                'calendarDate.endDate': null,
-                'radiocarbonDate.startDate': null,
-                'radiocarbonDate.endDate': null
+                coverageDates: rawJson.coverageDates
             },
             otherInformation: {
                 otherKeywords: $.map(rawJson.otherKeywords, function(v){return v.label;})
             }
     };
-    
-    
-    if(rawJson.calendarDate) {
-        obj.temporalInformation['calendarDate.startDate'] = rawJson.calendarDate.startDate;
-        obj.temporalInformation['calendarDate.endDate'] = rawJson.calendarDate.endDate;
-    }
-    
-    if(rawJson.radiocarbonDate) {
-        obj.temporalInformation['radiocarbonDate.startDate'] = rawJson.radiocarbonDate.startDate;
-        obj.temporalInformation['radiocarbonDate.endDate'] = rawJson.radiocarbonDate.endDate;
-    }
 
     // FIXME: update the parent latlong box (i.e. the red box not the brown
 	// box)..p_miny, pmaxy, etc. etc.
@@ -748,7 +690,7 @@ function resetRepeatRowTable(id, newSize) {
     resetIndexedAttributes(firstRow);
     if(newSize > 1) {
         for(var i = 1; i < newSize; i++) {
-            repeatRow(id);
+            repeatRow(id, null, false); 
         }
     }
     table.show();
@@ -791,7 +733,6 @@ function clearFormSection(selector) {
 function getBlankProject() {
     var skeleton = {"approvedCultureKeywords":[]
         ,"approvedSiteTypeKeywords":[]
-        ,"calendarDate":null
         ,"cultureKeywords":[]
         ,"dateRegistered":{}
         ,"description": null
@@ -801,15 +742,15 @@ function getBlankProject() {
         ,"investigationTypes":[]
         ,"materialKeywords":[]
         ,"otherKeywords":[]
-        ,"radiocarbonDate":null
         ,"resourceType":null
         ,"siteNameKeywords":[]
         ,"siteTypeKeywords":[]
         ,"submitter":null
         ,"temporalKeywords":[]
+        ,"coverageDates":[]
         ,"title": null
         ,"uncontrolledCultureKeywords":[]
-        ,"uncontrolledSiteTypeKeywords":[]}
+        ,"uncontrolledSiteTypeKeywords":[]};
     return skeleton;
 }
 
@@ -857,26 +798,50 @@ function inheritingMapIsSafe(rootElementSelector, spatialInformation) {
 																				// comparison
 }
 
+//return whether it's "safe" to populate the temporal information section with the supplied temporalInformation
+//we define "safe" to mean that section is either currently blank or that the supplied temporalInformation is the same as what is already on the form.
 function inheritingDatesIsSafe(rootElementSelector, temporalInformation) {
-    var ti = temporalInformation;
-    var jsonVals = [ti['calendarDate.startDate'], ti['calendarDate.endDate'], ti['radiocarbonDate.startDate'], ti['radiocarbonDate.endDate']];
-    var formVals = [];
-    formVals =  formVals.concat($('#calendarYearStart').val());
-    formVals =  formVals.concat($('#calendarYearEnd').val());
-    formVals =  formVals.concat($('#radiocarbonYearStart').val());
-    formVals =  formVals.concat($('#radiocarbonYearEnd').val());
-    var formValsAllBlank = false;
-    for(var i = 0; i < formVals.length; i++) {
-        if(formVals[i] == "") formVals[i] = null;
-        formValsAllBlank = formValsAllBlank || !formVals[i];
-    }
-    return formValsAllBlank || $.compareArray(jsonVals, formVals, false);
+	//are all the fields in this section blank?
+	var $coverageTextFields = $('input:text', '#coverageTable')
+	var joinedFieldValues = $coverageTextFields.map(function(){return $(this).val();}).toArray().join("");
+	
+	 //okay to populate if if the form section is blank
+	if(joinedFieldValues=="") return true;
+	
+	//not okay to populate if the incoming list is a different size as the current list
+	$tableRows = $('tr', '#coverageTable');
+	if(temporalInformation.coverageDates.length != $tableRows.length) return false; 
+	
+	//at this point it's we need to compare the contents of the form vs. incoming coverage dates
+	var concatTemporalInformation = $.map(temporalInformation.coverageDates, function(val, i){return "" + val.startDate + val.endDate + val.description;}).join("");
+	var concatRowFields = $.map($tableRows, function(rowElem, i){
+		var concatRow = $('.coverageStartYear', rowElem).val();
+		concatRow += $('.coverageEndYear', rowElem).val();
+		concatRow += $('.coverageDescription', rowElem).val();
+		return concatRow;
+	}).join("");
+	
+	return concatTemporalInformation == concatRowFields;
+	
 }
 
-function inheritInvestigationInformation(formId, json){
-    disableSection('#divInvestigationInformation');
-    clearFormSection('#divInvestigationInformation');
-    populateSection(formId, json.investigationInformation);
+function inheritInformation(formId, json,sectionId,tableId){
+    disableSection(sectionId);
+    clearFormSection(sectionId);
+    if (tableId != undefined) {
+    	if (document.getElementById("uncontrolled" + tableId +"Table" ) != undefined) {
+            resetRepeatRowTable('uncontrolled'+tableId+'Table', json['uncontrolled'+tableId+'s'].length);
+    	}
+    	if (document.getElementById("approved" + tableId +"Table" ) != undefined) {
+            resetRepeatRowTable('approved'+tableId+'Table', json['approved'+tableId+'s'].length);
+    	}
+    	var simpleId = tableId;
+    	simpleId[0] = simpleId[0].toLowerCase();
+    	if (document.getElementById(simpleId +"Table" ) != undefined) {
+            resetRepeatRowTable(simpleId+'Table', json[simpleId+'s'].length);
+    	}
+    }
+    populateSection(formId, json);
 }
 
 function inheritSiteInformation(formId, json){
@@ -887,18 +852,6 @@ function inheritSiteInformation(formId, json){
     populateSection(formId, json.siteInformation);
 }
 
-function inheritMaterialInformation(formId, json){
-    disableSection('#divMaterialInformation');
-    clearFormSection('#divMaterialInformation');
-    populateSection(formId, json.materialInformation);
-}
-
-function inheritCulturalInformation(formId, json){
-    disableSection('#divCulturalInformation');
-    clearFormSection('#divCulturalInformation');
-    resetRepeatRowTable('uncontrolledCultureKeywordTable', json.culturalInformation['uncontrolledCultureKeywords'].length);
-    populateSection(formId, json.culturalInformation);
-}
 
 function inheritSpatialInformation(formId, json){
     disableSection('#divSpatialInformation');
@@ -914,23 +867,18 @@ function inheritSpatialInformation(formId, json){
         GZoomControl.G.oMap.removeOverlay(GZoomControl.G.oZoomArea);        
     }
     drawMBR();
+    populateLatLongTextFields();  
 }
 
-function inheritTemporalInformation(formId, json){
-    disableSection('#divTemporalInformation');
-    clearFormSection('#divTemporalInformation');
-    resetRepeatRowTable('temporalKeywordTable', json.temporalInformation['temporalKeywords'].length);
+function inheritTemporalInformation() {
+//    function() {inheritInformation(formId, json.temporalInformation,"#divTemporalInformation","temporalKeyword");}
+	var sectionId = '#divTemporalInformation';
+    disableSection(sectionId);
+    clearFormSection(sectionId);
+    resetRepeatRowTable('temporalKeywordTable', json.temporalInformation.temporalKeywords.length);
+    resetRepeatRowTable('coverageTable', json.temporalInformation.coverageDates.length);
     populateSection(formId, json.temporalInformation);
 }
-
-function inheritOtherInformation(formId, json){
-    disableSection('#divOtherInformation');
-    clearFormSection('#divOtherInformation');
-    resetRepeatRowTable('otherKeywordTable', json.otherInformation['otherKeywords'].length);
-    populateSection(formId, json.otherInformation);
-
-}
-
 
 function bindCheckboxToInheritSection(cbSelector, divSelector, isSafeCallback, inheritSectionCallback, enableSectionCallback) {
     $(cbSelector).change(function(e){
@@ -965,6 +913,14 @@ function bindCheckboxToInheritSection(cbSelector, divSelector, isSafeCallback, i
 /**
  * Google Maps Support
  */
+
+//update the 'public' latlong controls based on the values of the invisible latlong text fields
+function populateLatLongTextFields() {
+    $("#d_minx").val(Geo.toLon($("#minx").val()));
+    $("#d_miny").val(Geo.toLat($("#miny").val()));
+    $("#d_maxx").val(Geo.toLon($("#maxx").val()));
+    $("#d_maxy").val(Geo.toLat($("#maxy").val()));
+}
 
 // googlemaps.js
 /* FIXME: modify this file to be a function that gets invoked */
@@ -1022,11 +978,8 @@ GEvent.addDomListener(window,'load',function(){
                 $("#maxx").val(ne.lng());
                 $("#maxy").val(ne.lat());
 
-                $("#d_minx").val(Geo.toDMS(sw.lng()));
-                $("#d_miny").val(Geo.toDMS(sw.lat()));
-                $("#d_maxx").val(Geo.toDMS(ne.lng()));
-                $("#d_maxy").val(Geo.toDMS(ne.lat()));
-boundBox = true;
+                populateLatLongTextFields();
+                boundBox = true;
             }
         }
         );
@@ -1035,13 +988,14 @@ boundBox = true;
         
         // hpcao adds this condition
         // based on the action (edit or view), we determine whether or
-                // not to allow users to draw a bounding box for the latitude.
-                var path = window.location.pathname;
-                var action = path.substring(path.lastIndexOf("/") + 1);
-                if(action.indexOf("edit") != -1 || action.indexOf("add") != -1
-                        || path.indexOf("search") != -1) { 
-                    map.addControl(gzControl, new GControlPosition(G_ANCHOR_BOTTOM_LEFT,new GSize(5,85)));
-                    map.addControl(clearControl, new GControlPosition(G_ANCHOR_BOTTOM_LEFT,new GSize(5,45)));
+        // not to allow users to draw a bounding box for the latitude.
+		// TODO: decide this at controller level, and then have ftl define a g_isEditing var
+		var path = window.location.pathname;
+		var action = path.substring(path.lastIndexOf("/") + 1);
+        if(action.indexOf("edit") != -1 || action.indexOf("add") != -1 || action.indexOf("save") != -1
+                || path.indexOf("search") != -1) { 
+            map.addControl(gzControl, new GControlPosition(G_ANCHOR_BOTTOM_LEFT,new GSize(5,85)));
+            map.addControl(clearControl, new GControlPosition(G_ANCHOR_BOTTOM_LEFT,new GSize(5,45)));
         }
         // set the starting location and zoom
         var bName = navigator.appName;
@@ -1070,36 +1024,31 @@ boundBox = true;
 );
 
 function ClearControl() {}
+ClearControl.prototype = new GControl();
+ClearControl.prototype.initialize = function(map) {
+      var container = document.createElement("div");
+      var zoomInDiv = document.createElement("div");
+      container.appendChild(zoomInDiv);
+      zoomInDiv.id = "mapResetButton";
+      zoomInDiv.appendChild(document.createTextNode("Reset"));
+      GEvent.addDomListener(zoomInDiv, "click", function() {
+          try {
+              map.removeOverlay(GZoomControl.G.oZoomArea);
+              document.getElementById("minx").value = "";
+              document.getElementById("miny").value = "";
+              document.getElementById("maxx").value = "";
+              document.getElementById("maxy").value = "";
 
-    ClearControl.prototype = new GControl();
-    ClearControl.prototype.initialize = function(map) {
-          var container = document.createElement("div");
-          var zoomInDiv = document.createElement("div");
-          container.appendChild(zoomInDiv);
-          zoomInDiv.id = "mapResetButton";
-          zoomInDiv.appendChild(document.createTextNode("Reset"));
-          GEvent.addDomListener(zoomInDiv, "click", function() {
-              try {
-                  map.removeOverlay(GZoomControl.G.oZoomArea);
-                  document.getElementById("minx").value = "";
-                  document.getElementById("miny").value = "";
-                  document.getElementById("maxx").value = "";
-                  document.getElementById("maxy").value = "";
+              document.getElementById("d_minx").value = "";
+              document.getElementById("d_miny").value = "";
+              document.getElementById("d_maxx").value = "";
+              document.getElementById("d_maxy").value = "";
+          } catch (e) {}
+      });
 
-                  document.getElementById("d_minx").value = "";
-                  document.getElementById("d_miny").value = "";
-                  document.getElementById("d_maxx").value = "";
-                  document.getElementById("d_maxy").value = "";
-} catch (e) {}
-          });
-
-          map.getContainer().appendChild(container);
-          return container;
-        }
-// }
-
-
-
+      map.getContainer().appendChild(container);
+      return container;
+    };
 
 
 // This function must be called after the map is displayed.
@@ -1229,6 +1178,16 @@ function drawMBR(prefix,colour){
 }
 
 
+function processLatLong(element) {
+    var value = $(element).val();
+    var id = $(element).attr('id');
+//                value = value.replace(/([a-z]+)/ig,"");
+    if (id.indexOf("d_") == 0) id = id.substring(2);
+    $("#"+ id).val(Geo.parseDMS(value));
+}
+
+
+
 /**
  * Sensory Data Support
  */
@@ -1321,28 +1280,43 @@ function sendFileIfAccepted(event, files, index, xhr, handler, callBack) {
     if(!files || files.length==0) {
         handler.removeNode(handler.uploadRow);
         return false;
-    } 
+    }
     var accepted = false;
+    var msgs = "";
     if(files[0].fileName) {
-        for(var i =0; i < files.length; i++) {
-            accepted = fileAccepted(files[i].fileName);
-            if(!accepted) break;
+        var i = files.length -1;
+        while(i >=0) {
+        	var accepted_ = fileAccepted(files[i].fileName);
+        	console.log(files[i].fileName +" : " + accepted_);
+            if(accepted_ == false) {
+                msgs += '<p>Sorry, this file type is not accepted:"'+files[i].fileName+'"</p>';
+                files.splice(i,1);
+            };
+            i--;
         }
-
-    }  
+        if (files.length > 0) {
+        	accepted=true;
+        }
+    }
     else { 
+    	if (index == undefined) {
+    		index =0;
+    	}
+    	console.log(index);
+    	console.log(files);
         accepted = fileAccepted(files[index].name);
-   }
+    }
 
     if(accepted) {
         asyncUploadStarted();
         callBack();
-    } else {
-        handler.uploadRow.find('.file_upload_progress').html('<span class="error">Sorry, this file type is not accepted</span>');
-        setTimeout(function () {
-            handler.removeNode(handler.uploadRow);
-        }, 5000);
-        return;
+    } 
+    if (!accepted || msgs != ""){
+    	if (msgs == "") {
+    		msgs = '<p>Sorry, this file type is not accepted: "' +files[index].name+'"</p>';
+    	}
+    	displayAsyncError(handler,msgs);
+    	return;
     }
 }
 
@@ -1373,7 +1347,7 @@ function getFormData() {
 
 function asyncUploadStarted() {
     g_asyncUploadCount++;
-    formSubmitDisable()
+    formSubmitDisable();
 }
     
 function asyncUploadEnded() {
@@ -1392,56 +1366,84 @@ function asyncUploadEnded() {
  */ 
     
 
-    function applyAutoComplete(selector,usersOnly) {
-            if(selector=='.nameAutoComplete') {
-                $(selector).each(function(i,v) {
+    function applyPersonAutoComplete(selector,usersOnly, showCreate) {
+            //if(selector=='.nameAutoComplete') {
+                //$(selector).each(function(i,v) {
                     // console.log("registering:" + v);
-                });
-            }
+                //});
+            //}
+    		var registered = undefined;
+    		if (usersOnly) {
+    			registered = true;
+    		}
+    	
+            // for everything that matches this selector in this space
+            // if selector does not have attribute autocomplete
             $(selector).autocomplete({
                 source: function(request, response) {
                     console.trace('autocomplete called');
                     var lemail = (usersOnly) ? '' : getEmail(this.element).val();
+                    var elem = this.element;
                     $.ajax({
                         url: getBaseURI() + "lookup/person",
                         dataType: "jsonp",
                         data: {
+                            sortField: 'CREATOR_NAME',
                             email:  lemail,
                             firstName: getFirstName(this.element).val(),
                             lastName: getLastName(this.element).val(),
-                            registered: usersOnly,
+                            registered: registered,
                             institution: getInstitution(this.element).val()
                         },
                         success: function(data) {
-                            response($.map(data.people, function(item) {
+                        	//user may have blurred this input before the server gave results. If so,  dismiss the popup.
+                        	if(!$(elem).is(':focus')) {
+                        		console.debug("input blurred before autocomplete results returned. returning no elements");
+                        		response({});
+                        		return;
+                        	} 
+                        	var values = $.map(data.people, function(item) {
                                 if (item.institution == undefined) {
-                                  item.institution = {};
-                                  item.institution.name = '';
-                                }
-                                return {
-                                    label: "<p style='min-height:5em'><img class='silhouette' src=\"" + getBaseURI() + "images/man_silhouette_clip_art_9510.jpg\" width=\"40\"/>"+
-                                        "<span class='name'>" + item.properName + "(" + item.email + ")</span>" +
-                                        "<br/><span class='institution'>"+ item.institution.name + "</span></p>"
-                                    ,
-                                    value: function() { 
-                                        // this may seem weird, it's because the
-										// select function below
-                                        // is actually setting the value for us.
-                                        // At this point 'this.value' is the
-										// contents of the input box.
-                                        return this.value;
-                                    },
-                                    firstName: item.firstName,
-                                    lastName: item.lastName,
-                                    email: item.email,
-                                    institution: item.institution.name,
-                                    authid: item.id
-                                }
-                            }))
+                                    item.institution = {};
+                                    item.institution.name = '';
+                                  }
+                                  return {
+                                      label: item.name,  // we're probably going
+  														// to ignore this in
+  														// custom rendering
+                                      value: function() { 
+                                          // this may seem weird, it's because the
+  										// select function below
+                                          // is actually setting the value for us.
+                                          // At this point 'this.value' is the
+  										// contents of the input box.
+                                          return this.value;
+                                      },
+                                      firstName: item.firstName,
+                                      lastName: item.lastName,
+                                      email: item.email,
+                                      institution: item.institution.name,
+                                      authid: item.id,
+                                      properName: item.properName
+                                  };
+                              });
+                        	if(showCreate) {
+                        		values.push({
+                        			label: 'ignored',
+                        			value: request.term, 
+                        			firstName: getFirstName(elem).val(),
+                        			lastName: getLastName(elem).val(),
+                        			email: lemail,
+                        			authid: -1,
+                        			properName: getFirstName(elem).val() + ' ' + getLastName(elem).val(),
+                        			institution: getInstitution(elem).val()
+                        		});
+                        	}
+                            response(values);
                         }
-                    })
+                    });
                 },
-                minLength: 2,
+                minLength: 3,
                 select: function(event, ui) {
                             // 'this' is the input box element.
                             getEmail(this).val(ui.item.email);
@@ -1462,70 +1464,136 @@ function asyncUploadEnded() {
                 close: function() {
                     $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
                 }
-            })
-        }; 
+            }).each(function(idx, elem){
+                $(elem).data( "autocomplete" )._renderItem = function( ul, item ) {
+                	var htmlSnippet =  "<p style='min-height:4em'><img class='silhouette' src=\"" + getBaseURI() + "images/man_silhouette_clip_art_9510.jpg\" width=\"40\"/>"+
+                	"<span class='name'>" + item.properName + "(" + item.email + ")</span>" +
+                	"<br/><span class='institution'>"+ item.institution + "</span></p>";
+                	if(item.authid == -1) {
+                    	htmlSnippet =  "<p style='min-height:4em'><img class='silhouette' src=\"" + getURI("images/man_silhouette_clip_art_9510.jpg") + 
+                    	"\" width=\"40\"/>"+
+                    	"<span class='name'><em>Create a new person record</em></span> </p>";
+                	}
+                    return $( "<li></li>" )
+                        .data( "item.autocomplete", item )
+                        .append( "<a>" + htmlSnippet  + "</a>" )
+                        .appendTo( ul );
+                };
+            });
+               
+    
+    }; 
 
         // FIXME:ditch lookupType and instead pass querystring parms via data
-        function applyKeywordAutocomplete(selector, lookupType, extraData) {
-            var lookupUrl = getBaseURI() + "lookup/" + lookupType;
-            console.trace("lookup url:" + lookupUrl);
-            $(selector).autocomplete({
-                source: function(request,response) {
-                    console.trace('keyword autocomplete');
+    function applyKeywordAutocomplete(selector, lookupType, extraData, newOption) {
+        console.log('applyKeywordAutocomplete:: selector:' + selector);
+        var lookupUrl = getBaseURI() + "lookup/" + lookupType;
+        console.trace("lookup url:" + lookupUrl);
+        $(selector).autocomplete({
+            source: function(request,response) {
+                console.trace('keyword autocomplete');
+                $.ajax({
+                    url: lookupUrl,
+                    dataType: "jsonp",
+                    data: $.extend({term: request.term, sortField:'LABEL'}, extraData),
+                    success: function(data) {
+                        var values = $.map(data.items, function(item){
+                            if(item.key) return {value:item.key, id:item.id};
+                            else return {value:item.label, id:item.id};
+                        });
+                        if(newOption) {
+                        	values.push({label: "(create new keyword: " + request.term + ")", id:-1, value:request.term});
+                        }
+                        response(values);
+                    }
+                });
+            },
+            minLength: 2
+        });
+    }
+
+    function applyCollectionAutocomplete(selector, newOption) {
+        var lookupUrl = getURI("lookup/collection");
+        console.debug("lookup url:" + lookupUrl);
+        $(selector).autocomplete({
+            source: function(request,response) {
+                $.ajax({
+                    url: lookupUrl,
+                    dataType: "jsonp",
+                    data: {term: request.term },
+                    success: function(data) {
+                        console.debug("data returned:"  + JSON.stringify(data));
+                        var values = $.map(data.collections, function(item){
+                            if(item.name) return {value:item.name, id:item.id};
+                            else return {value:item.name, id:item.id};
+                        });;
+                        //give the user the option to create a new collection w/ this name (TODO: unless name is taken?)
+                        if(newOption) {
+                        	values.push({id:-1, label:"(create new collection:'" + request.term + "')", value:request.term }); 
+                        }
+                        response(values);
+                    }
+                });
+            },
+            minLength: 2,
+            select:function(event, ui){
+            	//set the hidden id of the selected resource collection, and prep any extra fields if they are creating a new collection
+            	var $elem = $(this);
+            	var $tr = $elem.closest('tr');
+            	setResourceCollection($tr, ui.item);
+            	if(ui.item.id == -1) {
+            		prepareAdhocCollectionRow($tr, ui.item);
+            	}
+            }
+        });
+    }
+    
+    function setResourceCollection($tr, item) {
+    	console.debug('setting hidden id field in row: ');
+    	$('input[type=hidden]', $tr).val(item.id);  //a new reosurceCollection will have an id of -1
+    }
+
+    //FIXME: to be honest, I'm punting here.  I have no idea what extra form fields you want to add when creating a new collection.  Maybe none?  
+    function prepareAdhocCollectionRow($tr, item) {
+    	console.debug('creating a new collection... prepare yourself!!!');
+    }
+    
+    
+    function applyInstitutionAutoComplete(selector,usersOnly, newOption) {
+        $(selector).autocomplete({
+            source: function(request, response) {
+                var t = $.trim(request.term);
+                console.trace('institution autocomplete called, input:"' + t + '"');
+                if(t.length <= 2) {
+                    console.trace('trimmed input too short, not sending ajax');
+                    response({});
+                    
+                } else {    
                     $.ajax({
-                        url: lookupUrl,
+                        url: getBaseURI() + "lookup/institution",
                         dataType: "jsonp",
-                        data: $.extend({term: request.term}, extraData),
+                        data: {
+                            institution:  request.term,
+                            sortField: 'CREATOR_NAME'
+                        },
                         success: function(data) {
-                            var values = $.map(data.items, function(item){
-                                if(item.key) return {value:item.key, id:item.id};
-                                else return {value:item.label, id:item.id};
-                            });;
-                            
+                        	var values = $.map(data.institutions, function(item) {
+                                return {
+                                    value:item.name,
+                                    id:item.id
+                                };
+                            });
+                        	if(newOption) {
+                        		values.push({id:-1, label:"(create new institution:'" + request.term + "')", value:request.term }); 
+                        	}
                             response(values);
                         }
                     });
-                },
-                minLength: 2,
-                select: function(data){}
-            });
-        }
-
-        function applyInstitutionAutoComplete(selector,usersOnly) {
-            $(selector).autocomplete({
-                source: function(request, response) {
-                    var t = $.trim(request.term);
-                    console.trace('institution autocomplete called, input:"' + t + '"');
-                    if(t.length <= 2) {
-                        console.trace('trimmed input too short, not sending ajax');
-                        response({});
-                        
-                    } else {    
-                        $.ajax({
-                            url: getBaseURI() + "lookup/institution",
-                            dataType: "jsonp",
-                            data: {
-                                institution:  request.term
-                            },
-                            success: function(data) {
-                                response($.map(data.institutions, function(item) {
-                                    return {
-                                        value:item.name,
-                                        id:item.id
-                                    };
-                                }));
-                            }
-                        });
-                    }
-                },
-                minLength: 2,
-                select: function(event, ui) {
-                            console.trace('institution selected:'+ ui.item.value);
-                            // TODO: here is where we set the id for the hidden
-                            // instition id field
-                        }
-            });
-        }; 
+                }
+            },
+            minLength: 2
+        });
+    }; 
         
         
 // INHERITANCE
@@ -1545,7 +1613,7 @@ function asyncUploadEnded() {
                 $.ajax({
                     url: getBaseURI()  + "project/json",
                     dataType: "jsonp",
-                    data: {resourceId: $(sel).val()},
+                    data: {id: $(sel).val()},
                     success: projectChangedCallback,
                     error: function(msg){console.error("error");}
                 });
@@ -1571,7 +1639,7 @@ function processInheritance(formId) {
             return inheritingCheckboxesIsSafe('#divSiteInformation', json.siteInformation.approvedSiteTypeKeywordIds)
                     && inheritingRepeatRowsIsSafe('#divSiteInformation', allKeywords);
         },
-        function() {inheritSiteInformation(formId, json)}
+        function() {inheritSiteInformation(formId, json);}
     );
     
     bindCheckboxToInheritSection(
@@ -1579,9 +1647,9 @@ function processInheritance(formId) {
         '#divTemporalInformation',
         function() {
             return inheritingRepeatRowsIsSafe('#temporalKeywordTable', json.temporalInformation.temporalKeywords)
-                    && inheritingDatesIsSafe('#divTemporalInformation', json.temporalInformation)
+                    && inheritingDatesIsSafe('#divTemporalInformation', json.temporalInformation);
         }, 
-        function() {inheritTemporalInformation(formId, json);}
+        function() {inheritTemporalInformation();}
     );
 
     bindCheckboxToInheritSection(
@@ -1590,21 +1658,21 @@ function processInheritance(formId) {
         function() {return inheritingCheckboxesIsSafe('#divCulturalInformation', json.culturalInformation.approvedCultureKeywordIds) 
                             && inheritingRepeatRowsIsSafe('#divCulturalInformation', json.culturalInformation.uncontrolledCultureKeywords);
         },
-        function() {inheritCulturalInformation(formId, json);}
+        function() {inheritInformation(formId, json.culturalInformation,"#divCulturalInformation","CultureKeyword");}
     );
 
     bindCheckboxToInheritSection(
         '#cbInheritingOtherInformation',
         '#divOtherInformation',
-        function() {return inheritingRepeatRowsIsSafe('#divOtherInformation', json.otherInformation.otherKeywords)},
-        function() {inheritOtherInformation(formId, json);}
+        function() {return inheritingRepeatRowsIsSafe('#divOtherInformation', json.otherInformation.otherKeywords);},
+        function() {inheritInformation(formId, json.otherInformation,"#divOtherInformation","otherKeyword");}
     );
 
     bindCheckboxToInheritSection(
         '#cbInheritingInvestigationInformation',
         '#divInvestigationInformation',
-        function() {return inheritingCheckboxesIsSafe('#divInvestigationInformation', json.investigationInformation.investigationTypeIds)},
-        function() {inheritInvestigationInformation(formId, json)}
+        function() {return inheritingCheckboxesIsSafe('#divInvestigationInformation', json.investigationInformation.investigationTypeIds);},
+        function() {inheritInformation(formId, json.investigationInformation,'#divInvestigationInformation');}
     );
 
     bindCheckboxToInheritSection(
@@ -1613,7 +1681,7 @@ function processInheritance(formId) {
         function(){
             return inheritingCheckboxesIsSafe('#divMaterialInformation', json.materialInformation.materialKeywordIds);
         }, 
-        function() {inheritMaterialInformation(formId, json)}
+        function() {inheritInformation(formId, json.materialInformation,'#divMaterialInformation');}
    );
     
     bindCheckboxToInheritSection(
@@ -1630,28 +1698,26 @@ function processInheritance(formId) {
         }
     );
     
-    // FIXME:gzoom-control doesn't exist when this code fires on pageload. so we
+    // gzoom-control doesn't exist when this code fires on pageload. so we
 	// wait a moment before trying checking to see if the google map controls
 	// should be hidden
     setTimeout(function(e) {
         if($('#cbInheritingSpatialInformation').is(':checked')) {
-            disableMap()
+            disableMap();
         }
     }, 100);
-    
-        
 } 
 
 function disableMap() {
     $('#large-google-map').addClass('opaque');
     $('#gzoom-control').hide();
-    $('#mapResetButton').hide()
+    $('#mapResetButton').hide();
 }
 
 function enableMap() {
     $('#large-google-map').removeClass('opaque');
     $('#gzoom-control').show();
-    $('#mapResetButton').show()
+    $('#mapResetButton').show();
 }
 
 
@@ -1666,7 +1732,7 @@ function projectChangedCallback(data) {
     }
     
     if(project.resourceType == 'INDEPENDENT_RESOURCES_PROJECT')  {
-        project = getBlankProject()
+        project = getBlankProject();
     }
     
     json = convertToFormJson(project);
@@ -1690,7 +1756,7 @@ function updateInheritableSections(json) {
     
     // indicate in each section which project the section will inherit from.
     var labelText = "Inherit values from parent project";
-    if(json && json.title && TDAR.trim(json.title) != "") {
+    if(json && json.title && $.trim(json.title) != "") {
         labelText = 'Inherit values from parent project "' + TDAR.ellipsify(json.title, 60) + '"';
     }
     $('.inheritlabel label').text(labelText);
@@ -1698,7 +1764,7 @@ function updateInheritableSections(json) {
     // show or hide the text of each inheritable section based on checkbox
 	// state.
     if($('#cbInheritingInvestigationInformation').is(':checked')) {
-        inheritInvestigationInformation(formId, json);
+    	inheritInformation(formId, json.investigationInformation,'#divInvestigationInformation');
     }
 
     if($('#cbInheritingSiteInformation').is(':checked')) {
@@ -1706,11 +1772,11 @@ function updateInheritableSections(json) {
     }
     
     if($('#cbInheritingMaterialInformation').is(':checked')) {
-        inheritMaterialInformation(formId, json);
+    	inheritInformation(formId, json.materialInformation,'#divMaterialInformation');
     }
     
     if($('#cbInheritingCulturalInformation').is(':checked')) {
-        inheritCulturalInformation(formId, json);
+    	inheritInformation(formId, json.culturalInformation,"#divCulturalInformation","CultureKeyword");
     }
     
     if($('#cbInheritingSpatialInformation').is(':checked')) {
@@ -1718,11 +1784,11 @@ function updateInheritableSections(json) {
     }
     
     if($('#cbInheritingTemporalInformation').is(':checked')) {
-        inheritTemporalInformation(formId, json);
+    	inheritTemporalInformation();
     }
     
     if($('#cbInheritingOtherInformation').is(':checked')) {
-        inheritOtherInformation(formId, json);
+    	inheritInformation(formId, json.otherInformation,"#divOtherInformation","otherKeyword");
     }
 }
 
@@ -1770,6 +1836,7 @@ function testify(formSelector) {
 
 /* ASYNC FILE UPLOAD SUPPORT */
 function applyAsync(formId) {
+	$(formId).data('nextFileIndex',$('#files tr').not('.noFiles').length);
 	console.trace("apply async called");
     $(formId).fileUploadUI({
         multiFileRequest:true,  // FIXME: parts of this code aren't prepared for
@@ -1787,15 +1854,12 @@ function applyAsync(formId) {
                 // grab a ticket and set the ticket id back to the hidden form
 				// field
                 var ticketUrl = getBaseURI() + "upload/grab-ticket";
-                $.ajax({
-                    url: ticketUrl,
-                    dataType: 'json',
-                    type: 'POST', //important!  otherwise browser may return cached ticketid
-                    success: function(data) {
-                        $('#ticketId').val(data.id);
-                        sendFileIfAccepted(event, files, index, xhr, handler, callBack); 
-                        }
-                  });
+                $.post(ticketUrl, function(data) {
+                    $('#ticketId').val(data.id);
+                    sendFileIfAccepted(event, files, index, xhr, handler, callBack); // proceed
+                                                                                        // w/
+                                                                                        // upload
+                }, 'json');
             }
         },
         formData: getFormData,
@@ -1829,11 +1893,14 @@ function applyAsync(formId) {
           console.debug("Existing number of files: " + existingNumFiles);
           for (var fileIndex=0; fileIndex < jsonObject.files.length; fileIndex++) {
             var row = $('#queuedFileTemplate').clone();
+            var nextIndex = $(formId).data('nextFileIndex');
+            console.debug("next file index: " + nextIndex);
             row.find('*').each(function() {
                 var elem = this;
                 // skip any tags with the repeatRowSkip attribute
-                $.each(["id", "onclick", "name", "for"], function(i,attrName){
-                    replaceAttribute(elem, attrName, '{ID}', fileIndex + existingNumFiles);
+                $.each(["id", "onclick", "name", "for", "value"], function(i,attrName){
+                	//ensure each download row has a unique index.
+                	replaceAttribute(elem, attrName, '{ID}', nextIndex);
                 });
                 
                 $.each(["value", "onclick"], function(i,attrName){
@@ -1850,6 +1917,7 @@ function applyAsync(formId) {
                 		$(this).text($(this).text().replace(/\{FILESIZE\}/g,jsonObject.files[fileIndex].size));
                 	}
                 }
+                $(formId).data('nextFileIndex', nextIndex + 1);
             });
 
             toReturn += $(row).find("tbody").html();
@@ -1893,8 +1961,9 @@ function applyAsync(formId) {
         
     });
     
-    //Ensure that the ticketid is blank if there are no pending file uploads.  For example, a user begins uploading their first file,
-    //but then either cancels the upload or the upload terminates abnormally. 
+    // Ensure that the ticketid is blank if there are no pending file uploads.
+    // For example, a user begins uploading their first file,
+    // but then either cancels the upload or the upload terminates abnormally.
     $(formId).submit(function() {
         if($('tr', '#files').not('.noFiles').size() == 0) {
             $('#ticketId').val('');
@@ -1919,20 +1988,18 @@ function updateFileAction(rowId, value) {
     fileActionElement.val(value);
 }
 
-function deleteAsyncFileRow(rowId, newUpload, self) {
+function deleteFile(rowId, newUpload, self) {
+	console.log("deleteFile called" + rowId + " : " + newUpload);
 	var buttonText = $(self).find('.ui-button-text');
 	// console.debug("button text is: " + buttonText.html());
-	
 	var fileAction = $(rowId + " .fileAction");
 	if (buttonText.html() == 'delete') {
-	    if(confirmAsyncFileRowDeletion(rowId, newUpload, self)) {
-	        buttonText.html('undelete');
-	        $(rowId + " .filename").addClass('deleted-file');
-	        $(fileAction).attr("prev",fileAction.val());
-	        fileAction.val(newUpload ? "NONE" : "DELETE");
-	    }
+		buttonText.html('undelete');
+		$(rowId + " .filename").addClass('deleted-file');
+		$(fileAction).attr("prev",fileAction.val());
+        fileAction.val(newUpload ? "NONE" : "DELETE");
 	}
-	else { //text is 'un-delete',  change to 'delete' and revert previous action.
+	else {
 		buttonText.html('delete');
 		$(rowId + " .filename").removeClass('deleted-file');
 		$(fileAction).val(fileAction.attr("prev"));
@@ -1943,33 +2010,18 @@ function deleteAsyncFileRow(rowId, newUpload, self) {
 	}
 }
 
-function confirmAsyncFileRowDeletion(rowId, newUpload, self) {
-    var reallyDelete = confirm('Are you sure?  Select OK to delete file, or CANCEL to retain this file.');
-    console.log("answer to really delete:" + reallyDelete);
-    var stacktrace="unavailable";
-    var filename="unknown";
-    try {stacktrace = printStackTrace(" --> ");}catch(ignored){}
-    try {filename=$(self).closest('tr').find('.filename').text();}catch(ignored){}
-    if(reallyDelete) {
-        console.logRemote("Async Upload: user explicitly DELETED file at row:" + rowId + " name:" + filename + "stacktrace:" + stacktrace );
-    } else {
-        console.logRemote("Async Upload: user cancelled delete.  row:" + rowId + " name:" + filename + "stacktrace:" + stacktrace );
-    }
-    
-    return reallyDelete;
-}
-
-
 function replaceFile(rowId,replacementRowId) {
     var row = $(rowId);
     var existingFilename = row.find(".filename").html();
     var replacementFilename = $(replacementRowId).find('.replacefilename').html();
-    // message to let the user know that this file is being used to replace an existing file.
+    // message to let the user know that this file is being used to replace an
+	// existing file.
     $(replacementRowId).find("td:first").append("<div class='ui-state-default'><span class='tdar-ui-icon ui-icon ui-icon-info'></span>Replacing <b>" + existingFilename + "</b> with <b>" + replacementFilename + "</b>.</div>");
     // FIXME: simplify this logic through the use of effective CSS classes
     // clears out the delete button on the replacement row for the pending file
     $(replacementRowId).find("td:last").html("");
-    // clear out all name attributes for the FileProxy hidden inputs on the replacement row
+    // clear out all name attributes for the FileProxy hidden inputs on the
+    // replacement row
     $(replacementRowId).find("input").removeAttr("name");
     // clear out the replacement row's confidential checkbox div
     $(replacementRowId).find(".proxyConfidentialDiv").html("");
@@ -1977,11 +2029,15 @@ function replaceFile(rowId,replacementRowId) {
     // set the replacement filename on the existing FileProxy
     row.find(".fileReplaceName").val(replacementFilename);
     row.find("td:first").append("<div class='ui-state-default'><span class='tdar-ui-icon ui-icon ui-icon-info'></span>Replacing with <b>" + replacementFilename + "</b></div>");
+    var table = row.parent();
+    table.find(".fileSequenceNumber").each(function(index) {
+        $(this).val(index);
+    });
 }
 
 
 function replaceDialog(rowId,filename) {
-    var contents = "<b>select a file to replace:</b><br/><ul>";
+    var contents = "<b>Select the Newly Uploaded File That Should Replace The Existing File:</b><br/><ul>";
     var replacementFiles = $('#files .newrow');
     if (replacementFiles.length == 0) {
         contents +="<li>Please upload a file and then choose the replace option</li>";
@@ -2007,46 +2063,102 @@ function replaceDialog(rowId,filename) {
         });
 }
 function initializeView() {
+	console.debug('initialize view');
     applyZebraColors();
-    $('.collapsible').click(function() {
-            $(this).next().toggle('fast');
-            return false;
-        });
-    initializeTooltips();
+    registerMoreInfoText();
+    if (typeof formId != "undefined") {
+    	console.debug('delegating tooltips')
+    	$(formId).delegate("[tooltipcontent]","mouseenter",function(){setToolTipContents(this);});
+    	$(formId).delegate("[tooltipcontent]","focusin",function(){setToolTipContents(this);});
+    }
 }
 
-function applyZebraColors() {
-    $('.zebracolors tbody tr:even').addClass("even");
-    $('.zebracolors tbody tr:odd').addClass("odd");
+function applyZebraColors(optionalRoot) {
+	var root = document;
+	if(optionalRoot) root = optionalRoot;
+	
+    $('table.zebracolors tbody tr:even', root).addClass("even");
+    $('table.zebracolors tbody tr:odd', root).addClass("odd");
 }
 
 /**
  * SINGLE INIT FUNCTION
  */
 function initializeEdit() {
+	//if user gets to the edit page by clicking the 'back' button the submit button may be disabled. 
+	$("#submitButton").removeAttr('disabled');
+
+		/// this is for the backwards and forwards page cache
+	$(window).bind("pageshow", function() {
+		  $("#submitButton").removeAttr('disabled');
+		  });
+
 	// TODO: perftest on IE
 	initializeRepeatRow();
-	console.trace('applying institution auto completes');
 
-	console.trace("applying annotation key autocomplete");
-	console.trace("applying keywords autocomplete");
-	applyKeywordAutocomplete('.annotationAutoComplete', 'annotationkey');
-	applyAutoComplete(".nameAutoComplete");
-	applyAutoComplete(".userAutoComplete",true);
-	applyInstitutionAutoComplete(".institution");
-	applyKeywordAutocomplete(".sitenameAutoComplete", "keyword", {keywordType:'SiteNameKeyword'});
-	applyKeywordAutocomplete(".siteTypeKeywordAutocomplete", "keyword", {keywordType:'SiteTypeKeyword'});
-	applyKeywordAutocomplete(".cultureKeywordAutocomplete", "keyword", {keywordType:'CultureKeyword'});
-	applyKeywordAutocomplete(".temporalKeywordAutocomplete", "keyword", {keywordType:'TemporalKeyword'});
-	applyKeywordAutocomplete(".otherKeywordAutocomplete", "keyword", {keywordType:'OtherKeyword'});
-	applyKeywordAutocomplete(".geographicKeywordAutocomplete", "keyword", {keywordType:'GeographicKeyword'});
+
+	delegateCreator("#authorshipTable",false,true);
+	delegateCreator("#creditTable",false,true);
+	delegateCreator("#divAccessRights",true,false);
+	
+	delegateAnnotationKey("#resourceAnnotationsTable","annotation","annotationkey");
+	delegateKeyword("#siteNameKeywordTable","sitename","SiteNameKeyword");
+	delegateKeyword("#uncontrolledSiteTypeKeywordTable","siteType","SiteTypeKeyword");
+	delegateKeyword("#uncontrolledCultureKeywordTable","culture","CultureKeyword");
+	delegateKeyword("#temporalKeywordTable","temporal","TemporalKeyword");
+	delegateKeyword("#otherKeywordTable","other","OtherKeyword");
+	delegateKeyword("#geographicKeywordTable","geographic","GeographicKeyword");
+	
+    applyInstitutionAutoComplete('#txtResourceProviderInstitution', false, true);
 	initializeView();
+	// FIXME: change to delegate model
 	initializeInheritanceReminders();
+
+	$('#resourceCollectionTable').delegate(".collectionAutoComplete","focusin",function(){
+    	applyCollectionAutocomplete("#resourceCollectionTable .collectionAutoComplete", true);         
+});
+
+}
+
+
+function delegateCreator(id, user, showCreate) {
+	if (user == undefined || user == false) {
+		$(id).delegate(".nameAutoComplete","focusin",function(){
+		    // TODO: these calls re-regester every row after a row is created,
+            // change so that only the new row is registered.
+			applyPersonAutoComplete(id + " .nameAutoComplete",false, showCreate);
+		});
+		$(id).delegate(".institutionAutoComplete","focusin",function(){
+			applyInstitutionAutoComplete(id + " .institution", true, true);
+		});
+	} else {
+		$(id).delegate(".userAutoComplete","focusin",function(){
+			applyPersonAutoComplete(id + " .userAutoComplete",true,false);
+		});
+	}
+}
+
+
+// fixme: instead of focusin, look into using a customEvent (e.g. 'rowCreated')
+function delegateAnnotationKey(id, prefix, delim) {
+    $(id).delegate("."+prefix+"AutoComplete","focusin",function(){
+            applyKeywordAutocomplete("."+prefix+"AutoComplete", delim, true);         
+    });
+}
+
+function delegateKeyword(id,prefix,type) {
+	$(id).delegate(".keywordAutocomplete","focusin",function(){
+            // TODO: these calls re-regester every row after a row is created,
+            // change so that only the new row is registered.
+	        console.log('focusin:' + this.id);
+			applyKeywordAutocomplete(id + " .keywordAutocomplete", "keyword", {keywordType:type}, true);
+	});
+	
 }
 
 function initializeInheritanceReminders() {
     $('a.moreInfoToggle').click(function() {
-        //toggle the more/hide button, but just for the relevant section
+        // toggle the more/hide button, but just for the relevant section
         var elem = this;
         var div = $(elem).closest('.inheritanceExplanation');
         console.debug(div);
@@ -2074,4 +2186,288 @@ function sessionTimeoutWarning() {
 	 } else {
 	   setTimeout(sessionTimeoutWarning, 60000);
 	 }
-	}
+}
+
+
+function setupEditForm(formId,acceptedFiles) {
+    $(formId).FormNavigate("Leaving the page will cause any unsaved data to be lost!"); 
+
+
+    // FIXME: the jquery validate documentation for onfocusout/onkeyup/onclick
+	// doesn't jibe w/ what we see in practice. supposedly these take a boolean
+    // argument specifying 'true' causes an error. since true is the default for
+	// these three options I'm simply removing those lines from the validate
+	// call
+    // below.
+    // see http://docs.jquery.com/Plugins/Validation/validate#options for
+	// options and defaults
+    // see http://whilefalse.net/2011/01/17/jquery-validation-onkeyup/ for
+	// undocumented feature that lets you specify a function instead of a
+	// boolean.
+    
+    // Watermark labels *must* be registered before validation rules are
+	// applied, otherwise you get nasty conflicts.
+    applyWatermarks();
+    $(formId).validate({
+        errorLabelContainer: $("#error"),
+        onkeyup: function() {return ;},
+        onclick: function() {return;},
+        onfocusout: function(element) {
+        return ;
+        // I WORK IN CHROME but FAIL in IE & FF
+        // if (!dialogOpen) return;
+        // if ( !this.checkable(element) && (element.name in this.submitted ||
+		// !this.optional(element)) ) {
+        // this.element(element);
+        // }
+        },
+        invalidHandler: $.watermark.showAll,
+        showErrors: function(errorMap, errorList) {
+          this.defaultShowErrors();
+          if (errorList != undefined && errorList.length > 0 && this.submitted) {
+              dialogOpen = true;
+            $("#error").clone().dialog({
+              title: 'Please correct the following issues before saving',
+              buttons: { "Ok": function() { dialogOpen=false;$(this).dialog("close"); } },
+              dialogClass:'errorDialog',
+              resizable:false,
+              draggable:false
+            });
+          }
+        },
+        submitHandler: function(f) {
+            //prevent multiple form submits (e.g. from double-clicking the submit button)
+            $('input[type=submit]', f).attr('disabled', 'disabled');
+            f.submit();
+        }
+    });
+
+    // trim any type-converted fields prior to submit
+    $(formId).submit(function() {
+        try {
+            $.each($('.reasonableDate, .coverageStartYear, .coverageEndYear, .date, .number'), function() {
+                if($(this).val() == undefined || $(this).val() == "") return; 
+                // this is essential, or IE will replace null values w/
+				// empty-string values, and type-conversion dies.
+                var elem = this;
+                $(elem).val($.trim($(elem).val()));
+            });
+        } catch(err){
+            console.error("unable to trim:" + err);
+        }
+        return true;
+    });
+    
+    var uploadField = document.getElementById("fileUploadField");
+    if (uploadField != undefined) {
+	    var validate = $(uploadField);
+	        $(validate).rules("add", {
+	            accept: acceptedFiles,
+	            messages: {
+	                accept: "Please enter a valid file ("+acceptedFiles.replace(/\|/ig,", ")+")"
+	            }
+	        });
+    }
+    
+    $('.coverageTypeSelect',"#coverageTable").each(function(i, elem){
+        prepareDateFields(elem);
+    });
+    
+    if($(formId + '_uploadedFiles').length>0) {
+        console.trace("wiring up uploaded file check");
+        var validateUploadedFiles = function() {
+            if ($(formId + "_uploadedFiles").val().length > 0) {
+                $("#reminder").hide();
+            }
+        };
+        $(formId +'_uploadedFiles').change(validateUploadedFiles);
+        validateUploadedFiles();
+    }	
+    
+
+    // FIXME: see if we can sniff this from browser feature instead of browser
+	// version
+    if ($.browser.msie || $.browser.mozilla && $.browser.mozilla < 4 ) {
+        $('textarea.resizable:not(.processed)').TextAreaResizer();
+    }
+
+    $("#coverageTable").delegate(".coverageTypeSelect","change",function(){console.log('called delegate');prepareDateFields(this);});
+    showAccessRightsLinkIfNeeded();
+    $('#cbConfidential').click(showAccessRightsLinkIfNeeded);
+    $('#resourceAvailability').change(showAccessRightsLinkIfNeeded);
+
+}
+
+function setupDocumentEditForm() {
+	// wire up document-type selection to dependent fields
+	    $("#showmorecite").hide('slow');
+	    $("#show-more-types").hide();
+	    $("#link-more").click(function() { $('#showmorecite').show('show'); $('#showCite').hide(); return false; });
+	    $('#documentTypeBOOK').click(function(){switchType("book");});
+	    $('#documentTypeBOOK_SECTION').click(function(){switchType("book_section");});
+	    $('#documentTypeJOURNAL_ARTICLE').click(function(){switchType("journal_article");});
+	    $('#documentTypeMANUSCRIPT').click(function(){switchType("journal_article");}); // TODO:remove
+	    $('#documentTypeTHESIS').click(function(){switchType("thesis");});
+	    $('#documentTypeCONFERENCE_PRESENTATION').click(function(){switchType("conference");});
+	    $('#documentTypeOTHER').click(function(){switchType("other");});
+	    switchType($("input[@name='document.documentType']:radio:checked").val());
+}
+
+function switchType(doctype) {
+    try{doctype=doctype.toLowerCase();}catch(ex){}
+    console.debug('switchType:start:' + doctype);
+    
+    $("#t-title2-journal").hide();
+    $("#t-title2-book").hide();
+    $("#t-series").hide();
+    $("#t-jtitle").hide();
+    $("#t-isbn").hide();
+    $("#t-issn").hide();
+    $("#t-pub").hide();
+    $("#t-vol").hide();
+    $("#t-start-end").hide();
+    $("#t-edition").hide();
+    $("#t-institution").hide();
+ 
+    if(doctype == 'book_section') {$("#t-title2-book").show();}
+    if(doctype == 'journal_article') {$("#t-title2-journal").show();}
+    switchLabel($("#publisher-hints"),doctype);
+    switchLabel($("#publisherLocation-hints"),doctype);
+ 
+ 
+    if (doctype == 'book_section') {
+        $("#t-title2").show();
+        $("#t-isbn").show();
+        $("#t-start-end").show();
+    }
+    if (doctype == 'book_section' || doctype == 'book' || doctype== 'book_section') {
+        $("#t-series").show();
+        $("#t-isbn").show();
+        $("#t-pub").show();
+        $("#t-edition").show();
+    }
+ 
+    if ( doctype == 'book_section' || doctype == 'book_section') {
+        $("#t-start-end").show();
+    }
+     
+    if (doctype == 'journal_article') {
+        $("#t-title2").show();
+        $("#t-issn").show();
+        $("#t-vol").show();
+        $("#t-start-end").show();
+    }
+ 
+    if (doctype == 'thesis') {
+        $("#t-pub").show();
+    }
+ 
+    if (doctype == 'conference') {
+        $("#t-pub").show();
+    }
+ 
+    if (doctype == 'other') {
+        $("#t-series").show();
+        $("#t-isbn").show();
+        $("#t-pub").show();
+        $("#t-vol").show();
+        $("#t-start-end").show();
+        $("#t-edition").show();
+    }
+ 
+    if (!$('#title2').is(':hidden')) {
+        $('#title2').addClass("required");
+    } else {
+        $('#title2').removeClass("required");
+    }    
+    
+    // console.debug('switchType:end:' + doctype);
+    
+}
+
+function switchLabel(field,type) {
+    // console.debug('switchLabel('+field+','+type+')');
+    var label = "#" + $(field).attr('id') + '-label';
+    if($(field).attr(type) != undefined && $(label) != undefined) {
+        $(label).text($(field).attr(type));
+    }
+}
+
+function toggleDiv() {
+		 $(this).next().slideToggle('slow');
+		 $(this).find("span.ui-icon-triangle-1-e").switchClass("ui-icon-triangle-1-e","ui-icon-triangle-1-s",700);
+		 $(this).find("span.ui-icon-triangle-1-s").switchClass("ui-icon-triangle-1-s","ui-icon-triangle-1-e",700);
+}
+
+function setupSupportingResourceForm(totalNumberOfFiles, rtype) {
+    // the ontology textarea or file upload field is required whenever it is
+    // visible AND
+    // no ontology rules are already present from a previous upload
+
+    $('#fileInputTextArea').rules("add", {
+        required: {depends:isFieldRequired},
+        messages: {required: "No "+rtype+" data entered. Please enter "+rtype+" manually or upload a file."}
+    });
+
+    $('#fileUploadField').rules("add", {
+        required: {depends:isFieldRequired},
+        messages: {required: "No "+rtype+" file selected. Please select a file or enter "+rtype+" data manually."}
+    });
+    
+    function isFieldRequired(elem) {
+        var noRulesExist =  !( (totalNumberOfFiles > 0) || 
+        ($("#fileInputTextArea").val().length > 0 ) ||
+        ($("#fileUploadField").val().length > 0));
+        return noRulesExist && $(elem).is(":visible");
+    }
+    
+    refreshInputDisplay();
+  }
+
+//register 'more-info' sections
+function registerMoreInfoText() {
+    $('a.morify-toggle').click(function(){
+        console.debug('registering click handler');
+        var $elem = $(this);
+        $elem.text($elem.text() == '(show more)' ? '(show less)' : '(show more)');  //sometimes less is more.
+        var root = $elem.closest('.morify-root');
+        $('.ellipses', root).toggle();
+        $('.morify-remaining', root).toggle('slow');
+    });
+}
+
+
+function makeMap(json,mapId,type, value_) {
+  var jsonString = json;
+  var jsonObj = false;
+  var mapString = "";
+
+  if (!json.chartshape) {
+    alert("No map elements");
+    return;
+  }
+  mapString = "<map name='"+mapId+"'>";
+  var area = false;
+  var chart = json.chartshape;
+  var values = value_.split("|");
+  for (var i = 0; i < chart.length; i++) {
+    area = chart[i];
+    mapString += "\n  <area name='"  + area.name + "' shape='"  + area.type
+      + "' coords='" + area.coords.join(",");
+    var val = values[i];
+
+    //FIXME: I don't always consistently work
+    //    var offset = values.length - 1;
+	//    if (val == undefined && i >= offset && values[i-offset] != undefined) {
+	//    	val = values[(i-offset)];
+	//    }
+	//    console.log(values.length + ' ' + i + "{"+ (i -offset)+ "}" + ' ' + values[(i-offset)]);
+    if (val != undefined) {
+    	mapString += "' href='" + getURI("search/results") +"?"+type+"=" +val + "&useSubmitterContext=true'";
+    }
+    mapString += " title='"+val+"'>";;
+  }
+  mapString += "\n</map>";
+  $("#" + mapId +"-img").after(mapString);
+}
+

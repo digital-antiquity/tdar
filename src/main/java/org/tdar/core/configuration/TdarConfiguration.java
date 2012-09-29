@@ -3,6 +3,8 @@ package org.tdar.core.configuration;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -17,11 +19,13 @@ import org.tdar.filestore.PairtreeFilestore;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Rev$
  */
-//@Component
+// @Component
 public class TdarConfiguration {
 
     public final static String DEFAULT_SMTP_HOST = "smtp.asu.edu";
     private static final String SYSTEM_ADMIN_EMAIL = "tdar-svn@lists.asu.edu";
+
+    public static final int DEFAULT_AUTHORITY_MANAGEMENT_DUPE_LIST_MAX_SIZE = 10;
 
     private final transient Logger logger = Logger.getLogger(getClass());
 
@@ -77,32 +81,30 @@ public class TdarConfiguration {
 
         return filestore_;
     }
-    
-    //verify that the personal filestore location exists, attempt to make it if it doesn't, and System.exit() if that fails
+
+    // verify that the personal filestore location exists, attempt to make it if it doesn't, and System.exit() if that fails
     private void initPersonalFilestorePath() {
-    	File personalFilestoreHome = new File(getPersonalFileStoreLocation());
-    	String msg = null;
-    	boolean pathExists= true;
-    	try {
-    		logger.info("initializing personal filestore at " + getPersonalFileStoreLocation());
-    		if (!personalFilestoreHome.exists()) {
-    			pathExists = personalFilestoreHome.mkdirs();
-    			if(!pathExists) {
-    				msg = "Could not create personal filestore at " + getPersonalFileStoreLocation();
-    			}
-    		}
-    	} catch (SecurityException ex) {
-    		msg = "Security Exception: could not create personal filestore home directory";
-    		logger.fatal(ex);
-    		pathExists = false;
-    	}
-    	if(!pathExists) {
-    		throw new IllegalStateException(msg);
-    	}
-        
+        File personalFilestoreHome = new File(getPersonalFileStoreLocation());
+        String msg = null;
+        boolean pathExists = true;
+        try {
+            logger.info("initializing personal filestore at " + getPersonalFileStoreLocation());
+            if (!personalFilestoreHome.exists()) {
+                pathExists = personalFilestoreHome.mkdirs();
+                if (!pathExists) {
+                    msg = "Could not create personal filestore at " + getPersonalFileStoreLocation();
+                }
+            }
+        } catch (SecurityException ex) {
+            msg = "Security Exception: could not create personal filestore home directory";
+            logger.fatal(ex);
+            pathExists = false;
+        }
+        if (!pathExists) {
+            throw new IllegalStateException(msg);
+        }
+
     }
-    	
-    
 
     public static TdarConfiguration getInstance() {
         return INSTANCE;
@@ -116,9 +118,9 @@ public class TdarConfiguration {
         return assistant.getStringProperty("file.store.location",
                 "/home/tdar/filestore");
     }
-    
+
     public String getPersonalFileStoreLocation() {
-		return assistant.getStringProperty("personal.file.store.location", "/home/tdar/pfs");
+        return assistant.getStringProperty("personal.file.store.location", "/home/tdar/pfs");
     }
 
     public String getWebRoot() {
@@ -214,4 +216,35 @@ public class TdarConfiguration {
         return assistant.getIntProperty("tdar.indexer.flushEvery", 500);
     }
 
+    public int getAuthorityManagementDupeListMaxSize() {
+        return assistant.getIntProperty("tdar.authorityManagement.dupeListMaxSize", DEFAULT_AUTHORITY_MANAGEMENT_DUPE_LIST_MAX_SIZE);
+    }
+
+    /**
+     * @return
+     */
+    public Set<String> getStopWords() {
+        Set<String> toReturn = new HashSet<String>();
+        toReturn.add("the");
+        toReturn.add("a");
+        toReturn.add("null");
+        toReturn.add("of");
+        toReturn.add("in");
+        toReturn.add("for");
+        toReturn.add("and");
+        return toReturn;
+    }
+
+    
+    public String getRecapchaServer() {
+        return assistant.getProperty("recaptcha.url");        
+    }
+
+    public String getRecapchaPrivateKey() {
+        return assistant.getProperty("recaptcha.privateKey");        
+    }
+
+    public String getRecapchaPublicKey() {
+        return assistant.getProperty("recaptcha.publicKey");        
+    }
 }

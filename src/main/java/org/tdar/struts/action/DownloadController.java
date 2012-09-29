@@ -35,7 +35,7 @@ import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
 })
 @Component
 @Scope("prototype")
-public class DownloadController extends TdarActionSupport {
+public class DownloadController extends AuthenticationAware.Base  {
 
     private static final long serialVersionUID = 7548544212676661097L;
     private transient InputStream inputStream;
@@ -48,6 +48,16 @@ public class DownloadController extends TdarActionSupport {
 
     public static final String FORBIDDEN = "forbidden";
 
+    @Action(value = "confirm", results = { @Result(name = "confirm", location = "/WEB-INF/content/confirm-download.ftl") })
+    public String confirm() {
+        String status = execute();
+        if (status != SUCCESS) {
+            return status;
+        }
+        ;
+        return "confirm";
+    }
+
     @Action(value = "get")
     public String execute() {
         InformationResourceFileVersion irFileVersion = null;
@@ -58,10 +68,7 @@ public class DownloadController extends TdarActionSupport {
             getLogger().debug("no informationResourceFiles associated with this id [" + informationResourceFileId + "]");
             return ERROR;
         }
-        if ((irFileVersion.getInformationResourceFile().isConfidential() || !irFileVersion.getInformationResourceFile().getInformationResource()
-                .isAvailableToPublic())
-                && !getEntityService().canViewConfidentialInformation(getSessionData().getPerson(),
-                        irFileVersion.getInformationResourceFile().getInformationResource())) {
+        if (!getEntityService().canDownload(irFileVersion, getSessionData().getPerson())) {
             String msg = String.format("user %s does not have permissions to download %s", getSessionData().getPerson(), irFileVersion);
             getLogger().warn(msg);
             return FORBIDDEN;
@@ -86,10 +93,11 @@ public class DownloadController extends TdarActionSupport {
             return ERROR;
         }
 
+//        (irFileVersion.getInformationResourceFile().isConfidential() || !irFileVersion.getInformationResourceFile().getInformationResource()
+//                .isAvailableToPublic()) && !getEntityService().canViewConfidentialInformation(getSessionData().getPerson(),
+//                        irFileVersion.getInformationResourceFile().getInformationResource())
         // must not be confidential/embargoed
-        if ((irFileVersion.getInformationResourceFile().isConfidential() || !irFileVersion.getInformationResourceFile().getInformationResource()
-                .isAvailableToPublic()) && !getEntityService().canViewConfidentialInformation(getSessionData().getPerson(),
-                        irFileVersion.getInformationResourceFile().getInformationResource())) {
+        if (!getEntityService().canDownload(irFileVersion, getSessionData().getPerson())) {
             getLogger().warn("thumbail request: resource is confidential/embargoed:" + informationResourceFileId);
             return FORBIDDEN;
         }
@@ -110,7 +118,6 @@ public class DownloadController extends TdarActionSupport {
             try {
                 getLogger().debug("downloading file:" + resourceFile.getCanonicalPath());
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             contentLength = resourceFile.length();

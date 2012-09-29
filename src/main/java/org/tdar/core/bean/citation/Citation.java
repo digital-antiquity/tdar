@@ -4,10 +4,16 @@ import javax.persistence.CascadeType;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Field;
+import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Resource;
 
@@ -21,7 +27,10 @@ import org.tdar.core.bean.resource.Resource;
  * @version $Revision$
  */
 @MappedSuperclass
-public abstract class Citation extends Persistable.Base {
+@XmlAccessorType(XmlAccessType.PROPERTY)
+@XmlRootElement
+@XmlType(name = "citation")
+public abstract class Citation extends Persistable.Base implements HasResource<Resource> {
 
     private static final long serialVersionUID = 4174558394278154078L;
 
@@ -52,5 +61,16 @@ public abstract class Citation extends Persistable.Base {
 
     public void setResource(Resource resource) {
         this.resource = resource;
+    }
+
+    public boolean isValid() {
+        if (!StringUtils.isEmpty(text)) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isValidForController() {
+        return true;
     }
 }

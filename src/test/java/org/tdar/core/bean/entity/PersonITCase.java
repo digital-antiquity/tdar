@@ -29,7 +29,7 @@ public class PersonITCase extends AbstractIntegrationTestCase {
 
     @Test
     public void testEmptyFind() {
-        Person p = genericService.find(Person.class, null);
+        Person p = genericService.find(Person.class, (Number)null);
         assertNull(p);
     }
 

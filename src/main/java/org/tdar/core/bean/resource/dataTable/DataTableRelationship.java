@@ -29,10 +29,11 @@ public class DataTableRelationship extends Persistable.Base {
     @Column(name = "relationship_type")
     private DataTableColumnRelationshipType type;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    //FIXME: I think we need two join tables --one for localcolumns, one for foreigncolumns -- but hibernate creates one table w/ three fields.  don't think this will work.
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE}, fetch = FetchType.LAZY)
     private Set<DataTableColumn> localColumns;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE}, fetch = FetchType.LAZY)
     private Set<DataTableColumn> foreignColumns;
 
     @ManyToOne

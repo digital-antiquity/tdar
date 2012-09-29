@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.service.CrowdService;
+import org.tdar.core.service.external.CrowdService;
 import org.tdar.web.SessionData;
 import org.tdar.web.SessionDataAware;
 
@@ -28,6 +28,8 @@ import com.opensymphony.xwork2.interceptor.Interceptor;
 public class AuthenticationInterceptor implements SessionDataAware, Interceptor {
 
     private static final long serialVersionUID = -3147151913316273258L;
+
+    public static final String SKIP_REDIRECT = "(.*)/lookup/(.*)";
 
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -82,12 +84,12 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
 
     protected void setReturnUrl(ActionInvocation invocation) {
         HttpServletRequest request = ServletActionContext.getRequest();
-        if (! request.getMethod().equals("GET")) {
+        ActionProxy proxy = invocation.getProxy();
+        String returnUrl = String.format("%s/%s", proxy.getNamespace(), proxy.getActionName());
+        if (! request.getMethod().equals("GET") || returnUrl.matches(SKIP_REDIRECT)) {
             logger.warn("Not setting return url for anything other than a get {}", request.getMethod());
             return;
         }
-        ActionProxy proxy = invocation.getProxy();
-        String returnUrl = String.format("%s/%s", proxy.getNamespace(), proxy.getActionName());
         sessionData.setReturnUrl(returnUrl);
         sessionData.setParameters(invocation.getInvocationContext().getParameters());
         logger.debug("setting returnUrl to: {}", sessionData.getReturnUrl());

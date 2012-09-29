@@ -6,23 +6,23 @@ package org.tdar.search.query;
  * 
  * @author <a href="mailto:matt.cordial@asu.edu">Matt Cordial</a>
  * @version $Rev$
- *
+ * 
  */
-public class FreetextQueryPart implements QueryPart {
+public class FreetextQueryPart extends QueryPart.Base {
 
-	private String queryString;
-	
-	public String getQueryString() {
-		return queryString;
-	}
+    private String fieldValue;
 
-	public void setQueryString(String queryString) {
-		this.queryString = queryString;
-	}
+    public String getFieldValue() {
+        return fieldValue;
+    }
 
-	@Override
-	public String generateQueryString() {
-		return queryString;
-	}
+    public void setFieldValue(String queryString) {
+        this.fieldValue = queryString;
+    }
+
+    @Override
+    public String generateQueryString() {
+        return fieldValue;
+    }
 
 }

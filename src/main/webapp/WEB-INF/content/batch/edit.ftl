@@ -17,7 +17,7 @@
 <br/>
 <@s.select labelposition='left' label='Language'  name='resourceLanguage'  emptyOption='false' listValue='label' list='%{languages}'/>
 <br/>
-<@s.hidden labelposition='left' id='dateCreated' label='Year Created' name='image.dateCreated' value=""/>
+<@s.hidden labelposition='left' id='dateCreated' label='Year Created' name='image.dateCreated' cssClass="" value="-100"/>
 
 <@s.hidden id='ImageDescription' name='image.description' value="placeholder description"/>
 
@@ -62,7 +62,7 @@ $(function(){
                 <@s.file label="Upload a Mapping File" cssClass="validateFileType" labelposition='top' name='uploadedFiles' size='40'/>
 </div>
 
-<@edit.asyncFileUpload "Image" true>
+<@edit.asyncFileUpload "Image" true "Upload" "divFileUpload">
 
 select all of the files you'd like to add to tDAR.  Each one will be associated with a new record along with any metadata specified either in the excel spreadsheet specified above, or with any values selected on this form.
 
@@ -74,13 +74,13 @@ For all of the fields below, you can select values that will apply to all of the
 </div>
 <@edit.resourceCreators 'Creators' authorshipProxies 'authorship' />
 
-<@edit.sharedFormComponents />
+<@edit.sharedFormComponents  fileReminder=false/>
 
 </@s.form>
 <div id="sidebar" parse="true">
     <div id="notice">
     <h3>Introduction</h3>
-    This is the page editing form for a project.
+    This is the bulk upload edit form.
     </div>
 </div>
     <table style="display:none;visibility:hidden" id="queuedFileTemplate">

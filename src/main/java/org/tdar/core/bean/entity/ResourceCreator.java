@@ -11,8 +11,6 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.IndexedEmbedded;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
@@ -34,20 +32,28 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class ResourceCreator extends Persistable.Sequence<ResourceCreator> implements HasResource<Resource> {
 
     private static final long serialVersionUID = 7641781600023145104L;
-    protected final static transient Logger logger = LoggerFactory.getLogger(Resource.class);
 
     @ManyToOne(optional = false)
     private Resource resource;
 
     @ManyToOne(optional = false)
     @IndexedEmbedded
-    @BulkImportField(implementedSubclasses = { Person.class, Institution.class })
+    @BulkImportField(implementedSubclasses = { Person.class, Institution.class }, label = "Resource Creator",order=1)
     private Creator creator;
 
     @Enumerated(EnumType.STRING)
     @Field
-    @BulkImportField
+    @BulkImportField(label = "Resource Creator Role",comment=BulkImportField.CREATOR_ROLE_DESCRIPTION,order=200)
     private ResourceCreatorRole role;
+
+    public ResourceCreator(Resource resource, Creator creator, ResourceCreatorRole role) {
+        setResource(resource);
+        setCreator(creator);
+        setRole(role);
+    }
+
+    public ResourceCreator() {
+    }
 
     @XmlTransient
     public Resource getResource() {
@@ -93,11 +99,11 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
             logger.trace(String.format("role:%s creator:%s resource:%s", role, creator, resource));
             return false;
         }
-
         try {
             boolean relevant = getRole().isRelevantFor(getCreatorType(), getResource().getResourceType());
             if (!relevant) {
-                logger.debug(String.format("role {} is not relevant for resourceType {}", getRole(), getResource(), getResource().getResourceType()));
+                Object[] tmp = {getRole(), getResource(), getResource().getResourceType()};
+                logger.debug(String.format("role {} is not relevant for resourceType {} for {}", tmp));
             }
             return relevant;
         } catch (Exception e) {
@@ -106,4 +112,7 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
         return false;
     }
 
+    public boolean isValidForController() {
+        return true;
+    }
 }

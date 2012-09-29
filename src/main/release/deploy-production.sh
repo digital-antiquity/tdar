@@ -1,7 +1,15 @@
 #!/bin/sh
 sudo echo "deploying production"
+
+if [  $(id -u) -eq 0  ]
+ then
+   echo "This script should NOT be run as root" 1>&2
+   exit 1
+fi
+
 cd /home/tdar/tdar.src/
-svn update .
+hg pull
+hg update -C
 perl src/main/release/release.pl
 mvn clean compile war:war -Pproduction
 sudo service tomcat6 stop

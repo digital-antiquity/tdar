@@ -18,7 +18,7 @@
             $("#idxBtn").removeAttr('disabled');
         }
         if (data.errors  != undefined && data.errors != "") {
-          $("#asyncErrors").append("<div class='action-errors ui-corner-all'>"+data.errors+"</div>");
+          $("#asyncErrors").html("<div class='action-errors ui-corner-all'>"+data.errors+"</div>");
         }        
     });
   }
@@ -27,7 +27,7 @@
 </head>
 <body>
 <div class="glide">
- <h2>Processing bulk upload...</h2>
+ <h2>Processing bulk upload... this may take some time</h2>
 <span id="asyncErrors" >
 <#if !ticketId??>
 The system has not received any files.   Please try again or notify an administrator if the problem persists.

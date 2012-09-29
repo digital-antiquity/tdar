@@ -17,24 +17,23 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.entity.Person;
 
-
 public class BookmarkedResourceITCase extends AbstractIntegrationTestCase {
-    
+
     private List<BookmarkedResource> list = new ArrayList<BookmarkedResource>();
     private HashSet<BookmarkedResource> set = new HashSet<BookmarkedResource>();
     private Map<BookmarkedResource, Integer> map = new HashMap<BookmarkedResource, Integer>();
-    
+
     private Dataset dataset;
     // using arrays to avoid contamination with hashcode/equals
     private Person[] savedPersons;
-    
+
     private Dataset getDataset() {
         if (dataset == null) {
             dataset = createAndSaveNewDataset();
         }
         return dataset;
     }
-    
+
     // using arrays to avoid contamination with hashcode/equals
     private BookmarkedResource[] createNewUnsavedBookmarkedResources() {
         int numberOfBookmarks = 10;
@@ -43,7 +42,7 @@ public class BookmarkedResourceITCase extends AbstractIntegrationTestCase {
         savedPersons = new Person[numberOfBookmarks];
         for (int i = 0; i < array.length; i++) {
             BookmarkedResource br = new BookmarkedResource();
-            Person newPerson = createAndSaveNewPerson("test" + i + "@example.com", ""+i);
+            Person newPerson = createAndSaveNewPerson("test" + i + "@example.com", "" + i);
             savedPersons[i] = newPerson;
             br.setPerson(newPerson);
             br.setResource(dataset);
@@ -52,27 +51,28 @@ public class BookmarkedResourceITCase extends AbstractIntegrationTestCase {
         }
         return array;
     }
-    
+
     private void saveAll(BookmarkedResource... resources) {
         for (BookmarkedResource br : resources) {
             genericService.save(br);
         }
     }
-    
-    @Test @Rollback
+
+    @Test
+    @Rollback
     public void testTransientCollections() {
         BookmarkedResource[] array = createNewUnsavedBookmarkedResources();
         verifyCollectionOperations(array);
 
     }
-    
+
     public Person[] getSavedPersons() {
         for (int i = 0; i < savedPersons.length; i++) {
             savedPersons[i] = entityService.findByEmail(savedPersons[i].getEmail());
         }
         return savedPersons;
     }
-    
+
     private void verifyCollectionOperations(BookmarkedResource[] array) {
         // test transients
         for (int i = 0; i < array.length; i++) {
@@ -80,7 +80,7 @@ public class BookmarkedResourceITCase extends AbstractIntegrationTestCase {
             list.add(array[i]);
             map.put(array[i], Integer.valueOf(i));
         }
-        for (BookmarkedResource br: array) {
+        for (BookmarkedResource br : array) {
             assertTrue(set.contains(br));
             assertTrue(list.contains(br));
             assertTrue(map.containsKey(br));
@@ -92,7 +92,7 @@ public class BookmarkedResourceITCase extends AbstractIntegrationTestCase {
             assertTrue(set.remove(br));
             assertTrue(list.remove(br));
             assertEquals(map.remove(br), Integer.valueOf(index));
-            int remainingEntries = array.length - (index+1);
+            int remainingEntries = array.length - (index + 1);
             assertEquals(set.size(), remainingEntries);
             assertEquals(list.size(), remainingEntries);
             assertEquals(map.size(), remainingEntries);
@@ -106,8 +106,9 @@ public class BookmarkedResourceITCase extends AbstractIntegrationTestCase {
         assertTrue(list.isEmpty());
         assertTrue(map.isEmpty());
     }
-    
-    @Test @Rollback
+
+    @Test
+    @Rollback
     public void testPersistedCollections() {
         BookmarkedResource[] array = createNewUnsavedBookmarkedResources();
         saveAll(array);
@@ -144,13 +145,14 @@ public class BookmarkedResourceITCase extends AbstractIntegrationTestCase {
         }
         assertTrue(persistedDatasetBookmarks.isEmpty());
     }
-    
-    @Test @Rollback
+
+    @Test
+    @Rollback
     public void testBookmarkedResourceService() {
         BookmarkedResource[] array = createNewUnsavedBookmarkedResources();
         saveAll(array);
         Dataset mergedDataset = genericService.merge(dataset);
-        for (Person person: savedPersons) {
+        for (Person person : savedPersons) {
             Person mergedPerson = genericService.merge(person);
             assertTrue(bookmarkedResourceService.removeBookmark(mergedDataset, mergedPerson));
         }

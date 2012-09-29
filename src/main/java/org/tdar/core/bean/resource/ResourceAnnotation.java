@@ -10,6 +10,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlIDREF;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Type;
@@ -36,13 +38,14 @@ public class ResourceAnnotation extends Persistable.Base implements HasResource<
 
     private static final long serialVersionUID = 8517883471101372051L;
 
-    public ResourceAnnotation() {}
-    
-    public ResourceAnnotation(ResourceAnnotationKey key,String value) {
+    public ResourceAnnotation() {
+    }
+
+    public ResourceAnnotation(ResourceAnnotationKey key, String value) {
         setResourceAnnotationKey(key);
         setValue(value);
     }
-    
+
     @ManyToOne(optional = false)
     private Resource resource;
 
@@ -63,6 +66,8 @@ public class ResourceAnnotation extends Persistable.Base implements HasResource<
     @Column(name = "last_updated")
     private Date lastUpdated;
 
+    @XmlIDREF
+    @XmlAttribute(name = "resourceId")
     public Resource getResource() {
         return resource;
     }
@@ -127,6 +132,11 @@ public class ResourceAnnotation extends Persistable.Base implements HasResource<
         return resourceAnnotationKey != null
                 && StringUtils.isNotEmpty(resourceAnnotationKey.getKey())
                 && StringUtils.isNotEmpty(value);
+    }
+
+    @Override
+    public boolean isValidForController() {
+        return true;
     }
 
 }

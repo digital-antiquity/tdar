@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -60,9 +59,10 @@ public class UploadController extends AuthenticationAware.Base {
             @Result(name = ERROR, type = "freemarker", location = "error.ftl", params = { "contentType", "text/plain" })
             // FIXME: the line below does not work like i want it to. I'd like to render error.ftl *and* return a error status code.
             // @Result(name = ERROR, type = "freemarker", location = "error.ftl", params = { "contentType", "text/plain", "status", "400" })
-            })
+    })
     public String upload() {
         PersonalFilestoreTicket ticket = getGenericService().find(PersonalFilestoreTicket.class, ticketId);
+        logger.debug("UPLOAD CONTROLLER: called with " + uploadFile.size() + " tkt:" + ticketId);
         if (ticket == null) {
             addActionError("asynchronous uploads require a valid ticket"); // FIXME: yeah, like a user will understand this.
         }
@@ -75,7 +75,12 @@ public class UploadController extends AuthenticationAware.Base {
             String fileName = uploadFileFileName.get(i);
             // put upload in holding area to be retrieved later (maybe) by the informationResourceController
             if (file != null && file.exists()) {
-                logger.debug("UPLOAD CONTROLLER: processing file:" + uploadFileFileName.get(i) + ", ticket id that came from form:" + ticketId);
+                String contentType = "";
+                try {
+                    contentType = uploadFileContentType.get(i);
+                } catch (Exception e) { /* OK, JUST USED FOR DEBUG */ }
+                Object[] out = { fileName, file.length() ,contentType, ticketId };
+                logger.debug("UPLOAD CONTROLLER: processing file: {} ({}) , contentType: {} , tkt: {}", out);
                 PersonalFilestore filestore = filestoreService.getPersonalFilestore(submitter);
                 try {
                     filestore.store(ticket, file, fileName);
@@ -89,16 +94,10 @@ public class UploadController extends AuthenticationAware.Base {
         } else {
             // FIXME: I was hoping for an annotation-based way to return an error code *and* render a freemarker template. @Result annotations seem to only
             // allow one or the other (or I'm doing it wrong).
-            setHttpCode(HttpServletResponse.SC_BAD_REQUEST); // 400 seems appropriate
+            logger.error("{}",getActionErrors());
+            getServletResponse().setStatus(HttpServletResponse.SC_BAD_REQUEST); // 400 seems appropriate
             return ERROR;
         }
-    }
-
-    @Deprecated
-    // this feels wrong.
-    private void setHttpCode(int code) {
-        HttpServletResponse response = ServletActionContext.getResponse();
-        response.setStatus(code);
     }
 
     @Action(value = "list", results = { @Result(name = "success", type = "freemarker", location = "list.ftl") })
@@ -123,7 +122,7 @@ public class UploadController extends AuthenticationAware.Base {
 
     public long getUploadFileSize() {
         long totalBytes = 0;
-        
+
         for (File file : uploadFile) {
             uploadFileSizes.add(file.length());
             totalBytes += file.length();
@@ -184,7 +183,8 @@ public class UploadController extends AuthenticationAware.Base {
     }
 
     /**
-     * @param uploadFileSizes the uploadFileSizes to set
+     * @param uploadFileSizes
+     *            the uploadFileSizes to set
      */
     public void setUploadFileSizes(List<Long> uploadFileSizes) {
         this.uploadFileSizes = uploadFileSizes;

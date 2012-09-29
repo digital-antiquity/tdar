@@ -1,0 +1,17 @@
+.wrapper,#content {
+	width: 100% !important
+}
+
+#footer,#navigation {
+	display: none !important
+}
+
+#header {
+	background-color: #fff;
+	background-image: none
+}
+
+table { page-break-inside:auto !important}
+tr    { page-break-inside:avoid; page-break-after:auto !important}
+thead { display:table-header-group !important}
+tfoot { display:table-footer-group !important}

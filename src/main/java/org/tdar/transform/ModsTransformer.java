@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.xwork.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.coverage.CoverageDate;
@@ -121,12 +120,12 @@ public abstract class ModsTransformer<R extends Resource> implements
         for (LatitudeLongitudeBox longLat : source.getLatitudeLongitudeBoxes()) {
             Subject sub = mods.createSubject();
             List<String> coords = new ArrayList<String>();
-            coords.add("MaxY: ".concat(longLat.getMaximumLatitude().toString()));
-            coords.add("MinY: ".concat(longLat.getMinimumLatitude().toString()));
+            coords.add("MaxY: ".concat(longLat.getMaxObfuscatedLatitude().toString()));
+            coords.add("MinY: ".concat(longLat.getMinObfuscatedLatitude().toString()));
             coords.add("MaxX: "
-                    .concat(longLat.getMaximumLongitude().toString()));
+                    .concat(longLat.getMaxObfuscatedLongitude().toString()));
             coords.add("MinX: "
-                    .concat(longLat.getMinimumLongitude().toString()));
+                    .concat(longLat.getMinObfuscatedLongitude().toString()));
             sub.addCartographics(coords, "wgs84", null);
         }
 
@@ -153,9 +152,9 @@ public abstract class ModsTransformer<R extends Resource> implements
                 }
             }
 
-            if (StringUtils.isNotBlank(source.getDateCreated())) {
+            if (source.getDateCreated() != null && source.getDateCreated() != -1) {
                 DateElement createDate = mods.getOriginInfo().createDate(OriginDateType.CREATED);
-                createDate.setValue(source.getDateCreated());
+                createDate.setValue(source.getDateCreated().toString());
             }
 
             if (source.getResourceLanguage() != null)

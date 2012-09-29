@@ -15,10 +15,4 @@
 <@view.categoryVariables />
 </@view.codingRules>
 
-<@view.relatedResourceSection label="Coding Sheet"/>
-
-<@view.resourceNotes />
-<@view.unapiLink codingSheet />
-<@view.infoResourceAccessRights />
-
-
+<@view.sharedViewComponents resource />

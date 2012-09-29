@@ -1,5 +1,8 @@
 package org.tdar.core.service;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -80,15 +83,15 @@ public class FilestoreService {
     }
 
     public List<PersonalFilestoreFile> retrieveAllPersonalFilestoreFiles(PersonalFilestoreTicket ticket) {
-        return getPersonalFilestore(ticket).retrieveAll(ticket);
+        if (ticket == null) {
+            return Collections.emptyList();
+        }
+        return getPersonalFilestore(ticket.getSubmitter()).retrieveAll(ticket);
     }
 
     public List<PersonalFilestoreFile> retrieveAllPersonalFilestoreFiles(Long ticketId) {
         PersonalFilestoreTicket ticket = findPersonalFilestoreTicket(ticketId);
-        if (ticket != null) {
-            return getPersonalFilestore(ticket).retrieveAll(ticket);
-        }
-        return null;
+        return retrieveAllPersonalFilestoreFiles(ticket);
     }
 
     public synchronized PersonalFilestore getPersonalFilestore(PersonalFilestoreTicket ticket) {
@@ -98,6 +101,10 @@ public class FilestoreService {
     public synchronized PersonalFilestore getPersonalFilestore(Long ticketId) {
         PersonalFilestoreTicket ticket = findPersonalFilestoreTicket(ticketId);
         return getPersonalFilestore(ticket);
+    }
+    
+    public synchronized File store(PersonalFilestoreTicket ticket, File file, String filename) throws IOException {
+        return getPersonalFilestore(ticket.getSubmitter()).store(ticket, file, filename);
     }
 
 }

@@ -120,7 +120,6 @@ public class WorkflowContext implements Serializable {
 	 */
 	public void setWorkflow(Workflow w) {
 		this.workflow = w;
-		w.setWorkflowContext(this);
 	}
 
 	public Workflow getWorkflow() {

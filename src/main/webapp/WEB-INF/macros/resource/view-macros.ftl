@@ -54,44 +54,51 @@ View freemarker macros
 </#if>
 </#macro>
 
-<#macro createFileLink irfile>
-        <#if (irfile.public && resource.availableToPublic) || allowedToViewConfidentialFiles>
-          <a href="<@s.url value='/filestore/${irfile.latestUploadedVersion.id?c}/get'/>" <#if irfile.informationResourceFileType == "IMAGE">class="lightbox" </#if> >
-              ${irfile.latestUploadedVersion.filename}
+<#macro createFileLink irfile >
+    <#assign version=irfile />
+         <#if version.latestUploadedVersion?? >
+            <#assign version=version.latestUploadedVersion />        
+         </#if>
+        <#if (version.informationResourceFile.public && resource.availableToPublic) || allowedToViewConfidentialFiles>
+          <a href="<@s.url value='/filestore/${version.id?c}/get'/>" >
+              ${version.filename}
           </a>
          <#else>
-             ${irfile.latestUploadedVersion.filename} 
+             ${version.filename} 
          </#if>
-         <#if irfile.confidential || !resource.availableToPublic>
+         <#if version.informationResourceFile.confidential || !resource.availableToPublic>
             <span class="ui-icon ui-icon-locked" style="display: inline-block"></span>
          </#if>
-        <@convertFileSize irfile.latestUploadedVersion.size />
-        <@downloadCount irfile />
+        (<@convertFileSize version.size />)
+        <@downloadCount version />
 </#macro>
 
 <#macro uploadedFileInfo>
-  <#if (resource.getTotalNumberOfFiles() > 0)>
+  <#if (resource.getTotalNumberOfFiles?? && resource.getTotalNumberOfFiles() > 0)>
  <h3>Uploaded Files</h3>
+    <#assign seenDeleted = false />
       <@embargoCheck/>
         <#list resource.informationResourceFiles as irfile>
               <#if irfile.latestUploadedVersion??>
-                <div class="<#if irfile.deleted>deleted-file</#if>">
-                    <p><b>Original file:</b> 
+                <div class="<#if irfile.deleted>view-deleted-file</#if>">
+                    <#if irfile.deleted><#assign seenDeleted = true /></#if>
+                    <p><b>Original file #${irfile_index + 1}</b> 
                     <@createFileLink irfile />
                      </p>
                 </div>
-                <#elseif irfile.translatedFile?? >
-                    <p>
-                    Data column(s) in this dataset have been associated with coding sheet(s) and translated: 
-                    <@createFileLink irfile />
-                    <#if sessionData?? && sessionData.authenticated>
-                      <br/><small>(<a href="<@s.url value='/dataset/retranslate' resourceId='${resource.id?c}'/>">Click here to retranslate</a> - <b>Note: this process may take some time</b>)</small>
-                        <@downloadCount irFile />
-                    </#if>
-                    </p>
+              </#if>
+              <#if irfile.latestTranslatedVersion?? && resource.resourceType == 'DATASET' >
+                <blockquote>
+                  <b>Translated version</b> <@createFileLink irfile.latestTranslatedVersion /></br>
+                   Data column(s) in this dataset have been associated with coding sheet(s) and translated: 
+                  <#if sessionData?? && sessionData.authenticated>
+                    <br/><small>(<a href="<@s.url value='/dataset/retranslate'><@s.param name="id" value="${resource.id?c}"/></@s.url>">Click here to retranslate</a> - <b>Note: this process may take some time</b>)</small>
+                      <@downloadCount irfile />
+                  </#if>
+                </blockquote>
             </#if>
         </#list>
-
+        <#if seenDeleted><div><a href="#" id="showHiddenFiles" onClick="$('.view-deleted-file').toggle();$('#showHiddenFiles').toggle();return false;">show deleted files</a></div></#if>
         <#assign jsonimages=""/>
         <#list resource.informationResourceFiles as irfile>
             <#if (irfile.public || allowedToViewConfidentialFiles) && irfile.zoomableVersion??>
@@ -102,23 +109,10 @@ View freemarker macros
             </#if>
         </#list>
         <#if authenticated>
-		<script type='text/javascript'>
-		$(document).ready(function(){
-  		  $.fn.lightbox.defaults.fileLoadingImage = getBaseURI() + 'includes/jquery-lightbox-0.5/images/loading.gif';
-          $.fn.lightbox.defaults.fileBottomNavCloseImage = getBaseURI() + 'includes/jquery-lightbox-0.5/images/closelabel.gif';
-		
-		  $(".lightbox").lightbox({
-				  fitToScreen: true,
-				  imageClickClose: true,
-				  displayDownloadLink: true,
-				  jsonData: new Array(${jsonimages})
-			    });
-	     });
-		</script>
 		</#if>
     <#nested>
 </#if>
-<#if (resource.getTotalNumberOfFiles() == 0 && editable)>
+<#if (resource.getTotalNumberOfFiles?? && resource.getTotalNumberOfFiles() == 0 && editable)>
 <h3>Uploaded File(s)</h3>
 This resource does not have any uploaded files.
 </#if>
@@ -128,8 +122,7 @@ This resource does not have any uploaded files.
 <#macro codingRules>
 <#if codingSheet.id != -1>
 <#nested>
-<@uploadedFileInfo />
-<h3 class='collapsible'>Coding Rules</h3>
+<h3 onClick="$(this).next().toggle('fast');return false;">Coding Rules</h3>
 <#if codingSheet.codingRules.isEmpty() >
 <div>
 No coding rules have been entered for this coding sheet yet.  
@@ -176,6 +169,7 @@ No categories or subcategories specified.
 </div>
 </#macro>
 
+
 <#macro spatialCoverage>
     <#if (resource.inheritingSpatialInformation?? && resource.inheritingSpatialInformation)>
         <#assign inheriting=true>
@@ -185,9 +179,9 @@ No categories or subcategories specified.
         <#assign activeResource=resource>
     </#if>
     
-  <#if (activeResource?? && (!activeResource.latitudeLongitudeBoxes.isEmpty() || !activeResource.joinedGeographicKeywords.isEmpty()))>
+  <#if (activeResource?? && (!activeResource.latitudeLongitudeBoxes.isEmpty() || !resource.activeGeographicKeywords.isEmpty()))>
 <h3>Spatial Coverage</h3>
-  	<#if !activeResource.latitudeLongitudeBoxes.isEmpty()>
+    <#if !activeResource.latitudeLongitudeBoxes.isEmpty()>
           <div id='large-google-map' style='height:450px;'></div>
           <input type="hidden"  readonly='true' value="${activeResource.firstLatitudeLongitudeBox.maxObfuscatedLatitude}" id="maxy" size=14 />
           <input type="hidden"  readonly='true' value="${activeResource.firstLatitudeLongitudeBox.minObfuscatedLongitude}" id="minx" size=14 />
@@ -199,98 +193,91 @@ No categories or subcategories specified.
           </em>
        <br/>
        <br/>
-  	</#if>
-  	<#if ! activeResource.joinedGeographicKeywords.isEmpty()>
-  		<b>Geographic Terms:</b> ${activeResource.joinedGeographicKeywords}
-  		<!-- 
-  		${activeResource.joinedManagedGeographicKeywords}
-  		-->
-  	</#if>
+    </#if>
+    <#if !resource.activeGeographicKeywords.isEmpty()>
+        <b>Geographic Terms:</b> <@keywordSearch resource.activeGeographicKeywords "query" true />
+    </#if>
   </#if>
 </#macro>
 
 <#macro keywords showParentProjectKeywords=true>
-  <#assign targetSite=resource>
-  <#assign targetCulture=resource>
-  <#assign targetMaterial=resource>
-  <#assign targetInvestigation=resource>
-  <#assign targetOther=resource>
-  <#if (resource.inheritingSiteInformation?? && resource.inheritingSiteInformation)> <#assign targetSite=resource.project> </#if>
-  <#if (resource.inheritingCulturalInformation?? && resource.inheritingCulturalInformation)> <#assign targetCulture=resource.project> </#if>
-  <#if (resource.inheritingMaterialInformation?? && resource.inheritingMaterialInformation)> <#assign targetMaterial=resource.project> </#if>
-  <#if (resource.inheritingInvestigationInformation?? && resource.inheritingInvestigationInformation)> <#assign targetInvestigation=resource.project> </#if>
-  <#if (resource.inheritingOtherInformation?? && resource.inheritingOtherInformation)> <#assign targetOther=resource.project> </#if>
-  
-  <#if (targetSite?? && !targetSite.joinedSiteNameKeywords.isEmpty()) || (targetCulture?? && !targetCulture.joinedCultureKeywords.isEmpty()) ||
-  (targetSite?? && !targetSite.joinedSiteTypeKeywords.isEmpty()) || (targetMaterial?? && !targetMaterial.joinedMaterialKeywords.isEmpty()) ||
-   (targetInvestigation?? && !targetInvestigation.joinedInvestigationTypes.isEmpty()) || (targetOther?? && !targetOther.joinedOtherKeywords.isEmpty())>
+  <#if ( !resource.activeSiteNameKeywords.isEmpty()) || ( !resource.activeCultureKeywords.isEmpty()) ||
+  ( !resource.activeSiteTypeKeywords.isEmpty()) || ( !resource.activeMaterialKeywords.isEmpty()) ||
+   ( !resource.activeInvestigationTypes.isEmpty()) || ( !resource.activeOtherKeywords.isEmpty())>
   <h3>Keywords</h3>
 
-	<table>
-  <#if (targetSite?? && !targetSite.joinedSiteNameKeywords.isEmpty())>
-  	<tr><td><b>Site name keywords:</b></td><td> ${targetSite.joinedSiteNameKeywords}</td></tr>
-	</#if>
-  <#if (targetSite?? && !targetSite.joinedSiteTypeKeywords.isEmpty())>
-  	<tr><td><b>Site type keywords:</b></td><td> ${targetSite.joinedSiteTypeKeywords}</td></tr>
-	</#if>
+    <table>
+  <#if ( !resource.activeSiteNameKeywords.isEmpty())>
+    <tr><td><b>Site Name Keywords:</b></td><td> <@keywordSearch resource.activeSiteNameKeywords "siteNameKeywords" false /></td></tr>
+    </#if>
+  <#if ( !resource.activeSiteTypeKeywords.isEmpty())>
+    <tr><td><b>Site Type Keywords:</b></td><td> <@keywordSearch resource.activeSiteTypeKeywords "uncontrolledSiteTypeKeywords" false /></td></tr>
+    </#if>
 
-  <#if (targetCulture?? && !targetCulture.joinedCultureKeywords.isEmpty())>
-  	<tr><td><b>Culture keywords: </b></td><td> ${targetCulture.joinedCultureKeywords} </td></tr>
-	</#if>
-  <#if (targetMaterial?? && !targetMaterial.joinedMaterialKeywords.isEmpty())>
-  	<tr><td><b>Material keywords:</b></td><td> ${targetMaterial.joinedMaterialKeywords}  </td></tr>
-	</#if>
-  <#if (targetInvestigation?? && !targetInvestigation.joinedInvestigationTypes.isEmpty())>
-  	<tr><td><b>Investigation types:</b></td><td> ${targetInvestigation.joinedInvestigationTypes} </td></tr>
-	</#if>
-  <#if (targetOther?? && !targetOther.joinedOtherKeywords.isEmpty())>
-  	<tr><td><b>Other keywords:</b></td><td>  ${targetOther.joinedOtherKeywords} </td></tr>
-	</#if>
-	</table>
+  <#if ( !resource.activeCultureKeywords.isEmpty())>
+    <tr><td><b>Culture Keywords: </b></td><td> <@keywordSearch resource.activeCultureKeywords "uncontrolledCultureKeywords" false /> </td></tr>
+    </#if>
+  <#if ( !resource.activeMaterialKeywords.isEmpty())>
+    <tr><td><b>Material Keywords:</b></td><td> <@keywordSearch resource.activeMaterialKeywords "query" true />  </td></tr>
+    </#if>
+  <#if ( !resource.activeInvestigationTypes.isEmpty())>
+    <tr><td><b>Investigation Types:</b></td><td>  <@keywordSearch resource.activeInvestigationTypes "query" true /> </td></tr>
+    </#if>
+  <#if ( !resource.activeOtherKeywords.isEmpty())>
+    <tr><td><b>General Keyword:</b></td><td>  <@keywordSearch resource.activeOtherKeywords "query" true /></td></tr>
+    </#if>
+    </table>
   </#if>
 </#macro>
 
 
 <#macro temporalCoverage showParentCoverage=true>
-<#assign target=resource>
-<#if (resource.inheritingTemporalInformation?? && resource.inheritingTemporalInformation)>
-<#assign target=resource.project>
-</#if>
-  
-<#if !target.coverageDates.isEmpty() || !target.temporalKeywords.isEmpty()>
+<#if !resource.coverageDates.isEmpty() || !resource.temporalKeywords.isEmpty()>
 <h3>Temporal Coverage</h3>
-    <#if !target.coverageDates.isEmpty()>
-    <ul>
-    <#list target.coverageDates as coverageDate>
-    <li>${coverageDate} <#if (coverageDate.description?? && coverageDate.description.length() > 0)> (${coverageDate.description})</#if></li>
+    <#if !resource.coverageDates.isEmpty()>
+    <#list resource.coverageDates as coverageDate>
+    ${coverageDate} <#if (coverageDate.description?? && coverageDate.description.length() > 0)> (${coverageDate.description})</#if><br/>
     </#list>
-    </ul>
     </#if>
     
     <div>
-        <#if !target.temporalKeywords.isEmpty()>
-        <b>Temporal terms</b>:${target.joinedTemporalKeywords}</span>
+        <#if !resource.temporalKeywords.isEmpty()>
+        <b>Temporal terms</b>:<@keywordSearch resource.activeTemporalKeywords "query" true /></span>
         </#if>
     </div>
-	</#if>
+    </#if>
 </#macro>
-
 
 <#macro resourceProvider>
   <#if resource.resourceProviderInstitution??>
   <h3>Resource Provider</h3>
 	<div>
-    	<b>Institution:</b> <@search>${resource.resourceProviderInstitution}</@search>
+    	<b>Institution:</b> <@browse creator=resource.resourceProviderInstitution />
 	</div>
   </#if>
 </#macro>
 
-<#macro search>
- <#assign term><#nested></#assign> 
- <a href="<@s.url value="/search/search?query=\"${term?url}\""/>">${term}</a>
+<#macro browse creator>
+<#if creator??>
+ <a href="<@s.url value="/browse/creators/${creator.id?c}"/>">${creator.properName}</a>
+</#if>
+
 </#macro>
 
+<#macro search fieldName="query" quoted=true>
+<#assign q=''>
+<#if quoted>
+<#assign q='"'>
+</#if>
+ <#assign term><#nested></#assign> 
+ <a href="<@s.url value="/search/search?${fieldName}=${q?url}${term?url}${q?url}"/>">${term}</a>
+</#macro>
 
+<#macro keywordSearch _keywords fieldName="query" quoted=true>
+<#list _keywords.toArray()?sort_by("label") as _keyword><#t>
+ <@search fieldName quoted>${_keyword.label}</@search> <#if _keyword_has_next>&bull;</#if> 
+</#list>
+</#macro>
 
 <#macro downloadCount irfile>
     <#if irfile.downloadCount??>
@@ -323,41 +310,32 @@ No categories or subcategories specified.
     <tr><td nowrap><b>Viewed:</b></td><td>${resource.accessCounter!"0"} time(s)</td></tr>
   </table>
 
-	<div>
-	<#if ! resource.fullUsers.isEmpty()>
-	<b>Users with full access to this information resource</b>
-	<ul>
-	<@s.iterator value='resource.fullUsers' var='fullUser'>
-	<li>${fullUser.person}</li>
-	</@s.iterator>
-	</ul>
-	</#if>
-	</div>
-
-        <div>
-	<#if ! resource.readUsers.isEmpty()>
-	<b>Users with read access to this information resource</b>
-        <ul>
-	<@s.iterator value='resource.readUsers' var='readUser'>
-        <li>${readUser.person}</li>
-	</@s.iterator>
-	</ul>
-	</#if>
-	</div>
-        <br/>
-	<div>
-	<#-- if resource.confidential>
-        The file(s) attached to this resource have been flagged as containing confidential information, they are not available for download, contact the creator or submitter for access.
-	</#if -->
-	</div>
+<#--
+  <div>
+  <#if resource.internalResourceCollection?? && !resource.internalResourceCollection.authorizedUsers.isEmpty()>
+  <b>Users with access to this information resource</b>
+  <@authorizedUsers resource.internalResourceCollection.authorizedUsers />
+  </#if>
+  </div>
+-->
+   <br/>
 	<#nested>
+	<@resourceCollectionsRights effectiveResourceCollections />
 	</#if>
+</#macro>
+
+<#macro authorizedUsers users>
+  <ul>
+  <#list users as authorizedUser>
+    <li>${authorizedUser.user} (<#if authorizedUser?? && authorizedUser.generalPermission??>${authorizedUser.generalPermission.label!""}</#if>)</li>
+  </#list>
+  </ul>
 </#macro>
 
 <#macro infoResourceAccessRights>
 	<@accessRights>
 		<div>
-		<#if !resource.availableToPublic>
+		<#if resource.availableToPublic?? && !resource.availableToPublic>
       	   The file(s) attached to this resource are <b>not</b> publicly accessible.  
                     They will be released to the public domain on <b>${resource.dateMadePublic!"N/A"}</b>.
 		</#if>
@@ -372,7 +350,7 @@ No categories or subcategories specified.
   	<@s.iterator value='creditProxies' var='proxy'>
   	<tr><td>
   	<#if proxy.valid>
-    <@view.search>${proxy.resourceCreator.creator.properName}</@view.search>
+    <@browse creator=proxy.resourceCreator.creator />
     (${proxy.resourceCreator.role.label})
     </#if>
     </td></tr>
@@ -392,7 +370,7 @@ No categories or subcategories specified.
         <table>
         <@s.iterator value='resource.resourceNotes' var='resourceNote'>
         <tr>
-      <td><b>${resourceNote.type.label}</b></td>
+      <td><b>${resourceNote.type.label}</b>:</td>
       <td>${resourceNote.note}</td>
         </tr>
         </@s.iterator>
@@ -450,7 +428,7 @@ No categories or subcategories specified.
 
 <#macro relatedComparativeCollections>
   <#if ! resource.relatedComparativeCollections.isEmpty()>
-      <h3>Related comparative collections</h3>
+      <h3>Related Comparative Collections</h3>
     	<table>
       	<@s.iterator value='resource.relatedComparativeCollections' var='citation'>
         	<tr><td>${citation}</td></tr>
@@ -495,14 +473,14 @@ No categories or subcategories specified.
 <@showControllerErrors/>
 <#if resource.project?? && resource.project.id?? && resource.project.id != -1>
 <p style="padding-left:40px;">
-  project: <a href="<@s.url value='/project/view' resourceId='${resource.project.id?c}' />">${resource.project.title}</a>
+  project: <a href="<@s.url value='/project/view'><@s.param name="id" value="${resource.project.id?c}"/></@s.url>">${resource.project.title}</a>
 </p>
 </#if>
 <#if (authorshipProxies?? && !authorshipProxies.empty)>
   <p>
     <#list authorshipProxies as proxy>
       <#if proxy.valid>
-      <@view.search>${proxy.resourceCreator.creator.properName?html}</@view.search>
+      <@browse creator=proxy.resourceCreator.creator />
       (${proxy.resourceCreator.role.label})
       </#if>
     </#list>
@@ -511,13 +489,18 @@ No categories or subcategories specified.
   <p>
 
 <#if resource.informationResourceFiles??>
+<#assign img =""/>
+<!-- only show the 1st image -->
 <#list resource.informationResourceFiles as irfile>
-  <span style="float:right">
-    <#if ((irfile.public && resource.availableToPublic) || allowedToViewConfidentialFiles) && irfile.latestThumbnail?? >
-    <img src="<@s.url value="/filestore/${irfile.latestThumbnail.id?c}/thumbnail"/>"/>
+    <#if ((irfile.public && resource.availableToPublic) || allowedToViewConfidentialFiles) && irfile.latestThumbnail?? && img == ''>
+    <#assign img>
+        <span style="float:right">
+            <img src="<@s.url value="/filestore/${irfile.latestThumbnail.id?c}/thumbnail"/>"/>
+        </span>
+      </#assign>
     </#if>
-  </span>
 </#list>
+${img}
 </#if>
 
   ${resource.description!"No description specified."}
@@ -533,6 +516,100 @@ No categories or subcategories specified.
 
 </#macro>
 
+<#macro showcase>
+  <#assign numImagesToDisplay=0/>
+  <div id="showcase" class="showcase" style="display:none;<#if !authenticatedUser??>margin:0px !important</#if>"> 
+    <#list resource.informationResourceFiles as irfile>
+      <#if ((irfile.public && resource.availableToPublic) || allowedToViewConfidentialFiles) && irfile.latestThumbnail??>
+          <#assign numImagesToDisplay= 1 + numImagesToDisplay />
+          <div class="showcase-slide"> 
+            <#if authenticatedUser??>
+            <!-- Put the slide content in a div with the class .showcase-content. --> 
+            <div class="showcase-content" style="position:relative; top:50%;margin-top:-${irfile.zoomableVersion.height /2}px;"> 
+              <img alt=irfile_index src="<@s.url value="/filestore/${irfile.zoomableVersion.id?c}/get"/>" />
+            </div> 
+            <!-- Put the thumbnail content in a div with the class .showcase-thumbnail --> 
+            </#if>
+            <div class="showcase-thumbnail"> 
+              <img alt="${irfile.latestUploadedVersion.filename}" src="<@s.url value="/filestore/${irfile.latestThumbnail.id?c}/thumbnail"/>"  />
+              <!-- The div below with the class .showcase-thumbnail-caption contains the thumbnail caption. --> 
+              <!-- The div below with the class .showcase-thumbnail-cover is used for the thumbnails active state. --> 
+              <div class="showcase-thumbnail-cover"></div> 
+            </div> 
+              <div class="showcase-caption">
+              Download: <@createFileLink irfile />
+          </a>
+              
+              </div> 
+            <!-- Put the caption content in a div with the class .showcase-caption --> 
+          </div>   
+      </#if>
+   </#list>
+   <#if (authenticatedUser?? && numImagesToDisplay > 0 ) || ( numImagesToDisplay > 1) >
+    <script>
+     $("#showcase").toggle();
+    </script>
+   </#if>
+  </div>
+
+   <#if (authenticatedUser?? && numImagesToDisplay > 0 ) || ( numImagesToDisplay > 1) >
+<script type="text/javascript"> 
+  <#assign width = 700 />
+  <#if ((numImagesToDisplay * 100 + 200)< 700)>
+    <#assign width = numImagesToDisplay * 100 + 200/>
+  </#if>
+  $("#showcase").awShowcase(
+  {
+   <#if authenticatedUser??>
+      content_width:      600,
+      content_height:     600,
+      arrows:           true,
+   <#else>
+      content_width:      ${width},
+      content_height:     0,
+      arrows:         false,
+   </#if>
+    fit_to_parent:      false,
+    auto:         false,
+    interval:       3000,
+    continuous:       false,
+    loading:        true,
+    tooltip_width:      100,
+    tooltip_icon_width:   32,
+    tooltip_icon_height:  32,
+    tooltip_offsetx:    18,
+    tooltip_offsety:    0,
+    buttons:        true,
+    btn_numbers:      true,
+    keybord_keys:     true,
+    mousetrace:       false, /* Trace x and y coordinates for the mouse */
+    pauseonover:      true,
+    stoponclick:      true,
+    transition:       'hslide', /* hslide/vslide/fade */
+    transition_delay:   300,
+    transition_speed:   500,
+    show_caption:     'onhover', /* onload/onhover/show */
+    thumbnails:       true,
+    thumbnails_position:  'outside-last', /* outside-last/outside-first/inside-last/inside-first */
+    thumbnails_direction: 'horizontal', /* vertical/horizontal */
+    thumbnails_slidex:    1, /* 0 = auto / 1 = slide one thumbnail / 2 = slide two thumbnails / etc. */
+    dynamic_height:     false, /* For dynamic height to work in webkit you need to set the width and height of images in the source. Usually works to only set the dimension of the first slide in the showcase. */
+    speed_change:     false, /* Set to true to prevent users from swithing more then one slide at once. */
+    viewline:       false /* If set to true content_width, thumbnails, transition and dynamic_height will be disabled. As for dynamic height you need to set the width and height of images in the source. */
+  });
+ 
+</script> 
+
+<style>
+.showcase-thumbnail-container, .showcase-thumbnail-restriction {
+  height:110px !important; overflow:hidden !important;
+}
+
+.showcase-thumbnail { margin-bottom:20px}
+
+</style>
+</#if>
+</#macro>
 
 <#macro infoResourceBasicInformation>
 <@basicInformation>
@@ -544,7 +621,7 @@ No categories or subcategories specified.
 ${resource.resourceLanguage.label}
 </td></tr>
 </#if>
-<tr><td nowrap><b>Year:</b></td><td>${resource.dateCreated!"Creation year not set."}</td></tr>
+<#if resource.dateCreated??><tr><td nowrap><b>Year:</b></td><td>${resource.dateCreated?c}</td></tr></#if>
 </@basicInformation>
 </#macro>
 
@@ -569,7 +646,7 @@ ${resource.resourceLanguage.label}
     <@s.iterator status='rowStatus' value='resource.primaryCreators' var='resourceCreator'>
     <meta name="citation_author" content="${resourceCreator.creator.properName?html}">
     </@s.iterator>    
-    <meta name="citation_date" content="${resource.dateCreated!''}">
+    <meta name="citation_date" content="${resource.dateCreated?c!''}">
     <#if resource.dateRegistered??><meta name="citation_online_date" content="${resource.dateRegistered?date?string('yyyy/MM/dd')}"></#if>
     <#list resource.informationResourceFiles as irfile>
         <#if (irfile.public || allowedToViewConfidentialFiles) && irfile.latestPDF??>
@@ -627,13 +704,104 @@ ${_date?string('MM/dd/yyyy')}<#t>
 
 <#macro relatedResourceSection label="">
     <#if relatedResources?? && !relatedResources.empty>
-    <fieldset>
-    <legend>This ${label} is used by the following datasets:</legend>
-    <ol>
+    <h3>This ${label} is Used by the Following Datasets:</h3>
+    <ol style='list-style-position:inside'>
     <@s.iterator var='related' value='relatedResources' >
     <li><a href="<@s.url value="/${related.urlNamespace}/${related.id?c}"/>">${related.id?c} - ${related.title} </a></li>
     </@s.iterator>
     </ol>
-    </fieldset>
     </#if>
+</#macro>
+
+
+<#-- if content exceeds max, shorten it and add a 'show more' -->
+<#macro morify maxlen=80>
+    <#assign content><#nested></#assign>
+    <#if (content?length > maxlen)>
+        <span class="morify-root">
+            <span class="morify-begin">${content?substring(0,maxlen-3)}</span>
+            <span class='ellipses'>...</span>
+            <span class='morify-remaining' style='display:none'>${content?substring(maxlen-3)}</span>
+            <br /><a class='morify-toggle'>(show more)</a>
+        </span>
+    <#else>
+        ${content}
+    </#if>
+</#macro>
+
+<#macro linkToResource resource title target='resourcedetail'>
+<a href="<@s.url value="/${resource.resourceType.toString().toLowerCase()}/${resource.id?c}"/>" target="${target}" >
+    ${title}
+</a>
+</#macro>
+
+<#macro resourceCollectionTable removeable=false>
+    <table class="zebracolors tableFormat" id="tblCollectionResources">
+        <thead>
+            <tr>
+                <th style="width: 4em">tDAR ID</th>
+                <th>Name</th>
+                <#if removeable><th></th></#if>
+            </tr>
+        </thead>
+        <tbody>
+            <#list resources as resource>
+                <tr id='dataTableRow_${resource.id?c}'>
+                    <td>${resource.id?c}</td>
+                    <td>
+                        <@linkToResource resource resource.title!'<em>(no title)</em>' />
+                    </td>
+                    <#if removeable>
+                    <td><button class="addAnother minus" 
+                                type="button" tabindex="-1" 
+                                onclick='removeResourceClicked(${resource.id?c}, this);false;'><img src="/images/minus.gif" class="minus"></button></td>
+                    </#if>
+                </tr>
+            </#list>
+        </tbody>
+    </table>
+</#macro>
+
+
+<#macro resourceCollections>
+    <#if !persistable.sharedVisibleResourceCollections.empty>
+    <h3>This Resource is Part of the Following Collections</h3>
+    <#list persistable.sharedVisibleResourceCollections as collection>
+            <a href="<@s.url value="/collection/${collection.id?c}"/>">
+                ${collection.name}
+            </a> <br/>
+    </#list>
+    </#if>
+</#macro>
+
+
+
+<#macro sharedViewComponents resource_ >
+    <@uploadedFileInfo >
+        <#if resource_.resourceType == 'CODING_SHEET' ||  resource_.resourceType == 'ONTOLOGY'>
+            <@categoryVariables />
+        </#if>
+    </@uploadedFileInfo>
+    
+    <#if resource_.resourceType == 'PROJECT'>
+        <@keywords showParentProjectKeywords=false />
+    <#else>
+        <@keywords />
+    </#if>
+    <@spatialCoverage />
+    <@temporalCoverage />
+    <@resourceProvider />
+    <@indvidualInstitutionalCredit />
+    <#-- <@view.sourceCitations /> -->
+    <@sourceCollections />
+    <#-- <@view.relatedCitations /> -->
+    <@relatedComparativeCollections />
+    <#-- display linked data <-> ontology nodes -->
+    <@relatedResourceSection label=resource_.resourceType.label />
+    
+    
+    <@unapiLink resource_ />
+    <@resourceCollections />
+    <@infoResourceAccessRights />
+
 </#macro>

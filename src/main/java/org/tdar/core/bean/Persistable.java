@@ -14,6 +14,7 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
@@ -60,6 +61,9 @@ public interface Persistable extends Serializable {
 
         protected final static String[] DEFAULT_JSON_PROPERTIES = { "id" };
 
+        @Transient
+        protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+
         /**
          * Uses GenerationType.IDENTITY, which translates to the (big)serial column type for
          * hibernate+postgres, i.e., one sequence table per entity type
@@ -71,6 +75,11 @@ public interface Persistable extends Serializable {
         @XmlTransient
         public Long getId() {
             return id;
+        }
+        
+        @XmlID @XmlAttribute(name="id") @Transient
+        public String getXmlId() {
+            return getId().toString();
         }
 
         public void setId(Long id) {
@@ -189,7 +198,7 @@ public interface Persistable extends Serializable {
         @XStreamAsAttribute
         @XStreamAlias("sequence")
         @Column(name = "sequence_number")
-        private Integer sequenceNumber = 1;
+        private Integer sequenceNumber = 0;
 
         @Override
         public final int compareTo(E other) {
@@ -218,7 +227,7 @@ public interface Persistable extends Serializable {
             for (Sequenceable<T> item : collection) {
                 if (item == null) {
                     Logger logger = LoggerFactory.getLogger(Sequenceable.class);
-                    logger.error("null sequenceable found in sequenced collection");
+                    logger.debug("null sequenceable found in collection -- skipping");
                     continue;
                 }
                 item.setSequenceNumber(sequenceNumber);

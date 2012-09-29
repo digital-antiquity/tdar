@@ -3,7 +3,7 @@ package org.tdar.core.bean.keyword;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.hibernate.search.annotations.Indexed;
@@ -27,7 +27,7 @@ public class CultureKeyword extends HierarchicalKeyword<CultureKeyword> implemen
     private static final long serialVersionUID = -7196238088495993840L;
     private boolean approved;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY, optional = true)
     private CultureKeyword parent;
 
     public boolean isApproved() {

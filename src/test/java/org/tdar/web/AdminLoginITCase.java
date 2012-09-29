@@ -34,7 +34,7 @@ public class AdminLoginITCase extends AbstractAdminAuthenticatedWebTestCase {
 
 	@Test
 	public void testIndexResources() {
-		gotoPage("/searchindex/build");
+		gotoPage("/admin/searchindex/build");
 		assertTextPresentInPage("Build Index");
 	}
 

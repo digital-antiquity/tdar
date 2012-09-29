@@ -3,8 +3,8 @@ package org.tdar.search.query;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.tdar.index.LatLongClassBridge;
 import org.tdar.index.TdarIndexNumberFormatter;
+import org.tdar.index.bridge.LatLongClassBridge;
 
 /**
  * $Id$

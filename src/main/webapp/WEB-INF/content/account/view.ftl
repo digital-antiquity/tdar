@@ -15,7 +15,7 @@ Now that you've successfully registered an account with tDAR.  Here are some nic
 <li><a href="<@s.url value="/project/add"/>">Create a new project</a>.  (Projects in tDAR are simple, easy ways to organize similar Documents, Images, and Datasets which share metadata.)</li>
 <li><a href="<@s.url value="/resource/add"/>">Create a new resource</a>.</li>
 <li><a href="http://dev.tdar.org/confluence/display/TDAR/User+Documentation">Review the user's manual</a>.</li>
-<li><a href="<@s.url value="/project/list" />">Visit "my resources."</a></li>
+<li><a href="<@s.url value="/dashboard" />">Visit "my resources."</a></li>
 </ol>
 
 </div>

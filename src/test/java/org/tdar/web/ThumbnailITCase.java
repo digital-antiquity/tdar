@@ -25,7 +25,7 @@ public class ThumbnailITCase extends AbstractAdminAuthenticatedWebTestCase {
     public static final String TEST_IMAGE = TestConstants.TEST_IMAGE_DIR + TEST_IMAGE_NAME;
 
     public static String PROJECT_ID = "2";
-    public static String IMAGE_TITLE = "thumb test";
+    public static String IMAGE_TITLE = "a thumb test";
     public static String DESCRIPTION = "this is a test";
 
     public static String REGEX_IMAGE_VIEW = "\\/image\\/\\d+$";
@@ -46,6 +46,7 @@ public class ThumbnailITCase extends AbstractAdminAuthenticatedWebTestCase {
         setInput("ticketId", ticketId);
         setInput(IMAGE_TITLE_FIELDNAME, IMAGE_TITLE);
         setInput(DESCRIPTION_FIELDNAME, DESCRIPTION);
+        setInput("image.dateCreated", "1984");
         // FIXME: need to create input
         addFileProxyFields(0, true, TEST_IMAGE_NAME);
         setInput("resourceAvailability", "Public");
@@ -94,7 +95,7 @@ public class ThumbnailITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         assertLoginPrompt(irFileVersionIds);
 
-        // LOG IN, AS A USER THAT SHOULD HAVE RIGHTS TO THE RESOURCE. THUMBNAIL.
+        // LOG IN, AS A USER THAT SHOULD HAVE RIGHTS TO THE RESOURCE THUMBNAIL.
         login(TestConstants.USERNAME, TestConstants.PASSWORD);
         gotoPage(viewPage);
         assertTextPresent("/thumbnail");

@@ -24,13 +24,13 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.core.bean.AbstractDataIntegrationTestCase;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.dataTable.DataTable;
 import org.tdar.core.bean.resource.dataTable.DataTableRelationship;
 import org.tdar.db.conversion.converters.DatasetConverter;
+import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 
 public class AccessConverterITCase extends AbstractDataIntegrationTestCase {
 
@@ -64,7 +64,7 @@ public class AccessConverterITCase extends AbstractDataIntegrationTestCase {
         }
         dataset.setDataTables(converter.getDataTables());
         dataset.setRelationships(converter.getRelationships());
-        logger.info(converter.getRelationships());
+        logger.info("{}", converter.getRelationships());
         List<DataTableRelationship> listRelationshipsForColumns = datasetService.listRelationshipsForColumns(dataTable.getColumnByName("basic_int"));
         assertEquals(1, listRelationshipsForColumns.size());
         assertEquals("d_503_spital_abone_database_mdb_basic_int", listRelationshipsForColumns.get(0).getLocalTable().getName());
@@ -79,7 +79,7 @@ public class AccessConverterITCase extends AbstractDataIntegrationTestCase {
         DatasetConverter converter = setupSpitalfieldAccessDatabase();
 
         DataTable dataTable = converter.getDataTableByName("d_503_spital_abone_database_mdb_basic_int");
-        CodingSheet codingSheet = datasetService.convertTableToCodingSheet(getTestPerson(), dataTable.getColumnByName("basic_int"),
+        CodingSheet codingSheet = datasetService.convertTableToCodingSheet(getUser(), dataTable.getColumnByName("basic_int"),
                 dataTable.getColumnByName("basic_int_exp"), null);
         Map<String, CodingRule> ruleMap = new HashMap<String, CodingRule>();
         for (CodingRule rule : codingSheet.getCodingRules()) {
@@ -193,7 +193,7 @@ public class AccessConverterITCase extends AbstractDataIntegrationTestCase {
     public void testPgmDatabase() throws FileNotFoundException, IOException {
         DatasetConverter converter = convertDatabase("pgm-tdr-test-docs.mdb", 1124L);
         for (DataTable table : converter.getDataTables()) {
-            logger.info(table);
+            logger.info("{}", table);
         }
 
         tdarDataImportDatabase.selectAllFromTable(converter.getDataTableByName("d_1124_pgm_tdr_test_docs_mdb_spec_test"),
@@ -209,7 +209,7 @@ public class AccessConverterITCase extends AbstractDataIntegrationTestCase {
                         assertEquals("timestamptz", meta.getColumnTypeName(14));
                         while (rs.next()) {
                             Timestamp timestamp = rs.getTimestamp(14);
-                            logger.info(timestamp);
+                            logger.info("{}", timestamp);
                             if (timestamp.toString().equals("1984-06-04 00:00:00.0") || timestamp.toString().equals("1984-06-06 00:00:00.0")) {
                                 assertTrue(true);
                             } else {
@@ -222,13 +222,14 @@ public class AccessConverterITCase extends AbstractDataIntegrationTestCase {
                 }, false);
 
     }
+    
 
     @Test
     @Rollback(true)
-    public void testDateDatabase() throws FileNotFoundException, IOException {
+    public void testDatabaseWithDateTimeAndDuplicateTableNames() throws FileNotFoundException, IOException {
         DatasetConverter converter = convertDatabase("a32mo0296-306-1374-1375-mandan-nd.mdb", 1224L);
         for (DataTable table : converter.getDataTables()) {
-            logger.info(table);
+            logger.info("{}", table);
         }
 
         //FIXME: add more depth to testing

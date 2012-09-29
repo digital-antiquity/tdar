@@ -17,6 +17,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlIDREF;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.annotations.Type;
@@ -38,11 +39,11 @@ import org.tdar.core.bean.resource.OntologyNode;
  */
 @Entity
 @Table(name = "data_table_column")
-public class DataTableColumn extends Persistable.Base implements Comparable<DataTableColumn> {
+public class DataTableColumn extends Persistable.Sequence<DataTableColumn> {
 
     private static final long serialVersionUID = 430090539610139732L;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, cascade={CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "data_table_id")
     private DataTable dataTable;
 
@@ -92,6 +93,7 @@ public class DataTableColumn extends Persistable.Base implements Comparable<Data
     public DataTableColumn() {
     }
 
+    @XmlIDREF
     public DataTable getDataTable() {
         return dataTable;
     }
@@ -124,6 +126,7 @@ public class DataTableColumn extends Persistable.Base implements Comparable<Data
         this.columnEncodingType = columnEncodingType;
     }
 
+    @XmlIDREF
     public CategoryVariable getCategoryVariable() {
         return categoryVariable;
     }
@@ -132,6 +135,7 @@ public class DataTableColumn extends Persistable.Base implements Comparable<Data
         this.categoryVariable = categoryVariable;
     }
 
+    @XmlIDREF
     public Ontology getDefaultOntology() {
         return defaultOntology;
     }
@@ -140,24 +144,21 @@ public class DataTableColumn extends Persistable.Base implements Comparable<Data
         this.defaultOntology = defaultOntology;
     }
 
-    public MeasurementUnit getMeasurementUnit() {
-        return measurementUnit;
-    }
-
-    public void setMeasurementUnit(MeasurementUnit measurementUnit) {
-        this.measurementUnit = measurementUnit;
-    }
-
-    public int compareTo(DataTableColumn o) {
-        return getName().compareTo(o.getName());
-    }
-
+    @XmlIDREF
     public CodingSheet getDefaultCodingSheet() {
         return defaultCodingSheet;
     }
 
     public void setDefaultCodingSheet(CodingSheet defaultCodingSheet) {
         this.defaultCodingSheet = defaultCodingSheet;
+    }
+
+    public MeasurementUnit getMeasurementUnit() {
+        return measurementUnit;
+    }
+
+    public void setMeasurementUnit(MeasurementUnit measurementUnit) {
+        this.measurementUnit = measurementUnit;
     }
 
     public List<DataValueOntologyNodeMapping> getValueToOntologyNodeMapping() {
@@ -215,8 +216,8 @@ public class DataTableColumn extends Persistable.Base implements Comparable<Data
     }
 
     public String toString() {
-        StringBuilder builder = new StringBuilder(name).append(" - ")
-                        .append(columnDataType)
+        StringBuilder builder = new StringBuilder(name == null ?"null" : name).append(" - ")
+                        .append(columnDataType == null ? "null" : columnDataType)
                         .append(' ')
                         .append(getId() == null ? -1 : getId());
         return builder.toString();

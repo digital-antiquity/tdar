@@ -207,7 +207,6 @@ public interface ServiceInterface<T, S extends Dao<T>> {
         protected Logger getLogger() {
             return logger;
         }
-
     }
 
 }

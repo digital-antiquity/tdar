@@ -1,14 +1,12 @@
 package org.tdar.core.bean.resource;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.SequenceInputStream;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -20,10 +18,9 @@ import javax.persistence.Enumerated;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -32,16 +29,18 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Boost;
 import org.hibernate.search.annotations.DynamicBoost;
 import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.FieldBridge;
 import org.hibernate.search.annotations.Index;
 import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.annotations.NumericField;
 import org.hibernate.search.annotations.Store;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.coverage.CoverageDate;
@@ -56,8 +55,13 @@ import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
-import org.tdar.index.LowercaseWhiteSpaceStandardAnalyzer;
-import org.tdar.search.query.boost.InformationResourceBoostStrategy;
+import org.tdar.core.configuration.JSONTransient;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
+import org.tdar.index.analyzer.TdarStandardAnalyzer;
+import org.tdar.index.boost.InformationResourceBoostStrategy;
+import org.tdar.index.bridge.PersistentReaderBridge;
+import org.tdar.search.query.QueryFieldNames;
 
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
@@ -76,18 +80,16 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
  * @version $Revision$
  */
 @Entity
-// @Indexed(index = "Resource")
 @Table(name = "information_resource")
 @DynamicBoost(impl = InformationResourceBoostStrategy.class)
 @Inheritance(strategy = InheritanceType.JOINED)
-public abstract class InformationResource extends Resource implements Comparable<InformationResource> {
+public abstract class InformationResource extends Resource {
 
     private static final long serialVersionUID = -1534799746444826257L;
     private static final String[] JSON_PROPERTIES = { "inheritingCulturalInformation", "inheritingInvestigationInformation", "inheritingMaterialInformation",
             "inheritingOtherInformation", "inheritingSiteInformation", "inheritingSpatialInformation", "inheritingTemporalInformation",
-            // FIXME: what is inheritingXInformation?
-            // "inheritingXInformation"
-            };
+    };
+    public static final int EMBARGO_PERIOD_YEARS = 5;
 
     public InformationResource() {
 
@@ -107,33 +109,35 @@ public abstract class InformationResource extends Resource implements Comparable
     }
 
     @ManyToOne(optional = true)
-    // @ContainedIn
+    // @ContainedIn /* DISABLED TO MANAGE PERFORMANCE ISSUES*/
     @XStreamOmitField
     private Project project;
 
     @Transient
     private Long projectId;
 
-    @ManyToMany
-    @JoinTable(name = "information_resource_related_citation", joinColumns = @JoinColumn(name = "information_resource_id"), inverseJoinColumns = @JoinColumn(
-            name = "document_id"))
-    private Set<Document> relatedCitations = new HashSet<Document>();
-
-    @ManyToMany(cascade = CascadeType.ALL)
-    @XStreamOmitField
-    @JoinTable(name = "information_resource_source_citation", joinColumns = @JoinColumn(name = "information_resource_id"), inverseJoinColumns = @JoinColumn(
-            name = "document_id"))
-    private Set<Document> sourceCitations = new HashSet<Document>();
+    // @ManyToMany
+    // @JoinTable(name = "information_resource_related_citation", joinColumns = @JoinColumn(name = "information_resource_id"), inverseJoinColumns = @JoinColumn(
+    // name = "document_id"))
+    // private Set<Document> relatedCitations = new HashSet<Document>();
+    //
+    // @ManyToMany(cascade = CascadeType.ALL)
+    // @XStreamOmitField
+    // @JoinTable(name = "information_resource_source_citation", joinColumns = @JoinColumn(name = "information_resource_id"), inverseJoinColumns = @JoinColumn(
+    // name = "document_id"))
+    // private Set<Document> sourceCitations = new HashSet<Document>();
 
     @OneToMany(mappedBy = "informationResource", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
-    private Set<InformationResourceFile> informationResourceFiles = new HashSet<InformationResourceFile>();
+    @OrderBy("sequenceNumber asc")
+    @JSONTransient
+    private Set<InformationResourceFile> informationResourceFiles = new LinkedHashSet<InformationResourceFile>();
 
-    @BulkImportField
+    @BulkImportField(label = "Metadata Language", comment = BulkImportField.METADATA_LANGUAGE_DESCRIPTION)
     @Enumerated(EnumType.STRING)
     @Column(name = "metadata_language")
     private LanguageEnum metadataLanguage;
 
-    @BulkImportField
+    @BulkImportField(label = "Resource Language", comment = BulkImportField.RESOURCE_LANGAGE_DESCRIPTION)
     @Enumerated(EnumType.STRING)
     @Column(name = "resource_language")
     private LanguageEnum resourceLanguage;
@@ -144,7 +148,7 @@ public abstract class InformationResource extends Resource implements Comparable
     @Column(name = "external_reference", nullable = true)
     private boolean externalReference;
 
-    @BulkImportField
+    @BulkImportField(label = "Copy Located At", comment = BulkImportField.COPY_LOCATION_DESCRIPTION)
     @Column(name = "copy_location")
     private String copyLocation;
 
@@ -160,10 +164,8 @@ public abstract class InformationResource extends Resource implements Comparable
 
     // currently just a 4 digit year.
     @Column(name = "date_created")
-    // @NumericField
-    @Field(index = Index.UN_TOKENIZED)
-    @BulkImportField
-    private String dateCreated;
+    @BulkImportField(label = "Date Created (Year)", required = true, order = -10, comment = BulkImportField.YEAR_DESCRIPTION)
+    private Integer dateCreated = -1;
 
     // The institution providing this InformationResource
     @ManyToOne
@@ -186,19 +188,6 @@ public abstract class InformationResource extends Resource implements Comparable
     private boolean inheritingSpatialInformation;
     @Column(name = "inheriting_temporal_information", nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingTemporalInformation;
-
-    /**
-     * Returns the result of a String comparison between this
-     * InformationResource's title and the given InformationResource's title. If
-     * the titles are equal, uses compareTo between their Identifier, which is
-     * guaranteed to be unique.
-     * 
-     * @see java.lang.String#compareTo(String)
-     */
-    public int compareTo(InformationResource informationResource) {
-        int comparison = getTitle().compareTo(informationResource.getTitle());
-        return (comparison == 0) ? getId().compareTo(informationResource.getId()) : comparison;
-    }
 
     public LanguageEnum getMetadataLanguage() {
         return metadataLanguage;
@@ -232,12 +221,13 @@ public abstract class InformationResource extends Resource implements Comparable
         this.dateMadePublic = dateMadePublic;
     }
 
+    @NumericField
     @Field(index = Index.UN_TOKENIZED, store = Store.YES)
-    public String getDateCreated() {
+    public Integer getDateCreated() {
         return dateCreated;
     }
 
-    public void setDateCreated(String dateCreated) {
+    public void setDateCreated(Integer dateCreated) {
         this.dateCreated = dateCreated;
     }
 
@@ -256,6 +246,15 @@ public abstract class InformationResource extends Resource implements Comparable
             return Project.NULL;
         }
         return project;
+    }
+
+    @Transient
+    @Field(name = QueryFieldNames.PROJECT_TITLE_SORT, index = Index.UN_TOKENIZED, store = Store.YES)
+    public String getProjectTitle() {
+        if (getProject() != null && getProject() != Project.NULL) {
+            return getProject().getTitleSort();
+        }
+        return "";
     }
 
     public void setProject(Project project) {
@@ -289,7 +288,7 @@ public abstract class InformationResource extends Resource implements Comparable
     }
 
     @Transient
-    @Field(name = "projectId")
+    @Field(name = QueryFieldNames.PROJECT_ID)
     @Analyzer(impl = KeywordAnalyzer.class)
     public Long getProjectId() {
         if (projectId != null)
@@ -307,21 +306,21 @@ public abstract class InformationResource extends Resource implements Comparable
         this.projectId = projectId;
     }
 
-    public Set<Document> getRelatedCitations() {
-        return relatedCitations;
-    }
-
-    public void setRelatedCitations(Set<Document> relatedCitations) {
-        this.relatedCitations = relatedCitations;
-    }
-
-    public Set<Document> getSourceCitations() {
-        return sourceCitations;
-    }
-
-    public void setSourceCitations(Set<Document> sourceCitations) {
-        this.sourceCitations = sourceCitations;
-    }
+    // public Set<Document> getRelatedCitations() {
+    // return relatedCitations;
+    // }
+    //
+    // public void setRelatedCitations(Set<Document> relatedCitations) {
+    // this.relatedCitations = relatedCitations;
+    // }
+    //
+    // public Set<Document> getSourceCitations() {
+    // return sourceCitations;
+    // }
+    //
+    // public void setSourceCitations(Set<Document> sourceCitations) {
+    // this.sourceCitations = sourceCitations;
+    // }
 
     public int getTotalNumberOfFiles() {
         return informationResourceFiles.size();
@@ -329,6 +328,7 @@ public abstract class InformationResource extends Resource implements Comparable
 
     @XmlElementWrapper(name = "informationResourceFiles")
     @XmlElement(name = "informationResourceFile")
+    @JSONTransient
     public Set<InformationResourceFile> getInformationResourceFiles() {
         if (informationResourceFiles == null) {
             informationResourceFiles = new HashSet<InformationResourceFile>();
@@ -336,6 +336,7 @@ public abstract class InformationResource extends Resource implements Comparable
         return informationResourceFiles;
     }
 
+    @JSONTransient
     public InformationResourceFile getFirstInformationResourceFile() {
         if (getInformationResourceFiles().isEmpty()) {
             return null;
@@ -352,6 +353,7 @@ public abstract class InformationResource extends Resource implements Comparable
         logger.debug("adding information resource file: {} ({})", informationResourceFile, informationResourceFiles.size());
     }
 
+    @JSONTransient
     public Collection<InformationResourceFileVersion> getLatestVersions() {
         ArrayList<InformationResourceFileVersion> latest = new ArrayList<InformationResourceFileVersion>();
         for (InformationResourceFile irfile : getInformationResourceFiles()) {
@@ -375,6 +377,7 @@ public abstract class InformationResource extends Resource implements Comparable
         return latest;
     }
 
+    @JSONTransient
     public InformationResourceFileVersion getLatestUploadedVersion() {
         Collection<InformationResourceFileVersion> latestUploadedVersions = getLatestUploadedVersions();
         if (CollectionUtils.isEmpty(latestUploadedVersions)) {
@@ -384,36 +387,66 @@ public abstract class InformationResource extends Resource implements Comparable
         return getLatestUploadedVersions().iterator().next();
     }
 
+    @JSONTransient
     public Collection<InformationResourceFileVersion> getLatestUploadedVersions() {
         return getLatestVersions(VersionType.UPLOADED);
     }
 
-    @Field
+    @Field(store = Store.NO)
+    @FieldBridge(impl = PersistentReaderBridge.class)
     @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)
     @Transient
     @Boost(0.5f)
-    public String getContent() {
+    @XmlTransient
+    @JSONTransient
+    public List<URI> getContent() {
+        logger.trace("getContent");
         if (!isAvailableToPublic()) {
-            return "";
+            return null;
         }
-        List<InputStream> streams = new ArrayList<InputStream>();
+        // List<InputStream> streams = new ArrayList<InputStream>();
+        List<URI> fileURIs = new ArrayList<URI>();
         for (InformationResourceFile irFile : getPublicFiles()) {
             try {
                 InformationResourceFileVersion indexableVersion = irFile.getIndexableVersion();
-                streams.add(new FileInputStream(indexableVersion.getFile()));
-                logger.debug("getting indexed content for " + getId() + ": length:" + ("" + indexableVersion.getIndexableContent()).length());
+                if (indexableVersion.getFile().exists()) {
+                    fileURIs.add(indexableVersion.getFile().toURI());
+                    logger.debug("getting indexed content for " + getId() + ": length:" + ("" + indexableVersion.getIndexableContent()).length());
+                }
             } catch (Exception e) {
                 logger.trace("an exception occured while reading file: {} ", e);
             }
         }
-        try {
-            SequenceInputStream stream = new SequenceInputStream(Collections.enumeration(streams));
-            return IOUtils.toString(stream);
-        } catch (Exception e) {
-            logger.warn("exception: {}", e);
-        }
+        return fileURIs;
+    }
 
-        return "";
+    @Field(index = Index.UN_TOKENIZED, store = Store.YES, name = QueryFieldNames.RESOURCE_ACCESS_TYPE)
+    @Analyzer(impl = TdarStandardAnalyzer.class)
+    @Transient
+    // FIXME: This should work properly with the analyzer above without the toLowerCase()
+    public ResourceAccessType getResourceAccessType() {
+        int totalFiles = getInformationResourceFiles().size();
+        int publicFiles = getPublicFiles().size();
+        if (totalFiles > 0) {
+            if (publicFiles == 0) {
+                return ResourceAccessType.RESTRICTED;
+            }
+            if (publicFiles == totalFiles) {
+                return ResourceAccessType.PUBLICALLY_ACCESSIBLE;
+            }
+            return ResourceAccessType.PARTIALLY_RESTRICTED;
+        }
+        return ResourceAccessType.CITATION;
+    }
+
+    @Transient
+    public boolean getContainsFiles() {
+        return hasFiles();
+    }
+
+    @Transient
+    public boolean hasFiles() {
+        return getInformationResourceFiles().size() > 0;
     }
 
     public boolean isInheritingInvestigationInformation() {
@@ -556,11 +589,6 @@ public abstract class InformationResource extends Resource implements Comparable
         return project != null && isInheritingTemporalInformation() ? project.getCoverageDates() : getCoverageDates();
     }
 
-    @Transient
-    public boolean hasFiles() {
-        return getInformationResourceFiles().size() > 0;
-    }
-
     @Override
     protected String[] getIncludedJsonProperties() {
         ArrayList<String> allProperties = new ArrayList<String>(Arrays.asList(super.getIncludedJsonProperties()));
@@ -569,6 +597,7 @@ public abstract class InformationResource extends Resource implements Comparable
     }
 
     @Transient
+    @JSONTransient
     public boolean hasConfidentialFiles() {
         return !getConfidentialFiles().isEmpty();
     }
@@ -592,13 +621,50 @@ public abstract class InformationResource extends Resource implements Comparable
     }
 
     @Transient
+    @JSONTransient
     public List<InformationResourceFile> getConfidentialFiles() {
         return getFilesWithRestrictions(true);
     }
 
+    @Override
+    @XmlTransient
+    @JSONTransient
+    public String getAdditonalKeywords() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getCopyLocation()).append(" ").append(dateCreated);
+        if (getResourceProviderInstitution() != null) {
+            sb.append(" ").append(getResourceProviderInstitution().getName());
+        }
+
+        // if (getProject() != null) {
+        // getProject().getTitle();
+        // }
+        return sb.toString();
+    }
+
     @Transient
+    @XmlTransient
+    @JSONTransient
     public List<InformationResourceFile> getPublicFiles() {
         return getFilesWithRestrictions(false);
     }
 
+    @Override
+    @JSONTransient
+    public boolean isValidForController() {
+        if (dateCreated == null) {
+            throw new TdarRecoverableRuntimeException("Specifying a \"Created Date\" is required for this " + getResourceType());
+        }
+        return super.isValidForController();
+    }
+
+    @Override
+    @Transient
+    @JSONTransient
+    public String getAdditionalUsersWhoCanModify() {
+        if (getProject() != null) {
+            return getProject().getAdditionalUsersWhoCanModify();
+        }
+        return "";
+    }
 }

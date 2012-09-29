@@ -1,6 +1,8 @@
 package org.tdar.core.bean.resource.sensory;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,8 +11,9 @@ import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlTransient;
 
-import org.apache.commons.lang.xwork.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.SensoryData;
@@ -135,6 +138,7 @@ public class SensoryDataScan extends Persistable.Sequence<SensoryDataScan> imple
     }
 
     @Override
+    @XmlTransient
     public SensoryData getResource() {
         return resource;
     }
@@ -195,6 +199,21 @@ public class SensoryDataScan extends Persistable.Sequence<SensoryDataScan> imple
 
     public void setMatrixApplied(boolean matrixApplied) {
         this.matrixApplied = matrixApplied;
+    }
+
+    @Override
+    public boolean isValidForController() {
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return filename + " (" + getId() + " )";
+    }
+
+    @Override
+    public List<?> getEqualityFields() {
+        return Arrays.asList(getId());
     }
 
 }

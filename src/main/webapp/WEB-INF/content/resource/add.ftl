@@ -1,7 +1,6 @@
 <head>
 <title>Add a new information resource</title>
 <meta name="lastModifiedDate" content="$Date$"/>
-<script type='text/javascript' src='<@s.url value="/includes/jquery.validate-1.7.pack.js"/>'></script>
 <script type='text/javascript'>
 $(document).ready(function() {
     $('#selectResourceTypeForm').validate();
@@ -32,7 +31,7 @@ $(document).ready(function() {
 <@s.form id='selectResourceTypeForm' method='post' action='select' theme='css_xhtml'>
 <h3>Select resource type</h3>
 <@s.hidden name='projectId' value='${projectId}'/>
-<@s.select cssStyle='width:150px;' labelposition='left' id='resourceTypeId' label='Resource type' name='resourceType' list='%{resourceTypes}' emptyOption='true' onchange="checkResourceType();"/>
+<@s.select cssStyle='width:150px;' labelposition='left' id='resourceTypeId' label='Resource type' name='resourceType' list='%{resourceTypes}' emptyOption='true' />
 <div>
 <@s.submit value='Continue'/>
 </div>

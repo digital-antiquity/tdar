@@ -19,7 +19,8 @@ public interface Database
 {
 	enum DatabaseType {ACCESS, DB2, EXCEL, POSTGRES};
 	
-	public static final String NULL_EMPTY_INTEGRATION_VALUE = "This integration value was not specified in the uploaded dataset";
+    public static final String NULL_EMPTY_INTEGRATION_VALUE = "This integration value was not specified in the uploaded dataset";
+    public static final String NULL_EMPTY_MAPPED_VALUE = "This value has not been mapped to any ontology node";
 
 //	enum DATA_TYPE 
 //	{
@@ -37,6 +38,8 @@ public interface Database
 	
 	public DatabaseType getDatabaseType();
 
+	public int getMaxTableLength();
+	
 	/**
 	 * Attempt to change the datatype of the specified column in the specified table
 	 * @param tableName table name

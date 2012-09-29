@@ -31,9 +31,4 @@ public class UploadITCase extends AbstractAdminAuthenticatedWebTestCase {
         Assert.assertNotSame("expecting an error code because we sent bogus ticket", HttpStatus.OK.value(), status);
 
     }
-
-    public NameValuePair nameValuePair(String name, String value) {
-        return new NameValuePair(name, value);
-    }
-
 }

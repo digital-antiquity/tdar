@@ -105,6 +105,7 @@ public abstract class AbstractAuthenticatedWebTestCase extends AbstractWebTestCa
         createInput("hidden", "fileProxies["+rowNum+"].action", "ADD");
         createInput("hidden", "fileProxies["+rowNum+"].fileId", "-1");
         createInput("hidden", "fileProxies["+rowNum+"].filename", filename);
+        createInput("hidden", "fileProxies["+rowNum+"].sequenceNumber", Integer.toString(rowNum));
     }
     
     public int uploadFileToPersonalFilestoreWithoutErrorCheck(String ticketId, String path) {

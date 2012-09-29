@@ -33,6 +33,7 @@ public class GenericColumnarDataWorkflow extends BaseWorkflow {
         registerFileExtension("xlsx", ResourceType.CODING_SHEET, ResourceType.DATASET);
         registerFileExtension("xls", ResourceType.CODING_SHEET, ResourceType.DATASET);
         registerFileExtension("mdb", ResourceType.DATASET);
+        registerFileExtension("accdb", ResourceType.DATASET);
         registerFileExtension("mdbx", ResourceType.DATASET);
     }
 

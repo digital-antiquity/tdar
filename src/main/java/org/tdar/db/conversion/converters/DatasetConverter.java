@@ -70,8 +70,8 @@ public interface DatasetConverter {
         protected TargetDatabase targetDatabase;
         protected Connection connection;
         protected Set<DataTable> dataTables = new HashSet<DataTable>();
-        protected Set<String> dataTableNames = new HashSet<String>();
         protected Set<DataTableRelationship> dataTableRelationships = new HashSet<DataTableRelationship>();
+        private Set<String> dataTableNames = new HashSet<String>();
 
         protected abstract void openInputDatabase() throws IOException;
 
@@ -103,8 +103,15 @@ public interface DatasetConverter {
             DataTable dataTable = new DataTable();
             dataTable.setDisplayName(name);
             String name_ = generateDataTableName(name);
+            logger.info(name_);
+            
             if (dataTableNames.contains(name_)) {
                 int add = 1;
+
+                if (name_.length() + 1 > targetDatabase.getMaxTableLength() ) {
+                    name_ = name_.substring(0,targetDatabase.getMaxTableLength() - 2);
+                }
+
                 while (dataTableNames.contains(name_ + add)) {
                     add++;
                 }
@@ -126,6 +133,7 @@ public interface DatasetConverter {
             dataTableColumn.setColumnDataType(type);
             dataTableColumn.setColumnEncodingType(type.getDefaultEncodingType());
             dataTableColumn.setDataTable(dataTable);
+            dataTableColumn.setSequenceNumber(dataTable.getDataTableColumns().size());
             dataTable.getDataTableColumns().add(dataTableColumn);
             return dataTableColumn;
         }
@@ -150,6 +158,10 @@ public interface DatasetConverter {
             } catch (IOException e) {
                 logger.error("I/O error while opening input database or dumping data", e);
                 throw new TdarRecoverableRuntimeException("I/O error while opening input database or dumping data", e);
+            } catch (TdarRecoverableRuntimeException tex) {
+                //FIXME: THIS FEELS DUMB.  We are catching and throwing tdar exception so that the catch-all will not wipe out a friendly-and-specific error message
+                //with a friendly-yet-generic error message.
+                throw tex;
             } catch (Exception e) {
                 logger.error("Unexpected expection while opening input dataset or dumping data", e);
                 throw new TdarRecoverableRuntimeException("Unexpected expection while opening input dataset or dumping data", e);

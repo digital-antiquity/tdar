@@ -237,7 +237,7 @@ $(function() {
 <@edit.showControllerErrors/>
 
 <@s.form method='post' action='save-column-metadata'>
-<@s.hidden name='resourceId' value='${resource.id?c}'/>
+<@s.hidden name='id' value='${resource.id?c}'/>
 <@s.hidden name='dataTableId' value='${dataTable.id?c}'/>
 <div class='glide'>
 <h2>Column Description and Mapping: ${dataTable.displayName}</h2>

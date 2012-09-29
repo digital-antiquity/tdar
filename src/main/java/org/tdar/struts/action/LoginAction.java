@@ -10,8 +10,9 @@ import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.URLConstants;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.service.CrowdService.AuthenticationResult;
+import org.tdar.core.service.external.CrowdService.AuthenticationResult;
 
 import com.opensymphony.xwork2.validator.annotations.EmailValidator;
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
@@ -30,7 +31,7 @@ import com.opensymphony.xwork2.validator.annotations.ValidatorType;
 @Component
 @Scope("prototype")
 @Results({
-        @Result(name = "authenticated", type = "redirect", location = "/project/list"),
+        @Result(name = "authenticated", type = "redirect", location = URLConstants.DASHBOARD),
         @Result(name = "input", location = "/WEB-INF/content/login.ftl") })
 public class LoginAction extends AuthenticationAware.Base {
 
@@ -41,6 +42,8 @@ public class LoginAction extends AuthenticationAware.Base {
     private Person person;
     private boolean userCookieSet;
     private String url;
+    private String comment; // for simple spam protection
+    private String returnUrl;
 
     @Override
     @Actions({
@@ -59,10 +62,15 @@ public class LoginAction extends AuthenticationAware.Base {
     @Action(value = "process",
             results = {
                     @Result(name = "new", type = "redirect", location = "/account/new"),
-                    @Result(name = "return", type = "redirect", location = "${sessionData.returnUrl}")
+                    @Result(name = "return", type = "redirect", location = "${returnUrl}")
     })
     public String authenticate() {
         logger.debug("Trying to authenticate.");
+        if (StringUtils.isNotBlank(getComment())) {
+            logger.debug(String.format("we think this user was a spammer: %s  -- %s",getLoginEmail(),getComment()));
+            addActionError("Could not authenticate");
+            return INPUT;
+        }
         AuthenticationResult result = getCrowdService().authenticate(getServletRequest(), getServletResponse(), loginEmail, loginPassword);
         if (result.isValid()) {
             person = getEntityService().findByEmail(loginEmail);
@@ -80,15 +88,29 @@ public class LoginAction extends AuthenticationAware.Base {
             // another way to pass a url manually
             if (!StringUtils.isEmpty(url)) {
                 logger.info("url {} ", url);
-                getSessionData().setReturnUrl(UrlUtils.urlDecode(url));
+                setReturnUrl(UrlUtils.urlDecode(url));
             }
             logger.debug(loginEmail.toUpperCase() + " logged in from " + getServletRequest().getRemoteAddr() + " using: "
                     + getServletRequest().getHeader("User-Agent"));
             createAuthenticationToken(person);
             if (getSessionData().getReturnUrl() != null) {
-                logger.debug("Redirecting to return url: " + getSessionData().getReturnUrl());
+                setReturnUrl(getSessionData().getReturnUrl());
+                if (getReturnUrl().contains("filestore/")) {
+                    if (getReturnUrl().endsWith("/get")) {
+                        setReturnUrl(getReturnUrl().replace("/get", "/confirm"));
+                        logger.debug(getReturnUrl());
+                    } else if (getReturnUrl().matches("^(.+)filestore/(\\d+)$")) {
+                        setReturnUrl(getReturnUrl() + "/confirm");
+                        logger.debug(getReturnUrl());
+                    }
+                    logger.info(getReturnUrl());
+                }
+
+                logger.debug("Redirecting to return url: " + getReturnUrl());
                 return "return";
             }
+            getSessionData().setReturnUrl(null);
+
             return AUTHENTICATED;
         } else {
             addActionError(result.getMessage());
@@ -147,6 +169,35 @@ public class LoginAction extends AuthenticationAware.Base {
 
     public String getUrl() {
         return url;
+    }
+
+    /**
+     * @param returnUrl
+     *            the returnUrl to set
+     */
+    public void setReturnUrl(String returnUrl) {
+        this.returnUrl = returnUrl;
+    }
+
+    /**
+     * @return the returnUrl
+     */
+    public String getReturnUrl() {
+        return returnUrl;
+    }
+
+    /**
+     * @return the comment
+     */
+    public String getComment() {
+        return comment;
+    }
+
+    /**
+     * @param comment the comment to set
+     */
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
 }

@@ -7,18 +7,21 @@
 </#if>
 <meta name="lastModifiedDate" content="$Date$"/>
 
-<@edit.resourceJavascript formId="#datasetMetadataForm" selPrefix="#dataset" includeInheritance=true>
-    $('#datasetDescription').rules("add", {
-        required: true,
-        messages: {
-            required: "Please enter a description.",
-        }
-    });
-</@edit.resourceJavascript>
 <style>
-.proxyConfidentialDiv {display:none;}
 .deleteButton, .replaceButton {display:none;}
 </style>
+
+<script type="text/javascript">
+
+$(function(){
+    $("#fileUploadField").change(function(){
+            if ($("#fileUploadField").val().length > 0) {
+                $("#reminder").hide();
+            }        
+    });
+});
+</script>
+
 
 </head>
 <body>
@@ -29,13 +32,19 @@
 
 <@edit.basicInformation>
 <div tiplabel="Title" tooltipcontent="Enter the entire title, including sub-title, if appropriate.">
-<@s.textfield labelposition='left' id='datasetTitle' label='Title' name='dataset.title' cssClass="required tdartext longfield" 
+<@s.textfield labelposition='left' id='datasetTitle' label='Title' name='dataset.title' cssClass="required descriptiveTitle tdartext longfield" 
     title="A title is required for all datasets" required=true />
 </div>
 <br/>
 <@s.select labelposition='left' label='Language'  name='resourceLanguage'  emptyOption='false' listValue='label' list='%{languages}'/>
 <br/>
-<@s.textfield labelposition='left' id='dateCreated' label='Year Created' name='dataset.dateCreated' cssClass="reasonableDate" />
+       <#assign dateVal = ""/>
+       <#if dataset.dateCreated?? && dataset.dateCreated != -1>
+         <#assign dateVal = dataset.dateCreated?c />
+      </#if>
+        <@s.textfield labelposition='left' id='dateCreated' label='Year' name='dataset.dateCreated' value="${dateVal}" cssClass="shortfield reasonableDate required" required=true 
+         title="Please enter the year this dataset was created" />
+
 <p id="t-abstract" class='new-group' tiplabel="Abstract / Description" tooltipcontent="Short description of the resource. Often comes from the resource itself, but sometimes will include additional information from the contributor."> 
 
     <@s.textarea label='Abstract / Description' labelposition='top' id='datasetDescription' name='dataset.description' rows="5" 
@@ -44,19 +53,15 @@
 
 </@edit.basicInformation>
 <!-- foobar -->
-<@edit.upload "Dataset file">
-</@edit.upload>
+<@edit.upload "Dataset file" />
 
 <@edit.resourceCreators 'Dataset Creators' authorshipProxies 'authorship' />
 
 <@edit.sharedFormComponents/>
 
 </@s.form>
-<div id="sidebar" parse="true">
-    <div id="notice">
-    <h3>Introduction</h3>
-    This is the page editing form for a project.
-    </div>
-</div>
 
+<@edit.sidebar />
+
+<@edit.resourceJavascript formId="#datasetMetadataForm" selPrefix="#dataset" includeInheritance=true />
 </body>

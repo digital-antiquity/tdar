@@ -32,7 +32,7 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 @Table(name = "geographic_keyword")
 @XStreamAlias("geographicKeyword")
 @Indexed(index = "Keyword")
-public class GeographicKeyword extends UncontrolledKeyword.Base {
+public class GeographicKeyword extends UncontrolledKeyword.Base<GeographicKeyword> {
 
     private static final long serialVersionUID = 9120049059501138213L;
 

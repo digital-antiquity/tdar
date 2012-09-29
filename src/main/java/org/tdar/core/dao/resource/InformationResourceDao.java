@@ -13,7 +13,7 @@ import org.tdar.core.bean.resource.InformationResourceFile;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
  */
-@Component
+@Component("informationResourceDao")
 public class InformationResourceDao extends ResourceDao<InformationResource> {
 
     public InformationResourceDao() {

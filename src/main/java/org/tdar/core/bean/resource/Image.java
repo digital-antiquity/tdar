@@ -2,6 +2,7 @@ package org.tdar.core.bean.resource;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.search.annotations.Indexed;
 
@@ -17,6 +18,7 @@ import org.hibernate.search.annotations.Indexed;
 @Entity
 @Indexed
 @Table(name = "image")
+@XmlRootElement(name = "image")
 public class Image extends InformationResource {
 
 

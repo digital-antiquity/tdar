@@ -10,6 +10,8 @@ hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
 tdardata.connection.url=jdbc:postgresql://localhost/tdardata
 
 
+tdar.database.maxIdleTimeForConnection=600
+
 tdargisdata.connection.url=jdbc:postgresql_postGIS://localhost/tdargis
 postgis.driver.class=org.postgis.DriverWrapper
 

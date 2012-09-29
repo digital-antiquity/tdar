@@ -25,12 +25,13 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.exception.TdarRuntimeException;
-import org.tdar.core.service.ProjectService;
 import org.tdar.core.service.SearchService;
 import org.tdar.core.service.UrlService;
+import org.tdar.core.service.resource.ProjectService;
 import org.tdar.search.query.FieldQueryPart;
 import org.tdar.search.query.FreetextQueryPart;
 import org.tdar.search.query.KeywordQueryPart;
+import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.QueryPartGroup;
 import org.tdar.search.query.ResourceQueryBuilder;
 import org.tdar.search.query.SpatialLimit;
@@ -59,7 +60,7 @@ import org.w3c.dom.Element;
 @WebService(portName = "TagGateway", serviceName = "TagGatewayService",
         targetNamespace = "http://archaeologydataservice.ac.uk/tag/schema",
         endpointInterface = "org.tdar.tag.TagGatewayPort")
-public class TagGateway implements TagGatewayPort {
+public class TagGateway implements TagGatewayPort, QueryFieldNames {
 
     private static final Logger logger = Logger.getLogger(TagGateway.class);
     private static final Element XSLT;
@@ -100,8 +101,8 @@ public class TagGateway implements TagGatewayPort {
 
         // build the query from the supplied parameters
         ResourceQueryBuilder qb = new ResourceQueryBuilder();
-        qb.append(new FieldQueryPart("resourceType", ResourceType.PROJECT.name()));
-        qb.append(new FieldQueryPart("status", Status.ACTIVE.name().toLowerCase()));
+        qb.append(new FieldQueryPart(RESOURCE_TYPE, ResourceType.PROJECT.name()));
+        qb.append(new FieldQueryPart(STATUS, Status.ACTIVE.name().toLowerCase()));
 
         if (what != null) {
             List<String> terms = new ArrayList<String>();
@@ -110,7 +111,7 @@ public class TagGateway implements TagGatewayPort {
                     terms.add(stTerm);
                 }
             }
-            qb.append(new KeywordQueryPart("activeSiteTypeKeywords", terms));
+            qb.append(new KeywordQueryPart(ACTIVE_SITE_TYPE_KEYWORDS, terms));
         }
         if (when != null) {
             TemporalQueryPart tqp = new TemporalQueryPart();
@@ -131,7 +132,7 @@ public class TagGateway implements TagGatewayPort {
         }
         if (StringUtils.isNotBlank(freetext)) {
             FreetextQueryPart qp = new FreetextQueryPart();
-            qp.setQueryString(freetext);
+            qp.setFieldValue(freetext);
             qb.append(qp);
         }
 
@@ -144,7 +145,7 @@ public class TagGateway implements TagGatewayPort {
 
         // actually perform the search against the index
         try {
-            q = searchService.search(qb.buildQuery(), null, qb.getClasses());
+            q = searchService.search(qb);
         } catch (ParseException e) {
             logger.warn("Could not parse supplied query.", e);
         }
@@ -210,7 +211,7 @@ public class TagGateway implements TagGatewayPort {
 
         if (totalExceedsRequested) { // query again to get all of the projectIds
             try {
-                FullTextQuery idq = searchService.search(qb.buildQuery(), null, qb.getClasses());
+                FullTextQuery idq = searchService.search(qb);
                 idq.setProjection("id");
                 List<Object[]> idresults = idq.list();
                 for (Object[] idresult : idresults) {
@@ -265,8 +266,8 @@ public class TagGateway implements TagGatewayPort {
         QueryPartGroup projQg = new QueryPartGroup();
         projQg.setOperator(Operator.OR);
         for (Long id : projIds) {
-            FieldQueryPart projpart = new FieldQueryPart("projectId", id.toString());
-            projQg.addPart(projpart);
+            FieldQueryPart projpart = new FieldQueryPart(PROJECT_ID, id.toString());
+            projQg.append(projpart);
         }
         try {
             return String.format(

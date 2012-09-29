@@ -14,8 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.service.CrowdService;
 import org.tdar.core.service.GenericService;
+import org.tdar.core.service.external.CrowdService;
 import org.tdar.web.SessionDataAware;
 
 /**

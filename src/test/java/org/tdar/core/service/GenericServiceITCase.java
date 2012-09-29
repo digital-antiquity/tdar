@@ -32,7 +32,7 @@ public class GenericServiceITCase extends AbstractIntegrationTestCase {
     public void testFindRandom() {
         List<InvestigationType> randomInvestigationTypes = genericService.findRandom(InvestigationType.class, 10);
         assertEquals(10, randomInvestigationTypes.size());
-        logger.debug(randomInvestigationTypes);
+        logger.debug("{}", randomInvestigationTypes);
     }
     
     @Test

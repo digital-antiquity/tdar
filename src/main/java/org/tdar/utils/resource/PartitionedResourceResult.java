@@ -9,9 +9,11 @@ import java.util.Map;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.Status;
 
 /**
  * $Id$
@@ -38,11 +40,18 @@ public class PartitionedResourceResult implements Serializable {
     private Collection<? super InformationResource> resources;
     private Map<Class<?>, List<?>> partitions;
 
-    public PartitionedResourceResult(Collection<? super InformationResource> collection) {
+    public PartitionedResourceResult(Collection<? super InformationResource> collection, Status... statuses) {
         this.resources = collection;
+
         partitions = new HashMap<Class<?>, List<?>>();
         for (ResourceType type : ResourceType.values()) {
-            partitions.put(type.getResourceClass(), createListOfType(type.getResourceClass()));
+            List<? extends Resource> listOfType = createListOfType(type.getResourceClass());
+            for (int i = listOfType.size() - 1; i >= 0; i--) {
+                if (statuses != null && statuses.length > 0 && !ArrayUtils.contains(statuses, listOfType.get(i).getStatus())) {
+                    listOfType.remove(i);
+                }
+            }
+            partitions.put(type.getResourceClass(), listOfType);
         }
     }
 

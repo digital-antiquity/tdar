@@ -24,11 +24,6 @@ public class CompleteDocumentITCase extends AbstractAdminAuthenticatedWebTestCas
     public static String PROJECT_ID_FIELDNAME = "projectId";
     public static String DOCUMENT_TITLE_FIELDNAME = "document.title";
     public static String DOCUMENT_TYPE_FIELDNAME = "document.documentType";
-    // public static String AUTHOR_NAME_FIRST_FIELDNAME = "authorFirstNames";
-    // public static String AUTHOR_NAME_LAST_FIELDNAME = "authorLastNames";
-    // public static String AUTHOR_EMAIL_FIELDNAME = "authorEmails";
-    // public static String AUTHOR_INSTITUTION_FIELDNAME = "authorInstitutions";
-    // public static String AUTHOR_ROLE_FIELDNAME = "authorRoles";
     public static String DESCRIPTION_FIELDNAME = "resource.description";
 
     public static String PROJECT_ID = "1";
@@ -65,12 +60,14 @@ public class CompleteDocumentITCase extends AbstractAdminAuthenticatedWebTestCas
         docValMap.put("authorshipProxies[1].person.id", "");
         docValMap.put(DESCRIPTION_FIELDNAME, DESCRIPTION);
         docValMap.put("resource.dateCreated", "1923");
-        docValMap.put("fullUserIds[0]", "121");
-        docValMap.put("readUserIds[0]", "5349");
-        docValMap.put("fullUsers[0].firstName", "Michelle");
-        docValMap.put("fullUsers[0].lastName", "Elliott");
-        docValMap.put("readOnlyUsers[0].firstName", "Joshua");
-        docValMap.put("readOnlyUsers[0].lastName", "Watts");
+        docValMap.put("authorizedUsers[0].user.id", "121");
+        docValMap.put("authorizedUsers[1].user.id", "5349");
+        docValMap.put("authorizedUsers[0].generalPermission", "MODIFY_METADATA");
+        docValMap.put("authorizedUsers[1].generalPermission", "VIEW_ALL");
+        docValMap.put("authorizedUsers[0].user.firstName", "Michelle");
+        docValMap.put("authorizedUsers[0].user.lastName", "Elliott");
+        docValMap.put("authorizedUsers[1].user.firstName", "Joshua");
+        docValMap.put("authorizedUsers[1].user.lastName", "Watts");
         docValMap.put("document.doi", "doi:10.1016/j.iheduc.2003.11.004");
         docValMap.put("document.isbn", "9780385483995");
         docValMap.put("resourceLanguage", "SPANISH");
@@ -106,7 +103,6 @@ public class CompleteDocumentITCase extends AbstractAdminAuthenticatedWebTestCas
         docValMap.put("coverageDates[1].dateType", "RADIOCARBON_DATE");
         docValMap.put("resourceProviderInstitution", "Digital Antiquity");
         docValMap.put("resourceAvailability", "Embargoed");
-//        docValMap.put("confidential", "true");
         // FIXME: notes not maintaining order
         docValMap.put("resourceNotes[0].type", "GENERAL");
         docValMap.put("resourceNotes[0].note", "A Moose once bit my sister...");
@@ -147,7 +143,7 @@ public class CompleteDocumentITCase extends AbstractAdminAuthenticatedWebTestCas
 
         String path = internalPage.getUrl().getPath().toLowerCase();
         logger.info(getPageText());
-        assertTrue("expecting to be on view page. Actual path:" + path, path.matches(REGEX_DOCUMENT_VIEW));
+        assertTrue("expecting to be on view page. Actual path:" + path +"\n"  + getPageText(), path.matches(REGEX_DOCUMENT_VIEW));
 
         logger.info(getPageText());
         for (String key : docValMap.keySet()) {
@@ -163,7 +159,7 @@ public class CompleteDocumentITCase extends AbstractAdminAuthenticatedWebTestCas
             } else if (key.equals("confidential")) {
                 assertTextPresent("confidential");
             } else if (!key.equals("document.journalName") && !key.equals("document.bookTitle") && !key.startsWith("authorInstitutions")
-                    && !key.equals(PROJECT_ID_FIELDNAME) && !key.contains("Ids") && !key.contains("Email") && !key.equals("ticketId")
+                    && !key.equals(PROJECT_ID_FIELDNAME) && !key.contains("Ids") && !key.contains("Email") && !key.equals("ticketId") && !key.contains("generalPermission") 
                     && !key.contains(".id") && !key.contains(".email") && !key.contains(".type") && !key.contains(".dateType") && !key.contains("Role")
                     && !key.contains("person.institution.name")) {
                 assertTextPresentInPage(docValMap.get(key));

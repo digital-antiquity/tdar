@@ -17,6 +17,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.service.resource.CodingSheetService;
 import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.utils.Pair;
@@ -49,14 +50,14 @@ public class CachingServiceITCase extends AbstractControllerITCase {
         Map<ResourceType, Pair<Long, Double>> resourceCount = simpleCachingService.getHomepageCache().getResourceCount();
         assertEquals(count, resourceCount.get(ResourceType.CODING_SHEET).getFirst());
 
-        createAndSaveNewInformationResource(CodingSheet.class);
+        createAndSaveNewInformationResource(CodingSheet.class, false);
         assertEquals(count, resourceCount.get(ResourceType.CODING_SHEET).getFirst());
 
         simpleCachingService.taintAll();
         resourceCount = simpleCachingService.getHomepageCache().getResourceCount();
         assertFalse(count.equals(resourceCount.get(ResourceType.CODING_SHEET).getFirst()));
 
-        assertEquals(count.longValue() + 1l, resourceCount.get(ResourceType.CODING_SHEET).getFirst().longValue());
+        assertEquals(count.longValue() + 1L, resourceCount.get(ResourceType.CODING_SHEET).getFirst().longValue());
 
     }
 
@@ -69,14 +70,14 @@ public class CachingServiceITCase extends AbstractControllerITCase {
         Map<ResourceType, Pair<Long, Double>> resourceCount = simpleCachingService.getHomepageCache().getResourceCount();
         assertEquals(count, resourceCount.get(ResourceType.CODING_SHEET).getFirst());
 
-        createAndSaveNewInformationResource(CodingSheet.class);
+        createAndSaveNewInformationResource(CodingSheet.class, false);
         assertEquals(count, resourceCount.get(ResourceType.CODING_SHEET).getFirst());
 
         simpleCachingService.taintAllAndRebuild();
         resourceCount = simpleCachingService.getHomepageCache().getResourceCount();
         assertFalse(count.equals(resourceCount.get(ResourceType.CODING_SHEET).getFirst()));
 
-        assertEquals(count.longValue() + 1l, resourceCount.get(ResourceType.CODING_SHEET).getFirst().longValue());
+        assertEquals(count.longValue() + 1L, resourceCount.get(ResourceType.CODING_SHEET).getFirst().longValue());
 
     }
 

@@ -6,20 +6,6 @@
 
 <meta name="lastModifiedDate" content="$Id: edit.ftl 1872 2011-04-09 01:00:39Z nobdyman $"/>
 
-<@edit.resourceJavascript formId="#frmSensoryData" selPrefix="#sensoryData" includeAsync=true includeInheritance=true />
-<script>
-$(function() {
-    $('.scannerTechnology').each(
-            function(i,elem){
-                console.log('registering scanner tech select element');
-                var scannerTechElem = elem;
-                showScannerTechFields(scannerTechElem);
-                $(scannerTechElem).change(function(){showScannerTechFields(scannerTechElem);});
-            }
-    );
-});
-
-</script>
 </head>
 <body>
  
@@ -29,9 +15,15 @@ $(function() {
 
 <@edit.basicInformation>
     <@s.textfield labelposition='left' id="resourceRegistrationTitle" label='Title' 
-        title="The name of this Object / Monument." name='sensoryData.title' cssClass="required longfield" required=true maxlength="512"    />
+        title="The name of this Object / Monument." name='sensoryData.title' cssClass="required descriptiveTitle longfield" required=true maxlength="512"    />
     <br/>
-    <@s.textfield labelposition='left' id='dateCreated' label='Year Created' name='sensoryData.dateCreated' cssClass="reasonableDate" />
+         <#assign dateVal = ""/>
+       <#if sensoryData.dateCreated?? && sensoryData.dateCreated != -1>
+         <#assign dateVal = sensoryData.dateCreated?c />
+      </#if>
+        <@s.textfield labelposition='left' id='dateCreated' label='Year' name='sensoryData.dateCreated' value="${dateVal}" cssClass="shortfield reasonableDate required" required=true 
+         title="Please enter the year this sensory object was created" />
+
     <br />
     
     <span tiplabel="Object / Monument Number" tooltipcontent="The ID number or code, if applicable, of the object or monument">
@@ -88,7 +80,7 @@ $(function() {
     </div>
     <@s.textarea name="sensoryData.rgbDataCaptureInfo" id="rgbDataCaptureInfo" cssClass="resizable" label="RGB Data Capture Information" labelposition="top" rows="5"/>
     <div tooltipfor="rgbDataCaptureInfo">
-        <h2>RGB Data Capture Information</h2>
+        <h3>RGB Data Capture Information</h3>
         <div>
         If yes, then specify whether:<ul>
         <li>Internal or external?</li>
@@ -114,7 +106,7 @@ $(function() {
         <tbody>
         <#list _scans as _scan>
         <tr id="sensoryDataScanRow_${_scan_index}_">
-            <td>
+            <td class="enhancedTableRow">
             <div class="width50percent2">
                 <span tiplabel="Scan Filename" tooltipcontent="The name of the scan. A suggested filename for original raw scans for archiving is in this format: ProjectName_scan1.txt.">
                 <@s.textfield    name="sensoryDataScans[${_scan_index}].filename" watermark="Filename" cssClass="watermarked shortfield" /></span>
@@ -164,7 +156,7 @@ $(function() {
                 </span>
                 <br />
             </td>
-            <td>
+            <td class="enhancedTableRow">
                 <@edit.clearDeleteButton id="sensoryDataScanRow" />
             </td>
         </tr>
@@ -172,7 +164,13 @@ $(function() {
         </tbody>
     </table>
 </div>
-
+<style>
+ .enhancedTableRow {
+    padding-bottom: 5px;
+    border-bottom: 1px solid #333;
+    padding-top: 5px;
+}
+</style>
 <div class="glide" id="divImageInfo">
     <#assign _images=sensoryDataImages />
     <#if _images.isEmpty()>
@@ -319,30 +317,20 @@ $(function() {
 </@s.form>
  
  
+<@edit.resourceJavascript formId="#frmSensoryData" selPrefix="#sensoryData" includeAsync=true includeInheritance=true />
+<script>
+$(function() {
+    $('.scannerTechnology').each(
+            function(i,elem){
+                console.log('registering scanner tech select element');
+                var scannerTechElem = elem;
+                showScannerTechFields(scannerTechElem);
+                $(scannerTechElem).change(function(){showScannerTechFields(scannerTechElem);});
+            }
+    );
+});
+
+</script>
  
 <@edit.sidebar /> 
 </body>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

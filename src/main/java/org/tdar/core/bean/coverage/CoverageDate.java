@@ -12,11 +12,12 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.FieldBridge;
+import org.hibernate.search.annotations.Store;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.index.TdarPaddedNumberBridge;
-import org.tdar.index.TdarStandardAnalyzer;
+import org.tdar.index.analyzer.TdarStandardAnalyzer;
+import org.tdar.index.bridge.TdarPaddedNumberBridge;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
@@ -42,12 +43,14 @@ public class CoverageDate extends Persistable.Base implements HasResource<Resour
     private Resource resource;
 
     @Column(name = "start_date")
-    @Field
+    @Field(name = "startDate", store = Store.YES)
+    // @NumericField
     @FieldBridge(impl = TdarPaddedNumberBridge.class)
     private Integer startDate;
 
     @Column(name = "end_date")
-    @Field
+    @Field(name = "endDate", store = Store.YES)
+    // @NumericField
     @FieldBridge(impl = TdarPaddedNumberBridge.class)
     private Integer endDate;
 
@@ -58,27 +61,28 @@ public class CoverageDate extends Persistable.Base implements HasResource<Resour
     @XStreamAsAttribute
     @XStreamAlias("type")
     private CoverageType dateType;
-    
-    @Column(name="start_aprox", nullable = false)
+
+    @Column(name = "start_aprox", nullable = false)
     private boolean startDateApproximate;
 
-    @Column(name="end_aprox", nullable = false)
+    @Column(name = "end_aprox", nullable = false)
     private boolean endDateApproximate;
-    
+
     private String description;
-    
-    public CoverageDate() {}
-    
+
+    public CoverageDate() {
+    }
+
     public CoverageDate(CoverageType type) {
         setDateType(type);
     }
 
-    public CoverageDate(CoverageType type, Integer start,Integer end) {
+    public CoverageDate(CoverageType type, Integer start, Integer end) {
         setDateType(type);
         setStartDate(start);
         setEndDate(end);
     }
-    
+
     public Integer getStartDate() {
         return startDate;
     }
@@ -135,11 +139,12 @@ public class CoverageDate extends Persistable.Base implements HasResource<Resour
     }
 
     public String toString() {
-        return String.format(getDateType().getFormat(), getStartDate(),getEndDate());
+        return String.format(getDateType().getFormat(), getStartDate(), getEndDate());
     }
 
     /**
-     * @param startDateApproximate the startDateApproximate to set
+     * @param startDateApproximate
+     *            the startDateApproximate to set
      */
     public void setStartDateApproximate(boolean startDateApproximate) {
         this.startDateApproximate = startDateApproximate;
@@ -153,7 +158,8 @@ public class CoverageDate extends Persistable.Base implements HasResource<Resour
     }
 
     /**
-     * @param endDateApproximate the endDateApproximate to set
+     * @param endDateApproximate
+     *            the endDateApproximate to set
      */
     public void setEndDateApproximate(boolean endDateApproximate) {
         this.endDateApproximate = endDateApproximate;
@@ -167,7 +173,8 @@ public class CoverageDate extends Persistable.Base implements HasResource<Resour
     }
 
     /**
-     * @param description the description to set
+     * @param description
+     *            the description to set
      */
     public void setDescription(String description) {
         this.description = description;
@@ -178,5 +185,9 @@ public class CoverageDate extends Persistable.Base implements HasResource<Resour
      */
     public String getDescription() {
         return description;
+    }
+
+    public boolean isValidForController() {
+        return true;
     }
 }

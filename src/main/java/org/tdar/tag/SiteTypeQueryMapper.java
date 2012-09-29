@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.tdar.core.service.SiteTypeKeywordService;
+import org.tdar.core.service.keyword.SiteTypeKeywordService;
 
 public class SiteTypeQueryMapper implements QueryMapper<SubjectType> {
 

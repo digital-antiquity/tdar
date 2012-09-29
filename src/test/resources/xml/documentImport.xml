@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document>
-  <id>1</id>
+  <id>3794</id>
   <title>The True Prairie ecosystem</title>
   <resourceType>DOCUMENT</resourceType>
   <metadataLanguage>ENGLISH</metadataLanguage>
@@ -11,6 +11,13 @@ This citation has been migrated into tDAR from the National Park Service's Natio
   <copyLocation>AAS Citation Data Tranfer, Location Unknown [  20370]</copyLocation>
   <publisherLocation>Stroudsburg, Pa</publisherLocation>
   <dateCreated>1981</dateCreated>
+  <inheritingInvestigationInformation>true</inheritingInvestigationInformation>
+  <inheritingSiteInformation>true</inheritingSiteInformation>
+  <inheritingMaterialInformation>true</inheritingMaterialInformation>
+  <inheritingOtherInformation>true</inheritingOtherInformation>
+  <inheritingCulturalInformation>true</inheritingCulturalInformation>
+  <inheritingSpatialInformation>true</inheritingSpatialInformation>
+  <inheritingTemporalInformation>false</inheritingTemporalInformation>
   <publisher>distributed world wide by Academic Press</publisher>
   <seriesName>US / IBP synthesis series ; 16</seriesName>
   <resourceAnnotations>

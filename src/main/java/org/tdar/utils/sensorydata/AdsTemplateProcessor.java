@@ -6,8 +6,8 @@
  */
 package org.tdar.utils.sensorydata;
 
-import static org.apache.commons.lang.xwork.StringUtils.isBlank;
-import static org.apache.commons.lang.xwork.StringUtils.isNotBlank;
+import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,11 +28,10 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.ResourceAnnotation;
-import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.sensory.ScannerTechnologyType;
 import org.tdar.core.bean.resource.sensory.SensoryDataImage;
@@ -62,7 +61,6 @@ public class AdsTemplateProcessor {
     public SensoryData getSensoryDataFromAdsTemplate(File adsTemplate) {
         // put this in constructor
         SensoryData sensoryData = new SensoryData();
-        sensoryData.setAvailableToPublic(true); 
         try {
             
             logger.debug("Processing {}", adsTemplate);
@@ -81,23 +79,6 @@ public class AdsTemplateProcessor {
             AdsImportException ex = new AdsImportException(iox.getMessage());
             throw (ex);
         }
-        
-        
-        //make title be the objectNumber + description (we happen to know that every ads file will have an objectNumber)
-        String newTitle = sensoryData.getResourceAnnotations().iterator().next().getValue() + ": " + sensoryData.getTitle();
-        sensoryData.setTitle(newTitle);
-        
-        
-        //inherit all sections (this wipes out any local keywords, but cursory scan of the xls files tells me they were all the same across all documents anyway)
-        sensoryData.setInheritingCulturalInformation(true);
-        sensoryData.setInheritingInvestigationInformation(true);
-        sensoryData.setInheritingMaterialInformation(true);
-        sensoryData.setInheritingOtherInformation(true);
-        sensoryData.setInheritingSiteInformation(true);
-        sensoryData.setInheritingSpatialInformation(true);
-        sensoryData.setInheritingTemporalInformation(true);
-        
-        
 
         return sensoryData;
     }
@@ -117,22 +98,12 @@ public class AdsTemplateProcessor {
                         //TODO: try to use assign documents to a project.
                         break;
                     case NAME_OF_MONUMENT_SURVEY_AREA_OR_OBJECT:
-                        sensoryData.setMonumentNumber(strVal);
-                        ResourceAnnotationKey resourceAnnotationKey = new ResourceAnnotationKey();
-                        ResourceAnnotation resourceAnnotation = new ResourceAnnotation();
-                        resourceAnnotationKey.setKey(ProjectField.NAME_OF_MONUMENT_SURVEY_AREA_OR_OBJECT.label);
-                        resourceAnnotation.setResourceAnnotationKey(resourceAnnotationKey);
-                        resourceAnnotation.setValue(strVal);
-                        sensoryData.getResourceAnnotations().add(resourceAnnotation);                        
+                        sensoryData.setTitle(strVal);
                         break;
                     case MONUMENT_OBJECT_NUMBER:
                         sensoryData.setMonumentNumber(strVal);
                         break;
                     case MONUMENT_OBJECT_DESCRIPTION:
-                        if(isBlank(strVal)) {
-                            throw(new AdsImportException("title cannot be blank"));
-                        }
-                        sensoryData.setTitle(strVal);
                         sensoryData.setDescription(strVal);
                         break;
                     case SURVEY_LOCATION: //ignored
@@ -445,7 +416,7 @@ public class AdsTemplateProcessor {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         Integer year = new Integer(cal.get(Calendar.YEAR)); 
-        r.setDateCreated(year.toString());
+        r.setDateCreated(year);
     }
     
     private void setOtherKeywords(InformationResource resource, Cell cell) {

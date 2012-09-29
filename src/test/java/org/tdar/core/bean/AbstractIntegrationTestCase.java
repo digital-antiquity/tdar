@@ -1,5 +1,8 @@
 package org.tdar.core.bean;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -11,10 +14,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.hibernate.SessionFactory;
-import org.junit.BeforeClass;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -22,37 +29,49 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
+import org.tdar.core.bean.entity.AuthenticationToken;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
 import org.tdar.core.bean.resource.Project;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.service.BookmarkedResourceService;
-import org.tdar.core.service.DatasetService;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.FilestoreService;
 import org.tdar.core.service.GenericService;
-import org.tdar.core.service.InformationResourceService;
-import org.tdar.core.service.ProjectService;
-import org.tdar.core.service.ResourceService;
 import org.tdar.core.service.SearchIndexService;
 import org.tdar.core.service.SearchService;
+import org.tdar.core.service.resource.DatasetService;
+import org.tdar.core.service.resource.InformationResourceService;
+import org.tdar.core.service.resource.ProjectService;
+import org.tdar.core.service.resource.ResourceService;
+import org.tdar.filestore.Filestore;
+import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.FileProxy;
+import org.tdar.web.SessionData;
 
-import com.google.common.annotations.Beta;
-
-import static org.junit.Assert.*;
+import com.opensymphony.xwork2.ActionSupport;
 
 @ContextConfiguration(locations = { "classpath:/applicationContext.xml" })
 public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJUnit4SpringContextTests {
 
-    protected HttpServletRequest httpServletRequest = new MockHttpServletRequest();
+    protected HttpServletRequest defaultHttpServletRequest = new MockHttpServletRequest();
+
+    protected HttpServletRequest httpServletRequest = defaultHttpServletRequest;
+    protected HttpServletRequest httpServletPostRequest = new MockHttpServletRequest("POST", "/");
     protected HttpServletResponse httpServletResponse = new MockHttpServletResponse();
 
     @Autowired
@@ -78,7 +97,35 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     @Autowired
     protected FilestoreService filestoreService;
 
-    protected Logger logger = Logger.getLogger(getClass());
+    private List<ActionSupport> controllers = new ArrayList<ActionSupport>();
+    private boolean ignoreActionErrors = false;
+    protected Logger logger = LoggerFactory.getLogger(getClass());
+    private SessionData sessionData;
+
+    @Before
+    public final void initControllerErrorChecking() {
+        getControllers().clear();
+        setIgnoreActionErrors(false);
+    }
+
+    @After
+    public void checkForActionErrors() {
+        int errorCount = 0;
+        if (!isIgnoreActionErrors()) {
+            for (ActionSupport controller : getControllers()) {
+                if (controller != null && !controller.getActionErrors().isEmpty()) {
+                    logger.error("{}", controller.getActionErrors());
+                    errorCount += controller.getActionErrors().size();
+                }
+            }
+        }
+
+        if (errorCount > 0) {
+            Assert.fail("You've got errors!");
+        }
+
+        logger.trace("is this thing on!??");
+    }
 
     public Person createAndSaveNewPerson() {
         return createAndSaveNewPerson(null, "");
@@ -105,16 +152,62 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return testPerson;
     }
 
+    @Deprecated
+    /*
+     * deprecated, use generateInformationResourceWithFileAndUser() or generateInformationResourceWithUser() instead
+     */
     public InformationResource generateInformationResourceWithFile() throws InstantiationException, IllegalAccessException {
-        Document ir = createAndSaveNewInformationResource(Document.class);
+        Document ir = createAndSaveNewInformationResource(Document.class, true);
         assertTrue(ir.getResourceType() == ResourceType.DOCUMENT);
         File file = new File(TestConstants.TEST_DOCUMENT_DIR + TestConstants.TEST_DOCUMENT_NAME);
-        assertTrue("testing "+TestConstants.TEST_DOCUMENT_NAME+" exists", file.exists());
+        assertTrue("testing " + TestConstants.TEST_DOCUMENT_NAME + " exists", file.exists());
+        ir = (Document) addFileToResource(ir, file);
+        return ir;
+    }
+
+    public <R extends InformationResource> InformationResourceFileVersion generateAndStoreVersion(Class<R> type, String name, File f, Filestore filestore)
+            throws InstantiationException,
+            IllegalAccessException, IOException {
+        InformationResource ir = createAndSaveNewInformationResource(type, false);
+        InformationResourceFile irFile = new InformationResourceFile();
+        irFile.setInformationResource(ir);
+        irFile.setLatestVersion(1);
+        @SuppressWarnings("deprecation")
+        InformationResourceFileVersion version = new InformationResourceFileVersion();
+        version.setVersion(1);
+        version.setFilename(name);
+        version.setExtension(FilenameUtils.getExtension(name));
+        version.setInformationResourceFile(irFile);
+        version.setDateCreated(new Date());
+        version.setFileVersionType(VersionType.UPLOADED);
+        irFile.getInformationResourceFileVersions().add(version);
+        genericService.save(irFile);
+        genericService.save(version);
+        filestore.store(f, version);
+        return version;
+    }
+
+    public InformationResource generateInformationResourceWithFileAndUser() throws InstantiationException, IllegalAccessException {
+        Document ir = createAndSaveNewInformationResource(Document.class, false);
+        assertTrue(ir.getResourceType() == ResourceType.DOCUMENT);
+        File file = new File(TestConstants.TEST_DOCUMENT_DIR + TestConstants.TEST_DOCUMENT_NAME);
+        assertTrue("testing " + TestConstants.TEST_DOCUMENT_NAME + " exists", file.exists());
+        ir = (Document) addFileToResource(ir, file);
+        return ir;
+    }
+
+    public InformationResource generateInformationResourceWithUser() throws InstantiationException, IllegalAccessException {
+        Document ir = createAndSaveNewInformationResource(Document.class, false);
+        assertTrue(ir.getResourceType() == ResourceType.DOCUMENT);
+        return ir;
+    }
+
+    public InformationResource addFileToResource(InformationResource ir, File file) {
         try {
             FileProxy proxy = new FileProxy(file.getName(), new FileInputStream(file), VersionType.UPLOADED, FileAction.ADD);
             informationResourceService.processFileProxy(ir, proxy);
-//            informationResourceService.addOrReplaceInformationResourceFile(ir, new FileInputStream(file), file.getName(), FileAction.ADD,
-//                    VersionType.UPLOADED);
+            // informationResourceService.addOrReplaceInformationResourceFile(ir, new FileInputStream(file), file.getName(), FileAction.ADD,
+            // VersionType.UPLOADED);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -129,7 +222,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     }
 
     public <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls) throws InstantiationException, IllegalAccessException {
-        return createAndSaveNewInformationResource(cls, true);
+        return createAndSaveNewInformationResource(cls, false);
     }
 
     public <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls, boolean createUser) throws InstantiationException,
@@ -153,19 +246,31 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     protected Dataset createAndSaveNewDataset() {
         Dataset dataset = new Dataset();
-        Person testPerson = getTestPerson();
+        Person testPerson = getUser();
         dataset.setTitle("Test dataset");
         dataset.setDescription("Test dataset description");
         dataset.markUpdated(testPerson);
-//        dataset.setConfidential(false);
+        // dataset.setConfidential(false);
         dataset.setDateMadePublic(new Date());
-        dataset.setDateCreated("1999");
+        dataset.setDateCreated(1999);
         datasetService.save(dataset);
         return dataset;
     }
-
-    public Person getTestPerson() {
-        return entityService.findPerson(TestConstants.USER_ID);
+    
+    
+    protected Project createAndSaveNewProject() {
+        return createAndSaveNewProject("PROJECT TEST TITLE");
+    }
+        
+    protected Project createAndSaveNewProject(String title) {
+        Project project = new Project();
+        Person submitter = getUser();
+        project.markUpdated(submitter);
+        project.setTitle(title);
+        project.setDescription(title);
+        project.setStatus(Status.ACTIVE);
+        projectService.save(project);
+        return project;
     }
 
     @Override
@@ -187,7 +292,49 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     protected <T> T generateNewController(Class<T> controllerClass) {
         T controller = (T) applicationContext.getBean(controllerClass);
+        if (controller instanceof AuthenticationAware.Base) {
+            ((AuthenticationAware.Base) controller).setServletRequest(getServletRequest());
+            ((AuthenticationAware.Base) controller).setServletResponse(getServletResponse());
+        }
         return controller;
+    }
+
+    protected void init(TdarActionSupport controller, Person user) {
+        if (controller != null) {
+            controller.setSessionData(getSessionData());
+
+            if (user != null) {
+                AuthenticationToken token = AuthenticationToken.create(user);
+                controller.getSessionData().setAuthenticationToken(token);
+                genericService.save(token);
+            } else {
+                controller.getSessionData().setAuthenticationToken(new AuthenticationToken());
+            }
+        }
+    }
+
+    protected <T extends ActionSupport> T generateNewInitializedController(Class<T> controllerClass) {
+        T controller = generateNewController(controllerClass);
+        if (controller instanceof TdarActionSupport) {
+            init((TdarActionSupport) controller);
+        }
+        getControllers().add((ActionSupport) controller);
+        return controller;
+    }
+
+    protected void init(TdarActionSupport controller) {
+        init(controller, getSessionUser());
+    }
+
+    protected void initAnonymousUserinit(TdarActionSupport controller) {
+        init(controller, null);
+    }
+
+    public SessionData getSessionData() {
+        if (sessionData == null) {
+            this.sessionData = new SessionData();
+        }
+        return sessionData;
     }
 
     protected <T> List<T> createListWithSingleNull() {
@@ -198,6 +345,14 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     protected Person getUser() {
         return getUser(getUserId());
+    }
+
+    protected Long getUserId() {
+        return TestConstants.USER_ID;
+    }
+
+    protected Person getBasicUser() {
+        return getUser(TestConstants.USER_ID);
     }
 
     protected Person getAdminUser() {
@@ -216,10 +371,6 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         sessionFactory.getCurrentSession().flush();
     }
 
-    protected Long getUserId() {
-        return TestConstants.USER_ID;
-    }
-
     protected Long getAdminUserId() {
         return TestConstants.ADMIN_USER_ID;
     }
@@ -232,12 +383,72 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return httpServletRequest;
     }
 
+    public HttpServletRequest getServletPostRequest() {
+        return httpServletPostRequest;
+    }
+
+    public HttpServletRequest getDefaultHttpServletRequest() {
+        return defaultHttpServletRequest;
+    }
+
     public void setHttpServletResponse(HttpServletResponse httpServletResponse) {
         this.httpServletResponse = httpServletResponse;
     }
 
     public HttpServletResponse getServletResponse() {
         return httpServletResponse;
+    }
+
+    public void addAuthorizedUser(Resource resource, Person person, GeneralPermissions permission) {
+        AuthorizedUser authorizedUser = new AuthorizedUser(person, permission);
+        ResourceCollection internalResourceCollection = resource.getInternalResourceCollection();
+        if (internalResourceCollection == null) {
+            internalResourceCollection = new ResourceCollection(CollectionType.INTERNAL);
+            internalResourceCollection.setOwner(person);
+            resource.getResourceCollections().add(internalResourceCollection);
+        }
+        genericService.saveOrUpdate(internalResourceCollection);
+        authorizedUser.setResourceCollection(internalResourceCollection);
+        entityService.save(authorizedUser);
+        internalResourceCollection.getAuthorizedUsers().add(authorizedUser);
+        entityService.saveOrUpdate(resource);
+    }
+
+    /**
+     * @param controllers
+     *            the controllers to set
+     */
+    public void setControllers(List<ActionSupport> controllers) {
+        this.controllers = controllers;
+    }
+
+    /**
+     * @return the controllers
+     */
+    public List<ActionSupport> getControllers() {
+        return controllers;
+    }
+
+    /**
+     * @param ignoreActionErrors
+     *            the ignoreActionErrors to set
+     */
+    public void setIgnoreActionErrors(boolean ignoreActionErrors) {
+        this.ignoreActionErrors = ignoreActionErrors;
+    }
+
+    /**
+     * @return the ignoreActionErrors
+     */
+    public boolean isIgnoreActionErrors() {
+        return ignoreActionErrors;
+    }
+
+    /**
+     * @return
+     */
+    public Person getSessionUser() {
+        return getUser();
     }
 
 }

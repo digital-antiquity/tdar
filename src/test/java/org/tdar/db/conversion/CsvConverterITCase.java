@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -20,16 +19,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.core.bean.AbstractDataIntegrationTestCase;
-import org.tdar.core.bean.resource.CodingSheet;
-import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.dataTable.DataTable;
-import org.tdar.core.bean.resource.dataTable.DataTableColumn;
-import org.tdar.core.bean.resource.dataTable.DataTableColumnEncodingType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.DataTableService;
+import org.tdar.core.service.resource.DataTableService;
 import org.tdar.db.conversion.converters.DatasetConverter;
+import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 
 public class CsvConverterITCase extends AbstractDataIntegrationTestCase {
 
@@ -48,37 +43,37 @@ public class CsvConverterITCase extends AbstractDataIntegrationTestCase {
     }
 
     /* this test is based on data that does not exist */
-//    @Test
-//    @Rollback
-//    public void testMappingIssueWithFloats() throws IOException {
-//        Dataset jswVersion = setupAndLoadResource("../coding sheet/mapping_test_jsw/sha-ceramics-with-feature-dates.csv", Dataset.class);
-//        CodingSheet part_ = setupAndLoadResource("../coding sheet/mapping_test_jsw/dai---part.csv", CodingSheet.class);
-//        CodingSheet size_ = setupAndLoadResource("../coding sheet/mapping_test_jsw/dai---size.csv", CodingSheet.class);
-//        CodingSheet tsg_ = setupAndLoadResource("../coding sheet/mapping_test_jsw/dai---tsg.csv", CodingSheet.class);
-//        CodingSheet tt_ = setupAndLoadResource("../coding sheet/mapping_test_jsw/dai--tt.csv", CodingSheet.class);
-//        DataTable table = jswVersion.getDataTables().iterator().next();
-//        DataTableColumn vpart = new DataTableColumn();
-//        vpart.setName("vpart");
-//        vpart.setDefaultCodingSheet(part_);
-//        vpart.setColumnEncodingType(DataTableColumnEncodingType.CODED_VALUE);
-//
-//        DataTableColumn size = new DataTableColumn();
-//        size.setName("size");
-//        size.setDefaultCodingSheet(size_);
-//        size.setColumnEncodingType(DataTableColumnEncodingType.CODED_VALUE);
-//
-//        DataTableColumn tsg = new DataTableColumn();
-//        tsg.setName("tsg");
-//        tsg.setDefaultCodingSheet(tsg_);
-//        tsg.setColumnEncodingType(DataTableColumnEncodingType.CODED_VALUE);
-//
-//        DataTableColumn tt = new DataTableColumn();
-//        tt.setName("tt");
-//        tt.setDefaultCodingSheet(tt_);
-//        tt.setColumnEncodingType(DataTableColumnEncodingType.CODED_VALUE);
-//
-//        mapColumnsToDataset(jswVersion, table, vpart, tsg, tt, size);
-//    }
+    // @Test
+    // @Rollback
+    // public void testMappingIssueWithFloats() throws IOException {
+    // Dataset jswVersion = setupAndLoadResource("../coding sheet/mapping_test_jsw/sha-ceramics-with-feature-dates.csv", Dataset.class);
+    // CodingSheet part_ = setupAndLoadResource("../coding sheet/mapping_test_jsw/dai---part.csv", CodingSheet.class);
+    // CodingSheet size_ = setupAndLoadResource("../coding sheet/mapping_test_jsw/dai---size.csv", CodingSheet.class);
+    // CodingSheet tsg_ = setupAndLoadResource("../coding sheet/mapping_test_jsw/dai---tsg.csv", CodingSheet.class);
+    // CodingSheet tt_ = setupAndLoadResource("../coding sheet/mapping_test_jsw/dai--tt.csv", CodingSheet.class);
+    // DataTable table = jswVersion.getDataTables().iterator().next();
+    // DataTableColumn vpart = new DataTableColumn();
+    // vpart.setName("vpart");
+    // vpart.setDefaultCodingSheet(part_);
+    // vpart.setColumnEncodingType(DataTableColumnEncodingType.CODED_VALUE);
+    //
+    // DataTableColumn size = new DataTableColumn();
+    // size.setName("size");
+    // size.setDefaultCodingSheet(size_);
+    // size.setColumnEncodingType(DataTableColumnEncodingType.CODED_VALUE);
+    //
+    // DataTableColumn tsg = new DataTableColumn();
+    // tsg.setName("tsg");
+    // tsg.setDefaultCodingSheet(tsg_);
+    // tsg.setColumnEncodingType(DataTableColumnEncodingType.CODED_VALUE);
+    //
+    // DataTableColumn tt = new DataTableColumn();
+    // tt.setName("tt");
+    // tt.setDefaultCodingSheet(tt_);
+    // tt.setColumnEncodingType(DataTableColumnEncodingType.CODED_VALUE);
+    //
+    // mapColumnsToDataset(jswVersion, table, vpart, tsg, tt, size);
+    // }
 
     @Test
     @Rollback(true)

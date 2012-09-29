@@ -40,12 +40,14 @@ public class CompleteImageITCase extends AbstractAdminAuthenticatedWebTestCase {
         docMultiValMap.put("approvedSiteTypeKeywordIds", Arrays.asList(new String[] { "273", "312" }));
         docMultiValMap.put("materialKeywordIds", Arrays.asList(new String[] { "15", "12", "5" }));
         docMultiValMap.put("approvedCultureKeywordIds", Arrays.asList(new String[] { "12", "15", "26" }));
-        docValMap.put("fullUsers[0].lastName", "Elliott");
-        docValMap.put("fullUsers[0].firstName", "Michelle");
-        docValMap.put("fullUserIds[0]", "121");
-        docValMap.put("readUserIds[0]", "5349");
-        docValMap.put("readOnlyUsers[0].lastName", "Watts");
-        docValMap.put("readOnlyUsers[0].firstName", "Joshua");
+        docValMap.put("authorizedUsers[0].user.id", "121");
+        docValMap.put("authorizedUsers[1].user.id", "5349");
+        docValMap.put("authorizedUsers[0].generalPermission", "MODIFY_METADATA");
+        docValMap.put("authorizedUsers[1].generalPermission", "VIEW_ALL");
+        docValMap.put("authorizedUsers[0].user.firstName", "Michelle");
+        docValMap.put("authorizedUsers[0].user.lastName", "Elliott");
+        docValMap.put("authorizedUsers[1].user.firstName", "Joshua");
+        docValMap.put("authorizedUsers[1].user.lastName", "Watts");
 
         docValMap.put("authorshipProxies[0].person.firstName", "Adam");
         docValMap.put("authorshipProxies[0].person.lastName", "Brin");
@@ -67,10 +69,10 @@ public class CompleteImageITCase extends AbstractAdminAuthenticatedWebTestCase {
         docValMap.put("creditProxies[0].institution.name", "Othr Institution");
         docValMap.put("creditProxies[0].institutionRole", "SPONSOR");
 
-        docValMap.put("sourceCollections[0]", "ASU Museum Collection1");
-        docValMap.put("sourceCollections[1]", "test Museum Collection1");
-        docValMap.put("relatedComparativeCitations[0]", "ASU Museum Collection2");
-        docValMap.put("relatedComparativeCitations[1]", "test Museum Collection2");
+        docValMap.put("sourceCollections[0].text", "ASU Museum Collection1");
+        docValMap.put("sourceCollections[1].text", "test Museum Collection1");
+        docValMap.put("relatedComparativeCollections[0].text", "ASU Museum Collection2");
+        docValMap.put("relatedComparativeCollections[1].text", "test Museum Collection2");
         docValMap.put("siteNameKeywords[0]", "sandy");
         docValMap.put("uncontrolledSiteTypeKeywords[0]", "uncontrolled");
         docValMap.put("otherKeywords[0]", "other kwd");
@@ -87,7 +89,6 @@ public class CompleteImageITCase extends AbstractAdminAuthenticatedWebTestCase {
         docValMap.put("coverageDates[1].startDate", "1200");
         docValMap.put("coverageDates[1].endDate", "1000");
         docValMap.put("coverageDates[1].dateType", "RADIOCARBON_DATE");
-//        docValMap.put("confidential", "true");
 
         docMultiValMapLab.put("investigationTypeIds",
                 Arrays.asList(new String[] { "Archaeological Overview", "Architectural Survey", "Collections Research", "Data Recovery / Excavation" }));
@@ -132,7 +133,7 @@ public class CompleteImageITCase extends AbstractAdminAuthenticatedWebTestCase {
             } else if (key.equals("confidential")) {
                 assertTextPresent("confidential");
             } else if (!key.equals(PROJECT_ID_FIELDNAME) && !key.contains("Ids") && !key.startsWith("individualInstitutions") && !key.contains("Email")
-                    && !key.contains(".ids") && !key.contains(".email") && !key.contains(".id") && !key.contains(".dateType")
+                    && !key.contains(".ids") && !key.contains(".email") && !key.contains(".id") && !key.contains(".dateType") && !key.contains("generalPermission") 
                     && !key.contains(".type") && !key.contains("Role") && !key.contains("person.institution.name") && !key.contains("person.id")) {
                 assertTextPresentInPage(docValMap.get(key), false);
             }
@@ -156,7 +157,8 @@ public class CompleteImageITCase extends AbstractAdminAuthenticatedWebTestCase {
             if (key.contains("Ids") || key.contains(PROJECT_ID_FIELDNAME) || key.contains("upload") || key.contains(".id") || val.toUpperCase().equals(val))
                 continue;
 
-            if (key.startsWith("individual") || key.startsWith("sourceC") || key.startsWith("relatedC") || key.startsWith("institution")) {
+            if (key.startsWith("individual") || key.startsWith("sourceC") || key.startsWith("relatedC") || key.startsWith("institution") || 
+                    key.contains("authorized")) {
                 unorderedCheck.add(val);
                 continue;
             }

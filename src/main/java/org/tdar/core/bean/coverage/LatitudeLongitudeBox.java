@@ -15,7 +15,7 @@ import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.exception.TdarRuntimeException;
-import org.tdar.index.LatLongClassBridge;
+import org.tdar.index.bridge.LatLongClassBridge;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -243,4 +243,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         return (getMinObfuscatedLongitude() < -100f && getMaxObfuscatedLongitude() > 100f);
     }
 
+    public boolean isValidForController() {
+        return true;
+    }
 }

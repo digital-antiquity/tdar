@@ -16,9 +16,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
+import org.tdar.core.bean.SupportsResource;
 import org.tdar.core.bean.resource.dataTable.DataTableColumn;
 
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
@@ -26,7 +29,7 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 /**
  * $Id$
  * <p>
- * A coding sheet contains a set of CodingRules and is associated to a domain context variable in the master ontology.  
+ * A coding sheet contains a set of CodingRules and is associated to a domain context variable in the master ontology.
  * 
  * 
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
@@ -36,26 +39,27 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 @Entity
 @Indexed
 @Table(name = "coding_sheet")
-public class CodingSheet extends InformationResource {
+@XmlRootElement(name = "codingSheet")
+public class CodingSheet extends InformationResource implements SupportsResource {
 
     private static final long serialVersionUID = 7782805674943954511L;
 
     @ManyToOne
-    @JoinColumn(name = "category_variable_id") 
+    @JoinColumn(name = "category_variable_id")
     private CategoryVariable categoryVariable;
 
-    @OneToMany(cascade=CascadeType.ALL, mappedBy="codingSheet")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "codingSheet")
     @IndexedEmbedded
     private Set<CodingRule> codingRules = new LinkedHashSet<CodingRule>();
-    
-    @OneToMany(mappedBy="defaultCodingSheet")
+
+    @OneToMany(mappedBy = "defaultCodingSheet")
     @XStreamOmitField
     private Set<DataTableColumn> associatedDataTableColumns = new HashSet<DataTableColumn>();
-    
+
     public CodingSheet() {
-    	setResourceType(ResourceType.CODING_SHEET);
+        setResourceType(ResourceType.CODING_SHEET);
     }
-    
+
     public Set<CodingRule> getCodingRules() {
         return codingRules;
     }
@@ -64,6 +68,7 @@ public class CodingSheet extends InformationResource {
         this.codingRules = codingRules;
     }
 
+    @XmlIDREF
     public CategoryVariable getCategoryVariable() {
         return categoryVariable;
     }
@@ -71,7 +76,7 @@ public class CodingSheet extends InformationResource {
     public void setCategoryVariable(CategoryVariable domainContextVariable) {
         this.categoryVariable = domainContextVariable;
     }
-    
+
     @Transient
     public SortedSet<CodingRule> getSortedCodingRules() {
         return new TreeSet<CodingRule>(getCodingRules());
@@ -83,7 +88,7 @@ public class CodingSheet extends InformationResource {
         sortedCodingRules.addAll(getCodingRules());
         return sortedCodingRules;
     }
-    
+
     @Transient
     public Map<String, String> toCodingRulesMap() {
         Map<String, String> map = new HashMap<String, String>();
@@ -100,5 +105,5 @@ public class CodingSheet extends InformationResource {
     public void setAssociatedDataTableColumns(Set<DataTableColumn> associatedDataTableColumns) {
         this.associatedDataTableColumns = associatedDataTableColumns;
     }
-    
+
 }

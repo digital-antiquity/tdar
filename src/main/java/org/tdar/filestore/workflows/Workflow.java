@@ -28,15 +28,11 @@ import org.tdar.filestore.tasks.Task;
  */
 public interface Workflow {
 
-    public boolean run() throws Exception;
-
-    public WorkflowContext getWorkflowContext();
-
-    public void setWorkflowContext(WorkflowContext workflowContext);
+    public boolean run(WorkflowContext context) throws Exception;
 
     public Set<String> getValidExtensions();
 
-    public void addTask(Task task, WorkflowPhase phase);
+    public void addTask(Class<? extends Task> task, WorkflowPhase phase);
 
     public boolean canProcess(String ext);
 
@@ -49,8 +45,7 @@ public interface Workflow {
     public Set<String> getValidExtensionsForResourceType(ResourceType type);
 
     public abstract static class BaseWorkflow implements Workflow {
-        private WorkflowContext workflowContext;
-        private Map<WorkflowPhase, List<Task>> workflowPhaseToTasks = new HashMap<WorkflowPhase, List<Task>>();
+        private Map<WorkflowPhase, List<Class<? extends Task>>> workflowPhaseToTasks = new HashMap<WorkflowPhase, List<Class<? extends Task>>>();
         // this appears to be a folded version of resourceTypeToExtensions.values() ?
         private Set<String> extensions = new HashSet<String>();
         private Map<ResourceType, Set<String>> resourceTypeToExtensions = new HashMap<ResourceType, Set<String>>();
@@ -58,27 +53,28 @@ public interface Workflow {
         private final Logger logger = LoggerFactory.getLogger(getClass());
         
         public BaseWorkflow() {
-            addTask(new LoggingTask(), WorkflowPhase.CLEANUP);
+            addTask(LoggingTask.class, WorkflowPhase.CLEANUP);
         }
 
         public boolean isEnabled() {
             return true;
         }
 
-        public boolean run() throws Exception {
+        public boolean run(WorkflowContext workflowContext) throws Exception {
             boolean successful = true;
             // this may be more complex than it needs to be, but it may be useful in debugging later; or organizationally.
             // by default tasks are processed in the order they are added within the phase that they're part of.
             for (WorkflowPhase phase : WorkflowPhase.values()) {
-                List<Task> phaseTasks = workflowPhaseToTasks.get(phase);
+                List<Class<? extends Task>> phaseTasks = workflowPhaseToTasks.get(phase);
                 if (CollectionUtils.isEmpty(phaseTasks)) {
                     continue;
                 }
-                for (Task task : phaseTasks) {
+                for (Class<? extends Task> taskClass : phaseTasks) {
+                    Task task = taskClass.newInstance();
                     logger.info("{} - {}", phase.name(), task.getName());
                     StringBuilder message = new StringBuilder();
                     try {
-                        task.setWorkflowContext(getWorkflowContext());
+                        task.setWorkflowContext(workflowContext);
                         task.prepare();
                         task.run();
                     } catch (Throwable e) {
@@ -94,21 +90,13 @@ public interface Workflow {
             return successful;
         }
 
-        public WorkflowContext getWorkflowContext() {
-            return workflowContext;
-        }
-
-        public void addTask(Task task, WorkflowPhase phase) {
-            List<Task> taskList = workflowPhaseToTasks.get(phase);
+        public void addTask(Class<? extends Task> task, WorkflowPhase phase) {
+            List<Class<? extends Task>> taskList = workflowPhaseToTasks.get(phase);
             if (taskList == null) {
-                taskList = new ArrayList<Task>();
+                taskList = new ArrayList<Class<? extends Task>>();
                 workflowPhaseToTasks.put(phase, taskList);
             }
             taskList.add(task);
-        }
-
-        public void setWorkflowContext(WorkflowContext workflowContext) {
-            this.workflowContext = workflowContext;
         }
 
         public Set<String> getValidExtensions() {

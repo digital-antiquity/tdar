@@ -7,6 +7,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlIDREF;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.search.annotations.Field;
@@ -52,6 +53,8 @@ public class ResourceNote extends Persistable.Base implements HasResource<Resour
         this.note = note;
     }
 
+    @XmlIDREF
+    @XmlAttribute(name = "resourceId")
     public Resource getResource() {
         return resource;
     }
@@ -93,4 +96,8 @@ public class ResourceNote extends Persistable.Base implements HasResource<Resour
         return false;
     }
 
+    @Override
+    public boolean isValidForController() {
+        return true;
+    }
 }

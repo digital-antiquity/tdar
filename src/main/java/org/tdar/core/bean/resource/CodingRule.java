@@ -5,8 +5,8 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlTransient;
 
-import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.ContainedIn;
 import org.hibernate.search.annotations.Field;
 import org.tdar.core.bean.Persistable;
@@ -25,6 +25,15 @@ public class CodingRule extends Persistable.Base
 
     private static final long serialVersionUID = -577936920767925065L;
 
+    public CodingRule() {
+    }
+
+    public CodingRule(String code, String term, String description) {
+        setCode(code);
+        setTerm(term);
+        setDescription(description);
+    }
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "coding_sheet_id")
     @ContainedIn
@@ -38,7 +47,7 @@ public class CodingRule extends Persistable.Base
     @Field
     private String term;
 
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Column(length = 2000)
     private String description;
 
     public String getCode() {
@@ -80,6 +89,7 @@ public class CodingRule extends Persistable.Base
         this.description = description.trim();
     }
 
+    @XmlTransient
     public CodingSheet getCodingSheet() {
         return codingSheet;
     }

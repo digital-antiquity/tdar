@@ -10,16 +10,16 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * $Id$
  * 
- *
+ * 
  * @author Matt Cordial
  * @version $Rev$
  */
 @Entity
-@Table(name="investigation_type")
+@Table(name = "investigation_type")
 @XStreamAlias("investigationType")
 @Indexed(index = "Keyword")
-public class InvestigationType extends ControlledKeyword.Base {
+public class InvestigationType extends ControlledKeyword.Base<InvestigationType> {
 
-	private static final long serialVersionUID = 2557655317256194003L;
+    private static final long serialVersionUID = 2557655317256194003L;
 
 }

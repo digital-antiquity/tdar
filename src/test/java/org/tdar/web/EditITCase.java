@@ -8,6 +8,7 @@ package org.tdar.web;
 
 import org.junit.Test;
 import org.tdar.TestConstants;
+import org.tdar.URLConstants;
 
 public class EditITCase extends AbstractAdminAuthenticatedWebTestCase {
     
@@ -36,7 +37,7 @@ public class EditITCase extends AbstractAdminAuthenticatedWebTestCase {
 	public void testOntologyView() {
 		super.testOntologyView();
 		clickLinkWithText("edit");
-		assertTextPresentInPage("TAG Fauna Ontology - Taxon");
+        assertTextPresentInPage("Fauna Pathologies - Default Ontology Draft");
 		assertButtonPresentWithText("Save");
 	}
 
@@ -58,6 +59,7 @@ public class EditITCase extends AbstractAdminAuthenticatedWebTestCase {
 	public void testDocumentView() {
 		super.testDocumentView();
 		clickLinkWithText("edit");
+		logger.info(getPageText());
 		assertButtonPresentWithText("Save");
 	}
 
@@ -67,8 +69,8 @@ public class EditITCase extends AbstractAdminAuthenticatedWebTestCase {
 		clickLinkWithText("edit");
 		assertButtonPresentWithText("Save");
 		super.testDatasetView();  //back to view page, then to citations
-        clickLinkWithText("manage citations");
-        assertTextPresentInPage("Managing citation information for");
+//        clickLinkWithText("manage citations");
+//        assertTextPresentInPage("Managing citation information for");
         assertTextNotPresent("internal error");
         super.testDatasetView();  //back to view page, then to column mapping
         clickLinkWithText("map columns");
@@ -82,7 +84,15 @@ public class EditITCase extends AbstractAdminAuthenticatedWebTestCase {
 	//an malformed file should take you back to save.action and contain an action error
 	@Test
 	public void testMalformedAttachmentDisplaysError() {
-	    super.testDatasetView();
+	    //create a new dataset resource w/o a file
+	    gotoPage("/dataset/add");
+        setInput("projectId", "-1");
+        setInput("dataset.title", "testMalformedAttachmentDisplaysError");
+        setInput("dataset.dateCreated", "2002");
+        setInput("dataset.description", "trying to save this with a malformed csv should return action errors ");
+        submitForm();
+        
+        //now go to the edit page and try to upload a malformed file
         clickLinkWithText("edit");
         setInput("uploadedFiles", MALFORMED_DATASET_FILE);
         submitFormWithoutErrorCheck("Save");
@@ -92,17 +102,5 @@ public class EditITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertTextPresentInCode("action-errors");
 	}
 	
-//	@Test
-	public void testMalformedAttachmentDoesntSave() {
-	    String resourceTitle  = "malformed upload test";
-	    gotoPage("/dataset/add");
-	    setInput("dataset.title", "malformed upload test");
-	    setInput("dataset.description", "desc");
-        setInput("uploadedFiles", MALFORMED_DATASET_FILE);
-        submitFormWithoutErrorCheck("Save"); 
-        //we should have been booted back to edit page... go to the resource list anyway
-        gotoPage("/project/list");
-	    assertTextNotPresent(resourceTitle);
-	}
 
 }

@@ -3,7 +3,7 @@
 require Mail::Send;
 my $hostname = `cat /etc/hostname`;
 $hostname =~ s/[\r\n]//ig;
-my $svnversion = `svnversion`;
+my $svnversion = `hg id -n`;
 $svnversion =~ s/[\r\n]//ig;
 print "Deploying Version: " . $svnversion ."\r\n";
 

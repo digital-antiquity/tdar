@@ -5,14 +5,17 @@ import java.util.Collection;
 import org.apache.log4j.Logger;
 import org.hibernate.CacheMode;
 import org.hibernate.FlushMode;
+import org.hibernate.ObjectNotFoundException;
 import org.hibernate.ScrollableResults;
-import org.hibernate.SessionFactory;
 import org.hibernate.search.FullTextSession;
 import org.hibernate.search.Search;
 import org.hibernate.search.SearchFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.Indexable;
+import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.keyword.CultureKeyword;
@@ -26,14 +29,18 @@ import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.HibernateSearchDao;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
 @Service
 @Transactional(readOnly = true)
 public class SearchIndexService {
 
     private static final Logger log = Logger.getLogger(SearchIndexService.class);
+
     @Autowired
-    private SessionFactory sessionFactory;
+    private HibernateSearchDao hibernateSearchDao;
+
     @Autowired
     private GenericService genericService;
 
@@ -44,69 +51,94 @@ public class SearchIndexService {
     private static final int INDEXER_THREADS_TO_LOAD_OBJECTS = 5;
     private Class<?>[] defaultClassesToIndex = { Resource.class, Person.class, Institution.class, GeographicKeyword.class,
             CultureKeyword.class, InvestigationType.class, MaterialKeyword.class, SiteNameKeyword.class, SiteTypeKeyword.class, TemporalKeyword.class,
-            OtherKeyword.class,
-            ResourceAnnotationKey.class };
+            OtherKeyword.class, ResourceAnnotationKey.class, ResourceCollection.class };
 
     public void indexAll(AsyncUpdateReceiver updateReceiver) {
         indexAll(updateReceiver, defaultClassesToIndex);
     }
 
+    @SuppressWarnings("deprecation")
     public void indexAll(AsyncUpdateReceiver updateReceiver, Class<?>[] classesToIndex) {
         if (updateReceiver == null) {
             updateReceiver = getDefaultUpdateReceiver();
         }
+        try {
+            genericService.synchronize();
+            updateReceiver.setPercentComplete(0);
 
+            FullTextSession fullTextSession = getFullTextSession();
+            FlushMode previousFlushMode = fullTextSession.getFlushMode();
+            fullTextSession.setFlushMode(FlushMode.MANUAL);
+            fullTextSession.setCacheMode(CacheMode.IGNORE);
+            SearchFactory sf = fullTextSession.getSearchFactory();
+            float percent = 0f;
+            float maxPer = (1f / (float) classesToIndex.length) * 100f;
+            for (Class<?> toIndex : classesToIndex) {
+                fullTextSession.purgeAll(toIndex);
+                sf.optimize(toIndex);
+                Number total = genericService.count(toIndex);
+                ScrollableResults scrollableResults = genericService.findAllScrollable(toIndex);
+                updateReceiver.setStatus(total + " " + toIndex.getSimpleName() + "(s) to be indexed");
+                int divisor = getDivisor(total);
+                float currentProgress = 0f;
+                int numProcessed = 0;
+                String MIDDLE = " of " + total.intValue() + " " + toIndex.getSimpleName() + "(s) ";
+
+                while (scrollableResults.next()) {
+                    Object item = scrollableResults.get(0);
+                    currentProgress = (float) numProcessed / total.floatValue();
+                    fullTextSession.index(item);
+                    numProcessed++;
+                    float totalProgress = (currentProgress * maxPer + percent);
+
+                    if (numProcessed % divisor == 0) {
+                        updateReceiver.setStatus("indexed " + numProcessed + MIDDLE + totalProgress + "%");
+                        updateReceiver.setPercentComplete(totalProgress / 100f);
+                    }
+                    if ((numProcessed % FLUSH_EVERY) == 0) {
+                        updateReceiver.setStatus("indexed " + numProcessed + MIDDLE + totalProgress + "% ... (flushing)");
+                        log.trace("flushing search index");
+                        fullTextSession.flushToIndexes();
+                        fullTextSession.clear();
+                        log.trace("flushed search index");
+                    }
+                }
+                scrollableResults.close();
+                fullTextSession.flushToIndexes();
+                fullTextSession.clear();
+                percent += maxPer;
+                updateReceiver.setStatus("finished indexing all " + toIndex.getSimpleName() + "(s).");
+            }
+
+            fullTextSession.flushToIndexes();
+            fullTextSession.clear();
+            updateReceiver.setStatus("index all complete");
+            updateReceiver.setPercentComplete(100f);
+            fullTextSession.setFlushMode(previousFlushMode);
+        } catch (ObjectNotFoundException ex) {
+            updateReceiver.addError(ex);
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    public void index(Indexable... obj) {
+        log.debug("manual indexing ... " + obj.length);
         genericService.synchronize();
-        updateReceiver.setPercentComplete(0);
 
         FullTextSession fullTextSession = getFullTextSession();
         FlushMode previousFlushMode = fullTextSession.getFlushMode();
         fullTextSession.setFlushMode(FlushMode.MANUAL);
         fullTextSession.setCacheMode(CacheMode.IGNORE);
-        SearchFactory sf = fullTextSession.getSearchFactory();
-        float percent = 0f;
-        float maxPer = (1f / (float) classesToIndex.length) * 100f;
-        for (Class<?> toIndex : classesToIndex) {
-            fullTextSession.purgeAll(toIndex);
-            sf.optimize(toIndex);
-            Number total = genericService.count(toIndex);
-            ScrollableResults scrollableResults = genericService.findAllScrollable(toIndex);
-            updateReceiver.setStatus(total + " " + toIndex.getSimpleName() + "(s) to be indexed");
-            int divisor = getDivisor(total);
-            float currentProgress = 0f;
-            int numProcessed = 0;
-            String MIDDLE = " of " + total.intValue() + " " + toIndex.getSimpleName() + "(s) ";
-
-            while (scrollableResults.next()) {
-                Object item = scrollableResults.get(0);
-                currentProgress = (float) numProcessed / total.floatValue();
-                fullTextSession.index(item);
-                numProcessed++;
-                float totalProgress = (currentProgress * maxPer + percent);
-
-                if (numProcessed % divisor == 0) {
-                    updateReceiver.setStatus("indexed " + numProcessed + MIDDLE + totalProgress + "%");
-                    updateReceiver.setPercentComplete(totalProgress / 100f);
-                }
-                if ((numProcessed % FLUSH_EVERY) == 0) {
-                    updateReceiver.setStatus("indexed " + numProcessed + MIDDLE + totalProgress + "% ... (flushing)");
-                    log.trace("flushing search index");
-                    fullTextSession.flushToIndexes();
-                    fullTextSession.clear();
-                    log.trace("flushed search index");
-                }
-            }
-            scrollableResults.close();
-            fullTextSession.flushToIndexes();
-            fullTextSession.clear();
-            percent += maxPer;
-            updateReceiver.setStatus("finished indexing all " + toIndex.getSimpleName() + "(s).");
-        }
-
         fullTextSession.flushToIndexes();
-        fullTextSession.clear();
-        updateReceiver.setStatus("index all complete");
-        updateReceiver.setPercentComplete(100f);
+        for (Indexable obj_ : obj)
+            if (obj_ instanceof Persistable) {
+                fullTextSession.purge(obj_.getClass(), ((Persistable) obj_).getId());
+                fullTextSession.index(obj_);
+            } else {
+                throw new TdarRecoverableRuntimeException("object must subclass persistable");
+            }
+        fullTextSession.flushToIndexes();
+        // fullTextSession.clear();
         fullTextSession.setFlushMode(previousFlushMode);
     }
 
@@ -127,21 +159,22 @@ public class SearchIndexService {
     }
 
     public <C> void indexCollection(Collection<C> indexable) {
+        log.debug("manual indexing ... " + indexable.size());
         if (indexable == null)
             return;
         FullTextSession fullTextSession = getFullTextSession();
-        int numProcessed = 0;
         for (C toIndex : indexable) {
             fullTextSession.index(toIndex);
-            numProcessed++;
-            if ((numProcessed % FLUSH_EVERY) == 0) {
-                fullTextSession.flushToIndexes();
-                fullTextSession.clear();
-                log.debug("flusing search index");
-            }
         }
         fullTextSession.flushToIndexes();
-        fullTextSession.clear();
+    }
+
+    /*
+     * should only be used in tests...
+     */
+    @Deprecated
+    public void flushToIndexes() {
+        getFullTextSession().flushToIndexes();
     }
 
     public void indexAll() {
@@ -169,12 +202,8 @@ public class SearchIndexService {
         }
     }
 
-    public void setSessionFactory(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
-
     private FullTextSession getFullTextSession() {
-        return Search.getFullTextSession(sessionFactory.getCurrentSession());
+        return Search.getFullTextSession(hibernateSearchDao.getFullTextSession());
     }
 
     public void purgeAll() {
@@ -189,8 +218,8 @@ public class SearchIndexService {
     }
 
     /**
- * 
- */
+     * 
+     */
     public void optimizeAll() {
         FullTextSession fullTextSession = getFullTextSession();
         SearchFactory sf = fullTextSession.getSearchFactory();
@@ -200,4 +229,8 @@ public class SearchIndexService {
         }
     }
 
+    @Autowired
+    public void setGenericService(GenericService genericService) {
+        this.genericService = genericService;
+    }
 }

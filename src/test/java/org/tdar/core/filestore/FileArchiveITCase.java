@@ -26,7 +26,7 @@ import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.SensoryData;
-import org.tdar.core.service.MessageService;
+import org.tdar.core.service.fileProcessing.MessageService;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.PairtreeFilestore;
 import org.tdar.filestore.workflows.FileArchiveWorkflow;

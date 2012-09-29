@@ -16,17 +16,24 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Index;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.annotations.Store;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.configuration.JSONTransient;
+import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.resource.PartitionedResourceResult;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 /**
- * s * $Id$
+ * $Id$
  * 
  * @author <a href='Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
@@ -36,7 +43,8 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 @Table(name = "project")
 @Indexed
 @XStreamAlias("project")
-public class Project extends Resource implements Comparable<Project> {
+@XmlRootElement(name = "project")
+public class Project extends Resource {
 
     private static final long serialVersionUID = -3339534452963234622L;
 
@@ -48,7 +56,7 @@ public class Project extends Resource implements Comparable<Project> {
             // resource properties
             "title", "description",
             "cultureKeywords", "materialKeywords", "geographicKeywords", "siteNameKeywords",
-            "siteTypeKeywords", "temporalKeywords", "calendarDate", "radiocarbonDate",
+            "siteTypeKeywords", "temporalKeywords", "coverageDates",
             "firstLatitudeLongitudeBox", "otherKeywords", "investigationTypes", "resourceType",
 
             // derived properties
@@ -56,7 +64,7 @@ public class Project extends Resource implements Comparable<Project> {
             "uncontrolledCultureKeywords", "uncontrolledSiteTypeKeywords",
 
             // CoverageDate properties
-            "startDate", "endDate",
+            "dateType","startDate", "endDate",
 
             // latlongbox properties
             "minObfuscatedLongitude", "maxObfuscatedLongitude",
@@ -67,6 +75,11 @@ public class Project extends Resource implements Comparable<Project> {
         private static final long serialVersionUID = -8849690416412685818L;
         // FIXME: get rid of this if not needed.
         private transient ThreadLocal<Person> personThreadLocal = new ThreadLocal<Person>();
+
+        @Override
+        public String getDescription() {
+            return "No description";
+        }
 
         @Override
         public Person getSubmitter() {
@@ -100,34 +113,42 @@ public class Project extends Resource implements Comparable<Project> {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "project", fetch = FetchType.LAZY)
     @IndexedEmbedded
     @XStreamOmitField
+    @JSONTransient
+    @XmlTransient
     private Set<InformationResource> informationResources = new HashSet<InformationResource>();
 
     // XXX: currently used to more easily split up the generic InformationResources into categories.
     @Transient
     @XStreamOmitField
+    @JSONTransient
     private List<Document> documents;
     @Transient
     @XStreamOmitField
+    @JSONTransient
     private List<Dataset> datasets;
     @Transient
     @XStreamOmitField
+    @JSONTransient
     private List<CodingSheet> codingSheets;
     @Transient
+    @JSONTransient
     @XStreamOmitField
     private List<Ontology> ontologies;
     @Transient
+    @JSONTransient
     @XStreamOmitField
     private List<Image> images;
-    
+
     @Transient
+    @JSONTransient
     @XStreamOmitField
     private List<SensoryData> sensoryDataDocuments;
-    
 
     public Project() {
         setResourceType(ResourceType.PROJECT);
     }
 
+    @JSONTransient
     private synchronized void partitionInformationResources() {
         PartitionedResourceResult p = new PartitionedResourceResult(getInformationResources());
         codingSheets = p.getResourcesOfType(CodingSheet.class);
@@ -136,7 +157,6 @@ public class Project extends Resource implements Comparable<Project> {
         ontologies = p.getResourcesOfType(Ontology.class);
         images = p.getResourcesOfType(Image.class);
         sensoryDataDocuments = p.getResourcesOfType(SensoryData.class);
-        
 
         Collections.sort(codingSheets);
         Collections.sort(datasets);
@@ -181,14 +201,13 @@ public class Project extends Resource implements Comparable<Project> {
         }
         return images;
     }
-    
+
     public synchronized List<SensoryData> getSensoryDataDocuments() {
         if (sensoryDataDocuments == null) {
             partitionInformationResources();
         }
         return sensoryDataDocuments;
     }
-    
 
     public Set<InformationResource> getInformationResources() {
         return informationResources;
@@ -217,15 +236,16 @@ public class Project extends Resource implements Comparable<Project> {
     }
 
     @Override
-    public int compareTo(Project project) {
-        return getTitle().compareTo(project.getTitle());
-    }
-
-    @Override
     protected String[] getIncludedJsonProperties() {
         List<String> list = new ArrayList<String>(Arrays.asList(super.getIncludedJsonProperties()));
         list.addAll(Arrays.asList(JSON_PROPERTIES));
         return list.toArray(new String[list.size()]);
+    }
+
+    @Transient
+    @Field(name = QueryFieldNames.PROJECT_TITLE_SORT, index = Index.UN_TOKENIZED, store = Store.YES)
+    public String getProjectTitle() {
+        return getTitleSort();
     }
 
 }

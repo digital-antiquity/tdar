@@ -12,12 +12,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.junit.Assert;
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.PersonalFilestoreTicket;
-import org.tdar.core.bean.entity.AuthenticationToken;
+import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
@@ -27,13 +32,19 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.service.ResourceService;
+import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.PersonalFilestoreFile;
+import org.tdar.search.query.SortOption;
+import org.tdar.struts.action.resource.AbstractInformationResourceController;
+import org.tdar.struts.action.resource.CodingSheetController;
+import org.tdar.struts.action.resource.DatasetController;
+import org.tdar.struts.action.resource.DocumentController;
+import org.tdar.struts.action.resource.ImageController;
+import org.tdar.struts.action.resource.OntologyController;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.Pair;
-import org.tdar.web.SessionData;
 
-import com.opensymphony.xwork2.ActionSupport;
+import com.opensymphony.xwork2.Preparable;
 
 public abstract class AbstractControllerITCase extends AbstractIntegrationTestCase {
 
@@ -46,17 +57,8 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
 
     protected abstract TdarActionSupport getController();
 
-    private SessionData sessionData;
-
     @Autowired
-    private ResourceService resourceService;
-
-    public SessionData getSessionData() {
-        if (sessionData == null) {
-            this.sessionData = new SessionData();
-        }
-        return sessionData;
-    }
+    protected ResourceService resourceService;
 
     public void bookmarkResource(Resource r) {
         bookmarkResource(r, false);
@@ -85,7 +87,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         int size = r.getBookmarks().size();
         logger.info("removing bookmark " + r.getTitle() + " (" + r.getId() + ")");
         bookmarkController.setResourceId(r.getId());
-        logger.info(r.getBookmarks());
+        logger.info("{}", r.getBookmarks());
         if (ajax) {
             bookmarkController.removeBookmarkAjaxAction();
         } else {
@@ -96,54 +98,39 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         assertTrue(r.getBookmarks().isEmpty() || r.getBookmarks().size() == (size - 1));
     }
 
-    /*
-     * FIXME: figure out if we can load the resource within a new transaction.
-     * otherwise since we're running within the same transaction Hibernate's first-level cache
-     * will return the same resource that we saved initially as opposed to loading it again
-     * within a new transaction for a new web request.
-     */
-    // @Transactional(propagation=Propagation.REQUIRES_NEW, isolation=Isolation.SERIALIZABLE)
-    protected void loadResourceFromId(AbstractResourceController<?> controller, Long id) {
-        controller.setResourceId(id);
+    public ResourceCollection generateResourceCollection(String name, String description, CollectionType type, boolean visible, List<AuthorizedUser> users, List<? extends Resource> resources, Long parentId)
+            throws InstantiationException, IllegalAccessException {
+        CollectionController controller = generateNewInitializedController(CollectionController.class);
         controller.prepare();
-        controller.loadBasicMetadata();
-        controller.loadCustomMetadata();
-        if (controller instanceof AbstractInformationResourceController) {
-            ((AbstractInformationResourceController<?>) controller).loadInformationResourceProperties();
+//        controller.setSessionData(getSessionData());
+        logger.info("{}" , getUser());
+        assertEquals(getUser(),controller.getAuthenticatedUser());
+        ResourceCollection resourceCollection = controller.getResourceCollection();
+        resourceCollection.setName(name);
+        resourceCollection.setParent(genericService.find(ResourceCollection.class,parentId));
+        controller.setParentId(parentId);
+        resourceCollection.setType(type);
+        resourceCollection.setVisible(visible);
+        resourceCollection.setDescription(description);
+        if (resources != null) {
+            controller.getResources().addAll(resources);
         }
-    }
 
-    protected void init(TdarActionSupport controller) {
-        init(controller, getUser());
-    }
-
-    protected void init(TdarActionSupport controller, Person user) {
-        if (controller != null) {
-            controller.setSessionData(getSessionData());
-
-            if (getUser() != null) {
-                AuthenticationToken token = AuthenticationToken.create(user);
-                controller.getSessionData().setAuthenticationToken(token);
-            } else {
-                controller.getSessionData().setAuthenticationToken(new AuthenticationToken());
-            }
+        if (users != null) {
+            controller.setAuthorizedUsers(users);
         }
-    }
-
-    protected <T extends ActionSupport> T generateNewInitializedController(Class<T> controllerClass) {
-        T controller = generateNewController(controllerClass);
-        if (controller instanceof TdarActionSupport) {
-            init((TdarActionSupport) controller);
-        }
-        return controller;
+        resourceCollection.setSortBy(SortOption.RESOURCE_TYPE);
+        String save = controller.save();
+        assertTrue(save.equals(TdarActionSupport.SUCCESS));
+        return resourceCollection;
     }
 
     Long uploadFile(String path, String name) {
         UploadController controller = generateNewInitializedController(UploadController.class);
-        controller.setSessionData(sessionData);
+        controller.setSessionData(getSessionData());
         controller.grabTicket();
         Long ticketId = controller.getPersonalFilestoreTicket().getId();
-        logger.info(ticketId);
+        logger.info("ticketId {}", ticketId);
         controller = generateNewInitializedController(UploadController.class);
         controller.setUploadFile(Arrays.asList(new File(path + "/" + name)));
         controller.setUploadFileFileName(Arrays.asList(name));
@@ -151,6 +138,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         controller.upload();
         return ticketId;
     }
+
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public <C> C setupAndLoadResource(String filename, Class<C> cls) {
@@ -230,5 +218,15 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
             assertTrue(filename + " not found in uploadFiles: " + uploadFiles, equal);
         }
         return toReturn;
+    }
+
+    @Override
+    protected Person getUser() {
+        return getUser(getUserId());
+    }
+
+    @Override
+    protected Long getUserId() {
+        return TestConstants.USER_ID;
     }
 }

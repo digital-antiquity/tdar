@@ -25,7 +25,7 @@ import org.tdar.core.bean.Persistable;
 public class Statistic extends Persistable.Base {
 
     public enum StatisticType {
-        NUM_USERS, NUM_IMAGE, NUM_DATASET, NUM_PROJECT, NUM_DOCUMENT, NUM_CODING_SHEET, NUM_ONTOLOGY,NUM_SENSORY_DATA
+        NUM_USERS, NUM_IMAGE, NUM_DATASET, NUM_PROJECT, NUM_DOCUMENT, NUM_CODING_SHEET, NUM_ONTOLOGY,NUM_SENSORY_DATA, NUM_COLLECTIONS
     }
 
     private static final long serialVersionUID = 2693033966156306987L;

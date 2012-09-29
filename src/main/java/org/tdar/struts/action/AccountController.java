@@ -13,10 +13,11 @@ import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.URLConstants;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.request.ContributorRequest;
-import org.tdar.core.service.CrowdService.AuthenticationResult;
+import org.tdar.core.service.external.CrowdService.AuthenticationResult;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -38,6 +39,7 @@ import com.opensymphony.xwork2.Preparable;
 @Result(name = "new", type = "redirect", location = "new")
 public class AccountController extends AuthenticationAware.Base implements Preparable {
 
+    public static final String COULD_NOT_AUTHENTICATE_AT_THIS_TIME = "Could not authenticate at this time";
     public static final String ERROR_PASSWORDS_DONT_MATCH = "Please make sure your passwords match.";
     public static final String ERROR_MISSING_EMAIL = "Please enter an email address";
     public static final String ERROR_EMAILS_DONT_MATCH = "Please make sure your emails match.";
@@ -49,7 +51,10 @@ public class AccountController extends AuthenticationAware.Base implements Prepa
     private static final int MAXLENGTH_CONTRIBUTOR = 512;
 
     private static final long serialVersionUID = 1147098995283237748L;
+    public static final long ONE_HOUR_IN_MS = 3600000;
+    public static final long FIVE_SECONDS_IN_MS = 5000;
 
+    private Long timeCheck;
     private Long personId;
     private Person person;
     private String reminderEmail;
@@ -58,14 +63,19 @@ public class AccountController extends AuthenticationAware.Base implements Prepa
     private String confirmPassword;
     private boolean requestingContributorAccess;
     private String institutionName;
+    private String comment; // for simple spam protection
+
+    // private String recaptcha_challenge_field;
+    // private String recaptcha_response_field;
 
     @Action(value = "new", interceptorRefs = @InterceptorRef("basicStack"),
             results = {
                     @Result(name = "success", location = "edit.ftl"),
-                    @Result(name = "authenticated", type = "redirect", location = "/project/list") })
+                    @Result(name = "authenticated", type = "redirect", location = URLConstants.DASHBOARD) })
     @SkipValidation
     @Override
     public String execute() {
+        setTimeCheck(System.currentTimeMillis());
         if (isAuthenticated()) {
             return "authenticated";
         }
@@ -191,7 +201,7 @@ public class AccountController extends AuthenticationAware.Base implements Prepa
         logger.trace("testing email:", email);
         if (StringUtils.isBlank(email)) {
             addActionError(ERROR_MISSING_EMAIL);
-            return false;
+            return true;
         }
         Person person = getEntityService().findByEmail(email);
         return (person != null && person.isRegistered());
@@ -200,6 +210,7 @@ public class AccountController extends AuthenticationAware.Base implements Prepa
     @Override
     public void validate() {
         logger.trace("calling validate");
+
         if (StringUtils.length(person.getContributorReason()) > MAXLENGTH_CONTRIBUTOR) {
             // FIXME: should we really be doing this? Or just turn contributorReason into a text field instead?
             logger.debug("contributor reason too long");
@@ -216,9 +227,9 @@ public class AccountController extends AuthenticationAware.Base implements Prepa
         if (isEmailRegistered(person.getEmail())) {
             logger.debug("email was already registered: ", person.getEmail());
             addActionError(ERROR_ALREADY_REGISTERED);
-        } else if (StringUtils.isBlank(confirmEmail)) {
+        } else if (StringUtils.isBlank(getConfirmEmail())) {
             addActionError(ERROR_CONFIRM_EMAIL);
-        } else if (!new EqualsBuilder().append(person.getEmail(), confirmEmail).isEquals()) {
+        } else if (!new EqualsBuilder().append(person.getEmail(), getConfirmEmail()).isEquals()) {
             addActionError(ERROR_EMAILS_DONT_MATCH);
         }
         // validate password + confirmation
@@ -229,6 +240,68 @@ public class AccountController extends AuthenticationAware.Base implements Prepa
         } else if (!new EqualsBuilder().append(password, confirmPassword).isEquals()) {
             addActionError(ERROR_PASSWORDS_DONT_MATCH);
         }
+
+        checkForSpammers();
+    }
+
+    /**
+     * 
+     */
+    private boolean checkForSpammers() {
+        // SPAM CHECKING
+        // 1 - check for whether the "bogus" comment field has data
+        // 2 - check whether someone is adding characters that should not be there
+        // 3 - check for known spammer - fname == lname & phone = 123456
+        try {
+        Object[] obj = { getPerson().getFirstName(), 
+                getPerson().getLastName(), 
+                getPerson().getEmail(), 
+                getPerson().getPhone(), 
+                getInstitutionName(),
+                getComment(), 
+                getPerson().getContributorReason() };
+        logger.debug("user info: name: {} {} ({} -- {} | {}) ;  {} | {} ",obj);
+        } catch (Exception e) {
+            logger.debug("{}", e);
+        }
+        
+        if (StringUtils.isNotBlank(getComment())) {
+            logger.debug(String.format("we think this user was a spammer: %s  -- %s", getConfirmEmail(), getComment()));
+            addActionError(COULD_NOT_AUTHENTICATE_AT_THIS_TIME);
+            return true;
+        }
+
+        if (getPerson() != null) {
+            try {
+                if (getPerson().getEmail().endsWith("\\r") ||
+                        getPerson().getFirstName().equals(getPerson().getLastName())
+                        && getPerson().getPhone().equals("123456")) {
+                    logger.debug(String.format("we think this user was a spammer: %s  -- %s", getConfirmEmail(), getComment()));
+                    addActionError(COULD_NOT_AUTHENTICATE_AT_THIS_TIME);
+                    return true;
+                }
+            } catch (NullPointerException npe) {
+                // this is ok, just doing a spam check, not validating
+            }
+        }
+        long now = System.currentTimeMillis();
+
+        logger.debug("timcheck:{}", getTimeCheck());
+        if (getTimeCheck() == null) {
+            logger.debug("internal time check was null, this should never happen for real users");
+            addActionError(COULD_NOT_AUTHENTICATE_AT_THIS_TIME);
+            return true;
+        }
+
+        now -= timeCheck;
+        if (now < FIVE_SECONDS_IN_MS || now > ONE_HOUR_IN_MS) {
+            logger.debug(String.format("we think this user was a spammer, due to the time taken " +
+                    "to complete the form field: %s  -- %s", getConfirmEmail(), now));
+            addActionError(COULD_NOT_AUTHENTICATE_AT_THIS_TIME);
+            return true;
+        }
+
+        return false;
     }
 
     public Person getPerson() {
@@ -244,7 +317,8 @@ public class AccountController extends AuthenticationAware.Base implements Prepa
     }
 
     public void setConfirmEmail(String email) {
-        this.confirmEmail = email;
+        // matching case as CROWD & getEmail lower cases everything
+        this.confirmEmail = email.toLowerCase();
     }
 
     public void setPassword(String password) {
@@ -295,5 +369,65 @@ public class AccountController extends AuthenticationAware.Base implements Prepa
     public void setRequestingContributorAccess(boolean requestingContributorAccess) {
         this.requestingContributorAccess = requestingContributorAccess;
     }
+
+    /**
+     * @return the comment
+     */
+    public String getComment() {
+        return comment;
+    }
+
+    /**
+     * @param comment
+     *            the comment to set
+     */
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    /**
+     * @return the timeCheck
+     */
+    public Long getTimeCheck() {
+        return timeCheck;
+    }
+
+    /**
+     * @param timeCheck
+     *            the timeCheck to set
+     */
+    public void setTimeCheck(Long timeCheck) {
+        this.timeCheck = timeCheck;
+    }
+
+    // /**
+    // * @return the recaptcha_response_field
+    // */
+    // public String getRecaptcha_response_field() {
+    // return recaptcha_response_field;
+    // }
+    //
+    // /**
+    // * @param recaptcha_response_field
+    // * the recaptcha_response_field to set
+    // */
+    // public void setRecaptcha_response_field(String recaptcha_response_field) {
+    // this.recaptcha_response_field = recaptcha_response_field;
+    // }
+    //
+    // /**
+    // * @return the recaptcha_challenge_field
+    // */
+    // public String getRecaptcha_challenge_field() {
+    // return recaptcha_challenge_field;
+    // }
+    //
+    // /**
+    // * @param recaptcha_challenge_field
+    // * the recaptcha_challenge_field to set
+    // */
+    // public void setRecaptcha_challenge_field(String recaptcha_challenge_field) {
+    // this.recaptcha_challenge_field = recaptcha_challenge_field;
+    // }
 
 }

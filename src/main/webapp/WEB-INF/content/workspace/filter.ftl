@@ -22,6 +22,7 @@ subdivision categories.  Values that occur in each dataset are indicated with bl
 checks, absent values are indicated with red x's.
 </div>
 
+<#assign integrationcolumn_index =0>
 
 <div class="glide">
 <@rlist.showControllerErrors />
@@ -32,50 +33,65 @@ checks, absent values are indicated with red x's.
 <#-- display links with taxonomy expanded -->
 <@s.form method='post' action='display-filtered-results' id="filterForm">
 
-<@s.hidden name='displayAttributeIds' />
 <#assign totalCheckboxCount=0>
-<@s.iterator value='ontologyDataFilters' var='ontologyDataFilter'>
-<#if ontologyDataFilter.commonOntology??>
-<table class='tableFormat width99percent zebracolors'>
-<thead>
-    <tr>
-    <th>Ontology labels from ${ontologyDataFilter.commonOntology.title} <br/>
-    (<span class="link" onclick='selectAllChildren("${ontologyDataFilter.columnIds}", true);'>Select All</span> 
-    | <span class="link"onclick='selectAllChildren("${ontologyDataFilter.columnIds}", false);'>Clear All</span>)</th>
-    <@s.iterator value='#ontologyDataFilter.integrationColumns' var='column'>
-    <th>${column.name}<br/> <small>(${column.dataTable.dataset.title})</small></th>
-    </@s.iterator>
-    </tr>
-</thead>
-<tbody>
-<@s.iterator value='#ontologyDataFilter.flattenedOntologyNodeList' var='ontologyNode' status='rowStatus'>
+<#list integrationColumns as integrationColumn>
+ <#if integrationColumn.displayColumn >
+
+  <input type="hidden" name="integrationColumns[${integrationcolumn_index}].columnType" value="${integrationColumn.columnType}" />
+  <#list integrationColumn.columns as col_ >
+   <#if col_??>
+    <input type="hidden" name="integrationColumns[${integrationcolumn_index}].columns[${col__index}].id" value="${col_.id?c}" />
+   </#if>
+  </#list>
+ <#else>
+ <#if integrationColumn.sharedOntology??>
+ <table class='tableFormat width99percent zebracolors'>
+    <thead>
+        <tr>
+        <th>Ontology labels from ${integrationColumn.sharedOntology.title} [${integrationColumn.name}]<br/>
+
+        (<span class="link" onclick='selectAllChildren("${integrationcolumn_index}", true);'>Select All</span> 
+        | <span class="link"onclick='selectAllChildren("${integrationcolumn_index}", false);'>Clear All</span>)</th>
+        <#list integrationColumn.columns as column>
+        <th>${column.name}<br/> <small>(${column.dataTable.dataset.title})</small></th>
+        </#list>
+        </tr>
+    </thead>
+    <tbody>
+
+  <input type="hidden" name="integrationColumns[${integrationcolumn_index}].columnType" value="${integrationColumn.columnType}" />
+  <#list integrationColumn.columns as col>
+    <input type="hidden" name="integrationColumns[${integrationcolumn_index}].columns[${col_index}].id" value="${col.id?c}" />
+  </#list>
+
+<#list integrationColumn.flattenedOntologyNodeList as ontologyNode>
     <tr>
     <#assign numberOfParents=ontologyNode.numberOfParents>
-    <td>
+    <td style="white-space: nowrap;">
     <#list 1..numberOfParents as indentationLevel>
         &nbsp;&nbsp;&nbsp;&nbsp;
     </#list>
     <#assign checkForUser=false/>
-    <@s.iterator value='#ontologyNode.columnHasValueArray' var='hasValue'>
+    <#list ontologyNode.columnHasValueArray as hasValue>
         <#if !hasValue>
             <#assign checkForUser=false />
         </#if>
-    </@s.iterator>
-    
-    <input type='checkbox' id='ontologyNodeCheckboxId_${ontologyDataFilter.columnIds}_${ontologyNode.index}'
-    name='ontologyNodeFilterSelections[${totalCheckboxCount}]' value='${ontologyDataFilter.columnIds}_${ontologyNode.id?c}'
+    </#list>
+ 
+     <input type='checkbox' id='ontologyNodeCheckboxId_${integrationcolumn_index}_${ontologyNode.index}'
+    name='integrationColumns[${integrationcolumn_index}].filteredOntologyNodes[${ontologyNode_index}].id' value='${ontologyNode.id?c}'
     <#if checkForUser>checked</#if>
      />
-    <label for='ontologyNodeCheckboxId_${ontologyDataFilter.columnIds}_${ontologyNode.index}'>
+    <label for='ontologyNodeCheckboxId_${integrationcolumn_index}_${ontologyNode.index}'>
     <#assign totalCheckboxCount=totalCheckboxCount+1>
     <b>${ontologyNode.displayName} <!--(${ontologyNode.index})--></b>
     </label>
     <#if ontologyNode.parent>
-    &nbsp;(<span class="link" onclick='selectChildren("${ontologyDataFilter.columnIds}_${ontologyNode.index}", true);'>all</span>
-    | <span class="link" onclick='selectChildren("${ontologyDataFilter.columnIds}_${ontologyNode.index}", false);'>clear</span>)
+    &nbsp;(<span class="link" onclick='selectChildren("${integrationcolumn_index}_${ontologyNode.index}", true);'>all</span>
+    | <span class="link" onclick='selectChildren("${integrationcolumn_index}_${ontologyNode.index}", false);'>clear</span>)
     </#if>
     </td>
-    <@s.iterator value='#ontologyNode.columnHasValueArray' var='hasValue'>
+    <#list ontologyNode.columnHasValueArray as hasValue>
     <td>
         <#if hasValue>
         <@edit.img "/images/checked.gif" />
@@ -83,34 +99,35 @@ checks, absent values are indicated with red x's.
         <@edit.img "/images/unchecked.gif" />
         </#if>
     </td>
-    </@s.iterator>
+    </#list>
 </tr>
-</@s.iterator>
+</#list>
 </tbody>
 </table>
-<#else>
-These columns do not share a common ontology but ontology integration has not been
-fully implemented yet.  
+ 
+ <#else>
+    These columns do not share a common ontology but ontology integration has not been
+    fully implemented yet.  
+ </#if>
 </#if>
-
-</@s.iterator>
+<#assign integrationcolumn_index = integrationcolumn_index+1>
+ 
+ </#list>
 </div>
+
 <@edit.submit "Next: Apply filter" false/>
 
-<@s.iterator value="displayRules" var="displayRule" status="ruleStatus">
-  <input type="hidden" name="displayRules[${ruleStatus.index}]" value="${displayRule}" />
-</@s.iterator>
-
-<@s.iterator value="integrationRules" var="integrationRule" status="ruleStatus">
-  <input type="hidden" name="integrationRules[${ruleStatus.index}]" value="${integrationRule}" />
-</@s.iterator>
+  <#list selectedDataTables as table>
+      <!-- setting for error condition -->
+       <input type="hidden" name="tableIds[${table_index}]" value="${table.id?c}"/>
+  </#list>
 
 </@s.form>
 
 
 <script type='text/javascript'>
 function selectAllChildren(id, value) {
-    $("input[id*='" + id + "']").prop('checked', value);
+    $("input[id*='ontologyNodeCheckboxId_" + id + "']").prop('checked', value);
     return false;
 }
 function selectChildren(index, value) {
@@ -125,5 +142,7 @@ $("#filterForm").submit(function() {
     return false;
   }
 });
-$(applyZebraColors);
+$(document).ready(function() {
+  applyZebraColors();
+  });
 </script>

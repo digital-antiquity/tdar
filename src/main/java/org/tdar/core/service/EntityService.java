@@ -8,22 +8,22 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.bean.entity.Creator;
-import org.tdar.core.bean.entity.FullUser;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.entity.ReadUser;
 import org.tdar.core.bean.entity.ResourceCreator;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.request.ContributorRequest;
-import org.tdar.core.bean.resource.Project;
+import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.GenericDao.FindOptions;
+import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.dao.entity.InstitutionDao;
 import org.tdar.core.dao.entity.PersonDao;
 import org.tdar.core.dao.request.ContributorRequestDao;
-import org.tdar.core.dao.resource.FullUserDao;
-import org.tdar.core.dao.resource.ReadUserDao;
+import org.tdar.core.service.external.CrowdService;
 
 /**
  * $Id$
@@ -48,9 +48,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
     @Autowired
     private InstitutionDao institutionDao;
     @Autowired
-    private ReadUserDao readUserDao;
-    @Autowired
-    private FullUserDao fullUserDao;
+    private AuthorizedUserDao authorizedUserDao;
     @Autowired
     private ContributorRequestDao contributorRequestDao;
     @Autowired
@@ -107,10 +105,29 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
             return false;
 
         if (person == null) {
-            logger.debug("person is null");
+            logger.trace("person is null");
             return false;
         }
 
+        if (isSpecialUser(person)) {
+            return true;
+        }
+
+        if (resource.getSubmitter().equals(person)) {
+            logger.debug("person was submitter");
+            return true;
+        }
+
+        if (authorizedUserDao.isAllowedTo(person, resource, GeneralPermissions.VIEW_ALL)) {
+            logger.debug("person is an authorized user");
+            return true;
+        }
+
+        logger.debug("returning false... access denied");
+        return false;
+    }
+
+    public boolean isSpecialUser(Person person) {
         if (person.isPrivileged()) {
             logger.debug("person is privleged");
             return true;
@@ -121,20 +138,6 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
             return true;
         }
 
-        if (resource.getSubmitter().equals(person)) {
-            logger.debug("person was submitter");
-            return true;
-        }
-        if (fullUserDao.isFullUser(person, resource)) {
-            logger.debug("person is a full user");
-            return true;
-        }
-
-        if (readUserDao.isReadUser(person, resource)) {
-            logger.debug("person is a read user");
-            return true;
-        }
-        logger.debug("returning false... access denied");
         return false;
     }
 
@@ -154,12 +157,24 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      * @return true if person has write permissions on resource according to the above policies, false otherwise.
      */
     public boolean canEditResource(Person person, Resource resource) {
-        return person != null && resource != null
-                && (resource.getSubmitter().equals(person) || crowdService.isAdministrator(person) || isFullUser(person, resource));
+        return person != null
+                && resource != null
+                && (resource.getSubmitter().equals(person) || crowdService.isAdministrator(person) || authorizedUserDao.isAllowedTo(person, resource,
+                        GeneralPermissions.MODIFY_RECORD));
     }
 
-    public boolean isFullUser(Person person, Resource resource) {
-        return fullUserDao.isFullUser(person, resource);
+    public boolean canDownload(InformationResourceFileVersion irFileVersion, Person person) {
+        boolean fileRestricted = (irFileVersion.getInformationResourceFile().isConfidential() ||
+                !irFileVersion.getInformationResourceFile().getInformationResource().isAvailableToPublic());
+        if (fileRestricted && !canViewConfidentialInformation(person, irFileVersion.getInformationResourceFile().getInformationResource())) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean canViewCollection(ResourceCollection collection, Person person) {
+        return authorizedUserDao.isAllowedTo(person, GeneralPermissions.VIEW_ALL, collection);
     }
 
     public Person findByEmail(String email) {
@@ -183,30 +198,8 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      * @param person
      * @return
      */
-    public Set<Resource> findFullUserResources(Person person) {
-        return fullUserDao.findResourcesByPerson(person);
-    }
-
-    public FullUser findFullUser(Number id) {
-        return fullUserDao.find(id);
-    }
-
-    public ReadUser findReadUser(Number id) {
-        return readUserDao.find(id);
-    }
-
-    public List<Project> findReadUserProjects(Person person) {
-        return readUserDao.findProjectsByPerson(person);
-    }
-
-    /**
-     * Find the projects that the given user has full access to.
-     * 
-     * @param person
-     * @return
-     */
-    public List<Project> findSparseTitleIdProjectListByPerson(Person person) {
-        return fullUserDao.findSparseTitleIdProjectListByPerson(person);
+    public Set<Resource> findFullUserResources(Person person, boolean isAdmin) {
+        return authorizedUserDao.findEditableResources(person, isAdmin);
     }
 
     @Transactional(readOnly = false)
@@ -253,5 +246,30 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
     public void findOrSaveResourceCreator(ResourceCreator resourceCreator) {
         resourceCreator.setCreator(findOrSaveCreator(resourceCreator.getCreator()));
     }
+
+    /**
+     * @param authenticatedUser
+     * @param persistable
+     * @return
+     */
+    @Transactional(readOnly = false)
+    public boolean canEditCollection(Person authenticatedUser, ResourceCollection persistable) {
+        if (authenticatedUser == null) {
+            logger.debug("person is null");
+            return false;
+        }
+
+        if (isSpecialUser(authenticatedUser) || authenticatedUser.equals(persistable.getOwner())) {
+            return true;
+        }
+
+        return authorizedUserDao.isAllowedTo(authenticatedUser, GeneralPermissions.ADMINISTER_GROUP, persistable);
+    }
+
+    @Transactional 
+    public List<ResourceCollection> findAccessibleResourceCollections(Person user) {
+        return authorizedUserDao.findAccessibleResourceCollections(user);
+    }
+    
 
 }

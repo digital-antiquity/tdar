@@ -23,7 +23,7 @@ public class ImageWorkflow extends BaseWorkflow {
         registerFileExtensions(new String[] { "gif", "tif", "jpg", "tiff","jpeg"},  
                 ResourceType.IMAGE, ResourceType.SENSORY_DATA);
         registerFileExtensions(new String[] { "bmp", "pict", "png" }, ResourceType.IMAGE);
-        addTask(new ImageThumbnailTask(), WorkflowPhase.CREATE_DERIVATIVE);
+        addTask(ImageThumbnailTask.class, WorkflowPhase.CREATE_DERIVATIVE);
     }
 
     @Override

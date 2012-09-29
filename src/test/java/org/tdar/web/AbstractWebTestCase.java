@@ -11,10 +11,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import junit.framework.Assert;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.AbstractIntegrationTestCase;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.Page;
@@ -40,12 +43,13 @@ import com.opensymphony.module.sitemesh.HTMLPage;
  * @author Adam Brin
  * 
  */
-public abstract class AbstractWebTestCase {
+public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
     final Logger logger = LoggerFactory.getLogger(AbstractAnonymousWebTestCase.class);
 
     final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_3_6);
     protected Page internalPage;
+    protected HtmlPage htmlPage;
     private HtmlForm internalForm;
 
     /*
@@ -81,7 +85,7 @@ public abstract class AbstractWebTestCase {
      */
     public int gotoPage(String path) {
         int statusCode = gotoPageWithoutErrorCheck(path);
-        assertFalse(statusCode == HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        assertFalse("An error ocurred" + internalPage.getWebResponse().getContentAsString(), statusCode == HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         assertNoErrorTextPresent();
         return statusCode;
     }
@@ -136,12 +140,24 @@ public abstract class AbstractWebTestCase {
         assertTrue("looking for [" + text + "] in page:" + internalPage.getUrl(), internalPage.getWebResponse().getContentAsString().contains(text));
     }
 
+    public void assertTextPresentIgnoreCase(String text) {
+        assertTrue("looking for [" + text + "] in page:" + internalPage.getUrl(), StringUtils.containsIgnoreCase(internalPage.getWebResponse().getContentAsString(), text));
+    }
+
+    public void assertTextNotPresentIgnoreCase(String text) {
+        assertFalse("looking for [" + text + "] in page:" + internalPage.getUrl(), StringUtils.containsIgnoreCase(internalPage.getWebResponse().getContentAsString(), text));
+    }
+
     public HtmlElement getInput(String name) {
         HtmlPage page = (HtmlPage) internalPage;
         return page.getElementByName(name);
     }
 
     public void setInput(String name, String value) {
+        setInput(name, value, true);
+    }
+    
+    public void setInput(String name, String value, boolean overrideCreate) {
         HtmlPage page = (HtmlPage) internalPage;
         String id = null;
 
@@ -155,7 +171,7 @@ public abstract class AbstractWebTestCase {
             logger.info("no element found: " + name);
         }
 
-        if (input == null) {
+        if (input == null && overrideCreate) {
             // test for duplicating fields with the two cases we have (a) struts, or
             // (b) the non-standard file-upload
             if (name.matches(indexedNamePattern)) {
@@ -169,9 +185,9 @@ public abstract class AbstractWebTestCase {
             } else if (name.equalsIgnoreCase("uploadedFiles")) {
                 duplicateInputByName(name, name);
             }
-            input = page.getElementByName(name);
         }
-
+        input = page.getElementByName(name);
+        
         if (input instanceof HtmlTextArea) {
             HtmlTextArea txt = (HtmlTextArea) input;
             id = txt.getId();
@@ -179,6 +195,7 @@ public abstract class AbstractWebTestCase {
         } else if (input instanceof HtmlSelect) {
             HtmlSelect sel = (HtmlSelect) input;
             sel.setSelectedAttribute(value, true);
+//            assertTrue(sel.getSelectedOptions().get(0).getAttributes().getNamedItem("value").getTextContent() + " should equal " + value,sel.getSelectedOptions().get(0).getAttributes().getNamedItem("value").getTextContent().equals(value));
             id = sel.getId();
         } else if (input instanceof HtmlCheckBoxInput) {
             // if the checkbox's value attribute matches the supplied value, check the box. Otherwise uncheck it.
@@ -203,7 +220,36 @@ public abstract class AbstractWebTestCase {
         createdElement.setAttribute("type", inputName);
         createdElement.setAttribute("name", name);
         createdElement.setAttribute("value", value);
-        internalForm.appendChild(createdElement);
+        if(internalForm != null) {
+            internalForm.appendChild(createdElement);
+        } else {
+            logger.warn("internalPage was null - element will be added to all forms on the page");
+            HtmlPage page = (HtmlPage) internalPage;
+            List<HtmlForm> forms = page.getForms();
+            if(forms.isEmpty()) {
+                Assert.fail("cannot create input element because page does not have any forms");
+            }
+            for (HtmlForm form : page.getForms()) {
+                form.appendChild(createdElement);
+                logger.debug("appending name:'{}'\t value:'{}'\t to form:'{}'", new Object[] {name, value, form.getId()});
+            }
+        }
+    }
+    
+    public void createInput(String inputName, String name, Number value) {
+        createInput(inputName, name, value.toString());
+    }
+    
+    
+    public boolean removeElementsByName(String elementName) {
+        if(htmlPage == null) return false;
+        List<HtmlElement> elements = htmlPage.getElementsByName(elementName);
+        int count = 0;
+        for(HtmlElement element : elements) {
+            element.remove();
+            count++;
+        }
+        return count > 0;
     }
 
     public boolean checkInput(String name, String val) {
@@ -311,6 +357,8 @@ public abstract class AbstractWebTestCase {
      */
     public void assertNoErrorTextPresent() {
         assertTextNotPresent("Exception stack trace:" + getPageText()); // inline stacktrace (ftl compiles but dies partway through rendering)
+        assertTextNotPresentIgnoreCase("HTTP ERROR");
+        assertTextNotPresentIgnoreCase("Exception" + getPageText()); // inline stacktrace (ftl compiles but dies partway through rendering)
         Assert.assertFalse("page shouldn't contain action errors" + getPageText(), getPageCode().contains("class=\"action-error\""));
     }
 
@@ -334,6 +382,9 @@ public abstract class AbstractWebTestCase {
         internalPage = page;
         internalForm = null;
         logger.info("CHANGING url TO: " + internalPage.getUrl());
+        if(internalPage instanceof HtmlPage) {
+            htmlPage = (HtmlPage) internalPage;
+        }
     }
 
     public void clickLinkOnPage(String text) {
@@ -381,16 +432,17 @@ public abstract class AbstractWebTestCase {
     }
 
     public void testOntologyView() {
-        gotoPage("/ontology/3479");
-        assertTextPresentInPage("TAG Fauna Ontology - Taxon");
-        assertTextPresentInPage("AVES");
-        assertTextPresentInCode("Canis familiaris (Dog)"); // this may be hidden in the 'expanded' area, so look in html source
+        gotoPage("/ontology/3029");
+        assertTextPresentInPage("Fauna Pathologies - Default Ontology Draft");
+        assertTextPresentInPage("Indeterminate");
+        assertTextPresentInPage("Fauna"); 
     }
 
     public void testCodingSheetView() {
         gotoPage("/coding-sheet/449");
+        logger.debug("\n----------- page begin--------\n" + getPageText() + "\n----------- page begin--------\n" );
         assertTextPresentInPage("CARP Fauna Proximal-Distal");
-        assertTextPresentInPage("Subcategory: Proximal/Distal");
+        assertTextPresentInPage("Subcategory: Portion/Proximal/Distal");
     }
 
     public void testProjectView() {
@@ -410,6 +462,7 @@ public abstract class AbstractWebTestCase {
 
     public void testDatasetView() {
         gotoPage("/dataset/3088");
+        logger.info("content of dataset view page: {}", getPageText());
         assertTextPresentInPage("Knowth Stage 8 Fauna Dataset");
         assertTextPresentInPage("Dataset");
         assertTextPresentInPage("dataset_3088_knowthstage8.xls");
@@ -417,7 +470,7 @@ public abstract class AbstractWebTestCase {
 
     public void testBasicSearchView() {
         gotoPage("/search/basic");
-        assertTextPresentInPage("Limit by");
+        assertTextPresentInPage("Search");
     }
 
     public void testAdvancedSearchView() {
@@ -432,6 +485,20 @@ public abstract class AbstractWebTestCase {
     @After
     public void cleanup() {
         webClient.closeAllWindows();
+    }
+
+    public Long extractTdarIdFromCurrentURL() {
+        String url = internalPage.getUrl().toString();
+        while (url.indexOf("/") != -1) {
+            String part = url.substring(url.lastIndexOf("/"));
+            part = part.replace("/", "");
+            url = url.substring(0,url.lastIndexOf("/"));
+            logger.trace("evaluating {} : {}",url,part);
+            if (StringUtils.isNumeric(part)) {
+                return Long.parseLong(part);
+            }
+        }
+        throw new TdarRecoverableRuntimeException("could not find tDAR ID in URL" + internalPage.getUrl().toString());
     }
 
 }

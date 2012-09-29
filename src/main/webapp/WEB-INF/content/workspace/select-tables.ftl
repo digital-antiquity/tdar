@@ -72,8 +72,8 @@ $(document).ready(function() {
       $(this).next().toggle();
       return false;
   });
+applyZebraColors();
 });
-$(applyZebraColors);
 </script>
 </head>
 
@@ -87,7 +87,7 @@ $(applyZebraColors);
     <p>
     No tables have been bookmarked.  You can bookmark a table through <a
     href='<@s.url value="/search/basic"/>'>search</a> or through your <a
-    href='<@s.url value="/project/list"/>'>project list</a>.
+    href='<@s.url value="/dashboard"/>'>project list</a>.
     </p>
 <#else>
     <h3>Step 1: Select Datasets to Integrate or Display</h3>

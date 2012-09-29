@@ -37,7 +37,7 @@ public class ListArchiveTask extends AbstractTask {
         // NOTE: using fully qualified class names to ensure no confusion between packages
         // v7 of truezip moves to it's own dedicated namespace and resolves this issue
         de.schlichtherle.io.File.setDefaultArchiveDetector(ArchiveDetector.ALL);
-        de.schlichtherle.io.File archiveFile = new de.schlichtherle.io.File(f_,ArchiveDetector.ALL);
+        de.schlichtherle.io.File archiveFile = new de.schlichtherle.io.File(f_, ArchiveDetector.ALL);
 
         listFiles(archiveContents, archiveFile, archiveFile);
 

@@ -26,8 +26,8 @@ public interface TestConstants {
     public static Long USER_ID = 8092L;
     public static String USERNAME = "test@tdar.org";
     public static String PASSWORD = "test";
-    public static int ADMIN_PROJECT_ID = 1;
-    public static int PROJECT_ID = 2;
+    public static Long ADMIN_PROJECT_ID = 1L;
+    public static Long PROJECT_ID = 2L;
     public static String ADMIN_USERNAME = "admin@tdar.org";
     public static String ADMIN_PASSWORD = "admin";
     public static Long ADMIN_INDEPENDENT_PROJECT_ID = 1L;
@@ -41,6 +41,7 @@ public interface TestConstants {
     public static String DEFAULT_FIRST_NAME = "Test";
     public static String DEFAULT_LAST_NAME = "Person";
     public static String DEFAULT_EMAIL = "test@example.com";
+    public static String DOCUENT_DATE_CREATED = "resource.dateCreated";
 
     public static final String DOCUMENT_FIELD_TITLE = "document.title";
     public static final String DOCUMENT_FIELD_DESCRIPTION = "resource.description";
