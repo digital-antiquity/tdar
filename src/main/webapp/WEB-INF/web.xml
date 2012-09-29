@@ -169,6 +169,22 @@ vim:sts=2:sw=2
     <servlet-name>sitemesh-freemarker</servlet-name>
     <url-pattern>*.dec</url-pattern>
   </servlet-mapping>
-
+  
+    <servlet>
+    <servlet-name>OData_service</servlet-name>
+    <servlet-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</servlet-class>
+    <init-param>
+      <param-name>javax.ws.rs.Application</param-name>
+      <param-value>org.odata4j.jersey.producer.resources.ODataApplication</param-value>
+    </init-param>
+	<init-param>
+	  <param-name>odata4j.producerfactory</param-name>
+	  <param-value>org.tdar.odata.server.TDarProducerFactory</param-value>
+	</init-param>  
+ </servlet>
+	<servlet-mapping>
+		<servlet-name>OData_service</servlet-name>
+		<url-pattern>/odata.svc/*</url-pattern>
+	</servlet-mapping>
 
 </web-app>

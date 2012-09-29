@@ -581,16 +581,4 @@ public class DataIntegrationService {
         }
         return columnAutoList;
     }
-
-    public void editRow(DataTable dataTable, Long rowId, Map<?, ?> data) {
-        // DbUtils.
-        // dataTable.
-        // SPRING...
-    }
-
-    public void findRow(DataTable dataTable, Long rowId, Map<?, ?> query) {
-    }
-
-    public void deleteRow(DataTable dataTable, Long rowId) {
-    }
 }

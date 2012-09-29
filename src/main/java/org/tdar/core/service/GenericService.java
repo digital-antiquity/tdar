@@ -25,6 +25,7 @@ import org.tdar.core.bean.DeHydratable;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Validatable;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -184,6 +185,11 @@ public class GenericService {
     @Transactional(readOnly = true)
     public <T> List<T> findAll(Class<T> persistentClass, List<Long> idlist) {
         return genericDao.findAll(persistentClass, idlist);
+    }
+
+    @Transactional(readOnly = true)
+    public <T> T findByProperty(Class<T> persistentClass, String propertyName, Object propertyValue) {
+        return genericDao.findByProperty(persistentClass, propertyName, propertyValue);
     }
 
     @Transactional(readOnly = true)

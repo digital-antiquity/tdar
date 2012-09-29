@@ -27,6 +27,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<geotools.version>8.0</geotools.version>
 		<tika.version>1.2</tika.version>
+        <odata4j.version>0.7.0</odata4j.version>
+        <jersey.version>1.13</jersey.version>
 	</properties>
 	<prerequisites>
 		<maven>2.2.0</maven>
@@ -314,6 +316,16 @@
 		</dependency>
 		<!-- <dependency> <groupId>junit</groupId> <artifactId>junit</artifactId> 
 			<version>3.8.1</version> <scope>test</scope> </dependency> -->
+			<dependency>
+				<groupId>org.jmock</groupId>
+				<artifactId>jmock-junit4</artifactId>
+				<version>2.5.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jmock</groupId>
+			<artifactId>jmock-legacy</artifactId>
+			<version>2.5.1</version>
+		</dependency>		
 		<dependency>
 			<groupId>org.geotools</groupId>
 			<artifactId>gt-shapefile</artifactId>
@@ -519,6 +531,16 @@
 			<version>${spring.framework.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
+			<version>${spring.framework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aop</artifactId>
+			<version>${spring.framework.version}</version>
+		</dependency>		
+		<dependency>
 			<!-- needed by spring for @Transactional calls -->
 			<groupId>cglib</groupId>
 			<artifactId>cglib</artifactId>
@@ -701,6 +723,87 @@
 			<artifactId>commons-dbutils</artifactId>
 			<version>1.5</version>
 		</dependency>
+		
+		<!--  OData (odata4j) Stuff: Begin -->
+
+		<dependency>
+			<groupId>org.odata4j</groupId>
+			<artifactId>odata4j-core</artifactId>
+			<version>${odata4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.odata4j</groupId>
+			<artifactId>odata4j-jersey</artifactId>
+			<version>${odata4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.odata4j</groupId>
+			<artifactId>odata4j-fit</artifactId>
+			<version>${odata4j.version}</version>
+		</dependency>  
+		                                  
+		<!--  OData REST Infrastructure -->		
+		<dependency>
+			<groupId>com.sun.net.httpserver</groupId>
+			<artifactId>http</artifactId>
+			<version>20070405</version>
+		</dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-server</artifactId>
+            <version>${jersey.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-core</artifactId>
+            <version>${jersey.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-client</artifactId>
+            <version>${jersey.version}</version>
+        </dependency>
+		<dependency>
+		    <groupId>com.sun.jersey.contribs</groupId>
+		    <artifactId>jersey-spring</artifactId>
+		    <version>${jersey.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-web</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-beans</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-context</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-aop</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
+		<!--  OData Integration Testing Support -->
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-client</artifactId>
+			<version>8.1.4.v20120524</version>
+		</dependency>
+
+		<!--  OData (odata4j) Stuff: End -->
+
 	</dependencies>
 	<pluginRepositories>
 		<pluginRepository>
@@ -1045,6 +1148,7 @@
 					<!-- <includes> <include>**/*ITCase.java</include> <include>**/*TestCase.java</include> 
 						</includes> -->
 					<argLine>${jvm.args}</argLine>
+					<junitArtifactName>junit:junit-dep</junitArtifactName>
 				</configuration>
 			</plugin>
 			<plugin>

@@ -26,6 +26,7 @@ import java.util.concurrent.ConcurrentMap;
 import javax.sql.DataSource;
 
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -51,7 +52,9 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.RowOperations;
 import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.odata.server.AbstractDataRecord;
 import org.tdar.struts.data.IntegrationColumn;
 import org.tdar.struts.data.IntegrationContext;
 import org.tdar.struts.data.ModernIntegrationDataResult;
@@ -66,7 +69,7 @@ import org.tdar.utils.Pair;
  * 
  * @version $Revision$
  */
-public class PostgresDatabase implements TargetDatabase {
+public class PostgresDatabase implements TargetDatabase, RowOperations {
 
     public static final int MAX_VARCHAR_LENGTH = 500;
     private static final String SELECT_ALL_FROM_TABLE = "SELECT %s FROM %s";
@@ -319,6 +322,10 @@ public class PostgresDatabase implements TargetDatabase {
 
     public JdbcTemplate getJdbcTemplate() {
         return jdbcTemplate;
+    }
+    
+    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     public boolean hasColumn(final String tableName, final String columnName) {
@@ -893,6 +900,49 @@ public class PostgresDatabase implements TargetDatabase {
 
     public List<String[]> query(String selectSql, ParameterizedRowMapper<String[]> parameterizedRowMapper) {
         return jdbcTemplate.query(selectSql, parameterizedRowMapper);
+    }
+
+    @Override
+    public void editRow(DataTable dataTable, Long rowId, Map<?, ?> data) {
+        
+        String columnAssignments = "";
+        final List<Object> values = new ArrayList<Object>();
+        String separator = "";
+        for (Object columnName : data.keySet())
+        {
+            if (!"id".equals(columnName))
+            {
+                columnAssignments += separator + columnName + "=" + "?";
+                values.add(data.get(columnName));
+                separator = " ";
+            }
+        }
+        // Put id last so WHERE id = ? will work.
+        values.add(data.get("id"));
+        
+        // TODO RR: should this fail with an exception?
+        // Probably should log it.
+        if (values.size() > 1)
+        {
+            String sqlTemplate = "UPDATE \"%s\" SET %s WHERE id = ?";
+            String sql = String.format(sqlTemplate, dataTable.getName(), columnAssignments);
+            
+            jdbcTemplate.update(sql, values.toArray());
+        }               
+    }
+
+    @Override
+    public Set<AbstractDataRecord> findAllRows(DataTable dataTable) {
+        return null;
+    }
+
+    @Override
+    public void deleteRow(DataTable dataTable, Long rowId) {
+        // Do nothing.
+        // Not allowed this time.
+        // The use case was to allow modification of existing records.
+        // I am interpreting this literally as update only.
+        throw new NotImplementedException("Not allowed. Deletion of records is out of scope");
     }
 
 }

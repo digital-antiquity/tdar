@@ -37,7 +37,7 @@ import org.tdar.core.service.external.auth.TdarGroup;
 import org.tdar.struts.action.search.ReservedSearchParameters;
 
 @Service
-public class AuthenticationAndAuthorizationService extends AbstractConfigurableService<AuthenticationProvider> {
+public class AuthenticationAndAuthorizationService extends AbstractConfigurableService<AuthenticationProvider> implements Accessible {
 
     private final WeakHashMap<Person, TdarGroup> groupMembershipCache = new WeakHashMap<Person, TdarGroup>();
     private final Logger logger = Logger.getLogger(getClass());
@@ -270,6 +270,7 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
         }
     }
 
+    @Override
     public boolean canEdit(Person authenticatedUser, Persistable item) {
         if (item instanceof Resource) {
             return canEditResource(authenticatedUser, (Resource) item);
@@ -280,6 +281,7 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
         }
     }
 
+    @Override
     public boolean canView(Person authenticatedUser, Persistable item) {
         if (item instanceof Resource) {
             return canViewResource(authenticatedUser, (Resource) item);
