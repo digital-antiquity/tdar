@@ -142,7 +142,6 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     public final void initControllerErrorChecking() {
         getControllers().clear();
         setIgnoreActionErrors(false);
-        logger.info(" *** RUNNING TEST: " + getClass().getCanonicalName().toUpperCase() + " ***");
     }
 
     @After
@@ -160,7 +159,6 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         if (errorCount > 0) {
             Assert.fail("There were action errors.");
         }
-        logger.info(" *** COMPLETED TEST: " + getClass().getCanonicalName().toUpperCase() + " ***");
     }
 
     public Person createAndSaveNewPerson() {
@@ -285,7 +283,6 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         R iResource = cls.newInstance();
         iResource.setTitle(resourceTitle);
         iResource.markUpdated(persistentPerson);
-        iResource.setDescription("test description");
         iResource.setProject(project);
         iResource.setDate(2012);
         informationResourceService.save(iResource);

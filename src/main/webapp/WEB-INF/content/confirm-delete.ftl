@@ -37,9 +37,6 @@
   
   <#else>
     <@s.form name='deleteForm' id='deleteForm'  method='post' action='delete'>
-    <h4>Please explain why you are deleting this record</h4>
-      <input type="textarea" name="deletionReason"                   cols='60' rows='3' maxlength='255' />
-    
       <h4>Are you sure you want to delete this <#if persistable.resourceType??>${persistable.resourceType.label?lower_case}</#if>?</h4>
 
       <@s.submit type="submit" name="delete" value="delete" />

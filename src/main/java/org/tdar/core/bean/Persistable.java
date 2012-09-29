@@ -186,7 +186,7 @@ public interface Persistable extends Serializable {
         }
 
         public static boolean isTransient(Persistable persistable) {
-            return persistable.getId() == null || persistable.getId() == -1L;
+            return persistable.getId() == null || persistable.getId().longValue() == -1L;
         }
 
         public static boolean isNullOrTransient(Persistable persistable) {

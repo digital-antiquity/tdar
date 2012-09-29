@@ -106,11 +106,11 @@ public class InformationResourceService extends AbstractInformationResourceServi
                     resource.getResourceCollections().add(collection);
                 }
             }
+            resource.setLatitudeLongitudeBoxes(new HashSet<LatitudeLongitudeBox>(proxy.getLatitudeLongitudeBoxes()));
             resource.setMaterialKeywords(new HashSet<MaterialKeyword>(proxy.getMaterialKeywords()));
             resource.setTemporalKeywords(new HashSet<TemporalKeyword>(proxy.getTemporalKeywords()));
+            resource.setCoverageDates(proxy.getCoverageDates());
 
-            resource.setCoverageDates(cloneSet(resource, proxy.getCoverageDates()));
-            resource.setLatitudeLongitudeBoxes(cloneSet(resource, proxy.getLatitudeLongitudeBoxes()));
             resource.setResourceCreators(cloneSet(resource, proxy.getResourceCreators()));
             resource.setResourceAnnotations(cloneSet(resource, proxy.getResourceAnnotations()));
             resource.setResourceNotes(cloneSet(resource, proxy.getResourceNotes()));

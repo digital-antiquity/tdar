@@ -99,10 +99,41 @@ where
 order by 1
 ;
 
--- 2/08/2012 
+-- 2012-02-08 
 --add flags for email and phone number publication
 ALTER TABLE person ADD COLUMN phone_public BOOLEAN default false not null;
-ALTER TABLE person ADD COLUMN email_public BOOLEAN default false not null; 
+ALTER TABLE person ADD COLUMN email_public BOOLEAN default false not null;
+
+-- Table: data_table_column_relationship
+
+-- DROP TABLE data_table_column_relationship;
+
+-- 2012-02-29
+-- refactored storage of relationships between pairs of columns within table joins
+DROP TABLE data_table_relationship_data_table_column;
+CREATE TABLE data_table_column_relationship
+(
+  id bigserial NOT NULL,
+  relationship_id bigint,
+  local_column_id bigint,
+  foreign_column_id bigint,
+  CONSTRAINT data_table_column_relationship_pkey PRIMARY KEY (id),
+  CONSTRAINT fk_data_table_column_relationship_foreign_column FOREIGN KEY (foreign_column_id)
+      REFERENCES data_table_column (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT fk_data_table_column_relationship_local_column FOREIGN KEY (local_column_id)
+      REFERENCES data_table_column (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT fk_data_table_column_relationship_relationship FOREIGN KEY (relationship_id)
+      REFERENCES data_table_relationship (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+);
+
+-- 2012-03-06
+-- add licenseType and licenseText to informationResource
+
+ALTER TABLE information_resource ADD COLUMN license_type CHARACTER VARYING(128);
+ALTER TABLE information_resource ADD COLUMN license_text TEXT;
 
 
 -- 2012-03-09
@@ -115,7 +146,6 @@ create table homepage_cache_geographic_keyword (
   );
 
 -- PRIMING Cache
-truncate homepage_cache_geographic_keyword;
 insert into homepage_cache_geographic_keyword (resource_count, label, level) select count(resource.id), label, level from resource, resource_managed_geographic_keyword, geographic_keyword where status='ACTIVE' and resource.id=resource_id and geographic_keyword_id=geographic_keyword.id group by label, level;
 
 create table homepage_cache_resource_type (
@@ -125,19 +155,10 @@ create table homepage_cache_resource_type (
   );
 
 -- PRIMING Cache
-truncate homepage_cache_resource_type;
 insert into homepage_cache_resource_type (resource_count, resource_type) select count(resource.id), resource_type from resource where status='ACTIVE' group by resource_type;
 
+-- 2012-03-15
+-- add CopyrightHolder column to informationResource
 
-ALTER TABLE homepage_cache_resource_type add constraint homepage_cache_resource_type_unique unique(resource_type);
-update data_table_column set ignorefileextension=TRUE where ignorefileextension is null;
-update data_table_column set mappingcolumn=false where mappingcolumn is null;
-update data_table_column set visible=true where visible is null;
+ALTER TABLE information_resource ADD COLUMN copyright_holder_id BIGINT;
 
--- 2012-05-30 
--- making sensory data 'description' fields TEXT to avoid maxlength issues
-alter table sensory_data alter column rgb_data_capture_info type TEXT;
-alter table sensory_data alter column final_dataset_description type TEXT;
-alter table sensory_data_scan alter column scan_notes type TEXT;
-alter table sensory_data alter column point_deletion_summary type TEXT;
-alter table sensory_data alter column mesh_processing_notes type TEXT;

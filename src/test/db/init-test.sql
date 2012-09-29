@@ -2480,6 +2480,3 @@ UPDATE information_resource set inheriting_cultural_information=true where id=42
 set constraints all immediate;
 update data_table_column set column_encoding_type=NULL where column_encoding_type='NUMERIC' or column_encoding_type='TEXT' or column_encoding_type='';
 insert into authorized_user (general_permission_int,general_permission,resource_collection_id, user_id) values (500,'MODIFY_RECORD',1391,60);
-update data_table_column set mappingcolumn=false where mappingcolumn is null;
-update data_table_column set visible=true where visible is null;
-update data_table_column set ignorefileextension=true where ignorefileextension is null;

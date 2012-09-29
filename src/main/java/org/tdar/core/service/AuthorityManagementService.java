@@ -133,6 +133,13 @@ public class AuthorityManagementService {
         return countmap;
     }
 
+    private <T extends Dedupable, P extends Persistable> void logDupeModification(P referrer, Field field, T dupe, AuthorityManagementLog<T> data) {
+        // if we want to aggregate all this data, store it in a ThreadLocal Map and make sure
+        // we serialize it right now, otherwise the data will have been changed
+        // FIXME: log to database or flatfile
+        data.add(referrer, field, (Persistable) dupe);
+    }
+
     @Transactional
     // TODO: jim you (probably) aren't handling one-to-many correctly yet.
     /**
@@ -150,9 +157,6 @@ public class AuthorityManagementService {
      *  
      */
     public <T extends Dedupable> void updateReferrers(Class<T> referredClass, List<Long> dupeIds, Long authorityId) {
-        Activity activity = new Activity();
-        activity.setName(String.format("update-referrers:: referredClass:%s\tauthorityId:%s", referredClass.getSimpleName(), authorityId));
-        activity.start();
 
         int maxAffectedRecordsCount = TdarConfiguration.getInstance().getAuthorityManagementMaxAffectedRecords();
         int affectedRecordCount = 0;
@@ -165,7 +169,6 @@ public class AuthorityManagementService {
 
         // prevent 'protected' records from being deleted
         if (countProtectedRecords(dupes) > 0) {
-        	activity.end();
             throw new TdarRecoverableRuntimeException("This de-dupe operation is not allowed because at least one of the selected duplicates is protected");
         }
 
@@ -190,7 +193,7 @@ public class AuthorityManagementService {
                     Collection<T> collection = reflectionService.callFieldGetter(referrer, field);
                     for (T dupe : dupes) {
                         if (collection.remove(dupe)) {
-                            authorityManagementLog.add(referrer, field, (Persistable) dupe);
+                            logDupeModification(referrer, field, dupe, authorityManagementLog);
                         }
                     }
                     if (!collection.contains(authority)) {
@@ -199,7 +202,7 @@ public class AuthorityManagementService {
                 }
                 else {
                     T dupe = reflectionService.callFieldGetter(referrer, field);
-                    authorityManagementLog.add(referrer, field, (Persistable) dupe);
+                    logDupeModification(referrer, field, dupe, authorityManagementLog);
                     reflectionService.callFieldSetter(referrer, field, authority);
                 }
                 genericDao.saveOrUpdate(referrer);
@@ -217,14 +220,13 @@ public class AuthorityManagementService {
             throw new TdarRecoverableRuntimeException(msg);
         }
         
-        logAndNotify(authorityManagementLog);
+        sendNotifications(authorityManagementLog);
 
         // add the dupes to the authority as synonyms
         processSynonyms(authority, dupes);
 
         // finally, delete each dupe
         genericDao.delete(dupes);
-        activity.end();
     }
     
     // return number "protected" items in the dupe list. Duplicates may not be de-duped
@@ -244,15 +246,14 @@ public class AuthorityManagementService {
         }
     }
     
-    private <T extends Dedupable> void logAndNotify(AuthorityManagementLog<T> logData) {
+    @SuppressWarnings("rawtypes")
+    private void sendNotifications( AuthorityManagementLog logData) {
         logger.debug("{}", logData);
-        String bar = "\r\n========================================================\r\n";
         
         //log the xml to filestore/logs
         Filestore filestore = TdarConfiguration.getInstance().getFilestore();
         String xml = "";
         String className = logData.getAuthority().getClass().getSimpleName();
-        int numUpdated = logData.getUpdatedReferrers().keySet().size(); //number of records affected, not total reference count
         try {
             xml = xmlService.convertToXML(logData);
         } catch (Exception e) {
@@ -266,31 +267,19 @@ public class AuthorityManagementService {
         
         //now send a summary email
         String to = TdarConfiguration.getInstance().getSystemAdminEmail();
-        String subject = String.format("tDAR Authority Management Service: user %s merged %s %s records to '%s'", 
+        String subject = String.format("tDAR Authority Management Service: dudupe operation by %s,  merging %s dupes of type %s", 
                 logData.getUserDisplayName(), 
-                numUpdated,
-                className,
-                logData.getAuthority().toString());
+                logData.getDupes().size(),
+                className);
         
+        String body = "User " + logData.getUserDisplayName() + " performed a dedupe operation.\n" +
+                "class type:\t" + className + "\n" +
+                "authority:\t" + logData.getAuthority() + "\n" +
+                "dupecount:\t" + logData.getDupes().size() + "\n\n";
+        emailService.send(body, to, subject);
         
-        StringBuffer body = new StringBuffer(String.format("User %s performed a dedupe operation.\r\n\r\n", logData.getUserDisplayName()));
-        //String fmt = "%1$-20s %2$s\r\n";  //key:        value
-        String fmt  = "%1$s %2$s\r\n";
-        body.append(String.format(fmt,  "Authority:", logData.getAuthority()));
-        body.append(String.format(fmt,  "Record Type:", className));
-        body.append(String.format(fmt,  "Records Updated:", numUpdated));
-        
-        body.append(bar);
-        body.append("records merged");
-        body.append(bar);
-        
-        for(Object p : logData.getUpdatedReferrers().keySet()) {
-            body.append("\r\n  -");
-            body.append(p);
-        }
-        logger.debug(body.toString());
-        emailService.send(body.toString(), subject, to);
     }
+    
     
     @XmlRootElement
     @XmlAccessorType(XmlAccessType.PROPERTY)

@@ -130,17 +130,17 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dataTableColumn")
     private List<DataValueOntologyNodeMapping> valueToOntologyNodeMapping = new ArrayList<DataValueOntologyNodeMapping>();
 
-    @Column(columnDefinition = "boolean default FALSE")
-    private boolean mappingColumn = false;
+    @Column
+    private Boolean mappingColumn = false;
 
     @Column
     private String delimiterValue;
 
-    @Column(columnDefinition = "boolean default TRUE")
-    private boolean ignoreFileExtension = true;
+    @Column
+    private Boolean ignoreFileExtension = Boolean.TRUE;
 
-    @Column(columnDefinition = "boolean default TRUE")
-    private boolean visible = true;
+    @Column
+    private Boolean visible = Boolean.TRUE;
 
     @Transient
     private Map<Long, List<String>> ontologyNodeIdToValuesMap;
@@ -312,11 +312,15 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
         this.delimiterValue = delimiterValue;
     }
 
-    public boolean isIgnoreFileExtension() {
+    public Boolean getIgnoreFileExtension() {
         return ignoreFileExtension;
     }
 
-    public void setIgnoreFileExtension(boolean ignoreFileExtension) {
+    public Boolean isIgnoreFileExtension() {
+        return ignoreFileExtension;
+    }
+
+    public void setIgnoreFileExtension(Boolean ignoreFileExtension) {
         this.ignoreFileExtension = ignoreFileExtension;
     }
 
@@ -336,7 +340,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
         setMeasurementUnit(column.getMeasurementUnit());
         setMappingColumn(column.isMappingColumn());
         setDelimiterValue(column.getDelimiterValue());
-        setIgnoreFileExtension(column.isIgnoreFileExtension());
+        setIgnoreFileExtension(column.getIgnoreFileExtension());
     }
 
     public CategoryVariable getTempSubCategoryVariable() {
@@ -348,6 +352,9 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     }
 
     public boolean isVisible() {
+        if (visible == null) {
+            return Boolean.TRUE;
+        }
         return visible;
     }
 
@@ -394,20 +401,20 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
         return true;
     }
 
-    public boolean isMappingColumn() {
+    public Boolean isMappingColumn() {
         return mappingColumn;
     }
 
-    public void setMappingColumn(boolean mappingColumn) {
+    public void setMappingColumn(Boolean mappingColumn) {
         this.mappingColumn = mappingColumn;
     }
 
     public boolean hasDifferentMappingMetadata(DataTableColumn column) {
         logger.trace("delim: '{}' - '{}'", getDelimiterValue(), column.getDelimiterValue());
         logger.trace("mapping: {} - {}", isMappingColumn(), column.isMappingColumn());
-        logger.trace("extension: {} - {}", isIgnoreFileExtension(), column.isIgnoreFileExtension());
+        logger.trace("extension: {} - {}", getIgnoreFileExtension(), column.getIgnoreFileExtension());
         return ! (StringUtils.equals(getDelimiterValue(), column.getDelimiterValue()) &&
-                ObjectUtils.equals(isIgnoreFileExtension(), column.isIgnoreFileExtension()) &&
+                ObjectUtils.equals(getIgnoreFileExtension(), column.getIgnoreFileExtension()) &&
                 ObjectUtils.equals(isMappingColumn(), column.isMappingColumn()));
     }
 

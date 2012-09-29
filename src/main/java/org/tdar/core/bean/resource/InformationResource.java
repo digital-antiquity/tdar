@@ -35,6 +35,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.lucene.analysis.KeywordAnalyzer;
+import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Boost;
 import org.hibernate.search.annotations.DynamicBoost;
@@ -48,6 +49,7 @@ import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
+import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
@@ -141,15 +143,23 @@ public abstract class InformationResource extends Resource {
     @BulkImportField(label = "Metadata Language", comment = BulkImportField.METADATA_LANGUAGE_DESCRIPTION)
     @Enumerated(EnumType.STRING)
     @Column(name = "metadata_language")
-    private LanguageEnum metadataLanguage;
+    private Language metadataLanguage;
 
     @BulkImportField(label = "Resource Language", comment = BulkImportField.RESOURCE_LANGAGE_DESCRIPTION)
     @Enumerated(EnumType.STRING)
     @Column(name = "resource_language")
-    private LanguageEnum resourceLanguage;
+    private Language resourceLanguage;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "license_type")
+    private LicenseType licenseType;
+
+    @Column(name = "license_text")
+    @Type(type = "org.hibernate.type.StringClobType")
+    private String licenseText;
 
     @Column(name = "available_to_public")
-    private boolean availableToPublic = true;
+    private boolean availableToPublic;
 
     @Column(name = "external_reference", nullable = true)
     private boolean externalReference;
@@ -182,6 +192,11 @@ public abstract class InformationResource extends Resource {
     @IndexedEmbedded
     private Institution resourceProviderInstitution;
 
+    @JoinColumn(name = "copyright_holder_id")
+    @ManyToOne(optional = true)
+    // @BulkImportField(implementedSubclasses = { Person.class, Institution.class }, label = "Primary Copyright Holder", order = 1)
+    private Creator copyrightHolder;
+
     // downward inheritance sections
     @Column(name = "inheriting_investigation_information", nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingInvestigationInformation;
@@ -207,20 +222,53 @@ public abstract class InformationResource extends Resource {
     @Transient
     private Map<DataTableColumn, String> relatedDatasetData = new HashMap<DataTableColumn, String>();
 
-    public LanguageEnum getMetadataLanguage() {
+    public Language getMetadataLanguage() {
         return metadataLanguage;
     }
 
-    public void setMetadataLanguage(LanguageEnum metadataLanguage) {
+    public void setMetadataLanguage(Language metadataLanguage) {
         this.metadataLanguage = metadataLanguage;
     }
 
-    public LanguageEnum getResourceLanguage() {
+    public Language getResourceLanguage() {
         return resourceLanguage;
     }
 
-    public void setResourceLanguage(LanguageEnum resourceLanguage) {
+    public void setResourceLanguage(Language resourceLanguage) {
         this.resourceLanguage = resourceLanguage;
+    }
+
+    public Creator getCopyrightHolder() {
+        return copyrightHolder;
+    }
+
+    public void setCopyrightHolder(Creator copyrightHolder) {
+        this.copyrightHolder = copyrightHolder;
+    }
+
+    @XmlElement(name = "licenseType")
+    public LicenseType getLicenseType() {
+        return licenseType;
+    }
+
+    public void setLicenseType(LicenseType licenseType) {
+        this.licenseType = licenseType;
+        if (licenseType != LicenseType.OTHER) {
+            setLicenseText(null);
+        }
+    }
+
+    @XmlElement(name = "licenseText")
+    public String getLicenseText() {
+        if (licenseType == LicenseType.OTHER) {
+            return licenseText;
+        } else {
+            return null;
+        }
+    }
+
+    public void setLicenseText(String licenseText) {
+        this.licenseText = licenseText;
     }
 
     public boolean isAvailableToPublic() {
@@ -267,7 +315,10 @@ public abstract class InformationResource extends Resource {
     @Transient
     @Field(name = QueryFieldNames.PROJECT_TITLE_SORT, index = Index.UN_TOKENIZED, store = Store.YES)
     public String getProjectTitle() {
-        return getProject().getTitleSort();
+        if (getProject() != null && getProject() != Project.NULL) {
+            return getProject().getTitleSort();
+        }
+        return "";
     }
 
     public void setProject(Project project) {
@@ -300,13 +351,16 @@ public abstract class InformationResource extends Resource {
         this.lastUploaded = lastUploaded;
     }
 
+    @Transient
     @Field(name = QueryFieldNames.PROJECT_ID)
     @Analyzer(impl = KeywordAnalyzer.class)
     public Long getProjectId() {
-        if (projectId == null) {
-            projectId = getProject().getId();
-        }
-        return Long.valueOf(-1L).equals(projectId) ? null : projectId;
+        if (projectId != null)
+            return projectId;
+        if (project == null || project == Project.NULL)
+            return null;
+        projectId = project.getId();
+        return projectId;
     }
 
     @Deprecated
@@ -315,6 +369,22 @@ public abstract class InformationResource extends Resource {
         // implicitly set projectId.
         this.projectId = projectId;
     }
+
+    // public Set<Document> getRelatedCitations() {
+    // return relatedCitations;
+    // }
+    //
+    // public void setRelatedCitations(Set<Document> relatedCitations) {
+    // this.relatedCitations = relatedCitations;
+    // }
+    //
+    // public Set<Document> getSourceCitations() {
+    // return sourceCitations;
+    // }
+    //
+    // public void setSourceCitations(Set<Document> sourceCitations) {
+    // this.sourceCitations = sourceCitations;
+    // }
 
     public int getTotalNumberOfFiles() {
         return informationResourceFiles.size();
@@ -440,7 +510,7 @@ public abstract class InformationResource extends Resource {
     public boolean isPublicallyAccessible() {
         return getResourceAccessType() == ResourceAccessType.PUBLICALLY_ACCESSIBLE;
     }
-
+    
     @Transient
     public boolean getContainsFiles() {
         return hasFiles();
@@ -681,7 +751,7 @@ public abstract class InformationResource extends Resource {
     @Transient
     @JSONTransient
     public String getAdditionalUsersWhoCanModify() {
-        if (getProject() != Project.NULL) {
+        if (getProject() != null) {
             return getProject().getAdditionalUsersWhoCanModify();
         }
         return "";

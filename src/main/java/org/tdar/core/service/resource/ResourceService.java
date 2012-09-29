@@ -200,11 +200,6 @@ public class ResourceService extends GenericService {
     public <H extends HasResource<R>, R extends Resource> void saveHasResources(R resource, boolean shouldSave, ErrorHandling validateMethod,
             Collection<H> incoming_,
             Set<H> current, Class<H> cls) {
-        if (CollectionUtils.isEmpty(incoming_) && CollectionUtils.isEmpty(current)) {
-            //skip a complete no-op
-            return;
-        }
-
         // FIXME: the last parameter should be able to be determined via generics/reflection instead of passing in
         if (incoming_ == null) {
             incoming_ = new ArrayList<H>();

@@ -7,12 +7,12 @@ import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
 import org.apache.commons.lang.ObjectUtils;
-import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.resource.ResourceType;
 
 @Entity
 @Table(name = "homepage_cache_resource_type")
-public class HomepageResourceCountCache extends Persistable.Base implements Comparable<HomepageResourceCountCache> {
+public class HomepageResourceCountCache extends Base implements Comparable<HomepageResourceCountCache> {
 
     private static final long serialVersionUID = 4401314235170180736L;
 
@@ -20,7 +20,7 @@ public class HomepageResourceCountCache extends Persistable.Base implements Comp
     private Long count;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "resource_type", unique=true)
+    @Column(name = "resource_type")
     private ResourceType resourceType;
 
     public HomepageResourceCountCache() {

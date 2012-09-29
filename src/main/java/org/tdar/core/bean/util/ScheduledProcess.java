@@ -85,7 +85,8 @@ public interface ScheduledProcess<P extends Persistable> extends Serializable {
                 sb.append("\n").append(error.getFirst().toString()).append(" : ").append(error.getSecond());
             }
             if (sb.length() > 0) {
-                emailService.send(sb.toString(), String.format("tDAR: %s messages", getDisplayName()), tdarConfiguration.getSystemAdminEmail());
+                emailService.send(sb.toString(), tdarConfiguration.getSystemAdminEmail(), 
+                		String.format("tDAR: %s messages", getDisplayName()));
             }
         }
 

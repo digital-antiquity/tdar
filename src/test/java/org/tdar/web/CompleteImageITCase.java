@@ -91,6 +91,11 @@ public class CompleteImageITCase extends AbstractAdminAuthenticatedWebTestCase {
         docValMap.put("coverageDates[1].endDate", "1000");
         docValMap.put("coverageDates[1].dateType", "RADIOCARBON_DATE");
 
+        docValMap.put("copyrightHolderType", "Person");
+        docValMap.put("copyrightHolderProxy.person.lastName", "Disney");
+        docValMap.put("copyrightHolderProxy.person.firstName", "Walt");
+        docValMap.put("copyrightHolderProxy.person.institution.name", "Disney Corp.");
+
         docMultiValMapLab.put("investigationTypeIds",
                 Arrays.asList(new String[] { "Archaeological Overview", "Architectural Survey", "Collections Research", "Data Recovery / Excavation" }));
         docMultiValMapLab.put("approvedSiteTypeKeywordIds", Arrays.asList(new String[] { "Agricultural or Herding", "Ancient church / religious structure" }));

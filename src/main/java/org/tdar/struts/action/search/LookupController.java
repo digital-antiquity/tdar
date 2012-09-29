@@ -145,11 +145,11 @@ public class LookupController extends AbstractLookupController<Indexable> {
             addActionError("you must be logged in");
         }
         QueryPartGroup valueGroup = new QueryPartGroup();
-        addTitlePart(valueGroup, getTerm());
+        addTitlePart(valueGroup, getTerm(), false);
 
         if (getSortCategoryId() != null && getSortCategoryId() > -1) {
             // SHOULD PREFER THINGS THAT HAVE THAT CATEGORY ID
-            FieldQueryPart q2 = new FieldQueryPart(QueryFieldNames.CATEGORY_ID, getSortCategoryId().toString().trim());
+            FieldQueryPart q2 = new FieldQueryPart(QueryFieldNames.CATEGORY_ID, getSortCategoryId().toString());
             q2.setBoost(5f);
             valueGroup.append(q2);
             valueGroup.setOperator(Operator.OR);

@@ -61,7 +61,6 @@ $(document).ready(function() {
    the color if mapped properly to something */
 
 //FIXME: validation logic should be in validate methods
-//FIXME: confirm these calls to .first() are pointless, then remove
 function registerCheckboxInfo() {
     var $target = $($(this).parents(".datatablecolumn").first());
     var val = $('.columnEncoding:checked',$target).val();
@@ -104,13 +103,12 @@ function registerCheckboxInfo() {
     var ontolog = $target.find("input.ontologyfield:visible").first();
     var dataType = $target.find("input.dataType").first().val();
     var codig = $target.find("input.codingsheetfield:visible").first();
-    var codingSheetId = $('.codingsheetidfield', $target).val();
     var unit = $target.find("select.measurementUnit:visible").first();
 	var map = $target.find(':input.mappingValue:visible:checked').first();
 	var mapDetail = $target.find('fieldgroup.mappingDetail').first();
 	mapDetail.hide();
 
-	if (dataType == undefined || dataType.indexOf('INT') == -1 && dataType.indexOf('DOUBLE') == -1) {
+	if (dataType.indexOf('INT') == -1 && dataType.indexOf('DOUBLE') == -1) {
 	  $(".columnEncoding[value='MEASUREMENT']", $target).attr('disabled','disabled');
 	  $(".columnEncoding[value='COUNT']", $target).attr('disabled','disabled');
     }
@@ -126,7 +124,7 @@ function registerCheckboxInfo() {
     } else if (ontolog != undefined && ontolog.val() != '') {
       square.addClass("integration");
     } else if (val == 'CODED_VALUE') {
-    	if (codingSheetId != undefined && codingSheetId != '') {
+    	if (codig != undefined && codig.val() != '') {
 	      square.addClass("coded");
 	    } else {
           square.addClass("invalid");
@@ -339,7 +337,7 @@ function goToColumn(select) {
 				<#assign codingId=column.defaultCodingSheet.id?c />
 				<#assign codingTxt="${column.defaultCodingSheet.title} (${column.defaultCodingSheet.id?c})"/>
 			</#if>
-	        <@s.hidden id="${column_index}_cid" name="dataTableColumns[${column_index}].defaultCodingSheet.id" cssClass="codingsheetidfield" value="${codingId}" />
+	        <@s.hidden id="${column_index}_cid" name="dataTableColumns[${column_index}].defaultCodingSheet.id" value="${codingId}" />
 
 	        <@s.textfield name="dataTableColumns[${column_index}].defaultCodingSheet.title"  target="#columnDiv_${column_index}"
 	         autocompleteParentElement="#columnDiv_${column_index}"

@@ -2,7 +2,6 @@ package org.tdar.core.dao;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -65,14 +64,14 @@ public class GenericDao {
         Query query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_FIND_ALL_WITH_IDS, persistentClass.getSimpleName()));
         return query.setParameterList("ids", ids).list();
     }
-
+    
     @SuppressWarnings("unchecked")
     public <E> List<Long> findAllIds(Class<E> persistentClass) {
         return getCurrentSession().createQuery("select id from " + persistentClass.getName() + " ORDER by id asc").list();
     }
-
+    
     @SuppressWarnings("unchecked")
-    public <E> List<Long> findAllIds(Class<E> persistentClass, long startId, long endId) {
+    public <E> List<Long>findAllIds(Class<E> persistentClass, long startId, long endId) {
         String hqlfmt = "select id from %s where id between %s and %s order by id asc";
         String hql = String.format(hqlfmt, persistentClass.getName(), startId, endId);
         return getCurrentSession().createQuery(hql).list();
@@ -321,10 +320,6 @@ public class GenericDao {
         }
     }
 
-    public <E extends Persistable> int deleteAll(Class<E> persistentClass) {
-        return getCurrentSession().createQuery("DELETE FROM " + persistentClass.getName()).executeUpdate();
-    }
-
     protected String getDefaultOrderingProperty() {
         logger.warn("Did not override getDefaultOrderingProperty, using id as default ordering property.");
         return "id";
@@ -400,19 +395,6 @@ public class GenericDao {
 
     public Statistics getSessionStatistics() {
         return getCurrentSession().getSessionFactory().getStatistics();
-    }
-
-    public <O> Collection<O> mergeAll(Collection<O> collection) {
-        if (CollectionUtils.isEmpty(collection)) {
-            return Collections.emptyList();
-        }
-        ArrayList<O> mergedEntities = new ArrayList<O>();
-        for (O entity : collection) {
-            mergedEntities.add(merge(entity));
-        }
-        // collection.clear();
-        // collection.addAll(mergedEntities);
-        return mergedEntities;
     }
 
 }

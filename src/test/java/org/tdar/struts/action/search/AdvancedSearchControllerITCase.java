@@ -33,7 +33,6 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.SearchIndexService;
@@ -400,6 +399,21 @@ public class AdvancedSearchControllerITCase extends AbstractSearchControllerITCa
         assertSearchPhrase(gk.getLabel());
     }
 
+    private Document createDocumentWithContributorAndSubmitter() throws InstantiationException, IllegalAccessException {
+        Document doc = createAndSaveNewInformationResource(Document.class);
+        Person contributor = new Person("Kelly", "deVos", "kellyd@mailinator.com");
+        genericService.save(contributor);
+        ResourceCreator rc = new ResourceCreator(doc, contributor, ResourceCreatorRole.AUTHOR);
+        Person submitter = new Person("Evelyn", "deVos", "ecd@mailinator.com");
+        genericService.save(submitter);
+        doc.setSubmitter(submitter);
+        genericService.saveOrUpdate(rc);
+        doc.getResourceCreators().add(rc);
+        genericService.saveOrUpdate(doc);
+        reindex();
+        return doc;
+    }
+
     @Test
     @Rollback
     public void testSearchBySubmitterIds() throws InstantiationException, IllegalAccessException, ParseException {
@@ -457,30 +471,14 @@ public class AdvancedSearchControllerITCase extends AbstractSearchControllerITCa
     @Test
     @Rollback
     public void testTitleSearch() throws InstantiationException, IllegalAccessException, ParseException {
-    	String title = "the archaeology of class and war";
-    	Set<String> wordsInTitle = new HashSet<String>(Arrays.asList(title.split(" ")));
-    	wordsInTitle.removeAll(TdarConfiguration.getInstance().getStopWords());
-    	
         Document doc = createDocumentWithContributorAndSubmitter();
-        doc.setTitle(title);
+        doc.setTitle("the archaeology of class and war");
         genericService.saveOrUpdate(doc);
         searchIndexService.index(doc);
-        controller.setTitle(title);
+        controller.setTitle("the archaeology of class and war");
         controller.performSearch();
-        
-        //since we are sorting by relevance, we expect the exact match to be topmost,  and all other results to contain at least one matching term
-        assertTrue("at least one result expected", controller.getResults().size() > 1);
-        
-        assertEquals("exact match should be most relevant", title, controller.getResults().get(0).getTitle());
-        for(Resource r : controller.getResults()) {
-        	Set<String> wordsInResult = new HashSet<String>(Arrays.asList(r.getTitle().toLowerCase().split(" ")));
-        	wordsInResult.removeAll(TdarConfiguration.getInstance().getStopWords());
-        	wordsInResult.retainAll(wordsInTitle);  //intersection should yield at least one word
-        	
-        	String msg = String.format("expecting at least one term in title - title:'%s'  terms: [%s]", r.getTitle(), wordsInTitle);
-        	assertFalse(msg, wordsInResult.isEmpty());
-        	
-        }
+        assertEquals("only one result expected", 1L, controller.getResults().size());
+        assertEquals(doc, controller.getResults().iterator().next());
     }
     
 }

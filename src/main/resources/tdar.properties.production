@@ -1,9 +1,42 @@
-file.store.location=/home/tdar/filestore
-personal.file.store.location=/home/tdar/personal-filestore
+#
+#	Basic System settings
+#
 web.root=src/main/webapp
-file.store.class=org.tdar.filestore.PairtreeFilestore
 run.periodic.events=true
 app.theme.dir=includes/themes/tdar/
 server.environment=production
+#
+#	File locations
+#
+file.store.location=/home/tdar/filestore
+personal.file.store.location=/home/tdar/personal-filestore
+file.store.class=org.tdar.filestore.PairtreeFilestore
+#
+#	Configurable Navigation Menu Components
+#
+base.url=http://core.tdar.org/
+help.url=http://dev.tdar.org/confluence/display/TDAR/User+Documentation
+about.url=http://www.tdar.org
+comments.url=mailto:comments@tdar.org
+#
+#	OAI Settings
+#
+oai.repository.name=tDAR
+oai.repository.enableEntities=false
+oai.repository.namespace-identifier=tdar.org
+#
+#	Google Maps
+#
+google.map.defaultLatitude=40.00
+google.map.defaultLongitude=-97.00
+#
+#	Global Copyright & Privacy Controls
+#
+copyright.fields.enabled=false
+copyright.fields.mandatory=false
 privacy.controls.enabled=false
-search.excel.export.recordMax=1000
+
+ #
+# Licenses for InformationResources
+# 
+licenses.enabled=false

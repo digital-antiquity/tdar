@@ -35,8 +35,9 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     public static HashMap<String, List<String>> docMultiValMap = new HashMap<String, List<String>>();
     public static HashMap<String, List<String>> docMultiValMapLab = new HashMap<String, List<String>>();
     public static final String TEST_DATASET_NAME = "dataset_with_ints.xls";
-    public static String PROJECT_ID = "1";
+    public static String PROJECT_ID_FIELDNAME = "projectId";
 
+    public static String PROJECT_ID = "1";
     public static String TITLE = "My Sample Dataset";
     public static String DESCRIPTION = "A resource description";
     public static final String SPITAL_DB_NAME = "Spital Abone database.mdb";

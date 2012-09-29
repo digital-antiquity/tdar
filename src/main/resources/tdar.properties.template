@@ -3,4 +3,8 @@ personal.file.store.location=/home/tdar/personal-filestore
 web.root=src/main/webapp
 app.theme.dir=includes/themes/tdar/
 privacy.controls.enabled=false
+#
+# Licenses for InformationResources
+# 
+licenses.enabled=false
 search.excel.export.recordMax=1000

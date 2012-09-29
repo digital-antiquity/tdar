@@ -147,7 +147,7 @@
 			<@paginationLink startRecord=nextPageStartRecord path="${path}" linkText="next" />
 		</#if>
   <#if (end != numPages && nextPageStartRecord < totalRecords)>
-          <@paginationLink startRecord=(totalRecords - totalRecords % recordsPerPage) path="${path}" linkText="last" />
+          <@paginationLink startRecord=(totalRecords - totalRecords % 20) path="${path}" linkText="last" />
   </#if>
 	</div>
 </#macro>

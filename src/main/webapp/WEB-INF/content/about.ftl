@@ -57,7 +57,7 @@
 <div class="glide" style="position:relative;">
 <h3>Explore</h3>
 <#assign graphWidth = 372 />
-<#assign barWidth = (graphWidth  / (homepageResourceCountCache.size() - graphVariable?number) - 10 )/>
+<#assign barWidth = (graphWidth  / 5 - 10 )/>
 <div id="contents_pie" style="height:353px;padding-top:5px;position:absolute;vertical-align:bottom;left:552px;width:350px;margin-left:20px;border:1px solid #CCC;background-color:#fff">
     <p style="margin-right: auto;margin-left: auto;text-align:center;margin-top:10px;margin-bottom:0px"><b>tDAR by the Numbers</b></p>
    <table style="margin-left: auto;vertical-align:bottom;margin-right: auto;margin-top:auto;margin-bottom:5px;position:absolute;bottom:5px;padding-left:3px;padding-right:3px">

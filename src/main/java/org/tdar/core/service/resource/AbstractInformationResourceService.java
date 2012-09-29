@@ -19,7 +19,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.LanguageEnum;
+import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
@@ -264,8 +264,8 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         return informationResourceFileService;
     }
 
-    public List<LanguageEnum> findAllLanguages() {
-        return Arrays.asList(LanguageEnum.values());
+    public List<Language> findAllLanguages() {
+        return Arrays.asList(Language.values());
     }
 
 }

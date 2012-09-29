@@ -130,7 +130,7 @@ public class DoiProcess extends AbstractConfigurableService<ExternalIDProvider> 
         }
         if (sb.length() > 0 && total > 0) {
             logger.info("sending email");
-            emailService.send(sb.toString(), "tDAR: DOI Creation Info", TdarConfiguration.getInstance().getSystemAdminEmail());
+            emailService.send(sb.toString(), TdarConfiguration.getInstance().getSystemAdminEmail(), "tDAR: DOI Creation Info");
         }
         batchResults.clear();
         initializeBatchResults();

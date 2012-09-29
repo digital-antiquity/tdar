@@ -398,7 +398,7 @@ public class Resource extends JsonModel.Base implements Persistable, Comparable<
     @XmlElement(name = "siteTypeKeyword")
     public Set<SiteTypeKeyword> getSiteTypeKeywords() {
         if (siteTypeKeywords == null) {
-            this.siteTypeKeywords = new LinkedHashSet<SiteTypeKeyword>();
+            this.siteNameKeywords = new LinkedHashSet<SiteNameKeyword>();
         }
         return siteTypeKeywords;
     }
@@ -901,9 +901,6 @@ public class Resource extends JsonModel.Base implements Persistable, Comparable<
     @XmlElementWrapper(name = "resourceCreators")
     @XmlElement(name = "resourceCreator")
     public Set<ResourceCreator> getResourceCreators() {
-        if (resourceCreators == null) {
-            resourceCreators = new LinkedHashSet<ResourceCreator>();
-        }
         return resourceCreators;
     }
 
@@ -911,7 +908,7 @@ public class Resource extends JsonModel.Base implements Persistable, Comparable<
      * @return the resourceCreators with the given ResourceCreatorRole
      */
     public Set<ResourceCreator> getResourceCreators(ResourceCreatorRole role) {
-        Set<ResourceCreator> creators = new LinkedHashSet<ResourceCreator>();
+        Set<ResourceCreator> creators = new HashSet<ResourceCreator>();
         for (ResourceCreator creator : this.getResourceCreators()) {
             if (creator.getRole() == role) {
                 creators.add(creator);
@@ -1093,10 +1090,6 @@ public class Resource extends JsonModel.Base implements Persistable, Comparable<
         }
         for (ResourceAnnotation ann : getResourceAnnotations()) {
             sb.append(ann.getPairedValue()).append(" ");
-        }
-
-        for (ResourceCollection coll : getSharedResourceCollections()) {
-            sb.append(coll.getName()).append(" ");
         }
 
         for (RelatedComparativeCollection rcc : getRelatedComparativeCollections()) {

@@ -19,30 +19,35 @@ import org.tdar.core.bean.resource.ResourceType;
  * Enum for the possible roles a ResourceCreator can have and partitioned by CreatorType and ResourceType.
  * 
  * FIXME: refactor this for next release
+ * 
  * @author <a href='mailto:allen.lee@asu.edu'>Allen Lee</a>
  * @version $Rev$
  */
 
 // FIXME: the logic of these roles, when they are relevant, when they should be accepted for input, and when they should be included for citation, is almost
 // totally inscrutable
-public enum ResourceCreatorRole implements HasLabel  {
-    CONTACT("Contact"),
-    AUTHOR("Author", null, ResourceType.DOCUMENT),
-    CONTRIBUTOR("Contributor"),
-    EDITOR("Editor", CreatorType.PERSON, ResourceType.DOCUMENT),
-    TRANSLATOR("Translator", CreatorType.PERSON, ResourceType.DOCUMENT),
-    FIELD_DIRECTOR("Field Director", CreatorType.PERSON),
-    LAB_DIRECTOR("Lab Director", CreatorType.PERSON),
-    PRINCIPAL_INVESTIGATOR("Principal Investigator", CreatorType.PERSON),
-    PROJECT_DIRECTOR("Project Director", CreatorType.PERSON),
-    COLLABORATOR("Collaborator", CreatorType.INSTITUTION),
-    LANDOWNER("Landowner"),
-    SPONSOR("Sponsor"),
-    PERMITTER("Permitting Agency", CreatorType.INSTITUTION),
-    REPOSITORY("Repository", CreatorType.INSTITUTION),
-    CREATOR("Creator", null, ResourceType.CODING_SHEET, ResourceType.ONTOLOGY, ResourceType.IMAGE, ResourceType.DATASET, ResourceType.SENSORY_DATA),
-    PREPARER("Prepared By", CreatorType.INSTITUTION),
-    SUBMITTED_TO("Submitted To", CreatorType.INSTITUTION);
+public enum ResourceCreatorRole implements HasLabel {
+    CONTACT("Contact", ResourceCreatorRoleType.CREDIT),
+    AUTHOR("Author", ResourceCreatorRoleType.AUTHORSHIP, null, ResourceType.DOCUMENT),
+    CONTRIBUTOR("Contributor", ResourceCreatorRoleType.CREDIT),
+    EDITOR("Editor", ResourceCreatorRoleType.AUTHORSHIP, CreatorType.PERSON, ResourceType.DOCUMENT),
+    TRANSLATOR("Translator", ResourceCreatorRoleType.CREDIT, CreatorType.PERSON, ResourceType.DOCUMENT),
+    FIELD_DIRECTOR("Field Director", ResourceCreatorRoleType.CREDIT, CreatorType.PERSON),
+    LAB_DIRECTOR("Lab Director", ResourceCreatorRoleType.CREDIT, CreatorType.PERSON),
+    PRINCIPAL_INVESTIGATOR("Principal Investigator", ResourceCreatorRoleType.CREDIT, CreatorType.PERSON),
+    PROJECT_DIRECTOR("Project Director", ResourceCreatorRoleType.CREDIT, CreatorType.PERSON),
+    COLLABORATOR("Collaborator", ResourceCreatorRoleType.CREDIT, CreatorType.INSTITUTION),
+    LANDOWNER("Landowner", ResourceCreatorRoleType.CREDIT),
+    SPONSOR("Sponsor", ResourceCreatorRoleType.CREDIT),
+    PERMITTER("Permitting Agency", ResourceCreatorRoleType.CREDIT, CreatorType.INSTITUTION),
+    REPOSITORY("Repository", ResourceCreatorRoleType.CREDIT, CreatorType.INSTITUTION),
+    CREATOR("Creator", ResourceCreatorRoleType.AUTHORSHIP, null, ResourceType.CODING_SHEET, ResourceType.ONTOLOGY, ResourceType.IMAGE, ResourceType.DATASET,
+            ResourceType.SENSORY_DATA),
+    PREPARER("Prepared By", ResourceCreatorRoleType.CREDIT, CreatorType.INSTITUTION),
+    SUBMITTED_TO("Submitted To", ResourceCreatorRoleType.CREDIT, CreatorType.INSTITUTION),
+    COPYRIGHT_HOLDER("Copyright Holder", ResourceCreatorRoleType.OTHER, null, ResourceType.CODING_SHEET, ResourceType.ONTOLOGY, ResourceType.IMAGE,
+            ResourceType.DATASET,
+            ResourceType.SENSORY_DATA, ResourceType.DOCUMENT);
     /*
      * SUGGESTIONS FOR:
      * Crew Chief
@@ -52,6 +57,7 @@ public enum ResourceCreatorRole implements HasLabel  {
     private final String label;
     private final CreatorType relevantCreatorType;
     private final Set<ResourceType> relevantResourceTypes;
+    private ResourceCreatorRoleType type;
 
     /**
      * return a list of roles typically associated with the actual creation of a resource.
@@ -59,9 +65,7 @@ public enum ResourceCreatorRole implements HasLabel  {
      * @return
      */
     public static List<ResourceCreatorRole> getAuthorshipRoles() {
-        // FIXME: define role 'group' as part of the enum constructor
-        ResourceCreatorRole[] authorshipRoles = { AUTHOR, EDITOR, TRANSLATOR, CREATOR };
-        return Arrays.asList(authorshipRoles);
+        return getRolesOfType(ResourceCreatorRoleType.AUTHORSHIP);
     }
 
     /**
@@ -82,19 +86,20 @@ public enum ResourceCreatorRole implements HasLabel  {
         return new HashSet<ResourceCreatorRole>(map.get(resourceType));
     }
 
-    private ResourceCreatorRole(String label) {
-        this(label, null, new ResourceType[0]);
+    private ResourceCreatorRole(String label, ResourceCreatorRoleType type) {
+        this(label, type, null, new ResourceType[0]);
     }
 
-    private ResourceCreatorRole(String label, CreatorType forCreatorType) {
+    private ResourceCreatorRole(String label, ResourceCreatorRoleType type, CreatorType forCreatorType) {
         // FIXME: since there isn't a ResourceType.ALL and I don't think it makes sense
         // to have one in the database, we're using null to signify ResourceType.ALL
         // perhaps it is better to consistent to use null for Creator.Type as well...
-        this(label, forCreatorType, new ResourceType[0]);
+        this(label, type, forCreatorType, new ResourceType[0]);
     }
 
-    private ResourceCreatorRole(String label, CreatorType creatorType, ResourceType... resourceTypes) {
+    private ResourceCreatorRole(String label, ResourceCreatorRoleType type, CreatorType creatorType, ResourceType... resourceTypes) {
         this.label = label;
+        this.setType(type);
         this.relevantCreatorType = creatorType;
         if (resourceTypes.length == 0) {
             this.relevantResourceTypes = Collections.emptySet();
@@ -121,7 +126,11 @@ public enum ResourceCreatorRole implements HasLabel  {
     }
 
     public static List<ResourceCreatorRole> getAll() {
-        return Arrays.asList(values());
+
+        List<ResourceCreatorRole> relevantRoles = new ArrayList<ResourceCreatorRole>();
+        relevantRoles.addAll(getAuthorshipRoles());
+        relevantRoles.addAll(getCreditRoles());
+        return relevantRoles;
     }
 
     public static List<ResourceCreatorRole> getPersonRoles() {
@@ -134,9 +143,12 @@ public enum ResourceCreatorRole implements HasLabel  {
 
     public static List<ResourceCreatorRole> getRoles(CreatorType creatorType) {
         ArrayList<ResourceCreatorRole> relevantRoles = new ArrayList<ResourceCreatorRole>();
-        for(ResourceCreatorRole role : values()) {
-            if(role.isRelevantFor(creatorType)) relevantRoles.add(role);
+        for (ResourceCreatorRole role : values()) {
+            if (role.isRelevantFor(creatorType)) {
+                relevantRoles.add(role);
+            }
         }
+        relevantRoles.removeAll(getOtherRoles());
         return relevantRoles;
     }
 
@@ -147,19 +159,27 @@ public enum ResourceCreatorRole implements HasLabel  {
                 resourceCreatorRoles.add(role);
             }
         }
+        resourceCreatorRoles.removeAll(getOtherRoles());
         return resourceCreatorRoles;
     }
 
-    /**
-     * "Credit" roles are essentially any other roles that are not "authorship" type roles
-     * 
-     * @return
-     */
     public static List<ResourceCreatorRole> getCreditRoles() {
+        return getRolesOfType(ResourceCreatorRoleType.CREDIT);
+    }
+
+    private static List<ResourceCreatorRole> getRolesOfType(ResourceCreatorRoleType type) {
         // get mutable list of all roles, then remove the authorship roles
-        ArrayList<ResourceCreatorRole> roles = new ArrayList<ResourceCreatorRole>(getAll());
-        roles.removeAll(getAuthorshipRoles());
+        ArrayList<ResourceCreatorRole> roles = new ArrayList<ResourceCreatorRole>();
+        for (ResourceCreatorRole role : values()) {
+            if (role.getType() == type) {
+                roles.add(role);
+            }
+        }
         return roles;
+    }
+
+    public static List<ResourceCreatorRole> getOtherRoles() {
+        return getRolesOfType(ResourceCreatorRoleType.OTHER);
     }
 
     public static List<ResourceCreatorRole> getAuthorshipRoles(CreatorType creatorType, ResourceType resourceType) {
@@ -178,6 +198,14 @@ public enum ResourceCreatorRole implements HasLabel  {
         List<ResourceCreatorRole> sortedRoles = new ArrayList<ResourceCreatorRole>(s1);
         Collections.sort(sortedRoles);
         return sortedRoles;
+    }
+
+    public ResourceCreatorRoleType getType() {
+        return type;
+    }
+
+    public void setType(ResourceCreatorRoleType type) {
+        this.type = type;
     }
 
 }

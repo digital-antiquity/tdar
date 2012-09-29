@@ -128,9 +128,9 @@ public class ImportService {
 
     }
 
-    public Resource loadXMLFile(InputStream fileio, Person p, List<FileProxy> fileProxies) throws ClassNotFoundException,
+    public Resource loadXMLFile(InputStream fileio, Person p, List<Pair<String, InputStream>> filePairs) throws ClassNotFoundException,
             IOException, APIException {
-        return loadXMLFile(fileio, p, fileProxies, null);
+        return loadXMLFile(fileio, p, filePairs, null);
     }
 
     /**
@@ -149,16 +149,17 @@ public class ImportService {
         return loadXMLFile(new FileInputStream(filename), p, (Long) null);
     }
 
-    public Resource loadXMLFile(InputStream fileio, Person p, List<FileProxy> proxies, Long overrideProjectId) throws ClassNotFoundException,
+    public Resource loadXMLFile(InputStream fileio, Person p, List<Pair<String, InputStream>> filePairs, Long overrideProjectId) throws ClassNotFoundException,
             IOException, APIException {
         Resource incomingResource = loadXMLFile(fileio, p, overrideProjectId);
         Set<String> extensionsForType = fileAnalyzer.getExtensionsForType(ResourceType.fromClass(incomingResource.getClass()));
         if (incomingResource instanceof InformationResource) {
-            for (FileProxy proxy : proxies) {
-                String ext = FilenameUtils.getExtension(proxy.getFilename()).toLowerCase();
+            for (Pair<String, InputStream> filePair : filePairs) {
+                String ext = FilenameUtils.getExtension(filePair.getFirst()).toLowerCase();
                 if (!extensionsForType.contains(ext))
                     throw new APIException("invalid file type " + ext + " for resource type -- acceptable:"
                             + StringUtils.join(extensionsForType, ", "), StatusCode.FORBIDDEN);
+                FileProxy proxy = new FileProxy(filePair.getFirst(), filePair.getSecond(), VersionType.UPLOADED, FileAction.ADD);
                 informationResourceService.processFileProxy((InformationResource) incomingResource, proxy);
                 // informationResourceService.addOrReplaceInformationResourceFile((InformationResource) r, file.getSecond(), file.getFirst(),
                 // FileAction.REPLACE, VersionType.UPLOADED);
@@ -191,10 +192,8 @@ public class ImportService {
         created = populateFromExistingResource(person, xstreamResource);
 
         logger.debug("can edit record");
-        if (CollectionUtils.isNotEmpty(xstreamResource.getResourceCreators())) {
-            for (ResourceCreator resourceCreator : xstreamResource.getResourceCreators()) {
-                entityService.findOrSaveResourceCreator(resourceCreator);
-            }
+        for (ResourceCreator resourceCreator : xstreamResource.getResourceCreators()) {
+            entityService.findOrSaveResourceCreator(resourceCreator);
         }
 
         saveSharedChildMetadata(xstreamResource, person);
@@ -344,10 +343,6 @@ public class ImportService {
 
     public <G> void resolveManyToMany(Class<G> incomingClass, Collection<G> incomingCollection, List<String> ignoreProperties, boolean create)
             throws APIException {
-        if (CollectionUtils.isEmpty(incomingCollection)) {
-            return;
-        }
-
         // if just creating, then simple call (otherwise, dealing with validation)
         if (create) {
             Set<G> findByExamples = genericService.findByExamples(incomingClass, incomingCollection, ignoreProperties, FindOptions.FIND_FIRST_OR_CREATE);
@@ -372,7 +367,7 @@ public class ImportService {
     // if the informationResource specifies a project id, look it up and make necessary assignments
     private void resolveProject(InformationResource informationResource) throws APIException {
         logger.trace("resolving project...");
-        if (informationResource.getProjectId() == null || informationResource.getProject() == Project.NULL)
+        if (informationResource.getProjectId() == null)
             return;
         Project project = projectService.find(informationResource.getProjectId());
         if (project == null) {

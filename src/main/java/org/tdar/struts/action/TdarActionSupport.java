@@ -2,6 +2,7 @@ package org.tdar.struts.action;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -18,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -189,12 +191,28 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return TdarConfiguration.getInstance().getThemeDir();
     }
 
+   public String getGoogleMapsApiKey() {
+        return TdarConfiguration.getInstance().getGoogleMapsApiKey();	
+   }
+
     public String getGoogleAnalyticsId() {
         return TdarConfiguration.getInstance().getGoogleAnalyticsId();
     }
 
     public boolean getPrivacyControlsEnabled() {
         return TdarConfiguration.getInstance().getPrivacyControlsEnabled();
+    }
+    
+    public boolean isCopyrightMandatory() {
+        return TdarConfiguration.getInstance().getCopyrightMandatory();
+    }
+
+    public boolean isCopyrightEnabled() {
+        return TdarConfiguration.getInstance().getCopyrightEnabled();
+    }
+    
+    public boolean getLicensesEnabled() {
+        return TdarConfiguration.getInstance().getLicensesEnabled();
     }
 
     public String getServerEnvironmentStatus() {
@@ -215,6 +233,18 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     public String getCommentsUrl() {
         return TdarConfiguration.getInstance().getAboutUrl();
+    }
+
+    public String getGMapDefaultLat() {
+        DecimalFormat latlong = new DecimalFormat("0.00");
+        latlong.setGroupingUsed(false);
+        return latlong.format(TdarConfiguration.getInstance().getGmapDefaultLat());
+    }
+
+    public String getGMapDefaultLng() {
+        DecimalFormat latlong = new DecimalFormat("0.00");
+        latlong.setGroupingUsed(false);
+        return latlong.format(TdarConfiguration.getInstance().getGmapDefaultLng());
     }
 
     protected void clearAuthenticationToken() {
@@ -362,11 +392,18 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     }
 
     protected final boolean isPostRequest() {
-        return "post".equalsIgnoreCase(servletRequest.getMethod());
+        return "POST".equals(servletRequest.getMethod());
     }
 
     protected final boolean isGetRequest() {
-        return !isPostRequest();
+        return "GET".equals(servletRequest.getMethod());
+    }
+
+    public List<CoverageType> getAllCoverageTypes() {
+        List<CoverageType> coverageTypes = new ArrayList<CoverageType>();
+        coverageTypes.add(CoverageType.CALENDAR_DATE);
+        coverageTypes.add(CoverageType.RADIOCARBON_DATE);
+        return coverageTypes;
     }
 
 }

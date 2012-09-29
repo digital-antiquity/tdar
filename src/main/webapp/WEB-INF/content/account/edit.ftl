@@ -15,10 +15,6 @@ textarea {width:32em}
 </style>
 <script type='text/javascript'>
 $(function() {
-  setTimeout(function() {
-    alert("Your session has timed out, click ok to refresh the page.");
-    location.reload(true);
-  }, ${registrationTimeout?c});
   $('#contributor-id').click(function() {
     switchContributorReasonDisplay($(this).is(':checked'));
   });

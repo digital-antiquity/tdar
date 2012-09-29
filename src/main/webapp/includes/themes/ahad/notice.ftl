@@ -1,23 +1,15 @@
 <div class='info'>
 <#if !production>
 
-You are using tDAR's <b>staging development server</b>.   This server is only
-for testing purposes and data stored here will <b>NOT</b> be preserved.  If
-you'd like to use tDAR proper, please visit <a
-href='http://core.tdar.org'>the official tDAR site</a>.
-<br/>
-For more information you can contact us at
-<a
-href="mailto:&#99;&#111;&#109;&#109;&#101;&#110;&#116;&#115;&#64;&#116;&#100;&#97;&#114;&#46;&#111;&#114;&#103;?subject=tDAR%20comments&amp;cc=tdar-svn%40lists.asu.edu">&#99;&#111;&#109;&#109;&#101;&#110;&#116;&#115;&#64;&#116;&#100;&#97;&#114;&#46;&#111;&#114;&#103;</a>.
-
+<p>You are using AHAD's test server.</p>
+<#-- >The Australian Historical Archaeological Database (AHAD) was created to store and share historical archaeological catalogue data and associated stratigraphic and documentary records. AHAD is hosted by the Faculty of Humanities and Social Sciences and the eResearch Office of La Trobe University. It is AHAD powered by tDAR, a platform built by Digital Antiquity, and was created with funding from the Australian National Data Service (ANDS) in partnership with the Victorian eResearch Strategic Initiative (VeRSI).<br /> -->
+<p>AHAD is free to use. You must be logged in to download content, deposit resources or utilise advanced features of the site. All use is governed by the User Agreement.<br /> 
+We appreciate and encourage you to send comments, suggestions and bug reports to <a
+href="mailto:&#97;&#100;&#109;&#105;&#110;&#64;&#97;&#104;&#97;&#100&#46;&#101;&#100;&#117;&#46;&#97;&#117;?subject=tDAR%20comments&amp;cc=tdar-svn%40lists.asu.edu">&#97;&#100;&#109;&#105;&#110;&#64;&#97;&#104;&#97;&#100&#46;&#101;&#100;&#117;&#46;&#97;&#117;</a></p>
 <#else>
-You are using tDAR.   Content will be
-subject to review, including for appropriateness to Digital Antiquity's objectives
-and conformance with tDAR's contributor agreement and its basic metadata
-requirements.
-<br><br>
-We appreciate and encourage you to send comments, suggestions, and bug reports to
-<a
-href="mailto:&#99;&#111;&#109;&#109;&#101;&#110;&#116;&#115;&#64;&#116;&#100;&#97;&#114;&#46;&#111;&#114;&#103;?subject=tDAR%20comments&amp;cc=tdar-svn%40lists.asu.edu">&#99;&#111;&#109;&#109;&#101;&#110;&#116;&#115;&#64;&#116;&#100;&#97;&#114;&#46;&#111;&#114;&#103;</a>
+<#-- The Australian Historical Archaeological Database (AHAD) was created to store and share historical archaeological catalogue data and associated stratigraphic and documentary records. AHAD is hosted by the Faculty of Humanities and Social Sciences and the eResearch Office of La Trobe University. It is AHAD powered by tDAR, a platform built by Digital Antiquity, and was created with funding from the Australian National Data Service (ANDS) in partnership with the Victorian eResearch Strategic Initiative (VeRSI).<br /> -->
+<p>AHAD is free to use. You must be logged in to download content, deposit resources or utilise advanced features of the site. All use is governed by the User Agreement.<br /> 
+We appreciate and encourage you to send comments, suggestions and bug reports to <a
+href="mailto:&#97;&#100;&#109;&#105;&#110;&#64;&#97;&#104;&#97;&#100&#46;&#101;&#100;&#117;&#46;&#97;&#117;?subject=tDAR%20comments&amp;cc=tdar-svn%40lists.asu.edu">&#97;&#100;&#109;&#105;&#110;&#64;&#97;&#104;&#97;&#100&#46;&#101;&#100;&#117;&#46;&#97;&#117;</a></p>
 </#if>
 </div>

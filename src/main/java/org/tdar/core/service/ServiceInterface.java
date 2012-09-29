@@ -141,6 +141,26 @@ public interface ServiceInterface<T, S extends Dao<T>> {
             dao.delete(entity);
         }
 
+        /**
+         * Returns a new collection containing the results of merge()-ing every entity in the entity collection passed into this method.
+         * 
+         * @param collection
+         * @return
+         */
+        @Transactional(readOnly = false)
+        public Collection<E> mergeAll(Collection<E> collection) {
+            if (CollectionUtils.isEmpty(collection)) {
+                return Collections.emptyList();
+            }
+            ArrayList<E> mergedEntities = new ArrayList<E>();
+            for (E entity : collection) {
+                mergedEntities.add(dao.merge(entity));
+            }
+            // collection.clear();
+            // collection.addAll(mergedEntities);
+            return mergedEntities;
+        }
+
         @Transactional(readOnly = false)
         public void saveOrUpdateAll(Collection<?> c) {
             if (CollectionUtils.isEmpty(c))

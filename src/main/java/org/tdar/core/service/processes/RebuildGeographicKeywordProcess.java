@@ -35,8 +35,7 @@ public class RebuildGeographicKeywordProcess extends ScheduledProcess.Base<Resou
 
     @Override
     public boolean isConfigured() {
-        return false;
-//geoSearchService.isEnabled();
+        return geoSearchService.isEnabled();
     }
 
     @Override

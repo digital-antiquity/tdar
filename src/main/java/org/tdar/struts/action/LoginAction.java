@@ -87,9 +87,6 @@ public class LoginAction extends AuthenticationAware.Base {
                 return "new";
             }
 
-            // enable us to force group cache to be cleared
-            getAuthenticationAndAuthorizationService().clearPermissionsCache(person);
-
             // another way to pass a url manually
             if (!StringUtils.isEmpty(url)) {
                 logger.info("url {} ", url);

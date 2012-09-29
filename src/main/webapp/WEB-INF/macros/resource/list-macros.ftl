@@ -16,10 +16,6 @@ html markup) you will probably not like the results
     <#local stat=resource_.status.name()?lower_case />      
     <#local key = "" />
     <#local defaultKeyLabel="No Project"/>
-      <#if resource_.active || (ableToFindDraftResources && resource_.draft) ||
-       (editable && resource_.draft) ||  
-       (ableToFindFlaggedResources && resource_.flagged) || 
-       (ableToFindDeletedResources && resource_.deleted)>
     
     <#if sortfield?contains('RESOURCE_TYPE') || sortfield?contains('PROJECT')>
       <#if sortfield?contains('RESOURCE_TYPE')>
@@ -44,10 +40,14 @@ html markup) you will probably not like the results
       <#local prev=key />
     </#if>
   
+      <#if resource_.active || (ableToFindDraftResources && resource_.draft) ||
+       (editable && resource_.draft) ||  
+       (ableToFindFlaggedResources && resource_.flagged) || 
+       (ableToFindDeletedResources && resource_.deleted)>
       <!-- NOTE THIS MAY EXPOSE ISSUES IF (A) project is EDITABLE and resource IS NOT -->
          <li>
             <span  class="resource-list-title-${stat}"><#t>
-                <a href="<@s.url value="/${resource_.urlNamespace}/${resource_.id?c}"/>">${resource_.title!"No Title"}</a><#t>
+                <a href="<@s.url value="/${resource_.urlNamespace}/${resource_.id?c}"/>">${resource_.title}</a><#t>
                 <#if resource_.draft><span class='cartouche'>DRAFT</span></#if><#t>
             </span>
             <@bookmark resource_ false/>
@@ -77,8 +77,8 @@ html markup) you will probably not like the results
             </div>
             </#if>
          </li>
-     <#local first=false/>
      </#if>
+     <#local first=false/>
     </#list>
   </${listTag}>
 </#macro>
@@ -135,6 +135,7 @@ the size of the iterable collection.. improve this when we get the chance
         <#assign stat>${informationResource.status.name()}</#assign>      
       </#if>
       <#assign titleCssClass="resource-list-title-${stat?lower_case}" />
+
       <#if informationResource.active || (editable && informationResource.draft) || 
       		(ableToFindDraftResources && informationResource.draft) || (ableToFindFlaggedResources && informationResource.flagged) || (ableToFindDeletedResources && informationResource.deleted)>
       <li class='listItem'>

@@ -2,7 +2,6 @@ package org.tdar.core.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -10,7 +9,6 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.apache.poi.hssf.record.formula.functions.T;
 import org.hibernate.ScrollableResults;
 import org.hibernate.stat.Statistics;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +35,7 @@ import org.tdar.core.dao.GenericDao.FindOptions;
 @Service
 public class GenericService {
 
-    @Autowired
-    @Qualifier("genericDao")
+    @Autowired @Qualifier("genericDao")
     private GenericDao genericDao;
 
     public static final int MINIMUM_VALID_ID = 0;
@@ -147,8 +144,8 @@ public class GenericService {
     public <T> List<T> findAll(Class<T> persistentClass, int start, int numberOfRecords) {
         return genericDao.findAll(persistentClass, start, numberOfRecords);
     }
-
-    @Transactional(readOnly = true)
+    
+    @Transactional(readOnly=true)
     public <T> List<T> findAllSorted(Class<T> persistentClass) {
         return genericDao.findAllSorted(persistentClass);
     }
@@ -181,17 +178,6 @@ public class GenericService {
     @Transactional
     public <T> T merge(T entity) {
         return (T) genericDao.merge(entity);
-    }
-
-    /**
-     * Returns a new collection containing the results of merge()-ing every entity in the entity collection passed into this method.
-     * 
-     * @param collection
-     * @return
-     */
-    @Transactional(readOnly = false)
-    public Collection<T> mergeAll(Collection<T> collection) {
-        return (Collection<T>)genericDao.mergeAll(collection);
     }
 
     // background on different transactional settings and the implications of
@@ -314,20 +300,5 @@ public class GenericService {
     public long getActiveSessionCount() {
         Statistics stats = genericDao.getSessionStatistics();
         return stats.getSessionOpenCount() - stats.getSessionCloseCount();
-    }
-
-    /**
-     * Deletes all entities from the given persistent class. Use with caution!
-     * 
-     * @param persistentClass
-     * @return the number of deleted entities
-     * @see org.tdar.core.dao.GenericDao#deleteAll(java.lang.Class)
-     */
-    public <E extends Persistable> int deleteAll(Class<E> persistentClass) {
-        return genericDao.deleteAll(persistentClass);
-    }
-
-    protected GenericDao getDao() {
-        return genericDao;
     }
 }

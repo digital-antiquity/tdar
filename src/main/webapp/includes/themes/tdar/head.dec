@@ -9,8 +9,8 @@
     <script type="text/javascript" src="http://www.tdar.org/images/agency_fb_400-700.js"></script> 
 
     <script>
-        Cufon.replace( '#title', { fontFamily: 'AgencyFB' });
-        Cufon.replace( '#description', { fontFamily: 'AgencyFB' });
+        Cufon.replace( '#title', { fontFamily: 'Agency FB' });
+        Cufon.replace( '#description', { fontFamily: 'Agency FB' });
         Cufon.replace( '#digant', { fontFamily: 'bankgothic' });
     </script>
     

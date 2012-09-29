@@ -178,18 +178,10 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     public void delete(R resource) {
-		String reason =  getDeletionReason();
         getResourceService().saveRecordToFilestore(resource);
-		if (StringUtils.isNotEmpty(reason)) {
-	        ResourceNote note = new ResourceNote(ResourceNoteType.ADMIN, getDeletionReason());
-	        resource.getResourceNotes().add(note);
-	        note.setResource(resource);
-	        getGenericService().save(note);
-		} else {
-			reason = "reason not specified";
-		}
-        String logMessage = String.format("%s id:%s deleted by:%s reason: ", resource.getResourceType().getLabel(), resource.getId(),
-                getAuthenticatedUser(), reason);
+
+        String logMessage = String.format("%s id:%s deleted by:%s \ttitle:[%s]", resource.getResourceType().getLabel(), resource.getId(),
+                getAuthenticatedUser(), StringUtils.abbreviate(resource.getTitle(), 100));
 
         getResourceService().logResourceModification(resource, getAuthenticatedUser(), logMessage);
     }

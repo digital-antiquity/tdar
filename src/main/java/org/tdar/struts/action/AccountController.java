@@ -460,11 +460,5 @@ public class AccountController extends AuthenticationAware.Base implements Prepa
         return getAuthenticatedUser().equals(person)
                 || getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_PERSONAL_ENTITES, getAuthenticatedUser());
     }
-    
-    //if form submittal takes too long we assume spambot.   expose the timeout value to view layer so that we can make sure
-    //actual humans get a form that is never too old while still locking out spambots.
-    public long getRegistrationTimeout() {
-        return ONE_HOUR_IN_MS;
-    }
 
 }

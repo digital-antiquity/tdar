@@ -55,8 +55,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     protected HtmlPage htmlPage;
     private HtmlForm internalForm;
     public static final String TABLE_METADATA = "table metadata";
-    public static String PROJECT_ID_FIELDNAME = "projectId";
-
+    
     String regex = "&lt;(.+?)&gt;";
     Pattern pattern = Pattern.compile(regex);
     

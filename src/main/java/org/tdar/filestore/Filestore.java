@@ -37,10 +37,6 @@ public interface Filestore {
      */
     public abstract String store(InputStream content, InformationResourceFileVersion version) throws IOException;
 
-    long getSizeInBytes();
-
-    String getSizeAsReadableString();
-
     /**
      * Write content to the filestore.
      * 
@@ -213,14 +209,6 @@ public interface Filestore {
 
         private String getRelativePath(File f) {
             return new File(getFilestoreLocation()).toURI().relativize(f.toURI()).getPath();
-        }
-
-        public long getSizeInBytes() {
-            return FileUtils.sizeOfDirectory(new File(getFilestoreLocation()));
-        }
-
-        public String getSizeAsReadableString() {
-            return FileUtils.byteCountToDisplaySize(FileUtils.sizeOfDirectory(new File(getFilestoreLocation())));
         }
 
     }

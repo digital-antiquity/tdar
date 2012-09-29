@@ -65,7 +65,7 @@ import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
-import org.tdar.core.bean.resource.LanguageEnum;
+import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
@@ -644,7 +644,7 @@ public class BulkUploadService {
             // FIXME: CELL METADATA SHOULD MAINTAIN THE TYPE OF THE FIELD AND THEN CONSTRAIN VALUES BY
             // THE FIELD TYPE -- ENUM, STRING, INTEGER, FLOAT
             if (field.equals("metadataLanguage") || field.equals("resourceLanguage")) {
-                excelService.addColumnValidation(sheet, i, validationHelper, LanguageEnum.values());
+                excelService.addColumnValidation(sheet, i, validationHelper, Language.values());
             }
             if (field.equals("ResourceCreator.role")) {
                 excelService.addColumnValidation(sheet, i, validationHelper, ResourceCreatorRole.values());
@@ -702,7 +702,7 @@ public class BulkUploadService {
 
         addReferenceColumn(referenceSheet, DocumentType.values(), "Document Type Values:", summaryStyle, 1);
         addReferenceColumn(referenceSheet, ResourceCreatorRole.values(), "Resource Creator Roles:", summaryStyle, 2);
-        addReferenceColumn(referenceSheet, LanguageEnum.values(), "Language Values:", summaryStyle, 3);
+        addReferenceColumn(referenceSheet, Language.values(), "Language Values:", summaryStyle, 3);
 
         // autosize
         for (int c = 0; c < 4; c++) {

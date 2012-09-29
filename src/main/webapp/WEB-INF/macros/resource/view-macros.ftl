@@ -78,14 +78,14 @@ View freemarker macros
 
 <#macro uploadedFileInfo>
   <#if (resource.getTotalNumberOfFiles?? && resource.getTotalNumberOfFiles() > 0)>
- <h3>Download</h3>
+ <h3>Uploaded Files</h3>
     <#assign seenDeleted = false />
       <@embargoCheck/>
         <#list resource.informationResourceFiles as irfile>
               <#if irfile.latestUploadedVersion??>
                 <div class="<#if irfile.deleted>view-deleted-file</#if>">
                     <#if irfile.deleted><#assign seenDeleted = true /></#if>
-                    <p><b>File #${irfile_index + 1}</b> 
+                    <p><b>Original file #${irfile_index + 1}</b> 
                     <@createFileLink irfile />
                     <#-- FIXME: create a File Management section and put this + reprocess derivatives + retranslate there? -->
                     <#if resource.resourceType=='DATASET' && ableToReprocessDerivatives>
@@ -114,8 +114,8 @@ View freemarker macros
     <#nested>
 </#if>
 <#if (resource.getTotalNumberOfFiles?? && resource.getTotalNumberOfFiles() == 0 && editable)>
-<h3>Download(s)</h3>
-This resource is a citation.
+<h3>Uploaded File(s)</h3>
+This resource does not have any uploaded files.
 </#if>
 </#macro>
 
@@ -473,7 +473,7 @@ No categories or subcategories specified.
 <#assign img =""/>
 <!-- only show the 1st image -->
 <#list resource.informationResourceFiles as irfile>
-    <#if ((irfile.public && resource.availableToPublic) || allowedToViewConfidentialFiles) && !irfile.deleted && irfile.latestThumbnail?? && img == ''>
+    <#if ((irfile.public && resource.availableToPublic) || allowedToViewConfidentialFiles) && irfile.latestThumbnail?? && img == ''>
     <#assign img>
         <span style="float:right">
             <img src="<@s.url value="/filestore/${irfile.latestThumbnail.id?c}/thumbnail"/>"/>
@@ -483,9 +483,8 @@ No categories or subcategories specified.
 </#list>
 <#noescape>${img}</#noescape>
 </#if>
-<#noescape>
-  ${(resource.description!"No description specified.")?html?replace('\r\n', '<br />')}
-</#noescape>
+
+  ${resource.description!"No description specified."}
   </p>
  <h3>Basic Information</h3>
 	<table cellspacing="1" cellpadding="1" border="0">
@@ -752,6 +751,16 @@ ${_date?string('MM/dd/yyyy')}<#t>
 
 
 <#macro sharedViewComponents resource_ >
+    <#if resource_.resourceType != 'PROJECT'>
+    	<#if licensesEnabled??>
+    		<@license />
+        </#if>
+        
+        <#if copyrightEnabled??>
+    		<@copyrightHolders />
+        </#if>
+    </#if>
+	
     <@uploadedFileInfo >
         <#if resource_.resourceType == 'CODING_SHEET' ||  resource_.resourceType == 'ONTOLOGY'>
             <@categoryVariables />
@@ -821,6 +830,33 @@ ${_date?string('MM/dd/yyyy')}<#t>
         <@shortDate _val true/>
         </#if>
     </#if>
+</#macro>
+
+<#macro copyrightHolders>
+<#if copyrightMandatory>
+	<#if resource.copyrightHolder??>
+		<h3>Primary Copyright Holder</h3>
+		<@browse resource.copyrightHolder />
+	</#if>
+</#if>
+</#macro>
+
+<#macro license>
+	<#if licensesEnabled>
+		<#if resource.licenseType??>
+			<h3>License</h3>
+			<#if (resource.licenseType.imageURI != "")>
+				<a href="${resource.licenseType.URI}"><img src="${resource.licenseType.imageURI}"/></a>
+			</#if>
+			<#if (resource.licenseType.URI != "")>
+				<h4>${resource.licenseType.licenseName}</h4>
+				<p><@s.property value="resource.licenseType.descriptionText"/></p>
+				<p><a href="${resource.licenseType.URI}">view details</a></p>
+			<#else>
+				<p>${resource.licenseText}</p>
+			</#if>		
+		</#if>
+	</#if>
 </#macro>
 </#escape>
 

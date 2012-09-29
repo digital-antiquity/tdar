@@ -52,7 +52,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     private static final long serialVersionUID = -559340771608580602L;
     private Long startTime = -1L;
     private String delete;
-    private String deletionReason;
     private String submitAction;
     private P persistable;
     private Long id;
@@ -666,14 +665,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
 
     public void setSubmitAction(String submitAction) {
         this.submitAction = submitAction;
-    }
-
-    public String getDeletionReason() {
-        return deletionReason;
-    }
-
-    public void setDeletionReason(String deletionReason) {
-        this.deletionReason = deletionReason;
     }
 
 }

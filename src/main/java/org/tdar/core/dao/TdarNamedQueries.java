@@ -45,7 +45,6 @@ public interface TdarNamedQueries {
     public static final String QUERY_IS_ALLOWED_TO_MANAGE = "resourcecollection.isEditable";
     public static final String QUERY_RESOURCE_COUNT_BY_TYPE_AND_STATUS_BY_USER = "dashboard.resourceByPerson";
     public static final String QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO = "rescol.accessible";
-    public static final String QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME = "rescol.accessibleName";
     public static final String QUERY_SPARSE_EDITABLE_RESOURCES = "resource.editable.sparse";
     public static final String QUERY_COLLECTION_BY_PARENT = "collection.parent";
     public static final String QUERY_COLLECTION_BY_AUTH_OWNER = "collection.authOwnerId_name";

@@ -69,13 +69,8 @@ If you'd like to perform an integration:
 
 <#macro cleanupEnum enumvalue>
     <#assign ret = enumvalue?replace("_"," ") />
-    <#-- FIXME: this is not sustainable, but there's no access to the enum -->
-    <#if enumvalue == 'BOOK'>
-        <#assign ret = 'Book / Report'/>
-    </#if>
     ${ret?capitalize}
 </#macro>
-
  <div id="sidebar" parse="true">
  <div style="height:110px"></div>
 <h2>Search Options</h2>

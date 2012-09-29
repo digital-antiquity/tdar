@@ -7,12 +7,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +21,6 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.EntityService;
@@ -448,7 +444,6 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
 
         searchIndexService.index(collection1, collection2);
         BrowseController browseController = generateNewInitializedController(BrowseController.class);
-        browseController.setRecordsPerPage(Integer.MAX_VALUE);
         browseController.browseCollections();
         assertTrue("should see child collection of hidden parent", browseController.getResults().contains(collection2));
         assertFalse("should not see hidden collection", browseController.getResults().contains(collection1));
@@ -644,72 +639,4 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
 
     }
 
-    @Test
-    @Rollback(true)
-    public void testControllerWithActiveResourceThatBecomesDeleted() throws Exception {
-    controller = generateNewInitializedController(CollectionController.class, getUser());
-    controller.prepare();
-    ResourceCollection rc = controller.getPersistable();
-    Project project = createAndSaveNewResource(Project.class, getUser(), "test project");
-    Project proxy = new Project(project.getId(), project.getTitle());
-    Long pid = project.getId();
-    
-    controller.setAuthorizedUsers(Collections.<AuthorizedUser>emptyList());
-    controller.getResources().add(proxy);
-    controller.getPersistable().setName("testControllerWithActiveResourceThatBecomesDeleted");
-    controller.getPersistable().setDescription("description");
-    String result = controller.save();
-    Assert.assertEquals(CollectionController.SUCCESS, result);
-    Long rcid = rc.getId();
-    
-    //so, wait, is this resource actually in the collection?
-    controller = generateNewInitializedController(CollectionController.class);
-    controller.setId(rcid);
-    controller.prepare();
-    controller.view();
-    assertEquals("okay, we should have one resource in this collection now", 1, controller.getResources().size());
-
-    //okay now lets delete the resource
-    ProjectController projectController = generateNewInitializedController(ProjectController.class);
-    projectController.setServletRequest(getServletPostRequest());
-    projectController.setId(pid);
-    projectController.prepare();
-    projectController.setDelete(AbstractPersistableController.DELETE_CONSTANT);
-    projectController.delete();
-
-    //go back to the collection's 'edit' page and make sure that we are not displaying the deleted resource
-    controller = generateNewInitializedController(CollectionController.class, getUser());
-    controller.setId(rcid);
-    controller.prepare();
-    controller.edit();
-    assertEquals("deleted resource should not appear on edit page", 0, controller.getResources().size());
-
-    //so far so good.  but lets make sure that the resource *is* actually in the collection
-    rc = genericService.find(ResourceCollection.class, rcid);
-    rc.getResources().contains(project);
-
-    //undelete the proeject, then make sure that the collection shows up on the collection view page
-    projectController = generateNewInitializedController(ProjectController.class, getAdminUser());
-    projectController.setId(pid);
-    projectController.prepare();
-    projectController.getPersistable().setStatus(Status.ACTIVE);
-    projectController.save();
-   
-    controller = generateNewInitializedController(CollectionController.class);
-    controller.setId(rcid);
-    controller.prepare();
-    controller.view();
-    assertTrue("collection should show the newly undeleted project", CollectionUtils.isNotEmpty(controller.getResources()));
-   
-    //we should also see the newly-undeleted resource on the edit page
-    controller = generateNewInitializedController(CollectionController.class);
-    controller.setId(rcid);
-    controller.prepare();
-    controller.edit();
-    assertTrue("collection should show the newly undeleted project", CollectionUtils.isNotEmpty(controller.getResources()));
-   
-    }
-    
-    
-    
 }

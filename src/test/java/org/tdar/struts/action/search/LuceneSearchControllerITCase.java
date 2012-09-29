@@ -3,21 +3,14 @@ package org.tdar.struts.action.search;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.tdar.core.bean.resource.ResourceType.DOCUMENT;
 import static org.tdar.core.bean.resource.ResourceType.IMAGE;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.util.Version;
 import org.joda.time.DateMidnight;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,17 +21,14 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
-import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.SearchIndexService;
 import org.tdar.search.query.QueryDescriptionBuilder;
-import org.tdar.search.query.SpatialQueryPart;
 import org.tdar.struts.action.TdarActionSupport;
 
 @Transactional
@@ -70,42 +60,6 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
     public void testFindAllSearchPhrase() {
         doSearch("");
         assertEquals(QueryDescriptionBuilder.TITLE_ALL_RECORDS, controller.getSearchSubtitle());
-    }
-
-    public void setupTestDocuments() throws InstantiationException, IllegalAccessException {
-        String[] titles = {"Preliminary Archeological Investigation at the Site of a Mid-Nineteenth Century Shop and Yard Complex Associated With the Belvidere and Delaware Railroad, Lambertville, New Jersey", "The James Franks Site (41DT97): Excavations at a Mid-Nineteenth Century Farmstead in the South Sulphur River Valley, Cooper Lake Project, Texas", "Archeological and Architectural Investigation of Public, Residential, and Hydrological Features at the Mid-Nineteenth Century Quintana Thermal Baths Ponce, Puerto Rico","Final Report On a Phased Archaeological Survey Along the Ohio and Erie Canal Towpath in Cuyahoga Valley NRA, Summit and Cuyahoga Counties, Ohio","Archeological Investigation at the Lock 33 Complex, Chesapeake and Ohio Canal", "Arthur Patterson Site, a Mid-Nineteenth Century Site, San Jacinto County"};
-        for (String title : titles) {
-            Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), title);
-            searchIndexService.index(document);
-        }
-        
-    }
-    
-    @Test
-    @Rollback(true)
-    public void testExactTitleMatchInKeywordSearch() throws InstantiationException, IllegalAccessException {
-        String resourceTitle = "Archeological Excavation at Site 33-Cu-314: A Mid-Nineteenth Century Structure on the Ohio and Erie Canal";
-        Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
-        searchIndexService.index(document);
-        setupTestDocuments();
-        doSearch(resourceTitle);
-        logger.info("results:{}",controller.getResults());
-        assertTrue(controller.getResults().contains(document));
-        assertTrue(controller.getResults().get(0).equals(document) || controller.getResults().get(1).equals(document) );
-    }
-
-    @Test
-    @Rollback(true)
-    public void testExactTitleMatchInTitleSearch() throws InstantiationException, IllegalAccessException {
-        String resourceTitle = "Archeological Excavation at Site 33-Cu-314: A Mid-Nineteenth Century Structure on the Ohio and Erie Canal";
-        Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
-        setupTestDocuments();
-        searchIndexService.index(document);
-        controller.setTitle(resourceTitle);
-        doSearch();
-        logger.info("results:{}",controller.getResults());
-        assertTrue(controller.getResults().contains(document));
-        assertTrue(controller.getResults().get(0).equals(document) || controller.getResults().get(1).equals(document) );
     }
 
     @Test
@@ -452,6 +406,43 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         assertFalse(controller.getResults().contains(document2));
     }
     
+    
+    @Test
+    @Rollback
+    public void testTitleSearchWithBooleans() throws Exception {
+        Document document1 = createAndSaveNewInformationResource(
+                Document.class,
+                createAndSaveNewPerson("testTitleSearchWithBoolean@mailinator.com", ""),
+                "cromulent tacosauce");
+        Document document2 = createAndSaveNewInformationResource(
+                Document.class,
+                createAndSaveNewPerson("testTitleSearchWithBoolean2@mailinator.com", ""),
+                "the life and times of tacosauce jones");
+        searchIndexService.indexAll(Resource.class);
+        controller.setTitle("cromulent");
+        
+        doSearch();
+        assertTrue(controller.getResults().contains(document1));
+        
+        reset();
+        controller.setTitle("tacosauce");
+        doSearch();
+        assertTrue(controller.getResults().contains(document1));
+        assertTrue(controller.getResults().contains(document2));
+        
+        // NOTE!!! NONE OF THESE WORK BECAUSE WE DON'T HANDLE BOOLEANS
+        controller.setTitle("tacosauce AND cromulent");
+        controller.setResourceTypes(Arrays.asList(ResourceType.DOCUMENT));
+        doSearch();
+        assertFalse(controller.getResults().contains(document1));
+        assertFalse(controller.getResults().contains(document2));
+        // I'm guessing that cromulent and tacosauce are not found anywhere else in our test data
+        logger.debug("{}", controller.getResults());
+        assertEquals(0, controller.getResults().size());
+    }
+
+    
+    
     @Test
     public void testSearchPhraseWithQuote() {
         setIgnoreActionErrors(true);
@@ -478,121 +469,4 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         searchIndexService.indexAll(Resource.class);
         doSearch("\"test ( abc ");
     }
-    
-    @Test
-    @Rollback
-    public void testTitleSearchInAllFields() throws InstantiationException, IllegalAccessException, ParseException {
-        String title = "the archaeology of class and war";
-        Set<String> wordsInTitle = new HashSet<String>(Arrays.asList(title.split(" ")));
-        wordsInTitle.removeAll(TdarConfiguration.getInstance().getStopWords());
-        
-        Document doc = createDocumentWithContributorAndSubmitter();
-        doc.setTitle(title);
-        genericService.saveOrUpdate(doc);
-        searchIndexService.index(doc);
-        controller.setQuery(title);
-        controller.performSearch();
-        
-        //since we are sorting by relevance, we expect the exact match to be topmost,  and all other results to contain at least one matching term
-        assertTrue("at least one result expected", controller.getResults().size() > 1);
-        
-        assertEquals("exact match should be most relevant", title, controller.getResults().get(0).getTitle());
-        for(Resource r : controller.getResults()) {
-            Set<String> wordsInResult = new HashSet<String>(Arrays.asList(r.getTitle().toLowerCase().split(" ")));
-            wordsInResult.removeAll(TdarConfiguration.getInstance().getStopWords());
-            wordsInResult.retainAll(wordsInTitle);  //intersection should yield at least one word
-            
-            String msg = String.format("expecting at least one term in title - title:'%s'  terms: [%s]", r.getTitle(), wordsInTitle);
-            assertFalse(msg, wordsInResult.isEmpty());
-            
-        }
-    }
-    
-    @Test
-    public void testEscapedBoolean() {
-        //we don't care whether we get search results back.  However,  we need to make sure that the query does not throw action errors
-        String unsafeQuery = "Cultural Resource Management, Inc., Eugene, OR";
-        String safeQuery = searchService.sanitize(unsafeQuery);
-        logger.debug("unsafe query:\t{}", unsafeQuery);
-        logger.debug("safe query:\t{}", safeQuery);
-        assertFalse("unsafe query should have been modified", unsafeQuery.equals(safeQuery));
-        
-        assertQueryGetsSanitized(unsafeQuery);
-    }
-    
-    @Test
-    public void testSafeAndUnsafeQueries() {
-        //queries that will cause parse errors (even if escaped)
-        String[] unsafeQueries = {
-                "Eugene, OR",
-                "OR OR OR ",
-                "AND(OR)",
-                "AND PROTOHISTORIC, HISTORIC NON-INDIAN"
-        };
-        
-        //stuff that shouldn't be modified by SearchService.sanitize()
-        String [] safeQueries = {
-                "EUGENE, OREGON",
-                "this or that",
-                "OREGENO",
-                "ANDY RICHTER CONTROLS THE UNIVERSE",
-                "title:foo and (allfields:foo allfields:bar)" 
-        };
-        
-        String fmt = "%s:: Original:'%s'\t sanitized:'%s'";
-        for(String query : unsafeQueries)  {
-            String sanitized = searchService.sanitize(query);
-            assertFalse(String.format(fmt, "query should have been sanitized", query, sanitized), query.equals(sanitized));
-        }
-        
-        for(String query : safeQueries)  {
-            String sanitized = searchService.sanitize(query);
-            assertTrue(String.format(fmt, "query should not have been sanitized", query, sanitized), query.equals(sanitized));
-        }
-        
-        //now pass everything through a parser to make sure it's valid after we escape/sanitize it.
-        //we don't care about getting valid results. we just want to determine if string parses as valid lucene syntax
-        QueryParser parser = new QueryParser(Version.LUCENE_31, "ignored", new StandardAnalyzer(Version.LUCENE_31));
-        
-        List<String> allQueries = new ArrayList<String>(Arrays.asList(unsafeQueries));
-        allQueries.addAll(Arrays.asList(safeQueries));
-        for(String query : allQueries) {
-            String escapedSanitized = searchService.sanitize(QueryParser.escape(query));
-            try {
-                parser.parse(escapedSanitized);
-            } catch (ParseException pex) {
-                fmt = "%s:: Original:'%s'\t sanitizedEscaped:'%s'";
-                fail(String.format(fmt, "Could not parse query", query, escapedSanitized));
-            }
-        }
-        
-    }
-    
-    
-    
-    //assert query doesn't cause errors in any field where we use escaped-but-unquoted values
-    public void assertQueryGetsSanitized(String query) {
-        setIgnoreActionErrors(true);
-        
-        //all fields
-        controller.setQuery(query);
-        controller.search();
-        if(controller.hasActionErrors()) {
-            fail("the following query caused errors on the ALLFIELDS  field:" + query);
-        }
-            
-            
-        //title 
-        controller = generateNewInitializedController(LuceneSearchController.class);
-        controller.setTitle(query);
-        controller.search();
-        if(controller.hasActionErrors()) {
-            fail("the following query caused errors on the title  field:" + query);
-        }
-        
-    }
-    
-    
 }
-
-

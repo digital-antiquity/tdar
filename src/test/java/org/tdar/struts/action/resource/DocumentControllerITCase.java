@@ -14,7 +14,6 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
-import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
@@ -22,7 +21,6 @@ import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.ResourceCreatorProxy;
 
@@ -322,40 +320,4 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
                 actualPersonCount);
     }
 
-    private Long createDocument(String collectionname, String title) throws TdarActionException {
-        controller = generateNewInitializedController(DocumentController.class);
-        controller.prepare();
-        controller.add();
-        getLogger().trace("controller:" + controller);
-        getLogger().trace("controller.resource:" + controller.getResource());
-        Document d = controller.getDocument();
-        d.setTitle(title);
-        d.setDescription("desc");
-        d.markUpdated(getUser());
-        d.setDate(1234);
-        ResourceCollection collection = new ResourceCollection();
-        collection.setName(collectionname);
-        controller.getResourceCollections().add(collection);
-
-        controller.setServletRequest(getServletPostRequest());
-        controller.save();
-        return controller.getResource().getId();
-    }
-
-    @Test
-    @Rollback()
-    public void testResourceAdhocCollection() throws Exception {
-        initControllerFields();
-        String collectionname = "my collection";
-        Long newId = createDocument(collectionname, "test 1");
-        ResourceCollection collection = controller.getResource().getSharedResourceCollections().iterator().next();
-        Long collectionId = collection.getId();
-        logger.info("{}", collection);
-        Long newId2 = createDocument(collectionname, "test 2");
-        ResourceCollection collection2 = controller.getResource().getSharedResourceCollections().iterator().next();
-        Long collectionId2 = collection2.getId();
-        assertEquals(collectionId, collectionId2);
-
-    }
-    
 }

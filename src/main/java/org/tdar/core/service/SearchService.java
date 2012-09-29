@@ -9,8 +9,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
@@ -66,10 +64,8 @@ public class SearchService {
     private AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
 
     protected static final transient Logger logger = LoggerFactory.getLogger(SearchService.class);
-    private static final String[] LUCENE_RESERVED_WORDS = new String[] { "AND", "OR", "NOT" };
-    private static final Pattern luceneSantizeQueryPattern = Pattern.compile("(^|\\W)(" + StringUtils.join(LUCENE_RESERVED_WORDS, "|") + ")(\\W|$)");
-    private transient Map<Class<?>, Pair<String[], PerFieldAnalyzerWrapper>> parserCacheMap = Collections
-            .synchronizedMap(new HashMap<Class<?>, Pair<String[], PerFieldAnalyzerWrapper>>());
+
+    private transient Map<Class<?>, Pair<String[], PerFieldAnalyzerWrapper>> parserCacheMap = Collections.synchronizedMap(new HashMap<Class<?>, Pair<String[], PerFieldAnalyzerWrapper>>());
 
     public void setSessionFactory(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
@@ -368,8 +364,8 @@ public class SearchService {
     }
 
     private void setupQueryParser(QueryBuilder qb) {
-        Pair<String[], PerFieldAnalyzerWrapper> pair = parserCacheMap.get(qb.getClass());
-        if (pair == null) {
+    	Pair<String[], PerFieldAnalyzerWrapper> pair = parserCacheMap.get(qb.getClass());
+    	if (pair == null) {
             List<String> fields = new ArrayList<String>();
             Set<DynamicQueryComponent> cmpnts = new HashSet<DynamicQueryComponent>();
             PerFieldAnalyzerWrapper analyzer = new PerFieldAnalyzerWrapper(new LowercaseWhiteSpaceStandardAnalyzer());
@@ -420,15 +416,6 @@ public class SearchService {
         }
         QueryParser parser = new MultiFieldQueryParser(Version.LUCENE_31, pair.getFirst(), pair.getSecond());
         qb.setQueryParser(parser);
-    }
-
-    /*
-     * Replace AND/OR with lowercase so that lucene does not interpret them as operaters.
-     * It is not necessary sanitized quoted strings.
-     */
-    public String sanitize(String unsafeQuery) {
-        Matcher m = luceneSantizeQueryPattern.matcher(unsafeQuery);
-        return m.replaceAll("$1\\\\$2$3");
     }
 
 }

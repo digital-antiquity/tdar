@@ -57,7 +57,6 @@ public class DocumentCitationFormatTestCase {
         document.getResourceCreators().add(new ResourceCreator(document, new Institution("institution auth"), ResourceCreatorRole.AUTHOR));
         document.getResourceCreators().add(new ResourceCreator(document, new Person("First2", "Last2", "first2@last"), ResourceCreatorRole.EDITOR));
         document.getResourceCreators().add(new ResourceCreator(document, new Person("First3", "Last3", "first3@last"), ResourceCreatorRole.COLLABORATOR));
-
         document.setDocumentType(type);
         document.setDate(1234);
         if (document.getId() == null || document.getId() == -1) {

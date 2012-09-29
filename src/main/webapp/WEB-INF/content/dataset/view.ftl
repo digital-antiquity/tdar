@@ -8,6 +8,7 @@
 <@view.toolbar "${resource.urlNamespace}" "view" />
 
 <@view.projectAssociation resourceType="dataset" />
+
 <@view.infoResourceBasicInformation />
 <@view.sharedViewComponents resource>
 

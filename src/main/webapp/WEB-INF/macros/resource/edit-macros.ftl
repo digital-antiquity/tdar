@@ -281,7 +281,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         </div>
       <label for="resourceAvailability" id="lblResourceAvailability">Embargoed?</label><@s.select labelposition='left'  id='resourceAvailability' name='resourceAvailability' list=["Public", "Embargoed"] />
       <div id="divConfidentialAccessReminder" class="hidden">
-          <em>Embargoed records will become public in ${embargoPeriodInYears} years. Use the &quot;Access Rights&quot; section to assign access to this file for specific users.</em>
+          <em>Embargoed records will become public in ${embargoPeriodInYears} years. Confidential records will not be made public. Use the &quot;Access Rights&quot; section to assign access to this file for specific users.</em>
       </div>
 </div>
 
@@ -971,13 +971,8 @@ $(document).ready(function() {
 
     <#if proxy??>
     <tr id="${prefix}Row_${proxy_index}_">
-        <!-- <td> 
-            <img class="creatorInstitution icon <#if proxy.actualCreatorType=='PERSON'>hidden</#if>" src="/images/house_silhouette.png"  />
-            <img class="creatorPerson icon <#if proxy.actualCreatorType=='INSTITUTION'>hidden</#if>" src="/images/man_silhouette.png" /> 
-        </td> -->
+      
         <td>
-            <!-- <input type="hidden" name="${prefix}Proxies[${proxy_index}].creatorId" value="-1" /> -->
-            <!-- <input type="hidden" name="${prefix}Proxies[${proxy_index}].actualCreatorType" id="${prefix}ProxyActualCreatorType_${proxy_index}_ value="PERSON" />-->
             <span class="creatorPerson <#if proxy.actualCreatorType=='INSTITUTION'>hidden</#if>"  id="${prefix}Row_${proxy_index}_p">
             <span class="smallLabel">Person</span>
             <div class="width30percent marginLeft10" >
@@ -1181,7 +1176,17 @@ jquery validation hooks?)
 
 
 <#macro sharedFormComponents showInherited=true fileReminder=true>
-
+	
+    <#if resource.resourceType.label?lower_case != 'project'>
+        <#if licensesEnabled??>
+            <@edit.license />
+        </#if>
+        
+        <#if copyrightEnabled??>
+            <@edit.copyrightHolders />
+        </#if>
+    </#if>
+	
     <@edit.identifiers showInherited />
     
     <#if showInherited>
@@ -1486,12 +1491,7 @@ Projects in tDAR can contain a variety of different information resources and us
 </#macro>
 
 <#macro boolfieldCheckbox name label id value labelPosition cssClass>
-<#if value?? && value?string == 'true'>
-    <@s.checkbox name="${name}" label="${label}" labelPosition="${labelPosition}" id="${id}"  value=value cssClass="${cssClass}" 
-    	checked="checked"/>
-<#else>
     <@s.checkbox name="${name}" label="${label}" labelPosition="${labelPosition}" id="${id}"  value=value cssClass="${cssClass}" />
-</#if>
 </#macro>
 
 <#macro boolfieldRadio name label id value labelPosition labelTrue labelFalse>
@@ -1533,4 +1533,105 @@ Projects in tDAR can contain a variety of different information resources and us
         <@keywordNodeOptions node selectedKeywordId />
     </select>
 </#macro>
+
+
+<#macro copyrightHolders >
+<#if copyrightMandatory>
+<div class="glide" tiplabel="Primary Copyright Holder" tooltipcontent="Use this field to nominate a primary copyright holder. Other information about copyright can be added in the 'notes' section by creating a new 'Rights & Attribution note.">
+    <h3>Primary Copyright Holder</h3>
+    <div>
+        <table id="copyrightHolderTable" class="tableFormat">
+        <tr>
+        	<td>
+        		<input type="radio" id="copyright_holder_type_person" name="copyrightHolderType" value="Person" <#if copyrightHolderProxy.actualCreatorType=='PERSON'>checked='checked'</#if> onchange="toggleCopyrightHolder(${copyrightMandatory?string});"/>
+	            <label for="copyright_holder_type_person">Person</label>
+	            <input type="radio" id="copyright_holder_type_institution" name="copyrightHolderType" value="Institution" <#if copyrightHolderProxy.actualCreatorType=='INSTITUTION'>checked='checked'</#if> onchange="toggleCopyrightHolder(${copyrightMandatory?string});"/>
+	            <label for="copyright_holder_type_institution">Institution</label>
+            
+	            <div class="creatorInstitution <#if copyrightHolderProxy.actualCreatorType=='PERSON'>hidden</#if>" id="copyrightInstitution">
+	                <span class="smallLabel">Institution</span>
+	                <@s.hidden name="copyrightHolderProxy.institution.id" id="copyright_institution_id" value="${(copyrightHolderProxy.institution.id)!}"/>
+	                <div class="width60percent marginLeft10">
+	                	<#if copyrightHolderProxy.actualCreatorType=='INSTITUTION'><#assign institution_name_required="required"/></#if>
+	                    <@s.textfield id="copyright_holder_institution_name" cssClass="institutionAutoComplete institution ${institution_name_required!}" watermark="Institution Name"
+	                        autocompleteName="name" autocompleteIdElement="#copyright_institution_id" autocompleteParentElement="#copyrightInstitution"
+	                        name="copyrightHolderProxy.institution.name" value="${(copyrightHolderProxy.institution.name)!}" maxlength="255" />
+	                </div>
+	            </div>
+
+	            <div class="creatorPerson <#if copyrightHolderProxy.actualCreatorType=='INSTITUTION'>hidden</#if>" id="copyrightPerson">
+	                <span class="smallLabel">Person</span>
+	                <div class="width30percent marginLeft10" >
+	                	<#if copyrightHolderProxy.actualCreatorType=='PERSON'><#assign person_name_required="required"/></#if>
+	                    <@s.hidden name="copyrightHolderProxy.person.id" value="${(copyrightHolderProxy.person.id)!}" id="copyright_person_id" onchange="this.valid()"  autocompleteParentElement="#copyrightPerson"  />
+	                    <@s.textfield id="copyright_holder_person_last_name" cssClass="nameAutoComplete ${person_name_required!}" watermark="Last Name"
+	                         autocompleteName="lastName" autocompleteIdElement="#copyright_person_id" autocompleteParentElement="#copyrightPerson"
+	                        name="copyrightHolderProxy.person.lastName" value="${(copyrightHolderProxy.person.lastName)!}" maxlength="255" />
+	                    <@s.textfield id="copyright_holder_person_first_name" cssClass="nameAutoComplete  ${person_name_required!}" watermark="First Name"
+	                         autocompleteName="firstName" autocompleteIdElement="#copyright_person_id" autocompleteParentElement="#copyrightPerson"
+	                        name="copyrightHolderProxy.person.firstName" value="${(copyrightHolderProxy.person.firstName)!}" maxlength="255" />
+	                    <@s.textfield cssClass="nameAutoComplete" watermark="Email"
+	                         autocompleteName="email" autocompleteIdElement="#copyright_person_id" autocompleteParentElement="#copyrightPerson"
+		                        name="copyrightHolderProxy.person.email" value="${(copyrightHolderProxy.person.email)!}" maxlength="255"/>
+	                    <br />
+	                </div>
+	                <div class="width60percent marginLeft10">
+	                    <@s.textfield id="copyright_holder_institution_name" cssClass="nameAutoComplete" watermark="Institution Name"
+	                     autocompleteName="institution" autocompleteIdElement="#copyright_person_id" autocompleteParentElement="#copyrightPerson"
+	                    name="copyrightHolderProxy.person.institution.name" value="${(copyrightHolderProxy.person.institution.name)!}" maxlength="255" />
+                	</div>
+				</div>
+    		</td>
+    	</tr>
+    </table>
+</div>
+</div>
+</#if>
+</#macro>
+
+<#macro license>
+<#if licensesEnabled>
+    <#assign currentLicenseType = (resource.licenseType)!defaultLicenseType/>
+	<div class="glide" id="license_section">
+		<h3>License</h3>
+		<@s.iterator value="licenseTypes" var="licenseCursor">
+			<#if (licenseCursor == currentLicenseType)>
+				<#assign checked="checked='checked'"/>
+			<#else>
+				<#assign checked="">
+			</#if>
+    		<input type="radio" ${checked} name="resource.licenseType" id="license_radio_button_${licenseCursor}" 
+    			value="${licenseCursor}" onchange="toggleLicense()"/>
+    		<label for="license_radio_button_${licenseCursor}">${licenseName}</label><br/>
+    	</@s.iterator>
+    	<table id="license_details">
+		<@s.iterator value="licenseTypes" var="licenseCursor">
+			<#if (licenseCursor != currentLicenseType)>
+				<#assign visible="hidden"/>
+			<#else>
+				<#assign visible="">
+			</#if>
+			<tr id="license_details_${licenseCursor}" class="${visible}">
+				<td>
+					<#if (imageURI != "")>
+						<a href="${URI}"><img src="${imageURI}"/></a>
+					</#if>
+				</td>
+				<td>
+					<h4>${licenseName}</h4>
+					<p><@s.property value="descriptionText"/></p>
+					<#if (URI != "")>
+						<p><a href="${URI}">view details</a></p>
+					<#else>
+						<p><label style="position: static"  for="licenseText">License text:</label></p>
+						<p><@s.textarea id="licenseText" name='resource.licenseText' rows="3" cols="60" /></p>
+					</#if>
+				</td>
+        	</tr>
+		</@s.iterator>
+		</table>
+	</div>
+</#if>
+</#macro>
 </#escape>
+

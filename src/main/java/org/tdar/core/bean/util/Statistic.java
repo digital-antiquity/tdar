@@ -36,7 +36,7 @@ public class Statistic extends Persistable.Base {
         NUM_ONTOLOGY("# of Ontologies"),
         NUM_SENSORY_DATA("# of Sensory Data Objects"),
         NUM_COLLECTIONS("# of Collections"), 
-        NUM_ACTUAL_CONTRIBUTORS("# of Contributors"), REPOSITORY_SIZE("Repository Size");
+        NUM_ACTUAL_CONTRIBUTORS("# of Contributors");
 
         private String label;
 

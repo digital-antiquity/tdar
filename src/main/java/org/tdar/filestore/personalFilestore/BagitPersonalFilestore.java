@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -33,8 +32,6 @@ import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-
-import com.google.common.io.Files;
 
 /**
  * $Id$
@@ -115,28 +112,26 @@ public class BagitPersonalFilestore implements PersonalFilestore {
         String pathToBag = getPath(personalFilestoreTicket);
         File pathToBagFile = new File(pathToBag);
 
-        // need to give the file it's correct name, but not safe to do so until we move it into a unique temp directory
-        File tempFileDirectory = Files.createTempDir();
-        String tempFileDirectoryName = FilenameUtils.getBaseName(tempFileDirectory.getAbsolutePath());
-        // the path to the actual file payload that we're going to copy to from Struts' file upload directory
-        File tempFileToStore = new File(tempFileDirectory, incomingFileName);
+        // need to give the file it's correct name, but not safe to do so until we move it out of the temp directory
+        File tempFileToStore = new File(pathToBagFile.getParentFile(), incomingFileName);
         FileUtils.copyFile(file, tempFileToStore);
+
         FileUtils.forceMkdir(pathToBagFile);
         Bag bag = getBag(pathToBagFile);
-        bag.addFileToPayload(tempFileDirectory);
+        bag.addFileToPayload(tempFileToStore);
+
         Writer writer = new FileSystemWriter(bagFactory);
         Bag newBag = completer.complete(bag);
         newBag.write(writer, pathToBagFile);
-        FileUtils.deleteQuietly(tempFileDirectory);
+        FileUtils.deleteQuietly(tempFileToStore);
         for (BagFile storedBagFile : newBag.getPayload()) {
-            if (storedBagFile.getFilepath().contains(tempFileDirectoryName)) {
+            // BagFile makes the assumption of unix filesystem paths
+            if (storedBagFile.getFilepath().endsWith("/" + incomingFileName)) {
                 return new File(pathToBag, storedBagFile.getFilepath());
             }
         }
         throw new TdarRecoverableRuntimeException("could not find the file we just filed:" + incomingFileName);
     }
-
-
 
     @Override
     public void store(PersonalFilestoreTicket ticket, List<File> files, List<String> newFileNames) throws IOException {

@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.resource.DataValueOntologyNodeMapping;
@@ -188,10 +187,8 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         boolean seenElementNull = false;
         boolean seenSpeciesNull = false;
         logger.info("{}", results);
-        assertEquals(2,results.size());
         for (IntegrationDataResult result : results) {
-            logger.info("{} - {}",result.getDataTable().getName(), result.getRowData().size());
-            assertTrue(CollectionUtils.isNotEmpty(result.getRowData()));
+
             // List<DataTableColumn> columnsToDisplay = result.getColumnsToDisplay();
             // for (DataTableColumn col : columnsToDisplay) { // capturing to test later
             // resultingDataTableColumns.add(col.getName());

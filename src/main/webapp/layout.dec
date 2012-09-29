@@ -52,10 +52,11 @@ window.onerror = function onError(message, file, linenumber) {
 </script>
 
 
-    <script type='text/javascript' src="<@s.url value='/includes/googlemaps-api-key.js'/>"></script>
+    <script type='text/javascript' src="http://maps.google.com/maps?file=api&v=2&key=${googleMapsApiKey}"></script>
     <script type='text/javascript' src="<@s.url value='/includes/gzoom_uncompressed.js'/>"></script>
     <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/${jquery_version}/jquery.min.js'></script>
     <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_version}/jquery-ui.min.js'></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript" src="<@s.url value="/includes/jquery.metadata.2.1/jquery.metadata.js"/>"></script> 
     <script type="text/javascript" src="<@s.url value="/includes/jquery.maphighlight.local.js"/>"></script> 
     <script type='text/javascript' src='<@s.url value="/includes/jquery.cookie.js"/>'></script> 
@@ -76,6 +77,7 @@ window.onerror = function onError(message, file, linenumber) {
         function getURI(path) {
             return getBaseURI() + path;
         }
+              <li class="page_item"><a href="<@s.url value='https://bitbucket.org/tdar/tdar.dev'/>">Source code</a></li>
 
         var currentTime = 0;
 
@@ -86,6 +88,9 @@ window.onerror = function onError(message, file, linenumber) {
           var sessionTimeout = ${sessionTimeout?c};
           setTimeout(sessionTimeoutWarning,60000);
         </#if>
+        
+        var GMapDefaultLat = ${GMapDefaultLat};
+        var GMapDefaultLng = ${GMapDefaultLng};
   </script>
     <!--Scripts--> 
     
@@ -142,6 +147,12 @@ window.onerror = function onError(message, file, linenumber) {
   </#if>
 
   _gaq.push(['_trackPageview']);
+  _gaq.push(['_setCustomVar',
+      1,                   // This custom var is set to slot #1.  Required parameter.
+      'User',     // The name acts as a kind of category for the user activity.  Required parameter.
+      '<#if authenticatedUser??>${authenticatedUser.properName?js_string}<#else>anonymous</#if>',               // This value of the custom variable.  Required parameter.
+      2                    // Sets the scope to session-level.  Optional parameter.
+   ]);
 
   (function() {
     var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
@@ -229,6 +240,7 @@ window.onerror = function onError(message, file, linenumber) {
               <#if authenticatedUser??>
               <li class="page_item"><a href="<@s.url value='/entity/person/edit?id=${sessionData.person.id?c}'/>">Update your profile</a></li>
               </#if>
+              <li class="page_item"><a href="<@s.url value='https://bitbucket.org/tdar/tdar.dev'/>">Source code</a></li>
           </ul>
         
         </li>

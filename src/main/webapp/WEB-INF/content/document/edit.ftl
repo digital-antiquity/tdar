@@ -67,7 +67,7 @@ This will be linked as a <b>${linkType}</b> citation for: <b>${linkedInformation
 
 <@edit.resourceCreators "Authors / Editors" authorshipProxies 'authorship' false />
 
-<div class="glide" id="divAboutYourDocument">
+<div class="glide">
 <h3>About Your Document</h3>
 
 <p id="t-ident" class="clear">
@@ -162,19 +162,6 @@ This will be linked as a <b>${linkType}</b> citation for: <b>${linkedInformation
 <@edit.resourceJavascript includeAsync=true includeInheritance=true>
 
 setupDocumentEditForm();
-
-//certain fields in the "about your document" become extraneous upon selecting a new documentType value.  Clear the value of these fields prior to 
-//submission
-$(function(){
-    $('#resourceMetadataForm').submit(function() {
-        //assumption:  divAboutYourDocument has no radio buttons, select boxes, or checkboxes. This piece wont work if our assumption becomes false
-        $(':input', '#divAboutYourDocument').filter(':hidden').val("");
-    });
-});
-
-
-
-
 </@edit.resourceJavascript>
 </body>
 </#escape>

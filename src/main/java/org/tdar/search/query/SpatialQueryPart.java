@@ -30,20 +30,15 @@ public class SpatialQueryPart implements QueryPart {
 
     @Transient
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
-    private static final String MIN_LUCENE = TdarIndexNumberFormatter.format(-540);
-    private static final String MAX_LUCENE = TdarIndexNumberFormatter.format(540);
+    
+    private static final String SPATIAL_QUERY_FORMAT = "((("+QueryFieldNames.MINX+":[%1$s TO %2$s]) AND ("+QueryFieldNames.MAXX+":[%1$s TO %2$s])) " +
+            "AND ("+QueryFieldNames.MINY+":[%3$s TO %4$s]) AND ("+QueryFieldNames.MAXY+":[%3$s TO %4$s]))";
 
+    private static final String SPATIAL_QUERY_FORMAT_PRIME = "(((("+QueryFieldNames.MINX+":[%6$s TO %2$s]) AND ("+QueryFieldNames.MAXX+":[%1$s TO %5$s])) " +
+            "OR (("+QueryFieldNames.MINXPRIME+":[%6$s TO %2$s]) AND ("+QueryFieldNames.MAXX+":[%1$s TO %5$s])) " +
+            "OR (("+QueryFieldNames.MINX+":[%6$s TO %2$s]) AND ("+QueryFieldNames.MAXXPRIME+":[%1$s TO %5$s]))) " +
+            "AND ("+QueryFieldNames.MINY+":[%6$s TO %4$s]) AND ("+QueryFieldNames.MAXY+":[%3$s TO %5$s]))";
 
-    private static final String SPATIAL_QUERY_FORMAT = "((" + QueryFieldNames.MINX + ":[%1$s TO %2$s] AND " + QueryFieldNames.MAXX + ":[%1$s TO %2$s]) " +
-            " OR (" + QueryFieldNames.MINX + ":[" + MIN_LUCENE + " TO %2$s] AND " + QueryFieldNames.MAXX + ":[%1$s TO " + MAX_LUCENE + "])) " +
-            "AND ((" + QueryFieldNames.MINY + ":[%3$s TO %4$s] AND " + QueryFieldNames.MAXY + ":[%3$s TO %4$s]) " +
-            "OR (" + QueryFieldNames.MINY + ":[" + MIN_LUCENE + " TO %4$s] AND " + QueryFieldNames.MAXY + ":[%3$s TO " + MAX_LUCENE + "]))";
-
-    private static final String SPATIAL_QUERY_FORMAT_PRIME = "((((" + QueryFieldNames.MINX + ":[%6$s TO %2$s]) AND (" + QueryFieldNames.MAXX
-            + ":[%1$s TO %5$s])) " +
-            "OR ((" + QueryFieldNames.MINXPRIME + ":[%6$s TO %2$s]) AND (" + QueryFieldNames.MAXX + ":[%1$s TO %5$s])) " +
-            "OR ((" + QueryFieldNames.MINX + ":[%6$s TO %2$s]) AND (" + QueryFieldNames.MAXXPRIME + ":[%1$s TO %5$s]))) " +
-            "AND (" + QueryFieldNames.MINY + ":[%6$s TO %4$s]) AND (" + QueryFieldNames.MAXY + ":[%3$s TO %5$s]))";
     /*
      * ((
      * (
@@ -57,15 +52,6 @@ public class SpatialQueryPart implements QueryPart {
     private List<LatitudeLongitudeBox> spatialLimits = new ArrayList<LatitudeLongitudeBox>();
 
 
-
-    public SpatialQueryPart() {
-
-    }
-
-    public SpatialQueryPart(LatitudeLongitudeBox box) {
-        addSpatialLimit(box);
-    }
-    
     public void addSpatialLimit(LatitudeLongitudeBox limit) {
         spatialLimits.add(limit);
     }

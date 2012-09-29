@@ -40,7 +40,7 @@ import org.tdar.struts.search.query.SearchResultHandler;
  * @author Adam Brin
  * 
  */
-public abstract class AbstractLookupController<I extends Indexable> extends AuthenticationAware.Base implements SearchResultHandler<I> {
+public abstract class AbstractLookupController <I extends Indexable> extends AuthenticationAware.Base implements SearchResultHandler<I> {
 
     private static final long serialVersionUID = 2357805482356017885L;
 
@@ -197,19 +197,26 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         }
     }
 
-    protected void addTitlePart(QueryGroup q, String title_) {
-        if (StringUtils.isNotEmpty(title_)) {
-            QueryPartGroup titleGroup = new QueryPartGroup(Operator.OR);
-            titleGroup.append(new FieldQueryPart(QueryFieldNames.TITLE_AUTO).setBoost(6f).setQuotedEscapeValue(title_));
-            titleGroup.append(new FieldQueryPart(QueryFieldNames.TITLE, title_).setBoost(4f));
-            q.append(titleGroup);
+    protected void addTitlePart(QueryGroup q, String title, boolean autocomplete) {
+        if (StringUtils.isEmpty(title))
+            return;
+        String titleFieldName = QueryFieldNames.TITLE;
+        if (autocomplete) {
+            titleFieldName = QueryFieldNames.TITLE_AUTO;
         }
+        QueryPartGroup grp = new QueryPartGroup();
+        grp.setOperator(Operator.OR);
+        addEscapedWildcardField(grp, titleFieldName, title);
+        FieldQueryPart titlePart = new FieldQueryPart(titleFieldName);
+        titlePart.setQuotedEscapeValue(title);
+        grp.append(titlePart.setBoost(6f));
+        q.append(grp);
     }
 
     protected void appendStatusInformation(QueryBuilder q, QueryDescriptionBuilder queryDescriptionBuilder, List<Status> statuses, Person user) {
         logger.trace("initial status for {} : {}", user, statuses);
         CollectionUtils.filter(statuses, NotNullPredicate.INSTANCE);
-        // selecting nothing is the same as selecting everything
+        //selecting nothing is the same as selecting everything
         if (CollectionUtils.isEmpty(statuses)) {
             statuses.addAll(Arrays.asList(Status.values()));
         }
@@ -345,8 +352,8 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
      *            the includedStatuses to set
      */
     public void setIncludedStatuses(List<Status> includedStatuses) {
-        // we need a list we can mutate
-        this.includedStatuses = new ArrayList<Status>(includedStatuses);
+        //we need a list we can mutate
+        this.includedStatuses = new ArrayList<Status>(includedStatuses);      
     }
 
     /**

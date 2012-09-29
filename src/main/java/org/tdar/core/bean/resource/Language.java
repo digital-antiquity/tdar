@@ -12,7 +12,7 @@ import org.tdar.core.bean.HasLabel;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
  */
-public enum LanguageEnum implements HasLabel { 
+public enum Language implements HasLabel { 
 
 	ENGLISH("English", "en","eng"),
 	SPANISH("Spanish", "sp","spa"),
@@ -29,7 +29,7 @@ public enum LanguageEnum implements HasLabel {
     private final String iso639_2;
     
     
-    private LanguageEnum(String label, String code,String iso) {
+    private Language(String label, String code,String iso) {
         this.label = label;
         this.code = code;
         this.iso639_2 = iso;
@@ -47,9 +47,9 @@ public enum LanguageEnum implements HasLabel {
 		return iso639_2;
 	}
 	
-	public static LanguageEnum fromISO(String str) {
+	public static Language fromISO(String str) {
 		if (!StringUtils.isEmpty(str)) {
-			for (LanguageEnum val : LanguageEnum.values()) {
+			for (Language val : Language.values()) {
 				if (val.getIso639_2().equalsIgnoreCase(str)) return val;
 			}
 		}
@@ -60,13 +60,13 @@ public enum LanguageEnum implements HasLabel {
      * Returns the ResourceType corresponding to the String given or null if none exists.  Used in place of valueOf since
      * valueOf throws RuntimeExceptions.
      */
-    public static LanguageEnum fromString(String string) {
+    public static Language fromString(String string) {
         if (string == null || "".equals(string)) {
             return null;
         }
         // try to convert incoming resource type String query parameter to ResourceType enum.. unfortunately valueOf only throws RuntimeExceptions.
         try {
-            return LanguageEnum.valueOf(string);
+            return Language.valueOf(string);
         }
         catch (Exception exception) {
             return null;

@@ -50,8 +50,8 @@ public class PdfService implements Serializable {
     enum FontHelper {
         // confirm correct encoding http://stackoverflow.com/questions/1713751/using-java-pdfbox-library-to-write-russian-pdf
         HELVETICA_EIGHT_POINT(PDType1Font.HELVETICA, PDType1Font.HELVETICA_BOLD, PDType1Font.HELVETICA_OBLIQUE, new PdfDocEncoding(), 8, 100),
-        HELVETICA_TEN_POINT(PDType1Font.HELVETICA, PDType1Font.HELVETICA_BOLD, PDType1Font.HELVETICA_OBLIQUE, new PdfDocEncoding(), 10, 90),
-        HELVETICA_TWELVE_POINT(PDType1Font.HELVETICA, PDType1Font.HELVETICA_BOLD, PDType1Font.HELVETICA_OBLIQUE, new PdfDocEncoding(), 12, 80),
+        HELVETICA_TEN_POINT(PDType1Font.HELVETICA, PDType1Font.HELVETICA_BOLD, PDType1Font.HELVETICA_OBLIQUE, new PdfDocEncoding(), 10, 100),
+        HELVETICA_TWELVE_POINT(PDType1Font.HELVETICA, PDType1Font.HELVETICA_BOLD, PDType1Font.HELVETICA_OBLIQUE, new PdfDocEncoding(), 12, 100),
         HELVETICA_SIXTEEN_POINT(PDType1Font.HELVETICA, PDType1Font.HELVETICA_BOLD, PDType1Font.HELVETICA_OBLIQUE, new PdfDocEncoding(), 16, 55);
 
         private int fontSize;
@@ -282,7 +282,7 @@ public class PdfService implements Serializable {
         text = text.trim();
 
         for (String line : text.split("([\r|\n]+)")) {
-            logger.trace(line);
+            logger.debug(line);
             content.drawString(line);
             yFromBottom -= fontHelper.getLineHeight();
             content.endText();
@@ -323,7 +323,7 @@ public class PdfService implements Serializable {
         text = text.trim();
 
         for (String line : text.split("([\r|\n]+)")) {
-            logger.trace(line);
+            logger.debug(line);
             content.drawString(line);
             yFromBottom -= fontHelper.getLineHeight();
             content.endText();

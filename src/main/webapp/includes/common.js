@@ -377,17 +377,18 @@ $.validator.addMethod("latLong", function(value, element) {
 
 $.validator.addMethod("reasonableDate", function(value, element) {
 	var intVal = parseInt(value);
-	// -1 is allowable
-	return (intVal == value && (intVal == -1 || intVal > 1000 && intVal < 3000));
+	return (intVal == value && intVal > 1000 && intVal < 3000);
 }, "a date in the last millenia is expected");
 
-$.validator.addMethod("isbn", function(value, element) {
-	if($(element).is(':hidden')) return true; //skip validation if not showing
-	return value.match(/^(((\d+)-?(\d+)-?(\d+)-?([\dX]))|((978|979)-?(\d{9}[\dXx]))|)$/);
-}, "you must include a valid 10/13 Digit ISBN");
+$.validator
+		.addMethod(
+				"isbn",
+				function(value, element) {
+					return value
+							.match(/^(((\d+)-?(\d+)-?(\d+)-?([\dX]))|((978|979)-?(\d{9}[\dXx]))|)$/);
+				}, "you must include a valid 10/13 Digit ISBN");
 
 $.validator.addMethod("issn", function(value, element) {
-	if($(element).is(':hidden')) return true;//skip validation if not showing
 	return value.match(/^((\d{4})-?(\d{3})(\d|X|x)|)$/);
 }, "you must include a valid 8 Digit ISSN");
 
@@ -436,11 +437,6 @@ $.validator.addMethod('greaterThanEqual', function(value, element, param) {
 $.validator.addMethod('asyncFilesRequired', function(value, elem) {
 	return $('tr', '#files').not('.noFiles').size() > 0;
 }, "At least one file upload is required.");
-
-// $.validator's built-in number rule does not accept leading decimal points (e.g.'.12' vs. '0.12'), so we replace with our own 
-$.validator.addMethod('number', function(value, element){
-	return this.optional(element) || /^-?(?:\d+|\d{1,3}(?:,\d{3})+)?(?:\.\d+)?$/.test(value);
-}, $.validator.messages.number); 
 
 // $.validator.addClassRules("radiocarbonDate", {range:[0,100000]});
 // $.validator.addClassRules("julianYear", {range:[-99900, 2100]});
@@ -615,6 +611,7 @@ GEvent
 				'load',
 				function() {
 					// alert("action="+action);
+					
 					if (GBrowserIsCompatible()
 							&& document.getElementById("large-google-map") != undefined) {
 						map = new GMap2(document
@@ -690,8 +687,17 @@ GEvent
 						}
 						// set the starting location and zoom
 
-						map.setCenter(new GLatLng(40, -97.00), 4,
-								G_PHYSICAL_MAP); // other
+												
+						var MapLatLng = new GLatLng(GMapDefaultLat, GMapDefaultLng);
+						var MapZoom = 4;
+						
+						if(google.loader.ClientLocation){
+							MapLatLng = new GLatLng(google.loader.ClientLocation.latitude, google.loader.ClientLocation.longitude);							
+						}
+						
+						map.setCenter(MapLatLng, MapZoom,G_PHYSICAL_MAP); 
+						
+						// other
 
 						map.enableDoubleClickZoom();
 					}// end of if
@@ -1035,6 +1041,7 @@ function applyPersonAutoComplete(selector, usersOnly, showCreate) {
 	};
 	applyGenericAutocomplete(selector, options);
 }
+
 function evaluateAutocompleteRowAsEmpty(element, minCount) {
 	var req = buildRequestData($(element));
 	var total = 0;
@@ -2480,7 +2487,8 @@ function initializeEdit() {
 	delegateCreator("#authorshipTable", false, true);
 	delegateCreator("#creditTable", false, true);
 	delegateCreator("#divAccessRights", true, false);
-
+	delegateCreator("#copyrightHolderTable", false, true);
+	
 	delegateAnnotationKey("#resourceAnnotationsTable", "annotation",
 			"annotationkey");
 	delegateKeyword("#siteNameKeywordTable", "sitename", "SiteNameKeyword");
@@ -3022,4 +3030,49 @@ function changeSubcategory(categoryIdSelect, subCategoryIdSelect) {
 		$categoryIdSelect.siblings(".waitingSpinner").css('visibility','hidden');
 		$subCategoryIdSelect.html(result);
 	});
+}
+
+function toggleCopyrightHolder(copyrightMandatory) {
+	$("#copyrightHolderTable input[type!='radio']").each(function(index) {
+	    $(this).val("");
+	});
+	switch($('input[name=copyrightHolderType]:checked').val())
+	{
+	case "Institution":		
+		$("#copyrightPerson").hide();
+		$("#copyrightInstitution").show();
+		$("#copyright_holder_institution_name").addClass("required");
+		$("#copyright_holder_person_first_name").removeClass("required");
+		$("#copyright_holder_person_last_name").removeClass("required");
+		break;
+	case "Person":
+		$("#copyrightPerson").show();
+		$("#copyrightInstitution").hide();
+		$("#copyright_holder_institution_name").removeClass("required");
+		$("#copyright_holder_person_first_name").addClass("required");
+		$("#copyright_holder_person_last_name").addClass("required");
+		break;
+	}
+}
+
+function toggleLicense() {
+	// update display of licenses when the radio button selection changes
+	$("#license_section input[type='radio']").each(
+		function(index) {
+			// show or hide the row depending on whether the corresponding radio button is checked
+			var license_type_name = $(this).val();
+			var license_details_reference = "#license_details_" + license_type_name;
+			var license_details = $(license_details_reference);
+			if ($(this).is(":checked")) {
+				license_details.show();
+			} else {
+				license_details.hide();
+			}	
+			if (!$('#licenseText').is(':hidden')) {
+				$('#licenseText').addClass("required");
+			} else {
+				$('#licenseText').removeClass("required");
+			}
+		}
+	);
 }

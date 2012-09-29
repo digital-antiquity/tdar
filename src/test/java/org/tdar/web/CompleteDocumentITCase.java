@@ -85,6 +85,9 @@ public class CompleteDocumentITCase extends AbstractAdminAuthenticatedWebTestCas
         docValMap.put("document.endPage", "MMMvii");
         docValMap.put("document.journalNumber", "1");
         docValMap.put("document.volume", "25");
+        docValMap.put("copyrightHolderType", "Institution");
+        docValMap.put("copyrightHolderProxy.institution.name", "Elsevier");
+
         docValMap.put("siteNameKeywords[0]", "sandy");
         docValMap.put("uncontrolledSiteTypeKeywords[0]", "uncontrolled");
         docValMap.put("otherKeywords[0]", "other");

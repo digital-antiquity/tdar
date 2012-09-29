@@ -21,12 +21,8 @@
                         +
                         " rescol.id in (:resourceCollectionIds)"),
         @javax.persistence.NamedQuery(
-                name = TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME, 
-                query = "SELECT distinct resCol from ResourceCollection resCol left join resCol.authorizedUsers as authUser where (authUser.user.id=:userId or resCol.owner=:userId) and"
-                        + " resCol.type='SHARED' and resCol.name like :name "),
-        @javax.persistence.NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO, // NOTE: THIS MAY REQUIRE ADDITIONAL WORK INNER JOIN WILL PRECLUDE OwnerId w/no authorized users
-                query = "SELECT distinct resCol from ResourceCollection resCol left join resCol.authorizedUsers as authUser where (authUser.user.id=:userId or resCol.owner=:userId) and"
+                query = "SELECT distinct resCol from ResourceCollection resCol inner join resCol.authorizedUsers as authUser where authUser.user.id=:userId and"
                         +
                         " resCol.type='SHARED'"),
         @javax.persistence.NamedQuery(

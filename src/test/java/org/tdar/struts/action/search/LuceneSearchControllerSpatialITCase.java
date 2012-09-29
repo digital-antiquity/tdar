@@ -14,7 +14,6 @@ import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.SearchIndexService;
-import org.tdar.search.query.SpatialQueryPart;
 import org.tdar.struts.action.TdarActionSupport;
 
 @Transactional
@@ -44,7 +43,7 @@ public class LuceneSearchControllerSpatialITCase extends AbstractSearchControlle
             fail(e.getMessage());
         }
         doc.setTitle(title);
-        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(minLongX, minLatY, maxLongX, maxLatY);
+        LatitudeLongitudeBox llb = new LatitudeLongitudeBox( minLongX,minLatY, maxLongX,maxLatY);
         assertTrue("latlongbox is not valid", llb.isValid());
         doc.setStatus(Status.ACTIVE);
         logger.debug("creating document w/latLong: {}", llb);
@@ -85,8 +84,8 @@ public class LuceneSearchControllerSpatialITCase extends AbstractSearchControlle
         // document w/ coords that are around equator (Mali)
         Document doc = createGeoDoc("foo", 12.726084296948184, -7.646484375, 21.37124437061831, 3.427734375);
         // box around Micronesia
-        performGeoSearch(-14.602, -30d, 20.617, 146.154);
-        assertTrue(controller.getResults().contains(doc));
+        performGeoSearch(-14.602, 146.154, 20.617, -171.142);
+        assertFalse(controller.getResults().contains(doc));
     }
 
     @Test
@@ -191,59 +190,6 @@ public class LuceneSearchControllerSpatialITCase extends AbstractSearchControlle
         Document doc = createGeoDoc("Stafnsvötn", 65.18518697818304d, -18.776578903198242d, 65.18614154408306d, -18.773725032806396d);
         performGeoSearch(63.35212928507874d, -24.345703125d, 66.8265202749748d, -13.271484375d);
         assertTrue(controller.getResults().contains(doc));
-    }
-
-    @Test
-    @Rollback
-    public void testLatLongSearchOfBoxCoveringEntireItem() throws InstantiationException, IllegalAccessException {
-        LatitudeLongitudeBox latitudeLongitudeBoxOfItem = new LatitudeLongitudeBox(0.0, 0.0, 10.0, 10.0);
-        LatitudeLongitudeBox latitudLongitudeBoxOfQuery = new LatitudeLongitudeBox(1.0, 1.0, 9.0, 9.0);
-        testItemIsFoundByBox(latitudeLongitudeBoxOfItem, latitudLongitudeBoxOfQuery);
-    }
-
-    @Test
-    @Rollback
-    public void testLatLongSearchOfBoxCoveringEntireItem2() throws InstantiationException, IllegalAccessException {
-        LatitudeLongitudeBox latitudeLongitudeBoxOfItem = new LatitudeLongitudeBox(-173.237, 54.632, -129.98, 71.441);
-        LatitudeLongitudeBox latitudLongitudeBoxOfQuery = new LatitudeLongitudeBox(-173.14453125, 55.92458580482951, -139.833984375, 71.35706654962706);
-        testItemIsFoundByBox(latitudeLongitudeBoxOfItem, latitudLongitudeBoxOfQuery);
-    }
-
-    @Test
-    @Rollback
-    // @Ignore("ignore this test until we have true spatial search -- overlapping boxes currently do not work")
-    public void testLatLongSearchOfBoxCoveringPartOfItem() throws InstantiationException, IllegalAccessException {
-        LatitudeLongitudeBox latitudeLongitudeBoxOfItem = new LatitudeLongitudeBox(0.0, 0.0, 10.0, 10.0);
-        LatitudeLongitudeBox latitudLongitudeBoxOfQuery = new LatitudeLongitudeBox(1.0, 1.0, 12.0, 12.0);
-        testItemIsFoundByBox(latitudeLongitudeBoxOfItem, latitudLongitudeBoxOfQuery);
-    }
-
-    @Test
-    @Rollback
-    // @Ignore("ignore this test until we have true spatial search -- overlapping boxes currently do not work")
-    public void testLatLongSearchOfBoxCoveringPartOfItem2() throws InstantiationException, IllegalAccessException {
-        LatitudeLongitudeBox latitudeLongitudeBoxOfItem = new LatitudeLongitudeBox(2.0, 2.0, 10.0, 10.0);
-        LatitudeLongitudeBox latitudLongitudeBoxOfQuery = new LatitudeLongitudeBox(1.0, 1.0, 9.0, 9.0);
-        testItemIsFoundByBox(latitudeLongitudeBoxOfItem, latitudLongitudeBoxOfQuery);
-    }
-
-    private void testItemIsFoundByBox(LatitudeLongitudeBox latitudeLongitudeBoxOfItem, LatitudeLongitudeBox latitudLongitudeBoxOfQuery)
-            throws InstantiationException,
-            IllegalAccessException {
-        Document file = createAndSaveNewInformationResource(Document.class);
-        file.setLatitudeLongitudeBox(latitudeLongitudeBoxOfItem);
-        genericService.saveOrUpdate(file);
-        genericService.saveOrUpdate(latitudeLongitudeBoxOfItem);
-        searchIndexService.index(file);
-
-        logger.info("Item : {}", (new SpatialQueryPart(latitudeLongitudeBoxOfItem)).generateQueryString());
-        logger.info("Query: {}", (new SpatialQueryPart(latitudLongitudeBoxOfQuery)).generateQueryString());
-        controller.setMinx(latitudLongitudeBoxOfQuery.getMinimumLongitude());
-        controller.setMiny(latitudLongitudeBoxOfQuery.getMinimumLatitude());
-        controller.setMaxx(latitudLongitudeBoxOfQuery.getMaximumLongitude());
-        controller.setMaxy(latitudLongitudeBoxOfQuery.getMaximumLatitude());
-        doSearch();
-        assertTrue(controller.getResults().contains(file));
     }
 
 }

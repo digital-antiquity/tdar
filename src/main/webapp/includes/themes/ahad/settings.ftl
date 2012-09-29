@@ -5,4 +5,3 @@
 <#global siteName = "the Australian Historical Archaeological Database" />
 
 <#macro themeColors separator=","><#assign ret=""/><#list barColors as color>${ret}<#assign ret><#if color_index !=0>${separator}</#if>${color?replace("#","")}</#assign></#list>${ret}</#macro>
-<#global graphVariable = 0 />

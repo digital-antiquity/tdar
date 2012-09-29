@@ -11,11 +11,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -243,18 +241,13 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         for (ResourceCollection collection : incoming_) {
             ResourceCollection collectionToAdd = null;
             if (collection.isTransient()) {
-                ResourceCollection potential = getDao().findCollectionsWithName(authenticatedUser, collection);
-                if (potential != null) {
-                    collectionToAdd = potential;
-                } else {
-                    collection.setOwner(authenticatedUser);
-                    collection.setType(CollectionType.SHARED);
-                    if (collection.getSortBy() == null) {
-                        collection.setSortBy(SortOption.RESOURCE_TYPE);
-                    }
-                    collection.setVisible(true);
-                    collectionToAdd = collection;
+                collection.setOwner(authenticatedUser);
+                collection.setType(CollectionType.SHARED);
+                if (collection.getSortBy() == null) {
+                    collection.setSortBy(SortOption.RESOURCE_TYPE);
                 }
+                collection.setVisible(true);
+                collectionToAdd = collection;
             } else {
                 collectionToAdd = find(collection.getId());
             }

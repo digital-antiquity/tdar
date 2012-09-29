@@ -1,7 +1,13 @@
 package org.tdar.struts.action.resource;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -101,18 +107,15 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
         for (OntologyNode node : ont.getOntologyNodes()) {
             map.put(node.getIri(), node);
         }
-        logger.debug("iri -> nodes: {}", map);
-        OntologyNode node = map.get("Navicular__Central____Cuboid");
-        assertNotNull(node);
-        assertEquals("Navicular (Central) & Cuboid", node.getDisplayName());
-        assertEquals("4th Tarsal", node.getSynonyms().iterator().next());
         assertEquals("<Fish Element Additional>", map.get("_Fish_Element_Additional_").getDisplayName());
-        assertEquals("Clavicle % Clavicle.clavicle", map.get("Clavicle___Clavicle.clavicle").getDisplayName());
+        assertEquals("Navicular (Central) & Cuboid", map.get("Navicular_(Central)_Cuboid").getDisplayName());
+        assertEquals("4th Tarsal", map.get("Navicular_(Central)_Cuboid").getSynonyms().iterator().next());
     }
 
     @Test
     @Rollback
     public void testMappedOntologyUpdate() throws Exception {
+
         String ontText = IOUtils.toString(getClass().getResourceAsStream(TAB_ONTOLOGY_FILE));
         int originalFileLength = ontText.split("([\r\n]+)").length;
         Long id = loadOntologyFromText(ontText);

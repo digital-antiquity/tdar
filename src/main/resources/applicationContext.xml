@@ -23,20 +23,6 @@
 	<import resource='spring-daos.xml' />
 	<!-- persistence layer services -->
 	<import resource='spring-services.xml' />
-
-    <!-- spring JavaMailSenderImpl configuration to be autowired into the EmailService -->
-    <bean id="javaMailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
-       <property name="host" value="${mail.smtp.host:localhost}" />
-    </bean>
-    <bean id="freemarkerMailConfiguration" class="org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean">
-        <property name="templateLoaderPaths">
-            <list>
-                <value>classpath:/email-templates</value>
-                <value>file:/WEB-INF/email-templates</value>
-            </list>
-        </property>
-    </bean>
-	
 	<!-- TAG Service -->
 	<import resource='spring-tag.xml' />
 	<!-- Tasks -->

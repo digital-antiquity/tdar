@@ -25,7 +25,7 @@ import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.LanguageEnum;
+import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -146,7 +146,7 @@ public abstract class DcTransformer<R extends Resource> implements Transformer<R
                     dc.getDate().add(dateCreated);
                 }
             }
-            LanguageEnum resourceLanguage = source.getResourceLanguage();
+            Language resourceLanguage = source.getResourceLanguage();
             if (resourceLanguage != null)
                 dc.getLanguage().add(resourceLanguage.getCode());
 

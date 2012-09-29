@@ -3,8 +3,12 @@
  */
 package org.tdar.core.filestore;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+
 import java.io.File;
+
+import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.TestConstants;
@@ -35,6 +39,8 @@ public class DocumentFileITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     private MessageService messageService;
+
+    protected Logger logger = Logger.getLogger(getClass());
 
     @Test
     public void testBrokenImageStatus() throws Exception {

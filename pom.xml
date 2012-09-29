@@ -17,7 +17,6 @@
 		<generated.schema.dir>target/generated/db</generated.schema.dir>
 		<generated.schema.file>schema.sql</generated.schema.file>
 		<jetty.port>8080</jetty.port>
-		<jetty.stop.port>12919</jetty.stop.port>
 		<use.test.classpath>false</use.test.classpath>
 	</properties>
 	<organization>
@@ -101,6 +100,11 @@
 				<enabled>true</enabled>
 			</releases>
 		</repository>
+		<!-- To pull Log4J e-mail throttler: https://github.com/reaktor/log4j-email-throttle -->
+        <repository>
+        	<id>Laughing Panda</id>
+            <url>http://maven.laughingpanda.org/maven2</url>
+		</repository>		
 	</repositories>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.tdar</groupId>
@@ -203,6 +207,12 @@
 			<artifactId>commons-cli</artifactId>
 			<version>1.2</version>
 		</dependency>
+		<!-- Log4J e-mail throttling: https://github.com/reaktor/log4j-email-throttle -->
+        <dependency>
+        	<groupId>fi.reaktor.log4j</groupId>
+            <artifactId>log4j-email-throttle</artifactId>
+            <version>1.0.0</version>
+		</dependency>		
 		<!-- crowd integration -->
 		<dependency>
 			<groupId>com.atlassian.crowd</groupId>
@@ -581,6 +591,20 @@
 			<artifactId>joda-time</artifactId>
 			<version>2.0</version>
 		</dependency>
+		<!-- Jersey, required for OData implementation -->
+ 		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-server</artifactId>
+			<version>1.9</version>
+		</dependency>
+ 		<!-- OData4J -->
+		<dependency>
+			<groupId>org.odata4j</groupId>
+			<artifactId>odata4j-dist</artifactId>
+			<version>0.6.0</version>
+			<type>pom</type>
+		</dependency>
+	
 		<!-- <dependency> <groupId>org.codehaus.jackson</groupId> <artifactId>jackson-mapper-asl</artifactId> 
 			<version>1.8.0-SNAPSHOT</version> </dependency> -->
 	</dependencies>
@@ -852,8 +876,8 @@
 					<contextPath>/</contextPath>
 					<webDefaultXml>src/main/resources/webdefault.xml</webDefaultXml>
 					<scanIntervalSeconds>0</scanIntervalSeconds>
-					<stopKey>tdar${jetty.port}</stopKey>
-					<stopPort>${jetty.stop.port}</stopPort>
+					<stopKey>tdar</stopKey>
+					<stopPort>12919</stopPort>
 				</configuration>
 				<executions>
 					<execution>
@@ -1078,7 +1102,6 @@
 			</build>
 			<properties>
 				<jetty.port>8180</jetty.port>
-				<jetty.stop.port>12920</jetty.stop.port>
 				<use.test.classpath>true</use.test.classpath>
 				<webapp.deploy.dir>target/generated/webapp-test</webapp.deploy.dir>
 			</properties>

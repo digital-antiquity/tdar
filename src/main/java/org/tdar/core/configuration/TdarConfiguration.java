@@ -28,10 +28,13 @@ public class TdarConfiguration {
 
     public static final int DEFAULT_SCHEDULED_PROCESS_START_ID = 0;
     public static final int DEFAULT_SCHEDULED_PROCESS_END_ID = 400000;
+    
+
     public static final String DEFAULT_HOSTNAME = "core.tdar.org";
     public static final String DEFAULT_HOST_URL = "http://core.tdar.org";
-	public static final int DEFAULT_PORT = 80; // we use this in test
+    public static final int DEFAULT_PORT = 80; // we use this in test
     public final static String DEFAULT_SMTP_HOST = "localhost";
+    
     private static final String SYSTEM_ADMIN_EMAIL = "tdar-svn@lists.asu.edu";
 
     public static final int DEFAULT_AUTHORITY_MANAGEMENT_DUPE_LIST_MAX_SIZE = 10;
@@ -45,11 +48,10 @@ public class TdarConfiguration {
 
     private Filestore filestore;
 
-    private Set<String> stopWords = null;
+    private Set<String> stopWords = new HashSet<String>();
 
     private final static TdarConfiguration INSTANCE = new TdarConfiguration();
     public static final String PRODUCTION = "production";
-    private String baseHost;
 
     private TdarConfiguration() {
         this("/tdar.properties");
@@ -62,15 +64,26 @@ public class TdarConfiguration {
         initPersonalFilestorePath();
         testQueue();
         System.setProperty("java.awt.headless", "true");
+        initializeStopWords();
+    }
+    
+    private void initializeStopWords() {
+        try {
+            stopWords.addAll(IOUtils.readLines(new FileInputStream(assistant.getStringProperty("lucene.stop.words.file"))));
+        } catch (Exception e) {
+            stopWords.addAll(Arrays.asList(
+                    "the", "and", "a", "to", "of", "in", "i", "is", "that", "it", "on", "you", "this", "for",
+                    "but", "with", "are", "have", "be", "at", "or", "as", "was", "so", "if", "out", "not"));
+        }
     }
 
     /**
      * @return
      */
     private Filestore loadFilestore() {
-        String filestoreClass = assistant.getStringProperty("file.store.class",
+        String filestoreClassName = assistant.getStringProperty("file.store.class",
                 PairtreeFilestore.class.getCanonicalName());
-        Filestore filestore_ = null;
+        Filestore filestore = null;
 
         File filestoreLoc = new File(getFileStoreLocation());
         try {
@@ -82,20 +95,15 @@ public class TdarConfiguration {
         }
 
         try {
-            Class<?> class_ = Class.forName(filestoreClass);
-            filestore_ = (Filestore) class_.getConstructor(
-                    new Class<?>[] { String.class }).newInstance(
-                    getFileStoreLocation());
+            Class<?> filestoreClass = Class.forName(filestoreClassName);
+            filestore = (Filestore) filestoreClass.getConstructor(String.class).newInstance(getFileStoreLocation());
         } catch (Exception e) {
             String msg = "Could not instantiate Filestore: " + e.getMessage();
-            logger.fatal(msg, e);
+            logger.error(msg, e);
             throw new IllegalStateException(msg, e);
         }
-        ;
-
-        logger.info("instantiating filestore: " + filestore_.getClass().getCanonicalName());
-
-        return filestore_;
+        logger.info("instantiating filestore: " + filestore.getClass().getCanonicalName());
+        return filestore;
     }
 
     // verify that the personal filestore location exists, attempt to make it if it doesn't, and System.exit() if that fails
@@ -113,7 +121,7 @@ public class TdarConfiguration {
             }
         } catch (SecurityException ex) {
             msg = "Security Exception: could not create personal filestore home directory";
-            logger.fatal(ex);
+            logger.error(msg, ex);
             pathExists = false;
         }
         if (!pathExists) {
@@ -126,28 +134,25 @@ public class TdarConfiguration {
         return INSTANCE;
     }
 
-	public String getBaseUrl() {
+    public String getBaseUrl() {
 		String base = "http://" + getHostName();
 	    if (getPort() != 80) {
-	        base += ":" + getPort();
-	    }
-	    return base;
-	}
-	public String getBaseHost() {
-        return getHostName();
+            base += ":" + getPort();
+        }
+        return base;
     }
 
-	public String getHostName() {
-	    return assistant.getStringProperty("app.hostname", DEFAULT_HOSTNAME);
-	}
+    public String getHostName() {
+        return assistant.getStringProperty("app.hostname", DEFAULT_HOSTNAME);
+    }
 
 	public String getEmailHostName() {
 	    return assistant.getStringProperty("app.email.hostname", getHostName());
 	}
 
-	public int getPort() {
-	    return assistant.getIntProperty("app.port", DEFAULT_PORT);
-	}
+    public int getPort() {
+        return assistant.getIntProperty("app.port", DEFAULT_PORT);
+    }
 
     public String getHelpUrl() {
         return assistant.getStringProperty("help.url", "http://dev.tdar.org/confluence/display/TDAR/User+Documentation");
@@ -175,7 +180,7 @@ public class TdarConfiguration {
     }
 
     public String getSmtpHost() {
-        return assistant.getStringProperty("smtp.host", DEFAULT_SMTP_HOST);
+        return assistant.getStringProperty("mail.smtp.host", DEFAULT_SMTP_HOST);
     }
 
     public String getSystemAdminEmail() {
@@ -189,6 +194,28 @@ public class TdarConfiguration {
 
     public boolean getPrivacyControlsEnabled() {
         return assistant.getBooleanProperty("privacy.controls.enabled", false);
+
+    }
+    
+    public boolean getLicensesEnabled() {
+        return assistant.getBooleanProperty("licenses.enabled", false);
+    }
+    
+    public boolean getCopyrightMandatory() {
+        return assistant.getBooleanProperty("copyright.fields.mandatory", false);
+    }
+
+    public boolean getCopyrightEnabled() {
+        return assistant.getBooleanProperty("copyright.fields.enabled", false);
+    }
+
+    public double getGmapDefaultLat() {
+        return assistant.getDoubleProperty("google.map.defaultLatitude", 40.00);
+
+    }
+
+    public double getGmapDefaultLng() {
+        return assistant.getDoubleProperty("google.map.defaultLongitude", -97.00);
 
     }
 
@@ -292,23 +319,17 @@ public class TdarConfiguration {
      * @return
      */
     public Set<String> getStopWords() {
-        if (stopWords == null) {
-            stopWords = new HashSet<String>(Arrays.asList(new String[] {
-                    "the", "and", "a", "to", "of", "in", "i", "is", "that", "it", "on", "you", "this", "for",
-                    "but", "with", "are", "have", "be", "at", "or", "as",
-                    "was", "so", "if", "out", "not" }));
-            try {
-                stopWords.clear(); // resetting to use provided file
-                stopWords.addAll(IOUtils.readLines(new FileInputStream(assistant.getStringProperty("lucene.stop.words.file"))));
-            } catch (Exception e) {
-            }
-        }
         return stopWords;
     }
 
     public String getRecaptchaUrl() {
         return assistant.getStringProperty("recaptcha.host");
     }
+
+    public String getGoogleMapsApiKey() {
+        return assistant.getStringProperty("googlemaps.apikey","ABQIAAAA9NaKjBJpcVyUYJMRSYQl8xS0DQCUA87cCG9n-o92VKwf-4ptwhSBrQY9Wnb4P_utINrjb3QZf1KuBw");
+    }
+
 
     public String getRecaptchaPrivateKey() {
         return assistant.getStringProperty("recaptcha.privateKey");
@@ -332,6 +353,11 @@ public class TdarConfiguration {
 
     public boolean getEnableEntityOai() {
         return assistant.getBooleanProperty("oai.repository.enableEntities", false);
+    }
+
+    // TODO: remove feature toggle when feature complete
+    public boolean getLeftJoinDataIntegrationFeatureEnabled() {
+        return assistant.getBooleanProperty("featureEnabled.leftJoinDataIntegration", false);
     }
 
     public String getSystemDescription() {
@@ -363,6 +389,10 @@ public class TdarConfiguration {
 
     public int getSearchExcelExportRecordMax() {
         return assistant.getIntProperty("search.excel.export.recordMax", DEFAULT_SEARCH_EXCEL_EXPORT_RECORD_MAX);
+    }
+
+    public boolean isProductionEnvironment() {
+        return PRODUCTION.equals(getServerEnvironmentStatus());
     }
 
 }

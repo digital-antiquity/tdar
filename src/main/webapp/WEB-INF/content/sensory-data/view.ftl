@@ -48,6 +48,8 @@
     <@fieldval _val=resource.finalDatasetDescription!"" _show=resource.finalDatasetDescription??  _label="Description of Final Datasets for Archive" />
 </@view.infoResourceBasicInformation>
 
+<@view.uploadedFileInfo />
+
 <#if !resource.sensoryDataScans.isEmpty()>
 <h3>Scan Information</h3>
 <table class="zebracolors tableFormat">

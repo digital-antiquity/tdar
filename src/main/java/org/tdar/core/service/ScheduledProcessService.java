@@ -6,7 +6,6 @@
  */
 package org.tdar.core.service;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -14,7 +13,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,8 +99,6 @@ public class ScheduledProcessService {
         stats.add(generateStatistics(StatisticType.NUM_USERS, entityService.findAllRegisteredUsers(null).size(), ""));
         stats.add(generateStatistics(StatisticType.NUM_ACTUAL_CONTRIBUTORS, entityService.findNumberOfActualContributors(), ""));
         stats.add(generateStatistics(StatisticType.NUM_COLLECTIONS, resourceCollectionService.findAllResourceCollections().size(), ""));
-        long repositorySize = TdarConfiguration.getInstance().getFilestore().getSizeInBytes();
-        stats.add(generateStatistics(StatisticType.REPOSITORY_SIZE, Long.valueOf( repositorySize),FileUtils.byteCountToDisplaySize(repositorySize)));
         genericService.save(stats);
     }
 
@@ -204,7 +200,7 @@ public class ScheduledProcessService {
 
         logger.debug(subject + "[ " + getTdarConfiguration().getSystemAdminEmail() + " ]");
         logger.debug(message);
-        emailService.send(message, subject.toString(), getTdarConfiguration().getSystemAdminEmail());
+        emailService.send(message, getTdarConfiguration().getSystemAdminEmail(), subject.toString());
         logger.info("ending automated verification of files");
     }
 

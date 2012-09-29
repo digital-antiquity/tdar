@@ -77,6 +77,8 @@ public class Project extends Resource {
 
     public static final Project NULL = new Project() {
         private static final long serialVersionUID = -8849690416412685818L;
+        // FIXME: get rid of this if not needed.
+        private transient ThreadLocal<Person> personThreadLocal = new ThreadLocal<Person>();
 
         @Override
         public String getDescription() {
@@ -84,14 +86,15 @@ public class Project extends Resource {
         }
 
         @Override
-        public String getTitleSort() {
-            return "";
+        public Person getSubmitter() {
+            return personThreadLocal.get();
         }
+
         @Override
-        public boolean isActive() {
-            return false;
+        public void setSubmitter(Person person) {
+            personThreadLocal.set(person);
         }
-        
+
         @Override
         public Long getId() {
             return -1L;

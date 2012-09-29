@@ -42,12 +42,11 @@ public interface QueryPart {
             }
         }
 
-        public QueryPart setQuotedEscapeValue(String val) {
+        public void setQuotedEscapeValue(String val) {
             if (!StringUtils.isEmpty(val)) {
                 setEscapedValue(val);
                 setFieldValue("\"" + getFieldValue() + "\"");
             }
-            return this;
         }
 
         /**

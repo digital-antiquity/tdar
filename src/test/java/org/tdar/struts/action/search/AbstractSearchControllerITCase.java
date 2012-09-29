@@ -226,20 +226,4 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
         return null;
     }
 
-    
-    protected Document createDocumentWithContributorAndSubmitter() throws InstantiationException, IllegalAccessException {
-        Document doc = createAndSaveNewInformationResource(Document.class);
-        Person contributor = new Person("Kelly", "deVos", "kellyd@mailinator.com");
-        genericService.save(contributor);
-        ResourceCreator rc = new ResourceCreator(doc, contributor, ResourceCreatorRole.AUTHOR);
-        Person submitter = new Person("Evelyn", "deVos", "ecd@mailinator.com");
-        genericService.save(submitter);
-        doc.setSubmitter(submitter);
-        genericService.saveOrUpdate(rc);
-        doc.getResourceCreators().add(rc);
-        genericService.saveOrUpdate(doc);
-        reindex();
-        return doc;
-    }
-
 }

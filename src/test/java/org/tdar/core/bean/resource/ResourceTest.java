@@ -77,10 +77,10 @@ public class ResourceTest {
 
     @Test
     public void testLanguageEnum() {
-        LanguageEnum type = LanguageEnum.fromString("MULTIPLE");
-        LanguageEnum type2 = LanguageEnum.fromISO("fra");
-        assertEquals(LanguageEnum.MULTIPLE, type);
-        assertEquals(LanguageEnum.FRENCH, type2);
+        Language type = Language.fromString("MULTIPLE");
+        Language type2 = Language.fromISO("fra");
+        assertEquals(Language.MULTIPLE, type);
+        assertEquals(Language.FRENCH, type2);
     }
 
     @Test

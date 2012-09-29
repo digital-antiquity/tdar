@@ -88,12 +88,6 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
         logger.debug("Clearing group membership cache of all entries: " + groupMembershipCache);
         groupMembershipCache.clear();
     }
-    
-    public void clearPermissionsCache(Person person) {
-        logger.debug("Clearing group membership cache of entries for: " + person);
-        groupMembershipCache.remove(person);
-    }
-
 
     /**
      * Returns true iff
@@ -156,6 +150,5 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
             removeIfNotAllowed(list, item, permission, person);
         }
     }
-
 
 }

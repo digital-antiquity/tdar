@@ -44,6 +44,7 @@
     
     
 <div class="glide">
+	<!-- FIXME: shoudl this set editable to true -->
       <@list.listResources results resourceCollection.sortBy editable=editable />
 </div>
     </#if>

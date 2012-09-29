@@ -9,11 +9,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
-import org.apache.struts2.convention.annotation.Result;
-import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.hibernate.search.FullTextQuery;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -126,7 +123,6 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     @Override
     public void postSaveCleanup() {
-        //This is apparently necessary in order to force indexing of transient fields.
         getSearchIndexService().indexCollection(toReindex);
     }
 
@@ -186,30 +182,6 @@ public class CollectionController extends AbstractPersistableController<Resource
         return SUCCESS;
     }
 
-    @Override
-    @SkipValidation
-    @Action(value = "edit", results = {
-            @Result(name = SUCCESS, location = "edit.ftl"),
-            @Result(name = INPUT, location = "add", type = "redirect")
-    })
-    public String edit() throws TdarActionException {
-        String result = super.edit();
-        resources.removeAll(getRetainedResources());
-        return result;
-    }
-
-    private List<Resource> getRetainedResources() {
-        List<Resource> retainedResources = new ArrayList<Resource>();
-        for(Resource resource: getPersistable().getResources()) {
-            boolean canEdit = getAuthenticationAndAuthorizationService().canEditResource(getAuthenticatedUser(), resource);
-            if(!canEdit) {
-                retainedResources.add(resource);
-            }
-        }
-        return retainedResources; 
-    }
-    
-    
     public void loadExtraViewMetadata() {
         if (getId() == null || getId() == -1)
             return;

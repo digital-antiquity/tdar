@@ -12,7 +12,7 @@
         <div id="footer-about" class="footer-column"> 
                 <h2>Use</h2> 
 <ul> 
-      <li><a href='http://www.guidestogoodpractice.org/'>Guides to Good Practice</a></li> 
+      <li><a href='http://core.tdar.org/'>Search</a></li> 
       <li><a href='http://core.tdar.org/'>Start a project &amp; add data</a></li> 
       <li><a href='http://core.tdar.org/'>Login</a></li> 
       <li><a href='http://core.tdar.org/account/new'>Register</a></li> 
@@ -24,10 +24,9 @@
 <div> 
 Questions, comments, feedback?<br/> 
 <ul>
-	<li><a href="mailto:&#99;&#111;&#109;&#109;&#101;&#110;&#116;&#115;&#64;&#116;&#100;&#97;&#114;&#46;&#111;&#114;&#103;?subject=tDAR%20comments&amp;">&#99;&#111;&#109;&#109;&#101;&#110;&#116;&#115;&#64;&#116;&#100;&#97;&#114;&#46;&#111;&#114;&#103;</a> </li>
-	<li><a href="https://twitter.com/DigArcRec" class="twitter-follow-button" data-show-count="false">Follow @DigArcRec on twitter</a></li>
-<li><a href="http://facebook.com/digarcrec">Follow tDAR on Facebook</a></li>
-
+	<li><a href="mailto:&#99;&#111;&#109;&#109;&#101;&#110;&#116;&#115;&#64;&#116;&#100;&#97;&#114;&#46;&#111;&#114;&#103;?subject=tDAR%20comments&amp;cc=tdar-svn%40lists.asu.edu">&#99;&#111;&#109;&#109;&#101;&#110;&#116;&#115;&#64;&#116;&#100;&#97;&#114;&#46;&#111;&#114;&#103;</a> </li>
+	<li><a href="https://twitter.com/DigArcRec" class="twitter-follow-button" data-show-count="false">Follow @DigArcRec</a>
+		<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></li>
 </ul>
 </div> 
  

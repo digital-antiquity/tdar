@@ -504,16 +504,19 @@ public class LuceneSearchController extends AbstractLookupController<Resource> {
             cleanedQueryString = cleanedQueryString.substring(1, cleanedQueryString.length() - 1);
         }
         cleanedQueryString = QueryParser.escape(cleanedQueryString);
-        String unquotedQueryString = getSearchService().sanitize(cleanedQueryString);
-        
+
+        //undo why??
+//        // still quotes... undo
+//        if (cleanedQueryString.contains("\"")) {
+//            cleanedQueryString = query;
+//        }
+
         QueryPartGroup primary = new QueryPartGroup();
 
-        boolean hasSpaces = cleanedQueryString.contains(" ");
-        if (hasSpaces) {
+        if (cleanedQueryString.contains(" ")) {
             // quoting so we can do things like proximity
             cleanedQueryString = "\"" + cleanedQueryString + "\"";
         }
-        
 
         FieldQueryPart titlePart = new FieldQueryPart(QueryFieldNames.TITLE, cleanedQueryString);
         FieldQueryPart descriptionPart = new FieldQueryPart(QueryFieldNames.DESCRIPTION, cleanedQueryString);
@@ -521,7 +524,7 @@ public class LuceneSearchController extends AbstractLookupController<Resource> {
         FieldQueryPart content = new FieldQueryPart(QueryFieldNames.CONTENT, cleanedQueryString);
         FieldQueryPart allFields = new FieldQueryPart(QueryFieldNames.ALL, cleanedQueryString).setBoost(2f);
 
-        if (hasSpaces) {
+        if (cleanedQueryString.contains(" ")) {
             // APPLIES WEIGHTING BASED ON THE "PHRASE" NOT THE TERM
             FieldQueryPart phrase = new FieldQueryPart(QueryFieldNames.ALL_PHRASE, cleanedQueryString);
             //FIXME: magic words
@@ -530,14 +533,8 @@ public class LuceneSearchController extends AbstractLookupController<Resource> {
             primary.append(phrase);
             creatorPart.setProximity(2);
             titlePart.setProximity(3);
-            //perform a phrase and a keyword search on title
-            FieldQueryPart titleUnquotedPart = new FieldQueryPart(QueryFieldNames.TITLE, unquotedQueryString);
-            //boost the title keyword search a little less than the title phrase search under the assumption that phrase matches should have better relevancy score
-            primary.append(titleUnquotedPart.setBoost(5f));
-            
             descriptionPart.setProximity(4);
         }
-            
         primary.append(titlePart.setBoost(6f));
         primary.append(descriptionPart.setBoost(4f));
         primary.append(creatorPart.setBoost(5f));
@@ -554,7 +551,7 @@ public class LuceneSearchController extends AbstractLookupController<Resource> {
         QueryPartGroup group= new QueryPartGroup();
         group.setOperator(Operator.OR);
         FieldQueryPart wordsInTitle = new FieldQueryPart(QueryFieldNames.TITLE);
-        wordsInTitle.setEscapedValue(getSearchService().sanitize(getTitle()));
+        wordsInTitle.setQuotedEscapeValue(getTitle());
         FieldQueryPart wholeTitle = new FieldQueryPart(QueryFieldNames.TITLE);
         wholeTitle.setQuotedEscapeValue(getTitle());
         wholeTitle.setBoost(6f);//FIXME: magic numbers
@@ -1369,4 +1366,6 @@ public class LuceneSearchController extends AbstractLookupController<Resource> {
         coverageTypes.add(CoverageType.RADIOCARBON_DATE);
         return coverageTypes;
     }
+
+
 }
