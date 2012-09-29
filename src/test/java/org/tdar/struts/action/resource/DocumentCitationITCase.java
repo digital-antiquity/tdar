@@ -17,6 +17,7 @@ import org.custommonkey.xmlunit.XpathEngine;
 import org.junit.Before;
 import org.junit.Test;
 import org.tdar.core.bean.resource.DocumentType;
+import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.w3c.dom.Document;
 
@@ -43,7 +44,7 @@ public class DocumentCitationITCase extends AbstractResourceControllerITCase {
         loadResourceFromId(controller, tdarId);
     }
 
-    private String getModsXml() {
+    private String getModsXml() throws TdarActionException {
         String xml = null;
         controller.viewMods();
         ModsDocument mods = controller.getModsDocument();
@@ -57,7 +58,7 @@ public class DocumentCitationITCase extends AbstractResourceControllerITCase {
         return xml;
     }
 
-    private String getDcXml() {
+    private String getDcXml() throws TdarActionException {
         String xml = null;
         controller.viewDc();
         DublinCoreDocument dc = controller.getDcDocument();
@@ -85,7 +86,7 @@ public class DocumentCitationITCase extends AbstractResourceControllerITCase {
     }
 
     @Test
-    public void simpleModsTest() {
+    public void simpleModsTest() throws TdarActionException {
         // a simple test to see if we even get back a non-blank mods document
         navigateTo(DOC_TDAR_ID);
         String xml = getModsXml();
@@ -93,7 +94,7 @@ public class DocumentCitationITCase extends AbstractResourceControllerITCase {
     }
 
     @Test
-    public void simpleDcTest() {
+    public void simpleDcTest() throws TdarActionException {
         // a simple test to see if we even get back a non-blank dc document
         navigateTo(DOC_TDAR_ID);
         String xml = getDcXml();

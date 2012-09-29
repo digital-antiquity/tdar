@@ -35,6 +35,8 @@ import org.tdar.core.bean.resource.dataTable.DataTable;
 import org.tdar.core.bean.resource.dataTable.DataTableColumn;
 
 /**
+ * ProxyClass to help with passing integration data back and forth from Struts
+ * 
  * @author Adam Brin
  * 
  */

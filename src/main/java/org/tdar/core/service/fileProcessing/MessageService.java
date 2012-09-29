@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Service;
 import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.GenericService;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.workflows.Workflow;
@@ -99,22 +100,23 @@ public class MessageService {
         WorkflowContext ctx = workflowContextService.initializeWorkflowContext(version);
         version.getInformationResourceFile().setStatus(FileStatus.QUEUED);
         ctx.setWorkflow(w);
+        // w.setWorkflowContext(ctx);
         // if (TdarConfiguration.getInstance().useExternalMessageQueue()) {
         // RabbitTemplate template = getRabbitTemplate(getFilesToProcessQueue());
         // template.setRequireAck(true);
         // template.convertAndSend(ctx.toXML());
         // } else {
+        boolean success = false;
         try {
-            w.run(ctx);
+            success = w.run(ctx);
             workflowContextService.processContext(ctx);
         } catch (Exception e) {
-            logger.error(e);
+            // trying to get a more useful debug message...
+            logger.warn("Unhandled exception while processing file: " + version, e);
             e.printStackTrace();
-            return false;
         }
-        return true;
         // }
-
+        return success;
     }
 
     //

@@ -6,8 +6,10 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.URLConstants;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.struts.WriteableSession;
 
 /**
  * $Id$
@@ -21,6 +23,7 @@ import org.tdar.core.bean.resource.Resource;
 @Namespace("/resource")
 @Component
 @Scope("prototype")
+@WriteableSession
 public class BookmarkResourceAction extends AuthenticationAware.Base {
 	
 	private static final long serialVersionUID = -5396034976314292120L;
@@ -43,7 +46,7 @@ public class BookmarkResourceAction extends AuthenticationAware.Base {
 	@Action(
 		value="bookmark",
     	results={
-			@Result(name="success", type="redirect", location="/workspace/list")
+			@Result(name="success", type="redirect", location=URLConstants.WORKSPACE)
     	}
     )
 	public String bookmarkResourceAction() {
@@ -65,7 +68,7 @@ public class BookmarkResourceAction extends AuthenticationAware.Base {
 	@Action(
 		value="removeBookmark",
     	results={
-			@Result(name="success", type="redirect", location="/workspace/list")
+			@Result(name="success", type="redirect", location=URLConstants.WORKSPACE)
     	}
     )
 	public String removeBookmarkAction() {

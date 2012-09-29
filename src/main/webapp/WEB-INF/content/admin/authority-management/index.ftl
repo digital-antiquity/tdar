@@ -7,21 +7,50 @@
     <script type='text/javascript' src='<@s.url value="/includes/datatable-support.js"/>'></script>
     <script type='text/javascript' src='<@s.url value="/includes/jquery.watermark-3.1.3.min.js"/>'></script> 
     <script type='text/javascript'>
-    $(initIndexPageJavascript);
+    $(function() {
+        var selEntityType = $("#selEntityType");
+        if (selEntityType != undefined) {
+            searchControls = $('.searchControl');
+            selEntityType.change(updateSearchControl).change();
+            applyWatermarks();
+            $('span.button').button().click(clearDupeList);
+        }
+        $("#txtInstitution, #txtFirstName, #txtLastName, #txtInstitution, #txtEmail, #txtKeyword").bindWithDelay("keyup", 
+                function() {$("#dupe_datatable").dataTable().fnDraw();} ,500);
+     });
     </script>
-    
+<style type="text/css">
+@-webkit-keyframes 'blink' {
+    0% { background: rgba(255,0,0,0); }
+    50% { background: rgba(255,0,0,00.5); }
+    100% { background: rgba(255,0,0,0); }
+}
+.dire-warning {
+    color:red !important;
+    -webkit-animation-direction: normal;
+    -webkit-animation-duration: 0.5s;
+    -webkit-animation-iteration-count: 5;
+    -webkit-animation-name: blink;
+    -webkit-animation-timing-function: ease;   
+
+}
+</style>
 </head>
 <body>
     <div id="errors">
     <@view.showControllerErrors />
     </div>
 
+    <div class="glide">
+        <h3 class="dire-warning">WARNING</H3>
+        <p>Please note that act of de-duping entities is currently <em>irreversable</em> and should only be performed by curators and administrators only 
+        only after receiving approval to do so. </p>
+        <p>If you feel you may have made a mistake and de-duped the wrong enitity (or entities) please notify a tDAR administrator immediately.</p>
+    </div>
 
 
     <div class="glide">
-        
         <@s.select  name="entityType" id="selEntityType" label="Select Type" labelposition="left" listValue='label' list="%{dedupeableTypes}" />
-        
     </div>
     
     <div class="glide" id="divSearchControl">
@@ -47,8 +76,6 @@
                 </div>
             </div>
         </form>
-        
-        <button id="btnSearch">Search</button>
     </div>
     
     

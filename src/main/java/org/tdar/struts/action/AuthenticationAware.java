@@ -4,18 +4,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.struts2.interceptor.ServletRequestAware;
-import org.apache.struts2.interceptor.ServletResponseAware;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.GenericService;
-import org.tdar.core.service.external.CrowdService;
+import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.core.service.external.auth.InternalTdarRights;
 import org.tdar.web.SessionDataAware;
 
 /**
@@ -28,32 +25,59 @@ import org.tdar.web.SessionDataAware;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Rev$
  */
-public interface AuthenticationAware extends ServletRequestAware, ServletResponseAware, SessionDataAware {
+public interface AuthenticationAware extends SessionDataAware {
 
-    public final static String AUTHENTICATED = "authenticated";
-    public final static String UNAUTHORIZED = "unauthorized";
-
-    public CrowdService getCrowdService();
+    public AuthenticationAndAuthorizationService getAuthenticationAndAuthorizationService();
 
     public abstract static class Base extends TdarActionSupport implements AuthenticationAware {
 
         private static final long serialVersionUID = -7792905441259237588L;
 
-        private HttpServletRequest servletRequest;
-        private HttpServletResponse servletResponse;
         @Autowired
-        private transient CrowdService crowdService;
+        private transient AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
 
         public Person getAuthenticatedUser() {
             return getSessionData().getPerson();
         }
 
         public boolean isAdministrator() {
-            return isAuthenticated() && crowdService.isAdministrator(getSessionData().getPerson());
+            return isAuthenticated() && authenticationAndAuthorizationService.isAdministrator(getAuthenticatedUser());
+        }
+
+        public boolean isEditor() {
+            return isAuthenticated() && authenticationAndAuthorizationService.isEditor(getAuthenticatedUser());
+        }
+        
+        public boolean isAbleToFindDraftResources() {
+            return isAuthenticated() && authenticationAndAuthorizationService.can(InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS, getAuthenticatedUser());
+        }
+
+        public boolean isAbleToFindDeletedResources() {
+            return isAuthenticated() && authenticationAndAuthorizationService.can(InternalTdarRights.SEARCH_FOR_DELETED_RECORDS, getAuthenticatedUser());
+        }
+
+        public boolean isAbleToEditAnything() {
+            return isAuthenticated() && authenticationAndAuthorizationService.can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
+        }
+
+        public boolean isAbleToFindFlaggedResources() {
+            return isAuthenticated() && authenticationAndAuthorizationService.can(InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, getAuthenticatedUser());
+        }
+
+        public boolean isAbleToReprocessDerivatives() {
+            return isAuthenticated() && authenticationAndAuthorizationService.can(InternalTdarRights.REPROCESS_DERIVATIVES, getAuthenticatedUser());
+        }
+
+        public boolean userCan(InternalTdarRights right) {
+            return isAuthenticated() && authenticationAndAuthorizationService.can(right, getAuthenticatedUser());
+        }
+        
+        public boolean userCannot(InternalTdarRights right) {
+            return isAuthenticated() && authenticationAndAuthorizationService.cannot(right, getAuthenticatedUser());
         }
 
         public boolean isContributor() {
-            return isAuthenticated() && getSessionData().getPerson().isContributor();
+            return isAuthenticated() && getAuthenticatedUser().getContributor();
         }
 
         public boolean isAuthenticated() {
@@ -82,28 +106,8 @@ public interface AuthenticationAware extends ServletRequestAware, ServletRespons
             return list;
         }
 
-        public CrowdService getCrowdService() {
-            return crowdService;
-        }
-
-        public void setCrowdService(CrowdService crowdService) {
-            this.crowdService = crowdService;
-        }
-
-        protected HttpServletRequest getServletRequest() {
-            return servletRequest;
-        }
-
-        public void setServletRequest(HttpServletRequest servletRequest) {
-            this.servletRequest = servletRequest;
-        }
-
-        protected HttpServletResponse getServletResponse() {
-            return servletResponse;
-        }
-
-        public void setServletResponse(HttpServletResponse servletResponse) {
-            this.servletResponse = servletResponse;
+        public AuthenticationAndAuthorizationService getAuthenticationAndAuthorizationService() {
+            return authenticationAndAuthorizationService;
         }
 
         /**
@@ -126,6 +130,9 @@ public interface AuthenticationAware extends ServletRequestAware, ServletRespons
         public int getSessionTimeout() {
             return getServletRequest().getSession().getMaxInactiveInterval();
         }
+        
+        
+        
     }
 
 }

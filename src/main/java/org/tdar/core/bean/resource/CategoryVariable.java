@@ -16,9 +16,15 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.hibernate.search.annotations.Analyzer;
+import org.hibernate.search.annotations.Field;
 import org.tdar.core.bean.Persistable;
+import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
+import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
@@ -48,6 +54,8 @@ public class CategoryVariable extends Persistable.Base implements Comparable<Cat
     @Column(nullable = false)
     private String name;
 
+    @Field
+    @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     private String label;
 
     private String description;
@@ -57,6 +65,7 @@ public class CategoryVariable extends Persistable.Base implements Comparable<Cat
     private CategoryType type;
 
     @ManyToOne
+    // @IndexedEmbedded(depth=1)
     private CategoryVariable parent;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
@@ -69,7 +78,7 @@ public class CategoryVariable extends Persistable.Base implements Comparable<Cat
     @OneToMany(mappedBy = "categoryVariable")
     @XStreamOmitField
     private Set<Ontology> ontologies;
-    
+
     public String getName() {
         return name;
     }
@@ -102,7 +111,7 @@ public class CategoryVariable extends Persistable.Base implements Comparable<Cat
         this.synonyms = synonyms;
     }
 
-    @XmlIDREF
+    @XmlTransient
     public Set<CodingSheet> getCodingSheets() {
         return codingSheets;
     }
@@ -111,7 +120,7 @@ public class CategoryVariable extends Persistable.Base implements Comparable<Cat
         this.codingSheets = codingSheets;
     }
 
-    @XmlIDREF
+    @XmlTransient
     public Set<Ontology> getOntologies() {
         return ontologies;
     }
@@ -120,6 +129,8 @@ public class CategoryVariable extends Persistable.Base implements Comparable<Cat
         this.ontologies = ontologies;
     }
 
+    @XmlElement(name = "parentRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public CategoryVariable getParent() {
         return parent;
     }
@@ -140,6 +151,7 @@ public class CategoryVariable extends Persistable.Base implements Comparable<Cat
         this.description = description;
     }
 
+    @XmlTransient
     public Set<CategoryVariable> getChildren() {
         return children;
     }
@@ -168,8 +180,7 @@ public class CategoryVariable extends Persistable.Base implements Comparable<Cat
     public boolean isCategory() {
         return type.equals(CategoryType.CATEGORY);
     }
-    
-    
+
     @Transient
     public SortedSet<CategoryVariable> getSortedChildren() {
         TreeSet<CategoryVariable> sortedChildren = new TreeSet<CategoryVariable>();
@@ -184,5 +195,5 @@ public class CategoryVariable extends Persistable.Base implements Comparable<Cat
     public void setLabel(String label) {
         this.label = label;
     }
-    
+
 }

@@ -5,19 +5,22 @@ import java.util.List;
 
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Fields;
-import org.tdar.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
-import org.tdar.index.analyzer.PatternTokenAnalyzer;
+import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
+import org.tdar.search.index.analyzer.PatternTokenAnalyzer;
 
 import com.sun.xml.txw2.annotation.XmlElement;
 
 /**
  * $Id$
  * 
+ * Base class for hierarchical keywords (tree based)
  * 
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>, Matt Cordial
  * @version $Rev$
@@ -32,19 +35,16 @@ public abstract class HierarchicalKeyword<T extends HierarchicalKeyword<T>> exte
 
     private String index;
 
+    @XmlAttribute
     public boolean isSelectable() {
         return selectable;
     }
-
-//    public int compareTo(HierarchicalKeyword<T> o) {
-//        return getIndex().compareTo(o.getIndex());
-//    }
-
 
     public void setSelectable(boolean selectable) {
         this.selectable = selectable;
     }
 
+    @XmlAttribute
     public String getIndex() {
         return index;
     }
@@ -55,6 +55,7 @@ public abstract class HierarchicalKeyword<T extends HierarchicalKeyword<T>> exte
 
     public abstract void setParent(T parent);
 
+    @XmlTransient
     public abstract T getParent();
 
     @Fields({ @Field(name = "label", analyzer = @Analyzer(impl = PatternTokenAnalyzer.class)),
@@ -72,7 +73,7 @@ public abstract class HierarchicalKeyword<T extends HierarchicalKeyword<T>> exte
         parentString.append(StringUtils.trim(getParent().getLabel()));
         return parentString.toString();
     }
-    
+
     @Transient
     public List<String> getParentLabelList() {
         List<String> list = new ArrayList<String>();
@@ -81,6 +82,19 @@ public abstract class HierarchicalKeyword<T extends HierarchicalKeyword<T>> exte
         list.add(getParent().getLabel());
         list.addAll(getParent().getParentLabelList());
         return list;
+    }
+    
+    @Override
+    public boolean isDedupable() {
+        return getParent() == null;
+    }
+    
+    
+    @Transient
+    public int getLevel() {
+        //get the level without visiting the ancestors
+        if(StringUtils.isBlank(index)) return 0;
+        return 1 + StringUtils.countMatches(index, ".");
     }
 
 }

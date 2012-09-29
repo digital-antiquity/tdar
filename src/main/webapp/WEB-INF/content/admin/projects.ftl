@@ -1,3 +1,4 @@
+<#escape _untrusted as _untrusted?html >
 <#import "/WEB-INF/macros/resource/list-macros.ftl" as rlist>
 <head>
 <title>Administrator Dashboard: All Projects</title>
@@ -53,7 +54,7 @@ a project or information resource.
   <h3><span class='highlight'>${project.title}</span></h3>
   <div><b>Description:</b> ${project.description!"No description specified."}</div>
   <div><b>Submitted by:</b> ${project.submitter}</div>
-  <div><b>Date registered:</b> ${project.dateRegistered}</div>
+  <div><b>Date created:</b> ${project.dateCreated}</div>
   </td>
   <td valign="middle" style="width:200px;">
   <ul style="list-style:none;">
@@ -83,3 +84,4 @@ a project or information resource.
 </@s.iterator>
 </tbody>
 </table>
+</#escape>

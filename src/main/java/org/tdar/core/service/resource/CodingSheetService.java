@@ -2,9 +2,9 @@ package org.tdar.core.service.resource;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +14,10 @@ import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.dao.resource.CodingSheetDao;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.parser.CodingSheetParser;
 import org.tdar.core.parser.CodingSheetParserException;
-import org.tdar.core.parser.CsvCodingSheetParser;
-import org.tdar.core.parser.ExcelCodingSheetParser;
+import org.tdar.filestore.workflows.GenericColumnarDataWorkflow;
 
 /**
  * Provides coding sheet upload, parsing/import, and persistence functionality.
@@ -37,10 +37,6 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
         super.setDao(dao);
     }
 
-    public CodingSheet findByFilename(final String filename) {
-        return getDao().findByFilename(filename);
-    }
-
     public List<CodingSheet> findSparseCodingSheetList() {
         return getDao().findSparseResourceBySubmitterType(null, ResourceType.CODING_SHEET);
     }
@@ -53,39 +49,17 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
         // ArrayList<CodingRule> existingCodingRules = new ArrayList<CodingRule>(codingSheet.getCodingRules());
         // codingSheet.getCodingRules().clear();
         List<CodingRule> incomingCodingRules = getCodingSheetParser(filename).parse(codingSheet, inputStream);
-        // if (getDao().getNumberOfMappedDataTableColumns(codingSheet) > 0) {
-        // // implement the same logic as ontologyService to synchronize coding sheets, match on key only
-        // logger.info("remapping coding sheet values");
-        //
-        // for (int i = 0; i < incomingCodingRules.size(); i++) {
-        // CodingRule incomingRule = incomingCodingRules.get(i);
-        // incomingRule.setCodingSheet(codingSheet);
-        // for (int j = 0; j < existingCodingRules.size(); j++) {
-        // CodingRule existingRule = existingCodingRules.get(j);
-        // if (existingRule != null && existingRule.getCode().equals(incomingRule.getCode())) {
-        // long oldId = -1;
-        // if (incomingRule.getId() != null)
-        // oldId = incomingRule.getId();
-        // incomingRule.setId(existingRule.getId());
-        // getDao().detachFromSession(existingRule);
-        // incomingRule = getDao().merge(incomingRule);
-        // incomingCodingRules.set(i, incomingRule);
-        // existingCodingRules.set(j, null);
-        // logger.trace("incoming:" + incomingRule.getId() + " --> " + incomingRule.getTerm() + " was: " + oldId);
-        // logger.trace("existing:" + existingRule.getId() + " --> " + existingRule.getTerm());
-        // break;
-        // }
-        // // getDao().delete(existingRule);
-        // }
-        // }
-        // existingCodingRules.removeAll(Collections.singleton(null));
-        // delete(codingSheet.getCodingRules());
-        // }
-        // else {
-        // for (CodingRule rule : incomingCodingRules) {
-        // rule.setCodingSheet(codingSheet);
-        // }
-        // }
+        Set<String> uniqueSet = new HashSet<String>();
+        for (CodingRule rule : incomingCodingRules) {
+            uniqueSet.add(rule.getCode());
+        }
+        logger.trace("incoming rules: {}", incomingCodingRules);
+        logger.trace("unique set: {}", uniqueSet);
+        if (incomingCodingRules.size() != uniqueSet.size()) {
+            throw new TdarRecoverableRuntimeException(String.format("Code names must be unique, %s incoming %s unique names",
+                    incomingCodingRules.size(), uniqueSet.size()));
+        }
+
         getDao().delete(codingSheet.getCodingRules());
         codingSheet.getCodingRules().addAll(incomingCodingRules);
         getDao().saveOrUpdate(codingSheet);
@@ -102,13 +76,7 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
     }
 
     public static class CodingSheetParserFactory {
-        private final static Map<String, CodingSheetParser> PARSERS = new HashMap<String, CodingSheetParser>();
         public final static CodingSheetParserFactory INSTANCE = new CodingSheetParserFactory();
-
-        private CodingSheetParserFactory() {
-            add(new ExcelCodingSheetParser());
-            add(new CsvCodingSheetParser());
-        }
 
         public static CodingSheetParserFactory getInstance() {
             return INSTANCE;
@@ -118,14 +86,16 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
             if (filename == null || filename.isEmpty()) {
                 return null;
             }
-            return PARSERS.get(FilenameUtils.getExtension(filename.toLowerCase()));
-        }
-
-        private void add(CodingSheetParser parser) {
-            for (String supportedFileExtension : parser.getSupportedFileExtensions()) {
-                PARSERS.put(supportedFileExtension, parser);
+            GenericColumnarDataWorkflow workflow = new GenericColumnarDataWorkflow();
+            String extension = FilenameUtils.getExtension(filename.toLowerCase());
+            Class<? extends CodingSheetParser> parserClass = workflow.getCodingSheetParserForExtension(extension);
+            try {
+                return parserClass.newInstance();
+            } catch (Exception e) {
+                throw new IllegalArgumentException("No parser defined for format: " + extension, e);
             }
         }
+
     }
 
 }

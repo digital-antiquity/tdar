@@ -1,6 +1,6 @@
 <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
-
+<#import "/WEB-INF/macros/resource/common.ftl" as common> 
 <#macro selectYearType yearTypeOption>
 	<#if yearType?? && (yearType == yearTypeOption)>
 		selected="selected"
@@ -19,21 +19,22 @@
 <tr id='${namePrefix}_0_'>
 <td>
     <div class="width30percent marginLeft10" >
-        <@s.hidden name='${namePrefix}Ids[0]' cssClass="" onchange="this.valid()"  />
-        <@s.textfield cssClass="watermarked ${_autocompleteType}" watermark="Last Name" 
-            name="${namePrefix}.lastName" maxlength="255" onblur="setCalcUserVal(this)" /> 
-        <@s.textfield cssClass="watermarked ${_autocompleteType}" watermark="First Name" 
-            name="${namePrefix}.firstName" maxlength="255" onblur="setCalcUserVal(this)"  />
+        <@s.hidden name='${namePrefix}Ids[0]' id="${namePrefix}id_0_" cssClass="" onchange="this.valid()"  />
+        <@s.textfield cssClass="watermarked ${_autocompleteType}" watermark="Last Name"  autocompleteParentElement="#${namePrefix}_0_" autocompleteName="lastName"
+        autocompleteIdElement="#${namePrefix}id_0_"
+            name="${namePrefix}.lastName" maxlength="255"  /> 
+        <@s.textfield cssClass="watermarked ${_autocompleteType}" watermark="First Name" autocompleteParentElement="#${namePrefix}_0_" autocompleteName="firstName"
+         autocompleteIdElement="#${namePrefix}id_0_"   name="${namePrefix}.firstName" maxlength="255"  />
         <#if !nameFieldsOnly>
-        <@s.textfield cssClass="watermarked ${_autocompleteType}" watermark="Email"
-            name="${namePrefix}.email" maxlength="255"/>
+        <@s.textfield cssClass="watermarked ${_autocompleteType}" watermark="Email" autocompleteParentElement="#${namePrefix}_0_" autocompleteName="email"
+           autocompleteIdElement="#${namePrefix}id_0_" name="${namePrefix}.email" maxlength="255"/>
         <br />
         </#if>
     </div>
     <#if !nameFieldsOnly>
     <div class="width99percent marginLeft10">
-        <@s.textfield cssClass="watermarked ${_autocompleteType}" watermark="Institution Name"
-            name="${namePrefix}.institution.name" maxlength="255" onblur="setCalcUserVal(this)" />
+        <@s.textfield cssClass="watermarked ${_autocompleteType}" watermark="Institution Name" autocompleteParentElement="#${namePrefix}_0_" autocompleteName="institution"
+           autocompleteIdElement="#${namePrefix}id_0_" name="${namePrefix}.institution.name" maxlength="255"  />
     </div>
     </#if>
 </td>
@@ -56,114 +57,58 @@ $(window).bind("pageshow", function() {
 </script>
 </#macro>
 
-
 <head>
 <title>Advanced Search</title>
 <script type="text/javascript" src="<@s.url value='/includes/advanced-search.js'/>"></script>
 <script type="text/javascript">
     $(document).ready(function() {
+        //necessary for users that get to this page via the back button
         $("#searchButton").removeAttr('disabled');
-        $('#searchTipToggle').click(function(){
-            $("#divSearchTips").slideToggle();
-            return false;
-        });
     });
 
 </script>
-
 <style type="text/css">
     h3 {font-weight:bold; color:#333; margin-top:2em}
 </style>
 
 <@edit.resourceJavascript "#searchForm" />
+
 </head>
 
 
 <body>
+
 <@edit.showControllerErrors />
 
-<div id="divSearchTips" class="glide" style="display:none">
-    <div id="divSearchTipsContainer" >    
-        <h3>Search Tips</h3>
-        <a href="#" onclick="$('#divSearchTips').slideToggle(); return false;" style="float:right">(Close this section)</a>
-        <br clear=all/>
-        <dl>
-            <dt>Boolean Operators</dt>
-            <dd>
-                You can use boolean operators such as AND and OR. For example, the following search query:
-                <blockquote>
-                    <code>
-                        Archaic <em>AND</em> Mogollon
-                    </code>
-                </blockquote>         
-                This will return only those resources which contain BOTH "Archaic" and "Mogollon" for the field you have specified. Using OR returns 
-                results that contain "Archaic," "Mogollon," or both terms.
-                
-            </dd>
-            
-            <dt>Quoted Terms</dt>
-            <dd>
-            
-                Place multiple terms in quotes to return results that contain the specified terms in that order. For example, searching for the phrase
-                <blockquote>
-                    <code>
-                        They were selected from
-                    </code>
-                </blockquote>               
-                will likely return many pages of results,   however,  placing the term in quotes
-                <blockquote>
-                    <code>&quot;They were selected from&quot;</code>
-                </blockquote>
-                will narrow down your search results significantly.
-            </dd>
-            
-            <dt>Grouping terms in parenthesis</dt>
-            <dd> 
-                You can combine the aforementioned techniques using parentheses to create powerful, targeted searches. For example, if you want to write a 
-                search query that returns all of the results from the first two techniques, you could enter the following query:
-                <blockquote>
-                    <code>
-                        (Archaic <em>AND</em> Mogollon) OR ("They were selected from")
-                    </code>
-                </blockquote>
-            </dd>
-            
-        </dl>
-    </div>
-</div>
 <div class="glide">
        
 
 
     <@s.form id='searchForm' method='GET' action='results'>
-    <p>Find resources in tDAR by providing information in the fields below and clicking the &quot;Search&quot; button. (<a  href="#" id="searchTipToggle">Click here 
-    to show/hide search tips...</a>) </p>
+    <p>Find resources in tDAR by providing information in the fields below and clicking the &quot;Search&quot; button. </p>
     <@search.queryField freeTextLabel="Search all fields" showAdvancedLink=false>
     <br/>
       <label for="title_s">Title:</label> <input id="title_s" type="text" name="title" value="${title!}" class="longfield" />
       <br/>
-      <label for="tdarid">TDAR id:</label><input id="tdarid" type="text" class="number" name="id" value="<#if id?? && id?is_number && id != 0>${(id?c)!}</#if>" />
+      <label for="tdarid">TDAR id:</label><input id="tdarid" type="text" class="number" name="id" value="<@common.safenum id/>" />
       <br/>
       <label for="projectList">Project:</label>
       <select name="projectIds[0]" id="projectList">
           <option value="" selected='selected'>All Projects</option>
           <@s.iterator value='projects' status='projectRowStatus' var='project'>
-            <option truncate='80' value="${project.id?c}">${project.selectOptionTitle}</option>
+            <option value="${project.id?c}"><@common.truncate project.title 70 /></option>
           </@s.iterator>
       </select>
       <br/>
     </@search.queryField>
     <br/>
     
+    
         <div id="divTemporalLimits" tiplabel="Temporal Limits" tooltipcontent="#divTemporalLimitTooltip">
         	<h3>Temporal Limits</h3>
-        	<select name="yearType" id="yearTypeSelect">
-        		<option value="NONE" <@selectYearType yearTypeOption="NONE" />>No Limit</option>
-        		<option value="CALENDAR_DATE" <@selectYearType yearTypeOption="CALENDAR_DATE" />>Calendar Years</option>
-        		<option value="RADIOCARBON_DATE" <@selectYearType yearTypeOption="RADIOCARBON_DATE" />>Radiocarbon Years</option>
-        	</select>
-        	From <input type="text" id="fromYear" name="fromYear" value="${(fromYear?c)!}">
-        	To <input type="text" id="toYear" name="toYear" value="${(toYear?c)!}">
+        	
+            <@edit.coverageDatesSection false />
+            
     	</div>
     
         <div id="divTemporalLimitTooltip" class="hidden">
@@ -180,6 +125,7 @@ $(window).bind("pageshow", function() {
         <br/>   
     
     	<h3>Spatial Limits</h3>
+        <@s.textfield name='geographicKeywords[0]' cssClass="longfield" label="Geographic term" labelposition="left" />
     	<div><#-- placeholder div to make sitemesh parser not pickup div id to replace -->
     	<div id='large-google-map' style="height:450px;"></div> 	
     	<input type="hidden" name="minx" id="minx" value="${(minx?c)!}">
@@ -254,6 +200,15 @@ $(window).bind("pageshow", function() {
         </div>
     </div>
     
+
+    <h3>Temporal Information</h3>
+    <@s.textfield name='temporalKeywords[0]' cssClass="longfield" label="Keyword" labelposition="left" />
+    
+    
+    <h3>General Keywords</h3>
+    <@s.textfield name='otherKeywords[0]' cssClass="longfield" label="Keyword" labelposition="left" />
+    
+    
     <br/>
     <div id="divPersonSearch">
         <h3>Search by Submitter / Author / Contributor</h3>
@@ -262,16 +217,37 @@ $(window).bind("pageshow", function() {
         <@userAutoCompleteTable label="Author or Contributor" namePrefix="searchContributor" registeredUser=false nameFieldsOnly=!authenticated />
     </div>
     
-    <#if administrator?? && administrator>
+    <#if editor!false>
     <div id="divAdminSearchOptions">
-        <h3>Administrator Search Options</h3>
+        <h3 tiplabel="Curator Specific"   
+            tooltipcontent="The search options in this section are only available to digital curators and administrators"
+            >Curator-specific Search Options</h3>
         
         <h4>Status</h4>
-        <@s.checkboxlist name='includedStatuses' list='allStatuses'  listValue='label'  />
-    
-        <script type="text/javascript"> 
-            $('#updatedAfter,#updatedBefore').datepicker({dateFormat: 'm/d/y'});
-        </script>
+        <@s.checkboxlist name='includedStatuses' list='allStatuses'  listValue='label' numColumns=4 />
+        
+        <div id="divCuratorDateFilters" tiplabel="Registration/Updated Dates" tooltipcontent="#divCuratorDateFiltersTip">
+        <h4>Registration Date</h4>
+        <@s.textfield cssClass="watermarked datepicker" watermark="m/d/yy" labelposition="left" name="dateRegisteredStart" label="After"/>
+        <@s.textfield cssClass="watermarked datepicker" watermark="m/d/yy" labelposition="left" name="dateRegisteredEnd" label ="Before"/>
+
+        <h4>Updated Date</h4>    
+        <@s.textfield cssClass="watermarked datepicker" watermark="m/d/yy" labelposition="left" name="dateUpdatedStart" label="After"/>
+        <@s.textfield cssClass="watermarked datepicker" watermark="m/d/yy" labelposition="left" name="dateUpdatedEnd" label="Before"/>
+        </div>
+        <div class="hidden" id="divCuratorDateFiltersTip">
+            <dl>
+                <dt>Date Registered</dt>
+                <dd>This is the date that the user created DAR Resource.  Not to be confused with <em>Date Created</em>, 
+                which is the creation date of the object that the tDAR resource describes</dd>
+                
+                <dt>Date Updated</dt>
+                <dd>The most recent date that a user updated the metadata of the tDAR resource</dd>
+            </dl>
+            
+        </div>
+        
+        
     </div>
     </#if>
     

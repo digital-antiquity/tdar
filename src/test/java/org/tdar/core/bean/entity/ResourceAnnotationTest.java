@@ -1,7 +1,5 @@
 package org.tdar.core.bean.entity;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -9,8 +7,6 @@ import junit.framework.Assert;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
-import org.tdar.core.bean.keyword.GeographicKeyword;
-import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
 

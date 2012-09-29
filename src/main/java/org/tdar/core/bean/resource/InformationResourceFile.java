@@ -19,14 +19,16 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
+import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
  * $Id$
@@ -46,11 +48,14 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
 
     public enum FileAction {
         NONE, ADD, REPLACE, DELETE, MODIFY_METADATA, ADD_DERIVATIVE;
+
         public boolean shouldExpectFileHandle() {
             switch (this) {
                 case ADD:
                 case ADD_DERIVATIVE:
                 case REPLACE:
+                    //user added a file but changed mind and clicked delete. NONE instructs the system to ignore the pending file
+                case NONE:
                     return true;
             }
             return false;
@@ -66,7 +71,8 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         QUEUED,
         // whether or not this InformationResourceFile has been converted into postgres
         PROCESSED,
-        DELETED;
+        DELETED,
+        PROCESSING_ERROR;
     }
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
@@ -92,11 +98,14 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     @Enumerated(EnumType.STRING)
     private FileStatus status;
 
-    @XmlTransient
+    @XmlElement(name = "informationResourceRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public InformationResource getInformationResource() {
         return informationResource;
     }
 
+    private transient boolean accessible = false;
+    
     public void setInformationResource(InformationResource informationResource) {
         this.informationResource = informationResource;
     }
@@ -109,6 +118,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         this.informationResourceFileType = informationResourceFileType;
     }
 
+    @XmlAttribute(name = "latestVersion")
     public Integer getLatestVersion() {
         return latestVersion;
     }
@@ -296,7 +306,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         for (InformationResourceFileVersion latestVersion : getLatestVersions()) {
             logger.trace("latest version {}", latestVersion);
             switch (latestVersion.getFileVersionType()) {
-                // FIXME: if no WEB_MEDIUM is available we probably want to return a WEB_SMALL if possible.
+            // FIXME: if no WEB_MEDIUM is available we probably want to return a WEB_SMALL if possible.
                 case WEB_LARGE:
                     currentVersion = latestVersion;
                     break;
@@ -367,6 +377,14 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
 
     public boolean isColumnarDataFileType() {
         return getInformationResourceFileType() == FileType.COLUMNAR_DATA;
+    }
+
+    public boolean isAccessible() {
+        return accessible;
+    }
+
+    public void setAccessible(boolean accessible) {
+        this.accessible = accessible;
     }
 
 }

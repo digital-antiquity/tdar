@@ -2,8 +2,13 @@ package org.tdar.core.service.resource;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+
+import net.sourceforge.htmlunit.corejs.javascript.IRFactory;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -75,7 +80,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         resource.add(irFile);
         genericDao.saveOrUpdate(resource);
     }
-    
+
     private InformationResourceFile findInformationResourceFile(FileProxy proxy) {
         InformationResourceFile irFile = informationResourceFileService.find(proxy.getFileId());
         if (irFile == null) {
@@ -144,7 +149,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         }
         return irFile;
     }
-    
+
     private void setInformationResourceFileMetadata(InformationResourceFile irFile, FileProxy fileProxy) {
         irFile.setConfidential(fileProxy.isConfidential());
         Integer sequenceNumber = fileProxy.getSequenceNumber();
@@ -161,6 +166,33 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         irFile.setDownloadCount(0);
         irFile.clearStatus();
         logger.info("incremented version number and reset download and status for irfile: {}", irFile, irFile.getLatestVersion());
+    }
+
+    @Transactional(readOnly = false)
+    public void reprocessInformationResourceFiles(Collection<InformationResourceFile> informationResourceFiles) {
+        Iterator<InformationResourceFile> fileIterator = informationResourceFiles.iterator();
+        while (fileIterator.hasNext()) {
+            InformationResourceFile irFile = fileIterator.next();
+            InformationResourceFileVersion original = irFile.getLatestUploadedVersion();
+            Iterator<InformationResourceFileVersion> iterator = irFile.getInformationResourceFileVersions().iterator();
+            // List<InformationResourceFileVersion> toDelete = new ArrayList<InformationResourceFileVersion>();
+            while (iterator.hasNext()) {
+                InformationResourceFileVersion version = iterator.next();
+                if (!version.equals(original) && !version.isUploaded() && !version.isArchival()) {
+                    iterator.remove();
+                    informationResourceFileService.delete(version);
+                }
+            }
+            // this is a known case where we need to purge the session
+            genericDao.synchronize();
+            try {
+                analyzer.processFile(original);
+            } catch (Exception e) {
+                e.printStackTrace();
+                logger.warn("caught exception {} while analyzing file {}", e, original.getFilename());
+            }
+        }
+
     }
 
     private void createVersion(InformationResourceFile irFile, FileProxy fileProxy) throws IOException {
@@ -187,14 +219,26 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         genericDao.saveOrUpdate(irFile);
     }
 
+    /**
+     * This comes from the bad old days and was intended to make dataset filenames safe for postgres importing.
+     * Dataset files are converted into tables in postgres and this method
+     * was used to generate table names that were postgres-safe, e.g., starts with an alphabetic character and < 128 characters.
+     * Now, DatabaseConverter should be responsible for that translation / sanitization internally,
+     * and we should preserve the filename as it was originally sent in as best we can.
+     * 
+     * FIXME: Filestore should be responsible for sanitization of filenames instead
+     * 
+     * @param filename
+     * @return
+     */
     private String sanitizeFilename(String filename) {
         filename = filename.toLowerCase();
         String ext = FilenameUtils.getExtension(filename);
         String basename = FilenameUtils.getBaseName(filename);
 
-        // make sure that the total length does not exceed 128 characters
-        if (basename.length() > 122)
-            basename = basename.substring(0, 121);
+        // // make sure that the total length does not exceed 128 characters
+        // if (basename.length() > 122)
+        // basename = basename.substring(0, 121);
 
         // replace all whitespace with dashes
         // basename = basename.replaceAll("\\s", "-");
@@ -206,10 +250,11 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         basename = StringUtils.removeEnd(basename, "-");
 
         StringBuilder builder = new StringBuilder(basename);
+
         // ensure that the first letter of the basename is alphabetic
-        if (!StringUtils.isAlpha(String.valueOf(basename.charAt(0)))) {
-            builder.insert(0, 'a');
-        }
+        // if (!StringUtils.isAlpha(String.valueOf(basename.charAt(0)))) {
+        // builder.insert(0, 'a');
+        // }
         builder.append('.').append(ext);
 
         return builder.toString();

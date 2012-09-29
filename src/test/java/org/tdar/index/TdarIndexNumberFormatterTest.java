@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
+import org.tdar.search.index.TdarIndexNumberFormatter;
 
 public class TdarIndexNumberFormatterTest {
 

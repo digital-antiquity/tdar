@@ -35,7 +35,7 @@ public class CompleteImageITCase extends AbstractAdminAuthenticatedWebTestCase {
         docValMap.put(PROJECT_ID_FIELDNAME, PROJECT_ID);
         docValMap.put(DOCUMENT_TITLE_FIELDNAME, IMAGE_TITLE);
         docValMap.put(DESCRIPTION_FIELDNAME, DESCRIPTION);
-        docValMap.put("image.dateCreated", "1923");
+        docValMap.put("image.date", "1923");
         docMultiValMap.put("investigationTypeIds", Arrays.asList(new String[] { "1", "2", "3", "5" }));
         docMultiValMap.put("approvedSiteTypeKeywordIds", Arrays.asList(new String[] { "273", "312" }));
         docMultiValMap.put("materialKeywordIds", Arrays.asList(new String[] { "15", "12", "5" }));
@@ -68,6 +68,7 @@ public class CompleteImageITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         docValMap.put("creditProxies[0].institution.name", "Othr Institution");
         docValMap.put("creditProxies[0].institutionRole", "SPONSOR");
+        docValMap.put("resource.url", "http://zombo.com");
 
         docValMap.put("sourceCollections[0].text", "ASU Museum Collection1");
         docValMap.put("sourceCollections[1].text", "test Museum Collection1");
@@ -97,7 +98,7 @@ public class CompleteImageITCase extends AbstractAdminAuthenticatedWebTestCase {
         docMultiValMapLab.put("approvedCultureKeywordIds", Arrays.asList(new String[] { "Hopewell", "Middle Woodland", "African American" }));
 
         docValMap.put("resourceAvailability", "Embargoed");
-        docValMap.put("resourceProviderInstitution", "Digital Antiquity4");
+        docValMap.put("resourceProviderInstitutionName", "Digital Antiquity4");
         docValMap.put("resource.copyLocation", "test");
     }
 

@@ -1,136 +1,78 @@
 package org.tdar.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.SchemaOutputResolver;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.ValidationEvent;
-import javax.xml.bind.ValidationEventHandler;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Result;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.validation.SchemaFactory;
 
+import org.apache.commons.io.FileUtils;
+import org.custommonkey.xmlunit.exceptions.ConfigurationException;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.TestConstants;
-import org.tdar.core.bean.entity.Institution;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Project;
-import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.service.XmlService;
 import org.tdar.struts.action.search.AbstractSearchControllerITCase;
+import org.tdar.utils.jaxb.JaxbParsingException;
 import org.xml.sax.SAXException;
 
 public class JAXBITCase extends AbstractSearchControllerITCase {
 
+    @Autowired
+    XmlService xmlService;
+
     @Test
-    public void test() throws JAXBException {
-        JAXBContext jc = JAXBContext.newInstance(Project.class);
-        Document project = genericService.find(Document.class, 4232l);
-        Marshaller marshaller = jc.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        marshaller.marshal(project, System.out);
+    public void test() throws Exception {
+        Document document = genericService.find(Document.class, 4232l);
+        String xml = xmlService.convertToXML(document);
+        logger.info(xml);
+    }
+
+    @Test
+    public void testProject() throws Exception {
+        Project project = genericService.find(Project.class, 3805l);
+        String xml = xmlService.convertToXML(project);
+        logger.info(xml);
     }
 
     @Test
     public void loadTest() throws JAXBException, IOException, SAXException, ParserConfigurationException {
 
-        SchemaFactory sf = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
-        JAXBContext jc = JAXBContext.newInstance(Resource.class, Institution.class, Person.class);
-
-        // WRITE OUT SCHEMA
-        jc.generateSchema(new SchemaOutputResolver() {
-
-            @Override
-            public Result createOutput(String namespaceUri, String suggestedFileName) throws IOException {
-                return new StreamResult(new File("target/out.xsd"));
-            }
-        });
-
-        // READ IN SCHEMA
-        // Schema schema = sf.newSchema(new File("target/out.xsd"));
         File file = new File(TestConstants.TEST_XML_DIR + "/bad-enum-document.xml");
-
-        Unmarshaller unmarshaller = jc.createUnmarshaller();
-        // unmarshaller.setSchema(schema);
-        unmarshaller.setEventHandler(new ValidationEventHandler() {
-
-            @Override
-            public boolean handleEvent(ValidationEvent event) {
-                // TODO Auto-generated method stub
-                logger.info(event.getMessage());
-                logger.info(event.getClass().getName());
-                logger.info(Integer.toString(event.getSeverity()));
-                return true;
-            }
-        });
-
-        unmarshaller.unmarshal(file);// , new DefaultHandler());
-
-        // Load customer from XML
-        // Unmarshaller unmarshaller = jc.createUnmarshaller();
-        // jc.generateSchema(new SchemaOutputResolver() {
-        //
-        // @Override
-        // public Result createOutput(String namespaceUri, String suggestedFileName) throws IOException {
-        // return new StreamResult(new File("target/out.xsd"));
-        // }
-        // });
-        //
-        // SAXParserFactory spf = SAXParserFactory.newInstance();
-        // spf.setNamespaceAware(true);
-        // spf.setValidating(true);
-        // // Schema schema = sf.newSchema(new File("target/out.xsd"));
-        // // unmarshaller.setSchema(schema);
-        //
-        // // UnmarshallerHandler unmarshallerHandler = unmarshaller.getUnmarshallerHandler();
-        //
-        // // SAXParser sp = spf.newSAXParser();
-        // // XMLReader xr = sp.getXMLReader();
-        // // JAXBContentAndErrorHandler contentErrorHandler = new JAXBContentAndErrorHandler(unmarshallerHandler);
-        // // xr.setErrorHandler(contentErrorHandler);
-        // // xr.setContentHandler(contentErrorHandler);
-        // JAXBSource source = new JAXBSource(jc, docString);
-        // Validator validator = schema.newValidator();
-        // validator.setErrorHandler(new ErrorHandler() {
-        //
-        // public void warning(SAXParseException exception) throws SAXException {
-        // System.out.println("\nWARNING");
-        // exception.printStackTrace();
-        // }
-        //
-        // public void error(SAXParseException exception) throws SAXException {
-        // System.out.println("\nERROR");
-        // exception.printStackTrace();
-        // }
-        //
-        // public void fatalError(SAXParseException exception) throws SAXException {
-        // System.out.println("\nFATAL ERROR");
-        // exception.printStackTrace();
-        // }
-        // });
-        // validator.validate(source);
-
-        // InputSource xml = new InputSource(new FileReader(docString));
-        // xr.parse(xml);
-
-        // SAXParserFactory spf = SAXParserFactory.newInstance();
-        // spf.setNamespaceAware(true);
-        // SchemaFactory sf = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
-        // Schema schema = sf.newSchema(new File("out.xsd"));
-        // spf.setSchema(schema);
-        // // unmarshaller.setSchema(schema);
-        // UnmarshallerHandler unmarshallerHandler = unmarshaller.getUnmarshallerHandler();
-        // JAXBContentAndErrorHandler contentErrorHandler = new JAXBContentAndErrorHandler(unmarshallerHandler);
-        // Document doc = (Document) unmarshaller.unmarshal(new StringReader(docString));
-        // Marshaller marshaller = jc.createMarshaller();
-        // marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        // marshaller.marshal(doc, System.out);
-
-        // Persist customer to database
+        Object obj = null;
+        try {
+            obj = xmlService.parseXml(file);
+        } catch (JaxbParsingException exception) {
+            logger.debug("parsing exception", exception);
+            assertEquals(1, exception.getEvents().size());
+        }
+        logger.debug("{}", obj);
+        assertNull(obj);
     }
+
+    @Test
+    public void testValidateOAIStatic() throws ConfigurationException, SAXException, IOException {
+        testValidXMLResponse(new FileInputStream(new File(TestConstants.TEST_XML_DIR, "oaidc_get_records.xml")),
+                "http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd");
+    }
+
+    @Test
+    public void testValidateSchema() throws ConfigurationException, SAXException, IOException {
+        File schemaFile = new File("target/out.xsd");
+        try {
+            File generateSchema = xmlService.generateSchema();
+            FileUtils.copyFile(generateSchema, schemaFile);
+            testValidXMLSchemaResponse(FileUtils.readFileToString(generateSchema));
+        } catch (Exception e) {
+            assertFalse("I should not exist. fix me, please?", true);
+        }
+    }
+
 }

@@ -9,7 +9,6 @@ import java.util.List;
 
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
@@ -20,11 +19,9 @@ import org.tdar.core.bean.resource.sensory.ScannerTechnologyType;
 import org.tdar.core.bean.resource.sensory.SensoryDataImage;
 import org.tdar.core.bean.resource.sensory.SensoryDataScan;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
-import org.tdar.transform.DcTransformer;
-import org.tdar.transform.ModsTransformer;
 
 /**
- * $Id: ImageController.java 1761 2011-03-16 18:34:03Z abrin $
+ * $Id$
  * 
  * <p>
  * Manages requests to create/delete/edit an CodingSheet and its associated metadata.
@@ -32,7 +29,7 @@ import org.tdar.transform.ModsTransformer;
  * 
  * 
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
- * @version $Revision: 1761 $
+ * @version $Revision$
  */
 @Component
 @Scope("prototype")
@@ -41,12 +38,6 @@ import org.tdar.transform.ModsTransformer;
 public class SensoryDataController extends AbstractInformationResourceController<SensoryData> {
 
     private static final long serialVersionUID = -7329500931137726805L;
-
-    @Autowired
-    private transient ModsTransformer.SensoryDataTransformer sensoryModsTransformer;
-
-    @Autowired
-    private transient DcTransformer.SensoryDataTransformer sensoryDcTransformer;
 
     private List<SensoryDataImage> sensoryDataImages;
     private List<SensoryDataScan> sensoryDataScans;
@@ -106,16 +97,6 @@ public class SensoryDataController extends AbstractInformationResourceController
      */
     public SensoryData getSensoryData() {
         return getPersistable();
-    }
-
-    @Override
-    public DcTransformer<SensoryData> getDcTransformer() {
-        return sensoryDcTransformer;
-    }
-
-    @Override
-    public ModsTransformer<SensoryData> getModsTransformer() {
-        return sensoryModsTransformer;
     }
 
     @Override

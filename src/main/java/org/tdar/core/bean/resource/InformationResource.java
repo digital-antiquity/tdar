@@ -5,9 +5,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -25,13 +27,13 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Boost;
@@ -43,6 +45,7 @@ import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.NumericField;
 import org.hibernate.search.annotations.Store;
 import org.tdar.core.bean.BulkImportField;
+import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Institution;
@@ -55,13 +58,16 @@ import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
+import org.tdar.core.bean.resource.dataTable.DataTableColumn;
 import org.tdar.core.configuration.JSONTransient;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
-import org.tdar.index.analyzer.TdarStandardAnalyzer;
-import org.tdar.index.boost.InformationResourceBoostStrategy;
-import org.tdar.index.bridge.PersistentReaderBridge;
+import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
+import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
+import org.tdar.search.index.boost.InformationResourceBoostStrategy;
+import org.tdar.search.index.bridge.PersistentReaderBridge;
+import org.tdar.search.index.bridge.StringMapBridge;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
@@ -143,7 +149,7 @@ public abstract class InformationResource extends Resource {
     private LanguageEnum resourceLanguage;
 
     @Column(name = "available_to_public")
-    private boolean availableToPublic;
+    private boolean availableToPublic = true;
 
     @Column(name = "external_reference", nullable = true)
     private boolean externalReference;
@@ -165,7 +171,10 @@ public abstract class InformationResource extends Resource {
     // currently just a 4 digit year.
     @Column(name = "date_created")
     @BulkImportField(label = "Date Created (Year)", required = true, order = -10, comment = BulkImportField.YEAR_DESCRIPTION)
-    private Integer dateCreated = -1;
+    @NumericField
+    @Field(index = Index.UN_TOKENIZED, store = Store.YES)
+    // @FieldBridge(impl = TdarPaddedNumberBridge.class)
+    private Integer date = -1;
 
     // The institution providing this InformationResource
     @ManyToOne
@@ -188,6 +197,15 @@ public abstract class InformationResource extends Resource {
     private boolean inheritingSpatialInformation;
     @Column(name = "inheriting_temporal_information", nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingTemporalInformation;
+
+    @ManyToOne(optional = true)
+    private DataTableColumn mappedDataKeyColumn;
+
+    @Column
+    private String mappedDataKeyValue;
+
+    @Transient
+    private Map<DataTableColumn, String> relatedDatasetData = new HashMap<DataTableColumn, String>();
 
     public LanguageEnum getMetadataLanguage() {
         return metadataLanguage;
@@ -221,14 +239,12 @@ public abstract class InformationResource extends Resource {
         this.dateMadePublic = dateMadePublic;
     }
 
-    @NumericField
-    @Field(index = Index.UN_TOKENIZED, store = Store.YES)
-    public Integer getDateCreated() {
-        return dateCreated;
+    public Integer getDate() {
+        return date;
     }
 
-    public void setDateCreated(Integer dateCreated) {
-        this.dateCreated = dateCreated;
+    public void setDate(Integer dateCreated) {
+        this.date = dateCreated;
     }
 
     public Institution getResourceProviderInstitution() {
@@ -239,8 +255,8 @@ public abstract class InformationResource extends Resource {
         this.resourceProviderInstitution = resourceProviderInstitution;
     }
 
-    @XmlAttribute
-    @XmlIDREF
+    @XmlElement(name = "projectRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public Project getProject() {
         if (project == null) {
             return Project.NULL;
@@ -251,10 +267,7 @@ public abstract class InformationResource extends Resource {
     @Transient
     @Field(name = QueryFieldNames.PROJECT_TITLE_SORT, index = Index.UN_TOKENIZED, store = Store.YES)
     public String getProjectTitle() {
-        if (getProject() != null && getProject() != Project.NULL) {
-            return getProject().getTitleSort();
-        }
-        return "";
+        return getProject().getTitleSort();
     }
 
     public void setProject(Project project) {
@@ -287,16 +300,13 @@ public abstract class InformationResource extends Resource {
         this.lastUploaded = lastUploaded;
     }
 
-    @Transient
     @Field(name = QueryFieldNames.PROJECT_ID)
     @Analyzer(impl = KeywordAnalyzer.class)
     public Long getProjectId() {
-        if (projectId != null)
-            return projectId;
-        if (project == null || project == Project.NULL)
-            return null;
-        projectId = project.getId();
-        return projectId;
+        if (projectId == null) {
+            projectId = getProject().getId();
+        }
+        return Long.valueOf(-1L).equals(projectId) ? null : projectId;
     }
 
     @Deprecated
@@ -305,22 +315,6 @@ public abstract class InformationResource extends Resource {
         // implicitly set projectId.
         this.projectId = projectId;
     }
-
-    // public Set<Document> getRelatedCitations() {
-    // return relatedCitations;
-    // }
-    //
-    // public void setRelatedCitations(Set<Document> relatedCitations) {
-    // this.relatedCitations = relatedCitations;
-    // }
-    //
-    // public Set<Document> getSourceCitations() {
-    // return sourceCitations;
-    // }
-    //
-    // public void setSourceCitations(Set<Document> sourceCitations) {
-    // this.sourceCitations = sourceCitations;
-    // }
 
     public int getTotalNumberOfFiles() {
         return informationResourceFiles.size();
@@ -355,6 +349,7 @@ public abstract class InformationResource extends Resource {
 
     @JSONTransient
     public Collection<InformationResourceFileVersion> getLatestVersions() {
+        // FIXME: this method will become increasingly expensive as the number of files increases
         ArrayList<InformationResourceFileVersion> latest = new ArrayList<InformationResourceFileVersion>();
         for (InformationResourceFile irfile : getInformationResourceFiles()) {
             latest.addAll(irfile.getLatestVersions());
@@ -421,14 +416,14 @@ public abstract class InformationResource extends Resource {
     }
 
     @Field(index = Index.UN_TOKENIZED, store = Store.YES, name = QueryFieldNames.RESOURCE_ACCESS_TYPE)
-    @Analyzer(impl = TdarStandardAnalyzer.class)
+    @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     @Transient
     // FIXME: This should work properly with the analyzer above without the toLowerCase()
     public ResourceAccessType getResourceAccessType() {
         int totalFiles = getInformationResourceFiles().size();
         int publicFiles = getPublicFiles().size();
         if (totalFiles > 0) {
-            if (publicFiles == 0) {
+            if (publicFiles == 0 || !isAvailableToPublic()) {
                 return ResourceAccessType.RESTRICTED;
             }
             if (publicFiles == totalFiles) {
@@ -437,6 +432,13 @@ public abstract class InformationResource extends Resource {
             return ResourceAccessType.PARTIALLY_RESTRICTED;
         }
         return ResourceAccessType.CITATION;
+    }
+
+    @Transient
+    @XmlTransient
+    @JSONTransient
+    public boolean isPublicallyAccessible() {
+        return getResourceAccessType() == ResourceAccessType.PUBLICALLY_ACCESSIBLE;
     }
 
     @Transient
@@ -516,77 +518,87 @@ public abstract class InformationResource extends Resource {
     @IndexedEmbedded
     @Override
     public Set<InvestigationType> getActiveInvestigationTypes() {
-        return project != null && isInheritingInvestigationInformation() ? project.getInvestigationTypes() : getInvestigationTypes();
+        return isProjectActive() && isInheritingInvestigationInformation() ? project.getInvestigationTypes() : getInvestigationTypes();
+    }
+
+    @Transient
+    @XmlTransient
+    private boolean isProjectActive() {
+        // FIXME: indexing was dying when project below was replaced with getProject()
+        if (project != null && project != Project.NULL && project.isActive()) {
+            return true;
+        }
+        return false;
     }
 
     @IndexedEmbedded
     @Override
     public Set<SiteNameKeyword> getActiveSiteNameKeywords() {
-        return project != null && isInheritingSiteInformation() ? project.getSiteNameKeywords() : getSiteNameKeywords();
+        return isProjectActive() && isInheritingSiteInformation() ? project.getSiteNameKeywords() : getSiteNameKeywords();
     }
 
     @IndexedEmbedded
     @Override
     public Set<SiteTypeKeyword> getActiveSiteTypeKeywords() {
-        return project != null && isInheritingSiteInformation() ? project.getSiteTypeKeywords() : getSiteTypeKeywords();
+        return isProjectActive() && isInheritingSiteInformation() ? project.getSiteTypeKeywords() : getSiteTypeKeywords();
     }
 
     public Set<SiteTypeKeyword> getActiveApprovedSiteTypeKeywords() {
-        return project != null && isInheritingSiteInformation() ? project.getApprovedSiteTypeKeywords() : getApprovedSiteTypeKeywords();
+        return isProjectActive() && isInheritingSiteInformation() ? project.getApprovedSiteTypeKeywords() : getApprovedSiteTypeKeywords();
     }
 
     public Set<SiteTypeKeyword> getActiveUncontrolledSiteTypeKeywords() {
-        return project != null && isInheritingSiteInformation() ? project.getUncontrolledSiteTypeKeywords() : getUncontrolledSiteTypeKeywords();
+        return isProjectActive() && isInheritingSiteInformation() ? project.getUncontrolledSiteTypeKeywords() : getUncontrolledSiteTypeKeywords();
     }
 
     @Override
     @IndexedEmbedded
     public Set<MaterialKeyword> getActiveMaterialKeywords() {
-        return project != null && isInheritingMaterialInformation() ? project.getMaterialKeywords() : getMaterialKeywords();
+        return isProjectActive() && isInheritingMaterialInformation() ? project.getMaterialKeywords() : getMaterialKeywords();
     }
 
     @Override
     @IndexedEmbedded(targetElement = OtherKeyword.class)
     public Set<OtherKeyword> getActiveOtherKeywords() {
-        return project != null && isInheritingOtherInformation() ? project.getOtherKeywords() : getOtherKeywords();
+        return isProjectActive() && isInheritingOtherInformation() ? project.getOtherKeywords() : getOtherKeywords();
     }
 
     @Override
     @IndexedEmbedded
     public Set<CultureKeyword> getActiveCultureKeywords() {
-        return project != null && isInheritingCulturalInformation() ? project.getCultureKeywords() : getCultureKeywords();
+        return isProjectActive() && isInheritingCulturalInformation() ? project.getCultureKeywords() : getCultureKeywords();
     }
 
     public Set<CultureKeyword> getActiveApprovedCultureKeywords() {
-        return project != null && isInheritingCulturalInformation() ? project.getApprovedCultureKeywords() : getApprovedCultureKeywords();
+        return isProjectActive() && isInheritingCulturalInformation() ? project.getApprovedCultureKeywords() : getApprovedCultureKeywords();
     }
 
     public Set<CultureKeyword> getActiveUncontrolledCultureKeywords() {
-        return project != null && isInheritingCulturalInformation() ? project.getUncontrolledCultureKeywords() : getUncontrolledCultureKeywords();
+        return isProjectActive() && isInheritingCulturalInformation() ? project.getUncontrolledCultureKeywords() : getUncontrolledCultureKeywords();
     }
 
     @Override
     @IndexedEmbedded
     public Set<GeographicKeyword> getActiveGeographicKeywords() {
-        return project != null && isInheritingSpatialInformation() ? project.getGeographicKeywords() : getGeographicKeywords();
+        return isProjectActive() && isInheritingSpatialInformation() ? project.getGeographicKeywords() : getGeographicKeywords();
     }
 
     @Override
     @IndexedEmbedded
     public Set<LatitudeLongitudeBox> getActiveLatitudeLongitudeBoxes() {
-        return project != null && isInheritingSpatialInformation() ? project.getLatitudeLongitudeBoxes() : getLatitudeLongitudeBoxes();
+        return isProjectActive() && isInheritingSpatialInformation() ? project.getLatitudeLongitudeBoxes() : getLatitudeLongitudeBoxes();
     }
 
     @Override
     @IndexedEmbedded
     public Set<TemporalKeyword> getActiveTemporalKeywords() {
-        return project != null && isInheritingTemporalInformation() ? project.getTemporalKeywords() : getTemporalKeywords();
+        return isProjectActive() && isInheritingTemporalInformation() ? project.getTemporalKeywords() : getTemporalKeywords();
     }
 
     @Override
     @IndexedEmbedded
     public Set<CoverageDate> getActiveCoverageDates() {
-        return project != null && isInheritingTemporalInformation() ? project.getCoverageDates() : getCoverageDates();
+        return isProjectActive() && isInheritingTemporalInformation() ? project.getCoverageDates() : getCoverageDates();
     }
 
     @Override
@@ -631,9 +643,16 @@ public abstract class InformationResource extends Resource {
     @JSONTransient
     public String getAdditonalKeywords() {
         StringBuilder sb = new StringBuilder();
-        sb.append(getCopyLocation()).append(" ").append(dateCreated);
+        sb.append(getCopyLocation()).append(" ").append(date);
         if (getResourceProviderInstitution() != null) {
             sb.append(" ").append(getResourceProviderInstitution().getName());
+        }
+
+        if (MapUtils.isNotEmpty(relatedDatasetData)) {
+            for (String v : relatedDatasetData.values()) {
+                sb.append(v);
+                sb.append(" ");
+            }
         }
 
         // if (getProject() != null) {
@@ -652,7 +671,7 @@ public abstract class InformationResource extends Resource {
     @Override
     @JSONTransient
     public boolean isValidForController() {
-        if (dateCreated == null) {
+        if (date == null) {
             throw new TdarRecoverableRuntimeException("Specifying a \"Created Date\" is required for this " + getResourceType());
         }
         return super.isValidForController();
@@ -662,9 +681,62 @@ public abstract class InformationResource extends Resource {
     @Transient
     @JSONTransient
     public String getAdditionalUsersWhoCanModify() {
-        if (getProject() != null) {
+        if (getProject() != Project.NULL) {
             return getProject().getAdditionalUsersWhoCanModify();
         }
         return "";
+    }
+
+    public DataTableColumn getMappedDataKeyColumn() {
+        return mappedDataKeyColumn;
+    }
+
+    public void setMappedDataKeyColumn(DataTableColumn mappedDataKeyColumn) {
+        this.mappedDataKeyColumn = mappedDataKeyColumn;
+    }
+
+    public String getMappedDataKeyValue() {
+        return mappedDataKeyValue;
+    }
+
+    public void setMappedDataKeyValue(String mappedDataKeyValue) {
+        this.mappedDataKeyValue = mappedDataKeyValue;
+    }
+
+    @Field(index = Index.TOKENIZED, store = Store.NO)
+    @FieldBridge(impl = StringMapBridge.class)
+    public Map<DataTableColumn, String> getRelatedDatasetData() {
+        return relatedDatasetData;
+    }
+
+    public void setRelatedDatasetData(Map<DataTableColumn, String> relatedDatasetData) {
+        this.relatedDatasetData = relatedDatasetData;
+    }
+
+    @Transient
+    @XmlTransient
+    @JSONTransient
+    public boolean isInheritingSomeMetadata() {
+        return (inheritingCulturalInformation || inheritingInvestigationInformation || inheritingMaterialInformation || inheritingOtherInformation ||
+                inheritingSiteInformation || inheritingSpatialInformation || inheritingTemporalInformation);
+    }
+
+    @Transient
+    @JSONTransient
+    public List<Obfuscatable> obfuscate() {
+        // don't claim to inherit data from Projects which are inactive
+        if (!isProjectActive()) {
+            setProject(Project.NULL);
+            // setting the project to null should be enough...
+            setInheritingCulturalInformation(false);
+            setInheritingInvestigationInformation(false);
+            setInheritingMaterialInformation(false);
+            setInheritingOtherInformation(false);
+            setInheritingSiteInformation(false);
+            setInheritingSpatialInformation(false);
+            setInheritingTemporalInformation(false);
+        }
+        List<Obfuscatable> toObfuscate = super.obfuscate();
+        return toObfuscate;
     }
 }

@@ -23,8 +23,8 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.HibernateSearchDao;
+import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.SearchIndexService;
-import org.tdar.core.service.keyword.SiteNameKeywordService;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.search.LuceneSearchController;
@@ -34,7 +34,7 @@ public class SearchRelevancyITCase extends AbstractResourceControllerITCase {
     @Autowired
     private LuceneSearchController controller;
     @Autowired
-    private SiteNameKeywordService siteNameKeywordService;
+    private GenericKeywordService genericKeywordService;
     @Autowired
     SearchIndexService searchIndexService;
     @Autowired
@@ -89,7 +89,7 @@ public class SearchRelevancyITCase extends AbstractResourceControllerITCase {
         // now init the document that matches on keywords only
         resourceWithKeywordMatch = new Document();
         Set<SiteNameKeyword> siteNameKeywords = new HashSet<SiteNameKeyword>();
-        siteNameKeywords.add(siteNameKeywordService.findOrCreateByLabel(SEMI_UNIQUE_NAME));
+        siteNameKeywords.add(genericKeywordService.findOrCreateByLabel(SiteNameKeyword.class, SEMI_UNIQUE_NAME));
         resourceWithKeywordMatch.setSiteNameKeywords(siteNameKeywords);
         prepareResource(resourceWithKeywordMatch, "doc with match on keywords", "desc");
         logger.debug("resourceWithKeywordMatch:" + resourceWithKeywordMatch.getId());
@@ -114,7 +114,7 @@ public class SearchRelevancyITCase extends AbstractResourceControllerITCase {
         controller.setQuery(SEMI_UNIQUE_NAME);
         controller.setSortField(SortOption.RELEVANCE);
         logger.debug("about to perform search");
-        controller.performSearch();
+        controller.search();
 
         // we should get back **something**
         Assert.assertTrue("search results should not be empty", controller.getResults().size() > 0);
@@ -167,7 +167,7 @@ public class SearchRelevancyITCase extends AbstractResourceControllerITCase {
         searchIndexService.index(p);
         controller.setMaterialKeywordIds(Arrays.asList(materialKeywords.get(0).getId()));
         controller.setResourceTypes(Arrays.asList(ResourceType.DOCUMENT, ResourceType.PROJECT));
-        controller.performSearch();
+        controller.search();
 
         logger.debug("{}", controller.getResults());
         assertTrue(controller.getResults().contains(p));

@@ -12,6 +12,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Annotation for tracking bulk import fields and provinding a central location for all of the long descriptions.
+ * 
  * @author Adam Brin
  * 
  */
@@ -33,13 +35,18 @@ public @interface BulkImportField {
     public static final String CREATOR_FNAME_DESCRIPTION = "The first name of the person that created/authored/  contributed/ sponsored the resource. NOTE:  if there are multiple individuals and/ or institutions that should be credited, you will need to add them individually to each tDAR record using the tDAR website and editing each applicable resource created by this batch upload. NOTE: This does field  does not refer to the submitter/creator of the tDAR record - which  is an automatically populated field. ";
     public static final String CREATOR_LNAME_DESCRIPTION = "The name of the person that created/authored/  contributed/ sponsored the resource. NOTE:  if there are multiple individuals and/ or institutions that should be credited, you will need to add them individually to each tDAR record using the tDAR website and editing each applicable resource created by this batch upload. NOTE: This does field  does not refer to the submitter/creator of the tDAR record - which  is an automatically populated field. ";
 
+    // a way to tell the parser about subclasses (Creator -> Person/Institution)
     public Class<?>[] implementedSubclasses() default {};
 
+    // the label that will show in Excel
     public String label() default "";
 
+    // The comment field in excel
     public String comment() default "";
 
+    // Whether the field is required or not
     public boolean required() default false;
 
+    // The sort order for the excel columns, lower means closer to the left. Sorting is within the class
     public int order() default 0;
 }

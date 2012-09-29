@@ -11,6 +11,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.sensory.SensoryDataImage;
 import org.tdar.core.bean.resource.sensory.SensoryDataScan;
+import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 
 public class SensoryDataControllerITCase extends AbstractResourceControllerITCase {
@@ -38,7 +39,7 @@ public class SensoryDataControllerITCase extends AbstractResourceControllerITCas
 
     @Test
     @Rollback
-    public void testCreateBarebonesRecord() {
+    public void testCreateBarebonesRecord() throws Exception {
         initControllerFields();
         SensoryData resource = controller.getResource();
         Assert.assertNotNull("should have a blank, non-null resource", resource);
@@ -59,7 +60,7 @@ public class SensoryDataControllerITCase extends AbstractResourceControllerITCas
 
     @Test
     @Rollback
-    public void testSavingWithImageRecords() {
+    public void testSavingWithImageRecords() throws Exception {
         initControllerFields();
         SensoryData resource = controller.getResource();
         Assert.assertSame(INVALID_RESOURCE_ID, resource.getId());
@@ -89,7 +90,7 @@ public class SensoryDataControllerITCase extends AbstractResourceControllerITCas
 
     @Test
     @Rollback
-    public void testSavingWithScanRecords() {
+    public void testSavingWithScanRecords() throws Exception {
         initControllerFields();
         SensoryData resource = controller.getResource();
         Assert.assertNotNull("should have a blank, non-null resource", resource);
@@ -120,7 +121,7 @@ public class SensoryDataControllerITCase extends AbstractResourceControllerITCas
         }
     }
 
-    private Long saveAndReload(boolean test) {
+    private Long saveAndReload(boolean test) throws TdarActionException {
         Long oldid = controller.getResource().getId();
         controller.save();
         Long id = controller.getResource().getId();

@@ -3,7 +3,9 @@ package org.tdar.core.bean.resource.sensory;
 import java.util.HashMap;
 import java.util.Map;
 
-public enum ScannerTechnologyType {
+import org.tdar.core.bean.HasLabel;
+
+public enum ScannerTechnologyType implements HasLabel {
     //Time of Flight, Phase-based, Triangulation
     TIME_OF_FLIGHT("Time of Flight"),
     PHASE_BASED("Phase-based"),

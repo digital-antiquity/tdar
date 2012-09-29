@@ -1,3 +1,4 @@
+<#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
 <#macro fieldval _label _val _show=true>
 <#if _show>
@@ -20,7 +21,7 @@
 </#macro>
 
 <@view.htmlHeader resourceType="document">
-<meta name="lastModifiedDate" content="$Date: 2011-02-07 18:04:04 -0700 (Mon, 07 Feb 2011) $"/>
+<meta name="lastModifiedDate" content="$Date$"/>
 <@view.googleScholar />
 </@view.htmlHeader>
 <@view.toolbar "${resource.urlNamespace}" "view" />
@@ -46,8 +47,6 @@
     <@fieldval _val=resource.planimetricMapFilename!""      _show=resource.planimetricMapFilename??  _label="Planimetric Map Filename" />
     <@fieldval _val=resource.finalDatasetDescription!"" _show=resource.finalDatasetDescription??  _label="Description of Final Datasets for Archive" />
 </@view.infoResourceBasicInformation>
-
-<@view.uploadedFileInfo />
 
 <#if !resource.sensoryDataScans.isEmpty()>
 <h3>Scan Information</h3>
@@ -155,3 +154,4 @@
 </table>
 
 <@view.sharedViewComponents resource />
+</#escape>

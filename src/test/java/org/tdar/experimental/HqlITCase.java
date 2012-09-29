@@ -2,10 +2,12 @@ package org.tdar.experimental;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -19,11 +21,10 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.keyword.CultureKeyword;
-import org.tdar.core.bean.keyword.InvestigationType;
-import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.TdarNamedQueries;
+import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ReflectionService;
 import org.tdar.core.service.resource.ResourceService;
 
@@ -37,6 +38,9 @@ public class HqlITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     ReflectionService reflectionService;
+    
+    @Autowired 
+    GenericKeywordService genericKeywordService;
 
     private Session session;
 
@@ -119,22 +123,44 @@ public class HqlITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testManyToManyParm() {
+        
+        //Get the Resource.cultureKeywords field.
         Set<Field> set = reflectionService.findFieldsReferencingClass(Resource.class, CultureKeyword.class);
         Assert.assertEquals(1, set.size());
         Field cultureKeywordField = set.iterator().next();
+        logger.debug("Field that references cultureKeyword:{}", cultureKeywordField);
+        
+        //this is the list of ids of the keywords we want to find references to.
+        //TODO:  it would be better to explicitly create our own keywords, and resources that reference them, in this test rather than relying on test database. 
+        List<Long> idlist = Arrays.asList(120L, 8L, 40L, 25L);
+        Set<CultureKeyword> expectedCultureKeywords = new HashSet<CultureKeyword>(genericKeywordService.findAll(CultureKeyword.class, idlist));
+        
+        //    "from %1$s r1 where exists (from %1$s r2 inner join r2.%2$s ck where r2.id = r1.id and ck.id in (:idlist))";
         String hql = String.format(TdarNamedQueries.QUERY_HQL_MANY_TO_MANY_REFERENCES, Resource.class.getSimpleName(), cultureKeywordField.getName());
         Query query = session.createQuery(hql);
-        query.setParameterList("idlist", Arrays.asList(120L, 8L, 40L, 25L));
-        List results = query.list();
+        query.setParameterList("idlist", idlist);
+        
+        List<Resource> results = (List<Resource>)query.list();
         logger.debug("keywords: {}", results);
         Assert.assertTrue("list shouldn't be empty", CollectionUtils.isNotEmpty(results));
-        //this thing *is* in a collection, right?
         assertTrue(Collection.class.isAssignableFrom(cultureKeywordField.getType()) );
         
-        Collection<CultureKeyword> cultureKeywords = reflectionService.callFieldGetter(results.get(0), cultureKeywordField);
-        logger.debug("contents: {}", cultureKeywords);
-        Assert.assertEquals(3, cultureKeywords.size());
+        //Okay, so if this worked,  for each of the resources in the results list, the values for the field designated by cultureKeywordField references at
+        //least one of the in our id list.  Go through each result and confirm this is true.
+        for(Resource resource: results) {
+            Collection<CultureKeyword> cultureKeywords = reflectionService.callFieldGetter(resource, cultureKeywordField);
+            Set<CultureKeyword> cultureKeywordSet = new HashSet<CultureKeyword>(cultureKeywords);
+            logger.debug("resource:'{}'\t keywords:{}", resource, cultureKeywordSet);
+            cultureKeywordSet.retainAll(expectedCultureKeywords);
+            if(cultureKeywordSet.isEmpty()) {
+                String fmt = "The following resource does not reference any expected cultureKeywords.  \n\t resource:%s \n\t keywords:%s \n\t expected one of:%s)";
+                String err = String.format(fmt, resource, cultureKeywordSet, expectedCultureKeywords);
+                fail(err);
+            }
+            
+        }
     }
 
     @Test
@@ -179,6 +205,23 @@ public class HqlITCase extends AbstractIntegrationTestCase {
         query.setParameterList("idlist", Arrays.asList(6L, 38L));
         List results = query.list();
         logger.debug("keywords: {}", results);
+        Assert.assertTrue("list shouldn't be empty", CollectionUtils.isNotEmpty(results));
+    }
+    
+    @Test
+    public void testGetKeywordCounts() {
+        String hql = TdarNamedQueries.QUERY_KEYWORD_COUNT_CULTURE_KEYWORD_CONTROLLED;
+        Query query = session.getNamedQuery(hql);
+        List results = query.list();
+        logger.debug("keywords: {}", results);
+        for(Object obj : results) {
+           Object[] singleResult = (Object[])obj;
+           CultureKeyword ck = (CultureKeyword)singleResult[0];
+           Long count = (Long)singleResult[1];
+           logger.debug("{}:{}", ck.getLabel(), count);
+           
+        }
+        
         Assert.assertTrue("list shouldn't be empty", CollectionUtils.isNotEmpty(results));
     }
 

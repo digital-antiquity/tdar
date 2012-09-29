@@ -1,8 +1,9 @@
 package org.tdar.core.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.junit.Before;
@@ -15,6 +16,8 @@ import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.dao.GenericDao.FindOptions;
 
+import static org.junit.Assert.*;
+
 public class GenericServiceITCase extends AbstractIntegrationTestCase {
 
     @Autowired
@@ -25,6 +28,24 @@ public class GenericServiceITCase extends AbstractIntegrationTestCase {
     @Before
     public void init() {
 
+    }
+    
+    @Test
+    @Rollback
+    public void testFindAllWithIds() {
+        // iota
+        List<Long> ids = new ArrayList<Long>();
+        for (long id = 1; id < 21; id++) {
+            ids.add(id);
+        }
+        List<InvestigationType> investigationTypes = genericService.findAll(InvestigationType.class, ids);
+        assertEquals(20, investigationTypes.size());
+        Collections.sort(investigationTypes, new Comparator<InvestigationType>() {
+            public int compare(InvestigationType a, InvestigationType b) {
+                return a.getId().compareTo(b.getId());
+            }
+        });
+        assertEquals(investigationTypes, genericService.findAllSorted(InvestigationType.class));
     }
     
     @Test

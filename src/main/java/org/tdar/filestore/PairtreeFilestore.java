@@ -14,7 +14,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.filestore.Filestore.BaseFilestore;
@@ -33,7 +34,7 @@ public class PairtreeFilestore extends BaseFilestore {
     public static final String CONTAINER_NAME = "rec";
     public static final String DERIV = "deriv";
     public static final String ARCHIVAL = "archival";
-    private static final Logger logger = Logger.getLogger(PairtreeFilestore.class);
+    private static final Logger logger = LoggerFactory.getLogger(PairtreeFilestore.class);
     private final File baseStoreDirectory;
     private final String fileStoreLocation;
 
@@ -53,25 +54,32 @@ public class PairtreeFilestore extends BaseFilestore {
         baseStoreDirectory = new File(pathToFilestore);
         String error = "Can not initialize " + pathToFilestore + " as the filestore location.";
         if (!baseStoreDirectory.isDirectory()) {
-            logger.fatal(error);
+            logger.error(error);
             throw new IllegalArgumentException(error);
         }
         try {
             fileStoreLocation = baseStoreDirectory.getCanonicalPath();
         } catch (IOException e) {
-            logger.fatal(error, e);
+            logger.error(error, e);
             throw new TdarRuntimeException(error, e);
         }
+    }
+
+    public String store(InputStream content, InformationResourceFileVersion version) throws IOException {
+        return storeAndRotate(content, version, 0);
     }
 
     /**
      * @see org.tdar.filestore.Filestore#store(java.io.InputStream)
      */
-    public String store(InputStream content, InformationResourceFileVersion version) throws IOException {
+    public String storeAndRotate(InputStream content, InformationResourceFileVersion version, int maxRotations) throws IOException {
         OutputStream outstream = null;
         String path = getAbsoluteFilePath(version);
         logger.info("storing at: " + path);
         File outFile = new File(path);
+        if (outFile.exists() && maxRotations > 0) {
+            rotate(outFile, maxRotations);
+        }
         String errorMessage = "Unable to write content to filestore.";
         DigestInputStream in = appendMessageDigestStream(content);
         try {
@@ -85,10 +93,11 @@ public class PairtreeFilestore extends BaseFilestore {
             }
             updateVersionInfo(outFile, version);
         } catch (IOException iox) {
-            //this exception may be swallowed if the finally block itself throws an exception, so we explicitly log the error and then rethrow
+            //this exception may be swallowed if our finally block itself throws an exception, so we log it here first
             logger.error(errorMessage, iox);
             throw iox;
         }
+        
         finally {
             if (content != null) {
                 IOUtils.closeQuietly(content);
@@ -107,6 +116,37 @@ public class PairtreeFilestore extends BaseFilestore {
         }
 
         return outFile.getCanonicalPath();
+    }
+
+    private void rotate(File outFile, Integer maxRotations) {
+        logger.trace("rotating file: " + outFile.getName());
+        File parentDir = outFile.getParentFile();
+        for (int i = maxRotations; i > 0; i--) {
+            String baseName = FilenameUtils.getBaseName(outFile.getName());
+            String ext = FilenameUtils.getExtension(outFile.getName());
+            String rotationParent = String.format(".%s.", Integer.toString(i - 1));
+            String rotationTarget = String.format(".%s.", Integer.toString(i));
+            if (i == 1) {
+                rotationParent = ".";
+            }
+            rotationTarget = String.format("%s%s%s", baseName, rotationTarget, ext);
+            rotationParent = String.format("%s%s%s", baseName, rotationParent, ext);
+
+            logger.trace("rotating from: " + rotationParent + " to " + rotationTarget);
+
+            File parentFile = new File(parentDir, rotationParent);
+            File targetFile = new File(parentDir, rotationTarget);
+            logger.trace(parentFile.getAbsolutePath());
+
+            if (parentFile.exists()) {
+                try {
+                    FileUtils.copyFile(parentFile, targetFile);
+                } catch (IOException e) {
+                    logger.warn("something happened when saving file",e);
+                }
+                logger.debug("rotating file {} to {}", parentFile.getAbsolutePath(), targetFile.getAbsolutePath());
+            }
+        }
     }
 
     public static String toPairTree(Number val) {
@@ -132,11 +172,18 @@ public class PairtreeFilestore extends BaseFilestore {
      * @see org.tdar.filestore.Filestore#store(File)
      */
     public String store(File content, InformationResourceFileVersion version) throws IOException {
+        return storeAndRotate(content, version, 0);
+    }
+
+    /**
+     * @see org.tdar.filestore.Filestore#store(File)
+     */
+    public String storeAndRotate(File content, InformationResourceFileVersion version, int maxRotations) throws IOException {
         if (content == null || !content.isFile()) {
             logger.warn("Trying to store null or empty content: " + content);
             return "";
         }
-        return store(new FileInputStream(content), version);
+        return storeAndRotate(new FileInputStream(content), version, maxRotations);
     }
 
     /**
@@ -205,7 +252,7 @@ public class PairtreeFilestore extends BaseFilestore {
                 base.append(File.separator);
             }
         }
-        logger.trace(base);
+        logger.trace("{}", base);
         return FilenameUtils.concat(FilenameUtils.normalize(base.toString()), version.getFilename());
     }
 

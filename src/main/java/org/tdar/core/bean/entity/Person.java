@@ -1,6 +1,7 @@
 package org.tdar.core.bean.entity;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -10,8 +11,9 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
-import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -21,8 +23,10 @@ import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.tdar.core.bean.BulkImportField;
+import org.tdar.core.bean.Obfuscatable;
+import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.resource.BookmarkedResource;
-import org.tdar.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
+import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
@@ -39,7 +43,11 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 @Table(name = "person")
 @Indexed(index = "Person")
 @XmlRootElement(name = "person")
-public class Person extends Creator implements Comparable<Person> {
+public class Person extends Creator implements Comparable<Person>, Validatable {
+
+    @Transient
+    private static final String[] IGNORE_PROPERTIES_FOR_UNIQUENESS = { "id", "institution", "dateCreated", "dateUpdated", "registered", "privileged", "rpa",
+            "contributor", "totalLogins", "lastLogin", "penultimateLogin", "emailPublic", "phonePublic" };
 
     private static final long serialVersionUID = -3863573773250268081L;
 
@@ -57,47 +65,65 @@ public class Person extends Creator implements Comparable<Person> {
 
     @Column(nullable = false, name = "last_name")
     @Field(name = "lastName")
-    @BulkImportField(label="Last Name",comment=BulkImportField.CREATOR_LNAME_DESCRIPTION,order =2)
+    @BulkImportField(label = "Last Name", comment = BulkImportField.CREATOR_LNAME_DESCRIPTION, order = 2)
     @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
     private String lastName;
 
     @Column(nullable = false, name = "first_name")
     @Field(name = "firstName")
-    @BulkImportField(label="First Name",comment=BulkImportField.CREATOR_FNAME_DESCRIPTION,order=1)
+    @BulkImportField(label = "First Name", comment = BulkImportField.CREATOR_FNAME_DESCRIPTION, order = 1)
     @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
     private String firstName;
 
     @Column(unique = true, nullable = true)
     @Field(name = "email")
-    @BulkImportField(label="Email",order=3)
+    @BulkImportField(label = "Email", order = 3)
     @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
     private String email;
+    
+    @Column(nullable = false, name = "email_public", columnDefinition = "boolean default FALSE")
+    private Boolean emailPublic = Boolean.FALSE;
 
     @IndexedEmbedded(depth = 1)
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
-    @BulkImportField(label="Resource Creator's ",comment=BulkImportField.CREATOR_PERSON_INSTITUTION_DESCRIPTION, order=50)
+    // FIXME: this causes PersonController to throw non-unique key violations again when changing from one persistent Institution
+    // to another persistent Institution. WHY
+    // @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE})
+    @BulkImportField(label = "Resource Creator's ", comment = BulkImportField.CREATOR_PERSON_INSTITUTION_DESCRIPTION, order = 50)
     private Institution institution;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "last_login")
+    private Date lastLogin;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "penultimate_login")
+    private Date penultimateLogin;
+
+    @Column(name = "total_login")
+    private Long totalLogins = 0l;
+
     // can this user contribute resources?
-    private boolean contributor;
+    @Column(name= "contributor", nullable = false, columnDefinition = "boolean default FALSE")
+    private Boolean contributor = Boolean.FALSE;;
 
     @Column(name = "contributor_reason", length = 512)
     private String contributorReason;
 
     // can this user access confidential resources?
-    private boolean privileged;
+    @Deprecated
+    private boolean privileged = false;
 
     // did this user register with the system or were they entered by someone
     // else?
     @Field
     @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
-    private boolean registered;
-
-    // private boolean deleted;
+    private Boolean registered = Boolean.FALSE;
 
     // is this person a registered professional archaeologist? See
     // http://www.rpanet.org for more info
-    private boolean rpa;
+    @Deprecated
+    private Boolean rpa = Boolean.FALSE;
 
     // rpanet.org number (if applicable - using String since I'm not sure if
     // it's in numeric format)
@@ -106,6 +132,9 @@ public class Person extends Creator implements Comparable<Person> {
 
     private String phone;
 
+    @Column(nullable = false, name = "phone_public", columnDefinition = "boolean default FALSE")
+    private Boolean phonePublic = Boolean.FALSE;
+    
     private String password;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "person")
@@ -197,6 +226,15 @@ public class Person extends Creator implements Comparable<Person> {
         }
     }
 
+    public Boolean getEmailPublic() {
+    	return emailPublic;
+    
+    }
+    
+    public void setEmailPublic(Boolean toggle) {
+    	this.emailPublic = toggle;
+    }
+    
     public Institution getInstitution() {
         return institution;
     }
@@ -229,36 +267,42 @@ public class Person extends Creator implements Comparable<Person> {
         return comparison;
     }
 
-    public boolean isContributor() {
+    public Boolean getContributor() {
         return contributor;
     }
 
-    public void setContributor(boolean contributor) {
+    public void setContributor(Boolean contributor) {
         this.contributor = contributor;
     }
 
     @XmlTransient
+    @Deprecated
     public boolean isPrivileged() {
         return privileged;
     }
 
-    public void setPrivileged(boolean privileged) {
+    @Deprecated
+    public void setPrivileged(Boolean privileged) {
         this.privileged = privileged;
     }
 
-    public boolean isRegistered() {
+    public Boolean isRegistered() {
         return registered;
     }
 
-    public void setRegistered(boolean registered) {
+    public Boolean getRegistered() {
+        return registered;
+    }
+
+    public void setRegistered(Boolean registered) {
         this.registered = registered;
     }
 
-    public boolean isRpa() {
+    public Boolean getRpa() {
         return rpa;
     }
 
-    public void setRpa(boolean rpa) {
+    public void setRpa(Boolean rpa) {
         this.rpa = rpa;
     }
 
@@ -287,6 +331,14 @@ public class Person extends Creator implements Comparable<Person> {
         this.phone = phone;
     }
 
+    public Boolean getPhonePublic() {
+    	return phonePublic;
+    }
+    
+    public void setPhonePublic(Boolean toggle) {
+    	this.phonePublic = toggle;
+    }
+    
     @XmlTransient
     public String getPassword() {
         return password;
@@ -318,19 +370,83 @@ public class Person extends Creator implements Comparable<Person> {
     public CreatorType getCreatorType() {
         return CreatorType.PERSON;
     }
-    
-    @XmlID
-    @Transient
-    public String getXmlId() {
-        return getId().toString();
-    }
-    
+
     @Transient
     public String getInstitutionName() {
         String name = null;
-        if(institution != null) {
+        if (institution != null) {
             name = institution.getName();
         }
         return name;
+    }
+
+    @Override
+    public boolean isDedupable() {
+        return !isRegistered();
+    }
+
+    public Long getTotalLogins() {
+        if (totalLogins == null) {
+            return 0L;
+        }
+        return totalLogins;
+    }
+
+    public void setTotalLogins(Long totalLogins) {
+        this.totalLogins = totalLogins;
+    }
+
+    public Date getLastLogin() {
+        return lastLogin;
+    }
+
+    public void setLastLogin(Date lastLogin) {
+        this.penultimateLogin = this.lastLogin;
+        this.lastLogin = lastLogin;
+    }
+
+    public void incrementLoginCount() {
+        totalLogins = getTotalLogins() + 1;
+    }
+
+    public Date getPenultimateLogin() {
+        return penultimateLogin;
+    }
+
+    public void setPenultimateLogin(Date penultimateLogin) {
+        this.penultimateLogin = penultimateLogin;
+    }
+
+    public static String[] getIgnorePropertiesForUniqueness() {
+        return IGNORE_PROPERTIES_FOR_UNIQUENESS;
+    }
+
+    public List<Obfuscatable> obfuscate() {
+        setObfuscated(true);
+        // check if email and phone are actually confidential
+        if (! getEmailPublic()) {
+            setEmail(null);
+        }
+        if (! getPhonePublic()) {
+            setPhone(null);
+        }
+        setPassword(null);
+        setRegistered(false);
+        setContributor(false);
+        setRpaNumber(null);
+        setLastLogin(null);
+        setPenultimateLogin(null);
+        setTotalLogins(null);
+        return Arrays.asList((Obfuscatable) getInstitution());
+    }
+
+    @Override
+    public boolean isValidForController() {
+        return StringUtils.isNotBlank(firstName) && StringUtils.isNotBlank(lastName);
+    }
+
+    @Override
+    public boolean isValid() {
+    	return isValidForController() && getId() != null;
     }
 }

@@ -11,9 +11,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -61,13 +63,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     public void saveAuthorizedUsersForResource(Resource resource, List<AuthorizedUser> authorizedUsers, boolean shouldSave) {
         logger.info("saving authorized users...");
 
-        Iterator<AuthorizedUser> iterator = authorizedUsers.iterator();
-        while (iterator.hasNext()) {
-            AuthorizedUser user = iterator.next();
-            if (user == null || !user.isValidWithoutCollection()) {
-                iterator.remove();
-            }
-        }
+        
         // if the incoming set is empty and the current has nothing ... NO-OP
         if (CollectionUtils.isEmpty(authorizedUsers)
                 && (resource.getInternalResourceCollection() == null || resource.getInternalResourceCollection().getAuthorizedUsers().size() == 0)) {
@@ -98,7 +94,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                 genericDao.refresh(internalCollection);
             }
         }
-
+        //note: we assume here that the authorizedUser validation will happen in saveAuthorizedUsersForResourceCollection
         saveAuthorizedUsersForResourceCollection(internalCollection, authorizedUsers, shouldSave);
     }
 
@@ -165,14 +161,16 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                 }
 
                 incomingUser.setResourceCollection(resourceCollection);
-                if (!incomingUser.isValid()) {
-                    continue;
-                }
 
                 if (incomingUser.getUser().getId() != null && incomingUser.getUser().getId() != -1) {
                     Person user = entityService.find(incomingUser.getUser().getId());
                     if (user != null) {
+                        //it's important to ensure that we replace the proxy user w/ the  persistent user prior to calling isValid(),  because isValid() 
+                        //may evaluate fields that aren't set in the proxy object.
                         incomingUser.setUser(user);
+                        if (!incomingUser.isValid()) {
+                            continue;
+                        }
                         // FIXME: not sure this is needed, but because hashCode doesn't include generalPermissions
                         // best to be safe
                         if (currentUsers.contains(incomingUser)) {
@@ -225,7 +223,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             incoming_.addAll(incoming);
             current.clear();
         }
-        
+
         CollectionUtils.filter(incoming_, NotNullPredicate.INSTANCE);
 
         List<ResourceCollection> toRemove = new ArrayList<ResourceCollection>();
@@ -245,13 +243,18 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         for (ResourceCollection collection : incoming_) {
             ResourceCollection collectionToAdd = null;
             if (collection.isTransient()) {
-                collection.setOwner(authenticatedUser);
-                collection.setType(CollectionType.SHARED);
-                if (collection.getSortBy() == null) {
-                    collection.setSortBy(SortOption.RESOURCE_TYPE);
+                ResourceCollection potential = getDao().findCollectionsWithName(authenticatedUser, collection);
+                if (potential != null) {
+                    collectionToAdd = potential;
+                } else {
+                    collection.setOwner(authenticatedUser);
+                    collection.setType(CollectionType.SHARED);
+                    if (collection.getSortBy() == null) {
+                        collection.setSortBy(SortOption.RESOURCE_TYPE);
+                    }
+                    collection.setVisible(true);
+                    collectionToAdd = collection;
                 }
-                collection.setVisible(true);
-                collectionToAdd = collection;
             } else {
                 collectionToAdd = find(collection.getId());
             }

@@ -3,6 +3,8 @@ package org.tdar.utils.sensorydata.enums;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.tdar.core.bean.HasLabel;
+
 public class EnumHelp {
 
     //bah! why wont you work!!?   wanted an easy way to create these lookup maps rather than implement it in every enum that has labels.

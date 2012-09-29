@@ -3,6 +3,7 @@ $Id$
 Edit freemarker macros.  Getting large, should consider splitting this file up.
 -->
 <#-- include navigation menu in edit and view macros -->
+<#escape _untrusted as _untrusted?html>
 <#include "common.ftl">
 <#include "navigation-macros.ftl">
 
@@ -80,15 +81,21 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             </tbody>
         </table>
     </p>
+    <#if !resource.resourceType.codingSheet && !resource.resourceType.ontology>
+    <div id="divUrl" tiplabel="URL" tooltipcontent="Universal Resource Locator (i.e. website address) for this resource, if applicable">
+        <@s.textfield name="resource.url" id="txtUrl" label="URL" labelposition="left" cssClass="longfield url" />
+    </div>
+    </#if>
+    
 </div>
 </#macro>
 
 <#macro keywordRows keywordList keywordField showDelete=true>
     <#if keywordList.empty >
-    <@keywordRow keywordField />
+      <@keywordRow keywordField />
     <#else>
     <#list keywordList as keyword>
-    <@keywordRow keywordField keyword_index />
+      <@keywordRow keywordField keyword_index />
     </#list>
     </#if>
 </#macro>
@@ -201,7 +208,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <#macro resourceProvider showInherited=true>
 <div class="glide" id="divResourceProvider" tiplabel="Resource Provider" tooltipcontent="The institution authorizing tDAR to ingest the resource for the purpose of preservation and access.">
 <h3>Resource Provider</h3>
-<@s.textfield labelposition='left' label='Institution' name='resourceProviderInstitution' id='txtResourceProviderInstitution' cssClass="institution longfield" size='40'/>
+<@s.textfield labelposition='left' label='Institution' name='resourceProviderInstitutionName' id='txtResourceProviderInstitution' cssClass="institution longfield" size='40'/>
 <br/>
 </div>
 </#macro>
@@ -433,20 +440,25 @@ The form will check for matches in the tDAR database and populate the related fi
   <tr id='authorizedUserRow_${authorizedUser_index}_'>
   <td>
     <div class="width30percent marginLeft10" >
-        <@s.hidden name='authorizedUsers[${authorizedUser_index}].user.id' value='${(authorizedUser.user.id!-1)?c}'  cssClass="rowNotEmpty" onchange="this.valid()"  />
-        <@s.textfield cssClass="userAutoComplete" watermark="Last Name"  readonly="${disabled}"
-            name="authorizedUsers[${authorizedUser_index}].user.lastName" maxlength="255" 
-              onblur="setCalcUserVal(this)" /> 
+        <@s.hidden name='authorizedUsers[${authorizedUser_index}].user.id' value='${(authorizedUser.user.id!-1)?c}' id="authorizedUserId__id_${authorizedUser_index}_"  cssClass="validIdRequired" onchange="this.valid()"  autocompleteParentElement="#authorizedUserRow_${authorizedUser_index}_"  />
+        <@s.textfield cssClass="userAutoComplete" watermark="Last Name"  readonly="${disabled}" autocompleteParentElement="#authorizedUserRow_${authorizedUser_index}_"
+        autocompleteIdElement="#authorizedUserId__id_${authorizedUser_index}_" autocompleteName="lastName"
+            name="authorizedUsers[${authorizedUser_index}].user.lastName" maxlength="255" /> 
           <@s.textfield cssClass="userAutoComplete" watermark="First Name"  readonly="${disabled}"
-              name="authorizedUsers[${authorizedUser_index}].user.firstName" maxlength="255" 
-              onblur="setCalcUserVal(this)" />
+              name="authorizedUsers[${authorizedUser_index}].user.firstName" maxlength="255" autocompleteName="firstName"
+              autocompleteIdElement="#authorizedUserId__id_${authorizedUser_index}_" 
+              autocompleteParentElement="#authorizedUserRow_${authorizedUser_index}_"  />
         <@s.textfield cssClass="userAutoComplete" watermark="Email" readonly="${disabled}"
+        autocompleteIdElement="#authorizedUserId__id_${authorizedUser_index}_" autocompleteName="email" autocompleteParentElement="#authorizedUserRow_${authorizedUser_index}_"
             name="authorizedUsers[${authorizedUser_index}].user.email" maxlength="255"/>
         <br />
     </div>
     <div class="width60percent marginLeft10">
         <@s.textfield cssClass="userAutoComplete" watermark="Institution Name" readonly="${disabled}"
-            name="authorizedUsers[${authorizedUser_index}].user.institution.name" maxlength="255" onblur="setCalcUserVal(this)" />
+            autocompleteIdElement="#authorizedUserId__id_${authorizedUser_index}_" 
+            autocompleteName="institution" 
+            autocompleteParentElement="#authorizedUserRow_${authorizedUser_index}_"
+            name="authorizedUsers[${authorizedUser_index}].user.institution.name" maxlength="255" />
            <#if disabled?index_of("t") != -1>
             <@s.select name="authorizedUsers[${authorizedUser_index}].generalPermission" 
                emptyOption='false' listValue='label' list='%{availablePermissions}' disabled=true
@@ -468,14 +480,10 @@ The form will check for matches in the tDAR database and populate the related fi
 </#macro>
 
 <#macro categoryVariable>
-<script type="text/javascript">
-function changeSubcategory() {
-    $('#subcategoryDivId').load("<@s.url value='/resource/ajax/subcategories'/>", 
-            { "categoryVariableId" : $('#categoryId').val() });
-}
-</script>
 <div id='categoryDivId'>
-<@s.select labelposition='left' label='Category' id='categoryId' name='categoryId' onchange='changeSubcategory()' listKey='id' listValue='name' emptyOption='true' list='%{allDomainCategories}' />
+<@s.select labelposition='left' label='Category' id='categoryId' name='categoryId' 
+    onchange='changeSubcategory("#categoryId","#subcategoryId")'
+	listKey='id' listValue='name' emptyOption='true' list='%{allDomainCategories}' />
 </div>
 <div id='subcategoryDivId'>
 <@s.select labelposition='left' label='Subcategory' id='subcategoryId' name='subcategoryId' headerKey="-1" listKey='id' headerValue="N/A" list='%{subcategories}'/>
@@ -600,7 +608,8 @@ function changeSubcategory() {
 
 </#macro>
 
-<#macro submit label="Save" fileReminder=true>
+<#macro submit label="Save" fileReminder=true showWrapper=true buttonid="submitButton">
+<#if showWrapper>
 <div class="glide errorsection"> 
     <div id="error">
     </div>
@@ -609,12 +618,15 @@ function changeSubcategory() {
         <label class="error2">Did you mean to attach a file?</label>
     </div>
     </#if>     
-
-    <@s.submit align='left' cssClass='submitButton' value="${label}"  id="submitButton" />
-</div> 
-<div id="submitDiv">
-</div>
-
+</#if>
+    <#nested>
+    <@s.submit align='left' cssClass='submitButton' name="submitAction" value="${label}"  id="${buttonid}" />
+   	<img src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="visibility:hidden"/>
+<#if showWrapper>
+	</div> 
+	<div id="submitDiv">
+	</div>
+</#if>
 </#macro>
 
 <#macro resourceJavascript formId="#resourceMetadataForm" selPrefix="#resource" includeAsync=false includeInheritance=false>
@@ -645,10 +657,22 @@ $(document).ready(function() {
     <#nested>
     
     $('table.sortable tbody').sortable({
+        placeholder: "sortable-placeholder",
+        change: function(event, ui) {
+            console.log('sort update');
+            $('.sortable-placeholder').children().remove();
+            $('.sortable-placeholder').append('<td  class="fileinfo" colspan="2">&nbsp</td>')
+        },
         update: function(event, ui) {
-            ui.item.parent().find(".fileSequenceNumber").each(function(index) {
+            console.log('sort stop');
+            $filesTable = ui.item.parent(); 
+            //update every proxy's sequencenumberdd
+            $filesTable.find(".fileSequenceNumber").each(function(index) {
                 $(this).val(index);
             });
+            
+            //only update action of those proxies that have NONE action  (some might have ADD, REPLACE, etc.) 
+            $('.fileAction[value=NONE]', $filesTable).val('MODIFY_METADATA');
         }
     });
 
@@ -687,7 +711,7 @@ $(document).ready(function() {
             return regexp.test(filename);
         }
     </#if>
-
+    <#noescape>
     <#if includeInheritance>
     var resource = ${resource.toJSON()!""};
     var project = getBlankProject();
@@ -696,6 +720,7 @@ $(document).ready(function() {
     </#if>
     var json;
     </#if>
+    </#noescape>
 </script>
   
 </#macro>
@@ -784,8 +809,10 @@ $(document).ready(function() {
 <#macro resourceCollectionRow resourceCollection collection_index = 0 type="internal">
       <tr id="resourceCollectionRow_${collection_index}_">
           <td style="vertical-align:top"> 
-              <@s.hidden name="resourceCollections[${collection_index}].id" />
-              <@s.textfield name="resourceCollections[${collection_index}].name" cssClass="collectionAutoComplete" />
+              <@s.hidden name="resourceCollections[${collection_index}].id"  id="resourceCollectionRow_${collection_index}_id" />
+              <@s.textfield id="resourceCollectionRow_${collection_index}_id" name="resourceCollections[${collection_index}].name" cssClass="collectionAutoComplete" 
+              autocompleteIdElement="#resourceCollectionRow_${collection_index}_id"
+              autocompleteParentElement="#resourceCollectionRow_${collection_index}_" />
           </td>
           <td><@clearDeleteButton id="resourceCollectionRow" /> </td>
       </tr>
@@ -866,7 +893,11 @@ $(document).ready(function() {
 
 
 
-<#macro coverageDatesSection>
+<#macro coverageDatesSection multiRow=true>
+<#local repeatRowClass = "">
+<#if multiRow>
+<#local repeatRowClass = "repeatLastRow">
+</#if>
 <div class="hidden" id="coverageDatesTip">
 <div>
     Select the approriate type of date (Gregorian calendar date or radiocarbon date). To enter a date range, enter the <em>earliest date</em> in the <em>Start Year field<em> 
@@ -881,7 +912,7 @@ $(document).ready(function() {
     <label>Coverage Dates</label>
     <table 
         id="coverageTable" style="width:80%!important"
-        class="field tableFormat repeatLastRow" addAnother="add another coverage date">
+        class="field tableFormat ${repeatRowClass}" addAnother="add another coverage date">
         <tbody>
             <#if (!coverageDates.empty)>
               <#list coverageDates as coverageDate>
@@ -947,31 +978,36 @@ $(document).ready(function() {
         <td>
             <!-- <input type="hidden" name="${prefix}Proxies[${proxy_index}].creatorId" value="-1" /> -->
             <!-- <input type="hidden" name="${prefix}Proxies[${proxy_index}].actualCreatorType" id="${prefix}ProxyActualCreatorType_${proxy_index}_ value="PERSON" />-->
-            <span class="creatorPerson <#if proxy.actualCreatorType=='INSTITUTION'>hidden</#if>">
+            <span class="creatorPerson <#if proxy.actualCreatorType=='INSTITUTION'>hidden</#if>"  id="${prefix}Row_${proxy_index}_p">
             <span class="smallLabel">Person</span>
             <div class="width30percent marginLeft10" >
-                <@s.hidden name="${prefix}Proxies[${proxy_index}].person.id" />
+                <@s.hidden name="${prefix}Proxies[${proxy_index}].person.id" id="${prefix}person_id${proxy_index}" onchange="this.valid()"  autocompleteParentElement="#${prefix}Row_${proxy_index}_p"  />
                 <@s.textfield cssClass="nameAutoComplete" watermark="Last Name"
+                	 autocompleteName="lastName" autocompleteIdElement="#${prefix}person_id${proxy_index}" autocompleteParentElement="#${prefix}Row_${proxy_index}_p"
                     name="${prefix}Proxies[${proxy_index}].person.lastName" maxlength="255" /> 
                 <@s.textfield cssClass="nameAutoComplete" watermark="First Name" 
+                	 autocompleteName="firstName" autocompleteIdElement="#${prefix}person_id${proxy_index}" autocompleteParentElement="#${prefix}Row_${proxy_index}_p"
                     name="${prefix}Proxies[${proxy_index}].person.firstName" maxlength="255" />
                 <@s.textfield cssClass="nameAutoComplete" watermark="Email"
+                	 autocompleteName="email" autocompleteIdElement="#${prefix}person_id${proxy_index}" autocompleteParentElement="#${prefix}Row_${proxy_index}_p"
                     name="${prefix}Proxies[${proxy_index}].person.email" maxlength="255"/>
                 <br />
             </div>
             <div class="width60percent marginLeft10">
                 <@s.textfield cssClass="nameAutoComplete" watermark="Institution Name"
+                	 autocompleteName="institution" autocompleteIdElement="#${prefix}person_id${proxy_index}" autocompleteParentElement="#${prefix}Row_${proxy_index}_p"
                     name="${prefix}Proxies[${proxy_index}].person.institution.name" maxlength="255" />
                 <@s.select name="${prefix}Proxies[${proxy_index}].personRole" 
                     listValue='label' label="Role "
                     list=relevantPersonRoles  />
             </div>
             </span>
-            <span class="creatorInstitution <#if proxy.actualCreatorType=='PERSON'>hidden</#if>">
+            <span class="creatorInstitution <#if proxy.actualCreatorType=='PERSON'>hidden</#if>" id="${prefix}Row_${proxy_index}_i">
                 <span class="smallLabel">Institution</span>
-                <@s.hidden name="${prefix}Proxies[${proxy_index}].institution.id" />
+                <@s.hidden name="${prefix}Proxies[${proxy_index}].institution.id" id="${prefix}institution_id${proxy_index}"/>
             <div class="width60percent marginLeft10">
                 <@s.textfield cssClass="institutionAutoComplete institution" watermark="Institution Name"
+                	 autocompleteName="name" autocompleteIdElement="#${prefix}institution_id${proxy_index}" autocompleteParentElement="#${prefix}Row_${proxy_index}_i"
                     name="${prefix}Proxies[${proxy_index}].institution.name" maxlength="255" />
                 <@s.select name="${prefix}Proxies[${proxy_index}].institutionRole" 
                     listValue='label' label="Role "
@@ -1107,9 +1143,9 @@ jquery validation hooks?)
 <td class="fileinfo">
     <div class="width99percent">
             <#if fileid == -1>
-                <b class="filename replacefilename">${filename}</b> 
+                <b class="filename replacefilename" title="{FILENAME}">{FILENAME}</b> 
             <#else>
-                <b>Existing file:</b> <a class='filename' href="<@s.url value='/filestore/${versionId?c}/get' />">${filename}</a>
+                <b>Existing file:</b> <a class='filename' href="<@s.url value='/filestore/${versionId?c}/get'/>" title="${filename?html}"><@truncate filename 45 /></a>
             </#if>
     
         <span style='font-size: 0.9em;'>(${filesize} bytes)</span>
@@ -1135,7 +1171,7 @@ jquery validation hooks?)
     <span class="ui-button-icon-primary ui-icon ui-icon-cancel"></span><span class="ui-button-text">delete</span></button><br/>
     <#if fileid != -1>
     <button onclick="replaceDialog('#fileProxy_${rowId}','${filename}');return false;"  type="button"
-    class="replaceButton file-button cancel ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-primary" role="button">
+    class="replaceButton file-button cancel ui-button ui-widget ui-state-disabled ui-corner-all ui-button-text-icon-primary" role="button" disabled=disabled>
     <#-- replace with ui-icon-transferthick-e-w ? -->
     <span class="ui-button-icon-primary ui-icon"></span><span class="ui-button-text">replace</span></button>
     </#if>
@@ -1148,6 +1184,9 @@ jquery validation hooks?)
 
     <@edit.identifiers showInherited />
     
+    <#if showInherited>
+        <@edit.inheritAllSection />
+    </#if>
     <@edit.keywords showInherited />
     
     <@edit.temporalContext showInherited />
@@ -1208,7 +1247,7 @@ jquery validation hooks?)
   <#if allSubmittedProjects?? && !allSubmittedProjects.empty>
   <optgroup label="Your Projects">
     <@s.iterator value='allSubmittedProjects' status='projectRowStatus' var='submittedProject'>
-        <option truncate='70' value="${submittedProject.id?c}">${submittedProject.selectOptionTitle}</option>
+        <option value="${submittedProject.id?c}" title="${submittedProject.title!""?html}"><@truncate submittedProject.title 70 /> </option>
     </@s.iterator>
   </optgroup>
    <#else>
@@ -1217,7 +1256,7 @@ jquery validation hooks?)
   
   <optgroup label="Projects you have been given access to">
     <@s.iterator value='fullUserProjects' var='editableProject'>
-        <option  truncate='70' value="${editableProject.id?c}">${editableProject.selectOptionTitle}</option>
+        <option value="${editableProject.id?c}" title="${editableProject.title!""?html}"><@truncate editableProject.title 70 /></option>
     </@s.iterator>
   </optgroup>
 </select><br/>
@@ -1225,7 +1264,7 @@ jquery validation hooks?)
 <select id="collection-selector">
     <option value="" selected='selected'>All Collections</option>
     <@s.iterator value='resourceCollections' var='rc'>
-        <option  truncate='70' value="${rc.id?c}">${rc.name!"(No Name)"}</option>
+        <option value="${rc.id?c}" title="${rc.name!""?html}"><@truncate rc.name!"(No Name)" 70 /></option>
     </@s.iterator>
 </select>
 <br/>
@@ -1236,7 +1275,7 @@ jquery validation hooks?)
 
     <br/>
     <@s.select labelposition='left' label='Sort By' emptyOption='false' name='sortBy' 
-     listValue='label' list='%{sortOptions}' id="sortBy"
+     listValue='label' list='%{resourceDatatableSortOptions}' id="sortBy"
      value="ID_REVERSE" title="Sort resource by" />
 </div>
 <!-- <ul id="proj-toolbar" class="projectMenu"><li></li></ul> -->
@@ -1330,10 +1369,10 @@ $(function(){
                     'resourceTypes': $("#resourceTypes").val() == undefined ? "" : $("#resourceTypes").val(),
                     'includedStatuses': $("#statuses").val() == undefined ? "" : $("#statuses").val() ,
                     'sortField':$("#sortBy").val(),
-                    'title':$("#query").val(),
+                    'term':$("#query").val(),
                     'projectId':$("#project-selector").val(),
                     'collectionId':$("#collection-selector").val(),
-                    useSubmitterContext: !isAdministrator
+                     useSubmitterContext: !isAdministrator
             }
         },
         selectableRows: isSelectable,
@@ -1392,14 +1431,14 @@ $(document).ready(function() {
 function fnRenderTitle(oObj) {
     //in spite of name, aData is an object containing the resource record for this row
     var objResource = oObj.aData;
-    var html = '<a href="'  + getURI(objResource.urlNamespace + '/' + objResource.id) + '">' + objResource.title + '</a>';
+    var html = '<a href="'  + getURI(objResource.urlNamespace + '/' + objResource.id) + '">' + htmlEncode(objResource.title) + '</a>';
     html += ' (ID: ' + objResource.id 
     if (objResource.status != 'ACTIVE') {
     html += " " + objResource.status;
     }
     html += ')';
     <#if showDescription>
-    html += '<br /> <p>' + objResource.description + '</p>';
+    html += '<br /> <p>' + htmlEncode(objResource.description) + '</p>';
     </#if> 
     return html;
 }
@@ -1417,6 +1456,81 @@ function drawToolbar(projId) {
 </script>
 </#macro>
 
-<#macro checkedif arg1 arg2><#t>
-<#if arg1=arg2>checked='checked'</#if><#t>
+<#macro inheritAllSection>
+<div id="divSelectAllInheritanceTooltipContent" style="display:none"> 
+Projects in tDAR can contain a variety of different information resources and used to organize a set of related information resources such as documents, datasets, coding sheets, and images. A project's child resources can either inherit or override the metadata entered at this project level. For instance, if you enter the keywords "southwest" and "pueblo" on a project, resources associated with this project that choose to inherit those keywords will also be discovered by searches for the keywords "southwest" and "pueblo". Child resources that override those keywords would not be associated with those keywords (only as long as the overriden keywords are different of course). 
+</div>
+
+<div class="glide" tiplabel="Inherit Metadata from Selected Project" tooltipcontent="#divSelectAllInheritanceTooltipContent" id="divInheritFromProject">
+    <h3>Inherit Metadata From Project</h3>
+
+    <input type="checkbox" value="true" id="cbSelectAllInheritance" class="" onclick="selectAllInheritanceClicked(this)" >
+    <label class="datatable-cell-unstyled" for="cbSelectAllInheritance" id="lblCurrentlySelectedProject">this is a label that takes up a lot of space and shoudl span multiple lines is a label that takes up a lot of space and shoudl span multiple lines is a label that takes up a lot of space and shoudl span multiple lines is a label that takes up a lot of space and shoudl span multiple lines </label>
+</div>
 </#macro>
+
+<#macro checkedif arg1 arg2><#t>
+<@valif "checked='checked'" arg1 arg2 />
+</#macro>
+
+<#macro selectedif arg1 arg2>
+<@valif "selected='selected'" arg1 arg2 />
+</#macro>
+
+<#macro valif val arg1 arg2><#t>
+<#if arg1=arg2>${val}</#if><#t>
+</#macro>
+
+<#macro boolfield name label id  value labelPosition="left" type="checkbox" labelTrue="Yes" labelFalse="No" cssClass="">
+    <@boolfieldCheckbox name label id  value labelPosition cssClass />
+</#macro>
+
+<#macro boolfieldCheckbox name label id value labelPosition cssClass>
+<#if value?? && value?string == 'true'>
+    <@s.checkbox name="${name}" label="${label}" labelPosition="${labelPosition}" id="${id}"  value=value cssClass="${cssClass}" 
+    	checked="checked"/>
+<#else>
+    <@s.checkbox name="${name}" label="${label}" labelPosition="${labelPosition}" id="${id}"  value=value cssClass="${cssClass}" />
+</#if>
+</#macro>
+
+<#macro boolfieldRadio name label id value labelPosition labelTrue labelFalse>
+    <label>${label}</label>
+    <input type="radio" name="${name}" id="${id}-true" value="true"  <@checkedif true value />  />
+    <label for="${id}-true" class="datatable-cell-unstyled"> ${labelTrue}</label>
+    <#if (labelPosition=="top")><br />
+    <input type="radio" name="${name}" id="${id}-false" value="false" <@checkedif false value />   />
+    <label for="${id}-false" class="datatable-cell-unstyled"> ${labelFalse}</label>
+    <#else>
+    <input type="radio" name="${name}" id="${id}-false" value="false"   />
+    <label for="${id}-false" class="datatable-cell-unstyled"> ${labelFalse}</label>
+    </#if>
+</#macro>
+
+<#macro boolfieldSelect name label id value labelPosition labelTrue labelFalse>
+    <label>${label}</label>
+    <select id="${id}" name="${name}">
+    <#if (labelPosition=="top")><br /></#if>
+        <option id="${id}-true" value="true" <@selectedif true value/> />${labelTrue}</option>
+        <option id="${id}-false" value="false" <@selectedif false value/> />${labelFalse}</option>
+    </select>
+</#macro>
+
+<#macro repeat count>
+    <#list 1..count as idx> <#t>
+        <#nested><#t>
+    </#list><#t>
+</#macro>
+
+
+<#macro keywordNodeOptions node selectedKeyword>
+    <option>not implemented</option>
+</#macro>
+
+<#macro keywordNodeSelect label node selectedKeywordId selectTagId='keywordSelect'>
+    <label for="${selectTagId}">${label}</label>
+    <select id="${selectTagId}">
+        <@keywordNodeOptions node selectedKeywordId />
+    </select>
+</#macro>
+</#escape>

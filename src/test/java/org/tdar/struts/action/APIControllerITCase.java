@@ -13,25 +13,30 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.exception.APIException;
 import org.tdar.core.exception.StatusCode;
-import org.tdar.core.service.keyword.InvestigationTypeService;
+import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.search.query.SortOption;
 
 /**
  * @author Adam Brin
@@ -43,7 +48,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     ResourceService resourceService;
 
     @Autowired
-    InvestigationTypeService investigationTypeService;
+    GenericKeywordService genericKeywordService;
 
     @Override
     protected TdarActionSupport getController() {
@@ -54,17 +59,19 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
 
     @Test
     @Rollback(true)
-    public void testAPIController() throws IOException, ClassNotFoundException {
+    public void testAPIController() throws Exception {
         Resource old = resourceService.find(TEST_ID);
         old.getInvestigationTypes().clear();
-        old.getInvestigationTypes().add(investigationTypeService.find(1L));
+        old.getInvestigationTypes().add(genericKeywordService.find(InvestigationType.class, 1L));
         old.setAccessCounter(100l);
-        Date creationDate = old.getDateRegistered();
+        Date creationDate = old.getDateCreated();
         ResourceNote note = new ResourceNote();
         note.setResource(old);
         note.setNote("test");
         note.setType(ResourceNoteType.GENERAL);
         addAuthorizedUser(old, getUser(), GeneralPermissions.MODIFY_RECORD);
+        
+        old.getResourceCollections().addAll(getSomeResourceCollections());
 
         CoverageDate cd = new CoverageDate(CoverageType.CALENDAR_DATE, 0, 1000);
         old.getCoverageDates().add(cd);
@@ -89,7 +96,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
 
         assertEquals(1, importedRecord.getInternalResourceCollection().getAuthorizedUsers().size());
         assertEquals(Long.valueOf(100L), importedRecord.getAccessCounter());
-        assertEquals(creationDate, importedRecord.getDateRegistered());
+        assertEquals(creationDate, importedRecord.getDateCreated());
         assertEquals(old.getSubmitter(), importedRecord.getSubmitter());
         assertEquals(getUser(), importedRecord.getUpdatedBy());
         assertEquals(2, importedRecord.getInformationResourceFiles().size());
@@ -101,7 +108,23 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         assertTrue("field should be inherited", importedRecord.isInheritingSpatialInformation());
         assertFalse("field should NOT be inherited", importedRecord.isInheritingTemporalInformation());
         assertEquals(APIController.SUCCESS, uploadStatus);
-        assertEquals(StatusCode.UPDATED.getResultString(), controller.getStatus());
+        assertEquals(StatusCode.UPDATED.getResultName(), controller.getStatus());
+    }
+    
+    //return some public resource collections
+    private List<ResourceCollection> getSomeResourceCollections() throws InstantiationException, IllegalAccessException {
+        int count = 5;
+        List<ResourceCollection> resourceCollections = new ArrayList<ResourceCollection>();
+        for(int i = 0; i < count; i++) {
+            Document document = createAndSaveNewInformationResource(Document.class, 
+                    createAndSaveNewPerson("someperson" + i + "@mailinator.com" , "someperson"));
+            ResourceCollection rc = new ResourceCollection(document, getAdminUser());
+            rc.setName("test collection " + i);
+            rc.setSortBy(SortOption.TITLE);
+            resourceCollectionService.saveOrUpdate(rc);
+            resourceCollections.add(rc);
+        }
+        return resourceCollections;
     }
 
     @Test
@@ -114,13 +137,13 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         String uploadStatus = controller.upload();
         logger.info(controller.getErrorMessage());
         assertEquals(APIController.SUCCESS, uploadStatus);
-        assertEquals(StatusCode.CREATED.getResultString(), controller.getStatus());
+        assertEquals(StatusCode.CREATED.getResultName(), controller.getStatus());
     }
 
     @Test
     @Rollback
     public void testReplaceRecord() throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException {
-        Document old = (Document) generateInformationResourceWithFile();
+        Document old = (Document) generateInformationResourceWithFileAndUser();
         APIController controller = generateNewInitializedController(APIController.class);
         String document = FileUtils.readFileToString(new File(TestConstants.TEST_XML_DIR + "/documentImport.xml"));
         document = document.replace("<id>" + TEST_ID + "</id>", "<id>" + old.getId() + "</id>");
@@ -128,7 +151,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         String uploadStatus = controller.upload();
         logger.info(controller.getErrorMessage());
         assertEquals(APIController.SUCCESS, uploadStatus);
-        assertEquals(StatusCode.UPDATED.getResultString(), controller.getStatus());
+        assertEquals(StatusCode.UPDATED.getResultName(), controller.getStatus());
         old = (Document) resourceService.find(old.getId());
         assertTrue(old.getInformationResourceFiles().size() == 1);
     }
@@ -142,7 +165,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         controller.setUploadFileFileName(Arrays.asList(TestConstants.TEST_IMAGE_NAME));
         String uploadStatus = controller.upload();
         assertEquals(APIController.ERROR, uploadStatus);
-        assertEquals(StatusCode.NOT_ALLOWED.getResultString(), controller.getStatus());
+        assertEquals(StatusCode.FORBIDDEN.getResultName(), controller.getStatus());
     }
 
     @Test
@@ -155,7 +178,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         controller.setUploadFileFileName(Arrays.asList(TestConstants.TEST_DOCUMENT_NAME));
         String uploadStatus = controller.upload();
         assertEquals(APIController.ERROR, uploadStatus);
-        assertEquals(StatusCode.UNAUTHORIZED.getResultString(), controller.getStatus());
+        assertEquals(StatusCode.UNAUTHORIZED.getResultName(), controller.getStatus());
     }
 
     @Test
@@ -165,7 +188,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         controller.setRecord(FileUtils.readFileToString(new File(TestConstants.TEST_XML_DIR + "/bad-document.xml")));
         String uploadStatus = controller.upload();
         assertEquals(APIController.ERROR, uploadStatus);
-        assertEquals(StatusCode.NOT_ALLOWED.getResultString(), controller.getStatus());
+        assertEquals(StatusCode.FORBIDDEN.getResultName(), controller.getStatus());
     }
 
     @Test
@@ -175,7 +198,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         controller.setRecord(FileUtils.readFileToString(new File(TestConstants.TEST_XML_DIR + "/bad-enum-document.xml")));
         String uploadStatus = controller.upload();
         assertEquals(APIController.ERROR, uploadStatus);
-        assertEquals(StatusCode.UNKNOWN_ERROR.getResultString(), controller.getStatus());
+        assertEquals(StatusCode.UNKNOWN_ERROR.getResultName(), controller.getStatus());
     }
 
 }

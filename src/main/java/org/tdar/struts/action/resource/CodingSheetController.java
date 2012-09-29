@@ -12,7 +12,6 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.CodingSheet;
@@ -25,8 +24,6 @@ import org.tdar.core.bean.resource.dataTable.DataTable;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.parser.CodingSheetParserException;
 import org.tdar.struts.data.FileProxy;
-import org.tdar.transform.DcTransformer;
-import org.tdar.transform.ModsTransformer;
 
 /**
  * $Id$
@@ -48,11 +45,6 @@ public class CodingSheetController extends AbstractSupportingInformationResource
     private static final long serialVersionUID = 377533801938016848L;
 
     private List<CodingSheet> allSubmittedCodingSheets;
-
-    @Autowired
-    private transient ModsTransformer.CodingSheetTransformer codingSheetModsTransformer;
-    @Autowired
-    private transient DcTransformer.CodingSheetTransformer codingSheetDcTransformer;
 
     /**
      * Save basic metadata of the registering concept.
@@ -81,7 +73,6 @@ public class CodingSheetController extends AbstractSupportingInformationResource
             }
         }
     }
-
 
     @Override
     protected FileProxy createUploadedFileProxy(String fileTextInput) throws UnsupportedEncodingException {
@@ -171,16 +162,6 @@ public class CodingSheetController extends AbstractSupportingInformationResource
             return ERROR;
         }
         return SUCCESS;
-    }
-
-    @Override
-    public DcTransformer<CodingSheet> getDcTransformer() {
-        return codingSheetDcTransformer;
-    }
-
-    @Override
-    public ModsTransformer<CodingSheet> getModsTransformer() {
-        return codingSheetModsTransformer;
     }
 
     @Override

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!-- vim:sts=2:sw=2: -->
-<!-- $Id: applicationContext.xml 617 2008-03-28 17:27:23Z alllee $ -->
+<!-- $Id$ -->
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
 	xmlns:tx="http://www.springframework.org/schema/tx"
@@ -23,11 +23,22 @@
 	<import resource='spring-daos.xml' />
 	<!-- persistence layer services -->
 	<import resource='spring-services.xml' />
-	<!-- crowd beans -->
-	<import resource='spring-crowd.xml' />
+
+    <!-- spring JavaMailSenderImpl configuration to be autowired into the EmailService -->
+    <bean id="javaMailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+       <property name="host" value="${mail.smtp.host:localhost}" />
+    </bean>
+    <bean id="freemarkerMailConfiguration" class="org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean">
+        <property name="templateLoaderPaths">
+            <list>
+                <value>classpath:/email-templates</value>
+                <value>file:/WEB-INF/email-templates</value>
+            </list>
+        </property>
+    </bean>
+	
 	<!-- TAG Service -->
 	<import resource='spring-tag.xml' />
-	<!-- Transformers <import resource='spring-transforms.xml'/> -->
 	<!-- Tasks -->
 	<import resource='spring-tasks.xml' />
 	<!-- session scoped bean -->

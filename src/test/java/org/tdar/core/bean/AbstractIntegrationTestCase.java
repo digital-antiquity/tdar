@@ -3,9 +3,13 @@ package org.tdar.core.bean;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -13,9 +17,16 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
+import javax.xml.XMLConstants;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.SchemaFactory;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.custommonkey.xmlunit.exceptions.ConfigurationException;
+import org.custommonkey.xmlunit.jaxp13.Validator;
 import org.hibernate.SessionFactory;
 import org.junit.After;
 import org.junit.Assert;
@@ -28,6 +39,11 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
+import org.springframework.test.context.transaction.AfterTransaction;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
@@ -40,19 +56,24 @@ import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
-import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.Status;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.EntityService;
-import org.tdar.core.service.FilestoreService;
 import org.tdar.core.service.GenericService;
+import org.tdar.core.service.PersonalFilestoreService;
+import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.SearchIndexService;
 import org.tdar.core.service.SearchService;
+import org.tdar.core.service.UrlService;
+import org.tdar.core.service.XmlService;
+import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ProjectService;
@@ -62,10 +83,12 @@ import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.web.SessionData;
+import org.xml.sax.SAXException;
 
 import com.opensymphony.xwork2.ActionSupport;
 
 @ContextConfiguration(locations = { "classpath:/applicationContext.xml" })
+@SuppressWarnings("rawtypes")
 public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJUnit4SpringContextTests {
 
     protected HttpServletRequest defaultHttpServletRequest = new MockHttpServletRequest();
@@ -73,6 +96,10 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     protected HttpServletRequest httpServletRequest = defaultHttpServletRequest;
     protected HttpServletRequest httpServletPostRequest = new MockHttpServletRequest("POST", "/");
     protected HttpServletResponse httpServletResponse = new MockHttpServletResponse();
+
+    protected PlatformTransactionManager transactionManager;
+    private TransactionCallback verifyTransactionCallback;
+    private TransactionTemplate transactionTemplate;
 
     @Autowired
     protected SessionFactory sessionFactory;
@@ -82,6 +109,8 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     protected DatasetService datasetService;
     @Autowired
     protected GenericService genericService;
+    @Autowired
+    protected UrlService urlService;
     @Autowired
     protected ResourceService resourceService;
     @Autowired
@@ -95,7 +124,14 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     @Autowired
     protected BookmarkedResourceService bookmarkedResourceService;
     @Autowired
-    protected FilestoreService filestoreService;
+    protected PersonalFilestoreService filestoreService;
+    @Autowired
+    protected AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
+    @Autowired
+    XmlService xmlService;
+    @Autowired
+    protected ResourceCollectionService resourceCollectionService;
+    
 
     private List<ActionSupport> controllers = new ArrayList<ActionSupport>();
     private boolean ignoreActionErrors = false;
@@ -106,6 +142,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     public final void initControllerErrorChecking() {
         getControllers().clear();
         setIgnoreActionErrors(false);
+        logger.info(" *** RUNNING TEST: " + getClass().getCanonicalName().toUpperCase() + " ***");
     }
 
     @After
@@ -121,10 +158,9 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         }
 
         if (errorCount > 0) {
-            Assert.fail("You've got errors!");
+            Assert.fail("There were action errors.");
         }
-
-        logger.trace("is this thing on!??");
+        logger.info(" *** COMPLETED TEST: " + getClass().getCanonicalName().toUpperCase() + " ***");
     }
 
     public Person createAndSaveNewPerson() {
@@ -211,7 +247,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         } catch (IOException e) {
             e.printStackTrace();
         }
-        ir = genericService.find(Document.class, ir.getId());
+        ir = genericService.find(ir.getClass(), ir.getId());
         for (InformationResourceFile irf : ir.getInformationResourceFiles()) {
             assertTrue(irf.getId() != null);
             for (InformationResourceFileVersion irfv : irf.getInformationResourceFileVersions()) {
@@ -227,23 +263,62 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     public <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls, boolean createUser) throws InstantiationException,
             IllegalAccessException {
-        Project project = new Project();
         Person submitter = getUser();
         if (createUser) {
             submitter = createAndSaveNewPerson("test@user.com", "");
         }
-        project.markUpdated(submitter);
-        project.setTitle("PROJECT TEST TITLE");
+        return createAndSaveNewInformationResource(cls, submitter);
+    }
+
+    public <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls, Person persistentPerson) throws InstantiationException,
+            IllegalAccessException {
+        return createAndSaveNewInformationResource(cls, persistentPerson, "TEST TITLE");
+    }
+    
+    public <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls, Person persistentPerson, String resourceTitle) 
+            throws InstantiationException, IllegalAccessException {
+        Project project = new Project();
+        project.markUpdated(persistentPerson);
+        project.setTitle("PROJECT " + resourceTitle);
         projectService.save(project);
 
         R iResource = cls.newInstance();
-        iResource.setTitle("TEST TITLE");
-        iResource.markUpdated(submitter);
+        iResource.setTitle(resourceTitle);
+        iResource.markUpdated(persistentPerson);
+        iResource.setDescription("test description");
         iResource.setProject(project);
+        iResource.setDate(2012);
         informationResourceService.save(iResource);
         return iResource;
     }
 
+    public <R extends Resource> R createAndSaveNewResource(Class<R> cls, Person persistentPerson, String resourceTitle) {
+        R resource = null;
+        try {
+            resource = cls.newInstance();
+            resource.markUpdated(persistentPerson);
+            resource.setTitle(resourceTitle);
+            resource.setDescription("description for " + resourceTitle);
+            if(resource instanceof InformationResource) {
+                ((InformationResource)resource).setDate(2012);
+            }
+            genericService.save(resource);
+        } catch (Exception e) {
+            Assert.fail("failed to create/save test" + cls.getSimpleName() + " record" );
+        }
+
+        return resource;
+    }
+    
+    public <R extends Resource> R createAndSaveNewResource(Class<R> cls) {
+        Person persistentPerson = entityService.findByEmail("test@user.com");
+        if(persistentPerson == null) {
+            persistentPerson = createAndSaveNewPerson("test@user.com", "");
+        }
+        String resourceTitle = "Sample " + cls.getSimpleName() + " record";
+        return createAndSaveNewResource(cls, persistentPerson, resourceTitle);
+    }
+    
     protected Dataset createAndSaveNewDataset() {
         Dataset dataset = new Dataset();
         Person testPerson = getUser();
@@ -252,16 +327,15 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         dataset.markUpdated(testPerson);
         // dataset.setConfidential(false);
         dataset.setDateMadePublic(new Date());
-        dataset.setDateCreated(1999);
+        dataset.setDate(1999);
         datasetService.save(dataset);
         return dataset;
     }
     
-    
     protected Project createAndSaveNewProject() {
         return createAndSaveNewProject("PROJECT TEST TITLE");
     }
-        
+
     protected Project createAndSaveNewProject(String title) {
         Project project = new Project();
         Person submitter = getUser();
@@ -293,8 +367,8 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     protected <T> T generateNewController(Class<T> controllerClass) {
         T controller = (T) applicationContext.getBean(controllerClass);
         if (controller instanceof AuthenticationAware.Base) {
-            ((AuthenticationAware.Base) controller).setServletRequest(getServletRequest());
-            ((AuthenticationAware.Base) controller).setServletResponse(getServletResponse());
+            ((TdarActionSupport) controller).setServletRequest(getServletRequest());
+            ((TdarActionSupport) controller).setServletResponse(getServletResponse());
         }
         return controller;
     }
@@ -314,9 +388,17 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     }
 
     protected <T extends ActionSupport> T generateNewInitializedController(Class<T> controllerClass) {
+        return generateNewInitializedController(controllerClass, null);
+    }
+
+    protected <T extends ActionSupport> T generateNewInitializedController(Class<T> controllerClass, Person user) {
         T controller = generateNewController(controllerClass);
         if (controller instanceof TdarActionSupport) {
-            init((TdarActionSupport) controller);
+            if (user != null) {
+                init((TdarActionSupport) controller, user);
+            } else {
+                init((TdarActionSupport) controller);
+            }
         }
         getControllers().add((ActionSupport) controller);
         return controller;
@@ -449,6 +531,151 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
      */
     public Person getSessionUser() {
         return getUser();
+    }
+
+    public PlatformTransactionManager getTransactionManager() {
+        return transactionManager;
+    }
+
+    @Autowired
+    public void setTransactionManager(PlatformTransactionManager transactionManager) {
+        this.transactionManager = transactionManager;
+        transactionTemplate = new TransactionTemplate(transactionManager);
+        transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+    }
+
+    protected <V> V runInNewTransaction(TransactionCallback<V> action) {
+        logger.debug("running in new transaction  after {}", action);
+        return transactionTemplate.execute(action);
+    }
+
+    protected void runInNewTransactionWithoutResult(TransactionCallback<Object> action) {
+        runInNewTransaction(action);
+    }
+    
+    @SuppressWarnings("unchecked")
+    @AfterTransaction
+    public void verifyTransactionCallback() {
+        if (verifyTransactionCallback != null) {
+            runInNewTransaction(verifyTransactionCallback);
+        }
+    }
+
+    /**
+     * Validate a response against an external schema
+     * 
+     * @param schemaLocation
+     *            the URL of the schema to use to validate the document
+     * @throws ConfigurationException
+     * @throws SAXException
+     */
+    public void testValidXMLResponse(InputStream code, String schemaLocation) throws ConfigurationException, SAXException {
+        testValidXML(code, schemaLocation, true);
+    }
+
+    private void testValidXML(InputStream code, String schema, boolean loadSchemas) {
+        Validator v = setupValidator(loadSchemas);
+
+        if (schema != null) {
+            v.addSchemaSource(new StreamSource(schema));
+        }
+        BufferedReader reader = new BufferedReader(new InputStreamReader(code));
+        StreamSource is = new StreamSource(reader);
+        List<?> errorList = v.getInstanceErrors(is);
+
+        if (!errorList.isEmpty()) {
+            StringBuffer errors = new StringBuffer();
+            for (Object error : errorList) {
+                errors.append(error.toString());
+                errors.append(System.getProperty("line.separator"));
+                logger.error(error.toString());
+            }
+            Assert.fail("Instance invalid: " + errors.toString());
+        }
+    }
+
+    private void addSchemaToValidatorWithLocalFallback(Validator v, String url, File schemaFile) {
+        logger.debug("attempting to add schema to validation list: " + url);
+        File schema = null;
+        try {
+            File tmpFile = File.createTempFile(schemaFile.getName(), ".temp.xsd");
+            FileUtils.writeStringToFile(tmpFile, IOUtils.toString(new URI(url)));
+            schema = tmpFile;
+        } catch (Throwable e) {
+            logger.debug("could not validate against remote schema, attempting to use cached fallback:" + schemaFile);
+        }
+        if (schema == null) {
+            try {
+                schema = schemaFile;
+            } catch (Exception e) {
+                logger.debug("could not validate against local schema");
+            }
+        }
+        if (schema != null) {
+            try {
+                // testValidXMLSchemaResponse(schema);
+            } catch (Exception e) {
+                logger.debug("schema setup exception ", e);
+                assertTrue(false);
+            }
+            v.addSchemaSource(new StreamSource(schema));
+            for (Object err : v.getSchemaErrors()) {
+                logger.error(err.toString());
+            }
+            assertTrue(v.isSchemaValid());
+        }
+    }
+
+    private Validator setupValidator(boolean extra) {
+        SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        Validator v = new Validator(factory);
+
+        if (extra) {
+            // not the "ideal" way to set these up, but it should work... caching the schema locally and injecting
+            addSchemaToValidatorWithLocalFallback(v, "http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd", new File(TestConstants.TEST_XML_DIR,
+                    "schemaCache/oaipmh.xsd"));
+            addSchemaToValidatorWithLocalFallback(v, "http://www.openarchives.org/OAI/2.0/oai_dc.xsd",
+                    new File(TestConstants.TEST_XML_DIR, "schemaCache/oaidc.xsd"));
+            addSchemaToValidatorWithLocalFallback(v, "http://www.loc.gov/standards/mods/v3/mods-3-3.xsd", new File(TestConstants.TEST_XML_DIR,
+                    "schemaCache/mods3.3.xsd"));
+            addSchemaToValidatorWithLocalFallback(v, "http://www.openarchives.org/OAI/2.0/oai-identifier.xsd", new File(TestConstants.TEST_XML_DIR, 
+                    "schemaCache/oai-identifier.xsd"));
+
+            try {
+                addSchemaToValidatorWithLocalFallback(v, "http://localhost:8180/schema/current", xmlService.generateSchema());
+            } catch (Exception e) {
+                logger.error("an error occured creating the schema", e);
+                assertTrue(false);
+            }
+        }
+        return v;
+    }
+
+    /**
+     * Validate that a response is a valid XML schema
+     * 
+     * @throws ConfigurationException
+     * @throws SAXException
+     * @throws IOException
+     */
+    public void testValidXMLSchemaResponse(String code) throws ConfigurationException, SAXException, IOException {
+        Validator setupValidator = setupValidator(false);
+        // cleanup -- this is lazy
+        File tempFile = File.createTempFile("test-schema", "xsd");
+        FileUtils.writeStringToFile(tempFile, code);
+        addSchemaToValidatorWithLocalFallback(setupValidator, null, tempFile);
+    }
+
+    public TransactionCallback getVerifyTransactionCallback() {
+        return verifyTransactionCallback;
+    }
+
+    public <T> void setVerifyTransactionCallback(TransactionCallback<T> verifyTransactionCallback) {
+        this.verifyTransactionCallback = verifyTransactionCallback;
+    }
+    
+    public TdarConfiguration getTdarConfiguration() {
+        return TdarConfiguration.getInstance();
     }
 
 }

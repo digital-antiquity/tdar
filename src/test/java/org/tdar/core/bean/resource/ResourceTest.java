@@ -99,4 +99,22 @@ public class ResourceTest {
         String json = Project.NULL.toJSON().toString();
         Assert.assertNotNull(json);
     }
+    
+    @Test
+    @SuppressWarnings("deprecation")
+    public void testCoreProjectTitle() {
+        Project app = new Project(-5L, "The Alan Parsons Project");
+        Project cure = new Project(-6L, "The Cure");
+        Project gotan = new Project(-7L, "Gotan project");
+        
+        String expectedName = "Paleoethnobotany of Otumba";
+        
+        Project project = new Project(-8L, expectedName);
+        
+        assertEquals("Alan Parsons", app.getCoreTitle());
+        assertEquals("Cure", cure.getCoreTitle());
+        assertEquals("Gotan", gotan.getCoreTitle());
+        assertEquals(expectedName, project.getCoreTitle());
+        
+    }
 }

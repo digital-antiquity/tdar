@@ -9,10 +9,13 @@ import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.IndexedEmbedded;
 import org.tdar.core.bean.resource.dataTable.DataTable;
 import org.tdar.core.bean.resource.dataTable.DataTableColumn;
 import org.tdar.core.bean.resource.dataTable.DataTableRelationship;
@@ -40,6 +43,7 @@ public class Dataset extends InformationResource {
 
     @XStreamOmitField
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dataset")
+    @IndexedEmbedded
     private Set<DataTable> dataTables = new LinkedHashSet<DataTable>();
 
     @OneToMany(mappedBy = "dataset")
@@ -49,6 +53,8 @@ public class Dataset extends InformationResource {
         setResourceType(ResourceType.DATASET);
     }
 
+    @XmlElementWrapper(name = "dataTables")
+    @XmlElement(name = "dataTable")
     public Set<DataTable> getDataTables() {
         return dataTables;
     }
@@ -67,7 +73,7 @@ public class Dataset extends InformationResource {
         }
         return Boolean.FALSE;
     }
-    
+
     /**
      * @param string
      * @return

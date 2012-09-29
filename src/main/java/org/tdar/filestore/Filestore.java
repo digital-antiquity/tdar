@@ -1,5 +1,6 @@
 package org.tdar.filestore;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -13,11 +14,16 @@ import java.util.Date;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.tika.config.TikaConfig;
-import org.apache.tika.mime.MimeTypes;
+import org.apache.tika.detect.DefaultDetector;
+import org.apache.tika.detect.Detector;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.mime.MediaType;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
 
 public interface Filestore {
@@ -31,6 +37,19 @@ public interface Filestore {
      */
     public abstract String store(InputStream content, InformationResourceFileVersion version) throws IOException;
 
+    long getSizeInBytes();
+
+    String getSizeAsReadableString();
+
+    /**
+     * Write content to the filestore.
+     * 
+     * @param {@link InputStream} The content to be stored.
+     * @return {@link String} the fileId assigned to the content
+     * @throws {@link IOException}
+     */
+    public abstract String storeAndRotate(InputStream content, InformationResourceFileVersion version, int maxRotations) throws IOException;
+
     /**
      * Write a file to the filestore.
      * 
@@ -39,6 +58,8 @@ public interface Filestore {
      * @throws {@link IOException}
      */
     public abstract String store(File content, InformationResourceFileVersion version) throws IOException;
+
+    public abstract String storeAndRotate(File content, InformationResourceFileVersion version, int maxRotations) throws IOException;
 
     public abstract void storeLog(String filename, String message);
 
@@ -68,24 +89,47 @@ public interface Filestore {
     public abstract boolean verifyFile(InformationResourceFileVersion version) throws FileNotFoundException, TaintedFileException;
 
     public abstract static class BaseFilestore implements Filestore {
-        protected static final MimeTypes mimes = TikaConfig.getDefaultConfig().getMimeRepository();
+        // protected static final MimeTypes mimes = TikaConfig.getDefaultConfig().getMimeRepository();
         protected static final Logger logger = Logger.getLogger(BaseFilestore.class);
 
-        protected InformationResourceFileVersion updateVersionInfo(File f, InformationResourceFileVersion version) {
-            @SuppressWarnings("deprecation")
-            String mimeType = mimes.getMimeType(f).toString();
+        /*
+         * This method extracts out the MimeType from the file using Tika, the previous version tried to parse the file
+         * but this doesn't need to be so complex.
+         * http://stackoverflow.com/questions/7137634/getting-mimetype-subtype-with-apache-tika
+         */
+        public static String getContentType(File file, String overrideValue) {
+            MediaType mediaType = null;
+            Metadata md = new Metadata();
+            md.set(Metadata.RESOURCE_NAME_KEY, file.getName());
+            Detector detector = new DefaultDetector(TikaConfig.getDefaultConfig().getMimeRepository());
+            try {
+                FileInputStream fis = new FileInputStream(file);
+                mediaType = detector.detect(new BufferedInputStream(fis), md); // bufferedStream so we can move
+                fis.close();
+            } catch (IOException ioe) {
+                logger.debug("error", ioe);
+            }
+            if (mediaType == null) {
+                return overrideValue;
+            }
+            return mediaType.getType() + "/" + mediaType.getSubtype();
+        }
+
+        protected InformationResourceFileVersion updateVersionInfo(File file, InformationResourceFileVersion version) throws IOException {
+            String mimeType = getContentType(file, "UNKNOWN/UNKNOWN");
+            logger.info("MIMETYPE:" + mimeType);
             if (StringUtils.isEmpty(version.getFilename()))
-                version.setFilename(f.getName());
+                version.setFilename(file.getName());
             if (StringUtils.isEmpty(version.getMimeType()))
                 version.setMimeType(mimeType);
-            String relative = getRelativePath(f);
+            String relative = getRelativePath(file);
             File parent = getParentDirectory(new File(relative));
             if (StringUtils.isEmpty(version.getPath()))
                 version.setPath(parent.getPath());
             if (version.getSize() == null)
-                version.setSize(f.length());
+                version.setSize(file.length());
             if (StringUtils.isEmpty(version.getChecksum())) {
-                MessageDigest digest = createDigest(f);
+                MessageDigest digest = createDigest(file);
                 version.setChecksumType(digest.getAlgorithm());
                 version.setChecksum(formatDigest(digest));
             }
@@ -93,7 +137,7 @@ public interface Filestore {
                 version.setDateCreated(new Date());
 
             if (StringUtils.isEmpty(version.getExtension()))
-                version.setExtension(FilenameUtils.getExtension(f.getName()));
+                version.setExtension(FilenameUtils.getExtension(file.getName()));
             return version;
         }
 
@@ -144,21 +188,23 @@ public interface Filestore {
         }
 
         public MessageDigest createDigest(File f) {
-            DigestInputStream in = null;
+            DigestInputStream digestInputStream = null;
+            FileInputStream stream = null;
             try {
-                in = appendMessageDigestStream(new FileInputStream(f));
+                stream = new FileInputStream(f);
+                digestInputStream = appendMessageDigestStream(stream);
                 byte[] b = new byte[1000];
-                while (in.read(b) != -1) {
+                while (digestInputStream.read(b) != -1) {
                     // read file
                 }
-            } catch (FileNotFoundException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                return digestInputStream.getMessageDigest();
             } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                throw new TdarRecoverableRuntimeException(e);
+            } finally {
+                IOUtils.closeQuietly(stream);
+                IOUtils.closeQuietly(digestInputStream);
             }
-            return in.getMessageDigest();
+
         }
 
         File getParentDirectory(File outputFile) {
@@ -167,6 +213,14 @@ public interface Filestore {
 
         private String getRelativePath(File f) {
             return new File(getFilestoreLocation()).toURI().relativize(f.toURI()).getPath();
+        }
+
+        public long getSizeInBytes() {
+            return FileUtils.sizeOfDirectory(new File(getFilestoreLocation()));
+        }
+
+        public String getSizeAsReadableString() {
+            return FileUtils.byteCountToDisplaySize(FileUtils.sizeOfDirectory(new File(getFilestoreLocation())));
         }
 
     }

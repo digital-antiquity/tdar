@@ -11,7 +11,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResourceFile;
-import org.tdar.index.boost.InformationResourceBoostStrategy;
+import org.tdar.search.index.boost.InformationResourceBoostStrategy;
 
 /**
  * @author Adam Brin

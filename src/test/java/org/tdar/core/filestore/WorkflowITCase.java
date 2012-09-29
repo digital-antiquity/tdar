@@ -6,8 +6,6 @@
  */
 package org.tdar.core.filestore;
 
-import static org.junit.Assert.fail;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,8 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
-import org.tdar.core.bean.resource.Document;
-import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.FileAnalyzer;
@@ -41,46 +38,37 @@ public class WorkflowITCase extends AbstractIntegrationTestCase {
         // List<File>;
         final PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
         final List<File> versions = new ArrayList<File>();
-        versions.add(new File(TestConstants.TEST_DOCUMENT_DIR, "pia-09-lame-1980.pdf"));
-        versions.add(new File(TestConstants.TEST_DOCUMENT_DIR, "schoenwetter1964a.pdf"));
-        versions.add(new File(TestConstants.TEST_DOCUMENT_DIR, "pia-09-lame-1980.pdf"));
+        versions.add(new File(TestConstants.TEST_IMAGE_DIR, "/sample_image_formats/grandcanyon.tif"));
+        versions.add(new File(TestConstants.TEST_IMAGE_DIR, "/sample_image_formats/grandcanyon_mac.tif"));
+        versions.add(new File(TestConstants.TEST_IMAGE_DIR, "/sample_image_formats/grandcanyon.tif"));
+        versions.add(new File(TestConstants.TEST_IMAGE_DIR, "/sample_image_formats/grandcanyon_mac.tif"));
 
-        try {
-            AsynchTester[] testers = new AsynchTester[versions.size()];
-            for (int i = 0; i < versions.size(); i++) {
-                testers[i] = new AsynchTester(new Runnable() {
+        AsynchTester[] testers = new AsynchTester[versions.size()];
+        for (int i = 0; i < versions.size(); i++) {
+            testers[i] = new AsynchTester(new Runnable() {
 
-                    @Override
-                    public void run() {
-                        File version = versions.remove(0);
-                        InformationResourceFileVersion irversion;
-                        try {
-                            irversion = generateAndStoreVersion(Document.class, version.getName(), version, store);
-                            InformationResource informationResource = irversion.getInformationResourceFile().getInformationResource();
-                            boolean result = fileAnalyzer.processFile(irversion);
-                            if (!result) {
-                                throw new TdarRecoverableRuntimeException("some error happend in processing");
-                            }
-                            informationResource.markUpdated(getAdminUser());
-                            genericService.saveOrUpdate(informationResource);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            System.err.println("SOMETHING REALLY BAD HPND:" + e);
-                            throw new TdarRecoverableRuntimeException("something happened", e);
+                @Override
+                public void run() {
+                    File version = versions.remove(0);
+                    InformationResourceFileVersion irversion;
+                    try {
+                        irversion = generateAndStoreVersion(Image.class, version.getName(), version, store);
+                        boolean result = fileAnalyzer.processFile(irversion);
+                        if (!result) {
+                            throw new TdarRecoverableRuntimeException("should not see this, file processing error");
                         }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        throw new TdarRecoverableRuntimeException("something happened", e);
                     }
-                });
-                testers[i].start();
-            }
-
-            for (AsynchTester tester : testers) {
-                if (tester != null) {
-                    tester.test();
                 }
-            }
-        } catch (Throwable t) {
-            t.printStackTrace();
-            fail(t.getMessage());
+            });
+            testers[i].start();
         }
+
+        for (AsynchTester tester : testers)
+            if (tester != null) {
+                tester.test();
+            }
     }
 }

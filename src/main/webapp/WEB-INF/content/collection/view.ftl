@@ -1,9 +1,13 @@
+<#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
 <#import "/WEB-INF/macros/resource/list-macros.ftl" as list>
 <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
+<#import "/WEB-INF/macros/search/search-macros.ftl" as search>
+<@search.initResultPagination/>
+
 <head>
 <title>${resourceCollection.name!"untitled collection"}</title>
-<meta name="lastModifiedDate" content="$Date: 2011-07-11 08:30:39 -0700 (Mon, 11 Jul 2011) $"/>
+<meta name="lastModifiedDate" content="$Date$"/>
 
 <script type='text/javascript'>
     $(initializeView);
@@ -26,10 +30,21 @@
 </ul>
 </#if>
 
-</div>  
-    <#if ( results?? && results.size() > 0 )>
+</div>
+
+<#if (totalRecords > 0)>
 <div class="glide">
-      <@list.listResources results resourceCollection.sortBy  />
+	<div id="recordTotal">Records ${firstRec} - ${lastRec} of ${totalRecords}
+	</div> 
+	<@search.pagination ""/>
+
+</div>
+</#if>  
+    <#if ( results?? && results.size() > 0 )>
+    
+    
+<div class="glide">
+      <@list.listResources results resourceCollection.sortBy editable=editable />
 </div>
     </#if>
 
@@ -49,3 +64,4 @@
 This collection is not accessible
 </#if>
 </body>
+</#escape>

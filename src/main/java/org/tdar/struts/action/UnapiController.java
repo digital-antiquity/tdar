@@ -45,14 +45,13 @@ public class UnapiController extends TdarActionSupport {
 					type="freemarker", 
 					params={"contentType", "application/xml", "status", "300"}),
 			@Result(name="asformat", location="${formatUrl}", type="redirect"),
-			@Result(name="notfound", type="httpheader", params={"status", "404"}),
 			@Result(name="noformat", type="httpheader", params={"status", "406"})
 		}
 	)
     public String execute() {
 		if (StringUtils.isNotBlank(format) && id != null) {
 			Resource r = getResourceService().find(id);
-			if (r == null) { return "notfound"; }
+			if (r == null) { return TdarActionSupport.NOT_FOUND; }
 			formatUrl = constructFormatUrl(r);
 			if (StringUtils.isBlank(formatUrl)) { return "noformat"; }
 			return "asformat";

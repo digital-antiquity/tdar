@@ -16,9 +16,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.service.FilestoreService;
-import org.tdar.filestore.PersonalFilestore;
-import org.tdar.filestore.PersonalFilestoreFile;
+import org.tdar.core.service.PersonalFilestoreService;
+import org.tdar.filestore.personalFilestore.PersonalFilestore;
+import org.tdar.filestore.personalFilestore.PersonalFilestoreFile;
 
 @SuppressWarnings("serial")
 @Namespace("/upload")
@@ -28,7 +28,7 @@ import org.tdar.filestore.PersonalFilestoreFile;
 public class UploadController extends AuthenticationAware.Base {
 
     @Autowired
-    private FilestoreService filestoreService;
+    private PersonalFilestoreService filestoreService;
 
     private List<File> uploadFile = new ArrayList<File>();
     private List<String> uploadFileContentType = new ArrayList<String>();

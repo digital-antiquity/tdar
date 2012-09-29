@@ -1,23 +1,23 @@
 package org.tdar.core.bean.resource.dataTable;
 
-public enum DataTableColumnEncodingType {
+import org.tdar.core.bean.HasLabel;
 
-    NUMERIC("Numeric",false,true,false),
-    TEXT("Text",false,true,false),
-    CODED_VALUE("Coded Value",true,true,false),
-    MEASUREMENT("Measurement",false,false,true),
-    COUNT("Count",false,false,false);
-    
+public enum DataTableColumnEncodingType implements HasLabel {
+    UNCODED_VALUE("Uncoded Value",false,true,false),
+    CODED_VALUE("Coded Value", true, true, false),
+    MEASUREMENT("Measurement", false, false, true),
+    COUNT("Count", false, false, false);
+
     private final String label;
     private boolean supportsOntology;
     private boolean supportsCodingSheet;
     private boolean supportsMeasurement;
-    
-    private DataTableColumnEncodingType(String label,boolean showCoding,boolean showOntology,boolean showMeasurement) {
+
+    private DataTableColumnEncodingType(String label, boolean supportsCodingSheet, boolean supportsOntology, boolean supportsMeasurement) {
         this.label = label;
-        setSupportsCodingSheet(showCoding);
-        setSupportsMeasurement(showMeasurement);
-        setSupportsOntology(showOntology);
+        setSupportsCodingSheet(supportsCodingSheet);
+        setSupportsMeasurement(supportsMeasurement);
+        setSupportsOntology(supportsOntology);
     }
 
     public String getLabel() {
@@ -25,7 +25,8 @@ public enum DataTableColumnEncodingType {
     }
 
     /**
-     * @param supportsOntology the supportsOntology to set
+     * @param supportsOntology
+     *            the supportsOntology to set
      */
     public void setSupportsOntology(boolean supportsOntology) {
         this.supportsOntology = supportsOntology;
@@ -39,7 +40,8 @@ public enum DataTableColumnEncodingType {
     }
 
     /**
-     * @param supportsCodingSheet the supportsCodingSheet to set
+     * @param supportsCodingSheet
+     *            the supportsCodingSheet to set
      */
     public void setSupportsCodingSheet(boolean supportsCodingSheet) {
         this.supportsCodingSheet = supportsCodingSheet;
@@ -53,7 +55,8 @@ public enum DataTableColumnEncodingType {
     }
 
     /**
-     * @param supportsMeasurement the supportsMeasurement to set
+     * @param supportsMeasurement
+     *            the supportsMeasurement to set
      */
     public void setSupportsMeasurement(boolean supportsMeasurement) {
         this.supportsMeasurement = supportsMeasurement;

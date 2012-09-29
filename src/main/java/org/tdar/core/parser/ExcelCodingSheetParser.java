@@ -31,11 +31,6 @@ public class ExcelCodingSheetParser implements CodingSheetParser {
 
     private final static Logger logger = Logger.getLogger(ExcelCodingSheetParser.class);
     private DataFormatter excelDataFormatter = new HSSFDataFormatter();
-    public final static String[] SUPPORTED_FILE_EXTENSIONS = { "xls", "xlsx" };
-
-    public String[] getSupportedFileExtensions() {
-        return SUPPORTED_FILE_EXTENSIONS;
-    }
 
     @Override
     public List<CodingRule> parse(CodingSheet codingSheet, InputStream stream) throws CodingSheetParserException {

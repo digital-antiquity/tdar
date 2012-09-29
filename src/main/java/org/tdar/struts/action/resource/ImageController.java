@@ -6,14 +6,11 @@ import java.util.Set;
 
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.transform.DcTransformer;
-import org.tdar.transform.ModsTransformer;
 
 /**
  * $Id$
@@ -34,12 +31,6 @@ public class ImageController extends AbstractInformationResourceController<Image
 
     private static final long serialVersionUID = 377533801938016848L;
 
-    @Autowired
-    private transient ModsTransformer.ImageTransformer imageModsTransformer;
-
-    @Autowired
-    private transient DcTransformer.ImageTransformer imageDcTransformer;
-
     @Override
     protected void loadCustomMetadata() {
         loadInformationResourceProperties();
@@ -55,28 +46,9 @@ public class ImageController extends AbstractInformationResourceController<Image
         return SUCCESS;
     }
 
-//    @Override
-//    protected Image loadResourceFromId(Long resourceId) {
-//        Image image = getImageService().find(resourceId);
-//        if (image != null) {
-//            setProject(image.getProject());
-//        }
-//        return image;
-//    }
-
     @Override
     protected void processUploadedFiles(List<InformationResourceFile> uploadedFiles) throws IOException {
         return;
-    }
-
-    @Override
-    public DcTransformer<Image> getDcTransformer() {
-        return imageDcTransformer;
-    }
-
-    @Override
-    public ModsTransformer<Image> getModsTransformer() {
-        return imageModsTransformer;
     }
 
     @Override

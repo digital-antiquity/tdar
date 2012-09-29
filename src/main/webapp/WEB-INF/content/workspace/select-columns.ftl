@@ -1,3 +1,4 @@
+<#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/list-macros.ftl" as rlist>
 <head>
  <style type="text/css">
@@ -106,6 +107,7 @@ Drag columns from your selected data tables onto the integration table .
               <#if count % numCols == 0></tr></#if>
             </#list>
               <#if count % numCols != 0></tr></#if>
+
       </tbody>
       </table>
 </div>
@@ -315,3 +317,4 @@ $('.buttontable tr').each(function() {
 </div>
 </@s.form>
 </body>
+</#escape>

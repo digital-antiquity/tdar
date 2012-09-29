@@ -10,14 +10,16 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Field;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
+import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -66,8 +68,7 @@ public class ResourceAnnotation extends Persistable.Base implements HasResource<
     @Column(name = "last_updated")
     private Date lastUpdated;
 
-    @XmlIDREF
-    @XmlAttribute(name = "resourceId")
+    @XmlTransient
     public Resource getResource() {
         return resource;
     }

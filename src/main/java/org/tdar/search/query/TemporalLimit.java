@@ -1,5 +1,6 @@
 package org.tdar.search.query;
 
+import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 
 /**
@@ -20,6 +21,10 @@ public class TemporalLimit {
 		this.dateType = dateType;
 		this.fromYear = fromYear;
 		this.toYear = toYear;
+	}
+	
+	public TemporalLimit(CoverageDate coverageDate) {
+		this(coverageDate.getDateType(), coverageDate.getStartDate(), coverageDate.getEndDate());
 	}
 
 	public int getFromYear() {

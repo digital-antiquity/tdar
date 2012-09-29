@@ -1,8 +1,9 @@
 <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
 <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
+<#import "/${themeDir}/settings.ftl" as settings>
 <head>
-<title>Welcome to the Digital Archaeological Record</title>
+<title>Welcome to ${siteName}</title>
 <meta name="lastModifiedDate" content="$Date: 2009-02-13 09:05:44 -0700 (Fri, 13 Feb 2009)$"/>
 <meta name="google-site-verification" content="rd6Iv58lPY7jDqfNvOLe9-WXRpAEpwLZCCndxR64nSg" />
 <style type='text/css'>
@@ -22,6 +23,7 @@
     left:597px;
 }
 
+
 </style>
 </head>
 <body>
@@ -32,7 +34,7 @@
 </#if>
     <div class="glide       <#if !sessionData?? || !sessionData.authenticated>col66</#if>">
     <h3>About</h3>
-    <#include "/includes/ftl/notice.ftl">
+    <#include "/${themeDir}notice.ftl">
     </div>
 
 <#if !sessionData?? || !sessionData.authenticated>
@@ -55,42 +57,56 @@
 <div class="glide" style="position:relative;">
 <h3>Explore</h3>
 <#assign graphWidth = 372 />
-<#assign barWidth = (graphWidth  / (resourceTypeCounts.size()-2) - 10 )/>
+<#assign barWidth = (graphWidth  / (homepageResourceCountCache.size() - graphVariable?number) - 10 )/>
 <div id="contents_pie" style="height:353px;padding-top:5px;position:absolute;vertical-align:bottom;left:552px;width:350px;margin-left:20px;border:1px solid #CCC;background-color:#fff">
     <p style="margin-right: auto;margin-left: auto;text-align:center;margin-top:10px;margin-bottom:0px"><b>tDAR by the Numbers</b></p>
-   <table style="margin-left: auto;vertical-align:bottom;margin-right: auto;margin-top:auto;margin-bottom:5px;position:absolute;bottom:5px;padding-left:8px;padding-right:7px">
+   <table style="margin-left: auto;vertical-align:bottom;margin-right: auto;margin-top:auto;margin-bottom:5px;position:absolute;bottom:5px;padding-left:3px;padding-right:3px">
   <tr>
   <#assign resourceTypeCount = 0>
-  <#assign resourceTypeCountKeys = resourceTypeCounts?keys?sort />
-   <#list resourceTypeCountKeys as key>
-    <#if key != 'ONTOLOGY' && key != 'CODING_SHEET' &&  key != 'COLLECTION'>
-      <#assign resourceTypeCount = resourceTypeCounts.get(key).second + resourceTypeCount >
-      <td><a href="<@s.url value="/search/results?resourceTypes=${key}"/>"><div class="label">${resourceTypeCounts.get(key).first}</div><div class="bar" id="${key}"></div></a></td>
+   <#list homepageResourceCountCache?sort as key>
+    <#if key.resourceType != 'ONTOLOGY' && key.resourceType != 'CODING_SHEET' &&  key.resourceType != 'COLLECTION'>
+      <#assign resourceTypeCount = key.logCount + resourceTypeCount >
+      <td><a href="<@s.url value="/search/results?resourceTypes=${key.resourceType}"/>"><div class="label">${key.count}</div><div class="bar" id="${key.resourceType}"></div></a></td>
     </#if>
     </#list>
   </tr>
   <tr>
-   <#list resourceTypeCountKeys as key>
-    <#if key != 'ONTOLOGY' && key != 'CODING_SHEET' &&  key != 'COLLECTION'>
-      <#assign resourceTypeCount = resourceTypeCounts.get(key).second + resourceTypeCount >
-      <td><div class="label">${key.plural}</div></td>
+   <#list homepageResourceCountCache?sort as key>
+    <#if key.resourceType != 'ONTOLOGY' && key.resourceType != 'CODING_SHEET' &&  key.resourceType != 'COLLECTION'>
+      <#-- assign resourceTypeCount = key.count + resourceTypeCount -->
+      <td><div class="label">${key.resourceType.plural}</div></td>
     </#if>
     </#list>
    </tr>
 </table>
 
 <style>
-<#assign barColors = ['#4B514D', '#2C4D56','#C3AA72','#DC7612','#BD3200','#A09D5B','#F6D86B'] />
 table td  {vertical-align:bottom;}
 
-   <#list resourceTypeCountKeys as key>
-      #${key} {background-color: ${barColors[key_index]}; height: ${(1200 * (resourceTypeCounts.get(key).second / resourceTypeCount))?floor}px }
+	<#if resourceTypeCount == 0><#-- if database is empty, to prevent division by zero -->
+		<#assign resourceTypeCount = 1>
+	</#if>
+
+   <#list homepageResourceCountCache?sort as key>
+      #${key.resourceType} {background-color: ${settings.barColors[key_index]}; height: ${(800 * (key.logCount / resourceTypeCount))?floor}px }
    </#list>
 
    
 
 .bar {width:${barWidth?c}px;min-width:50px;;}
-div.label {;top:0;z-index:1000;overflow:visible;;left:0px;position:relative;;display:block;text-align:center;font-size:smaller}
+div.label {
+	top: 0;
+	z-index: 1000;
+	overflow: visible;
+	left: 0px;
+	position: relative;
+	display: block;
+	text-align: center;
+	font-size: smaller;
+	line-height: 1.2em;
+	vertical-align: top !important;
+	height: 1.5em;
+}
 </style>
 <script>
 $(".bar").each(function() {
@@ -160,22 +176,21 @@ $(function() {
   -->
 <#assign countryTotal = 0>
 <#assign countryLogTotal = 0>
-<#assign templateSource>{<#list iSOCountryCount?keys as key>
- <#assign code=key?substring(0,2) />
- "${code}" : ${iSOCountryCount.get(key).first?c},<#assign countryTotal = countryTotal+iSOCountryCount.get(key).first />
- "${code}_" : ${iSOCountryCount.get(key).second?c}<#if key_has_next>,</#if>
-    <#if (countryLogTotal < iSOCountryCount.get(key).second)><#assign countryLogTotal = iSOCountryCount.get(key).second /></#if>
+<#assign templateSource>{<#list geographicKeywordCache as key>
+ <#assign code=key.label?substring(0,2) />
+ "${code}" : ${key.count?c},<#assign countryTotal = key.count />
+ "${code}_" : ${key.logCount?c}<#if key_has_next>,</#if>
+    <#if (countryLogTotal < key.logCount)><#assign countryLogTotal = key.logCount /></#if>
    </#list>}</#assign>
   
 <#assign codes= {} + templateSource?eval />
 
 </script> 
 <div style="height:353px;border:1px solid #CCC;background-color:#fff;width:550px;padding-top:5px">
-<img class=map src="<@s.url value="/includes/world_550_2.png" />" width=545 height=345 usemap="#world" > 
-<#assign colors= ["ebd790","D6B84B","C3AA72","A09D5B","909D5B","DC7612","DC5000","BD3200","660000"] />
+<img class=map src="<@s.url value="/images/world_550_2.png" />" width=545 height=345 usemap="#world" > 
  <div id="map_legend">
   <div><span class='legendText'>none</span> 
-    <#list colors as color>
+    <#list settings.mapColors as color>
       <span class="legendBox" style="background-color:#${color}"></span>    
     </#list>
 <span class='legendText'> many </span></div>
@@ -199,25 +214,29 @@ $(function() {
  <#assign logCode= code+'_'/>
  <#if (val > 0)>
 
+	<#if countryLogTotal == 0>
+		<#assign countryLogTotal = 0 />
+	</#if>
+
     <#assign percent = ((codes[logCode]/countryLogTotal) * 100)?floor />
     <#assign color = "#ffffff" />
     
      <#if (percent < 9) >
-        <#assign color = colors[1] />
+        <#assign color = settings.mapColors[1] />
      <#elseif (percent > 8 && percent < 17)>
-        <#assign color = colors[2] />
+        <#assign color = settings.mapColors[2] />
      <#elseif (percent > 16 && percent < 32)>
-        <#assign color = colors[3]/>
+        <#assign color = settings.mapColors[3]/>
      <#elseif (percent > 31 && percent < 46)>
-        <#assign color = colors[4] />
+        <#assign color = settings.mapColors[4] />
      <#elseif (percent > 45 && percent < 61)>
-        <#assign color = colors[5] />
+        <#assign color = settings.mapColors[5] />
      <#elseif (percent > 60 && percent < 76)>
-        <#assign color = colors[6] />
+        <#assign color = settings.mapColors[6] />
      <#elseif (percent > 76 && percent < 85)>
-        <#assign color = colors[7] />
+        <#assign color = settings.mapColors[7] />
     <#else>
-        <#assign color = colors[8] />
+        <#assign color = settings.mapColors[8] />
     </#if>
 <span class="hidden">[${code} : ${percent} ]</span>
      <area coords="${coords}" shape="poly" title="${title} (${val})" alt="${title} (${val})" href='/search/results?geographicKeywords=${code} (ISO Country Code)' iso="${code}"

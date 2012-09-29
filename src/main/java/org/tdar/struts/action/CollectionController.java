@@ -1,18 +1,22 @@
 package org.tdar.struts.action;
 
+import static org.tdar.core.service.external.auth.InternalTdarRights.SEARCH_FOR_DELETED_RECORDS;
+import static org.tdar.core.service.external.auth.InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.hibernate.search.FullTextQuery;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
@@ -22,18 +26,18 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.search.query.FieldQueryPart;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.external.auth.InternalTdarRights;
 import org.tdar.search.query.QueryFieldNames;
-import org.tdar.search.query.QueryPartGroup;
-import org.tdar.search.query.ResourceQueryBuilder;
 import org.tdar.search.query.SortOption;
+import org.tdar.search.query.queryBuilder.ResourceQueryBuilder;
 import org.tdar.struts.search.query.SearchResultHandler;
 
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/collection")
-public class CollectionController extends AbstractPersistableController<ResourceCollection> implements SearchResultHandler {
+public class CollectionController extends AbstractPersistableController<ResourceCollection> implements SearchResultHandler<ResourceCollection> {
 
     private static final long serialVersionUID = 5710621983240752457L;
     private List<Resource> resources = new ArrayList<Resource>();
@@ -42,12 +46,12 @@ public class CollectionController extends AbstractPersistableController<Resource
     private List<Resource> toReindex = new ArrayList<Resource>();
     private Long parentId;
     private List<Resource> fullUserProjects;
-    private int resultSize;
-    private int startRecord = DEFAULT_START;
-    private int recordsPerPage = 800;
-    private int totalRecords;
     private List<ResourceCollection> collections;
-    private List<Indexable> results;
+
+    private int startRecord = DEFAULT_START;
+    private int recordsPerPage = 100;
+    private int totalRecords;
+    private List<ResourceCollection> results;
     private SortOption secondarySortField;
     private SortOption sortField;
     private String mode = "CollectionBrowse";
@@ -70,8 +74,9 @@ public class CollectionController extends AbstractPersistableController<Resource
         return publicResourceCollections;
     }
 
+    @Override
     public boolean isViewable() {
-        return isAdministrator() || isEditable() || getEntityService().canViewCollection(getResourceCollection(), getAuthenticatedUser());
+        return isEditable() || getEntityService().canViewCollection(getResourceCollection(), getAuthenticatedUser());
     }
 
     @Override
@@ -95,13 +100,25 @@ public class CollectionController extends AbstractPersistableController<Resource
         }
         persistable.getResources().removeAll(toReindex);
         getGenericService().saveOrUpdate(persistable);
+        List<Resource> ineligibleResources = new ArrayList<Resource>();
         for (Resource resource : rehydratedIncomingResources) {
-            resource.getResourceCollections().add(persistable);
-            // getGenericService().saveOrUpdate(resource);
-            toReindex.add(resource);
+            logger.info(getAuthenticatedUser().toString());
+            if (!getAuthenticationAndAuthorizationService().canEditResource(getAuthenticatedUser(), resource)) {
+                ineligibleResources.add(resource);
+                logger.info("{}", resource);
+            } else {
+                resource.getResourceCollections().add(persistable);
+                // getGenericService().saveOrUpdate(resource);
+                toReindex.add(resource);
+            }
         }
+        rehydratedIncomingResources.removeAll(ineligibleResources);
         persistable.getResources().addAll(rehydratedIncomingResources);
         getGenericService().saveOrUpdate(persistable);
+        if (ineligibleResources.size() > 0) {
+            throw new TdarRecoverableRuntimeException(
+                    "the following resources could not be added to the collection because you do not have the rights to add them: " + ineligibleResources);
+        }
         logger.trace("{}", rehydratedIncomingResources);
         logger.debug("RESOURCES {}", persistable.getResources());
         return SUCCESS;
@@ -109,7 +126,8 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     @Override
     public void postSaveCleanup() {
-      //  getSearchIndexService().indexCollection(toReindex);
+        //This is apparently necessary in order to force indexing of transient fields.
+        getSearchIndexService().indexCollection(toReindex);
     }
 
     @Override
@@ -129,7 +147,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         getGenericService().delete(persistable.getAuthorizedUsers());
         // FIXME: need to handle parents and children
 
-//        getSearchIndexService().index(persistable.getResources().toArray(new Resource[0]));
+        // getSearchIndexService().index(persistable.getResources().toArray(new Resource[0]));
     }
 
     public ResourceCollection getResourceCollection() {
@@ -155,6 +173,10 @@ public class CollectionController extends AbstractPersistableController<Resource
         options.add(1, SortOption.RESOURCE_TYPE_REVERSE);
         return options;
     }
+    
+    public List<SortOption> getResourceDatatableSortOptions() {
+        return SortOption.getOptionsForContext(Resource.class);
+    }
 
     @Override
     public String loadMetadata() {
@@ -164,8 +186,33 @@ public class CollectionController extends AbstractPersistableController<Resource
         return SUCCESS;
     }
 
+    @Override
+    @SkipValidation
+    @Action(value = "edit", results = {
+            @Result(name = SUCCESS, location = "edit.ftl"),
+            @Result(name = INPUT, location = "add", type = "redirect")
+    })
+    public String edit() throws TdarActionException {
+        String result = super.edit();
+        resources.removeAll(getRetainedResources());
+        return result;
+    }
+
+    private List<Resource> getRetainedResources() {
+        List<Resource> retainedResources = new ArrayList<Resource>();
+        for(Resource resource: getPersistable().getResources()) {
+            boolean canEdit = getAuthenticationAndAuthorizationService().canEditResource(getAuthenticatedUser(), resource);
+            if(!canEdit) {
+                retainedResources.add(resource);
+            }
+        }
+        return retainedResources; 
+    }
+    
+    
     public void loadExtraViewMetadata() {
-        if(getId() == null || getId() == -1) return;
+        if (getId() == null || getId() == -1)
+            return;
         List<ResourceCollection> findAllChildCollections;
         if (isAuthenticated()) {
             findAllChildCollections = getResourceCollectionService().findAllChildCollections(getId(), null, CollectionType.SHARED);
@@ -176,7 +223,8 @@ public class CollectionController extends AbstractPersistableController<Resource
                 while (iterator.hasNext()) {
                     ResourceCollection nextcollection = iterator.next();
                     if (!nextcollection.getAuthorizedUsers().contains(new AuthorizedUser(getAuthenticatedUser(), GeneralPermissions.VIEW_ALL)) &&
-                            !nextcollection.getOwner().equals(getAuthenticatedUser()) && !isAdministrator()) {
+                            !nextcollection.getOwner().equals(getAuthenticatedUser()) &&
+                            getAuthenticationAndAuthorizationService().cannot(InternalTdarRights.VIEW_ANYTHING, getAuthenticatedUser())) {
                         iterator.remove();
                     }
                 }
@@ -186,18 +234,10 @@ public class CollectionController extends AbstractPersistableController<Resource
         }
         setCollections(findAllChildCollections);
         Collections.sort(collections);
+
         if (getPersistable() != null) {
-            ResourceQueryBuilder qb = new ResourceQueryBuilder();
-            QueryPartGroup group = new QueryPartGroup(Operator.OR);
-            group.append(new FieldQueryPart(QueryFieldNames.STATUS, Status.ACTIVE.toString()));
-            if (getAuthenticatedUser() != null) {
-                QueryPartGroup group2 = new QueryPartGroup(Operator.AND);
-                group2.append(new FieldQueryPart(QueryFieldNames.STATUS, Status.DRAFT.toString()));
-                group2.append(new FieldQueryPart(QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY, getAuthenticatedUser().getId().toString()));
-                group.append(group2);
-            }
-            qb.append(group);
-            qb.append(new FieldQueryPart(QueryFieldNames.RESOURCE_COLLECTION_PUBLIC_IDS, getPersistable().getId().toString()));
+            ResourceQueryBuilder qb = getSearchService().buildResourceContainedInSearch(QueryFieldNames.RESOURCE_COLLECTION_PUBLIC_IDS,
+                    getResourceCollection(), getAuthenticatedUser());
             setSortField(getPersistable().getSortBy());
             if (getSortField() != SortOption.RELEVANCE) {
                 setSecondarySortField(SortOption.TITLE);
@@ -248,24 +288,18 @@ public class CollectionController extends AbstractPersistableController<Resource
     }
 
     public List<Resource> getFullUserProjects() {
-
         if (fullUserProjects == null) {
-            fullUserProjects = new ArrayList<Resource>(getProjectService().findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), isAdministrator()));
+            boolean canEditAnything = getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
+            fullUserProjects = new ArrayList<Resource>(getProjectService().findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), canEditAnything));
             fullUserProjects.removeAll(getAllSubmittedProjects());
         }
         return fullUserProjects;
     }
 
     public List<Status> getStatuses() {
-        List<Status> toReturn = new ArrayList<Status>();
-        for (Status status : getResourceService().findAllStatuses()) {
-            if (!isAdministrator() && (status == Status.FLAGGED ||
-                    status == Status.DELETED)) {
-                continue;
-            }
-            toReturn.add(status);
-
-        }
+        List<Status> toReturn = new ArrayList<Status>(getResourceService().findAllStatuses());
+        getAuthenticationAndAuthorizationService().removeIfNotAllowed(toReturn, Status.DELETED, SEARCH_FOR_DELETED_RECORDS, getAuthenticatedUser());
+        getAuthenticationAndAuthorizationService().removeIfNotAllowed(toReturn, Status.FLAGGED, SEARCH_FOR_FLAGGED_RECORDS, getAuthenticatedUser());
         return toReturn;
     }
 
@@ -287,7 +321,7 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     @Override
     public void setTotalRecords(int resultSize) {
-        this.setResultSize(resultSize);
+        this.totalRecords = resultSize;
     }
 
     @Override
@@ -314,14 +348,6 @@ public class CollectionController extends AbstractPersistableController<Resource
         return false;
     }
 
-    public int getResultSize() {
-        return resultSize;
-    }
-
-    public void setResultSize(int resultSize) {
-        this.resultSize = resultSize;
-    }
-
     public void setStartRecord(int startRecord) {
         this.startRecord = startRecord;
     }
@@ -345,13 +371,13 @@ public class CollectionController extends AbstractPersistableController<Resource
     }
 
     @Override
-    public void setResults(List<Indexable> toReturn) {
-        logger.info("setResults: {}", toReturn);
+    public void setResults(List<ResourceCollection> toReturn) {
+        logger.trace("setResults: {}", toReturn);
         this.results = toReturn;
     }
 
     @Override
-    public List<Indexable> getResults() {
+    public List<ResourceCollection> getResults() {
         return results;
     }
 
@@ -363,22 +389,28 @@ public class CollectionController extends AbstractPersistableController<Resource
         this.sortField = sortField;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.struts.search.query.SearchResultHandler#setMode(java.lang.String)
      */
     @Override
     public void setMode(String mode) {
-        // TODO Auto-generated method stub
-        
+        this.mode = mode;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.struts.search.query.SearchResultHandler#getMode()
      */
     @Override
     public String getMode() {
-        // TODO Auto-generated method stub
-        return null;
+        return mode;
+    }
+
+    public int getNextPageStartRecord() {
+        return startRecord + recordsPerPage;
     }
 
 }

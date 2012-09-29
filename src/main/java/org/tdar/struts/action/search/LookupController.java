@@ -1,9 +1,5 @@
 package org.tdar.struts.action.search;
 
-import java.util.Arrays;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.functors.NotNullPredicate;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser.Operator;
@@ -13,19 +9,19 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
-import org.tdar.core.bean.resource.Status;
 import org.tdar.search.query.FieldQueryPart;
-import org.tdar.search.query.InstitutionQueryBuilder;
-import org.tdar.search.query.KeywordQueryBuilder;
-import org.tdar.search.query.PersonQueryBuilder;
-import org.tdar.search.query.QueryBuilder;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.QueryPartGroup;
-import org.tdar.search.query.ResourceAnnotationKeyQueryBuilder;
-import org.tdar.search.query.ResourceCollectionQueryBuilder;
-import org.tdar.search.query.ResourceQueryBuilder;
 import org.tdar.search.query.SortOption;
+import org.tdar.search.query.queryBuilder.InstitutionQueryBuilder;
+import org.tdar.search.query.queryBuilder.KeywordQueryBuilder;
+import org.tdar.search.query.queryBuilder.PersonQueryBuilder;
+import org.tdar.search.query.queryBuilder.QueryBuilder;
+import org.tdar.search.query.queryBuilder.ResourceAnnotationKeyQueryBuilder;
+import org.tdar.search.query.queryBuilder.ResourceCollectionQueryBuilder;
+import org.tdar.search.query.queryBuilder.ResourceQueryBuilder;
 
 /**
  * $Id$
@@ -39,7 +35,7 @@ import org.tdar.search.query.SortOption;
 @ParentPackage("secured")
 @Component
 @Scope("prototype")
-public class LookupController extends AbstractLookupController {
+public class LookupController extends AbstractLookupController<Indexable> {
 
     private static final long serialVersionUID = 176288602101059922L;
 
@@ -58,6 +54,8 @@ public class LookupController extends AbstractLookupController {
     // this defines what we are looking up (people, institutions, etc)
     // FIXME: lookupSource really should be an enum or const.
     private String lookupSource;
+
+    private Long sortCategoryId;
 
     @Action(value = "person",
             results = { @Result(name = "success", location = "lookup.ftl", type = "freemarker", params = { "contentType", "application/json" }) })
@@ -88,7 +86,6 @@ public class LookupController extends AbstractLookupController {
                     return ERROR;
                 }
             }
-            logger.info("{}", q);
 
             try {
                 handleSearch(q);
@@ -139,30 +136,36 @@ public class LookupController extends AbstractLookupController {
         setMode("resourceLookup");
 
         addResourceTypeQueryPart(q, getResourceTypes());
-        CollectionUtils.filter(getIncludedStatuses(), NotNullPredicate.INSTANCE);
-        if(CollectionUtils.isEmpty(getIncludedStatuses())) {
-            if(!isAdministrator()) {
-                setIncludedStatuses(Arrays.asList(Status.ACTIVE, Status.DRAFT, Status.FLAGGED));
-            }
-        }
-        appendStatusTypes(q, getIncludedStatuses());
+
+        appendStatusInformation(q, null, getIncludedStatuses(), getAuthenticatedUser());
 
         try {
             appendIf(isUseSubmitterContext(), q, QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY, getAuthenticatedUser().getId().toString());
         } catch (IllegalStateException e) {
             addActionError("you must be logged in");
         }
-        addTitlePart(q, getTitle());
+        QueryPartGroup valueGroup = new QueryPartGroup();
+        addTitlePart(valueGroup, getTerm());
+
+        if (getSortCategoryId() != null && getSortCategoryId() > -1) {
+            // SHOULD PREFER THINGS THAT HAVE THAT CATEGORY ID
+            FieldQueryPart q2 = new FieldQueryPart(QueryFieldNames.CATEGORY_ID, getSortCategoryId().toString().trim());
+            q2.setBoost(5f);
+            valueGroup.append(q2);
+            valueGroup.setOperator(Operator.OR);
+        }
+        q.append(valueGroup);
+
         if (StringUtils.isNotBlank(projectId) && StringUtils.isNumeric(projectId)) {
             QueryPartGroup group = new QueryPartGroup();
             group.setOperator(Operator.OR);
-            group.append(new FieldQueryPart(QueryFieldNames.PROJECT_ID,projectId));
-            group.append(new FieldQueryPart(QueryFieldNames.ID,projectId));
+            group.append(new FieldQueryPart(QueryFieldNames.PROJECT_ID, projectId));
+            group.append(new FieldQueryPart(QueryFieldNames.ID, projectId));
             q.append(group);
         }
 
         appendIf(StringUtils.isNotBlank(collectionId) && StringUtils.isNumeric(collectionId), q, QueryFieldNames.RESOURCE_COLLECTION_PUBLIC_IDS, collectionId);
-        
+
         if (getSortField() != SortOption.RELEVANCE) {
             setSecondarySortField(SortOption.TITLE);
         }
@@ -214,7 +217,7 @@ public class LookupController extends AbstractLookupController {
         setMode("annotationLookup");
 
         this.lookupSource = "items";
-        logger.debug("looking up:'" + term + "'");
+        logger.trace("looking up:'" + term + "'");
 
         // only return results if query length has enough characters
         if (checkMinString(term)) {
@@ -237,13 +240,13 @@ public class LookupController extends AbstractLookupController {
         setMinLookupLength(2);
 
         this.lookupSource = "collections";
-        logger.debug("looking up:'" + term + "'");
+        logger.trace("looking up:'" + term + "'");
         setMode("collectionLookup");
 
         // only return results if query length has enough characters
         if (checkMinString(term)) {
             addQuotedEscapedField(q, QueryFieldNames.COLLECTION_NAME_AUTO, term);
-            FieldQueryPart fqp = new FieldQueryPart(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED.name());
+            FieldQueryPart fqp = new FieldQueryPart(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED);
             q.append(fqp);
             try {
                 appendIf(isUseSubmitterContext(), q, QueryFieldNames.COLLECTION_USERS_WHO_CAN_MODIFY, getAuthenticatedUser().getId().toString());
@@ -360,6 +363,14 @@ public class LookupController extends AbstractLookupController {
 
     public void setCollectionId(String collectionId) {
         this.collectionId = collectionId;
+    }
+
+    public Long getSortCategoryId() {
+        return sortCategoryId;
+    }
+
+    public void setSortCategoryId(Long sortCategoryId) {
+        this.sortCategoryId = sortCategoryId;
     }
 
 }

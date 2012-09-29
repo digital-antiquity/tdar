@@ -1,17 +1,17 @@
 package org.tdar.core.bean.coverage;
 
-public enum CoverageType {
+import org.tdar.core.bean.HasLabel;
 
-    CALENDAR_DATE("Calendar Date", "<B>Calendar dates:</B> %d to %d"),
-    RADIOCARBON_DATE("Radiocarbon Date", "<B>Radiocarbon date in BP years:</B> %d to %d"),
-    NONE("None","");
+public enum CoverageType implements HasLabel {
+
+    CALENDAR_DATE("Calendar Date"),
+    RADIOCARBON_DATE("Radiocarbon Date"),
+    NONE("None");
 
     private String label;
-    private String format;
 
-    CoverageType(String label, String format) {
+    CoverageType(String label) {
         setLabel(label);
-        setFormat(format);
     }
 
     public void setLabel(String label) {
@@ -34,13 +34,4 @@ public enum CoverageType {
         }
         return false;
     }
-
-    public void setFormat(String format) {
-        this.format = format;
-    }
-
-    public String getFormat() {
-        return format;
-    }
-
 }

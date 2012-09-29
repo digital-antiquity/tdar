@@ -36,15 +36,17 @@ import com.healthmarketscience.jackcess.Table;
  * @latest $Date$
  */
 public class AccessDatabaseConverter extends DatasetConverter.Base {
-    protected Logger logger = LoggerFactory.getLogger(getClass());
+    private static final String DB_PREFIX = "d";
     private static final String ERROR_CORRUPT_DB = "tDAR was unable to read portions of this Access database. It is possible this issue may be resolved By using the \"Compact and Repair \" feature in Microsoft Access.";
+    protected Logger logger = LoggerFactory.getLogger(getClass());
 
-    public AccessDatabaseConverter() {
-        setDatabasePrefix("d");
+    public String getDatabasePrefix() {
+        return DB_PREFIX;
     }
 
+    public AccessDatabaseConverter() {}
+    
     public AccessDatabaseConverter(InformationResourceFileVersion version, TargetDatabase targetDatabase) {
-        setDatabasePrefix("d");
         setTargetDatabase(targetDatabase);
         setInformationResourceFileVersion(version);
     }

@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,8 +32,6 @@ import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.dataTable.DataTable;
 import org.tdar.core.bean.resource.dataTable.DataTableColumn;
-import org.tdar.core.bean.resource.dataTable.DataTableColumnEncodingType;
-import org.tdar.core.bean.resource.dataTable.MeasurementUnit;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.db.conversion.DatasetConversionFactory;
 import org.tdar.db.conversion.converters.DatasetConverter;
@@ -159,7 +158,11 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
     @Before
     public void prepareFiles() throws Exception {
         // have the filestore put our sample files... wherever it puts files
-        for (String database : getDatabaseList()) {
+        String[] list = new String[0];
+        if (getDatabaseList() != null) {
+            list = getDatabaseList();
+        };
+        for (String database : list) {
             try {
                 tdarDataImportDatabase.dropTable(database);
             } catch (Exception ignored) {
@@ -168,7 +171,7 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
 
     }
 
-    protected void mapDataOntologyValues(DataTable dataTable, String columnName, Map<String, String> valueMap, Ontology ontology) {
+    protected void mapDataOntologyValues(DataTable dataTable, String columnName, Map<String, String> valueMap, Ontology ontology) throws TdarActionException {
         DatasetController controller = generateNewInitializedController(DatasetController.class);
         DataTableColumn column = dataTable.getColumnByName(columnName);
         AbstractResourceControllerITCase.loadResourceFromId(controller, dataTable.getDataset().getId());
@@ -201,64 +204,14 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         assertNotNull(column.getValueToOntologyNodeMap());
     }
 
-    public void mapColumnsToDataset(Dataset dataset, DataTable dataTable, DataTableColumn... mappings) {
+    public void mapColumnsToDataset(Dataset dataset, DataTable dataTable, DataTableColumn... mappings) throws TdarActionException {
         logger.info("{}", dataTable);
         DatasetController controller = generateNewInitializedController(DatasetController.class);
-        AbstractResourceControllerITCase.loadResourceFromId(controller, dataset.getId());
-        List<DataTableColumnEncodingType> encodingTypes = new ArrayList<DataTableColumnEncodingType>();
-        List<Long> codingSheetIds = new ArrayList<Long>();
-        List<Long> ontologyIds = new ArrayList<Long>();
-        List<MeasurementUnit> measurementUnits = new ArrayList<MeasurementUnit>();
-        List<String> columnDescriptions = new ArrayList<String>();
-        List<Long> categoryVariableIds = new ArrayList<Long>();
-        List<Long> subcategoryIds = new ArrayList<Long>();
         controller.setDataTableId(dataTable.getId());
-        for (DataTableColumn column : dataTable.getSortedDataTableColumns()) {
-            boolean mappedOntology = false;
-            boolean mappedCoding = false;
-            boolean mappedEncoding = false;
-            for (DataTableColumn mapping : mappings) {
-                logger.info(mapping.getName() + " : " + column.getName());
-                if (column.getName().equalsIgnoreCase(mapping.getName())) {
-                    logger.info(column.getName());
-                    if (mapping.getDefaultOntology() != null) {
-                        ontologyIds.add(mapping.getDefaultOntology().getId());
-                        mappedOntology = true;
-                    }
-                    if (mapping.getDefaultCodingSheet() != null) {
-                        codingSheetIds.add(mapping.getDefaultCodingSheet().getId());
-                        mappedCoding = true;
-                    }
-                    if (mapping.getColumnEncodingType() != null) {
-                        encodingTypes.add(mapping.getColumnEncodingType());
-                        mappedEncoding = true;
-                    }
-                }
-            }
-            if (!mappedOntology) {
-                ontologyIds.add(null);
-            }
-
-            if (!mappedCoding) {
-                codingSheetIds.add(null);
-            }
-            if (!mappedEncoding) {
-                encodingTypes.add(column.getColumnEncodingType());
-            }
-            measurementUnits.add(null);
-            columnDescriptions.add(null);
-            categoryVariableIds.add(null);
-            subcategoryIds.add(null);
-        }
-        controller.setCodingSheetIds(codingSheetIds);
-        controller.setOntologyIds(ontologyIds);
-        controller.setColumnEncodingTypes(encodingTypes);
-        controller.setMeasurementUnits(measurementUnits);
-        controller.setColumnDescriptions(columnDescriptions);
-        controller.setCategoryVariableIds(categoryVariableIds);
-        controller.setSubcategoryIds(subcategoryIds);
+        AbstractResourceControllerITCase.loadResourceFromId(controller, dataset.getId());
+        controller.setDataTableColumns(Arrays.asList(mappings));
         controller.saveColumnMetadata();
-        int i = 0;
+
         for (DataTableColumn mapping : mappings) {
             DataTableColumn col = dataTable.getColumnByName(mapping.getName());
             assertNotNull(col.getName() + " is null", col);

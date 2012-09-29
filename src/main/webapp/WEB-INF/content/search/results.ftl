@@ -9,102 +9,19 @@
 </head>
 <body>
 <div>
-<#assign firstRec = (startRecord + 1) />
-<#assign curPage = ((startRecord/recordsPerPage)?floor + 1) />
-<#assign numPages = ((totalRecords/recordsPerPage)?ceiling) />
-<#if (firstRec > totalRecords)>
- <#assign numPages = 0 />
- <#assign firstRec = totalRecords/>
+<@search.initResultPagination/>
+<#if searchPhrase??>
+	<p id="searchPhrase">
+	<em>
+		${searchPhrase!""}
+	</em></p>
 </#if>
-
-<#if (nextPageStartRecord > totalRecords) >
-	<#assign lastRec = totalRecords>
-<#else>
-	<#assign lastRec = nextPageStartRecord>
-</#if>
-
-<#if (firstRec - recordsPerPage) < 1 >
-	<#assign prevPageStartRec = 0>
-<#else>
-	<#assign prevPageStartRec = firstRec - recordsPerPage - 1>
-</#if>
-
-<#macro searchLink path linkText>
-	<a href="
-	<@s.url includeParams="all" value="${path}">
-		<#nested>
-	</@s.url> 
-	">${linkText}</a>
-</#macro>
-
-<#macro paginationLink startRecord linkText>
-	<span class="paginationLink">
-	<@searchLink "results" linkText>
-		<@s.param name="startRecord" value="${startRecord?c}" />
-		<@s.param name="recordsPerPage" value="${recordsPerPage?c}" />
-	</@searchLink>
-	</span>
-</#macro>
-
-<#macro join sequence delimiter=",">
-    <#list sequence as item>
-        ${item}<#if item_has_next>${delimiter}</#if><#t>
-    </#list>
-</#macro>
-
-<#assign pagination>
-	<div class="pagination">
-  <#assign start =0>
-  <#assign end =numPages -1>
-  <#if numPages &gt; 40 && curPage &gt; 19 >
-    <#assign start = curPage - 20>
-  </#if>
-  <#if numPages &gt; 40 && curPage &lt; numPages -19 >
-    <#assign end = curPage + 19>
-  </#if> 
-
-  <#if start != 0>
-      <@paginationLink startRecord=(0 * recordsPerPage) linkText="first" />
-  </#if>
-		<#if (firstRec > 1)>
-			<@paginationLink startRecord=prevPageStartRec linkText="previous" />
-		</#if>
-		<#if (numPages > 1)>
-			<#list start..end as i>
-				<#if (i + 1) = curPage>
-                                        <#-- FIXME: there are 2 of these spans with
-                                        the same id being generated.  Turn this into
-                                        a CSS class instead or is this a bug?
-                                        -->
-					<span id="currentResultPage">${i + 1}</span>
-				<#else>
-					<@paginationLink startRecord=(i * recordsPerPage) linkText=(i + 1) />
-				</#if>
-			</#list>
-			<#else>
-			1<br/>
-		</#if>
-		<#if (nextPageStartRecord < totalRecords) >
-			<@paginationLink startRecord=nextPageStartRecord linkText="next" />
-		</#if>
-  <#if (end != numPages && nextPageStartRecord < totalRecords)>
-          <@paginationLink startRecord=(totalRecords - totalRecords % 20) linkText="last" />
-  </#if>
-	</div>
-</#assign>
-<#macro bcad _year>
-  <#if (_year < 0)>BC<#else>AD</#if><#t/>
-</#macro>
-
-<p id="searchPhrase">
-<em>
-${searchPhrase}</em></p>
 
 <#if (totalRecords > 0)>
 <div class="glide">
 	<div id="recordTotal">Records ${firstRec} - ${lastRec} of ${totalRecords}
 	</div> 
-	${pagination}
+	<@search.pagination "results"/>
 
 </div>
 	<style type='text/css'>
@@ -136,11 +53,11 @@ If you'd like to perform an integration:
 </#if>
 
 <div class="glide">
-		<@rlist.informationResources iterable="results" editable=false bookmarkable=authenticated showTitle=false/>
+		<@rlist.informationResources iterable="results" editable=useSubmitterContext bookmarkable=authenticated showTitle=false/>
 </div>
     <#if (numPages > 1)>
 <div class="glide">
-	${pagination}
+	<@search.pagination "results"/>
 </div>
 </#if>
 <#else>
@@ -152,17 +69,33 @@ If you'd like to perform an integration:
 
 <#macro cleanupEnum enumvalue>
     <#assign ret = enumvalue?replace("_"," ") />
+    <#-- FIXME: this is not sustainable, but there's no access to the enum -->
+    <#if enumvalue == 'BOOK'>
+        <#assign ret = 'Book / Report'/>
+    </#if>
     ${ret?capitalize}
 </#macro>
+
  <div id="sidebar" parse="true">
  <div style="height:110px"></div>
 <h2>Search Options</h2>
 <ul class="facets">
-<li>        <B><@searchLink "advanced" "Modify Search" /></b>
-</li>
+<li>        <B>Search Options:</b>
+    <ul>
+        <li><b>Refine:</b><@search.searchLink "advanced" "Modify Search" /> </li>
+    <#if sessionData?? && sessionData.authenticated && (totalRecords > 0)>
+        <li><b>Download:</b>
+        <@search.searchLink "download" "to Excel" />
+        <#if totalRecords &gt; maxDownloadRecords>
+            Limited to the first ${maxDownloadRecords} results.    
+        </#if>
+        </li>
+     </#if>
       <li>  <form action=''>
         <b>Sort By:</b> <@search.sortFields true/>
         </form>
+      </li>
+      </ul>
       </li>
   </ul>
   <br/>
@@ -210,7 +143,7 @@ If you'd like to perform an integration:
     </@s.iterator>
 </ul><br/></li>
 </#if>
-<#--
+<#-- 
 <#if (dateCreatedFacets?? && !dateCreatedFacets.empty)>
 
 <li><B>Date Created:</B>
@@ -218,9 +151,18 @@ If you'd like to perform an integration:
     <@s.iterator status='rowStatus' value='dateCreatedFacets' var='facet'>
 <#if (count > 0) >
     <li> 
+<#assign dateCreatedMin = minDateValue />
+<#assign dateCreatedMax = maxDateValue />
+<#if facet.getMin()??> 
+  <#assign dateCreatedMin = facet.getMin() />
+</#if>
+<#if facet.getMax()??> 
+  <#assign dateCreatedMax = facet.getMax() />
+</#if>
     <a href="<@s.url includeParams="all">
         <@s.param name="startRecord" value="0"/>
-        <@s.param name="dateCreated">${facet.facetQuery}</@s.param>
+        <@s.param name="dateCreatedMin">${dateCreatedMin?c}</@s.param>
+        <@s.param name="dateCreatedMax">${dateCreatedMax?c}</@s.param>
     </@s.url>">
     <#assign val = facet.value?replace("]","") />
     <#assign val = val?replace("[","") />
@@ -230,7 +172,7 @@ If you'd like to perform an integration:
     <#if (val?ends_with('-') )>After 
       <#assign val = val?replace("-","") />
     </#if>
-    ${val}
+    ${val} 
     (${count})</li></#if>
     </@s.iterator>
 </ul></li>

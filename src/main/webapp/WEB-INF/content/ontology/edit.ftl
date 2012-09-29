@@ -1,3 +1,4 @@
+<#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit />
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view />
 <head>
@@ -21,10 +22,10 @@
 <br/>
 <span tiplabel="Year" tooltipcontent="Four digit year, e.g. 1966 or 2005.">
        <#assign dateVal = ""/>
-       <#if ontology.dateCreated?? && ontology.dateCreated != -1>
-         <#assign dateVal = ontology.dateCreated?c />
+       <#if ontology.date?? && ontology.date != -1>
+         <#assign dateVal = ontology.date?c />
       </#if>
-        <@s.textfield labelposition='left' id='dateCreated' label='Year' name='ontology.dateCreated' value="${dateVal}" cssClass="shortfield reasonableDate required" required=true 
+        <@s.textfield labelposition='left' id='dateCreated' label='Year' name='ontology.date' value="${dateVal}" cssClass="shortfield reasonableDate required" required=true 
          title="Please enter the year this ontology was created" />
 </span>
 
@@ -60,6 +61,5 @@
     setupSupportingResourceForm(${resource.getTotalNumberOfFiles()?c}, "ontology");
     $('#fileInputTextArea').tabby();
 </@edit.resourceJavascript>
-
-
 </body>
+</#escape>

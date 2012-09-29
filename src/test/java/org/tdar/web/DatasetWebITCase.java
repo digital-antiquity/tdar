@@ -35,26 +35,95 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     public static HashMap<String, List<String>> docMultiValMap = new HashMap<String, List<String>>();
     public static HashMap<String, List<String>> docMultiValMapLab = new HashMap<String, List<String>>();
     public static final String TEST_DATASET_NAME = "dataset_with_ints.xls";
-    public static String PROJECT_ID_FIELDNAME = "projectId";
-
     public static String PROJECT_ID = "1";
+
     public static String TITLE = "My Sample Dataset";
     public static String DESCRIPTION = "A resource description";
+    public static final String SPITAL_DB_NAME = "Spital Abone database.mdb";
 
     public DatasetWebITCase() {
         docValMap.put(PROJECT_ID_FIELDNAME, PROJECT_ID);
         docValMap.put("dataset.title", TITLE);
         docValMap.put("dataset.description", DESCRIPTION);
         docValMap.put("resourceCollections[0].name", "TESTCOLLECTIONNAME");
-        docValMap.put("dataset.dateCreated", "1923");
+        docValMap.put("dataset.date", "1923");
         docValMap.put("uploadedFiles", TestConstants.TEST_DATA_INTEGRATION_DIR + TEST_DATASET_NAME);
     }
 
     @Test
     @Rollback(true)
+    public void testCreateDatasetRecordSpitalfields() {
+        // upload a file ahead of submitting the form
+        docValMap.put("uploadedFiles", TestConstants.TEST_DATA_INTEGRATION_DIR + SPITAL_DB_NAME);
+
+        uploadDataset();
+
+    }
+    
+    @Test
+    @Rollback(true)
     public void testCreateDatasetRecord() {
         // upload a file ahead of submitting the form
 
+        uploadDataset();
+
+        assertTextPresentInPage(TEST_DATASET_NAME);
+        Long datasetId = extractTdarIdFromCurrentURL();
+        Long codingSheetId = testCodingSheetCreation();
+        Long ontologyId = testOntologyCreation();
+
+        gotoPage("/dataset/" + datasetId);
+        clickLinkWithText(TABLE_METADATA);
+
+        assertTextPresentInCode(datasetId.toString());
+
+        assertTrue("Column1 should not be blank", checkInput("dataTableColumns[1].columnEncodingType", "UNCODED_VALUE"));
+        setInput("dataTableColumns[0].columnEncodingType", "UNCODED_VALUE", false);
+
+        setInput("dataTableColumns[1].columnEncodingType", "CODED_VALUE", false);
+        setInput("dataTableColumns[1].categoryVariable.id", "1", false); // ARCHITECTURE
+        setInput("dataTableColumns[1].tempSubCategoryVariable.id", "25", false); // MATERIAL
+        setInput("dataTableColumns[1].description", "column description for city", false);
+        setInput("dataTableColumns[1].defaultCodingSheet.id", Long.toString(codingSheetId), false);
+        setInput("dataTableColumns[1].defaultOntology.id", Long.toString(ontologyId), false);
+        setInput("postSaveAction", "SAVE_MAP_NEXT");
+        logger.debug("coding sheet id: {} ", codingSheetId);
+        logger.debug("ontology id: {} ", ontologyId);
+        submitForm("Save");
+        assertFalse(internalPage.getUrl().toString().contains("save-column-metadata"));
+        assertCurrentUrlContains("ontology");
+        assertTextPresent(EAST_COAST_CITIES);
+        assertTextPresent(WEST_COAST_CITIES);
+
+        int indexOfOntology = getPageCode().indexOf("var ontology");
+        String ontologyNodeInfo = getPageCode().substring(indexOfOntology, getPageCode().indexOf("];", indexOfOntology));
+        logger.debug("ONTOLOGY NODE TEXT: {}", ontologyNodeInfo);
+
+        String regex = "id:\"(\\d+)\",(?:\\s+)name:\\\"(.+)\\\"";
+        Pattern p = Pattern.compile(regex);
+
+        HashMap<String, Long> ontology = new HashMap<String, Long>();
+        for (String line : ontologyNodeInfo.split("([{]|(}\\s?,?))")) {
+            logger.info(line);
+            Matcher matcher = p.matcher(line);
+            if (matcher.matches()) {
+                String key = matcher.group(2).replaceAll("[\\|\\-]", "").trim().toLowerCase();
+                logger.info("{} : {}", matcher.group(1), key);
+                ontology.put(key, Long.parseLong(matcher.group(1)));
+            }
+        }
+        assertTrue(ontology.containsKey("united states"));
+        setInput("ontologyNodeIds[0]", ontology.get(NEW_YORK_1).toString(), false);
+        setInput("ontologyNodeIds[1]", ontology.get(SAN_FRANCISCO_2).toString(), false);
+        setInput("ontologyNodeIds[2]", ontology.get(WASHINGTON_3).toString(), false);
+        setInput("postSaveAction", "SAVE_VIEW");
+        submitForm("Save");
+        assertTrue(internalPage.getUrl().toString().endsWith("/dataset/" + datasetId));
+        assertTextPresentIgnoreCase("translated");
+
+    }
+
+    private void uploadDataset() {
         gotoPage("/dataset/add");
         for (String key : docValMap.keySet()) {
             setInput(key, docValMap.get(key));
@@ -64,6 +133,8 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         }
         logger.trace(getPageText());
         submitForm();
+        assertCurrentUrlContains("columns");
+        clickLinkWithText("view");
         logger.trace(getPageText());
         for (String key : docValMap.keySet()) {
             // avoid the issue of the fuzzy distances or truncation... use just the
@@ -107,60 +178,6 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
                 assertTrue("element:" + key + " is set to:" + val, checkInput(key, val));
             }
         }
-
-        assertTextPresentInPage(TEST_DATASET_NAME);
-        Long datasetId = extractTdarIdFromCurrentURL();
-        Long codingSheetId = testCodingSheetCreation();
-        Long ontologyId = testOntologyCreation();
-
-        gotoPage("/dataset/" + datasetId);
-        clickLinkWithText("map columns");
-
-        assertTextPresentInCode(datasetId.toString());
-        assertTextPresentInCode(codingSheetId.toString());
-        assertTextPresentInCode(ontologyId.toString());
-        assertTrue("Column1 should be numeric", checkInput("columnEncodingTypes[1]", "NUMERIC"));
-
-        setInput("columnEncodingTypes[1]", "CODED_VALUE", false);
-        setInput("categoryVariableIds[1]", "1", false); // ARCHITECTURE
-        setInput("subcategoryIds[1]", "25", false); // MATERIAL
-        setInput("columnDescriptions[1]", "column description for city", false);
-        setInput("codingSheetIds[1]", Long.toString(codingSheetId), false);
-        setInput("ontologyIds[1]", Long.toString(ontologyId), false);
-        logger.debug("coding sheet id: {} ", codingSheetId);
-        logger.debug("ontology id: {} ", ontologyId);
-        submitForm("Next: Map column values to Ontologies");
-        assertFalse(internalPage.getUrl().toString().contains("save-column-metadata"));
-        assertTrue(internalPage.getUrl().toString().contains("ontology"));
-
-        assertTextPresent(EAST_COAST_CITIES);
-        assertTextPresent(WEST_COAST_CITIES);
-
-        int indexOfOntology = getPageCode().indexOf("var ontology");
-        String ontologyNodeInfo = getPageCode().substring(indexOfOntology, getPageCode().indexOf("];", indexOfOntology));
-        logger.debug("ONTOLOGY NODE TEXT: {}", ontologyNodeInfo);
-        
-        String regex = "id:\"(\\d+)\",(?:\\s+)name:\\\"(.+)\\\"";
-        Pattern p = Pattern.compile(regex);
-
-        HashMap<String, Long> ontology = new HashMap<String, Long>();
-        for (String line : ontologyNodeInfo.split("([{]|(}\\s?,?))")) {
-            logger.info(line);
-            Matcher matcher = p.matcher(line);
-            if (matcher.matches()) {
-                String key = matcher.group(2).replaceAll("[\\|\\-]", "").trim().toLowerCase();
-                logger.info("{} : {}", matcher.group(1), key);
-                ontology.put(key, Long.parseLong(matcher.group(1)));
-            }
-        }
-        assertTrue(ontology.containsKey("united states"));
-        setInput("ontologyNodeIds[0]", ontology.get(NEW_YORK_1).toString(), false);
-        setInput("ontologyNodeIds[1]", ontology.get(SAN_FRANCISCO_2).toString(), false);
-        setInput("ontologyNodeIds[2]", ontology.get(WASHINGTON_3).toString(), false);
-        submitForm("Save mappings for last column");
-        assertTrue(internalPage.getUrl().toString().endsWith("/dataset/" + datasetId));
-        assertTextPresentIgnoreCase("translated");
-
     }
 
     public Long testCodingSheetCreation() {
@@ -169,7 +186,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         codingMap.put(PROJECT_ID_FIELDNAME, PROJECT_ID);
         codingMap.put("codingSheet.title", TITLE);
         codingMap.put("codingSheet.description", DESCRIPTION);
-        codingMap.put("codingSheet.dateCreated", "1923");
+        codingMap.put("codingSheet.date", "1923");
         codingMap.put("categoryId", "1"); // ARCHITECTURE
         codingMap.put("subcategoryId", "25"); // MATERIAL
         String codingText = "1," + NEW_YORK_1 + ",NY\r\n" +
@@ -179,7 +196,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         for (String key : codingMap.keySet()) {
             setInput(key, codingMap.get(key));
         }
-        logger.info(getPageText());
+        logger.trace(getPageText());
         submitForm();
         // logger.info(getPageText());
         for (String key : codingMap.keySet()) {
@@ -211,7 +228,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         codingMap.put(PROJECT_ID_FIELDNAME, PROJECT_ID);
         codingMap.put("ontology.title", TITLE);
         codingMap.put("ontology.description", DESCRIPTION);
-        codingMap.put("ontology.dateCreated", "1923");
+        codingMap.put("ontology.date", "1923");
         codingMap.put("categoryId", "1"); // ARCHITECTURE
         codingMap.put("subcategoryId", "25"); // MATERIAL
         String ontology = "North America\r\n" +

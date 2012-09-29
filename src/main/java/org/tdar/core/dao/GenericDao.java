@@ -2,6 +2,7 @@ package org.tdar.core.dao;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -18,6 +19,7 @@ import org.hibernate.criterion.Example;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.stat.Statistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,28 +53,48 @@ public class GenericDao {
     @Autowired
     private transient SessionFactory sessionFactory;
 
-    public <E> E find(Class<E> cls, Number id) {
+    public <E> E find(Class<E> cls, Long id) {
         // FIXME: push guard checks into Service layer.
         if (id == null)
             return null;
         return cls.cast(getCurrentSession().get(cls, id));
     }
-    
-    public <E> List<E> find(Class<E> cls, List<? extends Number> idlist) {
-        List<E> list = new ArrayList<E>();
-        for(Number id: idlist) {
-            E item = find(cls, id);
-            if(item == null) {
-                logger.warn("{} not found with id:{}", cls.getSimpleName(), id);
-            }
-            list.add(item);
-        }
-        return list;
+
+    @SuppressWarnings("unchecked")
+    public <E> List<E> findAll(Class<E> persistentClass, List<Long> ids) {
+        Query query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_FIND_ALL_WITH_IDS, persistentClass.getSimpleName()));
+        return query.setParameterList("ids", ids).list();
+    }
+
+    @SuppressWarnings("unchecked")
+    public <E> List<Long> findAllIds(Class<E> persistentClass) {
+        return getCurrentSession().createQuery("select id from " + persistentClass.getName() + " ORDER by id asc").list();
+    }
+
+    @SuppressWarnings("unchecked")
+    public <E> List<Long> findAllIds(Class<E> persistentClass, long startId, long endId) {
+        String hqlfmt = "select id from %s where id between %s and %s order by id asc";
+        String hql = String.format(hqlfmt, persistentClass.getName(), startId, endId);
+        return getCurrentSession().createQuery(hql).list();
     }
 
     public Number count(Class<?> persistentClass) {
         Query query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_SQL_COUNT, persistentClass.getSimpleName()));
         return (Number) query.uniqueResult();
+    }
+
+    @SuppressWarnings("unchecked")
+    public <E> List<E> findIdRange(Class<E> persistentClass, long startId, long endId, int maxResults) {
+        Criteria criteria = getCriteria(persistentClass);
+        // FIXME: replace with HasStatus isAssignable?
+        if (Resource.class.isAssignableFrom(persistentClass)) {
+            criteria.add(Restrictions.eq("status", Status.ACTIVE));
+        }
+        criteria.add(Restrictions.ge("id", startId));
+        criteria.add(Restrictions.le("id", endId));
+        criteria.addOrder(Order.asc("id"));
+        criteria.setMaxResults(maxResults);
+        return criteria.list();
     }
 
     @SuppressWarnings("unchecked")
@@ -299,6 +321,10 @@ public class GenericDao {
         }
     }
 
+    public <E extends Persistable> int deleteAll(Class<E> persistentClass) {
+        return getCurrentSession().createQuery("DELETE FROM " + persistentClass.getName()).executeUpdate();
+    }
+
     protected String getDefaultOrderingProperty() {
         logger.warn("Did not override getDefaultOrderingProperty, using id as default ordering property.");
         return "id";
@@ -329,9 +355,64 @@ public class GenericDao {
         session.flush();
     }
 
+    /**
+     * Clears out the hibernate session, evicting all entities and discarding any unflushed changes. {@see org.hibernate.Session#clear()}
+     */
+    public void clearCurrentSession() {
+        getCurrentSession().clear();
+    }
+
     public void refresh(Object object) {
         getCurrentSession().refresh(object);
     }
 
-    
+    public void markReadOnly(Object obj) {
+        if (getCurrentSession().contains(obj)) {
+            // mark as read only
+            getCurrentSession().setCacheMode(CacheMode.GET);
+            // dump it off the cache so that future searches don't find the updated version
+            getCurrentSession().setReadOnly(obj, true);
+        }
+    }
+
+    public void markReadOnly() {
+        logger.trace("read only object session ID: {}", getCurrentSession().hashCode());
+        getCurrentSession().setDefaultReadOnly(true);
+    }
+
+    public void markWritable() {
+        logger.trace("writable object session ID: {}", getCurrentSession().hashCode());
+        getCurrentSession().setDefaultReadOnly(false);
+    }
+
+    public <O> O markWritable(O obj) {
+        if (getCurrentSession().contains(obj)) {
+            // theory -- if we're persistable and have not been 'saved' perhaps we don't need to worry about merging yet
+            if (obj instanceof Persistable && !Persistable.Base.isTransient((Persistable) obj)) {
+                getCurrentSession().setCacheMode(CacheMode.NORMAL);
+                getCurrentSession().setReadOnly(obj, false);
+                getCurrentSession().evict(obj);
+                return merge(obj);
+            }
+        }
+        return obj;
+    }
+
+    public Statistics getSessionStatistics() {
+        return getCurrentSession().getSessionFactory().getStatistics();
+    }
+
+    public <O> Collection<O> mergeAll(Collection<O> collection) {
+        if (CollectionUtils.isEmpty(collection)) {
+            return Collections.emptyList();
+        }
+        ArrayList<O> mergedEntities = new ArrayList<O>();
+        for (O entity : collection) {
+            mergedEntities.add(merge(entity));
+        }
+        // collection.clear();
+        // collection.addAll(mergedEntities);
+        return mergedEntities;
+    }
+
 }

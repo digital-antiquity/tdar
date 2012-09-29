@@ -11,7 +11,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -27,6 +26,7 @@ import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.dataTable.DataTable;
 import org.tdar.core.bean.resource.dataTable.DataTableColumn;
+import org.tdar.core.bean.resource.dataTable.DataTableColumnEncodingType;
 import org.tdar.struts.data.IntegrationColumn;
 import org.tdar.struts.data.IntegrationColumn.ColumnType;
 import org.tdar.struts.data.IntegrationDataResult;
@@ -89,7 +89,7 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testIntegrationProcess() throws IOException {
+    public void testIntegrationProcess() throws Exception {
         // load datasets
         Dataset alexandriaDb = setupAndLoadResource(ALEXANDRIA_DB_NAME, Dataset.class);
         Dataset spitalDb = setupAndLoadResource(SPITAL_DB_NAME, Dataset.class);
@@ -112,12 +112,17 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         elementColumn.setDefaultOntology(bElementOntology);
         DataTableColumn taxonColumn = new DataTableColumn();
         elementColumn.setName(BELEMENT_COL);
+        elementColumn.setId(alexandriaTable.getColumnByName(BELEMENT_COL).getId());
         taxonColumn.setName(TAXON_COL);
         taxonColumn.setDefaultOntology(taxonOntology);
-
+        taxonColumn.setId(alexandriaTable.getColumnByName(TAXON_COL).getId());
+        elementColumn.setColumnEncodingType(DataTableColumnEncodingType.UNCODED_VALUE);
+        taxonColumn.setColumnEncodingType(DataTableColumnEncodingType.UNCODED_VALUE);
         mapColumnsToDataset(alexandriaDb, alexandriaTable, elementColumn, taxonColumn);
         elementColumn.setName(BONE_COMMON_NAME_COL);
+        elementColumn.setId(spitalMain.getColumnByName(BONE_COMMON_NAME_COL).getId());
         taxonColumn.setName(SPECIES_COMMON_NAME_COL);
+        taxonColumn.setId(spitalMain.getColumnByName(SPECIES_COMMON_NAME_COL).getId());
 
         mapColumnsToDataset(spitalDb, spitalMain, elementColumn, taxonColumn);
 
@@ -208,7 +213,7 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testHierarchicalIntegrationProcess() throws IOException {
+    public void testHierarchicalIntegrationProcess() throws Exception {
         // load datasets
         Dataset alexandriaDb = setupAndLoadResource(ALEXANDRIA_DB_NAME, Dataset.class);
         Dataset spitalDb = setupAndLoadResource(SPITAL_DB_NAME, Dataset.class);
@@ -229,7 +234,7 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         DataTableColumn elementColumn = new DataTableColumn();
         elementColumn.setDefaultOntology(bElementOntology);
         elementColumn.setName(BELEMENT_COL);
-
+        elementColumn.setColumnEncodingType(DataTableColumnEncodingType.UNCODED_VALUE);
         mapColumnsToDataset(alexandriaDb, alexandriaTable, elementColumn);
         elementColumn.setName(BONE_COMMON_NAME_COL);
         mapColumnsToDataset(spitalDb, spitalMain, elementColumn);

@@ -14,6 +14,7 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.ResourceAnnotationType;
+import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 
 public class ProjectControllerResourceAnnotationITCase extends AbstractResourceControllerITCase {
@@ -32,7 +33,7 @@ public class ProjectControllerResourceAnnotationITCase extends AbstractResourceC
 
     @Test
     @Rollback
-    public void testAddSingleAnnotation() {
+    public void testAddSingleAnnotation() throws Exception {
         initControllerFields();
         Project p = controller.getProject();
         Assert.assertNotNull(p);
@@ -71,7 +72,7 @@ public class ProjectControllerResourceAnnotationITCase extends AbstractResourceC
     @Test
     @Rollback
     // try to delete the single annotation added by testAddSingleAnnotation
-    public void testDeleteFromSingleAnnotation() {
+    public void testDeleteFromSingleAnnotation() throws Exception {
         testAddSingleAnnotation();
         // meta test ... does @rollback apply if we're calling a test from another test??
         Long id = controller.getResource().getId();
@@ -116,7 +117,7 @@ public class ProjectControllerResourceAnnotationITCase extends AbstractResourceC
 
     @Test
     @Rollback
-    public void testAdd3ThenDeleteMiddle() {
+    public void testAdd3ThenDeleteMiddle() throws Exception {
         initControllerFields();
         Project p = controller.getProject();
         Assert.assertNotNull(p);

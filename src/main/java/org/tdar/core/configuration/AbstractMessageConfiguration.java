@@ -8,8 +8,8 @@ package org.tdar.core.configuration;
 
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.connection.SingleConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.annotation.Bean;
@@ -26,7 +26,7 @@ public class AbstractMessageConfiguration {
 
     @Bean
     public ConnectionFactory getConnectionFactory() {
-        SingleConnectionFactory connectionFactory = new SingleConnectionFactory(TdarConfiguration.getInstance().getMessageQueueURL());
+        CachingConnectionFactory connectionFactory = new CachingConnectionFactory(TdarConfiguration.getInstance().getMessageQueueURL());
         connectionFactory.setUsername(TdarConfiguration.getInstance().getMessageQueueUser());
         connectionFactory.setPassword(TdarConfiguration.getInstance().getMessageQueuePwd());
         return connectionFactory;

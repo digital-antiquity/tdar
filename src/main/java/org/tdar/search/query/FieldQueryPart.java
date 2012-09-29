@@ -22,6 +22,11 @@ public class FieldQueryPart extends QueryPart.Base {
         this.fieldValue = fieldValue;
     }
 
+    public FieldQueryPart(String fieldName, Enum<?> fieldValue) {
+        this.fieldName = fieldName;
+        this.fieldValue = fieldValue.name();
+    }
+
     @Override
     public String generateQueryString() {
         StringBuilder sb = new StringBuilder();

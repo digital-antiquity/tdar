@@ -12,7 +12,9 @@ my  $msg = Mail::Send->new;
   $msg->subject($ENV{'USER'} . ' restarted tDAR on ' . $hostname . ' [' . $svnversion . ']');
   $msg->set('From','release@tdar.org');
 my $fh = $msg->open;   
-print $fh 'Date: ' .scalar(localtime) . "\r\n";
-print $fh 'Host: ' . $hostname ."\r\n";
-print $fh 'Current Verson: ' . $svnversion . "\r\n";
+my $date = scalar(localtime);
+print $fh "Date: $date \r\n";
+print $fh "Host: $hostname \r\n";
+print $fh "Current Verson:  $svnversion \r\n";
 $fh->close   or die "couldn't send whole message: $!\n";
+`echo '$ENV{'USER'} released $svnversion $date' >> /home/tdar/release.log`

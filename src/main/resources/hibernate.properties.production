@@ -3,6 +3,8 @@ javax.persistence.jdbc.password=
 javax.persistence.jdbc.url=jdbc:postgresql://localhost/tdarmetadata
 javax.persistence.jdbc.driver=org.postgresql.Driver
 hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+hibernate.search.analyzer=org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer
+hibernate.generate_statistics=true
 
 tdardata.connection.url=jdbc:postgresql://localhost/tdardata
 

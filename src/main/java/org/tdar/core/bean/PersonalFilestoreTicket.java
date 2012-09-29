@@ -11,11 +11,14 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.tdar.core.bean.entity.Person;
-import org.tdar.filestore.PersonalFileType;
+import org.tdar.filestore.personalFilestore.PersonalFileType;
 
 /**
  * $Id$
  * 
+ * This allows for asynchronous uploads by creating a ticket that tracks the filestore (where things are stored temporarily)
+ * and the submitter. The ticket gets created at the beginning of the first upload, and is then kept open and available until
+ * the user completes the resource submission process.
  * 
  * @author Jim DeVos
  * @version $Rev$
@@ -25,8 +28,8 @@ import org.tdar.filestore.PersonalFileType;
 public class PersonalFilestoreTicket extends Persistable.Base {
 
     private static final long serialVersionUID = 3712388159075958666L;
-    private final static String[] JSON_PROPERTIES = { "id", "dateGenerated", "submitter" }; 
-    
+    private final static String[] JSON_PROPERTIES = { "id", "dateGenerated", "submitter" };
+
     @Column(nullable = false, name = "date_generated")
     private Date dateGenerated = new Date();
 
@@ -38,9 +41,9 @@ public class PersonalFilestoreTicket extends Persistable.Base {
     @JoinColumn(nullable = false, name = "submitter_id")
     private Person submitter;
 
-    @Column(length=500)
+    @Column(length = 500)
     private String description;
-    
+
     public Person getSubmitter() {
         return submitter;
     }
@@ -71,7 +74,8 @@ public class PersonalFilestoreTicket extends Persistable.Base {
     }
 
     /**
-     * @param description the description to set
+     * @param description
+     *            the description to set
      */
     public void setDescription(String description) {
         this.description = description;

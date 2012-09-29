@@ -41,7 +41,8 @@ public interface TestConstants {
     public static String DEFAULT_FIRST_NAME = "Test";
     public static String DEFAULT_LAST_NAME = "Person";
     public static String DEFAULT_EMAIL = "test@example.com";
-    public static String DOCUENT_DATE_CREATED = "resource.dateCreated";
+    public static String DOCUENT_DATE_CREATED = "resource.date";
+    public static String TEST_DOCUMENT_ID = "4232";
 
     public static final String DOCUMENT_FIELD_TITLE = "document.title";
     public static final String DOCUMENT_FIELD_DESCRIPTION = "resource.description";

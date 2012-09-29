@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
@@ -113,6 +114,23 @@ public class FilestoreTest {
         ;
         // version.getHeight();
         // version.getWidth();
+    }
+
+    @Test
+    @Rollback(true)
+    public void filestoreRotateTest() throws IOException {
+        cleanup();
+        PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
+        InformationResourceFileVersion version = generateVersion(TEST_DOCUMENT_NAME);
+        File f = new File(TEST_DOCUMENT);
+        store.storeAndRotate(f, version, 5);
+        store.storeAndRotate(f, version, 5);
+
+        File tmpFile = version.getFile();
+        assertTrue(tmpFile.exists());
+        File rotated = new File(tmpFile.getParentFile(), String.format("%s.1.%s", FilenameUtils.getBaseName(tmpFile.getName()),
+                FilenameUtils.getExtension(tmpFile.getName())));
+        assertTrue(rotated.exists());
     }
 
     private InformationResourceFileVersion generateVersion(String name) {

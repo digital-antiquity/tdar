@@ -1,14 +1,18 @@
 package org.tdar.core.bean.entity;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -17,22 +21,29 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.search.Explanation;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyzer;
+import org.hibernate.search.annotations.DateBridge;
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Index;
+import org.hibernate.search.annotations.Resolution;
 import org.hibernate.search.annotations.Store;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.JsonModel;
+import org.tdar.core.bean.OaiDcProvider;
+import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
-import org.tdar.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
-import org.tdar.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
+import org.tdar.core.bean.Updatable;
+import org.tdar.core.configuration.JSONTransient;
+import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
+import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 
 /**
@@ -50,7 +61,9 @@ import org.tdar.search.query.QueryFieldNames;
 @Inheritance(strategy = InheritanceType.JOINED)
 @XmlSeeAlso({ Person.class, Institution.class })
 @XmlAccessorType(XmlAccessType.PROPERTY)
-public abstract class Creator extends JsonModel.Base implements Persistable, HasName, Indexable {
+public abstract class Creator extends JsonModel.Base implements Persistable, HasName, Indexable, Dedupable, Updatable, OaiDcProvider, Obfuscatable {
+
+    private transient boolean obfuscated;
 
     private static final long serialVersionUID = 2296217124845743224L;
 
@@ -72,21 +85,37 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
     @Field
     @Analyzer(impl = KeywordAnalyzer.class)
     private Long id = -1L;
+    /*
+     * @Boost(.5f)
+     * 
+     * @IndexedEmbedded
+     * 
+     * @ManyToOne()
+     * 
+     * @JoinColumn(name = "updater_id")
+     * private Person updatedBy;
+     */
+    @Field(index = Index.UN_TOKENIZED, store = Store.YES)
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "last_updated", nullable = true)
+    @DateBridge(resolution = Resolution.MILLISECOND)
+    private Date dateUpdated;
 
     @Temporal(TemporalType.DATE)
     @Column(name = "date_created")
     private Date dateCreated;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "last_updated")
-    private Date lastUpdated;
-
     @Lob
     @Type(type = "org.hibernate.type.StringClobType")
     private String description;
 
+    @ElementCollection()
+    @JoinTable(name = "creator_synonym")
+    private Set<String> synonyms = new HashSet<String>();
+
     public Creator() {
         setDateCreated(new Date());
+        setDateUpdated(new Date());
     }
 
     @Column(length = 64)
@@ -130,10 +159,6 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
         this.id = id;
     }
 
-    public Date getDateCreated() {
-        return dateCreated;
-    }
-
     /*
      * @NumericField
      * 
@@ -151,14 +176,6 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
 
     public void setDateCreated(Date dateCreated) {
         this.dateCreated = dateCreated;
-    }
-
-    public Date getLastUpdated() {
-        return lastUpdated;
-    }
-
-    public void setLastUpdated(Date lastUpdated) {
-        this.lastUpdated = lastUpdated;
     }
 
     public String getUrl() {
@@ -219,6 +236,7 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
     }
 
     @Transient
+    @XmlTransient
     public Float getScore() {
         return score;
     }
@@ -228,12 +246,86 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
     }
 
     @Transient
+    @XmlTransient
     public Explanation getExplanation() {
         return explanation;
     }
 
     public void setExplanation(Explanation explanation) {
         this.explanation = explanation;
+    }
+
+    public Set<String> getSynonyms() {
+        if (synonyms == null) {
+            synonyms = new HashSet<String>();
+        }
+        return synonyms;
+    }
+
+    public <D extends Dedupable> void addSynonym(D synonym) {
+        for (String name : synonym.getSynonyms()) {
+            getSynonyms().add(name);
+        }
+        getSynonyms().add(synonym.getSynonymFormattedName());
+    }
+
+    public void setSynonyms(Set<String> synonyms) {
+        this.synonyms = synonyms;
+    }
+
+    @Override
+    public boolean isDedupable() {
+        return true;
+    }
+
+    public String getSynonymFormattedName() {
+        return getProperName();
+    }
+
+    @Override
+    public void markUpdated(Person p) {
+        // setUpdatedBy(p);
+        setDateUpdated(new Date());
+    }
+
+    /*
+     * @XmlIDREF
+     * 
+     * @XmlAttribute(name = "updaterId")
+     * public Person getUpdatedBy() {
+     * return updatedBy;
+     * }
+     * 
+     * public void setUpdatedBy(Person updatedBy) {
+     * this.updatedBy = updatedBy;
+     * }
+     */
+    @XmlTransient
+    public Date getDateUpdated() {
+        return dateUpdated;
+    }
+
+    public void setDateUpdated(Date dateUpdated) {
+        this.dateUpdated = dateUpdated;
+    }
+
+    @Override
+    public String getTitle() {
+        return getProperName();
+    }
+
+    public Date getDateCreated() {
+        return dateCreated;
+    }
+
+    @XmlTransient
+    @JSONTransient
+    public boolean isObfuscated() {
+        return obfuscated;
+    }
+
+    public void setObfuscated(boolean obfuscated) {
+        this.obfuscated = obfuscated;
     }
 
 }

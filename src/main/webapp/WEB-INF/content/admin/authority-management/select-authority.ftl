@@ -69,7 +69,9 @@
     </table>
 </#macro>
 <script type="text/javascript">
-    $(applyZebraColors);
+    $(document).ready(function() {
+        applyZebraColors();
+    });
 </script>
 
 <div id="errors">

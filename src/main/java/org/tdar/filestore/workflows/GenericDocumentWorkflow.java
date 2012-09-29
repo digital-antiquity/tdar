@@ -24,7 +24,8 @@ public class GenericDocumentWorkflow extends BaseWorkflow {
 	}
 
 	public GenericDocumentWorkflow() {
-		registerFileExtension("doc", ResourceType.DOCUMENT);
+        registerFileExtension("rtf", ResourceType.DOCUMENT);
+        registerFileExtension("doc", ResourceType.DOCUMENT);
 		registerFileExtension("docx", ResourceType.DOCUMENT);
 		registerFileExtension("txt", ResourceType.DOCUMENT);
 		// don't register PDF, because it's duplicative of an actual workflow that handles tihs.

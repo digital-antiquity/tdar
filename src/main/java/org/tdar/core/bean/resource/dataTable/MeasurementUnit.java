@@ -1,6 +1,8 @@
 package org.tdar.core.bean.resource.dataTable;
 
-public enum MeasurementUnit {
+import org.tdar.core.bean.HasLabel;
+
+public enum MeasurementUnit implements HasLabel {
 
     KILOGRAM("kilogram", "kg"),
     GRAM("gram", "g"),
@@ -24,6 +26,10 @@ public enum MeasurementUnit {
     private MeasurementUnit(String label, String simple) {
         this.setFullName(label);
         this.setShortName(simple);
+    }
+
+    public String getLabel() {
+        return getFullName();
     }
 
     private void setFullName(String label) {

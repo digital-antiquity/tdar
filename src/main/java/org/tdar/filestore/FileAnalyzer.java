@@ -95,7 +95,7 @@ public class FileAnalyzer {
     public boolean processFile(InformationResourceFileVersion irFileVersion) throws Exception {
         Workflow workflow = getWorkflow(irFileVersion);
         if (workflow == null)
-            return false; //technically not sure if this should be true or not
+            return false; //could argue that this is true
         logger.debug("using workflow: {}", workflow);
         return messageService.sendFileProcessingRequest(irFileVersion, workflow);
     }

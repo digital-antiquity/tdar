@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.tasks.LoggingTask;
 import org.tdar.filestore.tasks.Task;
@@ -28,7 +27,7 @@ import org.tdar.filestore.tasks.Task;
  */
 public interface Workflow {
 
-    public boolean run(WorkflowContext context) throws Exception;
+    public boolean run(WorkflowContext workflowContext) throws Exception;
 
     public Set<String> getValidExtensions();
 
@@ -45,13 +44,14 @@ public interface Workflow {
     public Set<String> getValidExtensionsForResourceType(ResourceType type);
 
     public abstract static class BaseWorkflow implements Workflow {
+        // private WorkflowContext workflowContext;
         private Map<WorkflowPhase, List<Class<? extends Task>>> workflowPhaseToTasks = new HashMap<WorkflowPhase, List<Class<? extends Task>>>();
         // this appears to be a folded version of resourceTypeToExtensions.values() ?
         private Set<String> extensions = new HashSet<String>();
         private Map<ResourceType, Set<String>> resourceTypeToExtensions = new HashMap<ResourceType, Set<String>>();
-        // were we expecting that these Workflows would be serializable?    
+        // were we expecting that these Workflows would be serializable?
         private final Logger logger = LoggerFactory.getLogger(getClass());
-        
+
         public BaseWorkflow() {
             addTask(LoggingTask.class, WorkflowPhase.CLEANUP);
         }
@@ -80,15 +80,20 @@ public interface Workflow {
                     } catch (Throwable e) {
                         message.append("Task Failed.");
                         successful = false;
-                        throw new TdarRecoverableRuntimeException(e.getMessage(), e);
+                        continue;
                     } finally {
                         workflowContext.logTask(task, message);
                         task.cleanup();
                     }
                 }
             }
+            workflowContext.setProcessedSuccessfully(successful);
             return successful;
         }
+
+        // public WorkflowContext getWorkflowContext() {
+        // return workflowContext;
+        // }
 
         public void addTask(Class<? extends Task> task, WorkflowPhase phase) {
             List<Class<? extends Task>> taskList = workflowPhaseToTasks.get(phase);
@@ -98,6 +103,10 @@ public interface Workflow {
             }
             taskList.add(task);
         }
+
+        // public void setWorkflowContext(WorkflowContext workflowContext) {
+        // this.workflowContext = workflowContext;
+        // }
 
         public Set<String> getValidExtensions() {
             return extensions;

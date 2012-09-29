@@ -4,37 +4,34 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.struts2.interceptor.ServletRequestAware;
+import org.apache.struts2.interceptor.ServletResponseAware;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.AuthenticationToken;
-import org.tdar.core.bean.keyword.GeographicKeyword;
-import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.DataIntegrationService;
 import org.tdar.core.service.EntityService;
+import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.SearchIndexService;
 import org.tdar.core.service.SearchService;
-import org.tdar.core.service.SimpleCachingService;
+import org.tdar.core.service.StatisticService;
 import org.tdar.core.service.UrlService;
-import org.tdar.core.service.keyword.CultureKeywordService;
-import org.tdar.core.service.keyword.GeographicKeywordService;
-import org.tdar.core.service.keyword.InvestigationTypeService;
-import org.tdar.core.service.keyword.MaterialKeywordService;
-import org.tdar.core.service.keyword.OtherKeywordService;
-import org.tdar.core.service.keyword.SiteNameKeywordService;
-import org.tdar.core.service.keyword.SiteTypeKeywordService;
-import org.tdar.core.service.keyword.TemporalKeywordService;
+import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.core.service.resource.CategoryVariableService;
 import org.tdar.core.service.resource.CodingSheetService;
 import org.tdar.core.service.resource.DataTableService;
@@ -47,29 +44,33 @@ import org.tdar.core.service.resource.OntologyNodeService;
 import org.tdar.core.service.resource.OntologyService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.utils.Pair;
 import org.tdar.web.SessionData;
 
+import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 
 /**
  * $Id$
- * 
- * Provides access to common service layer classes.
+ * <p>
+ * Base action class that provides access to the service layer, SessionData, and constants for custom result names.
+ * </p>
  * 
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
  */
 @Configuration
-public abstract class TdarActionSupport extends ActionSupport {
+public abstract class TdarActionSupport extends ActionSupport implements ServletRequestAware, ServletResponseAware {
 
     private static final long serialVersionUID = 7084489869489013998L;
 
+    // result name constants
     public static final String WAIT = "wait";
     public static final String SUCCESS_ASYNC = "SUCCESS_ASYNC";
-
-    public static final String NOT_FOUND = "not found";
+    public static final String NOT_FOUND = "not_found";
+    public static final String UNAUTHORIZED = "unauthorized";
+    public static final String AUTHENTICATED = "authenticated";
     public static final String GONE = "gone";
+    public static final String BAD_REQUEST = "badrequest";
 
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -82,8 +83,6 @@ public abstract class TdarActionSupport extends ActionSupport {
     @Autowired
     private transient CodingSheetService codingSheetService;
     @Autowired
-    private transient SimpleCachingService simpleCachingService;
-    @Autowired
     private transient OntologyService ontologyService;
     @Autowired
     private transient OntologyNodeService ontologyNodeService;
@@ -91,6 +90,10 @@ public abstract class TdarActionSupport extends ActionSupport {
     private transient BookmarkedResourceService bookmarkedResourceService;
     @Autowired
     private transient EntityService entityService;
+
+    @Autowired
+    private transient AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
+
     @Autowired
     private transient CategoryVariableService categoryVariableService;
     @Autowired
@@ -102,21 +105,7 @@ public abstract class TdarActionSupport extends ActionSupport {
     @Autowired
     private transient SearchService searchService;
     @Autowired
-    private transient OtherKeywordService otherKeywordService;
-    @Autowired
-    private transient CultureKeywordService cultureKeywordService;
-    @Autowired
-    private transient SiteNameKeywordService siteNameKeywordService;
-    @Autowired
-    private transient GeographicKeywordService geographicKeywordService;
-    @Autowired
-    private transient TemporalKeywordService temporalKeywordService;
-    @Autowired
-    private transient SiteTypeKeywordService siteTypeKeywordService;
-    @Autowired
-    private transient MaterialKeywordService materialKeywordService;
-    @Autowired
-    private transient InvestigationTypeService investigationTypeService;
+    private transient GenericKeywordService genericKeywordService;
     @Autowired
     private transient DataIntegrationService dataIntegrationService;
     @Autowired
@@ -131,10 +120,16 @@ public abstract class TdarActionSupport extends ActionSupport {
     private transient SearchIndexService searchIndexService;
     @Autowired
     private transient ResourceCollectionService resourceCollectionService;
+    @Autowired
+    private transient StatisticService statisticService;
 
     private transient List<String> stackTraces = new ArrayList<String>();
 
     private SessionData sessionData;
+
+    private HttpServletRequest servletRequest;
+
+    private HttpServletResponse servletResponse;
 
     public ProjectService getProjectService() {
         return projectService;
@@ -152,14 +147,6 @@ public abstract class TdarActionSupport extends ActionSupport {
         return ontologyService;
     }
 
-    public Map<ResourceType, Pair<Long,Double>> getResourceTypeCounts() {
-        return simpleCachingService.getHomepageCache().getResourceCount();
-    }
-
-    public Map<GeographicKeyword, Pair<Long, Double>> getISOCountryCount() {
-        return simpleCachingService.getHomepageCache().getCountryCount();
-    }
-
     public ResourceService getResourceService() {
         return resourceService;
     }
@@ -172,8 +159,18 @@ public abstract class TdarActionSupport extends ActionSupport {
         return entityService;
     }
 
+    public AuthenticationAndAuthorizationService getAuthenticationAndAuthorizationService() {
+        return authenticationAndAuthorizationService;
+    }
+
     public TdarConfiguration getTdarConfiguration() {
         return TdarConfiguration.getInstance();
+    }
+
+    public String getActionName() {
+        if (ActionContext.getContext() == null)
+            return null;
+        return ActionContext.getContext().getName();
     }
 
     public SessionData getSessionData() {
@@ -186,6 +183,38 @@ public abstract class TdarActionSupport extends ActionSupport {
 
     public void setSessionData(SessionData sessionData) {
         this.sessionData = sessionData;
+    }
+
+    public String getThemeDir() {
+        return TdarConfiguration.getInstance().getThemeDir();
+    }
+
+    public String getGoogleAnalyticsId() {
+        return TdarConfiguration.getInstance().getGoogleAnalyticsId();
+    }
+
+    public boolean getPrivacyControlsEnabled() {
+        return TdarConfiguration.getInstance().getPrivacyControlsEnabled();
+    }
+
+    public String getServerEnvironmentStatus() {
+        return TdarConfiguration.getInstance().getServerEnvironmentStatus();
+    }
+
+    public boolean isProduction() {
+        return TdarConfiguration.getInstance().getServerEnvironmentStatus().equalsIgnoreCase(TdarConfiguration.PRODUCTION);
+    }
+
+    public String getHelpUrl() {
+        return TdarConfiguration.getInstance().getHelpUrl();
+    }
+
+    public String getAboutUrl() {
+        return TdarConfiguration.getInstance().getAboutUrl();
+    }
+
+    public String getCommentsUrl() {
+        return TdarConfiguration.getInstance().getAboutUrl();
     }
 
     protected void clearAuthenticationToken() {
@@ -223,40 +252,12 @@ public abstract class TdarActionSupport extends ActionSupport {
         return informationResourceFileService;
     }
 
-    public OtherKeywordService getOtherKeywordService() {
-        return otherKeywordService;
-    }
-
-    public CultureKeywordService getCultureKeywordService() {
-        return cultureKeywordService;
-    }
-
-    public SiteNameKeywordService getSiteNameKeywordService() {
-        return siteNameKeywordService;
-    }
-
     public DataIntegrationService getDataIntegrationService() {
         return dataIntegrationService;
     }
 
-    public GeographicKeywordService getGeographicKeywordService() {
-        return geographicKeywordService;
-    }
-
-    public SiteTypeKeywordService getSiteTypeKeywordService() {
-        return siteTypeKeywordService;
-    }
-
-    public TemporalKeywordService getTemporalKeywordService() {
-        return temporalKeywordService;
-    }
-
-    public MaterialKeywordService getMaterialKeywordService() {
-        return materialKeywordService;
-    }
-
-    public InvestigationTypeService getInvestigationTypeService() {
-        return investigationTypeService;
+    public GenericKeywordService getGenericKeywordService() {
+        return genericKeywordService;
     }
 
     public GenericService getGenericService() {
@@ -289,11 +290,12 @@ public abstract class TdarActionSupport extends ActionSupport {
      * @param collection
      * @return
      */
-    protected List<String> toStringList(Collection<?> collection) {
+    protected List<String> toSortedStringList(Collection<?> collection) {
         ArrayList<String> stringList = new ArrayList<String>(collection.size());
         for (Object o : collection) {
             stringList.add(o.toString());
         }
+        Collections.sort(stringList);
         return stringList;
     }
 
@@ -307,6 +309,7 @@ public abstract class TdarActionSupport extends ActionSupport {
 
     protected void addActionErrorWithException(String message, Throwable exception) {
         String trace = getStackTrace(exception);
+
         getLogger().error("{}: {} -- {}", new Object[] { message, exception, trace });
         if (exception instanceof TdarRecoverableRuntimeException) {
             super.addActionError(exception.getMessage());
@@ -315,10 +318,10 @@ public abstract class TdarActionSupport extends ActionSupport {
         }
         stackTraces.add(trace);
     }
-    
+
     @Override
     public void addActionError(String message) {
-        logger.debug("ACTIONERROR:: {}",message);
+        logger.debug("ACTIONERROR:: {}", message);
         super.addActionError(message);
     }
 
@@ -334,11 +337,36 @@ public abstract class TdarActionSupport extends ActionSupport {
         return stackTraces;
     }
 
-    /**
-     * @return the resourceCollectionService
-     */
     public ResourceCollectionService getResourceCollectionService() {
         return resourceCollectionService;
+    }
+
+    public StatisticService getStatisticService() {
+        return statisticService;
+    }
+
+    protected HttpServletRequest getServletRequest() {
+        return servletRequest;
+    }
+
+    public void setServletRequest(HttpServletRequest servletRequest) {
+        this.servletRequest = servletRequest;
+    }
+
+    protected HttpServletResponse getServletResponse() {
+        return servletResponse;
+    }
+
+    public void setServletResponse(HttpServletResponse servletResponse) {
+        this.servletResponse = servletResponse;
+    }
+
+    protected final boolean isPostRequest() {
+        return "post".equalsIgnoreCase(servletRequest.getMethod());
+    }
+
+    protected final boolean isGetRequest() {
+        return !isPostRequest();
     }
 
 }

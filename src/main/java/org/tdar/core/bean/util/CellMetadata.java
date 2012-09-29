@@ -12,6 +12,9 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 
 /**
+ * This class is a proxy class that enables the BulkUpload process to map and manage the import process. The BulkUploadService
+ * scans the resource tree and then creates the CellMetadata classes to describe each field.
+ * 
  * @author Adam Brin
  * 
  */
@@ -176,7 +179,7 @@ public class CellMetadata implements Comparable<CellMetadata> {
     public void setOrder(int order) {
         this.order = order;
     }
-    
+
     public String getPropertyName() {
         if (name.indexOf(".") != -1) {
             return name.substring(name.lastIndexOf(".") + 1);

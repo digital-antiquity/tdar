@@ -9,18 +9,24 @@ package org.tdar.core.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
-import java.util.Map;
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.core.bean.keyword.GeographicKeyword;
+import org.tdar.core.bean.keyword.GeographicKeyword.Level;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.util.HomepageGeographicKeywordCache;
+import org.tdar.core.bean.util.HomepageResourceCountCache;
+import org.tdar.core.service.processes.RebuildHomepageCache;
 import org.tdar.core.service.resource.CodingSheetService;
+import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.utils.Pair;
 
 /**
  * @author Adam Brin
@@ -29,7 +35,10 @@ import org.tdar.utils.Pair;
 public class CachingServiceITCase extends AbstractControllerITCase {
 
     @Autowired
-    SimpleCachingService simpleCachingService;
+    ResourceService resourceService;
+
+    @Autowired
+    RebuildHomepageCache cache;
 
     @Autowired
     CodingSheetService codingSheetService;
@@ -45,39 +54,60 @@ public class CachingServiceITCase extends AbstractControllerITCase {
 
     @Test
     @Rollback
-    public void testCachingService() throws InstantiationException, IllegalAccessException {
+    public void testCachingService() throws Exception {
         Long count = countActive();
-        Map<ResourceType, Pair<Long, Double>> resourceCount = simpleCachingService.getHomepageCache().getResourceCount();
-        assertEquals(count, resourceCount.get(ResourceType.CODING_SHEET).getFirst());
+        cache.processBatch(Arrays.asList(-1L));
+        Long count_ = -1l;
+        count_ = updateCodingSheetCount(genericService.findAll(HomepageResourceCountCache.class));
+        assertEquals(count, count_);
 
         createAndSaveNewInformationResource(CodingSheet.class, false);
-        assertEquals(count, resourceCount.get(ResourceType.CODING_SHEET).getFirst());
+        count_ = updateCodingSheetCount(genericService.findAll(HomepageResourceCountCache.class));
+        assertEquals(count, count_);
 
-        simpleCachingService.taintAll();
-        resourceCount = simpleCachingService.getHomepageCache().getResourceCount();
-        assertFalse(count.equals(resourceCount.get(ResourceType.CODING_SHEET).getFirst()));
+        cache.processBatch(Arrays.asList(-1L));
+        count_ = updateCodingSheetCount(genericService.findAll(HomepageResourceCountCache.class));
+        assertFalse(count.equals(count_));
 
-        assertEquals(count.longValue() + 1L, resourceCount.get(ResourceType.CODING_SHEET).getFirst().longValue());
+        assertEquals(count.longValue(), count_ - 1l);
 
+    }
+
+    private Long updateCodingSheetCount(List<HomepageResourceCountCache> resourceCounts) {
+        Long count_ = -1L;
+        for (HomepageResourceCountCache cache_ : resourceCounts) {
+            if (cache_.getResourceType() == ResourceType.CODING_SHEET) {
+                count_ = cache_.getCount();
+            }
+        }
+        return count_;
     }
 
     @Test
     @Rollback
-    @SuppressWarnings("static-access")
-    public void testCachingService2() throws InstantiationException, IllegalAccessException {
-        simpleCachingService.taintAll();
-        Number count = countActive();
-        Map<ResourceType, Pair<Long, Double>> resourceCount = simpleCachingService.getHomepageCache().getResourceCount();
-        assertEquals(count, resourceCount.get(ResourceType.CODING_SHEET).getFirst());
+    public void testCachingServiceGeo() throws Exception {
+        cache.processBatch(Arrays.asList(-1L));
+        List<HomepageGeographicKeywordCache> findAll = genericService.findAll(HomepageGeographicKeywordCache.class);
+        final Long count = new Long(findAll.size());
+        Long count_ = count;
+        CodingSheet cs = createAndSaveNewInformationResource(CodingSheet.class, false);
+        GeographicKeyword mgc = new GeographicKeyword();
+        mgc.setLabel("test");
+        mgc.setLevel(Level.ISO_COUNTRY);
+        genericService.save(mgc);
+        cs.getManagedGeographicKeywords().add(mgc);
+        genericService.saveOrUpdate(cs);
+        genericService.synchronize();
+        count_ = new Long(findAll.size());
+        assertEquals(count, count_);
+        logger.info("list: {} ", findAll);
+        cache.processBatch(Arrays.asList(-1L));
+        findAll = genericService.findAll(HomepageGeographicKeywordCache.class);
+        count_ = new Long(findAll.size());
+        logger.info("list: {} ", findAll);
+        assertFalse(count.equals(count_));
 
-        createAndSaveNewInformationResource(CodingSheet.class, false);
-        assertEquals(count, resourceCount.get(ResourceType.CODING_SHEET).getFirst());
-
-        simpleCachingService.taintAllAndRebuild();
-        resourceCount = simpleCachingService.getHomepageCache().getResourceCount();
-        assertFalse(count.equals(resourceCount.get(ResourceType.CODING_SHEET).getFirst()));
-
-        assertEquals(count.longValue() + 1L, resourceCount.get(ResourceType.CODING_SHEET).getFirst().longValue());
+        assertEquals(count.longValue(), count_ - 1L);
 
     }
 

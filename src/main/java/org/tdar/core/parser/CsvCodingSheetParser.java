@@ -29,16 +29,14 @@ public class CsvCodingSheetParser implements CodingSheetParser {
 
     private final static Logger logger = Logger.getLogger(CsvCodingSheetParser.class);
 
-    public final static String[] SUPPORTED_FILE_EXTENSIONS = { "csv" };
-
-    public String[] getSupportedFileExtensions() {
-        return SUPPORTED_FILE_EXTENSIONS;
+    public CSVReader getReader(InputStream stream) {
+        return new CSVReader(new BufferedReader(new InputStreamReader(stream)));
     }
-
+    
     @Override
     public List<CodingRule> parse(CodingSheet codingSheet, InputStream stream) throws CodingSheetParserException {
         List<CodingRule> codingRules = new ArrayList<CodingRule>();
-        CSVReader reader = new CSVReader(new BufferedReader(new InputStreamReader(stream)));
+        CSVReader reader = getReader(stream);
         try {
             for (String[] ruleArray : reader.readAll()) {
                 if (ruleArray.length < 2) {

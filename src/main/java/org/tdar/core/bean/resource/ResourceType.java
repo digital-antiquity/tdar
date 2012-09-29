@@ -1,6 +1,7 @@
 package org.tdar.core.bean.resource;
 
 import org.apache.commons.lang.StringUtils;
+import org.tdar.core.bean.HasLabel;
 
 /**
  * $Id$
@@ -10,31 +11,33 @@ import org.apache.commons.lang.StringUtils;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
  */
-public enum ResourceType {
-    CODING_SHEET("Coding Sheet", "Dataset", CodingSheet.class),
-    DATASET("Dataset", "Dataset", Dataset.class),
-    DOCUMENT("Document", "Text", Document.class),
-    IMAGE("Image", "Still Image", Image.class),
-    SENSORY_DATA("Sensory Data", "Interactive Resource", SensoryData.class),
-    ONTOLOGY("Ontology", "Dataset", Ontology.class),
-    PROJECT("Project", Project.class);
+public enum ResourceType implements HasLabel {
+    CODING_SHEET("Coding Sheet", 7, "Dataset", CodingSheet.class),
+    DATASET("Dataset", 3, "Dataset", Dataset.class),
+    DOCUMENT("Document", 1, "Text", Document.class),
+    IMAGE("Image", 2, "Still Image", Image.class),
+    SENSORY_DATA("Sensory Data", 5, "Interactive Resource", SensoryData.class),
+    ONTOLOGY("Ontology", 6, "Dataset", Ontology.class),
+    PROJECT("Project", 4, Project.class);
 
     private final String label;
     private final String dcmiTypeString;
+    private int order;
     private final Class<? extends Resource> resourceClass;
 
-    private ResourceType(String label, Class<? extends Resource> resourceClass) {
-        this(label, "", resourceClass);
+    private ResourceType(String label, int order, Class<? extends Resource> resourceClass) {
+        this(label, order, "", resourceClass);
     }
 
-    private ResourceType(String label, String dcmiTypeString, Class<? extends Resource> resourceClass) {
+    private ResourceType(String label, int order, String dcmiTypeString, Class<? extends Resource> resourceClass) {
         this.label = label;
+        this.setOrder(order);
         this.dcmiTypeString = dcmiTypeString;
         this.resourceClass = resourceClass;
     }
-    
+
     public String getPlural() {
-        switch(this) {
+        switch (this) {
             case ONTOLOGY:
                 return "Ontologies";
             case SENSORY_DATA:
@@ -46,6 +49,10 @@ public enum ResourceType {
 
     public boolean isDataset() {
         return this == DATASET;
+    }
+
+    public String getSortName() {
+        return this.order + this.name();
     }
 
     public boolean isSensoryData() {
@@ -115,5 +122,13 @@ public enum ResourceType {
 
     public Class<? extends Resource> getResourceClass() {
         return resourceClass;
+    }
+
+    public int getOrder() {
+        return order;
+    }
+
+    public void setOrder(int order) {
+        this.order = order;
     }
 }

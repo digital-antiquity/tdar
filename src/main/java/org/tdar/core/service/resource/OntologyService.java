@@ -8,7 +8,9 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
@@ -40,6 +42,7 @@ import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.dataTable.DataTableColumn;
 import org.tdar.core.dao.resource.OntologyDao;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.parser.OwlApiHierarchyParser;
 import org.tdar.utils.Pair;
@@ -56,12 +59,14 @@ import org.tdar.utils.Pair;
 @Transactional
 public class OntologyService extends AbstractInformationResourceService<Ontology, OntologyDao> {
 
-    // regex that matches if String contains one or more characters invalid in a
-    // regex.
-    // FIXME: allow all valid characters from
-    // http://www.ietf.org/rfc/rfc3987.txt
-    // also, double check that we can only allow % if necessary.pn
-    public final static String IRI_INVALID_CHARACTERS_REGEX = "[^\\w().~%-]+";
+    // FIXME: allow all valid characters for ifragments in http://www.ietf.org/rfc/rfc3987.txt ?  
+    // some of these throw errors out from the OWLParser, (e.g., / and ?)
+    // IRI            = scheme ":" ihier-part [ "?" iquery ] [ "#" ifragment ]
+    // ipchar         = iunreserved / pct-encoded / sub-delims / ":"
+    // iunreserved    = ALPHA / DIGIT / "-" / "." / "_" / "~" / ucschar
+    // ifragment      = *( ipchar / "/" / "?" ) 
+    // regex that matches if String contains one or more characters invalid in an IRI
+    public final static String IRI_INVALID_CHARACTERS_REGEX = "[^\\w~.-]";
 
     public final static Pattern TAB_PREFIX_PATTERN = Pattern.compile("^(\\t+).*$");
     public static final String SYNONYM_SPLIT_REGEX = ";";
@@ -103,6 +108,17 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
         return getDao().findSparseResourceBySubmitterType(null, ResourceType.ONTOLOGY);
     }
 
+    public void testOntologyNodesUnique(ArrayList<String> nodeList) {
+        Set<String> uniqueSet = new HashSet<String>(nodeList);
+
+        logger.debug("unique: {} incoming: {}",uniqueSet.size(),nodeList.size());
+        if (nodeList.size() != uniqueSet.size()) {
+            throw new TdarRecoverableRuntimeException(String.format("Ontology node names must be unique, %s incoming %s unique names",
+                    nodeList.size(), uniqueSet.size()));
+        }
+   
+    }
+    
     /**
      * Parses the OWL file associated with the given Ontology and indexes them
      * in the database.
@@ -274,7 +290,7 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
 
     }
 
-    private OWLOntology loadFromIRI(IRI iri) {
+    protected OWLOntology loadFromIRI(IRI iri) {
         try {
             return owlOntologyManager.loadOntologyFromOntologyDocument(iri);
         } catch (UnparsableOntologyException exception) {
@@ -290,10 +306,10 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
     }
 
     public String labelToFragmentId(String label) {
-        if (StringUtils.isBlank(label))
-            return "";
-        return label.trim().replaceAll(IRI_INVALID_CHARACTERS_REGEX, "_");
-    }
+	    if (StringUtils.isBlank(label))
+	        return "";
+	    return label.trim().replaceAll(IRI_INVALID_CHARACTERS_REGEX, "_");
+	}
 
     /**
      * Returns the number of tabs at the beginning of this string.
@@ -330,7 +346,8 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
         builder.append(startStr);
 
         ArrayList<String> parentList = new ArrayList<String>();
-
+        ArrayList<String> nodeList = new ArrayList<String>();
+        
         String line;
         BufferedReader reader = new BufferedReader(new StringReader(inputString));
         try {
@@ -360,6 +377,7 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
                 }
                 String displayLabel = line.trim();
                 line = labelToFragmentId(line);
+                nodeList.add(line);
                 if (currentDepth == 0) {
                     // root node
                     // format style
@@ -399,6 +417,8 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
         } catch (IOException e) {
             e.printStackTrace();
         }
+        
+        testOntologyNodesUnique(nodeList);
         return builder.append(ONTOLOGY_END_STRING).toString();
     }
 

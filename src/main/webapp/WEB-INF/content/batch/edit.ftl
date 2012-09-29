@@ -2,7 +2,7 @@
 <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
 <head>
 <title>Batch Upload Documents or Images</title>
-<meta name="lastModifiedDate" content="$Date: 2011-04-08 18:00:39 -0700 (Fri, 08 Apr 2011) $"/>
+<meta name="lastModifiedDate" content="$Date$"/>
 
 <@edit.resourceJavascript formId='#BulkMetadataForm' includeAsync=true includeInheritance=true/>
 
@@ -17,7 +17,7 @@
 <br/>
 <@s.select labelposition='left' label='Language'  name='resourceLanguage'  emptyOption='false' listValue='label' list='%{languages}'/>
 <br/>
-<@s.hidden labelposition='left' id='dateCreated' label='Year Created' name='image.dateCreated' cssClass="" value="-100"/>
+<@s.hidden labelposition='left' id='dateCreated' label='Year Created' name='image.date' cssClass="" value="-100"/>
 
 <@s.hidden id='ImageDescription' name='image.description' value="placeholder description"/>
 
@@ -51,7 +51,7 @@ $(function(){
             one file. Documents must be in the following types: xls,xlsx">
              <h4>Instructions:</h4>
             <ol>
-              <li><a href="template" target="_blank">Download</a> the template file (<a href="template" target="_blank">link</a>).</li>
+              <li><a href="template" onClick="navigateTempIgnore()">Download</a> the template file (<a href="template" onClick="navigateTempIgnore()">link</a>).</li>
               <li>create a row for each file you're uploading</li>
               <li>the first column should always be the filename the record references [eg. document1.pdf ]</li>
               <li>enter in any other metadata by using the field names specified.</li>

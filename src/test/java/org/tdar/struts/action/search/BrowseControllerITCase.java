@@ -3,12 +3,16 @@ package org.tdar.struts.action.search;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.apache.lucene.queryParser.ParseException;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.core.bean.entity.Creator;
+import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
@@ -30,27 +34,48 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
 
     @Test
     @Rollback
-    public void testBrowseControllerPeople() throws InstantiationException, IllegalAccessException, ParseException {
+    public void testBrowsePersonWithResults() throws InstantiationException, IllegalAccessException, ParseException {
+        testBrowseController(getAdminUser());
+    }
+    
+    @Test
+    @Rollback
+    public void testBrowseInstitutionWithResults() throws InstantiationException, IllegalAccessException, ParseException {
+        Institution institution = new Institution("testBrowseControllerInstitution");
+        entityService.save(institution);
+        testBrowseController(institution);
+    }
+    
+    @Test
+    @Rollback
+    public void testBrowseInstitutionWithResultsViaResourceProvider() throws Exception {
+        Institution institution = new Institution("testBrowseControllerInstitution");
+        entityService.save(institution);
         Document doc = genericService.find(Document.class, setupDatedDocument());
-        ResourceCreator rc = new ResourceCreator(doc, getAdminUser(), ResourceCreatorRole.AUTHOR);
-        assertTrue(rc.isValid());
-        genericService.saveOrUpdate(rc);
-        doc.getResourceCreators().add(rc);
+        doc.setResourceProviderInstitution(institution);
         genericService.saveOrUpdate(doc);
-        boolean ex = false;
-        // try {
-        // searchIndexService.index( doc);
-        // } catch (TdarRecoverableRuntimeException e) {
-        // ex = true;
-        // }
-        // assertTrue("exception was thrown", ex);
         searchIndexService.index(doc);
+        controller.setId(institution.getId());
+        controller.browseCreators();
+        List<Creator> results = controller.getResults();
+        assertTrue(results.contains(doc));
+    }
+    
+    @Test
+    @Rollback
+    public void testNewCreatorHasNoResourceAssociations() throws ParseException {
+        Creator creator = createAndSaveNewPerson("testNewPersonHasNoResourceAssociations@tdar.org", "");
+        controller.setId(creator.getId());
+        controller.browseCreators();
+        assertEquals(0, controller.getResults().size());
+
         initController();
-        controller.setId(getAdminUserId());
-        assertEquals(TdarActionSupport.SUCCESS, controller.browseCreators());
-        assertEquals(getAdminUser(), controller.getCreator());
-        log.info(controller.getResults());
-        assertTrue(controller.getResults().size() > 0);
+        creator = new Institution("testNewCreatorHasNoResourceAssociations");
+        entityService.save(creator);
+        controller.setId(creator.getId());
+        controller.browseCreators();
+        assertEquals(0, controller.getResults().size());
+        
     }
 
     @Override
@@ -58,4 +83,18 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
         return getBasicUser();
     }
 
+    private void testBrowseController(Creator creator) throws InstantiationException, IllegalAccessException, ParseException {
+        Document doc = genericService.find(Document.class, setupDatedDocument());
+        ResourceCreator rc = new ResourceCreator(doc, creator, ResourceCreatorRole.CONTRIBUTOR);
+        assertTrue(rc.isValid());
+        genericService.saveOrUpdate(rc);
+        doc.getResourceCreators().add(rc);
+        genericService.saveOrUpdate(doc);
+        searchIndexService.index(doc);
+        controller.setId(creator.getId());
+        assertEquals(TdarActionSupport.SUCCESS, controller.browseCreators());
+        assertEquals(creator, controller.getCreator());
+        log.info(controller.getResults());
+        assertTrue(controller.getResults().size() > 0);
+    }
 }

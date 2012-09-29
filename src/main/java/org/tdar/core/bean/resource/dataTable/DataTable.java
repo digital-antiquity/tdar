@@ -3,7 +3,9 @@ package org.tdar.core.bean.resource.dataTable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -14,23 +16,34 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.hibernate.annotations.Type;
+import org.hibernate.search.annotations.Analyzer;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.IndexedEmbedded;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.Dataset;
+import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
+import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
- * 
- * A representation of a data table in tDAR.
+ * $Id$
+ * <p>
+ * A DataTable belonging to a Dataset and carrying a list of ordered DataTableColumns and descriptive metadata.
+ * </p>
  * 
  * @author <a href='Yan.Qi@asu.edu'>Yan Qi</a>
  * @version $Revision$
- * @latest $Id$
  */
 @Entity
 @Table(name = "data_table")
+@XmlRootElement
 public class DataTable extends Persistable.Base {
 
     private static final long serialVersionUID = -4875482933981074863L;
@@ -41,6 +54,8 @@ public class DataTable extends Persistable.Base {
     @Column(nullable = false)
     private String name;
 
+    @Field
+    @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     @Column(name = "display_name")
     private String displayName;
 
@@ -53,27 +68,19 @@ public class DataTable extends Persistable.Base {
 
     @ManyToOne
     @JoinColumn(name = "category_variable_id")
+    @IndexedEmbedded
     private CategoryVariable categoryVariable;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dataTable")
+    @IndexedEmbedded
     private List<DataTableColumn> dataTableColumns = new ArrayList<DataTableColumn>();
 
-    /**
-     * Default constructor, needed by JPA/Hibernate.
-     */
-    public DataTable() {
-    }
+    private transient Map<String, DataTableColumn> nameToColumnMap;
+    private transient Map<String, DataTableColumn> displayNameToColumnMap;
+    private transient int dataTableColumnHashCode = -1;
 
-    /**
-     * Constructs a data table associated with the given {@link Dataset}.
-     * 
-     * @param dataset 
-     */
-    public DataTable(Dataset dataset) {
-        setDataset(dataset);
-    }
-
-    @XmlIDREF
+    @XmlElement(name = "resourceRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public Dataset getDataset() {
         return dataset;
     }
@@ -90,6 +97,8 @@ public class DataTable extends Persistable.Base {
         this.name = name;
     }
 
+    @XmlElementWrapper(name = "dataTableColumns")
+    @XmlElement(name = "dataTableColumn")
     public List<DataTableColumn> getDataTableColumns() {
         return dataTableColumns;
     }
@@ -106,16 +115,17 @@ public class DataTable extends Persistable.Base {
     public List<DataTableColumn> getSortedDataTableColumns() {
         return getSortedDataTableColumns(new Comparator<DataTableColumn>() {
             public int compare(DataTableColumn a, DataTableColumn b) {
-                if (a.getSequenceNumber() == null || b.getSequenceNumber() == null) {
+                int comparison = a.compareTo(b);
+                if (comparison == 0) {
                     return a.getDisplayName().compareTo(b.getDisplayName());
                 }
-                return a.getSequenceNumber().compareTo(b.getSequenceNumber());
+                return comparison;
             }
-       });
+        });
     }
 
     public List<DataTableColumn> getSortedDataTableColumns(Comparator<DataTableColumn> comparator) {
-        ArrayList<DataTableColumn> sortedDataTableColumns = new ArrayList<DataTableColumn>(dataTableColumns);
+        ArrayList<DataTableColumn> sortedDataTableColumns = new ArrayList<DataTableColumn>(getDataTableColumns());
         Collections.sort(sortedDataTableColumns, comparator);
         return sortedDataTableColumns;
     }
@@ -167,17 +177,38 @@ public class DataTable extends Persistable.Base {
 
     @Transient
     public DataTableColumn getColumnByName(String name) {
-        for (DataTableColumn column : getDataTableColumns()) {
-            if (column.getName().equals(name))
-                return column;
+        if (nameToColumnMap == null || ObjectUtils.notEqual(dataTableColumnHashCode, getDataTableColumns().hashCode())) {
+            initializeNameToColumnMap();
         }
-        return null;
+        // NOTE: IF the HashCode is not implemented properly, on DataTableColumn, this may get out of sync
+        return nameToColumnMap.get(name);
+    }
+
+    private void initializeNameToColumnMap() {
+        nameToColumnMap = new HashMap<String, DataTableColumn>();
+        displayNameToColumnMap = new HashMap<String, DataTableColumn>();
+        // using the HashCode to detect changes to the map, and thus rebuid
+        dataTableColumnHashCode = getDataTableColumns().hashCode();
+        for (DataTableColumn column : getDataTableColumns()) {
+            nameToColumnMap.put(column.getName(), column);
+            displayNameToColumnMap.put(column.getDisplayName(), column);
+        }
+        nameToColumnMap.put(DataTableColumn.TDAR_ROW_ID.getName(), DataTableColumn.TDAR_ROW_ID);
+        displayNameToColumnMap.put(DataTableColumn.TDAR_ROW_ID.getDisplayName(), DataTableColumn.TDAR_ROW_ID);
     }
 
     @Transient
     public DataTableColumn getColumnByDisplayName(String name) {
+        if (displayNameToColumnMap == null || ObjectUtils.notEqual(dataTableColumnHashCode, getDataTableColumns().hashCode())) {
+            initializeNameToColumnMap();
+        }
+        return displayNameToColumnMap.get(name);
+    }
+
+    @Transient
+    public DataTableColumn getColumnById(Long id) {
         for (DataTableColumn column : getDataTableColumns()) {
-            if (column.getDisplayName().equals(name))
+            if (column.getId().equals(id))
                 return column;
         }
         return null;

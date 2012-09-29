@@ -8,7 +8,6 @@ import java.util.Set;
 
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.InformationResourceFile;
@@ -17,8 +16,6 @@ import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.struts.data.FileProxy;
-import org.tdar.transform.DcTransformer;
-import org.tdar.transform.ModsTransformer;
 
 /**
  * $Id$
@@ -38,11 +35,6 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
     private static final long serialVersionUID = 4320412741803278996L;
 
     private List<Ontology> allSubmittedOntologies;
-
-    @Autowired
-    private transient ModsTransformer.OntologyTransformer ontologyModsTransformer;
-    @Autowired
-    private transient DcTransformer.OntologyTransformer ontologyDcTransformer;
 
     @Override
     protected FileProxy createUploadedFileProxy(String fileTextInput) throws UnsupportedEncodingException {
@@ -93,16 +85,6 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
 
     public Ontology getOntology() {
         return getPersistable();
-    }
-
-    @Override
-    public DcTransformer<Ontology> getDcTransformer() {
-        return ontologyDcTransformer;
-    }
-
-    @Override
-    public ModsTransformer<Ontology> getModsTransformer() {
-        return ontologyModsTransformer;
     }
 
     @Override

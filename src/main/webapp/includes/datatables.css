@@ -329,6 +329,10 @@ td.details {
     background-color: #99B3FF;
 }
 
+span.paginate_active {
+	color: #333 !important;
+}
+
 table.display tr.even.row_selected td {
     background-color: #B0BED9;
 }

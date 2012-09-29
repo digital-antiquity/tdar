@@ -2,9 +2,10 @@ package org.tdar.struts.action;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Result;
@@ -20,13 +21,18 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.external.auth.InternalTdarRights;
+import org.tdar.struts.WriteableSession;
 import org.tdar.struts.action.resource.AbstractResourceController;
 
 import com.opensymphony.xwork2.Preparable;
 
+import static org.tdar.core.bean.Persistable.Base.*;
+
 /**
- * $Id: AbstractResourceController.java 2695 2011-08-05 18:30:32Z abrin $
+ * $Id$
  * 
  * Provides basic metadata support for controllers that manage subtypes of
  * Resource.
@@ -34,20 +40,23 @@ import com.opensymphony.xwork2.Preparable;
  * Don't extend this class unless you need this metadata to be set.
  * 
  * 
- * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
- * @version $Revision: 2695 $
+ * @author Adam Brin, <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
+ * @version $Revision$
  */
 @Results({ @Result(name = AbstractResourceController.REDIRECT_HOME, type = "redirect", location = URLConstants.HOME),
         @Result(name = AbstractResourceController.REDIRECT_PROJECT_LIST, type = "redirect", location = URLConstants.DASHBOARD) })
-public abstract class AbstractPersistableController<P extends Persistable> extends AuthenticationAware.Base implements Preparable {
+public abstract class AbstractPersistableController<P extends Persistable> extends AuthenticationAware.Base implements Preparable, CrudAction<P> {
 
     public static final String CONFIRM = "confirm";
     public static final String DELETE_CONSTANT = "delete";
     private static final long serialVersionUID = -559340771608580602L;
     private Long startTime = -1L;
     private String delete;
+    private String deletionReason;
+    private String submitAction;
     private P persistable;
     private Long id;
+    private String saveSuccessPath = "view";
     @SuppressWarnings("unused")
     private Class<P> persistableClass;
     public final static String msg = "%s is %s %s (%s): %s";
@@ -57,8 +66,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     private List<AuthorizedUser> authorizedUsers;
 
     protected P loadFromId(final Long id) {
-        setPersistable(getGenericService().find(getPersistableClass(), id));
-        return persistable;
+        return getGenericService().find(getPersistableClass(), id);
     }
 
     /**
@@ -103,40 +111,25 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     }
 
     public Collection<? extends Persistable> getDeleteIssues() {
-        return new ArrayList<Persistable>();
+        return Collections.emptyList();
     }
 
     @SkipValidation
-    @Action(value = "view", interceptorRefs = { @InterceptorRef("unAuthenticatedStack") }, results = { 
-                    @Result(name = SUCCESS, location = "view.ftl"),
-                    @Result(name = GONE, location = "/WEB-INF/content/resource-deleted.ftl"),
-                    @Result(name = NOT_FOUND, location = "/WEB-INF/content/page-not-found.ftl") })
-    public String view() {
-        String toReturn = validateViewRequest();
-        //a "new" record (id == -1) is not appropriate for a view page
-        if(toReturn == SUCCESS)
-        {
-            toReturn = loadMetadata();
-            loadExtraViewMetadata();
-        }
-        return toReturn;
-    }
-    
-    //return SUCCESS if request is valid for a "view" type action (the persistable must not be null or 'new').
-    protected String validateViewRequest() {
-        String toReturn = SUCCESS;
-        if(getPersistable() == null) {
-            getServletResponse().setStatus(HttpStatus.SC_NOT_FOUND);
-            toReturn = NOT_FOUND;
-        } else if(getPersistable().getId() == -1) {
-            //show the user "not found" page,  but use "bad request" page for more informative logging.
-            getServletResponse().setStatus(HttpStatus.SC_BAD_REQUEST); 
-            toReturn = NOT_FOUND;
-        }
-        if(toReturn != SUCCESS) {
-            logger.warn("view page requested without valid ID. Request was '{}' ", getServletRequest().getQueryString());            
-        }
-        return toReturn;
+    @Action(value = "view",
+        interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
+        results = {
+            @Result(name = SUCCESS, location = "view.ftl"),
+            @Result(name = INPUT, type="httpheader", params={"error", "404"}),
+            @Result(name = "draft", location = "/WEB-INF/content/errors/resource-in-draft.ftl")
+    })
+    public String view() throws TdarActionException {
+        String resultName = SUCCESS;
+        // ensureValidViewRequest();
+        checkValidRequest(RequestType.VIEW, this, InternalTdarRights.VIEW_ANYTHING);
+        // checkValidRequest(UserIs.ANYONE, UsersCanModify.NONE, isViewable(), InternalTdarRights.VIEW_ANYTHING);
+        resultName = loadMetadata();
+        loadExtraViewMetadata();
+        return resultName;
     }
 
     /*
@@ -149,7 +142,8 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     @SkipValidation
     @Action(value = "add", results = { @Result(name = SUCCESS, location = "edit.ftl"),
             @Result(name = INPUT, type = "redirect", location = "edit") })
-    public String add() {
+    public String add() throws TdarActionException {
+        checkValidRequest(RequestType.CREATE, this, InternalTdarRights.EDIT_ANY_RESOURCE);
         logAction("CREATING");
         return SUCCESS;
     }
@@ -157,41 +151,36 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     @SkipValidation
     @Action(value = DELETE_CONSTANT, results = { @Result(name = SUCCESS, type = "redirect", location = URLConstants.DASHBOARD),
             @Result(name = CONFIRM, location = "/WEB-INF/content/confirm-delete.ftl") })
-    public String delete() {
-        checkSession();
-        if (getServletRequest() != null && getServletRequest().getMethod() != null
-                && getServletRequest().getMethod().equalsIgnoreCase("post")
-                && getDelete() != null && getDelete().equals(DELETE_CONSTANT)) {
+    @WriteableSession
+    public String delete() throws TdarActionException {
+        if (isPostRequest() && DELETE_CONSTANT.equals(getDelete())) {
+        	try {
+        		checkValidRequest(RequestType.DELETE, this, InternalTdarRights.DELETE_RESOURCES);
+        		if (CollectionUtils.isNotEmpty(getDeleteIssues())) {
+        			addActionError("cannot delete item because references still exist");
+        			return CONFIRM;
+        		}
+        		logAction("DELETING");
+        		// FIXME: deleteCustom might as well just return a boolean in this current implementation
+        		// should we return the result name specified by deleteCustom() instead?
+        		if (deleteCustom() != SUCCESS)
+        			return ERROR;
 
-            try {
-                if (isNullOrNew()) {
-                    logger.warn("Null item, turning delete into a no-op");
-                    return REDIRECT_HOME;
-                } else if (!isEditable() && !isAdministrator()) {
-                    String msg = String.format("user %s does not have the rights to delete this resource %d", getAuthenticatedUser(), getPersistable().getId());
-                    logger.warn(msg);
-                    return REDIRECT_HOME;
-                }
-
-                if (getDeleteIssues() != null && getDeleteIssues().size() > 0) {
-                    addActionError("cannot delete item because references still exist");
-                    return CONFIRM;
-                }
-                logAction("DELETING");
-                if (deleteCustom() != SUCCESS)
-                    return ERROR;
-
-                delete(persistable);
-                if (persistable instanceof HasStatus) {
-                    ((HasStatus) persistable).setStatus(Status.DELETED);
-                    getGenericService().saveOrUpdate(persistable);
-                } else {
-                    getGenericService().delete(persistable);
-                }
-                // purgeFromArchive(resource);
-            } catch (Exception e) {
-                addActionErrorWithException("could not delete " + getPersistableClass().getSimpleName(), e);
-            }
+        		delete(persistable);
+        		// FIXME: push this logic to the service layer
+        		if (persistable instanceof HasStatus) {
+        			((HasStatus) persistable).setStatus(Status.DELETED);
+        			getGenericService().saveOrUpdate(persistable);
+        		} else {
+        			getGenericService().delete(persistable);
+        		}
+        	}
+        	catch (TdarActionException exception) {
+        		throw exception;
+        	}
+        	catch (Exception e) {
+        		addActionErrorWithException("could not delete " + getPersistableClass().getSimpleName(), e);
+        	}
             return SUCCESS;
         }
         return CONFIRM;
@@ -205,35 +194,38 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     }
 
     @Action(value = "save", results = {
-            @Result(name = SUCCESS, type = "redirect", location = "view?id=${persistable.id}"),
+            @Result(name = SUCCESS, type = "redirect", location = "${saveSuccessPath}?id=${persistable.id}"),
             @Result(name = SUCCESS_ASYNC, location = "view-async.ftl"),
             @Result(name = INPUT, location = "edit.ftl")
     })
-    public String save() {
-        checkSession();
+    @WriteableSession
+    public String save() throws TdarActionException {
+        // checkSession();
         String actionReturnStatus = SUCCESS;
         logAction("SAVING");
         long currentTimeMillis = System.currentTimeMillis();
-        boolean isNew = true;
+        boolean isNew = false;
         try {
-            if (getPersistable() == null) {
-                logger.warn("Trying to save but {} was null, returning INPUT", getPersistableClass().getSimpleName());
-                return INPUT;
-            }
-            if (getPersistable().getId() != null && getPersistable().getId() > 0) {
-                isNew = false;
+            checkValidRequest(RequestType.SAVE, this, InternalTdarRights.EDIT_ANYTHING);
+
+            if (isNullOrNew()) {
+                isNew = true;
             }
             preSaveCallback();
-            // First time it to make sure that the record is valid for a save
             if (persistable instanceof Updatable) {
                 ((Updatable) persistable).markUpdated(getAuthenticatedUser());
             }
             actionReturnStatus = save(persistable);
-
-        } catch (Exception exception) {
-            addActionErrorWithException("Sorry, we were unable to save: " + getPersistable(), exception);
+        }
+        catch (TdarActionException exception) {
+        	throw exception;
+        }
+        catch (Exception exception) {
+        	addActionErrorWithException("Sorry, we were unable to save: " + getPersistable(), exception);
             return INPUT;
-        } finally {
+        }
+        finally {
+            // FIXME: make sure this doesn't cause issues with SessionSecurityInterceptor now handling TdarActionExceptions
             postSaveCleanup();
         }
         try {
@@ -251,18 +243,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         }
         logger.debug("EDIT TOOK: {} SAVE TOOK: {}", editTime, Math.abs(currentTimeMillis));
         return actionReturnStatus;
-    }
-
-    private void checkSession() {
-        try {
-            if (getSessionData().getAuthenticationToken().getId() > -1 && getSessionData().getPerson().getId() > -1) {
-                // ok good we have a session
-            } else {
-                addActionError("something wrong with the session, was it initialized properly?");
-            }
-        } catch (Exception e) {
-            addActionErrorWithException("something wrong with the session, was it initialized properly?", e);
-        }
     }
 
     private void logAction(String action_) {
@@ -285,7 +265,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         } catch (Exception e) {
             logger.debug("something weird happend, authenticated user is null");
         }
-
         logger.info(String.format(msg, email_, action_, getPersistableClass().getSimpleName().toUpperCase(), id_, name_));
     }
 
@@ -304,26 +283,194 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     @SkipValidation
     @Action(value = "edit", results = {
             @Result(name = SUCCESS, location = "edit.ftl"),
-            @Result(name = INPUT, location = "add", type = "redirect"),
-            @Result(name = UNAUTHORIZED, location = "/WEB-INF/content/unauthorized.ftl")
+            @Result(name = INPUT, location = "add", type = "redirect")
     })
-    public String edit() {
-        checkSession();
-        if (isNullOrNew()) {
-            logger.warn("Trying to edit but entity was null, returning INPUT");
-            return INPUT;
-        } else if (isEditable() || isAdministrator()) {
-            logAction("EDITING");
-            return loadMetadata();
-        } else {
-            addActionError(String
-                    .format("You do not have permissions to edit the %s (ID: %s)", getPersistableClass().getSimpleName(), getPersistable().getId()));
-            return UNAUTHORIZED;
-        }
+    public String edit() throws TdarActionException {
+        // ensureValidEditRequest();
+        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+
+        logAction("EDITING");
+        return loadMetadata();
     }
 
-    public boolean isEditable() {
+//    @SuppressWarnings("unused")
+//    private void ensureValidEditRequest() throws TdarActionException {
+//        // first make sure the user is even authenticated
+//        if (!getSessionData().isAuthenticated()) {
+//            abort(StatusCode.OK.withResultName(LOGIN), "Unauthenticated edit request.");
+//        }
+//        if (!isEditable()) {
+//            // we performed an authz check that failed (not a structural issue with the persistable)
+//            abort(StatusCode.UNAUTHORIZED,
+//                    String.format("You do not have permissions to edit %s (id: %s)", getPersistableClass().getSimpleName(), getPersistable().getId()));
+//        }
+//    }
+
+    protected enum RequestType {
+        EDIT(true),
+        CREATE(true),
+        DELETE(true),
+        MODIFY_EXISTING(true),
+        SAVE(true),
+        VIEW(false),
+        NONE(false);
+        private final boolean authenticationRequired;
+
+        private RequestType(boolean authenticationRequired) {
+            this.authenticationRequired = authenticationRequired;
+        }
+
+        public boolean isAuthenticationRequired() {
+            return authenticationRequired;
+        }
+
+    }
+
+    /**
+     * This method centralizes a lot of the logic around rights checking ensuring a valid session and rights if needed
+     * 
+     * @param RequestType
+     *            -- the type of request the user is making
+     * @param CrudAction
+     *            <P extends Persistable>
+     *            -- the action that we're going to call the check on
+     * @param adminRightsCheck
+     *            -- the adminRights associated with the basicCheck enabling an effective override
+     * @throws TdarActionException
+     *             -- this will contain the return status, if any SUCCESS vs. INVALID, INPUT, ETC
+     */
+    protected void checkValidRequest(RequestType userAction, CrudAction<P> action, InternalTdarRights adminRightsCheck)
+            throws TdarActionException {
+        // first check the session
+        Object[] msg = { action.getAuthenticatedUser(), userAction, action.getPersistableClass().getSimpleName() };
+        logger.trace("user {} is TRYING to {} a {}", msg);
+
+        if (userAction.isAuthenticationRequired()) {
+            try {
+                if (!getSessionData().isAuthenticated()) {
+                    addActionError("you must authenticate");
+                    abort(StatusCode.OK.withResultName(LOGIN), "you must authenticate");
+                }
+            } catch (Exception e) {
+                addActionErrorWithException("something wrong with the session, was it initialized properly?", e);
+                abort(StatusCode.OK.withResultName(LOGIN), "could not load item, no user on session");
+            }
+        }
+        
+        Persistable persistable = action.getPersistable();
+        if (isNullOrTransient(persistable)) {
+        // deal with the case that we have a new or not found resource
+            logger.debug("Dealing with transient persistable {}", persistable);
+            switch (userAction) {
+                case CREATE:
+                case SAVE:
+                    if (action.isCreatable()) {
+                        return;
+                    }
+                case EDIT:
+                default:
+
+                    if (persistable == null) {
+                        // persistable is null, so the lookup failed (aka not found)
+                        abort(StatusCode.NOT_FOUND, String.format("Sorry, the page you requested cannot be found"));
+                    } else if (persistable.getId() == -1) {
+                        // id not specified or not a number, so this is an invalid request
+                        abort(StatusCode.BAD_REQUEST, String.format(
+                                "Sorry, tDAR does not recognize this type of request on a %s ", persistable.getClass().getSimpleName()));
+                    }
+
+            }
+        }
+
+        // the admin rights check -- on second thought should be the fastest way to execute as it pulls from cached values
+        if (getAuthenticationAndAuthorizationService().can(adminRightsCheck, action.getAuthenticatedUser())) {
+            return;
+        }
+
+        switch (userAction) {
+            case CREATE:
+                if (action.isCreatable()) {
+                    return;
+                }
+                break;
+            case EDIT:
+            case MODIFY_EXISTING:
+                if (action.isEditable()) {
+                    return;
+                }
+                break;
+            case VIEW:
+                if (action.isViewable()) {
+                    return;
+                }
+                break;
+            case SAVE:
+                if (action.isSaveable()) {
+                    return;
+                }
+                break;
+            case DELETE:
+                if (action.isDeleteable()) {
+                    return;
+                }
+                break;
+        }
+        addActionError("user does not have permissions to perform the requested action");
+        abort(StatusCode.FORBIDDEN.withResultName(GONE), "could not load requested item (insufficient permissions -- may not be able to view deleted resources)");
+
+    }
+    
+    protected void abort(StatusCode statusCode, String errorMessage) throws TdarActionException {
+    	getServletResponse().setStatus(statusCode.getHttpStatusCode());
+    	throw new TdarActionException(statusCode, errorMessage);
+    }
+
+    /**
+     * Generic method enabling override for whether a record is viewable
+     * 
+     * @return boolean whether the user can VIEW this resource
+     * @throws TdarActionException
+     */
+    public boolean isViewable() throws TdarActionException {
+        return true;
+    }
+
+    public boolean isCreatable() throws TdarActionException {
+        return true;
+    }
+
+    /**
+     * Generic method enabling override for whether a record is editable
+     * 
+     * @return boolean whether the user can EDIT this resource
+     * @throws TdarActionException
+     */
+    public boolean isEditable() throws TdarActionException {
         return false;
+    }
+
+    /**
+     * Generic method enabling override for whether a record is deleteable
+     * 
+     * @return boolean whether the user can DELETE this resource (default calls isEditable)
+     * @throws TdarActionException
+     */
+    public boolean isDeleteable() throws TdarActionException {
+        return isEditable();
+    }
+
+    /**
+     * Generic method enabling override for whether a record is saveable
+     * 
+     * @return boolean whether the user can SAVE this resource (default is TRUE for NEW resources, calls isEditable for existing)
+     * @throws TdarActionException
+     */
+    public boolean isSaveable() throws TdarActionException {
+        if (isNullOrNew()) {
+            return true;
+        } else {
+            return isEditable();
+        }
     }
 
     /**
@@ -337,6 +484,8 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     }
 
     /**
+     * this is the "override" that gets set when a user clicks on the "confirm" button to confirm
+     * they want to delete a record
      * 
      * @return the delete
      */
@@ -366,18 +515,22 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
      * incoming resourceId param, and then re-apply params on that resource.
      */
     public void prepare() {
+
         if (isPersistableIdSet()) {
             logger.error("item id should not be set yet -- persistable.id:{}\t controller.id:{}", getPersistable().getId(), getId());
         }
         if (getId() == null || getId() == -1L) {
             setPersistable(createPersistable());
         } else {
-            setPersistable(loadFromId(getId()));
+
+            P p = loadFromId(getId());
+            // from a permissions standpoint... being really strict, we should mark this as read-only
+            // getGenericService().markReadOnly(p);
+            logger.trace("id:{}, persistable:{}", getId(), p);
+            setPersistable(p);
         }
+
     }
-    
-    
-    
 
     protected boolean isPersistableIdSet() {
         return getPersistable() != null && (getPersistable().getId() != null && getPersistable().getId() != -1L);
@@ -490,4 +643,37 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             }
         }
     }
+
+    /*
+     * This method returns the base URL for where a save should go, in 99% of the cases,
+     * this goes to <b>view</b>
+     */
+    public String getSaveSuccessPath() {
+        return saveSuccessPath;
+    }
+
+    /*
+     * This method sets the base URL for where a save should go, in 99% of the cases,
+     * this method should not be needed
+     */
+    public void setSaveSuccessPath(String successPath) {
+        this.saveSuccessPath = successPath;
+    }
+
+    public String getSubmitAction() {
+        return submitAction;
+    }
+
+    public void setSubmitAction(String submitAction) {
+        this.submitAction = submitAction;
+    }
+
+    public String getDeletionReason() {
+        return deletionReason;
+    }
+
+    public void setDeletionReason(String deletionReason) {
+        this.deletionReason = deletionReason;
+    }
+
 }

@@ -13,9 +13,12 @@
     </#list> 
   
   </#if>
-
-<#assign whatamideleting><#if persistable.resourceType??>${persistable.resourceType.label?lower_case}<#else>${persistableClass.simpleName}</#if></#assign>
-  <h2>Confirm deletion of ${whatamideleting}: ${persistable.name}</h2>
+<#if persistable.resourceType??>
+<#assign whatamideleting = persistable.resourceType.label?lower_case />
+<#else>
+<#assign whatamideleting = persistableClass.simpleName />
+</#if>
+  <h2>Confirm deletion of ${whatamideleting}: ${persistable.name?html}</h2>
   
   <#if persistable.resourceType?? && persistable.resourceType.label?lower_case != "project">
     <@view.projectAssociation resourceType="${persistable.resourceType.label?lower_case}" />
@@ -27,13 +30,16 @@
     <#if deleteIssues??>
       <#list deleteIssues as rsc>
         <#if !rsc.deleted?? || !rsc.deleted>  
-          <li>${rsc.id?c} - ${rsc.name} </li> 
+          <li>${rsc.id?c} - ${rsc.name?html} </li> 
         </#if>
       </#list> 
     </#if>
   
   <#else>
     <@s.form name='deleteForm' id='deleteForm'  method='post' action='delete'>
+    <h4>Please explain why you are deleting this record</h4>
+      <input type="textarea" name="deletionReason"                   cols='60' rows='3' maxlength='255' />
+    
       <h4>Are you sure you want to delete this <#if persistable.resourceType??>${persistable.resourceType.label?lower_case}</#if>?</h4>
 
       <@s.submit type="submit" name="delete" value="delete" />
@@ -41,7 +47,7 @@
     </@s.form>
   </#if>
  <#else>
- <h2>This resource has already been deleted <#if persistable.resourceType??>${persistable.resourceType.label?lower_case}</#if> ${persistable.name}</h2>
+ <h2>This resource has already been deleted <#if persistable.resourceType??>${persistable.resourceType.label?lower_case}</#if> ${persistable.name?html}</h2>
 
 </#if>
 

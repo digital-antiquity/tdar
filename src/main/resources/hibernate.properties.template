@@ -1,5 +1,7 @@
 hibernate.search.default.directory_provider=org.hibernate.search.store.FSDirectoryProvider
 hibernate.search.default.indexBase=indexes
+hibernate.search.analyzer=org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer
+hibernate.generate_statistics=true
 
 javax.persistence.jdbc.user=tdar
 javax.persistence.jdbc.password=

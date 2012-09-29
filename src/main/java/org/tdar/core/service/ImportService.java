@@ -64,20 +64,13 @@ import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.exception.APIException;
 import org.tdar.core.exception.StatusCode;
-import org.tdar.core.service.keyword.CultureKeywordService;
-import org.tdar.core.service.keyword.GeographicKeywordService;
-import org.tdar.core.service.keyword.InvestigationTypeService;
-import org.tdar.core.service.keyword.MaterialKeywordService;
-import org.tdar.core.service.keyword.OtherKeywordService;
-import org.tdar.core.service.keyword.SiteNameKeywordService;
-import org.tdar.core.service.keyword.SiteTypeKeywordService;
-import org.tdar.core.service.keyword.TemporalKeywordService;
+import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.filestore.FileAnalyzer;
-import org.tdar.geosearch.GeoSearchService;
+import org.tdar.search.geosearch.GeoSearchService;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.Pair;
 
@@ -85,6 +78,8 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
+ * The service that handles the import of info from the API into tDAR... Ideally this should be merged wih the BulkUploadService
+ * 
  * @author Adam Brin
  * 
  */
@@ -92,21 +87,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @Service
 public class ImportService {
     @Autowired
-    GeographicKeywordService geographicKeywordService;
-    @Autowired
-    OtherKeywordService otherKeywordService;
-    @Autowired
-    TemporalKeywordService temporalKeywordService;
-    @Autowired
-    SiteTypeKeywordService siteTypeKeywordService;
-    @Autowired
-    SiteNameKeywordService siteNameKeywordService;
-    @Autowired
-    InvestigationTypeService investigationTypeService;
-    @Autowired
-    MaterialKeywordService materialKeywordService;
-    @Autowired
-    CultureKeywordService cultureKeywordService;
+    GenericKeywordService genericKeywordService;
     @Autowired
     FileAnalyzer fileAnalyzer;
     @Autowired
@@ -115,6 +96,8 @@ public class ImportService {
     ResourceCollectionService resourceCollectionService;
     @Autowired
     EntityService entityService;
+    @Autowired
+    AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
     @Autowired
     GenericService genericService;
     @Autowired
@@ -145,9 +128,9 @@ public class ImportService {
 
     }
 
-    public Resource loadXMLFile(InputStream fileio, Person p, List<Pair<String, InputStream>> filePairs) throws ClassNotFoundException,
+    public Resource loadXMLFile(InputStream fileio, Person p, List<FileProxy> fileProxies) throws ClassNotFoundException,
             IOException, APIException {
-        return loadXMLFile(fileio, p, filePairs, null);
+        return loadXMLFile(fileio, p, fileProxies, null);
     }
 
     /**
@@ -166,17 +149,16 @@ public class ImportService {
         return loadXMLFile(new FileInputStream(filename), p, (Long) null);
     }
 
-    public Resource loadXMLFile(InputStream fileio, Person p, List<Pair<String, InputStream>> filePairs, Long overrideProjectId) throws ClassNotFoundException,
+    public Resource loadXMLFile(InputStream fileio, Person p, List<FileProxy> proxies, Long overrideProjectId) throws ClassNotFoundException,
             IOException, APIException {
         Resource incomingResource = loadXMLFile(fileio, p, overrideProjectId);
         Set<String> extensionsForType = fileAnalyzer.getExtensionsForType(ResourceType.fromClass(incomingResource.getClass()));
         if (incomingResource instanceof InformationResource) {
-            for (Pair<String, InputStream> filePair : filePairs) {
-                String ext = FilenameUtils.getExtension(filePair.getFirst()).toLowerCase();
+            for (FileProxy proxy : proxies) {
+                String ext = FilenameUtils.getExtension(proxy.getFilename()).toLowerCase();
                 if (!extensionsForType.contains(ext))
                     throw new APIException("invalid file type " + ext + " for resource type -- acceptable:"
-                            + StringUtils.join(extensionsForType, ", "), StatusCode.NOT_ALLOWED);
-                FileProxy proxy = new FileProxy(filePair.getFirst(), filePair.getSecond(), VersionType.UPLOADED, FileAction.ADD);
+                            + StringUtils.join(extensionsForType, ", "), StatusCode.FORBIDDEN);
                 informationResourceService.processFileProxy((InformationResource) incomingResource, proxy);
                 // informationResourceService.addOrReplaceInformationResourceFile((InformationResource) r, file.getSecond(), file.getFirst(),
                 // FileAction.REPLACE, VersionType.UPLOADED);
@@ -209,11 +191,13 @@ public class ImportService {
         created = populateFromExistingResource(person, xstreamResource);
 
         logger.debug("can edit record");
-        for (ResourceCreator resourceCreator : xstreamResource.getResourceCreators()) {
-            entityService.findOrSaveResourceCreator(resourceCreator);
+        if (CollectionUtils.isNotEmpty(xstreamResource.getResourceCreators())) {
+            for (ResourceCreator resourceCreator : xstreamResource.getResourceCreators()) {
+                entityService.findOrSaveResourceCreator(resourceCreator);
+            }
         }
 
-        saveSharedChildMetadata(xstreamResource,person);
+        saveSharedChildMetadata(xstreamResource, person);
 
         if (xstreamResource instanceof SupportsResource) {
             CategoryVariable categoryVariable = ((SupportsResource) xstreamResource).getCategoryVariable();
@@ -248,7 +232,7 @@ public class ImportService {
      * @param xstreamResource
      * @throws APIException
      */
-    private void saveSharedChildMetadata(Resource xstreamResource,Person user) throws APIException {
+    private void saveSharedChildMetadata(Resource xstreamResource, Person user) throws APIException {
         List<String> ignoreProperties = new ArrayList<String>(Arrays.asList("approved", "selectable"));
 
         // fixme if we have to do this for more ... we should make this nice and generic
@@ -290,7 +274,8 @@ public class ImportService {
         resourceService.saveHasResources(xstreamResource, false, ErrorHandling.VALIDATE_WITH_EXCEPTION, xstreamResource.getResourceAnnotations(),
                 xstreamResource.getResourceAnnotations(), ResourceAnnotation.class);
 
-        resourceCollectionService.saveSharedResourceCollections(xstreamResource, xstreamResource.getResourceCollections(), xstreamResource.getResourceCollections(),
+        resourceCollectionService.saveSharedResourceCollections(xstreamResource, xstreamResource.getResourceCollections(),
+                xstreamResource.getResourceCollections(),
                 user, false, ErrorHandling.VALIDATE_WITH_EXCEPTION);
 
     }
@@ -325,27 +310,26 @@ public class ImportService {
             }
 
             if (!xstreamResource.getResourceType().equals(oldRecord.getResourceType())) {
-                throw new APIException("incoming and existing resource types are different", StatusCode.NOT_ALLOWED);
+                throw new APIException("incoming and existing resource types are different", StatusCode.FORBIDDEN);
             }
 
             // check if the user can modify the record
-            if (!entityService.canEditResource(person, oldRecord)) {
+            if (!authenticationAndAuthorizationService.canEditResource(person, oldRecord)) {
                 throw new APIException("Permission Denied", StatusCode.UNAUTHORIZED);
             }
             logger.debug("updating existing record " + xstreamResource.getId());
             // remove old keywords ... and carry over values
             xstreamResource.setAccessCounter(oldRecord.getAccessCounter());
-            xstreamResource.setDateRegistered(oldRecord.getDateRegistered());
+            xstreamResource.setDateCreated(oldRecord.getDateCreated());
             xstreamResource.setSubmitter(oldRecord.getSubmitter());
 
-            for (ResourceCollection internalResourceCollection : oldRecord.getResourceCollections()) { 
-                oldRecord.getResourceCollections().remove(internalResourceCollection);
-                xstreamResource.getResourceCollections().add(internalResourceCollection);
-            }
+            xstreamResource.getResourceCollections().addAll(oldRecord.getResourceCollections());
+            //it is probably not necessary to clear the collections of from the orig. resource, but uncomment if I'm wrong
+            //oldRecord.getResourceCollections().clear();
 
             if (oldRecord instanceof InformationResource) {
                 Set<InformationResourceFile> files = new HashSet<InformationResourceFile>(((InformationResource) oldRecord).getInformationResourceFiles());
-                ((InformationResource) oldRecord).getInformationResourceFiles().clear();
+                //((InformationResource) oldRecord).getInformationResourceFiles().clear();
                 ((InformationResource) xstreamResource).getInformationResourceFiles().addAll(files);
             }
 
@@ -360,6 +344,10 @@ public class ImportService {
 
     public <G> void resolveManyToMany(Class<G> incomingClass, Collection<G> incomingCollection, List<String> ignoreProperties, boolean create)
             throws APIException {
+        if (CollectionUtils.isEmpty(incomingCollection)) {
+            return;
+        }
+
         // if just creating, then simple call (otherwise, dealing with validation)
         if (create) {
             Set<G> findByExamples = genericService.findByExamples(incomingClass, incomingCollection, ignoreProperties, FindOptions.FIND_FIRST_OR_CREATE);
@@ -370,7 +358,7 @@ public class ImportService {
             for (G incoming : incomingCollection) {
                 List<G> found = genericService.findByExample(incomingClass, incoming, ignoreProperties, FindOptions.FIND_FIRST);
                 if (CollectionUtils.isEmpty(found)) {
-                    throw new APIException(incomingClass.getSimpleName() + " " + incoming + " is not valid", StatusCode.NOT_ALLOWED);
+                    throw new APIException(incomingClass.getSimpleName() + " " + incoming + " is not valid", StatusCode.FORBIDDEN);
                 } else {
                     toPersist.add(found.get(0));
                 }
@@ -384,7 +372,7 @@ public class ImportService {
     // if the informationResource specifies a project id, look it up and make necessary assignments
     private void resolveProject(InformationResource informationResource) throws APIException {
         logger.trace("resolving project...");
-        if (informationResource.getProjectId() == null)
+        if (informationResource.getProjectId() == null || informationResource.getProject() == Project.NULL)
             return;
         Project project = projectService.find(informationResource.getProjectId());
         if (project == null) {

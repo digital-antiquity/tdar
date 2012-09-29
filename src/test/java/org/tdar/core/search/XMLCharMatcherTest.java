@@ -1,29 +1,29 @@
 package org.tdar.core.search;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.regex.Matcher;
 
 import org.junit.Test;
-import org.tdar.struts.action.search.LuceneSearchController;
+import org.tdar.core.service.RssService;
 
 public class XMLCharMatcherTest {
 
     @Test
-    public void testBadChar() {
+    public void test() {
         String tst = "\u0001";
-        Matcher matcher = LuceneSearchController.INVALID_XML_CHARS.matcher(tst);
+        Matcher matcher = RssService.INVALID_XML_CHARS.matcher(tst);
         assertTrue(matcher.matches());
     }
 
     @Test
     public void testValidChar() {
         String tst = "abc1";
-        Matcher matcher = LuceneSearchController.INVALID_XML_CHARS.matcher(tst);
+        Matcher matcher = RssService.INVALID_XML_CHARS.matcher(tst);
         assertFalse(matcher.matches());
-        assertEquals(tst,LuceneSearchController.cleanStringForXML(tst));
+        assertEquals(tst, RssService.cleanStringForXML(tst));
     }
-
 
 }

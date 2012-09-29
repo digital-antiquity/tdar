@@ -33,7 +33,7 @@ public interface Dao<T> {
      * @param id
      * @return persistent entity T with the given id, or null if none exists.
      */
-    public T find(Number id);
+    public T find(Long id);
 
     /**
      * Returns all persistent T entities in the database.
@@ -162,7 +162,7 @@ public interface Dao<T> {
             return super.count(persistentClass);
         }
 
-        public E find(Number id) {
+        public E find(Long id) {
             return super.find(persistentClass, id);
         }
 
@@ -172,6 +172,10 @@ public interface Dao<T> {
 
         public List<E> findAll() {
             return super.findAll(persistentClass);
+        }
+        
+        public List<E> findAll(List<Long> ids) {
+            return super.findAll(persistentClass, ids);
         }
 
         public List<E> findAll(int start, int numberOfRecords) {

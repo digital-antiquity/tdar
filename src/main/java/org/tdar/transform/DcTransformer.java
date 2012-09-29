@@ -29,7 +29,9 @@ import org.tdar.core.bean.resource.LanguageEnum;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.SensoryData;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
 import edu.asu.lib.dc.DublinCoreDocument;
 
@@ -63,33 +65,33 @@ public abstract class DcTransformer<R extends Resource> implements Transformer<R
         }
 
         // add geographic subjects
-        for (GeographicKeyword geoTerm : source.getGeographicKeywords()) {
+        for (GeographicKeyword geoTerm : source.getActiveGeographicKeywords()) {
             dc.getCoverage().add(geoTerm.getLabel());
         }
 
         // add temporal subjects
-        for (TemporalKeyword temporalTerm : source.getTemporalKeywords()) {
+        for (TemporalKeyword temporalTerm : source.getActiveTemporalKeywords()) {
             dc.getCoverage().add(temporalTerm.getLabel());
         }
 
         // add culture subjects
-        for (CultureKeyword cultureTerm : source.getCultureKeywords()) {
+        for (CultureKeyword cultureTerm : source.getActiveCultureKeywords()) {
             dc.getSubject().add(cultureTerm.getLabel());
         }
 
         // add site name subjects
-        for (SiteNameKeyword siteNameTerm : source.getSiteNameKeywords()) {
+        for (SiteNameKeyword siteNameTerm : source.getActiveSiteNameKeywords()) {
             dc.getCoverage().add(siteNameTerm.getLabel());
         }
 
         // add other subjects
-        for (OtherKeyword otherTerm : source.getOtherKeywords()) {
+        for (OtherKeyword otherTerm : source.getActiveOtherKeywords()) {
             dc.getSubject().add(otherTerm.getLabel());
         }
 
         dc.getType().add(source.getResourceType().getLabel());
 
-        for (LatitudeLongitudeBox longLat : source.getLatitudeLongitudeBoxes()) {
+        for (LatitudeLongitudeBox longLat : source.getActiveLatitudeLongitudeBoxes()) {
             String maxy = "MaxY: ".concat(longLat.getMaxObfuscatedLatitude().toString());
             String miny = "MinY: ".concat(longLat.getMinObfuscatedLatitude().toString());
             String maxx = "MaxX: ".concat(longLat.getMaxObfuscatedLongitude().toString());
@@ -138,12 +140,12 @@ public abstract class DcTransformer<R extends Resource> implements Transformer<R
                     dc.getPublisher().add(resourceCreator.getCreator().getProperName());
                 }
             }
-
-            String dateCreated = source.getDateCreated().toString();
-            if (dateCreated != null && dateCreated != "") {
-                dc.getDate().add(dateCreated);
+            if (source.getDate() != null) {
+                String dateCreated = source.getDate().toString();
+                if (dateCreated != null && dateCreated != "") {
+                    dc.getDate().add(dateCreated);
+                }
             }
-
             LanguageEnum resourceLanguage = source.getResourceLanguage();
             if (resourceLanguage != null)
                 dc.getLanguage().add(resourceLanguage.getCode());
@@ -272,28 +274,48 @@ public abstract class DcTransformer<R extends Resource> implements Transformer<R
 
     }
 
-    @Component("datasetDcTransformer")
     public static class DatasetTransformer extends InformationResourceTransformer<Dataset> {
     }
 
-    @Component("sensoryDcTransformer")
     public static class SensoryDataTransformer extends InformationResourceTransformer<SensoryData> {
     }
 
-    @Component("codingSheetDcTransformer")
     public static class CodingSheetTransformer extends InformationResourceTransformer<CodingSheet> {
     }
 
-    @Component("imageDcTransformer")
     public static class ImageTransformer extends InformationResourceTransformer<Image> {
     }
 
-    @Component("ontologyDcTransformer")
     public static class OntologyTransformer extends InformationResourceTransformer<Ontology> {
     }
 
-    @Component("projectDcTransformer")
     public static class ProjectTransformer extends DcTransformer<Project> {
     }
 
+    public static DublinCoreDocument transformAny(Resource resource) {
+        ResourceType resourceType = ResourceType.fromClass(resource.getClass());
+        if (resourceType == null) {
+            throw new TdarRecoverableRuntimeException("Unsupported / Unknown Resource Type");
+        }
+        switch (resourceType) {
+            case CODING_SHEET:
+                return new CodingSheetTransformer().transform((CodingSheet) resource);
+            case DATASET:
+                return new DatasetTransformer().transform((Dataset) resource);
+            case DOCUMENT:
+                return new DocumentTransformer().transform((Document) resource);
+            case IMAGE:
+                return new ImageTransformer().transform((Image) resource);
+            case ONTOLOGY:
+                return new OntologyTransformer().transform((Ontology) resource);
+            case PROJECT:
+                return new ProjectTransformer().transform((Project) resource);
+            case SENSORY_DATA:
+                return new SensoryDataTransformer().transform((SensoryData) resource);
+            default:
+                break;
+        }
+
+        throw new TdarRecoverableRuntimeException("could not provide DC tranformer for class:" + resource.getClass());
+    }
 }

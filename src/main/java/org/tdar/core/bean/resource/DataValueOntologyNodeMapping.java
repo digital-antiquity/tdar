@@ -5,11 +5,12 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.dataTable.DataTableColumn;
+import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
@@ -48,8 +49,8 @@ public class DataValueOntologyNodeMapping extends Persistable.Base {
         setDataValue(value);
     }
 
-    @XmlIDREF
-    @XmlAttribute(name = "dataTableColumnId")
+    @XmlElement(name = "dataTableColumnRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public DataTableColumn getDataTableColumn() {
         return dataTableColumn;
     }
@@ -66,8 +67,8 @@ public class DataValueOntologyNodeMapping extends Persistable.Base {
         this.dataValue = columnValue;
     }
 
-    @XmlIDREF
-    @XmlAttribute(name = "ontologyNodeId")
+    @XmlElement(name = "ontologyNodeRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public OntologyNode getOntologyNode() {
         return ontologyNode;
     }

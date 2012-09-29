@@ -10,6 +10,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.lucene.search.Explanation;
 import org.hibernate.search.annotations.Analyzer;
@@ -18,7 +19,7 @@ import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Indexed;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
-import org.tdar.index.analyzer.AutocompleteAnalyzer;
+import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
 
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
@@ -130,6 +131,7 @@ public class ResourceAnnotationKey extends Persistable.Base implements Indexable
     }
 
     @Transient
+    @XmlTransient
     public Explanation getExplanation() {
         return explanation;
     }

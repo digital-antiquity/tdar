@@ -1,4 +1,6 @@
+<#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
+<#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 <head>
 <title>Match column values to ontology nodes</title>
 <meta name="lastModifiedDate" content="$Date$"/>
@@ -72,12 +74,12 @@ function applyLocalAutoComplete(selector, db) {
         },
         minLength:0,
         select: function(event, ui) {
-            var input = this; //'this' points to the target element 
+            var $input = $(this); //'this' points to the target element 
             //get the hidden input next to the textbox and set the id field
-            var elem  = findSibling(input, 'ids');
+            var $idElement = $($input.attr("autocompleteIdElement"));
             global_formNavigate = false;
-            elem.val(ui.item.id);
-            $(input).removeClass("error");
+            $idElement.val(ui.item.id);
+            $input.removeClass("error");
         },
         open: function(event, ui) {
                 $("ul.ui-autocomplete li a").each(function(){
@@ -94,26 +96,28 @@ function applyLocalAutoComplete(selector, db) {
             //But I'm not seeing that behavior (ui.item has a value) So,  this block executes even after select() fires,  which is redundant. 
 
             if(true) { 
+                var $input = $(input);
                 //did they type in an exact match to an elment?
-                var matcher = new RegExp( "^([\\|\\-\\s]|&nbsp;)*" + $.ui.autocomplete.escapeRegex( $(this).val() ) + "$", "i" );
+                var matcher = new RegExp( "^([\\|\\-\\s]|&nbsp;)*" + $.ui.autocomplete.escapeRegex( $input.val() ) + "$", "i" );
                 var valid = false;
                 $.each(ontology, function(k,v){
-                  if ($(input).val() == '') {
+                  if ($input.val() == '') {
                       valid = true;
                       return false;
                   }
                   if(v.name.match(matcher)) {
                       valid = true;
-                      findSibling(input, "ids").val(v.id);
+                    var $idElement = $($input.attr("autocompleteIdElement"));
+                    $idElement.val(v.id);
                       return false;
                   }
                     
                 });
                 if(!valid) {
                     console.debug("invalid entry - clearing input box and hidden id value");
-                    findSibling(input,"ids").val("");
-                    $(input).val("");
-                    $(input).addClass("error");
+                    var $idElement = $($input.attr("autocompleteIdElement"));
+                    $idElement.val("");
+                    $input.addClass("error");
                 } 
                 
             }
@@ -124,7 +128,7 @@ function applyLocalAutoComplete(selector, db) {
     //add a button to expand the full list        
     $(selector).each(function(k,v){
         var input = $(v);
-        var container = $(input).next();
+        var container = $(input).siblings("button").first();
         container.click(function(){
             var expanded = input.autocomplete("widget").is(":visible");
             console.debug("expanded:" + expanded);
@@ -162,7 +166,7 @@ $(function() {
 var ontology = [
 {id:"", name:" -- All Values -- "},
 <@s.iterator status="stat" var="ont" value="%{ontologyNodes}">
-    {id:"${ont.id?c}",  name:"<@repeat num="${ont.numberOfParents-1}" />- ${ont.displayName?js_string}"} <#if !stat.last>,</#if>
+    {id:"${ont.id?c}",  name:"<@repeat num="${ont.numberOfParents-1}" />- <#noescape>${ont.displayName?js_string}</#noescape>"} <#if !stat.last>,</#if>
 </@s.iterator>
 ];
 
@@ -240,10 +244,13 @@ var suggestionsFor_${rowStatus.index} = [
 </@s.iterator>
 ];
 </script>
-<@s.textfield name="ontologyNodeNames[${rowStatus.index}]" id="autocomp_${rowStatus.index}" cssClass="manualAutocomplete"/>
-        <button title="Expand entire list" tabindex="-1" class="ui-button ui-widget ui-state-default ui-button-icon-only ui-corner-right ui-button-icon" role="button" aria-disabled="false" style="height:18px; position:relative;top:4px;left:-5px;clear:none;">
+<@s.textfield name="ontologyNodeNames[${rowStatus.index}]" id="autocomp_${rowStatus.index}" cssClass="manualAutocomplete" autocompleteIdElement="#ontologyNodeId_${rowStatus.index}"/>
+        <button title="Expand entire list" tabindex="-1" 
+        class="ui-button ui-widget ui-state-default ui-button-icon-only ui-corner-right ui-button-icon" role="button" aria-disabled="false" 
+        type="button"
+        style="height:18px; position:relative;top:4px;left:-5px;clear:none;">
             <span class="ui-button-icon-primary ui-icon ui-icon-triangle-1-s"></span></button>
-<@s.hidden name="ontologyNodeIds[${rowStatus.index}]" />
+<@s.hidden name="ontologyNodeIds[${rowStatus.index}]" id="ontologyNodeId_${rowStatus.index}" />
 
 </td>
 </tr>
@@ -251,12 +258,16 @@ var suggestionsFor_${rowStatus.index} = [
 </tbody>
 </table>
 </div>
-<#assign msg="Save mappings and go to next column"/>
-<#if isLast>
-  <#assign msg="Save mappings for last column"/>
-</#if>
-<@s.submit value='${msg}' align='left' />
+
+	<@edit.submit "Save" false><br/>
+		<input type="radio" name="postSaveAction" checked="checked" value="SAVE_VIEW"/> Save, then return to the view page</br>
+		<input type="radio" name="postSaveAction" value="SAVE_MAP_THIS"/> Save, then continue to edit this ontology mapping</br>
+	<#if (ontologyMappedColumns.size() > 1 && nextColumnId??)>
+		<input type="radio" name="postSaveAction" value="SAVE_MAP_NEXT"/> Save, then edit next ontology mapping column</br>
+	</#if>
+	</@edit.submit>
 </@s.form>
 </div>
 
 </body>
+</#escape>

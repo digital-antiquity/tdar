@@ -11,22 +11,23 @@ import java.util.Set;
 import java.util.SortedMap;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.resource.CategoryType;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.DataValueOntologyNodeMapping;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResourceFile;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.ResourceType;
@@ -35,18 +36,18 @@ import org.tdar.core.bean.resource.dataTable.DataTableColumn;
 import org.tdar.core.bean.resource.dataTable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.dataTable.MeasurementUnit;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.external.auth.InternalTdarRights;
 import org.tdar.core.service.resource.OntologyService;
-import org.tdar.transform.DcTransformer;
-import org.tdar.transform.ModsTransformer;
+import org.tdar.struts.WriteableSession;
+import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.data.FileProxy;
 
 /**
  * $Id$
  * <p>
- * Manages requests to create/delete/edit a Dataset and its associated metadata.
- * 
- * This class is getting fairly big due to the complexity of column metadata registration, coding sheet translation, and column ontology mapping. Consider
- * extracting some functionality into a separate URL space and controller class.
- * 
+ * Manages CRUD requests for Dataset metadata including column-level metadata that enables translation of a column via a CodingSheet, mapping of
+ * column data values to nodes within an ontology, and association of individual rows within a table to Resources within tdar (e.g., a Mimbres image database).
+ * </p>
  * 
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
@@ -59,26 +60,48 @@ public class DatasetController extends AbstractInformationResourceController<Dat
 
     private static final long serialVersionUID = 2874916865886637108L;
 
-    private Integer datasetFormatId;
+    public static final String SAVE_VIEW = "SAVE_VIEW";
+    public static final String SAVE_MAP_THIS = "SAVE_MAP_THIS";
+    public static final String SAVE_MAP_NEXT = "SAVE_MAP_NEXT";
 
-    private String datasetAvailability;
+    public enum PostSaveColumnMapActions implements HasLabel {
+        SAVE_VIEW("Save, and go to the view page", "Save, and go to the view page"),
+        SAVE_MAP_THIS("Save, and continue to edit this page", "Save, and continue to edit this page"),
+        SAVE_MAP_NEXT("Save, and go to ontology mapping", "Save, and go to next column mapping");
+
+        private String label;
+        private String ontologyLabel;
+
+        private PostSaveColumnMapActions(String label, String ontologyLabel) {
+            this.setLabel(label);
+            this.setOntologyLabel(ontologyLabel);
+        }
+
+        public String getLabel() {
+            return label;
+        }
+
+        public void setLabel(String label) {
+            this.label = label;
+        }
+
+        public String getOntologyLabel() {
+            return ontologyLabel;
+        }
+
+        public void setOntologyLabel(String ontologyLabel) {
+            this.ontologyLabel = ontologyLabel;
+        }
+    }
 
     // column metadata incoming data
     // Each list contains some specific piece of metadata for the given data table, where
     // the index of the list maps to the ordering of the column names
     private DataTable dataTable;
-    private List<DataTableColumnEncodingType> columnEncodingTypes = new ArrayList<DataTableColumnEncodingType>();
-    private List<MeasurementUnit> measurementUnits = new ArrayList<MeasurementUnit>();
-    private List<String> columnDescriptions = new ArrayList<String>();
-    private List<Long> categoryVariableIds = new ArrayList<Long>();
-    private List<Long> subcategoryIds = new ArrayList<Long>();
-    private List<Long> codingSheetIds = new ArrayList<Long>();
-    private List<Long> ontologyIds = new ArrayList<Long>();
+    private List<DataTableColumn> dataTableColumns;
 
-    private List<CodingSheet> allCodingSheets;
-    private List<Ontology> allOntologies;
     private List<List<CategoryVariable>> subcategories = new ArrayList<List<CategoryVariable>>();
-
+    private PostSaveColumnMapActions postSaveAction = PostSaveColumnMapActions.SAVE_VIEW;
     // ontology mapped columns
     private DataTableColumn dataTableColumn;
     // incoming data
@@ -99,11 +122,6 @@ public class DatasetController extends AbstractInformationResourceController<Dat
 
     private SortedMap<String, List<OntologyNode>> suggestions;
 
-    @Autowired
-    private transient ModsTransformer.DatasetTransformer datasetModsTransformer;
-    @Autowired
-    private transient DcTransformer.DatasetTransformer datasetDcTransformer;
-
     private List<String> ontologyNames = new ArrayList<String>();
     private List<String> codingSheetNames = new ArrayList<String>();
 
@@ -123,10 +141,8 @@ public class DatasetController extends AbstractInformationResourceController<Dat
             @Result(name = SUCCESS, location = "column-ontology.ftl"),
             @Result(name = INPUT, type = "redirect", location = "view?id=${resource.id}")
     })
-    public String loadOntologyMappedColumns() {
-        if (isNullOrNew()) {
-            return REDIRECT_HOME;
-        }
+    public String loadOntologyMappedColumns() throws TdarActionException {
+        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         getLogger().debug("loading ontology mapped columns for {}", getPersistable());
         DataTableColumn column = getDataTableColumn();
         if (column == null) {
@@ -141,18 +157,15 @@ public class DatasetController extends AbstractInformationResourceController<Dat
             getOntologyService().shred(ontology);
             ontologyNodes = ontology.getOntologyNodes();
         }
-
         Map<Long, OntologyNode> ontologyNodeMap = ontology.getIdToNodeMap();
         OntologyService.sortOntologyNodesByImportOrder(ontologyNodes);
         List<String> distinctColumnValues = getDistinctColumnValues();
         // generate suggestions for all distinct column values or only those
         // columns that aren't already mapped?
         logger.debug("{}", distinctColumnValues);
-
         suggestions = getOntologyService().generateSuggestions(distinctColumnValues, ontologyNodes);
         // load existing ontology mappings
         Map<String, Long> valueToOntologyNodeIdMap = column.getValueToOntologyNodeIdMap();
-
         // iteration order here is important - use the same iteration order as
         // the suggestions SortedMap, because
         // that's the data structure we'll iterate over in the output template.
@@ -179,19 +192,26 @@ public class DatasetController extends AbstractInformationResourceController<Dat
             logger.trace(" -- " + ontologyNodeId + ":" + ontologyNodeName + " - " + columnValue);
             ontologyNodeIds.add(ontologyNodeId);
             ontologyNodeNames.add(ontologyNodeName);
+
+        }
+        // set up next column index and roll over to 0 if we reach the end of the list.
+        int nextColumnIndex = (getOntologyMappedColumns().indexOf(column) + 1) % getOntologyMappedColumns().size();
+        if (nextColumnIndex > 0) {
+            nextColumnId = getOntologyMappedColumns().get(nextColumnIndex).getId();
         }
         return SUCCESS;
     }
 
+    @WriteableSession
     @SkipValidation
     @Action(value = "save-data-ontology-mapping", results = {
-            @Result(name = "redirect-view", type = "redirect", location = "view?id=${resource.id}"),
-            @Result(name = SUCCESS, type = "redirect", location = "column-ontology", params = { "columnId", "${nextColumnId}" }),
+            @Result(name = SAVE_VIEW, type = "redirect", location = "view?id=${resource.id}"),
+            @Result(name = SAVE_MAP_NEXT, type = "redirect", location = "column-ontology", params = { "columnId", "${nextColumnId}" }),
+            @Result(name = SAVE_MAP_THIS, type = "redirect", location = "column-ontology", params = { "columnId", "${columnId}" }),
             @Result(name = INPUT, location = "column-ontology.ftl") })
-    public String saveDataValueOntologyNodeMapping() {
-        if (isNullOrNew()) {
-            return REDIRECT_HOME;
-        }
+    public String saveDataValueOntologyNodeMapping() throws TdarActionException {
+        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+
         DataTableColumn dataTableColumn = getDataTableColumn();
         if (dataTableColumn == null) {
             getLogger().warn("No data table column set, this should never happen...");
@@ -225,14 +245,16 @@ public class DatasetController extends AbstractInformationResourceController<Dat
             getDatasetService().save(dataTableColumn);
             // FIXME: this appears needed to make tests pass, but why???
             for (DataValueOntologyNodeMapping mapping : mappings) {
-                if (mapping.getOntologyNode().getDataValueOntologyNodeMappings() == null) {
-                    mapping.getOntologyNode().setDataValueOntologyNodeMappings(new HashSet<DataValueOntologyNodeMapping>());
+                OntologyNode node = mapping.getOntologyNode();
+                if (node.getDataValueOntologyNodeMappings() == null) {
+                    node.setDataValueOntologyNodeMappings(new HashSet<DataValueOntologyNodeMapping>());
                 }
                 mapping.getOntologyNode().getDataValueOntologyNodeMappings().add(mapping);
             }
             getPersistable().markUpdated(getAuthenticatedUser());
             getDatasetService().save(getPersistable());
             // serialize the saved state to the revision log
+
             getDatasetService().serializeDataValueOntologyNodeMapping(dataTableColumn, getAuthenticatedUser());
 
             // logic to redirect to the next ontology mapped data table column after saving the current one.
@@ -241,7 +263,7 @@ public class DatasetController extends AbstractInformationResourceController<Dat
             // set up next column index and roll over to 0 if we reach the end of the list.
             int nextColumnIndex = (ontologyMappedColumns.indexOf(dataTableColumn) + 1) % ontologyMappedColumns.size();
             if (nextColumnIndex == 0)
-                return "redirect-view";
+                return SAVE_VIEW;
             nextColumnId = ontologyMappedColumns.get(nextColumnIndex).getId();
             getLogger().debug("next column id: " + nextColumnId);
         } catch (Throwable tde) {
@@ -249,134 +271,154 @@ public class DatasetController extends AbstractInformationResourceController<Dat
             addActionErrorWithException(tde.getMessage(), tde);
             return INPUT;
         }
+
+        // FIXME: can we replace this with return getPostSaveAction().getResultName() or something like that?
+        // the only thing we lose is the nextColumnId check which we *could* embed in PostSaveActionEnum.getResultName
+        // when will nextColumnId == -1?
+        switch (getPostSaveAction()) {
+            case SAVE_MAP_THIS:
+                return SAVE_MAP_THIS;
+            case SAVE_MAP_NEXT:
+                if (nextColumnId != -1) {
+                    return SAVE_MAP_NEXT;
+                }
+            case SAVE_VIEW:
+                return SAVE_VIEW;
+        }
+        return SAVE_VIEW;
+    }
+
+    @Action(value = "reimport", results = { @Result(name = SUCCESS, type = "redirect", location = "view?id=${resource.id}") })
+    @WriteableSession
+    public String reimport() throws TdarActionException {
+        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+        getDatasetService().reprocess(getPersistable());
         return SUCCESS;
     }
 
+    /**
+     * Retranslates the given dataset.  
+     * XXX: does this need a WritableSession? 
+     */
     @Action(value = "retranslate", results = { @Result(name = SUCCESS, type = "redirect", location = "view?id=${resource.id}") })
-    public String retranslate() {
-        if (isNullOrNew()) {
-            return REDIRECT_HOME;
-        }
+    @WriteableSession
+    public String retranslate() throws TdarActionException {
+        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         for (DataTable table : getPersistable().getDataTables()) {
-            for (DataTableColumn column : table.getDataTableColumns()) {
-                CodingSheet codingSheet = column.getDefaultCodingSheet();
-                if (codingSheet != null) {
-                    getDatasetService().translate(column, codingSheet);
-                }
-            }
+            getDatasetService().retranslate(table.getDataTableColumns());
         }
         getDatasetService().createTranslatedFile(getPersistable());
-
         return SUCCESS;
     }
 
     @SkipValidation
+    @WriteableSession
     @Action(value = "save-column-metadata", results = { @Result(name = SUCCESS, type = "redirect", location = "view?id=${resource.id}"),
-            @Result(name = "match", type = "redirect", location = "column-ontology?id=${resource.id}"),
+            @Result(name = SAVE_VIEW, type = "redirect", location = "view?id=${resource.id}"),
+            @Result(name = SAVE_MAP_NEXT, type = "redirect", location = "column-ontology?id=${resource.id}"),
+            @Result(name = SAVE_MAP_THIS, type = "redirect", location = "columns?id=${resource.id}"),
             @Result(name = INPUT, location = "edit-column-metadata.ftl") })
-    public String saveColumnMetadata() {
-        if (isNullOrNew()) {
-            return REDIRECT_HOME;
-        }
+    public String saveColumnMetadata() throws TdarActionException {
+        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+        boolean hasOntologies = false;
         try {
-            int columnIndex = 0;
-            boolean translateFileOutOfSync = false;
-            boolean hasOntologies = false;
-            for (DataTableColumn column : getDataTable().getSortedDataTableColumns()) {
-                String description = columnDescriptions.get(columnIndex);
-                Long categoryVariableId = categoryVariableIds.get(columnIndex);
-                DataTableColumnEncodingType columnEncodingType = columnEncodingTypes.get(columnIndex);
-                MeasurementUnit measurementUnit = measurementUnits.get(columnIndex);
-                Long subcategoryVariableId = subcategoryIds.get(columnIndex);
-
-                // the form hides the ontology/coding sheet mappings for incompatible column encoding types so we ignore any values from the form for
-                // incompatible
-                // encoding types under the assumption that the user meant for these values to be 'cleared' s
-                Long ontologyId = null;
-                Long codingSheetId = null;
-                if (columnEncodingType != null && columnEncodingType.isSupportsOntology()) {
-                    ontologyId = ontologyIds.get(columnIndex);
-                }
-                if (columnEncodingType != null && columnEncodingType.isSupportsCodingSheet()) {
-                    codingSheetId = codingSheetIds.get(columnIndex);
-                }
-
-                Ontology ontology = getOntologyService().find(ontologyId);
-                if (ontology != null) {
-                    hasOntologies = true;
-                }
-                column.setDefaultOntology(ontology);
-
-                // check if incoming coding sheet is already this column's default coding sheet.
-                CodingSheet defaultCodingSheet = column.getDefaultCodingSheet();
-                CodingSheet codingSheet = getCodingSheetService().find(codingSheetId);
-                // only translate the column if its existing default coding sheet is null or if its default coding sheet's id is different from the
-                // incoming coding sheet's id.
-                if (defaultCodingSheet == null || !defaultCodingSheet.getId().equals(codingSheetId)) {
-                    if (getDatasetService().translate(column, codingSheet)) {
-                        translateFileOutOfSync = true;
+            List<DataTableColumn> columnsToTranslate = new ArrayList<DataTableColumn>();
+            List<DataTableColumn> columnsToMap = new ArrayList<DataTableColumn>();
+            for (DataTableColumn column : dataTableColumns) {
+                boolean needToRetranslate = false;
+                boolean needToRemap = false;
+                logger.debug("{}", column);
+                DataTableColumn existing = getDataTable().getColumnById(column.getId());
+                if (existing == null) {
+                    existing = getDataTable().getColumnByName(column.getName());
+                    if (existing == null) {
+                        throw new TdarRecoverableRuntimeException(String.format("could not find column named %s with id %s", column.getName(),
+                                column.getId()));
                     }
-                } else {
-                    getLogger().debug("Not translating column: " + column + " - has same default coding sheet: " + codingSheet);
                 }
+                column.setDefaultCodingSheet(getGenericService().rehydrateSparseIdBean(column.getDefaultCodingSheet(), CodingSheet.class));
+                column.setDefaultOntology(getGenericService().rehydrateSparseIdBean(column.getDefaultOntology(), Ontology.class));
+                // FIXME: can we simplify this logic? Perhaps push into DataTableColumn?
+                // incoming ontology or coding sheet from the web was not null but the column encoding type was set to something that
+                // doesn't support either, we set it to null
+                // incoming ontology or coding sheet is explicitly set to null
+                if (column.getDefaultOntology() != null) {
+                    if (column.getColumnEncodingType().isSupportsOntology()) {
+                        hasOntologies = true;
+                    }
+                    else {
+                        column.setDefaultOntology(null);
+                        logger.debug("setting default ontology to null on column {} (encoding type: {}", column, column.getColumnEncodingType());
+                    }
+                }
+                needToRetranslate = ObjectUtils.notEqual(column.getDefaultCodingSheet(), existing.getDefaultCodingSheet());
+                if (column.getDefaultCodingSheet() != null && !column.getColumnEncodingType().isSupportsCodingSheet()) {
+                    column.setDefaultCodingSheet(null);
+                    logger.debug("setting default coding sheet to null on column {} (encoding type: {})", column, column.getColumnEncodingType());
+                }
+                existing.setDefaultOntology(column.getDefaultOntology());
+                existing.setDefaultCodingSheet(column.getDefaultCodingSheet());
 
+                existing.setCategoryVariable(getGenericService().rehydrateSparseIdBean(column.getCategoryVariable(), CategoryVariable.class));
+                CategoryVariable subcategoryVariable = getGenericService().rehydrateSparseIdBean(column.getTempSubCategoryVariable(), CategoryVariable.class);
+
+                if (subcategoryVariable != null) {
+                    existing.setCategoryVariable(subcategoryVariable);
+                }
+                // check if values have changed
+                needToRemap = existing.hasDifferentMappingMetadata(column);
+                // copy off all of the values that can be directly copied from the bean
+                existing.copyUserMetadataFrom(column);
+                if (!existing.isValid()) {
+                    throw new TdarRecoverableRuntimeException("invalid column: " + existing);
+                }
+                logger.debug("need to re-translate {}", needToRetranslate);
+                logger.debug("need to re-map {}", needToRemap);
+                if (needToRemap) {
+                    columnsToMap.add(existing);
+                }
                 // a column had a coding sheet but now it shouldn't, so tell the db
                 // service to 'untranslate' it.
-                if (defaultCodingSheet != null && codingSheet == null) {
-                    getDatasetService().untranslate(column);
-                    translateFileOutOfSync = true;
+                if (needToRetranslate) {
+                    columnsToTranslate.add(existing);
                 }
-
-                column.setDefaultCodingSheet(codingSheet);
-
-                // and how will people provide alternative mappings for this data table? create resource relationship between coding sheets and ontologies and
-                // this
-                // data table column? that's brittle still...
-                column.setColumnEncodingType(columnEncodingType);
-                column.setMeasurementUnit(measurementUnit);
-                column.setDescription(description);
-                CategoryVariable categoryVariable = getCategoryVariableService().find(subcategoryVariableId);
-                if (categoryVariable == null) {
-                    categoryVariable = getCategoryVariableService().find(categoryVariableId);
-                }
-                column.setCategoryVariable(categoryVariable);
-                logger.trace("{}", column);
-                getDataTableService().update(column);
-                columnIndex++;
+                logger.trace("{}", existing);
+                getGenericService().update(existing);
             }
             getPersistable().markUpdated(getAuthenticatedUser());
             getDatasetService().save(getPersistable());
-
-            if (translateFileOutOfSync) {
+            getDatasetService().updateMappings(getPersistable().getProject(), columnsToMap);
+            if (!columnsToTranslate.isEmpty()) {
                 // create the translation file for this dataset.
                 logger.debug("creating translated file");
+                getDatasetService().retranslate(columnsToTranslate);
                 getDatasetService().createTranslatedFile(getPersistable());
-
             }
-            getDatasetService().logDataTableColumns(getDataTable(),
-                    "data column metadata registration - " + (translateFileOutOfSync ? "translated" : "no translation"), getAuthenticatedUser());
-            if (hasOntologies) {
-                return "match";
-            }
-
+            getDatasetService().logDataTableColumns(getDataTable(), "data column metadata registration", getAuthenticatedUser());
         } catch (Throwable tde) {
             logger.error(tde.getMessage(), tde);
             addActionErrorWithException(tde.getMessage(), tde);
             return INPUT;
         }
-
+        switch (getPostSaveAction()) {
+            case SAVE_MAP_THIS:
+                return SAVE_MAP_THIS;
+            case SAVE_MAP_NEXT:
+                if (hasOntologies) {
+                    return SAVE_MAP_NEXT;
+                }
+            case SAVE_VIEW:
+                return SAVE_VIEW;
+        }
         return SUCCESS;
     }
 
     @SkipValidation
     @Action(value = "columns", results = { @Result(name = SUCCESS, location = "edit-column-metadata.ftl") })
-    public String editColumnMetadata() {
-        if (isNullOrNew()) {
-            logger.warn("Trying to map column metadata but resource was null.");
-            return REDIRECT_HOME;
-        }
+    public String editColumnMetadata() throws TdarActionException {
+        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
 
-        if (getPersistable().getLatestVersions().size() == 0) {
+        if (getPersistable().getLatestVersions().isEmpty()) {
             addActionError("You should upload a data file before attempting to register column metadata.");
             return INPUT;
         }
@@ -387,58 +429,29 @@ public class DatasetController extends AbstractInformationResourceController<Dat
         }
         // load existing column metadata if any.
         DataTable currentDataTable = getDataTable();
+
         for (DataTableColumn column : currentDataTable.getSortedDataTableColumns()) {
             CategoryVariable categoryVariable = column.getCategoryVariable();
-            // category variables are slightly complicated.
-            // if there is no category variable specified, easy, just set null on both ids.
             if (categoryVariable == null) {
-                categoryVariableIds.add(null);
-                subcategoryIds.add(null);
                 subcategories.add(null);
             } else {
                 if (categoryVariable.getType() == CategoryType.CATEGORY) {
-                    categoryVariableIds.add(categoryVariable.getId());
-                    subcategoryIds.add(null);
                     // make sure that the subcategories get populated with the
                     // children of the parent even though none were selected.
                     subcategories.add(new ArrayList<CategoryVariable>(categoryVariable.getSortedChildren()));
                 } else { // category is a subcategory
-                    categoryVariableIds.add(categoryVariable.getParent().getId());
-                    subcategoryIds.add(categoryVariable.getId());
                     subcategories.add(new ArrayList<CategoryVariable>(categoryVariable.getParent().getSortedChildren()));
                 }
             }
-            measurementUnits.add(column.getMeasurementUnit());
-            columnEncodingTypes.add(column.getColumnEncodingType());
-
-            addId(codingSheetIds, column.getDefaultCodingSheet());
-            addId(ontologyIds, column.getDefaultOntology());
-            // columnConfidentials.add( column.isConfidential() ? "Yes" : "No");
-            columnDescriptions.add(column.getDescription());
-
-            Ontology ontology = column.getDefaultOntology();
-            if (ontology != null) {
-                ontologyNames.add(ontology.getTitle() + "(tDAR ID:" + ontology.getId() + ")");
-            } else {
-                ontologyNames.add("");
-            }
-            CodingSheet codingSheet = column.getDefaultCodingSheet();
-            if (codingSheet != null) {
-                codingSheetNames.add(codingSheet.getTitle() + " (tDAR ID:" + codingSheet.getId() + ")");
-            } else {
-                codingSheetNames.add("");
-            }
-
         }
+        setDataTableColumns(currentDataTable.getSortedDataTableColumns());
+
         getLogger().debug("passing off to Freemarker");
         return SUCCESS;
     }
 
-    private void addId(List<Long> ids, Persistable persistable) {
-        ids.add((persistable == null) ? null : persistable.getId());
-    }
-
     protected void processUploadedFiles(List<InformationResourceFile> uploadedFiles) throws IOException {
+        // FIXME: replace with uploadedFiles.get(0) and push logic into the message service?
         InformationResourceFile datasetFile = getPersistable().getFirstInformationResourceFile();
         if (datasetFile == null) {
             getLogger().debug("dataset file is null, nothing to process.");
@@ -452,8 +465,8 @@ public class DatasetController extends AbstractInformationResourceController<Dat
             // previously translated files, if any, should have already been removed by the InformationResourceFileService.
             getDatasetService().convertDataFile(datasetFile);
         } catch (TdarRecoverableRuntimeException exception) {
-            getLogger().error("Couldn't convert data file with id:" + datasetFile.getId(), exception);
-            // addActionError(exception.getMessage());
+            getLogger().debug("Couldn't convert data file with id:" + datasetFile.getId(), exception);
+            getFileProxies().clear(); 
             throw exception;
         }
         getDatasetService().saveOrUpdate(getPersistable());
@@ -477,59 +490,23 @@ public class DatasetController extends AbstractInformationResourceController<Dat
         getDatasetService().saveOrUpdate(dataset);
         // HACK: implicitly cache fullUsers via call to getProjectAsJson() as workaround for TDAR-1162. This is the software equivalent of turning the radio up
         // to mask weird sounds your engine is making
-        logger.debug(getProjectAsJson());
+        // logger.debug(getProjectAsJson());
         handleUploadedFiles();
+        boolean fileChanged = false;
+        for (FileProxy proxy : getFileProxies()) {
+            if (proxy.getAction().equals(FileAction.ADD) || proxy.getAction().equals(FileAction.REPLACE)) {
+                fileChanged = true;
+            }
+        }
+        // logger.debug("{}", getFileProxies());
+        if (fileChanged) {
+            setSaveSuccessPath("columns");
+        }
         return SUCCESS;
     }
 
-//    @Override
-//    protected Dataset loadResourceFromId(Long datasetId) {
-//        Dataset dataset = getDatasetService().find(datasetId);
-//        if (dataset != null) {
-//            setProject(dataset.getProject());
-//        }
-//        return dataset;
-//    }
-
-    public String getDatasetAvailability() {
-        return datasetAvailability;
-    }
-
-    public void setDatasetAvailability(String datasetAvailability) {
-        this.datasetAvailability = datasetAvailability;
-    }
-
-    public Integer getDatasetFormatId() {
-        return datasetFormatId;
-    }
-
-    public void setDatasetFormatId(Integer datasetFormatId) {
-        this.datasetFormatId = datasetFormatId;
-    }
-
-    // Outgoing data
     public List<Dataset> getAllSubmittedDatasets() {
         return getDatasetService().findBySubmitter(getAuthenticatedUser());
-    }
-
-    public List<CodingSheet> getAllCodingSheets() {
-        if (allCodingSheets == null) {
-            allCodingSheets = getCodingSheetService().findSparseCodingSheetList();
-        }
-        return allCodingSheets;
-    }
-
-    public List<Ontology> getAllOntologies() {
-        if (allOntologies == null) {
-            // abrin 2010-08-19: changed findBySubmitter( getAuthenticatedUser()
-            // ); to findAll() to allow all users
-            // to see all ontologies.
-            // TODO: this is a temporary fix, but it should show all 'public'
-            // ontologies, or find a better way to
-            // handle shared access so that this can better integrate into tDAR
-            allOntologies = getOntologyService().findSparseOntologyList();
-        }
-        return allOntologies;
     }
 
     public List<DataTableColumn> getOntologyMappedColumns() {
@@ -606,62 +583,6 @@ public class DatasetController extends AbstractInformationResourceController<Dat
         }
     }
 
-    public List<DataTableColumnEncodingType> getColumnEncodingTypes() {
-        return columnEncodingTypes;
-    }
-
-    public void setColumnEncodingTypes(List<DataTableColumnEncodingType> columnEncodingTypes) {
-        this.columnEncodingTypes = columnEncodingTypes;
-    }
-
-    public List<String> getColumnDescriptions() {
-        return columnDescriptions;
-    }
-
-    public void setColumnDescriptions(List<String> columnDescriptions) {
-        this.columnDescriptions = columnDescriptions;
-    }
-
-    public List<Long> getCategoryVariableIds() {
-        return categoryVariableIds;
-    }
-
-    public void setCategoryVariableIds(List<Long> categoryVariableIds) {
-        this.categoryVariableIds = categoryVariableIds;
-    }
-
-    public List<Long> getSubcategoryIds() {
-        return subcategoryIds;
-    }
-
-    public void setSubcategoryIds(List<Long> subcategoryIds) {
-        this.subcategoryIds = subcategoryIds;
-    }
-
-    public void setMeasurementUnits(List<MeasurementUnit> measurementUnits) {
-        this.measurementUnits = measurementUnits;
-    }
-
-    public List<MeasurementUnit> getMeasurementUnits() {
-        return measurementUnits;
-    }
-
-    public List<Long> getCodingSheetIds() {
-        return codingSheetIds;
-    }
-
-    public void setCodingSheetIds(List<Long> codingSheetIds) {
-        this.codingSheetIds = codingSheetIds;
-    }
-
-    public List<Long> getOntologyIds() {
-        return ontologyIds;
-    }
-
-    public void setOntologyIds(List<Long> ontologyIds) {
-        this.ontologyIds = ontologyIds;
-    }
-
     public List<List<CategoryVariable>> getSubcategories() {
         return subcategories;
     }
@@ -702,16 +623,6 @@ public class DatasetController extends AbstractInformationResourceController<Dat
         return nextColumnId;
     }
 
-    @Override
-    public DcTransformer<Dataset> getDcTransformer() {
-        return datasetDcTransformer;
-    }
-
-    @Override
-    public ModsTransformer<Dataset> getModsTransformer() {
-        return datasetModsTransformer;
-    }
-
     public List<String> getCodingSheetNames() {
         return codingSheetNames;
     }
@@ -735,7 +646,6 @@ public class DatasetController extends AbstractInformationResourceController<Dat
             if (getOntologyService().isOntologyMappedToDataTableColumn(column) == 0) {
                 status = "unmapped";
             }
-
             ontologyMappedColumnStatus.add(status);
         }
         logger.trace("{}", ontologyMappedColumnStatus);
@@ -763,7 +673,31 @@ public class DatasetController extends AbstractInformationResourceController<Dat
         return getPersistable();
     }
 
+    public Long getDataTableId() {
+        return dataTableId;
+    }
+
     public Class<Dataset> getPersistableClass() {
         return Dataset.class;
+    }
+
+    public List<DataTableColumn> getDataTableColumns() {
+        return dataTableColumns;
+    }
+
+    public void setDataTableColumns(List<DataTableColumn> dataTableColumns) {
+        this.dataTableColumns = dataTableColumns;
+    }
+
+    public PostSaveColumnMapActions getPostSaveAction() {
+        return postSaveAction;
+    }
+
+    public void setPostSaveAction(PostSaveColumnMapActions postSaveAction) {
+        this.postSaveAction = postSaveAction;
+    }
+
+    public List<PostSaveColumnMapActions> getAllSaveActions() {
+        return Arrays.asList(PostSaveColumnMapActions.values());
     }
 }

@@ -218,3 +218,8 @@ drop table test;
 
 --DONT-PROCESS-- UPDATE information_resource set inheriting_cultural_information=true where id=4230;
 --DONT-PROCESS-- set constraints all immediate;
+--DONT-PROCESS-- update data_table_column set column_encoding_type=NULL where column_encoding_type='NUMERIC' or column_encoding_type='TEXT' or column_encoding_type='';
+--DONT-PROCESS-- insert into authorized_user (general_permission_int,general_permission,resource_collection_id, user_id) values (500,'MODIFY_RECORD',1391,60);
+--DONT-PROCESS-- update data_table_column set mappingcolumn=false where mappingcolumn is null;
+--DONT-PROCESS-- update data_table_column set visible=true where visible is null;
+--DONT-PROCESS-- update data_table_column set ignorefileextension=true where ignorefileextension is null;

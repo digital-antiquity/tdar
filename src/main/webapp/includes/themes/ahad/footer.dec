@@ -1,0 +1,55 @@
+        <div id="footer-flickr" class="footer-column"> 
+            <h2>About</h2> 
+ <ul> 
+<li><a class="" href="http://www.tdar.org/about/">what is tDAR</a></li> 
+<li><a class="" href="http://dev.tdar.org/confluence/display/TDAR/User+Documentation">getting started</a></li> 
+<li><a class="" href="http://www.tdar.org/support/">how to use tDAR</a></li>
+<li><a class="" href="http://www.digitalantiquity.org/about/">about Digital Antiquity</a></li> 
+ 
+</ul> 
+        </div> 
+ 
+        <div id="footer-about" class="footer-column"> 
+                <h2>Use</h2> 
+<ul> 
+      <li><a href="<@s.url value='/search/basic'/>">Search</a></li> 
+      <li><a href="<@s.url value='/project/add'/>">Start a project &amp; add data</a></li>
+      <#if sessionData?? && sessionData.authenticated>
+      <li><a href="<@s.url value='/logout'/>">Logout</a></li>
+      <#else>
+      <li><a href="<@s.url value='/login'/>">Login</a></li>
+      <li><a href="<@s.url value='/account/new'/>">Register</a></li>
+      </#if> 
+</ul> 
+        </div> 
+ 
+        <div id="footer-search" class="footer-column"> 
+            <h2>Questions</h2> 
+<div> 
+Questions, comments, feedback?<br/> 
+<a href="mailto:&#99;&#111;&#109;&#109;&#101;&#110;&#116;&#115;&#64;&#116;&#100;&#97;&#114;&#46;&#111;&#114;&#103;?subject=tDAR%20comments&amp;cc=tdar-svn%40lists.asu.edu">&#99;&#111;&#109;&#109;&#101;&#110;&#116;&#115;&#64;&#116;&#100;&#97;&#114;&#46;&#111;&#114;&#103;</a> 
+</div> 
+ 
+        </div> 
+        <div id="copyright"> 
+            <p class="copyright-notice">The Australian Historical Archaeological Database is based on tDAR,
+the digital repository of <a href="http://www.digitalantiquity.org" target='_blank'>Digital Antiquity</a>, a collaborative
+organization dedicated to enhancing preservation and access to the digital records
+of archaeological investigations and hosted by <a href="http://www.latrobe.edu.au">La Trobe University</a>.
+
+<a href="http://www.tdar.org" target='_blank'>tDAR</a> is supported by
+grants from the <a href="http://www.mellon.org" target='_blank'>Andrew W. Mellon Foundation</a>,
+the <a href="http://www.nsf.gov" target='_blank'>National Science Foundation</a>, a grant 
+jointly funded by the <a href="http://neh.gov/" target='_blank'>National Endowment for the Humanities</a> 
+(PX-50022-09) and the Higher Education Funding Council for England of the
+United Kingdom acting through the <a href="http://www.jisc.ac.uk/" target='_blank'>Joint
+Information Systems Committee</a> (JISC) and a grant funded by the Australian National Data Service. 
+Any opinions, findings, conclusions or recommendations expressed in this material are those 
+of the author(s) and do not necessarily reflect those of the National Science Foundation, the Mellon
+Foundation, the National Endowment for the Humanities or the Joint Information Systems Committee.
+<br/>Copyright &copy; 2010 Digital Antiquity.
+<br/>
+ 
+		</div><!--end copyright--> 
+        
+

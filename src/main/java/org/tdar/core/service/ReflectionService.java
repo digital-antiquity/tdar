@@ -13,10 +13,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.ManyToMany;
@@ -27,8 +30,15 @@ import javax.persistence.OneToOne;
 import org.apache.struts2.convention.ReflectionTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
+import org.springframework.core.type.filter.AnnotationTypeFilter;
+import org.springframework.core.type.filter.AssignableTypeFilter;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
+import org.tdar.core.bean.Persistable;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
 /**
  * @author Adam Brin
@@ -38,6 +48,7 @@ import org.springframework.util.ReflectionUtils;
 public class ReflectionService {
 
     public transient Logger logger = LoggerFactory.getLogger(getClass());
+    private Map<String, Class<Persistable>> persistableLookup;
 
     /*
      * This method looks at a class like "Resource" and finds fields that contain the "classToFind",
@@ -53,8 +64,8 @@ public class ReflectionService {
         logger.debug("Found Fields:{} on {}", matchingFields, classToInspect.getSimpleName());
         return matchingFields;
     }
-    
-    //todo:  do we really need an extra function for this?
+
+    // todo: do we really need an extra function for this?
     public Set<Field> findAssignableFieldsRefererencingClass(Class<?> classToInspect, Class<?> ancestorToFind) {
         Set<Field> matchingFields = new HashSet<Field>();
         for (Field field : classToInspect.getDeclaredFields()) {
@@ -62,7 +73,7 @@ public class ReflectionService {
                 matchingFields.add(field);
             }
         }
-        logger.debug("Fields in {} that refer to {}:{}",  new Object[] {classToInspect.getSimpleName(), ancestorToFind.getSimpleName(), matchingFields});
+        logger.debug("Fields in {} that refer to {}:{}", new Object[] { classToInspect.getSimpleName(), ancestorToFind.getSimpleName(), matchingFields });
         return matchingFields;
     }
 
@@ -130,12 +141,11 @@ public class ReflectionService {
     public static String generateSetterName(Field field) {
         return generateSetterName(field.getName());
     }
-    
 
     public static String generateSetterName(String name) {
-    	return generateName("set", name);
+        return generateName("set", name);
     }
-    
+
     /*
      * Based on the field and the object passed in, call the getter and return the result
      */
@@ -158,30 +168,30 @@ public class ReflectionService {
             }
         return null;
     }
-    
+
     /**
-     * Call the setter of the supplied object and field with the supplied value 
+     * Call the setter of the supplied object and field with the supplied value
      */
     public <T> void callFieldSetter(Object obj, Field field, T fieldValue) {
-    	String setterName = generateSetterName(field);
-    	logger.debug("Calling {}.{}({})", new Object[]{field.getDeclaringClass().getSimpleName(), setterName, fieldValue.getClass().getSimpleName()});
-        //here we assume that field's type is assignable from the fieldValue
-        Method setter = ReflectionUtils.findMethod(field.getDeclaringClass(), setterName, field.getType());  
-    	try {
-			setter.invoke(obj, fieldValue);
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	
+        String setterName = generateSetterName(field);
+        logger.debug("Calling {}.{}({})", new Object[] { field.getDeclaringClass().getSimpleName(), setterName, fieldValue.getClass().getSimpleName() });
+        // here we assume that field's type is assignable from the fieldValue
+        Method setter = ReflectionUtils.findMethod(field.getDeclaringClass(), setterName, field.getType());
+        try {
+            setter.invoke(obj, fieldValue);
+        } catch (IllegalArgumentException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
     }
-    
+
     private static String generateName(String prefix, String name) {
         return prefix + name.substring(0, 1).toUpperCase() + name.substring(1);
     }
@@ -212,5 +222,46 @@ public class ReflectionService {
             return (Class<?>) type;
         }
         return null;
+    }
+
+    public Class<Persistable> getMatchingClassForSimpleName(String name) throws NoSuchBeanDefinitionException, ClassNotFoundException {
+        scanForPersistables();
+        return persistableLookup.get(name);
+    }
+
+    public static Class<?>[] scanForAnnotation(Class<? extends Annotation>... annots) throws NoSuchBeanDefinitionException, ClassNotFoundException {
+        List<Class<?>> toReturn = new ArrayList<Class<?>>();
+        ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
+        for (Class<? extends Annotation> annot : annots) {
+            scanner.addIncludeFilter(new AnnotationTypeFilter(annot));
+        }
+        String basePackage = "org/tdar/";
+        for (BeanDefinition bd : scanner.findCandidateComponents(basePackage)) {
+            String beanClassName = bd.getBeanClassName();
+            Class<?> cls = Class.forName(beanClassName);
+            toReturn.add(cls);
+        }
+        return toReturn.toArray(new Class<?>[0]);
+    }
+    
+    private void scanForPersistables() throws NoSuchBeanDefinitionException, ClassNotFoundException {
+        if (persistableLookup != null)
+            return;
+
+        ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
+        scanner.addIncludeFilter(new AssignableTypeFilter(Persistable.class));
+        String basePackage = "org/tdar/";
+        persistableLookup = new HashMap<String, Class<Persistable>>();
+        for (BeanDefinition bd : scanner.findCandidateComponents(basePackage)) {
+            String beanClassName = bd.getBeanClassName();
+            Class cls = Class.forName(beanClassName);
+            logger.trace("{} - {} ", cls.getSimpleName(), cls);
+            if (persistableLookup.containsKey(cls.getSimpleName())) {
+                throw new TdarRecoverableRuntimeException("There is an error in the JAXB Naming Mapping because of overlap in simple names "
+                        + cls.getSimpleName());
+            }
+            persistableLookup.put(cls.getSimpleName(), cls);
+        }
+
     }
 }

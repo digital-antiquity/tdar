@@ -41,7 +41,11 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
      */
     public boolean isAllowedTo(Person person, Resource resource, GeneralPermissions permission) {
         Set<Long> ids = new HashSet<Long>();
-
+        
+        //FIXME: push business logic up to service layer?
+        if (resource.isDeleted()) {
+            return false;
+        }
         // if the user is the owner, don't go any further
         if (resource.getSubmitter().equals(person)) {
             return true;
@@ -52,44 +56,8 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
             ids.addAll(collection.getParentIdList());
         }
 
-        // try to add project to get direct inherited permissions
-        // FIXME: DISABLING PROJECT INHERITANCE OF RIGHTS: SEE Resource.getUsersWhoCanModify()
-        /*
-         * if (resource instanceof InformationResource) {
-         * InformationResource informationResource = (InformationResource) resource;
-         * for other part
-         * if (informationResource.getProjectId() != null) {
-         * ids.add(informationResource.getProjectId());
-         * }
-         * }
-         */
-
         return isAllowedTo(person, permission, ids);
     }
-
-    // private boolean userCanDoLookupForCollectionList(Person person, GeneralPermissions permission, Collection<Long> resourceCollectionIds) {
-    // Query query = getCurrentSession().getNamedQuery(QUERY_IS_ALLOWED_TO_NEW);
-    // query.setLong("userId", person.getId());
-    // query.setInteger("effectivePermission", permission.getEffectivePermissions());
-    // if (resourceCollectionIds.isEmpty()) {
-    // return false;
-    // }
-    //
-    // query.setParameterList("resourceCollectionIds", resourceCollectionIds);
-    // @SuppressWarnings("unchecked")
-    // List<Integer> result = query.list();
-    // if (!result.isEmpty() && result.get(0) == 1) {
-    // return true;
-    // }
-    // return false;
-    // }
-
-    // public boolean hasRightsToCollection(Person person, ResourceCollection collection, GeneralPermissions permission) {
-    // if (person == null || collection == null || permission == null) {
-    // return false;
-    // }
-    // return userCanDoLookupForCollectionList(person, permission, collection.getParentIdList());
-    // }
 
     public boolean isAllowedTo(Person person, GeneralPermissions permission, ResourceCollection collection) {
         if (collection.getOwner() != null && collection.getOwner().equals(person)) {

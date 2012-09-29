@@ -3,3 +3,7 @@ personal.file.store.location=/home/tdar/personal-filestore
 web.root=src/main/webapp
 file.store.class=org.tdar.filestore.PairtreeFilestore
 run.periodic.events=true
+app.theme.dir=includes/themes/tdar/
+server.environment=production
+privacy.controls.enabled=false
+search.excel.export.recordMax=1000

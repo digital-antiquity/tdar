@@ -25,6 +25,6 @@ label.error {display:block;}
 </div>
 </#if>
  <@nav.loginForm />
-<#include "/includes/ftl/notice.ftl">
+<#include "/${themeDir}/notice.ftl">
 </body> 
 

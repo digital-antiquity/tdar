@@ -11,7 +11,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -38,13 +37,13 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
     @Test
     @Rollback
     public void testDegenerateFileProxy() throws Exception {
-        DocumentController controller = generateNewInitializedController(DocumentController.class);
+        DocumentController controller = generateNewInitializedController(DocumentController.class,getBasicUser());
         controller.prepare();
         controller.add();
         Document document = controller.getDocument();
         document.setTitle("test title");
         document.setDescription("descr");
-        document.setDateCreated(1234);
+        document.setDate(1234);
         List<File> fileList = new ArrayList<File>();
         fileList.add(new File(TestConstants.TEST_DOCUMENT_DIR + "a2-15.pdf"));
         fileList.add(new File(TestConstants.TEST_DOCUMENT_DIR + "a2-17.pdf"));
@@ -54,7 +53,8 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         uploadFilesAsync.getSecond().remove(0);
         controller.setFileProxies(uploadFilesAsync.getSecond());
         controller.getFileProxies().get(0).setConfidential(true);
-        controller.save();
+        String save = controller.save();
+        assertEquals(TdarActionSupport.SUCCESS,save);
         assertEquals(fileList.size(), document.getInformationResourceFiles().size());
         for (InformationResourceFile irFile : document.getInformationResourceFiles()) {
             logger.info("{}", irFile);
@@ -70,14 +70,46 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
-    public void testReplace() throws FileNotFoundException {
+    public void testSameFileName() throws Exception {
+        DocumentController controller = generateNewInitializedController(DocumentController.class,getBasicUser());
+        controller.prepare();
+        controller.add();
+        Document document = controller.getDocument();
+        document.setTitle("test title");
+        document.setDescription("descr");
+        document.setDate(1234);
+        List<File> fileList = new ArrayList<File>();
+        for (String subdir: Arrays.asList("t1", "t2", "t3")) {
+            File file = new File(TestConstants.TEST_DOCUMENT_DIR + subdir, "test.txt");
+            assertTrue(file.exists());
+            fileList.add(file);
+        }
+        Pair<PersonalFilestoreTicket, List<FileProxy>> uploadFilesAsync = uploadFilesAsync(fileList);
+        controller.setTicketId(uploadFilesAsync.getFirst().getId());
+        uploadFilesAsync.getSecond().remove(0);
+        controller.setFileProxies(uploadFilesAsync.getSecond());
+        controller.getFileProxies().get(0).setConfidential(true);
+        controller.setServletRequest(getServletPostRequest());
+        String save = controller.save();
+        assertEquals(TdarActionSupport.SUCCESS,save);
+        assertEquals(fileList.size(), document.getInformationResourceFiles().size());
+        for (InformationResourceFile irFile : document.getInformationResourceFiles()) {
+            logger.info("{}", irFile);
+        }
+    }
+    
+    
+    
+    @Test
+    @Rollback
+    public void testReplace() throws Exception {
         DocumentController controller = generateNewInitializedController(DocumentController.class);
         controller.prepare();
         controller.add();
         Document document = controller.getDocument();
         document.setTitle("test title");
         document.setDescription("descr");
-        document.setDateCreated(1234);
+        document.setDate(1234);
         List<File> fileList = new ArrayList<File>();
         fileList.add(new File(TestConstants.TEST_DOCUMENT_DIR + "a2-15.pdf"));
         fileList.add(new File(TestConstants.TEST_DOCUMENT_DIR + "a2-17.pdf"));
@@ -131,14 +163,14 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
-    public void testReplaceFileWithSameName() throws FileNotFoundException {
+    public void testReplaceFileWithSameName() throws Exception {
         DocumentController controller = generateNewInitializedController(DocumentController.class);
         controller.prepare();
         controller.add();
         Document document = controller.getDocument();
         document.setTitle("test title");
         document.setDescription("descr");
-        document.setDateCreated(1234);
+        document.setDate(1234);
         List<File> fileList = new ArrayList<File>();
         String a2pdf = "a2-15.pdf";
         fileList.add(new File(TestConstants.TEST_DOCUMENT_DIR + a2pdf));

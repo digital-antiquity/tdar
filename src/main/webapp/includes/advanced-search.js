@@ -14,24 +14,7 @@ rcFromRules = { required:true, digits:true, lessThanTo:true };
 rcToRules = { required:true, digits:true };
 
 function prepareTemporalFields() {
-    console.log("preparing temporal fields");
-	$("#fromYear").rules("remove");
-	$("#toYear").rules("remove");
-	$("#fromYear,#toYear").removeAttr("disabled");
-	switch ($("#yearTypeSelect").val()) {
-		case "CALENDAR_DATE":
-			$("#fromYear").rules("add", calFromRules);
-			$("#toYear").rules("add", calToRules);
-			break;
-		case "RADIOCARBON_DATE":
-			$("#fromYear").rules("add", rcFromRules);
-			$("#toYear").rules("add", rcToRules);
-			break;
-		case "NONE":
-			$("#fromYear,#toYear").attr("disabled", "disabled");
-			$("#fromYear,#toYear").val("");
-			break;
-	}
+	prepareDateFields($('.coverageTypeSelect')[0]);
 }
 
 $(document).ready(function(){
@@ -45,14 +28,12 @@ $(document).ready(function(){
 	});
 	
 	prepareTemporalFields();
-	$("#yearTypeSelect").change(prepareTemporalFields);
 	
 	$("#formResetButton").click(function(){ 
 		$("#searchForm_query").val("");
 		$("#yearTypeSelect").val("NONE");
-		prepareTemporalFields();
 		$("select,input[type=hidden],input[type=text]").val("");
-		$("input[type=checkbox]").prop("checked",false);
+		$("input[type=checkbox]").prop("checked",false)
 		$("#resourceTypes_Document").prop("checked",true);
 		$("#resourceTypes_Dataset").prop("checked",true);
 		
@@ -60,6 +41,15 @@ $(document).ready(function(){
 			map.removeOverlay(GZoomControl.G.oZoomArea);
 		} catch (e) {}
 	});
+	console.log("applying datepickers");
+    $('.datepicker').datepicker({dateFormat: 'm/d/y'});
 });
 
+
+
+//add/remove validation rules depending on which temporal terms the user has chosen
+$(function() {
+    //this will need to be revisited after we add more kinds of date types
+    
+});
 

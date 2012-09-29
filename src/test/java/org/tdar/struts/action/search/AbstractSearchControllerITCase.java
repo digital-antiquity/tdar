@@ -29,9 +29,8 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.SearchIndexService;
-import org.tdar.core.service.keyword.CultureKeywordService;
-import org.tdar.core.service.keyword.SiteTypeKeywordService;
 import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.TdarActionSupport;
 
@@ -39,6 +38,7 @@ import org.tdar.struts.action.TdarActionSupport;
 public abstract class AbstractSearchControllerITCase extends AbstractControllerITCase {
 
     @Autowired
+    // FIXME: MAKE GENERIC
     protected LuceneSearchController controller;
 
     // FIXME:these counts will change often - need to figure a better way to keep it in sync
@@ -70,9 +70,7 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
     @Autowired
     SearchIndexService searchIndexService;
     @Autowired
-    CultureKeywordService cultureKeywordService;
-    @Autowired
-    SiteTypeKeywordService siteTypeKeywordService;
+    GenericKeywordService genericKeywordService;
 
     public TdarActionSupport getController() {
         return controller;
@@ -86,11 +84,15 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
     }
 
     protected Long setupDataset() {
+        return setupDataset(Status.DELETED);
+    }
+
+    protected Long setupDataset(Status status) {
         Dataset dataset = new Dataset();
         dataset.setTitle("precambrian dataset");
         dataset.setDescription("dataset description");
         dataset.markUpdated(getUser());
-        SiteTypeKeyword siteType = siteTypeKeywordService.findByLabel("Shell midden");
+        SiteTypeKeyword siteType = genericKeywordService.findByLabel(SiteTypeKeyword.class, "Shell midden");
         dataset.getSiteTypeKeywords().add(siteType);
         assertFalse(siteType.getLabel().trim().startsWith(":"));
         assertFalse(siteType.getLabel().trim().endsWith(":"));
@@ -107,7 +109,7 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
         genericService.save(rc2);
         dataset.getResourceCreators().add(rc);
         dataset.getResourceCreators().add(rc2);
-        dataset.setStatus(Status.DELETED);
+        dataset.setStatus(status);
         genericService.saveOrUpdate(dataset);
 
         Long datasetId = dataset.getId();
@@ -128,12 +130,16 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
     }
 
     protected Long setupImage() {
+        return setupImage(getUser());
+    }
+
+    protected Long setupImage(Person user) {
         Image img = new Image();
         img.setTitle("precambrian Test");
         img.setDescription("image description");
-        img.markUpdated(getUser());
-        CultureKeyword label = cultureKeywordService.findByLabel("Folsom");
-        CultureKeyword label2 = cultureKeywordService.findByLabel("Early Archaic");
+        img.markUpdated(user);
+        CultureKeyword label = genericKeywordService.findByLabel(CultureKeyword.class, "Folsom");
+        CultureKeyword label2 = genericKeywordService.findByLabel(CultureKeyword.class, "Early Archaic");
         LatitudeLongitudeBox latLong = new LatitudeLongitudeBox();
         latLong.setMaximumLatitude(35.791);
         latLong.setMaximumLongitude(-117.124);
@@ -153,7 +159,7 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
     protected Long setupDatedDocument() {
         Document doc = new Document();
         doc.setTitle("Calendar Date Test");
-        doc.setDateCreated(1000);
+        doc.setDate(1000);
         doc.setProject(Project.NULL);
         doc.setDescription("Ensure we can find a resource given temporal limits.");
         doc.markUpdated(getUser());
@@ -166,7 +172,7 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
 
     protected boolean resultsContainId(Long id) {
         boolean found = false;
-        for (Indexable r_ : controller.getResults()) {
+        for (Resource r_ : controller.getResults()) {
             Resource r = (Resource) r_;
             logger.trace(r.getId() + " " + r.getResourceType());
             if (id.equals(r.getId()))
@@ -184,8 +190,12 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
 
     protected void doSearch(String query) {
         controller.setQuery(query);
-        controller.performSearch();
+        controller.search();
         logger.info("search (" + controller.getQuery() + ") found: " + controller.getTotalRecords());
+    }
+
+    protected void doSearch() {
+        doSearch("");
     }
 
     protected void reindex() {
@@ -194,12 +204,11 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
     }
 
     protected void setStatuses(Status... status) {
-        List<Status> includedStatuses = Arrays.asList(status);
-        controller.setIncludedStatuses(includedStatuses);
+        controller.setIncludedStatuses(new ArrayList<Status>(Arrays.asList(status)));
     }
 
     protected void setStatusAll() {
-        controller.setIncludedStatuses(Arrays.asList(Status.values()));
+        controller.setIncludedStatuses(new ArrayList<Status>(Arrays.asList(Status.values())));
     }
 
     protected void logResults() {
@@ -215,6 +224,22 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
     @Override
     public Person getSessionUser() {
         return null;
+    }
+
+    
+    protected Document createDocumentWithContributorAndSubmitter() throws InstantiationException, IllegalAccessException {
+        Document doc = createAndSaveNewInformationResource(Document.class);
+        Person contributor = new Person("Kelly", "deVos", "kellyd@mailinator.com");
+        genericService.save(contributor);
+        ResourceCreator rc = new ResourceCreator(doc, contributor, ResourceCreatorRole.AUTHOR);
+        Person submitter = new Person("Evelyn", "deVos", "ecd@mailinator.com");
+        genericService.save(submitter);
+        doc.setSubmitter(submitter);
+        genericService.saveOrUpdate(rc);
+        doc.getResourceCreators().add(rc);
+        genericService.saveOrUpdate(doc);
+        reindex();
+        return doc;
     }
 
 }

@@ -20,7 +20,7 @@ import org.tdar.filestore.workflows.Workflow.BaseWorkflow;
 public class ImageWorkflow extends BaseWorkflow {
 
     public ImageWorkflow() {
-        registerFileExtensions(new String[] { "gif", "tif", "jpg", "tiff","jpeg"},  
+        registerFileExtensions(new String[] { "gif", "tif", "jpg", "tiff", "jpeg" },
                 ResourceType.IMAGE, ResourceType.SENSORY_DATA);
         registerFileExtensions(new String[] { "bmp", "pict", "png" }, ResourceType.IMAGE);
         addTask(ImageThumbnailTask.class, WorkflowPhase.CREATE_DERIVATIVE);
@@ -34,4 +34,5 @@ public class ImageWorkflow extends BaseWorkflow {
     public boolean isEnabled() {
         return true;
     }
+
 }

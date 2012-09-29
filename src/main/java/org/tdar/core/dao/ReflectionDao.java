@@ -68,6 +68,7 @@ public class ReflectionDao {
      * @param idlist list of id's of the objects to find a reference count for
      * @return reference count
      */
+    //FIXME: Why am I deprecated?
     @Deprecated
     public long getReferrerCount(Field field, List<Long> idlist) {
         String hql, fmt;

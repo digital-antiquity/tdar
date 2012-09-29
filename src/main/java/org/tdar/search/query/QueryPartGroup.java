@@ -53,9 +53,7 @@ public class QueryPartGroup implements QueryPart, QueryGroup {
         for (int i = 0; i < parts.size(); i++) {
             buff.append(parts.get(i).generateQueryString());
             if (i + 1 < parts.size()) {
-                buff.append(" ");
-                buff.append(operator.toString());
-                buff.append(" ");
+                buff.append(" ").append(operator.toString()).append(" ");
             }
         }
         buff.append(" ) ");

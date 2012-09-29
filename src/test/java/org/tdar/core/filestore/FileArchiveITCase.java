@@ -9,21 +9,17 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
-import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.service.fileProcessing.MessageService;
@@ -73,8 +69,7 @@ public class FileArchiveITCase extends AbstractIntegrationTestCase {
 
     public void testArchiveFormat(PairtreeFilestore store, String filename) throws InstantiationException, IllegalAccessException, IOException, Exception {
         File f = new File(TestConstants.TEST_SENSORY_DIR, filename);
-        InformationResourceFileVersion originalVersion = generateVersion(SensoryData.class, filename);
-        store.store(f, originalVersion);
+        InformationResourceFileVersion originalVersion = generateAndStoreVersion(SensoryData.class, filename, f, store);
         FileType fileType = fileAnalyzer.analyzeFile(originalVersion);
         assertEquals(FileType.FILE_ARCHIVE, fileType);
         Workflow workflow = fileAnalyzer.getWorkflow(originalVersion);
@@ -95,28 +90,6 @@ public class FileArchiveITCase extends AbstractIntegrationTestCase {
         // FIXME: confirm that there is a resulting file, and that the file has the right contents
         // confirm x number of versions, confirm types
         // confirm contents
-    }
-
-    private <R extends InformationResource> InformationResourceFileVersion generateVersion(Class<R> type, String name) throws InstantiationException,
-            IllegalAccessException {
-        InformationResource ir = createAndSaveNewInformationResource(type, false);
-        InformationResourceFile irFile = new InformationResourceFile();
-        irFile.setId(INFORMATION_RESOURCE_FILE_ID);
-        irFile.setInformationResource(ir);
-        irFile.setLatestVersion(VERSION);
-        @SuppressWarnings("deprecation")
-        InformationResourceFileVersion version = new InformationResourceFileVersion();
-        version.setVersion(VERSION);
-        version.setId(INFORMATION_RESOURCE_FILE_VERSION_ID);
-        version.setFilename(name);
-        version.setExtension(FilenameUtils.getExtension(name));
-        version.setInformationResourceFile(irFile);
-        version.setDateCreated(new Date());
-        version.setFileVersionType(VersionType.UPLOADED);
-        irFile.getInformationResourceFileVersions().add(version);
-        genericService.save(irFile);
-        genericService.save(version);
-        return version;
     }
 
 }

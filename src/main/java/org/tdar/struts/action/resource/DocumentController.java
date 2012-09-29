@@ -9,7 +9,6 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Document;
@@ -17,8 +16,6 @@ import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.transform.DcTransformer;
-import org.tdar.transform.ModsTransformer;
 
 /**
  * $Id$
@@ -46,12 +43,6 @@ public class DocumentController extends AbstractInformationResourceController<Do
 
     // either "source" or "related". kind of hacky. should be a better way to do this.
     private String linkType;
-
-    @Autowired
-    private transient ModsTransformer.DocumentTransformer documentModsTransformer;
-
-    @Autowired
-    private transient DcTransformer.DocumentTransformer documentDcTransformer;
 
     @Actions({
             @Action("related"),
@@ -91,24 +82,24 @@ public class DocumentController extends AbstractInformationResourceController<Do
         super.saveInformationResourceProperties();
         getGenericService().saveOrUpdate(document);
         handleUploadedFiles();
-//        handleLinkedInformationResource();
+        // handleLinkedInformationResource();
         getGenericService().saveOrUpdate(document);
         return SUCCESS;
     }
 
-//    private void handleLinkedInformationResource() {
-//        if (linkedInformationResource == null)
-//            return;
-//        if (StringUtils.isBlank(linkType))
-//            return;
-//        logger.debug("linking information resource: " + linkedInformationResource.getTitle() + " as " + linkType + " with " + getPersistable().getTitle());
-//        if (linkType.equals("related")) {
-//            linkedInformationResource.getRelatedCitations().add(getPersistable());
-//        } else if (linkType.equals("source")) {
-//            linkedInformationResource.getSourceCitations().add(getPersistable());
-//        }
-//        getInformationResourceService().saveOrUpdate(linkedInformationResource);
-//    }
+    // private void handleLinkedInformationResource() {
+    // if (linkedInformationResource == null)
+    // return;
+    // if (StringUtils.isBlank(linkType))
+    // return;
+    // logger.debug("linking information resource: " + linkedInformationResource.getTitle() + " as " + linkType + " with " + getPersistable().getTitle());
+    // if (linkType.equals("related")) {
+    // linkedInformationResource.getRelatedCitations().add(getPersistable());
+    // } else if (linkType.equals("source")) {
+    // linkedInformationResource.getSourceCitations().add(getPersistable());
+    // }
+    // getInformationResourceService().saveOrUpdate(linkedInformationResource);
+    // }
 
     public void setLinkedResourceId(Long informationResourceId) {
         if (informationResourceId == null) {
@@ -139,16 +130,6 @@ public class DocumentController extends AbstractInformationResourceController<Do
 
     public void setLinkType(String linkType) {
         this.linkType = linkType;
-    }
-
-    @Override
-    public DcTransformer<Document> getDcTransformer() {
-        return documentDcTransformer;
-    }
-
-    @Override
-    public ModsTransformer<Document> getModsTransformer() {
-        return documentModsTransformer;
     }
 
     public Set<String> getValidFileExtensions() {

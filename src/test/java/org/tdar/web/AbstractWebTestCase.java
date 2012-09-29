@@ -1,11 +1,10 @@
 package org.tdar.web;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.tdar.TestConstants.DEFAULT_BASE_URL;
-
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -16,6 +15,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
@@ -39,6 +39,9 @@ import com.gargoylesoftware.htmlunit.html.HtmlTextArea;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 import com.opensymphony.module.sitemesh.HTMLPage;
 
+import static org.junit.Assert.*;
+import static org.tdar.TestConstants.*;
+
 /**
  * @author Adam Brin
  * 
@@ -51,6 +54,31 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     protected Page internalPage;
     protected HtmlPage htmlPage;
     private HtmlForm internalForm;
+    public static final String TABLE_METADATA = "table metadata";
+    public static String PROJECT_ID_FIELDNAME = "projectId";
+
+    String regex = "&lt;(.+?)&gt;";
+    Pattern pattern = Pattern.compile(regex);
+    
+    //using linked hash for consistent execution order
+    @SuppressWarnings("serial")
+    Map<String,String> encodingErrorRegexes = new LinkedHashMap<String, String>() {{
+        //note that braces are java regex meta instructions and must be escaped (oh and don't forget to escape the escape character... man I hate you java)
+        put("possible html encoding inside json, open-brace", "\\{&quot;");
+        put("possible html encoding inside json, close-brace", "&quot;\\}");
+        put("possible html encoding inside json, quoted-key", "\\{&quot;:");
+        put("double-encoded html tag", "&lt;(.+?)&gt;");
+        put("double-encoded html attribute pair", "\\w+\\s?=\\s?&quot;\\w+&quot;");
+    }};
+    
+    Map<String, Pattern> encodingErrorPatterns = new LinkedHashMap<String, Pattern>();
+    
+    public AbstractWebTestCase() {
+        for(Map.Entry<String, String> entry  : encodingErrorRegexes.entrySet()) {
+            Pattern pattern = Pattern.compile(entry.getValue());
+            encodingErrorPatterns.put(entry.getKey(), pattern);
+        }
+    }
 
     /*
      * override to test with different URL can use this to point at another
@@ -86,6 +114,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     public int gotoPage(String path) {
         int statusCode = gotoPageWithoutErrorCheck(path);
         assertFalse("An error ocurred" + internalPage.getWebResponse().getContentAsString(), statusCode == HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        assertNoEscapeIssues();
         assertNoErrorTextPresent();
         return statusCode;
     }
@@ -99,6 +128,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     public int gotoPageWithoutErrorCheck(String path) {
         webClient.setThrowExceptionOnFailingStatusCode(false);
         changePage(getPage(path));
+        assertNoEscapeIssues();
         webClient.setThrowExceptionOnFailingStatusCode(true);
         return internalPage.getWebResponse().getStatusCode();
     }
@@ -110,9 +140,10 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     public void assertTextPresentInPage(String text, boolean sensitive) {
         HtmlPage page = (HtmlPage) internalPage;
         if (sensitive) {
-            assertTrue("looking for [" + text + "] in page:" + internalPage.getUrl(), page.asText().contains(text));
+            assertTrue("looking for [" + text + "] in page:" + internalPage.getUrl() + "\n" + page.asText(), page.asText().contains(text));
         } else {
-            assertTrue("looking for [" + text + "] in page:" + internalPage.getUrl(), page.asText().toLowerCase().contains(text.toLowerCase()));
+            assertTrue("looking for [" + text + "] in page:" + internalPage.getUrl() + "\n" + page.asText(),
+                    page.asText().toLowerCase().contains(text.toLowerCase()));
         }
     }
 
@@ -122,9 +153,9 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
     public void assertTextPresentInCode(String text, boolean sensitive) {
         if (sensitive) {
-            assertTrue("looking for [" + text + "] in page:" + internalPage.getUrl(), getPageCode().contains(text));
+            assertTrue("looking for [" + text + "] in page:" + internalPage.getUrl() + "\n" + getPageCode(), getPageCode().contains(text));
         } else {
-            assertTrue("looking for [" + text + "] in page:" + internalPage.getUrl(), getPageCode().toLowerCase().contains(text));
+            assertTrue("looking for [" + text + "] in page:" + internalPage.getUrl() + "\n" + getPageCode(), getPageCode().toLowerCase().contains(text));
         }
     }
 
@@ -137,15 +168,28 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     }
 
     public void assertTextPresent(String text) {
-        assertTrue("looking for [" + text + "] in page:" + internalPage.getUrl(), internalPage.getWebResponse().getContentAsString().contains(text));
+        assertTrue("looking for [" + text + "] in page:" + internalPage.getUrl() + "\n" + getPageText(), internalPage.getWebResponse().getContentAsString()
+                .contains(text));
     }
 
     public void assertTextPresentIgnoreCase(String text) {
-        assertTrue("looking for [" + text + "] in page:" + internalPage.getUrl(), StringUtils.containsIgnoreCase(internalPage.getWebResponse().getContentAsString(), text));
+        assertTrue("looking for [" + text + "] in page:" + internalPage.getUrl() + "\n" + getPageText(),
+                StringUtils.containsIgnoreCase(internalPage.getWebResponse().getContentAsString(), text));
     }
 
     public void assertTextNotPresentIgnoreCase(String text) {
-        assertFalse("looking for [" + text + "] in page:" + internalPage.getUrl(), StringUtils.containsIgnoreCase(internalPage.getWebResponse().getContentAsString(), text));
+        assertFalse("looking for [" + text + "] in page:" + internalPage.getUrl() + "\n" + getPageText(),
+                StringUtils.containsIgnoreCase(internalPage.getWebResponse().getContentAsString(), text));
+    }
+
+    public void assertPageTitleEquals(String expectedTitle) {
+        if (internalPage instanceof HtmlPage) {
+            HtmlPage page = (HtmlPage) internalPage;
+            assertEquals(expectedTitle.toLowerCase(), page.getTitleText().toLowerCase());
+        }
+        else {
+            Assert.fail(String.format("was looking for <title>%s</title> but server response was not a valid html page", expectedTitle));
+        }
     }
 
     public HtmlElement getInput(String name) {
@@ -156,7 +200,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     public void setInput(String name, String value) {
         setInput(name, value, true);
     }
-    
+
     public void setInput(String name, String value, boolean overrideCreate) {
         HtmlPage page = (HtmlPage) internalPage;
         String id = null;
@@ -168,7 +212,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         try {
             page.getElementByName(name);
         } catch (Exception e) {
-            logger.info("no element found: " + name);
+            logger.trace("no element found: " + name);
         }
 
         if (input == null && overrideCreate) {
@@ -187,7 +231,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             }
         }
         input = page.getElementByName(name);
-        
+
         if (input instanceof HtmlTextArea) {
             HtmlTextArea txt = (HtmlTextArea) input;
             id = txt.getId();
@@ -195,7 +239,8 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         } else if (input instanceof HtmlSelect) {
             HtmlSelect sel = (HtmlSelect) input;
             sel.setSelectedAttribute(value, true);
-//            assertTrue(sel.getSelectedOptions().get(0).getAttributes().getNamedItem("value").getTextContent() + " should equal " + value,sel.getSelectedOptions().get(0).getAttributes().getNamedItem("value").getTextContent().equals(value));
+            // assertTrue(sel.getSelectedOptions().get(0).getAttributes().getNamedItem("value").getTextContent() + " should equal " +
+            // value,sel.getSelectedOptions().get(0).getAttributes().getNamedItem("value").getTextContent().equals(value));
             id = sel.getId();
         } else if (input instanceof HtmlCheckBoxInput) {
             // if the checkbox's value attribute matches the supplied value, check the box. Otherwise uncheck it.
@@ -220,32 +265,32 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         createdElement.setAttribute("type", inputName);
         createdElement.setAttribute("name", name);
         createdElement.setAttribute("value", value);
-        if(internalForm != null) {
+        if (internalForm != null) {
             internalForm.appendChild(createdElement);
         } else {
             logger.warn("internalPage was null - element will be added to all forms on the page");
             HtmlPage page = (HtmlPage) internalPage;
             List<HtmlForm> forms = page.getForms();
-            if(forms.isEmpty()) {
+            if (forms.isEmpty()) {
                 Assert.fail("cannot create input element because page does not have any forms");
             }
             for (HtmlForm form : page.getForms()) {
                 form.appendChild(createdElement);
-                logger.debug("appending name:'{}'\t value:'{}'\t to form:'{}'", new Object[] {name, value, form.getId()});
+                logger.debug("appending name:'{}'\t value:'{}'\t to form:'{}'", new Object[] { name, value, form.getId() });
             }
         }
     }
-    
+
     public void createInput(String inputName, String name, Number value) {
         createInput(inputName, name, value.toString());
     }
-    
-    
+
     public boolean removeElementsByName(String elementName) {
-        if(htmlPage == null) return false;
+        if (htmlPage == null)
+            return false;
         List<HtmlElement> elements = htmlPage.getElementsByName(elementName);
         int count = 0;
-        for(HtmlElement element : elements) {
+        for (HtmlElement element : elements) {
             element.remove();
             count++;
         }
@@ -309,8 +354,14 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         if (internalForm == null && getHtmlPage().getForms().size() > 0) {
             internalForm = getHtmlPage().getForms().get(0);
         }
-        assertNotNull("button with text [" + buttonText + "] not found", internalForm.getInputByValue(buttonText));
-        assertTrue(internalForm.getInputByValue(buttonText).getTypeAttribute().equalsIgnoreCase("submit"));
+        HtmlInput input = null;
+        try {
+            input = internalForm.getInputByValue(buttonText);
+        } catch (Exception ex) {
+            logger.error("button element not found", ex);
+        }
+        assertNotNull("button with text [" + buttonText + "] not found", input);
+        assertTrue(input.getTypeAttribute().equalsIgnoreCase("submit"));
     }
 
     public int submitForm() {
@@ -322,6 +373,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         int statusCode = internalPage.getWebResponse().getStatusCode();
         assertFalse(statusCode == HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         assertNoErrorTextPresent();
+        assertNoEscapeIssues();
         return statusCode;
     }
 
@@ -349,6 +401,9 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             UnexpectedPage page = (UnexpectedPage) internalPage;
             contents = page.getWebResponse().getContentAsString();
         }
+        if (contents.contains(text)) {
+            logger.debug("text " + text + " found in " + contents);
+        }
         assertFalse("text should not be present [" + text + "] in page:" + internalPage.getUrl(), contents.contains(text));
     }
 
@@ -359,8 +414,20 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         assertTextNotPresent("Exception stack trace:" + getPageText()); // inline stacktrace (ftl compiles but dies partway through rendering)
         assertTextNotPresentIgnoreCase("HTTP ERROR");
         assertTextNotPresentIgnoreCase("Exception" + getPageText()); // inline stacktrace (ftl compiles but dies partway through rendering)
-        Assert.assertFalse("page shouldn't contain action errors" + getPageText(), getPageCode().contains("class=\"action-error\""));
+        assertFalse("page shouldn't contain action errors" + getPageText(), getPageCode().contains("class=\"action-error\""));
     }
+
+    public void assertNoEscapeIssues() {
+        String html = getPageCode().toLowerCase();
+        for(Map.Entry<String, Pattern> entry : encodingErrorPatterns.entrySet()) {
+            Matcher matcher = entry.getValue().matcher(html);
+            if(matcher.find()) {
+                String msg = "encoding issue \"%s\" found at pos[%s,%s] : '%s'";
+                Assert.fail(String.format(msg, entry.getKey(), matcher.start(), matcher.end(), matcher.group()));
+            }
+        }
+    }
+    
 
     public HtmlPage getHtmlPage() {
         assertTrue("page is not a HtmlPage", internalPage instanceof HtmlPage);
@@ -382,14 +449,15 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         internalPage = page;
         internalForm = null;
         logger.info("CHANGING url TO: " + internalPage.getUrl());
-        if(internalPage instanceof HtmlPage) {
+        if (internalPage instanceof HtmlPage) {
             htmlPage = (HtmlPage) internalPage;
+            assertNoEscapeIssues();
         }
     }
 
     public void clickLinkOnPage(String text) {
         HtmlAnchor anchor = findPageLink(text);
-        assertNotNull(anchor);
+        assertNotNull("could not find link with " + text + " on " + getPageText(), anchor);
         try {
             changePage(anchor.click());
         } catch (Exception e) {
@@ -435,28 +503,31 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         gotoPage("/ontology/3029");
         assertTextPresentInPage("Fauna Pathologies - Default Ontology Draft");
         assertTextPresentInPage("Indeterminate");
-        assertTextPresentInPage("Fauna"); 
+        assertTextPresentInPage("Fauna");
     }
 
     public void testCodingSheetView() {
         gotoPage("/coding-sheet/449");
-        logger.debug("\n----------- page begin--------\n" + getPageText() + "\n----------- page begin--------\n" );
+        logger.trace("\n----------- page begin--------\n" + getPageText() + "\n----------- page begin--------\n");
         assertTextPresentInPage("CARP Fauna Proximal-Distal");
         assertTextPresentInPage("Subcategory: Portion/Proximal/Distal");
     }
 
     public void testProjectView() {
+        // this should probably be done @before every test but it would slow things down even more
+        searchIndexService.indexAll();
+
         gotoPage("/project/3805");
-        logger.trace(getPageText());
+        logger.debug(getPageText());
         assertTextPresentInPage("New Philadelphia Archaeology Project");
         assertTextPresentInPage("Block 3, Lot 4");
     }
 
     public void testDocumentView() {
-        gotoPage("/document/4232");
+        gotoPage("/document/" + TestConstants.TEST_DOCUMENT_ID);
         assertTextPresentInPage("2008 New Philadelphia Archaeology Report, Chapter 4, Block 7, Lot 1");
         assertTextPresentInPage("a2008reportchap4.pdf");
-        assertTextPresentInPage("New Philadelphia Archaeology Project");
+        assertTextPresentInPage("New Philadelphia Archaeology project");
         assertTextPresentInPage("17");
     }
 
@@ -492,13 +563,24 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         while (url.indexOf("/") != -1) {
             String part = url.substring(url.lastIndexOf("/"));
             part = part.replace("/", "");
-            url = url.substring(0,url.lastIndexOf("/"));
-            logger.trace("evaluating {} : {}",url,part);
+            url = url.substring(0, url.lastIndexOf("/"));
+            logger.trace("evaluating {} : {}", url, part);
             if (StringUtils.isNumeric(part)) {
                 return Long.parseLong(part);
             }
         }
         throw new TdarRecoverableRuntimeException("could not find tDAR ID in URL" + internalPage.getUrl().toString());
+    }
+
+    public void assertCurrentUrlEquals(String url) {
+        String msg = String.format("actual page: %s; assumed page: %s; status: %s", internalPage.getUrl(), url, internalPage.getWebResponse().getStatusCode());
+        assertEquals(msg, internalPage.getUrl().toString(), url);
+    }
+
+    public void assertCurrentUrlContains(String url) {
+        String msg = String.format("actual page: %s; assumed page should have in URL: %s; status: %s", internalPage.getUrl(), url, internalPage
+                .getWebResponse().getStatusCode());
+        assertTrue(msg, internalPage.getUrl().toString().contains(url));
     }
 
 }

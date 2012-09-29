@@ -3,6 +3,7 @@ application.password                    tdardev.crowdpw
 application.login.url                   http://auth.tdar.org/crowd/console/
 
 crowd.server.url                        http://auth.tdar.org/crowd/services/
+crowd.passwordreseturl					http\://auth.tdar.org/crowd/console/forgottenlogindetails\!default.action
 
 session.isauthenticated                 session.isauthenticated
 session.tokenkey                        session.tokenkey

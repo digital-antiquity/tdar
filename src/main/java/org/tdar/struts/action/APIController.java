@@ -3,7 +3,6 @@ package org.tdar.struts.action;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,12 +16,14 @@ import org.apache.tools.ant.filters.StringInputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
+import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.exception.APIException;
 import org.tdar.core.exception.StatusCode;
-import org.tdar.core.service.FilestoreService;
 import org.tdar.core.service.ImportService;
-import org.tdar.utils.Pair;
+import org.tdar.core.service.PersonalFilestoreService;
+import org.tdar.struts.data.FileProxy;
 
 @SuppressWarnings("serial")
 @Namespace("/api")
@@ -32,7 +33,7 @@ import org.tdar.utils.Pair;
 public class APIController extends AuthenticationAware.Base {
 
     @Autowired
-    FilestoreService filestoreService;
+    PersonalFilestoreService filestoreService;
 
     private List<File> uploadFile = new ArrayList<File>();
     private List<String> uploadFileFileName = new ArrayList<String>();
@@ -49,7 +50,14 @@ public class APIController extends AuthenticationAware.Base {
 
     private Resource importedRecord;
     private String message;
+    private List<String> confidentialFiles = new ArrayList<String>();
     private Long id;
+    public final static String msg_ = "%s is %s %s (%s): %s";
+
+    
+    private void logMessage(String action_, Class<?> cls, Long id_, String name_) {
+        logger.info(String.format(msg_, getAuthenticatedUser().getEmail(), action_, cls.getSimpleName().toUpperCase(), id_, name_));
+    }
 
     @Action(value = "upload", results = {
             @Result(name = SUCCESS, type = "freemarker", location = "/WEB-INF/content/api.ftl", params = { "contentType", "text/plain" }),
@@ -57,28 +65,33 @@ public class APIController extends AuthenticationAware.Base {
     public String upload() throws ClassNotFoundException, IOException {
         if (StringUtils.isEmpty(getRecord())) {
             logger.info("you must define a record");
-            status = StatusCode.BAD_REQUEST.getResultString();
-            getServletResponse().setStatus(StatusCode.BAD_REQUEST.getStatusCode());
+            status = StatusCode.BAD_REQUEST.getResultName();
+            getServletResponse().setStatus(StatusCode.BAD_REQUEST.getHttpStatusCode());
             return ERROR;
         }
-        List<Pair<String, InputStream>> filePairs = new ArrayList<Pair<String, InputStream>>();
+        List<FileProxy> proxies = new ArrayList<FileProxy>();
         for (int i = 0; i < uploadFileFileName.size(); i++) {
-            filePairs.add(new Pair<String, InputStream>(uploadFileFileName.get(i), new FileInputStream(uploadFile.get(i))));
+            FileProxy proxy = new FileProxy(uploadFileFileName.get(i), new FileInputStream(uploadFile.get(i)), VersionType.UPLOADED,FileAction.ADD);
+            if (confidentialFiles.contains(uploadFileFileName.get(i))) {
+                proxy.setConfidential(true);
+            }
+            proxies.add(proxy);
         }
 
         try {
-            Resource loadedRecord = importService.loadXMLFile(new StringInputStream(getRecord()), getAuthenticatedUser(), filePairs, projectId);
+            Resource loadedRecord = importService.loadXMLFile(new StringInputStream(getRecord()), getAuthenticatedUser(), proxies, projectId);
             setImportedRecord(loadedRecord);
             setId(loadedRecord.getId());
 
+            logMessage("SAVING", loadedRecord.getClass(), loadedRecord.getId(), loadedRecord.getTitle());
             if (loadedRecord.isCreated()) {
-                status = StatusCode.CREATED.getResultString();
+                status = StatusCode.CREATED.getResultName();
                 message = "created:" + loadedRecord.getId();
-                getServletResponse().setStatus(StatusCode.CREATED.getStatusCode());
+                getServletResponse().setStatus(StatusCode.CREATED.getHttpStatusCode());
                 return SUCCESS;
             }
-            status = StatusCode.UPDATED.getResultString();
-            getServletResponse().setStatus(StatusCode.UPDATED.getStatusCode());
+            status = StatusCode.UPDATED.getResultName();
+            getServletResponse().setStatus(StatusCode.UPDATED.getHttpStatusCode());
             return SUCCESS;
         } catch (Exception e) {
             getLogger().debug("an exception occured when processing the xml import", e);
@@ -91,13 +104,13 @@ public class APIController extends AuthenticationAware.Base {
 
             if (e instanceof APIException) {
                 StatusCode code = ((APIException) e).getCode();
-                status = code.getResultString();
-                getServletResponse().setStatus(code.getStatusCode());
+                status = code.getResultName();
+                getServletResponse().setStatus(code.getHttpStatusCode());
                 return ERROR;
             }
         }
-        status = StatusCode.UNKNOWN_ERROR.getResultString();
-        getServletResponse().setStatus(StatusCode.UNKNOWN_ERROR.getStatusCode());
+        status = StatusCode.UNKNOWN_ERROR.getResultName();
+        getServletResponse().setStatus(StatusCode.UNKNOWN_ERROR.getHttpStatusCode());
         return ERROR;
     }
 
@@ -193,6 +206,14 @@ public class APIController extends AuthenticationAware.Base {
 
     public void setProjectId(Long projectId) {
         this.projectId = projectId;
+    }
+
+    public List<String> getConfidentialFiles() {
+        return confidentialFiles;
+    }
+
+    public void setConfidentialFiles(List<String> confidentialFiles) {
+        this.confidentialFiles = confidentialFiles;
     }
 
 }

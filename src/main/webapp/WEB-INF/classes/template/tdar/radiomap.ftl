@@ -32,7 +32,7 @@
         <#assign itemKey = stack.findValue('top')/>
     </#if>
     <#if parameters.numColumns??>
-       <#if radioNumber.index &gt; 0 && (radioNumber.index + 1) % parameters.numColumns == 1>
+       <#if (radioNumber.index &gt; 0 && (radioNumber.index + 1) % parameters.numColumns == 1) || parameters.numColumns == 1 >
          <br/>
        </#if>
     </#if>
@@ -71,6 +71,7 @@
 </#if>
 <#include "/${parameters.templateDir}/simple/scripting-events.ftl" />
 <#include "/${parameters.templateDir}/simple/common-attributes.ftl" />
+<#include "/${parameters.templateDir}/tdar/tdar-attributes.ftl" />
 /><#rt/>
 <label for="${parameters.id?html}${itemKeyStr?html}"><#rt/>
     ${itemValue}<#t/>

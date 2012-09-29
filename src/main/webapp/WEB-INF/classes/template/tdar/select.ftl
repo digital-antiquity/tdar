@@ -46,6 +46,7 @@
 <#include "/${parameters.templateDir}/simple/scripting-events.ftl" />
 <#include "/${parameters.templateDir}/simple/common-attributes.ftl" />
 <#include "/${parameters.templateDir}/simple/dynamic-attributes.ftl" />
+<#include "/${parameters.templateDir}/tdar/tdar-attributes.ftl" />
 >
 <#if parameters.headerKey?? && parameters.headerValue??>
     <option value="${parameters.headerKey?html}"

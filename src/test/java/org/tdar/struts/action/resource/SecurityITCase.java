@@ -6,13 +6,10 @@
  */
 package org.tdar.struts.action.resource;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
@@ -20,6 +17,8 @@ import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
 import org.tdar.core.service.EntityService;
 import org.tdar.struts.action.DownloadController;
 import org.tdar.struts.action.TdarActionSupport;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Adam Brin
@@ -253,6 +252,15 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
         controller.setInformationResourceFileId(doc.getInformationResourceFiles().iterator().next()
                 .getCurrentVersion(VersionType.WEB_SMALL).getId());
         assertEquals(DownloadController.SUCCESS, controller.thumbnail());
+    }
+    
+    // FIXME: not sure where this belongs, it was in DatasetControllerITCase originally
+    @Test
+    @Rollback
+    public void testAuthorizedUserEquality() {
+        AuthorizedUser authorizedUser = new AuthorizedUser(getAdminUser(), GeneralPermissions.VIEW_ALL);
+        AuthorizedUser authorizedUser2 = new AuthorizedUser(getAdminUser(), GeneralPermissions.VIEW_ALL);
+        assertEquals(authorizedUser, authorizedUser2);
     }
 
     /*

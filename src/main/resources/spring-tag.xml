@@ -11,7 +11,10 @@
 
 	<!-- This map maps terms to site type label. Primary key IDs are not used 
 		because they can vary across databases, should be safe as labels are 
-		marked as unique. -->
+		marked as unique. 
+		
+		// FROM MDA Archaeological Thesaurus
+		-->
 	<util:map id="siteTypeTermMap">
 		<entry>
 			<key>
@@ -149,7 +152,6 @@
 	</util:map>
 
 	<bean id="siteTypeQueryMapper" class="org.tdar.tag.SiteTypeQueryMapper">
-		<property name="siteTypeKeywordService" ref="siteTypeKeywordService" />
 		<property name="tagTermMap" ref="siteTypeTermMap" />
 	</bean>
 

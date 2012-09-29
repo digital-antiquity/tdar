@@ -7,7 +7,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.search.annotations.Field;
@@ -28,7 +28,7 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 @Entity
 @XStreamAlias("resourceNote")
 @Table(name = "resource_note")
-public class ResourceNote extends Persistable.Base implements HasResource<Resource> {
+public class ResourceNote extends Persistable.Sequence<ResourceNote> implements HasResource<Resource> {
 
     private static final long serialVersionUID = 8517883471101372051L;
 
@@ -53,8 +53,7 @@ public class ResourceNote extends Persistable.Base implements HasResource<Resour
         this.note = note;
     }
 
-    @XmlIDREF
-    @XmlAttribute(name = "resourceId")
+    @XmlTransient
     public Resource getResource() {
         return resource;
     }

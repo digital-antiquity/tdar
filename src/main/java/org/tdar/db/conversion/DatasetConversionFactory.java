@@ -1,11 +1,9 @@
 package org.tdar.db.conversion;
 
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.db.conversion.converters.AccessDatabaseConverter;
-import org.tdar.db.conversion.converters.CsvConverter;
 import org.tdar.db.conversion.converters.DatasetConverter;
-import org.tdar.db.conversion.converters.ExcelConverter;
 import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.filestore.workflows.GenericColumnarDataWorkflow;
 
 public class DatasetConversionFactory {
 
@@ -17,17 +15,17 @@ public class DatasetConversionFactory {
      * @return
      */
 
-    public static DatasetConverter getConverter(InformationResourceFileVersion dataset,TargetDatabase targetDatabase) {
-        // String formatName = datasetFormat.getName();
-        // FIXME: use explicit CSV converter, using POI to read CSV has known bugs
-        if (dataset.getExtension().equalsIgnoreCase("xls") || dataset.getExtension().equalsIgnoreCase("xlsx")) {
-            return new ExcelConverter(dataset,targetDatabase);
-        } else if (dataset.getExtension().equalsIgnoreCase("CSV")) {
-            return new CsvConverter(dataset,targetDatabase);
-        } else if (dataset.getExtension().equalsIgnoreCase("mdb") || dataset.getExtension().equalsIgnoreCase("accdb")) {
-            return new AccessDatabaseConverter(dataset,targetDatabase);
+    public static DatasetConverter getConverter(InformationResourceFileVersion dataset, TargetDatabase targetDatabase) {
+        try {
+            GenericColumnarDataWorkflow workflow = new GenericColumnarDataWorkflow();
+            Class<? extends DatasetConverter> converterClass = workflow.getDatasetConverterForExtension(dataset.getExtension());
+            DatasetConverter converter = converterClass.newInstance();
+            converter.setTargetDatabase(targetDatabase);
+            converter.setInformationResourceFileVersion(dataset);
+            return converter;
+        } catch (Exception e) {
+            throw new IllegalArgumentException("No converter defined for format: " + dataset.getExtension(),e);
         }
-        throw new IllegalArgumentException("No converter defined for format: " + dataset.getExtension());
     }
 
 }

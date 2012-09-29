@@ -17,6 +17,7 @@ import org.apache.pdfbox.util.PDFImageWriter;
 import org.apache.pdfbox.util.PDFTextStripper;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.InformationResourceFileVersion.VersionType;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.WorkflowContext;
 
 /**
@@ -43,6 +44,7 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
             task.run(origFile);
         } catch (Throwable e) {
             e.printStackTrace();
+            throw new TdarRecoverableRuntimeException("processing error");
         }
         String outXML = task.getWorkflowContext().toXML();
         System.out.println(outXML);
@@ -56,11 +58,15 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
 
     @Override
     public void run(File originalFile) throws Exception {
-        PDDocument document = openPDF("", originalFile);
-        File imageFile = new File(extractPage(1, originalFile, document));
-        extractText(originalFile, document);
-        closePDF(document);
-        processImage(imageFile);
+        try {
+            PDDocument document = openPDF("", originalFile);
+            File imageFile = new File(extractPage(1, originalFile, document));
+            extractText(originalFile, document);
+            closePDF(document);
+            processImage(imageFile);
+        } catch (Throwable t) {
+            throw new TdarRecoverableRuntimeException("processing error", t);
+        }
     }
 
     /**
@@ -163,6 +169,11 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
             getLogger().debug("Error: the number of bits per pixel must be 1, 8 or 24.");
         }
         return imageType;
+    }
+
+    @Override
+    public String getName() {
+        return "PDFDerivativeTask";
     }
 
 }

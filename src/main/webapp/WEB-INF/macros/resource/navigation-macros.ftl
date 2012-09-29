@@ -2,6 +2,7 @@
 $Id$ 
 navigation freemarker macros
 -->
+<#escape _untrusted as _untrusted?html>
 <#import "list-macros.ftl" as list>
 <#import "edit-macros.ftl" as edit>
 
@@ -55,7 +56,7 @@ $(document).ready(function() {
 </style>
 
 <@s.form id='loginForm' method="post" action="%{#request.contextPath}/login/process">
-    <@s.textfield id='loginEmail' label="Email" name="loginEmail" cssClass="required email" /><br/>
+    <@s.textfield spellcheck="false" id='loginEmail' label="Email" name="loginEmail" cssClass="required email" /><br/>
     <@s.password id='loginPassword' label="Password" name="loginPassword" cssClass="required" /><br/>
 <div class="field"></div>
  <label for="loginForm_userCookieSet">Remember me?</label><@s.checkbox name='userCookieSet' cssClass="overrideCheckbox"/><br/>
@@ -63,7 +64,6 @@ $(document).ready(function() {
     <#if Parameters.url??>
         <input type="hidden" name="url" value="${Parameters.url}"/>
 </#if>
-  <textarea name="comment" style="color:red;display:none;"></textarea>
 </@s.form>
 <div id="error" style="border:1px solid red;display:none; margin:.1em;padding:.1em"></div>
 <p style="margin-left: 9.2em;">
@@ -78,7 +78,7 @@ $(document).ready(function() {
     <#-- FIXME: this is a bit of a hack, but we need a queuedFileTemplate table
     outside of the form for file uploads.  Consider renaming this to ..?-->
     <#if resource.resourceType != "PROJECT" && current == "edit">
-    <table class="tdarCommentDescription" id="queuedFileTemplate">
+    <table style="display:none;visibility:hidden" id="queuedFileTemplate">
         <@edit.fileProxyRow />
     </table>
     </#if>
@@ -111,7 +111,7 @@ $(document).ready(function() {
           </@makeLink>
          -->
         <#if ! resource.dataTables.isEmpty() >
-            <@makeLink "dataset" "columns" "map columns" "columns" current>
+            <@makeLink "dataset" "columns" "table metadata" "columns" current>
             <@img "/images/database_table.png" />
             </@makeLink>
         </#if>
@@ -123,8 +123,11 @@ $(document).ready(function() {
         </#if>
         </#if>
         </#if>
-
-
+       <#elseif creator??>
+        <@makeViewLink namespace current />
+        <#if ableToEditAnything>
+          <@makeEditLink namespace current />
+        </#if>
        <#else>
         <@makeLink "workspace" "list" "bookmarked resources" "list" current false>
             <@img "/images/book_go.png"/>
@@ -139,6 +142,38 @@ $(document).ready(function() {
 
 </#macro>
 
+<#macro creatorToolbar current>
+
+    <#if editor || authenticatedUser?? && id == authenticatedUser.id>
+	    <#if creator??>
+	    <#local creatorType = creator.creatorType.toString().toLowerCase() />
+	    <#else>
+	    <#local creatorType = persistable.creatorType.toString().toLowerCase() />
+	    </#if>
+    
+  <#if sessionData?? && sessionData.authenticated>
+    <div id="toolbars" parse="true">
+      <ul id="toolbar" class="fg-toolbar ui-toolbar ui-widget-header ui-corner-tl ui-corner-bl ui-corner-br  ui-corner-tr ui-helper-clearfix">
+    <@nav.makeLink "browse" "creators" "view" "view" current true>
+        <@img "/images/view.png" />
+    </@nav.makeLink>
+    <#if "edit" != current>
+    <@nav.makeLink "entity/${creatorType}" "edit" "edit" "edit" current true >
+            <@img "/images/delete.png" />
+    </@nav.makeLink>
+    <#else>
+    <@nav.makeLink "entity/${creatorType}" "edit" "edit" "edit" current true >
+            <@img "/images/desaturated/delete.png" />
+    </@nav.makeLink>
+    </#if>
+      </ul>
+    </div>
+  </#if>
+  </#if>
+</#macro>
+
+
+
 
 <#macro makeLink namespace action label name current includeResourceId=true disabled=false>
 <#if disabled>
@@ -150,7 +185,12 @@ $(document).ready(function() {
 <#else>
 <li>
 <#if includeResourceId>
-<a href='<@s.url value="/${namespace}/${action}"><@s.param name="id" value="${persistable.id?c}" /></@s.url>'><#nested> ${label}</a>
+    <#if persistable??>
+        <#local _id = persistable.id />
+    <#else>
+        <#local _id = creator.id />
+    </#if>
+<a href='<@s.url value="/${namespace}/${action}"><@s.param name="id" value="${_id?c}" /></@s.url>'><#nested> ${label}</a>
 <#else>
 <a href='<@s.url value="/${namespace}/${action}" />'><#nested> ${label}</a>
 </#if>
@@ -185,12 +225,10 @@ $(document).ready(function() {
 </@makeLink>
 </#macro>
 
-<#-- macro to lessen typing when constructing an <img> tag 
-FIXME: add alt text?
--->
-
-<#macro img url>
-<img src='<@s.url value="${url}" />' />
+<#macro img url alt="">
+<img src='<@s.url value="${url}" />' <#t>
+    <#if alt != ""> alt='${alt}'</#if> <#t>
+ />
 </#macro>
 
 
@@ -199,10 +237,11 @@ FIXME: add alt text?
 <#if disabled="true">
   <#assign disabledText>disabled="disabled"</#assign>
 </#if>
+    
     <#if !rowStatus??>
         <button ${disabledText} class="addAnother minus" type="button" tabindex="-1" onclick='deleteParentRow(this)'><img src="/images/minus.gif"></button>
     <#else>
         <button ${disabledText} class="addAnother minus" type="button" tabindex="-1" onclick='deleteParentRow(this)'><img src="/images/minus.gif" class="minus"></button>
     </#if>
 </#macro>
-
+</#escape>
