@@ -4,7 +4,7 @@ dropdb tdardata -U tdar
 echo "creating tdarmetadata and tdardata databases"
 createdb tdarmetadata -O tdar  -U tdar
 createdb tdardata -O tdar -U tdar
-echo "loading schema"
+echo "loading schema based on the latest stable release"
 psql -U tdar tdarmetadata -f tdarmetadata_schema.sql > log.txt
 echo "loading controlled data"
 psql -U tdar tdarmetadata -f tdarmetadata_init.sql >> log.txt
