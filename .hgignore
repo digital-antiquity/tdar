@@ -5,7 +5,7 @@ syntax:glob
 indexes
 target
 bin
-*.properties
+src/main/resources/*.properties
 *-local-settings.xml
 googlemaps-api-key.js
 logs
