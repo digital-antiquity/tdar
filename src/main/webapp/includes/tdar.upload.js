@@ -133,9 +133,9 @@ TDAR.fileupload = function() {
     };
     
     
+    //if there are any newfile rows,  enable all the replace buttons
     var _updateReplaceButtons = function(e, data) {
         console.log("_updateReplaceButtons")
-        //if there are any newfile rows,  enable all the replace buttons
         var $filesTable = $(data.context).closest("tbody.files");
         var $newfileRows = $('.new-file:not(.replace-target,.deleted-file)', $filesTable);
         
@@ -152,23 +152,40 @@ TDAR.fileupload = function() {
     var _buildReplaceDropdown = function(e) {
         var button = this;
         var $ul = $(button).next(); //in a button dropdown, the ul follows the button
+        var $tr = $(button).parents("tr.existing-file");
         var $tbody = $(button).closest("tbody.files");
         var $newfiles = $('.new-file:not(.replace-target,.deleted-file)');
         var data = {
                 jqnewfiles: $newfiles,
                 //TODO: figure  out if this existing file has already chosen a replacement, if so,  render a "cancel" option.
-                bReplacePending: false};
-        var repoHtml = tmpl("template-replace-menu", data);
-        $ul.html(repoHtml);
+                bReplacePending: $tr.hasClass('replacement-selected')};
+        
+        var $listItems = $(tmpl("template-replace-menu", data));
+        $listItems.find('a').bind("click", _replacementFileSelected);
+        $ul.empty();
+        $ul.append($listItems);
+    };
+
+    //"replacement file chosen" event handler.  update the hidden replacement filename field of the replacement file row, and mark target as selected
+    var _replacementFileSelected = function(e) {
+        var anchorElement = this;
+        var $tr = $(anchorElement).parents("tr.existing-file");
+        var $filename  = $('.fileReplaceName', $tr);
+        
+        if($(e).hasClass("cancel")) {
+            $filename.val($filename.data("original-value"));
+            $('.replacement-text', $tr).text("").fadeOut();
+            $tr.removeClass('replacement-selected');
+        } else {
+            var newFilename = $(anchorElement).data("filename");
+            $filename.data("original-value", $filename.val());
+            $filename.val(newFilename);
+            $('.replacement-text', $tr).text(" (will be replaced by '" + newFilename + "')").fadeIn();
+            $tr.addClass('replacement-selected');
+            //TODO: figure out how to prevent user from selecting same target for two existing files.
+        }
     };
     
-    //todo: bIsReplacementAvailable()
-    
-    //todo: handle additions to replacementList
-    
-    //todo: handle deletions from replacementList
-    
-    //todo: dynamically generate replace UL contents
     
     //FIXME:   preventDefault on menuItems
     

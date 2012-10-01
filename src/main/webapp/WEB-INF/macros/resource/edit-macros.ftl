@@ -1118,7 +1118,7 @@ jquery validation hooks?)
                <th>Name</th>
                <th>Size</th>
                <th colspan="2">Access Restrictions</th>
-               <th>Action</th>
+               <th colspan="2">Action</th>
             </thead>
             <tbody class="files"></tbody>
         </table>
@@ -1729,6 +1729,7 @@ function drawToolbar(projId) {
                 {% } else { %}
                 {%=file.name%}
                 {% } %} 
+                <span class="replacement-text" style="display:none"></span>
             </td>
             <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
             <td colspan="2">
@@ -1739,12 +1740,13 @@ function drawToolbar(projId) {
             </td>
         {% } %}
         <td class="delete">
-            <div class="btn-toolbar">
                 <button class="btn btn-danger delete-button" data-type="{%=file.delete_type%}" data-url="{%=file.delete_url%}">
                     <i class="icon-trash icon-white"></i>
                     <span>{%=locale.fileupload.destroy%}</span>
                 </button>
-                {%if (file.fileId) { %}
+        </td>
+        <td>
+            {%if (file.fileId) { %}
                <#--
                 <button class="btn btn-warning disabled replace-button" disabled="disabled">
                     <i class="icon-retweet icon-white"></i>
@@ -1760,10 +1762,9 @@ function drawToolbar(projId) {
                       <li><a href="#">cancel replace operation</a></li>
                     </ul>
                   </div> 
-              </div>   
-            
-            
             {% } %}
+            
+            
             <#-- TODO: this widget has a "bulk actions" convention, but I don't want it.  is it safe to remove the html,  or do we also need to handle this in javascript --> 
             <#-- <input type="checkbox" name="delete"  value="1"> -->
 
@@ -1780,10 +1781,14 @@ function drawToolbar(projId) {
 
 <script id="template-replace-menu" type="text/x-tmpl">
 {% for(var i = 0, row; row = o.jqnewfiles[i]; i++) { %}
-   <li><a href="#" class="replace-menu-item" data-filename="" >{%=$('.fileReplaceName', row).val()%}</a></li>
+   <li><a href="#" 
+            class="replace-menu-item"
+            data-action="rename"
+            data-filename="{%=$('.fileReplaceName', row).val()%}" 
+            data-target="" >{%=$('.fileReplaceName', row).val()%}</a></li>
 {% } %}
    <li class="divider"></li> 
-   <li><a href="#" class="cancel">Cancel previous operation</a></li>
+   <li><a href="#" class="cancel" >Cancel previous operation</a></li>
 </script>
 </#macro>
 
