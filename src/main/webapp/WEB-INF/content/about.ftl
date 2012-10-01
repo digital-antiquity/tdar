@@ -47,10 +47,7 @@
 
 <div class="row">
     <div class="span5">
-        <#if featuredResource?? >
-        <h3>Featured ${featuredResource.resourceType.label}</h3>
-            <@view.tdarCitation featuredResource false />
-        </#if>
+		<#include "featured.ftl" />
     </div>
     <div class="span4">
         <h3>Getting Started with ${siteAcronym}</h3>

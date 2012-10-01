@@ -9,6 +9,8 @@ vim:sts=2:sw=2:
     <pattern>/images/*</pattern>
     <pattern>/includes/*</pattern>
     <pattern>/*.html</pattern>
+    <pattern>/map</pattern>
+    <pattern>/featured</pattern>
     <pattern>/config-browser/*</pattern>
     <pattern>/services/*</pattern>
   </excludes>

@@ -55,15 +55,14 @@ public class IndexAction extends AuthenticationAware.Base {
     public String execute() {
         return SUCCESS;
     }
-    
-//    @Action(value = "oai", results = {
-//            @Result(name = SUCCESS_GET_RECORD, location = "getRecord.ftl", type = "freemarker", params = {
-//                    "contentType", "text/xml" }),
 
     @Actions({
-            @Action(value="opensearch", results = {
-                    @Result(name = "success", location = "opensearch.ftl", type = "freemarker", params = { "contentType", "application/xml" })
-            })
+        @Action(value = "opensearch", results = {
+                @Result(name = SUCCESS, location = "opensearch.ftl", type = "freemarker", params = { "contentType", "application/xml" })
+        }),
+        @Action(value = "robots", results = {
+                @Result(name = SUCCESS, location = "robots.ftl", type = "freemarker", params = { "contentType", "text/plain" })
+        })
     })
     public String emptyText() {
         return SUCCESS;
@@ -72,8 +71,10 @@ public class IndexAction extends AuthenticationAware.Base {
     @Actions({
             @Action("about"),
             @Action(results = {
-                    @Result(name = "success", location = "about.ftl")
-            })
+                    @Result(name = SUCCESS, location = "about.ftl")
+            }),
+            @Action(value = "featured", results = { @Result(name = SUCCESS, location = "featured.ftl", type = "freemarker", params = { "contentType", "text/html" }) }),
+            @Action(value = "map", results = { @Result(name = SUCCESS, location = "map.ftl", type = "freemarker", params = { "contentType", "text/html" }) })
     })
     public String about() {
         setGeographicKeywordCache(getGenericService().findAll(HomepageGeographicKeywordCache.class));
@@ -106,7 +107,7 @@ public class IndexAction extends AuthenticationAware.Base {
 
     @Action(value = "logout",
             results = {
-                    @Result(name = "success", type = "redirect", location = "/")
+                    @Result(name = SUCCESS, type = "redirect", location = "/")
             })
     public String logout() {
         if (getSessionData().isAuthenticated()) {

@@ -29,6 +29,10 @@
 		<from>^/opensearch.xml$</from>
 		<to>/opensearch</to>
 	</rule>
+	<rule>
+		<from>^/robots.txt$</from>
+		<to>/robots</to>
+	</rule>
 
 	<rule>
 		<from>^/projects/list</from>
