@@ -57,7 +57,7 @@ $(document).ready(function() {
   </#if>
   <#if sessionData?? && sessionData.authenticated>
 	<div class="span12 resource-nav" id="toolbars" parse="true">
-      <ul id="toolbar">
+      <ul >
        <#if persistable??>
         <@makeViewLink namespace current />
         <#if editable>

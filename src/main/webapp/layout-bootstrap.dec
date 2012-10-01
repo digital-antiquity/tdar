@@ -28,6 +28,11 @@
 
     <#import "/WEB-INF/macros/header.ftl" as header>
 
+    <#assign uri = request.requestURI />
+    <#assign bodyid = 'home' />
+	<#if (uri != '' && uri != '/')>
+		<#assign bodyid = "sub" />
+	</#if>
     <@header.css production true />
         
     ${head}
@@ -40,7 +45,7 @@
 	<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
 
 </head>
-<body id=sub>
+<body id="${bodyid}">
 
 	<div class="container">
 		<div class="row">
@@ -77,41 +82,53 @@
 						<li><a href="">ABOUT</a></li>
 						<li><a href="">WHY tDAR?</a></li>
 						<li><a href="">USING tDAR</a></li>
-						<li class="btn"><a href="">BROWSE</a></li>
-						<li class="btn"><a href="">UPLOAD</a></li>
+						<li class="button"><a href="">BROWSE</a></li>
+						<li class="button"><a href="">UPLOAD</a></li>
+
 					</ul>
 	
-				    <#assign uri = request.requestURI />
-					<#if (uri != '' && uri != '/')>
+					<#if bodyid != 'home'>
 						<form>
 							<input type="text" value="Search...">
 						</form>
-					<#else>
-						<@common.loginMenu />
 					</#if>
 				</nav>
 			</header>
 		</div>
-		<div class="row">
-			<#if (uri != '' && uri != '/')>
-				<div class="span12 subnav">
-	
-					<ul class="subnav-lft">
-						<li class="current"><a href="">Search</a></li>
-						<li><a href="">Advanced Search</a></li>
-						<li><a href="">Browse</a></li>
-					</ul>
-					<@common.loginMenu />
-				</div>
-			</#if>
-		</div>
     
+<#if bodyid == 'home'>
+
+			<div class="span12 hero">
+
+				<h2>What can you dig up?</h2>
+
+				<p><strong>The Digital Archaeological Record (tDAR)</strong> is your online archive for archaeological information.</p>
+
+				<form>
+					<input type="text" value="Find archaeological data...">
+				</form>
+
+				<@common.loginMenu true/>
+
+			</div>
+<#else>
+	<div class="span12 subnav">
+
+		<ul class="subnav-lft">
+			<li class="current"><a href="">Search</a></li>
+			<li><a href="">Advanced Search</a></li>
+			<li><a href="">Browse</a></li>
+		</ul>
+		<@common.loginMenu true />
+	</div>
     <div class="row">
 	    <@common.bootstrapNavbar />      
     </div>
 
 
+</#if>
     <div class="row">
+
 		<#if  page.properties["div.toolbars"]?? && page.properties["div.toolbars"] != "">
 		    ${page.properties["div.toolbars"]}
 		</#if>
@@ -121,10 +138,10 @@
         <@s.actionerror theme="bootstrap" />
         <@s.actionmessage theme="bootstrap" />
         <@s.fielderror theme="bootstrap" />
-	</div>
 
-	<#-- <section class="row cols"> -->
-	<section class="">
+	</div>
+		<#-- <section class="row cols"> -->
+	<section class="row cols">
         ${body}
 	</section>
 </div>

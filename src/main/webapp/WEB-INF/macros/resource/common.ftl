@@ -783,15 +783,19 @@ this bit of freemarker is voodoo:
 </#macro>
 
 
-<#macro loginMenu>
+<#macro loginMenu showMenu=false>
+ <#if showMenu>
 	<ul class="subnav-rht">
+ </#if>
 		<#if !(authenticatedUser??) > 
-				<li><a href="<@s.url value="/register" />" class="btn">Sign Up</a></li>
-				<li><a href="<@s.url value="/login" />" class="btn">Log In</a></li>
+				<li><a href="<@s.url value="/register" />" class="button">Sign Up</a></li>
+				<li><a href="<@s.url value="/login" />" class="button">Log In</a></li>
 		<#else>
-				<li><a href="<@s.url value="/logout" />" class="btn">Logout</a></li>
+				<li><a href="<@s.url value="/logout" />" class="button">Logout</a></li>
 		</#if>						
+ <#if showMenu>
 	</ul>
+ </#if>
 </#macro>
 
 </#escape>
