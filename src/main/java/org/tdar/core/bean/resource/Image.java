@@ -7,8 +7,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.search.annotations.Indexed;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-
 /**
  * $Id$
  * <p>
@@ -21,7 +19,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @Entity
 @Indexed
 @Table(name = "image")
-@XStreamAlias("image")
 @XmlRootElement(name = "image")
 public class Image extends InformationResource {
 

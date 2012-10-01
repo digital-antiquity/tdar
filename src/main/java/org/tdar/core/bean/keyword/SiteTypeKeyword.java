@@ -4,11 +4,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -18,8 +16,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.hibernate.search.annotations.Indexed;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
-
-import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * $Id$
@@ -31,7 +27,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @Entity
 @Table(name = "site_type_keyword")
-@XStreamAlias("siteTypeKeyword")
 @Indexed(index = "Keyword")
 public class SiteTypeKeyword extends HierarchicalKeyword<SiteTypeKeyword> implements SuggestedKeyword {
 
@@ -40,7 +35,6 @@ public class SiteTypeKeyword extends HierarchicalKeyword<SiteTypeKeyword> implem
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.LAZY, optional = true)
     private SiteTypeKeyword parent;
-
 
     @XmlAttribute
     public boolean isApproved() {
@@ -61,7 +55,7 @@ public class SiteTypeKeyword extends HierarchicalKeyword<SiteTypeKeyword> implem
         this.parent = parent;
     }
 
-    @OneToMany(orphanRemoval = true,cascade=CascadeType.ALL)
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "merge_keyword_id")
     private Set<SiteTypeKeyword> synonyms = new HashSet<SiteTypeKeyword>();
 

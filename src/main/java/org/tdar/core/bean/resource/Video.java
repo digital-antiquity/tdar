@@ -8,12 +8,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.search.annotations.Indexed;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-
 @Entity
 @Indexed
 @Table(name = "video")
-@XStreamAlias("video")
 @XmlRootElement(name = "video")
 public class Video extends InformationResource {
 

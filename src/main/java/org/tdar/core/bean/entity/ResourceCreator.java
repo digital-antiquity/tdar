@@ -19,8 +19,6 @@ import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-
 /**
  * $Id$
  * 
@@ -31,7 +29,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @version $Rev$
  */
 @Entity
-@XStreamAlias("resourceCreator")
 @Table(name = "resource_creator")
 public class ResourceCreator extends Persistable.Sequence<ResourceCreator> implements HasResource<Resource> {
 

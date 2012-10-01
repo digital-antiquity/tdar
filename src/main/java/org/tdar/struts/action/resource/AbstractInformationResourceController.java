@@ -250,15 +250,15 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         ArrayList<InformationResourceFile> modifiedFiles = new ArrayList<InformationResourceFile>();
         for (FileProxy fileProxy : fileProxiesToProcess) {
             try {
-                InformationResourceFile file = getInformationResourceService().processFileProxy(getPersistable(), fileProxy);
+                InformationResourceFile file = getInformationResourceService()
+                        .processFileProxy(getPersistable(), fileProxy);
                 if (file != null) {
                     modifiedFiles.add(file);
                     if (file.getWorkflowContext() != null) {
-                        List<Throwable> exceptions = file.getWorkflowContext().getExceptions();
+                        List<String> exceptions = file.getWorkflowContext().getExceptions();
                         if (CollectionUtils.isNotEmpty(exceptions)) {
-                            for (Throwable exception : exceptions) {
-                                addActionErrorWithException(exception.getMessage(), exception);
-                            }
+                            getActionErrors().addAll(exceptions);
+                            getStackTraces().addAll(file.getWorkflowContext().getStackTraces());
                         }
                     }
                 }

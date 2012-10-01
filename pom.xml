@@ -286,12 +286,13 @@
 			<artifactId>opensearch</artifactId>
 			<version>0.1</version>
 		</dependency>
+<!-- 
 		<dependency>
 			<groupId>com.thoughtworks.xstream</groupId>
 			<artifactId>xstream</artifactId>
 			<version>1.4.3</version>
 		</dependency>
-		<!-- Spring LDAP -->
+ -->		<!-- Spring LDAP -->
 		<dependency>
 			<groupId>org.springframework.ldap</groupId>
 			<artifactId>spring-ldap-core</artifactId>

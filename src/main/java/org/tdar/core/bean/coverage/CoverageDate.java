@@ -19,9 +19,6 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.index.bridge.TdarPaddedNumberBridge;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-
 /**
  * $Id$
  * 
@@ -33,7 +30,6 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
  */
 @Entity
 @Table(name = "coverage_date")
-@XStreamAlias("coverageDate")
 public class CoverageDate extends Persistable.Base implements HasResource<Resource>, Validatable {
 
     private static final long serialVersionUID = -5878760394443928287L;
@@ -54,8 +50,6 @@ public class CoverageDate extends Persistable.Base implements HasResource<Resour
     @Field
     @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     @Column(name = "date_type")
-    @XStreamAsAttribute
-    @XStreamAlias("type")
     private CoverageType dateType;
 
     @Column(name = "start_aprox", nullable = false)

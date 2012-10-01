@@ -23,8 +23,6 @@ import org.hibernate.annotations.Type;
 import org.tdar.core.bean.Persistable;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
-import com.thoughtworks.xstream.annotations.XStreamOmitField;
-
 /**
  * $Id$
  * 
@@ -50,7 +48,6 @@ public class OntologyNode extends Persistable.Base implements Comparable<Ontolog
         }
     };
 
-    @XStreamOmitField
     @ManyToOne(optional = false)
     private Ontology ontology;
 

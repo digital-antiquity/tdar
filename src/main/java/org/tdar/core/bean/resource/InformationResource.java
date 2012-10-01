@@ -78,8 +78,6 @@ import org.tdar.search.index.bridge.TdarPaddedNumberBridge;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
-import com.thoughtworks.xstream.annotations.XStreamOmitField;
-
 /**
  * $Id$
  * <p>
@@ -125,7 +123,6 @@ public abstract class InformationResource extends Resource {
 
     @ManyToOne(optional = true)
     // @ContainedIn /* DISABLED TO MANAGE PERFORMANCE ISSUES*/
-    @XStreamOmitField
     private Project project;
 
     @Transient

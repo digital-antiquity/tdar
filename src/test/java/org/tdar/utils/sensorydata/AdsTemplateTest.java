@@ -25,6 +25,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.SensoryData;
@@ -101,13 +102,14 @@ public class AdsTemplateTest {
     }
     
     @Test
+    @Ignore
     public void testExport() throws Exception {
-        SensoryDataExporter exporter = new SensoryDataExporter();
-        PrintWriter pw = new PrintWriter(System.out);
-        SensoryData sensoryData = loadThenProcess(PATH_ADS_TEMPLATE1);
-        exporter.export(sensoryData, pw);
-        pw.flush();
-        System.out.println("hi");
+//        SensoryDataExporter exporter = new SensoryDataExporter();
+//        PrintWriter pw = new PrintWriter(System.out);
+//        SensoryData sensoryData = loadThenProcess(PATH_ADS_TEMPLATE1);
+//        exporter.export(sensoryData, pw);
+//        pw.flush();
+//        System.out.println("hi");
         
     }
     

@@ -30,9 +30,6 @@ import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamOmitField;
-
 /**
  * $Id$
  * 
@@ -45,7 +42,6 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 @Entity
 @Indexed
 @Table(name = "dataset")
-@XStreamAlias("dataset")
 @XmlRootElement(name = "dataset")
 public class Dataset extends InformationResource {
 
@@ -76,13 +72,12 @@ public class Dataset extends InformationResource {
         }
     }
 
-    @XStreamOmitField
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dataset", orphanRemoval = true)
     @IndexedEmbedded
     private Set<DataTable> dataTables = new LinkedHashSet<DataTable>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name="dataset_id")
+    @JoinColumn(name = "dataset_id")
     private Set<DataTableRelationship> relationships = new HashSet<DataTableRelationship>();
 
     public Dataset() {

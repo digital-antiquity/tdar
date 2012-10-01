@@ -27,9 +27,6 @@ import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamOmitField;
-
 /**
  * $Id$
  * 
@@ -40,7 +37,6 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 @Entity
 @Table(name = "project")
 @Indexed
-@XStreamAlias("project")
 @XmlRootElement(name = "project")
 public class Project extends Resource implements Sortable {
 
@@ -112,7 +108,6 @@ public class Project extends Resource implements Sortable {
         setResourceType(ResourceType.PROJECT);
     }
 
-    @XStreamOmitField
     @JSONTransient
     @Transient
     private transient Set<InformationResource> cachedInformationResources = new HashSet<InformationResource>();
@@ -133,7 +128,7 @@ public class Project extends Resource implements Sortable {
     }
 
     @Transient
-    @Field(name = QueryFieldNames.PROJECT_TITLE_SORT, norms = Norms.NO, store = Store.YES, analyze=Analyze.NO)
+    @Field(name = QueryFieldNames.PROJECT_TITLE_SORT, norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     public String getProjectTitle() {
         return getTitleSort();
     }

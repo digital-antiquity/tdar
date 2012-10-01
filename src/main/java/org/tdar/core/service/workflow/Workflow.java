@@ -148,12 +148,12 @@ public interface Workflow {
             return logger;
         }
 
-        public void initialize(InformationResourceFileVersion version, WorkflowContext ctx) {
+        public void initializeWorkflowContext(InformationResourceFileVersion version, WorkflowContext ctx) {
             return;
         }
 
     }
 
-    public void initialize(InformationResourceFileVersion version, WorkflowContext ctx);
+    public void initializeWorkflowContext(InformationResourceFileVersion version, WorkflowContext ctx);
 
 }

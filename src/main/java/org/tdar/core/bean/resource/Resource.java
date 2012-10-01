@@ -114,9 +114,6 @@ import org.tdar.search.index.boost.InformationResourceBoostStrategy;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamOmitField;
-
 /**
  * $Id$
  * 
@@ -131,7 +128,6 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 @Table(name = "resource")
 @Indexed(index = "Resource", interceptor = DontIndexWhenNotReadyInterceptor.class)
 @DynamicBoost(impl = InformationResourceBoostStrategy.class)
-@XStreamAlias("resource")
 @Inheritance(strategy = InheritanceType.JOINED)
 @XmlRootElement
 @XmlSeeAlso({ Document.class, InformationResource.class, Project.class,
@@ -255,7 +251,6 @@ public class Resource extends JsonModel.Base implements Persistable,
     @BulkImportField
     private Set<ResourceCreator> resourceCreators = new LinkedHashSet<ResourceCreator>();
 
-    @XStreamOmitField
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "resource")
     private Set<BookmarkedResource> bookmarks = new LinkedHashSet<BookmarkedResource>();
 
@@ -1584,11 +1579,11 @@ public class Resource extends JsonModel.Base implements Persistable,
         this.uploader = uploader;
     }
 
-    public boolean isContainsActiveKeywords() { 
+    public boolean isContainsActiveKeywords() {
 
-        if (CollectionUtils.isNotEmpty(getActiveSiteNameKeywords()) || CollectionUtils.isNotEmpty(getActiveCultureKeywords())|| 
-                CollectionUtils.isNotEmpty(getActiveSiteTypeKeywords())|| CollectionUtils.isNotEmpty(getActiveMaterialKeywords())|| 
-                CollectionUtils.isNotEmpty(getActiveInvestigationTypes())|| CollectionUtils.isNotEmpty(getActiveOtherKeywords())) {
+        if (CollectionUtils.isNotEmpty(getActiveSiteNameKeywords()) || CollectionUtils.isNotEmpty(getActiveCultureKeywords()) ||
+                CollectionUtils.isNotEmpty(getActiveSiteTypeKeywords()) || CollectionUtils.isNotEmpty(getActiveMaterialKeywords()) ||
+                CollectionUtils.isNotEmpty(getActiveInvestigationTypes()) || CollectionUtils.isNotEmpty(getActiveOtherKeywords())) {
             return true;
         }
         return false;

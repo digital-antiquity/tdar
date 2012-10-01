@@ -20,8 +20,6 @@ import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.configuration.JSONTransient;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-
 /**
  * $Id$
  * 
@@ -33,7 +31,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @version $Rev$
  */
 @Entity
-@XStreamAlias("resourceAnnotation")
 @Table(name = "resource_annotation")
 public class ResourceAnnotation extends Persistable.Base implements HasResource<Resource> {
 

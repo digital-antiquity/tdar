@@ -28,8 +28,6 @@ import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.search.index.bridge.LatLongClassBridge;
 import org.tdar.search.index.bridge.TdarPaddedNumberBridge;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-
 /**
  * $Id$
  * 
@@ -42,7 +40,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @Entity
 @Table(name = "latitude_longitude")
-@XStreamAlias("latitudeLongitude")
 @ClassBridge(impl = LatLongClassBridge.class)
 @XmlRootElement
 // (name="latitudeLongitudeBox")

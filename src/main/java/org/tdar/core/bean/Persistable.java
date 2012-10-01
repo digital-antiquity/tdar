@@ -34,9 +34,6 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.search.query.QueryFieldNames;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-
 /**
  * $Id$
  * 
@@ -137,10 +134,10 @@ public interface Persistable extends Serializable {
                     hashCode = super.hashCode();
                 }
                 hashCode = toHashCode(this);
-                
-                logger.trace("setting hashCode to {} ({}) {}", obj );
+
+                logger.trace("setting hashCode to {} ({}) {}", obj);
             } else {
-                logger.trace("returning existing hashCode to {} ({}) {}", obj );
+                logger.trace("returning existing hashCode to {} ({}) {}", obj);
             }
             return hashCode;
         }
@@ -310,8 +307,6 @@ public interface Persistable extends Serializable {
     public abstract static class Sequence<E extends Sequence<E>> extends Persistable.Base implements Sequenceable<E> {
         private static final long serialVersionUID = -2667067170953144064L;
 
-        @XStreamAsAttribute
-        @XStreamAlias("sequence")
         @Column(name = "sequence_number")
         protected Integer sequenceNumber = 0;
 

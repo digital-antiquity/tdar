@@ -1,7 +1,5 @@
 package org.tdar.struts.action;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.struts2.interceptor.ServletRequestAware;
 import org.apache.struts2.interceptor.ServletResponseAware;
 import org.slf4j.Logger;
@@ -390,7 +389,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     }
 
     protected void addActionErrorWithException(String message, Throwable exception) {
-        String trace = getStackTrace(exception);
+        String trace = ExceptionUtils.getFullStackTrace(exception);
 
         getLogger().error("{}: {} -- {}", new Object[] { message, exception, trace });
         if (exception instanceof TdarRecoverableRuntimeException) {
@@ -419,13 +418,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         super.addActionError(message);
     }
 
-    protected String getStackTrace(Throwable exception) {
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        exception.printStackTrace(pw);
-        return sw.toString();
-
-    }
 
     public List<String> getStackTraces() {
         return stackTraces;

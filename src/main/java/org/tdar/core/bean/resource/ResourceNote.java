@@ -17,9 +17,6 @@ import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-
 /**
  * $Id$
  * <p>
@@ -29,7 +26,6 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
  */
 
 @Entity
-@XStreamAlias("resourceNote")
 @Table(name = "resource_note")
 public class ResourceNote extends Persistable.Sequence<ResourceNote> implements HasResource<Resource> {
 
@@ -48,7 +44,6 @@ public class ResourceNote extends Persistable.Sequence<ResourceNote> implements 
     @Column(name = "note_type")
     @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     @Transient
-    @XStreamAsAttribute
     private ResourceNoteType type;
 
     public ResourceNote() {

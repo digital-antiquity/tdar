@@ -22,8 +22,6 @@ import org.tdar.core.configuration.JSONTransient;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-
 /**
  * $Id$
  * 
@@ -42,7 +40,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @Entity
 @Indexed
 @Table(name = "document")
-@XStreamAlias("document")
 @XmlRootElement(name = "document")
 public class Document extends InformationResource {
 

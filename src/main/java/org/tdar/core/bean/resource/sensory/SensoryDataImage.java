@@ -10,11 +10,8 @@ import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.SensoryData;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-
 @Entity
 @Table(name = "sensory_data_image")
-@XStreamAlias("sensoryDataImage")
 public class SensoryDataImage extends Persistable.Sequence<SensoryDataImage> implements HasResource<SensoryData> {
     private static final long serialVersionUID = -9115746507586171584L;
 

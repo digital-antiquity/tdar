@@ -31,8 +31,6 @@ import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.resource.BookmarkedResource;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 
-import com.thoughtworks.xstream.annotations.XStreamOmitField;
-
 /**
  * $Id$
  * 
@@ -136,7 +134,6 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     private Boolean phonePublic = Boolean.FALSE;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "person")
-    @XStreamOmitField
     private Set<BookmarkedResource> bookmarkedResources;
 
     /**

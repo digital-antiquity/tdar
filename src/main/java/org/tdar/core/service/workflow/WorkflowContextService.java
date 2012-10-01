@@ -13,6 +13,7 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
+import org.tdar.core.service.XmlService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.InformationResourceFileVersionService;
 import org.tdar.db.model.abstracts.TargetDatabase;
@@ -32,6 +33,8 @@ public class WorkflowContextService {
     private InformationResourceFileVersionService informationResourceFileVersionService;
     @Autowired
     private GenericDao genericDao;
+    @Autowired
+    private XmlService xmlService;
     @Autowired
     private DatasetService datasetService;
 
@@ -89,7 +92,11 @@ public class WorkflowContextService {
             irFile.addFileVersion(version);
         }
 
-        logger.trace(ctx.toXML());
+        try {
+            logger.debug(ctx.toXML());
+        } catch (Exception e) {
+            logger.error(e);
+        }
         orig.setInformationResourceFile(irFile);
         // genericDao.saveOrUpdate(orig);
         irFile.setInformationResource(genericDao.find(InformationResource.class, ctx.getInformationResourceId()));
@@ -108,8 +115,13 @@ public class WorkflowContextService {
         ctx.setInformationResourceId(version.getInformationResourceId());
         ctx.setInformationResourceFileId(version.getInformationResourceFileId());
         ctx.setWorkingDirectory(new File(System.getProperty("java.io.tmpdir")));
-        w.initialize(version, ctx); // handle any special bits here
-        logger.trace(ctx.toXML());
+        ctx.setXmlService(xmlService);
+        w.initializeWorkflowContext(version, ctx); // handle any special bits here
+        try {
+            logger.trace(ctx.toXML());
+        } catch (Exception e) {
+            logger.error(e);
+        }
         return ctx;
     }
 }

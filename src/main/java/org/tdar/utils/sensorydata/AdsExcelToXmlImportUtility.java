@@ -13,12 +13,13 @@ import org.tdar.core.bean.resource.SensoryData;
 
 import de.schlichtherle.io.FileOutputStream;
 
+@Deprecated
 public class AdsExcelToXmlImportUtility {
 
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
     
     AdsTemplateProcessor processor = new AdsTemplateProcessor();
-    SensoryDataExporter exporter = new SensoryDataExporter();
+//    SensoryDataExporter exporter = new SensoryDataExporter();
     
     public static void main(String[] args) {
         
@@ -31,7 +32,7 @@ public class AdsExcelToXmlImportUtility {
             
             FileOutputStream fileOutputStream = new FileOutputStream(outFile);
             PrintWriter pw = new PrintWriter(fileOutputStream);
-            exporter.export(sensoryData, pw);
+//            exporter.export(sensoryData, pw);
             pw.flush();
             pw.close();
             

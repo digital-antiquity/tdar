@@ -21,8 +21,6 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.configuration.JSONTransient;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
-import com.thoughtworks.xstream.annotations.XStreamOmitField;
-
 /**
  * @author <a href='mailto:Yan.Qi@asu.edu'>Yan Qi</a>
  * @version $Revision$
@@ -37,7 +35,6 @@ public class CodingRule extends Persistable.Base implements Comparable<CodingRul
     @ManyToOne(optional = false)
     @JoinColumn(name = "coding_sheet_id")
     @ContainedIn
-    @XStreamOmitField
     private CodingSheet codingSheet;
 
     @Column(nullable = false)

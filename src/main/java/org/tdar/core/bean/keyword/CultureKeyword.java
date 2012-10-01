@@ -17,8 +17,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.hibernate.search.annotations.Indexed;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-
 /**
  * $Id$
  * 
@@ -29,22 +27,19 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @Entity
 @Table(name = "culture_keyword")
-@XStreamAlias("cultureKeyword")
 @Indexed(index = "Keyword")
 public class CultureKeyword extends HierarchicalKeyword<CultureKeyword> implements SuggestedKeyword {
 
     private static final long serialVersionUID = -7196238088495993840L;
     private boolean approved;
 
-    @OneToMany(orphanRemoval = true,cascade=CascadeType.ALL)
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "merge_keyword_id")
     private Set<CultureKeyword> synonyms = new HashSet<CultureKeyword>();
 
-
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY, optional = true)
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.LAZY, optional = true)
     private CultureKeyword parent;
 
-    
     @XmlAttribute
     public boolean isApproved() {
         return approved;
@@ -65,7 +60,7 @@ public class CultureKeyword extends HierarchicalKeyword<CultureKeyword> implemen
     /**
      * @return the parent
      */
-    @XmlElement(name="parentRef")
+    @XmlElement(name = "parentRef")
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public CultureKeyword getParent() {
         return parent;

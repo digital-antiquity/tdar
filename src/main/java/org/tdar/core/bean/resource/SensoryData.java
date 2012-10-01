@@ -20,12 +20,9 @@ import org.hibernate.search.annotations.Indexed;
 import org.tdar.core.bean.resource.sensory.SensoryDataImage;
 import org.tdar.core.bean.resource.sensory.SensoryDataScan;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-
 @Entity
 @Indexed
 @Table(name = "sensory_data")
-@XStreamAlias("sensoryData")
 @XmlRootElement(name = "sensoryData")
 public class SensoryData extends InformationResource {
 
@@ -169,11 +166,11 @@ public class SensoryData extends InformationResource {
     private boolean rgbPreservedFromOriginal;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    @JoinColumn(nullable=false,  updatable=false, name="sensory_data_id")
+    @JoinColumn(nullable = false, updatable = false, name = "sensory_data_id")
     private Set<SensoryDataScan> sensoryDataScans = new LinkedHashSet<SensoryDataScan>();
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    @JoinColumn(nullable=false,  updatable=false,   name="sensory_data_id")
+    @JoinColumn(nullable = false, updatable = false, name = "sensory_data_id")
     private Set<SensoryDataImage> sensoryDataImages = new LinkedHashSet<SensoryDataImage>();
 
     public SensoryData() {
