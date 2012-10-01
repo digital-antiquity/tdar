@@ -78,7 +78,7 @@ public abstract class AbstractAuthenticatedWebTestCase extends AbstractWebTestCa
 
     public void login(String user, String pass, boolean expectingErrors) {
         gotoPage("/");
-        clickLinkOnPage("Login");
+        clickLinkOnPage("Log In");
         setMainForm("loginForm");
         user = System.getProperty("tdar.user", user);
         pass = System.getProperty("tdar.pass", pass);
