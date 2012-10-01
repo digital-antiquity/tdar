@@ -4,11 +4,12 @@
 package org.tdar.filestore;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -140,7 +141,7 @@ public class WorkflowContext implements Serializable {
 		return processedSuccessfully;
 	}
 
-	public void setProcessedSuccessfully(boolean processed) {
+    public void setProcessedSuccessfully(boolean processed) {
 		this.processedSuccessfully = processed;
 	}
 
@@ -180,8 +181,9 @@ public class WorkflowContext implements Serializable {
 	public void addException(Throwable e) {
         int maxDepth = 4;
         Throwable thrw = e;
-        StringBuilder sb = new StringBuilder(e.getMessage());
-
+        StringBuilder sb = new StringBuilder();
+        
+        sb.append(e.getMessage());
         while (thrw.getCause() != null && maxDepth > -1) {
             thrw = thrw.getCause();
             if (StringUtils.isNotBlank(thrw.getMessage())) {
@@ -194,6 +196,8 @@ public class WorkflowContext implements Serializable {
 		this.getStackTraces().add(ExceptionUtils.getFullStackTrace(e));
 	}
 
+    @XmlElementWrapper(name="exceptions")
+    @XmlElement(name="exception")
 	public List<String> getExceptions() {
 		return exceptions;
 	}
@@ -202,6 +206,8 @@ public class WorkflowContext implements Serializable {
 		this.exceptions = exceptions;
 	}
 
+    @XmlElementWrapper(name="stackTraces")
+    @XmlElement(name="stackTrace")
 	public List<String> getStackTraces() {
 		return stackTraces;
 	}
