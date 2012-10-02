@@ -22,3 +22,5 @@ TDAR.namespace = function() {
 
     return o;
 };
+
+//TODO: create an "info" function that dumps all the namespaces currently loaded.

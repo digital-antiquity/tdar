@@ -144,27 +144,25 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 </#macro>
 
-<#macro keywordRows label keywordList keywordField showDelete=true>
-    <div class="control-group">
+<#macro keywordRows label keywordList keywordField showDelete=true addAnother="add another keyword">
+    <div class="control-group repeatLastRow" data-add-another="${addAnother}">
         <label class="control-label">${label}</label>
         <#if keywordList.empty >
           <@keywordRow keywordField />
         <#else>
         <#list keywordList as keyword>
-          <@keywordRow keywordField keyword_index />
+          <@keywordRow keywordField keyword_index showDelete />
         </#list>
         </#if>
     </div>
 </#macro>
 
 <#macro keywordRow keywordField keyword_index=0 showDelete=true>
-    <div id='${keywordField}Row_${keyword_index}_'>
-        <div class="controls controls-row ">
-            <@s.textfield theme="tdar" name='${keywordField}[${keyword_index}]' cssClass='input-large keywordAutocomplete' placeholder="enter keyword"/>
-            <#if showDelete>
-            <@clearDeleteButton id="${keywordField}Row" />
-            </#if>
-        </div>
+    <div class="controls controls-row " id='${keywordField}Row_${keyword_index}_'>
+        <@s.textfield theme="tdar" name='${keywordField}[${keyword_index}]' cssClass='input-large keywordAutocomplete' placeholder="enter keyword"/>
+        <#if showDelete>
+        <@clearDeleteButton id="${keywordField}Row" />
+        </#if>
     </div>
 </#macro>
 
@@ -272,7 +270,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <@inheritsection checkboxId="cbInheritingTemporalInformation" name='resource.inheritingTemporalInformation' showInherited=showInherited  />
     <div  id="divTemporalInformation">
         <div tiplabel="Temporal Term" tooltipcontent="Keyword list: Temporal terms relevant to the document, e.g. &quot;Pueblo IV&quot; or &quot;Late Archaic&quot;."></div>
-        <@keywordRows "Temporal Terms" temporalKeywords 'temporalKeywords' />
+        <@keywordRows "Temporal Terms" temporalKeywords 'temporalKeywords' true "add another temporal keyword" />
         <@coverageDatesSection />
     </div>
 </div>
@@ -857,17 +855,16 @@ var resource = {};
         <li>Radiocarbon dates: 500 start, 300 end (number only, larger value first)</li>     
     </ul>
 </div>
-<div class="control-group">
+<div class="control-group repeatLastRow" data-add-another="add another coverage date">
     <label class="control-label">Coverage Dates</label>
     
-    <div id="divCoverageDateRows">
-        <#list _coverageDates as coverageDate>
-        <#if coverageDate??>
-        <@dateRow coverageDate coverageDate_index/>
-        </#if>
-        </#list>
-    </div>
+    <#list _coverageDates as coverageDate>
+    <#if coverageDate??>
+    <@dateRow coverageDate coverageDate_index/>
+    </#if>
+    </#list>
 </div>
+
 </#macro>
 
 
@@ -1210,7 +1207,6 @@ jquery validation hooks?)
 </#macro>
 
 <#macro sharedFormComponents showInherited=true fileReminder=true prefix="${resource.resourceType.label?lower_case}">
-
     <@organizeResourceSection />
     <#if !resource.resourceType.project>
       <@resourceProvider showInherited />
@@ -1226,7 +1222,6 @@ jquery validation hooks?)
     <@identifiers showInherited />
 
     <@spatialContext showInherited />
-
     <@temporalContext showInherited />
 
     <@investigationTypes showInherited />

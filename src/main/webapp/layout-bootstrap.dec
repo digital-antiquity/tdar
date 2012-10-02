@@ -40,7 +40,9 @@
     <@common.globalJavascript />
 
 <!-- fixme -- optimize -->
+    <#-- respond.1.1.0.min.js currently 404.
 	<script src="http://tdar.fervorinteractive.com/js/vendor/modernizr-2.6.1-respond-1.1.0.min.js"></script>
+     -->
 	<script type="text/javascript" src="//use.typekit.net/czp6njc.js"></script>
 	<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
 
