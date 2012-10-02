@@ -1,5 +1,8 @@
 package org.tdar.struts.action;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -10,6 +13,7 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.cache.HomepageFeaturedItemCache;
@@ -18,6 +22,10 @@ import org.tdar.core.bean.cache.HomepageResourceCountCache;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.service.RssService;
+
+import com.sun.syndication.feed.synd.SyndEntry;
+import com.sun.syndication.io.FeedException;
 
 /**
  * $Id$
@@ -43,7 +51,12 @@ public class IndexAction extends AuthenticationAware.Base {
 
     private List<HomepageGeographicKeywordCache> geographicKeywordCache = new ArrayList<HomepageGeographicKeywordCache>();
     private List<HomepageResourceCountCache> homepageResourceCountCache = new ArrayList<HomepageResourceCountCache>();
-    private Resource featuredResource;
+    private List<Resource> featuredResources = new ArrayList<Resource>();
+    
+    @Autowired
+    RssService rssService;
+
+    private List<SyndEntry> rssEntries;
 
     @Override
     @Actions({
@@ -80,12 +93,20 @@ public class IndexAction extends AuthenticationAware.Base {
         setGeographicKeywordCache(getGenericService().findAll(HomepageGeographicKeywordCache.class));
         setHomepageResourceCountCache(getGenericService().findAll(HomepageResourceCountCache.class));
         try {
-            setFeaturedResource(getGenericService().findAll(HomepageFeaturedItemCache.class).get(0).getKey());
+            setRssEntries(rssService.parseFeed(new URL(getTdarConfiguration().getNewsRssFeed())));
+        } catch (Exception e) {
+            logger.warn("RssParsingException happened", e);
+        }
+        try {
+            for (HomepageFeaturedItemCache cache : getGenericService().findAll(HomepageFeaturedItemCache.class)) {
+                Resource key = cache.getKey();
+                if (key instanceof InformationResource) {
+                    getAuthenticationAndAuthorizationService().setTransientViewableStatus((InformationResource) key, null);
+                }
+                getFeaturedResources().add(key);
+            }
         } catch (IndexOutOfBoundsException ioe) {
             logger.debug("no featured resources found");
-        }
-        if (getFeaturedResource() instanceof InformationResource) {
-            getAuthenticationAndAuthorizationService().setTransientViewableStatus((InformationResource) getFeaturedResource(), null);
         }
         Iterator<HomepageResourceCountCache> iterator = homepageResourceCountCache.iterator();
         while (iterator.hasNext()) {
@@ -125,13 +146,6 @@ public class IndexAction extends AuthenticationAware.Base {
         this.featuredProject = featuredProject;
     }
 
-    public Resource getFeaturedResource() {
-        return featuredResource;
-    }
-
-    public void setFeaturedResource(Resource featuredResource) {
-        this.featuredResource = featuredResource;
-    }
 
     public List<HomepageGeographicKeywordCache> getGeographicKeywordCache() {
         return geographicKeywordCache;
@@ -147,6 +161,22 @@ public class IndexAction extends AuthenticationAware.Base {
 
     public void setHomepageResourceCountCache(List<HomepageResourceCountCache> homepageResourceCountCache) {
         this.homepageResourceCountCache = homepageResourceCountCache;
+    }
+
+    public List<Resource> getFeaturedResources() {
+        return featuredResources;
+    }
+
+    public void setFeaturedResources(List<Resource> featuredResources) {
+        this.featuredResources = featuredResources;
+    }
+
+    public List<SyndEntry> getRssEntries() {
+        return rssEntries;
+    }
+
+    public void setRssEntries(List<SyndEntry> rssEntries) {
+        this.rssEntries = rssEntries;
     }
 
 }

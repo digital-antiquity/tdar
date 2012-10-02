@@ -460,6 +460,10 @@ public class TdarConfiguration {
         return assistant.getStringProperty("app.contact.email", "info@digitalantiquity.org");
     }
 
+    public String getNewsRssFeed() {
+        return assistant.getStringProperty("news.rssFeed", "http://www.tdar.org/feed/");
+    }
+
     public int getEmbargoPeriod() {
         return assistant.getIntProperty("embargo.period", 5);
     }

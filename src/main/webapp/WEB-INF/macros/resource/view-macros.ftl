@@ -973,15 +973,22 @@ $(function() {
 
 
 <#macro tdarCitation resource_ showLabel = true>
-  <div class="tdarCitation">
-    <@firstThumbnail resource_ /><b><a href="<@s.url value="/${resource_.urlNamespace}/${resource_.id?c}"/>">${resource_.title}</a> <#if showLabel>(${resource_.resourceType.label})</#if></b>
-    <br/>
-    <#if resource_.formattedAuthorList?has_content>${resource_.formattedAuthorList}
-    <br/></#if>
-    <@truncate resource_.description 150 />
-    <a href="<@s.url value="/${resource_.urlNamespace}/${resource_.id?c}"/>"> read more</a>
+  <li>
+  	<#local url><@s.url value="/${resource_.urlNamespace}/${resource_.id?c}"/></#local>
+		<a href="${url}" target="_top"><@firstThumbnail resource_ /></a>
+		<p class="title">
+			<a href="${url}">${resource_.title} </a><br>
+		    <#if resource_.formattedAuthorList?has_content>${resource_.formattedAuthorList}
+		    <br/></#if>
+		</p>
+	
+		<p><@truncate resource_.description 150 /></p>
+	
+		<p>
+			<a href="${url}" class="button">View ${resource_.resourceType.label}</a> or &nbsp; <a href="">Browse all projects</a>
+		</p>    
 
-  </div>
+  </li>
 </#macro>
 
 <#macro toOpenURL resource>

@@ -46,10 +46,10 @@
 </div>
 
 <div class="row">
-    <div class="span5">
 		<#include "featured.ftl" />
-    </div>
-    <div class="span4">
+</div>
+<div class="row">
+    <div class="span3">
         <h3>Getting Started with ${siteAcronym}</h3>
         <ul>
         <li><a href="${documentationUrl}">a tutorial that can help you get started</a>.</li>
@@ -58,7 +58,26 @@
         <li> <a href="<@s.url value="/browse/explore"/>">explore</a> ${siteAcronym} by keyword</li>
         </ul>
     </div>
-</div>
+	<div class="span6 news">
+
+				<h3>What&rsquo;s New at tDAR?</h3>
+
+				<ul>
+					<#assign maxEntries =5 />
+					<#list rssEntries as entry>
+					<#assign maxEntries = maxEntries -1 />
+					<#if maxEntries == 0>
+						<#break>
+					</#if>
+					<li>
+						<span>${entry.publishedDate?string("MMM")?upper_case}<em>${entry.publishedDate?string("dd")}</em></span>
+						<a href="${entry.link}" class="title">${entry.title}</a>
+						Posted by ${entry.author}
+					</li>
+					</#list>
+				</ul>
+
+			</div>
 
 </div>
 </body>
