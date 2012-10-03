@@ -18,8 +18,6 @@
 
 <meta name="lastModifiedDate" content="$Date$"/>
 
-<script src="/includes/tdar.repeatrow.js"></script>
-
 </head>
 <body>
 <@edit.toolbar "${resource.urlNamespace}" "edit" />
