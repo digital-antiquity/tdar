@@ -40,8 +40,10 @@
 <@edit.sidebar />
 
 <@edit.resourceJavascript includeInheritance=true>
-    setupSupportingResourceForm(${resource.getTotalNumberOfFiles()?c}, "ontology");
-    $('#fileInputTextArea').tabby();
+    $(function() {
+        setupSupportingResourceForm(${resource.getTotalNumberOfFiles()?c}, "ontology");
+        $('#fileInputTextArea').tabby();
+    });
 </@edit.resourceJavascript>
 </body>
 </#escape>

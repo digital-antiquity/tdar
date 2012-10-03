@@ -35,6 +35,6 @@
 
 <@edit.sidebar />
 
-<@edit.resourceJavascript formId="#VideoMetadataForm" selPrefix="#video" includeAsync=true includeInheritance=true />
+<@edit.resourceJavascript formSelector="#VideoMetadataForm" selPrefix="#video" includeAsync=true includeInheritance=true />
 </body>
 </#escape>

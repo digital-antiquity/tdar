@@ -36,6 +36,6 @@
 
 <@edit.sidebar />
 
-<@edit.resourceJavascript formId="#ImageMetadataForm" selPrefix="#image" includeAsync=true includeInheritance=true />
+<@edit.resourceJavascript formSelector="#ImageMetadataForm" selPrefix="#image" includeAsync=true includeInheritance=true />
 </body>
 </#escape>

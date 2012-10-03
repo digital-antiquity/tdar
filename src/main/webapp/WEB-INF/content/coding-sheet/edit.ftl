@@ -64,13 +64,15 @@
 
 <@edit.sidebar />
 
-<@edit.resourceJavascript formId="#resourceRegistrationForm" selPrefix="#resourceRegistration" includeInheritance=true>
-    setupSupportingResourceForm(${codingSheet.getTotalNumberOfFiles()?c}, "coding sheet");
-    $(formId).delegate(".down-arrow", "click",autocompleteShowAll);
-    $(formId).delegate('input.ontologyfield',"focusin", function() {
-        applyResourceAutocomplete($('input.ontologyfield'), "ONTOLOGY");
+<@edit.resourceJavascript formSelector="#resourceRegistrationForm" selPrefix="#resourceRegistration" includeInheritance=true>
+    $(function() {
+        setupSupportingResourceForm(${codingSheet.getTotalNumberOfFiles()?c}, "coding sheet");
+        $(formId).delegate(".down-arrow", "click",autocompleteShowAll);
+        $(formId).delegate('input.ontologyfield',"focusin", function() {
+            applyResourceAutocomplete($('input.ontologyfield'), "ONTOLOGY");
+        });
     });
-
+    
 </@edit.resourceJavascript>
 
 </body>

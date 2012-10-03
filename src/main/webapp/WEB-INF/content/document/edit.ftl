@@ -17,12 +17,6 @@
 <@edit.title />
 
 <meta name="lastModifiedDate" content="$Date$"/>
-<#--//FIXME: remove these styles once main.css problems are sorted out -->
-<style type="text/css">
-input[type="text"]  {
-    font-size: 10pt;
-}
-</style>
 
 <script src="/includes/tdar.repeatrow.js"></script>
 
@@ -117,25 +111,6 @@ input[type="text"]  {
 </div>
 
 <@edit.asyncUploadTemplates />
-<script>
-    $(function(){
-        'use strict';
-        
-        //init fileupload
-        var id = $('input[name=id]').val();
-        var acceptFileTypes  = <@edit.acceptedFileTypesRegex />;
-        TDAR.fileupload.registerUpload({informationResourceId: id, acceptFileTypes: acceptFileTypes});
-        
-        //init repeatrows
-        TDAR.repeatrow.registerRepeatable(".repeatLastRow");
-    });
-
-    $(function(){
-        loadTdarMap();
-    });
-    
-    
-</script>
-
+<@edit.resourceJavascript />
 </body>
 </#escape>

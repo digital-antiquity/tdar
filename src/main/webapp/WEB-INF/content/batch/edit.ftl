@@ -56,7 +56,7 @@ For all of the fields below, you can select values that will apply to all of the
     <table style="display:none;visibility:hidden" id="queuedFileTemplate">
         <@edit.fileProxyRow />
     </table>
-<@edit.resourceJavascript formId='#BulkMetadataForm' includeAsync=true includeInheritance=true>
+<@edit.resourceJavascript formSelector='#BulkMetadataForm' includeAsync=true includeInheritance=true>
 <#if validFileExtensions??>
 
 $(function() {

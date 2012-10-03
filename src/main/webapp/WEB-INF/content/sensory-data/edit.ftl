@@ -303,7 +303,7 @@
 </@s.form>
  
  
-<@edit.resourceJavascript formId="#frmSensoryData" selPrefix="#sensoryData" includeAsync=true includeInheritance=true />
+<@edit.resourceJavascript formSelector="#frmSensoryData" selPrefix="#sensoryData" includeAsync=true includeInheritance=true />
 <script>
 $(function() {
     $('.scannerTechnology').each(

@@ -116,14 +116,17 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </#macro>
 
 <#macro resourceCollectionSection>
-   <div style="display:none" id="divResourceCollectionListTips">
+    <#local _resourceCollections = [blankResourceCollection] />
+    <#if (resourceCollections?? && !resourceCollections.empty)>
+    <#local _resourceCollections = resourceCollections />
+    </#if>
+    <div style="display:none" id="divResourceCollectionListTips">
         <p>
             Specify the names of the collections that ${siteAcronym} should add this resource to.  Alternately you can start a new, <em>public</em>  collection 
             by typing the desired name and selecting the last option in the list of pop-up results.  The newly-created collection will contain only this 
             resource, but can be modified at any time. 
         </p>
     </div>
-
 
     <p tiplabel="${siteAcronym} Collections" tooltipcontent="#divResourceCollectionListTips"></p>
     <p class="help-block">Collections enable you to organize and share resources within ${siteAcronym}</p>
@@ -132,13 +135,9 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             <th colspan=2>Collection Name</th>
         </thead>
         <tbody>
-            <#if (resourceCollections?? && !resourceCollections.empty)>
-              <#list resourceCollections as resourceCollection>
-                <@resourceCollectionRow resourceCollection resourceCollection_index/>
-              </#list>
-            <#else>
-                <@resourceCollectionRow blankResourceCollection />
-            </#if>
+            <#list _resourceCollections as resourceCollection>
+            <@resourceCollectionRow resourceCollection resourceCollection_index/>
+            </#list>
         </tbody>
     </table>
 
@@ -458,7 +457,7 @@ The form will check for matches in the ${siteAcronym} database and populate the 
 <#local bDisabled = (authorizedUser.user.id == authenticatedUser.id) />
 <#local disabled =  bDisabled?string />
 
-    <div id='authorizedUserRow_${authorizedUser_index}_'>
+    <div id='authorizedUserRow_${authorizedUser_index}_' class="repeat-row">
         <@s.hidden name='authorizedUsers[${authorizedUser_index}].user.id' value='${(authorizedUser.user.id!-1)?c}' id="authorizedUserId__id_${authorizedUser_index}_"  cssClass="validIdRequired" onchange="this.valid()"  autocompleteParentElement="#authorizedUserRow_${authorizedUser_index}_"  />
         <!-- FIXME -- is this needed -->
         <@s.hidden name="authorizedUsers[${authorizedUser_index}].generalPermission" value="${authorizedUser.generalPermission!'VIEW_ALL'}"/>
@@ -650,76 +649,47 @@ The form will check for matches in the ${siteAcronym} database and populate the 
 </#if>
 </#macro>
 
-<#macro resourceJavascript formId="#resourceMetadataForm" selPrefix="#resource" includeAsync=false includeInheritance=false>
+<#macro resourceJavascript formSelector="#resourceMetadataForm" selPrefix="#resource" includeAsync=false includeInheritance=false hasUploads=false>
 
 <script type='text/javascript'>
- var formId = '${formId}';
-
-
-var dialogOpen = false;
-$(document).ready(function() {
-    //console.log("edit-macros:ready:" +formId);
-
-    <#if validFileExtensions??>
-      setupEditForm(formId,"<@join sequence=validFileExtensions delimiter="|"/>");
-    <#else>
-      setupEditForm(formId);
-    </#if>
-    <#nested>
+$(function(){
+    'use strict';
+    var form = $("${formSelector}")[0];
     
-    setupSortableTables();
+    <#if hasUploads>
+    //init fileupload
+    var id = $('input[name=id]').val();
+    var acceptFileTypes  = <@edit.acceptedFileTypesRegex />;
+    TDAR.fileupload.registerUpload({informationResourceId: id, acceptFileTypes: acceptFileTypes});
+    </#if>
 
-    // gleaning lessons from http://forums.dropbox.com/topic.php?id=16926 [IE Script Issue]
-    //if ($.browser.msie && $.browser.version <= 8 ) {
-    //FIXME: i think this section is sporatically breaking inheritance UI, but I can't reliably reproduce it. 
-    if (false) {
-       setTimeout(loadTdarMap,500);
-       setTimeout(applyTreeviews,1000);
-       setTimeout(initializeEdit,1500);
-       <#if includeAsync> 
-         setTimeout(function(){applyAsync(formId);},2000);
-       </#if>
-       <#if includeInheritance>
-         setTimeout(function(){applyInheritance(project,resource);updateSelectAllCheckboxState();},2500);
-       </#if>
-    } else {
-      loadTdarMap();
-      applyTreeviews();
-      initializeEdit();
-       <#if includeAsync> 
-        applyAsync(formId);
-       </#if>
-       <#if includeInheritance>
-         applyInheritance(project,resource);
-         updateSelectAllCheckboxState(); 
-       </#if>
-    }
+    //init person/institution buttons
+    //init repeatrows
+    TDAR.repeatrow.registerRepeatable(".repeatLastRow");
     
-});
+    //init person/institution buttons
+    $("button.add-person, button.add-institution", form).click(function() {
+        var button = this;
+        var $button = $(button);
+        var $table = $($button.data("repeatable"));
+        var $row = $('.repeat-row:last', $table);
+        var $clone = TDAR.repeatrow.cloneSection($row[0], $row.parent()[0]);
+        
 
-var json;
-var project = {};
-var resource = {};
-    <#noescape>
-    <#if includeInheritance>
-        resource = ${resource.toJSON()!""};
-    <#if projectAsJson??>
-        project = ${projectAsJson};
-    </#if>
-    </#if>
-    </#noescape>
-
-    <#if validFileExtensions??>
-        //FIXME:  use element data instead of global if it's not too slow
-        var g_asyncUploadCount = 0;
-        function fileAccepted(filename) {
-            var regexp = /\.(<@join sequence=validFileExtensions delimiter="|"/>)$/i;
-            var accept="<@join sequence=validFileExtensions delimiter="|"/>";
-            //console.log("regex:" + regexp + "  test:" + filename);
-            return regexp.test(filename);
+        //show only the correct portion of the proxy
+        if($(button).hasClass("add-person")) {
+            $(".creatorInstitution", $clone).hide();
+            $(".creatorPerson", $clone).show().removeClass("hidden");
+        } else {
+            $(".creatorInstitution", $clone).show();
+            $(".creatorPerson", $clone).hide().removeClass("hidden");
         }
-    </#if>
-    
+    });
+
+    //init map
+    loadTdarMap();
+});
+<#nested>
 </script>
   
 </#macro>
@@ -796,7 +766,7 @@ var resource = {};
 </#macro>
 
 <#macro resourceCollectionRow resourceCollection collection_index = 0 type="internal">
-      <tr id="resourceCollectionRow_${collection_index}_">
+      <tr id="resourceCollectionRow_${collection_index}_" class="repeat-row">
           <td> 
               <@s.hidden name="resourceCollections[${collection_index}].id"  id="resourceCollectionRow_${collection_index}_id" />
               <@s.textfield id="resourceCollectionRow_${collection_index}_id" name="resourceCollections[${collection_index}].name" cssClass="input-xxlarge collectionAutoComplete "  autocomplete="off"
@@ -819,7 +789,7 @@ var resource = {};
     a &quot;Redaction Note&quot; may be added to describe the rationale for certain redactions in a document."></div>
     <legend>Notes</legend>
     <@inheritsection checkboxId="cbInheritingNoteInformation" name='resource.inheritingNoteInformation' showInherited=showInherited />
-    <div id="resourceNoteSection" class="control-group">
+    <div id="resourceNoteSection" class="control-group repeatLastRow">
         <label class="control-label">Type / Contents</label>
         <#list _resourceNotes as resourceNote>
         <#if resourceNote??><@noteRow resourceNote resourceNote_index/></#if>
@@ -829,7 +799,7 @@ var resource = {};
 </#macro>
 
 <#macro noteRow proxy note_index=0>
-      <div id="resourceNoteRow_${note_index}_">
+      <div id="resourceNoteRow_${note_index}_" class="repeat-row">
           <div class="controls controls-row">
               <@s.hidden name="resourceNotes[${note_index}].id" />
               <@s.select theme="tdar" emptyOption='false' name='resourceNotes[${note_index}].type' list='%{noteTypes}' listValue="label" /> 
@@ -912,8 +882,8 @@ var resource = {};
         </tbody>
     </table>
     <p>
-    <button type="button" class="btn btn-mini addAnother" onclick="repeatRow('${prefix}Table', personAdded)"><i class="icon-plus-sign"> </i>add another person</button>
-    <button type="button" class="btn btn-mini addAnother" onclick="repeatRow('${prefix}Table', institutionAdded)"><i class="icon-plus-sign"> </i>add another institution</button>
+    <button type="button" class="btn btn-mini add-person" data-repeatable="#${prefix}Table"><i class="icon-plus-sign"> </i>add another person</button>
+    <button type="button" class="btn btn-mini add-institution" data-repeatable="#${prefix}Table"><i class="icon-plus-sign"> </i>add another institution</button>
     </p>
 <#if !inline>
 </div>
@@ -931,7 +901,7 @@ var resource = {};
     </#if>
 
     <#if proxy??>
-    <tr id="${prefix}Row_${proxy_index}_">
+    <tr id="${prefix}Row_${proxy_index}_" class="repeat-row">
           <#assign creatorType = proxy.actualCreatorType!"PERSON" />
           
         <td>
@@ -981,7 +951,7 @@ var resource = {};
             </span>
         </td>
         <td>
-            <button class="btn  btn-mini" type="button" tabindex="-1" onclick="deleteParentRow(this)"><i class="icon-trash"></i></button>
+            <button class="btn  btn-mini repeat-row-delete " type="button" tabindex="-1" onclick="deleteParentRow(this)"><i class="icon-trash"></i></button>
         </td>
     </tr>
     </#if>
@@ -989,6 +959,10 @@ var resource = {};
 
 
 <#macro identifiers showInherited=true>
+    <#local _resourceAnnotations = resourceAnnotations />
+    <#if _resourceAnnotations.empty>
+    <#local _resourceAnnotations = [blankResourceAnnotation] />
+    </#if>
     <div class="well" id="divIdentifiersGlide" tiplabel="${resource.resourceType.label} Specific or Agency Identifiers" tooltipcontent="#divIdentifiersTip">
         <div id="divIdentifiersTip" class="hidden">
             <div>
@@ -1005,11 +979,8 @@ var resource = {};
         <div id="divIdentifiers">
         <table id="resourceAnnotationsTable" class="table repeatLastRow" addAnother="add another identifier" >
             <tbody>
-              <#if resourceAnnotations.empty>
-                <@displayAnnotation blankResourceAnnotation />              
-              </#if>
-                <#list resourceAnnotations as annotation>
-                  <@displayAnnotation annotation annotation_index/>
+                <#list _resourceAnnotations as annotation>
+                    <@displayAnnotation annotation annotation_index/>
                 </#list>
             </tbody>
         </table>
@@ -1019,11 +990,11 @@ var resource = {};
 </#macro>
 
 <#macro displayAnnotation annotation annotation_index=0>
-    <tr id="resourceAnnotationRow_${annotation_index}_">
+    <tr id="resourceAnnotationRow_${annotation_index}_" class="repeat-row">
         <td >
             <div class="control-group">
             <label class="control-label">Name / Value</label>
-                <div class="controls controls-row">
+                <div class="controls controls-row ">
                     <@s.textfield theme="tdar" placeholder="Name" cssClass="annotationAutoComplete span3" name='resourceAnnotations[${annotation_index}].resourceAnnotationKey.key' value='${annotation.resourceAnnotationKey.key!""}'  autocomplete="off" />
                     <@s.textfield theme="tdar" placeholder="Value" cssClass="span4" name='resourceAnnotations[${annotation_index}].value'  value='${annotation.value!""}' />
                 </div>

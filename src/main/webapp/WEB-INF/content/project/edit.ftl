@@ -69,8 +69,10 @@ Projects in ${siteAcronym} contain and help organize a variety of different info
 
 <@edit.sidebar />
 
-<@edit.resourceJavascript formId="#projectMetadataForm" selPrefix="#project">
- $("#collapse").click(toggleDiv);
+<@edit.resourceJavascript formSelector="#projectMetadataForm" selPrefix="#project">
+    $(function(){
+        $("#collapse").click(toggleDiv);
+    });
 </@edit.resourceJavascript>
 
 

@@ -45,6 +45,6 @@ $(function(){
 
 <@edit.sidebar />
 
-<@edit.resourceJavascript formId="#datasetMetadataForm" selPrefix="#dataset" includeInheritance=true />
+<@edit.resourceJavascript formSelector="#datasetMetadataForm" selPrefix="#dataset" includeInheritance=true />
 </body>
 </#escape>
