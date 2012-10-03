@@ -46,6 +46,8 @@
                      "/includes/jquery.maphighlight.local.js",
                      "/includes/tdar.upload.js",
                      "/includes/tdar.repeatrow.js",
+                     "/includes/tdar.autocomplete.js",
+                     "/includes/tdar.common.js",
                      "/includes/blueimp-javascript-templates/tmpl.min.js",
                      "/includes/blueimp-jquery-file-upload-3c5d440/js/jquery.iframe-transport.js", 
                      "/includes/blueimp-jquery-file-upload-3c5d440/js/jquery.fileupload.js",

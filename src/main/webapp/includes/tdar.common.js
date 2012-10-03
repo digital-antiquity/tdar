@@ -31,7 +31,6 @@ if (!window.JSON)
 JSON.stringify = JSON.stringify || function() {
 };
 
-var TDAR = {};
 TDAR.ellipsify = function(str, maxlength) {
     if (!str)
         return;

@@ -688,6 +688,10 @@ $(function(){
 
     //init map
     loadTdarMap();
+    
+    initializeEdit();
+    
+    
 });
 <#nested>
 </script>

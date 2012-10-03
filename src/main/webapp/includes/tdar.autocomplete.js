@@ -1,6 +1,7 @@
 /**
  * Autocomplete Support
  */
+//FIXME: put this in TDAR.autocomplete namespace, "hide" functions that don't need to be public.
 function buildRequestData(element) {
     var data = {};
     //    console.log("autocompleteParentElement: " + element.attr("autocompleteParentElement"));
