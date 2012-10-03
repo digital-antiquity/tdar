@@ -183,9 +183,9 @@ $(document).ready(function() {
 
 <#macro clearDeleteButton id="" disabled="false" title="delete this item from the list">
 <#if disabled="true">
-<button class="btn  btn-mini" type="button" tabindex="-1" onclick="deleteParentRow(this)" title="${title}" disabled="disabled"><i class="icon-trash"></i></button>
+<button class="btn  btn-mini repeat-row-delete" type="button" tabindex="-1" onclick="TDAR.repeatrow.deleteRow(this)" title="${title}" disabled="disabled"><i class="icon-trash"></i></button>
 <#else>
-<button class="btn  btn-mini" type="button" tabindex="-1" onclick="deleteParentRow(this)" title="${title}"><i class="icon-trash"></i></button>
+<button class="btn  btn-mini repeat-row-delete" type="button" tabindex="-1" onclick="TDAR.repeatrow.deleteRow(this)" title="${title}"><i class="icon-trash"></i></button>
 </#if>
 </#macro>
 

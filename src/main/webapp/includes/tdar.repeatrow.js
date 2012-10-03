@@ -9,17 +9,16 @@ TDAR.repeatrow = function() {
     /**
      *  public: register a repeatrow element
      *  This has the effect of adding a "add another"  button after each matched element.  Clicking the addnew button clones 
-     *  the element specified by options.lastSelector, and places it after that element in the dom.
+     *  the element specified by options.rowSelector, and places it after that element in the dom.
      *  
      *  events: 
      *      -"repeatrowadded": function(e, parentElement, clonedElement)
      */
 
-    //FIXME: this calling convention is a bit silly. make settle on one argument, or two arguments, but not an "" argument.
     var _registerRepeatable = function(selector, options) {
         var _options = {
                 //select the last bootstrap "controls" div,  or the last element with the 'repeat-row' class
-                lastSelector: "> div.controls:last, .repeat-row:last",
+                rowSelector: "> div.controls, .repeat-row",
                 addAnother: "add another"
         };
         if(options) {
@@ -28,11 +27,13 @@ TDAR.repeatrow = function() {
         
         var $parents = $(selector);
         $parents.each(function(index, parentElement){
+            //tag the repeat rows so we know which element to delete if delete button clicked
+            $(_options.rowSelector, parentElement).addClass("repeat-row");
             
             var btnLabel =$(parentElement).data("add-another") || _options.addAnother;
             var $button = _button(btnLabel);
             $('button', $button).click(function() {
-                var element = $(_options.lastSelector, parentElement);
+                var element = $(_options.rowSelector, parentElement).last();
                 var $clone = _cloneSection(element, parentElement);
                 $(parentElement).trigger("repeatrowadded", parentElement, $clone[0]);
             });
@@ -140,6 +141,16 @@ TDAR.repeatrow = function() {
     };
     
     
+    var _deleteRow = function(elem) {
+        var $row = $(elem).closest(".repeat-row");
+        if($row.siblings(".repeat-row").length > 0) {
+            $row.remove();
+        } else {
+            _clearInputs($row);
+        }
+    }
+    
+    
     // private: return a dom button
     var _button = function(label) {
         var html = "<div class='control-group'>" +
@@ -156,7 +167,8 @@ TDAR.repeatrow = function() {
     console.debug("repeatrow loaded");
     return {
         registerRepeatable: _registerRepeatable,
-        cloneSection: _cloneSection
+        cloneSection: _cloneSection,
+        deleteRow: _deleteRow
     };
     
 }();
