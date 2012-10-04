@@ -88,7 +88,7 @@ public class BuildSearchIndexAction extends AuthenticationAware.Base implements 
     public void addError(Throwable t) {
         setStatus(t.getMessage());
         errors.addFirst(t);
-        logger.error(t.getMessage());
+        logger.error(t.getMessage(),t);
     }
 
     @Override

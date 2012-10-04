@@ -206,6 +206,9 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
 
     @Field(name = QueryFieldNames.FILENAME, analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class))
     public String getFileName() {
+        if (getLatestUploadedVersion() == null) {
+            return null;
+        }
         return getLatestUploadedVersion().getFilename();
     }
 

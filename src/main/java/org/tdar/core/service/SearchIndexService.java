@@ -147,7 +147,8 @@ public class SearchIndexService {
             updateReceiver.setPercentComplete(100f);
             fullTextSession.setFlushMode(previousFlushMode);
             activity.end();
-        } catch (ObjectNotFoundException ex) {
+        } catch (Throwable ex) {
+            log.warn(ex);
             updateReceiver.addError(ex);
         }
     }

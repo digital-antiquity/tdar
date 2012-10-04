@@ -173,6 +173,7 @@ public class CoverageDate extends Persistable.Base implements HasResource<Resour
     }
 
     // package private
+    @Transient
     Range<Integer> getRange() {
         Range<Integer> range = Range.between(startDate, endDate);
         return range;
@@ -191,6 +192,7 @@ public class CoverageDate extends Persistable.Base implements HasResource<Resour
     }
 
     // is this date even worth 'evaluating'
+    @Transient
     public boolean isInitialized() {
         if (getStartDate() == null && getEndDate() == null) {
             return false;

@@ -1,14 +1,14 @@
 echo "dropping tdarmetadata and tdardata databases"
-dropdb tdarmetadata -U tdar
-dropdb tdardata -U tdar
+dropdb -U tdar tdarmetadata 
+dropdb -U tdar tdardata 
 echo "creating tdarmetadata and tdardata databases"
-createdb tdarmetadata -O tdar  -U tdar
-createdb tdardata -O tdar -U tdar
+createdb -O tdar  -U tdar tdarmetadata 
+createdb -O tdar -U tdar tdardata
 echo "loading schema based on the latest stable release"
-psql -U tdar tdarmetadata -f tdarmetadata_schema.sql > log.txt
+psql -U tdar -f tdarmetadata_schema.sql tdarmetadata > log.txt
 echo "loading controlled data"
-psql -U tdar tdarmetadata -f tdarmetadata_init.sql >> log.txt
+psql -U tdar -f tdarmetadata_init.sql tdarmetadata >> log.txt
 echo "loading sample data"
-psql -U tdar tdarmetadata -f tdarmetadata_sample_data.sql >> log.txt
+psql -U tdar -f tdarmetadata_sample_data.sql tdarmetadata >> log.txt
 echo "running latest upgrade-db script to bring up to current rev"
-psql -U tdar tdarmetadata -f upgrade_scripts/upgrade-db.sql >> log.txt
+psql -U tdar -f upgrade_scripts/upgrade-db.sql tdarmetadata >> log.txt
