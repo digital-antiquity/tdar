@@ -87,7 +87,11 @@
                  "/includes/jquery.aw-showcase.1.1.1/jquery.aw-showcase/css/style.css"] />
 
 <#if bootstrap>
-    <#local srcs = ["/css/tdar-bootstrap.css", "/includes/blueimp-jquery-file-upload-3c5d440/css/jquery.fileupload-ui.css"] />
+    <#local srcs = [
+                    "/css/tdar-bootstrap.css",
+                    "/includes/blueimp-jquery-file-upload-3c5d440/css/jquery.fileupload-ui.css",
+                    "/includes/bootstrap-toggle-buttons-2.3/stylesheets/bootstrap-toggle-buttons.css"
+                    ] />
 </#if>
 
 <#if combine>
