@@ -6,8 +6,13 @@
 Convert long string to shorter string with ellipses. If you pass it anything fancy (like 
 html markup) you will probably not like the results
 -->
+    <#macro printTag tagName className closing>
+    	<#if tagName?has_content>
+    		<<#if closing>/</#if>${tagName} class="${className}">
+    	</#if>
+    </#macro>
 
-<#macro listResources resourcelist=resources_ sortfield='PROJECT' editable=false bookmarkable=authenticated expanded=false listTag='ul' itemTag='li' headerTag="h3" titleTag="">
+<#macro listResources resourcelist=resources_ sortfield='PROJECT' editable=false bookmarkable=authenticated expanded=false listTag='ul' itemTag='li' headerTag="h3" titleTag="h3">
   <#local showProject = false />
   <#local prev =""/>
   <#local first = true/>
@@ -36,17 +41,21 @@ html markup) you will probably not like the results
             </#if>
             <#local prev=key />
         <#elseif resource_index == 0>
-            <${listTag} class='resource-list'>
+            <@printTag listTag "resource-list" false />
         </#if>  
-            <${itemTag} class="listItem">
+            <@printTag itemTag "listItem" false />
+            <#if itemTag?lower_case != 'li'>
+				<#if resource_index != 0>
+            		<hr />
+				</#if>
+            </#if>
             <@searchResultTitleSection resource titleTag />
+
+    <#if (resource.citationRecord!false)><span class='cartouche' title="Citation only; this record has no attached files.">Citation</span></#if>
             <#if expanded>
                 <div class="listItem">
+		    <@common.cartouch resource true><@listCreators resource/></@common.cartouch>  
                 <@view.unapiLink resource  />
-                <p>
-                <@listCreators resource/>
-                <#if (resource.date?? && resource.date > 0 )>(${resource.date?c})</#if>
-                </p>
                 <#if showProject && resource.resourceType != 'PROJECT'>
                 <p class="project">${resource.project.title}</p>
                 </#if>
@@ -68,14 +77,14 @@ html markup) you will probably not like the results
 
 <#macro searchResultTitleSection result titleTag>
     <#local titleCssClass="search-result-title-${result.status!('ACTIVE')}" />
+	<!-- <h3><a href="">Casa Grande Ruins National Monument, A Centennial History of the First Prehistoric Reserve, 1892-1992</a></h3> -->
     <#if titleTag?has_content>
         <${titleTag} class="${titleCssClass}">
     </#if>
     <a class="resourceLink" href="<@s.url value="/${result.urlNamespace}/${result.id?c}"/>"><#rt>
         ${result.title!"No Title"}<#t>
-        <@common.cartouch result true/>  
+        <#if (result.date?has_content && (result.date > 0 || result.date < -1) )>(${result.date?c})</#if>
     </a><#lt>
-    <#if (result.citationRecord!false)><span class='cartouche' title="Citation only; this record has no attached files.">Citation</span></#if>
     <@bookmark result false/>
     <#if titleTag?has_content>
         </${titleTag}>

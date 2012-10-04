@@ -8,14 +8,15 @@
 <div>
 <@search.initResultPagination/>
 <#if searchPhrase?? && !explore>
-    ${searchPhrase}
-</#if>
+
+			<h1>Search Results: <span>"${searchPhrase}"</span></h1>
+    </#if>
 
 <#if (totalRecords > 0)>
 
 <#if explore && exploreKeyword?? && exploreKeyword.definition?has_content >
+    <h1>${exploreKeyword.label?html}</h1>
 <div class="glide">
-    <h3>${exploreKeyword.label?html}</h3>
     <#if exploreKeyword.definition??>
         ${exploreKeyword.definition?html}
     </#if>
@@ -23,7 +24,7 @@
 </#if>
 
 <#if (referrer?? && referrer == 'TAG')>
-<div class="glide">
+<div class="notice">
 <b>Welcome TAG Users</b><br/>
 If you'd like to perform an integration:
 <ol>
@@ -37,19 +38,47 @@ If you'd like to perform an integration:
 <a href="http://dev.tdar.org/confluence/display/TDAR/Data+Integration">visit our documentation for more details</a>
 </div>
 </#if>
-    <@search.basicPagination "Records"/>
 
-    <style type='text/css'>
-    ol { 
-        list-style-type:none !important;
-    }
+	<aside class="span3 options">
+				
+				<h2>Search Options</h2>
 
-    h5 {
-        display:block !important;
-        border-bottom:1px solid #ccc;
-    }
-    
-    </style>
+				<ul class="tools">
+					<li><@search.searchLink "advanced" "Refine your search &raquo;" />
+        <li>Download these results &raquo;
+    <#if sessionData?? && sessionData.authenticated && (totalRecords > 0) && (actionName=="results")>
+        <@search.searchLink "download" "to Excel" />
+        <#if totalRecords &gt; maxDownloadRecords>
+            Limited to the first ${maxDownloadRecords} results.    
+        </#if>
+        </li>
+	<#else>
+	Login
+     </#if>
+				</ul>
+
+				<form>
+					<@facetBy facetlist=resourceTypeFacets label="Resource Type(s)" facetParam="resourceTypes" />
+					
+					<@facetBy facetlist=documentTypeFacets label="Document Type(s)" facetParam="documentType" />
+					
+					<@facetBy facetlist=integratableOptionFacets label="Integratable" facetParam="integratableOptions" />
+					
+					<@facetBy facetlist=fileAccessFacets label="File Access" facetParam="fileAccess" />
+				</form>
+
+			</aside>
+
+
+
+<article class="span9 results">
+ <h2>${totalRecords} Results</h2>
+ <div class="sort">
+ <p>Sort By:</p>
+ <form action=''>
+    <@search.sortFields true/>
+ </form>
+</div>
 
 <div class="limit">
 <@removeFacet facetlist=resourceTypes label="Resource Type(s)" facetParam="resourceTypes" />
@@ -57,46 +86,22 @@ If you'd like to perform an integration:
 <@removeFacet facetlist=fileAccess label="File Access" facetParam="fileAccess" />
 
 </div>
-<div class="glide">
-    <@rlist.listResources resourcelist=results sortfield=sortField expanded=true listTag="ol" titleTag="h5"/>
-</div>
-    <#if (numPages > 1)>
-<div class="glide">
+
+	<hr class="dbl" />
+    <@rlist.listResources resourcelist=results sortfield=sortField expanded=true listTag="" itemTag="" titleTag="h3"/>
+	<hr class="dbl" />
     <@search.pagination ""/>
 </div>
-</#if>
 <#else>
     <h2>No records match the query.</h2>
 </#if>
 </div>
 
 
- <div id="sidebar" parse="true">
- <div style="height:110px"></div>
-<h2>Search Options</h2>
-<ul class="facets">
-<li>        <B>Search Options:</b>
-    <ul>
-        <li><b>Refine:</b><@search.searchLink "advanced" "Modify Search" /> </li>
-    <#if sessionData?? && sessionData.authenticated && (totalRecords > 0) && (actionName=="results")>
-        <li><b>Download:</b>
-        <@search.searchLink "download" "to Excel" />
-        <#if totalRecords &gt; maxDownloadRecords>
-            Limited to the first ${maxDownloadRecords} results.    
-        </#if>
-        </li>
-     </#if>
-      <li>  <form action=''>
-        <b>Sort By:</b> <@search.sortFields true/>
-        </form>
-      </li>
-      </ul>
-      </li>
-  </ul>
-  <br/>
+
 <#macro facetBy facetlist label="Facet Label" facetParam="">
 <#if (facetlist?? && !facetlist.empty)>
-<li><B>${label}:</B>
+<h4>${label}:</h4>
 <ul>
     <#list facetlist as facet>
         <#assign facetLabel = facet />
@@ -107,6 +112,8 @@ If you'd like to perform an integration:
         </#if>
         <li>
             <#if (facetlist?size > 1)>
+				<input type="checkbox">
+				<label>
                 <a href="<@s.url includeParams="all">
                     <@s.param name="${facetParam}">${facet}</@s.param>
                     <@s.param name="startRecord" value="0"/>
@@ -123,10 +130,11 @@ If you'd like to perform an integration:
             <#else>
                 ${facetLabel}
             </#if>
-           (${facet.count})
+           <span>(${facet.count})</span>
+			</label>
         </li>
     </#list>
-</ul><br/></li>
+</ul>
 </#if>
 
 </#macro>
@@ -160,17 +168,6 @@ If you'd like to perform an integration:
     </#if>
 </#macro>
 
-<h2>Limit Your Search</h2>
-<ul class="facets" id="facets">
-<@facetBy facetlist=resourceTypeFacets label="Resource Type(s)" facetParam="resourceTypes" />
-
-<@facetBy facetlist=documentTypeFacets label="Document Type(s)" facetParam="documentType" />
-
-<@facetBy facetlist=integratableOptionFacets label="Integratable" facetParam="integratableOptions" />
-
-<@facetBy facetlist=fileAccessFacets label="File Access" facetParam="fileAccess" />
-
-</ul>
 </div>
 
 

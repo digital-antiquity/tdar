@@ -756,18 +756,11 @@ this bit of freemarker is voodoo:
 
 <#macro cartouch persistable useDocumentType=false>
     <#local cartouchePart><@upperPersistableTypeLabel persistable /></#local>
-    <span class="${cartouchePart?replace(" ", "")?lower_case}-color cartouche"><#t>
+	<p class="meta ${cartouchePart?replace(" ","")?lower_case}"><#t>
     <#if (persistable.status)?? && !persistable.active>
         ${persistable.status} <#t>
     </#if> 
-    <#if persistable.urlNamespace=='collection'>
-        COLLECTION<#t>
-    <#elseif (persistable.resourceType.document && useDocumentType && persistable.documentType.label!='Other')>
-        ${persistable.documentType.label?upper_case}<#t>
-    <#else>
-        ${cartouchePart?upper_case}<#t>
-    </#if>
-    </span><#lt>
+	<#nested /></p>
 </#macro>
 
 <#-- FIXME: freemarker docs advise against setting locals w/ macro contents -->

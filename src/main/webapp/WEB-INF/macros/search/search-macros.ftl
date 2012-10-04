@@ -105,26 +105,28 @@
 </#macro>
 
 <#macro initResultPagination>
-<#global firstRec = (startRecord + 1) />
-<#global curPage = ((startRecord/recordsPerPage)?floor + 1) />
-<#global numPages = ((totalRecords/recordsPerPage)?ceiling) />
-<#global lastRec = nextPageStartRecord>
-
-<#if (firstRec > totalRecords)>
- <#assign numPages = 0 />
- <#assign firstRec = totalRecords/>
-</#if>
-
-<#if (nextPageStartRecord > totalRecords) >
-    <#assign lastRec = totalRecords>
-</#if>
-
-<#if (firstRec - recordsPerPage) < 1 >
-    <#assign prevPageStartRec = 0>
-<#else>
-    <#assign prevPageStartRec = firstRec - recordsPerPage - 1>
-</#if>
+	<#global firstRec = (startRecord + 1) />
+	<#global curPage = ((startRecord/recordsPerPage)?floor + 1) />
+	<#global numPages = ((totalRecords/recordsPerPage)?ceiling) />
+	<#global lastRec = nextPageStartRecord>
+	
+	<#if (firstRec > totalRecords)>
+	 <#assign numPages = 0 />
+	 <#assign firstRec = totalRecords/>
+	</#if>
+	
+	<#if (nextPageStartRecord > totalRecords) >
+	    <#assign lastRec = totalRecords>
+	</#if>
+	
+	<#if (firstRec - recordsPerPage) < 1 >
+	    <#assign prevPageStartRec = 0>
+	<#else>
+	    <#assign prevPageStartRec = firstRec - recordsPerPage - 1>
+	</#if>
 </#macro>
+
+
 <#macro searchLink path linkText>
     <a href="
     <@s.url includeParams="all" value="${path}">
@@ -152,7 +154,10 @@
 </#macro>
 
 <#macro pagination path="results">
-    <div class="pagination">
+    <#if (numPages <= 1)>
+    <#return />
+    </#if>
+
   <#assign start =0>
   <#assign end =numPages -1>
   <#if numPages &gt; 40 && curPage &gt; 19 >
@@ -162,34 +167,52 @@
     <#assign end = curPage + 19>
   </#if> 
 
-  <#if start != 0>
-      <@paginationLink startRecord=(0 * recordsPerPage) path="${path}" linkText="first" />
-  </#if>
-        <#if (firstRec > 1)>
-            <@paginationLink startRecord=prevPageStartRec path="${path}" linkText="previous" />
-        </#if>
-        <#if (numPages > 1)>
-            <#list start..end as i>
-                <#if (i + 1) = curPage>
-                                        <#-- FIXME: there are 2 of these spans with
-                                        the same id being generated.  Turn this into
-                                        a CSS class instead or is this a bug?
-                                        -->
-                    <span id="currentResultPage">${i + 1}</span>
-                <#else>
-                    <@paginationLink startRecord=(i * recordsPerPage) path="${path}" linkText=(i + 1) />
-                </#if>
-            </#list>
-            <#else>
-            1<br/>
-        </#if>
-        <#if (nextPageStartRecord < totalRecords) >
-            <@paginationLink startRecord=nextPageStartRecord path="${path}" linkText="next" />
-        </#if>
-  <#if (end != numPages && nextPageStartRecord < totalRecords)>
-          <@paginationLink startRecord=(totalRecords - totalRecords % recordsPerPage) path="${path}" linkText="last" />
-  </#if>
-    </div>
+	<table class="pagin">
+					<tr>
+				        <#if (firstRec > 1)>
+						<td class="prev">
+				            <@paginationLink startRecord=prevPageStartRec path="${path}" linkText="Previous" />
+						</td>
+				        </#if>
+						<td class="page">
+							<ul>
+							  <#if start != 0>
+								<li>
+							      <@paginationLink startRecord=(0 * recordsPerPage) path="${path}" linkText="first" />
+	 						    </li>
+								<li>...</li>
+							  </#if>
+					        <#if (numPages > 1)>
+					            <#list start..end as i>
+					            <li>
+					                <#if (i + 1) = curPage>
+					                                        <#-- FIXME: there are 2 of these spans with
+					                                        the same id being generated.  Turn this into
+					                                        a CSS class instead or is this a bug?
+					                                        -->
+					                    <span id="currentResultPage">${i + 1}</span>
+					                <#else>
+					                    <@paginationLink startRecord=(i * recordsPerPage) path="${path}" linkText=(i + 1) />
+					                </#if>
+				                </li>
+					            </#list>
+					            <#else>
+					            <li>1</li>
+					        </#if>
+							<#if (end != numPages && nextPageStartRecord < totalRecords)>
+							    <li>
+							          <@paginationLink startRecord=(totalRecords - totalRecords % recordsPerPage) path="${path}" linkText="Last" />
+								</li>
+							</#if>
+							</ul>
+						</td>
+					        <#if (nextPageStartRecord < totalRecords) >
+						<td class="next">
+					            <@paginationLink startRecord=nextPageStartRecord path="${path}" linkText="Next" />
+						</td>
+					        </#if>
+					</tr>
+				</table>
 </#macro>
 
 <#macro bcad _year>

@@ -156,9 +156,9 @@
     </div>
 </div>
 </div>
-	
-		<#-- <section class="row cols"> -->
-	<section class="row cols">
+	<#assign part="cols" />
+	<#if request.requestURI?contains("/search/") ><#assign part="search" /></#if>
+	<section class="row ${part}">
         ${body}
 	</section>
 </div>
