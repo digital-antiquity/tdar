@@ -27,8 +27,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<geotools.version>8.0</geotools.version>
 		<tika.version>1.2</tika.version>
-        <odata4j.version>0.7.0</odata4j.version>
-        <jersey.version>1.13</jersey.version>
+		<odata4j.version>0.7.0</odata4j.version>
+		<jersey.version>1.13</jersey.version>
 	</properties>
 	<prerequisites>
 		<maven>2.2.0</maven>
@@ -286,13 +286,8 @@
 			<artifactId>opensearch</artifactId>
 			<version>0.1</version>
 		</dependency>
-<!-- 
-		<dependency>
-			<groupId>com.thoughtworks.xstream</groupId>
-			<artifactId>xstream</artifactId>
-			<version>1.4.3</version>
-		</dependency>
- -->		<!-- Spring LDAP -->
+		<!-- <dependency> <groupId>com.thoughtworks.xstream</groupId> <artifactId>xstream</artifactId> 
+			<version>1.4.3</version> </dependency> -->		<!-- Spring LDAP -->
 		<dependency>
 			<groupId>org.springframework.ldap</groupId>
 			<artifactId>spring-ldap-core</artifactId>
@@ -317,16 +312,16 @@
 		</dependency>
 		<!-- <dependency> <groupId>junit</groupId> <artifactId>junit</artifactId> 
 			<version>3.8.1</version> <scope>test</scope> </dependency> -->
-			<dependency>
-				<groupId>org.jmock</groupId>
-				<artifactId>jmock-junit4</artifactId>
-				<version>2.5.1</version>
+		<dependency>
+			<groupId>org.jmock</groupId>
+			<artifactId>jmock-junit4</artifactId>
+			<version>2.5.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jmock</groupId>
 			<artifactId>jmock-legacy</artifactId>
 			<version>2.5.1</version>
-		</dependency>		
+		</dependency>
 		<dependency>
 			<groupId>org.geotools</groupId>
 			<artifactId>gt-shapefile</artifactId>
@@ -359,7 +354,7 @@
 			<exclusions>
 			</exclusions>
 		</dependency>
-		<!--  these are required for htmlunit 2.10 -->
+		<!-- these are required for htmlunit 2.10 -->
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
@@ -377,7 +372,7 @@
 			<artifactId>httpmime</artifactId>
 			<version>4.2.1</version>
 		</dependency>
-				<!-- /these are required for htmlunit 2.10 -->
+		<!-- /these are required for htmlunit 2.10 -->
 		<dependency>
 			<groupId>com.3levers.cssselectors</groupId>
 			<artifactId>cssselectors</artifactId>
@@ -540,7 +535,7 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-aop</artifactId>
 			<version>${spring.framework.version}</version>
-		</dependency>		
+		</dependency>
 		<dependency>
 			<!-- needed by spring for @Transactional calls -->
 			<groupId>cglib</groupId>
@@ -691,41 +686,39 @@
 		<!-- <dependency> <groupId>org.codehaus.jackson</groupId> <artifactId>jackson-mapper-asl</artifactId> 
 			<version>1.9.7</version> </dependency> <dependency> <groupId>org.codehaus.jackson</groupId> 
 			<artifactId>jackson-core-asl</artifactId> <version>1.9.7</version> </dependency> 
-        
 			<dependency> <groupId>org.codehaus.jackson</groupId> <artifactId>jackson-xc</artifactId> 
-			<version>1.9.7</version> </dependency>
-            <dependency> <groupId>org.codehaus.jackson</groupId> <artifactId>jackson-xc</artifactId> 
-            <version>1.7.3</version> </dependency>
-        -->
-        <!-- Jackson v2 (1.7.3 cannot be used because it doesnt handle @XmlJavaTypeConverter w/ collections correctly) -->
-        <dependency>
-          <groupId>com.fasterxml.jackson.core</groupId>
-          <artifactId>jackson-core</artifactId>
-          <version>2.0.6</version>
-        </dependency>        
-        <dependency>
-          <groupId>com.fasterxml.jackson.core</groupId>
-          <artifactId>jackson-databind</artifactId>
-          <version>2.0.6</version>
-        </dependency>
-        <dependency>
-          <groupId>com.fasterxml.jackson.core</groupId>
-          <artifactId>jackson-annotations</artifactId>
-          <version>2.0.6</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-jaxb-annotations</artifactId>
-            <version>2.0.5</version>
-        </dependency> 
-       
+			<version>1.9.7</version> </dependency> <dependency> <groupId>org.codehaus.jackson</groupId> 
+			<artifactId>jackson-xc</artifactId> <version>1.7.3</version> </dependency> -->
+		<!-- Jackson v2 (1.7.3 cannot be used because it doesnt handle @XmlJavaTypeConverter 
+			w/ collections correctly) -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>2.0.6</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.0.6</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+			<version>2.0.6</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.module</groupId>
+			<artifactId>jackson-module-jaxb-annotations</artifactId>
+			<version>2.0.5</version>
+		</dependency>
+
 		<dependency>
 			<groupId>commons-dbutils</groupId>
 			<artifactId>commons-dbutils</artifactId>
 			<version>1.5</version>
 		</dependency>
-		
-		<!--  OData (odata4j) Stuff: Begin -->
+
+		<!-- OData (odata4j) Stuff: Begin -->
 
 		<dependency>
 			<groupId>org.odata4j</groupId>
@@ -741,33 +734,33 @@
 			<groupId>org.odata4j</groupId>
 			<artifactId>odata4j-fit</artifactId>
 			<version>${odata4j.version}</version>
-		</dependency>  
-		                                  
-		<!--  OData REST Infrastructure -->		
+		</dependency>
+
+		<!-- OData REST Infrastructure -->
 		<dependency>
 			<groupId>com.sun.net.httpserver</groupId>
 			<artifactId>http</artifactId>
 			<version>20070405</version>
 		</dependency>
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-server</artifactId>
-            <version>${jersey.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-core</artifactId>
-            <version>${jersey.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-client</artifactId>
-            <version>${jersey.version}</version>
-        </dependency>
 		<dependency>
-		    <groupId>com.sun.jersey.contribs</groupId>
-		    <artifactId>jersey-spring</artifactId>
-		    <version>${jersey.version}</version>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-server</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-core</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-client</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey.contribs</groupId>
+			<artifactId>jersey-spring</artifactId>
+			<version>${jersey.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.springframework</groupId>
@@ -795,15 +788,15 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		
-		<!--  OData Integration Testing Support -->
+
+		<!-- OData Integration Testing Support -->
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-client</artifactId>
 			<version>8.1.4.v20120524</version>
 		</dependency>
 
-		<!--  OData (odata4j) Stuff: End -->
+		<!-- OData (odata4j) Stuff: End -->
 
 	</dependencies>
 	<pluginRepositories>
@@ -1595,7 +1588,6 @@
 											tofile="src/main/resources/log4j.properties" />
 										<copy file="src/main/resources/tdar.properties.template"
 											tofile="src/main/resources/tdar.properties" />
-										<copy file="src/main/webapp/robots.txt.template" tofile="src/main/webapp/robots.txt" />
 										<copy file="src/main/resources/struts-local-settings.xml.template"
 											tofile="src/main/resources/struts-local-settings.xml" />
 										<copy file="src/main/resources/spring-local-settings.xml.template"
