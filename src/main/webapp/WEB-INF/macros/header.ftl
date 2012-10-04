@@ -44,6 +44,7 @@
                      "/includes/tdar.dataintegration.js", 
                      "/includes/latLongUtil-1.0.js",
                      "/includes/jquery.maphighlight.local.js",
+                     "/includes/jquery.FormNavigate.js",
                      "/includes/tdar.upload.js",
                      "/includes/tdar.repeatrow.js",
                      "/includes/tdar.autocomplete.js",
@@ -53,7 +54,8 @@
                      "/includes/blueimp-jquery-file-upload-3c5d440/js/jquery.fileupload.js",
                      "/includes/blueimp-jquery-file-upload-3c5d440/js/jquery.fileupload-fp.js",
                      "/includes/blueimp-jquery-file-upload-3c5d440/js/jquery.fileupload-ui.js",
-                     "/includes/blueimp-jquery-file-upload-3c5d440/js/locale.js" 
+                     "/includes/blueimp-jquery-file-upload-3c5d440/js/locale.js",
+                     "/includes/bootstrap-toggle-buttons-2.3/js/jquery.toggle.buttons.js"
     ] />
     
     

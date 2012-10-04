@@ -309,7 +309,7 @@ $(document).ready(function() {
      $("#edit-metadata-form").FormNavigate("Leaving the page will cause any unsaved data to be lost!");
      $("#table_select").unbind("change");
        applyWatermarks(document);
-      setupFormValidate("#edit-metadata-form");
+      TDAR.common.initFormValidation($("#edit-metadata-form")[0]);
       
           $('#table_select').change(function() {
         window.location='?dataTableId='+$(this).val();

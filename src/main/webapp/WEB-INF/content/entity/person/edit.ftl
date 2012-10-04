@@ -15,7 +15,7 @@
             $frmPerson = $('#frmPerson');
             applyInstitutionAutocomplete($('.institutionAutocomplete'), true);
             initializeView();
-            setupEditForm('#frmPerson');
+            TDAR.common.initEditPage($('#frmPerson')[0]);
             
             //tack on the confirm-password rules
         });

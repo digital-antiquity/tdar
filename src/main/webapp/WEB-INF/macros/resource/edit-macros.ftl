@@ -663,45 +663,7 @@ $(function(){
     TDAR.fileupload.registerUpload({informationResourceId: id, acceptFileTypes: acceptFileTypes});
     </#if>
 
-    //init person/institution buttons
-    //init repeatrows
-    TDAR.repeatrow.registerRepeatable(".repeatLastRow");
-    
-    //init person/institution buttons
-    $("button.add-person, button.add-institution", form).click(function() {
-        var button = this;
-        var $button = $(button);
-        var $table = $($button.data("repeatable"));
-        var $row = $('.repeat-row:last', $table);
-        var $clone = TDAR.repeatrow.cloneSection($row[0], $row.parent()[0]);
-        
-
-        //show only the correct portion of the proxy
-        if($(button).hasClass("add-person")) {
-            $(".creatorInstitution", $clone).hide();
-            $(".creatorPerson", $clone).show().removeClass("hidden");
-        } else {
-            $(".creatorInstitution", $clone).show();
-            $(".creatorPerson", $clone).hide().removeClass("hidden");
-        }
-    });
-
-	$('.creator-toggle-button').toggleButtons({
-	    width: 220,
-	    label: {
-	        enabled: "Person",
-	        disabled: "Institution"
-	    },
-	    onChange: function ($el, status, e) {
-			$(".creatorPerson", $el.parents("tr").first()).toggleClass("hidden");
-			$(".creatorInstitution",$el.parents("tr").first()).toggleClass("hidden");
-	    }
-	});
-
-    //init map
-    loadTdarMap();
-    
-    initializeEdit();
+    TDAR.common.initEditPage(form);
     
     
 });

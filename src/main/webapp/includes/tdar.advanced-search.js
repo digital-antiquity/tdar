@@ -1,5 +1,5 @@
 function initAdvancedSearch() {
-    setupFormValidate('#searchGroups');
+    TDAR.common.initFormValidation($('#searchGroups')[0]);
 
     // when user changes searchType: swap out the term ui snippet
     $('#searchGroups').on('change', '.searchType', function(evt) {

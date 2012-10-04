@@ -803,62 +803,6 @@ function applyZebraColors(optionalRoot) {
     $('table.zebracolors tbody tr:odd', root).addClass("odd");
 }
 
-/**
- * SINGLE INIT FUNCTION
- */
-function initializeEdit() {
-    // if user gets to the edit page by clicking the 'back' button the submit
-    // button may be disabled.
-    var $button = $("#submitButton");
-    $button.removeAttr('disabled');
-    $button.removeClass("waitingSpinner");
-    // / this is for the backwards and forwards page cache
-    $(window).bind("pageshow", function() {
-        var $button = $("#submitButton");
-        $button.removeAttr('disabled');
-        $button.removeClass("waitingSpinner");
-    });
-
-    initializeRepeatRow();
-
-    delegateCreator("#authorshipTable", false, true);
-    delegateCreator("#creditTable", false, true);
-    delegateCreator("#divAccessRights", true, false);
-    delegateCreator("#copyrightHolderTable",false,true);
-
-    delegateAnnotationKey("#resourceAnnotationsTable", "annotation",
-            "annotationkey");
-    delegateKeyword("#siteNameKeywordTable", "sitename", "SiteNameKeyword");
-    delegateKeyword("#uncontrolledSiteTypeKeywordTable", "siteType",
-            "SiteTypeKeyword");
-    delegateKeyword("#uncontrolledCultureKeywordTable", "culture",
-            "CultureKeyword");
-    delegateKeyword("#temporalKeywordTable", "temporal", "TemporalKeyword");
-    delegateKeyword("#otherKeywordTable", "other", "OtherKeyword");
-    delegateKeyword("#geographicKeywordTable", "geographic",
-            "GeographicKeyword");
-
-    applyInstitutionAutocomplete($('#txtResourceProviderInstitution'), true);
-    applyInstitutionAutocomplete($('#publisher'), true);
-    initializeView();
-    $('#resourceCollectionTable').delegate(
-            ".collectionAutoComplete",
-            "focusin",
-            function() {
-                applyCollectionAutocomplete($(".collectionAutoComplete", $('#resourceCollectionTable')), {showCreate:true});
-            });
-
-    // prevent "enter" from submitting
-    $('input,select').keypress(function(event) {
-        return event.keyCode != 13;
-    });
-
-    $(".alphasort").click(sortFilesAlphabetically);
-    $(".licenseRadio",$("#license_section")).change(toggleLicense);
-    $("#copyright_holder_type_person").change(toggleCopyrightHolder);
-    $("#copyright_holder_type_institution").change(toggleCopyrightHolder);
-}
-
 function delegateCreator(id, user, showCreate) {
     if (user == undefined || user == false) {
         $(id).delegate(
@@ -929,100 +873,6 @@ function sessionTimeoutWarning() {
     }
 }
 
-function setupEditForm(formId, acceptedFiles) {
-    $(formId).FormNavigate(
-            "Leaving the page will cause any unsaved data to be lost!");
-
-    // FIXME: the jquery validate documentation for onfocusout/onkeyup/onclick
-    // doesn't jibe w/ what we see in practice. supposedly these take a boolean
-    // argument specifying 'true' causes an error. since true is the default for
-    // these three options I'm simply removing those lines from the validate
-    // call
-    // below.
-    // see http://docs.jquery.com/Plugins/Validation/validate#options for
-    // options and defaults
-    // see http://whilefalse.net/2011/01/17/jquery-validation-onkeyup/ for
-    // undocumented feature that lets you specify a function instead of a
-    // boolean.
-
-    // Watermark labels *must* be registered before validation rules are
-    // applied, otherwise you get nasty conflicts.
-    applyWatermarks(document);
-    setupFormValidate(formId);
-    // trim any type-converted fields prior to submit
-
-    $(formId)
-            .submit(
-                    function(f) {
-                        try {
-                            $
-                                    .each(
-                                            $('.reasonableDate, .coverageStartYear, .coverageEndYear, .date, .number'),
-                                            function() {
-                                                if ($(this).val() == undefined
-                                                        || $(this).val() == "")
-                                                    return;
-                                                // this is essential, or IE will
-                                                // replace null values w/
-                                                // empty-string values, and
-                                                // type-conversion dies.
-                                                var elem = this;
-                                                $(elem).val(
-                                                        $.trim($(elem).val()));
-                                            });
-                        } catch (err) {
-                            console.error("unable to trim:" + err);
-                        }
-
-                        var $button = $('input[type=submit]', f);
-                        $button.siblings(".waitingSpinner").css('visibility',
-                                'visible');
-
-                        return true;
-                    });
-
-    var uploadField = document.getElementById("fileUploadField");
-    if (uploadField != undefined) {
-        var validate = $(uploadField);
-        $(validate).rules(
-                "add",
-                {
-                    accept : acceptedFiles,
-                    messages : {
-                        accept : "Please enter a valid file ("
-                                + acceptedFiles.replace(/\|/ig, ", ") + ")"
-                    }
-                });
-    }
-
-    $('.coverageTypeSelect', "#coverageTable").each(function(i, elem) {
-        prepareDateFields(elem);
-    });
-
-    if ($(formId + '_uploadedFiles').length > 0) {
-//        console.log("wiring up uploaded file check");
-        var validateUploadedFiles = function() {
-            if ($(formId + "_uploadedFiles").val().length > 0) {
-                $("#reminder").hide();
-            }
-        };
-        $(formId + '_uploadedFiles').change(validateUploadedFiles);
-        validateUploadedFiles();
-    }
-
-    if ($.browser.msie || $.browser.mozilla && getBrowserMajorVersion() < 4) {
-        $('textarea.resizable:not(.processed)').TextAreaResizer();
-    }
-
-    $("#coverageTable").delegate(".coverageTypeSelect", "change", function() {
-        console.log('called delegate');
-        prepareDateFields(this);
-    });
-    showAccessRightsLinkIfNeeded();
-    $('.fileProxyConfidential').change(showAccessRightsLinkIfNeeded);
-
-}
-
 function getBrowserMajorVersion() {
     var browserMajorVersion = 1;
     try {
@@ -1062,74 +912,6 @@ function setupDocumentEditForm() {
     switchType($("input[@name='document.documentType']:radio:checked").val());
 }
 
-function setupFormValidate(formId) {
-    $(formId)
-            .validate(
-                    {
-                        errorLabelContainer : $("#error"),
-                        onkeyup : function() {
-                            return;
-                        },
-                        onclick : function() {
-                            return;
-                        },
-                        onfocusout : function(element) {
-                            return;
-                            // I WORK IN CHROME but FAIL in IE & FF
-                            // if (!dialogOpen) return;
-                            // if ( !this.checkable(element) && (element.name in
-                            // this.submitted ||
-                            // !this.optional(element)) ) {
-                            // this.element(element);
-                            // }
-                        },
-                        invalidHandler : $.watermark.showAll,
-                        showErrors : function(errorMap, errorList) {
-                            this.defaultShowErrors();
-                            if (errorList != undefined && errorList.length > 0
-                                    && this.submitted) {
-                                dialogOpen = true;
-                                $("#error")
-                                        .clone()
-                                        .dialog(
-                                                {
-                                                    title : 'Please correct the following issues before saving',
-                                                    buttons : {
-                                                        "Ok" : function() {
-                                                            dialogOpen = false;
-                                                            $(this).dialog(
-                                                                    "close");
-                                                        }
-                                                    },
-                                                    dialogClass : 'errorDialog',
-                                                    resizable : false,
-                                                    draggable : false
-                                                });
-                            }
-                        },
-                        submitHandler : function(f) {
-                            var $button = $('input[type=submit]', f);
-                            $button.siblings(".waitingSpinner").css(
-                                    'visibility', 'visible');
-                            // prevent multiple form submits (e.g. from
-                            // double-clicking the submit button)
-                            $button.attr('disabled', 'disabled');
-                            f.submit();
-                        }
-                    });
-
-    $(formId).delegate(
-            "input.error",
-            "change blur",
-            function() {
-                if ($("div.errorDialog:visible") == undefined
-                        || $("div.errorDialog:visible").length == 0) {
-                    $(this).valid();
-                    console.log('revalidating...');
-                }
-            });
-
-}
 
 function switchType(doctype) {
     try {
@@ -1430,3 +1212,237 @@ function toggleLicense() {
         }
     );
 }
+
+
+/**
+ * trying to move these functions out of global scope and apply strict parsing.
+ */
+
+
+TDAR.namespace("common");
+TDAR.common = function() {
+    "use strict";
+
+    
+     // FIXME: the jquery validate documentation for onfocusout/onkeyup/onclick
+     // doesn't jibe w/ what we see in practice. supposedly these take a boolean
+     // argument specifying 'true' causes an error. since true is the default for
+     // these three options I'm simply removing those lines from the validate
+     // call
+     // below.
+     // see http://docs.jquery.com/Plugins/Validation/validate#options for
+     // options and defaults
+     // see http://whilefalse.net/2011/01/17/jquery-validation-onkeyup/ for
+     // undocumented feature that lets you specify a function instead of a
+     // boolean.
+     var _setupFormValidate = function(form) {
+         $(form)
+                 .validate(
+                         {
+                             errorLabelContainer : $("#error"),
+                             onkeyup : function() {
+                                 return;
+                             },
+                             onclick : function() {
+                                 return;
+                             },
+                             onfocusout : function(element) {
+                                 return;
+                                 // I WORK IN CHROME but FAIL in IE & FF
+                                 // if (!dialogOpen) return;
+                                 // if ( !this.checkable(element) && (element.name in
+                                 // this.submitted ||
+                                 // !this.optional(element)) ) {
+                                 // this.element(element);
+                                 // }
+                             },
+                             //invalidHandler : $.watermark.showAll,
+                             showErrors : function(errorMap, errorList) {
+                                 this.defaultShowErrors();
+                                 if (errorList != undefined && errorList.length > 0
+                                         && this.submitted) {
+                                     $("#error")
+                                             .clone()
+                                             .dialog(
+                                                     {
+                                                         title : 'Please correct the following issues before saving',
+                                                         buttons : {
+                                                             "Ok" : function() {
+                                                                 $(this).dialog(
+                                                                         "close");
+                                                             }
+                                                         },
+                                                         dialogClass : 'errorDialog',
+                                                         resizable : false,
+                                                         draggable : false
+                                                     });
+                                 }
+                             },
+                             submitHandler : function(f) {
+                                 var $button = $('input[type=submit]', f);
+                                 $button.siblings(".waitingSpinner").css(
+                                         'visibility', 'visible');
+                                 // prevent multiple form submits (e.g. from
+                                 // double-clicking the submit button)
+                                 $button.attr('disabled', 'disabled');
+                                 f.submit();
+                             }
+                         });
+    
+         $(form).delegate(
+                 "input.error",
+                 "change blur",
+                 function() {
+                     if ($("div.errorDialog:visible") == undefined
+                             || $("div.errorDialog:visible").length == 0) {
+                         $(this).valid();
+                         console.log('revalidating...');
+                     }
+                 });
+    
+     }
+    
+    
+    
+
+    //setup other form edit controls
+    //FIXME: wny is this broken out from  initEditPage?   If anything, break it out even further w/ smaller private functions
+    var _setupEditForm = function (form) {
+        
+        //warn user about leaving before saving
+        //FIXME: FormNavigate.js has bugs and is not being maintained. need to find/write replacement.
+        //$(form).FormNavigate("Leaving the page will cause any unsaved data to be lost!");
+
+        //initialize form validation
+        _setupFormValidate(form);
+        
+        //prepwork prior to form submit (trimming fields)
+        $(form).submit(function(f) {
+            try {
+                $.each($('.reasonableDate, .coverageStartYear, .coverageEndYear, .date, .number'), function(idx, elem) {
+                    if ($(elem).val() !== undefined)  {
+                        $(elem).val($.trim($(elem).val()));
+                    }
+                });
+            } catch (err) {
+                console.error("unable to trim:" + err);
+            }
+
+            var $button = $('input[type=submit]', f);
+            $button.siblings(".waitingSpinner").css('visibility', 'visible');
+
+            return true;
+        });
+
+
+        $('.coverageTypeSelect', "#coverageTable").each(function(i, elem) {
+            prepareDateFields(elem);
+        });
+
+        if ($(form.id + '_uploadedFiles').length > 0) {
+            var validateUploadedFiles = function() {
+                if ($(form.id + "_uploadedFiles").val().length > 0) {
+                    $("#reminder").hide();
+                }
+            };
+            $(form.id + '_uploadedFiles').change(validateUploadedFiles);
+            validateUploadedFiles();
+        }
+
+        if ($.browser.msie || $.browser.mozilla && getBrowserMajorVersion() < 4) {
+            $('textarea.resizable:not(.processed)').TextAreaResizer();
+        }
+
+        $("#coverageTable").delegate(".coverageTypeSelect", "change", function() {
+            console.log('called delegate');
+            prepareDateFields(this);
+        });
+        showAccessRightsLinkIfNeeded();
+        $('.fileProxyConfidential').change(showAccessRightsLinkIfNeeded);
+
+    }
+
+    
+    
+    
+    //public: initialize the edit page form
+    var _initEditPage = function(form) {
+        
+        //Multi-submit prevention disables submit button, so it will be disabled if we get here via back button. So we explicitly enable it. 
+        var $button = $("#submitButton");
+        $button.removeAttr('disabled').removeClass("waitingSpinner");
+        
+        //FIXME: we should figure out if a) $.ready is not always called for bfcached pages, and b)if not, where to hook into 'pageshow' event.
+        //I'm 99% sure the following code in this pageshow handler will never execute because caller runs in a $.ready handler.
+        $(window).bind("pageshow", function() {
+            $button.removeAttr('disabled').removeClass("waitingSpinner");
+        });
+        
+        //init map
+        loadTdarMap();
+
+        //init repeatrows
+        TDAR.repeatrow.registerRepeatable(".repeatLastRow");
+        
+        //init person/institution buttons
+        $('.creator-toggle-button').toggleButtons({
+            width: 220,
+            label: {
+                enabled: "Person",
+                disabled: "Institution"
+            },
+            onChange: function ($el, status, e) {
+                $(".creatorPerson", $el.parents("tr").first()).toggleClass("hidden");
+                $(".creatorInstitution",$el.parents("tr").first()).toggleClass("hidden");
+            }
+        });    
+        
+        //wire up autocompletes
+        delegateCreator("#authorshipTable", false, true);
+        delegateCreator("#creditTable", false, true);
+        delegateCreator("#divAccessRights", true, false);
+        delegateCreator("#copyrightHolderTable",false,true);
+        delegateAnnotationKey("#resourceAnnotationsTable", "annotation", "annotationkey");
+        delegateKeyword("#siteNameKeywordTable", "sitename", "SiteNameKeyword");
+        delegateKeyword("#uncontrolledSiteTypeKeywordTable", "siteType", "SiteTypeKeyword");
+        delegateKeyword("#uncontrolledCultureKeywordTable", "culture", "CultureKeyword");
+        delegateKeyword("#temporalKeywordTable", "temporal", "TemporalKeyword");
+        delegateKeyword("#otherKeywordTable", "other", "OtherKeyword");
+        delegateKeyword("#geographicKeywordTable", "geographic", "GeographicKeyword");
+        applyInstitutionAutocomplete($('#txtResourceProviderInstitution'), true);
+        applyInstitutionAutocomplete($('#publisher'), true);
+        initializeView();
+        $('#resourceCollectionTable').on(
+                ".collectionAutoComplete",
+                "focusin",
+                function() {
+                    applyCollectionAutocomplete($(".collectionAutoComplete", $('#resourceCollectionTable')), {showCreate:true});
+                });
+
+        // prevent "enter" from submitting
+        $('input,select').keypress(function(event) {
+            return event.keyCode != 13;
+        });
+
+        //init sortables
+        //FIXME: sortables currently broken 
+        $(".alphasort").click(sortFilesAlphabetically);
+        
+        //ahad: toggle license
+        $(".licenseRadio",$("#license_section")).change(toggleLicense);
+        
+        //ahad: toggle person/institution for copyright holder
+        $("#copyright_holder_type_person").change(toggleCopyrightHolder);
+        $("#copyright_holder_type_institution").change(toggleCopyrightHolder);
+        
+        //FIXME: other init stuff that is separate function for some reason 
+        _setupEditForm(form);
+
+        
+    };
+    
+    return {
+        "initEditPage":_initEditPage,
+        "initFormValidation": _setupFormValidate
+    };
+}();

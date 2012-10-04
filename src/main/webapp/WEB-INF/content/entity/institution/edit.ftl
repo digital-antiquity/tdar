@@ -11,7 +11,7 @@
     <script type="text/javascript">
         $(function() {
             initializeView();
-            setupEditForm('#frmInstitution');
+            TDAR.common.initEditPage($('#frmInstitution')[0]);
         });
     </script>
 </head>
