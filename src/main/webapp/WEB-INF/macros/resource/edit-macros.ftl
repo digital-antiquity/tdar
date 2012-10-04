@@ -686,6 +686,18 @@ $(function(){
         }
     });
 
+	$('.creator-toggle-button').toggleButtons({
+	    width: 220,
+	    label: {
+	        enabled: "Person",
+	        disabled: "Institution"
+	    },
+	    onChange: function ($el, status, e) {
+			$(".creatorPerson", $el.parents("tr").first()).toggleClass("hidden");
+			$(".creatorInstitution",$el.parents("tr").first()).toggleClass("hidden");
+	    }
+	});
+
     //init map
     loadTdarMap();
     
@@ -873,7 +885,7 @@ $(function(){
 
     <table 
         id="${prefix}Table"
-        class="table">
+        class="table repeatLastRow">
         <tbody>
             <#if proxies?has_content >
               <#list proxies as proxy>
@@ -881,14 +893,9 @@ $(function(){
               </#list>
             <#else>
               <@creatorProxyRow blankCreatorProxy prefix 0 />
-              <@creatorProxyRow blankCreatorProxy2 prefix 1 "INSTITUTION"/> 
             </#if>
         </tbody>
     </table>
-    <p>
-    <button type="button" class="btn btn-mini add-person" data-repeatable="#${prefix}Table"><i class="icon-plus-sign"> </i>add another person</button>
-    <button type="button" class="btn btn-mini add-institution" data-repeatable="#${prefix}Table"><i class="icon-plus-sign"> </i>add another institution</button>
-    </p>
 <#if !inline>
 </div>
 </#if>
@@ -907,12 +914,14 @@ $(function(){
     <#if proxy??>
     <tr id="${prefix}Row_${proxy_index}_" class="repeat-row">
           <#assign creatorType = proxy.actualCreatorType!"PERSON" />
-          
+         <td><div class="creator-toggle-button">
+    <input type="checkbox" checked="checked">
+</div>
+</td>
         <td>
         <span class="creatorPerson <#if creatorType =='INSTITUTION' || type_override == "INSTITUTION">hidden</#if>"  id="${prefix}Row_${proxy_index}_p">
             <@s.hidden name="${prefix}Proxies[${proxy_index}].person.id" id="${prefix}person_id${proxy_index}" onchange="this.valid()"  autocompleteParentElement="#${prefix}Row_${proxy_index}_p"  />
             <div class="control-group">
-                <label class="control-label">Person</label>
                 <div class="controls controls-row">
                     <@s.textfield theme="tdar" cssClass="nameAutoComplete span2" watermark="Last Name" placeholder="Last Name" autocomplete="off"
                         autocompleteName="lastName" autocompleteIdElement="#${prefix}person_id${proxy_index}" autocompleteParentElement="#${prefix}Row_${proxy_index}_p"
@@ -940,7 +949,6 @@ $(function(){
             <span class="creatorInstitution <#if type_override == "PERSON" || (creatorType=='PERSON' && type_override=='NONE') >hidden</#if>" id="${prefix}Row_${proxy_index}_i">
             <@s.hidden name="${prefix}Proxies[${proxy_index}].institution.id" id="${prefix}institution_id${proxy_index}"/>
             <div class="control-group">
-                <Label class="control-label">Institution</label>
                 <div class="controls controls-row">
                     <@s.textfield theme="tdar" cssClass="institutionAutoComplete institution span4" watermark="Institution Name" placeholder="Institution Name" autocomplete="off"
                         autocompleteName="name" autocompleteIdElement="#${prefix}institution_id${proxy_index}" autocompleteParentElement="#${prefix}Row_${proxy_index}_i"
