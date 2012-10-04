@@ -95,7 +95,6 @@
 					</#if>
 				</nav>
 			</header>
-		</div>
     
 <#if bodyid == 'home'>
 
@@ -122,14 +121,12 @@
 		</ul>
 		<@common.loginMenu true />
 	</div>
-    <div class="row">
-	    <@common.bootstrapNavbar />      
-    </div>
+
+
 
 
 </#if>
-    <div class="row">
-
+    <div>
 		<#if  page.properties["div.toolbars"]?? && page.properties["div.toolbars"] != "">
 		    ${page.properties["div.toolbars"]}
 		</#if>
@@ -139,27 +136,25 @@
         <@s.actionerror theme="bootstrap" />
         <@s.actionmessage theme="bootstrap" />
         <@s.fielderror theme="bootstrap" />
-
-
-
 	</div>
 <#--//FIXME: remove these styles once main.css problems are sorted out -->
-<div class="row" id="divOfHacks">
+<div id="divOfHacks">
     <style type="text/css">
     /* main.css: all text inputs font-size set to 0 */
     input[type="text"]  {font-size: 10pt;}
     
     /* main.css: .cols table selects too many tables, floats them left */
-    .cols form table {
+    .cols  table {
         float: inherit ;
         clear: inherit ;
     }
     </style>
-    <div class="alert alert-block">
+    <div class="alert alert-block" style="position:relative;display:inline-block;margin-top:10px">
         <button type="button" class="close" data-dismiss="alert">×</button>
         <h4>Hacks in Effect</h4>
         Jim has placed this obnoxious banner to remind you to remove the temporary CSS hacks when they are no longer needed.
     </div>
+</div>
 </div>
 	
 		<#-- <section class="row cols"> -->
@@ -167,6 +162,9 @@
         ${body}
 	</section>
 </div>
+
+	    <@common.bootstrapNavbar />      
+
 	<footer>
 		<div class="container">
 		    <#include "${themeDir}/footer.dec" />

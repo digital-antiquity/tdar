@@ -17,6 +17,7 @@ vim:sts=2:sw=2:
   <decorator name="bootstrapmain" page="layout-bootstrap.dec">
     <pattern>/login*</pattern>
     <pattern>/</pattern>
+    <pattern>/search**</pattern>
     <pattern>/project/**</pattern>
     <pattern>/document/**</pattern>
     <pattern>/image/**</pattern>
