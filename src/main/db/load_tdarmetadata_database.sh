@@ -1,3 +1,4 @@
+#!/bin/bash
 echo "dropping tdarmetadata and tdardata databases"
 dropdb -U tdar tdarmetadata 
 dropdb -U tdar tdardata 
