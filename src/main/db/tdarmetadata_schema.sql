@@ -114,7 +114,6 @@ CREATE TABLE category_variable (
 
 ALTER TABLE public.category_variable OWNER TO tdar;
 
-
 --
 -- Name: category_variable_id_seq; Type: SEQUENCE; Schema: public; Owner: tdar
 --
@@ -2746,6 +2745,7 @@ ALTER TABLE ONLY institution
 ALTER TABLE ONLY investigation_type
     ADD CONSTRAINT investigation_type_pkey PRIMARY KEY (id);
 
+
 --
 -- Name: material_keyword_pkey; Type: CONSTRAINT; Schema: public; Owner: tdar; Tablespace: 
 --
@@ -3705,7 +3705,6 @@ ALTER TABLE ONLY other_keyword_synonym
 
 ALTER TABLE ONLY latitude_longitude
     ADD CONSTRAINT fk8c6540b332793d68 FOREIGN KEY (resource_id) REFERENCES resource(id);
-
 
 
 --
