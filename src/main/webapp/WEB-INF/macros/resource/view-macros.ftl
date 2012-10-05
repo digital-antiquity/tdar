@@ -783,7 +783,7 @@ ${_date?string('MM/dd/yyyy')}<#t>
 	    ${resource_.title}. <#if resource_.formattedAuthorList?has_content>${resource_.formattedAuthorList}.</#if> 
 	     <#if resource_.formattedSourceInformation?has_content>${resource_.formattedSourceInformation}</#if> (${siteAcronym} ID: ${resource_.id?c})<br/>
 	    <#if resource_.doi?has_content>${resource_.doi}
-	    <#elseif resource_.lessThanDayOld && !citationRecord>
+	    <#elseif resource_.lessThanDayOld && !resource_.citationRecord>
 	    	<em>Note:</em>A DOI will be generated in the next day for this resource.
 	    </#if>
 		</p>

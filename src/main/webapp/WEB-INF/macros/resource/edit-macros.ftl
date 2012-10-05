@@ -9,7 +9,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <#include "navigation-macros.ftl">
 
 <#macro basicInformation itemTypeLabel="file" itemPrefix="resource" isBulk=false>
-<div class="well" >
+<div class="well" id="basicInformationSection">
     <legend>Basic Information</legend>
   <#if resource.id?? &&  resource.id != -1>
       <@s.hidden name="id"  value="${resource.id?c}" />
@@ -76,7 +76,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </#macro>
 
 <#macro organizeResourceSection>
-    <div class="well" id="organize">
+    <div class="well" id="organizeSection">
         <legend>${siteAcronym} Collections &amp; Project</legend>
         <h4>Add to a Collection</h4>
          <@edit.resourceCollectionSection />
@@ -167,7 +167,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 
 <#macro spatialContext showInherited=true>
-<div class="well">
+<div class="well" id="spatialSection">
     <legend>Spatial Terms</legend>
     <@inheritsection checkboxId="cbInheritingSpatialInformation" name='resource.inheritingSpatialInformation' showInherited=showInherited />
     <div id="divSpatialInformation">
@@ -264,7 +264,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 
 <#macro temporalContext showInherited=true>
-<div class="well">
+<div class="well" id="temporalSection">
     <legend>Temporal Coverage</legend>
     <@inheritsection checkboxId="cbInheritingTemporalInformation" name='resource.inheritingTemporalInformation' showInherited=showInherited  />
     <div  id="divTemporalInformation">
@@ -290,7 +290,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 
 <#macro sharedUploadFile divTitle="Upload">
-<div class="well">
+<div class="well" id="uploadSection">
     <legend>${divTitle}</legend>
         <div class='fileupload-content'>
             <#nested />
@@ -327,7 +327,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </#macro>
 
 <#macro siteKeywords showInherited=true divTitle="Site Information">
-<div class="well" >
+<div class="well" id="siteSection">
     <legend>${divTitle}</legend>
     <@inheritsection checkboxId='cbInheritingSiteInformation' name='resource.inheritingSiteInformation'  showInherited=showInherited />
     <div id="divSiteInformation">
@@ -397,7 +397,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </#macro>
 
 <#macro investigationTypes showInherited=true >
-<div class="well" tiplabel="Investigation Types" tooltipcontent="#investigationtypehelp">
+<div class="well" tiplabel="Investigation Types" tooltipcontent="#investigationtypehelp" id="investigationSection">
     <legend>Investigation Types</legend>
     <@inheritsection checkboxId='cbInheritingInvestigationInformation' name='resource.inheritingInvestigationInformation'  showInherited=showInherited />
     <div id="divInvestigationInformation">
@@ -638,7 +638,7 @@ The form will check for matches in the ${siteAcronym} database and populate the 
     </#if>     
     <#nested>
     <div class="form-actions">
-    <input type="submit" class='btn btn-primary submitButton' name="submitAction" value="${label}"  id="${buttonid}">
+    <@submitButton label=label id=buttonid />
        <img src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="visibility:hidden"/>
     </div> 
 
@@ -656,6 +656,10 @@ The form will check for matches in the ${siteAcronym} database and populate the 
     </div>
 </div> 
 
+</#macro>
+
+<#macro submitButton label="submit" id="">
+    <input type="submit" class='btn btn-primary submitButton' name="submitAction" value="${label}"  <#if id?has_content>id="${id}"</#if>>
 </#macro>
 
 <#macro resourceJavascript formSelector="#resourceMetadataForm" selPrefix="#resource" includeAsync=false includeInheritance=false hasUploads=false>

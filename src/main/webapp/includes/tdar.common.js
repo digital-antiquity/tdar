@@ -1431,6 +1431,8 @@ TDAR.common = function() {
         //ahad: toggle person/institution for copyright holder
         $("#copyright_holder_type_person").change(toggleCopyrightHolder);
         $("#copyright_holder_type_institution").change(toggleCopyrightHolder);
+    
+        $('#subnavbar').scrollspy();
         
         //FIXME: other init stuff that is separate function for some reason 
         _setupEditForm(form);

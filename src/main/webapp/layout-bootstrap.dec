@@ -50,7 +50,7 @@
 	<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
 
 </head>
-<body id="${bodyid}">
+<body id="${bodyid}" data-spy="scroll" data-target=".subnavbar">
 	<div class="container">
 		<div class="row">
 			<header class="span12">

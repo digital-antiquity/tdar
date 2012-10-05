@@ -21,8 +21,29 @@
 </head>
 <body>
 <@edit.toolbar "${resource.urlNamespace}" "edit" />
+<div id='subnavbar' class="navbar navbar-static" data-spy="affix" data-offset-top="10">
+  <div class="navbar-inner">
+    <div class="container" style="width: auto;">
+	<ul class="nav">
+		<li><a href="#basicInformationSection">Basic</a></li>
+		<li><a href="#authors">Authors</a></li>
+		<li><a href="#uploadSection">Upload</a></li>
+		<li><a href="#organizeSection">Project</a></li>
+		<li><a href="#spatialSection">Where</a></li>
+		<li><a href="#temporalSection">When</a></li>
+		<li><a href="#investigationSection">What</a></li>
+		<li><a href="#siteSection">Site</a></li>
+		<li><a href="#resourceNoteSectionGlide">Notes</a></li>
+		<li><a href="#divAccessRights">Permissions</a></li>
+	</ul>
+	<span class="brand">
+	      <@edit.submitButton  />
+	</span>
+	</div>
+  </div>
+</div>
 <div>
-<@s.form id='resourceMetadataForm' method='post' enctype='multipart/form-data' action='save'  cssClass="well form-horizontal">
+<@s.form id='resourceMetadataForm' method='post' enctype='multipart/form-data' action='save'  cssClass="form-horizontal">
 
 <@edit.basicInformation 'document' 'document' >
     <#if linkedInformationResource??>
