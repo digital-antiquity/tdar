@@ -68,6 +68,8 @@ import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Resolution;
 import org.hibernate.search.annotations.Store;
+import org.joda.time.DateTime;
+import org.joda.time.Days;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.BulkImportField;
@@ -1559,8 +1561,7 @@ public class Resource extends JsonModel.Base implements Persistable,
 
     @Transient
     boolean isCitationRecord() {
-        // resources don't have files, but should still not be considered citation records because they *can't* have files.
-        return false;
+        return true;
     }
 
     public <R extends Resource> void copyImmutableFieldsFrom(R resource) {
@@ -1579,6 +1580,12 @@ public class Resource extends JsonModel.Base implements Persistable,
         this.uploader = uploader;
     }
 
+    @Transient
+    @XmlTransient
+    public boolean isLessThanDayOld() {
+        return Days.daysBetween(new DateTime(new Date()), new DateTime(getDateCreated())).getDays() < 1;
+    }
+    
     public boolean isContainsActiveKeywords() {
 
         if (CollectionUtils.isNotEmpty(getActiveSiteNameKeywords()) || CollectionUtils.isNotEmpty(getActiveCultureKeywords()) ||
