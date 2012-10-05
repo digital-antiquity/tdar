@@ -628,25 +628,34 @@ The form will check for matches in the ${siteAcronym} database and populate the 
 
 </#macro>
 
-<#macro submit label="Save" fileReminder=true showWrapper=true buttonid="submitButton">
-<#if showWrapper>
-<div class="glide errorsection"> 
-    <div id="error">
-    </div>
+<#macro submit label="Save" fileReminder=true buttonid="submitButton">
+<div class="errorsection"> 
     <#if fileReminder>
-    <div id="reminder">
-        <label class="error2">Did you mean to attach a file?</label>
+    <div id="reminder" class="row">
+        <p><span class="label label-info">Reminder</span> No files are attached to this record. </p>
     </div>
+    <div id="error" class="row"><ul></ul></div>
     </#if>     
-</#if>
     <#nested>
-    <@s.submit align='left' cssClass='submitButton' name="submitAction" value="${label}"  id="${buttonid}" />
+    <div class="form-actions">
+    <input type="submit" class='btn btn-primary submitButton' name="submitAction" value="${label}"  id="${buttonid}">
        <img src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="visibility:hidden"/>
-<#if showWrapper>
     </div> 
-    <div id="submitDiv">
+
+<div class="modal hide fade" id="validationErrorModal" tabindex="-1" role="dialog" aria-labelledby="validationErrorModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="validationErrorModalLabel">Validation Errors</h3>
     </div>
-</#if>
+    <div class="modal-body">
+        <h4>Please correct the following errors</h4>
+        <p></p>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    </div>
+</div> 
+
 </#macro>
 
 <#macro resourceJavascript formSelector="#resourceMetadataForm" selPrefix="#resource" includeAsync=false includeInheritance=false hasUploads=false>

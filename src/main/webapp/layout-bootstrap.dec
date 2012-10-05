@@ -1,4 +1,7 @@
 <#import "/WEB-INF/macros/resource/common.ftl" as common><#t>
+<#assign jquery_version="1.8.2">
+<#assign jquery_ui_version="1.8.23">
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -7,22 +10,23 @@
     	<link rel="search" type="application/opensearchdescription+xml" href='<@s.url value="/includes/opensearch.xml"/>' title="Search ${siteAcronym}" /> 
         <title>${title!siteName}</title>
         <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/css/bootstrap-combined.min.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href='//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_version}/themes/base/jquery-ui.css'></link> 
 
         <!-- fixme: figure out differences -->
         
         <link href="http://tdar.fervorinteractive.com/css/main.css" rel="stylesheet" />
         
         <script src="<@s.url value="/includes/tdar.core.js"/>"></script>
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
-        <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/${jquery_version}/jquery.min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_version}/jquery-ui.min.js"></script>
         <#--maps support.  TODO: only include maps when we use them.  put this in (sharedFormCompoenents head section?) -->
 
         <script>
                     var GMapDefaultLat = ${GMapDefaultLat};
                     var GMapDefaultLng = ${GMapDefaultLng};
         </script>
-        <script type='text/javascript' src="http://maps.google.com/maps?file=api&v=2&key=${googleMapsApiKey}"></script>
-        <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+        <script type='text/javascript' src="//maps.google.com/maps?file=api&v=2&key=${googleMapsApiKey}"></script>
+        <script type="text/javascript" src="//www.google.com/jsapi"></script>
         <#--end maps support -->
 
     <#import "/WEB-INF/macros/header.ftl" as header>

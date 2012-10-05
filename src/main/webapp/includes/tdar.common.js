@@ -1239,7 +1239,8 @@ TDAR.common = function() {
          $(form)
                  .validate(
                          {
-                             errorLabelContainer : $("#error"),
+                             errorLabelContainer : $("#error ul"),
+                             wrapper: "li",
                              onkeyup : function() {
                                  return;
                              },
@@ -1259,23 +1260,12 @@ TDAR.common = function() {
                              //invalidHandler : $.watermark.showAll,
                              showErrors : function(errorMap, errorList) {
                                  this.defaultShowErrors();
-                                 if (errorList != undefined && errorList.length > 0
-                                         && this.submitted) {
-                                     $("#error")
-                                             .clone()
-                                             .dialog(
-                                                     {
-                                                         title : 'Please correct the following issues before saving',
-                                                         buttons : {
-                                                             "Ok" : function() {
-                                                                 $(this).dialog(
-                                                                         "close");
-                                                             }
-                                                         },
-                                                         dialogClass : 'errorDialog',
-                                                         resizable : false,
-                                                         draggable : false
-                                                     });
+                                 //spawn a modal widget and copy the errorLabelContainer contents (a separate div) into the widget's body section
+                                 //TODO: docs say this is only called when errorList is not empty - can we remove this check?
+                                 if (typeof errorList !== "undefined" && errorList.length > 0) {
+                                     $('#validationErrorModal .modal-body p').empty().append($('#error').html());
+                                     $('#validationErrorModal').modal();
+                                     
                                  }
                              },
                              submitHandler : function(f) {
@@ -1286,6 +1276,13 @@ TDAR.common = function() {
                                  // double-clicking the submit button)
                                  $button.attr('disabled', 'disabled');
                                  f.submit();
+                             },
+                             
+                             highlight: function(element, errorClass, validClass) {
+                                 $(element).closest("div.control-group").addClass("error");
+                             },
+                             unhighlight:function(element, errorClass, validClass) {
+                                 $(element).closest("div.control-group").removeClass("error");
                              }
                          });
     
