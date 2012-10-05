@@ -1382,16 +1382,16 @@ TDAR.common = function() {
         TDAR.repeatrow.registerRepeatable(".repeatLastRow");
         
         //init person/institution buttons
-        $('.creator-toggle-button').toggleButtons({
-            width: 220,
-            label: {
-                enabled: "Person",
-                disabled: "Institution"
-            },
-            onChange: function ($el, status, e) {
-                $(".creatorPerson", $el.parents("tr").first()).toggleClass("hidden");
-                $(".creatorInstitution",$el.parents("tr").first()).toggleClass("hidden");
-            }
+        $("table.creatorProxyTable").delegate('.creator-toggle-button', "click",function(event){
+        	var $this = $(this);
+        	var $top = $this.parents("tr").first();
+        	if ($(event.target).hasClass("personButton")) {
+                $(".creatorPerson", $top).removeClass("hidden");
+                $(".creatorInstitution",$top).removeClass("hidden").addClass("hidden");
+        	} else {
+                $(".creatorPerson", $top).removeClass("hidden").addClass("hidden");
+                $(".creatorInstitution",$top).removeClass("hidden");
+        	}
         });    
         
         //wire up autocompletes

@@ -860,7 +860,7 @@ $(function(){
 
     <table 
         id="${prefix}Table"
-        class="table repeatLastRow">
+        class="table repeatLastRow creatorProxyTable">
         <tbody>
             <#if proxies?has_content >
               <#list proxies as proxy>
@@ -889,9 +889,10 @@ $(function(){
     <#if proxy??>
     <tr id="${prefix}Row_${proxy_index}_" class="repeat-row">
           <#assign creatorType = proxy.actualCreatorType!"PERSON" />
-         <td><div class="creator-toggle-button">
-    <input type="checkbox" checked="checked">
-</div>
+         <td><div class="btn-group creator-toggle-button" data-toggle="buttons-radio">
+	         <button type="button" class="btn personButton <#if type_override == "PERSON" || (creatorType=='PERSON' && type_override=='NONE') >btn-active active</#if>" data-toggle="button">Person</button>
+	         <button type="button" class="btn institutionButton <#if creatorType =='INSTITUTION' || type_override == "INSTITUTION">btn-active active</#if>" data-toggle="button">Institution</button>
+		</div>
 </td>
         <td>
         <span class="creatorPerson <#if creatorType =='INSTITUTION' || type_override == "INSTITUTION">hidden</#if>"  id="${prefix}Row_${proxy_index}_p">

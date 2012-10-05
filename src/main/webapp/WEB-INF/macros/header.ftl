@@ -54,8 +54,7 @@
                      "/includes/blueimp-jquery-file-upload-3c5d440/js/jquery.fileupload.js",
                      "/includes/blueimp-jquery-file-upload-3c5d440/js/jquery.fileupload-fp.js",
                      "/includes/blueimp-jquery-file-upload-3c5d440/js/jquery.fileupload-ui.js",
-                     "/includes/blueimp-jquery-file-upload-3c5d440/js/locale.js",
-                     "/includes/bootstrap-toggle-buttons-2.3/js/jquery.toggle.buttons.js"
+                     "/includes/blueimp-jquery-file-upload-3c5d440/js/locale.js"
     ] />
     
     
@@ -89,8 +88,7 @@
 <#if bootstrap>
     <#local srcs = [
                     "/css/tdar-bootstrap.css",
-                    "/includes/blueimp-jquery-file-upload-3c5d440/css/jquery.fileupload-ui.css",
-                    "/includes/bootstrap-toggle-buttons-2.3/stylesheets/bootstrap-toggle-buttons.css"
+                    "/includes/blueimp-jquery-file-upload-3c5d440/css/jquery.fileupload-ui.css"
                     ] />
 </#if>
 
