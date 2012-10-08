@@ -42,6 +42,13 @@ vim:sts=2:sw=2:filetype=xhtml
     .entry ol li p {margin-left: 2em !important; }
     #content .treeview .hitarea { margin-top: 0px !important;}
     .addAnother { position: inherit !important; }    
+
+	@media print body {
+		background-color:#FFF !important;
+		background-image:none !important;
+		filter:none !important;
+	}
+
   </style>
     <![endif]-->
     <!--[if lt IE 8]>
