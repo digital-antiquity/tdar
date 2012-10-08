@@ -877,7 +877,9 @@ $(function(){
 
 <#macro resourceCreators sectionTitle proxies prefix inline=false showInherited=false>
 <#if !inline>
-<div class="well" tiplabel="Individual or Institutional Credit" tooltipcontent="Use these fields to properly credit individuals and institutions for their contribution to the resource. Use the '+' sign to add fields for either persons or institutions, and use the drop-down menu to select roles">
+<div class="well" tiplabel="${sectionTitle}" 
+	id="${prefix}Section"
+	tooltipcontent="Use these fields to properly credit individuals and institutions for their contribution to the resource. Use the '+' sign to add fields for either persons or institutions, and use the drop-down menu to select roles">
     <legend>${sectionTitle}</legend>
 <#else>
 <label class="toplabel">${sectionTitle}</label> <br />

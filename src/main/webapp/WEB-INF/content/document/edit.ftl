@@ -25,8 +25,8 @@
     <div class="container" style="width: auto;">
 	<ul class="nav">
 		<li><a href="#basicInformationSection">Basic</a></li>
-		<li><a href="#authors">Authors</a></li>
-		<li><a href="#uploadSection">Upload</a></li>
+		<li><a href="#authorshipSection">Authors</a></li>
+		<li><a href="#divFileUpload">Upload</a></li>
 		<li><a href="#organizeSection">Project</a></li>
 		<li><a href="#spatialSection">Where</a></li>
 		<li><a href="#temporalSection">When</a></li>
