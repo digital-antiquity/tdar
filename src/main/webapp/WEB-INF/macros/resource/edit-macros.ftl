@@ -275,6 +275,22 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </div>
 </#macro>
 
+<#macro combineValues list=[]>
+	<#compress>
+		<#list list as item>
+			<#if item_index !=0>,</#if>"${item?html}"
+		</#list>
+	</#compress>
+</#macro>
+<#macro combineValues2 list=[]>
+	<#compress>
+		<#list list as item>
+			<#if item_index !=0>,</#if>${item?html}
+		</#list>
+	</#compress>
+</#macro>
+
+
 <#macro generalKeywords showInherited=true>
 
 <div class="well" 
@@ -283,7 +299,16 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <legend>General Keywords</legend>
     <@inheritsection checkboxId="cbInheritingOtherInformation" name='resource.inheritingOtherInformation'  showInherited=showInherited />
     <div id="divOtherInformation">
-        <@keywordRows "Keyword" otherKeywords 'otherKeywords' />
+<!--        <@keywordRows "Keyword" otherKeywords 'otherKeywords' /> -->
+    	<input type=text" name="test" id="otherKeywords" style="width:500px" value="<@combineValues2 otherKeywords/>"/>
+    	<script>
+    	        $(document).ready(function() {
+        $("#otherKeywords").select2({
+            tags:[<@combineValues otherKeywords />],
+            tokenSeparators: [";"]});
+    	});
+    	</script>
+
     </div>
 </div>
 </#macro>

@@ -20,8 +20,7 @@
 
 </head>
 <body>
-<@edit.toolbar "${resource.urlNamespace}" "edit" />
-<div id='subnavbar' class="navbar navbar-static" data-spy="affix" data-offset-top="10">
+<div id='subnavbar' class="affix-top navbar navbar-static"  data-offset-top="250" data-offset-bottom="250" data-spy="affix">
   <div class="navbar-inner">
     <div class="container" style="width: auto;">
 	<ul class="nav">
@@ -37,12 +36,13 @@
 		<li><a href="#divAccessRights">Permissions</a></li>
 	</ul>
 	<span class="brand">
-	      <@edit.submitButton  />
+	      <@edit.submitButton "save" />
 	</span>
 	</div>
   </div>
 </div>
 <div>
+<@edit.toolbar "${resource.urlNamespace}" "edit" />
 <@s.form id='resourceMetadataForm' method='post' enctype='multipart/form-data' action='save'  cssClass="form-horizontal">
 
 <@edit.basicInformation 'document' 'document' >

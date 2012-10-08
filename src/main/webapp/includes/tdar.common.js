@@ -1394,6 +1394,7 @@ TDAR.common = function() {
         	}
         });    
         
+
         //wire up autocompletes
         delegateCreator("#authorshipTable", false, true);
         delegateCreator("#creditTable", false, true);

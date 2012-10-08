@@ -49,6 +49,7 @@
                      "/includes/tdar.repeatrow.js",
                      "/includes/tdar.autocomplete.js",
                      "/includes/tdar.common.js",
+                     "/includes/ivaynberg-select2-817453b/select2.js",
                      "/includes/blueimp-javascript-templates/tmpl.min.js",
                      "/includes/blueimp-jquery-file-upload-3c5d440/js/jquery.iframe-transport.js", 
                      "/includes/blueimp-jquery-file-upload-3c5d440/js/jquery.fileupload.js",
@@ -88,6 +89,7 @@
 <#if bootstrap>
     <#local srcs = [
                     "/css/tdar-bootstrap.css",
+                    "/includes/ivaynberg-select2-817453b/select2.css",
                     "/includes/blueimp-jquery-file-upload-3c5d440/css/jquery.fileupload-ui.css"
                     ] />
 </#if>

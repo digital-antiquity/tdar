@@ -14,7 +14,7 @@
 	margin-right: 5px
 }
 
-.mapcontainer  .legendBox, .mapcontainer  .legendText {
+.mapcontainer  .legendBox,.mapcontainer  .legendText {
 	clear: none;
 	float: left;
 }
@@ -28,15 +28,27 @@
 }
 
 div.barlabel {
-    top: 0;
-    z-index: 1000;
-    overflow: visible;
-    left: 0px;
-    position: relative;
-    display: block;
-    text-align: center;
-    font-size: smaller;
-    line-height: 1.2em;
-    vertical-align: top !important;
-    height: 1.5em;
- }
+	top: 0;
+	z-index: 1000;
+	overflow: visible;
+	left: 0px;
+	position: relative;
+	display: block;
+	text-align: center;
+	font-size: smaller;
+	line-height: 1.2em;
+	vertical-align: top !important;
+	height: 1.5em;
+}
+
+#subnavbar {
+	z-index: 10000;
+}
+
+#subnavbar .brand {
+	padding: 2px 20px 0px 20px !important;
+}
+
+#subnavbar.affix {
+	top: 4px;
+}
