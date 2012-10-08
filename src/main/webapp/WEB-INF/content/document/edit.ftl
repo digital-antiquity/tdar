@@ -130,6 +130,6 @@
 </div>
 
 <@edit.asyncUploadTemplates />
-<@edit.resourceJavascript />
+<@edit.resourceJavascript includeAsync=true />
 </body>
 </#escape>

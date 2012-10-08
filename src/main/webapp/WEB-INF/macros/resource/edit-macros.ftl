@@ -662,14 +662,14 @@ The form will check for matches in the ${siteAcronym} database and populate the 
     <input type="submit" class='btn btn-primary submitButton' name="submitAction" value="${label}"  <#if id?has_content>id="${id}"</#if>>
 </#macro>
 
-<#macro resourceJavascript formSelector="#resourceMetadataForm" selPrefix="#resource" includeAsync=false includeInheritance=false hasUploads=false>
+<#macro resourceJavascript formSelector="#resourceMetadataForm" selPrefix="#resource" includeAsync=false includeInheritance=false>
 
 <script type='text/javascript'>
 $(function(){
     'use strict';
     var form = $("${formSelector}")[0];
     
-    <#if hasUploads>
+    <#if includeAsync>
     //init fileupload
     var id = $('input[name=id]').val();
     var acceptFileTypes  = <@edit.acceptedFileTypesRegex />;

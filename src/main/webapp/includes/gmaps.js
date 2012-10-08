@@ -263,7 +263,9 @@ function processLatLong(element) {
 		id = id.substring(2);
 	$("#" + id).val(Geo.parseDMS(value));
 }
-
+/**
+ * Jim here: pretty sure everything below this comment is never even used...
+ */
 function TdarGMap(mapElement, allowRegionSelection) {
 	this.map = new GMap2(mapElement);
 	this.map.addMapType(G_PHYSICAL_MAP);
