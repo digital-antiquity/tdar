@@ -34,7 +34,7 @@ try {
 </div>
 
 <br/>
-<div class="glide">
+<div class="span9">
 Welcome back, ${authenticatedUser.firstName}! 
 <#if contributor>
  The resources you can access are listed below.  To create a <a href="<@s.url value="/resource/add"/>">new resource</a> or <a href="<@s.url value="/project/add"/>">project</a>, or <a href="<@s.url value="/collection/add"/>">collection</a>, use the "new" menu above.
@@ -42,7 +42,7 @@ Welcome back, ${authenticatedUser.firstName}!
 <br/>
 </div>
 
-<div class="glide news">
+<div class="span9 news alert">
 <B>tDAR Update:</B>
 We just upgraded tDAR with a bunch of additional features, a list of features are available <a href="http://www.tdar.org/news/2012/07/tdar-software-update-harris/">here</a> on the tDAR website. 
 </div>
@@ -58,55 +58,55 @@ We just upgraded tDAR with a bunch of additional features, a list of features ar
 </div>
 
 <#else>
-
-<div class="glide">
-<h3>At a glance</h3>
-
-    <div style="float:right"><@common.pieChart statusCountForUser "statusForUser" "userSubmitterContext=true&includedStatuses" /></div>
-    <@common.pieChart resourceCountForUser "resourceForUser" "useSubmitterContext=true&resourceTypes" />
-
-
-</div>
-
-<div class="glide">
-<h3>Item(s) You've Recently Updated</h3>
-<ol id='recentlyEditedResources'>
-    <#list recentlyEditedResources as res>
-    <li id="li-recent-resource-${res.id?c}">
-        <div class="recent-nav">
-            <a href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>">edit</a> |
-            <a href="<@s.url value='/${res.urlNamespace}/delete'><@s.param name="id" value="${res.id?c}"/></@s.url>">delete</a>
-        </div>
-           <span class="fixed"> <span class="${res.resourceType.fieldName?lower_case}-color cartouche">${res.resourceType.label}</span> <a href="<@s.url value='/${res.urlNamespace}/view'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@common.truncate res.title 65 /></a></span>
-    </li>
-    </#list>
-</ol>
-</div>
+	
+	<h3>At a glance</h3>
+	
+	    <div class="span4"><@common.pieChart statusCountForUser "statusForUser" "userSubmitterContext=true&includedStatuses" /></div>
+	    <div class="span4"><@common.pieChart resourceCountForUser "resourceForUser" "useSubmitterContext=true&resourceTypes" /></div>
+	
+<hr />	
+	
+	<div class="span9">
+	<h3>Item(s) You've Recently Updated</h3>
+	<ol id='recentlyEditedResources'>
+	    <#list recentlyEditedResources as res>
+	    <li id="li-recent-resource-${res.id?c}">
+	        <div class="recent-nav">
+	            <a href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>">edit</a> |
+	            <a href="<@s.url value='/${res.urlNamespace}/delete'><@s.param name="id" value="${res.id?c}"/></@s.url>">delete</a>
+	        </div>
+	           <span class="fixed"> <span class="${res.resourceType.fieldName?lower_case}-color cartouche">${res.resourceType.label}</span> <a href="<@s.url value='/${res.urlNamespace}/view'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@common.truncate res.title 65 /></a></span>
+	    </li>
+	    </#list>
+	</ol>
+	</div>
+	<hr />
 
 </#if>
+
 
 <#if (emptyProjects?? && !emptyProjects.empty )>
-<div class="glide" id="divEmptyProjects">
-    <h3>Empty Projects</h3>
-    <ol style='list-style-position:inside' id="emptyProjects">
-    <@s.iterator value='emptyProjects' status='recentEditStatus' var='res'>
-    <li id="li-recent-resource-${res.id?c}">
-            <a href="<@s.url value='/${res.urlNamespace}/view'><@s.param name="id" value="${res.id?c}"/></@s.url>">
-                <@common.truncate res.title 70 />
-            </a> 
-        <div class="recent-nav">
-            <a href="<@s.url value='/resource/add?projectId=${res.id?c}'><@s.param name="id" value="${res.id?c}"/></@s.url>" title="add a resource to this project">add resource</a> |
-            <a href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>">edit</a> |
-            <a href="<@s.url value='/${res.urlNamespace}/delete'><@s.param name="id" value="${res.id?c}"/></@s.url>" >delete</a>
-        </div>
-    </li>
-    </@s.iterator>
-    </ol>
-</div>
+	<div class="span9" id="divEmptyProjects">
+	    <h3>Empty Projects</h3>
+	    <ol style='list-style-position:inside' id="emptyProjects">
+	    <@s.iterator value='emptyProjects' status='recentEditStatus' var='res'>
+	    <li id="li-recent-resource-${res.id?c}">
+	            <a href="<@s.url value='/${res.urlNamespace}/view'><@s.param name="id" value="${res.id?c}"/></@s.url>">
+	                <@common.truncate res.title 70 />
+	            </a> 
+	        <div class="recent-nav">
+	            <a href="<@s.url value='/resource/add?projectId=${res.id?c}'><@s.param name="id" value="${res.id?c}"/></@s.url>" title="add a resource to this project">add resource</a> |
+	            <a href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>">edit</a> |
+	            <a href="<@s.url value='/${res.urlNamespace}/delete'><@s.param name="id" value="${res.id?c}"/></@s.url>" >delete</a>
+	        </div>
+	    </li>
+	    </@s.iterator>
+	    </ol>
+	</div>
+<hr />
 </#if>
 
-
-<div class="glide" id="project-list">
+<div class="span9" id="project-list">
 <h3>Browse Resources</h3>
 <form action=''>
 <@edit.resourceDataTable />
@@ -134,7 +134,8 @@ We just upgraded tDAR with a bunch of additional features, a list of features ar
   </#if>
 </div>
 </#if>
-<div class="glide" id="divAccountInfo">
+<hr />
+<div class="span9" id="divAccountInfo">
 <h3>About Your Account</h3>
     <em class="label">Full Name</em>${authenticatedUser.properName}<#if authenticatedUser.institution??>, ${authenticatedUser.institution.name}</#if><br />
     <#if authenticatedUser.penultimateLogin??>

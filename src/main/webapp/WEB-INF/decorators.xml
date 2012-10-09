@@ -19,6 +19,7 @@ vim:sts=2:sw=2:
     <pattern>/</pattern>
     <pattern>/search**</pattern>
     <pattern>/project/**</pattern>
+    <pattern>/dashboard/**</pattern>
     <pattern>/document/**</pattern>
     <pattern>/image/**</pattern>
     <pattern>/video/**</pattern>
