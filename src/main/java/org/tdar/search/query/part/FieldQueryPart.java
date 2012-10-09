@@ -72,6 +72,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         return this;
     }
 
+    @Override
     public boolean isEmpty() {
         return CollectionUtils.isEmpty(fieldValues);
     }
@@ -81,6 +82,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         return generateQueryString();
     };
 
+    @Override
     public String generateQueryString() {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < fieldValues.size(); i++) {
