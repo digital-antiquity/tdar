@@ -495,7 +495,7 @@ The form will check for matches in the ${siteAcronym} database and populate the 
                 name="authorizedUsers[${authorizedUser_index}].user.firstName" maxlength="255" autocompleteName="firstName"
                 autocompleteIdElement="#authorizedUserId__id_${authorizedUser_index}_" 
                 autocompleteParentElement="#authorizedUserRow_${authorizedUser_index}_"  />
-            <@s.textfield theme="tdar" cssClass="span3 userAutoComplete" placeholder="Email" readonly="${disabled}" autocomplete="off"
+            <@s.textfield theme="tdar" cssClass="span3 userAutoComplete" placeholder="Email (optional)" readonly="${disabled}" autocomplete="off"
                 autocompleteIdElement="#authorizedUserId__id_${authorizedUser_index}_" autocompleteName="email" autocompleteParentElement="#authorizedUserRow_${authorizedUser_index}_"
                 name="authorizedUsers[${authorizedUser_index}].user.email" maxlength="255"/>
           
@@ -504,7 +504,7 @@ The form will check for matches in the ${siteAcronym} database and populate the 
   
    
         <div class="controls controls-row">
-        <@s.textfield theme="tdar" cssClass="span4 userAutoComplete" placeholder="Institution Name" readonly="${disabled}" autocomplete="off"
+        <@s.textfield theme="tdar" cssClass="span4 userAutoComplete" placeholder="Institution Name (Optional)" readonly="${disabled}" autocomplete="off"
             autocompleteIdElement="#authorizedUserId__id_${authorizedUser_index}_" 
             autocompleteName="institution" 
             autocompleteParentElement="#authorizedUserRow_${authorizedUser_index}_"
@@ -932,19 +932,19 @@ $(function(){
                     <@s.textfield theme="tdar" cssClass="nameAutoComplete span2" watermark="First Name" placeholder="First Name" autocomplete="off"
                         autocompleteName="firstName" autocompleteIdElement="#${prefix}person_id${proxy_index}" autocompleteParentElement="#${prefix}Row_${proxy_index}_p"
                         name="${prefix}Proxies[${proxy_index}].person.firstName" maxlength="255" />
-                    <@s.textfield theme="tdar" cssClass="nameAutoComplete span3" watermark="Email" placeholder="Email" autocomplete="off"
-                         autocompleteName="email" autocompleteIdElement="#${prefix}person_id${proxy_index}" autocompleteParentElement="#${prefix}Row_${proxy_index}_p"
-                        name="${prefix}Proxies[${proxy_index}].person.email" maxlength="255"/>
+	                <@s.select theme="tdar" name="${prefix}Proxies[${proxy_index}].role"  autocomplete="off"
+	                    listValue='label'
+	                    list=relevantPersonRoles  
+	                    cssClass="creator-role-select span3"
+	                    />
                 </div>
                 <div class="controls controls-row">
-                <@s.textfield theme="tdar" cssClass="nameAutoComplete span4" watermark="Institution Name" placeholder="Institution Name" autocomplete="off"
+                <@s.textfield theme="tdar" cssClass="nameAutoComplete span4" watermark="Institution Name (Optional)" placeholder="Institution Name (Optional)" autocomplete="off"
                      autocompleteName="institution" autocompleteIdElement="#${prefix}person_id${proxy_index}" autocompleteParentElement="#${prefix}Row_${proxy_index}_p"
                     name="${prefix}Proxies[${proxy_index}].person.institution.name" maxlength="255" />
-                <@s.select theme="tdar" name="${prefix}Proxies[${proxy_index}].role"  autocomplete="off"
-                    listValue='label'
-                    list=relevantPersonRoles  
-                    cssClass="creator-role-select span3"
-                    />
+                    <@s.textfield theme="tdar" cssClass="nameAutoComplete span3" watermark="Email (Optional)" placeholder="Email (Optional)" autocomplete="off"
+                         autocompleteName="email" autocompleteIdElement="#${prefix}person_id${proxy_index}" autocompleteParentElement="#${prefix}Row_${proxy_index}_p"
+                        name="${prefix}Proxies[${proxy_index}].person.email" maxlength="255"/>
                 </div>
             </div>
         </span>

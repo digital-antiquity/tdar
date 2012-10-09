@@ -211,8 +211,8 @@ function repeatRow(tableId, rowAddedCallback, resetRights) {
 
 function repeatRowPostCloneActions(clonedRow) {
 
-    $.each(clonedRow.find("[watermark]"), function(k, v) {
-        $(this).watermark($(this).attr("watermark"));
+    $.each(clonedRow.find("[placeholder]"), function(k, v) {
+        $(this).watermark($(this).attr("placeholder"));
     });
 
 }
@@ -434,7 +434,7 @@ $.validator
                                     function() {
                                         if ($(this).val() != '') {
                                             msg += " "
-                                                    + $(this).attr("watermark")
+                                                    + $(this).attr("placeholder")
                                                     + ":" + $(this).val();
                                         }
                                     });
@@ -601,9 +601,9 @@ function formSubmitEnable() {
 
 //apply watermark input tags in context with watermark attribute.  'context' can be any valid argument to jQuery(selector[, context])
 function applyWatermarks(context) {
-    $("input[watermark]", context).each(function() {
+    $("input[placeholder]", context).each(function() {
         //todo: see if its any faster to do direct call to attr, e.g. this.attributes["watermark"].value
-        $(this).watermark($(this).attr("watermark"));
+        $(this).watermark($(this).attr("placeholder"));
     });
 }
 

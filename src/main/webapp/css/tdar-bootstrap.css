@@ -52,3 +52,8 @@ div.barlabel {
 #subnavbar.affix {
 	top: 4px;
 }
+
+/* fix for file upload control to make it not make space for label */
+.template-download .controls {
+	margin-left: 0px !important;
+}
