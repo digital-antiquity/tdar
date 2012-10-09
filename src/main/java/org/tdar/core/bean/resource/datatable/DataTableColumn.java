@@ -383,7 +383,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
 
     public List<String> getMappedDataValues(OntologyNode node) {
         ArrayList<String> values = new ArrayList<String>();
-        for (CodingRule rule : getDefaultCodingSheet().getCodingRules()) {
+        for (CodingRule rule: getDefaultCodingSheet().getCodingRules()) {
             if (ObjectUtils.equals(node, rule.getOntologyNode())) {
                 values.add(rule.getTerm());
             }
