@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateMidnight;
+import org.joda.time.DateTimeZone;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
     protected static final Long DOCUMENT_INHERITING_NOTHING_ID = 4231L;
     protected static List<ResourceType> allResourceTypes = Arrays.asList(ResourceType.values());
 
+    @Override
     @Autowired
     public TdarActionSupport getController() {
         return controller;
@@ -56,6 +58,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         firstGroup().getTitles().add(title);
     }
 
+    @Override
     @Before
     public void reset() {
         reindex();
@@ -438,13 +441,24 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
     @Test
     @Rollback
     public void testLookupResourceWithDateRegisteredRange() throws InstantiationException, IllegalAccessException {
+        // From the Hibernate documentation: 
+        // "The default Date bridge uses Lucene's DateTools to convert from and to String. This means that all dates are expressed in GMT time." 
+        // The Joda DateMidnight defaults to DateTimeZone.getDefault(). Which is probably *not* GMT
+        // So for the tests below to work in, say, Australia, we need to force the DateMidnight to the GMT time zone...
+        // ie: 
+        // DateTimeZone dtz = DateTimeZone.forID("Australia/Melbourne");
+        // will break this test.
+        DateTimeZone dtz = DateTimeZone.forID("GMT");
+
         // first create two documents with two separate create dates
         Document document1 = createAndSaveNewInformationResource(Document.class, createAndSaveNewPerson("lookuptest1@mailinator.com", ""));
-        Document document2 = createAndSaveNewInformationResource(Document.class, createAndSaveNewPerson("lookuptest2@mailinator.com", ""));
-        DateMidnight dm1 = new DateMidnight(2001, 2, 16);
-        DateMidnight dm2 = new DateMidnight(2002, 11, 1);
+        DateMidnight dm1 = new DateMidnight(2001, 2, 16, dtz);
         document1.setDateCreated(dm1.toDate());
+
+        Document document2 = createAndSaveNewInformationResource(Document.class, createAndSaveNewPerson("lookuptest2@mailinator.com", ""));
+        DateMidnight dm2 = new DateMidnight(2002, 11, 1, dtz);
         document2.setDateCreated(dm2.toDate());
+        
         genericService.saveOrUpdate(document1, document2);
         searchIndexService.index(document1, document2);
 
@@ -455,6 +469,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         firstGroup().getRegisteredDates().add(dateRange);
 
         doSearch("");
+        
         assertTrue(controller.getResults().contains(document1));
         assertTrue(controller.getResults().contains(document2));
 
@@ -464,6 +479,8 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         firstGroup().getRegisteredDates().add(dateRange);
 
         doSearch("");
+        
+        assertTrue(controller.getResults().contains(document1));
         assertFalse(controller.getResults().contains(document2));
     }
 

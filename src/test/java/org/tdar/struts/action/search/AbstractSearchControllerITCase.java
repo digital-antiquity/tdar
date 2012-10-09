@@ -70,6 +70,7 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
     @Autowired
     protected GenericKeywordService genericKeywordService;
 
+    @Override
     public TdarActionSupport getController() {
         return controller;
     }
@@ -162,11 +163,12 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
 
     protected boolean resultsContainId(Long id) {
         boolean found = false;
-        for (Resource r_ : controller.getResults()) {
-            Resource r = (Resource) r_;
+        for (Resource r : controller.getResults()) {
             logger.trace(r.getId() + " " + r.getResourceType());
-            if (id.equals(r.getId()))
+            if (id.equals(r.getId())) {
                 found = true;
+                break;
+            }
         }
         return found;
     }
