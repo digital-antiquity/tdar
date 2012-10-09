@@ -671,22 +671,6 @@ function scanAdded(rowElem) {
     });
 }
 
-function applyTreeviews() {
-
-    var $treeviews = $(".treeview");
-    //Hack: a bug in Treeview plugin causes 'expand/collapse' icon to not show for the last LI if it contains a sublist.  So we arbitrarily
-    //add an invisible LI to the end of each treeview to sidestep the bug.
-    $treeviews.append('<li style="display:none !important">&nbsp</li>');
-    
-    $treeviews.treeview({
-        collapsed : true,
-        persist : "cookie",
-        cookieId : "tdar-treeview-" + this.id
-    });
-    
-    //expand ancestors if any children are selected
-    $treeviews.find("input:checked").parents(".hitarea").trigger("click");
-}
 
 function cancelSearchRequest($elem) {
 
@@ -1358,6 +1342,25 @@ TDAR.common = function() {
         $('.fileProxyConfidential').change(showAccessRightsLinkIfNeeded);
 
     }
+    
+    
+    var _applyTreeviews = function() {
+        var $treeviews = $(".treeview");
+        // Hack: a bug in Treeview plugin causes 'expand/collapse' icon to not show
+        // for the last LI if it contains a sublist. So we arbitrarily
+        // add an invisible LI to the end of each treeview to sidestep the bug.
+        $treeviews.append('<li style="display:none !important">&nbsp</li>');
+
+        $treeviews.each(function(idx, elem){
+            $(elem).treeview({
+                collapsed : true
+            });
+        });
+
+        // expand ancestors if any children are selected
+        $treeviews.find("input:checked").parents(".hitarea").trigger("click");
+       
+    };
 
     
     
@@ -1438,11 +1441,13 @@ TDAR.common = function() {
         //FIXME: other init stuff that is separate function for some reason 
         _setupEditForm(form);
 
+        _applyTreeviews();
         
     };
     
     return {
         "initEditPage":_initEditPage,
-        "initFormValidation": _setupFormValidate
+        "initFormValidation": _setupFormValidate,
+        "applyTreeviews": _applyTreeviews
     };
 }();

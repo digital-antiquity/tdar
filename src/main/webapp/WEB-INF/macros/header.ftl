@@ -62,7 +62,8 @@
 	                 "/includes/bindWithDelay.js",
                  	 "/includes/jquery.cookie.js",
                  	 "/includes/tdar.datatable.js",
-                     "/includes/blueimp-jquery-file-upload-3c5d440/js/locale.js"
+                     "/includes/blueimp-jquery-file-upload-3c5d440/js/locale.js",
+                     "/includes/jquery-treeview/jquery.treeview.js"
     ] />
     
     
@@ -97,7 +98,9 @@
     <#local srcs = [
                     "/css/tdar-bootstrap.css",
                     "/includes/ivaynberg-select2-817453b/select2.css",
-                    "/includes/blueimp-jquery-file-upload-3c5d440/css/jquery.fileupload-ui.css"
+                    "/includes/blueimp-jquery-file-upload-3c5d440/css/jquery.fileupload-ui.css",
+                    "/includes/jquery-treeview/jquery.treeview.css"
+                    
                     ] />
 </#if>
 

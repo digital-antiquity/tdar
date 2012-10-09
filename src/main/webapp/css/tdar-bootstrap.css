@@ -57,3 +57,11 @@ div.barlabel {
 .template-download .controls {
 	margin-left: 0px !important;
 }
+
+/* undo bootstrap's styling for certain elements when inside of a 'treeview' widget. */
+.treeview input[type=checkbox] {
+    margin: 0 0 0;
+}
+.treeview label {
+    display: inline;
+}
