@@ -155,4 +155,9 @@ public class DocumentController extends AbstractInformationResourceController<Do
     public String testFileUpload() {
         return SUCCESS;
     }
+    @SkipValidation
+    @Action("map-test")
+    public String testMap() {
+        return SUCCESS;
+    }
 }

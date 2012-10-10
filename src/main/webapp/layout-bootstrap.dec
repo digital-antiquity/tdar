@@ -34,6 +34,9 @@
         <#--end maps support -->
 
     <#import "/WEB-INF/macros/header.ftl" as header>
+    <script type="text/javascript">
+    TDAR.maps.googleApiKey = "${googleMapsApiKey?js_string}";
+    </script>
 
     <#assign uri = request.requestURI />
     <#assign bodyid = 'home' />

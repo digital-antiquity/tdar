@@ -1,17 +1,5 @@
-<@s.set name="theme" value="'bootstrap'" scope="request" />
 <#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
-<#macro bsip>
-<div class="alert alert-error">
-  <button type="button" class="close" data-dismiss="alert">×</button>
-  <strong>Bootsrapification in Progress</strong>
-  <p class="pull-right">
-    <i class="icon-arrow-up">  </i> bootstrapped
-    <i class="icon-arrow-down">  </i> not bootstrapped
-  </p>
-</div>
-</#macro>
-
 
 <head>
 <@edit.title />
