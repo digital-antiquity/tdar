@@ -92,7 +92,7 @@
 					</ul>
 	
 					<#if bodyid != 'home'>
-						<form>
+						<form name="searchheader" action="<@s.url value="/search/results"/>">
 							<input type="text" value="Search...">
 						</form>
 					</#if>

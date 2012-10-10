@@ -135,7 +135,7 @@ public class EditITCase extends AbstractAdminAuthenticatedWebTestCase {
     	List<Element> selectElements = querySelectorAll(".creator-role-select option");
     	for(Element element : selectElements) {
     		HtmlOption option = (HtmlOption) element;
-    		logger.debug("looking for fake roles in {}", option);
+    		logger.trace("looking for fake roles in {}", option);
 			ResourceCreatorRole role = ResourceCreatorRole.valueOf(option.getValueAttribute());
 			assertThat("OTHER role should not appear on this page", role.getType(), not(ResourceCreatorRoleType.OTHER));
     	}

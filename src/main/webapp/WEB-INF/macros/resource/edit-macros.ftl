@@ -299,7 +299,9 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <legend>General Keywords</legend>
     <@inheritsection checkboxId="cbInheritingOtherInformation" name='resource.inheritingOtherInformation'  showInherited=showInherited />
     <div id="divOtherInformation">
-<!--        <@keywordRows "Keyword" otherKeywords 'otherKeywords' /> -->
+        <@keywordRows "Keyword" otherKeywords 'otherKeywords' />
+        
+        <p>fixme: replace above with below</p>
     	<input type=text" name="test" id="otherKeywords" style="width:500px" value="<@combineValues2 otherKeywords/>"/>
     	<script>
     	        $(document).ready(function() {

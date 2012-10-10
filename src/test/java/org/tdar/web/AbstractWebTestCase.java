@@ -665,7 +665,8 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
                 htmlForm = getHtmlPage().getForms().get(0);
             } else {
                 for (HtmlForm form : getHtmlPage().getForms()) {
-                    if (!form.getNameAttribute().equalsIgnoreCase("autosave")) {
+                    if (StringUtils.isNotBlank(form.getActionAttribute()) && !form.getNameAttribute().equalsIgnoreCase("autosave") &&
+                            !form.getNameAttribute().equalsIgnoreCase("searchheader")) {
                         htmlForm = form;
                         break;
                     }
