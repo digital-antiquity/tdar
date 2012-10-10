@@ -1560,7 +1560,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     @Transient
-    boolean isCitationRecord() {
+    public boolean isCitationRecord() {
         return true;
     }
 
