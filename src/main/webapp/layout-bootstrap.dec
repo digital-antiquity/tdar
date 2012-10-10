@@ -18,7 +18,7 @@
 
         <!-- fixme: figure out differences -->
         
-        <link href="http://tdar.fervorinteractive.com/css/main.css" rel="stylesheet" />
+        <link href="<@s.url value="/css/tdar-base.css"/>" rel="stylesheet" />
         
         <script src="<@s.url value="/includes/tdar.core.js"/>"></script>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/${jquery_version}/jquery.min.js"></script>
