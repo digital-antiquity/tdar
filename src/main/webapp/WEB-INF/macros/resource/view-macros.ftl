@@ -510,15 +510,10 @@ No categories or subcategories specified.
 
 <hr class="span9" />
 
-    <table cellspacing="1" cellpadding="1" border="0">
     <#nested>
     <#if resource.url! != ''>
-    <tr>
-        <td nowrap><b>URL:</b></td><td>
-        <a href="${resource.url?html}" title="${resource.url?html}"><@truncate resource.url?html 80 /></a></td>
-    </tr>
+        <b>URL:</b><a href="${resource.url?html}" title="${resource.url?html}"><@truncate resource.url?html 80 /></a><br/>
     </#if>
-    </table>
 
 </#macro>
 

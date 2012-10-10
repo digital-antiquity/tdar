@@ -38,7 +38,7 @@
     <#assign uri = request.requestURI />
     <#assign bodyid = 'home' />
 	<#if (uri != '' && uri != '/')>
-		<#assign bodyid = "sub" />
+		<#assign bodyid = "alt" />
 	</#if>
     <@header.css production true />
         
@@ -118,9 +118,8 @@
 			</div>
 <#else>
 	<div class="span12 subnav">
-
 		<ul class="subnav-lft">
-			<li class="current"><a href="">Search</a></li>
+			<li class="current_page_item"><a href="">Search</a></li>
 			<li><a href="">Advanced Search</a></li>
 			<li><a href="">Browse</a></li>
 		</ul>
@@ -142,24 +141,6 @@
         <@s.actionmessage theme="bootstrap" />
         <@s.fielderror theme="bootstrap" />
 	</div>
-<#--//FIXME: remove these styles once main.css problems are sorted out -->
-<div id="divOfHacks">
-    <style type="text/css">
-    /* main.css: all text inputs font-size set to 0 */
-    input[type="text"]  {font-size: 10pt;}
-    
-    /* main.css: .cols table selects too many tables, floats them left */
-    .cols  table {
-        float: inherit ;
-        clear: inherit ;
-    }
-    </style>
-    <div class="alert alert-block" style="position:relative;display:inline-block;margin-top:10px">
-        <button type="button" class="close" data-dismiss="alert">×</button>
-        <h4>Hacks in Effect</h4>
-        Jim has placed this obnoxious banner to remind you to remove the temporary CSS hacks when they are no longer needed.
-    </div>
-</div>
 </div>
 
 	<#assign part="" />

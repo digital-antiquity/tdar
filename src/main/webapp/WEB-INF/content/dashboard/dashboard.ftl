@@ -41,8 +41,8 @@ Welcome back, ${authenticatedUser.firstName}!
 </#if>
 <br/>
 </div>
-
-<div class="span9 news alert">
+<br/>
+<div class="news alert">
 <B>tDAR Update:</B>
 We just upgraded tDAR with a bunch of additional features, a list of features are available <a href="http://www.tdar.org/news/2012/07/tdar-software-update-harris/">here</a> on the tDAR website. 
 </div>

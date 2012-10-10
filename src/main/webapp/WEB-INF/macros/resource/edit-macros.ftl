@@ -324,9 +324,9 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             <#-- XXX: verify logic for rendering this -->
             <#if multipleFileUploadEnabled || resource.hasFiles()>
             <h4>Current ${multipleFileUploadEnabled?string("and Pending Files", "File")}</h4>
-            <table id="uploadFiles" class="files">
+            <table id="uploadFiles" class="files tableFormat">
             </table>
-            <table id="files" class='files sortable'>
+            <table id="files" class='files sortable tableFormat'>
             <thead>
                 <tr class="reorder <#if (fileProxies?size < 2 )>hidden</#if>">
                     <th colspan=2>Reorder: <span class="link alphasort">Alphabetic</span> | <span class="link" onclick="customSort(this)">Custom</span>  </th>
@@ -1302,7 +1302,7 @@ jquery validation hooks?)
 </div>
 <!-- <ul id="proj-toolbar" class="projectMenu"><li></li></ul> -->
 </div>
-<table cellpadding="0" cellspacing="0" border="0" class="display" id="resource_datatable" width="650px">
+<table cellpadding="0" cellspacing="0" border="0" class="display tableFormat" id="resource_datatable" width="650px">
 <thead>
      <tr>
          <#if selectable><th><input type="checkbox" onclick="checkAllToggle()" id="cbCheckAllToggle">id</th></#if>

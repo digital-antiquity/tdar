@@ -47,7 +47,7 @@ body {
 	border-top: 1px solid #222;
 	border-bottom: none;
 	height: 1px;
-	float: left;
+//	float: left;
 	display: block;
 	width: 1000px;
 	margin: 30px 0 30px 40px;
@@ -105,11 +105,11 @@ a.button:hover {
 }
 
 #home {
-	background: url(/images/bg-home.jpg) center 115px no-repeat;
+	background: url(/images/r4/bg-home.jpg) center 115px no-repeat;
 }
 
 #alt, #sub {
-	background: url(/images/bg-sub.jpg) top center no-repeat;
+	background: url(/images/r4/bg-sub.jpg) top center no-repeat;
 }
 
 header {
@@ -126,7 +126,7 @@ header h1 a {
 	display: block;
 	width: 187px;
 	height: 77px;
-	background: url(/images/bg-logo.png);
+	background: url(/images/r4/bg-logo.png);
 	text-indent: -999em;
 }
 
@@ -187,7 +187,7 @@ header form input[type="text"] {
 	border: 1px solid #dedede !important;
 	-webkit-border-radius: 2px;
 	border-radius: 2px;
-	background: url(/images/bg-search.png) 195px 50% no-repeat;
+	background: url(/images/r4/bg-search.png) 195px 50% no-repeat;
 }
 
 .lt-ie9 header form input[type="text"] {padding: 9px 10px 3px 10px;}
@@ -206,7 +206,7 @@ header .welcome {
 
 header .welcome a {
 	padding-right: 13px;
-	background: url(/images/bg-welcome.png) right 3px no-repeat;
+	background: url(/images/r4/bg-welcome.png) right 3px no-repeat;
 }
 
 header .welcome-drop {
@@ -214,14 +214,14 @@ header .welcome-drop {
 	top: 25px;
 	right: -5px;
 	width: 229px;
-	background: url(/images/bg-welcome-drop.png) bottom center no-repeat;
+	background: url(/images/r4/bg-welcome-drop.png) bottom center no-repeat;
 	padding-bottom: 12px;
 	display: none;
 	z-index: 100;
 }
 
 header .welcome-drop p {
-	background: url(/images/bg-welcome-top.png) 0 0 no-repeat;
+	background: url(/images/r4/bg-welcome-top.png) 0 0 no-repeat;
 	margin: 0;
 	padding: 30px 20px 0 20px;
 	font-family: "soleil", sans-serif;
@@ -240,7 +240,7 @@ header .welcome-drop ul {
 }
 
 #home {
-	background: url(/images/bg-home.jpg) center 115px no-repeat;
+	background: url(/images/r4/bg-home.jpg) center 115px no-repeat;
 }
 
 .hero {
@@ -268,7 +268,7 @@ header .welcome-drop ul {
 .hero input {
 	width: 552px;
 	padding: 11px 0 13px 18px !important;
-	background: url(/images/bg-hero-search.png) 0 0 no-repeat !important;
+	background: url(/images/r4/bg-hero-search.png) 0 0 no-repeat !important;
 	border: none;
 	font-family: "ff-tisa-web-pro";
 	font-style: italic;
@@ -359,7 +359,7 @@ header .welcome-drop ul {
 	position: absolute;
 	top: 145px;
 	text-indent: -999em;
-	background: url(/images/btns-slider.png) 0 0 no-repeat;
+	background: url(/images/r4/btns-slider.png) 0 0 no-repeat;
 	opacity: 0.5;
 	transition: opacity 0.1s ease-out;
 	-moz-transition: opacity 0.1s ease-out;
@@ -493,12 +493,12 @@ header .welcome-drop ul {
 	
 }
 
-.subnav ul.subnav-lft li a:hover, .subnav ul.subnav-lft li.current a {
+.subnav ul.subnav-lft li a:hover, .subnav ul.subnav-lft li.current_page_item a {
 	color: #a72d1d;
 	
 }
 
- .subnav ul.subnav-lft li.current {background: url(/images/bg-subnav.png) bottom center no-repeat;}
+ .subnav ul.subnav-lft li.current_page_item {background: url(/images/r4/bg-subnav.png) bottom center no-repeat;}
 
 .subnav ul.subnav-rht {
 	position: absolute;
@@ -539,14 +539,14 @@ header .welcome-drop ul {
 	float: left;
 	padding: 16px 20px 14px 40px;
 	border-right: 1px solid #fff;
-	background: url(/images/bg-resource-nav-off.png) 15px 13px no-repeat;
+	background: url(/images/r4/bg-resource-nav-off.png) 15px 13px no-repeat;
 }
 
 .lt-ie10 .resource-nav li a {padding: 15px 20px 14px 40px !important;}
 
 .resource-nav li a:hover, .resource-nav li.active a {
 	color: #fff;
-	background: #a72d1d url(/images/bg-resource-nav-on.png) 15px 14px no-repeat;
+	background: #a72d1d url(/images/r4/bg-resource-nav-on.png) 15px 14px no-repeat;
 	text-decoration: none;
 }
 
@@ -557,7 +557,7 @@ header .welcome-drop ul {
 .resource-nav li.onto a {background-position: 12px -258px;}
 
 .cols {
-	background: url(/images/bg-cols.png) top right repeat-y;
+	background: url(/images/r4/bg-cols.png) top right repeat-y;
 }
 
 .cols h1 {
@@ -575,7 +575,7 @@ header .welcome-drop ul {
 	font-size: 20px;
 	line-height: 24px;
 	margin: -5px 0 0 0;
-	float: left;
+	//float: left;
 	
 }
 
@@ -584,7 +584,7 @@ header .welcome-drop ul {
 	font-size: 16px;
 	line-height: 23px;
 	margin: 15px 0 -5px 0;
-	float: left;
+	//float: left;
 }
 
 .cols iframe {margin: 20px 0 -10px 0;}
@@ -609,15 +609,15 @@ header .welcome-drop ul {
 	margin: -3px;
 }
 
-.cols p, .cols table {clear: both;}
+.cols p, .cols .tableFormat {clear: both;}
 
-.cols table {
-	float: left;
+.cols .tableFormat {
+//	float: left;
 	margin: 22px 0 0 0;
 	width: 100%;
 }
 
-.cols th, .cols td {
+.cols .tableFormat th, .cols .tableFormat td {
 	font-size: 11px;
 	line-height: 14px;
 	margin: 0;
@@ -628,26 +628,26 @@ header .welcome-drop ul {
 	border-bottom: 1px solid #fff;
 }
 
-.cols th {
+.cols .tableFormat th {
 	font-family: "soleil", sans-serif;
 	font-weight: 700;
 	background: #1b1a18;
 	color: #fff;
 }
 
-.cols td {
+.cols .tableFormat td {
 	font-family: "ff-tisa-web-pro";
 	background: #eee;
 }
 
-.cols tr.alt td {
+.cols .tableFormat tr.alt td {
 	background: #ddd;
 }
 
 .cols .guide {background: #b6a07d !important;}
 
 .sub-col {
-	float: left;
+	//float: left;
 	width: 350px;
 	margin: 5px 0 0 40px;
 }
@@ -667,7 +667,7 @@ header .welcome-drop ul {
 .lt-ie8 .sub-col p {width: 350px;}
 
 #alt aside.dataset {
-	background: url(/images/icn-dataset.png) 0 0 no-repeat;
+	background: url(/images/r4/icn-dataset.png) 0 0 no-repeat;
 	padding-top: 250px;
 }
 
@@ -719,7 +719,7 @@ header .welcome-drop ul {
 
 #alt aside h3.downloads span {
 	display: inline-block;
-	float: right;
+	//float: right;
 	font-size: 13px;
 	line-height: 22px !important;
 	background: #641b11;
@@ -745,7 +745,7 @@ header .welcome-drop ul {
 }
 
 #alt aside ul.downloads li.pdf {
-	background: url(/images/icn-pdf.png) 8px 14px no-repeat;
+	background: url(/images/r4/icn-pdf.png) 8px 14px no-repeat;
 }
 
 .why h1 {
@@ -797,7 +797,7 @@ header .welcome-drop ul {
 .why li span {color: #1b1a18;}
 
 .why article.find {
-	background: url(/images/bg-find.png) top right no-repeat;
+	background: url(/images/r4/bg-find.png) top right no-repeat;
 	padding-bottom: 35px;
 }
 
@@ -808,7 +808,7 @@ header .welcome-drop ul {
 
 .why article.preserve {
 	padding: 43px 0 35px 0;
-	background: url(/images/bg-preserve.png) 120px 30px no-repeat;
+	background: url(/images/r4/bg-preserve.png) 120px 30px no-repeat;
 	border-top: 1px solid #dadada;
 	border-bottom: 1px solid #dadada;
 }
@@ -819,7 +819,7 @@ header .welcome-drop ul {
 
 .why article.extend {
 	padding-top: 40px;
-	background: url(/images/bg-extend.png) 520px 55px no-repeat;
+	background: url(/images/r4/bg-extend.png) 520px 55px no-repeat;
 }
 
 .why article.extend h2, .why article.extend p, .why article.extend ul {
@@ -883,18 +883,18 @@ contrib article h2, .contrib article p, .contrib article ul {
 .contrib .span3 h2 {
 	line-height: 42px;
 	padding-left: 42px;
-	background: url(/images/bg-contrib.png) 0 0 no-repeat;
+	background: url(/images/r4/bg-contrib.png) 0 0 no-repeat;
 	margin-bottom: 10px;
 }
 
 .contrib .span3 h2.img {
-	background: url(/images/bg-contrib.png) 0 -75px no-repeat;
+	background: url(/images/r4/bg-contrib.png) 0 -75px no-repeat;
 	padding-left: 48px;
 }
 
-.contrib .span3 h2.set {background: url(/images/bg-contrib.png) 0 -150px no-repeat;}
+.contrib .span3 h2.set {background: url(/images/r4/bg-contrib.png) 0 -150px no-repeat;}
 
-.contrib .span3 h2.vir {background: url(/images/bg-contrib.png) 0 -228px no-repeat;}
+.contrib .span3 h2.vir {background: url(/images/r4/bg-contrib.png) 0 -228px no-repeat;}
 
 .contrib .span3 ul, .contrib .span3 li {
 	margin: 0;
@@ -931,13 +931,13 @@ contrib article h2, .contrib article p, .contrib article ul {
 .contrib article.rights {
 	margin: 50px 0 50px 40px;
 	padding: 50px 0;
-	background: url(/images/bg-rights.png) 520px 35px no-repeat;
+	background: url(/images/r4/bg-rights.png) 520px 35px no-repeat;
 	border-top: 1px solid #dadada;
 	border-bottom: 1px solid #dadada;
 }
 
 .contrib article.things {
-	background: url(/images/bg-things.png) 100px 0 no-repeat;
+	background: url(/images/r4/bg-things.png) 100px 0 no-repeat;
 }
 
 .contrib article.things h2, .contrib article.things p, .contrib article.things ul {
@@ -1008,7 +1008,7 @@ contrib article h2, .contrib article p, .contrib article ul {
 .search ul.tools {margin: 0 0 20px 0 !important;}
 
 .search ul.tools li {
-	background: url(/images/bg-tools.png) left -18px no-repeat;
+	background: url(/images/r4/bg-tools.png) left -18px no-repeat;
 	line-height: 14px;
 	padding-left: 20px;
 	margin-bottom: 5px !important;
@@ -1054,7 +1054,7 @@ contrib article h2, .contrib article p, .contrib article ul {
 	color: #999;
 	font-style: italic;
 	margin: 10px 0;
-	background-image: url(/images/bg-meta.png);
+	background-image: url(/images/r4/bg-meta.png);
 	background-repeat: no-repeat;
 }
 
@@ -1098,7 +1098,7 @@ contrib article h2, .contrib article p, .contrib article ul {
 footer {
 	height: 154px;
 	margin-top: 60px;
-	background: url(/images/bg-footer.png) 0 0 repeat-x;
+	background: url(/images/r4/bg-footer.png) 0 0 repeat-x;
 	padding: 50px 0;
 }
 
@@ -1138,7 +1138,7 @@ B.fmCheckbox {
 	background: red;
 	position: relative;
 	cursor: pointer;
-	background: url("/images/checkbox.png") no-repeat left -12px;
+	background: url("/images/r4/checkbox.png") no-repeat left -12px;
 	margin-top: 7px;
 	margin-right: 7px;
 	font-size: 9px;
@@ -1165,7 +1165,7 @@ B.fmCheckbox.checked { background-position: left top; }
 .fmSelect STRONG { 
 	float: left;
 	width: 100%;
-	background: url("/images/select-box-left.png") no-repeat left top;
+	background: url("/images/r4/select-box-left.png") no-repeat left top;
 	cursor: pointer;
 	position: relative;
 }
@@ -1174,7 +1174,7 @@ B.fmCheckbox.checked { background-position: left top; }
 	display: block;
 	font-size: 13px;
 	font-weight: normal;
-	background: url("/images/select-box-right.png") no-repeat right top;
+	background: url("/images/r4/select-box-right.png") no-repeat right top;
 }
 
 .fmSelect STRONG SPAN CITE{
