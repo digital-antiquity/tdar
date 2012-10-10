@@ -211,9 +211,11 @@ function repeatRow(tableId, rowAddedCallback, resetRights) {
 
 function repeatRowPostCloneActions(clonedRow) {
 
-    $.each(clonedRow.find("[placeholder]"), function(k, v) {
-        $(this).watermark($(this).attr("placeholder"));
-    });
+	if(!Modernizr.input.placeholder){
+	    $.each(clonedRow.find("[placeholder]"), function(k, v) {
+    		$(this).watermark($(this).attr("placeholder"));
+	    });
+	}
 
 }
 
@@ -601,10 +603,12 @@ function formSubmitEnable() {
 
 //apply watermark input tags in context with watermark attribute.  'context' can be any valid argument to jQuery(selector[, context])
 function applyWatermarks(context) {
-    $("input[placeholder]", context).each(function() {
-        //todo: see if its any faster to do direct call to attr, e.g. this.attributes["watermark"].value
-        $(this).watermark($(this).attr("placeholder"));
-    });
+	if(!Modernizr.input.placeholder){
+	    $("input[placeholder]", context).each(function() {
+	        //todo: see if its any faster to do direct call to attr, e.g. this.attributes["watermark"].value
+	        $(this).watermark($(this).attr("placeholder"));
+	    });
+	}
 }
 
 
@@ -1437,6 +1441,8 @@ TDAR.common = function() {
         $("#copyright_holder_type_institution").change(toggleCopyrightHolder);
     
         $('#subnavbar').scrollspy();
+        
+        applyWatermarks(form);
         
         //FIXME: other init stuff that is separate function for some reason 
         _setupEditForm(form);

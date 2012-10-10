@@ -164,7 +164,7 @@ TDAR.repeatrow = function() {
     
     
     //return public members
-    console.debug("repeatrow loaded");
+    console.log("repeatrow loaded");
     return {
         registerRepeatable: _registerRepeatable,
         cloneSection: _cloneSection,

@@ -203,7 +203,7 @@
 		</div>
 
 	</footer>
-
+		<script src="//ajax.aspnetcdn.com/ajax/modernizr/modernizr-2.0.6-development-only.js"></script>
         <script src="//ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"></script>        
         <#--TODO: decide whether it's wise to use a bootstrap CDN.  For now I'm using this for convenience -->
         <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/js/bootstrap.min.js"></script>
