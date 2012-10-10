@@ -25,7 +25,7 @@
     <#local ulid = "${parameters.id}" />
     </#if>
     
-     <ul<#if itemCount < 1> id="${ulid}"</#if> class="treeview">
+     <ul<#if itemCount < 1> id="${ulid}" class="tdar-treeview"</#if> >
     <#list node.children?keys as kid>
          <#assign itemCount = itemCount + 1/>
          <#assign kidnode = node.children.get(kid) />

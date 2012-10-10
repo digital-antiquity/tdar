@@ -1349,16 +1349,16 @@ TDAR.common = function() {
     
     
     var _applyTreeviews = function() {
-        var $treeviews = $(".treeview");
+        console.debug("applying tdar-treeviews v3")
+        var $treeviews = $(".tdar-treeview");
         // Hack: a bug in Treeview plugin causes 'expand/collapse' icon to not show
         // for the last LI if it contains a sublist. So we arbitrarily
         // add an invisible LI to the end of each treeview to sidestep the bug.
-        $treeviews.append('<li style="display:none !important">&nbsp</li>');
+        
+        //$treeviews.append('<li style="display:none !important">&nbsp</li>');
 
-        $treeviews.each(function(idx, elem){
-            $(elem).treeview({
+        $treeviews.treeview({
                 collapsed : true
-            });
         });
 
         // expand ancestors if any children are selected

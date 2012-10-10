@@ -91,7 +91,7 @@ function sectionLoaded(context) {
     }
 
     // register any treeviews
-    $('.treeview', context).treeview({
+    $('.tdar-treeview', context).treeview({
         collapsed : true
     });
 
