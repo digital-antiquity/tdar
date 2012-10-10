@@ -103,9 +103,7 @@ TDAR.fileupload = function() {
         // data.type: deletion request type, e.g. "DELETE",
         // data.dataType: deletion response type, e.g. "json"
         
-        //HACK: this is ugly jim fix this asap!
-        //FIXME: any button in the "delete" TD is treaded as delete. either put REPLACE button in separate <td> or find a way to disregard
-        
+        var $row = data.context;
         var newUpload = TDAR.fileupload.informationResourceId === -1;
         var $btnDelete = $("button.delete-button", data.context);
         var $hdnAction = $(".fileAction", data.context);
@@ -115,11 +113,13 @@ TDAR.fileupload = function() {
             $(data.context).addClass("deleted-file");
             $btnDelete.data("type", "UNDELETE");
             //TODO: make row look "deleted", disable everything except 'undelete' button
+            _disableRow($row);
         } else {
             //re-enable row appearance and change label back to previous state
             $hdnAction.val($hdnAction.data("prev"));
             $(data.context).removeClass("deleted-file");
             $btnDelete.data("type", "DELETE");
+            _enableRow($row);
         }
         //show the correct button label
         $("span", $btnDelete).html({
@@ -187,7 +187,15 @@ TDAR.fileupload = function() {
     };
     
     
-    //FIXME:   preventDefault on menuItems
+    var _enableRow = function(row) {
+        $('button:not(.delete-button), select', row).prop('disabled', false);
+        $('.delete-button', row).removeClass('btn-warning').addClass('btn-danger');
+    };
+    
+    var _disableRow = function(row) {
+        $('button:not(.delete-button), select', row).prop('disabled', true);
+        $('.delete-button', row).addClass('btn-warning').removeClass('btn-danger');
+    };
     
     
     //expose public elements
