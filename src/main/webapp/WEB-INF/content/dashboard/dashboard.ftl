@@ -112,7 +112,7 @@ We just upgraded tDAR with a bunch of additional features, a list of features ar
 <@edit.resourceDataTable />
 </form>
 </div>
-<div id="sidebar" parse="true">
+<div id="sidebar-right" parse="true">
 <#macro repeat num val>
  <#if (num > 0)>
   <@repeat (num-1) val /><#noescape>${val}</#noescape>

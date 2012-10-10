@@ -8,12 +8,11 @@
 <@view.toolbar "${resource.urlNamespace}" "view" />
 
 
-			<article class="span9">
 <@view.projectAssociation resourceType="document" />
 
 <@view.infoResourceBasicInformation />
 
 <@view.sharedViewComponents document />
-</article>
+
     <@view.sidebar />
 </#escape>

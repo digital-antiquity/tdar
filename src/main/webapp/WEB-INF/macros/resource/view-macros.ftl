@@ -800,7 +800,7 @@ ${_date?string('MM/dd/yyyy')}<#t>
 </#macro>
 
 <#macro sidebar>
-			<aside class="span3 ${resource.resourceType?lower_case}">
+		<div id="sidebar-right" parse="true">
 				
 			    <@uploadedFileInfo />
 
@@ -880,9 +880,8 @@ ${_date?string('MM/dd/yyyy')}<#t>
 					</li>
 				</ul>
 
-			</aside>
+			</div>
 
-		</section>
 
 </#macro>
 

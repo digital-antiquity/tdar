@@ -159,11 +159,36 @@
     </div>
 </div>
 </div>
+
+
 	<#assign part="cols" />
 	<#if request.requestURI?contains("/search/") ><#assign part="search" /></#if>
 	<section class="row ${part}">
-        ${body}
+		<#assign spanSize = 12/>
+		<#if  page.properties["div.sidebar-left"]?has_content ||  page.properties["div.sidebar-right"]?has_content >
+			<#assign spanSize = 9/>
+		<#elseif page.properties["div.sidebar-left"]?has_content && page.properties["div.sidebar-right"]?has_content >
+			<#assign spanSize = 6/>
+		</#if> 
+
+		<#if  page.properties["div.sidebar-left"]?has_content>
+			<aside class="span3">
+		    ${page.properties["div.sidebar-left"]}
+		   </aside>
+		</#if>
+
+		<article class="span${spanSize}">
+	        ${body}
+		</article>
+
+		<#if  page.properties["div.sidebar-right"]?? && page.properties["div.sidebar-right"] != "">
+			<aside class="span3 dataset">
+		    ${page.properties["div.sidebar-right"]}
+		   </aside>
+		</#if>
 	</section>
+
+
 </div>
 
 	    <@common.bootstrapNavbar />      
