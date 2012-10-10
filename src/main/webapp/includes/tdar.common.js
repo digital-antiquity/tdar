@@ -1334,7 +1334,9 @@ TDAR.common = function() {
             validateUploadedFiles();
         }
 
-        if ($.browser.msie || $.browser.mozilla && getBrowserMajorVersion() < 4) {
+        Modernizr.addTest('cssresize', Modernizr.testAllProps('resize'));
+        
+        if (!Modernizr.cssresize) {
             $('textarea.resizable:not(.processed)').TextAreaResizer();
         }
 

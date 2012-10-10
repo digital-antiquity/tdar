@@ -14,5 +14,4 @@
 
 <@view.sharedViewComponents document />
 
-    <@view.sidebar />
 </#escape>

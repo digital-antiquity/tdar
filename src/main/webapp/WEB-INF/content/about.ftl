@@ -11,7 +11,6 @@
 <meta name="lastModifiedDate" content="$Date: 2009-02-13 09:05:44 -0700 (Fri, 13 Feb 2009)$"/>
 </head>
 <body>
-<div class="container">
 <div class="row">
     <div class="<#if !sessionData?? || !sessionData.authenticated>span6</#if>">
     <h3>About</h3>
@@ -26,14 +25,7 @@
     </#if>
 </div>
 
-<div class="row">
-    <h3>Search</h3>
-    <div class="span9">
-    <@s.form action="search/results" method="GET" id='searchForm' cssClass="form-inline">
-        <@search.queryField "Keyword"/>
-    </@s.form>
-    </div>
-</div>
+
 
 <div class="row">
     <h3>Explore</h3>
@@ -79,5 +71,4 @@
 
 			</div>
 
-</div>
 </body>

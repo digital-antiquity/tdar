@@ -477,7 +477,7 @@ No categories or subcategories specified.
 <h1>${resource.title}</h1>
 <#if resource.project?? && resource.project.id?? && resource.project.id != -1>
 
-<div id="subtitle" parse="true"> 
+<div id="subtitle"> 
     Part of the  
   <#if resource.project.active || editable>
     <a href="<@s.url value='/project/view'><@s.param name="id" value="${resource.project.id?c}"/></@s.url>">
@@ -797,6 +797,8 @@ ${_date?string('MM/dd/yyyy')}<#t>
     
     <@infoResourceAccessRights />
     
+    <@sidebar />
+    
 </#macro>
 
 <#macro sidebar>
@@ -810,55 +812,55 @@ ${_date?string('MM/dd/yyyy')}<#t>
 
 				<ul>
 					<@view.resourceProvider />
-				    <#if document.seriesName?has_content>
-				    <li><strong>Series name:</strong>:${document.seriesName}</li>
+				    <#if resource.seriesName?has_content>
+				    <li><strong>Series name</strong>${resource.seriesName}</li>
 				    </#if>
-				    <#if document.seriesNumber?has_content>
-				    <li><strong>Series number:</strong>:${document.seriesNumber}</li>
+				    <#if resource.seriesNumber?has_content>
+				    <li><strong>Series number</strong>${resource.seriesNumber}</li>
 				    </#if>
-				    <#if document.journalName?has_content>
-				        <li><strong>Journal:</strong>:${document.journalName}<#if document.volume?has_content>, ${document.volume}</#if>
+				    <#if resource.journalName?has_content>
+				        <li><strong>Journal</strong>${resource.journalName}<#if resource.volume?has_content>, ${resource.volume}</#if>
 						    <!-- issue -->
-						    <#if document.journalNumber?has_content> (${document.journalNumber}) </#if>
+						    <#if resource.journalNumber?has_content> (${resource.journalNumber}) </#if>
 				        </li>
 				    </#if>
-					  <#if document.bookTitle?has_content>
-						  <li><strong>Book Title:</strong>:${document.bookTitle}</li>
+					  <#if resource.bookTitle?has_content>
+						  <li><strong>Book Title</strong>${resource.bookTitle}</li>
 					  </#if>
-				    <#if document.numberOfVolumes??>
-					    <li><strong>Number of volumes:</strong>:${document.numberOfVolumes}</li>
+				    <#if resource.numberOfVolumes??>
+					    <li><strong>Number of volumes</strong>${resource.numberOfVolumes}</li>
 				    </#if>
 				    </li>
-				    <#if document.edition?has_content>
-				    <li><strong>Edition:</strong>:${document.edition}</li>
+				    <#if resource.edition?has_content>
+				    <li><strong>Edition</strong>${resource.edition}</li>
 				    </#if>
-				    <#if (document.publisher?has_content ||  document.publisherLocation?has_content)>
-					    <li><strong>Publisher</strong>${document.publisher.name} 
-						    <#if document.degree?has_content>${document.degree.label}</#if>
-					        <#if document.publisherLocation?has_content> (${document.publisherLocation}) </#if>
+				    <#if (resource.publisher?has_content ||  resource.publisherLocation?has_content)>
+					    <li><strong>Publisher</strong>${resource.publisher.name} 
+						    <#if resource.degree?has_content>${resource.degree.label}</#if>
+					        <#if resource.publisherLocation?has_content> (${resource.publisherLocation}) </#if>
 				        </li>
 				    </#if>
-				    <#if document.isbn?has_content>
-					    <li><strong>ISBN:</strong>:${document.isbn}</li>
+				    <#if resource.isbn?has_content>
+					    <li><strong>ISBN</strong>${resource.isbn}</li>
 				    </#if>
-				    <#if document.issn?has_content>
-				    	<li><strong>ISSN:</strong>:${document.issn}</li>
+				    <#if resource.issn?has_content>
+				    	<li><strong>ISSN</strong>${resource.issn}</li>
 				    </#if>
-				    <#if document.doi?has_content>
-				    	<li><strong>DOI:</strong>:${document.doi}</li>
+				    <#if resource.doi?has_content>
+				    	<li><strong>DOI</strong>${resource.doi}</li>
 				    </#if>
 
 
 					<#if resource.documentType?has_content>
-				    <#if (document.startPage?has_content) || (document.endPage?has_content) || (document.totalNumberOfPages?has_content)>
+				    <#if (resource.startPage?has_content) || (resource.endPage?has_content) || (resource.totalNumberOfPages?has_content)>
 					<li>
 						<strong>Pages</strong><br>
-					        ${document.startPage!} <#if document.startPage?has_content && document.endPage?has_content>-</#if> ${document.endPage!}
+					        ${resource.startPage!} <#if resource.startPage?has_content && resource.endPage?has_content>-</#if> ${resource.endPage!}
 					    </#if>
-					      <#if document.totalNumberOfPages?? > 
-					      <#if (document.startPage?has_content) || (document.endPage?has_content) >(</#if>
-					        ${document.totalNumberOfPages}
-					      <#if (document.startPage?has_content) || (document.endPage?has_content) >)</#if>
+					      <#if resource.totalNumberOfPages?? > 
+					      <#if (resource.startPage?has_content) || (resource.endPage?has_content) >(</#if>
+					        ${resource.totalNumberOfPages}
+					      <#if (resource.startPage?has_content) || (resource.endPage?has_content) >)</#if>
 				   	</li>
 			        </#if>
 					<li>
@@ -866,14 +868,18 @@ ${_date?string('MM/dd/yyyy')}<#t>
 						${resource.documentType.label}
 					</li>
 					</#if>
+					<#if resource.resourceLanguage?has_content>
 					<li>
 						<strong>Language</strong><br>
 						${resource.resourceLanguage.label}
 					</li>
+					</#if>
+					<#if resource.copyLocation?has_content>
 					<li>
 						<strong>Location</strong><br>
-						Massachusetts Historical Commission
+						${resource.copyLocation}
 					</li>
+					</#if>
 					<li>
 						<strong>${siteAcronym} ID</strong><br>
 						${resource.id?c}
