@@ -1,0 +1,229 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY owl2xml "http://www.w3.org/2006/12/owl2-xml#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+    <!ENTITY example-hierarchy "http://www.tdar.org/ontology/example-hierarchy.owl#" >
+]>
+
+
+<rdf:RDF xmlns="http://www.tdar.org/ontology/example-hierarchy.owl#"
+     xml:base="http://www.tdar.org/ontology/example-hierarchy.owl"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:example-hierarchy="http://www.tdar.org/ontology/example-hierarchy.owl#">
+    <owl:Ontology rdf:about=""/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.tdar.org/ontology/example-hierarchy.owl#p1address -->
+
+    <owl:Class rdf:about="#p1address">
+        <rdfs:subClassOf rdf:resource="#publisher1"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.tdar.org/ontology/example-hierarchy.owl#p1address.CAMBRIDGE -->
+
+    <owl:Class rdf:about="#p1address.CAMBRIDGE">
+        <rdfs:subClassOf rdf:resource="#p1address"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.tdar.org/ontology/example-hierarchy.owl#p1book -->
+
+    <owl:Class rdf:about="#p1book">
+        <rdfs:subClassOf rdf:resource="#publisher1"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.tdar.org/ontology/example-hierarchy.owl#p1book.author -->
+
+    <owl:Class rdf:about="#p1book.author">
+        <rdfs:subClassOf rdf:resource="#p1book"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.tdar.org/ontology/example-hierarchy.owl#p1book.author.tom -->
+
+    <owl:Class rdf:about="#p1book.author.tom">
+        <rdfs:subClassOf rdf:resource="#p1book.author"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.tdar.org/ontology/example-hierarchy.owl#p1book.author2 -->
+
+    <owl:Class rdf:about="#p1book.author2">
+        <rdfs:subClassOf rdf:resource="#p1book"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.tdar.org/ontology/example-hierarchy.owl#p1book.author2.john -->
+
+    <owl:Class rdf:about="#p1book.author2.john">
+        <rdfs:subClassOf rdf:resource="#p1book.author2"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.tdar.org/ontology/example-hierarchy.owl#p1book.title -->
+
+    <owl:Class rdf:about="#p1book.title">
+        <rdfs:subClassOf rdf:resource="#p1book"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.tdar.org/ontology/example-hierarchy.owl#p1book.title.databases -->
+
+    <owl:Class rdf:about="#p1book.title.databases">
+        <rdfs:subClassOf rdf:resource="#p1book.title"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.tdar.org/ontology/example-hierarchy.owl#p1name -->
+
+    <owl:Class rdf:about="#p1name">
+        <rdfs:subClassOf rdf:resource="#publisher1"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.tdar.org/ontology/example-hierarchy.owl#p1name.MITPRESS -->
+
+    <owl:Class rdf:about="#p1name.MITPRESS">
+        <rdfs:subClassOf rdf:resource="#p1name"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.tdar.org/ontology/example-hierarchy.owl#p2book -->
+
+    <owl:Class rdf:about="#p2book">
+        <rdfs:subClassOf rdf:resource="#publisher2"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.tdar.org/ontology/example-hierarchy.owl#p2book.author -->
+
+    <owl:Class rdf:about="#p2book.author">
+        <rdfs:subClassOf rdf:resource="#p2book"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.tdar.org/ontology/example-hierarchy.owl#p2book.author.age -->
+
+    <owl:Class rdf:about="#p2book.author.age">
+        <rdfs:subClassOf rdf:resource="#p2book.author"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.tdar.org/ontology/example-hierarchy.owl#p2book.author.age.18 -->
+
+    <owl:Class rdf:about="#p2book.author.age.18">
+        <rdfs:subClassOf rdf:resource="#p2book.author.age"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.tdar.org/ontology/example-hierarchy.owl#p2book.author.name -->
+
+    <owl:Class rdf:about="#p2book.author.name">
+        <rdfs:subClassOf rdf:resource="#p2book.author"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.tdar.org/ontology/example-hierarchy.owl#p2book.author.name.SMITH -->
+
+    <owl:Class rdf:about="#p2book.author.name.SMITH">
+        <rdfs:subClassOf rdf:resource="#p2book.author.name"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.tdar.org/ontology/example-hierarchy.owl#p2book.title -->
+
+    <owl:Class rdf:about="#p2book.title">
+        <rdfs:subClassOf rdf:resource="#p2book"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.tdar.org/ontology/example-hierarchy.owl#p2book.title.life -->
+
+    <owl:Class rdf:about="#p2book.title.life">
+        <rdfs:subClassOf rdf:resource="#p2book.title"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.tdar.org/ontology/example-hierarchy.owl#p2name -->
+
+    <owl:Class rdf:about="#p2name">
+        <rdfs:subClassOf rdf:resource="#publisher2"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.tdar.org/ontology/example-hierarchy.owl#p2name.NYPRESS -->
+
+    <owl:Class rdf:about="#p2name.NYPRESS">
+        <rdfs:subClassOf rdf:resource="#p2name"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.tdar.org/ontology/example-hierarchy.owl#publisher1 -->
+
+    <owl:Class rdf:about="#publisher1">
+        <rdfs:subClassOf rdf:resource="#publishers"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.tdar.org/ontology/example-hierarchy.owl#publisher2 -->
+
+    <owl:Class rdf:about="#publisher2">
+        <rdfs:subClassOf rdf:resource="#publishers"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.tdar.org/ontology/example-hierarchy.owl#publishers -->
+
+    <owl:Class rdf:about="#publishers"/>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 2.2.1.1138) http://owlapi.sourceforge.net -->
+

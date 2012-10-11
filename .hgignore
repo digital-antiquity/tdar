@@ -1,0 +1,23 @@
+syntax:glob
+.project
+.settings
+.classpath
+indexes
+target
+bin
+src/main/resources/*.properties
+src/main/resources/*-local-settings.xml
+googlemaps-api-key.js
+logs
+*.jpage
+*.class
+*~
+tags
+*.orig
+*.rej
+
+syntax: regexp
+^src/main/webapp/robots\.txt$
+
+syntax: regexp
+^src/main/db/log\.txt$

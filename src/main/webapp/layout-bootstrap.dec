@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<html lang="en">
+<#import "/WEB-INF/macros/resource/common.ftl" as common><#t>
+<#assign jquery_version="1.8.2">
+<#assign jquery_ui_version="1.8.23">
+
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8"/> 
+	    <link rel="unapi-server" type="application/xml" title="unAPI" href="<@s.url value='/unapi'/>" />
+    	<link rel="search" type="application/opensearchdescription+xml" href='<@s.url value="/includes/opensearch.xml"/>' title="Search ${siteAcronym}" /> 
+        <title>${title!siteName}</title>
+        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/css/bootstrap-combined.min.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href='//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_version}/themes/base/jquery-ui.css'></link> 
+
+        <!-- fixme: figure out differences -->
+        
+        <link href="<@s.url value="/css/tdar-base.css"/>" rel="stylesheet" />
+        
+        <script src="<@s.url value="/includes/tdar.core.js"/>"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/${jquery_version}/jquery.min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_version}/jquery-ui.min.js"></script>
+        <#--maps support.  TODO: only include maps when we use them.  put this in (sharedFormCompoenents head section?) -->
+
+        <script>
+                    var GMapDefaultLat = ${GMapDefaultLat};
+                    var GMapDefaultLng = ${GMapDefaultLng};
+        </script>
+        <script type='text/javascript' src="//maps.google.com/maps?file=api&v=2&key=${googleMapsApiKey}"></script>
+        <script type="text/javascript" src="//www.google.com/jsapi"></script>
+        <#--end maps support -->
+
+    <#import "/WEB-INF/macros/header.ftl" as header>
+    <script type="text/javascript">
+    TDAR.maps.googleApiKey = "${googleMapsApiKey?js_string}";
+    </script>
+
+    <#assign uri = request.requestURI />
+    <#assign bodyid = 'home' />
+	<#if (uri != '' && uri != '/')>
+		<#assign bodyid = "alt" />
+	</#if>
+    <@header.css production true />
+        
+    ${head}
+
+    <@common.globalJavascript />
+
+<!-- fixme -- optimize -->
+    <#-- respond.1.1.0.min.js currently 404.
+	<script src="http://tdar.fervorinteractive.com/js/vendor/modernizr-2.6.1-respond-1.1.0.min.js"></script>
+     -->
+	<script type="text/javascript" src="//use.typekit.net/czp6njc.js"></script>
+	<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+
+</head>
+<body id="${bodyid}" data-spy="scroll" data-target="#subnavbar">
+	<div class="container">
+		<div class="row">
+			<header class="span12">
+				<h1><a href="/"><#if siteAcronym?has_content>${siteAcronym} - </#if>${siteName}</a></h1>
+				<#if (authenticatedUser??) > 
+
+					<p class="welcome">
+						Welcome back, <a href="">${authenticatedUser.properName}</a>
+					</p>
+	
+					<div class="welcome-drop">
+	
+						<p>${authenticatedUser.properName}</p>
+	
+						<ul>
+							<li><a href="<@s.url value="/resource/add"/>">Upload a resource</a></li>
+							<li><a href="<@s.url value="/project/add"/>">Create a project</a></li>
+							<li><a href="<@s.url value="/collection/add"/>">Create a collection</a></li>
+							<li><a href="<@s.url value="/dashboard"/>">View my resources</a></li>
+						</ul>
+	
+						<ul>
+							<li><a href="<@s.url value='/entity/person/edit?id=${sessionData.person.id?c}'/>">Account Settings</a></li>
+							<li><a href="<@s.url value="/contact"/>">Contact Us</a></li>
+							<li><a href="<@s.url value="/logout"/>">Sign Out</a></li>
+						</ul>
+					</div>
+				</#if>
+
+				<nav>
+					<ul>
+						<li><a href="">ABOUT</a></li>
+						<li><a href="">WHY tDAR?</a></li>
+						<li><a href="">USING tDAR</a></li>
+						<li class="button"><a href="<@s.url value="/search/results"/>">BROWSE</a></li>
+						<li class="button"><a href="<@s.url value="/resource/add"/>">UPLOAD</a></li>
+					</ul>
+	
+					<#if bodyid != 'home'>
+						<form name="searchheader" action="<@s.url value="/search/results"/>">
+							<input type="text" name="query" placeholder="Search...">
+						</form>
+					</#if>
+				</nav>
+			</header>
+    
+<#if bodyid == 'home'>
+
+			<div class="span12 hero">
+
+				<h2>What can you dig up?</h2>
+
+				<p><strong>The Digital Archaeological Record (tDAR)</strong> is your online archive <br/>for archaeological information.</p>
+
+						<form name="searchheader" action="<@s.url value="/search/results"/>">
+							<input type="text" name="query" placeholder="Find archaeological data...">
+						</form>
+
+				<@common.loginMenu true/>
+
+			</div>
+<#else>
+	<div class="span12 subnav">
+		<ul class="subnav-lft">
+			<li class="current_page_item"><a href="">Search</a></li>
+			<li><a href="">Advanced Search</a></li>
+			<li><a href="">Browse</a></li>
+		</ul>
+		<@common.loginMenu true />
+	</div>
+
+
+
+
+</#if>
+    <div>
+		<#if  page.properties["div.toolbars"]?? && page.properties["div.toolbars"] != "">
+		    ${page.properties["div.toolbars"]}
+		</#if>
+		<#if  page.properties["div.messages"]?? && page.properties["div.messages"] != "">
+		    ${page.properties["div.messages"]}
+		</#if>
+        <@s.actionerror theme="bootstrap" />
+        <@s.actionmessage theme="bootstrap" />
+        <@s.fielderror theme="bootstrap" />
+	</div>
+</div>
+
+	<#assign part="" />
+	<#assign spanSize = 12/>
+	<#if  page.properties["div.sidebar-left"]?has_content ||  page.properties["div.sidebar-right"]?has_content >
+		<#assign part="cols" />
+		<#assign spanSize = 9/>
+	<#elseif page.properties["div.sidebar-left"]?has_content && page.properties["div.sidebar-right"]?has_content >
+		<#assign part="cols" />
+		<#assign spanSize = 6/>
+	</#if> 
+
+	<#if request.requestURI?contains("/search/") ><#assign part="search" /></#if>
+	<section class="row ${part}">
+
+		<#if  page.properties["div.sidebar-left"]?has_content>
+			<aside class="span3">
+		    ${page.properties["div.sidebar-left"]}
+		   </aside>
+		</#if>
+
+		<article class="span${spanSize}">
+	        ${body}
+		</article>
+
+		<#if  page.properties["div.sidebar-right"]?? && page.properties["div.sidebar-right"] != "">
+			<aside class="span3 dataset">
+		    ${page.properties["div.sidebar-right"]}
+		   </aside>
+		</#if>
+	</section>
+
+
+</div>
+
+	    <@common.bootstrapNavbar />      
+
+	<footer>
+		<div class="container">
+		    <#include "${themeDir}/footer.dec" />
+		</div>
+
+	</footer>
+		<script src="//ajax.aspnetcdn.com/ajax/modernizr/modernizr-2.0.6-development-only.js"></script>
+        <script src="//ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"></script>        
+        <#--TODO: decide whether it's wise to use a bootstrap CDN.  For now I'm using this for convenience -->
+        <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/js/bootstrap.min.js"></script>
+        <script src='http://tdar.fervorinteractive.com/js/plugins.js'></script>
+        <script src='http://tdar.fervorinteractive.com/js/main.js'></script>
+    <@header.scripts production true/>
+    </body>
+</html>

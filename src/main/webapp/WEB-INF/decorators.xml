@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!--
+vim:sts=2:sw=2:
+-->
+<decorators defaultdir="/">
+  <excludes>
+    <pattern>**/ajax/**</pattern>
+    <pattern>/css/*</pattern>
+    <pattern>/images/*</pattern>
+    <pattern>/includes/*</pattern>
+    <pattern>/*.html</pattern>
+    <pattern>/map</pattern>
+    <pattern>/featured</pattern>
+    <pattern>/config-browser/*</pattern>
+    <pattern>/services/*</pattern>
+  </excludes>
+  <decorator name="bootstrapmain" page="layout-bootstrap.dec">
+    <pattern>/login*</pattern>
+    <pattern>/</pattern>
+    <pattern>/search**</pattern>
+    <pattern>/project/**</pattern>
+    <pattern>/dashboard/**</pattern>
+    <pattern>/document/**</pattern>
+    <pattern>/image/**</pattern>
+    <pattern>/video/**</pattern>
+    <pattern>/dataset/**</pattern>
+    <pattern>/coding-sheet/**</pattern>
+    <pattern>/ontology/**</pattern>
+    <pattern>/sensory-data/**</pattern>
+    <pattern>/collection/**</pattern>
+  </decorator>
+  <decorator name="main" page="layout.dec">
+    <pattern>/*</pattern>
+  </decorator>
+</decorators>
+
