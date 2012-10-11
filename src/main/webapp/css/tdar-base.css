@@ -1049,7 +1049,7 @@ contrib article h2, .contrib article p, .contrib article ul {
 	line-height: 20px;
 }
 
-.search article p.meta {
+p.cartouche {
 	font-size: 12px;
 	color: #999;
 	font-style: italic;
@@ -1058,15 +1058,16 @@ contrib article h2, .contrib article p, .contrib article ul {
 	background-repeat: no-repeat;
 }
 
-.search article p.doc {
+p.cartouche.document {
 	background-position: 0 0;
 	padding-left: 93px;
 }
 
-.search article p.img {
+p.cartouche.image {
 	background-position: 0 -20px;
 	padding-left: 75px;
 }
+
 
 .search .pagin {
 	width: 100%;

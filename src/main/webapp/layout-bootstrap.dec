@@ -196,6 +196,6 @@
         <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/js/bootstrap.min.js"></script>
         <script src='http://tdar.fervorinteractive.com/js/plugins.js'></script>
         <script src='http://tdar.fervorinteractive.com/js/main.js'></script>
-    <@header.scripts production true/>
+    <@header.scripts production />
     </body>
 </html>

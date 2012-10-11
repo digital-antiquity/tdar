@@ -26,7 +26,7 @@
 
 <#if (totalRecords > 0)>
 
-	<div id="sidebar-left" parse="true">
+	<div id="sidebar-left" parse="true" class="options">
 				
 				<h2>Search Options</h2>
 
