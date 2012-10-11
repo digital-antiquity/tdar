@@ -18,7 +18,8 @@
 <@edit.resourceJavascript />
 
 <div class="well">
-    <h3>Experimental map</h3>
+    <h3>Experimental map </h3>
+    <h4>${resource.title!"new resource"} (id:${id?c})</h4>
     <div id="editmapv3" class="tdar-map-large tdar-map-edit googlemap"></div>
 </div>
 
@@ -26,7 +27,8 @@
     $(function() {
         //fixme: implicitly init when necessary
         TDAR.maps.initMapApi();
-        TDAR.maps.setupMap($('#editmapv3')[0]);
+        var mapdiv = $('#editmapv3')[0];
+        TDAR.maps.setupMap(mapdiv);
     });
 </script>
 

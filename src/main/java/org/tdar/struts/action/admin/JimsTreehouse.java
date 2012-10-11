@@ -22,7 +22,6 @@ public class JimsTreehouse extends AbstractInformationResourceController<Documen
     private static final long serialVersionUID = -6995338248977016810L;
     
     public Long id = -1L;
-    public Document resource = new Document();
     
     
     @SkipValidation
@@ -43,12 +42,6 @@ public class JimsTreehouse extends AbstractInformationResourceController<Documen
     }
     public void setId(Long id) {
         this.id = id;
-    }
-    public Document getResource() {
-        return resource;
-    }
-    public void setResource(Document resource) {
-        this.resource = resource;
     }
 
     private void prodcheck() {

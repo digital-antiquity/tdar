@@ -276,7 +276,23 @@ TDAR.maps = function() {
                 lat: 0,
                 lng: 0
             },
-            zoomLevel: 4
+            zoomLevel: 4,
+            rectStyleOptions: {
+                PARENT: {
+                    strokeColor: "#FF0000",
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    fillColor: "#FF0000",
+                    fillOpacity: 0.35,                    
+                },
+                RESOURCE: {
+                    strokeColor: "#FFFFFF",
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    fillColor: "#FFFFFF",
+                    fillOpacity: 0.35,                    
+                }
+            }
     };
     
     
@@ -297,6 +313,7 @@ TDAR.maps = function() {
         });
     };
     
+    //private: execute a function only when google api is ready
     var _execute = function(callback) {
         if(_isApiLoaded) {
             callback();
@@ -316,8 +333,7 @@ TDAR.maps = function() {
         document.body.appendChild(script);        
     }
     
-    
-    //setup the specified map.
+    //public: setup the specified map, store in data-gmap 
     var _setupMap = function(mapDiv) {
         _execute(function() {
             console.log("running  setupmap");
@@ -327,8 +343,46 @@ TDAR.maps = function() {
                     mapTypeId: google.maps.MapTypeId.ROADMAP
             };
             var map = new google.maps.Map(mapDiv, mapOptions);
+            $(mapDiv).data("gmap", map);
+            
+            _setupLatLongBoxes(mapDiv);
         });
     };
+    
+    var _setupLatLongBoxes = function(mapDiv){
+        //resource box exists?
+        var style = _defaults.rectStyleOptions.RESOURCE;
+        if($('#minx').val() !=="") {
+            var lat1 = $('#miny').val();
+            var lng1 = $('#minx').val();
+            var lat2 = $('#maxy').val();
+            var lng2 = $('#maxx').val();
+            
+            _addBound(mapDiv, style, lat1, lng1, lat2, lng2);
+        };
+        
+        //TODO: parent box exists? currently we don't show parent and child bounds in same map (maybe we should?)
+        
+    };
+    
+    var _addBound = function(mapDiv, rectStyleOptions, lat1, lng1, lat2, lng2) {
+        var p1 = new google.maps.LatLng(lat1, lng1);
+        var p2 = new google.maps.LatLng(lat2, lng2);
+        var bounds = new google.maps.LatLngBounds(p1, p2);
+        var map = $(mapDiv).data("gmap");
+        
+        var rectOptions = $.extend({
+                bounds: bounds, 
+                map: map
+            }, rectStyleOptions);
+       
+        var rect = new google.maps.Rectangle(rectOptions);
+        
+        console.debug("added rect:%s  to map:%s", rect, map);
+        
+        //move/pan the map to contain the rectangle w/ context
+        
+    }
     
     
     return {
@@ -336,6 +390,7 @@ TDAR.maps = function() {
         initMapApi: _initGmapApi,
         setupMap: _setupMap,
         googleApiKey: false,
-        defaults: _defaults
+        defaults: _defaults,
+        addBound: _addBound
     };
 }();
