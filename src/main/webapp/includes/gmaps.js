@@ -271,6 +271,15 @@ TDAR.maps = function() {
     
     var _isApiLoaded = false;
     var _pendingOps = [];
+    var _defaults = {
+            center: {
+                lat: 0,
+                lng: 0
+            },
+            zoomLevel: 4
+    };
+    
+    
     
     //fire the mapapi-ready event, but only after onready
     //FIXME: this may be over-kill. is it conceivable that we want multiple gmap-api event handlers to run?
@@ -312,6 +321,12 @@ TDAR.maps = function() {
     var _setupMap = function(mapDiv) {
         _execute(function() {
             console.log("running  setupmap");
+            var mapOptions = {
+                    zoom: _defaults.zoomLevel,
+                    center: new google.maps.LatLng(_defaults.center.lat, _defaults.center.lng),
+                    mapTypeId: google.maps.MapTypeId.ROADMAP
+            };
+            var map = new google.maps.Map(mapDiv, mapOptions);
         });
     };
     
@@ -320,6 +335,7 @@ TDAR.maps = function() {
         _apiLoaded: _apiLoaded,
         initMapApi: _initGmapApi,
         setupMap: _setupMap,
-        googleApiKey: false
+        googleApiKey: false,
+        defaults: _defaults
     };
 }();

@@ -919,8 +919,8 @@ $(function(){
     <tr id="${prefix}Row_${proxy_index}_" class="repeat-row">
           <#assign creatorType = proxy.actualCreatorType!"PERSON" />
          <td><div class="btn-group creator-toggle-button" data-toggle="buttons-radio">
-	         <button type="button" class="btn personButton <#if type_override == "PERSON" || (creatorType=='PERSON' && type_override=='NONE') >btn-active active</#if>" data-toggle="button">Person</button>
-	         <button type="button" class="btn institutionButton <#if creatorType =='INSTITUTION' || type_override == "INSTITUTION">btn-active active</#if>" data-toggle="button">Institution</button>
+	         <button type="button" class="btn btn-small personButton <#if type_override == "PERSON" || (creatorType=='PERSON' && type_override=='NONE') >btn-active active</#if>" data-toggle="button">Person</button>
+	         <button type="button" class="btn btn-small institutionButton <#if creatorType =='INSTITUTION' || type_override == "INSTITUTION">btn-active active</#if>" data-toggle="button">Institution</button>
 		</div>
 </td>
         <td>

@@ -290,16 +290,16 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return getTdarConfiguration().isRPAEnabled();
     }
 
-    public String getGMapDefaultLat() {
+    public String getMapDefaultLat() {
         DecimalFormat latlong = new DecimalFormat("0.00");
         latlong.setGroupingUsed(false);
-        return latlong.format(getTdarConfiguration().getGmapDefaultLat());
+        return latlong.format(getTdarConfiguration().getMapDefaultLat());
     }
 
-    public String getGMapDefaultLng() {
+    public String getMapDefaultLng() {
         DecimalFormat latlong = new DecimalFormat("0.00");
         latlong.setGroupingUsed(false);
-        return latlong.format(getTdarConfiguration().getGmapDefaultLng());
+        return latlong.format(getTdarConfiguration().getMapDefaultLng());
     }
 
     protected void clearAuthenticationToken() {

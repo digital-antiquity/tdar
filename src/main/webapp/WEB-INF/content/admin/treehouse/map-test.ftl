@@ -6,8 +6,7 @@
     height:450px;
 }
 </style>
-<@edit.title />
-
+<title>Welcome to the treehouse</title>
 <meta name="lastModifiedDate" content="$Date$"/>
 
 </head>

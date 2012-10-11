@@ -26,17 +26,14 @@
         <#--maps support.  TODO: only include maps when we use them.  put this in (sharedFormCompoenents head section?) -->
 
         <script>
-                    var GMapDefaultLat = ${GMapDefaultLat};
-                    var GMapDefaultLng = ${GMapDefaultLng};
+                    var GMapDefaultLat = ${mapDefaultLat};
+                    var GMapDefaultLng = ${mapDefaultLng};
         </script>
         <script type='text/javascript' src="//maps.google.com/maps?file=api&v=2&key=${googleMapsApiKey}"></script>
         <script type="text/javascript" src="//www.google.com/jsapi"></script>
         <#--end maps support -->
 
     <#import "/WEB-INF/macros/header.ftl" as header>
-    <script type="text/javascript">
-    TDAR.maps.googleApiKey = "${googleMapsApiKey?js_string}";
-    </script>
 
     <#assign uri = request.requestURI />
     <#assign bodyid = 'home' />
@@ -197,5 +194,11 @@
         <script src='http://tdar.fervorinteractive.com/js/plugins.js'></script>
         <script src='http://tdar.fervorinteractive.com/js/main.js'></script>
     <@header.scripts production />
+    <script type="text/javascript">
+    TDAR.maps.googleApiKey = "${googleMapsApiKey?js_string}";
+    TDAR.maps.defaults.center.lat = ${mapDefaultLat};
+    TDAR.maps.defaults.center.lng = ${mapDefaultLng};
+    </script>
+    
     </body>
 </html>

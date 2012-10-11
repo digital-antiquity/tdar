@@ -209,12 +209,13 @@ public class TdarConfiguration {
         return assistant.getBooleanProperty("copyright.fields.enabled", false);
     }
 
-    public double getGmapDefaultLat() {
+    //TODO: make mapping props vendor neutral where possible (e.g. lat/long)
+    public double getMapDefaultLat() {
         return assistant.getDoubleProperty("google.map.defaultLatitude", 40.00);
 
     }
 
-    public double getGmapDefaultLng() {
+    public double getMapDefaultLng() {
         return assistant.getDoubleProperty("google.map.defaultLongitude", -97.00);
 
     }
