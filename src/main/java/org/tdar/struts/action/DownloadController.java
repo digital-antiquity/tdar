@@ -21,6 +21,7 @@ import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.statistics.FileDownloadStatistic;
 import org.tdar.core.service.PdfService;
+import org.tdar.utils.DeleteOnCloseFileInputStream;
 
 @ParentPackage("secured")
 @Namespace("/filestore/{informationResourceFileId}")
@@ -128,6 +129,7 @@ public class DownloadController extends AuthenticationAware.Base {
             if (irFileVersion.getExtension().equalsIgnoreCase("PDF")) {
                 try {
                     resourceFile = pdfService.mergeCoverPage(getAuthenticatedUser(), irFileVersion);
+                    inputStream = new DeleteOnCloseFileInputStream(resourceFile);
                 } catch (Exception e) {
                     getLogger().error("Error occured while merging cover page onto " + irFileVersion, e);
                 }
@@ -139,7 +141,9 @@ public class DownloadController extends AuthenticationAware.Base {
             }
             contentLength = resourceFile.length();
             contentType = irFileVersion.getMimeType();
-            inputStream = new FileInputStream(resourceFile);
+            if (inputStream == null) {
+                inputStream = new FileInputStream(resourceFile);
+            }
             if (!irFileVersion.isDerivative()) {
                 InformationResourceFile irFile = irFileVersion.getInformationResourceFile();
                 FileDownloadStatistic stat = new FileDownloadStatistic(new Date(), irFile);
