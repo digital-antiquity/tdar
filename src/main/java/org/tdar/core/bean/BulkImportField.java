@@ -12,7 +12,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation for tracking bulk import fields and provinding a central location for all of the long descriptions.
+ * Annotation for tracking bulk import fields and providing a central location for all of the long descriptions.
  * 
  * @author Adam Brin
  * 

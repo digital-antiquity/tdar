@@ -245,6 +245,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
         return asyncErrors;
     }
 
+    @Override
     public Class<Image> getPersistableClass() {
         return Image.class;
     }

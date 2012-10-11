@@ -10,7 +10,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -19,6 +18,7 @@ import java.util.Map;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -58,7 +58,7 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
         }
     }
 
-    public Map<String, Resource> setup() throws FileNotFoundException {
+    public Map<String, Resource> setup() {
         Map<String, Resource> filenameResourceMap = new HashMap<String, Resource>();
         filenameResourceMap.put("test1.pdf", new Document());
         filenameResourceMap.put("test2.pdf", new Document());
@@ -137,7 +137,7 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
-    public <R extends Resource> void parseExcelFileWithBadField() throws InvalidFormatException, IOException {
+    public <R extends Resource> void parseExcelFileWithBadField() {
         try {
             BulkManifestProxy manifestProxy = generateManifest("bad_field_name.xlsx");
             Map<String, Resource> filenameResourceMap = setup();
@@ -173,7 +173,7 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
-    public <R extends Resource> void parseExcelFileWithBadFirstColumn() throws InvalidFormatException, IOException {
+    public <R extends Resource> void parseExcelFileWithBadFirstColumn() {
         try {
             BulkManifestProxy manifestProxy = generateManifest("bad_first_column.xlsx");
             Map<String, Resource> filenameResourceMap = setup();
@@ -216,10 +216,11 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
         assertTrue(noException);
     }
 
+    @Ignore
     @Test
     @Rollback
     public void testInheritanceSelections() {
-
+        // Martin: The test is here, but has no body? Is this a TODO left undone?
     }
 
 }
