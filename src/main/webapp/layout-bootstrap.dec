@@ -34,9 +34,6 @@
         <#--end maps support -->
 
     <#import "/WEB-INF/macros/header.ftl" as header>
-    <script type="text/javascript">
-    TDAR.maps.googleApiKey = "${googleMapsApiKey?js_string}";
-    </script>
 
     <#assign uri = request.requestURI />
     <#assign bodyid = 'home' />
@@ -194,5 +191,9 @@
         <script src='http://tdar.fervorinteractive.com/js/plugins.js'></script>
         <script src='http://tdar.fervorinteractive.com/js/main.js'></script>
     <@header.scripts production true/>
+    <script type="text/javascript">
+    TDAR.maps.googleApiKey = "${googleMapsApiKey?js_string}";
+    </script>
+    
     </body>
 </html>

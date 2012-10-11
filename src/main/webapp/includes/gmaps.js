@@ -269,14 +269,33 @@ TDAR.namespace("maps");
 TDAR.maps = function() {
     "use strict";
     
+    var _isApiLoaded = false;
+    var _pendingOps = [];
+    
     //fire the mapapi-ready event, but only after onready
     //FIXME: this may be over-kill. is it conceivable that we want multiple gmap-api event handlers to run?
     var _apiLoaded = function() {
         $(function(){
             console.debug("v3 map api loaded");
             $('body').trigger("mapapiready");
+            _isApiLoaded = true;
+            
+            while(_pendingOps[0]) {
+                var op = _pendingOps.shift();
+                op();
+            }
+            
         });
     };
+    
+    var _execute = function(callback) {
+        if(_isApiLoaded) {
+            callback();
+        } else {
+            _pendingOps.push(callback);
+        }
+        
+    }
     
     //public: dynamically load the gmap v3 api
     var _initGmapApi = function() {
@@ -288,9 +307,19 @@ TDAR.maps = function() {
         document.body.appendChild(script);        
     }
     
+    
+    //setup the specified map.
+    var _setupMap = function(mapDiv) {
+        _execute(function() {
+            console.log("running  setupmap");
+        });
+    };
+    
+    
     return {
-        initGmapApi: _initGmapApi,
         _apiLoaded: _apiLoaded,
+        initMapApi: _initGmapApi,
+        setupMap: _setupMap,
         googleApiKey: false
     };
 }();
