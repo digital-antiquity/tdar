@@ -5,41 +5,28 @@
   <@search.headerLinks includeRss=(actionName=="results") />
 </head>
 <body>
-<div>
-<@search.initResultPagination/>
-<#if searchPhrase?? && !explore>
 
+
+
+	<@search.initResultPagination/>
+
+	<div id="titlebar" parse="true">
+		<#if searchPhrase?? && !explore>
 			<h1>Search Results: <span>"${searchPhrase}"</span></h1>
-    </#if>
+			
+		<#elseif explore && exploreKeyword?? && exploreKeyword.definition?has_content >
+		    <h1>${exploreKeyword.label?html}</h1>
+			<div class="glide">
+			    <#if exploreKeyword.definition??>
+			        ${exploreKeyword.definition?html}
+			    </#if>
+			</div>
+	    </#if>
+	</div>
 
 <#if (totalRecords > 0)>
 
-<#if explore && exploreKeyword?? && exploreKeyword.definition?has_content >
-    <h1>${exploreKeyword.label?html}</h1>
-<div class="glide">
-    <#if exploreKeyword.definition??>
-        ${exploreKeyword.definition?html}
-    </#if>
-</div>
-</#if>
-
-<#if (referrer?? && referrer == 'TAG')>
-<div class="notice">
-<b>Welcome TAG Users</b><br/>
-If you'd like to perform an integration:
-<ol>
-<#if !sessionData?? || !sessionData.authenticated>
-<#assign returnurl><@s.url value="/search/search?url=" includeParams="all" /></#assign>
-<li><a href="<@s.url value="/login"/>?url=${returnurl?url}">Login or Register</a></li>
-</#if>
-<li>Bookmark datasets you'd like to integrate</li>
-<li>Visit your workspace to begin the integration process</li>
-</ol>
-<a href="http://dev.tdar.org/confluence/display/TDAR/Data+Integration">visit our documentation for more details</a>
-</div>
-</#if>
-
-	<aside class="span3 options">
+	<div id="sidebar-left" parse="true">
 				
 				<h2>Search Options</h2>
 
@@ -59,33 +46,45 @@ If you'd like to perform an integration:
 
 				<form>
 					<@facetBy facetlist=resourceTypeFacets label="Resource Type(s)" facetParam="resourceTypes" />
-					
 					<@facetBy facetlist=documentTypeFacets label="Document Type(s)" facetParam="documentType" />
-					
 					<@facetBy facetlist=integratableOptionFacets label="Integratable" facetParam="integratableOptions" />
-					
 					<@facetBy facetlist=fileAccessFacets label="File Access" facetParam="fileAccess" />
 				</form>
+	</div>
 
-			</aside>
+	
+	<#if (referrer?? && referrer == 'TAG')>
+		<div class="notice">
+		<b>Welcome TAG Users</b><br/>
+		If you'd like to perform an integration:
+		<ol>
+			<#if !sessionData?? || !sessionData.authenticated>
+			<#assign returnurl><@s.url value="/search/search?url=" includeParams="all" /></#assign>
+			<li><a href="<@s.url value="/login"/>?url=${returnurl?url}">Login or Register</a></li>
+			</#if>
+			<li>Bookmark datasets you'd like to integrate</li>
+			<li>Visit your workspace to begin the integration process</li>
+		</ol>
+		<a href="http://dev.tdar.org/confluence/display/TDAR/Data+Integration">visit our documentation for more details</a>
+		</div>
+	</#if>
 
 
 
-<article class="span9 results">
- <h2>${totalRecords} Results</h2>
- <div class="sort">
- <p>Sort By:</p>
- <form action=''>
-    <@search.sortFields true/>
- </form>
-</div>
+	 <h2>${totalRecords} Results</h2>
+	 <div class="sort">
+		 <p>Sort By:</p>
+		 <form action=''>
+		    <@search.sortFields true/>
+		 </form>
+	 </div>
 
-<div class="limit">
-<@removeFacet facetlist=resourceTypes label="Resource Type(s)" facetParam="resourceTypes" />
-<@removeFacet facetlist=documentType label="Document Type(s)" facetParam="documentType" />
-<@removeFacet facetlist=fileAccess label="File Access" facetParam="fileAccess" />
-
-</div>
+	<div class="limit">
+		<@removeFacet facetlist=resourceTypes label="Resource Type(s)" facetParam="resourceTypes" />
+		<@removeFacet facetlist=documentType label="Document Type(s)" facetParam="documentType" />
+		<@removeFacet facetlist=fileAccess label="File Access" facetParam="fileAccess" />
+	
+	</div>
 
 	<hr class="dbl" />
     <@rlist.listResources resourcelist=results sortfield=sortField expanded=true listTag="" itemTag="" titleTag="h3"/>
@@ -95,7 +94,6 @@ If you'd like to perform an integration:
 <#else>
     <h2>No records match the query.</h2>
 </#if>
-</div>
 
 
 

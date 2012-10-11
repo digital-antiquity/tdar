@@ -34,6 +34,9 @@
         <#--end maps support -->
 
     <#import "/WEB-INF/macros/header.ftl" as header>
+    <script type="text/javascript">
+    TDAR.maps.googleApiKey = "${googleMapsApiKey?js_string}";
+    </script>
 
     <#assign uri = request.requestURI />
     <#assign bodyid = 'home' />
@@ -54,7 +57,7 @@
 	<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
 
 </head>
-<body id="${bodyid}" data-spy="scroll" data-target="#subnavbar">
+<body id="${bodyid}" data-spy="scroll" data-target="#subnavbar" class="results">
 	<div class="container">
 		<div class="row">
 			<header class="span12">
@@ -156,17 +159,20 @@
 	<#if request.requestURI?contains("/search/") ><#assign part="search" /></#if>
 	<section class="row ${part}">
 
-		<#if  page.properties["div.sidebar-left"]?has_content>
+		<#if page.properties["div.titlebar"]?has_content>
+			${page.properties["div.titlebar"]}
+		</#if>
+		<#if page.properties["div.sidebar-left"]?has_content>
 			<aside class="span3">
 		    ${page.properties["div.sidebar-left"]}
 		   </aside>
 		</#if>
 
-		<article class="span${spanSize}">
+		<article class="span${spanSize} results">
 	        ${body}
 		</article>
 
-		<#if  page.properties["div.sidebar-right"]?? && page.properties["div.sidebar-right"] != "">
+		<#if  page.properties["div.sidebar-right"]?has_content>
 			<aside class="span3 dataset">
 		    ${page.properties["div.sidebar-right"]}
 		   </aside>
@@ -190,10 +196,6 @@
         <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/js/bootstrap.min.js"></script>
         <script src='http://tdar.fervorinteractive.com/js/plugins.js'></script>
         <script src='http://tdar.fervorinteractive.com/js/main.js'></script>
-    <@header.scripts production />
-    <script type="text/javascript">
-    TDAR.maps.googleApiKey = "${googleMapsApiKey?js_string}";
-    </script>
-    
+    <@header.scripts production true/>
     </body>
 </html>
