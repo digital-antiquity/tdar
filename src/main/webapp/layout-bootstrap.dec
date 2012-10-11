@@ -195,7 +195,8 @@
         <script src='http://tdar.fervorinteractive.com/js/main.js'></script>
     <@header.scripts production />
     <script type="text/javascript">
-    TDAR.maps.googleApiKey = "${googleMapsApiKey?js_string}";
+    //this is temporary - our localhost v2 api key apparently incompatible with v3 api key.
+    TDAR.maps.googleApiKey = "AIzaSyB532T66Gm5utEfPxiexOWhDc9tr2kyzsI";
     TDAR.maps.defaults.center.lat = ${mapDefaultLat};
     TDAR.maps.defaults.center.lng = ${mapDefaultLng};
     </script>

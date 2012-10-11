@@ -19,8 +19,7 @@
 
 <div class="well">
     <h3>Experimental map</h3>
-    <div id="editmapv3" class="tdar-map-large tdar-map-edit">
-    </div>
+    <div id="editmapv3" class="tdar-map-large tdar-map-edit googlemap"></div>
 </div>
 
 <script>

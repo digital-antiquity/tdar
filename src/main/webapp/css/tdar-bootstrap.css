@@ -71,3 +71,14 @@ div.barlabel {
 .luceneScore , .luceneExplanation {
 	display: none;
 }
+
+/* bootstrap css affects google maps v3 - http://stackoverflow.com/questions/9141249/twitter-bootstrap-css-affecting-google-maps */
+#large-google-map img, div.googlemap img {
+    border: inherit;
+    height: auto;
+    max-width: inherit;
+}
+
+#large-google-map label, div.googlemap label {
+    width: auto; display:inline;
+}
