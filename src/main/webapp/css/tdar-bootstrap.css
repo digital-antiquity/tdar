@@ -65,3 +65,9 @@ div.barlabel {
 .treeview label {
     display: inline;
 }
+
+
+/* javascript:javascript:$('.luceneScore').fadeIn('fast') */
+.luceneScore , .luceneExplanation {
+	display: none;
+}

@@ -51,6 +51,13 @@ html markup) you will probably not like the results
             </#if>
             <@searchResultTitleSection resource titleTag />
 
+            <blockquote class="luceneExplanation">
+    	        <#if resource.explanation?has_content><b>explanation:</b>${resource.explanation}<br/></#if>
+			</blockquote>
+            <blockquote class="luceneScore">
+	            <#if resource.score?has_content><b>score:</b>${resource.score}<br/></#if>
+			</blockquote>
+            
     <#if (resource.citationRecord!false)><span class='cartouche' title="Citation only; this record has no attached files.">Citation</span></#if>
             <#if expanded>
                 <div class="listItem">
