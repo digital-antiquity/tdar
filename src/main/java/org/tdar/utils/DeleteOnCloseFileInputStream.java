@@ -8,6 +8,7 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.exception.TdarRuntimeException;
 
 /*
  * from: http://stackoverflow.com/questions/4693968/is-there-an-existing-fileinputstream-delete-on-close
@@ -37,6 +38,7 @@ public class DeleteOnCloseFileInputStream extends FileInputStream {
                     file = null;
                 } else {
                     logger.error("trying to delete temp file in FILESTORE!!!!!!: {}", file);
+                    throw new TdarRuntimeException("cannot delete a file in the filestore with the DeleteOnCloseInputStream:" + file);
                 }
             }
         }
