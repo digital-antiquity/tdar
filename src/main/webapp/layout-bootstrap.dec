@@ -40,7 +40,7 @@
 	<#if (uri != '' && uri != '/')>
 		<#assign bodyid = "alt" />
 	</#if>
-    <@header.css production true />
+    <@header.css production />
         
     ${head}
 
@@ -190,7 +190,7 @@
         <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/js/bootstrap.min.js"></script>
         <script src='http://tdar.fervorinteractive.com/js/plugins.js'></script>
         <script src='http://tdar.fervorinteractive.com/js/main.js'></script>
-    <@header.scripts production true/>
+    <@header.scripts production />
     <script type="text/javascript">
     TDAR.maps.googleApiKey = "${googleMapsApiKey?js_string}";
     </script>
