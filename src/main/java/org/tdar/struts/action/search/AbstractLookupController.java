@@ -44,7 +44,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     private List<I> results = Collections.emptyList();
     private int totalRecords;
     private SortOption sortField = SortOption.RELEVANCE;
-    private SortOption secondarySortField;
+    private SortOption secondarySortField = SortOption.TITLE;
     private boolean debug = false;
     private ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
     public static final String ERROR_MINIMUM_LENGTH = "Search term shorter than minimum length";

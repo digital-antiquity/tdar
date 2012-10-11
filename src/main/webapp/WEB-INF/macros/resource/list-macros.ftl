@@ -40,6 +40,12 @@ html markup) you will probably not like the results
         </#if>  
             <${itemTag} class="listItem">
             <@searchResultTitleSection resource titleTag />
+
+            <blockquote class="luceneScore">
+    	        <#if resource.explanation?has_content><b>explanation:</b>${resource.explanation}<br/></#if>
+	            <#if resource.score?has_content><b>score:</b>${resource.score}<br/></#if>
+			</blockquote>
+            
             <#if expanded>
                 <div class="listItem">
                 <@view.unapiLink resource  />
