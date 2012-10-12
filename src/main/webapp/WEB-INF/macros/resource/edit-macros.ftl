@@ -1264,7 +1264,9 @@ jquery validation hooks?)
 
 <#macro resourceDataTable showDescription=true selectable=false>
 <div>
-<@s.textfield name="query" id="query" label="Title" cssClass='longfield' /><br/>
+<@s.textfield name="query" id="query" label="Title" cssClass='input-xxlarge' /><br/>
+<div class="row">
+<div class="span4">
 <label for="project-selector">Project:</label>
 <select id="project-selector">
     <option value="" selected='selected'>All Editable Projects</option>
@@ -1281,7 +1283,9 @@ jquery validation hooks?)
         <option value="${editableProject.id?c}" title="${editableProject.title!""?html}"><@truncate editableProject.title 70 /></option>
     </@s.iterator>
   </optgroup>
-</select><br/>
+</select>
+</div>
+<div class="span4">
 <label for="collection-selector">Collection:</label>
 <select id="collection-selector">
     <option value="" selected='selected'>All Collections</option>
@@ -1289,17 +1293,22 @@ jquery validation hooks?)
         <option value="${rc.id?c}" title="${rc.name!""?html}"><@truncate rc.name!"(No Name)" 70 /></option>
     </@s.iterator>
 </select>
-<br/>
-<div>
-    <@s.select labelposition='left' id="statuses" headerKey="" headerValue="Any" label='Status' name='status'  emptyOption='false' listValue='label' list='%{statuses}'/></span>
-    
-    <@s.select labelposition='left' id="resourceTypes" label='Resource Type' name='resourceType'  headerKey="" headerValue="All" emptyOption='false' listValue='label' list='%{resourceTypes}'/></span>
+</div>
+</div>
+<div class="row">
+	<div class="span4">
+	    <@s.select labelposition='left' id="statuses" headerKey="" headerValue="Any" label='Status' name='status'  emptyOption='false' listValue='label' list='%{statuses}'/></span>
+	</div>
+	<div class="span4">
+	    
+	    <@s.select labelposition='left' id="resourceTypes" label='Resource Type' name='resourceType'  headerKey="" headerValue="All" emptyOption='false' listValue='label' list='%{resourceTypes}'/></span>
+	</div>
+</div>
 
-    <br/>
     <@s.select labelposition='left' label='Sort By' emptyOption='false' name='sortBy' 
      listValue='label' list='%{resourceDatatableSortOptions}' id="sortBy"
      value="ID_REVERSE" title="Sort resource by" />
-</div>
+
 <!-- <ul id="proj-toolbar" class="projectMenu"><li></li></ul> -->
 </div>
 <table cellpadding="0" cellspacing="0" border="0" class="display tableFormat" id="resource_datatable" width="650px">

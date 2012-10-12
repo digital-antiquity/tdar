@@ -164,7 +164,9 @@
 	<section class="row ${part}">
 
 		<#if page.properties["div.titlebar"]?has_content>
+		<div class="row">
 			${page.properties["div.titlebar"]}
+		</div>
 		</#if>
 		<#if page.properties["div.sidebar-left"]?has_content>
 			<aside class="span3">

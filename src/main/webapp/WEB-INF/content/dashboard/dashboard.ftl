@@ -26,6 +26,16 @@ try {
 
 </head>
 
+<div id="titlebar" parse="true">
+	<h1>${authenticatedUser.properName}'s Dashboard</h1>
+	
+	<div class="news alert">
+	<B>${siteAcronym} Update:</B>
+	We just upgraded tDAR with a bunch of additional features, a list of features are available <a href="http://www.tdar.org/news/2012/07/tdar-software-update-harris/">here</a> on the tDAR website. 
+	</div>
+</div>
+
+
 <div id="messages" style="margin:2px">
     <div id="message-ie-obsolete" class="message-error" style="display:none">
     You appear to be using an older version of Internet Explorer.  Note that certain features in ${siteAcronym} may not work properly.  
@@ -44,10 +54,6 @@ Welcome back, ${authenticatedUser.firstName}!
 </div>
 </div>
 <br/>
-<div class="news alert">
-<B>${siteAcronym} Update:</B>
-We just upgraded tDAR with a bunch of additional features, a list of features are available <a href="http://www.tdar.org/news/2012/07/tdar-software-update-harris/">here</a> on the tDAR website. 
-</div>
 
 <#if contributor>
 <#if (activeResourceCount == 0)>
