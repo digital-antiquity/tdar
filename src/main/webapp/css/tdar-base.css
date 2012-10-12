@@ -551,8 +551,10 @@ header .welcome-drop ul {
 }
 
 .resource-nav li.edit a {background-position-y: -40px;}
-.resource-nav li.dele a {background-position-y: -95px;}
-.resource-nav li.book a {background-position-y: -150px;}
+.resource-nav li.delete a {background-position-y: -95px;}
+.resource-nav li.bookmark a {background-position-y: -150px;}
+.resource-nav li.un-bookmark a {background-position-y: -300px;}
+.resource-nav li.disabled-bookmark a {background-position-y: -300px;}
 .resource-nav li.meta a {background-position-y: -203px;}
 .resource-nav li.onto a {background-position: 12px -258px;}
 

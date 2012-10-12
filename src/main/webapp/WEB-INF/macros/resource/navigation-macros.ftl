@@ -67,7 +67,7 @@ $(document).ready(function() {
           <@makeDeleteLink namespace current />
         </#if>
         <#if persistable.resourceType??>
-        <li><@list.bookmark resource /></li>
+        <@list.bookmark resource true true />
         <#if resource.resourceType == "PROJECT">                
           <@makeLink "resource" "add?projectId=${resource.id?c}" "add new resource to project" "add" "" false />
         </#if>

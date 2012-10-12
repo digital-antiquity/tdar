@@ -119,8 +119,7 @@
 <#else>
 	<div class="span12 subnav">
 		<ul class="subnav-lft">
-			<li class="current_page_item"><a href="">Search</a></li>
-			<li><a href="">Advanced Search</a></li>
+			<li><a href="<@s.url value="/search"/>">Search</a></li>
 			<li><a href="">Browse</a></li>
 		</ul>
 		<@common.loginMenu true />

@@ -131,29 +131,46 @@ html markup) you will probably not like the results
     </#if>
 </#macro>
 
-<#macro bookmark _resource showLabel=true>
+<#macro bookmark _resource showLabel=true useListItem=false>
   <#if sessionData?? && sessionData.authenticated>
       <#if _resource.resourceType?has_content>
+      <#assign status = "disabled-bookmark" />
+
+        <#if bookmarkedResourceService.isAlreadyBookmarked(_resource, authenticatedUser)>
+	       <#assign status = "un-bookmark" />
+		<#else>
+	       <#assign status = "bookmark" />
+		</#if>
+		
+		<#if useListItem>
+			<li class="${status}">
+		</#if>
+
         <#if _resource.deleted?? && _resource.deleted>
-            <img src='<@s.url value="/images/desaturated/bookmark.png"/>' alt='bookmark(unavailable)' title='Deleted items cannot be bookmarked.' /><#t>
+            <#if !useListItem><img src='<@s.url value="/images/desaturated/bookmark.png"/>' alt='bookmark(unavailable)' title='Deleted items cannot be bookmarked.' /><#t></#if>
             <#if showLabel>
                 <span class="disabled" title='Deleted items cannot be bookmarked.'>bookmark</span><#t>
             </#if>
         <#elseif bookmarkedResourceService.isAlreadyBookmarked(_resource, authenticatedUser)>
             <a href="<@s.url value='/resource/removeBookmark' resourceId='${_resource.id?c}'/>" class="bookmark" onclick='removeBookmark(${_resource.id?c}, this); return false;'>
-                <img src='<@s.url value="/images/bookmark.gif"/>'/><#t>
+                <#if !useListItem><img src='<@s.url value="/images/bookmark.gif"/>'/><#t></#if>
                 <#if showLabel>
                     <span class="bookmark">un-bookmark</span><#t>
                 </#if>
             </a><#t>
         <#else>
             <a href="<@s.url value='/resource/bookmark' resourceId='${_resource.id?c}'/>" onclick='bookmarkResource(${_resource.id?c}, this); return false;'>
-                <img src='<@s.url value="/images/unbookmark.gif"/>'/><#t>
+                <#if !useListItem><img src='<@s.url value="/images/unbookmark.gif"/>'/><#t></#if>
                 <#if showLabel>
                     <span class="bookmark"> bookmark</span><#t>
                 </#if>
             </a><#t>    
         </#if>
+
+		<#if useListItem>
+			</li>
+		</#if>
+		
       </#if>
   </#if>
 </#macro>

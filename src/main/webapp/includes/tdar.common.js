@@ -565,13 +565,25 @@ function removeBookmark(resourceId, link) {
 }
 
 function updateBookmarkTag($elem, url, strOnclick, imgSrc, txt) {
+	var css = "";
     if (txt != undefined & txt != '') {
+    	css = txt;
         txt = "<span class='bookmark'>&nbsp;" + txt + "</span>";
     } else {
         txt = "";
     }
+    
+    var img = "<img src='" + getURI(imgSrc) + "' />";
+    var parent = $elem.parent().get(0);
+
+    if (parent.tagName.toLowerCase() == 'li') {
+    	img = "";
+    	var $parent = $(parent);
+    	$parent.removeClass();
+    	$parent.addClass(css);
+    }
     var newElem = $("<a href='" + getURI(url) + "' onclick='" + strOnclick
-            + "; return false;'><img src='" + getURI(imgSrc) + "' />" + txt
+            + "; return false;'>" + img + txt
             + "</a>");
     $elem.replaceWith(newElem);
 }
