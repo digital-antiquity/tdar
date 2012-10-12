@@ -117,6 +117,22 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
     @Test
     @Rollback
+    public void testComplexGeographicKeywords() {
+        GeographicKeyword snk = genericKeywordService.findOrCreateByLabel(GeographicKeyword.class, "propylon, Athens, Greece, Mnesicles");
+        Document doc = createAndSaveNewResource(Document.class);
+        doc.getGeographicKeywords().add(snk);
+        genericService.saveOrUpdate(doc);
+        searchIndexService.index(doc);
+        firstGroup().getGeographicKeywords().add("Greece");
+        doSearch();
+        assertFalse("we should get back at least one hit", controller.getResults().isEmpty());
+        for (Resource resource : controller.getResults()) {
+            assertTrue("expecting site name for resource", resource.getGeographicKeywords().contains(snk));
+        }
+    }
+
+@Test
+    @Rollback
     public void testSearchDecade() {
         Document doc = createAndSaveNewResource(Document.class);
         doc.setDate(4000);

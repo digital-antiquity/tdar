@@ -47,17 +47,19 @@ public class HydrateableKeywordQueryPart<K extends Keyword> extends AbstractHydr
             }
         }
         FieldQueryPart<String> labelPart = new FieldQueryPart<String>(getFieldName() + ".label", getOperator(), labels);
+        FieldQueryPart<String> labelKeyPart = new FieldQueryPart<String>(getFieldName() + ".labelKeyword", getOperator(), labels);
         labelPart.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
         FieldQueryPart<Long> idPart = new FieldQueryPart<Long>(getFieldName() + ".id", getOperator(), ids);
-        QueryPartGroup field = new QueryPartGroup(getOperator(), idPart, labelPart);
+        QueryPartGroup field = new QueryPartGroup(getOperator(), idPart, labelPart,labelKeyPart);
 
         QueryPartGroup topLevel = new QueryPartGroup(Operator.AND, field);
         if (includeChildren) {
             topLevel.setOperator(Operator.OR);
             FieldQueryPart<Long> irIdPart = new FieldQueryPart<Long>("informationResources." + getFieldName() + ".id", getOperator(), ids);
             FieldQueryPart<String> irLabelPart = new FieldQueryPart<String>("informationResources." + getFieldName() + ".label", getOperator(), labels);
+            FieldQueryPart<String> irLabelKeyPart = new FieldQueryPart<String>("informationResources." + getFieldName() + ".labelKeyword", getOperator(), labels);
             irLabelPart.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
-            QueryPartGroup group = new QueryPartGroup(getOperator(), irLabelPart, irIdPart);
+            QueryPartGroup group = new QueryPartGroup(getOperator(), irLabelPart, irIdPart,irLabelKeyPart);
             topLevel.append(group);
         }
         return topLevel.generateQueryString();
