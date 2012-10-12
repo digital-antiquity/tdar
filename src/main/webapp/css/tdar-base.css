@@ -717,9 +717,9 @@ header .welcome-drop ul {
 	border-bottom: none;
 }
 
-#alt aside h3.downloads span {
+#alt aside h3.downloads span.downloadNumber {
 	display: inline-block;
-	//float: right;
+	float: right;
 	font-size: 13px;
 	line-height: 22px !important;
 	background: #641b11;

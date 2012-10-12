@@ -1,3 +1,7 @@
+section.row.cols {
+	margin-top:3em !important;	
+}
+
 .mapcontainer #map_legend {
 	position: relative;
 	right: -262px;

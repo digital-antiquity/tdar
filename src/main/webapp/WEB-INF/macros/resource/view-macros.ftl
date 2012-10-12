@@ -113,7 +113,7 @@ View freemarker macros
   <#if (resource.totalNumberOfFiles?has_content)>
 				<h3 class="downloads">
 					Downloads
-					<span>${resource.totalNumberOfFiles?c}</span>
+					<span class="downloadNumber">${resource.totalNumberOfFiles?c}</span>
 				</h3>
       <@embargoCheck/>
 		<ul class="downloads">
@@ -472,8 +472,11 @@ No categories or subcategories specified.
     });
 </script>
 </head>
+
+
 <@resourceDeletedCallout />
 <@resourceFlaggedCallout />
+
 <h1>${resource.title}</h1>
 <#if resource.project?? && resource.project.id?? && resource.project.id != -1>
 
