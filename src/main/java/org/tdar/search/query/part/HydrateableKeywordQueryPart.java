@@ -40,7 +40,7 @@ public class HydrateableKeywordQueryPart<K extends Keyword> extends AbstractHydr
             if (getFieldValues().get(i) == null) {
                 continue;
             }
-            if (Persistable.Base.isNotNullOrTransient(getFieldValues().get(i))) {
+            if (!Persistable.Base.isNullOrTransient(getFieldValues().get(i))) {
                 ids.add(getFieldValues().get(i).getId());
             } else if (StringUtils.isNotBlank(getFieldValues().get(i).getLabel())) {
                 labels.add(getFieldValues().get(i).getLabel());
