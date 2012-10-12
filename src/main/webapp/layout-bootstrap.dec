@@ -74,6 +74,7 @@
 							<li><a href="<@s.url value="/project/add"/>">Create a project</a></li>
 							<li><a href="<@s.url value="/collection/add"/>">Create a collection</a></li>
 							<li><a href="<@s.url value="/dashboard"/>">View my resources</a></li>
+							<li><a href="<@s.url value="/workspace/list"/>">Bookmarks</a></li>
 						</ul>
 	
 						<ul>
@@ -120,7 +121,14 @@
 	<div class="span12 subnav">
 		<ul class="subnav-lft">
 			<li><a href="<@s.url value="/search"/>">Search</a></li>
-			<li><a href="">Browse</a></li>
+			<li><a href="<@s.url value="/search/results"/>">Browse</a></li>
+			<li><a href="<@s.url value="/browse/explore"/>">Explore</a></li>
+  			<#if sessionData?? && sessionData.authenticated>
+  				<li><a href="<@s.url value="/workspace/select-tables"/>">Integrate</a></li>
+				<#if administrator>
+					<li><a href="<@s.url value="/admin"/>">Admin</a></li>
+				</#if>
+			</#if>
 		</ul>
 		<@common.loginMenu true />
 	</div>
@@ -169,7 +177,7 @@
 		</article>
 
 		<#if  page.properties["div.sidebar-right"]?has_content>
-			<aside class="span3 dataset">
+			<aside class="span3">
 		    ${page.properties["div.sidebar-right"]}
 		   </aside>
 		</#if>
@@ -177,8 +185,6 @@
 
 
 </div>
-
-	    <@common.bootstrapNavbar />      
 
 	<footer>
 		<div class="container">

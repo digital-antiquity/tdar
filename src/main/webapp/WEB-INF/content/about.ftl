@@ -30,7 +30,13 @@
 <div class="row">
     <h3>Explore</h3>
     <div class="span6">
-        <@common.worldMap />
+        <h3>Getting Started with ${siteAcronym}</h3>
+        <ul>
+        <li><a href="${documentationUrl}">a tutorial that can help you get started</a>.</li>
+        <li> <a href="<@s.url value="/search/results?query=&resourceTypes=PROJECT"/>">browse</a> all projects</li>
+        <li> <a href="<@s.url value="/browse/collections"/>">browse</a> all collections</li>
+        <li> <a href="<@s.url value="/browse/explore"/>">explore</a> ${siteAcronym} by keyword</li>
+        </ul>
     </div>
     <div class="span3">
         <@common.barGraph resourceCacheObjects=homepageResourceCountCache graphLabel="${siteAcronym} by the Numbers" graphHeight=354 />
@@ -41,18 +47,12 @@
 		<#include "featured.ftl" />
 </div>
 <div class="row">
-    <div class="span3">
-        <h3>Getting Started with ${siteAcronym}</h3>
-        <ul>
-        <li><a href="${documentationUrl}">a tutorial that can help you get started</a>.</li>
-        <li> <a href="<@s.url value="/search/results?query=&resourceTypes=PROJECT"/>">browse</a> all projects</li>
-        <li> <a href="<@s.url value="/browse/collections"/>">browse</a> all collections</li>
-        <li> <a href="<@s.url value="/browse/explore"/>">explore</a> ${siteAcronym} by keyword</li>
-        </ul>
-    </div>
+    <div class="span6 map">
+        <@common.worldMap />
+	</div>
 	<div class="span6 news">
 
-				<h3>What&rsquo;s New at tDAR?</h3>
+				<h3>What&rsquo;s New at ${siteAcronym}?</h3>
 
 				<ul>
 					<#assign maxEntries =5 />

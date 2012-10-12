@@ -34,6 +34,7 @@ try {
 </div>
 
 <br/>
+<div class="row">
 <div class="span9">
 Welcome back, ${authenticatedUser.firstName}! 
 <#if contributor>
@@ -41,44 +42,49 @@ Welcome back, ${authenticatedUser.firstName}!
 </#if>
 <br/>
 </div>
+</div>
 <br/>
 <div class="news alert">
-<B>tDAR Update:</B>
+<B>${siteAcronym} Update:</B>
 We just upgraded tDAR with a bunch of additional features, a list of features are available <a href="http://www.tdar.org/news/2012/07/tdar-software-update-harris/">here</a> on the tDAR website. 
 </div>
 
 <#if contributor>
 <#if (activeResourceCount == 0)>
-<div class="glide">
-<h3>Getting Started</h3>
-<ol style='list-style-position:inside'>
-    <li><a href="<@s.url value="/project/add"/>">Start a new Project</a></li>
-    <li><a href="<@s.url value="/resource/add"/>">Add a new Resource</a></li>
-</ol>
-</div>
-
+	<div class="span9">
+		<h3>Getting Started</h3>
+		<ol style='list-style-position:inside'>
+		    <li><a href="<@s.url value="/project/add"/>">Start a new Project</a></li>
+		    <li><a href="<@s.url value="/resource/add"/>">Add a new Resource</a></li>
+		</ol>
+	</div>
 <#else>
-	
-	<h3>At a glance</h3>
-	
+	<div class="span9">
+		<h3>At a glance</h3>
+		<div class="row">
 	    <div class="span4"><@common.pieChart statusCountForUser "statusForUser" "userSubmitterContext=true&includedStatuses" /></div>
 	    <div class="span4"><@common.pieChart resourceCountForUser "resourceForUser" "useSubmitterContext=true&resourceTypes" /></div>
-	
-<hr />	
-	
+	    </div>
+	    <br/>
+	</div>
+	<hr />	
 	<div class="span9">
-	<h3>Item(s) You've Recently Updated</h3>
-	<ol id='recentlyEditedResources'>
-	    <#list recentlyEditedResources as res>
-	    <li id="li-recent-resource-${res.id?c}">
-	        <div class="recent-nav">
-	            <a href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>">edit</a> |
-	            <a href="<@s.url value='/${res.urlNamespace}/delete'><@s.param name="id" value="${res.id?c}"/></@s.url>">delete</a>
-	        </div>
-	           <span class="fixed"> <span class="${res.resourceType.fieldName?lower_case}-color cartouche">${res.resourceType.label}</span> <a href="<@s.url value='/${res.urlNamespace}/view'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@common.truncate res.title 65 /></a></span>
-	    </li>
-	    </#list>
-	</ol>
+		<h3>Item(s) You've Recently Updated</h3>
+		<ol id='recentlyEditedResources'>
+		    <#list recentlyEditedResources as res>
+		    <li id="li-recent-resource-${res.id?c}">
+	           <span class="fixed">
+	           		    <@common.cartouch res true>
+		        <span class="recent-nav">
+		            <a href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>">edit</a> |
+		            <a href="<@s.url value='/${res.urlNamespace}/delete'><@s.param name="id" value="${res.id?c}"/></@s.url>">delete</a>
+		        </span>
+	           		    <a href="<@s.url value='/${res.urlNamespace}/view'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@common.truncate res.title 65 /></a>
+	           		    </@common.cartouch>
+       		    </span>
+		    </li>
+		    </#list>
+		</ol>
 	</div>
 	<hr />
 

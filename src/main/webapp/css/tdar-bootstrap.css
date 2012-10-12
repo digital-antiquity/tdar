@@ -1,5 +1,5 @@
 section.row.cols {
-	margin-top:3em !important;	
+	margin-top: 3em !important;
 }
 
 .mapcontainer #map_legend {
@@ -64,25 +64,39 @@ div.barlabel {
 
 /* undo bootstrap's styling for certain elements when inside of a 'treeview' widget. */
 .treeview input[type=checkbox] {
-    margin: 0 0 0;
-}
-.treeview label {
-    display: inline;
+	margin: 0 0 0;
 }
 
+.treeview label {
+	display: inline;
+}
 
 /* javascript:javascript:$('.luceneScore').fadeIn('fast') */
-.luceneScore , .luceneExplanation {
+.luceneScore,.luceneExplanation {
 	display: none;
 }
 
 /* bootstrap css affects google maps v3 - http://stackoverflow.com/questions/9141249/twitter-bootstrap-css-affecting-google-maps */
-#large-google-map img, div.googlemap img {
-    border: inherit;
-    height: auto;
-    max-width: inherit;
+#large-google-map img,div.googlemap img {
+	border: inherit;
+	height: auto;
+	max-width: inherit;
 }
 
-#large-google-map label, div.googlemap label {
-    width: auto; display:inline;
+#large-google-map label,div.googlemap label {
+	width: auto;
+	display: inline;
+}
+
+.fixed p.cartouche {
+	font-size: 16px;
+	line-height: 12px;
+}
+
+#recentlyEditedResources {
+	margin-right: 40px;
+}
+
+#recentlyEditedResources .recent-nav {
+	float: right;
 }

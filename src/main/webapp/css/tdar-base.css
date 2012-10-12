@@ -1099,9 +1099,9 @@ p.cartouche.image {
 }
 
 footer {
-	height: 154px;
+/*	height: 154px; */
 	margin-top: 60px;
-	background: url(/images/r4/bg-footer.png) 0 0 repeat-x;
+	background: url(/images/r4/bg-footer.png) repeat;
 	padding: 50px 0;
 }
 
