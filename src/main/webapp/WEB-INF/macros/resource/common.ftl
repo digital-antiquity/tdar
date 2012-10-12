@@ -106,7 +106,7 @@ TDAR.uri = function(path) {
                               <li><a href="<@s.url value='/project/add'/>">New Project</a></li>
                               <li><a href="<@s.url value='/document/add'/>" class="item_line">New Document</a></li>
                               <li><a href="<@s.url value='/image/add'/>">New Image</a></li>
-                              <#if editor!false><li><a href="<@s.url value='/video/add'/>">New Video</a></li></#if>
+                              <#if administrator!false><li><a href="<@s.url value='/video/add'/>">New Video</a></li></#if>
                               <li><a href="<@s.url value='/dataset/add'/>">New Dataset</a></li>
                               <li><a href="<@s.url value='/coding-sheet/add'/>" class="item_line">New Coding Sheet</a></li>
                               <li><a href="<@s.url value='/ontology/add'/>">New Ontology</a></li>
