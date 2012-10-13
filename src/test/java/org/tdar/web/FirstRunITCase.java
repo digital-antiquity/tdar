@@ -34,6 +34,8 @@ public class FirstRunITCase extends AbstractAuthenticatedWebTestCase {
         uploadFileToPersonalFilestore(ticketId, TEST_DOCUMENT);
         gotoPage(originalLocation);
         // assume that you're at /project/list
+//        logger.info(getPageText());
+
         clickLinkWithText("New Document");
         assertTextPresentInPage("Create a new Document");
         setInput("document.title", TEST_TITLE);
@@ -47,6 +49,7 @@ public class FirstRunITCase extends AbstractAuthenticatedWebTestCase {
         }
         
         addFileProxyFields(0, FileAccessRestriction.PUBLIC, TEST_DOCUMENT_NAME);
+//        logger.info(getPageCode());
         submitForm();
         HtmlPage page = (HtmlPage) internalPage;
         logger.info(page.getUrl().toString());

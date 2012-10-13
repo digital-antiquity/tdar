@@ -64,6 +64,8 @@ TDAR.uri = function(path) {
 
 
 <#macro bootstrapNavbar>
+
+
             <div class="navbar">
               <div class="navbar-inner">
                 <div class="container">
@@ -89,6 +91,7 @@ TDAR.uri = function(path) {
                           </ul>
                       </li>
                       <#if authenticatedUser??>
+                      
                         <li  class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" >Workspace<b class="caret"></b></a>
                             <ul class="dropdown-menu">
@@ -101,7 +104,6 @@ TDAR.uri = function(path) {
                       <#if contributor!false>
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" >New<b class="caret"></b></a>
-                            <ul class="dropdown-menu">
                               <li><a href="<@s.url value='/project/add'/>">New...</a></li>
                               <li><a href="<@s.url value='/project/add'/>">New Project</a></li>
                               <li><a href="<@s.url value='/document/add'/>" class="item_line">New Document</a></li>
@@ -113,6 +115,9 @@ TDAR.uri = function(path) {
                               <li><a href="<@s.url value='/sensory-data/add'/>">New Sensory Data</a></li>
                               <li><a href="<@s.url value='/collection/add'/>">New Collection</a></li>
                               <li style="border-top: 1px solid #AAA;"><a href="<@s.url value='/batch/add'/>">Batch Upload Tool</a></li>
+                            <ul class="dropdown-menu">
+
+
                             </ul>
                         </li>
                         </#if>

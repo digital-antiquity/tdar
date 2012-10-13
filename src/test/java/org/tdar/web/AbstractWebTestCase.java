@@ -663,11 +663,13 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             HtmlForm htmlForm = null;
             if (getHtmlPage().getForms().size() == 1) {
                 htmlForm = getHtmlPage().getForms().get(0);
+                logger.info("only one form: " + htmlForm.getNameAttribute());
             } else {
                 for (HtmlForm form : getHtmlPage().getForms()) {
                     if (StringUtils.isNotBlank(form.getActionAttribute()) && !form.getNameAttribute().equalsIgnoreCase("autosave") &&
                             !form.getNameAttribute().equalsIgnoreCase("searchheader")) {
                         htmlForm = form;
+                        logger.info("using form: " + htmlForm.getNameAttribute());
                         break;
                     }
                 }

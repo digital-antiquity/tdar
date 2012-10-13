@@ -187,7 +187,7 @@
 
 
 </div>
-
+<@common.bootstrapNavbar />
 	<footer>
 		<div class="container">
 		    <#include "${themeDir}/footer.dec" />
