@@ -3,6 +3,7 @@ package org.tdar.odata.server;
 import java.util.Properties;
 
 import org.odata4j.producer.ODataProducer;
+import org.odata4j.producer.ODataProducerDelegate;
 import org.odata4j.producer.ODataProducerFactory;
 import org.tdar.core.configuration.TdarConfiguration;
 
@@ -34,6 +35,13 @@ public class TDarODataProducerFactory implements ODataProducerFactory {
         if (TdarConfiguration.getInstance().isOdataEnabled()) {
             return producer;
         }
-        return null;
+        return new ODataProducerDelegate() {
+            
+            @Override
+            public ODataProducer getDelegate() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+        };
     }
 }
