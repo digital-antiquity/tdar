@@ -29,6 +29,7 @@
         TDAR.maps.initMapApi();
         var mapdiv = $('#editmapv3')[0];
         TDAR.maps.setupMap(mapdiv);
+        TDAR.maps.setupEditMap(mapdiv);
     });
 </script>
 

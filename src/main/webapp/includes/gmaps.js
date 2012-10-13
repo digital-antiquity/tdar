@@ -279,20 +279,21 @@ TDAR.maps = function() {
             zoomLevel: 4,
             rectStyleOptions: {
                 PARENT: {
+                    strokeColor: "#FF8000",
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    fillColor: "#FF8800",
+                    fillOpacity: 0.35
+                },
+                RESOURCE: {
                     strokeColor: "#FF0000",
                     strokeOpacity: 0.8,
                     strokeWeight: 2,
                     fillColor: "#FF0000",
-                    fillOpacity: 0.35,                    
-                },
-                RESOURCE: {
-                    strokeColor: "#FFFFFF",
-                    strokeOpacity: 0.8,
-                    strokeWeight: 2,
-                    fillColor: "#FFFFFF",
-                    fillOpacity: 0.35,                    
+                    fillOpacity: 0.15
                 }
             }
+
     };
     
     
@@ -327,44 +328,63 @@ TDAR.maps = function() {
     var _initGmapApi = function() {
         var script = document.createElement("script");
         script.type = "text/javascript";
-        script.src = "http://maps.googleapis.com/maps/api/js?key=" +
+        script.src = "http://maps.googleapis.com/maps/api/js?libraries=drawing&key=" +
         		TDAR.maps.googleApiKey +
         		"&sensor=false&callback=TDAR.maps._apiLoaded";
         document.body.appendChild(script);        
     }
     
-    //public: setup the specified map, store in data-gmap 
+    //public: initialize a gmap inside of the specified div element.  If hidden inputs define spatial bounds,  draw
+    //          a box and pan/zoom the map to fit the bounds.
     var _setupMap = function(mapDiv) {
         _execute(function() {
             console.log("running  setupmap");
-            var mapOptions = {
+            var mapOptions = $.extend({}, _defaults.mapOptions, {
                     zoom: _defaults.zoomLevel,
                     center: new google.maps.LatLng(_defaults.center.lat, _defaults.center.lng),
-                    mapTypeId: google.maps.MapTypeId.ROADMAP
-            };
+                    mapTypeControlOptions:{
+                        mapTypeIds: [
+                            google.maps.MapTypeId.TERRAIN,
+                            google.maps.MapTypeId.SATELLITE,
+                            google.maps.MapTypeId.ROADMAP,
+                            google.maps.MapTypeId.HYBRID
+                        ]
+                    },
+                    mapTypeId: google.maps.MapTypeId.TERRAIN,
+                    streetViewControl: false
+
+            });
             var map = new google.maps.Map(mapDiv, mapOptions);
             $(mapDiv).data("gmap", map);
-            
+
             _setupLatLongBoxes(mapDiv);
         });
     };
-    
+
+    //private: look for resource latlongboxes and draw rectangles if found.
     var _setupLatLongBoxes = function(mapDiv){
-        //resource box exists?
         var style = _defaults.rectStyleOptions.RESOURCE;
+        var gmap = $(mapDiv).data("gmap");
         if($('#minx').val() !=="") {
             var lat1 = $('#miny').val();
             var lng1 = $('#minx').val();
             var lat2 = $('#maxy').val();
             var lng2 = $('#maxx').val();
             
-            _addBound(mapDiv, style, lat1, lng1, lat2, lng2);
+            var rect = _addBound(mapDiv, style, lat1, lng1, lat2, lng2);
+            gmap.fitBounds(rect.getBounds());
+            //pan/zoom the 
         };
         
-        //TODO: parent box exists? currently we don't show parent and child bounds in same map (maybe we should?)
+        $(mapDiv).data("resourceRect", rect);
         
+        
+        //TODO: draw a rect for parent project (but don't pan/zoom to it)
+
+        //TODO: add "snap back" control, for when the user pans/zooms away from resource bounds
     };
-    
+
+    //private: add rect to map, returns: google.maps.Rectangle
     var _addBound = function(mapDiv, rectStyleOptions, lat1, lng1, lat2, lng2) {
         var p1 = new google.maps.LatLng(lat1, lng1);
         var p2 = new google.maps.LatLng(lat2, lng2);
@@ -381,16 +401,111 @@ TDAR.maps = function() {
         console.debug("added rect:%s  to map:%s", rect, map);
         
         //move/pan the map to contain the rectangle w/ context
-        
+        return rect;
     }
-    
-    
+
+    //public: setup a map in an editing context (after map has been initialized for viewing)
+    var _setupEditMap = function(mapDiv) { _execute(function(){
+        var gmap = $(mapDiv).data("gmap");
+
+        //add "select region" button
+        var $controlDiv = $('<div class="tdar-gmap-control"></div>');
+        //var $controlUi = $('<div class="tdar-gmap-control-ui"></div>');
+        var $selectButton = $('<button type="button" id="btnSelectRegion" class="btn btn-small btn-primary">Select Region</button>');
+        var $clearButton = $('<button type="button" id="btnClearRect" class="btn btn-small ">Clear Region</button>');
+        $controlDiv.append($selectButton).append($clearButton);
+
+        var drawingManager = _setupDrawingManager(mapDiv);
+
+        //handle select click
+        google.maps.event.addDomListener($selectButton[0], 'click', function() {
+            var existingRect = $(mapDiv).data("resourceRect");
+            console.log(" select region");
+            //remove any existing rectangle
+            if(existingRect) {
+                existingRect.setMap();
+                $(mapDiv).removeData("resourceRect");
+            }
+            drawingManager.setDrawingMode(google.maps.drawing.OverlayType.RECTANGLE);
+            $(mapDiv).find('.tdar-gmap-control button').prop("disabled", true);
+        });
+
+        //handle clear click
+        google.maps.event.addDomListener($clearButton[0], 'click', function() {
+            var existingRect = $(mapDiv).data("resourceRect");
+            if(!existingRect) return;
+            existingRect.setMap();
+            $(mapDiv).removeData("resourceRect");
+
+            //tell the DOM that rect is gone
+            _fireBoundsModified(mapDiv, null);
+        });
+
+        //add control to map
+        gmap.controls[google.maps.ControlPosition.TOP_CENTER].push($controlDiv[0]);
+
+        //if rect already present,  make it editable
+        var rect = $(mapDiv).data('resourceRect');
+        if(rect) {
+            rect.setEditable(true);
+            google.maps.event.addDomListener(rect, 'bounds_changed', function() {
+                _fireBoundsModified(mapDiv, rect);
+            });
+
+        }
+
+
+    })};
+
+    //gmap events are not 'seen' by the DOM.  bubble them up by firing custom event on the container div
+    var _fireBoundsModified = function(mapDiv, rect) {
+        console.log("resource rect created/changed:: map:%s,  rect:%s", mapDiv.id, rect);
+        $(mapDiv).trigger("resourceboundschanged", rect.getBounds());
+    };
+
+    var _setupDrawingManager = function(mapDiv){
+        var gmap = $(mapDiv).data("gmap");
+
+        //add drawing manager to map,
+        var drawingManager = new google.maps.drawing.DrawingManager({
+            drawingMode: null, //drawing mode off
+            drawingControl: false, //drawing toolbar hidden
+            drawingControlOptions: {
+                position: google.maps.ControlPosition.TOP_CENTER,
+                drawingModes: [
+                    google.maps.drawing.OverlayType.RECTANGLE
+                ]
+            },
+            rectangleOptions:$.extend({}, _defaults.rectStyleOptions.RESOURCE)
+        });
+        drawingManager.setMap(gmap);
+
+        //as soon as rectangle is complete, turn off drawing mode, make rect editable
+        google.maps.event.addDomListener(drawingManager, 'rectanglecomplete', function(rect) {
+            drawingManager.setDrawingMode();
+            rect.setEditable(true);
+            $(mapDiv).data("resourceRect", rect);
+            $(mapDiv).find('.tdar-gmap-control button').prop("disabled", false);
+
+            //fire bounds-modified event for this new rect right now, and again whenever the bounds change
+            _fireBoundsModified(mapDiv, rect);
+            google.maps.event.addDomListener(rect, 'bounds_changed', function() {
+                _fireBoundsModified(mapDiv, rect);
+            });
+        });
+
+        $(mapDiv).data("drawingManager", drawingManager);
+        return drawingManager;
+    };
+
+
     return {
         _apiLoaded: _apiLoaded,
         initMapApi: _initGmapApi,
         setupMap: _setupMap,
         googleApiKey: false,
         defaults: _defaults,
-        addBound: _addBound
+        addBound: _addBound,
+        setupEditMap: _setupEditMap
     };
 }();
