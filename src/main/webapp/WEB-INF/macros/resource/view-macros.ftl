@@ -249,19 +249,22 @@ No categories or subcategories specified.
 <#macro keywords showParentProjectKeywords=true>
   <#if resource.containsActiveKeywords >
 		<h2>Keywords</h2>
-		<div class="sub-col sub-col-lft">
-			    <#if resource.project?? && !resource.project.active && resource.inheritingSomeMetadata>
-				    <em>Note: Inherited values from this project are not available because the project is not active</em>
-			    </#if>
-				<@keywordSection "Site Name" resource.activeSiteNameKeywords "siteNameKeywords" />
-				<@keywordSection "Site Type" resource.activeSiteTypeKeywords "uncontrolledSiteTypeKeywords" />
-				<@keywordSection "Culture" resource.activeCultureKeywords "uncontrolledCultureKeywords" />
+	    <#if resource.project?? && !resource.project.active && resource.inheritingSomeMetadata>
+		    <em>Note: Inherited values from this project are not available because the project is not active</em>
+	    </#if>
+	    <div class="row">
+			<div class="span45">
+					<@keywordSection "Site Name" resource.activeSiteNameKeywords "siteNameKeywords" />
+					<@keywordSection "Site Type" resource.activeSiteTypeKeywords "uncontrolledSiteTypeKeywords" />
+					<@keywordSection "Culture" resource.activeCultureKeywords "uncontrolledCultureKeywords" />
+			</div>
+			<div class="span45">
+					<@keywordSection "Material" resource.activeMaterialKeywords "query" />
+					<@keywordSection "Investigation Types" resource.activeInvestigationTypes "query" />
+					<@keywordSection "General" resource.activeOtherKeywords "query" />
+			</div>
 		</div>
-		<div class="sub-col sub-col-rht">
-				<@keywordSection "Material" resource.activeMaterialKeywords "query" />
-				<@keywordSection "Investigation Types" resource.activeInvestigationTypes "query" />
-				<@keywordSection "General" resource.activeOtherKeywords "query" />
-		</div>
+		<hr/>
   </#if>
 </#macro>
 
@@ -445,7 +448,7 @@ No categories or subcategories specified.
 		  </#if>
 		</#list>
 		<#if contents?has_content>
-		<strong><b>${role.label}(s):</strong> <#noescape>${contents}<#t/></#noescape> <br/>
+		<strong>${role.label}(s):</strong> <#noescape>${contents}<#t/></#noescape> <br/>
 		</#if>
 	</#list>
 	</#if>
@@ -811,41 +814,41 @@ ${_date?string('MM/dd/yyyy')}<#t>
 				<ul>
 					<@view.resourceProvider />
 				    <#if resource.seriesName?has_content>
-				    <li><strong>Series name</strong>${resource.seriesName}</li>
+				    <li><strong>Series name</strong><br>${resource.seriesName}</li>
 				    </#if>
 				    <#if resource.seriesNumber?has_content>
-				    <li><strong>Series number</strong>${resource.seriesNumber}</li>
+				    <li><strong>Series number</strong><br>${resource.seriesNumber}</li>
 				    </#if>
 				    <#if resource.journalName?has_content>
-				        <li><strong>Journal</strong>${resource.journalName}<#if resource.volume?has_content>, ${resource.volume}</#if>
+				        <li><strong>Journal</strong><br>${resource.journalName}<#if resource.volume?has_content>, ${resource.volume}</#if>
 						    <!-- issue -->
 						    <#if resource.journalNumber?has_content> (${resource.journalNumber}) </#if>
 				        </li>
 				    </#if>
 					  <#if resource.bookTitle?has_content>
-						  <li><strong>Book Title</strong>${resource.bookTitle}</li>
+						  <li><strong>Book Title</strong><br>${resource.bookTitle}</li>
 					  </#if>
 				    <#if resource.numberOfVolumes??>
-					    <li><strong>Number of volumes</strong>${resource.numberOfVolumes}</li>
+					    <li><strong>Number of volumes</strong><br>${resource.numberOfVolumes}</li>
 				    </#if>
 				    </li>
 				    <#if resource.edition?has_content>
-				    <li><strong>Edition</strong>${resource.edition}</li>
+				    <li><strong>Edition</strong><br>${resource.edition}</li>
 				    </#if>
 				    <#if (resource.publisher?has_content ||  resource.publisherLocation?has_content)>
-					    <li><strong>Publisher</strong>${resource.publisher.name} 
+					    <li><strong>Publisher</strong><br>${resource.publisher.name} 
 						    <#if resource.degree?has_content>${resource.degree.label}</#if>
 					        <#if resource.publisherLocation?has_content> (${resource.publisherLocation}) </#if>
 				        </li>
 				    </#if>
 				    <#if resource.isbn?has_content>
-					    <li><strong>ISBN</strong>${resource.isbn}</li>
+					    <li><strong>ISBN</strong><br>${resource.isbn}</li>
 				    </#if>
 				    <#if resource.issn?has_content>
-				    	<li><strong>ISSN</strong>${resource.issn}</li>
+				    	<li><strong>ISSN</strong><br>${resource.issn}</li>
 				    </#if>
 				    <#if resource.doi?has_content>
-				    	<li><strong>DOI</strong>${resource.doi}</li>
+				    	<li><strong>DOI</strong><br>${resource.doi}</li>
 				    </#if>
 
 

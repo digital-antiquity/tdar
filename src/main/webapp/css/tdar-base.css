@@ -8,6 +8,7 @@
 .span6{width:480px;}
 .span5{width:380px;}
 .span4{width:305px;}
+.span45{width:330px;}
 .span3{width:220px;}
 .span2{width:140px;}
 .span1{width:80px;}
@@ -65,7 +66,7 @@ body {
 	font-weight: 700;
 	font-size: 20px;
 	line-height: 20px;
-	margin: 0;
+	margin: 1em 0 0 0;
 }
 
 a {
@@ -562,13 +563,15 @@ header .welcome-drop ul {
 	background: url(/images/r4/bg-cols.png) top right repeat-y;
 }
 
-.cols h1 {
+.cols h1, #titlebar h1 {
 	font-family: "soleil", sans-serif;
 	font-weight: 700;
 	font-size: 30px;
 	line-height: 34px;
-	margin: -5px 0 0 0;
-	
+	margin-top: 45px !important;
+	margin-right: 0px;
+	margin-left: 0px;
+	margin-bottom: 50px  !important;	
 }
 
 .cols h2 {
@@ -576,7 +579,7 @@ header .welcome-drop ul {
 	font-weight: 700;
 	font-size: 20px;
 	line-height: 24px;
-	margin: -5px 0 0 0;
+	margin: 1em 0 0 0;
 	//float: left;
 	
 }
@@ -649,7 +652,7 @@ header .welcome-drop ul {
 .cols .guide {background: #b6a07d !important;}
 
 .sub-col {
-	//float: left;
+	float: left;
 	width: 350px;
 	margin: 5px 0 0 40px;
 }
@@ -946,20 +949,20 @@ contrib article h2, .contrib article p, .contrib article ul {
 	margin-left: 520px;
 }
 
-.search h1, .search h2, .search h3, .search h4, .search p, .search aside li {
+#titlebar h1, .search h1, .search h2, .search h3, .search h4, .search p, .search aside li {
 	font-family: "soleil", sans-serif;
 	margin: 0;
 	padding: 0;
 }
 
-.search h1 {
+ .search h1 {
 	font-size: 30px;
 	line-height: 34px;
 	font-weight: 700;
 	margin: 45px 0 50px 40px;
 }
 
-.search h1 span {color: #a72d1d;}
+.results #titlebar h1 span, .search h1 span {color: #a72d1d;}
 
 .search h2 {
 	font-size: 20px;

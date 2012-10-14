@@ -24,7 +24,7 @@
 		<li><a href="#divAccessRights">Permissions</a></li>
 	</ul>
 	<span class="brand">
-		<span class="button btn">FIX ME!</span>
+		<span class="button btn btn-primary submitButton" id="fakeSubmitButton">Submit</span>
 	</span>
 	</div>
   </div>

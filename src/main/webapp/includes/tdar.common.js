@@ -1390,6 +1390,7 @@ TDAR.common = function() {
         var $button = $("#submitButton");
         $button.removeAttr('disabled').removeClass("waitingSpinner");
         
+        $("#fakeSubmitButton").click(function() {$("#submitButton").click();});
         //FIXME: we should figure out if a) $.ready is not always called for bfcached pages, and b)if not, where to hook into 'pageshow' event.
         //I'm 99% sure the following code in this pageshow handler will never execute because caller runs in a $.ready handler.
         $(window).bind("pageshow", function() {
