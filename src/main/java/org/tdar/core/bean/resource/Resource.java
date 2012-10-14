@@ -1585,7 +1585,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     public boolean isLessThanDayOld() {
         return Days.daysBetween(new DateTime(new Date()), new DateTime(getDateCreated())).getDays() < 1;
     }
-    
+
     public boolean isContainsActiveKeywords() {
 
         if (CollectionUtils.isNotEmpty(getActiveSiteNameKeywords()) || CollectionUtils.isNotEmpty(getActiveCultureKeywords()) ||
@@ -1595,4 +1595,35 @@ public class Resource extends JsonModel.Base implements Persistable,
         }
         return false;
     }
+
+    @Transient
+    public List<String> getKeywordProperties() {
+        List<String> toReturn = new ArrayList<String>();
+        if (CollectionUtils.isNotEmpty(getActiveCultureKeywords())) {
+            toReturn.add("activeCultureKeywords");
+        }
+        if (CollectionUtils.isNotEmpty(getActiveMaterialKeywords())) {
+            toReturn.add("activeMaterialKeywords");
+        }
+        if (CollectionUtils.isNotEmpty(getActiveSiteNameKeywords())) {
+            toReturn.add("activeSiteNameKeywords");
+        }
+        if (CollectionUtils.isNotEmpty(getActiveSiteTypeKeywords())) {
+            toReturn.add("activeSiteTypeKeywords");
+        }
+        if (CollectionUtils.isNotEmpty(getActiveInvestigationTypes())) {
+            toReturn.add("activeInvestigationTypes");
+        }
+        if (CollectionUtils.isNotEmpty(getActiveOtherKeywords())) {
+            toReturn.add("activeOtherKeywords");
+        }
+        if (CollectionUtils.isNotEmpty(getActiveGeographicKeywords())) {
+            toReturn.add("activeGeographicKeywords");
+        }
+        if (CollectionUtils.isNotEmpty(getActiveTemporalKeywords())) {
+            toReturn.add("activeTemporalKeywords");
+        }
+        return toReturn;
+    }
+
 }

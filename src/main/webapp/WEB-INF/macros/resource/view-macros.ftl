@@ -218,11 +218,6 @@ No categories or subcategories specified.
 		              <!-- ${activeResource.firstLatitudeLongitudeBox.scale } -->
 					</p>
 				</div>
-				<iframe width="740" height="400" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" 
-				src="https://maps.google.com/maps?q=${(activeResource.firstLatitudeLongitudeBox.minObfuscatedLatitude + activeResource.firstLatitudeLongitudeBox.maxObfuscatedLatitude)/2} ${(activeResource.firstLatitudeLongitudeBox.minObfuscatedLongitude + activeResource.firstLatitudeLongitudeBox.maxObfuscatedLongitude)/2}&t=t&z=11&output=embed" >
-				</iframe>
-<!-- path=color:0xff0000ff|weight:2|${activeResource.firstLatitudeLongitudeBox.minObfuscatedLatitude} ${activeResource.firstLatitudeLongitudeBox.minObfuscatedLongitude}|${activeResource.firstLatitudeLongitudeBox.minObfuscatedLatitude} ${activeResource.firstLatitudeLongitudeBox.maxObfuscatedLongitude}|${activeResource.firstLatitudeLongitudeBox.maxObfuscatedLatitude} ${activeResource.firstLatitudeLongitudeBox.maxObfuscatedLongitude}|${activeResource.firstLatitudeLongitudeBox.maxObfuscatedLatitude} ${activeResource.firstLatitudeLongitudeBox.minObfuscatedLongitude}|${activeResource.firstLatitudeLongitudeBox.minObfuscatedLatitude} ${activeResource.firstLatitudeLongitudeBox.minObfuscatedLongitude}
--->				<hr>
     
           <div id='large-google-map' style='width:740;height:400px;'></div>
           <input type="hidden"  readonly='true' value="${activeResource.firstLatitudeLongitudeBox.maxObfuscatedLatitude}" id="maxy" size=14 />
@@ -232,8 +227,6 @@ No categories or subcategories specified.
        <br/>
        <br/>
     </#if>
-   	<@keywordSection "Geographic Keywords" resource.activeGeographicKeywords "query" />
-
   </#if>
 </#macro>
 
@@ -253,16 +246,45 @@ No categories or subcategories specified.
 		    <em>Note: Inherited values from this project are not available because the project is not active</em>
 	    </#if>
 	    <div class="row">
-			<div class="span45">
-					<@keywordSection "Site Name" resource.activeSiteNameKeywords "siteNameKeywords" />
-					<@keywordSection "Site Type" resource.activeSiteTypeKeywords "uncontrolledSiteTypeKeywords" />
-					<@keywordSection "Culture" resource.activeCultureKeywords "uncontrolledCultureKeywords" />
-			</div>
-			<div class="span45">
-					<@keywordSection "Material" resource.activeMaterialKeywords "query" />
-					<@keywordSection "Investigation Types" resource.activeInvestigationTypes "query" />
-					<@keywordSection "General" resource.activeOtherKeywords "query" />
-			</div>
+				<#if (resource.keywordProperties?size > 1)>	    
+					<div class="span45">
+				<#elseif resource.keywordProperties?size == 1>
+					<div clsss="span9">
+				</#if>
+				
+				<#list resource.keywordProperties as prop>
+				<#-- FIXME: somehow this should be folded into SearchFieldType to not have all of this if/else -->
+					<#if ((resource.keywordProperties?size /2)?ceiling == prop_index)>	    
+						</div><div class="span45">
+					</#if>
+					<#if prop == "activeSiteNameKeywords">
+						<@keywordSection "Site Name" resource.activeSiteNameKeywords "siteNameKeywords" />
+					</#if>
+					<#if prop == "activeSiteTypeKeywords">
+						<@keywordSection "Site Type" resource.activeSiteTypeKeywords "uncontrolledSiteTypeKeywords" />
+					</#if>
+					<#if prop == "activeCultureKeywords">
+						<@keywordSection "Culture" resource.activeCultureKeywords "uncontrolledCultureKeywords" />
+					</#if>					
+					<#if prop == "activeMaterialKeywords">
+						<@keywordSection "Material" resource.activeMaterialKeywords "query" />
+					</#if>
+					<#if prop == "activeInvestigationTypes">
+						<@keywordSection "Investigation Types" resource.activeInvestigationTypes "query" />
+					</#if>
+					<#if prop == "activeOtherKeywords">
+						<@keywordSection "General" resource.activeOtherKeywords "query" />
+					</#if>
+					<#if prop == "activeTemporalKeywords">
+						<@keywordSection "Temporal Keywords" resource.activeTemporalKeywords "query" />
+					</#if>
+					<#if prop == "activeGeographicKeywords">
+					   	<@keywordSection "Geographic Keywords" resource.activeGeographicKeywords "query" />
+					</#if>
+				</#list>
+				<#if (resource.keywordProperties?size > 0)>	    
+					</div>
+				</#if>				
 		</div>
 		<hr/>
   </#if>
@@ -273,18 +295,14 @@ No categories or subcategories specified.
 <#if !resource.coverageDates.isEmpty() || !resource.temporalKeywords.isEmpty()>
 <h2>Temporal Coverage</h2>
     <#if !resource.coverageDates.isEmpty()>
-    <#list resource.coverageDates as coverageDate>
-    <b>${coverageDate.dateType.label}</b>: 
-        <#if coverageDate.startDate?has_content>${coverageDate.startDate?c}<#else>?</#if> to 
-                <#if coverageDate.endDate?has_content>${coverageDate.endDate?c}<#else>?</#if>
-                 <#if (coverageDate.description?has_content)> (${coverageDate.description})</#if><br/>
-    </#list>
+	    <#list resource.coverageDates as coverageDate>
+		    <b>${coverageDate.dateType.label}</b>: 
+		        <#if coverageDate.startDate?has_content>${coverageDate.startDate?c}<#else>?</#if> to 
+		                <#if coverageDate.endDate?has_content>${coverageDate.endDate?c}<#else>?</#if>
+		                 <#if (coverageDate.description?has_content)> (${coverageDate.description})</#if><br/>
+	    </#list>
     </#if>
-    
-    <div>
-    	<@keywordSection "Temporal Keywords" resource.activeTemporalKeywords "query" />
-        
-    </div>
+
     </#if>
 </#macro>
 
