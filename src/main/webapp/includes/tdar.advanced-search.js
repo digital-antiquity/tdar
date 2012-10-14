@@ -1,6 +1,7 @@
 function initAdvancedSearch() {
     TDAR.common.initFormValidation($('#searchGroups')[0]);
-
+    initializeRepeatRow();
+    
     // when user changes searchType: swap out the term ui snippet
     $('#searchGroups').on('change', '.searchType', function(evt) {
         // console.log("change event on %s", this.id);

@@ -11,7 +11,7 @@
 		the simple theme. it may only work if you're using basic JSP struts tags 
 		though, needs testing. -->
   <!-- <constant name="struts.ui.templateSuffix" value="java" /> -->
-  <constant name="struts.ui.theme" value="tdar"/>
+  <constant name="struts.ui.theme" value="bootstrap"/>
   <constant name="struts.url.includeParams" value="none"/>
   <constant name="struts.action.excludePattern" value="/services/.*"/>
   <!-- set it to 50 MB to start with, using the ISI standard for megabyte, 

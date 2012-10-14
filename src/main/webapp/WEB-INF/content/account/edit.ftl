@@ -4,14 +4,6 @@
 <meta name="lastModifiedDate" content="$Date$"/>
 <style type="text/css">
 label.error {display:block;}
-label {width:14em;}
-input[type=text],input[type=password] {margin-left:16em}
-textarea {margin-left:150pt}
-input[type=radio]+ label + input[type=radio] {margin-left:4em}
-label.radio {width:4em !important}
-
-.field {margin-left:16em !important}
-textarea {width:32em}
 </style>
 <script type='text/javascript'>
 $(function() {
@@ -79,7 +71,7 @@ function switchContributorReasonDisplay(shouldDisplay) {
 
 <h2>Account Registration</h2>
 <hr/>
-<@s.form id="accountForm" method="post" action="register">
+<@s.form id="accountForm" method="post" action="register" cssClass="form-horizontal">
 
 <div class="glide">
     <@s.hidden name='personId' value='${person.id!-1}'/>
@@ -91,7 +83,7 @@ function switchContributorReasonDisplay(shouldDisplay) {
     <@s.textfield spellcheck="false" required='true' labelposition='left' id='confirmEmail' label="Confirm email address" name="confirmEmail" cssClass="required email" size='25'/><br/> 
 
     <#if privacyControlsEnabled>   
-        <@s.checkbox labelposition='left' label='Make email public?' name="isEmailPublic" id="isEmailPublic" value="false" cssStyle='margin-left: 16em;'/><br/>
+        <@s.checkbox labelposition='left' label='Make email public?' name="isEmailPublic" id="isEmailPublic" value="false" /><br/>
         <p class="field"><em><b>NOTE: </b> Making your email address public will display it to anyone who visits ${siteAcronym}, this includes search engines, spammers, and visitors who are not logged in.</em></p>
     </#if>
     
@@ -101,7 +93,7 @@ function switchContributorReasonDisplay(shouldDisplay) {
     <@s.textfield label='Work phone' labelposition='left' name='person.phone' id='phone' size='25'/><br/>
 
      <#if privacyControlsEnabled>
-        <@s.checkbox labelposition='left' label='Make phone public?' name="isPhonePublic" id="isPhonePublic" value="false" cssStyle='margin-left: 16em;'/><br/>
+        <@s.checkbox labelposition='left' label='Make phone public?' name="isPhonePublic" id="isPhonePublic" value="false" /><br/>
         <p class="field"><em><b>NOTE:</b> Making your phone # public will display it to anyone who visits ${siteAcronym}, this includes search engines, and visitors who are not logged in.</em></p>
     </#if>    
 
@@ -115,7 +107,7 @@ function switchContributorReasonDisplay(shouldDisplay) {
         </div> 
     </#if>
     <@s.checkbox labelposition='left' label='Do you plan to contribute?' name="requestingContributorAccess" id="contributor-id" 
-    value="true" cssStyle='margin-left: 16em;' />
+    value="true" />
     <div id='contributorReasonTextArea'>
     <br/>
     <label for='contributorReasonId' style="line-height: 1.2em;">
@@ -142,7 +134,7 @@ function switchContributorReasonDisplay(shouldDisplay) {
     <div class='info'>By submitting the following form you <a href='#terms'>signify your
     consent to the above terms and conditions.</a></div>
     <div id="error"></div>
-    <@s.submit cssStyle='margin-left: 16em;' value="Save" />
+    <input type="submit" class='btn btn-primary submitButton' name="submitAction" value="Save">
     </div>
 </@s.form>
 </body>

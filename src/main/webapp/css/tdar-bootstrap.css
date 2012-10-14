@@ -1,3 +1,8 @@
+.tdarCommentDescription { /* do not remove */
+	display: none !important;
+	visibility: hidden !important;
+}
+
 section.row.cols {
 	margin-top: 3em !important;
 }
@@ -99,4 +104,13 @@ div.barlabel {
 
 #recentlyEditedResources .recent-nav {
 	float: right;
+}
+
+.creatorPerson .controls.controls-row,.creatorInstitution .controls.controls-row
+	{
+	margin-left: 0px;
+}
+
+.control-group-list .controls {
+	margin-left:10px !important;
 }

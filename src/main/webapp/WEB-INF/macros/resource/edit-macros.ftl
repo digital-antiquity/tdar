@@ -158,7 +158,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 <#macro keywordRow keywordField keyword_index=0 showDelete=true>
     <div class="controls controls-row " id='${keywordField}Row_${keyword_index}_'>
-        <@s.textfield theme="tdar" name='${keywordField}[${keyword_index}]' cssClass='input-large keywordAutocomplete' placeholder="enter keyword"/>
+        <@s.textfield theme="tdar" name='${keywordField}[${keyword_index}]' cssClass='input-xxlarge keywordAutocomplete' placeholder="enter keyword"/>
         <#if showDelete>
         <@clearDeleteButton id="${keywordField}Row" />
         </#if>
@@ -386,7 +386,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <@inheritsection checkboxId='cbInheritingMaterialInformation' name='resource.inheritingMaterialInformation'  showInherited=showInherited />
     <div id="divMaterialInformation">
         <@s.checkboxlist name='materialKeywordIds' list='allMaterialKeywords' listKey='id' listValue='label' listTitle="definition"  label="Select Type(s)"
-            numColumns="3" cssClass="smallIndent" />
+            spanSize="3" numColumns="3" cssClass="smallIndent" />
     </div>      
 </div>
 
@@ -788,7 +788,7 @@ $(function(){
           <td> 
               <@s.hidden name="resourceCollections[${collection_index}].id"  id="resourceCollectionRow_${collection_index}_id" />
               <@s.textfield id="resourceCollectionRow_${collection_index}_id" name="resourceCollections[${collection_index}].name" cssClass="input-xxlarge collectionAutoComplete "  autocomplete="off"
-              autocompleteIdElement="#resourceCollectionRow_${collection_index}_id"
+              autocompleteIdElement="#resourceCollectionRow_${collection_index}_id" label="${siteAcronym} Collection"
               autocompleteParentElement="#resourceCollectionRow_${collection_index}_" />
           </td>
           <td><@clearDeleteButton id="resourceCollectionRow" /> </td>
@@ -824,7 +824,7 @@ $(function(){
           <@clearDeleteButton id="resourceNoteRow" />
           </div>
           <div class="controls">
-              <@s.textarea theme="tdar" name='resourceNotes[${note_index}].note' placeholder="enter note contents" cssClass='resizable input-xlarge'  rows='3' maxlength='5000' />
+              <@s.textarea theme="tdar" name='resourceNotes[${note_index}].note' placeholder="enter note contents" cssClass='resizable input-xxlarge'  rows='3' maxlength='5000' />
           </div>
       </div>
 </#macro>

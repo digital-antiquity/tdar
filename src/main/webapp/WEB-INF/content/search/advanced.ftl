@@ -59,7 +59,7 @@
 </ul> 
 <div id="resource" >
 
-<@s.form action="results" method="GET" id="searchGroups">
+<@s.form action="results" method="GET" id="searchGroups" cssClass="form-horizontal">
     <div class="glide searchgroup" >
         <h3>Choose Search Terms</h3>
 <#assign currentIndex = 0 />
@@ -123,7 +123,7 @@ $(document).ready(function(){
 });
 </script>
 
-<form name="autosave" style="display:none;visibility:hidden">
+<form name="autosave" style="display:none;visibility:hidden" >
 <textarea  id="autosave"></textarea>
 </form>
 
@@ -156,7 +156,7 @@ $(document).ready(function(){
              </div>
         <#elseif fieldType.simple>
              <div class="term retain  ${fieldType}">
-                <@s.textfield type="text" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}]" cssClass="longfield" />
+                <@s.textfield type="text" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}]" cssClass="input-xxlarge" />
                 </div>
         <#elseif fieldType="COVERAGE_DATE_RADIOCARBON" || fieldType="COVERAGE_DATE_CALENDAR" >
              <div class="term ${fieldType}">
@@ -316,7 +316,7 @@ $(document).ready(function(){
             </select>
         </div>
         <br />        
-        <table id="groupTable0" class="grouptable" style="width:100%" callback="setDefaultTerm" data-groupnum="0">
+        <table id="groupTable0" class="grouptable repeatLastRow" style="width:100%" callback="setDefaultTerm" data-groupnum="0" data-add-another="add another search term">
         
             <#if group_?is_hash >
                 <#list group_.fieldTypes as fieldType >
@@ -328,7 +328,7 @@ $(document).ready(function(){
                         <td class="searchfor" > 
                                 <@fieldTemplate fieldType=fieldType fieldIndex=fieldType_index groupid=groupid />
                         </td>
-                        <td> <@removeRowButton /> </td>
+	                    <td> <@removeRowButton /> </td>
                     </tr>
                 </#if>
                 </#list>
@@ -336,9 +336,6 @@ $(document).ready(function(){
                 <@blankRow />
             </#if>
         </table>
-        <button type="button" class="addAnother " onclick="addRowFromTemplate('#groupTable0')" >
-            <img src="<@s.url value='/images/add.gif'/>">Add another search term
-        </button>
 </#macro>
 
 <#macro blankRow groupid=0 fieldType_index=0>
@@ -348,7 +345,7 @@ $(document).ready(function(){
                     </td>
                     <td class="searchfor" > 
                         <div class="term retain  ALL_FIELDS">
-                            <input type="text" name="groups[${groupid}].allFields[${fieldType_index}]" class="longfield" />
+                            <input type="text" name="groups[${groupid}].allFields[${fieldType_index}]" class="input-xxlarge" />
                         </div>
                     </td>
                     <td> <@removeRowButton /> </td>
@@ -372,7 +369,7 @@ $(document).ready(function(){
 <#macro templateProject fieldIndex="{termid}" groupid="{groupid}">
         <div class="term PROJECT">
             <@s.hidden name="groups[${groupid}].projects[${fieldIndex}].id" id="projects_${groupid}_${fieldIndex}_id" />
-            <@s.textfield cssClass="longfield projectcombo" name="groups[${groupid}].projects[${fieldIndex}].title" 
+            <@s.textfield cssClass="input-xxlarge projectcombo" name="groups[${groupid}].projects[${fieldIndex}].title" 
                 autocompleteIdElement="#projects_${groupid}_${fieldIndex}_id" />
             <div class="down-arrow"></div>
         </div>
@@ -383,7 +380,7 @@ $(document).ready(function(){
         <div class="term COLLECTION">
             <@s.hidden name="groups[${groupid}].collections[${fieldIndex}].id" id="collections_${groupid}_${fieldIndex}_id" />
             <@s.textfield name="groups[${groupid}].collections[${fieldIndex}].name" id="collections_${groupid}_${fieldIndex}_name"  
-                cssClass="longfield collectioncombo" autocompleteIdElement="#collections_${groupid}_${fieldIndex}_id" />
+                cssClass="input-xxlarge collectioncombo" autocompleteIdElement="#collections_${groupid}_${fieldIndex}_id" />
             <div class="down-arrow"></div>
         </div>
 </#macro>

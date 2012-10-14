@@ -24,8 +24,7 @@
 		<li><a href="#divAccessRights">Permissions</a></li>
 	</ul>
 	<span class="brand">
-	
-	      <#-- @edit.submitButton "save" / -->
+		<span class="button btn">FIX ME!</span>
 	</span>
 	</div>
   </div>

@@ -328,6 +328,12 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         return getReservedSearchParameters().getResourceTypes();
     }
 
+    public List<ResourceType> getAllResourceTypes() {
+        ArrayList<ResourceType> arrayList = new ArrayList<ResourceType>(Arrays.asList(ResourceType.values()));
+        arrayList.remove(ResourceType.VIDEO);
+        return arrayList;
+    }
+
     public List<IntegratableOptions> getIntegratableOptions() {
         return getReservedSearchParameters().getIntegratableOptions();
     }

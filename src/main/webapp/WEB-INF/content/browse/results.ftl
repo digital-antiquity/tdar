@@ -23,11 +23,11 @@
                 <table class='tableFormat'>
                 <tr>
                     <td>
-                        <#if RPAEnabled && creator.rpaNumber??>
+                        <#if creator.rpaNumber??>
                             <B>Registered Public Archaeologist</B>:${creator.rpaNumber}
                         </#if>
                     </td><td>
-                    <#if creator.registered && (editor || id == authenticatedUser.id)>
+                    <#if creator.registered?has_content && creator.registered && (editor || id == authenticatedUser.id)>
                             <#if creator.lastLogin??>
                                         <@view.datefield "Last Login"  creator.lastLogin />
                             <#else>

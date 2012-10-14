@@ -946,7 +946,7 @@ contrib article h2, .contrib article p, .contrib article ul {
 	margin-left: 520px;
 }
 
-.search h1, .search h2, .search h3, .search h4, .search p, .search li {
+.search h1, .search h2, .search h3, .search h4, .search p, .search aside li {
 	font-family: "soleil", sans-serif;
 	margin: 0;
 	padding: 0;
@@ -979,16 +979,16 @@ contrib article h2, .contrib article p, .contrib article ul {
 	margin-top: 20px  !important;
 }
 
-.search ul, .search li {
+.search aside ul, .search aside li {
 	margin: 0  !important;
 	padding: 0;
 	list-style: none;
 	clear: left;
 }
 
-.search ul {margin-bottom: 15px;}
+.search aside ul {margin-bottom: 15px;}
 
-.search li, .search label {
+.search aside li, .search aside label {
 	font-family: "ff-tisa-web-pro";
 	font-size: 13px;
 	line-height: 23px;
@@ -996,13 +996,13 @@ contrib article h2, .contrib article p, .contrib article ul {
 	margin: 0;
 }
 
-.lt-ie8 .search label {float: left; margin-top: 1px;}
+.lt-ie8 .search aside label {float: left; margin-top: 1px;}
 
-.search label.checked {color: #a72d1d;}
+.search aside label.checked {color: #a72d1d;}
 
-.search label span {color: #7d7a77 !important;}
+.search aside label span {color: #7d7a77 !important;}
 
-.search li input {
+.search aside li input {
 	float: left;
 	margin: 7px 7px 0 0;
 }

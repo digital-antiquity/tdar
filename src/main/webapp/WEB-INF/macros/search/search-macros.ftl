@@ -13,15 +13,13 @@
 
 <#macro narrowAndSort>
         <h3>Narrow Your Search</h3>
-        <div>
-            <label>Limit by<br/> resource type:</label> 
-            <@resourceTypeLimits />
-        </div>
+
+        <@s.checkboxlist id="includedResourceTypes" name='resourceTypes' list='allResourceTypes'  listValue='label' label="Limit by resource type"/>
 
         <#if editor!false>
         <h4>Status</h4>
         <span class="ie8-cbt-hack">
-        <@s.checkboxlist id="myincludedstatuses" name='includedStatuses' list='allStatuses'  listValue='label' numColumns=4 />
+        <@s.checkboxlist id="myincludedstatuses" name='includedStatuses' list='allStatuses'  listValue='label' />
         </span>
         </#if>
         
