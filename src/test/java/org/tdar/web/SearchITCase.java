@@ -1,12 +1,13 @@
 package org.tdar.web;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Test;
@@ -40,20 +41,9 @@ public class SearchITCase extends AbstractAdminAuthenticatedWebTestCase {
     SearchIndexService indexService;
 
     private void selectAllResourceTypes() {
-        ArrayList<HtmlCheckBoxInput> checkboxes = new ArrayList<HtmlCheckBoxInput>();
-        checkboxes.add((HtmlCheckBoxInput) getHtmlPage().getElementById(
-                "resourceTypes_Document"));
-        checkboxes.add((HtmlCheckBoxInput) getHtmlPage().getElementById(
-                "resourceTypes_Dataset"));
-        checkboxes.add((HtmlCheckBoxInput) getHtmlPage().getElementById(
-                "resourceTypes_Coding_Sheet"));
-        checkboxes.add((HtmlCheckBoxInput) getHtmlPage().getElementById(
-                "resourceTypes_Image"));
-        checkboxes.add((HtmlCheckBoxInput) getHtmlPage().getElementById(
-                "resourceTypes_Ontology"));
-        checkboxes.add((HtmlCheckBoxInput) getHtmlPage().getElementById(
-                "resourceTypes_Project"));
-        for (HtmlCheckBoxInput cb : checkboxes) {
+        Iterator<HtmlElement> iter = getHtmlPage().getElementsByName("resourceTypes").iterator();
+        while (iter.hasNext()) {
+            HtmlCheckBoxInput cb = ((HtmlCheckBoxInput) iter.next());
             cb.setChecked(false);
             logger.trace("checkbox: " + cb);
         }
@@ -174,7 +164,7 @@ public class SearchITCase extends AbstractAdminAuthenticatedWebTestCase {
             gotoPage(path);
             setInput(String.format("%s.%s", rt.getFieldName(), "title"), "test");
             setInput(String.format("%s.%s", rt.getFieldName(), "description"), "test");
-            if (isCopyrightMandatory()  && isNotAddProject(path)) {
+            if (isCopyrightMandatory() && isNotAddProject(path)) {
                 setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
                 setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
             }
@@ -211,9 +201,7 @@ public class SearchITCase extends AbstractAdminAuthenticatedWebTestCase {
                 }
             }
             logger.info("{} - {}", type, sawSomething);
-            assertTrue(
-                    String.format("should have at least one result for",
-                            type.name()), sawSomething);
+            assertTrue(String.format("should have at least one result for %s %s", type.name()), sawSomething);
         }
     }
 
@@ -2223,8 +2211,8 @@ public class SearchITCase extends AbstractAdminAuthenticatedWebTestCase {
         urls.add(SEARCH_RESULTS_BASE_URL
                 + ".action?query=canada&title=&id=&projectIds%5B0%5D=&resourceTypes=DATASET&coverageDates%5B0%5D.id=&coverageDates%5B0%5D.dateType=NONE&coverageDates%5B0%5D.startDate=&coverageDates%5B0%5D.endDate=&coverageDates%5B0%5D.description=&geographicKeywords%5B0%5D=&minx=&maxx=&miny=&maxy=&__multiselect_investigationTypeIds=&siteNameKeywords%5B0%5D=&__multiselect_approvedSiteTypeKeywordIds=&uncontrolledSiteTypeKeywords%5B0%5D=&__multiselect_materialKeywordIds=&__multiselect_approvedCultureKeywordIds=&uncontrolledCultureKeywords%5B0%5D=&temporalKeywords%5B0%5D=&otherKeywords%5B0%5D=&searchSubmitterIds%5B0%5D=&searchSubmitter.lastName=abc&searchSubmitter.firstName=&searchSubmitter.email=&searchSubmitter.institution.name=&searchContributorIds%5B0%5D=&searchContributor.lastName=&searchContributor.firstName=adam&searchContributor.email=&searchContributor.institution.name=&sortField=RELEVANCE");
 
-        //this url simulates a "modify search" request with a "gap" in the terms; a gap is created, for example, if you create three terms then delete 
-        //the middle term.
+        // this url simulates a "modify search" request with a "gap" in the terms; a gap is created, for example, if you create three terms then delete
+        // the middle term.
         urls.add("/search/advanced?__multiselect_groups%5B0%5D.approvedSiteTypeIdLists%5B0%5D=&groups%5B0%5D.latitudeLongitudeBoxes%5B0%5D.minimumLatitude=&groups%5B0%5D.operator=AND&groups%5B0%5D.fieldTypes%5B2%5D=KEYWORD_CULTURAL&sortField=RELEVANCE&__multiselect_groups%5B0%5D.approvedCultureKeywordIdLists%5B1%5D=&groups%5B0%5D.latitudeLongitudeBoxes%5B0%5D.maximumLongitude=&groups%5B0%5D.latitudeLongitudeBoxes%5B0%5D.minimumLongitude=&groups%5B0%5D.approvedSiteTypeIdLists%5B0%5D=272&groups%5B0%5D.latitudeLongitudeBoxes%5B0%5D.maximumLatitude=&groups%5B0%5D.fieldTypes%5B0%5D=KEYWORD_SITE&groups%5B0%5D.approvedCultureKeywordIdLists%5B1%5D=4");
 
         for (String url : urls) {
@@ -2232,7 +2220,7 @@ public class SearchITCase extends AbstractAdminAuthenticatedWebTestCase {
             assertNoErrorTextPresent();
         }
     }
-    
+
     @Test
     public void testTitleSearch() {
         reindex();
@@ -2263,19 +2251,18 @@ public class SearchITCase extends AbstractAdminAuthenticatedWebTestCase {
     }
 
     @Test
-    //perform simple type search, then retrn to the form via "modify search" and confirm form values are retained
-    //FIXME: magic numbers
+    // perform simple type search, then retrn to the form via "modify search" and confirm form values are retained
+    // FIXME: magic numbers
     public void testModifySearchApprovedSiteType() throws IOException {
-        //reindex not necessary, we don't care about the  results
-        
+        // reindex not necessary, we don't care about the results
+
         gotoPage(ADVANCED_SEARCH_BASE_URL);
         setInput("groups[0].fieldTypes[0]", SearchFieldType.KEYWORD_SITE.name());
         createTextInput("groups[0].approvedSiteTypeIdLists[0]", "251");
         submitForm("Search");
         clickLinkWithText("Modify Search");
-        HtmlCheckBoxInput element = (HtmlCheckBoxInput)htmlPage.getElementById("groups[0].approvedSiteTypeIdLists[0]-1");
+        HtmlCheckBoxInput element = (HtmlCheckBoxInput) htmlPage.getElementById("groups[0].approvedSiteTypeIdLists[0]-1");
         assertNotNull("could not find element", element);
         assertTrue("checkbox isn't checked", element.isChecked());
     }
 }
-

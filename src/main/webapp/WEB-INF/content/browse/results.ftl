@@ -27,15 +27,19 @@
                             <B>Registered Public Archaeologist</B>:${creator.rpaNumber}
                         </#if>
                     </td><td>
-                    <#if creator.registered?has_content && creator.registered && (editor || id == authenticatedUser.id)>
+                    	<#assign registered = false />
+	                    <#if creator.registered?has_content>
+	                        <#assign registered = creator.registered>
+                        </#if>
+                    <#if registered && (editor || id == authenticatedUser.id)>
                             <#if creator.lastLogin??>
                                         <@view.datefield "Last Login"  creator.lastLogin />
                             <#else>
                                         <@view.textfield "Last Login"  "No record" />
                             </#if>                    
                     <#else>
-                        <@view.boolean "Registered User" creator.registered />
-                        </#if>
+	                        <@view.boolean "Registered User" registered />
+                    </#if>
                     </td>
                 </tr>
                 <tr>

@@ -64,15 +64,15 @@ public class CompleteImageITCase extends AbstractAdminAuthenticatedWebTestCase {
         docValMap.put("authorshipProxies[0].person.id", "");
 
         // FIXME: this is brittle
-        // docValMap.put("authorshipProxies[1].person.firstName", "Shelby");
-        // docValMap.put("authorshipProxies[1].person.lastName", "Manney");
-        // docValMap.put("authorshipProxies[1].person.email", "test2@test.com");
-        // docValMap.put("authorshipProxies[1].personRole", "CREATOR");
-        // docValMap.put("authorshipProxies[1].person.id", "");
-        // docValMap.put("authorshipProxies[1].person.institution.name", "Digital Antiquity2");
+         docValMap.put("authorshipProxies[1].person.firstName", "Shelby");
+         docValMap.put("authorshipProxies[1].person.lastName", "Manney");
+         docValMap.put("authorshipProxies[1].person.email", "test2@test.com");
+         docValMap.put("authorshipProxies[1].role", ResourceCreatorRole.CREATOR.name());
+         docValMap.put("authorshipProxies[1].person.id", "");
+         docValMap.put("authorshipProxies[1].person.institution.name", "Digital Antiquity2");
         // FIXME: this is brittle
-        // docValMap.put("creditProxies[1].institution.name", "Digital Antiquity3");
-        // docValMap.put("creditProxies[1].institutionRole", "COLLABORATOR");
+         docValMap.put("creditProxies[1].institution.name", "Digital Antiquity3");
+         docValMap.put("creditProxies[1].role",  ResourceCreatorRole.COLLABORATOR.name());
 
         docValMap.put("creditProxies[0].institution.name", "Othr Institution");
         docValMap.put("creditProxies[0].role", ResourceCreatorRole.SPONSOR.name());
