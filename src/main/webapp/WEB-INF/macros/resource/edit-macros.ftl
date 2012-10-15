@@ -1323,7 +1323,7 @@ jquery validation hooks?)
 
 <!-- <ul id="proj-toolbar" class="projectMenu"><li></li></ul> -->
 </div>
-<table cellpadding="0" cellspacing="0" border="0" class="display tableFormat" id="resource_datatable" width="650px">
+<table cellpadding="0" cellspacing="0" border="0" class="display tableFormat table-striped table-bordered" id="resource_datatable" width="650px">
 <thead>
      <tr>
          <#if selectable><th><input type="checkbox" onclick="checkAllToggle()" id="cbCheckAllToggle">id</th></#if>
@@ -1393,7 +1393,11 @@ $(function(){
     var isAdministrator = ${administrator?string};
     var isSelectable = ${selectable?string};
     jQuery.fn.dataTableExt.oPagination.iFullNumbersShowPages =3;
-    
+	$.extend( $.fn.dataTableExt.oStdClasses, {
+	    "sWrapper": "dataTables_wrapper form-inline"
+	} );
+//        sDom:'<"datatabletop"ilrp>t<>', //omit the search box
+	    
     $dataTable = registerLookupDataTable({
         tableSelector: '#resource_datatable',
         sAjaxSource:'/lookup/resource',
@@ -1404,7 +1408,7 @@ $(function(){
           { "mDataProp": "title",  sWidth: '65%', fnRender: fnRenderTitle, bUseRendered:false ,"bSortable":false},
           { "mDataProp": "resourceTypeLabel",  sWidth: '15%',"bSortable":false }
         ],
-        sDom:'<"datatabletop"ilrp>t<>', //omit the search box
+		"sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
         sPaginationType:"full_numbers",
         sAjaxDataProp: 'resources',
         requestCallback: function(searchBoxContents){
