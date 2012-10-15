@@ -25,6 +25,7 @@
                      "/includes/blueimp-jquery-file-upload-3c5d440/js/jquery.fileupload-fp.js",
                      "/includes/blueimp-jquery-file-upload-3c5d440/js/jquery.fileupload-ui.js",
 	                 "/includes/jquery.datatables-1.8.2/media/js/jquery.dataTables.js",
+	                 "/includes/jquery.datatables-1.8.2/extras/bootstrap-paging.js",
 	                 "/includes/bindWithDelay.js",
                  	 "/includes/jquery.cookie.js",
                  	 "/includes/tdar.datatable.js",

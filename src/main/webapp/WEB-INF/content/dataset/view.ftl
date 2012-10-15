@@ -27,23 +27,27 @@
 </form>
 </#if>
 
-<table id="dataTable" ></table>
+<table id="dataTable" class="tableFormat display  table-striped table-bordered span8" ></table>
 
 <script>
 
 $(document).ready(function() {
     jQuery.fn.dataTableExt.oPagination.iFullNumbersShowPages =3;
+    	$.extend( $.fn.dataTableExt.oStdClasses, {
+	    "sWrapper": "dataTables_wrapper form-inline"
+	} );
     
+//        sDom:'<"datatabletop"ilrp>t<>', //omit the search box
     var options = { 
-               "sAjaxDataProp":"results.results",
-        sDom:'<"datatabletop"ilrp>t<>', //omit the search box
+        "sAjaxDataProp":"results.results",
+  		"sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span4'i><'span5'p>>",
         "bProcessing": true,
         "bServerSide":true,
           "bScrollInfinite": false,
         "bScrollCollapse": true,
         tableSelector: '#dataTable',
            "sScrollX": "600px",
-        sPaginationType:"full_numbers",
+        sPaginationType:"bootstrap",
         "sScrollY": "550px",
         "aoColumns":[
         
@@ -89,7 +93,7 @@ $(document).ready(function() {
 </div>
 <#list dataset.dataTables as dataTable>
  <h4>${dataTable.displayName} Table</h4>
- <table class="tableFormat zebracolors">
+ <table class="tableFormat span8 table-striped table-bordered">
     <thead class='highlight'>
  <tr>
  <th>Column Name</th>

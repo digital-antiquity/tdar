@@ -1323,7 +1323,7 @@ jquery validation hooks?)
 
 <!-- <ul id="proj-toolbar" class="projectMenu"><li></li></ul> -->
 </div>
-<table cellpadding="0" cellspacing="0" border="0" class="display tableFormat table-striped table-bordered" id="resource_datatable" width="650px">
+<table cellpadding="0" cellspacing="0" border="0" class="display tableFormat table-striped table-bordered span8" id="resource_datatable" >
 <thead>
      <tr>
          <#if selectable><th><input type="checkbox" onclick="checkAllToggle()" id="cbCheckAllToggle">id</th></#if>
@@ -1408,8 +1408,8 @@ $(function(){
           { "mDataProp": "title",  sWidth: '65%', fnRender: fnRenderTitle, bUseRendered:false ,"bSortable":false},
           { "mDataProp": "resourceTypeLabel",  sWidth: '15%',"bSortable":false }
         ],
-		"sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
-        sPaginationType:"full_numbers",
+		"sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span4'i><'span5'p>>",
+        sPaginationType:"bootstrap",
         sAjaxDataProp: 'resources',
         requestCallback: function(searchBoxContents){
                 return {title: searchBoxContents,
