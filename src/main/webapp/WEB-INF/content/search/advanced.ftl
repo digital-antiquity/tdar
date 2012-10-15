@@ -52,12 +52,14 @@
 
 </head>
 <body>
+<h1>Search ${siteAcronym}</h1>
 <div class="usual">
-<ul id="idtab"> 
-  <li><a href="#resource">Resource</a></li> 
-  <li><a href="#collection">Collection</a></li> 
+<ul class="nav nav-tabs" id="myTab"> 
+  <li  class="active"><a href="#resource" data-toggle="tab">Resource</a></li> 
+  <li><a href="#collection" data-toggle="tab">Collection</a></li> 
 </ul> 
-<div id="resource" >
+<div class="tab-content">
+<div id="resource" class="tab-pane active" >
 
 <@s.form action="results" method="GET" id="searchGroups" cssClass="form-horizontal">
     <div class="glide searchgroup" >
@@ -87,7 +89,7 @@
     </div>
 
 </@s.form>
-    <div id="collection" style="display:none;">
+    <div id="collection" class="tab-pane">
         <div class="glide">
         <h3>Search For Collections By Name</h3>
         <@s.form action="collections" method="GET" id='searchForm2'>
@@ -98,6 +100,7 @@
     </div>
     
 </div> 
+</div>
 </div>
 <script>
 $(document).ready(function(){
