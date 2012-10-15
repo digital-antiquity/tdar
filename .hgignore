@@ -15,6 +15,7 @@ logs
 tags
 *.orig
 *.rej
+.idea/*
 
 syntax: regexp
 ^src/main/webapp/robots\.txt$
