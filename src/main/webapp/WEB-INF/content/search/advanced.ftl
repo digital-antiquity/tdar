@@ -83,7 +83,6 @@
     <div>
         <div id="error"></div>
         <@s.submit id="searchButton" value="Search"  /> 
-<!--        <input type='button' value='Reset' id='formResetButton'/> -->
     </div>
         
     </div>
@@ -93,7 +92,7 @@
         <div class="glide">
         <h3>Search For Collections By Name</h3>
         <@s.form action="collections" method="GET" id='searchForm2'>
-            <@search.queryField freeTextLabel="Collection Name" showLimits=false showAdvancedLink=false />
+            <@search.queryField freeTextLabel="Collection Name" showLimits=false showAdvancedLink=false submitLabel="Search For a Collection"/>
         </@s.form>
         </div>
         <div id="collection-spacer" style="height:850px"></div>
@@ -319,7 +318,7 @@ $(document).ready(function(){
             </select>
         </div>
         <br />        
-        <table id="groupTable0" class="grouptable repeatLastRow" style="width:100%" callback="setDefaultTerm" data-groupnum="0" data-add-another="add another search term">
+        <table id="groupTable0" class="grouptable control-group repeatLastRow" style="width:100%" callback="setDefaultTerm" data-groupnum="0" data-add-another="add another search term">
         
             <#if group_?is_hash >
                 <#list group_.fieldTypes as fieldType >

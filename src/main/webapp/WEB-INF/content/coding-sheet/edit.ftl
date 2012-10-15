@@ -8,10 +8,11 @@
 
 </head>
 <body>
+<@edit.subNavMenu />
 
 <@edit.toolbar "${resource.urlNamespace}" "edit" />
 
-<@s.form name='resourceRegistrationForm' id='resourceRegistrationForm' method='post' enctype='multipart/form-data' action='save'>
+<@s.form name='resourceRegistrationForm' id='resourceRegistrationForm' method='post' enctype='multipart/form-data' action='save' cssClass="form-horizontal">
 
 <@edit.basicInformation "coding sheet" "codingSheet"/>
 <@edit.citationInfo "codingSheet" />

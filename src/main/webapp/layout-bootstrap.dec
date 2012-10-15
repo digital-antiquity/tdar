@@ -144,8 +144,28 @@
 		<#if  page.properties["div.messages"]?? && page.properties["div.messages"] != "">
 		    ${page.properties["div.messages"]}
 		</#if>
-        <@s.actionerror theme="bootstrap" />
         <@s.actionmessage theme="bootstrap" />
+		<#if (actionErrors?has_content)>
+		   <div class="action-errors ui-corner-all">
+		     <b>The following errors were found with your submission</b> <br />
+		     <ul>
+		     <#list actionErrors as err>
+			      <li class="action-error">${err!"unknown error"}</li>
+		     </#list>
+		     </ul>
+		     <#if stackTraces?has_content >
+			     <a href="#" id="pToggleStackTrace" onclick="$('#stackTraceList').toggle();return false;">Show/Hide Detailed Error Information</a>
+			     <div id="stackTraceList" class="hidden">
+			        <#list stackTraces as _stacktrace>
+			        <p>
+			        <em>Stacktrace ${_stacktrace_index + 1} of ${stackTraces?size}</em><br />
+			        ${_stacktrace?html}
+			        </p>
+			        </#list>
+			     </div>
+		     </#if>
+		   </div>
+		</#if>
         <@s.fielderror theme="bootstrap" />
 	</div>
 </div>

@@ -526,15 +526,17 @@ The form will check for matches in the ${siteAcronym} database and populate the 
 </#macro>
 
 <#macro categoryVariable>
-<div id='categoryDivId'>
-<@s.select labelposition='left' label='Category' id='categoryId' name='categoryId' 
-    onchange='changeSubcategory("#categoryId","#subcategoryId")'
-                autocompleteName="sortCategoryId"
-    listKey='id' listValue='name' emptyOption='true' list='%{allDomainCategories}' />
-</div>
-<div id='subcategoryDivId'>
-<@s.select labelposition='left' label='Subcategory' id='subcategoryId' name='subcategoryId' 
-    autocompleteName="subCategoryId" headerKey="-1" listKey='id' headerValue="N/A" list='%{subcategories}'/>
+<div class="control-group row">
+	<div id='categoryDivId' class="span4">
+	<@s.select labelposition='left' label='Category' id='categoryId' name='categoryId' 
+	    onchange='changeSubcategory("#categoryId","#subcategoryId")'
+	                autocompleteName="sortCategoryId"
+	    listKey='id' listValue='name' emptyOption='true' list='%{allDomainCategories}' />
+	</div>
+	<div id='subcategoryDivId' class="span3">
+	<@s.select labelposition='left' label='Subcategory' id='subcategoryId' name='subcategoryId' 
+	    autocompleteName="subCategoryId" headerKey="-1" listKey='id' headerValue="N/A" list='%{subcategories}'/>
+	</div>
 </div>
 </#macro>
 
@@ -649,7 +651,7 @@ The form will check for matches in the ${siteAcronym} database and populate the 
         </pre>
     </#if>
     </div>
-    <@s.textarea label='${typeLabel}' labelposition='top' id='fileInputTextArea' name='fileTextInput' rows="5" cssClass='resizable' />
+    <@s.textarea label='${typeLabel}' labelposition='top' id='fileInputTextArea' name='fileTextInput' rows="5" cssClass='resizable input-xxlarge' />
     </div>
 </div>
 
@@ -1246,7 +1248,7 @@ jquery validation hooks?)
 </#macro>
 
 <#macro sidebar>
-<div id="sidebar" parse="true">
+<div id="sidebar-right" parse="true">
     <div id="notice">
     <h3>Introduction</h3>
     This is the page for editing metadata associated with ${resource.resourceType.plural}.
@@ -1788,5 +1790,31 @@ function drawToolbar(projId) {
 /\.(<@join sequence=validFileExtensions delimiter="|"/>)$/i<#t>
 </#macro>
 
+
+<#macro subNavMenu>
+	<div id='subnavbar' class="affix-top navbar navbar-static"  data-offset-top="250" data-offset-bottom="250" data-spy="affix">
+	  <div class="navbar-inner">
+	    <div class="container" style="width: auto;">
+		<ul class="nav">
+			<li><a href="#basicInformationSection">Basic</a></li>
+			<li><a href="#authorshipSection">Authors</a></li>
+			<#if persistable.resourceType?has_content && persistable.resourceType != 'PROJECT' ><li><a href="#divFileUpload">Upload</a></li></#if>
+			<li><a href="#organizeSection">Project</a></li>
+			<li><a href="#spatialSection">Where</a></li>
+			<li><a href="#temporalSection">When</a></li>
+			<li><a href="#investigationSection">What</a></li>
+			<li><a href="#siteSection">Site</a></li>
+			<li><a href="#resourceNoteSectionGlide">Notes</a></li>
+			<li><a href="#divAccessRights">Permissions</a></li>
+		</ul>
+		<span class="brand">
+			<span class="button btn btn-primary submitButton" id="fakeSubmitButton">Submit</span>
+		</span>
+		</div>
+	  </div>
+	</div>
+	<div>
+
+</#macro>
 
 </#escape>

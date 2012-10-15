@@ -50,7 +50,7 @@ public enum ResourceType implements HasLabel, Comparable<ResourceType>,
             case SENSORY_DATA:
                 return SENSORY_DATA.label;
             default:
-                return this.label.concat("s");
+                return getLabel().concat("s");
         }
     }
 

@@ -387,7 +387,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
     public void assertButtonPresentWithText(String buttonText) {
         HtmlElement input = getButtonWithName(buttonText);
-        assertNotNull("button with text [" + buttonText + "] not found", input);
+        assertNotNull(String.format("button with text [%s] not found in form [%s]", buttonText,getForm() ), input);
         assertTrue(input.getAttribute("type").equalsIgnoreCase("submit"));
     }
 
@@ -639,7 +639,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             part = part.replace("/", "");
             url = url.substring(0, url.lastIndexOf("/"));
             logger.trace("evaluating {} : {}", url, part);
-            if (StringUtils.isNumeric(part)) {
+            if (StringUtils.isNotBlank(part) && StringUtils.isNumeric(part)) {
                 return Long.parseLong(part);
             }
         }

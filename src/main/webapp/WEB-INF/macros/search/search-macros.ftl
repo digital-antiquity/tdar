@@ -1,14 +1,14 @@
-<#macro queryField freeTextLabel="Search" showAdvancedLink=true showLimits=false>
+<#macro queryField freeTextLabel="Search" showAdvancedLink=true showLimits=false submitLabel="Search">
 
  <@s.textfield label="${freeTextLabel}" id='queryField' name='query' size='81' value="${query!}" cssClass="input-xxlarge"/>
-<#if showAdvancedLink><span class="help-inline"><a style="display:inline" href="<@s.url value="/search/advanced"/>">advanced search</a></span></#if>
-        <@s.submit value="Search" />
-<#nested>
-<#if showLimits>
-<br/>
-<@narrowAndSort />
-</#if>
-<br/>
+	<#if showAdvancedLink><span class="help-inline"><a style="display:inline" href="<@s.url value="/search/advanced"/>">advanced search</a></span></#if>
+    <@s.submit value="${submitLabel}" />
+	<#nested>
+	<#if showLimits>
+		<br/>
+		<@narrowAndSort />
+	</#if>
+	<br/>
 </#macro>
 
 <#macro narrowAndSort>

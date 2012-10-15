@@ -7,10 +7,11 @@
 <meta name="lastModifiedDate" content="$Id$"/>
 </head>
 <body>
+<@edit.subNavMenu />
 <@edit.toolbar "${resource.urlNamespace}" "edit" />
 <div>
 
-<@s.form id='resourceMetadataForm' method='post' action='save' enctype='multipart/form-data'>
+<@s.form id='resourceMetadataForm' method='post' action='save' enctype='multipart/form-data' cssClass="form-horizontal">
 
 <@edit.basicInformation "ontology" "ontology"/>
 <@edit.citationInfo "ontology" />

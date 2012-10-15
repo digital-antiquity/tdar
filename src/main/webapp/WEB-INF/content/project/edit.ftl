@@ -12,6 +12,8 @@
 <meta name="lastModifiedDate" content="$Date$"/>
 </head>
 <body>
+<@edit.subNavMenu />
+<@edit.sidebar />
 <@edit.toolbar "${resource.urlNamespace}" "edit" />
 
 <div tooltipfor="cbInheritingInvestigationInformationhint,cbInheritingSiteInformationhint,cbInheritingMaterialInformationhint,cbInheritingCulturalInformationhint,cbInheritingTemporalInformationhint,cbInheritingOtherInformationhint,cbInheritingSpatialInformationhint" class="hidden">
@@ -67,7 +69,6 @@ Projects in ${siteAcronym} contain and help organize a variety of different info
 
 </@s.form>
 
-<@edit.sidebar />
 
 <@edit.resourceJavascript formSelector="#projectMetadataForm" selPrefix="#project">
     $(function(){

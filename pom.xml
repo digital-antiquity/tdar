@@ -263,7 +263,7 @@
 		<dependency>
 			<groupId>gov.loc</groupId>
 			<artifactId>bagit</artifactId>
-			<version>4.0</version>
+			<version>4.4</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>commons-codec</artifactId>
@@ -662,7 +662,7 @@
 		<dependency>
 			<groupId>org.tuckey</groupId>
 			<artifactId>urlrewritefilter</artifactId>
-			<version>3.2.0</version>
+			<version>4.0.4</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>

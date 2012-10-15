@@ -8,6 +8,7 @@
 
 </head>
 <body>
+<@edit.subNavMenu />
 
 
 <@edit.toolbar "${resource.urlNamespace}" "edit" />
