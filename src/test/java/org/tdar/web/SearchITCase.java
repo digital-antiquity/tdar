@@ -201,7 +201,7 @@ public class SearchITCase extends AbstractAdminAuthenticatedWebTestCase {
                 }
             }
             logger.info("{} - {}", type, sawSomething);
-            assertTrue(String.format("should have at least one result for %s %s", type.name()), sawSomething);
+            assertTrue(String.format("should have at least one result for: %s", type.name()), sawSomething);
         }
     }
 

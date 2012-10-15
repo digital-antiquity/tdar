@@ -96,7 +96,7 @@
 	
 					<#if bodyid != 'home'>
 						<form name="searchheader" action="<@s.url value="/search/results"/>">
-							<input type="text" name="query" placeholder="Search...">
+							<input type="text" name="query" placeholder="Search..." />
 						</form>
 					</#if>
 				</nav>

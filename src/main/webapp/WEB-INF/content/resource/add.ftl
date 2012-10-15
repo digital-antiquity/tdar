@@ -27,11 +27,10 @@
 </style>
 </head>
 <body>
-<div class="glide" id="divCreateResources">
     <h3>Create Resources </h3>
-    <div class="two-column">
+    <div class="row">
     
-        <div class="left">
+        <div class="span45">
             <dl class='fancy-clickable'>
                 <dt><@link "document" "Document" /></dt>
                 <dd>A written, printed record of information, evidence, or analysis. Examples from archaeology include published articles, books, excavation reports, field notes, or doctoral dissertations. </dd>
@@ -49,7 +48,7 @@
             
             </dl>
         </div>
-        <div class="right">
+        <div class="span45">
             <dl class='fancy-clickable'>
                 <dt><@link "image" "Image" /></dt>
                 <dd>A visual representation of an object or location. Examples from archaeology include photographs (born digital or scanned) of artifacts or sites, drawings or figures, and some maps.</dd>
@@ -63,13 +62,11 @@
             </dl>
         </div>
     </div>
-    <div class="clear"></div>
-</div>
 
 <#if (projectId!-1) == -1>
-<div class="glide" id="divOrganizeResources">
+<div class="row" id="divOrganizeResources">
     <h3>Organize Resources </h3>
-    <div class="two-column">
+    <div class="span45">
         <div class="left">
             <dl class='fancy-clickable'>
                 <dt><@link "project" "Project" /></dt>
@@ -81,7 +78,7 @@
                 </dd>
             </dl>
         </div>
-        <div class="right">
+        <div class="span45">
             <dl class='fancy-clickable'>
                 <dt><@link "collection" "Collection"/></dt>
                 <dd>In ${siteAcronym}, a collection is an organizational tool with two purposes. The first is to allow contributors and users to create groups and 
@@ -90,7 +87,6 @@
             </dl>
         </div>
     </div>
-    <div class="clear"></div>
 </div>
 </#if>
 

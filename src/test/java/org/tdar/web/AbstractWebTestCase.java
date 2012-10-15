@@ -426,6 +426,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
     private HtmlElement getButtonWithName(String buttonText) {
         //get all the likely suspects we consider to be a "button" and return the best match
+        logger.info("get button by name, form {}", _internalForm);
         List<HtmlElement> elements = new ArrayList<HtmlElement>();
         elements.addAll(getForm().getButtonsByName(buttonText));
         elements.addAll(getForm().getInputsByValue(buttonText));
@@ -659,17 +660,18 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
     // get the "main" form. it's pretty much a guess, so if you encounter a page w/ multiple forms you might wanna specify it outright
     public HtmlForm getForm() {
+        logger.trace("FORM{} OTHERS: {}", _internalForm, getHtmlPage().getForms());
         if (_internalForm == null) {
             HtmlForm htmlForm = null;
             if (getHtmlPage().getForms().size() == 1) {
                 htmlForm = getHtmlPage().getForms().get(0);
-                logger.info("only one form: " + htmlForm.getNameAttribute());
+                logger.trace("only one form: " + htmlForm.getNameAttribute());
             } else {
                 for (HtmlForm form : getHtmlPage().getForms()) {
                     if (StringUtils.isNotBlank(form.getActionAttribute()) && !form.getNameAttribute().equalsIgnoreCase("autosave") &&
                             !form.getNameAttribute().equalsIgnoreCase("searchheader")) {
                         htmlForm = form;
-                        logger.info("using form: " + htmlForm.getNameAttribute());
+                        logger.trace("using form: " + htmlForm.getNameAttribute());
                         break;
                     }
                 }
@@ -694,10 +696,11 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
     // set the main form to be first form that contains a child element with the specified id
     private void updateMainFormIfNull(String id) {
-        if (_internalForm != null)
+        if (_internalForm != null || StringUtils.isBlank(id))
             return;
         for (HtmlForm form : getHtmlPage().getForms()) {
-            if (form.hasHtmlElementWithId(id)) {
+            if (form.getFirstByXPath("descendant-or-self::*[contains(@id,'"+id+"')]")  != null) {
+                logger.info("updating main for for id: " + id + " to form: " +form);
                 setMainForm(form);
                 return;
             }
