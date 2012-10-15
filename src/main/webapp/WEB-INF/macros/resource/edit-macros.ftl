@@ -175,7 +175,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <@keywordRows "Geographic Terms" geographicKeywords 'geographicKeywords' />
         
         <h4>Geographic Region</h4>
-        <div id='large-google-map' style='height:450px;'
+        <div id='editmapv3' class="tdar-map-large googlemap"
             tiplabel="Geographic Coordinates"
             tooltipcontent="Identify the approximate region of this resource by clicking on &quot;Select Region&quot; and drawing a bounding box on the map.
                 <br/>Note: to protect site security, ${siteAcronym} obfuscates all bounding boxes, bounding boxes smaller than 1 mile, especially.  This 'edit' view 
@@ -707,6 +707,16 @@ $(function(){
 
     TDAR.common.initEditPage(form);
     
+    //register maps, if any
+    if($('#divSpatialInformation').length) {
+        $(function() {
+            //fixme: implicitly init when necessary
+            TDAR.maps.initMapApi();
+            var mapdiv = $('#editmapv3')[0];
+            TDAR.maps.setupMap(mapdiv);
+            TDAR.maps.setupEditMap(mapdiv);
+        });
+    }
     
 });
 <#nested>

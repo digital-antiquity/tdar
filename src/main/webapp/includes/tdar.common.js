@@ -778,7 +778,7 @@ function sprintf() {
 function initializeView() {
     console.debug('initialize view');
     applyZebraColors();
-    loadTdarMap();
+    //loadTdarMap();
     initializeTooltipContent();
 }
 
@@ -1398,7 +1398,7 @@ TDAR.common = function() {
         });
         
         //init map
-        loadTdarMap();
+//        loadTdarMap();
 
         //init repeatrows
         TDAR.repeatrow.registerRepeatable(".repeatLastRow");

@@ -101,34 +101,40 @@ function loadTdarMap() {
 	drawMBR("p_", "#996633");
 }
 
+
 function ClearControl() {
 }
-	ClearControl.prototype = new GControl();
-	ClearControl.prototype.initialize = function(map) {
-		var container = document.createElement("div");
-		var zoomInDiv = document.createElement("div");
-		container.appendChild(zoomInDiv);
-		zoomInDiv.id = "mapResetButton";
-		zoomInDiv.appendChild(document.createTextNode("Reset"));
-		GEvent.addDomListener(zoomInDiv, "click", function() {
-			try {
-				map.removeOverlay(GZoomControl.G.oZoomArea);
-				document.getElementById("minx").value = "";
-				document.getElementById("miny").value = "";
-				document.getElementById("maxx").value = "";
-				document.getElementById("maxy").value = "";
+//jtd:hiding this block for now. going to rip it out but going to keep it around until I figure out all of the old functionality.
+var _hiddenblock = function() {
+    ClearControl.prototype = new GControl();
+    ClearControl.prototype.initialize = function(map) {
+        var container = document.createElement("div");
+        var zoomInDiv = document.createElement("div");
+        container.appendChild(zoomInDiv);
+        zoomInDiv.id = "mapResetButton";
+        zoomInDiv.appendChild(document.createTextNode("Reset"));
+        GEvent.addDomListener(zoomInDiv, "click", function() {
+            try {
+                map.removeOverlay(GZoomControl.G.oZoomArea);
+                document.getElementById("minx").value = "";
+                document.getElementById("miny").value = "";
+                document.getElementById("maxx").value = "";
+                document.getElementById("maxy").value = "";
+                
+                document.getElementById("d_minx").value = "";
+                document.getElementById("d_miny").value = "";
+                document.getElementById("d_maxx").value = "";
+                document.getElementById("d_maxy").value = "";
+            } catch (e) {
+            }
+        });
+        
+        map.getContainer().appendChild(container);
+        return container;
+    };
+    
+} //();
 
-				document.getElementById("d_minx").value = "";
-				document.getElementById("d_miny").value = "";
-				document.getElementById("d_maxx").value = "";
-				document.getElementById("d_maxy").value = "";
-			} catch (e) {
-			}
-		});
-
-		map.getContainer().appendChild(container);
-		return container;
-	};
 
 // This function must be called after the map is displayed.
 // If put this to the head script, the map cannot be zoomed to U.S. map.
@@ -453,7 +459,7 @@ TDAR.maps = function() {
             });
 
         }
-
+        
 
     })};
 
@@ -509,3 +515,14 @@ TDAR.maps = function() {
         setupEditMap: _setupEditMap
     };
 }();
+
+
+//todo: prime coord inputs with correct value
+
+//todo: update 'display' inputs when selection created, updated.
+
+//todo: update the bound box when manually entered. (they click the 'locate' button)
+
+//todo: "enter / view coordinates"  should be a bootstrap toggle button, not a checkbox.
+
+//todo: gzoomcontrol.js no longer needed.  gmaps v3 provides 'overview' ivewport (which we will disable for aesthetics)

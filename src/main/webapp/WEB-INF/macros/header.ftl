@@ -3,7 +3,6 @@
 
     <#local srcs = [
                      "/includes/jquery.xcolor-1.5.js",
-                     "/includes/gzoom_uncompressed.js",
                      "/includes/gmaps.js",
                      "/includes/tdar.dataintegration.js", 
                      "/includes/latLongUtil-1.0.js",

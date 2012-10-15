@@ -25,11 +25,6 @@
         <script src="//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_version}/jquery-ui.min.js"></script>
         <#--maps support.  TODO: only include maps when we use them.  put this in (sharedFormCompoenents head section?) -->
 
-        <script>
-                    var GMapDefaultLat = ${mapDefaultLat};
-                    var GMapDefaultLng = ${mapDefaultLng};
-        </script>
-        <script type='text/javascript' src="//maps.google.com/maps?file=api&v=2&key=${googleMapsApiKey}"></script>
         <script type="text/javascript" src="//www.google.com/jsapi"></script>
         <#--end maps support -->
 

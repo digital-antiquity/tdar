@@ -55,7 +55,9 @@ public class JimsTreehouse extends AbstractInformationResourceController<Documen
     public void prepare()  {
         prodcheck();
         super.prepare();
-        loadMetadata();
+        if (id != -1L) {
+            loadMetadata();
+        }
     }
     
     @Override
