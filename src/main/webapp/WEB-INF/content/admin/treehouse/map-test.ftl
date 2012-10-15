@@ -20,6 +20,10 @@
 
 
 <script>
+$(function() {
+
+
+});
 </script>
 
 </body>

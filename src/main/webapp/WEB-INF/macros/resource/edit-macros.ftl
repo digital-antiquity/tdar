@@ -205,29 +205,29 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                 <tr>                                    
                 <td></td>
                 <td>
-                <@s.textfield  name='latitudeLongitudeBoxes[0].maximumLatitude' id='maxy' size="14" cssClass="float latLong" title="Please enter a valid Maximum Latitude" />
-                <input type="text"  id='d_maxy'  watermark="Latitude (max)" onChange='processLatLong(this)' onBlur='processLatLong(this)' />
+                <@s.textfield  theme="simple" name='latitudeLongitudeBoxes[0].maximumLatitude' id='maxy' size="14" cssClass="float latLong sw-lat" title="Please enter a valid Maximum Latitude" />
+                <input type="text"  id='d_maxy'  watermark="Latitude (max)" onChange='processLatLong(this)' class="sw-lat-display span2" />
                 </td>
                 <td></td>
                 </tr>
                 <tr>
                 <td style="width:33%;text-align:center">
-                    <@s.textfield  name="latitudeLongitudeBoxes[0].minimumLongitude" id='minx' size="14" cssClass="float latLong" title="Please enter a valid Minimum Longitude" />
-                    <input type="text"  id='d_minx'  watermark="Longitude (min)"  onChange='processLatLong(this)' onBlur='processLatLong(this)' />
+                    <@s.textfield theme="simple"  name="latitudeLongitudeBoxes[0].minimumLongitude" id='minx' size="14" cssClass="float latLong sw-lng" title="Please enter a valid Minimum Longitude" />
+                    <input type="text"  id='d_minx'  watermark="Longitude (min)"  onChange='processLatLong(this)' class="sw-lng-display span2" />
                 </td>
                 <td style="width:33%;text-align:center">
-                    <input type="button" id="locate" value="Locate" onclick="locateCoords();" style="padding:5px; margin:0;width:10em" />
+                    <input type="button" id="locate" value="Locate" class="btn locateCoordsButton" />
                 </td>
                 <td style="width:33%;text-align:center">
-                    <@s.textfield  name="latitudeLongitudeBoxes[0].maximumLongitude" id='maxx' size="14" cssClass="float latLong" title="Please enter a valid Maximum Longitude" />
-                    <input type="text"  id='d_maxx'   watermark="Longitude (max)" onChange='processLatLong(this)' onBlur='processLatLong(this)' />
+                    <@s.textfield theme="simple"  name="latitudeLongitudeBoxes[0].maximumLongitude" id='maxx' size="14" cssClass="float latLong ne-lng" title="Please enter a valid Maximum Longitude" />
+                    <input type="text"  id='d_maxx'   watermark="Longitude (max)" onChange='processLatLong(this)' class="ne-lng-display span2" />
                 </td>
                 </tr>
                 <tr>
                 <td></td>
                 <td>
-                    <@s.textfield  name="latitudeLongitudeBoxes[0].minimumLatitude" id="miny" size="14" cssClass="float latLong " title="Please enter a valid Minimum Latitude" /> 
-                    <input type="text" id="d_miny"  watermark="Latitude (min)" onChange='processLatLong(this)' onBlur='processLatLong(this)' /> 
+                    <@s.textfield theme="simple"  name="latitudeLongitudeBoxes[0].minimumLatitude" id="miny" size="14" cssClass="float latLong ne-lat" title="Please enter a valid Minimum Latitude" /> 
+                    <input type="text" id="d_miny"  watermark="Latitude (min)" onChange='processLatLong(this)' class="ne-lat-display span2" /> 
                 </td>
                 <td></td>
                 </tr>           
@@ -713,8 +713,9 @@ $(function(){
             //fixme: implicitly init when necessary
             TDAR.maps.initMapApi();
             var mapdiv = $('#editmapv3')[0];
+            var inputCoordsContainer = $("#explicitCoordinatesDiv")[0];
             TDAR.maps.setupMap(mapdiv);
-            TDAR.maps.setupEditMap(mapdiv);
+            TDAR.maps.setupEditMap(mapdiv, inputCoordsContainer);
         });
     }
     
