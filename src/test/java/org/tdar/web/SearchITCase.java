@@ -41,9 +41,9 @@ public class SearchITCase extends AbstractAdminAuthenticatedWebTestCase {
     SearchIndexService indexService;
 
     private void selectAllResourceTypes() {
-        Iterator<HtmlElement> iter = getHtmlPage().getElementsByName("resourceTypes").iterator();
-        while (iter.hasNext()) {
-            HtmlCheckBoxInput cb = ((HtmlCheckBoxInput) iter.next());
+        List<HtmlElement> iter = getHtmlPage().getElementsByName("resourceTypes");
+        for (int i=0; i <= iter.size(); i++) {
+            HtmlCheckBoxInput cb = ((HtmlCheckBoxInput) iter.get(i));
             cb.setChecked(false);
             logger.trace("checkbox: " + cb);
         }
