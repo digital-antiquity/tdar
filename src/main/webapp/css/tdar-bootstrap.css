@@ -112,5 +112,13 @@ div.barlabel {
 }
 
 .control-group-list .controls {
-	margin-left:10px !important;
+	margin-left: 10px !important;
+}
+
+.searchfor .controls {
+	margin-left: 0px !important;
+}
+
+.term .control-group  {
+	margin-bottom:0px;
 }

@@ -10,6 +10,7 @@
                      "/includes/jquery.maphighlight.local.js",
                      "/includes/jquery.FormNavigate.js",
                      "/includes/tdar.upload.js",
+                     "/includes/tdar.advanced-search.js",
                      "/includes/tdar.repeatrow.js",
 	                 "/includes/jquery.textarearesizer.js",
                      "/includes/tdar.autocomplete.js",

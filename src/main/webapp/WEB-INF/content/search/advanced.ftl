@@ -106,7 +106,7 @@ $(document).ready(function(){
     if($('#queryField').val() !='') {
         tabindex = 1;
     }
-    $("#idtab").idTabs({start:tabindex});
+//    $("#idtab").idTabs({start:tabindex});
 
     //other view init stuff;
     loadTdarMap();
@@ -159,15 +159,15 @@ $(document).ready(function(){
                 <@s.textfield type="text" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}]" cssClass="input-xxlarge" />
                 </div>
         <#elseif fieldType="COVERAGE_DATE_RADIOCARBON" || fieldType="COVERAGE_DATE_CALENDAR" >
-             <div class="term ${fieldType}">
+             <div class="term ${fieldType} controls control-row">
                 <#assign type="CALENDAR_DATE">
                 <#if fieldType !="COVERAGE_DATE_CALENDAR">
                     <#assign type="RADIOCARBON_DATE">
                 </#if>
                 <@s.hidden name="groups[${groupid}].coverageDates[${fieldIndex}].dateType" value="${type}" cssClass="coverageDateType" />
     
-                <@s.textfield  watermark="Start Year" cssClass="coverageStartYear" name="groups[${groupid}].coverageDates[${fieldIndex}].startDate" maxlength="10" /> 
-                <@s.textfield  watermark="End Year" cssClass="coverageEndYear" name="groups[${groupid}].coverageDates[${fieldIndex}].endDate" maxlength="10" />
+                <@s.textfield  theme="simple" placeholder="Start Year" cssClass="coverageStartYear" name="groups[${groupid}].coverageDates[${fieldIndex}].startDate" maxlength="10" /> 
+                <@s.textfield  theme="simple" placeholder="End Year" cssClass="coverageEndYear" name="groups[${groupid}].coverageDates[${fieldIndex}].endDate" maxlength="10" />
             </div>
         <#elseif fieldType="KEYWORD_INVESTIGATION">        
             <div class="term KEYWORD_INVESTIGATION">
@@ -210,27 +210,26 @@ $(document).ready(function(){
         <div class="term RESOURCE_CREATOR_PERSON">
         <!-- FIXME: REPLACE WITH REFERENCE TO EDIT-MACROS -->
             <span class="creatorPerson "  id="group_${groupid}_row_${fieldIndex}_parent">
-            <div class="tableFormat">
-            <div class="width30percent marginLeft10" >
-                <@s.hidden name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.id" id="group_${groupid}_${fieldIndex}_person_id" onchange="this.valid()"  autocompleteParentElement="#group_${groupid}_row_${fieldIndex}_parent"  />
-                <@s.textfield cssClass="nameAutoComplete" watermark="Last Name"
-                     autocompleteName="lastName" autocompleteIdElement="#group_${groupid}_${fieldIndex}_person_id" autocompleteParentElement="#group_${groupid}_row_${fieldIndex}_parent"
-                    name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.lastName" maxlength="255" /> 
-                <@s.textfield cssClass="nameAutoComplete" watermark="First Name" 
-                     autocompleteName="firstName" autocompleteIdElement="#group_${groupid}_${fieldIndex}_person_id" autocompleteParentElement="#group_${groupid}_row_${fieldIndex}_parent"
-                    name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.firstName" maxlength="255" />
+            <div class="control-group">
+                <div class="controls controls-row">
+	                <@s.hidden name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.id" id="group_${groupid}_${fieldIndex}_person_id" onchange="this.valid()"  autocompleteParentElement="#group_${groupid}_row_${fieldIndex}_parent"  />
+	                <@s.textfield cssClass="nameAutoComplete" placeholder="Last Name"  theme="simple"  
+	                     autocompleteName="lastName" autocompleteIdElement="#group_${groupid}_${fieldIndex}_person_id" autocompleteParentElement="#group_${groupid}_row_${fieldIndex}_parent"
+	                    name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.lastName" maxlength="255" cssClass="span2" /> 
+	                <@s.textfield cssClass="nameAutoComplete" placeholder="First Name" theme="simple" 
+	                     autocompleteName="firstName" autocompleteIdElement="#group_${groupid}_${fieldIndex}_person_id" autocompleteParentElement="#group_${groupid}_row_${fieldIndex}_parent"
+	                    name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.firstName" maxlength="255" cssClass="span2"  />
+                <@s.select theme="simple"  name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].role" emptyOption=true listValue='label' label="Role" list=relevantPersonRoles cssClass="creator-role-select span3" />
+                </div>
+                <div class="controls controls-row">
                 <#if authenticated>
-                <@s.textfield cssClass="nameAutoComplete" watermark="Email"
-                     autocompleteName="email" autocompleteIdElement="#group_${groupid}_${fieldIndex}_person_id" autocompleteParentElement="#group_${groupid}_row_${fieldIndex}_parent"
-                    name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.email" maxlength="255"/>
-                <br />
+	                <@s.textfield cssClass="nameAutoComplete" placeholder="Email (Optional)" theme="simple" 
+	                     autocompleteName="email" autocompleteIdElement="#group_${groupid}_${fieldIndex}_person_id" autocompleteParentElement="#group_${groupid}_row_${fieldIndex}_parent"
+	                    name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.email" maxlength="255" cssClass="span3" />
                 </#if>
-            </div>
-            <div class="width60percent marginLeft10">
-                <@s.textfield cssClass="nameAutoComplete" watermark="Institution Name"
+                <@s.textfield cssClass="nameAutoComplete" placeholder="Institution Name (Optional)" theme="simple" 
                      autocompleteName="institution" autocompleteIdElement="#group_${groupid}_${fieldIndex}_person_id" autocompleteParentElement="group_${groupid}_row_${fieldIndex}_parent"
                     name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.institution.name" maxlength="255" />
-                <@s.select name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].role" emptyOption=true listValue='label' label="Role" list=relevantPersonRoles  />
             </div>
             </div>
             </span>
@@ -240,13 +239,14 @@ $(document).ready(function(){
     <!-- FIXME: REPLACE WITH REFERENCE TO EDIT-MACROS -->
         <div class="term retain RESOURCE_CREATOR_INSTITUTION">
             <span class="creatorInstitution" id="group_${groupid}_${fieldIndex}_institution_parent">
-            <div class="tableFormat">
+            <div class="control-group">
                 <@s.hidden name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].institution.id" id="group_${groupid}_${fieldIndex}_institution_id"/>
-            <div class="width60percent marginLeft10">
-                <@s.textfield cssClass="institutionAutoComplete institution" watermark="Institution Name"
+            <div class="controls control-row">
+                <@s.textfield theme="simple" cssClass="institutionAutoComplete institution" placeholder="Institution Name" theme="simple" 
                      autocompleteName="name" autocompleteIdElement="#group_${groupid}_${fieldIndex}_institution_id" autocompleteParentElement="#group_${groupid}_${fieldIndex}_institution_parent"
-                    name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].institution.name" maxlength="255" />
-                <@s.select name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].role" emptyOption=true listValue='label' label="Role " list=relevantInstitutionRoles />
+                    name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].institution.name" maxlength="255" cssClass="span4" />
+                <@s.select theme="simple" name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].role" theme="simple" 
+                emptyOption=true listValue='label' label="Role " list=relevantInstitutionRoles />
             </div>
             </div>
             </span>
@@ -254,15 +254,15 @@ $(document).ready(function(){
     
     <!-- FIXME: refactor to not repeat the same block -->
     <#elseif fieldType = 'DATE_CREATED'>
-        <div class="term retain ${fieldType}">
-            <@s.textfield cssClass="watermarked number" watermark='yyyy' labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].start" label="After"/>
-            <@s.textfield cssClass="watermarked number" watermark='yyyy'labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].end" label ="Before"/>
+        <div class="term retain ${fieldType} controls control-row">
+            <@s.textfield cssClass="placeholdered number" theme="simple" placeholder='yyyy' labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].start" label="After"/>
+            <@s.textfield cssClass="placeholdered number" theme="simple" placeholder='yyyy'labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].end" label ="Before"/>
         </div>            
     
     <#elseif fieldType?starts_with("DATE_")>
-        <div class="term retain ${fieldType}">
-            <@s.textfield cssClass="watermarked datepicker" watermark="m/d/yy" labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].start" label="After"/>
-            <@s.textfield cssClass="watermarked datepicker" watermark="m/d/yy" labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].end" label ="Before"/>
+        <div class="term retain ${fieldType} controls control-row">
+            <@s.textfield cssClass="placeholdered datepicker" theme="simple" placeholder="m/d/yy" labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].start" label="After"/>
+            <@s.textfield cssClass="placeholdered datepicker" theme="simple" placeholder="m/d/yy" labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].end" label ="Before"/>
         </div>            
     <#elseif fieldType="PROJECT">
     <!-- FIXME: refactor to not repeat the same block -->
