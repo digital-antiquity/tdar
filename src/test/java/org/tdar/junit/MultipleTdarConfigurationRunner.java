@@ -29,9 +29,14 @@ public class MultipleTdarConfigurationRunner extends SpringJUnit4ClassRunner {
 //    }
 
     private Description describeTest(FrameworkMethod method) {
-        String[] configs = method.getAnnotation(RunWithTdarConfiguration.class).runWith();
-        logger.info(testName(method));
+        RunWithTdarConfiguration annotation = method.getAnnotation(RunWithTdarConfiguration.class);
         Description description = Description.createSuiteDescription(testName(method), method.getAnnotations());
+
+        if (annotation == null) {
+            return description;
+        }
+        String[] configs = annotation.runWith();
+        logger.info(testName(method));
 
         for (int i = 0; i < configs.length; i++) {
             description.addChild(Description.createTestDescription(getTestClass().getJavaClass(),  testName(method) + "[" + configs[i] + "] "));
