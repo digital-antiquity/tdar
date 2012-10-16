@@ -1721,7 +1721,7 @@ function drawToolbar(projId) {
 
 <script id="template-download" type="text/x-tmpl">
 {% for (var i=0, file; file=o.files[i]; i++) { %}
-{% var idx = '' + i;%}
+{% var idx = '' + TDAR.fileupload.getRowId();%}
 {% var rowclass = file.fileId ? "existing-file" : "new-file" ;%}
     <tr class="template-download fade {%=rowclass%}">
         {% if (file.error) { %}        
@@ -1778,7 +1778,7 @@ function drawToolbar(projId) {
 
 
             <input type="hidden" class="fileAction" name="fileProxies[{%=idx%}].action" value="{%=file.action||'ADD'%}"/>
-            <input type="hidden" class="fileId" name="fileProxies[{%=idx%}].fileId" value="{%=file.fileId%}"/>
+            <input type="hidden" class="fileId" name="fileProxies[{%=idx%}].fileId" value="{%=''+(file.fileId || '-1')%}"/>
             <input type="hidden" class="fileReplaceName" name="fileProxies[{%=idx%}].filename" value="{%=file.name%}"/>
             <input type="hidden" class="fileSequenceNumber" name="fileProxies[{%=idx%}].sequenceNumber" value="{%=idx%}"/>
             

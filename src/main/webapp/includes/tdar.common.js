@@ -1311,6 +1311,9 @@ TDAR.common = function() {
     //FIXME: wny is this broken out from  initEditPage?   If anything, break it out even further w/ smaller private functions
     var _setupEditForm = function (form) {
         
+        //fun fact: because we have a form field named "ID",  form.id actually refers to this DOM element,  not the ID attribute of the form.
+        var formid = $(form).attr("id");
+        
         //warn user about leaving before saving
         //FIXME: FormNavigate.js has bugs and is not being maintained. need to find/write replacement.
         //$(form).FormNavigate("Leaving the page will cause any unsaved data to be lost!");
@@ -1341,13 +1344,13 @@ TDAR.common = function() {
             prepareDateFields(elem);
         });
 
-        if ($(form.id + '_uploadedFiles').length > 0) {
+        if ($(formid + '_uploadedFiles').length > 0) {
             var validateUploadedFiles = function() {
-                if ($(form.id + "_uploadedFiles").val().length > 0) {
+                if ($(formid + "_uploadedFiles").val().length > 0) {
                     $("#reminder").hide();
                 }
             };
-            $(form.id + '_uploadedFiles').change(validateUploadedFiles);
+            $(formid + '_uploadedFiles').change(validateUploadedFiles);
             validateUploadedFiles();
         }
 

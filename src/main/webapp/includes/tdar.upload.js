@@ -7,6 +7,7 @@ TDAR.fileupload = function() {
     
     var _informationResource;
     var _informationResourceId = -1;
+    var _nextRowId = 0;
     
     //main file upload registration function
     var _registerUpload  = function(options) {
@@ -17,13 +18,15 @@ TDAR.fileupload = function() {
         
         //pass off our options to fileupload options (to allow easy passthrough of page-specific (options e.g. acceptFileTypes)
         var $fileupload = $(_options.formSelector).fileupload($.extend({
-            add: function(e, data) {
-                data.submit(); //upload after file selected
-            },
+//            add: function(e, data) {
+//                data.submit(); //upload after file selected
+//            },
             formData: function(){
                 return [{name:"ticketId", value:$('#ticketId').val()}]
             },
+            singleFileUploads: false,
             url: TDAR.uri('upload/upload'),
+            autoUpload: true,
             
             destroy: _destroy
         }, _options));
@@ -31,6 +34,17 @@ TDAR.fileupload = function() {
         
         $fileupload.bind("fileuploadcompleted", _updateReplaceButtons);
         
+        //make sure the sequenceNumber field is correct after files are added (or the operation fails)
+        var _updateSequenceNumbers =  function(e, data){
+            console.log("updating sequenceNumbers");
+            $('tbody.files').find("tr").not(".replace-target,.deleted-file").each(function(idx, trElem){
+                console.log("updating sequencenumber::   row.id:%s   sequenceNumber:%s", trElem.id, idx+1);
+                $('.fileSequenceNumber', trElem).val(idx + 1);
+            });
+        }
+        
+        //note: unlike in jquery.bind(), you cant use space-separated event names here.
+        $fileupload.bind("fileuploadcompleted fileuploadfailed", _updateSequenceNumbers);
         
         //hack: disable until we have a valid ticket
         $fileupload.fileupload("disable");
@@ -90,8 +104,7 @@ TDAR.fileupload = function() {
                 delete_url: null,
                 delete_type: "DELETE", //required, no purpose (future use?)
                 action: proxy.action,
-                fileId: proxy.fileId,
-                
+                fileId: proxy.fileId
             };
         });
     };
@@ -197,12 +210,19 @@ TDAR.fileupload = function() {
         $('.delete-button', row).addClass('btn-warning').removeClass('btn-danger');
     };
     
+    //public: kludge for dealing w/ fileupload's template system, which doesn't have a good way to pass the row number of the table the template will be rendered to
+    var _getRowId = function() {
+        return _nextRowId++;
+    }
+    
     
     //expose public elements
     return {
         "registerUpload": _registerUpload,
         //FIXME: we can remove the need for this if we include it as closure to instanced version of _destroy.
         "informationResourceId": _informationResourceId,
-        "updateFileAction": _updateFileAction
+        "updateFileAction": _updateFileAction,
+        "getRowId": _getRowId
+        
     };
 }();
