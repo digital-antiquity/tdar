@@ -13,7 +13,9 @@ import java.util.regex.Pattern;
 import org.junit.Test;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.struts.data.FileProxy;
 
 
 public class ThumbnailITCase extends AbstractAdminAuthenticatedWebTestCase {
@@ -94,8 +96,8 @@ public class ThumbnailITCase extends AbstractAdminAuthenticatedWebTestCase {
         // LOGIN, CHANGE FROM CONFIDENTIAL TO PUBLIC THEN LOGOUT... WE SHOULD SEE THE THUMBNAIL
         loginAdmin();
         gotoPage(editPage);
-        setInput("fileProxies[0].action", "MODIFY_METADATA");
-        setInput("fileProxies[0].restriction", "PUBLIC");
+        setInput("fileProxies[0].action", FileAction.MODIFY_METADATA.name());
+        setInput("fileProxies[0].restriction", FileAccessRestriction.PUBLIC.name());
         submitForm();
         logout();
         gotoPage(viewPage);

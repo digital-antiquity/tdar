@@ -339,7 +339,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     public boolean checkInput(String name, String val) {
         List<HtmlElement> els = getHtmlPage().getElementsByName(name);
         for (HtmlElement el : els) {
-            logger.info(String.format("checkinput[%s --> %s] %s", name, val, el.asXml()));
+            logger.trace(String.format("checkinput[%s --> %s] %s", name, val, el.asXml()));
             if (el instanceof HtmlTextArea && ((HtmlTextArea) el).getText().equals(val)) {
                 return true;
             } else if (el instanceof HtmlSelect) {
@@ -427,7 +427,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
     private HtmlElement getButtonWithName(String buttonText) {
         //get all the likely suspects we consider to be a "button" and return the best match
-        logger.info("get button by name, form {}", _internalForm);
+        logger.trace("get button by name, form {}", _internalForm);
         List<HtmlElement> elements = new ArrayList<HtmlElement>();
         elements.addAll(getForm().getButtonsByName(buttonText));
         elements.addAll(getForm().getInputsByValue(buttonText));

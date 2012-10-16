@@ -17,6 +17,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.cache.BrowseYearCountCache;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Creator;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
@@ -119,6 +120,8 @@ public class BrowseController extends AbstractLookupController {
             setRecordsPerPage(50);
             handleSearch(queryBuilder);
         }
+        creator = getGenericService().find(Creator.class, getId());
+        logger.info("{}  -- {} ", creator, ((Person)creator).isRegistered());
         // setResults(getResourceService().findResourceLinkedValues(Creator.class));
         return SUCCESS;
     }

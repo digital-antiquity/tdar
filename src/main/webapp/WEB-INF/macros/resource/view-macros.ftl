@@ -219,7 +219,9 @@ No categories or subcategories specified.
 					</p>
 				</div>
     
-          <div id='large-google-map' class="googlemap">
+    	<div class="row">
+          <div id='large-google-map' class="googlemap span9">
+          </div>
           </div>
           <div id="divCoordContainer" style="display:none">
               <input type="hidden"  class="ne-lat" value="${activeResource.firstLatitudeLongitudeBox.maxObfuscatedLatitude}" id="maxy" />

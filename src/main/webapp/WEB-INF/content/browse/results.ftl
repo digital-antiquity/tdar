@@ -15,7 +15,7 @@
     <a href="<@s.url value="${creator.institution.id?c}"/>">${creator.institution}</a>
     <br/>
     </#if>
-    
+    <br/>
     <p>${creator.description!''}</p>
     <br/>
         <#if creator.creatorType == 'PERSON'>
@@ -23,7 +23,7 @@
                 <table class='tableFormat'>
                 <tr>
                     <td>
-                        <#if creator.rpaNumber??>
+                        <#if creator.rpaNumber?has_content>
                             <B>Registered Public Archaeologist</B>:${creator.rpaNumber}
                         </#if>
                     </td><td>
@@ -32,7 +32,7 @@
 	                        <#assign registered = creator.registered>
                         </#if>
                     <#if registered && (editor || id == authenticatedUser.id)>
-                            <#if creator.lastLogin??>
+                            <#if creator.lastLogin?has_content>
                                         <@view.datefield "Last Login"  creator.lastLogin />
                             <#else>
                                         <@view.textfield "Last Login"  "No record" />

@@ -112,7 +112,7 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
 
     // can this user contribute resources?
     @Column(name = "contributor", nullable = false, columnDefinition = "boolean default FALSE")
-    private Boolean contributor = Boolean.FALSE;;
+    private Boolean contributor = Boolean.FALSE;
 
     @Column(name = "contributor_reason", length = 512)
     private String contributorReason;
@@ -121,7 +121,7 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     // else?
     @Field
     @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
-    private Boolean registered = Boolean.FALSE;
+    private boolean registered = false;
 
     // rpanet.org number (if applicable - using String since I'm not sure if
     // it's in numeric format)
@@ -270,12 +270,12 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
         this.contributor = contributor;
     }
 
-    public Boolean isRegistered() {
+    public boolean isRegistered() {
         return registered;
     }
 
 
-    public void setRegistered(Boolean registered) {
+    public void setRegistered(boolean registered) {
         this.registered = registered;
     }
 
