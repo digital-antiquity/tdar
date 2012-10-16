@@ -74,10 +74,13 @@ public class MultipleTdarConfigurationRunner extends SpringJUnit4ClassRunner {
     }
 
     private void setConfiguration(final FrameworkMethod method, String config) {
-        if (method.getClass().isAssignableFrom(AbstractWebTestCase.class)) {
+        if (AbstractWebTestCase.class.isAssignableFrom(getTestClass().getJavaClass())) {
             try {
-                webClient.getPage(AbstractWebTestCase.getBaseUrl() + "/admin/switchContext/denied?configurationFile=" + config);
+                String url  = AbstractWebTestCase.getBaseUrl() + "/admin/switchContext/denied?configurationFile=" + config;
+                logger.info("LOADING CONFIG : "+ url);
+                webClient.getPage(url);
             } catch (Exception e) {
+                logger.warn("Exception {}", e);
                 Assert.fail(e.getMessage());
             }
         }
