@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.coverage.CoverageType;
@@ -25,7 +26,10 @@ import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.LicenseType;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.junit.MultipleTdarConfigurationRunner;
+import org.tdar.junit.RunWithTdarConfiguration;
 
+//@RunWith(MultipleTdarConfigurationRunner.class)
 public class CompleteDocumentITCase extends AbstractAdminAuthenticatedWebTestCase {
     public static HashMap<String, String> docValMap;
     public static HashMap<String, List<String>> docMultiValMap = new HashMap<String, List<String>>();
@@ -34,7 +38,6 @@ public class CompleteDocumentITCase extends AbstractAdminAuthenticatedWebTestCas
     public static String REGEX_DOCUMENT_VIEW = "\\/document\\/\\d+$";
 
     public CompleteDocumentITCase() {
-
         docValMap = new HashMap<String, String>();
         // removing inline implementation of HashMap to remove serialization warning
         docValMap.put("projectId", "1");
@@ -126,6 +129,7 @@ public class CompleteDocumentITCase extends AbstractAdminAuthenticatedWebTestCas
 
     @Test
     @Rollback(true)
+    @RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.properties", "src/test/resources/tdar.ahad.properties" })
     public void testCreateDocument() {
 
         // grab a ticket, upload a file with that ticket, then set ticketId on this form

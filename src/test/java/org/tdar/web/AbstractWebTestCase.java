@@ -88,7 +88,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
      * override to test with different URL can use this to point at another
      * instance of tDAR instead of running "integration" tests.
      */
-    public String getBaseUrl() {
+    public static String getBaseUrl() {
         return System.getProperty("tdar.baseurl", DEFAULT_BASE_URL);
     }
 

@@ -2260,7 +2260,7 @@ public class SearchITCase extends AbstractAdminAuthenticatedWebTestCase {
         setInput("groups[0].fieldTypes[0]", SearchFieldType.KEYWORD_SITE.name());
         createTextInput("groups[0].approvedSiteTypeIdLists[0]", "251");
         submitForm("Search");
-        clickLinkWithText("Modify Search");
+        clickLinkWithText("Refine your search »");
         HtmlCheckBoxInput element = (HtmlCheckBoxInput) htmlPage.getElementById("groups[0].approvedSiteTypeIdLists[0]-1");
         assertNotNull("could not find element", element);
         assertTrue("checkbox isn't checked", element.isChecked());
