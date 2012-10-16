@@ -265,10 +265,8 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     public String toString() {
-        if (isValid()) {
-            return String.format("Latitude [%s to %s], Longitude [%s to %s]", minimumLatitude, maximumLatitude, minimumLongitude, maximumLongitude);
-        }
-        return super.toString();
+            return String.format("Latitude [%s to %s], Longitude [%s to %s], valid:%s", minimumLatitude, maximumLatitude, minimumLongitude, maximumLongitude, 
+                    isValid());
     }
 
     public void copyValuesFrom(LatitudeLongitudeBox otherBox) {

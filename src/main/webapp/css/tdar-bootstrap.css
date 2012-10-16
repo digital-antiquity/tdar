@@ -88,7 +88,7 @@ div.barlabel {
 	max-width: inherit;
 }
 
-.tdar-map-large {
+.tdar-map-large , #large-google-map{
     height:450px;
 }
 

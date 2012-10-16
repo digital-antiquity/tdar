@@ -205,8 +205,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                 <tr>                                    
                 <td></td>
                 <td>
-                <@s.textfield  theme="simple" name='latitudeLongitudeBoxes[0].maximumLatitude' id='maxy' size="14" cssClass="float latLong sw-lat" title="Please enter a valid Maximum Latitude" />
-                <input type="text"  id='d_maxy'  watermark="Latitude (max)" onChange='processLatLong(this)' class="sw-lat-display span2" />
+                <@s.textfield  theme="simple" name='latitudeLongitudeBoxes[0].maximumLatitude' id='maxy' size="14" cssClass="float latLong ne-lat" title="Please enter a valid Maximum Latitude" />
+                <input type="text"  id='d_maxy'  watermark="Latitude (max)" onChange='processLatLong(this)' class="ne-lat-display span2" />
                 </td>
                 <td></td>
                 </tr>
@@ -226,8 +226,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                 <tr>
                 <td></td>
                 <td>
-                    <@s.textfield theme="simple"  name="latitudeLongitudeBoxes[0].minimumLatitude" id="miny" size="14" cssClass="float latLong ne-lat" title="Please enter a valid Minimum Latitude" /> 
-                    <input type="text" id="d_miny"  watermark="Latitude (min)" onChange='processLatLong(this)' class="ne-lat-display span2" /> 
+                    <@s.textfield theme="simple"  name="latitudeLongitudeBoxes[0].minimumLatitude" id="miny" size="14" cssClass="float latLong sw-lat" title="Please enter a valid Minimum Latitude" /> 
+                    <input type="text" id="d_miny"  watermark="Latitude (min)" onChange='processLatLong(this)' class="sw-lat-display span2" /> 
                 </td>
                 <td></td>
                 </tr>           
@@ -714,7 +714,6 @@ $(function(){
             TDAR.maps.initMapApi();
             var mapdiv = $('#editmapv3')[0];
             var inputCoordsContainer = $("#explicitCoordinatesDiv")[0];
-            TDAR.maps.setupMap(mapdiv);
             TDAR.maps.setupEditMap(mapdiv, inputCoordsContainer);
         });
     }

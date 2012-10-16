@@ -74,7 +74,7 @@ TDAR.maps = function() {
     
     //public: initialize a gmap inside of the specified div element.  If hidden inputs define spatial bounds,  draw
     //          a box and pan/zoom the map to fit the bounds.
-    var _setupMap = function(mapDiv) {
+    var _setupMap = function(mapDiv, inputContainer) {
         _execute(function() {
             console.log("running  setupmap");
             var mapOptions = $.extend({}, _defaults.mapOptions, {
@@ -97,19 +97,21 @@ TDAR.maps = function() {
             var map = new google.maps.Map(mapDiv, mapOptions);
             $(mapDiv).data("gmap", map);
 
-            _setupLatLongBoxes(mapDiv);
+            if(inputContainer) {
+                _setupLatLongBoxes(mapDiv, inputContainer);
+            }
         });
     };
 
     //private: look for resource latlongboxes and draw rectangles if found.
-    var _setupLatLongBoxes = function(mapDiv){
+    var _setupLatLongBoxes = function(mapDiv, inputContainer){
         var style = _defaults.rectStyleOptions.RESOURCE;
         var gmap = $(mapDiv).data("gmap");
         if($('.sw-lat').val() !=="") {
-            var lat1 = $('.sw-lat').val();
-            var lng1 = $('.sw-lng').val();
-            var lat2 = $('.ne-lat').val();
-            var lng2 = $('.ne-lng').val();
+            var lat1 = $('.sw-lat', inputContainer).val();
+            var lng1 = $('.sw-lng', inputContainer).val();
+            var lat2 = $('.ne-lat', inputContainer).val();
+            var lng2 = $('.ne-lng', inputContainer).val();
             
             var rect = _addBound(mapDiv, style, lat1, lng1, lat2, lng2);
             gmap.fitBounds(rect.getBounds());
@@ -152,58 +154,59 @@ TDAR.maps = function() {
     }
 
     //public: setup a map in an editing context (after map has been initialized for viewing)
-    var _setupEditMap = function(mapDiv, inputContainer) { _execute(function(){
-        var gmap = $(mapDiv).data("gmap");
-
-        //add "select region" button
-        var $controlDiv = $('<div class="tdar-gmap-control"></div>');
-        //var $controlUi = $('<div class="tdar-gmap-control-ui"></div>');
-        var $selectButton = $('<button type="button" id="btnSelectRegion" class="btn btn-small btn-primary">Select Region</button>');
-        var $clearButton = $('<button type="button" id="btnClearRect" class="btn btn-small ">Clear Region</button>');
-        $controlDiv.append($selectButton).append($clearButton);
-
-        var drawingManager = _setupDrawingManager(mapDiv);
-
-        //handle select click
-        google.maps.event.addDomListener($selectButton[0], 'click', function() {
-            var existingRect = $(mapDiv).data("resourceRect");
-            console.log(" select region");
-            //remove any existing rectangle
-            if(existingRect) {
+    var _setupEditMap = function(mapDiv, inputContainer) {
+        _setupMap(mapDiv, inputContainer);
+        _execute(function(){
+            var gmap = $(mapDiv).data("gmap");
+    
+            //add "select region" button
+            var $controlDiv = $('<div class="tdar-gmap-control"></div>');
+            //var $controlUi = $('<div class="tdar-gmap-control-ui"></div>');
+            var $selectButton = $('<button type="button" id="btnSelectRegion" class="btn btn-small btn-primary">Select Region</button>');
+            var $clearButton = $('<button type="button" id="btnClearRect" class="btn btn-small ">Clear Region</button>');
+            $controlDiv.append($selectButton).append($clearButton);
+    
+            var drawingManager = _setupDrawingManager(mapDiv);
+    
+            //handle select click
+            google.maps.event.addDomListener($selectButton[0], 'click', function() {
+                var existingRect = $(mapDiv).data("resourceRect");
+                console.log(" select region");
+                //remove any existing rectangle
+                if(existingRect) {
+                    existingRect.setMap();
+                    $(mapDiv).removeData("resourceRect");
+                }
+                drawingManager.setDrawingMode(google.maps.drawing.OverlayType.RECTANGLE);
+                $(mapDiv).find('.tdar-gmap-control button').prop("disabled", true);
+            });
+    
+            //handle clear click
+            google.maps.event.addDomListener($clearButton[0], 'click', function() {
+                var existingRect = $(mapDiv).data("resourceRect");
+                if(!existingRect) return;
                 existingRect.setMap();
                 $(mapDiv).removeData("resourceRect");
-            }
-            drawingManager.setDrawingMode(google.maps.drawing.OverlayType.RECTANGLE);
-            $(mapDiv).find('.tdar-gmap-control button').prop("disabled", true);
-        });
-
-        //handle clear click
-        google.maps.event.addDomListener($clearButton[0], 'click', function() {
-            var existingRect = $(mapDiv).data("resourceRect");
-            if(!existingRect) return;
-            existingRect.setMap();
-            $(mapDiv).removeData("resourceRect");
-
-            //tell the DOM that rect is gone
-            _fireBoundsModified(mapDiv, null);
-        });
-
-        //add control to map
-        gmap.controls[google.maps.ControlPosition.TOP_CENTER].push($controlDiv[0]);
-
-        //if rect already present,  make it editable
-        var rect = $(mapDiv).data('resourceRect');
-        if(rect) {
-            rect.setEditable(true);
-            google.maps.event.addDomListener(rect, 'bounds_changed', function() {
-                _fireBoundsModified(mapDiv, rect);
+    
+                //tell the DOM that rect is gone
+                _fireBoundsModified(mapDiv, null);
             });
-
-        }
-        
-        //bind resource rectangle to the manual latlong input controls
-        _registerInputs(mapDiv);
-        
+    
+            //add control to map
+            gmap.controls[google.maps.ControlPosition.TOP_CENTER].push($controlDiv[0]);
+    
+            //if rect already present,  make it editable
+            var rect = $(mapDiv).data('resourceRect');
+            if(rect) {
+                rect.setEditable(true);
+                google.maps.event.addDomListener(rect, 'bounds_changed', function() {
+                    _fireBoundsModified(mapDiv, rect);
+                });
+    
+            }
+            
+            //bind resource rectangle to the manual latlong input controls
+            _registerInputs(mapDiv);
 
     })};
 

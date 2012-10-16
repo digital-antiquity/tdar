@@ -777,8 +777,13 @@ function sprintf() {
 
 function initializeView() {
     console.debug('initialize view');
-    applyZebraColors();
-    //loadTdarMap();
+    if($('#large-google-map').length) {
+        var mapdiv = $('#large-google-map')[0];
+        TDAR.maps.initMapApi();
+        TDAR.maps.setupMap(mapdiv, mapdiv);
+        
+    }
+    
     initializeTooltipContent();
 }
 
@@ -1431,7 +1436,6 @@ TDAR.common = function() {
         delegateKeyword("#geographicKeywordTable", "geographic", "GeographicKeyword");
         applyInstitutionAutocomplete($('#txtResourceProviderInstitution'), true);
         applyInstitutionAutocomplete($('#publisher'), true);
-        initializeView();
         $('#resourceCollectionTable').on(
                 ".collectionAutoComplete",
                 "focusin",
@@ -1466,9 +1470,20 @@ TDAR.common = function() {
         
     };
     
+    var _initializeView = function() {
+        console.debug('initialize view');
+        if($('#large-google-map').length) {
+            var mapdiv = $('#large-google-map')[0];
+            var inputContainer = $("#divCoordContainer")[0];
+            TDAR.maps.initMapApi();
+            TDAR.maps.setupMap(mapdiv, inputContainer);
+        }
+    };
+    
     return {
         "initEditPage":_initEditPage,
         "initFormValidation": _setupFormValidate,
-        "applyTreeviews": _applyTreeviews
+        "applyTreeviews": _applyTreeviews,
+        "initializeView": _initializeView
     };
 }();

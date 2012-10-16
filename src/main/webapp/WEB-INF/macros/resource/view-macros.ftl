@@ -219,13 +219,14 @@ No categories or subcategories specified.
 					</p>
 				</div>
     
-          <div id='large-google-map' style='width:740;height:400px;'></div>
-          <input type="hidden"  readonly='true' value="${activeResource.firstLatitudeLongitudeBox.maxObfuscatedLatitude}" id="maxy" size=14 />
-          <input type="hidden"  readonly='true' value="${activeResource.firstLatitudeLongitudeBox.minObfuscatedLongitude}" id="minx" size=14 />
-          <input type="hidden"  readonly='true' value="${activeResource.firstLatitudeLongitudeBox.maxObfuscatedLongitude}" id="maxx" size=14 />
-          <input type="hidden"  readonly='true' value="${activeResource.firstLatitudeLongitudeBox.minObfuscatedLatitude}"  id="miny" size=14 />
-       <br/>
-       <br/>
+          <div id='large-google-map' class="googlemap">
+          </div>
+          <div id="divCoordContainer" style="display:none">
+              <input type="hidden"  class="ne-lat" value="${activeResource.firstLatitudeLongitudeBox.maxObfuscatedLatitude}" id="maxy" />
+              <input type="hidden"  class="sw-lng" value="${activeResource.firstLatitudeLongitudeBox.minObfuscatedLongitude}" id="minx" />
+              <input type="hidden"  class="ne-lng" value="${activeResource.firstLatitudeLongitudeBox.maxObfuscatedLongitude}" id="maxx" />
+              <input type="hidden"  class="sw-lat" value="${activeResource.firstLatitudeLongitudeBox.minObfuscatedLatitude}"  id="miny" />
+          </div>
     </#if>
   </#if>
 </#macro>
@@ -489,7 +490,7 @@ No categories or subcategories specified.
 <head>
 <script>
     $(document).ready(function() {
-    initializeView();
+    TDAR.common.initializeView();
     });
 </script>
 </head>
