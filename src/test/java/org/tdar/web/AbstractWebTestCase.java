@@ -339,6 +339,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     public boolean checkInput(String name, String val) {
         List<HtmlElement> els = getHtmlPage().getElementsByName(name);
         for (HtmlElement el : els) {
+            logger.info(String.format("checkinput[%s --> %s] %s", name, val, el.asXml()));
             if (el instanceof HtmlTextArea && ((HtmlTextArea) el).getText().equals(val)) {
                 return true;
             } else if (el instanceof HtmlSelect) {

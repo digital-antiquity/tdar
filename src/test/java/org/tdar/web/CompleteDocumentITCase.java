@@ -193,12 +193,12 @@ public class CompleteDocumentITCase extends AbstractAdminAuthenticatedWebTestCas
                 assertTextPresent(docValMap.get(key));
                 continue;
             }
-            assertTrue("element:" + key + " is set to:" + val, checkInput(key, val));
+            assertTrue("element:" + key + " should be set to:" + val, checkInput(key, val));
         }
 
         for (String key : docMultiValMap.keySet()) {
             for (String val : docMultiValMap.get(key)) {
-                assertTrue("element:" + key + " is set to:" + val, checkInput(key, val));
+                assertTrue("element:" + key + " should be set to:" + val, checkInput(key, val));
             }
         }
 
