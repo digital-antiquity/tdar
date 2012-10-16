@@ -1109,7 +1109,12 @@ jquery validation hooks?)
     <div class="fileupload-loading"></div>
     <br />
         <!-- The table listing the files available for upload/download -->
-        <table role="presentation" class="table table-striped">
+
+                <div class="reorder <#if (fileProxies?size < 2 )>hidden</#if>">
+                    Reorder: <span class="link alphasort">Alphabetic</span> | <span class="link" onclick="customSort(this)">Custom</span>  
+                </div>
+
+        <table id="files" role="presentation" class="table table-striped sortable">
             <thead>
                <th><!--preview-->&nbsp;</th>
                <th>Name</th>
@@ -1118,51 +1123,60 @@ jquery validation hooks?)
                <th colspan="2">Action</th>
             </thead>
             <tbody class="files"></tbody>
+            <#list fileProxies as fileProxy>
+                <#if fileProxy??>
+                <@fileProxyRow rowId=fileProxy_index filename=fileProxy.filename filesize=fileProxy.size fileid=fileProxy.fileId action=fileProxy.action versionId=fileProxy.originalFileVersionId/>
+                </#if>
+            </#list>
         </table>
     
 </div>
 </#macro>
 
 <#macro fileProxyRow rowId="{ID}" filename="{FILENAME}" filesize="{FILESIZE}" action="ADD" fileid=-1 versionId=-1>
-<tr id="fileProxy_${rowId}" class="${(fileid == -1)?string('newrow', '')} sortable">
-<td class="fileinfo">
-    <div class="width99percent">
-            <#if fileid == -1>
-                <b class="filename replacefilename" title="{FILENAME}">{FILENAME}</b> 
-            <#else>
-                <b>Existing file:</b> <a class='filename' href="<@s.url value='/filestore/${versionId?c}/get'/>" title="${filename?html}"><@truncate filename 45 /></a>
-            </#if>
-    
-        <span style='font-size: 0.9em;'>(${filesize} bytes)</span>
+<tr id="fileProxy_${rowId}" class="${(fileid == -1)?string('newrow', '')} sortable template-download fade existing-file in">
+            <td class="preview"></td>
+            <td class="name">
+                        
+                <a href="<@s.url value='/filestore/${versionId?c}/get'/>" title="${filename?html}" download="${filename?html}">${filename?html}</a>
+                 
+                <span class="replacement-text" style="display:none"></span>
+            </td>
+            <td class="size"><span>${filesize} bytes</span></td>
+            <td colspan="2">
+		<div class="control-group">
+		
+		    <div class="controls">
+		        <@s.select id="proxy${rowId}_conf"  name="fileProxies[${rowId}].restriction" labelposition="right" 
+		        style="padding-left: 20px;" list=fileAccessRestrictions listValue="label"  class="fileProxyConfidential" onchange="TDAR.fileupload.updateFileAction(this)" style="padding-left: 20px;" />
+		    </div> 
+		</div>
+		</td>
+        
+        <td class="delete">
+                <button class="btn btn-danger delete-button" data-type="DELETE" data-url="">
+                    <i class="icon-trash icon-white"></i><span>Delete</span>
+                </button>
+        </td>
+        <td>
+            
+                  <div class="btn-group">
+                    <button class="btn btn-warning disabled dropdown-toggle replace-button" disabled="" data-toggle="dropdown">Replace <span class="caret"></span></button>
+                    <ul class="dropdown-menu" id="tempul">
+                      <li><a href="#">file 1</a></li>
+                      <li><a href="#">file 2</a></li>
+                      <li class="divider"></li>
+                      <li><a href="#">cancel replace operation</a></li>
+                    </ul>
+                  </div> 
 
         <input type="hidden" class="fileAction" name="fileProxies[${rowId}].action" value="${action}"/>
         <input type="hidden" class="fileId" name="fileProxies[${rowId}].fileId" value="${fileid?c}"/>
         <input type="hidden" class="fileReplaceName" name="fileProxies[${rowId}].filename" value="${filename}"/>
         <input type="hidden" class="fileSequenceNumber" name="fileProxies[${rowId}].sequenceNumber" value=${rowId} />
-
-    </div>
-    <#if multipleFileUploadEnabled>
-    <div class="width99percent field proxyConfidentialDiv">
-        <label for="proxy${rowId}_conf">Access Restrictions</label>
-        <@s.select id="proxy${rowId}_conf"  name="fileProxies[${rowId}].restriction" labelposition="right" 
-        style="padding-left: 20px;" list=fileAccessRestrictions listValue="label"  
-        onclick="updateFileAction('#fileProxy_${rowId}', 'MODIFY_METADATA');showAccessRightsLinkIfNeeded();" cssClass="fileProxyConfidential"/>
-    </div>
-    </#if>
-    <#nested />
-</td>
-<td>
-    <button id='deleteFile_${rowId}' onclick="deleteFile('#fileProxy_${rowId}', ${(fileid == -1)?string}, this);return false;"  type="button"
-    class="deleteButton file-button cancel ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-primary" role="button">
-    <span class="ui-button-icon-primary ui-icon ui-icon-cancel"></span><span class="ui-button-text">delete</span></button><br/>
-    <#if fileid != -1>
-    <button onclick="replaceDialog('#fileProxy_${rowId}','${filename}');return false;"  type="button"
-    class="replaceButton file-button cancel ui-button ui-widget ui-state-disabled ui-corner-all ui-button-text-icon-primary" role="button" disabled=disabled>
-    <#-- replace with ui-icon-transferthick-e-w ? -->
-    <span class="ui-button-icon-primary ui-icon"></span><span class="ui-button-text">replace</span></button>
-    </#if>
-</td>
-</tr>
+            
+        </td>
+    </tr>
 </#macro>
 
 <#macro citationInfo prefix="resource" includeAbstract=true >
