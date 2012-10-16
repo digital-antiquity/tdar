@@ -25,6 +25,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.common.util.StringUtils;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
@@ -51,6 +52,8 @@ import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.service.BulkUploadService;
+import org.tdar.junit.MultipleTdarConfigurationRunner;
+import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.AbstractAdminControllerITCase;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.FileProxy;
@@ -63,6 +66,7 @@ import org.tdar.utils.Pair;
  * @author Adam Brin
  * @version $Rev$
  */
+@RunWith(MultipleTdarConfigurationRunner.class)
 public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
 
     @Autowired
@@ -70,6 +74,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
 
     @Test
     @Rollback
+    @RunWithTdarConfiguration(runWith={"src/test/resources/tdar.properties","src/test/resources/tdar.ahad.properties"})
     public void testExcelTemplate() throws FileNotFoundException, IOException {
         BulkUploadController bulkUploadController = generateNewInitializedController(BulkUploadController.class);
         bulkUploadController.prepare();

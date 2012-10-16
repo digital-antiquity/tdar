@@ -48,6 +48,7 @@ public class TdarConfiguration {
     private Filestore filestore;
 
     private Set<String> stopWords = new HashSet<String>();
+    private String configurationFile;
 
     private final static TdarConfiguration INSTANCE = new TdarConfiguration();
     public static final String PRODUCTION = "production";
@@ -60,10 +61,15 @@ public class TdarConfiguration {
     public void setConfigurationFile(String configurationFile) {
         assistant = new ConfigurationAssistant();
         assistant.loadProperties(configurationFile);
+        this.configurationFile = configurationFile;
         filestore = loadFilestore();
         initPersonalFilestorePath();
         testQueue();
         initializeStopWords();
+    }
+    
+    public String getConfigurationFile() {
+        return configurationFile;
     }
     
     private TdarConfiguration(String configurationFile) {
