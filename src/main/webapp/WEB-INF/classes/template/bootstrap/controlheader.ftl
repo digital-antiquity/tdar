@@ -4,7 +4,7 @@
 </#if>
 
 <#if parameters.numColumns?has_content>
-    <div class="control-group-list">
+    <div class="controls controls-row">
 <#else>
     <div class="controls">
 </#if>    

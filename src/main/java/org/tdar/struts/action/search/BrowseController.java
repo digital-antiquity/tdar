@@ -121,8 +121,6 @@ public class BrowseController extends AbstractLookupController {
             handleSearch(queryBuilder);
         }
         creator = getGenericService().find(Creator.class, getId());
-        logger.info("{}  -- {} ", creator, ((Person)creator).isRegistered());
-        // setResults(getResourceService().findResourceLinkedValues(Creator.class));
         return SUCCESS;
     }
 
