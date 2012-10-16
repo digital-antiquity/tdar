@@ -49,6 +49,7 @@ public class HydrateableKeywordQueryPart<K extends Keyword> extends AbstractHydr
         FieldQueryPart<String> labelPart = new FieldQueryPart<String>(getFieldName() + ".label", getOperator(), labels);
         FieldQueryPart<String> labelKeyPart = new FieldQueryPart<String>(getFieldName() + ".labelKeyword", getOperator(), labels);
         labelPart.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
+        labelKeyPart.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
         FieldQueryPart<Long> idPart = new FieldQueryPart<Long>(getFieldName() + ".id", getOperator(), ids);
         QueryPartGroup field = new QueryPartGroup(getOperator(), idPart, labelPart,labelKeyPart);
 
@@ -59,6 +60,7 @@ public class HydrateableKeywordQueryPart<K extends Keyword> extends AbstractHydr
             FieldQueryPart<String> irLabelPart = new FieldQueryPart<String>("informationResources." + getFieldName() + ".label", getOperator(), labels);
             FieldQueryPart<String> irLabelKeyPart = new FieldQueryPart<String>("informationResources." + getFieldName() + ".labelKeyword", getOperator(), labels);
             irLabelPart.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
+            irLabelKeyPart.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
             QueryPartGroup group = new QueryPartGroup(getOperator(), irLabelPart, irIdPart,irLabelKeyPart);
             topLevel.append(group);
         }
