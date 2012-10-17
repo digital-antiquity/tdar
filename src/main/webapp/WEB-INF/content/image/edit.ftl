@@ -8,6 +8,7 @@
 
 </head>
 <body>
+<@edit.sidebar />
 <@edit.subNavMenu />
 
 
@@ -35,7 +36,6 @@
 
 </@s.form>
 
-<@edit.sidebar />
 
 <@edit.resourceJavascript formSelector="#ImageMetadataForm" selPrefix="#image" includeAsync=true includeInheritance=true />
 </body>

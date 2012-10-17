@@ -10,7 +10,9 @@
 <body>
 <@edit.subNavMenu />
 <@edit.toolbar "${resource.urlNamespace}" "edit" />
+<@edit.sidebar />
 <@s.form id='resourceMetadataForm' method='post' enctype='multipart/form-data' action='save'  cssClass="form-horizontal">
+
 
 <@edit.basicInformation 'document' 'document' >
     <#if linkedInformationResource??>
