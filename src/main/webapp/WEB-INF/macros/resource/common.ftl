@@ -622,7 +622,7 @@ this bit of freemarker is voodoo:
         <#assign color = settings.mapColors[8] />
     </#if>
 <span class="hidden">[${code} : ${percent} ]</span>
-     <area coords="${coords}" shape="poly" title="${title} (${val})" alt="${title} (${val})" href='/search/results?geographicKeywords=${code} (ISO Country Code)' iso="${code}"
+     <area coords="${coords}" shape="poly" title="${title} (${val})" alt="${title} (${val})" href='/search/results?geographicKeywords="${code} (ISO Country Code)"' iso="${code}"
      class="{alwaysOn:true,strokeColor:'666666',strokeWidth:'.5',fillColor:'${color}',fillOpacity:1}" ></area>
  </#if>
 </#macro>
