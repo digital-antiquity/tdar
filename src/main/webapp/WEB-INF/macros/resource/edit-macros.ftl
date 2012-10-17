@@ -1122,7 +1122,7 @@ jquery validation hooks?)
                <th colspan="2">Access Restrictions</th>
                <th colspan="2">Action</th>
             </thead>
-            <tbody class="files"></tbody>
+            <tbody id="fileProxyUploadBody" class="files"></tbody>
             <#list fileProxies as fileProxy>
                 <#if fileProxy??>
                 <@fileProxyRow rowId=fileProxy_index filename=fileProxy.filename filesize=fileProxy.size fileid=fileProxy.fileId action=fileProxy.action versionId=fileProxy.originalFileVersionId/>
@@ -1160,15 +1160,15 @@ jquery validation hooks?)
         </td>
         <td>
             
-                  <div class="btn-group">
-                    <button class="btn btn-warning disabled dropdown-toggle replace-button" disabled="" data-toggle="dropdown">Replace <span class="caret"></span></button>
-                    <ul class="dropdown-menu" id="tempul">
-                      <li><a href="#">file 1</a></li>
-                      <li><a href="#">file 2</a></li>
-                      <li class="divider"></li>
-                      <li><a href="#">cancel replace operation</a></li>
-                    </ul>
-                  </div> 
+          <div class="btn-group">
+            <button class="btn btn-warning disabled dropdown-toggle replace-button" disabled="" data-toggle="dropdown">Replace <span class="caret"></span></button>
+            <ul class="dropdown-menu" id="tempul">
+              <li><a href="#">file 1</a></li>
+              <li><a href="#">file 2</a></li>
+              <li class="divider"></li>
+              <li><a href="#">cancel replace operation</a></li>
+            </ul>
+          </div> 
 
         <input type="hidden" class="fileAction" name="fileProxies[${rowId}].action" value="${action}"/>
         <input type="hidden" class="fileId" name="fileProxies[${rowId}].fileId" value="${fileid?c}"/>
