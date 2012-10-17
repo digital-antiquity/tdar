@@ -36,6 +36,11 @@ public class JimsTreehouse extends AbstractInformationResourceController<Documen
         return SUCCESS;
     }
     
+    @SkipValidation
+    @Action("knockout-test")
+    public String testKnockout() {
+        return SUCCESS;
+    }
     
     public Long getId() {
         return id;
