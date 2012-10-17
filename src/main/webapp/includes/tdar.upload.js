@@ -65,7 +65,7 @@ TDAR.fileupload = function() {
                             var files = _translateIrFiles(data);
                             console.log("files.length: %s", files.length);
                             // remove all of the pre-loaded proxies ahead of replacing them with their respective proxy versions
-                            $("#fileProxyUploadBody").empty();
+                            $("#fileProxyUploadBody").remove();
                             $fileupload.fileupload('option', 'done').call($fileupload[0], null, {result: files});
                         },
                         error: function(jqxhr, textStatus, errorThrown) {
