@@ -23,14 +23,14 @@ public class WorkspaceITCase extends AbstractAuthenticatedWebTestCase {
         // bookmark it, confirm it's on workspace
         clickLinkOnPage("bookmark");
         gotoPage(viewPage);
-        clickLinkOnPage("Workspace");
+        gotoPage(URLConstants.WORKSPACE);
         assertTextPresentInCode(docTitle);
 
         // now delete it, and check again: it should be gone.
         gotoPage(viewPage);
         clickLinkOnPage("delete");
         submitForm("delete");
-        clickLinkOnPage("Workspace");
+        gotoPage(URLConstants.WORKSPACE);
         assertTextNotPresent(docTitle);
 
         // have an admin undelete the resource
@@ -76,7 +76,7 @@ public class WorkspaceITCase extends AbstractAuthenticatedWebTestCase {
         // bookmark it, confirm it's on workspace
         clickLinkOnPage("bookmark");
         gotoPage(viewPage);
-        clickLinkOnPage("Workspace");
+        gotoPage(URLConstants.WORKSPACE);
         
         assertTextPresentInCode(docTitle);
 
@@ -86,7 +86,7 @@ public class WorkspaceITCase extends AbstractAuthenticatedWebTestCase {
             clickLinkOnPage("edit");
             setInput("status", status.name());
             submitForm();
-            clickLinkOnPage("Workspace");
+            gotoPage(URLConstants.WORKSPACE);
             assertTextNotPresent(docTitle);
         }
 
@@ -96,7 +96,7 @@ public class WorkspaceITCase extends AbstractAuthenticatedWebTestCase {
         clickLinkOnPage("edit");
         setInput("status", Status.ACTIVE.name());
         submitForm();
-        clickLinkOnPage("Workspace");
+        gotoPage(URLConstants.WORKSPACE);
         assertTextPresentInCode(docTitle);
     }
 
