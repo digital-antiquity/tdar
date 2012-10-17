@@ -48,11 +48,11 @@ public class CompleteImageITCase extends AbstractAdminAuthenticatedWebTestCase {
         docMultiValMap.put("materialKeywordIds", Arrays.asList(new String[] { "15", "12", "5" }));
         docMultiValMap.put("approvedCultureKeywordIds", Arrays.asList(new String[] { "12", "15", "26" }));
         docValMap.put("authorizedUsers[0].user.id", "121");
+        docValMap.put("authorizedUsers[1].user.id", "5349");
         docValMap.put("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
+        docValMap.put("authorizedUsers[1].generalPermission", GeneralPermissions.VIEW_ALL.name());
         docValMap.put("authorizedUsers[0].user.firstName", "Michelle");
         docValMap.put("authorizedUsers[0].user.lastName", "Elliott");
-        docValMap.put("authorizedUsers[1].generalPermission", GeneralPermissions.VIEW_ALL.name());
-        docValMap.put("authorizedUsers[1].user.id", "5349");
         docValMap.put("authorizedUsers[1].user.firstName", "Joshua");
         docValMap.put("authorizedUsers[1].user.lastName", "Watts");
 

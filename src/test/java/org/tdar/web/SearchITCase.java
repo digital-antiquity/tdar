@@ -42,7 +42,7 @@ public class SearchITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     private void selectAllResourceTypes() {
         List<HtmlElement> iter = getHtmlPage().getElementsByName("resourceTypes");
-        for (int i=0; i < iter.size(); i++) {
+        for (int i = 0; i < iter.size(); i++) {
             HtmlCheckBoxInput cb = ((HtmlCheckBoxInput) iter.get(i));
             cb.setChecked(false);
             logger.trace("checkbox: " + cb);
@@ -187,16 +187,13 @@ public class SearchITCase extends AbstractAdminAuthenticatedWebTestCase {
             gotoPage(SEARCH_RESULTS_BASE_URL + "?");
             clickLinkOnPage(type.getPlural());
             boolean sawSomething = false;
-            for (Element element : querySelectorAll(".resource-list h5 a")) {
+            for (Element element : querySelectorAll("h3 a")) {
                 String href = element.getAttribute("href");
                 if (!element.getAttribute("href").toLowerCase()
                         .contains("bookmark")) {
                     assertTrue(
-                            String.format(
-                                    "element should have the resource type (%s) in the url: %s",
-                                    type.getUrlNamespace(), href),
-                            href.contains(String.format("/%s/",
-                                    type.getUrlNamespace())));
+                            String.format("element should have the resource type (%s) in the url: %s", type.getUrlNamespace(), href),
+                            href.contains(String.format("/%s/", type.getUrlNamespace())));
                     sawSomething = true;
                 }
             }

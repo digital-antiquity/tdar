@@ -128,7 +128,10 @@ public class ThumbnailITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         gotoPage(editPage);
         // LOG IN, BUT AS A USER THAT SHOULDN'T HAVE RIGHTS TO THE RESOURCE. NO THUMBNAIL.
-        login(TestConstants.USERNAME, TestConstants.PASSWORD);
+        int statusCode = login(TestConstants.USERNAME, TestConstants.PASSWORD,true);
+        assertTrue(getCurrentUrlPath().contains("edit"));  // we can be on the "edit" page with an error message
+        logger.info(getPageText());
+        assertFalse(statusCode == 200); // make sure we have a "bad" status code though
         gotoPage(viewPage);
         assertTextNotPresent("/thumbnail");
 

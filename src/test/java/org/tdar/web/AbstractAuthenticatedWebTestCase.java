@@ -76,7 +76,7 @@ public abstract class AbstractAuthenticatedWebTestCase extends AbstractWebTestCa
         login(user, pass, false);
     }
 
-    public void login(String user, String pass, boolean expectingErrors) {
+    public int login(String user, String pass, boolean expectingErrors) {
         gotoPage("/");
         clickLinkOnPage("Log In");
         setMainForm("loginForm");
@@ -86,10 +86,13 @@ public abstract class AbstractAuthenticatedWebTestCase extends AbstractWebTestCa
         setInput("loginUsername", user);
         setInput("loginPassword", pass);
         if (expectingErrors) {
+            webClient.setThrowExceptionOnFailingStatusCode(false);
             submitFormWithoutErrorCheck("Login");
+            webClient.setThrowExceptionOnFailingStatusCode(true);
         } else {
             submitForm("Login");
         }
+        return internalPage.getWebResponse().getStatusCode();
     }
 
     @After
