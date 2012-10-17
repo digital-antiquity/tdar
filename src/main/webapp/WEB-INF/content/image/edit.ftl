@@ -14,7 +14,7 @@
 
 <@edit.toolbar "${resource.urlNamespace}" "edit" />
 
-<@s.form name='ImageMetadataForm' id='ImageMetadataForm'  method='post' enctype='multipart/form-data' action='save'>
+<@s.form name='imageMetadataForm' id='ImageMetadataForm'  method='post' enctype='multipart/form-data' action='save'>
 
 <@edit.basicInformation "image" "image">
 
@@ -37,6 +37,16 @@
 </@s.form>
 
 
-<@edit.resourceJavascript formSelector="#ImageMetadataForm" selPrefix="#image" includeAsync=true includeInheritance=true />
+<@edit.resourceJavascript formSelector="#imageMetadataForm" selPrefix="#image" includeAsync=true includeInheritance=true />
+
+<script type="text/javascript" src="/includes/tdar.inheritance.js"></script>
+<script type="text/javascript" src="/includes/jquery.populate.js"></script>
+<#noescape><script>
+$(function() {
+    "use strict";
+    var project = ${projectAsJson};
+    applyInheritance(project, "#imageMetadataForm" );
+});
+</script></#noescape>
 </body>
 </#escape>

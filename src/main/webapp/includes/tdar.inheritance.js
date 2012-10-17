@@ -356,7 +356,7 @@ function bindCheckboxToInheritSection(cbSelector, divSelector, isSafeCallback, i
     });
 }
 
-function applyInheritance(project, resource) {
+function applyInheritance(project, formSelector) {
     // if we are editing, set up the initial form values
     if (project) {
         json = convertToFormJson(project);
@@ -366,6 +366,8 @@ function applyInheritance(project, resource) {
     // update the inherited form values when project selection changes.
     $('#projectId').change(function(e) {
         var sel = this;
+        $('.open-project', '#t-project').remove();
+        
 //        console.log('project changed. new value:' + $(sel).val());
         if ($(sel).val() != '' && $(sel).val() > 0) {
 //            console.log('about to make ajax call for project info');
@@ -388,9 +390,11 @@ function applyInheritance(project, resource) {
         enableOrDisableInheritAllSection();
         updateInheritanceCheckboxes();
     });
+    
+    
     updateInheritanceCheckboxes();
     enableOrDisableInheritAllSection();
-    processInheritance(formId);
+    processInheritance(formSelector);
     var $cbSelectAllInheritance = $("#cbSelectAllInheritance");
 
     // prime the "im-busy-dont-bother-me" flag on select-all checkbox.
@@ -400,6 +404,28 @@ function applyInheritance(project, resource) {
     // with forward-reference to function expression/variable?
     $cbSelectAllInheritance.click(selectAllInheritanceClicked);
 }
+
+
+//update the project json variable and update the inherited sections
+function projectChangedCallback(data) {
+    project = data;
+    
+    // if user picked blank option, then clear the sections
+    if (!project.id) {
+        project = getBlankProject();
+    } else  if (project.resourceType == 'INDEPENDENT_RESOURCES_PROJECT') {
+        project = getBlankProject();
+    } else {
+        $('#t-project').append('<p class="open-project"><a class="btn btn-small" target="_project" href="/project/' + project.id + '">open project in new window</a></p>');
+    }
+
+    json = convertToFormJson(project);
+    updateInheritableSections(json);
+    
+    
+    
+}
+
 
 function processInheritance(formId) {
     // ---- bind inheritance tracking checkboxes
@@ -531,7 +557,10 @@ function updateInheritableSections(json) {
         labelText = 'Inherit values from parent project "' + TDAR.ellipsify(json.title, 60) + '"';
         selectedProjectName = "Inherit metadata from " + json.title;
     }
-    $('.divInheritSection label').text(labelText);
+    
+    //update inheritance checkbox labels with new project name (don't clobber checkbox in the process)
+    $('.divInheritSection').find('label.checkbox .labeltext').text(labelText);
+    
     $('#spanCurrentlySelectedProjectText').text(selectedProjectName);
 
     // show or hide the text of each inheritable section based on checkbox

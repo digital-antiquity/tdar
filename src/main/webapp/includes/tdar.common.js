@@ -746,21 +746,6 @@ function getBlankProject() {
     return skeleton;
 }
 
-// update the project json variable and update the inherited sections
-function projectChangedCallback(data) {
-    project = data;
-    // if user picked blank option, then clear the sections
-    if (!project.id) {
-        project = getBlankProject();
-    }
-
-    if (project.resourceType == 'INDEPENDENT_RESOURCES_PROJECT') {
-        project = getBlankProject();
-    }
-
-    json = convertToFormJson(project);
-    updateInheritableSections(json);
-}
 
 /**
  * Testing Support

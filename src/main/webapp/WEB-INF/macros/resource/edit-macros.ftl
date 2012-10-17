@@ -787,7 +787,15 @@ $(function(){
 <#macro inheritsection checkboxId name showInherited=true  label="Inherit this section" >
     <div class='divInheritSection'>
     <#if showInherited>
-        <@s.checkbox label="${label}" id="${checkboxId}" name="${name}" cssClass="alwaysEnabled" />
+        <div class="control-group alwaysEnabled">
+            <div class="controls">
+                <label class="checkbox">
+                    <input type="checkbox" name="${name}" value="true" id="${checkboxId}">
+                    <span class="labeltext">${label}</span>
+                </label>
+            </div>
+        </div>
+            
     <#elseif resource??>
          <@inheritTips id="${checkboxId}" />
     </#if>
