@@ -75,7 +75,6 @@ public class WorkflowContextService {
 
         }
         // setting transient context for evaluation
-        irFile.setWorkflowContext(ctx);
 
         orig.setInformationResourceFile(irFile);
         if (ctx.isProcessedSuccessfully()) {
@@ -101,6 +100,7 @@ public class WorkflowContextService {
         // genericDao.saveOrUpdate(orig);
         irFile.setInformationResource(genericDao.find(InformationResource.class, ctx.getInformationResourceId()));
         genericDao.merge(irFile);
+        irFile.setWorkflowContext(ctx);
     }
 
     /*

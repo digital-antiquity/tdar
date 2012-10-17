@@ -256,8 +256,12 @@ public abstract class AbstractInformationResourceController<R extends Informatio
                     modifiedFiles.add(file);
                     if (file.getWorkflowContext() != null) {
                         List<String> exceptions = file.getWorkflowContext().getExceptions();
+                        logger.info("EXCEPTIONS: {}", exceptions);
+                        logger.info("STACK TRACES: {}", file.getWorkflowContext().getStackTraces());
                         if (CollectionUtils.isNotEmpty(exceptions)) {
-                            getActionErrors().addAll(exceptions);
+                            for (String except : exceptions) {
+                                addActionError(except);
+                            }
                             getStackTraces().addAll(file.getWorkflowContext().getStackTraces());
                         }
                     }
