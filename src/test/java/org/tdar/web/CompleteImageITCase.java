@@ -197,6 +197,7 @@ public class CompleteImageITCase extends AbstractAdminAuthenticatedWebTestCase {
             assertTextPresent(val);
         }
 
+        logger.info(getPageCode());
         for (String key : docMultiValMap.keySet()) {
             for (String val : docMultiValMap.get(key)) {
                 assertTrue("element:" + key + " is set to:" + val, checkInput(key, val));

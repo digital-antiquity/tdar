@@ -738,20 +738,20 @@ $(function(){
 <#if _sourceCollections.empty><#local _sourceCollections = [blankSourceCollection] /></#if>
 <#if _relatedComparativeCollections.empty><#local _relatedComparativeCollections = [blankRelatedComparativeCollection] /></#if>
 <div class="well" id="relatedCollectionsSectionGlide">
-    <less>Museum or Archive Collections</less>
+    <legend>Museum or Archive Collections</legend>
     <@inheritsection checkboxId="cbInheritingCollectionInformation" name='resource.inheritingCollectionInformation' showInherited=showInherited />
     <div id="relatedCollectionsSection" >
         <div id="divSourceCollectionControl" class="control-group">
             <label class="control-label">Source Collection</label>
             <#list _sourceCollections as sourceCollection>
-            <@sourceCollectionRow sourceCollection "sourceCollection" sourceCollection_index/>
+	            <@sourceCollectionRow sourceCollection "sourceCollection" sourceCollection_index/>
             </#list>
         </div>
     
         <div id="divRelatedComparativeCitationControl" class="control-group">
             <label class="control-label">Related or Comparative Collection</label></label>
             <#list _relatedComparativeCollections as relatedComparativeCollection>
-            <@sourceCollectionRow relatedComparativeCollection "relatedComparativeCollection" relatedComparativeCollection_index/>
+    	        <@sourceCollectionRow relatedComparativeCollection "relatedComparativeCollection" relatedComparativeCollection_index/>
             </#list>
         </div> 
     
@@ -771,7 +771,6 @@ $(function(){
             documented in this ${siteAcronym} record.
             </p>
         </div>
-    </div>
     </div>
 </div>
 </#macro>
@@ -848,7 +847,7 @@ $(function(){
 <#local _coverageDates=coverageDates />
 <#if _coverageDates.empty><#local _coverageDates = [blankCoverageDate] /></#if>
 <div class="hidden" id="coverageDatesTip">
-    Select the approriate type of date (Gregorian calendar date or radiocarbon date). To enter a date range, enter the <em>earliest date</em> in the <em>Start Year field<em> 
+    Select the approriate type of date (Gregorian calendar date or radiocarbon date). To enter a date range, enter the <em>earliest date</em> in the <em>Start Year field</em> 
     and the latest date in the End Year Field. <em>Dates containing "AD" or "BC" are not valid</em>. Use positive numbers for AD dates (500, 1200), and use negative numbers for BC dates (-500, -1200). Examples: 
     <ul>
         <li>Calendar dates: 300 start, 500 end (number only, smaller value first)</li>

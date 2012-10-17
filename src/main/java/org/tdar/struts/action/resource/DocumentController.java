@@ -150,14 +150,4 @@ public class DocumentController extends AbstractInformationResourceController<Do
         this.degree = degree;
     }
     
-    @SkipValidation
-    @Action("file-upload-test")
-    public String testFileUpload() {
-        return SUCCESS;
-    }
-    @SkipValidation
-    @Action("map-test")
-    public String testMap() {
-        return SUCCESS;
-    }
 }
