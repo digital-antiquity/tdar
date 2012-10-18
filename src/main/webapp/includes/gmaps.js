@@ -324,18 +324,46 @@ TDAR.maps = function() {
                 
                 var rect = $(mapDiv).data("resourceRect");
                 var gmap = $(mapDiv).data('gmap');
+                
+                //FIXME: REPLACE block w/ call to updateResourceRect
                 if(!rect) {
                     rect = _addBound(mapDiv, _defaults.rectStyleOptions.RESOURCE, $swLatInput.val(), $swLngInput.val(), $neLatInput.val(), $neLngInput.val());
                     $(mapDiv).data("resourceRect", rect);
-                    _registerInputs(mapDiv, inputContainer);
-
+                    //FIXME
                 } else {
                     _updateBound(rect, $swLatInput.val(), $swLngInput.val(), $neLatInput.val(), $neLngInput.val());
                 }
                 gmap.fitBounds(rect.getBounds());
             };
         });
-        
+    };
+    
+    
+    var _bounds = function(swlat, swlng, nelat, nelng) {
+        var sw = new google.maps.LatLng(swlat, swlng);
+        var ne = new google.maps.LatLng(nelat, nelng);
+        var bounds = new google.maps.LatLngBounds(sw, ne);
+        return bounds;
+    };
+    
+    var _bindRectEvents = function (mapDiv, rect) {
+        google.maps.event.addDomListener(rect, 'bounds_changed', function() {
+            _fireBoundsModified(mapDiv, rect);
+        });
+    }
+    
+    var _updateResourceRect = function(mapDiv, swlat, swlng, nelat, nelng) {
+        var gmap = $(mapDiv).data("gmap");
+        var rect = $(mapDiv).data("resourceRect");
+        if(!rect) {
+            rect = _addBound(mapDiv, _defaults.rectStyleOptions.RESOURCE, swlat, swlng, nelat, nelng);
+            _bindRectEvents(mapDiv, rect);
+            $(mapDiv).data("resourceRect", rect);
+        } else {
+            var bounds = _bounds(swlat, swlng, nelat, nelng);
+            rect.setBounds(bounds);
+        }
+        gmap.fitBounds(rect.getBounds());
     };
     
     return {
@@ -344,7 +372,7 @@ TDAR.maps = function() {
         setupMap: _setupMap,
         googleApiKey: false,
         defaults: _defaults,
-        addBound: _addBound,
+        updateResourceRect: _updateResourceRect,
         setupEditMap: _setupEditMap
     };
 }();

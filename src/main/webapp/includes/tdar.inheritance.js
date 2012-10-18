@@ -195,22 +195,14 @@ function inheritingMapIsSafe(rootElementSelector, spatialInformation) {
     // compare parent coords to this form's current coords. seems like overkill
     // but isn't.
     var jsonVals = [ si.minx, si.miny, si.maxx, si.maxy ]; // strip out nulls
-    var formVals = [];
-    formVals = formVals.concat($('#minx'));
-    formVals = formVals.concat($('#miny'));
-    formVals = formVals.concat($('#maxx'));
-    formVals = formVals.concat($('#maxy'));
+    var formVals = $.map([ 
+                     $('#minx').val(),
+                     $('#miny').val(), 
+                     $('#maxx').val(),
+                     $('#maxy').val()
+                    ], function(v){if(v!=="") return parseFloat(v)});
 
-    formVals = $.map(formVals, function(item) {
-        if ($(item).val())
-            return $(item).val();
-    });
-    return formVals.length === 0 || $.compareArray(jsonVals, formVals, false); // don't
-    // ignore
-    // array
-    // order
-    // in
-    // comparison
+    return  !formVals.length || $.compareArray(jsonVals, formVals, false);
 }
 
 // return whether it's "safe" to populate the temporal information section with
@@ -300,21 +292,17 @@ function inheritNoteInformation(formId, json) {
 }
 
 function inheritSpatialInformation(formId, json) {
-    disableSection('#divSpatialInformation');
-    //disableMap();
-
+    var mapdiv = $('#editmapv3')[0];
     clearFormSection('#divSpatialInformation');
-    resetRepeatRowTable('geographicKeywordTable', json.spatialInformation['geographicKeywords'].length);
+    TDAR.inheritance.resetRepeatable('#geographicKeywordsRepeatable', json.spatialInformation['geographicKeywords'].length);
     populateSection(formId, json.spatialInformation);
+    disableSection('#divSpatialInformation');
 
     // clear the existing redbox and draw new one;
     populateLatLongTextFields();
     
-    //HACK: add/update resource bounding box
-    $('.locateCoordsButton').prop('disabled', false);
-    $('.locateCoordsButton').click();
-    $('.locateCoordsButton').prop('disabled', true);
-    
+    var si = json.spatialInformation;
+    TDAR.maps.updateResourceRect(mapdiv,  si.miny, si.minx, si.maxy, si.maxx);
 }
 
 function inheritTemporalInformation(formId, json) {
@@ -680,3 +668,18 @@ function enableMap() {
         $mapdiv.data("resourceRect").setEditable(true);
     }
 }
+
+TDAR.namespace("inheritance");
+TDAR.inheritance = function() {
+    var _resetRepeatable = function(repeatableSelector, newSize) {
+        $(repeatableSelector).find(".repeat-row:not(:first)").remove();
+        var $firstRow = $('.repeat-row', repeatableSelector);
+        resetIndexedAttributes($firstRow); 
+        for(var i = 0; i < newSize - 1; i++) {
+            TDAR.repeatrow.cloneSection($('.repeat-row:last', repeatableSelector)[0]);
+        }
+    };
+    return{
+        resetRepeatable: _resetRepeatable
+    };
+}();

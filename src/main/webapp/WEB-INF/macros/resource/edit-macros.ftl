@@ -144,7 +144,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </#macro>
 
 <#macro keywordRows label keywordList keywordField showDelete=true addAnother="add another keyword">
-    <div class="control-group repeatLastRow" data-add-another="${addAnother}">
+    <div class="control-group repeatLastRow" id="${keywordField}Repeatable" data-add-another="${addAnother}">
         <label class="control-label">${label}</label>
         <#if keywordList.empty >
           <@keywordRow keywordField />
@@ -157,7 +157,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </#macro>
 
 <#macro keywordRow keywordField keyword_index=0 showDelete=true>
-    <div class="controls controls-row " id='${keywordField}Row_${keyword_index}_'>
+    <div class="controls controls-row" id='${keywordField}Row_${keyword_index}_'>
         <@s.textfield theme="tdar" name='${keywordField}[${keyword_index}]' cssClass='input-xxlarge keywordAutocomplete' placeholder="enter keyword"/>
         <#if showDelete>
         <@clearDeleteButton id="${keywordField}Row" />
@@ -790,7 +790,7 @@ $(function(){
         <div class="control-group alwaysEnabled">
             <div class="controls">
                 <label class="checkbox">
-                    <input type="checkbox" name="${name}" value="true" id="${checkboxId}">
+                    <@s.checkbox theme="simple" name="${name}" id="${checkboxId}" />
                     <span class="labeltext">${label}</span>
                 </label>
             </div>
