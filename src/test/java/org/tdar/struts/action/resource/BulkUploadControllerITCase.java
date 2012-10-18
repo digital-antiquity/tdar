@@ -52,7 +52,6 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.service.BulkUploadService;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
@@ -73,13 +72,12 @@ import org.tdar.utils.Pair;
 public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
 
     private static final String OTHER_LICENCE_TYPE_BOILERPLATE = "A long and boring piece of waffle";
-    
+
     @Autowired
     private ResourceCollectionDao resourceCollectionDao;
 
     @Test
     @Rollback
-    @RunWithTdarConfiguration(runWith={"src/test/resources/tdar.properties","src/test/resources/tdar.ahad.properties"})
     public void testExcelTemplate() throws FileNotFoundException, IOException {
         BulkUploadController bulkUploadController = generateNewInitializedController(BulkUploadController.class);
         bulkUploadController.prepare();
@@ -452,7 +450,6 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
     @Test
     @Rollback
     public void testCloneImageWithNoLicenceEnabled() {
-        TdarConfiguration.getInstance().setConfigurationFile("properties/noLicenceEnabled.properties");
         Image expected = new Image();
         Image image = resourceService.createResourceFrom(expected, expected.getClass());
         // the assumption is that both of these will default to null
@@ -462,8 +459,8 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
 
     @Test
     @Rollback
+    @RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.ahad.properties" })
     public void testCloneImageWithLicencesEnabled() {
-        TdarConfiguration.getInstance().setConfigurationFile("properties/licenceEnabled.properties");
         Image expected = new Image();
         expected.setLicenseType(LicenseType.CREATIVE_COMMONS_ATTRIBUTION);
         expected.setLicenseText("This should be ignored");
@@ -474,8 +471,8 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
 
     @Test
     @Rollback
+    @RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.ahad.properties" })
     public void testCloneImageWithLicencesEnabledOtherLicenceType() {
-        TdarConfiguration.getInstance().setConfigurationFile("properties/licenceEnabled.properties");
         Image expected = new Image();
         expected.setLicenseType(LicenseType.OTHER);
         expected.setLicenseText(OTHER_LICENCE_TYPE_BOILERPLATE);
@@ -483,14 +480,14 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         assertTrue(LicenseType.OTHER.equals(image.getLicenseType()));
         assertTrue(OTHER_LICENCE_TYPE_BOILERPLATE.equals(image.getLicenseText()));
     }
-    
+
     @Test
     @Rollback
+    @RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.ahad.properties" })
     public void testCloneImageWithCopyrightEnabled() {
-        TdarConfiguration.getInstance().setConfigurationFile("properties/copyrightEnabled.properties");
         Image expected = new Image();
-        Creator copyrightHolder =  entityService.find(getAdminUserId());
-        expected.setCopyrightHolder(copyrightHolder );
+        Creator copyrightHolder = entityService.find(getAdminUserId());
+        expected.setCopyrightHolder(copyrightHolder);
         Image image = resourceService.createResourceFrom(expected, expected.getClass());
         assertTrue(copyrightHolder.equals(image.getCopyrightHolder()));
     }
@@ -498,12 +495,12 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
     @Test
     @Rollback
     public void testCloneImageWithNoCopyrightEnabled() {
-        TdarConfiguration.getInstance().setConfigurationFile("properties/noCopyrightEnabled.properties");
         Image expected = new Image();
         Image image = resourceService.createResourceFrom(expected, expected.getClass());
         // the assumption is that this will default to null
-        assertTrue(image.getCopyrightHolder()==null);
+        assertTrue(image.getCopyrightHolder() == null);
     }
+
     @Test
     @Rollback
     /*
@@ -514,7 +511,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
      */
     public void testAddingAdHocCollectionToBulkUpload() throws Exception {
         // start by getting the original count of public/private collections
-        //int origInternalCount = getCollectionCount(CollectionType.INTERNAL);
+        // int origInternalCount = getCollectionCount(CollectionType.INTERNAL);
         int origSharedCount = getCollectionCount(CollectionType.SHARED);
         int origImageCount = genericService.findAll(Image.class).size();
 
@@ -552,7 +549,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         bulkUploadController.checkStatus();
         assertEquals(new Float(100), bulkUploadController.getPercentDone());
 
-        //int newInternalCount = getCollectionCount(CollectionType.INTERNAL);
+        // int newInternalCount = getCollectionCount(CollectionType.INTERNAL);
         int newSharedCount = getCollectionCount(CollectionType.SHARED);
         int newImageCount = genericService.findAll(Image.class).size();
         Assert.assertNotSame(origImageCount, newImageCount);
