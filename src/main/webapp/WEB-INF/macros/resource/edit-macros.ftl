@@ -790,7 +790,7 @@ $(function(){
         <div class="control-group alwaysEnabled">
             <div class="controls">
                 <label class="checkbox">
-                    <input type="checkbox" name="${name}" value="true" id="${checkboxId}">
+                    <@s.checkbox theme="simple" name="${name}" id="${checkboxId}" />
                     <span class="labeltext">${label}</span>
                 </label>
             </div>
