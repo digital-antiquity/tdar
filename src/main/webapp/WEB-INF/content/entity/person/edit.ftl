@@ -35,7 +35,7 @@ textarea {width:32em}
 <body>
 <@nav.creatorToolbar "edit" />
 
-<@s.form name='personForm' id='frmPerson'  method='post' enctype='multipart/form-data' action='save'>
+<@s.form name='personForm' id='frmPerson'  cssClass="form-horizontal"  method='post' enctype='multipart/form-data' action='save'>
 
 <div class="glide">
     <h3>Personal Details</h3>

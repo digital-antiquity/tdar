@@ -13,7 +13,7 @@
  
 <@edit.toolbar "${resource.urlNamespace}" "edit" />
 
-<@s.form name='sensoryDataForm' id='frmSensoryData' method='post' action='save' enctype='multipart/form-data'>
+<@s.form name='sensoryDataForm' id='frmSensoryData'  cssClass="form-horizontal" method='post' action='save' enctype='multipart/form-data'>
 
 <@edit.basicInformation "sensory object" "sensoryData">
     <br/>

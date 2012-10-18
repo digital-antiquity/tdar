@@ -14,7 +14,7 @@
 
 <@edit.toolbar "${resource.urlNamespace}" "edit" />
 
-<@s.form name='imageMetadataForm' id='ImageMetadataForm'  method='post' enctype='multipart/form-data' action='save'>
+<@s.form name='imageMetadataForm' id='ImageMetadataForm'  cssClass="form-horizontal"  method='post' enctype='multipart/form-data' action='save'>
 
 <@edit.basicInformation "image" "image">
 

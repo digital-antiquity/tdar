@@ -7,7 +7,7 @@
 </head>
 <body>
 
-<@s.form name='BulkMetadataForm' id='BulkMetadataForm'  method='post' enctype='multipart/form-data' action='save'>
+<@s.form name='BulkMetadataForm' id='BulkMetadataForm'  cssClass="form-horizontal"  method='post' enctype='multipart/form-data' action='save'>
 
 <@edit.basicInformation "image" "batch" true>
     <@s.select labelposition='left' label='Language'  name='resourceLanguage'  emptyOption='false' listValue='label' list='%{languages}'/>

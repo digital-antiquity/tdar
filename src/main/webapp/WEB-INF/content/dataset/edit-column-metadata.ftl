@@ -8,7 +8,7 @@
 <body>
 <@edit.toolbar "dataset" "columns" />
 
-<@s.form method='post' id="edit-metadata-form" action='save-column-metadata'>
+<@s.form method='post' id="edit-metadata-form" cssClass="form-horizontal"  action='save-column-metadata'>
 <@s.hidden name='id' value='${resource.id?c}'/>
 <@s.hidden name='dataTableId' value='${dataTable.id?c}'/>
     <#if ( dataset.dataTables?size > 1 )>

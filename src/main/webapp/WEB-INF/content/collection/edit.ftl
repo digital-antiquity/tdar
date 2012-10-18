@@ -108,7 +108,7 @@ function removeResourceClicked(id, elem) {
 <@edit.toolbar "collection" "edit" />
 
 <div>
-<@s.form name='MetadataForm' id='MetadataForm'  method='post' enctype='multipart/form-data' action='save'>
+<@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='save'>
 
 <div class="glide" tiplabel="Basic Information"  tooltipcontent="Enter a name and description for this collection.  You may also choose a &quot;parent 
     collection&quot; which allows you to inherit all of the access permissions defined by the parent.">
@@ -121,11 +121,11 @@ function removeResourceClicked(id, elem) {
     listKey='id' listValue='name' list='%{candidateParentResourceCollections}'
     truncate="80" title="Please select a parent collection" />
 <br />
-<@s.textfield labelposition='left' label='Collection Name' name='resourceCollection.name'  cssClass="required descriptiveTitle longfield"  title="A title is required for all collections." maxlength="512" />
+<@s.textfield labelposition='left' label='Collection Name' name='resourceCollection.name'  cssClass="required descriptiveTitle input-xxlarge"  title="A title is required for all collections." maxlength="512" />
 <p class='field'>
 </p>
 <@s.textarea labelposition='top' label='Collection Description' name='resourceCollection.description'  
-     cssClass='resizable' title="Please enter the description " />
+     cssClass='resizable input-xxlarge' title="Please enter the description " />
 
 
 </div>
@@ -139,13 +139,15 @@ function removeResourceClicked(id, elem) {
 </div>
 <div class="glide" tiplabel="Browse and Display Options" tooltipcontent="#divBrowseOptionsTips">
 <h3>Browse and Display Options</h3>
-<label class="toplabel">Make this collection public?</label>
-<br />
-<input type="radio" id="rdoVisibleTrue" name="resourceCollection.visible" value="true" <@edit.checkedif resourceCollection.visible true /> /><label for="rdoVisibleTrue">Yes</label> 
-<input type="radio" id="rdoVisibleFalse" name="resourceCollection.visible" value="false" <@edit.checkedif resourceCollection.visible false /> /><label for="rdoVisibleFalse">No</label>
-<br />
-<br />
+<div class="control-group">
+<label class="control-label">Make this collection public?</label>
+<div class="controls">
+	<label for="rdoVisibleTrue" class="radio inline"><input type="radio" id="rdoVisibleTrue" name="resourceCollection.visible" value="true" <@edit.checkedif resourceCollection.visible true /> />Yes</label> 
+	<label for="rdoVisibleFalse" class="radio inline"><input type="radio" id="rdoVisibleFalse" name="resourceCollection.visible" value="false" <@edit.checkedif resourceCollection.visible false /> />No</label>
+</div>
+</div>
 
+<br/>
 <@s.select labelposition='top' label='When Browsing Sort Resource By:' name='resourceCollection.sortBy' 
      listValue='label' list='%{sortOptions}'
     truncate="80" title="Sort resource by" />

@@ -58,7 +58,7 @@ Projects in ${siteAcronym} contain and help organize a variety of different info
 </#if>
 
 
-<@s.form name='projectMetadataForm' id='projectMetadataForm' method='post' action='save'>
+<@s.form name='projectMetadataForm' id='projectMetadataForm'  cssClass="form-horizontal" method='post' action='save'>
 
 <@edit.basicInformation "project" "project" />
 <@edit.citationInfo "project" />
