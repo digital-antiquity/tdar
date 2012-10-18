@@ -37,7 +37,7 @@
 </@s.form>
 
 
-<@edit.resourceJavascript formSelector="#imageMetadataForm" selPrefix="#image" includeAsync=true includeInheritance=true />
+<@edit.resourceJavascript formSelector="#ImageMetadataForm" selPrefix="#image" includeAsync=true includeInheritance=true />
 
 <script type="text/javascript" src="/includes/tdar.inheritance.js"></script>
 <script type="text/javascript" src="/includes/jquery.populate.js"></script>
@@ -45,7 +45,7 @@
 $(function() {
     "use strict";
     var project = ${projectAsJson};
-    applyInheritance(project, "#imageMetadataForm" );
+    applyInheritance(project, "#ImageMetadataForm" );
 });
 </script></#noescape>
 </body>

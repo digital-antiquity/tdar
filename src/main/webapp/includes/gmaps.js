@@ -206,7 +206,7 @@ TDAR.maps = function() {
             }
             
             //bind resource rectangle to the manual latlong input controls
-            _registerInputs(mapDiv);
+            _registerInputs(mapDiv, inputContainer);
 
     })};
 
@@ -310,7 +310,7 @@ TDAR.maps = function() {
         $btnLocate.click(function() {
             //trim the input, and if all non-blank then update the region
             var blankCount = 0;
-            $('.sw-lat-display, .sw-lng-display, .ne-lat-display, .ne-lng-display', mapDiv).each(function(){
+            $('.sw-lat-display, .sw-lng-display, .ne-lat-display, .ne-lng-display', inputContainer).each(function(){
                 this.value = $.trim(this.value);
                 if(!this.value) blankCount++;
             });
@@ -326,10 +326,13 @@ TDAR.maps = function() {
                 var gmap = $(mapDiv).data('gmap');
                 if(!rect) {
                     rect = _addBound(mapDiv, _defaults.rectStyleOptions.RESOURCE, $swLatInput.val(), $swLngInput.val(), $neLatInput.val(), $neLngInput.val());
+                    $(mapDiv).data("resourceRect", rect);
+                    _registerInputs(mapDiv, inputContainer);
+
                 } else {
                     _updateBound(rect, $swLatInput.val(), $swLngInput.val(), $neLatInput.val(), $neLngInput.val());
-                    gmap.fitBounds(rect.getBounds());
                 }
+                gmap.fitBounds(rect.getBounds());
             };
         });
         
@@ -346,15 +349,6 @@ TDAR.maps = function() {
     };
 }();
 
-
-//todo: prime coord inputs with correct value
-
-//todo: update 'display' inputs when selection created, updated.
-
-//todo: update the bound box when manually entered. (they click the 'locate' button)
-
 //todo: "enter / view coordinates"  should be a bootstrap toggle button, not a checkbox.
 
-//todo: gzoomcontrol.js no longer needed.  gmaps v3 provides 'overview' ivewport (which we will disable for aesthetics)
 
-//todo: turn off scroll wheel if possible)

@@ -301,19 +301,20 @@ function inheritNoteInformation(formId, json) {
 
 function inheritSpatialInformation(formId, json) {
     disableSection('#divSpatialInformation');
-    disableMap();
+    //disableMap();
 
     clearFormSection('#divSpatialInformation');
     resetRepeatRowTable('geographicKeywordTable', json.spatialInformation['geographicKeywords'].length);
     populateSection(formId, json.spatialInformation);
 
     // clear the existing redbox and draw new one;
-    if (GZoomControl.G.oZoomArea) {
-        // TODO: reset the map to default zoom and default location
-        GZoomControl.G.oMap.removeOverlay(GZoomControl.G.oZoomArea);
-    }
-    drawMBR();
     populateLatLongTextFields();
+    
+    //HACK: add/update resource bounding box
+    $('.locateCoordsButton').prop('disabled', false);
+    $('.locateCoordsButton').click();
+    $('.locateCoordsButton').prop('disabled', true);
+    
 }
 
 function inheritTemporalInformation(formId, json) {
@@ -651,5 +652,31 @@ function updateSelectAllCheckboxState() {
     if (!$cbSelectAllInheritance.data('isUpdatingSections')) {
         var $uncheckedBoxes = $('.divInheritSection input[type=checkbox]').not(":checked");
         $cbSelectAllInheritance.prop('checked', $uncheckedBoxes.length === 0);
+    }
+}
+
+//FIXME: kill this function.
+function populateLatLongTextFields() {
+ $("#d_minx").val(Geo.toLon($("#minx").val()));
+ $("#d_miny").val(Geo.toLat($("#miny").val()));
+ $("#d_maxx").val(Geo.toLon($("#maxx").val()));
+ $("#d_maxy").val(Geo.toLat($("#maxy").val()));
+}
+
+//FIXME: kill this function.
+function disableMap() {
+    var $mapdiv = $('#editmapv3');
+    $mapdiv.addClass('opaque');
+    if($mapdiv.data("resourceRect")) {
+        $mapdiv.data("resourceRect").setEditable(false);
+    }
+}
+
+//FIXME: kill this function.
+function enableMap() {
+    var $mapdiv = $('#editmapv3');
+    $mapdiv.removeClass('opaque');
+    if($mapdiv.data("resourceRect")) {
+        $mapdiv.data("resourceRect").setEditable(true);
     }
 }

@@ -634,18 +634,7 @@ function showAccessRightsLinkIfNeeded() {
     }
 }
 
-/**
- * Google Maps Support
- */
 
-// update the 'public' latlong controls based on the values of the invisible
-// latlong text fields
-function populateLatLongTextFields() {
-    $("#d_minx").val(Geo.toLon($("#minx").val()));
-    $("#d_miny").val(Geo.toLat($("#miny").val()));
-    $("#d_maxx").val(Geo.toLon($("#maxx").val()));
-    $("#d_maxy").val(Geo.toLat($("#maxy").val()));
-}
 
 /**
  * Sensory Data Support
@@ -702,18 +691,6 @@ function htmlDecode(value) {
     if (value == undefined || value == '')
         return "";
     return $('<div/>').html(value).text();
-}
-
-function disableMap() {
-    $('#large-google-map').addClass('opaque');
-    $('#gzoom-control').hide();
-    $('#mapResetButton').hide();
-}
-
-function enableMap() {
-    $('#large-google-map').removeClass('opaque');
-    $('#gzoom-control').show();
-    $('#mapResetButton').show();
 }
 
 // return skeleton project
