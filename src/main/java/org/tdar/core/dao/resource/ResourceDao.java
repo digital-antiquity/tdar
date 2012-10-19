@@ -30,10 +30,12 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.dao.Dao;
 import org.tdar.core.dao.NamedNativeQueries;
 import org.tdar.core.dao.TdarNamedQueries;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.struts.data.ResourceUsageStatistic;
 
 /**
  * $Id$
@@ -225,10 +227,8 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         return toReturn;
     }
 
-
-
     /*
-     * This method is the combined method for finding a random resource in a collection or a project or in all of tDAR. Due to the nature of the 
+     * This method is the combined method for finding a random resource in a collection or a project or in all of tDAR. Due to the nature of the
      * database queries that are actually performed, it's split into two parts (a) find the random resource.id and (b) retrieve the resource
      */
     @SuppressWarnings("hiding")
@@ -261,9 +261,54 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         // find the resource by ID using the projected version
         List<Long> ids = new ArrayList<Long>();
         for (Object result : criteria.list()) {
-            ids.add((Long)result);
+            ids.add((Long) result);
         }
         logger.trace("find random resource end");
         return (List<E>) findAll(ids);
+    }
+
+    public ResourceUsageStatistic getResourceUsageStatistics(List<Long> personId, List<Long> resourceId, List<Long> collectionId, List<Long> projectId,
+            List<Status> statuses, List<VersionType> types) {
+        List<Status> statuses_ = new ArrayList<Status>(Arrays.asList(Status.values()));
+        List<VersionType> types_ = new ArrayList<VersionType>(Arrays.asList(VersionType.values()));
+
+        if (CollectionUtils.isNotEmpty(types)) {
+            types_ = types;
+        }
+
+        if (CollectionUtils.isNotEmpty(statuses)) {
+            statuses_ = statuses;
+        }
+
+        Object[] params = { resourceId, projectId, personId, collectionId, statuses_, types_ };
+        logger.info("admin stats [resources: {} projects: {} people: {} collections: {} statuses: {} types: {} ]", params);
+        Query query = null;
+        if (CollectionUtils.isNotEmpty(resourceId)) {
+            query = getCurrentSession().getNamedQuery(SPACE_BY_RESOURCE);
+            query.setParameterList("resourceIds", resourceId);
+        }
+        if (CollectionUtils.isNotEmpty(projectId)) {
+            query = getCurrentSession().getNamedQuery(SPACE_BY_PROJECT);
+            query.setParameterList("projectIds", projectId);
+        }
+        if (CollectionUtils.isNotEmpty(personId)) {
+            query = getCurrentSession().getNamedQuery(SPACE_BY_SUBMITTER);
+            query.setParameterList("submitterIds", personId);
+        }
+        if (CollectionUtils.isNotEmpty(collectionId)) {
+            query = getCurrentSession().getNamedQuery(SPACE_BY_COLLECTION);
+            query.setParameterList("collectionIds", collectionId);
+        }
+        if (query == null) {
+            return null;
+        }
+        query.setParameterList("statuses", statuses_);
+        query.setParameterList("types", types_);
+        List<?> list = query.list();
+        for (Object obj_ : list) {
+            Object[] obj = (Object[]) obj_;
+            return new ResourceUsageStatistic((Number) obj[0], (Number) obj[1], (Number) obj[2]);
+        }
+        return null;
     }
 }

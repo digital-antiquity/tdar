@@ -52,7 +52,7 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy> {
         if (latestVersion != null) {
             this.originalFileVersionId = latestVersion.getId();
             this.filename = latestVersion.getFilename();
-            this.size = latestVersion.getSize();
+            this.size = latestVersion.getFileLength();
         } else {
             LOGGER.warn("No version number available for file {}", file);
         }

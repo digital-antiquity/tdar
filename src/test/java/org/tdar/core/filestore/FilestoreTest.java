@@ -109,7 +109,7 @@ public class FilestoreTest {
         assertEquals("application/pdf", version.getMimeType());
         // version.getPath();
         assertEquals(null, version.getPremisId());
-        assertEquals(f.length(), version.getSize().intValue());
+        assertEquals(f.length(), version.getFileLength().intValue());
         assertEquals(VERSION, version.getVersion());
         ;
         // version.getHeight();

@@ -74,6 +74,10 @@ public interface TdarNamedQueries {
     public static final String QUERY_RESOURCES_BY_DECADE = "resources.byDecade";
     public static final String QUERY_SPARSE_RESOURCE_LOOKUP = "resource.sparseLookup";
     public static final String QUERY_SPARSE_COLLECTION_LOOKUP = "resourceCollection.sparseLookup";
+    public static final String SPACE_BY_PROJECT = "admin.size.project";
+    public static final String SPACE_BY_RESOURCE = "admin.size.resource";
+       public static final String SPACE_BY_COLLECTION = "admin.size.collection";
+    public static final String SPACE_BY_SUBMITTER = "admin.size.submitter";
     // raw SQL/HQL queries
 
     public static final String QUERY_SQL_DASHBOARD =

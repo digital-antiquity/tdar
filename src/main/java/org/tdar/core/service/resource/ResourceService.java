@@ -42,6 +42,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.XmlService;
 import org.tdar.search.geosearch.GeoSearchService;
+import org.tdar.struts.data.ResourceUsageStatistic;
 
 @Service
 public class ResourceService extends GenericService {
@@ -130,7 +131,7 @@ public class ResourceService extends GenericService {
         save(log);
     }
 
-    //FIXME: I'm pretty sure @Transactional is pointless here.  you can't rollback file io
+    // FIXME: I'm pretty sure @Transactional is pointless here. you can't rollback file io
     @Transactional(readOnly = true)
     public <T extends Resource> void saveRecordToFilestore(T resource) {
         @SuppressWarnings("deprecation")
@@ -142,10 +143,10 @@ public class ResourceService extends GenericService {
         try {
             TdarConfiguration.getInstance().getFilestore().storeAndRotate(new StringInputStream(xmlService.convertToXML(resource)), version, 5);
         } catch (Exception e) {
-            //FIXME: This catch is too wide. E.g. a LazyInitializationException is arguably not a "recoverable exception" and we should throw something 
-            //       more appropriate like TdarRuntimeException so that the caller knows to (for example) rollback any DB work that happened to this record
-            //       before we tried to write it to the filestore.   On the other hand, if just a file IO issue, it may be acceptable to simply log the error 
-            //       but keep the DB transaction.
+            // FIXME: This catch is too wide. E.g. a LazyInitializationException is arguably not a "recoverable exception" and we should throw something
+            // more appropriate like TdarRuntimeException so that the caller knows to (for example) rollback any DB work that happened to this record
+            // before we tried to write it to the filestore. On the other hand, if just a file IO issue, it may be acceptable to simply log the error
+            // but keep the DB transaction.
             logger.error("something happend when converting record to XML: {}", e);
             throw new TdarRecoverableRuntimeException("could not save xml record");
         }
@@ -181,7 +182,6 @@ public class ResourceService extends GenericService {
     public Long countResourcesForUserAccess(Person user) {
         return datasetDao.countResourcesForUserAccess(user);
     }
-
 
     @Transactional
     public void processManagedKeywords(Resource resource, Collection<LatitudeLongitudeBox> allLatLongBoxes) {
@@ -296,4 +296,9 @@ public class ResourceService extends GenericService {
         return datasetDao.getResourceCount(resourceType, status);
     }
 
+    @Transactional
+    public ResourceUsageStatistic getResourceUsageStatistics(List<Long> personId, List<Long> resourceId, List<Long> collectionId, List<Long> projectId,
+            List<Status> statuses, List<VersionType> types) {
+        return datasetDao.getResourceUsageStatistics(personId, resourceId, collectionId, projectId, statuses, types);
+    }
 }

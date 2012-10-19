@@ -1,5 +1,6 @@
 <#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
+<#import "/WEB-INF/macros/resource/common.ftl" as common>
 <#import "/WEB-INF/macros/resource/list-macros.ftl" as list>
 <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
 <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
@@ -43,9 +44,12 @@
 <#if editable>
 <div class="glide">
   <h3>Administrative Information</h3>
+  
+	<@common.resourceUsageInfo />
+  
     <p><b>Collection Type:</b> ${resourceCollection.type.label}</p>
     <p><b>Visible:</b> ${resourceCollection.visible?string}</p>
-    <p><b>Owner:</b> ${resourceCollection.owner}</p>
+    <p><b>Owner:</b> <a href="<@s.url value="/browse/creators/${resourceCollection.owner.id?c}"/>">${resourceCollection.owner}</a></p>
     <#if resourceCollection.sortBy??><p><b>Sort by:</b> ${resourceCollection.sortBy.label}</p></#if>
 
     <p><b>Authorized Users:</b></p>

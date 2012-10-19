@@ -26,6 +26,7 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.auth.InternalTdarRights;
 import org.tdar.search.query.QueryFieldNames;
@@ -39,9 +40,9 @@ import org.tdar.search.query.builder.ResourceQueryBuilder;
 @Namespace("/collection")
 public class CollectionController extends AbstractPersistableController<ResourceCollection> implements SearchResultHandler<ResourceCollection> {
 
-    //FIXME: This notification message blows.  Could somebody rephrase this to be more helpful to a user?
+    // FIXME: This notification message blows. Could somebody rephrase this to be more helpful to a user?
     public static final String MSG_PERMISSION_REBASE_NOTIFICATION = "Note: the system has copied inherited permissions from the former parent to this collection";
-    
+
     private static final long serialVersionUID = 5710621983240752457L;
     private List<Resource> resources = new ArrayList<Resource>();
 
@@ -71,9 +72,9 @@ public class CollectionController extends AbstractPersistableController<Resource
      * @return
      */
     public Set<ResourceCollection> getCandidateParentResourceCollections() {
-        Set<ResourceCollection> publicResourceCollections = 
+        Set<ResourceCollection> publicResourceCollections =
                 getResourceCollectionService().findPotentialParentCollections(getAuthenticatedUser(),
-                getPersistable());
+                        getPersistable());
         return publicResourceCollections;
     }
 
@@ -87,10 +88,10 @@ public class CollectionController extends AbstractPersistableController<Resource
         if (persistable.getType() == null) {
             persistable.setType(CollectionType.SHARED);
         }
-        
-        //handle corner case of user losing effective permissions by converting child collection to root collection (parentId == null);
+
+        // handle corner case of user losing effective permissions by converting child collection to root collection (parentId == null);
         handlePermissionsRebase();
-        
+
         // FIXME: may need some potential check for recursive loops here to prevent self-referential
         // parent-child loops
         // FIXME: if persistable's parent is different from current parent; then need to reindex all of the children as well
@@ -129,7 +130,7 @@ public class CollectionController extends AbstractPersistableController<Resource
 
         // remove all of the undesirable resources that that the user just tried to add
         rehydratedIncomingResources.removeAll(ineligibleResources);
-//        getResourceCollectionService().findAllChildCollectionsRecursive(persistable, CollectionType.SHARED);
+        // getResourceCollectionService().findAllChildCollectionsRecursive(persistable, CollectionType.SHARED);
         persistable.getResources().addAll(rehydratedIncomingResources);
 
         // add all the deleted resources that were already in the colleciton
@@ -144,18 +145,19 @@ public class CollectionController extends AbstractPersistableController<Resource
         return SUCCESS;
     }
 
-    /** 
-     * handle a "permissions rebase", which we define as the situation where the user converts a child collection to a root collection and will lose the 
+    /**
+     * handle a "permissions rebase", which we define as the situation where the user converts a child collection to a root collection and will lose the
      * inherited permissions that enable the user to edit the collection in the first place.
      * 
-     * @return  true if any action was taken
+     * @return true if any action was taken
      */
     private boolean handlePermissionsRebase() {
         List<AuthorizedUser> users = getResourceCollectionService().getTransientInheritedAuthorizedUsers(getPersistable());
-        if(users.isEmpty() || !Persistable.Base.isNullOrTransient(getParentId())) return false;
-        
-        //collection is becoming a root node and has inherited authusers, copy them to the incoming list.  Also notify the user so they don't freak out
-        //when these extra users show up on the view page
+        if (users.isEmpty() || !Persistable.Base.isNullOrTransient(getParentId()))
+            return false;
+
+        // collection is becoming a root node and has inherited authusers, copy them to the incoming list. Also notify the user so they don't freak out
+        // when these extra users show up on the view page
         getAuthorizedUsers().addAll(users);
 
         addActionMessage(MSG_PERMISSION_REBASE_NOTIFICATION);
@@ -284,12 +286,21 @@ public class CollectionController extends AbstractPersistableController<Resource
         setCollections(findAllChildCollections);
         Collections.sort(collections);
 
+        if (isEditor()) {
+            List<Long> collectionIds = Persistable.Base.extractIds(getResourceCollectionService().findAllDirectChildCollections(getId(), null,
+                    CollectionType.SHARED));
+            collectionIds.add(getId());
+            setTotalResourceAccessStatistic(getResourceService().getResourceUsageStatistics(null, null, collectionIds, null, null, null));
+            setUploadedResourceAccessStatistic(getResourceService().getResourceUsageStatistics(null, null, collectionIds, null,
+                    null, Arrays.asList(VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED_TEXT)));
+        }
+
         if (getPersistable() != null) {
-            //FIXME: logic is right here, but this feels "wrong"
-            
+            // FIXME: logic is right here, but this feels "wrong"
+
             // if this collection is public, it will appear in a resource's public collection id list, otherwise it'll be in the shared collection id list
-//            String collectionListFieldName = getPersistable().isVisible() ? QueryFieldNames.RESOURCE_COLLECTION_PUBLIC_IDS
-//                    : QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS;
+            // String collectionListFieldName = getPersistable().isVisible() ? QueryFieldNames.RESOURCE_COLLECTION_PUBLIC_IDS
+            // : QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS;
 
             // the visibilty fence should take care of visible vs. shared above
             ResourceQueryBuilder qb = getSearchService().buildResourceContainedInSearch(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS,

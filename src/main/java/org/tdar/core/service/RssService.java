@@ -162,7 +162,7 @@ public class RssService implements Serializable {
         if (user != null && authenticationAndAuthorizationService.canDownload(version, user)) {
             logger.info("allowed:" + version);
             SyndEnclosure enclosure = new SyndEnclosureImpl();
-            enclosure.setLength(version.getSize());
+            enclosure.setLength(version.getFileLength());
             enclosure.setType(version.getMimeType());
             enclosure.setUrl(urlService.downloadUrl(version));
             entry.getEnclosures().add(enclosure);

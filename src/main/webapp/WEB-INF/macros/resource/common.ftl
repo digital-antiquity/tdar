@@ -656,6 +656,22 @@ this bit of freemarker is voodoo:
 
 
 
+<#macro resourceUsageInfo>
+<table class="tableFormat">
+	<tr>
+		<#if !persistable?has_content || !persistable.resourceType?has_content || persistable.resourceType == 'PROJECT' ><th>Total # of Resource</th></#if>
+		<th>Total # of Files</th>
+		<th>Total Space (Uploaded Only)</th>
+		<th>Total Space (Used by System)</th>
+	</tr>
+	<tr>
+		<#if !persistable?has_content || !persistable.resourceType?has_content || persistable.resourceType == 'PROJECT' ><td>${uploadedResourceAccessStatistic.countResources}</td></#if>
+		<td>${uploadedResourceAccessStatistic.countFiles}</td>
+		<td><@convertFileSize uploadedResourceAccessStatistic.totalSpace /></td>
+		<td><@convertFileSize totalResourceAccessStatistic.totalSpace /></td>
+	</tr>
+</table>
+</#macro>
 </#escape>
 
 

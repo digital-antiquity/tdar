@@ -237,7 +237,7 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_FILE_STATS,
-                query = "select extension, avg(size) , min(size) , max(size) from InformationResourceFileVersion group by extension order by extension desc"
+                query = "select extension, avg(fileLength) , min(fileLength) , max(fileLength) from InformationResourceFileVersion group by extension order by extension desc"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_RESOURCES_IN_PROJECT,
@@ -262,6 +262,26 @@
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.UPDATE_DATATABLECOLUMN_ONTOLOGIES,
                 query = "UPDATE DataTableColumn set defaultOntology = :ontology where defaultCodingSheet = :codingSheet"
+        ),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.SPACE_BY_SUBMITTER,
+                query = "select sum( irfv.fileLength ) as len, count(irfv), count(res) from InformationResource res left join res.informationResourceFiles as irf left join irf.informationResourceFileVersions as irfv" +
+                " where res.submitter.id in (:submitterIds) and res.status in (:statuses) and irfv.fileVersionType in (:types)"
+        ),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.SPACE_BY_RESOURCE,
+                query = "select sum( irfv.fileLength ) as len, count(irfv), count(res) from InformationResource res left join res.informationResourceFiles as irf left join irf.informationResourceFileVersions as irfv" +
+                " where res.id in (:resourceIds) and res.status in (:statuses) and irfv.fileVersionType in (:types)"
+        ),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.SPACE_BY_PROJECT,
+                query = "select sum( irfv.fileLength ) as len, count(irfv), count(res) from InformationResource res left join res.informationResourceFiles as irf left join irf.informationResourceFileVersions as irfv" +
+                " where res.project.id in (:projectIds) and res.status in (:statuses) and irfv.fileVersionType in (:types)"
+        ),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.SPACE_BY_COLLECTION,
+                query = "select sum( irfv.fileLength ) as len, count(irfv), count(res) from ResourceCollection coll left join coll.resources as res left join res.informationResourceFiles as irf left join irf.informationResourceFileVersions as irfv" +
+                " where coll.id in (:collectionIds) and res.status in (:statuses) and irfv.fileVersionType in (:types)"
         )
 })
 package org.tdar.core.dao;
