@@ -25,7 +25,6 @@ $(function(){
 <body>
 <@edit.subNavMenu />
 
-<@edit.toolbar "${resource.urlNamespace}" "edit" />
 <@s.form name='datasetMetadataForm' id='datasetMetadataForm'   cssClass="form-horizontal" method='post' enctype='multipart/form-data' action='save'>
 
 

@@ -58,9 +58,10 @@ html markup) you will probably not like the results
 	            <#if resource.score?has_content><b>score:</b>${resource.score}<br/></#if>
 			</blockquote>
             
-    <#if (resource.citationRecord!false)><span class='cartouche' title="Citation only; this record has no attached files.">Citation</span></#if>
             <#if expanded>
                 <div class="listItem">
+    <#if (resource.citationRecord && resource.resourceType != 'PROJECT')>
+   			<span class='cartouche' title="Citation only; this record has no attached files.">Citation</span></#if>
 		    <@common.cartouch resource true><@listCreators resource/></@common.cartouch>  
                 <@view.unapiLink resource  />
                 <#if showProject && resource.resourceType != 'PROJECT'>

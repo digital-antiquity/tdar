@@ -177,7 +177,7 @@ public class UploadController extends AuthenticationAware.Base {
         StringWriter sw = new StringWriter();
         xmlService.convertToJson(fileProxies, sw);
         String json = sw.toString();
-        logger.debug("file list as json: {}", json);
+        logger.trace("file list as json: {}", json);
         byte[] jsonBytes = json.getBytes();
         jsonInputStream = new ByteArrayInputStream(jsonBytes);
         jsonContentLength = jsonBytes.length;

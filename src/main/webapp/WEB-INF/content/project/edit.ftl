@@ -14,7 +14,6 @@
 <body>
 <@edit.subNavMenu />
 <@edit.sidebar />
-<@edit.toolbar "${resource.urlNamespace}" "edit" />
 
 <div tooltipfor="cbInheritingInvestigationInformationhint,cbInheritingSiteInformationhint,cbInheritingMaterialInformationhint,cbInheritingCulturalInformationhint,cbInheritingTemporalInformationhint,cbInheritingOtherInformationhint,cbInheritingSpatialInformationhint" class="hidden">
     <h2>&quot;Inheriting&quot; Project Metadata</h2>

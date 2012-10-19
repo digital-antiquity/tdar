@@ -16,7 +16,6 @@
     </script>
 </head>
 <body>
-    <@nav.creatorToolbar "edit" />
 
     <@s.form  name="institutionForm" id="frmInstitution"  cssClass="form-horizontal" method='post' enctype='multipart/form-data' action='save'>
     <div class="glide">

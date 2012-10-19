@@ -38,7 +38,7 @@
     
     
 <div class="glide">
-        <@list.listResources resourcelist=results sortfield=resourceCollection.sortBy />
+        <@list.listResources resourcelist=results sortfield=resourceCollection.sortBy  titleTag="h5" />
 </div>
     </#if>
 

@@ -45,10 +45,10 @@
 				</ul>
 
 				<form>
-					<@facetBy facetlist=resourceTypeFacets label="Resource Type(s)" facetParam="resourceTypes" />
-					<@facetBy facetlist=documentTypeFacets label="Document Type(s)" facetParam="documentType" />
-					<@facetBy facetlist=integratableOptionFacets label="Integratable" facetParam="integratableOptions" />
-					<@facetBy facetlist=fileAccessFacets label="File Access" facetParam="fileAccess" />
+					<@facetBy facetlist=resourceTypeFacets currentValues=resourceTypes label="Resource Type(s)" facetParam="resourceTypes" />
+					<@facetBy facetlist=documentTypeFacets currentValues=documentType label="Document Type(s)" facetParam="documentType" />
+					<@facetBy facetlist=integratableOptionFacets currentValues=integratableOptions label="Integratable" facetParam="integratableOptions" />
+					<@facetBy facetlist=fileAccessFacets currentValues=fileAccess label="File Access" facetParam="fileAccess" />
 				</form>
 	</div>
 
@@ -79,13 +79,6 @@
 		 </form>
 	 </div>
 
-	<div class="limit">
-		<@removeFacet facetlist=resourceTypes label="Resource Type(s)" facetParam="resourceTypes" />
-		<@removeFacet facetlist=documentType label="Document Type(s)" facetParam="documentType" />
-		<@removeFacet facetlist=fileAccess label="File Access" facetParam="fileAccess" />
-	
-	</div>
-
 	<hr class="dbl" />
     <@rlist.listResources resourcelist=results sortfield=sortField expanded=true listTag="" itemTag="" titleTag="h3"/>
 	<hr class="dbl" />
@@ -97,7 +90,7 @@
 
 
 
-<#macro facetBy facetlist label="Facet Label" facetParam="">
+<#macro facetBy facetlist=[] currentValues=[] label="Facet Label" facetParam="">
 <#if (facetlist?? && !facetlist.empty)>
 <h4>${label}:</h4>
 <ul>
@@ -109,9 +102,9 @@
             <#assign facetLabel = facet.label />
         </#if>
         <li>
+			<input type="checkbox" <#if currentValues?size == 1>checked=checked</#if>>
+			<label class="<#if currentValues?size == 1>checked</#if>">
             <#if (facetlist?size > 1)>
-				<input type="checkbox">
-				<label>
                 <a href="<@s.url includeParams="all">
                     <@s.param name="${facetParam}">${facet}</@s.param>
                     <@s.param name="startRecord" value="0"/>
@@ -125,8 +118,10 @@
                 </@s.url>">
                     ${facetLabel}
                 </a>
+            <#elseif currentValues?size == 1>
+				<@removeFacet facetlist=currentValues facetParam=facetParam />
             <#else>
-                ${facetLabel}
+	                ${facetLabel}
             </#if>
            <span>(${facet.count})</span>
 			</label>
@@ -157,7 +152,7 @@
                 <@s.param name="integratableOptions" value=""/>
             </#if>
             <#nested>
-        </@s.url>"> [X]
+        </@s.url>">
         <#if facet.plural?has_content>${facet.plural}
         <#elseif facet.label?has_content>${facet.label}
         <#else>${facet}

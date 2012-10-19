@@ -11,8 +11,6 @@
 
 <@edit.subNavMenu />
 
-<@edit.toolbar "${resource.urlNamespace}" "edit" />
-
 <@s.form name='VideoMetadataForm' id='VideoMetadataForm'  cssClass="form-horizontal"  method='post' enctype='multipart/form-data' action='save'>
 
 <@edit.basicInformation "video" "video">

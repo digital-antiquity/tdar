@@ -105,7 +105,6 @@ function removeResourceClicked(id, elem) {
 </head>
 <body>
 
-<@edit.toolbar "collection" "edit" />
 
 <div>
 <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='save'>

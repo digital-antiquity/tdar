@@ -394,14 +394,11 @@ No categories or subcategories specified.
 </#macro>
 
 <#macro indvidualInstitutionalCredit>
-    <#if ! creditProxies.isEmpty()>
-    <h3>Individual &amp; Institutional Roles</h3>
-	<@showCreatorProxy proxyList=creditProxies />
+    <#if creditProxies?has_content >
+	    <h3>Individual &amp; Institutional Roles</h3>
+		<@showCreatorProxy proxyList=creditProxies />
+		<hr/>
 	</#if>
-	
-    <@resourceAnnotations />
-    
-    <@resourceNotes />
 
 </#macro>
 
@@ -782,6 +779,10 @@ ${_date?string('MM/dd/yyyy')}<#t>
     <@temporalCoverage />
 
     <@indvidualInstitutionalCredit />
+
+    <@resourceAnnotations />
+    
+    <@resourceNotes />
 
     <#-- <@relatedSimpleItem resource.sourceCitations "Source Citations"/> -->
     <#-- <@relatedSimpleItem resource.relatedCitations "Related Citations"/> -->

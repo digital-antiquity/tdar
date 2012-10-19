@@ -33,7 +33,6 @@ textarea {width:32em}
 </style>
 </head>
 <body>
-<@nav.creatorToolbar "edit" />
 
 <@s.form name='personForm' id='frmPerson'  cssClass="form-horizontal"  method='post' enctype='multipart/form-data' action='save'>
 
