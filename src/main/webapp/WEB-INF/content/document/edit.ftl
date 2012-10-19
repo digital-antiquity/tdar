@@ -7,7 +7,7 @@
 <meta name="lastModifiedDate" content="$Date$"/>
 
 </head>
-<body>
+<body class="resource">
 <@edit.subNavMenu />
 <@edit.toolbar "${resource.urlNamespace}" "edit" />
 <@edit.sidebar />

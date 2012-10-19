@@ -415,7 +415,7 @@ No categories or subcategories specified.
 </#macro>
 
 <#macro resourceNotes>
-    <#if ! resource.resourceNotes.isEmpty()>
+    <#if ! resource.resourceNotes?has_content>
  			<hr>
 				<h2>Notes</h2>
         <#list resource.resourceNotes.toArray()?sort_by("sequenceNumber") as resourceNote>
@@ -696,7 +696,7 @@ No categories or subcategories specified.
                 <#if embargoDate?has_content>  They will be released on ${embargoDate}</#if> 
        </#if>
    <#else>
-        <#if showNotice && (!resource.publicallyAccessible) >
+        <#if showNotice && (!resource.publicallyAccessible) && !resource.citationRecord >
             <i>Note: this resource is restricted from general view; however, you have been granted access to it. </i>
             <#if embargoDate?has_content>  They will be released on ${embargoDate}</#if> 
        </#if>

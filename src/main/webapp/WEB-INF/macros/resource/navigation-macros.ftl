@@ -8,45 +8,49 @@ navigation freemarker macros
 
 
 <#macro loginForm>
+
 <script type="text/javascript">
 $(document).ready(function() {
   $('#loginForm').validate({
-    errorLabelContainer: $("#error"),
     messages: {
       loginUsername: {
-        email: "Please enter a valid username or email address.",
-        required: "Please enter a valid email address."
+        required: "Please enter your username."
       },
       loginPassword: {
         required: "Please enter your password."
       }
-    }
-  });
+    },
+    errorClass:'help-inline',
+  highlight: function(label) {
+    $(label).closest('.control-group').addClass('error');
+  },
+  success: function($label) {
+    $label.closest('.control-group').removeClass('error').addClass('success');
+  }
+  
+    });
   $('#loginUsername').focus();
   $('#loginUsername').bind("focusout",function() {
     var fld = $('#loginUsername');
     fld.val($.trim(fld.val()))});
 });
 </script>
-<style type='text/css'>
-.overrideCheckbox {margin-left: 9.3em !important; }
-</style>
 
-<@s.form id='loginForm' method="post" action="%{#request.contextPath}/login/process">
-    <@s.textfield spellcheck="false" id='loginUsername' label="Username" name="loginUsername" cssClass="required" />
-    <@s.password id='loginPassword' label="Password" name="loginPassword" cssClass="required" />
-
-    <@s.checkbox name='userCookieSet'  label="Remember Me"/>
-    <@s.submit value="Login"/>
-    <#if Parameters.url??>
-        <input type="hidden" name="url" value="${Parameters.url}"/>
-</#if>
+<@s.form id='loginForm' method="post" action="%{#request.contextPath}/login/process" cssClass="well form-horizontal">
+    <input type="hidden" name="url" value="${Parameters.url!''}"/>
+    <@s.textfield spellcheck="false" id='loginUsername' name="loginUsername" label="Username" cssClass="required" />
+    <@s.password id='loginPassword' name="loginPassword" label="Password" cssClass="required" />
+    <@s.checkbox  name="userCookieSet" label="Stay logged-in the next time I visit this page" />
+    
+    <div class="form-actions">
+        <button type="submit" class="button btn btn-primary submitButton" name="Login">Login</button>
+        <p class="pull-right">
+            <a href='<@s.url value="/account/new"/>'>Register </a> |
+            <a href='<@s.url value="/account/recover"/>'>Reset Password</a>
+        </p>
+    </div>
 </@s.form>
-<div id="error" style="border:1px solid red;display:none; margin:.1em;padding:.1em"></div>
-<p>
-<a href='<@s.url value="/account/new"/>'>Register </a> |
-<a href='<@s.url value="/account/recover"/>'>Reset Password</a>
-</p>
+<div id="error"></div>
 </#macro>
 
 <#macro toolbar namespace current="view">
@@ -118,8 +122,8 @@ $(document).ready(function() {
         </#if>
     
   <#if sessionData?? && sessionData.authenticated>
-    <div id="toolbars" parse="true">
-      <ul id="toolbar" class="fg-toolbar ui-toolbar ui-widget-header ui-corner-tl ui-corner-bl ui-corner-br  ui-corner-tr ui-helper-clearfix">
+	<div class="span12 resource-nav" id="toolbars" parse="true">
+      <ul >
     <@nav.makeLink "browse" "creators" "view" "view" current true />
 
     <#if "edit" != current>

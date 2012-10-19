@@ -51,7 +51,7 @@
 </style>
 
 </head>
-<body>ww
+<body>
 <h1>Search ${siteAcronym}</h1>
 <div class="usual">
 <ul class="nav nav-tabs" id="myTab"> 
@@ -112,7 +112,7 @@ $(document).ready(function(){
 //    $("#idtab").idTabs({start:tabindex});
 
     //other view init stuff;
-    loadTdarMap();
+    TDAR.maps.setupMap();
 
     serializeFormState();
 
@@ -120,7 +120,7 @@ $(document).ready(function(){
         $("#searchGroups").html($("#autosave").val());
     }
     initAdvancedSearch();
-    loadTdarMap();
+    TDAR.maps.setupMap();
     
 
 });

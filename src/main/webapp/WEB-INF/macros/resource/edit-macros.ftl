@@ -47,7 +47,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     tooltipcontent="Enter the entire title, including sub-title, if appropriate."></span>
    
     <@s.textfield label="Title" id="resourceRegistrationTitle"  
-        title="A title is required for all ${itemTypeLabel}s" name='${itemPrefix}.title' cssClass="required descriptiveTitle input-xxlarge" required=true maxlength="512"/>
+        title="A title is required for all ${itemTypeLabel}s" name='${itemPrefix}.title' cssClass="required descriptiveTitle input-xlarge" required=true maxlength="512"/>
 
     <#if resource.resourceType != 'PROJECT'>
     <span tiplabel="Year" tooltipcontent="Four digit year, e.g. 1966 or 2005."></span>
@@ -90,10 +90,10 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <div id="t-project" tooltipcontent="#projectTipText" tiplabel="Project">
             <#if resource.id != -1>
                 <@s.select labelposition='left' label='Project' emptyOption='true' id='projectId' name='projectId' listKey='id' listValue='title' list='%{potentialParents}'
-                truncate="70" value='project.id' required="true" title="Please select a project" cssClass="required input-xxlarge" />
+                truncate="70" value='project.id' required="true" title="Please select a project" cssClass="required input-xlarge" />
             <#else>
                 <@s.select labelposition='left' label='Project' title="Please select a project" emptyOption='true' id='projectId' name='projectId' listKey='id' listValue='title' list='%{potentialParents}'
-                truncate="70" value="${request.getParameter('projectId')!''}"required="true" cssClass="required input-xxlarge" />
+                truncate="70" value="${request.getParameter('projectId')!''}"required="true" cssClass="required input-xlarge" />
             </#if>
         </div>
 
@@ -158,7 +158,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 <#macro keywordRow keywordField keyword_index=0 showDelete=true>
     <div class="controls controls-row" id='${keywordField}Row_${keyword_index}_'>
-        <@s.textfield theme="tdar" name='${keywordField}[${keyword_index}]' cssClass='input-xxlarge keywordAutocomplete' placeholder="enter keyword"/>
+        <@s.textfield theme="tdar" name='${keywordField}[${keyword_index}]' cssClass='input-xlarge keywordAutocomplete' placeholder="enter keyword"/>
         <#if showDelete>
         <@clearDeleteButton id="${keywordField}Row" />
         </#if>
@@ -257,7 +257,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <#macro resourceProvider showInherited=true>
 <div class="well" id="divResourceProvider" tiplabel="Resource Provider" tooltipcontent="The institution authorizing ${siteAcronym} to ingest the resource for the purpose of preservation and access.">
     <legend>Institution Authorizing Upload of this ${resource.resourceType.label}</legend>
-    <@s.textfield label='Institution' name='resourceProviderInstitutionName' id='txtResourceProviderInstitution' cssClass="institution input-xxlarge" size='40'/>
+    <@s.textfield label='Institution' name='resourceProviderInstitutionName' id='txtResourceProviderInstitution' cssClass="institution input-xlarge" size='40'/>
     <br/>
 </div>
 </#macro>
@@ -651,7 +651,7 @@ The form will check for matches in the ${siteAcronym} database and populate the 
         </pre>
     </#if>
     </div>
-    <@s.textarea label='${typeLabel}' labelposition='top' id='fileInputTextArea' name='fileTextInput' rows="5" cssClass='resizable input-xxlarge' />
+    <@s.textarea label='${typeLabel}' labelposition='top' id='fileInputTextArea' name='fileTextInput' rows="5" cssClass='resizable input-xlarge' />
     </div>
 </div>
 
@@ -779,7 +779,7 @@ $(function(){
 <#local plural = "${prefix}s" />
     <div class="controls control-row">
     <@s.hidden name="${plural}[${index}].id" />
-    <@s.textfield theme="tdar" name='${plural}[${index}].text' cssClass="input-xxlarge" /></td>
+    <@s.textfield theme="tdar" name='${plural}[${index}].text' cssClass="input-xlarge" /></td>
     <@edit.clearDeleteButton id="${prefix}Row" />
     </div>
 </#macro>
@@ -806,7 +806,7 @@ $(function(){
       <tr id="resourceCollectionRow_${collection_index}_" class="repeat-row">
           <td> 
               <@s.hidden name="resourceCollections[${collection_index}].id"  id="resourceCollectionRow_${collection_index}_id" />
-              <@s.textfield id="resourceCollectionRow_${collection_index}_id" name="resourceCollections[${collection_index}].name" cssClass="input-xxlarge collectionAutoComplete "  autocomplete="off"
+              <@s.textfield id="resourceCollectionRow_${collection_index}_id" name="resourceCollections[${collection_index}].name" cssClass="input-xlarge collectionAutoComplete "  autocomplete="off"
               autocompleteIdElement="#resourceCollectionRow_${collection_index}_id" label="${siteAcronym} Collection"
               autocompleteParentElement="#resourceCollectionRow_${collection_index}_" />
           </td>
@@ -843,7 +843,7 @@ $(function(){
           <@clearDeleteButton id="resourceNoteRow" />
           </div>
           <div class="controls">
-              <@s.textarea theme="tdar" name='resourceNotes[${note_index}].note' placeholder="enter note contents" cssClass='resizable input-xxlarge'  rows='3' maxlength='5000' />
+              <@s.textarea theme="tdar" name='resourceNotes[${note_index}].note' placeholder="enter note contents" cssClass='resizable input-xlarge'  rows='3' maxlength='5000' />
           </div>
       </div>
 </#macro>
@@ -1297,7 +1297,7 @@ jquery validation hooks?)
 
 <#macro resourceDataTable showDescription=true selectable=false>
 <div>
-<@s.textfield name="query" id="query" label="Title" cssClass='input-xxlarge' /><br/>
+<@s.textfield name="query" id="query" label="Title" cssClass='input-xlarge' /><br/>
 <div class="row">
 <div class="span4">
 <label for="project-selector">Project:</label>
@@ -1827,7 +1827,7 @@ function drawToolbar(projId) {
 
 
 <#macro subNavMenu>
-	<div id='subnavbar' class="affix-top navbar navbar-static"  data-offset-top="250" data-offset-bottom="250" data-spy="affix">
+	<div id='subnavbar' class="affix-top navbar span12 navbar-static"  data-offset-top="250" data-offset-bottom="250" data-spy="affix">
 	  <div class="navbar-inner">
 	    <div class="container" style="width: auto;">
 		<ul class="nav">

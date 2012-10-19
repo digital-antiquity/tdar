@@ -10,6 +10,7 @@
 <@nav.creatorToolbar "view" />
 
 <title><#if creator?? && creator.properName??>${creator.properName}<#else>No title</#if></title>
+<h1><#if creator?? && creator.properName??>${creator.properName}</#if></h1>
 <#if creator??>
     <#if creator.institution??>
     <a href="<@s.url value="${creator.institution.id?c}"/>">${creator.institution}</a>
@@ -23,23 +24,22 @@
                 <table class='tableFormat'>
                 <tr>
                     <td>
-                        <#if creator.rpaNumber?has_content>
-                            <B>Registered Public Archaeologist</B>:${creator.rpaNumber}
-                        </#if>
-                    </td><td>
+                            <B>Registered Public Archaeologist</B>:${creator.rpaNumber!"no"}
+                    </td>
+                    <td>
                     	<#assign registered = false />
 	                    <#if creator.registered?has_content>
 	                        <#assign registered = creator.registered>
                         </#if>
-                    <#if registered && (editor || id == authenticatedUser.id)>
+    	                <#if registered && (editor || id == authenticatedUser.id)>
                             <#if creator.lastLogin?has_content>
-                                        <@view.datefield "Last Login"  creator.lastLogin />
+                                <@view.datefield "Last Login"  creator.lastLogin />
                             <#else>
-                                        <@view.textfield "Last Login"  "No record" />
+                                <@view.textfield "Last Login"  "No record" />
                             </#if>                    
-                    <#else>
+	                    <#else>
 	                        <@view.boolean "Registered User" registered />
-                    </#if>
+    	                </#if>
                     </td>
                 </tr>
                 <tr>
@@ -80,7 +80,7 @@
 
 <div class="glide">
 <#if results??>
-<@list.listResources results "RESOURCE_TYPE" />
+<@list.listResources resourcelist=results sortfield="RESOURCE_TYPE" titleTag="h5" />
 </#if>
 </div>
 </#escape>

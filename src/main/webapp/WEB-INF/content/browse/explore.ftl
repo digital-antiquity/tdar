@@ -4,7 +4,7 @@
 <title>Explore ${siteAcronym}</title>
  
 <#escape _untrusted as _untrusted?html >
-
+<h1>Explore ${siteAcronym}</h1>
  <h2>Browse Resources by Title</h2>
      <ul>
  <#list alphabet as letter>

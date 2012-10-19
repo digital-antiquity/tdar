@@ -12,9 +12,9 @@
     <h3>Statistics Menu</h3>
     <table cellpadding=4>
     <tr>
-        <td><a href="resource">Resource Statistics</a> </td>
-        <td><a href="user">User Statistics</a> </td>
-        <td><a href="keyword-stats">Keyword Statistics</a> </td>
+        <td><a href="<@s.url value="/admin/resource"/>">Resource Statistics</a> </td>
+        <td><a href="<@s.url value="/admin/user"/>">User Statistics</a> </td>
+        <td><a href="<@s.url value="/admin/keyword-stats"/>">Keyword Statistics</a> </td>
     </tr>
     </table>
 </div>    

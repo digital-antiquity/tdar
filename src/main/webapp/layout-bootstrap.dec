@@ -192,7 +192,7 @@
 		</article>
 
 		<#if page.properties["div.sidebar-right"]?has_content>
-			<aside class="span3">
+			<aside class="span3 <#if resource?has_content>${resource.resourceType?lower_case}</#if>">
 		    ${page.properties["div.sidebar-right"]}
 		   </aside>
 		</#if>

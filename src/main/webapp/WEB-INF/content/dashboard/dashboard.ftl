@@ -57,7 +57,7 @@ Welcome back, ${authenticatedUser.firstName}!
 
 <#if contributor>
 <#if (activeResourceCount == 0)>
-	<div class="span9">
+	<div class="span9 noindent">
 		<h3>Getting Started</h3>
 		<ol style='list-style-position:inside'>
 		    <li><a href="<@s.url value="/project/add"/>">Start a new Project</a></li>
@@ -65,7 +65,7 @@ Welcome back, ${authenticatedUser.firstName}!
 		</ol>
 	</div>
 <#else>
-	<div class="span9">
+	<div class="span9 noindent">
 		<h3>At a glance</h3>
 		<div class="row">
 	    <div class="span4"><@common.pieChart statusCountForUser "statusForUser" "userSubmitterContext=true&includedStatuses" /></div>
@@ -74,7 +74,7 @@ Welcome back, ${authenticatedUser.firstName}!
 	    <br/>
 	</div>
 	<hr />	
-	<div class="span9">
+	<div class="span9 noindent">
 		<h3>Item(s) You've Recently Updated</h3>
 		<ol id='recentlyEditedResources'>
 		    <#list recentlyEditedResources as res>
@@ -98,7 +98,7 @@ Welcome back, ${authenticatedUser.firstName}!
 
 
 <#if (emptyProjects?? && !emptyProjects.empty )>
-	<div class="span9" id="divEmptyProjects">
+	<div class="span9 noindent" id="divEmptyProjects">
 	    <h3>Empty Projects</h3>
 	    <ol style='list-style-position:inside' id="emptyProjects">
 	    <@s.iterator value='emptyProjects' status='recentEditStatus' var='res'>
@@ -118,7 +118,7 @@ Welcome back, ${authenticatedUser.firstName}!
 <hr />
 </#if>
 
-<div class="span9" id="project-list">
+<div class="span9 noindent" id="project-list">
 <h3>Browse Resources</h3>
 <form action=''>
 <@edit.resourceDataTable />
@@ -147,7 +147,7 @@ Welcome back, ${authenticatedUser.firstName}!
 </div>
 </#if>
 <hr />
-<div class="span9" id="divAccountInfo">
+<div class="span9 noindent" id="divAccountInfo">
 <h3>About Your Account</h3>
     <em class="label">Full Name</em>${authenticatedUser.properName}<#if authenticatedUser.institution??>, ${authenticatedUser.institution.name}</#if><br />
     <#if authenticatedUser.penultimateLogin??>
