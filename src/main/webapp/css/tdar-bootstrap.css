@@ -659,3 +659,5 @@ table.legend {
 #project-list .dataTables_wrapper {
 //	width:700px
 }
+
+#home .form-actions {border:none; background-color:transparent}
