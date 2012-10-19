@@ -200,36 +200,26 @@ No categories or subcategories specified.
 
 
 <#macro spatialCoverage>
-    <#if (resource.inheritingSpatialInformation?? && resource.inheritingSpatialInformation)>
-        <#assign inheriting=true>
-        <#assign activeResource=project>
-    <#else>
-        <#assign inheriting=false>
-        <#assign activeResource=resource>
-    </#if>
-    
-  <#if (activeResource?? && (!activeResource.latitudeLongitudeBoxes.isEmpty() || !resource.activeGeographicKeywords.isEmpty()))>
-    		<h2>Spatial Coverage</h2>
-    <#if !activeResource.latitudeLongitudeBoxes.isEmpty()>
-				<div class="title-data">
-					<p>
-					  min long: ${activeResource.firstLatitudeLongitudeBox.minObfuscatedLongitude}; min lat: ${activeResource.firstLatitudeLongitudeBox.minObfuscatedLatitude} ;
-		              max long: ${activeResource.firstLatitudeLongitudeBox.maxObfuscatedLongitude}; max lat: ${activeResource.firstLatitudeLongitudeBox.maxObfuscatedLatitude} ;
-		              <!-- ${activeResource.firstLatitudeLongitudeBox.scale } -->
-					</p>
-				</div>
-    
+  <#if (resource.activeLatitudeLongitudeBoxes?has_content )>
+		<h2>Spatial Coverage</h2>
+			<div class="title-data">
+				<p>
+				  min long: ${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLongitude}; min lat: ${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLatitude} ;
+	              max long: ${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLongitude}; max lat: ${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLatitude} ;
+	              <!-- ${resource.firstActiveLatitudeLongitudeBox.scale } -->
+	              <!-- ${resource.managedGeographicKeywords } -->
+				</p>
+			</div>
+
     	<div class="row">
-          <div id='large-google-map' class="googlemap span9">
-          </div>
-          </div>
-          <div id="divCoordContainer" style="display:none">
-              <input type="hidden"  class="ne-lat" value="${activeResource.firstLatitudeLongitudeBox.maxObfuscatedLatitude}" id="maxy" />
-              <input type="hidden"  class="sw-lng" value="${activeResource.firstLatitudeLongitudeBox.minObfuscatedLongitude}" id="minx" />
-              <input type="hidden"  class="ne-lng" value="${activeResource.firstLatitudeLongitudeBox.maxObfuscatedLongitude}" id="maxx" />
-              <input type="hidden"  class="sw-lat" value="${activeResource.firstLatitudeLongitudeBox.minObfuscatedLatitude}"  id="miny" />
-          </div>
-    </#if>
+          <div id='large-google-map' class="googlemap span9"></div>
+       </div>
+       <div id="divCoordContainer" style="display:none">
+          <input type="hidden"  class="ne-lat" value="${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLatitude}" id="maxy" />
+          <input type="hidden"  class="sw-lng" value="${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLongitude}" id="minx" />
+          <input type="hidden"  class="ne-lng" value="${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLongitude}" id="maxx" />
+          <input type="hidden"  class="sw-lat" value="${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLatitude}"  id="miny" />
+       </div>
   </#if>
 </#macro>
 
@@ -295,17 +285,15 @@ No categories or subcategories specified.
 
 
 <#macro temporalCoverage showParentCoverage=true>
-<#if !resource.coverageDates.isEmpty() || !resource.temporalKeywords.isEmpty()>
-<h2>Temporal Coverage</h2>
-    <#if !resource.coverageDates.isEmpty()>
-	    <#list resource.coverageDates as coverageDate>
+	<#if resource.activeCoverageDates?has_content>
+		<h2>Temporal Coverage</h2>
+	    <#list resource.activeCoverageDates as coverageDate>
 		    <b>${coverageDate.dateType.label}</b>: 
 		        <#if coverageDate.startDate?has_content>${coverageDate.startDate?c}<#else>?</#if> to 
 		                <#if coverageDate.endDate?has_content>${coverageDate.endDate?c}<#else>?</#if>
 		                 <#if (coverageDate.description?has_content)> (${coverageDate.description})</#if><br/>
 	    </#list>
-    </#if>
-
+		<hr/>
     </#if>
 </#macro>
 
@@ -418,26 +406,27 @@ No categories or subcategories specified.
 </#macro>
 
 <#macro resourceNotes>
-    <#if ! resource.resourceNotes?has_content>
- 			<hr>
-				<h2>Notes</h2>
-        <#list resource.resourceNotes.toArray()?sort_by("sequenceNumber") as resourceNote>
+    <#if resource.activeResourceNotes?has_content>
+		<h2>Notes</h2>
+        <#list resource.activeResourceNotes.toArray()?sort_by("sequenceNumber") as resourceNote>
 			<p class="sml"><strong>${resourceNote.type.label}:</strong> ${resourceNote.note}</p>
         </#list>
+		<hr />
     </#if>
 </#macro>
 
 <#macro resourceAnnotations>
-    <#if ! resource.resourceAnnotations.isEmpty()>
+    <#if ! resource.activeResourceAnnotations.isEmpty()>
     <h3>Record Identifiers</h3>
         <table>
-        <#list resource.resourceAnnotations as resourceAnnotation>
+        <#list resource.activeResourceAnnotations as resourceAnnotation>
             <tr>
                 <td><b>${resourceAnnotation.resourceAnnotationKey.key}:</b></td>
                 <td>${resourceAnnotation.value}</td>
             </tr>
         </#list>
         </table>
+		<hr/>
     </#if>
 
 </#macro>
@@ -761,12 +750,13 @@ ${_date?string('MM/dd/yyyy')}<#t>
 
 <#macro resourceCollections>
     <#if !viewableResourceCollections.empty>
-    <h3>This Resource is Part of the Following Collections</h3>
-    <#list viewableResourceCollections as collection>
-            <a href="<@s.url value="/collection/${collection.id?c}"/>">
-                ${collection.name}
-            </a> <br/>
-    </#list>
+	    <h3>This Resource is Part of the Following Collections</h3>
+	    <#list viewableResourceCollections as collection>
+	            <a href="<@s.url value="/collection/${collection.id?c}"/>">
+	                ${collection.name}
+	            </a> <br/>
+	    </#list>
+		<hr />
     </#if>
 </#macro>
 
@@ -795,13 +785,15 @@ ${_date?string('MM/dd/yyyy')}<#t>
 
     <#-- <@relatedSimpleItem resource.sourceCitations "Source Citations"/> -->
     <#-- <@relatedSimpleItem resource.relatedCitations "Related Citations"/> -->
-    <@relatedSimpleItem resource.sourceCollections "Source Collections"/>
-    <@relatedSimpleItem resource.relatedComparativeCollections "Related Comparative Collections" />
+    <@relatedSimpleItem resource.activeSourceCollections "Source Collections"/>
+    <@relatedSimpleItem resource.activeRelatedComparativeCollections "Related Comparative Collections" />
+	<#if resource.activeSourceCollections?has_content || resource.activeRelatedComparativeCollections?has_content>
+	 	<hr />
+ 	</#if>
     <#-- display linked data <-> ontology nodes -->
     <@relatedResourceSection label=resource_.resourceType.label />
     
 
-	    <hr>
 		<h2>Cite this Record</h2>
     <div class="citeMe">
 		<p class="sml">
@@ -812,8 +804,8 @@ ${_date?string('MM/dd/yyyy')}<#t>
 	    	<em>Note:</em>A DOI will be generated in the next day for this resource.
 	    </#if>
 		</p>
-		</div>
-		    
+	</div>
+	<hr />	    
     <@unapiLink resource_ />
     <@resourceCollections />
     <@additionalInformation resource_ />

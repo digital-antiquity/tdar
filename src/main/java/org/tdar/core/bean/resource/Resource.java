@@ -734,6 +734,13 @@ public class Resource extends JsonModel.Base implements Persistable,
         return getLatitudeLongitudeBoxes();
     }
 
+    public LatitudeLongitudeBox getFirstActiveLatitudeLongitudeBox() {
+        if (CollectionUtils.isEmpty(getActiveLatitudeLongitudeBoxes())) {
+            return null;
+        }
+        return getActiveLatitudeLongitudeBoxes().iterator().next();
+    }
+
     public LatitudeLongitudeBox getFirstLatitudeLongitudeBox() {
         if (CollectionUtils.isEmpty(latitudeLongitudeBoxes)) {
             return null;

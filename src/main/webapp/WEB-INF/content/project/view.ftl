@@ -29,7 +29,6 @@
         </div>
     </#if>
 
-</div>
 <#else>
     No resources have been associated with this project.
 </#if>

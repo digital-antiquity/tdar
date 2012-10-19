@@ -32,6 +32,7 @@
 <#if resource.surveyDateBegin??><#assign _surveyDateBegin><@view.shortDate resource.surveyDateBegin /></#assign></#if>
 <#if resource.surveyDateEnd??><#assign _surveyDateEnd><@view.shortDate resource.surveyDateEnd /></#assign></#if>
 <@view.infoResourceBasicInformation>
+<table>
     <@fieldval _label="Object #" _val=resource.monumentNumber!0 _show=resource.monumentNumber??  />
     <@fieldval _val=resource.surveyLocation!""          _show=resource.surveyLocation??  _label="Survey Location" />
     <@fieldval _val=_surveyDateBegin              _show=resource.surveyDateBegin??  _label="Survey Date (start)" />
@@ -46,6 +47,8 @@
     <@fieldval _val=resource.controlDataFilename!""      _show=resource.controlDataFilename??  _label="Control Data Filename" />
     <@fieldval _val=resource.planimetricMapFilename!""      _show=resource.planimetricMapFilename??  _label="Planimetric Map Filename" />
     <@fieldval _val=resource.finalDatasetDescription!"" _show=resource.finalDatasetDescription??  _label="Description of Final Datasets for Archive" />
+</table>
+<hr/>
 </@view.infoResourceBasicInformation>
 
 <#if !resource.sensoryDataScans.isEmpty()>
@@ -119,6 +122,8 @@
 <@fieldval _val=resource.registrationErrorUnits!0   _show=resource.registrationErrorUnits??      _label="Registration Error"   />
 <@fieldval _val=resource.finalRegistrationPoints!0  _show=resource.finalRegistrationPoints??     _label="# Points in File"   />
 </table>
+<hr/>
+
 <h3>Mesh Information</h3>
 
 <h4>Pre-mesh</h4>
@@ -131,6 +136,7 @@
 <@fieldvalbool      _val=resource.premeshSubsampling              _show=resource.premeshSubsampling??                   _label="Subsampling"  />
 <@fieldvalbool      _val=resource.premeshColorEditions            _show=resource.premeshColorEditions??                 _label="Color Editions"  />
 </table>
+
 <h4>Polygonal Mesh Metadata</h4>
 <table>
 <@fieldval          _val=resource.meshDatasetName!""                _show=resource.meshDatasetName??                        _label="Dataset Name"  />
@@ -152,6 +158,7 @@
 <@fieldval          _val=resource.decimatedMeshTriangleCount!0          _show=resource.decimatedMeshTriangleCount??          _label="Decimated Triangle Count"  />
 <@fieldvalbool      _val=resource.rgbPreservedFromOriginal            _show=resource.rgbPreservedFromOriginal??            _label="RGB Color" />
 </table>
+<hr/>
 
 <@view.sharedViewComponents resource />
 </#escape>
