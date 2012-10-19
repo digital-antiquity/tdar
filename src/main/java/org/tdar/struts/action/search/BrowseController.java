@@ -22,6 +22,7 @@ import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
+import org.tdar.core.bean.resource.VersionType;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.QueryBuilder;
@@ -29,6 +30,7 @@ import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.struts.data.ResourceCreatorProxy;
+import org.tdar.struts.data.ResourceUsageStatistic;
 
 /**
  * $Id$
@@ -58,6 +60,8 @@ public class BrowseController extends AbstractLookupController {
     private List<String> alphabet = new ArrayList<String>(Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q",
             "R", "S", "T", "U", "V", "W", "X", "Y", "Z"));
     private List<BrowseYearCountCache> timelineData;
+    private ResourceUsageStatistic totalResourceAccessStatistic;
+    private ResourceUsageStatistic uploadedResourceAccessStatistic;
 
     // private Keyword keyword;
 
@@ -94,6 +98,16 @@ public class BrowseController extends AbstractLookupController {
         handleSearch(qb);
         setSearchDescription(ALL_TDAR_COLLECTIONS);
         setSearchTitle(ALL_TDAR_COLLECTIONS);
+
+        if (isEditor()) {
+            setTotalResourceAccessStatistic(getResourceService().getResourceUsageStatistics(null, null,
+                    Persistable.Base.extractIds(getResourceCollectionService().findAllDirectChildCollections(getId(), null, CollectionType.SHARED)), null,
+                    null, null));
+            setUploadedResourceAccessStatistic(getResourceService().getResourceUsageStatistics(null, null,
+                    Persistable.Base.extractIds(getResourceCollectionService().findAllDirectChildCollections(getId(), null, CollectionType.SHARED)), null,
+                    null, Arrays.asList(VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED_TEXT)));
+        }
+
         return SUCCESS;
     }
 
@@ -112,6 +126,12 @@ public class BrowseController extends AbstractLookupController {
             getAuthenticationAndAuthorizationService().initializeReservedSearchParameters(reservedSearchParameters, getAuthenticatedUser());
             queryBuilder.append(reservedSearchParameters);
 
+            if (isEditor() && creator instanceof Person) {
+                setTotalResourceAccessStatistic(getResourceService().getResourceUsageStatistics(Arrays.asList(getId()), null, null, null, null, null));
+                setUploadedResourceAccessStatistic(getResourceService().getResourceUsageStatistics(Arrays.asList(getId()), null, null, null, null,
+                        Arrays.asList(VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED_TEXT)));
+            }
+
             setMode("browseCreators");
             setSortField(SortOption.RESOURCE_TYPE);
             String descr = String.format("All Resources from %s", creator.getProperName());
@@ -120,6 +140,7 @@ public class BrowseController extends AbstractLookupController {
             setRecordsPerPage(50);
             handleSearch(queryBuilder);
         }
+        // reset fields which can be broken by the searching hydration obfuscating things
         creator = getGenericService().find(Creator.class, getId());
         return SUCCESS;
     }
@@ -196,5 +217,21 @@ public class BrowseController extends AbstractLookupController {
     @Override
     public List<String> getProjections() {
         return ListUtils.EMPTY_LIST;
+    }
+
+    public ResourceUsageStatistic getUploadedResourceAccessStatistic() {
+        return uploadedResourceAccessStatistic;
+    }
+
+    public void setUploadedResourceAccessStatistic(ResourceUsageStatistic uploadedResourceAccessStatistic) {
+        this.uploadedResourceAccessStatistic = uploadedResourceAccessStatistic;
+    }
+
+    public ResourceUsageStatistic getTotalResourceAccessStatistic() {
+        return totalResourceAccessStatistic;
+    }
+
+    public void setTotalResourceAccessStatistic(ResourceUsageStatistic totalResourceAccessStatistic) {
+        this.totalResourceAccessStatistic = totalResourceAccessStatistic;
     }
 }

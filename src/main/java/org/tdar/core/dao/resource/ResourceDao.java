@@ -30,10 +30,12 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.dao.Dao;
 import org.tdar.core.dao.NamedNativeQueries;
 import org.tdar.core.dao.TdarNamedQueries;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.struts.data.ResourceUsageStatistic;
 
 /**
  * $Id$
@@ -263,5 +265,50 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         }
         logger.trace("find random resource end");
         return (List<E>) findAll(ids);
+    }
+
+    public ResourceUsageStatistic getResourceUsageStatistics(List<Long> personId, List<Long> resourceId, List<Long> collectionId, List<Long> projectId,
+            List<Status> statuses, List<VersionType> types) {
+        List<Status> statuses_ = new ArrayList<Status>(Arrays.asList(Status.values()));
+        List<VersionType> types_ = new ArrayList<VersionType>(Arrays.asList(VersionType.values()));
+
+        if (CollectionUtils.isNotEmpty(types)) {
+            types_ = types;
+        }
+
+        if (CollectionUtils.isNotEmpty(statuses)) {
+            statuses_ = statuses;
+        }
+
+        Object[] params = {resourceId, projectId, personId, collectionId, statuses_, types_};
+        logger.info("admin stats [resources: {} projects: {} people: {} collections: {} statuses: {} types: {} ]", params);
+        Query query = null;
+        if (CollectionUtils.isNotEmpty(resourceId)) {
+            query = getCurrentSession().getNamedQuery(SPACE_BY_RESOURCE);
+            query.setParameterList("resourceIds", resourceId);
+        }
+        if (CollectionUtils.isNotEmpty(projectId)) {
+            query = getCurrentSession().getNamedQuery(SPACE_BY_PROJECT);
+            query.setParameterList("projectIds", projectId);
+        }
+        if (CollectionUtils.isNotEmpty(personId)) {
+            query = getCurrentSession().getNamedQuery(SPACE_BY_SUBMITTER);
+            query.setParameterList("submitterIds", personId);
+        }
+        if (CollectionUtils.isNotEmpty(collectionId)) {
+            query = getCurrentSession().getNamedQuery(SPACE_BY_COLLECTION);
+            query.setParameterList("collectionIds", collectionId);
+        }
+        if (query == null) {
+            return null;
+        }
+        query.setParameterList("statuses", statuses_);
+        query.setParameterList("types", types_);
+        List<?> list = query.list();
+        for (Object obj_ : list) {
+            Object[] obj = (Object[]) obj_;
+            return new ResourceUsageStatistic((Number) obj[0], (Number) obj[1], (Number) obj[2]);
+        }
+        return null;
     }
 }

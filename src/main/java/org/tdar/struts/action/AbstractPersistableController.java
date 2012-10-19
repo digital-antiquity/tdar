@@ -30,6 +30,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.auth.InternalTdarRights;
 import org.tdar.struts.WriteableSession;
 import org.tdar.struts.action.resource.AbstractResourceController;
+import org.tdar.struts.data.ResourceUsageStatistic;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -66,6 +67,10 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     public final static String REDIRECT_PROJECT_LIST = "PROJECT_LIST";
     private boolean asyncSave = true;
     private List<AuthorizedUser> authorizedUsers;
+
+    private ResourceUsageStatistic totalResourceAccessStatistic;
+    private ResourceUsageStatistic uploadedResourceAccessStatistic;
+
 
     public static String formatTime(long millis) {
         Date dt = new Date(millis);
@@ -700,4 +705,20 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         this.deletionReason = deletionReason;
     }
 
+
+    public ResourceUsageStatistic getUploadedResourceAccessStatistic() {
+        return uploadedResourceAccessStatistic;
+    }
+
+    public void setUploadedResourceAccessStatistic(ResourceUsageStatistic uploadedResourceAccessStatistic) {
+        this.uploadedResourceAccessStatistic = uploadedResourceAccessStatistic;
+    }
+
+    public ResourceUsageStatistic getTotalResourceAccessStatistic() {
+        return totalResourceAccessStatistic;
+    }
+
+    public void setTotalResourceAccessStatistic(ResourceUsageStatistic totalResourceAccessStatistic) {
+        this.totalResourceAccessStatistic = totalResourceAccessStatistic;
+    }
 }

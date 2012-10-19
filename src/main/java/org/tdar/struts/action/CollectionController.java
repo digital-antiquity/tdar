@@ -20,10 +20,12 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.auth.InternalTdarRights;
 import org.tdar.search.query.QueryFieldNames;
@@ -119,7 +121,7 @@ public class CollectionController extends AbstractPersistableController<Resource
 
         // remove all of the undesirable resources that that the user just tried to add
         rehydratedIncomingResources.removeAll(ineligibleResources);
-//        getResourceCollectionService().findAllChildCollectionsRecursive(persistable, CollectionType.SHARED);
+        // getResourceCollectionService().findAllChildCollectionsRecursive(persistable, CollectionType.SHARED);
         persistable.getResources().addAll(rehydratedIncomingResources);
 
         // add all the deleted resources that were already in the colleciton
@@ -255,12 +257,23 @@ public class CollectionController extends AbstractPersistableController<Resource
         setCollections(findAllChildCollections);
         Collections.sort(collections);
 
+        if (isEditor()) {
+            List<Long> collectionIds = Persistable.Base.extractIds(getResourceCollectionService().findAllDirectChildCollections(getId(), null, CollectionType.SHARED));
+            collectionIds.add(getId());
+            setTotalResourceAccessStatistic(getResourceService().getResourceUsageStatistics(null, null,
+                    collectionIds, null,
+                    null, null));
+            setUploadedResourceAccessStatistic(getResourceService().getResourceUsageStatistics(null, null,
+                    collectionIds, null,
+                    null, Arrays.asList(VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED_TEXT)));
+        }
+
         if (getPersistable() != null) {
-            //FIXME: logic is right here, but this feels "wrong"
-            
+            // FIXME: logic is right here, but this feels "wrong"
+
             // if this collection is public, it will appear in a resource's public collection id list, otherwise it'll be in the shared collection id list
-//            String collectionListFieldName = getPersistable().isVisible() ? QueryFieldNames.RESOURCE_COLLECTION_PUBLIC_IDS
-//                    : QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS;
+            // String collectionListFieldName = getPersistable().isVisible() ? QueryFieldNames.RESOURCE_COLLECTION_PUBLIC_IDS
+            // : QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS;
 
             // the visibilty fence should take care of visible vs. shared above
             ResourceQueryBuilder qb = getSearchService().buildResourceContainedInSearch(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS,

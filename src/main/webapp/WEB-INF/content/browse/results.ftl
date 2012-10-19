@@ -1,5 +1,6 @@
 <#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
+<#import "/WEB-INF/macros/resource/common.ftl" as common>
 <#import "/WEB-INF/macros/resource/list-macros.ftl" as list>
 <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
 <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
@@ -68,6 +69,9 @@
                 </td>
                 </tr>
                 </table>
+
+				<@common.resourceUsageInfo />
+
             </#if>
 <br/>        
         </#if>

@@ -33,7 +33,6 @@ import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.LicenseType;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -52,6 +51,7 @@ import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.XmlService;
 import org.tdar.search.geosearch.GeoSearchService;
+import org.tdar.struts.data.ResourceUsageStatistic;
 
 @Service
 public class ResourceService extends GenericService {
@@ -243,7 +243,7 @@ public class ResourceService extends GenericService {
             current.clear();
         }
 
-//        incoming = getDao().merge(incoming);
+        // incoming = getDao().merge(incoming);
         // assume everything that's incoming is valid or deduped and tied back into
         // tDAR entities/beans
         logger.debug("Current Collection of {}s ({}) : {} ", new Object[] { cls.getSimpleName(), current.size(), current });
@@ -254,11 +254,11 @@ public class ResourceService extends GenericService {
         // executing the remove properly. remove will even report that it's successful if you call "clear()" on
         // the collection first.
 
-//        Collection<H> retainAll = CollectionUtils.retainAll(current, incoming);
-//        current.clear();
-//        current.addAll(retainAll);
+        // Collection<H> retainAll = CollectionUtils.retainAll(current, incoming);
+        // current.clear();
+        // current.addAll(retainAll);
         current.retainAll(incoming);
-        
+
         if (!CollectionUtils.isEmpty(incoming)) {
             logger.debug("Incoming Collection of {}s ({})  : {} ", new Object[] { cls.getSimpleName(), incoming.size(), incoming });
             Iterator<H> incomingIterator = incoming.iterator();
@@ -351,9 +351,9 @@ public class ResourceService extends GenericService {
                     for (AuthorizedUser proxyAuthorizedUser : collection.getAuthorizedUsers()) {
                         AuthorizedUser newAuthorizedUser = new AuthorizedUser(proxyAuthorizedUser.getUser(),
                                 proxyAuthorizedUser.getGeneralPermission());
-//                        newAuthorizedUser.setResourceCollection(newInternal);
+                        // newAuthorizedUser.setResourceCollection(newInternal);
                         newInternal.getAuthorizedUsers().add(newAuthorizedUser);
-//                        getDao().save(newAuthorizedUser);
+                        // getDao().save(newAuthorizedUser);
                     }
                     resource.getResourceCollections().add(newInternal);
                     newInternal.getResources().add(resource);
@@ -424,4 +424,9 @@ public class ResourceService extends GenericService {
         return targetCollection;
     }
 
+    @Transactional
+    public ResourceUsageStatistic getResourceUsageStatistics(List<Long> personId, List<Long> resourceId, List<Long> collectionId, List<Long> projectId,
+            List<Status> statuses, List<VersionType> types) {
+        return datasetDao.getResourceUsageStatistics(personId, resourceId, collectionId, projectId, statuses, types);
+    }
 }

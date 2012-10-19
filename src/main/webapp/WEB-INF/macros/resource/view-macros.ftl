@@ -362,8 +362,11 @@ No categories or subcategories specified.
   <#if sessionData?? && sessionData.authenticated>
   <hr>
 <h2>Administrative Information</h2>
+
+	<@resourceUsageInfo />
+
   <table cellspacing="1" cellpadding="1" border="0">
-    <tr><td nowrap><b>Created by:</b></td><td>${resource.submitter.properName} on ${resource.dateCreated}</td></tr>
+    <tr><td nowrap><b>Created by:</b></td><td><a href="<@s.url value="/browse/creators/${resource.submitter.id?c}"/>">${resource.submitter.properName}</a> on ${resource.dateCreated}</td></tr>
 <#if administrator>
 <tr>
 <td nowrap><b>Status:</b></td>
@@ -372,7 +375,7 @@ No categories or subcategories specified.
 </#if>
 
   <#if resource.updatedBy??>
-    <tr><td nowrap><b>Last Updated by:</b></td><td>${resource.updatedBy.properName!""} on ${resource.dateUpdated?date!""} </td></tr>
+    <tr><td nowrap><b>Last Updated by:</b></td><td><a href="<@s.url value="/browse/creators/${resource.updatedBy.id?c}"/>">${resource.updatedBy.properName!""}</a> on ${resource.dateUpdated?date!""} </td></tr>
 </#if>
     <tr><td nowrap><b>Viewed:</b></td><td>${resource.transientAccessCount!"0"} time(s)</td></tr>
   </table>

@@ -37,12 +37,14 @@ import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
+import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.GenericKeywordService;
@@ -168,6 +170,18 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         loadBasicMetadata();
         loadCustomMetadata();
         getResourceService().incrementAccessCounter(getPersistable());
+        if (isEditor()) {
+            if (getPersistableClass().equals(Project.class)) {
+                setTotalResourceAccessStatistic(getResourceService().getResourceUsageStatistics(null, null, null, Arrays.asList(getId()), null, null));
+                setUploadedResourceAccessStatistic(getResourceService().getResourceUsageStatistics(null, null, null, Arrays.asList(getId()), null,
+                        Arrays.asList(VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED_TEXT)));
+            } else {
+                setTotalResourceAccessStatistic(getResourceService().getResourceUsageStatistics(null, Arrays.asList(getId()), null, null, null, null));
+                setUploadedResourceAccessStatistic(getResourceService().getResourceUsageStatistics(null, Arrays.asList(getId()), null, null, null,
+                        Arrays.asList(VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED_TEXT)));
+            }
+        }
+
         return SUCCESS;
     }
 

@@ -270,6 +270,11 @@
                 " where res.submitter.id in (:submitterIds) and res.status in (:statuses) and irfv.fileVersionType in (:types)"
         ),
         @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.SPACE_BY_RESOURCE,
+                query = "select sum( irfv.fileLength ) as len, count(irfv), count(res) from InformationResource res left join res.informationResourceFiles as irf left join irf.informationResourceFileVersions as irfv" +
+                " where res.id in (:resourceIds) and res.status in (:statuses) and irfv.fileVersionType in (:types)"
+        ),
+        @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.SPACE_BY_PROJECT,
                 query = "select sum( irfv.fileLength ) as len, count(irfv), count(res) from InformationResource res left join res.informationResourceFiles as irf left join irf.informationResourceFileVersions as irfv" +
                 " where res.project.id in (:projectIds) and res.status in (:statuses) and irfv.fileVersionType in (:types)"

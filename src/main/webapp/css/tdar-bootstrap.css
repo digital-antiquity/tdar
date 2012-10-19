@@ -159,7 +159,7 @@ div.map {
 	height: 304px !Important;
 }
 
-.sorting_1 input[type='checkbox'] {
+#cbCheckAllToggle, .sorting_1 input[type='checkbox'] {
 	margin-right: 10px !Important;
 	margin-left: 10px !Important;
 }
