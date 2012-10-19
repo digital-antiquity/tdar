@@ -28,8 +28,9 @@ vim:sts=2:sw=2:filetype=jsp
 </div>
 </#if>
 <h1>Login to ${siteAcronym}</h1>
+<div class="well">
 <@nav.loginForm/>
-
+</div>
 <#include "/${themeDir}/notice.ftl">
 
 </body>

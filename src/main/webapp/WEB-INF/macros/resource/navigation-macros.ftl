@@ -36,7 +36,7 @@ $(document).ready(function() {
 });
 </script>
 
-<@s.form id='loginForm' method="post" action="%{#request.contextPath}/login/process" cssClass="well form-horizontal">
+<@s.form id='loginForm' method="post" action="%{#request.contextPath}/login/process" cssClass="form-horizontal">
     <input type="hidden" name="url" value="${Parameters.url!''}"/>
     <@s.textfield spellcheck="false" id='loginUsername' name="loginUsername" label="Username" cssClass="required" />
     <@s.password id='loginPassword' name="loginPassword" label="Password" cssClass="required" />
