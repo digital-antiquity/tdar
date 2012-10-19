@@ -218,14 +218,14 @@
 </#macro>
 
 
-<#macro basicPagination label="Records">
+<#macro basicPagination label="Records" showIfOnePage=false>
 <#if (totalRecords > 0 && numPages > 1)>
   <div class="glide">
     <div id="recordTotal">${label} ${firstRec} - ${lastRec} of ${totalRecords}
     </div> 
     <@pagination ""/> 
   </div>
-<#elseif (totalRecords > 0)>
+<#elseif (totalRecords > 0 && showIfOnePage)>
   <div class="glide">
   Displaying ${label} ${firstRec} - ${totalRecords} of ${totalRecords}
   </div>

@@ -81,7 +81,8 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
     @Column(name = "total_time")
     private Long totalTime;
 
-    private Long size;
+    @Column(name = "size")
+    private Long fileLength;
 
     private String path;
 
@@ -256,12 +257,12 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
         this.height = height;
     }
 
-    public Long getSize() {
-        return size;
+    public Long getFileLength() {
+        return fileLength;
     }
 
-    public void setSize(Long size) {
-        this.size = size;
+    public void setFileLength(Long size) {
+        this.fileLength = size;
     }
 
     public String getPath() {

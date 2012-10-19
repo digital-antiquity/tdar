@@ -14,9 +14,7 @@
 <#if creator??>
     <#if creator.institution??>
     <a href="<@s.url value="${creator.institution.id?c}"/>">${creator.institution}</a>
-    <br/>
     </#if>
-    <br/>
     <p>${creator.description!''}</p>
     <br/>
         <#if creator.creatorType == 'PERSON'>
@@ -71,12 +69,11 @@
                 </tr>
                 </table>
             </#if>
-        
+<br/>        
         </#if>
-<br/>    
 </#if>
 
-<@search.basicPagination "Records"/>
+<@search.basicPagination label="Records" />
 
 <div class="glide">
 <#if results??>

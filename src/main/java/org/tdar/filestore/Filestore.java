@@ -150,8 +150,8 @@ public interface Filestore {
             File parent = getParentDirectory(new File(relative));
             if (StringUtils.isEmpty(version.getPath()))
                 version.setPath(parent.getPath());
-            if (version.getSize() == null)
-                version.setSize(file.length());
+            if (version.getFileLength() == null)
+                version.setFileLength(file.length());
             if (StringUtils.isEmpty(version.getChecksum())) {
                 MessageDigest digest = createDigest(file);
                 version.setChecksumType(digest.getAlgorithm());
