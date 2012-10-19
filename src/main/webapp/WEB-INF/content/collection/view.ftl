@@ -14,6 +14,7 @@
 </head>
 <body>
 <@view.toolbar "collection" "view" />
+<h1>${resourceCollection.name!"untitled collection"}</h1>
 <#if resourceCollection.visible || viewable>
 <!-- Don't show header if header doesn't exist -->
 <#if resourceCollection.parent?? || resourceCollection.description?? || collections??>

@@ -30,7 +30,7 @@ public class CreatorQueryPart<C extends Creator> extends AbstractHydrateableQuer
                         this.getFieldValues().add((C) rc.getCreator());
                     }
                 } else {
-                    throw new TdarRecoverableRuntimeException(String.format("Please use autocmplete when looking for creator %s", rc.getCreator()));
+                    throw new TdarRecoverableRuntimeException(String.format("Please use autocomplete when looking for creator %s", rc.getCreator()));
                 }
             } catch (NullPointerException npe) {
                 logger.trace("NPE in creator construction, skipping...", npe);
