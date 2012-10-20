@@ -8,8 +8,8 @@
 
 </head>
 <body class="resource">
-<@edit.subNavMenu />
 <@edit.sidebar />
+<@edit.subNavMenu />
 <@s.form id='resourceMetadataForm' method='post' enctype='multipart/form-data' action='save'  cssClass="form-horizontal">
 
 
@@ -44,6 +44,7 @@
 </@edit.basicInformation>
 
 <@edit.allCreators "Authors / Editors" authorshipProxies 'authorship' false />
+
 <@edit.citationInfo "document">
 
 

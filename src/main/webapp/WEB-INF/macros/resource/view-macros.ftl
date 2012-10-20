@@ -348,7 +348,6 @@ No categories or subcategories specified.
 
 <#macro accessRights>
   <#if sessionData?? && sessionData.authenticated>
-  <hr>
 <h2>Administrative Information</h2>
 
 	<@resourceUsageInfo />
@@ -648,24 +647,27 @@ No categories or subcategories specified.
         <meta name="citation_pdf_url" content="<@s.url value='/filestore/${irfile.latestPDF.id?c}/get'/>">
         </#if>
     </#list>
-      <#if resource.resourceType == 'DOCUMENT'>
-      <#if document.documentType == 'CONFERENCE_PRESENTATION' && document.publisher??>
-        <meta name="citation_conference_title" content="${document.publisher.name?html}">
-      <#elseif document.documentType == 'JOURNAL_ARTICLE' && document.journalName??>
-        <meta name="citation_journal_title" content="${document.journalName?html}">
-      </#if>
-        <#if document.volume?has_content><meta name="citation_volume" content="${document.volume}"></#if>
+    <#assign publisherFieldName = "DC.publisher" />
+    <#if resource.resourceType == 'DOCUMENT'>
+	     <#if document.documentType == 'CONFERENCE_PRESENTATION'>
+	       <#assign publisherFieldName="citation_conference_title" />
+	     <#elseif document.documentType == 'JOURNAL_ARTICLE' && document.journalName??>
+	        <meta name="citation_journal_title" content="${document.journalName?html}">
+	    </#if>
+	    <#if document.volume?has_content><meta name="citation_volume" content="${document.volume}"></#if>
         <#if document.journalNumber?has_content><meta name="citation_issue" content="${document.journalNumber}"></#if>
         <#if document.issn?has_content><meta name="citation_issn" content="${document.issn}"></#if>
         <#if document.isbn?has_content><meta name="citation_isbn" content="${document.isbn}"></#if>
         <#if document.startPage?has_content><meta name="citation_firstpage" content="${document.startPage}"></#if>
         <#if document.endPage?has_content><meta name="citation_lastpage" content="${document.endPage}"></#if>
         <#if document.documentType == 'THESIS'>
-        <meta name="citation_dissertation_institution" content="${document.publisher.name?html}" >
-      <#elseif (document.documentType != 'CONFERENCE_PRESENTATION') && document.publisher?has_content>
-        <meta name="DC.publisher" content="${document.publisher.name?html}" >
-      </#if>
+		      <#assign publisherFieldName="citation_dissertation_institution" />
+       </#if>
     </#if>
+   <#if resource.publisher?has_content>
+     <meta name="${publisherFieldName}" content="${resource.publisher.name?html}" >
+   </#if>
+
 <#else>
     <!--required google scholar fields not available - skipping meta tags -->
 </#if>

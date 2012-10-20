@@ -9,8 +9,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <#include "navigation-macros.ftl">
 
 <#macro basicInformation itemTypeLabel="file" itemPrefix="resource" isBulk=false>
-<div class="well" id="basicInformationSection">
-    <legend>Basic Information</legend>
+<div class="well-alt" id="basicInformationSection">
+    <h2>Basic Information</h2>
   <#if resource.id?? &&  resource.id != -1>
       <@s.hidden name="id"  value="${resource.id?c}" />
   </#if>
@@ -65,19 +65,19 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </#macro>
 
 <#macro abstractSection itemPrefix="resource">
-<div class="well">
-    <legend>Abstract / Description</legend>
+<div class="well-alt">
+    <h2>Abstract / Description</h2>
     <span id="t-abstract" class="clear"
         tiplabel="Abstract / Description"
         tooltipcontent="Short description of the ${resource.resourceType.label}."></span>
-    <@s.textarea id='resourceDescription'  name='${itemPrefix}.description' cssClass='required resizable span7' required=true title="A description is required" />
+    <@s.textarea id='resourceDescription'  name='${itemPrefix}.description' cssClass='required resizable span6' required=true title="A description is required" />
     
 </div>
 </#macro>
 
 <#macro organizeResourceSection>
-    <div class="well" id="organizeSection">
-        <legend>${siteAcronym} Collections &amp; Project</legend>
+    <div class="well-alt" id="organizeSection">
+        <h2>${siteAcronym} Collections &amp; Project</h2>
         <h4>Add to a Collection</h4>
          <@edit.resourceCollectionSection />
         
@@ -167,8 +167,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 
 <#macro spatialContext showInherited=true>
-<div class="well" id="spatialSection">
-    <legend>Spatial Terms</legend>
+<div class="well-alt" id="spatialSection">
+    <h2>Spatial Terms</h2>
     <@inheritsection checkboxId="cbInheritingSpatialInformation" name='resource.inheritingSpatialInformation' showInherited=showInherited />
     <div id="divSpatialInformation">
         <div tiplabel="Spatial Terms: Geographic" tooltipcontent="Keyword list: Geographic terms relevant to the document, e.g. &quot;Death Valley&quot; or &quot;Kauai&quot;." ></div>
@@ -255,17 +255,17 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 
 <#macro resourceProvider showInherited=true>
-<div class="well" id="divResourceProvider" tiplabel="Resource Provider" tooltipcontent="The institution authorizing ${siteAcronym} to ingest the resource for the purpose of preservation and access.">
-    <legend>Institution Authorizing Upload of this ${resource.resourceType.label}</legend>
-    <@s.textfield label='Institution' name='resourceProviderInstitutionName' id='txtResourceProviderInstitution' cssClass="institution input-xlarge" size='40'/>
+<div class="well-alt" id="divResourceProvider" tiplabel="Resource Provider" tooltipcontent="The institution authorizing ${siteAcronym} to ingest the resource for the purpose of preservation and access.">
+    <h2>Institution Authorizing Upload of this ${resource.resourceType.label}</h2>
+    <@s.textfield label='Institution' name='resourceProviderInstitutionName' id='txtResourceProviderInstitution' cssClass="institution input-xxlarge" size='40'/>
     <br/>
 </div>
 </#macro>
 
 
 <#macro temporalContext showInherited=true>
-<div class="well" id="temporalSection">
-    <legend>Temporal Coverage</legend>
+<div class="well-alt" id="temporalSection">
+    <h2>Temporal Coverage</h2>
     <@inheritsection checkboxId="cbInheritingTemporalInformation" name='resource.inheritingTemporalInformation' showInherited=showInherited  />
     <div  id="divTemporalInformation">
         <div tiplabel="Temporal Term" tooltipcontent="Keyword list: Temporal terms relevant to the document, e.g. &quot;Pueblo IV&quot; or &quot;Late Archaic&quot;."></div>
@@ -293,10 +293,10 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 <#macro generalKeywords showInherited=true>
 
-<div class="well" 
+<div class="well-alt" 
     tiplabel="General Keywords"
     tooltipcontent="Keyword list: Select the artifact types discussed in the document.">   
-    <legend>General Keywords</legend>
+    <h2>General Keywords</h2>
     <@inheritsection checkboxId="cbInheritingOtherInformation" name='resource.inheritingOtherInformation'  showInherited=showInherited />
     <div id="divOtherInformation">
         <@keywordRows "Keyword" otherKeywords 'otherKeywords' />
@@ -317,8 +317,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 
 <#macro sharedUploadFile divTitle="Upload">
-<div class="well" id="uploadSection">
-    <legend>${divTitle}</legend>
+<div class="well-alt" id="uploadSection">
+    <h2>${divTitle}</h2>
         <div class='fileupload-content'>
             <#nested />
             <#-- XXX: verify logic for rendering this -->
@@ -354,8 +354,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </#macro>
 
 <#macro siteKeywords showInherited=true divTitle="Site Information">
-<div class="well" id="siteSection">
-    <legend>${divTitle}</legend>
+<div class="well-alt" id="siteSection">
+    <h2>${divTitle}</h2>
     <@inheritsection checkboxId='cbInheritingSiteInformation' name='resource.inheritingSiteInformation'  showInherited=showInherited />
     <div id="divSiteInformation">
         <div class="hidden" id="siteinfohelp">
@@ -378,27 +378,27 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 
 <#macro materialTypes showInherited=true>
-<div class="well">
+<div class="well-alt">
     <div class="hidden" id="materialtypehelp">
         Keyword list: Select the artifact types discussed in the document.<a href="${materialTypesHelpUrl}">view all material types</a>
     </div>
-    <legend>Material Types</legend>
+    <h2>Material Types</h2>
     <@inheritsection checkboxId='cbInheritingMaterialInformation' name='resource.inheritingMaterialInformation'  showInherited=showInherited />
     <div id="divMaterialInformation">
         <@s.checkboxlist name='materialKeywordIds' list='allMaterialKeywords' listKey='id' listValue='label' listTitle="definition"  label="Select Type(s)"
-            spanSize="3" numColumns="3" cssClass="smallIndent" />
+            spanSize="2" numColumns="3" cssClass="smallIndent" />
     </div>      
 </div>
 
 </#macro>
 
 <#macro culturalTerms showInherited=true inline=false>
-<div  <#if !inline> class="well" </#if>>
+<div  <#if !inline> class="well-alt" </#if>>
     <div id="culturehelp" class="hidden">
         Keyword list: Select the archaeological &quot;cultures&quot; discussed in the document. Use the Other field if needed. 
         <a href="${culturalTermsHelpUrl}">view all controlled terms</a>
     </div>
-    <legend>Cultural Terms<legend>
+    <h2>Cultural Terms<h2>
     <@inheritsection checkboxId="cbInheritingCulturalInformation" name='resource.inheritingCulturalInformation'  showInherited=showInherited />
     <div id="divCulturalInformation">
         <div class="control-group">
@@ -424,11 +424,11 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </#macro>
 
 <#macro investigationTypes showInherited=true >
-<div class="well" tiplabel="Investigation Types" tooltipcontent="#investigationtypehelp" id="investigationSection">
-    <legend>Investigation Types</legend>
+<div class="well-alt" tiplabel="Investigation Types" tooltipcontent="#investigationtypehelp" id="investigationSection">
+    <h2>Investigation Types</h2>
     <@inheritsection checkboxId='cbInheritingInvestigationInformation' name='resource.inheritingInvestigationInformation'  showInherited=showInherited />
     <div id="divInvestigationInformation">
-        <@s.checkboxlist name='investigationTypeIds' list='allInvestigationTypes' listKey='id' listValue='label' numColumns="2" cssClass="smallIndent" 
+        <@s.checkboxlist name='investigationTypeIds' list='allInvestigationTypes' listKey='id' listValue='label' numColumns="2" spanSize="3" 
             label="Select Type(s)" listTitle="definition" />
     </div>
 </div>
@@ -454,8 +454,8 @@ The form will check for matches in the ${siteAcronym} database and populate the 
 </dl>
 </div>
 
-<div id="divAccessRights" class="well" tooltipcontent="${tipsSelector}">
-<legend><a name="accessRights"></a>Access Rights</legend>
+<div id="divAccessRights" class="well-alt" tooltipcontent="${tipsSelector}">
+<h2><a name="accessRights"></a>Access Rights</h2>
 <h4>Users who can view or modify this resource</h4>
 
 <div id="accessRightsRecords" class="repeatLastRow" data-addAnother="add another user">
@@ -485,10 +485,11 @@ The form will check for matches in the ${siteAcronym} database and populate the 
 <#local disabled =  bDisabled?string />
 
     <div id='authorizedUserRow_${authorizedUser_index}_' class="repeat-row">
+
         <@s.hidden name='authorizedUsers[${authorizedUser_index}].user.id' value='${(authorizedUser.user.id!-1)?c}' id="authorizedUserId__id_${authorizedUser_index}_"  cssClass="validIdRequired" onchange="this.valid()"  autocompleteParentElement="#authorizedUserRow_${authorizedUser_index}_"  />
-        <!-- FIXME -- is this needed -->
+    <#if bDisabled>
         <@s.hidden name="authorizedUsers[${authorizedUser_index}].generalPermission" value="${authorizedUser.generalPermission!'VIEW_ALL'}"/>
-        
+	</#if>        
         <div class="controls controls-row">
             <@s.textfield theme="tdar" cssClass="span2 userAutoComplete" placeholder="Last Name"  readonly="${disabled}" autocompleteParentElement="#authorizedUserRow_${authorizedUser_index}_"
                 autocompleteIdElement="#authorizedUserId__id_${authorizedUser_index}_" autocompleteName="lastName" autocomplete="off"
@@ -497,7 +498,7 @@ The form will check for matches in the ${siteAcronym} database and populate the 
                 name="authorizedUsers[${authorizedUser_index}].user.firstName" maxlength="255" autocompleteName="firstName"
                 autocompleteIdElement="#authorizedUserId__id_${authorizedUser_index}_" 
                 autocompleteParentElement="#authorizedUserRow_${authorizedUser_index}_"  />
-            <@s.textfield theme="tdar" cssClass="span3 userAutoComplete" placeholder="Email (optional)" readonly="${disabled}" autocomplete="off"
+            <@s.textfield theme="tdar" cssClass="span2 userAutoComplete" placeholder="Email (optional)" readonly="${disabled}" autocomplete="off"
                 autocompleteIdElement="#authorizedUserId__id_${authorizedUser_index}_" autocompleteName="email" autocompleteParentElement="#authorizedUserRow_${authorizedUser_index}_"
                 name="authorizedUsers[${authorizedUser_index}].user.email" maxlength="255"/>
           
@@ -506,7 +507,7 @@ The form will check for matches in the ${siteAcronym} database and populate the 
   
    
         <div class="controls controls-row">
-        <@s.textfield theme="tdar" cssClass="span4 userAutoComplete" placeholder="Institution Name (Optional)" readonly="${disabled}" autocomplete="off"
+        <@s.textfield theme="tdar" cssClass="span3 userAutoComplete" placeholder="Institution Name (Optional)" readonly="${disabled}" autocomplete="off"
             autocompleteIdElement="#authorizedUserId__id_${authorizedUser_index}_" 
             autocompleteName="institution" 
             autocompleteParentElement="#authorizedUserRow_${authorizedUser_index}_"
@@ -651,7 +652,7 @@ The form will check for matches in the ${siteAcronym} database and populate the 
         </pre>
     </#if>
     </div>
-    <@s.textarea label='${typeLabel}' labelposition='top' id='fileInputTextArea' name='fileTextInput' rows="5" cssClass='resizable input-xlarge' />
+    <@s.textarea label='${typeLabel}' labelposition='top' id='fileInputTextArea' name='fileTextInput' rows="5" cssClass='resizable input-xxlarge' />
     </div>
 </div>
 
@@ -737,8 +738,8 @@ $(function(){
 <#local _relatedComparativeCollections = relatedComparativeCollections />
 <#if _sourceCollections.empty><#local _sourceCollections = [blankSourceCollection] /></#if>
 <#if _relatedComparativeCollections.empty><#local _relatedComparativeCollections = [blankRelatedComparativeCollection] /></#if>
-<div class="well" id="relatedCollectionsSectionGlide">
-    <legend>Museum or Archive Collections</legend>
+<div class="well-alt" id="relatedCollectionsSectionGlide">
+    <h2>Museum or Archive Collections</h2>
     <@inheritsection checkboxId="cbInheritingCollectionInformation" name='resource.inheritingCollectionInformation' showInherited=showInherited />
     <div id="relatedCollectionsSection" >
         <div id="divSourceCollectionControl" class="control-group">
@@ -779,7 +780,7 @@ $(function(){
 <#local plural = "${prefix}s" />
     <div class="controls control-row">
     <@s.hidden name="${plural}[${index}].id" />
-    <@s.textfield theme="tdar" name='${plural}[${index}].text' cssClass="input-xlarge" /></td>
+    <@s.textarea theme="tdar" name='${plural}[${index}].text' cssClass="input-xxlarge" /></td>
     <@edit.clearDeleteButton id="${prefix}Row" />
     </div>
 </#macro>
@@ -817,14 +818,14 @@ $(function(){
 
 
 <#macro resourceNoteSection showInherited=true>
-<div class="well" id="resourceNoteSectionGlide">
+<div class="well-alt" id="resourceNoteSectionGlide">
     <#local _resourceNotes = resourceNotes />
     <#if _resourceNotes.empty >
     <#local _resourceNotes = [blankResourceNote] />
     </#if>
     <div class="hidden" tiplabel="Notes"  tooltipcontent="Use this section to append any notes that may help clarify certain aspects of the resource.  For example, 
     a &quot;Redaction Note&quot; may be added to describe the rationale for certain redactions in a document."></div>
-    <legend>Notes</legend>
+    <h2>Notes</h2>
     <@inheritsection checkboxId="cbInheritingNoteInformation" name='resource.inheritingNoteInformation' showInherited=showInherited />
     <div id="resourceNoteSection" class="control-group repeatLastRow">
         <label class="control-label">Type / Contents</label>
@@ -843,7 +844,7 @@ $(function(){
           <@clearDeleteButton id="resourceNoteRow" />
           </div>
           <div class="controls">
-              <@s.textarea theme="tdar" name='resourceNotes[${note_index}].note' placeholder="enter note contents" cssClass='resizable input-xlarge'  rows='3' maxlength='5000' />
+              <@s.textarea theme="tdar" name='resourceNotes[${note_index}].note' placeholder="enter note contents" cssClass='resizable input-xxlarge'  rows='3' maxlength='5000' />
           </div>
       </div>
 </#macro>
@@ -898,10 +899,10 @@ $(function(){
 
 <#macro resourceCreators sectionTitle proxies prefix inline=false showInherited=false>
 <#if !inline>
-<div class="well" tiplabel="${sectionTitle}" 
+<div class="well-alt" tiplabel="${sectionTitle}" 
 	id="${prefix}Section"
 	tooltipcontent="Use these fields to properly credit individuals and institutions for their contribution to the resource. Use the '+' sign to add fields for either persons or institutions, and use the drop-down menu to select roles">
-    <legend>${sectionTitle}</legend>
+    <h2>${sectionTitle}</h2>
 <#else>
 <label class="toplabel">${sectionTitle}</label> <br />
 </#if>
@@ -999,7 +1000,7 @@ $(function(){
     <#if _resourceAnnotations.empty>
     <#local _resourceAnnotations = [blankResourceAnnotation] />
     </#if>
-    <div class="well" id="divIdentifiersGlide" tiplabel="${resource.resourceType.label} Specific or Agency Identifiers" tooltipcontent="#divIdentifiersTip">
+    <div class="well-alt" id="divIdentifiersGlide" tiplabel="${resource.resourceType.label} Specific or Agency Identifiers" tooltipcontent="#divIdentifiersTip">
         <div id="divIdentifiersTip" class="hidden">
             <div>
                 <dl>
@@ -1010,7 +1011,7 @@ $(function(){
                 </dl> 
             </div>
         </div>
-        <legend>${resource.resourceType.label} Specific or Agency Identifiers</legend>
+        <h2>${resource.resourceType.label} Specific or Agency Identifiers</h2>
         <@inheritsection checkboxId="cbInheritingIdentifierInformation" name='resource.inheritingIdentifierInformation' showInherited=showInherited />
         <div id="divIdentifiers">
         <table id="resourceAnnotationsTable" class="table repeatLastRow" addAnother="add another identifier" >
@@ -1032,7 +1033,7 @@ $(function(){
             <label class="control-label">Name / Value</label>
                 <div class="controls controls-row ">
                     <@s.textfield theme="tdar" placeholder="Name" cssClass="annotationAutoComplete span3" name='resourceAnnotations[${annotation_index}].resourceAnnotationKey.key' value='${annotation.resourceAnnotationKey.key!""}'  autocomplete="off" />
-                    <@s.textfield theme="tdar" placeholder="Value" cssClass="span4" name='resourceAnnotations[${annotation_index}].value'  value='${annotation.value!""}' />
+                    <@s.textfield theme="tdar" placeholder="Value" cssClass="span3" name='resourceAnnotations[${annotation_index}].value'  value='${annotation.value!""}' />
                 </div>
             </div>            
         </td>
@@ -1068,9 +1069,9 @@ jquery validation hooks?)
 
 
 <#macro asyncFileUpload uploadLabel="Attach Files" showMultiple=false divTitle="Upload" divId="divFileUpload" >
-<div id="${divId}" class="well">
+<div id="${divId}" class="well-alt">
     <@s.hidden name="ticketId" id="ticketId" />
-    <legend>${uploadLabel}</legend>
+    <h2>${uploadLabel}</h2>
     <div class="row fileupload-buttonbar">
         <div class="span2">
             <!-- The fileinput-button span is used to style the file input field as button -->
@@ -1188,8 +1189,8 @@ jquery validation hooks?)
 
 <#macro citationInfo prefix="resource" includeAbstract=true >
      <#if !resource.resourceType.codingSheet && !resource.resourceType.ontology>
-<div id="citationInformation" class="well"> 
-    <legend>Additional Citation Information</legend>
+<div id="citationInformation" class="well-alt"> 
+    <h2>Additional Citation Information</h2>
 
         <span id="publisher-hints" 
             book="Publisher" 
