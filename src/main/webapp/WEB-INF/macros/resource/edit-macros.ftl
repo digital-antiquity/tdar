@@ -17,8 +17,9 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
   
   <@s.hidden name="startTime" value="${currentTime?c}" />
 
-        <div id="spanStatus" tooltipcontent="#spanStatusToolTip"></div>   
+        <div id="spanStatus" tooltipcontent="#spanStatusToolTip">   
         <@s.select label="Status" value="resource.status" name='status'  emptyOption='false' listValue='label' list='%{statuses}'/>
+     	</div>
         <#if resource.resourceType.project><span class="help-block">Note: project status does not affect status of child resources.</span></#if>
     
         <#-- TODO: use bootstrap tooltips (need to decide how to toggle. click? hover?) -->
@@ -44,11 +45,11 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <#else>
     <span
     tiplabel="Title"
-    tooltipcontent="Enter the entire title, including sub-title, if appropriate."></span>
+    tooltipcontent="Enter the entire title, including sub-title, if appropriate.">
    
     <@s.textfield label="Title" id="resourceRegistrationTitle"  
-        title="A title is required for all ${itemTypeLabel}s" name='${itemPrefix}.title' cssClass="required descriptiveTitle input-xlarge" required=true maxlength="512"/>
-
+        title="A title is required for all ${itemTypeLabel}s" name='${itemPrefix}.title' cssClass="required descriptiveTitle input-xxlarge" required=true maxlength="512"/>
+</span>
     <#if resource.resourceType != 'PROJECT'>
     <span tiplabel="Year" tooltipcontent="Four digit year, e.g. 1966 or 2005."></span>
     <#local dateVal = ""/>
@@ -206,28 +207,28 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                 <td></td>
                 <td>
                 <@s.textfield  theme="simple" name='latitudeLongitudeBoxes[0].maximumLatitude' id='maxy' size="14" cssClass="float latLong ne-lat" title="Please enter a valid Maximum Latitude" />
-                <input type="text"  id='d_maxy'  watermark="Latitude (max)" onChange='processLatLong(this)' class="ne-lat-display span2" />
+                <input type="text"  id='d_maxy'  placeholder="Latitude (max)" onChange='processLatLong(this)' class="ne-lat-display span2" />
                 </td>
                 <td></td>
                 </tr>
                 <tr>
                 <td style="width:33%;text-align:center">
                     <@s.textfield theme="simple"  name="latitudeLongitudeBoxes[0].minimumLongitude" id='minx' size="14" cssClass="float latLong sw-lng" title="Please enter a valid Minimum Longitude" />
-                    <input type="text"  id='d_minx'  watermark="Longitude (min)"  onChange='processLatLong(this)' class="sw-lng-display span2" />
+                    <input type="text"  id='d_minx'  placeholder="Longitude (min)"  onChange='processLatLong(this)' class="sw-lng-display span2" />
                 </td>
                 <td style="width:33%;text-align:center">
                     <input type="button" id="locate" value="Locate" class="btn locateCoordsButton" />
                 </td>
                 <td style="width:33%;text-align:center">
                     <@s.textfield theme="simple"  name="latitudeLongitudeBoxes[0].maximumLongitude" id='maxx' size="14" cssClass="float latLong ne-lng" title="Please enter a valid Maximum Longitude" />
-                    <input type="text"  id='d_maxx'   watermark="Longitude (max)" onChange='processLatLong(this)' class="ne-lng-display span2" />
+                    <input type="text"  id='d_maxx'   placeholder="Longitude (max)" onChange='processLatLong(this)' class="ne-lng-display span2" />
                 </td>
                 </tr>
                 <tr>
                 <td></td>
                 <td>
                     <@s.textfield theme="simple"  name="latitudeLongitudeBoxes[0].minimumLatitude" id="miny" size="14" cssClass="float latLong sw-lat" title="Please enter a valid Minimum Latitude" /> 
-                    <input type="text" id="d_miny"  watermark="Latitude (min)" onChange='processLatLong(this)' class="sw-lat-display span2" /> 
+                    <input type="text" id="d_miny"  placeholder="Latitude (min)" onChange='processLatLong(this)' class="sw-lat-display span2" /> 
                 </td>
                 <td></td>
                 </tr>           
@@ -417,7 +418,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <#macro uncontrolledCultureKeywordRow uncontrolledCultureKeyword_index=0>
             <tr id='uncontrolledCultureKeywordRow_${uncontrolledCultureKeyword_index}_'>
             <td>
-                <@s.textfield name='uncontrolledCultureKeywords[${uncontrolledCultureKeyword_index}]' cssClass='longfield cultureKeywordAutocomplete' autocomplete="off" />
+                <@s.textfield name='uncontrolledCultureKeywords[${uncontrolledCultureKeyword_index}]' cssClass=' input-xxlarge cultureKeywordAutocomplete' autocomplete="off" />
                 </td><td><@clearDeleteButton id="uncontrolledCultureKeywordRow" />
             </td>
             </tr>
@@ -948,10 +949,10 @@ $(function(){
             <@s.hidden name="${prefix}Proxies[${proxy_index}].person.id" id="${prefix}person_id${proxy_index}" onchange="this.valid()"  autocompleteParentElement="#${prefix}Row_${proxy_index}_p"  />
             <div class="control-group">
                 <div class="controls controls-row">
-                    <@s.textfield theme="tdar" cssClass="nameAutoComplete span2" watermark="Last Name" placeholder="Last Name" autocomplete="off"
+                    <@s.textfield theme="tdar" cssClass="nameAutoComplete span2" placeholder="Last Name" placeholder="Last Name" autocomplete="off"
                         autocompleteName="lastName" autocompleteIdElement="#${prefix}person_id${proxy_index}" autocompleteParentElement="#${prefix}Row_${proxy_index}_p"
                         name="${prefix}Proxies[${proxy_index}].person.lastName" maxlength="255" /> 
-                    <@s.textfield theme="tdar" cssClass="nameAutoComplete span2" watermark="First Name" placeholder="First Name" autocomplete="off"
+                    <@s.textfield theme="tdar" cssClass="nameAutoComplete span2" placeholder="First Name" placeholder="First Name" autocomplete="off"
                         autocompleteName="firstName" autocompleteIdElement="#${prefix}person_id${proxy_index}" autocompleteParentElement="#${prefix}Row_${proxy_index}_p"
                         name="${prefix}Proxies[${proxy_index}].person.firstName" maxlength="255" />
 	                <@s.select theme="tdar" name="${prefix}Proxies[${proxy_index}].role"  autocomplete="off"
@@ -961,10 +962,10 @@ $(function(){
 	                    />
                 </div>
                 <div class="controls controls-row">
-                <@s.textfield theme="tdar" cssClass="nameAutoComplete span4" watermark="Institution Name (Optional)" placeholder="Institution Name (Optional)" autocomplete="off"
+                <@s.textfield theme="tdar" cssClass="nameAutoComplete span4" placeholder="Institution Name (Optional)" placeholder="Institution Name (Optional)" autocomplete="off"
                      autocompleteName="institution" autocompleteIdElement="#${prefix}person_id${proxy_index}" autocompleteParentElement="#${prefix}Row_${proxy_index}_p"
                     name="${prefix}Proxies[${proxy_index}].person.institution.name" maxlength="255" />
-                    <@s.textfield theme="tdar" cssClass="nameAutoComplete span3" watermark="Email (Optional)" placeholder="Email (Optional)" autocomplete="off"
+                    <@s.textfield theme="tdar" cssClass="nameAutoComplete span3" placeholder="Email (Optional)" placeholder="Email (Optional)" autocomplete="off"
                          autocompleteName="email" autocompleteIdElement="#${prefix}person_id${proxy_index}" autocompleteParentElement="#${prefix}Row_${proxy_index}_p"
                         name="${prefix}Proxies[${proxy_index}].person.email" maxlength="255"/>
                 </div>
@@ -975,7 +976,7 @@ $(function(){
             <@s.hidden name="${prefix}Proxies[${proxy_index}].institution.id" id="${prefix}institution_id${proxy_index}"/>
             <div class="control-group">
                 <div class="controls controls-row">
-                    <@s.textfield theme="tdar" cssClass="institutionAutoComplete institution span4" watermark="Institution Name" placeholder="Institution Name" autocomplete="off"
+                    <@s.textfield theme="tdar" cssClass="institutionAutoComplete institution span4" placeholder="Institution Name" placeholder="Institution Name" autocomplete="off"
                         autocompleteName="name" autocompleteIdElement="#${prefix}institution_id${proxy_index}" autocompleteParentElement="#${prefix}Row_${proxy_index}_i"
                         name="${prefix}Proxies[${proxy_index}].institution.name" maxlength="255" />
                     <@s.select theme="tdar" name="${prefix}Proxies[${proxy_index}].role" 
@@ -1208,14 +1209,14 @@ jquery validation hooks?)
             other="Publisher Loc."></span>
 
     <p tiplabel="Department / Publisher Location" tooltipcontent="Department name, or City,State (and Country, if relevant)"></p>
-    <@s.textfield id='publisher' label="Publisher" name='publisherName' cssClass="institution"  />
+    <@s.textfield id='publisher' label="Publisher" name='publisherName' cssClass="institution input-xxlarge"  />
 
-    <@s.textfield id='publisherLocation' label="Publisher Loc." name='${prefix}.publisherLocation' cssClass='longfield' />
+    <@s.textfield id='publisherLocation' label="Publisher Loc." name='${prefix}.publisherLocation' cssClass='input-xxlarge' />
 
     <#nested />
 
     <div id="divUrl" tiplabel="URL" tooltipcontent="Website address for this resource, if applicable"></div>
-    <@s.textfield name="${prefix}.url" id="txtUrl" label="URL" labelposition="left" cssClass="longfield url" />
+    <@s.textfield name="${prefix}.url" id="txtUrl" label="URL" labelposition="left" cssClass="url input-xxlarge" placeholder="http://" />
     
 </div>
     </#if>
@@ -1500,7 +1501,7 @@ $(document).ready(function() {
 function fnRenderTitle(oObj) {
     //in spite of name, aData is an object containing the resource record for this row
     var objResource = oObj.aData;
-    var html = '<a href="'  + getURI(objResource.urlNamespace + '/' + objResource.id) + '">' + htmlEncode(objResource.title) + '</a>';
+    var html = '<a href="'  + getURI(objResource.urlNamespace + '/' + objResource.id) + ' class='title'">' + htmlEncode(objResource.title) + '</a>';
     html += ' (ID: ' + objResource.id 
     if (objResource.status != 'ACTIVE') {
     html += " " + objResource.status;
@@ -1623,7 +1624,7 @@ function drawToolbar(projId) {
                 <@s.hidden name="copyrightHolderProxy.institution.id" id="copyright_institution_id" value="${(copyrightHolderProxy.institution.id)!}"/>
                 <div class="width60percent marginLeft10">
                     <#if creatorType=='INSTITUTION'><#assign institution_name_required="required"/></#if>
-                        <@s.textfield id="copyright_holder_institution_name" cssClass="institutionAutoComplete institution ${institution_name_required!}" watermark="Institution Name"
+                        <@s.textfield id="copyright_holder_institution_name" cssClass="institutionAutoComplete institution ${institution_name_required!}" placeholder="Institution Name"
                             autocompleteName="name" autocompleteIdElement="#copyright_institution_id" autocompleteParentElement="#copyrightInstitution"
                             name="copyrightHolderProxy.institution.name" value="${(copyrightHolderProxy.institution.name)!}" maxlength="255" 
                             title="Please enter a copyright holder institution" />
@@ -1637,21 +1638,21 @@ function drawToolbar(projId) {
                 <div class="width30percent marginLeft10" >
                     <#if creatorType=='PERSON'><#assign person_name_required="required"/></#if>
                     <@s.hidden name="copyrightHolderProxy.person.id" id="copyright_person_id" onchange="this.valid()"  autocompleteParentElement="#copyrightPerson"  />
-                    <@s.textfield id="copyright_holder_person_last_name" cssClass="nameAutoComplete ${person_name_required!}" watermark="Last Name"
+                    <@s.textfield id="copyright_holder_person_last_name" cssClass="nameAutoComplete ${person_name_required!}" placeholder="Last Name"
                         autocompleteName="lastName" autocompleteIdElement="#copyright_person_id" autocompleteParentElement="#copyrightPerson"
                         name="copyrightHolderProxy.person.lastName" maxlength="255" autocomplete="off"
                         title="Please enter the copyright holder's last name" />
-                    <@s.textfield id="copyright_holder_person_first_name" cssClass="nameAutoComplete ${person_name_required!}" watermark="First Name"
+                    <@s.textfield id="copyright_holder_person_first_name" cssClass="nameAutoComplete ${person_name_required!}" placeholder="First Name"
                         autocompleteName="firstName" autocompleteIdElement="#copyright_person_id" autocompleteParentElement="#copyrightPerson"
                         name="copyrightHolderProxy.person.firstName"  maxlength="255" autocomplete="off"
                         title="Please enter the copyright holder's first name" />
-                    <@s.textfield cssClass="nameAutoComplete" watermark="Email"
+                    <@s.textfield cssClass="nameAutoComplete" placeholder="Email"
                         autocompleteName="email" autocompleteIdElement="#copyright_person_id" autocompleteParentElement="#copyrightPerson"
                         name="copyrightHolderProxy.person.email" maxlength="255" autocomplete="off"/>
                     <br />
                 </div>
                 <div class="width60percent marginLeft10">
-                    <@s.textfield id="copyright_holder_institution_name" cssClass="nameAutoComplete" watermark="Institution Name"
+                    <@s.textfield id="copyright_holder_institution_name" cssClass="nameAutoComplete" placeholder="Institution Name"
                         autocompleteName="institution" autocompleteIdElement="#copyright_person_id" autocompleteParentElement="#copyrightPerson"
                         name="copyrightHolderProxy.person.institution.name" maxlength="255" />
                 </div>

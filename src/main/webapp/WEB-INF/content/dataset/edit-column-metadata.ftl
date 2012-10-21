@@ -6,13 +6,14 @@
 
 </head>
 <body>
-<@edit.toolbar "dataset" "columns" />
 
+    <h1>Edit Table Metadata for ${dataset.title}</h1>
+
+<@edit.sidebar/>
 <@s.form method='post' id="edit-metadata-form" cssClass="form-horizontal"  action='save-column-metadata'>
 <@s.hidden name='id' value='${resource.id?c}'/>
 <@s.hidden name='dataTableId' value='${dataTable.id?c}'/>
     <#if ( dataset.dataTables?size > 1 )>
-    
 <div class='glide'>
     <h2>Column Description and Mapping: ${dataTable.displayName}</h2>
     <p>
@@ -34,7 +35,6 @@
 </div>
     </#if>
 
-<div class="glide">
 <#if dataTable.dataTableColumns??>
 <style>
 .legend {
@@ -44,41 +44,56 @@
     margin: 2px;
 }
 </style>
-<h3>The ${dataTable.displayName} table has ${dataTable.dataTableColumns?size } columns</h3>
-<b>Click on a column name below to edit the column's metadata.</b><br/>
+	<div id='subnavbar' class="affix-top navbar span12 navbar-static"  data-offset-top="250" data-offset-bottom="250" data-spy="affix">
+	  <div class="navbar-inner">
 
-<select name="chooseColumn" onChange="goToColumn(this)">
-<#list dataTableColumns?sort_by("sequenceNumber") as column>
- <option value="columnDiv_${column_index}">${column.displayName}</option>
-</#list>
-</select>
-</#if> 
+			<h3>The ${dataTable.displayName} table has ${dataTable.dataTableColumns?size } columns</h3>
+			
+			<span class="pull-right">
+				<span class="button btn btn-primary submitButton" id="fakeSubmitButton">Submit</span>
+			</span>
+			<div class="control-group">
+			    <label class="control-label">Jump to a column:</label>
+			    <div class="controls">
+					<select name="chooseColumn" onChange="goToColumn(this)">
+					<#list dataTableColumns?sort_by("sequenceNumber") as column>
+					 <option value="columnDiv_${column_index}">${column.displayName}</option>
+					</#list>
+					</select>
+			    </div> 
+			</div>
+		</div>
 </div>
+</#if> 
+
 
 <#if dataTable.dataTableColumns??>
 <div id="datatablecolumns">
 <#list dataTableColumns?sort_by("sequenceNumber") as column>
+	<#if column_index != 0><hr/></#if>
+
 <div class="glide datatablecolumn" id="columnDiv_${column_index}" >
-  <h3><span id="columnDiv_${column_index}lgnd" tooltipcontent="#generalToolTip" tiplabel="Column Mapping Instructions" class="columnSquare">&nbsp;</span>Column: <span class="displayName">${column.displayName}</span> <small style="float:right">jump to: <a href="#top">top</a> | <a href="#submitButton">save</a></small></h3>
+  <h3> 
+  <span id="columnDiv_${column_index}lgnd" tooltipcontent="#generalToolTip" tiplabel="Column Mapping Instructions" class="columnSquare">&nbsp;</span>
+  <!-- Column: -->
+  <span class="displayName">${column.displayName}</span> 
+  <!-- <small style="float:right">jump to: <a href="#top">top</a> | <a href="#submitButton">save</a></small> --></h3>
 
     <span tooltipcontent="#columnTypeToolTip" tiplabel="Column Type">
     <@s.radio id='columnEncoding_${column_index}' name='dataTableColumns[${column_index}].columnEncodingType' label="Column Type:"
     cssClass="columnEncoding" target="#columnDiv_${column_index}"
          listValue='label' emptyOption='false' list='%{allColumnEncodingTypes}'/>
     </span>
-<br/>
-    <@s.hidden name="dataTableColumns[${column_index}].id" value="${column.id?c}" /> <br/>
+    <@s.hidden name="dataTableColumns[${column_index}].id" value="${column.id?c}" />
     <@s.hidden name="dataTableColumns[${column_index}].columnDataType" value="${column.columnDataType}" cssClass="dataType" />
     <@s.hidden name="dataTableColumns[${column_index}].name" value="${column.name}" />
-    <@s.textfield name="dataTableColumns[${column_index}].displayName" value="${column.displayName}" label="Display Name:" 
-    tooltipcontent="#displayNameToolTip" tiplabel="Display Name"/>
+    <@s.textfield name="dataTableColumns[${column_index}].displayName" value="${column.displayName}" label="Display Name:" tooltipcontent="#displayNameToolTip" tiplabel="Display Name" cssClass="input-xxlarge" />
     <div class="measurementInfo" style='display:none;'>
     <@s.select name='dataTableColumns[${column_index}].measurementUnit' cssClass="measurementUnit"
          label="Meas. Unit:" listValue='fullName' emptyOption='true' list='%{allMeasurementUnits}'/>
     </div>
-    <br>
-    <div tooltipcontent="#categoryVariableToolTip" tiplabel="Category Variable">
-	<div class="controls-row">
+    <div tooltipcontent="#categoryVariableToolTip" tiplabel="Category Variable" class="control-group">
+	    <label class="control-label">Category:</label>
 	    <#assign subCategoryId="" />
 	    <#assign categoryId="" />
 	    <#if column.categoryVariable??>
@@ -89,16 +104,18 @@
 	            <#assign categoryId="${column.categoryVariable.id?c}" />
 	        </#if> 
 	    </#if> 
+	    <div class="controls">
 	        <@s.select id='categoryVariableId_${column_index}' 
 	                name='dataTableColumns[${column_index}].categoryVariable.id' 
 	                onchange='changeSubcategory("#categoryVariableId_${column_index}","#subcategoryId_${column_index}")'
 	                headerKey="-1"
 	                headerValue=""
-	                cssClass="categorySelect"
+	                cssClass="categorySelect span3"
 	                listKey='id'
 	                listValue='name'
 	                list='%{allDomainCategories}'
 	                label="Category:"
+	                theme="simple"
 	                autocompleteName="sortCategoryId"
 	                value="${categoryId}"
 	                />
@@ -107,9 +124,10 @@
 	            <#if subCategoryId != "">
 	            <@s.select  target="#columnDiv_${column_index}"
 	                id='subcategoryId_${column_index}'
-	                cssClass="subcategorySelect" 
+	                cssClass="subcategorySelect span3" 
 	                name='dataTableColumns[${column_index}].tempSubCategoryVariable.id'
 	                list='%{subcategories[${column_index}]}'
+	                theme="simple"
 	                headerKey="-1"
 	                headerValue=""
 	                listKey='id'
@@ -121,7 +139,7 @@
 	            />
 	            <#else>
 	                <select id='subcategoryId_${column_index}' name='dataTableColumns[${column_index}].tempSubCategoryVariable.id'
-	                            autocompleteName="subCategoryId">
+	                        class="span3"    autocompleteName="subCategoryId">
 	                    <option value='-1'>N/A</option>
 	                </select>
 	            </#if>
@@ -129,16 +147,11 @@
 	           <img src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="visibility:hidden"/>
 	    </div>
     </div>
-    <br/>
     <span tooltipcontent="#descriptionToolTip" tiplabel="Column Description">
-    <b>Please describe the data collected in this column</b><br/>
-    <@s.textarea name='dataTableColumns[${column_index}].description' rows='2' cols='12' cssClass="resizable" />
+    <@s.textarea label="Please describe the data collected in this column" name='dataTableColumns[${column_index}].description' rows='2' cols='12' cssClass="resizable input-xxlarge" />
 
     </span>
-    <br/>    
     <div id='divCodingSheet-${column_index}' class="codingInfo" tooltipcontent="#codingSheetToolTip" tiplabel="Coding Sheet">
-        <br />
-        <b>Translate your data using a Coding Sheet:</b>
             <#assign codingId="" />
             <#assign codingTxt="" />
             <#if column.defaultCodingSheet?? && column.defaultCodingSheet.id??>
@@ -146,17 +159,17 @@
                 <#assign codingTxt="${column.defaultCodingSheet.title} (${column.defaultCodingSheet.id?c})"/>
             </#if>
             <@s.hidden id="${column_index}_cid" name="dataTableColumns[${column_index}].defaultCodingSheet.id" cssClass="codingsheetidfield" value="${codingId}" />
+            <small class="pull-right"><a target="_blank" onclick="setAdhocTarget(this);" href='<@s.url value="/coding-sheet/add?returnToResourceMappingId=${resource.id?c}"/>'>Create Coding Sheet</a> </small>
             <@s.textfield name="dataTableColumns[${column_index}].defaultCodingSheet.title"  target="#columnDiv_${column_index}"
+			 label="Translate your data using a Coding Sheet:"
              autocompleteParentElement="#columnDiv_${column_index}"
              autocompleteIdElement="#${column_index}_cid"
-             watermark="Enter the name of a Coding Sheet"
-            value="${codingTxt}" cssClass="longfield codingsheetfield" />
+             placeholder="Enter the name of a Coding Sheet"
+            value="${codingTxt}" cssClass="input-xxlarge codingsheetfield" />
             <div class="down-arrow"></div>
-            <small><a target="_blank" onclick="setAdhocTarget(this);" href='<@s.url value="/coding-sheet/add?returnToResourceMappingId=${resource.id?c}"/>'>Create Coding Sheet</a> </small>
             <br/>
     </div>
-     <div id='divOntology-${column_index}' class="ontologyInfo" tooltipcontent="#ontologyToolTip" tiplabel="Ontology">
-        <b>Map it to an Ontology:</b><br/>
+     <div id='divOntology-${column_index}' class="ontologyInfo " tooltipcontent="#ontologyToolTip" tiplabel="Ontology">
             <#assign ontologyId="" />
             <#assign ontologyTxt="" />
             <#if column.defaultOntology??  && column.defaultOntology.id??>
@@ -164,14 +177,15 @@
                 <#assign ontologyTxt="${column.defaultOntology.title} (${column.defaultOntology.id?c})"/>
             </#if>
             <@s.hidden name="dataTableColumns[${column_index}].defaultOntology.id" value="${ontologyId}" id="${column_index}_oid" />
+            <small class="pull-right"><a target="_blank" onclick="setAdhocTarget(this);" href='<@s.url value="/ontology/add?returnToResourceMappingId=${resource.id?c}"/>'>Create Ontology</a> </small>
             <@s.textfield name="dataTableColumns[${column_index}].defaultOntology.title" target="#columnDiv_${column_index}"
              value="${ontologyTxt}"  
-             watermark="Enter the name of an Ontology"
+             label="Map it to an Ontology:"
+             placeholder="Enter the name of an Ontology"
              autocompleteParentElement="#columnDiv_${column_index}"
              autocompleteIdElement="#${column_index}_oid"
-             cssClass="longfield ontologyfield" />
+             cssClass="input-xxlarge ontologyfield" />
             <div class="down-arrow"></div>
-            <small><a target="_blank" onclick="setAdhocTarget(this);" href='<@s.url value="/ontology/add?returnToResourceMappingId=${resource.id?c}"/>'>Create Ontology</a> </small>
     </div>
     <br/>
     <div class="mappingInfo" tooltipcontent="#mappingToolTip" tiplabel="Mapping ${siteAcronym} Resources">
@@ -250,7 +264,7 @@
 </#if>
 
     <@edit.submit "Save" false><br/>
-    <table id="summaryTable">
+    <table id="summaryTable" class=" tableFormat">
         <tr><th></th><th>Summary</th></tr>
         <tr><td><span class="columnSquare invalid">&nbsp;</span><span class="error_label"></span></td><td>columns with errors</td></tr>
         <tr><td><span class="columnSquare measurement">&nbsp;</span><span class="measurement_label"></span></td><td>measurment columns</td></tr>
@@ -263,8 +277,6 @@
         <@s.radio name="postSaveAction" listValue="label" emptyOption="false" list="%{allSaveActions}" numColumns=1 />
     </@edit.submit>
 </@s.form>
-<@edit.sidebar>
-</@edit.sidebar>
 
 
 <script type='text/javascript'>
@@ -299,7 +311,7 @@ $(document).ready(function() {
     });
 
 
-    if ($.browser.msie || $.browser.mozilla && getBrowserMajorVersion() < 4 ) {
+    if (!Modernizr.cssresize) {
         $('textarea.resizable:not(.processed)').TextAreaResizer();
     }
 
@@ -308,8 +320,8 @@ $(document).ready(function() {
         cache: false 
     });
      
-     $("#edit-metadata-form").FormNavigate("Leaving the page will cause any unsaved data to be lost!");
-     $("#table_select").unbind("change");
+//     $("#edit-metadata-form").FormNavigate("Leaving the page will cause any unsaved data to be lost!");
+//     $("#table_select").unbind("change");
        applyWatermarks(document);
       TDAR.common.initFormValidation($("#edit-metadata-form")[0]);
       
@@ -339,7 +351,8 @@ $(document).ready(function() {
            $('input', $('.ontologyInfo:hidden')).val('');
            $('input', $('.codingInfo:hidden')).val('');
       });
-      
+
+	$("#fakeSubmitButton").click(function() {$("#submitButton").click();});      
 });
 
 

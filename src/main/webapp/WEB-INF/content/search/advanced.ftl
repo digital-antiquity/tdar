@@ -8,7 +8,7 @@
 <head>
 <title>Search ${siteAcronym}</title>
 <style type="text/css">
-    
+/*    
     #searchTemplate {
         background-color: lightgreen
     }
@@ -16,9 +16,9 @@
     .searchfor {width:70%}
     
     tr.template {display:none}
-    
+  */  
     /*FIXME: the difference in the widths of checkboxlabels (and hence the need for these hacks) is because (i think) ie8 has different size 'em' unit */
-    .checkboxtable tr > td {
+  /*  .checkboxtable tr > td {
         width: 60%;
     }
     .ie8-cbt-hack > .checkboxtable tr > td {
@@ -35,7 +35,7 @@
     
 
     td.searchTypeCell {vertical-align:top}
-    /* fdf8e4 */
+
     tr.termrow, tr.termrow td {background-color:#ddc;}
     
     table label+input{
@@ -47,7 +47,7 @@
     font-weight:bold;
     font-size:90%;
 }
-     
+*/     
 </style>
 
 </head>
@@ -57,6 +57,8 @@
 <ul class="nav nav-tabs" id="myTab"> 
   <li  class="active"><a href="#resource" data-toggle="tab">Resource</a></li> 
   <li><a href="#collection" data-toggle="tab">Collection</a></li> 
+  <li><a href="#institution" data-toggle="tab">Institution</a></li> 
+  <li><a href="#person" data-toggle="tab">Person</a></li> 
 </ul> 
 <div class="tab-content">
 <div id="resource" class="tab-pane active" >
@@ -98,6 +100,25 @@
         </div>
         <div id="collection-spacer" style="height:850px"></div>
     </div>
+    <div id="institution" class="tab-pane">
+        <div class="glide">
+        <h3>Search For Institutions By Name</h3>
+        <@s.form action="institutions" method="GET" id='searchForm3'>
+            <@search.queryField freeTextLabel="Institution Name" showLimits=false showAdvancedLink=false />
+        </@s.form>
+        </div>
+        <div id="collection-spacer" style="height:850px"></div>
+    </div>
+
+    <div id="person" class="tab-pane">
+        <div class="glide">
+        <h3>Search For Person By Name</h3>
+        <@s.form action="people" method="GET" id='searchForm4'>
+            <@search.queryField freeTextLabel="Person Name" showLimits=false showAdvancedLink=false />
+        </@s.form>
+        </div>
+        <div id="collection-spacer" style="height:850px"></div>
+    </div>
     
 </div> 
 </div>
@@ -105,14 +126,14 @@
 <script>
 $(document).ready(function(){
     //switch to the correct tab if coming from collection search
-    var tabindex = 0;
-    if($('#queryField').val() !='') {
-        tabindex = 1;
-    }
-//    $("#idtab").idTabs({start:tabindex});
 
     //other view init stuff;
-    TDAR.maps.setupMap();
+    if($('#large-google-map').length) {
+        var mapdiv = $('#large-google-map')[0];
+        TDAR.maps.initMapApi();
+        TDAR.maps.setupMap(mapdiv, mapdiv);
+        
+    }
 
     serializeFormState();
 
@@ -120,7 +141,6 @@ $(document).ready(function(){
         $("#searchGroups").html($("#autosave").val());
     }
     initAdvancedSearch();
-    TDAR.maps.setupMap();
     
 
 });
@@ -356,9 +376,7 @@ $(document).ready(function(){
 </#macro>
 
 <#macro removeRowButton>
-<button class="addAnother minus" type="button" tabindex="-1" onclick="removeRow($(this))">
-    <img src="<@s.url value='/images/minus.gif'/>" class="minus" alt="delete row" />
-</button>
+            <button class="btn  btn-mini repeat-row-delete " type="button" tabindex="-1" onclick="deleteParentRow(this)"><i class="icon-trash"></i></button>
 </#macro>
 
 

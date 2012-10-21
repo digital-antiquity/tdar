@@ -219,22 +219,22 @@ function repeatRowPostCloneActions(clonedRow) {
 
 }
 
-function initializeRepeatRow() {
-    $("table.repeatLastRow").each(
-            function(index) {
-                var msg = "add another";
-                if ($(this).attr('addAnother') != undefined)
-                    msg = $(this).attr('addAnother');
-                var extraClass = "";
-                if ($(this).hasClass("tableFormat"))
-                    extraClass = "normalTop";
-                $(this).after(
-                        "<button type=button  class='addAnother " + extraClass
-                                + "' onClick=\"repeatRow(\'" + this.id
-                                + "\')\"><img src='/images/add.gif'>" + msg
-                                + "</button>");
-            });
-}
+//function initializeRepeatRow() {
+//    $("table.repeatLastRow").each(
+//            function(index) {
+//                var msg = "add another";
+//                if ($(this).attr('addAnother') != undefined)
+//                    msg = $(this).attr('addAnother');
+//                var extraClass = "";
+//                if ($(this).hasClass("tableFormat"))
+//                    extraClass = "normalTop";
+//                $(this).after(
+//                        "<button type=button  class='addAnother " + extraClass
+//                                + "' onClick=\"repeatRow(\'" + this.id
+//                                + "\')\"><img src='/images/add.gif'>" + msg
+//                                + "</button>");
+//            });
+//}
 
 // FIXME: this business of optionally enabling the cloned row is screwing up
 // existing stuff. remove this option and break it out into a separate function.
@@ -746,16 +746,16 @@ function initializeView() {
         
     }
     
-    initializeTooltipContent();
+//    initializeTooltipContent();
 }
 
-function initializeTooltipContent() {
-    if (typeof formId != "undefined") {
+function initializeTooltipContent(form) {
+    if (typeof form != "undefined") {
         console.debug('delegating tooltips');
-        $(formId).delegate("[tooltipcontent]", "mouseenter", function() {
+        $(form).delegate("[tooltipcontent]", "mouseenter", function() {
             setToolTipContents(this);
         });
-        $(formId).delegate("[tooltipcontent]", "focusin", function() {
+        $(form).delegate("[tooltipcontent]", "focusin", function() {
             setToolTipContents(this);
         });
     }
@@ -858,37 +858,18 @@ function setupDocumentEditForm() {
         $('#showCite').hide();
         return false;
     });
-    $('#documentTypeBOOK').click(function() {
-        switchType("book");
-    });
-    $('#documentTypeBOOK_SECTION').click(function() {
-        switchType("book_section");
-    });
-    $('#documentTypeJOURNAL_ARTICLE').click(function() {
-        switchType("journal_article");
-    });
-    $('#documentTypeTHESIS').click(function() {
-        switchType("thesis");
-    });
-    $('#documentTypeCONFERENCE_PRESENTATION').click(function() {
-        switchType("conference");
-    });
-    $('#documentTypeOTHER').click(function() {
-        switchType("other");
-    });
-    switchType($("input[@name='document.documentType']:radio:checked").val());
+    $(".doctype input[type=radio]").click(function() {switchType(this);});
+    switchType($(".doctype input[type=radio]:checked"));
 }
 
 
-function switchType(doctype) {
-    try {
-        doctype = doctype.toLowerCase();
-    } catch (ex) {
-    }
+function switchType(el) {
+    var doctype = $(el).val().toLowerCase();
+
     console.debug('switchType:start:' + doctype);
 
-    $("#t-title2-journal").hide();
-    $("#t-title2-book").hide();
+    $("#journalTitle").hide();
+    $("#bookTitle").hide();
     $("#t-series").hide();
     $("#t-jtitle").hide();
     $("#t-isbn").hide();
@@ -1425,7 +1406,7 @@ TDAR.common = function() {
         $("#copyright_holder_type_institution").change(toggleCopyrightHolder);
     
         $('#subnavbar').scrollspy();
-        
+        initializeTooltipContent(form);
         applyWatermarks(form);
         
         //FIXME: other init stuff that is separate function for some reason 

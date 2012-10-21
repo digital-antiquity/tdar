@@ -22,9 +22,10 @@
     </div>
     </#if>
 
-    <span tiplabel="Document Type"  tooltipcontent="Select the document type. Appropriate citation fields will be displayed below."></span>
-    <@s.radio name='document.documentType' id="documentType" emptyOption='false' listValue="label"  
-        list='%{documentTypes}' label="Document Type" theme="bootstrap" />
+    <span tiplabel="Document Type"  tooltipcontent="Select the document type. Appropriate citation fields will be displayed below." class="doctype">
+	    <@s.radio name='document.documentType' id="documentType" emptyOption='false' listValue="label"  
+	        list='%{documentTypes}' label="Document Type" theme="bootstrap" />
+    </span>
             
     
     <span tiplabel="Additional Title" tooltipcontent="Enter the title of the book, report, or journal this document is part of"></span>
@@ -82,10 +83,10 @@
     <span id="t-doi" tiplabel="DOI" tooltipcontent="Digital Object Identifier."></span>
     <@s.textfield labelposition='left' id='doi' label='DOI' name='document.doi' cssClass="shortfield" />
     
-    <span id="t-isbn" tiplabel="ISBN" tooltipcontent="International Standard Book Number."></span>
+    <span id="t-isbn" placeholder="XXXX-XXXX" tiplabel="ISBN" tooltipcontent="International Standard Book Number."></span>
     <@s.textfield labelposition='left' id='isbn' title="please add a valid ISBN" label='ISBN' name='document.isbn' cssClass="isbn book_section book other" />
     
-    <span id="t-issn" tiplabel="ISSN" tooltipcontent="International Standard Serial Number, an eight-digit number assigned to many serial publications."></span>
+    <span id="t-issn" placeholder="XXXX-XXXX" tiplabel="ISSN" tooltipcontent="International Standard Serial Number, an eight-digit number assigned to many serial publications."></span>
     <@s.textfield labelposition='left' id='issn' title="please add a valid ISSN" label='ISSN' name='document.issn' cssClass="issn journal_article" />
 
 
@@ -100,5 +101,11 @@
 
 <@edit.asyncUploadTemplates />
 <@edit.resourceJavascript includeAsync=true />
+<script>
+$(function(){
+    'use strict';
+setupDocumentEditForm();
+});
+</script>
 </body>
 </#escape>
