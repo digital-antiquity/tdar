@@ -69,6 +69,9 @@
                 </td>
                 </tr>
                 </table>
+
+				<@common.resourceUsageInfo />
+
             </#if>
         
         </#if>
