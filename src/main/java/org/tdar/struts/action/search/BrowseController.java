@@ -17,6 +17,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.cache.BrowseYearCountCache;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Creator;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
@@ -124,6 +125,12 @@ public class BrowseController extends AbstractLookupController {
             ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
             getAuthenticationAndAuthorizationService().initializeReservedSearchParameters(reservedSearchParameters, getAuthenticatedUser());
             queryBuilder.append(reservedSearchParameters);
+
+            if (isEditor() && creator instanceof Person) {
+                setTotalResourceAccessStatistic(getResourceService().getResourceUsageStatistics(Arrays.asList(getId()), null, null, null, null, null));
+                setUploadedResourceAccessStatistic(getResourceService().getResourceUsageStatistics(Arrays.asList(getId()), null, null, null, null,
+                        Arrays.asList(VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED_TEXT)));
+            }
 
             setMode("browseCreators");
             setSortField(SortOption.RESOURCE_TYPE);
