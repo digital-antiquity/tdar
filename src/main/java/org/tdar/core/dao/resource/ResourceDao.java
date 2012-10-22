@@ -35,6 +35,7 @@ import org.tdar.core.dao.Dao;
 import org.tdar.core.dao.NamedNativeQueries;
 import org.tdar.core.dao.TdarNamedQueries;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.struts.data.DateGranularity;
 import org.tdar.struts.data.ResourceUsageStatistic;
 
 /**
@@ -267,10 +268,18 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         return (List<E>) findAll(ids);
     }
     
-    public void getResourceViewStatistics(Date start, Date end) {
-        
-    }
+    public void getUsageStats(DateGranularity granularity,Date start, Date end, int minCount, boolean download) {
+        Query query = getCurrentSession().getNamedQuery(ACCESS_BY);
+        if (download) {
+            query = getCurrentSession().getNamedQuery(DOWNLOAD_BY);
+        }
+        query.setParameter("part", granularity.name());
+        query.setParameter("start", start);
+        query.setParameter("end", end);
+        query.setParameter("minCount", minCount);
 
+    }
+    
     public ResourceUsageStatistic getResourceUsageStatistics(List<Long> personId, List<Long> resourceId, List<Long> collectionId, List<Long> projectId,
             List<Status> statuses, List<VersionType> types) {
         List<Status> statuses_ = new ArrayList<Status>(Arrays.asList(Status.values()));

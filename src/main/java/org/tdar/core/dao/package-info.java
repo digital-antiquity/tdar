@@ -286,11 +286,11 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.ACCESS_BY,
-                query = "select date_trunc(:part, date_accessed),  count(reference), reference from ResourceAccessStatistic ras where ras.date between :start and :end group by date_trunc(:part, ras.date),resource_id having count(reference) > 1 order by count(reference) desc"
+                query = "select date_trunc(:part, date_accessed),  count(reference), reference from ResourceAccessStatistic ras where ras.date between :start and :end group by date_trunc(:part, ras.date),resource_id having count(reference) > :minCount order by count(reference) desc"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.DOWNLOAD_BY,
-                query = "select date_trunc(:part, date_accessed),  count(reference), reference from ResourceAccessStatistic ras where ras.date between :start and :end group by date_trunc(:part, ras.date),resource_id having count(reference) > 1 order by count(reference) desc"
+                query = "select date_trunc(:part, date_accessed),  count(reference), reference from ResourceAccessStatistic ras where ras.date between :start and :end group by date_trunc(:part, ras.date),resource_id having count(reference) > :minCount order by count(reference) desc"
         )
 })
 package org.tdar.core.dao;
