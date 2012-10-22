@@ -271,39 +271,44 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         return (List<E>) findAll(ids);
     }
 
-    public List<AggregateViewStatistic> getUsageStats(DateGranularity granularity, Date start, Date end, int minCount) {
+    public List<AggregateViewStatistic> getUsageStats(DateGranularity granularity, Date start, Date end, Long minCount) {
         List<AggregateViewStatistic> toReturn = new ArrayList<AggregateViewStatistic>();
         Query query = setupStatsQuery(granularity, start, end, minCount, false);
         for (Object obj_ : query.list()) {
             Object[] obj = (Object[]) obj_;
-            toReturn.add(new AggregateViewStatistic((Date)obj[0], (Number)obj[1], (Resource)obj[2]));
+            AggregateViewStatistic view = new AggregateViewStatistic((Date) obj[3], (Number) obj[4], new Resource((Long) obj[0], (String) obj[1],
+                    (ResourceType) obj[2]));
+            markReadOnly(view.getResource());
+            toReturn.add(view);
         }
         return toReturn;
     }
 
-    private Query setupStatsQuery(DateGranularity granularity, Date start, Date end, int minCount, boolean download) {
+    private Query setupStatsQuery(DateGranularity granularity, Date start, Date end, Long minCount, boolean download) {
         Query query = getCurrentSession().getNamedQuery(ACCESS_BY);
         if (download) {
             query = getCurrentSession().getNamedQuery(DOWNLOAD_BY);
         }
-        query.setParameter("part", granularity.name());
+        // query.setParameter("part", granularity.name().toLowerCase());
         query.setParameter("start", start);
         query.setParameter("end", end);
         query.setParameter("minCount", minCount);
         return query;
     }
 
-    public List<AggregateDownloadStatistic> getDownloadStats(DateGranularity granularity, Date start, Date end, int minCount) {
+    public List<AggregateDownloadStatistic> getDownloadStats(DateGranularity granularity, Date start, Date end, Long minCount) {
         List<AggregateDownloadStatistic> toReturn = new ArrayList<AggregateDownloadStatistic>();
         Query query = setupStatsQuery(granularity, start, end, minCount, true);
         for (Object obj_ : query.list()) {
             Object[] obj = (Object[]) obj_;
-            toReturn.add(new AggregateDownloadStatistic((Date)obj[0], (Number)obj[1], (InformationResourceFile)obj[2]));
+            InformationResourceFile irf = find(InformationResourceFile.class, (Long)obj[2]);
+            toReturn.add(new AggregateDownloadStatistic((Date) obj[0], (Number) obj[1], irf.getFileName(), irf.getId(), irf.getInformationResource().getId()));
         }
         return toReturn;
     }
 
-    public ResourceSpaceUsageStatistic getResourceSpaceUsageStatistics(List<Long> personId, List<Long> resourceId, List<Long> collectionId, List<Long> projectId,
+    public ResourceSpaceUsageStatistic getResourceSpaceUsageStatistics(List<Long> personId, List<Long> resourceId, List<Long> collectionId,
+            List<Long> projectId,
             List<Status> statuses, List<VersionType> types) {
         List<Status> statuses_ = new ArrayList<Status>(Arrays.asList(Status.values()));
         List<VersionType> types_ = new ArrayList<VersionType>(Arrays.asList(VersionType.values()));

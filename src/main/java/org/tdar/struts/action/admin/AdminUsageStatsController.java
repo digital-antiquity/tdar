@@ -1,35 +1,22 @@
 package org.tdar.struts.action.admin;
 
-import java.math.BigInteger;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
+import org.joda.time.DateTime;
 import org.springframework.context.annotation.Scope;
+import org.springframework.format.datetime.joda.JodaTimeContext;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.keyword.CultureKeyword;
-import org.tdar.core.bean.keyword.GeographicKeyword;
-import org.tdar.core.bean.keyword.InvestigationType;
-import org.tdar.core.bean.keyword.MaterialKeyword;
-import org.tdar.core.bean.keyword.OtherKeyword;
-import org.tdar.core.bean.keyword.SiteNameKeyword;
-import org.tdar.core.bean.keyword.SiteTypeKeyword;
-import org.tdar.core.bean.keyword.TemporalKeyword;
-import org.tdar.core.bean.request.ContributorRequest;
-import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.ResourceRevisionLog;
-import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 import org.tdar.core.service.external.auth.TdarGroup;
 import org.tdar.struts.RequiresTdarUserGroup;
 import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.data.AggregateDownloadStatistic;
+import org.tdar.struts.data.AggregateViewStatistic;
 import org.tdar.struts.data.DateGranularity;
-import org.tdar.utils.Pair;
 
 /**
  * $Id$
@@ -49,51 +36,65 @@ public class AdminUsageStatsController extends AuthenticationAware.Base {
     private static final long serialVersionUID = 6455397601247694602L;
     private String dateStart;
     private String dateEnd;
-    private DateGranularity granularity;
-    
+    private DateGranularity granularity = DateGranularity.DAY;
+    private List<AggregateDownloadStatistic> downloadStats;
+    private List<AggregateViewStatistic> usageStats;
 
     @Actions({
             @Action("stats")
     })
     public String execute() {
-        
+        DateTime end = new DateTime();
+        DateTime start = end.minusDays(7);
+        if (StringUtils.isNotBlank(dateEnd)) {
+            DateTime.parse(dateEnd);
+        }
+        if (StringUtils.isNotBlank(dateStart)) {
+            DateTime.parse(dateStart);
+        }
+        setUsageStats(getResourceService().getUsageStats(granularity, start.toDate(), end.toDate(), 1L));
+        setDownloadStats(getResourceService().getDownloadStats(granularity, start.toDate(), end.toDate(), 0L));
         return SUCCESS;
     }
-
-
 
     public String getDateEnd() {
         return dateEnd;
     }
 
-
-
     public void setDateEnd(String dateEnd) {
         this.dateEnd = dateEnd;
     }
-
-
 
     public String getDateStart() {
         return dateStart;
     }
 
-
-
     public void setDateStart(String dateStart) {
         this.dateStart = dateStart;
     }
-
-
 
     public DateGranularity getGranularity() {
         return granularity;
     }
 
-
-
     public void setGranularity(DateGranularity granularity) {
         this.granularity = granularity;
+    }
+
+    public List<AggregateViewStatistic> getUsageStats() {
+        return usageStats;
+    }
+
+    public void setUsageStats(List<AggregateViewStatistic> usageStats) {
+        this.usageStats = usageStats;
+    }
+
+    public List<AggregateDownloadStatistic> getDownloadStats() {
+        return downloadStats;
+    }
+
+    public void setDownloadStats(List<AggregateDownloadStatistic> downloadStats) {
+        this.downloadStats = downloadStats;
     }
 
 }

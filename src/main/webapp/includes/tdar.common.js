@@ -336,12 +336,7 @@ function institutionAdded(id) {
 function setToolTipContents(targetElem) {
     $targetElem = $(targetElem);
     var fieldOff = $targetElem.offset();
-    var noteOff = $('#notice').offset();
-    $('#notice').offset({
-        left : noteOff.left,
-        top : fieldOff.top
-    });
-
+    
     // tooltip content can either be in 'tooltipcontent' attribute or in a
     // separate div
     var label = "";
@@ -358,10 +353,25 @@ function setToolTipContents(targetElem) {
             content = $(content).html();
         }
     } else {
-        console
-                .error("unable to bind tooltip - no tooltip element or tooltipcontent found");
+        console.error("unable to bind tooltip - no tooltip element or tooltipcontent found");
     }
-    $('#notice').html(label + "<div id='noticecontent'>" + content + "</div>");
+    var $notice = $("#notice");
+    if ($notice.length > 0 ) {
+	    var noteOff = $notice.offset();
+	    $notice.offset({
+	        left : noteOff.left,
+	        top : fieldOff.top
+	    });
+	
+	    $notice.html(label + "<div id='noticecontent'>" + content + "</div>");
+	} else {
+		$targetElem.popover({
+			placement:'top',
+			trigger:'hover',
+			'title': label,
+			'content': content
+		});
+	}
 }
 
 // expand those nodes where children are selected

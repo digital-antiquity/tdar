@@ -11,16 +11,21 @@ public class AggregateDownloadStatistic implements Serializable {
 
     Date aggregateDate;
     Number count;
-    private InformationResourceFile file;
+    String filename;
+    Long informationResourceFileId;
+    Long informationResourceId;
 
-    public AggregateDownloadStatistic() {}
-    
-    public AggregateDownloadStatistic(Date date, Number count, InformationResourceFile file) {
-        this.aggregateDate=  date;
-        this.count= count;
-        this.file = file;
+    public AggregateDownloadStatistic() {
     }
-    
+
+    public AggregateDownloadStatistic(Date date, Number count, String filename, Long irfId, Long irId) {
+        this.aggregateDate = date;
+        this.count = count;
+        this.filename = filename;
+        this.informationResourceFileId = irfId;
+        this.informationResourceId = irId;
+    }
+
     public Date getAggregateDate() {
         return aggregateDate;
     }
@@ -37,12 +42,28 @@ public class AggregateDownloadStatistic implements Serializable {
         this.count = count;
     }
 
-    public InformationResourceFile getFile() {
-        return file;
+    public String getFilename() {
+        return filename;
     }
 
-    public void setFile(InformationResourceFile file) {
-        this.file = file;
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
+
+    public Long getInformationResourceFileId() {
+        return informationResourceFileId;
+    }
+
+    public void setInformationResourceFileId(Long informationResourceFileId) {
+        this.informationResourceFileId = informationResourceFileId;
+    }
+
+    public Long getInformationResourceId() {
+        return informationResourceId;
+    }
+
+    public void setInformationResourceId(Long informationResourceId) {
+        this.informationResourceId = informationResourceId;
     }
 
 }
