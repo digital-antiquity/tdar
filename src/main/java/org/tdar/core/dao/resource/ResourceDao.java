@@ -39,7 +39,7 @@ import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.struts.data.AggregateDownloadStatistic;
 import org.tdar.struts.data.AggregateViewStatistic;
 import org.tdar.struts.data.DateGranularity;
-import org.tdar.struts.data.ResourceUsageStatistic;
+import org.tdar.struts.data.ResourceSpaceUsageStatistic;
 
 /**
  * $Id$
@@ -303,7 +303,7 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         return toReturn;
     }
 
-    public ResourceUsageStatistic getResourceUsageStatistics(List<Long> personId, List<Long> resourceId, List<Long> collectionId, List<Long> projectId,
+    public ResourceSpaceUsageStatistic getResourceSpaceUsageStatistics(List<Long> personId, List<Long> resourceId, List<Long> collectionId, List<Long> projectId,
             List<Status> statuses, List<VersionType> types) {
         List<Status> statuses_ = new ArrayList<Status>(Arrays.asList(Status.values()));
         List<VersionType> types_ = new ArrayList<VersionType>(Arrays.asList(VersionType.values()));
@@ -343,7 +343,7 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         List<?> list = query.list();
         for (Object obj_ : list) {
             Object[] obj = (Object[]) obj_;
-            return new ResourceUsageStatistic((Number) obj[0], (Number) obj[1], (Number) obj[2]);
+            return new ResourceSpaceUsageStatistic((Number) obj[0], (Number) obj[1], (Number) obj[2]);
         }
         return null;
     }

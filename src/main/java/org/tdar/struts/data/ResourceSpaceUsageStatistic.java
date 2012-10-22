@@ -2,7 +2,7 @@ package org.tdar.struts.data;
 
 import java.io.Serializable;
 
-public class ResourceUsageStatistic implements Serializable {
+public class ResourceSpaceUsageStatistic implements Serializable {
 
     private static final long serialVersionUID = 2229379378756763536L;
 
@@ -10,7 +10,7 @@ public class ResourceUsageStatistic implements Serializable {
     private Number countFiles;
     private Number countResources;
     
-    public ResourceUsageStatistic(Number space, Number fileCount, Number resourceCount) {
+    public ResourceSpaceUsageStatistic(Number space, Number fileCount, Number resourceCount) {
         this.totalSpace = space;
         this.countFiles = fileCount;
         this.countResources = resourceCount;

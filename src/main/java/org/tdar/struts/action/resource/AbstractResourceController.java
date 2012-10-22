@@ -172,12 +172,12 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         getResourceService().incrementAccessCounter(getPersistable());
         if (isEditor()) {
             if (getPersistableClass().equals(Project.class)) {
-                setTotalResourceAccessStatistic(getResourceService().getResourceUsageStatistics(null, null, null, Arrays.asList(getId()), null, null));
-                setUploadedResourceAccessStatistic(getResourceService().getResourceUsageStatistics(null, null, null, Arrays.asList(getId()), null,
+                setTotalResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, null, null, Arrays.asList(getId()), null, null));
+                setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, null, null, Arrays.asList(getId()), null,
                         Arrays.asList(VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED_TEXT)));
             } else {
-                setTotalResourceAccessStatistic(getResourceService().getResourceUsageStatistics(null, Arrays.asList(getId()), null, null, null, null));
-                setUploadedResourceAccessStatistic(getResourceService().getResourceUsageStatistics(null, Arrays.asList(getId()), null, null, null,
+                setTotalResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, Arrays.asList(getId()), null, null, null, null));
+                setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, Arrays.asList(getId()), null, null, null,
                         Arrays.asList(VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED_TEXT)));
             }
         }

@@ -54,7 +54,7 @@ import org.tdar.search.geosearch.GeoSearchService;
 import org.tdar.struts.data.AggregateDownloadStatistic;
 import org.tdar.struts.data.AggregateViewStatistic;
 import org.tdar.struts.data.DateGranularity;
-import org.tdar.struts.data.ResourceUsageStatistic;
+import org.tdar.struts.data.ResourceSpaceUsageStatistic;
 
 @Service
 public class ResourceService extends GenericService {
@@ -419,8 +419,7 @@ public class ResourceService extends GenericService {
                 T clone = (T) BeanUtils.cloneBean(t);
                 targetCollection.add(clone);
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                logger.warn("Exception in clone set: {} ",e);
             }
         }
         // getDao().save(targetCollection);
@@ -428,9 +427,9 @@ public class ResourceService extends GenericService {
     }
 
     @Transactional
-    public ResourceUsageStatistic getResourceUsageStatistics(List<Long> personId, List<Long> resourceId, List<Long> collectionId, List<Long> projectId,
+    public ResourceSpaceUsageStatistic getResourceSpaceUsageStatistics(List<Long> personId, List<Long> resourceId, List<Long> collectionId, List<Long> projectId,
             List<Status> statuses, List<VersionType> types) {
-        return datasetDao.getResourceUsageStatistics(personId, resourceId, collectionId, projectId, statuses, types);
+        return datasetDao.getResourceSpaceUsageStatistics(personId, resourceId, collectionId, projectId, statuses, types);
     }
 
     @Transactional

@@ -30,7 +30,7 @@ import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.struts.data.ResourceCreatorProxy;
-import org.tdar.struts.data.ResourceUsageStatistic;
+import org.tdar.struts.data.ResourceSpaceUsageStatistic;
 
 /**
  * $Id$
@@ -60,8 +60,8 @@ public class BrowseController extends AbstractLookupController {
     private List<String> alphabet = new ArrayList<String>(Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q",
             "R", "S", "T", "U", "V", "W", "X", "Y", "Z"));
     private List<BrowseYearCountCache> timelineData;
-    private ResourceUsageStatistic totalResourceAccessStatistic;
-    private ResourceUsageStatistic uploadedResourceAccessStatistic;
+    private ResourceSpaceUsageStatistic totalResourceAccessStatistic;
+    private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
 
     // private Keyword keyword;
 
@@ -100,10 +100,10 @@ public class BrowseController extends AbstractLookupController {
         setSearchTitle(ALL_TDAR_COLLECTIONS);
 
         if (isEditor()) {
-            setTotalResourceAccessStatistic(getResourceService().getResourceUsageStatistics(null, null,
+            setTotalResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, null,
                     Persistable.Base.extractIds(getResourceCollectionService().findAllDirectChildCollections(getId(), null, CollectionType.SHARED)), null,
                     null, null));
-            setUploadedResourceAccessStatistic(getResourceService().getResourceUsageStatistics(null, null,
+            setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, null,
                     Persistable.Base.extractIds(getResourceCollectionService().findAllDirectChildCollections(getId(), null, CollectionType.SHARED)), null,
                     null, Arrays.asList(VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED_TEXT)));
         }
@@ -127,8 +127,8 @@ public class BrowseController extends AbstractLookupController {
             queryBuilder.append(reservedSearchParameters);
 
             if (isEditor() && creator instanceof Person) {
-                setTotalResourceAccessStatistic(getResourceService().getResourceUsageStatistics(Arrays.asList(getId()), null, null, null, null, null));
-                setUploadedResourceAccessStatistic(getResourceService().getResourceUsageStatistics(Arrays.asList(getId()), null, null, null, null,
+                setTotalResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(Arrays.asList(getId()), null, null, null, null, null));
+                setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(Arrays.asList(getId()), null, null, null, null,
                         Arrays.asList(VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED_TEXT)));
             }
 
@@ -219,19 +219,19 @@ public class BrowseController extends AbstractLookupController {
         return ListUtils.EMPTY_LIST;
     }
 
-    public ResourceUsageStatistic getUploadedResourceAccessStatistic() {
+    public ResourceSpaceUsageStatistic getUploadedResourceAccessStatistic() {
         return uploadedResourceAccessStatistic;
     }
 
-    public void setUploadedResourceAccessStatistic(ResourceUsageStatistic uploadedResourceAccessStatistic) {
+    public void setUploadedResourceAccessStatistic(ResourceSpaceUsageStatistic uploadedResourceAccessStatistic) {
         this.uploadedResourceAccessStatistic = uploadedResourceAccessStatistic;
     }
 
-    public ResourceUsageStatistic getTotalResourceAccessStatistic() {
+    public ResourceSpaceUsageStatistic getTotalResourceAccessStatistic() {
         return totalResourceAccessStatistic;
     }
 
-    public void setTotalResourceAccessStatistic(ResourceUsageStatistic totalResourceAccessStatistic) {
+    public void setTotalResourceAccessStatistic(ResourceSpaceUsageStatistic totalResourceAccessStatistic) {
         this.totalResourceAccessStatistic = totalResourceAccessStatistic;
     }
 }
