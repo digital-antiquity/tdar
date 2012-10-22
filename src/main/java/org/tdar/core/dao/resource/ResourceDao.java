@@ -266,6 +266,10 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         logger.trace("find random resource end");
         return (List<E>) findAll(ids);
     }
+    
+    public void getResourceViewStatistics(Date start, Date end) {
+        
+    }
 
     public ResourceUsageStatistic getResourceUsageStatistics(List<Long> personId, List<Long> resourceId, List<Long> collectionId, List<Long> projectId,
             List<Status> statuses, List<VersionType> types) {

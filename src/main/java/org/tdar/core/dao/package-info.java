@@ -283,12 +283,15 @@
                 name = TdarNamedQueries.SPACE_BY_COLLECTION,
                 query = "select sum( irfv.fileLength ) as len, count(irfv), count(res) from ResourceCollection coll left join coll.resources as res left join res.informationResourceFiles as irf left join irf.informationResourceFileVersions as irfv" +
                 " where coll.id in (:collectionIds) and res.status in (:statuses) and irfv.fileVersionType in (:types)"
+        ),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.ACCESS_BY,
+                query = "select date_trunc(:part, date_accessed),  count(reference), reference from ResourceAccessStatistic ras where ras.date between :start and :end group by date_trunc(:part, ras.date),resource_id having count(reference) > 1 order by count(reference) desc"
+        ),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.DOWNLOAD_BY,
+                query = "select date_trunc(:part, date_accessed),  count(reference), reference from ResourceAccessStatistic ras where ras.date between :start and :end group by date_trunc(:part, ras.date),resource_id having count(reference) > 1 order by count(reference) desc"
         )
-        //,
-//        @org.hibernate.annotations.NamedQuery(
-//                name = TdarNamedQueries.SPACE_BY_PROJECT,
-//                query = "select sum(size) from InformationResource res left join res.informationResourceFiles irf left join irf.informationResourceFileVersions as irfv where res.project.id in (:projectIds) and status in (:statuses) and irfv.fileVersionType in (:types)"
-//        )
 })
 package org.tdar.core.dao;
 

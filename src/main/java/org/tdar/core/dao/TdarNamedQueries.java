@@ -77,7 +77,9 @@ public interface TdarNamedQueries {
     public static final String SPACE_BY_PROJECT = "admin.size.project";
     public static final String SPACE_BY_RESOURCE = "admin.size.resource";
        public static final String SPACE_BY_COLLECTION = "admin.size.collection";
-    public static final String SPACE_BY_SUBMITTER = "admin.size.submitter";
+       public static final String SPACE_BY_SUBMITTER = "admin.size.submitter";
+       public static final String ACCESS_BY = "admin.access";
+       public static final String DOWNLOAD_BY = "admin.download";
     // raw SQL/HQL queries
 
     public static final String QUERY_SQL_DASHBOARD =
