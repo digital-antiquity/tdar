@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.Transient;
-
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -53,6 +51,8 @@ import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.XmlService;
 import org.tdar.search.geosearch.GeoSearchService;
+import org.tdar.struts.data.AggregateDownloadStatistic;
+import org.tdar.struts.data.AggregateViewStatistic;
 import org.tdar.struts.data.DateGranularity;
 import org.tdar.struts.data.ResourceUsageStatistic;
 
@@ -433,9 +433,13 @@ public class ResourceService extends GenericService {
         return datasetDao.getResourceUsageStatistics(personId, resourceId, collectionId, projectId, statuses, types);
     }
 
+    @Transactional
+    public List<AggregateViewStatistic> getUsageStats(DateGranularity granularity, Date start, Date end, int minCount) {
+        return datasetDao.getUsageStats(granularity, start, end, minCount);
+    }
 
     @Transactional
-    public void getUsageStats(DateGranularity granularity, Date start, Date end, int minCount) {
-        getDao().getUsageStats(granularity, start, end, minCount, false);
+    public List<AggregateDownloadStatistic> getDownloadStats(DateGranularity granularity, Date start, Date end, int minCount) {
+        return datasetDao.getDownloadStats(granularity, start, end, minCount);
     }
 }
