@@ -72,7 +72,7 @@ View freemarker macros
          <#if (!version.viewable || !version.informationResourceFile.public )>
             <span class="ui-icon ui-icon-locked" style="display: inline-block"></span>
          </#if>
-        (<@convertFileSize version.size />)
+        (<@convertFileSize version.fileLength />)
         <@downloadCount version />
 </#macro>
 
