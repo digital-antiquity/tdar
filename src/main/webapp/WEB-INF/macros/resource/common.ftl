@@ -163,13 +163,13 @@ TDAR.uri = function(path) {
 
 
 <#macro resourceCollectionsRights effectiveResourceCollections_>
-    <#if !effectiveResourceCollections_.empty>
-    <h4>Access Permissions for this Resource</h4>
+    <#if effectiveResourceCollections_?has_content>
+    <h4>Access Permissions</h4>
     <#nested />
     <table class="tableFormat zebracolors">
     <thead><th>Collection</th><th>User</th><th>Permission</th></thead>
-    <#list effectiveResourceCollections_ as collection_>
-      <#if collection_??>
+    <#list effectiveResourceCollections_ as collection_ >
+      <#if collection_.authorizedUsers?has_content >
         <#list collection_.authorizedUsers as user>
         <tr>
           <td>

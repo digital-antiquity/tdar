@@ -71,8 +71,7 @@
     <p><b>Owner:</b> <a href="<@s.url value="/browse/creators/${resourceCollection.owner.id?c}"/>">${resourceCollection.owner}</a></p>
     <#if resourceCollection.sortBy??><p><b>Sort by:</b> ${resourceCollection.sortBy.label}</p></#if>
 
-    <p><b>Authorized Users:</b></p>
-    <@view.authorizedUsers resourceCollection.authorizedUsers />
+    <@view.authorizedUsers resourceCollection />
 </div>
 </#if>
 <#else>

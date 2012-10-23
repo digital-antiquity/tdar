@@ -373,12 +373,8 @@ No categories or subcategories specified.
     </#if>
 </#macro>
 
-<#macro authorizedUsers users>
-  <ul>
-  <#list users as authorizedUser>
-    <li>${authorizedUser.user} (<#if authorizedUser?? && authorizedUser.generalPermission??>${authorizedUser.generalPermission.label!""}</#if>)</li>
-  </#list>
-  </ul>
+<#macro authorizedUsers collection >
+    <@resourceCollectionsRights collection.hierarchicalResourceCollections />
 </#macro>
 
 <#macro infoResourceAccessRights>
