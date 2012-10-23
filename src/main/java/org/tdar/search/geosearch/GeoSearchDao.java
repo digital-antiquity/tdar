@@ -73,12 +73,14 @@ public class GeoSearchDao {
      */
 
     private final static String QUERY_ENVELOPE = "SELECT ST_Envelope(ST_Collect(the_geom)) as %2$s FROM \"%1$s\" where %3$s";
+    private final static String QUERY_ENVELOPE_WEBMER = "SELECT ST_Envelope(ST_Collect(st_transform(the_geom,2163))) as %2$s FROM \"%1$s\" where %3$s";
+    
     private final static String QUERY_ENVELOPE_2 = "(%1$s='%2$s') ";
     private final static String POLYGON = "polygon";
     // , concat('${',%1$s,'-style?default('''')}') as style
     public static final String QUERY_SVG = "select xmlelement(name g, xmlattributes( concat('a',%1$s) as id, concat('a',%1$s) as class, %2$s as name, " +
             "  %3$s as \"stroke-width\" ), xmlelement(name a,xmlattributes(concat('%4$s',%1$s,'%5$s') as \"xlink:href\")," +
-            " xmlelement(name path, xmlattributes(ST_asSVG(the_geom, 1, 5) as d))) ) from %6$s where %1$s is not null";
+            " xmlelement(name path, xmlattributes(ST_asSVG(ST_transform(the_geom, 2163), 0, 5) as d))) ) from %6$s where %1$s is not null";
 
     public enum SpatialTables {
         COUNTRY("country_wgs84", "long_name", "iso_2digit"),
@@ -324,7 +326,7 @@ public class GeoSearchDao {
             }
         }
 
-        sql = String.format(QUERY_ENVELOPE, table.getTableName(), POLYGON, table.getIdColumn() + " is not NULL ");
+        sql = String.format(QUERY_ENVELOPE_WEBMER, table.getTableName(), POLYGON, table.getIdColumn() + " is not NULL ");
         if (StringUtils.isNotBlank(limit)) {
             sql += String.format(" and %s='%s'", table.getLimitColumn(), StringEscapeUtils.escapeSql(limit));
         }

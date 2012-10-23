@@ -1501,7 +1501,7 @@ $(document).ready(function() {
 function fnRenderTitle(oObj) {
     //in spite of name, aData is an object containing the resource record for this row
     var objResource = oObj.aData;
-    var html = '<a href="'  + getURI(objResource.urlNamespace + '/' + objResource.id) + ' class='title'">' + htmlEncode(objResource.title) + '</a>';
+    var html = '<a href="'  + getURI(objResource.urlNamespace + '/' + objResource.id) + '" class=\'title\'>' + htmlEncode(objResource.title) + '</a>';
     html += ' (ID: ' + objResource.id 
     if (objResource.status != 'ACTIVE') {
     html += " " + objResource.status;

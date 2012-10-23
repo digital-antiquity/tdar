@@ -14,7 +14,7 @@
 	</tr>
 <#list usageStats as stats>
 	<tr>
-		<td><a href="<@s.url value="/${stats.resource.resourceType.urlNamespace}/${stats.resource.id?c}" />">${stats.resource.title}</a> (${stats.resource.id})</td>
+		<td><a href="<@s.url value="/${stats.resource.resourceType.urlNamespace}/${stats.resource.id?c}" />">${stats.resource.title}</a> (${stats.resource.id?c})</td>
 		<td>${stats.count}</td>
 		<td>${stats.aggregateDate}</td>
 	</tr>
@@ -31,7 +31,7 @@ ${downloadStats}
 	</tr>
 <#list downloadStats as stats>
 	<tr>
-		<td><a href="<@s.url value="/filestore/${stats.informationResourceFileId}" />"><img src="<@s.url value="/filestore/${stats.informationResourceFileId}/thumbnail" />"/>${stats.filename}</a> (${stats.informationResourceId})</td>
+		<td><a href="<@s.url value="/filestore/${stats.informationResourceFileId?c}" />"><img src="<@s.url value="/filestore/${stats.informationResourceFileId?c}/thumbnail" />"/>${stats.filename}</a> (${stats.informationResourceId?c})</td>
 		<td>${stats.count}</td>
 		<td>${stats.aggregateDate}</td>
 	</tr>
