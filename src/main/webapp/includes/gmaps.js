@@ -69,7 +69,8 @@ TDAR.maps = function() {
         script.src = "http://maps.googleapis.com/maps/api/js?libraries=drawing&key=" +
         		TDAR.maps.googleApiKey +
         		"&sensor=false&callback=TDAR.maps._apiLoaded";
-        document.body.appendChild(script);        
+        document.body.appendChild(script);
+        console.log("api loaded");
     }
     
     //public: initialize a gmap inside of the specified div element.  If hidden inputs define spatial bounds,  draw
@@ -100,6 +101,7 @@ TDAR.maps = function() {
             if(inputContainer) {
                 _setupLatLongBoxes(mapDiv, inputContainer);
             }
+            return map;
         });
     };
 

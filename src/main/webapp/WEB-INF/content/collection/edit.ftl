@@ -104,7 +104,13 @@ function removeResourceClicked(id, elem) {
 </script>
 </head>
 <body>
-
+<div id="sidebar-right" parse="true">
+    <div id="notice">
+    <h3>Introduction</h3>
+    This is the editing form for a Collection.
+    </div>
+</div>
+<h1>Editing ${persistable.name!"New Collection"}</h1>
 
 <div>
 <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='save'>
@@ -191,12 +197,6 @@ The form will check for matches in the ${siteAcronym} database and populate the 
     <@edit.submit fileReminder=false />
 </@s.form>
 
-</div>
-<div id="sidebar" parse="true">
-    <div id="notice">
-    <h3>Introduction</h3>
-    This is the editing form for a Collection.
-    </div>
 </div>
 
 </body>

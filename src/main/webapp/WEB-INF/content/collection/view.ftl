@@ -35,7 +35,25 @@
 
     <#if ( results?has_content )>
 <@search.basicPagination "Records" />
-    
+
+
+<div class="row">
+<div class="span3">
+	<ul id="mapitems">
+		<#list results as result>
+			<li <#if result.firstLatitudeLongitudeBox?has_content> data-lat="${result.firstLatitudeLongitudeBox.minObfuscatedLatitude?c}"
+			data-long="${result.firstLatitudeLongitudeBox.minObfuscatedLongitude?c}" </#if>>
+				<a href="<@s.url value="/${result.resourceType.urlNamespace}/${result.id?c}"/>" class="title">${result.title}</a><br/>
+				<p class="description">${result.description}</p>
+			 </li>
+		</#list>
+	</ul>
+</div>
+<div class="span9" id="large-map">
+
+</div>
+
+</div>    
     
 <div class="glide">
         <@list.listResources resourcelist=results sortfield=resourceCollection.sortBy  titleTag="h5" />
@@ -66,6 +84,39 @@ $(document).ready(function(){
 });
 </script>
 
+<script>
+$(function() {
+TDAR.maps.initMapApi();
+var map = new google.maps.Map(document.getElementById("large-map"));
+
+var bounds = new google.maps.LatLngBounds();
+
+var markers = new Array();
+var infowindows = new Array();
+
+$("#mapitems li").each(function() {
+	var infowindow = new google.maps.InfoWindow({
+	    content: $(this).html()
+	});
+	
+	var marker = new google.maps.Marker({
+	    position: new google.maps.LatLng($(this).attr("data-lat"),$(this).attr("data-long")),
+	    map: map,
+	    title:$("a", $(this)).text()
+	});
+
+	google.maps.event.addListener(marker, 'click', function() {
+	  infowindow.open(map,marker);
+	});
+
+	markers[markers.length] = marker;
+	infowindows[infowindows.length] = infowindow;
+	bounds.extend(marker.position);
+});
+map.fitBounds(bounds);
+
+});
+</script>
 
 </body>
 </#escape>

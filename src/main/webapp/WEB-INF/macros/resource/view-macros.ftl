@@ -762,6 +762,19 @@ ${_date?string('MM/dd/yyyy')}<#t>
 
 
 <#macro sharedViewComponents resource_ >
+		<h2>Cite this Record</h2>
+    <div class="citeMe">
+		<p class="sml">
+	    ${resource_.title}. <#if resource_.formattedAuthorList?has_content>${resource_.formattedAuthorList}.</#if> 
+	     <#if resource_.formattedSourceInformation?has_content>${resource_.formattedSourceInformation}</#if> (${siteAcronym} ID: ${resource_.id?c})<br/>
+	    <#if resource_.doi?has_content>${resource_.doi}
+	    <#elseif resource_.lessThanDayOld && !resource_.citationRecord>
+	    	<em>Note:</em>A DOI will be generated in the next day for this resource.
+	    </#if>
+		</p>
+	</div>
+	<hr />	    
+
         <#if resource_.resourceType == 'CODING_SHEET' ||  resource_.resourceType == 'ONTOLOGY'>
             <@categoryVariables />
         </#if>
@@ -797,18 +810,6 @@ ${_date?string('MM/dd/yyyy')}<#t>
     <@relatedResourceSection label=resource_.resourceType.label />
     
 
-		<h2>Cite this Record</h2>
-    <div class="citeMe">
-		<p class="sml">
-	    ${resource_.title}. <#if resource_.formattedAuthorList?has_content>${resource_.formattedAuthorList}.</#if> 
-	     <#if resource_.formattedSourceInformation?has_content>${resource_.formattedSourceInformation}</#if> (${siteAcronym} ID: ${resource_.id?c})<br/>
-	    <#if resource_.doi?has_content>${resource_.doi}
-	    <#elseif resource_.lessThanDayOld && !resource_.citationRecord>
-	    	<em>Note:</em>A DOI will be generated in the next day for this resource.
-	    </#if>
-		</p>
-	</div>
-	<hr />	    
     <@unapiLink resource_ />
     <@resourceCollections />
     <@additionalInformation resource_ />
