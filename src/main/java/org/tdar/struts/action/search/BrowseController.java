@@ -15,6 +15,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.cache.BrowseYearCountCache;
+import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
+import org.tdar.core.bean.cache.HomepageResourceCountCache;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
@@ -62,11 +64,15 @@ public class BrowseController extends AbstractLookupController {
     private List<BrowseYearCountCache> timelineData;
     private ResourceSpaceUsageStatistic totalResourceAccessStatistic;
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
+    private List<HomepageGeographicKeywordCache> geographicKeywordCache = new ArrayList<HomepageGeographicKeywordCache>();
+    private List<HomepageResourceCountCache> homepageResourceCountCache = new ArrayList<HomepageResourceCountCache>();
 
     // private Keyword keyword;
 
     @Action("explore")
     public String explore() {
+        setGeographicKeywordCache(getGenericService().findAll(HomepageGeographicKeywordCache.class));
+        setHomepageResourceCountCache(getGenericService().findAll(HomepageResourceCountCache.class));
         setMaterialTypes(getGenericKeywordService().findAllWithCache(MaterialKeyword.class));
         setInvestigationTypes(getGenericKeywordService().findAllWithCache(InvestigationType.class));
         setCultureKeywords(getGenericKeywordService().findAllApprovedWithCache(CultureKeyword.class));
@@ -234,4 +240,23 @@ public class BrowseController extends AbstractLookupController {
     public void setTotalResourceAccessStatistic(ResourceSpaceUsageStatistic totalResourceAccessStatistic) {
         this.totalResourceAccessStatistic = totalResourceAccessStatistic;
     }
+
+
+    public List<HomepageGeographicKeywordCache> getGeographicKeywordCache() {
+        return geographicKeywordCache;
+    }
+
+    public void setGeographicKeywordCache(List<HomepageGeographicKeywordCache> geographicKeywordCache) {
+        this.geographicKeywordCache = geographicKeywordCache;
+    }
+
+    public List<HomepageResourceCountCache> getHomepageResourceCountCache() {
+        return homepageResourceCountCache;
+    }
+
+    public void setHomepageResourceCountCache(List<HomepageResourceCountCache> homepageResourceCountCache) {
+        this.homepageResourceCountCache = homepageResourceCountCache;
+    }
+
+
 }

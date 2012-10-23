@@ -11,7 +11,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.CacheMode;
 import org.hibernate.FlushMode;
-import org.hibernate.ObjectNotFoundException;
 import org.hibernate.ScrollableResults;
 import org.hibernate.search.FullTextSession;
 import org.hibernate.search.Search;
@@ -22,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.Indexable;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Institution;
@@ -43,7 +41,6 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.HibernateSearchDao;
 import org.tdar.core.dao.resource.ProjectDao;
 import org.tdar.core.service.resource.DatasetService;
-import org.tdar.core.service.resource.ProjectService;
 import org.tdar.utils.activity.Activity;
 
 @Service
@@ -189,26 +186,26 @@ public class SearchIndexService {
         indexCollection(collectionToReindex);
     }
 
-//    @SuppressWarnings("deprecation")
-//    public <H extends Indexable & Persistable> void index(H... obj) {
-//        log.debug("MANUAL INDEXING ... " + obj.length);
-//        genericService.synchronize();
-//
-//        FullTextSession fullTextSession = getFullTextSession();
-//        FlushMode previousFlushMode = fullTextSession.getFlushMode();
-//        fullTextSession.setFlushMode(FlushMode.MANUAL);
-//        fullTextSession.setCacheMode(CacheMode.IGNORE);
-//        fullTextSession.flushToIndexes();
-//        for (H obj_ : obj) {
-//            if (obj_ != null) {
-//                fullTextSession.purge(obj_.getClass(), obj_.getId());
-//                index(fullTextSession, obj_);
-//            }
-//        }
-//        fullTextSession.flushToIndexes();
-//        // fullTextSession.clear();
-//        fullTextSession.setFlushMode(previousFlushMode);
-//    }
+    // @SuppressWarnings("deprecation")
+    // public <H extends Indexable & Persistable> void index(H... obj) {
+    // log.debug("MANUAL INDEXING ... " + obj.length);
+    // genericService.synchronize();
+    //
+    // FullTextSession fullTextSession = getFullTextSession();
+    // FlushMode previousFlushMode = fullTextSession.getFlushMode();
+    // fullTextSession.setFlushMode(FlushMode.MANUAL);
+    // fullTextSession.setCacheMode(CacheMode.IGNORE);
+    // fullTextSession.flushToIndexes();
+    // for (H obj_ : obj) {
+    // if (obj_ != null) {
+    // fullTextSession.purge(obj_.getClass(), obj_.getId());
+    // index(fullTextSession, obj_);
+    // }
+    // }
+    // fullTextSession.flushToIndexes();
+    // // fullTextSession.clear();
+    // fullTextSession.setFlushMode(previousFlushMode);
+    // }
 
     public int getDivisor(Number total) {
         int divisor = 5;
@@ -226,17 +223,17 @@ public class SearchIndexService {
         return divisor;
     }
 
-    public <C extends Indexable> void index(C ... indexable) {
+    public <C extends Indexable> void index(C... indexable) {
         indexCollection(Arrays.asList(indexable));
     }
-    
+
     public <C extends Indexable> void indexCollection(Collection<C> indexable) {
         log.debug("manual indexing ... " + indexable.size());
         if (indexable != null) {
             FullTextSession fullTextSession = getFullTextSession();
 
             for (C toIndex : indexable) {
-//                fullTextSession.purge(toIndex.getClass(), toIndex.getId());
+                // fullTextSession.purge(toIndex.getClass(), toIndex.getId());
                 index(fullTextSession, toIndex);
                 log.debug("indexing: " + toIndex);
                 try {

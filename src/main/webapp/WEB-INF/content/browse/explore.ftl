@@ -5,6 +5,16 @@
  
 <#escape _untrusted as _untrusted?html >
 <h1>Explore ${siteAcronym}</h1>
+
+<div class="row">
+    <div class="span6">
+        <@common.barGraph resourceCacheObjects=homepageResourceCountCache graphLabel="${siteAcronym} by the Numbers" graphHeight=304 />
+    </div>
+    <div class="span6 map">
+        <@common.worldMap />
+	</div>
+</div>
+<br/><br/>
  <h2>Browse Resources by Title</h2>
      <ul>
  <#list alphabet as letter>

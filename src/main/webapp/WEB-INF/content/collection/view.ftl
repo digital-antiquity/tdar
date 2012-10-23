@@ -44,7 +44,7 @@
 			<li <#if result.firstLatitudeLongitudeBox?has_content> data-lat="${result.firstLatitudeLongitudeBox.minObfuscatedLatitude?c}"
 			data-long="${result.firstLatitudeLongitudeBox.minObfuscatedLongitude?c}" </#if>>
 				<a href="<@s.url value="/${result.resourceType.urlNamespace}/${result.id?c}"/>" class="title">${result.title}</a><br/>
-				<p class="description">${result.description}</p>
+				<p class="description" style="display:none;visibility:hidden">${result.description}</p>
 			 </li>
 		</#list>
 	</ul>

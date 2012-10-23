@@ -1,7 +1,5 @@
 package org.tdar.struts.action;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -25,7 +23,6 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.RssService;
 
 import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.io.FeedException;
 
 /**
  * $Id$
@@ -52,7 +49,7 @@ public class IndexAction extends AuthenticationAware.Base {
     private List<HomepageGeographicKeywordCache> geographicKeywordCache = new ArrayList<HomepageGeographicKeywordCache>();
     private List<HomepageResourceCountCache> homepageResourceCountCache = new ArrayList<HomepageResourceCountCache>();
     private List<Resource> featuredResources = new ArrayList<Resource>();
-    
+
     @Autowired
     RssService rssService;
 
@@ -70,12 +67,12 @@ public class IndexAction extends AuthenticationAware.Base {
     }
 
     @Actions({
-        @Action(value = "opensearch", results = {
-                @Result(name = SUCCESS, location = "opensearch.ftl", type = "freemarker", params = { "contentType", "application/xml" })
-        }),
-        @Action(value = "robots", results = {
-                @Result(name = SUCCESS, location = "robots.ftl", type = "freemarker", params = { "contentType", "text/plain" })
-        })
+            @Action(value = "opensearch", results = {
+                    @Result(name = SUCCESS, location = "opensearch.ftl", type = "freemarker", params = { "contentType", "application/xml" })
+            }),
+            @Action(value = "robots", results = {
+                    @Result(name = SUCCESS, location = "robots.ftl", type = "freemarker", params = { "contentType", "text/plain" })
+            })
     })
     public String emptyText() {
         return SUCCESS;
@@ -86,7 +83,8 @@ public class IndexAction extends AuthenticationAware.Base {
             @Action(results = {
                     @Result(name = SUCCESS, location = "about.ftl")
             }),
-            @Action(value = "featured", results = { @Result(name = SUCCESS, location = "featured.ftl", type = "freemarker", params = { "contentType", "text/html" }) }),
+            @Action(value = "featured", results = { @Result(name = SUCCESS, location = "featured.ftl", type = "freemarker", params = { "contentType",
+                    "text/html" }) }),
             @Action(value = "map", results = { @Result(name = SUCCESS, location = "map.ftl", type = "freemarker", params = { "contentType", "text/html" }) })
     })
     public String about() {
@@ -145,7 +143,6 @@ public class IndexAction extends AuthenticationAware.Base {
     public void setFeaturedProject(Project featuredProject) {
         this.featuredProject = featuredProject;
     }
-
 
     public List<HomepageGeographicKeywordCache> getGeographicKeywordCache() {
         return geographicKeywordCache;

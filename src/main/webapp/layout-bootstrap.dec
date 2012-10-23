@@ -73,6 +73,9 @@
 						</ul>
 	
 						<ul>
+							<#if administrator >
+								<li><a href="<@s.url value="/admin/searchindex/build"/>">reindex</a></li>
+							</#if>
 							<li><a href="<@s.url value='/entity/person/edit?id=${sessionData.person.id?c}'/>">Account Settings</a></li>
 							<li><a href="<@s.url value="/contact"/>">Contact Us</a></li>
 							<li><a href="<@s.url value="/logout"/>">Sign Out</a></li>
@@ -118,6 +121,7 @@
 			<li><a href="<@s.url value="/search"/>">Search</a></li>
 			<li><a href="<@s.url value="/search/results"/>">Browse</a></li>
 			<li><a href="<@s.url value="/browse/explore"/>">Explore</a></li>
+			<li><a href="<@s.url value="/dashboard"/>">Dashboard</a></li>
   			<#if sessionData?? && sessionData.authenticated>
   				<li><a href="<@s.url value="/workspace/select-tables"/>">Integrate</a></li>
 				<#if administrator>
@@ -200,7 +204,6 @@
 
 
 </div>
-<@common.bootstrapNavbar />
 	<footer>
 		<div class="container">
 		    <#include "${themeDir}/footer.dec" />

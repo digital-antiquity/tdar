@@ -13,9 +13,13 @@
     <table cellpadding=4>
     <tr>
         <td><a href="<@s.url value="/admin/resource"/>">Resource Statistics</a> </td>
+        <td><a href="<@s.url value="/admin/usage/stats"/>">Usage Statistics</a> </td>
         <td><a href="<@s.url value="/admin/user"/>">User Statistics</a> </td>
         <td><a href="<@s.url value="/admin/keyword-stats"/>">Keyword Statistics</a> </td>
-    </tr>
+		<#if administrator >
+			<td><a href="<@s.url value="/admin/searchindex/build"/>">reindex</a></td>
+		</#if>
+</tr>
     </table>
 </div>    
 </#macro>

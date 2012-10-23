@@ -115,9 +115,7 @@
                         <@s.param name="integratableOptions" value=""/>
                     </#if>
                     <#nested>
-                </@s.url>">
-                    ${facetLabel}
-                </a>
+                </@s.url>">${facetLabel}</a>
             <#elseif currentValues?size == 1>
 				<@removeFacet facetlist=currentValues facetParam=facetParam />
             <#else>
@@ -142,6 +140,10 @@
         <#assign facet= facetlist />
     </#if>
     <#if facet?has_content>
+        <#assign facetText=facet/>
+        <#if facet.plural?has_content><#assign facetText=facet.plural/>
+        <#elseif facet.label?has_content><#assign facetText=label/>
+        </#if>
         <a href="<@s.url includeParams="all">
             <@s.param name="${facetParam}"value="" />
             <@s.param name="startRecord" value="0"/>
@@ -152,11 +154,7 @@
                 <@s.param name="integratableOptions" value=""/>
             </#if>
             <#nested>
-        </@s.url>">
-        <#if facet.plural?has_content>${facet.plural}
-        <#elseif facet.label?has_content>${facet.label}
-        <#else>${facet}
-        </#if></a>
+        </@s.url>">${facetText}</a>
     </#if>
     </#if>
 </#macro>
