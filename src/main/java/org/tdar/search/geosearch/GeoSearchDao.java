@@ -325,7 +325,8 @@ public class GeoSearchDao {
                 wrapper.getSqlXml().add((SQLXML) val);
             }
         }
-
+        logger.info(sql);
+        
         sql = String.format(QUERY_ENVELOPE_WEBMER, table.getTableName(), POLYGON, table.getIdColumn() + " is not NULL ");
         if (StringUtils.isNotBlank(limit)) {
             sql += String.format(" and %s='%s'", table.getLimitColumn(), StringEscapeUtils.escapeSql(limit));
