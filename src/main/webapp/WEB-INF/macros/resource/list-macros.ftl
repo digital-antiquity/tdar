@@ -50,12 +50,16 @@ html markup) you will probably not like the results
             </#if>
             <#local prev=key />
         <#elseif resource_index == 0>
-            <@printTag listTag_ "resource-list row" false />
+            <@printTag listTag_ "resource-list row ${orientation}" false />
         </#if>  
             <@printTag itemTag_ "listItem ${itemClass!''}" false />
             <#if itemTag_?lower_case != 'li'>
-				<#if resource_index != 0 && (orientation != 'GRID' || orientation == 'GRID' && resource_index   % 4 = 0)>
-            		</div><hr /><div class="row">
+				<#if resource_index != 0>
+				<#if orientation != 'GRID'>
+					<hr/>
+				<#elseif resource_index   % 4 = 0>
+            		</div>	</div><hr /><div class="row ${orientation} resource-list"><div class="span2">
+				</#if>
 				</#if>
             </#if>
             <#if orientation == 'GRID'>

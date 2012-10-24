@@ -765,3 +765,7 @@ body.edit h2 {
 h3.popover-title {
 	margin-top:0px;
 }
+
+.GRID .resourceLink {
+	font-size:14px;
+}

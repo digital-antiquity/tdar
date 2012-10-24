@@ -40,12 +40,21 @@
         </#if>
         </li>
 
-        <li>Subscribe via &raquo;
-        	<a class="subscribe"  href="${rssUrl}">RSS</a>
-        </li>
 	<#else>
 	Login
      </#if>
+        <li>Subscribe via &raquo;
+        	<a class="subscribe"  href="${rssUrl}">RSS</a>
+        </li>
+				</ul>
+				<h3>View Options</h3> 
+		<ul class="tools">
+				<li><a class="list" href="<@s.url includeParams="all">
+					<@s.param name="orientation"></@s.param>
+				</@s.url>">List</a></li>
+				<li><a class="grid" href="<@s.url includeParams="all">
+					<@s.param name="orientation">GRID</@s.param>
+				</@s.url>">Grid</a></li>
 				</ul>
 
 				<form>
