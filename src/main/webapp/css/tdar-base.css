@@ -651,11 +651,11 @@ header .welcome-drop ul {
 	background-position-y: -300px;
 }
 
-.resource-nav li.meta a {
+.resource-nav li.columns a {
 	background-position-y: -203px;
 }
 
-.resource-nav li.onto a {
+.resource-nav li.mapping a {
 	background-position: 12px -258px;
 }
 

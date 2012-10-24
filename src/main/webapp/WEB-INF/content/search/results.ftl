@@ -39,6 +39,10 @@
             Limited to the first ${maxDownloadRecords} results.    
         </#if>
         </li>
+
+        <li>Subscribe via &raquo;
+        	<a class="subscribe"  href="${rssUrl}">RSS</a>
+        </li>
 	<#else>
 	Login
      </#if>

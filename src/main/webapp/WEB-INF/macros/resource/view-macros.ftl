@@ -242,7 +242,7 @@ No categories or subcategories specified.
 				<#if (resource.keywordProperties?size > 1)>	    
 					<div class="span45">
 				<#elseif resource.keywordProperties?size == 1>
-					<div clsss="span9">
+					<div class="span9">
 				</#if>
 				
 				<#list resource.keywordProperties as prop>

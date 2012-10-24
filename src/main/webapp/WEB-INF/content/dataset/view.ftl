@@ -40,7 +40,7 @@ $(document).ready(function() {
 //        sDom:'<"datatabletop"ilrp>t<>', //omit the search box
     var options = { 
         "sAjaxDataProp":"results.results",
-  		"sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span4'i><'span5'p>>",
+  		"sDom": "<'row'<'span6'l><'span6'>r>t<'row'<'span4'i><'span5'p>>",
         "bProcessing": true,
         "bServerSide":true,
           "bScrollInfinite": false,
@@ -83,11 +83,11 @@ $(document).ready(function() {
 <!--<h4>Legend</h4> -->
 <table>
  <tr>
-         <td><span class="columnSquare measurement"></span> Measurement Column</td>
-         <td><span class="columnSquare count"></span> Count Column</td>
-         <td><span class="columnSquare coded"></span> Coded Column</td>
-         <td><span class="columnSquare integration"></span> Integration Column (has Ontology)</td>
-         <td><span class="columnSquare mapped"></span> Mapping Column</td>
+         <td><span class="columnSquare measurement"></span></td><td> Measurement Column</td>
+         <td><span class="columnSquare count"></span></td><td> Count Column</td>
+         <td><span class="columnSquare coded"></span></td><td> Coded Column</td>
+         <td><span class="columnSquare integration"></span> </td><td>Integration Column (has Ontology)</td>
+         <td><span class="columnSquare mapped"></span></td><td> Mapping Column</td>
   </tr>
   </table>
 </div>
@@ -96,7 +96,7 @@ $(document).ready(function() {
  <table class="tableFormat span8 table-striped table-bordered">
     <thead class='highlight'>
  <tr>
- <th>Column Name</th>
+ <th class="guide">Column Name</th>
  <th>Data Type</th>
  <th>Type</th>
  <th>Category</th>
@@ -112,7 +112,7 @@ $(document).ready(function() {
         <#if column.defaultOntology??><#assign typeLabel = "integration"/></#if>
         <#if column.columnEncodingType?? && column.columnEncodingType == 'COUNT'><#assign typeLabel = "count"/></#if>
         <#if column.mappingColumn??><#assign typeLabel = "mapped"/></#if>
-        <td nowrap><span class="columnSquare ${typeLabel}"></span><b>
+        <td class="guide" nowrap><span class="columnSquare ${typeLabel}"></span><b>
             ${column.displayName}
         </b> </td>
          <td><#if column.columnDataType??>${column.columnDataType.label}&nbsp;</#if></td>
