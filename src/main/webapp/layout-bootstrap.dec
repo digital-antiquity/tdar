@@ -214,8 +214,24 @@
         <script src="//ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"></script>        
         <#--TODO: decide whether it's wise to use a bootstrap CDN.  For now I'm using this for convenience -->
         <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/js/bootstrap.min.js"></script>
-        <script src='http://tdar.fervorinteractive.com/js/plugins.js'></script>
-        <script src='http://tdar.fervorinteractive.com/js/main.js'></script>
+        <#--<script src='http://tdar.fervorinteractive.com/js/plugins.js'></script> -->
+        <#--<script src='http://tdar.fervorinteractive.com/js/main.js'></script> -->
+        <script src="<@s.url value='/includes/plugins.js' />"></script>
+        <script type="text/javascript">
+        //functionality for "welcome back, so-and-so!" (pulled from main.js)
+        //FIXME: needs refactoring
+        $(function(){
+            $(".welcome a").click(function(){
+                $(".welcome-drop").toggle();
+                return false;
+            });
+            
+            $(document).click(function(){  
+              $('.welcome-drop').hide();
+            });
+        });
+        
+        </script>
     <@header.scripts production />
     <script type="text/javascript">
     //this is temporary - our localhost v2 api key apparently incompatible with v3 api key.

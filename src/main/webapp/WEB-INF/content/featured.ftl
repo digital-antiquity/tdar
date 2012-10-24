@@ -18,6 +18,24 @@
 	<a href="" class="car-btn car-next">Next</a>
  </div>
 <#if request.requestURI?contains("featured") >
-	<script src="http://tdar.fervorinteractive.com/js/plugins.js"></script>
+	<script src="<@s.url value='/includes/plugins.js' />"></script>
 </#if>
 </#if>
+<script type="text/javascript">
+//enable slider (pulled from main.js,  currently broken?)
+$(function(){
+  var slider = $('#slider').bxSlider({
+    controls: false
+  });
+
+  $('.car-prev').click(function(){
+    slider.goToPreviousSlide();
+    return false;
+  });
+
+  $('.car-next').click(function(){
+    slider.goToNextSlide();
+    return false;
+  });
+});
+</script>
