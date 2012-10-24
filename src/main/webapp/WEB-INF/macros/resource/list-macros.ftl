@@ -12,10 +12,19 @@ html markup) you will probably not like the results
     	</#if>
     </#macro>
 
-<#macro listResources resourcelist=resources_ sortfield='PROJECT' editable=false bookmarkable=authenticated expanded=false listTag='ul' itemTag='li' headerTag="h3" titleTag="h3">
+<#macro listResources resourcelist=resources_ sortfield='PROJECT' editable=false bookmarkable=authenticated expanded=false listTag='ul' itemTag='li' headerTag="h3" titleTag="h3" orientation=''>
   <#local showProject = false />
   <#local prev =""/>
   <#local first = true/>
+  <#assign listTag_=listTag/>  
+  <#assign itemTag_=itemTag/> 
+  <#assign itemClass = ""/>
+  <#if orientation == "GRID">
+	<#assign listTag_="div"/>  
+    <#assign itemClass = "span2"/>
+	<#assign itemTag_="div"/> 
+	<#else>
+  </#if>
   <#if resourcelist??>
   <#list resourcelist as resource>
     <#local key = "" />
@@ -35,19 +44,22 @@ html markup) you will probably not like the results
                 </#if>
             </#if>
             <#if first || (prev != key) && key?has_content>
-                <#if prev?has_content></${listTag}></#if>
+                <#if prev?has_content></${listTag_}></#if>
                 <${headerTag}><#if key?has_content>${key}<#else>${defaultKeyLabel}</#if></${headerTag}>
-                <${listTag} class='resource-list'>
+                <${listTag_} class='resource-list'>
             </#if>
             <#local prev=key />
         <#elseif resource_index == 0>
-            <@printTag listTag "resource-list" false />
+            <@printTag listTag_ "resource-list row" false />
         </#if>  
-            <@printTag itemTag "listItem" false />
-            <#if itemTag?lower_case != 'li'>
-				<#if resource_index != 0>
-            		<hr />
+            <@printTag itemTag_ "listItem ${itemClass!''}" false />
+            <#if itemTag_?lower_case != 'li'>
+				<#if resource_index != 0 && (orientation != 'GRID' || orientation == 'GRID' && resource_index   % 4 = 0)>
+            		</div><hr /><div class="row">
 				</#if>
+            </#if>
+            <#if orientation == 'GRID'>
+            			<a href="<@s.url value="/${resource.urlNamespace}/${resource.id?c}"/>" target="_top"><@view.firstThumbnail resource /></a><br/>
             </#if>
             <@searchResultTitleSection resource titleTag />
 
@@ -58,8 +70,8 @@ html markup) you will probably not like the results
 	            <#if resource.score?has_content><b>score:</b>${resource.score}<br/></#if>
 			</blockquote>
             
-            <#if expanded>
-                <div class="listItem">
+            <#if expanded && orientation != 'GRID'>
+                <div class="listItemPart">
     <#if (resource.citationRecord && resource.resourceType != 'PROJECT')>
    			<span class='cartouche' title="Citation only; this record has no attached files.">Citation</span></#if>
 		    <@common.cartouch resource true><@listCreators resource/></@common.cartouch>  
@@ -75,11 +87,11 @@ html markup) you will probably not like the results
                 <br/>
                 </div>
             </#if>
-            </${itemTag}>
+            </${itemTag_}>
         <#local first=false/>
      </#if>
     </#list>
-  </${listTag}>
+  </${listTag_}>
   </#if>
 </#macro>
 

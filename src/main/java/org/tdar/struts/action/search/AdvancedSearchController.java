@@ -65,6 +65,7 @@ import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.GeneralSearchQueryPart;
 import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.struts.data.KeywordNode;
+import org.tdar.struts.data.ResultsOrientation;
 
 /**
  * Eventual replacement for LuceneSearchController. extending
@@ -95,6 +96,7 @@ public class AdvancedSearchController extends
     public static final String TITLE_BY_TDAR_ID = "Search by TDAR ID";
     public static final String TITLE_TAG_KEYWORD_PHRASE = "Referred Query from the Transatlantic Archaeology Gateway";
 
+    private ResultsOrientation orientation = ResultsOrientation.LIST; 
     // error message of last resort. User entered something we did not
     // anticipate, and we ultimately translated it into query that lucene can't
     // parse
@@ -849,6 +851,14 @@ public class AdvancedSearchController extends
 
     public Long getContentLength() {
         return contentLength;
+    }
+
+    public ResultsOrientation getOrientation() {
+        return orientation;
+    }
+
+    public void setOrientation(ResultsOrientation orientation) {
+        this.orientation = orientation;
     }
 
 }

@@ -396,6 +396,10 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
                 }
             }
 
+            if (item instanceof InformationResource) {
+                setTransientViewableStatus((InformationResource)item, authenticatedUser);
+            }
+            
             if (!viewable && canEdit(authenticatedUser, p)) {
                 viewable = true;
             }

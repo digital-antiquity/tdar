@@ -84,7 +84,7 @@
 	 </div>
 
 	<hr class="dbl" />
-    <@rlist.listResources resourcelist=results sortfield=sortField expanded=true listTag="" itemTag="" titleTag="h3"/>
+    <@rlist.listResources resourcelist=results sortfield=sortField expanded=true listTag="" itemTag="" titleTag="h3" orientation=orientation/>
 	<hr class="dbl" />
     <@search.pagination ""/>
 </div>

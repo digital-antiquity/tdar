@@ -48,6 +48,7 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
