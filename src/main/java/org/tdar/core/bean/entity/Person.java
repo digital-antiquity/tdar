@@ -68,6 +68,9 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
         this.email = email;
     }
 
+    
+    private transient String wildcardName;
+    
     @Column(nullable = false, name = "last_name")
     @Field(name = "lastName")
     @BulkImportField(label = "Last Name", comment = BulkImportField.CREATOR_LNAME_DESCRIPTION, order = 2)
@@ -438,6 +441,17 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
 
     public void setSynonyms(Set<Person> synonyms) {
         this.synonyms = synonyms;
+    }
+
+
+    @Transient
+    @XmlTransient
+    public String getWildcardName() {
+        return wildcardName;
+    }
+
+    public void setWildcardName(String wildcardName) {
+        this.wildcardName = wildcardName;
     }
 
 }

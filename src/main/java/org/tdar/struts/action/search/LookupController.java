@@ -99,6 +99,11 @@ public class LookupController extends AbstractLookupController<Indexable> {
             incomingPerson.setFirstName(firstName);
             valid = true;
         }
+        if (checkMinString(term)) {
+            incomingPerson.setWildcardName(term);
+            valid = true;
+        }
+        
         if (checkMinString(lastName)) {
             incomingPerson.setLastName(lastName);
             valid = true;

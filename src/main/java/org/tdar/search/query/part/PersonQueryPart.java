@@ -30,6 +30,15 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
             if (StringUtils.isNotBlank(pers.getLastName())) {
                 lns.add(pers.getLastName());
             }
+            
+            if (StringUtils.isNotBlank(pers.getWildcardName())) {
+                fns.add(pers.getWildcardName());
+                lns.add(pers.getWildcardName());
+                group.setOperator(Operator.OR);
+                setOperator(Operator.OR);
+                
+            }
+            
             if (StringUtils.isNotBlank(pers.getEmail())) {
                 ems.add(pers.getEmail());
             }

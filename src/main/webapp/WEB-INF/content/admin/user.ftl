@@ -4,22 +4,30 @@
 <head>
 <title>User Info Pages</title>
 <script type="text/javascript">
+
+function fnRenderId(oObj) {
+    //in spite of name, aData is an object containing the resource record for this row
+    var objResource = oObj.aData;
+    var html = '<a href="'  + getURI('browse/creators/' + objResource.id) + '" class=\'title\'>' + objResource.id + '</a>';
+    return html;
+}
+
 $(function() {
     var settings  = {
         tableSelector: '#dataTable',
         sAjaxSource:'/lookup/person',
+  		"sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span4'i><'span5'p>>",
+        sPaginationType:"bootstrap",
         "bLengthChange": true,
         "bFilter": true,
         aoColumns:[
-                   {sTitle:"id", bUseRendered: false, mDataProp:"id", tdarSortOption:'ID', bSortable:false},
+                   {sTitle:"id", bUseRendered: false, mDataProp:"id", tdarSortOption:'ID', bSortable:false, fnRender: fnRenderId, bUseRendered:false},
                    {sTitle:"First", mDataProp:"firstName", tdarSortOption:'FIRST_NAME', bSortable:false},
                    {sTitle:"Last", mDataProp:"lastName", tdarSortOption:'LAST_NAME', bSortable:false},
                    {sTitle:"Email", mDataProp:"email", tdarSortOption:'CREATOR_EMAIL', bSortable:false}],
-        sPaginationType:"full_numbers",
         sAjaxDataProp: 'people',
         selectableRows: false,
-        requestCallback: function() {return {minLookupLength:0,registered:'true'};},
-        sDom:'<"datatabletop"ilrp>t<>' //omit the search box
+        requestCallback: function() {return {minLookupLength:0,registered:'true',term: $("#dataTable_filter input").val()};}
     };
     
     var dataTable = registerLookupDataTable(settings);
