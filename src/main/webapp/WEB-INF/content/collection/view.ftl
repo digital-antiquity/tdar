@@ -39,15 +39,7 @@
 <hr/>
 <div class="row">
 <div class="span3">
-	<ol id="mapitems">
-		<#list results as result>
-			<li <#if result.firstActiveLatitudeLongitudeBox?has_content> data-lat="${result.firstActiveLatitudeLongitudeBox.minObfuscatedLatitude?c}"
-			data-long="${result.firstActiveLatitudeLongitudeBox.minObfuscatedLongitude?c}" </#if>>
-				<a href="<@s.url value="/${result.resourceType.urlNamespace}/${result.id?c}"/>" class="title">${result.title}</a><br/>
-				<p class="description" style="display:none;visibility:hidden">${result.description}</p>
-			 </li>
-		</#list>
-	</ol>
+        <@list.listResources resourcelist=results sortfield=resourceCollection.sortBy  titleTag="h5" orientation="MAP"/>
 </div>
 <div class="span9 google-map">
 
@@ -56,7 +48,6 @@
 </div>    
     
 <div class="glide">
-        <@list.listResources resourcelist=results sortfield=resourceCollection.sortBy  titleTag="h5" />
 </div>
     </#if>
 
@@ -92,35 +83,37 @@ $(function() {
 	var markers = new Array();
 	var infowindows = new Array();
 	var i=0;
-	$("#mapitems li").each(function() {
-	i++;
-	var $this = $(this);
-		var infowindow = new google.maps.InfoWindow({
-		    content: $this.html()
-		});
-		var marker = new google.maps.Marker({
-		    position: new google.maps.LatLng($this.attr("data-lat"),$this.attr("data-long")),
-		    map: myMap,
-		    icon: 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld='+i+'|7a1501|FFFFFF',
-		    title:$("a", $this).text()
-		});
+	$("ol.MAP li").each(function() {
+		i++;
+		var $this = $(this);
+		if ($this.attr("data-lat") && $this.attr('data-long')) {
+			var infowindow = new google.maps.InfoWindow({
+			    content: $this.html()
+			});
+			var marker = new google.maps.Marker({
+			    position: new google.maps.LatLng($this.attr("data-lat"),$this.attr("data-long")),
+			    map: myMap,
+			    icon: 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld='+i+'|7a1501|FFFFFF',
+			    title:$("a.resourceLink", $this).text()
+			});
+		
+			$(this).click(function() {
+				myMap.panTo(marker.getPosition());
+			  $(infowindows).each(function() {this.close(myMap);});
+			  infowindow.open(myMap,marker);
+			  return false;
+			});
 	
-		$(this).click(function() {
-			myMap.panTo(marker.getPosition());
-		  $(infowindows).each(function() {this.close(myMap);});
-		  infowindow.open(myMap,marker);
-		  return false;
-		});
-
-		google.maps.event.addListener(marker, 'click', function() {
-		  $(infowindows).each(function() {this.close(myMap);});
-		  infowindow.open(myMap,marker);
-		});
-	
-		markers[markers.length] = marker;
-		infowindows[infowindows.length] = infowindow;
-		bounds.extend(marker.position);
-		myMap.fitBounds(bounds);
+			google.maps.event.addListener(marker, 'click', function() {
+			  $(infowindows).each(function() {this.close(myMap);});
+			  infowindow.open(myMap,marker);
+			});
+		
+			markers[markers.length] = marker;
+			infowindows[infowindows.length] = infowindow;
+			bounds.extend(marker.position);
+			myMap.fitBounds(bounds);
+		};
 	}); 
 });
 });

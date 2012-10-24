@@ -8,7 +8,7 @@ html markup) you will probably not like the results
 -->
     <#macro printTag tagName className closing>
     	<#if tagName?has_content>
-    		<<#if closing>/</#if>${tagName} class="${className}">
+    		<<#if closing>/</#if>${tagName} class="${className}" <#nested><#rt/>>
     	</#if>
     </#macro>
 
@@ -23,7 +23,9 @@ html markup) you will probably not like the results
 	<#assign listTag_="div"/>  
     <#assign itemClass = "span2"/>
 	<#assign itemTag_="div"/> 
-	<#else>
+  <#elseif orientation == "MAP" >
+	<#assign listTag_="ol"/>  
+	<#assign itemTag_="li"/> 
   </#if>
   <#if resourcelist??>
   <#list resourcelist as resource>
@@ -52,7 +54,10 @@ html markup) you will probably not like the results
         <#elseif resource_index == 0>
             <@printTag listTag_ "resource-list row ${orientation}" false />
         </#if>  
-            <@printTag itemTag_ "listItem ${itemClass!''}" false />
+            <@printTag itemTag_ "listItem ${itemClass!''}" false>
+            <#if orientation == 'MAP' && resource.firstActiveLatitudeLongitudeBox?has_content> data-lat="${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLatitude?c}"
+			data-long="${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLongitude?c}" </#if>
+			</@printTag>
             <#if itemTag_?lower_case != 'li'>
 				<#if resource_index != 0>
 				<#if orientation != 'GRID'>
