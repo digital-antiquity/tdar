@@ -95,8 +95,16 @@ TDAR.maps = function() {
                     scrollwheel: false
 
             });
+            
+            
+            var $mapDiv = $(mapDiv);
+            // if we have not specified a height, setting the height to the height of the parent DIV
+            if ($mapDiv.height() < 5) {
+            	$mapDiv.height($mapDiv.parent().height() -5);
+            }
+
             var map = new google.maps.Map(mapDiv, mapOptions);
-            $(mapDiv).data("gmap", map);
+            $mapDiv.data("gmap", map);
 
             if(inputContainer) {
                 _setupLatLongBoxes(mapDiv, inputContainer);
@@ -128,6 +136,7 @@ TDAR.maps = function() {
         //TODO: draw a rect for parent project (but don't pan/zoom to it)
 
         //TODO: add "snap back" control, for when the user pans/zooms away from resource bounds
+        $('body').trigger("mapready");
     };
 
     //private: add rect to map, returns: google.maps.Rectangle

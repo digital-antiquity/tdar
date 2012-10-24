@@ -749,11 +749,12 @@ function sprintf() {
 
 function initializeView() {
     console.debug('initialize view');
-    if($('#large-google-map').length) {
-        var mapdiv = $('#large-google-map')[0];
+    var maps = $(".google-map, #large-google-map");
+    if(maps.length) {
         TDAR.maps.initMapApi();
-        TDAR.maps.setupMap(mapdiv, mapdiv);
-        
+        maps.each(function() {
+        	TDAR.maps.setupMap(this, this);
+        });
     }
     
 //    initializeTooltipContent();

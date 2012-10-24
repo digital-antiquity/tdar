@@ -82,7 +82,7 @@ div.barlabel {
 }
 
 /* bootstrap css affects google maps v3 - http://stackoverflow.com/questions/9141249/twitter-bootstrap-css-affecting-google-maps */
-#large-google-map img,div.googlemap img {
+#large-google-map img, .google-map img {
 	border: inherit;
 	height: auto;
 	max-width: inherit;
@@ -92,7 +92,7 @@ div.barlabel {
 	height: 450px;
 }
 
-#large-google-map label,div.googlemap label {
+#large-google-map label, .google-map label {
 	width: auto;
 	display: inline;
 }

@@ -36,10 +36,10 @@
     <#if ( results?has_content )>
 <@search.basicPagination "Records" />
 
-
+<hr/>
 <div class="row">
 <div class="span3">
-	<ul id="mapitems">
+	<ol id="mapitems">
 		<#list results as result>
 			<li <#if result.firstActiveLatitudeLongitudeBox?has_content> data-lat="${result.firstActiveLatitudeLongitudeBox.minObfuscatedLatitude?c}"
 			data-long="${result.firstActiveLatitudeLongitudeBox.minObfuscatedLongitude?c}" </#if>>
@@ -47,9 +47,9 @@
 				<p class="description" style="display:none;visibility:hidden">${result.description}</p>
 			 </li>
 		</#list>
-	</ul>
+	</ol>
 </div>
-<div class="span9" id="large-google-map">
+<div class="span9 google-map">
 
 </div>
 
@@ -86,31 +86,41 @@ $(document).ready(function(){
 <script>
 $(function() {
 
-  $("body").bind("mapapiready", function(e,map) {
+  $("body").bind("mapready", function() {
 	var bounds = new google.maps.LatLngBounds();
-	
+	var myMap = $(".google-map").data('gmap');
 	var markers = new Array();
 	var infowindows = new Array();
-	
+	var i=0;
 	$("#mapitems li").each(function() {
+	i++;
+	var $this = $(this);
 		var infowindow = new google.maps.InfoWindow({
-		    content: $(this).html()
+		    content: $this.html()
 		});
-		console.log($(this).text());		
 		var marker = new google.maps.Marker({
-		    position: new google.maps.LatLng($(this).attr("data-lat"),$(this).attr("data-long")),
-		    map: map,
-		    title:$("a", $(this)).text()
+		    position: new google.maps.LatLng($this.attr("data-lat"),$this.attr("data-long")),
+		    map: myMap,
+		    icon: 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld='+i+'|7a1501|FFFFFF',
+		    title:$("a", $this).text()
 		});
 	
+		$(this).click(function() {
+			myMap.panTo(marker.getPosition());
+		  $(infowindows).each(function() {this.close(myMap);});
+		  infowindow.open(myMap,marker);
+		  return false;
+		});
+
 		google.maps.event.addListener(marker, 'click', function() {
-		  infowindow.open(map,marker);
+		  $(infowindows).each(function() {this.close(myMap);});
+		  infowindow.open(myMap,marker);
 		});
 	
 		markers[markers.length] = marker;
 		infowindows[infowindows.length] = infowindow;
 		bounds.extend(marker.position);
-	//map.fitBounds(bounds);
+		myMap.fitBounds(bounds);
 	}); 
 });
 });
