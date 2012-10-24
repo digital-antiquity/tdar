@@ -769,3 +769,7 @@ h3.popover-title {
 .GRID .resourceLink {
 	font-size:14px;
 }
+
+.control-label {
+	font-weight:bold;
+}

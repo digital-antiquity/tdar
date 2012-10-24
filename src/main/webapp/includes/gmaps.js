@@ -53,7 +53,7 @@ TDAR.maps = function() {
     };
     
     //private: execute a function only when google api is ready
-    var _execute = function(callback) {
+    var _executeWhenAPILoaded = function(callback) {
         if(_isApiLoaded) {
             callback();
         } else {
@@ -76,7 +76,7 @@ TDAR.maps = function() {
     //public: initialize a gmap inside of the specified div element.  If hidden inputs define spatial bounds,  draw
     //          a box and pan/zoom the map to fit the bounds.
     var _setupMap = function(mapDiv, inputContainer) {
-        _execute(function() {
+        _executeWhenAPILoaded(function() {
             console.log("running  setupmap");
             var mapOptions = $.extend({}, _defaults.mapOptions, {
                     zoom: _defaults.zoomLevel,
@@ -116,7 +116,9 @@ TDAR.maps = function() {
             var lng2 = $('.ne-lng', inputContainer).val();
             
             var rect = _addBound(mapDiv, style, lat1, lng1, lat2, lng2);
-            gmap.fitBounds(rect.getBounds());
+            if (rect) {
+            	gmap.fitBounds(rect.getBounds());
+            }
             //pan/zoom the 
         };
         
@@ -130,6 +132,10 @@ TDAR.maps = function() {
 
     //private: add rect to map, returns: google.maps.Rectangle
     var _addBound = function(mapDiv, rectStyleOptions, lat1, lng1, lat2, lng2) {
+//    	console.debug("%s %s %s %s", lat1, lng1, lat2, lng2);
+    	if (!(parseInt(lat1) && parseInt(lat2) && parseInt(lng1) && parseInt(lng2))) 
+    		return;
+    	
         var p1 = new google.maps.LatLng(lat1, lng1);
         var p2 = new google.maps.LatLng(lat2, lng2);
         var bounds = new google.maps.LatLngBounds(p1, p2);
@@ -146,6 +152,7 @@ TDAR.maps = function() {
         
         //move/pan the map to contain the rectangle w/ context
         return rect;
+	        
     }
     
     var _updateBound = function(rect, lat1, lng1, lat2, lng2) {
@@ -158,7 +165,7 @@ TDAR.maps = function() {
     //public: setup a map in an editing context (after map has been initialized for viewing)
     var _setupEditMap = function(mapDiv, inputContainer) {
         _setupMap(mapDiv, inputContainer);
-        _execute(function(){
+        _executeWhenAPILoaded(function(){
             var gmap = $(mapDiv).data("gmap");
     
             //add "select region" button
@@ -330,12 +337,14 @@ TDAR.maps = function() {
                 //FIXME: REPLACE block w/ call to updateResourceRect
                 if(!rect) {
                     rect = _addBound(mapDiv, _defaults.rectStyleOptions.RESOURCE, $swLatInput.val(), $swLngInput.val(), $neLatInput.val(), $neLngInput.val());
-                    $(mapDiv).data("resourceRect", rect);
-                    //FIXME
                 } else {
                     _updateBound(rect, $swLatInput.val(), $swLngInput.val(), $neLatInput.val(), $neLngInput.val());
                 }
-                gmap.fitBounds(rect.getBounds());
+
+                if (rect) {
+                	$(mapDiv).data("resourceRect", rect);
+                	gmap.fitBounds(rect.getBounds());
+                }
             };
         });
     };

@@ -68,7 +68,9 @@ $.extend( $.fn.dataTableExt.oPagination, {
 						.bind('click', function (e) {
 							e.preventDefault();
 							oSettings._iDisplayStart = (parseInt($('a', this).text(),10)-1) * oPaging.iLength;
+							// FIXME: here is where we should be putting an offset to scroll back to the top of a table
 							fnDraw( oSettings );
+							
 						} );
 				}
 

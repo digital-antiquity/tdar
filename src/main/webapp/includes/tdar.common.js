@@ -106,181 +106,181 @@ function replaceAttribute(elem, attrName, str, rep) {
         // newval);
     }
 }
-
-function repeatRow(tableId, rowAddedCallback, resetRights) {
-    // FIXME: this business of optionally enabling the cloned row is screwing up
-    // existing stuff. remove this option and break it out into a separate
-    // function.
-    var _resetRights = true;
-    if (typeof resetRights != 'undefined') {
-        _resetRights = resetRights;
-    }
-
-    var rowReference = $('#' + tableId + " > tbody > tr:last");
-    var clonedRow = rowReference.clone();
-
-    // we assume that the table row will have an ID that follows the convention
-    // _num_, and we
-    // will use this same convention for choosing the next ID addribute for the
-    // row as well as
-    // any element inside the row that uses the same convention for the NAME and
-    // ID attributes.
-    var rex = /_(\d+)_/i;
-    var match = rex.exec(rowReference.attr("id"));
-    var currentId = parseInt(match[1]); // the last occurance _num_ is our
-    // current id
-
-    var nextId = currentId + 1;
-    var newRowId = nextId;
-    if (rowReference.attr("id") != undefined
-            && rowReference.attr("id").indexOf("_") != -1) {
-        while ("a" != "b") {
-            newRowId = rowReference.attr("id").substring(0,
-                    rowReference.attr("id").lastIndexOf('_' + currentId + '_'))
-                    + "_" + nextId + '_';
-            if ($(newRowId).length == 0)
-                break;
-        }
-    }
-    // remove an error container if it exists (added by multi-column validation
-    if (clonedRow.children("td:last").html().indexOf("errorContainer") != -1) {
-        clonedRow.children("td:last").remove();
-    }
-
-    // update the id for our new row
-    clonedRow.attr('id', newRowId);
-
-    /*
-     * Now that we've cloned the row, certain element attributes may need to be
-     * renamed (for example, input tags with name attributes of the form
-     * "fieldval[0]" should be renamed "fieldval[1]". Our assumption is that
-     * every ID or NAME attribute that contains either "_num_" or "[num]" will
-     * renamed.
-     * 
-     * However, we do not modify any tags that that have the css
-     * class"repeatRowSkip".
-     */
-    // console.debug("about to find each elment in clonedrow:" + currentId);
-    clonedRow.find('*').each(
-            function() {
-                var elem = this;
-                // skip any tags that with the repeatRowSkip attribute
-                if (!$(elem).hasClass('repeatRowSkip')) {
-                    $(
-                            [ "id", "autoVal", "name", "autocompleteIdElement",
-                                    "autocompleteParentElement" ]).each(
-                            function(i, attrName) {
-                                // replace occurances of [num]
-                                replaceAttribute(elem, attrName, '['
-                                        + currentId + ']', '[' + nextId + ']');
-
-                                // replace occurances of _num_
-                                replaceAttribute(elem, attrName, '_'
-                                        + currentId + '_', '_' + nextId + '_');
-                            });
-                }
-            });
-
-    rowReference.after(clonedRow);
-    // FIXME: uniformly name forms tdarForm to add tdarForm context?
-    // clear all input fields from the cloned row (except buttons)
-    clearRow('#' + newRowId, _resetRights);
-    // set focus on the first input field.
-
-    repeatRowPostCloneActions(clonedRow);
-
-    if (rowAddedCallback) {
-        var clonedRowId = clonedRow.attr("id");
-//        console.log("row added, calling callback with:" + clonedRowId);
-        rowAddedCallback(clonedRow.attr("id"));
-    }
-
-    if ($('#' + tableId).attr('callback') != undefined) {
-        console.log("about to execute callback");
-        try {
-            eval($('#' + tableId).attr('callback') + "(" + clonedRow.attr("id")
-                    + ")");
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
-    $("input[type=text], textarea",clonedRow).filter(":visible:first").focus();
-    return false;
-}
-
-function repeatRowPostCloneActions(clonedRow) {
-
-	if(!Modernizr.input.placeholder){
-	    $.each(clonedRow.find("[placeholder]"), function(k, v) {
-    		$(this).watermark($(this).attr("placeholder"));
-	    });
-	}
-
-}
-
-//function initializeRepeatRow() {
-//    $("table.repeatLastRow").each(
-//            function(index) {
-//                var msg = "add another";
-//                if ($(this).attr('addAnother') != undefined)
-//                    msg = $(this).attr('addAnother');
-//                var extraClass = "";
-//                if ($(this).hasClass("tableFormat"))
-//                    extraClass = "normalTop";
-//                $(this).after(
-//                        "<button type=button  class='addAnother " + extraClass
-//                                + "' onClick=\"repeatRow(\'" + this.id
-//                                + "\')\"><img src='/images/add.gif'>" + msg
-//                                + "</button>");
+//
+//function repeatRow(tableId, rowAddedCallback, resetRights) {
+//    // FIXME: this business of optionally enabling the cloned row is screwing up
+//    // existing stuff. remove this option and break it out into a separate
+//    // function.
+//    var _resetRights = true;
+//    if (typeof resetRights != 'undefined') {
+//        _resetRights = resetRights;
+//    }
+//
+//    var rowReference = $('#' + tableId + " > tbody > tr:last");
+//    var clonedRow = rowReference.clone();
+//
+//    // we assume that the table row will have an ID that follows the convention
+//    // _num_, and we
+//    // will use this same convention for choosing the next ID addribute for the
+//    // row as well as
+//    // any element inside the row that uses the same convention for the NAME and
+//    // ID attributes.
+//    var rex = /_(\d+)_/i;
+//    var match = rex.exec(rowReference.attr("id"));
+//    var currentId = parseInt(match[1]); // the last occurance _num_ is our
+//    // current id
+//
+//    var nextId = currentId + 1;
+//    var newRowId = nextId;
+//    if (rowReference.attr("id") != undefined
+//            && rowReference.attr("id").indexOf("_") != -1) {
+//        while ("a" != "b") {
+//            newRowId = rowReference.attr("id").substring(0,
+//                    rowReference.attr("id").lastIndexOf('_' + currentId + '_'))
+//                    + "_" + nextId + '_';
+//            if ($(newRowId).length == 0)
+//                break;
+//        }
+//    }
+//    // remove an error container if it exists (added by multi-column validation
+//    if (clonedRow.children("td:last").html().indexOf("errorContainer") != -1) {
+//        clonedRow.children("td:last").remove();
+//    }
+//
+//    // update the id for our new row
+//    clonedRow.attr('id', newRowId);
+//
+//    /*
+//     * Now that we've cloned the row, certain element attributes may need to be
+//     * renamed (for example, input tags with name attributes of the form
+//     * "fieldval[0]" should be renamed "fieldval[1]". Our assumption is that
+//     * every ID or NAME attribute that contains either "_num_" or "[num]" will
+//     * renamed.
+//     * 
+//     * However, we do not modify any tags that that have the css
+//     * class"repeatRowSkip".
+//     */
+//    // console.debug("about to find each elment in clonedrow:" + currentId);
+//    clonedRow.find('*').each(
+//            function() {
+//                var elem = this;
+//                // skip any tags that with the repeatRowSkip attribute
+//                if (!$(elem).hasClass('repeatRowSkip')) {
+//                    $(
+//                            [ "id", "autoVal", "name", "autocompleteIdElement",
+//                                    "autocompleteParentElement" ]).each(
+//                            function(i, attrName) {
+//                                // replace occurances of [num]
+//                                replaceAttribute(elem, attrName, '['
+//                                        + currentId + ']', '[' + nextId + ']');
+//
+//                                // replace occurances of _num_
+//                                replaceAttribute(elem, attrName, '_'
+//                                        + currentId + '_', '_' + nextId + '_');
+//                            });
+//                }
 //            });
+//
+//    rowReference.after(clonedRow);
+//    // FIXME: uniformly name forms tdarForm to add tdarForm context?
+//    // clear all input fields from the cloned row (except buttons)
+//    clearRow('#' + newRowId, _resetRights);
+//    // set focus on the first input field.
+//
+//    repeatRowPostCloneActions(clonedRow);
+//
+//    if (rowAddedCallback) {
+//        var clonedRowId = clonedRow.attr("id");
+////        console.log("row added, calling callback with:" + clonedRowId);
+//        rowAddedCallback(clonedRow.attr("id"));
+//    }
+//
+//    if ($('#' + tableId).attr('callback') != undefined) {
+//        console.log("about to execute callback");
+//        try {
+//            eval($('#' + tableId).attr('callback') + "(" + clonedRow.attr("id")
+//                    + ")");
+//        } catch (e) {
+//            console.log(e);
+//        }
+//    }
+//
+//    $("input[type=text], textarea",clonedRow).filter(":visible:first").focus();
+//    return false;
 //}
-
-// FIXME: this business of optionally enabling the cloned row is screwing up
-// existing stuff. remove this option and break it out into a separate function.
-function clearRow(rowId, resetRights) {
-    if (typeof resetRights == 'undefined') {
-        resetRights = true;
-    }
-    try {
-        if (typeof global_formNavigate != 'undefined') {
-            global_formNavigate = false;
-        }
-    } catch (e) {
-    }
-    // NOTE: we do not renumber IDs afterwards if they delete from the middle.
-    // Not bad, but should be accounted for in controller
-    $("input[type!=button],textarea", rowId).not(
-            'input[type=checkbox],input[type=radio]').each(function() {
-        $(this).val("");
-        if (resetRights) {
-            $(this).attr("readonly", false);
-            $(this).attr("disabled", false);
-        }
-    });
-
-    $("button,input[type=button],select").each(function() {
-        if (resetRights) {
-            $(this).attr("readonly", false);
-            $(this).attr("disabled", false);
-        }
-    });
-    // uncheck any checkboxes/radios
-    $("input[type=checkbox],input[type=radio]", rowId).prop("checked", false);
-
-    $("select", rowId).val($("select option:first", rowId).val());
-    var parent = $(rowId).parents("table")[0];
-    if ($(parent).attr('callback') != undefined) {
-        try {
-            // FIXME: push this callback call up to deleteRow. Otherwise
-            // callbacks get called twice each time user adds a row.
-            eval($(parent).attr('callback') + "('" + rowId + "')");
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
-}
+//
+//function repeatRowPostCloneActions(clonedRow) {
+//
+//	if(!Modernizr.input.placeholder){
+//	    $.each(clonedRow.find("[placeholder]"), function(k, v) {
+//    		$(this).watermark($(this).attr("placeholder"));
+//	    });
+//	}
+//
+//}
+//
+////function initializeRepeatRow() {
+////    $("table.repeatLastRow").each(
+////            function(index) {
+////                var msg = "add another";
+////                if ($(this).attr('addAnother') != undefined)
+////                    msg = $(this).attr('addAnother');
+////                var extraClass = "";
+////                if ($(this).hasClass("tableFormat"))
+////                    extraClass = "normalTop";
+////                $(this).after(
+////                        "<button type=button  class='addAnother " + extraClass
+////                                + "' onClick=\"repeatRow(\'" + this.id
+////                                + "\')\"><img src='/images/add.gif'>" + msg
+////                                + "</button>");
+////            });
+////}
+//
+//// FIXME: this business of optionally enabling the cloned row is screwing up
+//// existing stuff. remove this option and break it out into a separate function.
+//function clearRow(rowId, resetRights) {
+//    if (typeof resetRights == 'undefined') {
+//        resetRights = true;
+//    }
+//    try {
+//        if (typeof global_formNavigate != 'undefined') {
+//            global_formNavigate = false;
+//        }
+//    } catch (e) {
+//    }
+//    // NOTE: we do not renumber IDs afterwards if they delete from the middle.
+//    // Not bad, but should be accounted for in controller
+//    $("input[type!=button],textarea", rowId).not(
+//            'input[type=checkbox],input[type=radio]').each(function() {
+//        $(this).val("");
+//        if (resetRights) {
+//            $(this).attr("readonly", false);
+//            $(this).attr("disabled", false);
+//        }
+//    });
+//
+//    $("button,input[type=button],select").each(function() {
+//        if (resetRights) {
+//            $(this).attr("readonly", false);
+//            $(this).attr("disabled", false);
+//        }
+//    });
+//    // uncheck any checkboxes/radios
+//    $("input[type=checkbox],input[type=radio]", rowId).prop("checked", false);
+//
+//    $("select", rowId).val($("select option:first", rowId).val());
+//    var parent = $(rowId).parents("table")[0];
+//    if ($(parent).attr('callback') != undefined) {
+//        try {
+//            // FIXME: push this callback call up to deleteRow. Otherwise
+//            // callbacks get called twice each time user adds a row.
+//            eval($(parent).attr('callback') + "('" + rowId + "')");
+//        } catch (e) {
+//            console.log(e);
+//        }
+//    }
+//
+//}
 
 function navigateTempIgnore() {
     global_formNavigate = true;

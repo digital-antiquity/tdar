@@ -131,7 +131,7 @@ $(document).ready(function(){
     if($('#large-google-map').length) {
         var mapdiv = $('#large-google-map')[0];
         TDAR.maps.initMapApi();
-        TDAR.maps.setupMap(mapdiv, mapdiv);
+        TDAR.maps.setupEditMap(mapdiv, $("#latlongoptions")[0]);
         
     }
 
@@ -344,7 +344,7 @@ $(document).ready(function(){
             <#if group_?is_hash >
                 <#list group_.fieldTypes as fieldType >
                 <#if fieldType??>
-                    <tr id="grouptablerow_0_" class="termrow">
+                    <tr id="grouptablerow_0_" class="termrow repeat-row">
                         <td class="searchTypeCell"> 
                             <@searchTypeSelect id="${fieldType_index}" init="${fieldType}" groupid="${groupid}" />
                         </td>
@@ -362,7 +362,7 @@ $(document).ready(function(){
 </#macro>
 
 <#macro blankRow groupid=0 fieldType_index=0>
-                <tr id="grouptablerow_${groupid}_" class="termrow">
+                <tr id="grouptablerow_${groupid}_" class="termrow repeat-row">
                     <td class="searchTypeCell"> 
                         <@searchTypeSelect />
                     </td>

@@ -24,12 +24,12 @@
         </#if>
         
         <h4>Limit by geographic region:</h4>
-        <div>
+        <div id="latlongoptions">
             <div id='large-google-map' style="height:450px;"></div>     
-            <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].maximumLongitude" id="maxx" />
-            <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].minimumLatitude"  id="miny" />
-            <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].minimumLongitude" id="minx" />
-            <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].maximumLatitude"  id="maxy" />
+            <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].maximumLongitude" id="maxx" class="ne-lng-display" />
+            <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].minimumLatitude"  id="miny" class="sw-lat-display" />
+            <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].minimumLongitude" id="minx" class="sw-lng-display" />
+            <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].maximumLatitude"  id="maxy" class="ne-lat-display" />
         </div>
         
     <h3>Sorting Options and Submit</h3>

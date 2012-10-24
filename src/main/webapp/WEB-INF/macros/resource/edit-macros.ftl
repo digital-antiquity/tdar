@@ -1829,7 +1829,7 @@ function drawToolbar(projId) {
 
 
 <#macro subNavMenu>
-	<div id='subnavbar' class="affix-top navbar span12 navbar-static"  data-offset-top="250" data-offset-bottom="250" data-spy="affix">
+	<div id='subnavbar' class="affix-top navbar span12 row navbar-static"  data-offset-top="250" data-offset-bottom="250" data-spy="affix">
 	  <div class="navbar-inner">
 	    <div class="container" style="width: auto;">
 		<ul class="nav">
@@ -1851,7 +1851,7 @@ function drawToolbar(projId) {
 	  </div>
 	</div>
 	<div>
-
+	<br/>
 </#macro>
 
 </#escape>

@@ -62,10 +62,13 @@ TDAR.fileupload = function() {
                         url: TDAR.uri("upload/list-resource-files"), 
                         data: {informationResourceId: _options.informationResourceId},
                         success: function(data){
+                        	//FIXME: if there's an exception in this method, it gets eaten
                             var files = _translateIrFiles(data);
                             console.log("files.length: %s", files.length);
                             // remove all of the pre-loaded proxies ahead of replacing them with their respective proxy versions
-                            $("#fileProxyUploadBody").remove();
+                            if (files.length) {
+                            	$("#fileProxyUploadBody").remove();
+                            }
                             $fileupload.fileupload('option', 'done').call($fileupload[0], null, {result: files});
                         },
                         error: function(jqxhr, textStatus, errorThrown) {

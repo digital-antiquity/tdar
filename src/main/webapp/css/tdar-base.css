@@ -910,7 +910,7 @@ aside.dataset,  aside.document, aside.coding_sheet, aside.sensory_data, aside.on
 	font-family: "soleil", sans-serif;
 }
 
-.why h1 span {
+h1 span {
 	color: #a72d1d;
 }
 
@@ -1112,9 +1112,6 @@ contrib article h2,.contrib article p,.contrib article ul {
 	margin: 45px 0 50px 40px;
 }
 
-.results #titlebar h1 span,.search h1 span {
-	color: #a72d1d;
-}
 
 .search h2 {
 	font-size: 20px;

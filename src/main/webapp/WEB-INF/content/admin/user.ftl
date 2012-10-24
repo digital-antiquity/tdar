@@ -69,6 +69,6 @@ $(function() {
 
 <div class="glide">
 <h3>Registered Users</h3>
-<table id="dataTable"></table>
+<table id="dataTable" class="tableFormat"></table>
 </div>
 </#escape>

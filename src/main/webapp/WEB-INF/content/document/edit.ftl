@@ -10,9 +10,9 @@
 <body class="resource">
 <@edit.sidebar />
 <@edit.subNavMenu />
+<#assign newTitle>New Document</#assign>
+<h1>Editing:<span> <#if resource.title?has_content>${resource.title}<#else>${newTitle}</#if> </span></h1>
 <@s.form id='resourceMetadataForm' method='post' enctype='multipart/form-data' action='save'  cssClass="form-horizontal">
-
-
 <@edit.basicInformation 'document' 'document' >
     <#if linkedInformationResource??>
     <div class='help-block'>

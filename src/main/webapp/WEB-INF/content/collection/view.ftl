@@ -41,15 +41,15 @@
 <div class="span3">
 	<ul id="mapitems">
 		<#list results as result>
-			<li <#if result.firstLatitudeLongitudeBox?has_content> data-lat="${result.firstLatitudeLongitudeBox.minObfuscatedLatitude?c}"
-			data-long="${result.firstLatitudeLongitudeBox.minObfuscatedLongitude?c}" </#if>>
+			<li <#if result.firstActiveLatitudeLongitudeBox?has_content> data-lat="${result.firstActiveLatitudeLongitudeBox.minObfuscatedLatitude?c}"
+			data-long="${result.firstActiveLatitudeLongitudeBox.minObfuscatedLongitude?c}" </#if>>
 				<a href="<@s.url value="/${result.resourceType.urlNamespace}/${result.id?c}"/>" class="title">${result.title}</a><br/>
 				<p class="description" style="display:none;visibility:hidden">${result.description}</p>
 			 </li>
 		</#list>
 	</ul>
 </div>
-<div class="span9" id="large-map">
+<div class="span9" id="large-google-map">
 
 </div>
 
@@ -85,35 +85,34 @@ $(document).ready(function(){
 
 <script>
 $(function() {
-TDAR.maps.initMapApi();
-var map = new google.maps.Map(document.getElementById("large-map"));
 
-var bounds = new google.maps.LatLngBounds();
-
-var markers = new Array();
-var infowindows = new Array();
-
-$("#mapitems li").each(function() {
-	var infowindow = new google.maps.InfoWindow({
-	    content: $(this).html()
-	});
+  $("body").bind("mapapiready", function(e,map) {
+	var bounds = new google.maps.LatLngBounds();
 	
-	var marker = new google.maps.Marker({
-	    position: new google.maps.LatLng($(this).attr("data-lat"),$(this).attr("data-long")),
-	    map: map,
-	    title:$("a", $(this)).text()
-	});
-
-	google.maps.event.addListener(marker, 'click', function() {
-	  infowindow.open(map,marker);
-	});
-
-	markers[markers.length] = marker;
-	infowindows[infowindows.length] = infowindow;
-	bounds.extend(marker.position);
+	var markers = new Array();
+	var infowindows = new Array();
+	
+	$("#mapitems li").each(function() {
+		var infowindow = new google.maps.InfoWindow({
+		    content: $(this).html()
+		});
+		console.log($(this).text());		
+		var marker = new google.maps.Marker({
+		    position: new google.maps.LatLng($(this).attr("data-lat"),$(this).attr("data-long")),
+		    map: map,
+		    title:$("a", $(this)).text()
+		});
+	
+		google.maps.event.addListener(marker, 'click', function() {
+		  infowindow.open(map,marker);
+		});
+	
+		markers[markers.length] = marker;
+		infowindows[infowindows.length] = infowindow;
+		bounds.extend(marker.position);
+	//map.fitBounds(bounds);
+	}); 
 });
-map.fitBounds(bounds);
-
 });
 </script>
 
