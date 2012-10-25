@@ -65,6 +65,7 @@ import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
+import org.tdar.struts.data.ResultsOrientation;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
@@ -128,6 +129,10 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @Enumerated(EnumType.STRING)
     @Column(name = "sort_order")
     private SortOption sortBy = SortOption.TITLE;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "orientation")
+    private ResultsOrientation orientation = ResultsOrientation.LIST;
 
     @Field(name = QueryFieldNames.COLLECTION_TYPE)
     @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
@@ -546,14 +551,24 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         return owner;
     }
 
-    @Transient
-    @XmlTransient
-    public boolean isReadyToIndex() {
-        return readyToIndex;
+    public ResultsOrientation getOrientation() {
+        return orientation;
     }
 
-    public void setReadyToIndex(boolean readyToIndex) {
-        this.readyToIndex = readyToIndex;
+    public void setOrientation(ResultsOrientation orientation) {
+        this.orientation = orientation;
+    }
+
+    @Override
+    public boolean isReadyToIndex() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public void setReadyToIndex(boolean ready) {
+        // TODO Auto-generated method stub
+        
     }
 
 }

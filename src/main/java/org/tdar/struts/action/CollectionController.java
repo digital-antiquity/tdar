@@ -20,7 +20,6 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
@@ -32,6 +31,7 @@ import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
+import org.tdar.struts.data.ResultsOrientation;
 
 @Component
 @Scope("prototype")
@@ -194,6 +194,11 @@ public class CollectionController extends AbstractPersistableController<Resource
         return options;
     }
 
+    public List<ResultsOrientation> getResultsOrientations() {
+        List<ResultsOrientation> options = Arrays.asList(ResultsOrientation.values());
+        return options;
+    }
+
     public List<SortOption> getResourceDatatableSortOptions() {
         return SortOption.getOptionsForContext(Resource.class);
     }
@@ -258,7 +263,8 @@ public class CollectionController extends AbstractPersistableController<Resource
         Collections.sort(collections);
 
         if (isEditor()) {
-            List<Long> collectionIds = Persistable.Base.extractIds(getResourceCollectionService().findAllDirectChildCollections(getId(), null, CollectionType.SHARED));
+            List<Long> collectionIds = Persistable.Base.extractIds(getResourceCollectionService().findAllDirectChildCollections(getId(), null,
+                    CollectionType.SHARED));
             collectionIds.add(getId());
             setTotalResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, null,
                     collectionIds, null,

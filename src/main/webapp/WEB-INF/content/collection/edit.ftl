@@ -155,7 +155,13 @@ function removeResourceClicked(id, elem) {
 <br/>
 <@s.select labelposition='top' label='When Browsing Sort Resource By:' name='resourceCollection.sortBy' 
      listValue='label' list='%{sortOptions}'
-    truncate="80" title="Sort resource by" />
+    truncate=80 title="Sort resource by" />
+
+<br/>
+
+<@s.select labelposition='top' label='Display Collection as:' name='resourceCollection.orientation' 
+     list='%{ResultsOrientations}'
+ listValue='label'  truncate=80 title="Display as" />
 </div>
 
 <div id="divCollectionAccessRightsTips" style="display:none">

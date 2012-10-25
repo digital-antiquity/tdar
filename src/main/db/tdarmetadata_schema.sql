@@ -205,6 +205,7 @@ CREATE TABLE collection (
     name character varying(255),
     owner_id bigint,
     parent_id bigint,
+    collection orientation varchar(50) DEFAULT 'LIST',
     collection_type character varying(255),
     visible boolean DEFAULT false NOT NULL,
     date_created timestamp without time zone,
