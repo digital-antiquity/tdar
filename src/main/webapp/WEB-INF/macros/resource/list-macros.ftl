@@ -12,13 +12,14 @@ html markup) you will probably not like the results
     	</#if>
     </#macro>
 
-<#macro listResources resourcelist=resources_ sortfield='PROJECT' editable=false bookmarkable=authenticated expanded=false listTag='ul' itemTag='li' headerTag="h3" titleTag="h3" orientation=''>
+<#macro listResources resourcelist=resources_ sortfield='PROJECT' editable=false bookmarkable=authenticated expanded=false listTag='ul' itemTag='li' headerTag="h3" titleTag="h3" orientation='' mapPosition="" mapHeight="">
   <#local showProject = false />
   <#local prev =""/>
   <#local first = true/>
   <#assign listTag_=listTag/>  
   <#assign itemTag_=itemTag/> 
   <#assign itemClass = ""/>
+  
   <#if orientation == "GRID">
 	<#assign listTag_="div"/>  
     <#assign itemClass = "span2"/>
@@ -26,6 +27,16 @@ html markup) you will probably not like the results
   <#elseif orientation == "MAP" >
 	<#assign listTag_="ol"/>  
 	<#assign itemTag_="li"/> 
+	<div class="row">
+  	<#if mapPosition=="top" || mapPosition == "right">
+  	<div class="span9 google-map" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if>>
+  
+	</div>
+	</#if>	
+	
+		<div class="<#if mapPosition=='left' || mapPosition=="right">span3<#else>span9</#if>">
+
+
   </#if>
   <#if resourcelist??>
   <#list resourcelist as resource>
@@ -101,6 +112,59 @@ html markup) you will probably not like the results
      </#if>
     </#list>
   </${listTag_}>
+  </#if>
+  <#if orientation == "MAP">
+  </div>
+  	<#if mapPosition=="left" || mapPosition == "bottom">
+	<div class="span9 google-map" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if> >
+	
+	</div>
+	</#if>	
+	</div>    
+<script>
+$(function() {
+
+  $("body").bind("mapready", function() {
+	var bounds = new google.maps.LatLngBounds();
+	var myMap = $(".google-map").data('gmap');
+	var markers = new Array();
+	var infowindows = new Array();
+	var i=0;
+	$("ol.MAP li").each(function() {
+		i++;
+		var $this = $(this);
+		if ($this.attr("data-lat") && $this.attr('data-long')) {
+			var infowindow = new google.maps.InfoWindow({
+			    content: $this.html()
+			});
+			var marker = new google.maps.Marker({
+			    position: new google.maps.LatLng($this.attr("data-lat"),$this.attr("data-long")),
+			    map: myMap,
+			    icon: 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld='+i+'|7a1501|FFFFFF',
+			    title:$("a.resourceLink", $this).text()
+			});
+		
+			$(this).click(function() {
+				myMap.panTo(marker.getPosition());
+			  $(infowindows).each(function() {this.close(myMap);});
+			  infowindow.open(myMap,marker);
+			  return false;
+			});
+	
+			google.maps.event.addListener(marker, 'click', function() {
+			  $(infowindows).each(function() {this.close(myMap);});
+			  infowindow.open(myMap,marker);
+			});
+		
+			markers[markers.length] = marker;
+			infowindows[infowindows.length] = infowindow;
+			bounds.extend(marker.position);
+			myMap.fitBounds(bounds);
+		};
+	}); 
+});
+});
+</script>	  
   </#if>
 </#macro>
 

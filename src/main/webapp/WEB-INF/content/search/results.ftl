@@ -55,6 +55,9 @@
 				<li><a class="grid" href="<@s.url includeParams="all">
 					<@s.param name="orientation">GRID</@s.param>
 				</@s.url>">Grid</a></li>
+				<li><a class="grid" href="<@s.url includeParams="all">
+					<@s.param name="orientation">MAP</@s.param>
+				</@s.url>">Map</a></li>
 				</ul>
 
 				<form>
@@ -93,7 +96,7 @@
 	 </div>
 
 	<hr class="dbl" />
-    <@rlist.listResources resourcelist=results sortfield=sortField expanded=true listTag="" itemTag="" titleTag="h3" orientation=orientation/>
+    <@rlist.listResources resourcelist=results sortfield=sortField expanded=true listTag="" itemTag="" titleTag="h3" orientation=orientation mapPosition="top" mapHeight="450"/>
 	<hr class="dbl" />
     <@search.pagination ""/>
 </div>
@@ -179,6 +182,8 @@
         $(function() {
             $('.sort form').NiceIt();
             $('.options form').NiceIt();
+		    $(initializeView);
+			
         });
 </script>
 
