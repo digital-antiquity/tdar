@@ -240,3 +240,5 @@ TRUNCATE table homepage_featured_item_cache;
 INSERT into homepage_featured_item_cache VALUES (1,366237);
 
 ALTER TABLE resource_note alter column "note" type varchar(5000);
+
+ALTER TABLE collection ADD COLUMN orientation VARCHAR(50) DEFAULT 'LIST';

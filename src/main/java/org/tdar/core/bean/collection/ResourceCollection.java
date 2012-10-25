@@ -66,6 +66,7 @@ import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
+import org.tdar.struts.data.ResultsOrientation;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
@@ -125,6 +126,10 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @Enumerated(EnumType.STRING)
     @Column(name = "sort_order")
     private SortOption sortBy = SortOption.TITLE;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "orientation")
+    private ResultsOrientation orientation = ResultsOrientation.LIST;
 
     @Field(name = QueryFieldNames.COLLECTION_TYPE)
     @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
@@ -260,8 +265,10 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     public boolean isTopLevel() {
         return getParent() == null || !getParent().isVisible();
     }
-    
-    @Transient @XmlTransient @JSONTransient
+
+    @Transient
+    @XmlTransient
+    @JSONTransient
     public boolean isRoot() {
         return parent == null;
     }
@@ -409,7 +416,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         return toUserList(GeneralPermissions.ADMINISTER_GROUP);
     }
 
-
     @Field(name = QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW)
     @Transient
     @JSONTransient
@@ -453,7 +459,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         }
         return ancestorChain;
     }
-    
 
     @Transient
     public List<ResourceCollection> getVisibleParents() {
@@ -536,5 +541,13 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     public Person getSubmitter() {
         return owner;
     }
-    
+
+    public ResultsOrientation getOrientation() {
+        return orientation;
+    }
+
+    public void setOrientation(ResultsOrientation orientation) {
+        this.orientation = orientation;
+    }
+
 }

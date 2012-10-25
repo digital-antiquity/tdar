@@ -10,6 +10,7 @@
 				 "/includes/jquery.maphighlight.local.js", 
 				 "/includes/jquery.cookie.js",
 				 "/includes/jquery.idTabs.min.js",
+				 "/includes/jquery.googlemaps1.01.js",
 				 "/includes/jquery.history.js",
 				 "/includes/jquery.xcolor-1.5.js",
 				 "/includes/jquery-treeview/jquery.treeview.js",

@@ -152,6 +152,15 @@ function removeResourceClicked(id, elem) {
 <@s.select labelposition='top' label='When Browsing Sort Resource By:' name='resourceCollection.sortBy' 
      listValue='label' list='%{sortOptions}'
     truncate=80 title="Sort resource by" />
+
+
+<#if editor>
+<br/><br/>
+<em>This is a "BETA" feature only available in "list" or map -- only editors can see this</em><br/>
+<@s.select labelposition='top' label='Display Collection as:' name='resourceCollection.orientation' 
+     list='%{ResultsOrientations}'
+ listValue='label'  truncate=80 title="Display as" />
+</#if>
 </div>
 
 <div id="divCollectionAccessRightsTips" style="display:none">

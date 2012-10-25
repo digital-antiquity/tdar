@@ -33,6 +33,7 @@ import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
+import org.tdar.struts.data.ResultsOrientation;
 
 @Component
 @Scope("prototype")
@@ -222,6 +223,13 @@ public class CollectionController extends AbstractPersistableController<Resource
         options.add(1, SortOption.RESOURCE_TYPE_REVERSE);
         return options;
     }
+
+
+    public List<ResultsOrientation> getResultsOrientations() {
+        List<ResultsOrientation> options = Arrays.asList(ResultsOrientation.values());
+        return options;
+    }
+
 
     public List<SortOption> getResourceDatatableSortOptions() {
         return SortOption.getOptionsForContext(Resource.class);
