@@ -118,7 +118,7 @@ body {
 }
 
 a {
-	color: #a72d1d;
+	color: #7a1501;
 	transition: 0.1s ease-out;
 	-moz-transition: 0.1s ease-out;
 	-webkit-transition: 0.1s ease-out;
@@ -133,7 +133,7 @@ a.button {
 	width: 130px;
 	height: 35px;
 	display: inline-block;
-	background: #a72d1d;
+	background: #7a1501;
 	-webkit-border-radius: 2px;
 	border-radius: 2px;
 	font-weight: 700;
@@ -220,14 +220,14 @@ header nav a:hover {
 }
 
 header nav li.active a {
-	color: #a72d1d;
+	color: #7a1501;
 }
 
 header nav li.button a {
 	width: 72px;
 	height: 24px;
 	display: inline-block;
-	background: #a72d1d;
+	background: #7a1501;
 	-webkit-border-radius: 2px;
 	border-radius: 2px;
 	font-weight: 700;
@@ -569,7 +569,7 @@ header .welcome-drop ul {
 
 .subnav ul.subnav-lft li a:hover,.subnav ul.subnav-lft li.current_page_item a
 	{
-	color: #a72d1d;
+	color: #7a1501;
 }
 
 .subnav ul.subnav-lft li.current_page_item {
@@ -626,7 +626,7 @@ header .welcome-drop ul {
 
 .resource-nav li a:hover,.resource-nav li.active a {
 	color: #fff;
-	background: #a72d1d url(/images/r4/bg-resource-nav-on.png) 15px 14px
+	background: #7a1501 url(/images/r4/bg-resource-nav-on.png) 15px 14px
 		no-repeat;
 	text-decoration: none;
 }
@@ -855,7 +855,7 @@ aside.dataset,  aside.document, aside.coding_sheet, aside.sensory_data, aside.on
 	line-height: 45px;
 	margin: 0 !important;
 	padding: 0 10px;
-	background: #a72d1d;
+	background: #7a1501;
 	-webkit-border-radius: 2px 2px 0 0;
 	border-radius: 2px 2px 0 0;
 	border-bottom: none;
@@ -911,7 +911,7 @@ aside.dataset,  aside.document, aside.coding_sheet, aside.sensory_data, aside.on
 }
 
 h1 span {
-	color: #a72d1d;
+	color: #7a1501;
 }
 
 .why article h2 {
@@ -1004,7 +1004,7 @@ contrib article h2,.contrib article p,.contrib article ul {
 	font-size: 24px;
 	line-height: 24px;
 	font-weight: 700;
-	color: #a72d1d !important;
+	color: #7a1501 !important;
 }
 
 .contrib p {
@@ -1156,7 +1156,7 @@ contrib article h2,.contrib article p,.contrib article ul {
 }
 
 .search aside label.checked {
-	color: #a72d1d;
+	color: #7a1501;
 }
 
 .search aside label span {
@@ -1398,4 +1398,8 @@ B.fmCheckbox.checked {
 
 .fmHidden {
 	display: none;
+}
+
+.span12 hr {
+margin-left: 0px !important;
 }

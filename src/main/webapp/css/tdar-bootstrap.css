@@ -773,3 +773,17 @@ h3.popover-title {
 .control-label {
 	font-weight:bold;
 }
+
+ol.MAP {
+	margin-left: 1.2em !important;
+}
+
+ol.MAP .listItemPart {
+	visibility:hidden;
+	display:none;
+}
+
+.MAP h3 {
+	font-size:14px !important;
+}
+
