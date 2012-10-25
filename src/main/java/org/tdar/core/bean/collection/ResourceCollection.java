@@ -51,6 +51,7 @@ import org.tdar.core.bean.DeHydratable;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.SimpleSearch;
 import org.tdar.core.bean.Sortable;
 import org.tdar.core.bean.Updatable;
@@ -66,7 +67,6 @@ import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
-import org.tdar.struts.data.ResultsOrientation;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
@@ -129,7 +129,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @Enumerated(EnumType.STRING)
     @Column(name = "orientation")
-    private ResultsOrientation orientation = ResultsOrientation.LIST;
+    private DisplayOrientation orientation = DisplayOrientation.LIST;
 
     @Field(name = QueryFieldNames.COLLECTION_TYPE)
     @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
@@ -542,11 +542,11 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         return owner;
     }
 
-    public ResultsOrientation getOrientation() {
+    public DisplayOrientation getOrientation() {
         return orientation;
     }
 
-    public void setOrientation(ResultsOrientation orientation) {
+    public void setOrientation(DisplayOrientation orientation) {
         this.orientation = orientation;
     }
 

@@ -1,15 +1,14 @@
-package org.tdar.struts.data;
+package org.tdar.core.bean;
 
-import org.tdar.core.bean.HasLabel;
 
-public enum ResultsOrientation implements HasLabel {
+public enum DisplayOrientation implements HasLabel {
     LIST("List"),
     GRID("Grid"),
     MAP("Map");
     
     private String label;
     
-    private ResultsOrientation(String label) {
+    private DisplayOrientation(String label) {
     this.setLabel(label);    
     }
 
