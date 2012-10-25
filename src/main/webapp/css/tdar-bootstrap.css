@@ -787,3 +787,7 @@ ol.MAP .listItemPart {
 	font-size:14px !important;
 }
 
+
+.showcase-content-container {
+margin-left: -2px !important;
+}

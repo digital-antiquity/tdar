@@ -13,6 +13,7 @@
 	                 "/includes/jquery.datatables-1.8.2/extras/bootstrap-paging.js",
                      "/includes/jquery-treeview/jquery.treeview.js"
                      "/includes/blueimp-javascript-templates/tmpl.min.js",
+                     "/includes/jquery.aw-showcase.1.1.1/jquery.aw-showcase/jquery.aw-showcase.js",
                      "/includes/blueimp-jquery-file-upload-3c5d440/js/jquery.iframe-transport.js", 
                      "/includes/blueimp-jquery-file-upload-3c5d440/js/jquery.fileupload.js",
                      "/includes/blueimp-jquery-file-upload-3c5d440/js/jquery.fileupload-fp.js",
@@ -63,6 +64,7 @@
     <#local srcs = [
                     "/css/tdar-bootstrap.css",
                     "/includes/ivaynberg-select2-817453b/select2.css",
+                    "/includes/jquery.aw-showcase.1.1.1/jquery.aw-showcase/css/style.css",
                     "/includes/blueimp-jquery-file-upload-3c5d440/css/jquery.fileupload-ui.css",
                     "/includes/jquery-treeview/jquery.treeview.css"
                     
