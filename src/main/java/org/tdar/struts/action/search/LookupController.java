@@ -134,7 +134,9 @@ public class LookupController extends AbstractLookupController<Indexable> {
     public String lookupInstitution() {
         QueryBuilder q = new InstitutionQueryBuilder();
         setMode("institutionLookup");
-
+        if (getRecordsPerPage() == 10) {
+            setRecordsPerPage(20);
+        }
         this.lookupSource = "institutions";
 
         if (checkMinString(this.institution)) {
