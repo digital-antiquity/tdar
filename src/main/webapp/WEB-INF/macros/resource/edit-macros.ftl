@@ -714,7 +714,7 @@ $(function(){
     //init fileupload
     var id = $('input[name=id]').val();
     var acceptFileTypes  = <@edit.acceptedFileTypesRegex />;
-    TDAR.fileupload.registerUpload({informationResourceId: id, acceptFileTypes: acceptFileTypes});
+    TDAR.fileupload.registerUpload({informationResourceId: id, acceptFileTypes: acceptFileTypes, formSelector:"${formSelector}"});
     </#if>
 
     TDAR.common.initEditPage(form);

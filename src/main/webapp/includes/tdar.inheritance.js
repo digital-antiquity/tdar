@@ -756,7 +756,6 @@ TDAR.inheritance = function() {
         
     };
     
-    
     return{
         resetRepeatable: _resetRepeatable,
         resetKeywords: _resetKeywords,
