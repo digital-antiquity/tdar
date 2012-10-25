@@ -9,6 +9,7 @@
 </head>
 <body>
 
+<@edit.sidebar />
 <@edit.subNavMenu />
 
 <@s.form name='VideoMetadataForm' id='VideoMetadataForm'  cssClass="form-horizontal"  method='post' enctype='multipart/form-data' action='save'>
@@ -32,7 +33,6 @@
 
 </@s.form>
 
-<@edit.sidebar />
 
 <@edit.resourceJavascript formSelector="#VideoMetadataForm" selPrefix="#video" includeAsync=true includeInheritance=true />
 </body>

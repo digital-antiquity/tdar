@@ -8,6 +8,7 @@
 
 </head>
 <body>
+<@edit.sidebar />
 <@edit.subNavMenu />
 
 
@@ -62,7 +63,6 @@
 <@edit.submit  fileReminder=false  />
 </@s.form>
 
-<@edit.sidebar />
 
 <@edit.resourceJavascript formSelector="#resourceRegistrationForm" selPrefix="#resourceRegistration" includeInheritance=true>
     $(function() {
