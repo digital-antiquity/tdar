@@ -211,7 +211,7 @@ function inheritingMapIsSafe(rootElementSelector, spatialInformation) {
 // supplied temporalInformation is the same as what is already on the form.
 function inheritingDatesIsSafe(rootElementSelector, temporalInformation) {
     // are all the fields in this section blank?
-    var $coverageTextFields = $('input:text', '#coverageTable');
+    var $coverageTextFields = $('input:text', '#coverageDateRepeatable');
     var joinedFieldValues = $coverageTextFields.map(function() {
         return $(this).val();
     }).toArray().join("");
@@ -222,7 +222,7 @@ function inheritingDatesIsSafe(rootElementSelector, temporalInformation) {
 
     // not okay to populate if the incoming list is a different size as the
     // current list
-    $tableRows = $('tr', '#coverageTable');
+    $tableRows = $('.repeat-row', '#coverageDateRepeatable');
     if (temporalInformation.coverageDates.length != $tableRows.length)
         return false;
 
@@ -243,22 +243,23 @@ function inheritingDatesIsSafe(rootElementSelector, temporalInformation) {
 }
 
 function inheritInformation(formId, json, sectionId, tableId) {
-    disableSection(sectionId);
+    console.debug("inheritInformation(formId:%s, json:%s, sectionId:%s, tableId:%s)", formId, json, sectionId, tableId);
     clearFormSection(sectionId);
     if (tableId != undefined) {
         if (document.getElementById("uncontrolled" + tableId + "Table") != undefined) {
-            resetRepeatRowTable('uncontrolled' + tableId + 'Table', json['uncontrolled' + tableId + 's'].length);
+            TDAR.inheritance.resetRepeatable("#" + 'uncontrolled' + tableId + 'Table', json['uncontrolled' + tableId + 's'].length);
         }
         if (document.getElementById("approved" + tableId + "Table") != undefined) {
-            resetRepeatRowTable('approved' + tableId + 'Table', json['approved' + tableId + 's'].length);
+            TDAR.inheritance.resetRepeatable("#" + 'approved' + tableId + 'Table', json['approved' + tableId + 's'].length);
         }
         var simpleId = tableId;
         simpleId[0] = simpleId[0].toLowerCase();
         if (document.getElementById(simpleId + "Table") != undefined) {
-            resetRepeatRowTable(simpleId + 'Table', json[simpleId + 's'].length);
+            TDAR.inheritance.resetRepeatable("#" + simpleId + 'Table', json[simpleId + 's'].length);
         }
     }
     populateSection(formId, json);
+    disableSection(sectionId);
 }
 
 function inheritSiteInformation(formId, json) {
@@ -270,25 +271,25 @@ function inheritSiteInformation(formId, json) {
 }
 
 function inheritIdentifierInformation(formId, json) {
-    disableSection('#divIdentifiers');
     clearFormSection('#divIdentifiers');
-    resetRepeatRowTable('resourceAnnotationsTable', json.resourceAnnotations.length);
+    TDAR.inheritance.resetRepeatable('#resourceAnnotationsTable', json.resourceAnnotations.length);
     populateSection(formId, json);
+    disableSection('#divIdentifiers');
 }
 
 function inheritCollectionInformation(formId, json) {
     disableSection('#relatedCollectionsSection');
     clearFormSection('#relatedCollectionsSection');
-    resetRepeatRowTable('sourceCollectionTable', json.collectionInformation['relatedComparativeCollections'].length);
-    resetRepeatRowTable('relatedComparativeCitationTable', json.collectionInformation['sourceCollections'].length);
+    //resetRepeatRowTable('sourceCollectionTable', json.collectionInformation['relatedComparativeCollections'].length);
+    //resetRepeatRowTable('relatedComparativeCitationTable', json.collectionInformation['sourceCollections'].length);
     populateSection(formId, json.collectionInformation);
 }
 
 function inheritNoteInformation(formId, json) {
-    disableSection('#resourceNoteSection');
     clearFormSection('#resourceNoteSection');
-    resetRepeatRowTable('resourceNoteTable', json.noteInformation['resourceNotes'].length);
+    TDAR.inheritance.resetRepeatable('#resourceNoteSection', json.noteInformation['resourceNotes'].length);
     populateSection(formId, json.noteInformation);
+    disableSection('#resourceNoteSection');
 }
 
 function inheritSpatialInformation(formId, json) {
@@ -307,11 +308,11 @@ function inheritSpatialInformation(formId, json) {
 
 function inheritTemporalInformation(formId, json) {
     var sectionId = '#divTemporalInformation';
-    disableSection(sectionId);
     clearFormSection(sectionId);
-    resetRepeatRowTable('temporalKeywordTable', json.temporalInformation.temporalKeywords.length);
-    resetRepeatRowTable('coverageTable', json.temporalInformation.coverageDates.length);
+    TDAR.inheritance.resetRepeatable('#temporalKeywordsRepeatable', json.temporalInformation.temporalKeywords.length);
+    TDAR.inheritance.resetRepeatable('#coverageDateRepeatable', json.temporalInformation.coverageDates.length);
     populateSection(formId, json.temporalInformation);
+    disableSection(sectionId);
 }
 
 function bindCheckboxToInheritSection(cbSelector, divSelector, isSafeCallback, inheritSectionCallback, enableSectionCallback) {
@@ -428,7 +429,7 @@ function processInheritance(formId) {
     });
 
     bindCheckboxToInheritSection('#cbInheritingTemporalInformation', '#divTemporalInformation', function() {
-        return inheritingRepeatRowsIsSafe('#temporalKeywordTable', json.temporalInformation.temporalKeywords)
+        return inheritingRepeatRowsIsSafe('#temporalKeywordsRepeatable', json.temporalInformation.temporalKeywords)
                 && inheritingDatesIsSafe('#divTemporalInformation', json.temporalInformation);
     }, function() {
         inheritTemporalInformation(formId, json);
@@ -488,7 +489,7 @@ function processInheritance(formId) {
 
     bindCheckboxToInheritSection('#cbInheritingSpatialInformation', '#divSpatialInformation', function() {
         return inheritingMapIsSafe('#divSpatialInformation', json.spatialInformation)
-                && inheritingRepeatRowsIsSafe('#geographicKeywordTable', json.spatialInformation.geographicKeywords);
+                && inheritingRepeatRowsIsSafe('#geographicKeywordsRepeatable', json.spatialInformation.geographicKeywords);
     }, function() {
         inheritSpatialInformation(formId, json);
     }, function() {

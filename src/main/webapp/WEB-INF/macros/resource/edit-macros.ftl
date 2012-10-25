@@ -864,7 +864,7 @@ $(function(){
         <li>Radiocarbon dates: 500 start, 300 end (number only, larger value first)</li>     
     </ul>
 </div>
-<div class="control-group repeatLastRow" data-add-another="add another coverage date">
+<div class="control-group repeatLastRow" id="coverageDateRepeatable" data-add-another="add another coverage date">
     <label class="control-label">Coverage Dates</label>
     
     <#list _coverageDates as coverageDate>
