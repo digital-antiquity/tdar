@@ -9,6 +9,7 @@
 
 </head>
 <body>
+<@edit.sidebar /> 
 <@edit.subNavMenu />
  
 <@s.form name='sensoryDataForm' id='frmSensoryData'  cssClass="form-horizontal" method='post' action='save' enctype='multipart/form-data'>
@@ -328,6 +329,5 @@ $(function() {
 
 </script>
  
-<@edit.sidebar /> 
 </body>
 </#escape>

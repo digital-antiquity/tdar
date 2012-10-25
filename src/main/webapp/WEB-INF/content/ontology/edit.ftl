@@ -7,6 +7,7 @@
 <meta name="lastModifiedDate" content="$Id$"/>
 </head>
 <body>
+<@edit.sidebar />
 <@edit.subNavMenu />
 <div>
 
@@ -37,7 +38,6 @@
 <@edit.submit  fileReminder=false />
 </@s.form>
 </div>
-<@edit.sidebar />
 
 <@edit.resourceJavascript includeInheritance=true>
     $(function() {
