@@ -32,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
@@ -65,7 +66,6 @@ import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.GeneralSearchQueryPart;
 import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.struts.data.KeywordNode;
-import org.tdar.struts.data.ResultsOrientation;
 
 /**
  * Eventual replacement for LuceneSearchController. extending
@@ -96,7 +96,7 @@ public class AdvancedSearchController extends
     public static final String TITLE_BY_TDAR_ID = "Search by TDAR ID";
     public static final String TITLE_TAG_KEYWORD_PHRASE = "Referred Query from the Transatlantic Archaeology Gateway";
 
-    private ResultsOrientation orientation = ResultsOrientation.LIST; 
+    private DisplayOrientation orientation = DisplayOrientation.LIST; 
     // error message of last resort. User entered something we did not
     // anticipate, and we ultimately translated it into query that lucene can't
     // parse
@@ -852,11 +852,11 @@ public class AdvancedSearchController extends
         return contentLength;
     }
 
-    public ResultsOrientation getOrientation() {
+    public DisplayOrientation getOrientation() {
         return orientation;
     }
 
-    public void setOrientation(ResultsOrientation orientation) {
+    public void setOrientation(DisplayOrientation orientation) {
         this.orientation = orientation;
     }
 

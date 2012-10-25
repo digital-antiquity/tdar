@@ -18,6 +18,7 @@ import org.hibernate.search.FullTextQuery;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.resource.Project;
@@ -31,7 +32,6 @@ import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
-import org.tdar.struts.data.ResultsOrientation;
 
 @Component
 @Scope("prototype")
@@ -194,8 +194,8 @@ public class CollectionController extends AbstractPersistableController<Resource
         return options;
     }
 
-    public List<ResultsOrientation> getResultsOrientations() {
-        List<ResultsOrientation> options = Arrays.asList(ResultsOrientation.values());
+    public List<DisplayOrientation> getResultsOrientations() {
+        List<DisplayOrientation> options = Arrays.asList(DisplayOrientation.values());
         return options;
     }
 
