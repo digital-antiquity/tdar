@@ -471,7 +471,6 @@ public class AdvancedSearchController extends
         if (groups.isEmpty()) {
             sb.append("Showing all resources");
         } else {
-            sb.append("Searching for: ");
             String searchingFor = topLevelQueryPart.getDescription();
             sb.append(searchingFor);
         }

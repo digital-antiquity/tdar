@@ -874,88 +874,23 @@ function setupDocumentEditForm() {
 }
 
 
+var $docItems = new Array();
 function switchType(el) {
     var doctype = $(el).val().toLowerCase();
 
     console.debug('switchType:start:' + doctype);
+    var $citeInfo = $("#citationInformation");
+    $(".doctypeToggle",$citeInfo).hide();
+    $($("." + doctype) ,$citeInfo).show();
 
-    $("#journalTitle").hide();
-    $("#bookTitle").hide();
-    $("#t-series").hide();
-    $("#t-jtitle").hide();
-    $("#t-isbn").hide();
-    $("#t-issn").hide();
-    $("#t-pub").hide();
-    $("#t-vol").hide();
-    $("#t-start-end").hide();
-    $("#t-institution").hide();
-    $("#t-degree").hide();
-
-    if (doctype == 'book_section') {
-        $("#t-title2-book").show();
-    }
-    if (doctype == 'journal_article') {
-        $("#t-title2-journal").show();
-    }
     switchLabel($("#publisher-hints"), doctype);
     switchLabel($("#publisherLocation-hints"), doctype);
-
-    if (doctype == 'book_section') {
-        $("#t-title2").show();
-        $("#t-isbn").show();
-        $("#t-start-end").show();
-    }
-    if (doctype == 'book_section' || doctype == 'book'
-            || doctype == 'book_section') {
-        $("#t-series").show();
-        $("#t-isbn").show();
-        $("#t-pub").show();
-    }
-
-    if (doctype == 'book_section' || doctype == 'book_section') {
-        $("#t-start-end").show();
-    }
-
-    if (doctype == 'journal_article') {
-        $("#t-title2").show();
-        $("#t-issn").show();
-        $("#t-vol").show();
-        $("#t-start-end").show();
-    }
-
-    if (doctype == 'thesis') {
-        $("#t-pub").show();
-        $("#t-degree").show();
-    }
-
-    if (doctype == 'conference') {
-        $("#t-pub").show();
-    }
-
-    if (doctype == 'other') {
-        $("#t-series").show();
-        $("#t-isbn").show();
-        $("#t-pub").show();
-        $("#t-vol").show();
-        $("#t-start-end").show();
-    }
-
-    if (!$('#title2').is(':hidden')) {
-        $('#title2').addClass("required");
-    } else {
-        $('#title2').removeClass("required");
-    }
-
-    // console.debug('switchType:end:' + doctype);
 
 }
 
 function switchLabel(field, type) {
     // console.debug('switchLabel('+field+','+type+')');
-    var label = "#" + $(field).attr('id') + '-label';
-    if ($(field).attr(type) != undefined && $(label) != undefined) {
-        $(label).text($(field).attr(type));
-    }
+    $("label",field).text(field.attr(type));
 }
 
 function toggleDiv() {

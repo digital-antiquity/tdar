@@ -39,7 +39,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <#if isBulk>
 
     <@s.hidden labelposition='left' id='resourceTitle' label='Title' name='image.title' cssClass="" value="BULK_TEMPLATE_TITLE"/>
-    <@s.hidden labelposition='left' id='dateCreated' label='Year Created' name='image.date' cssClass="" value="-100"/>
+    <@s.hidden labelposition='left' id='dateCreated' placeholder='YYYY' label='Year Created' name='image.date' cssClass="" value="-100"/>
     <@s.hidden id='ImageDescription' name='image.description' value="placeholder description"/>
 
 <#else>
@@ -1200,26 +1200,16 @@ jquery validation hooks?)
 <div id="citationInformation" class="well-alt"> 
     <h2>Additional Citation Information</h2>
 
-        <span id="publisher-hints" 
-            book="Publisher" 
-            book_section="Publisher"
-            journal_article="Publisher" 
-            conference="Conference"
-            thesis="Institution"
-            other="Publisher"></span>
-        <span id="publisherLocation-hints" style="display:none"
-            book="Publisher Loc." 
-            book_section="Publisher Loc." 
-            journal_article="Publisher Loc."
-            conference="Location" 
-            thesis="Department"
-            other="Publisher Loc."></span>
+    
+    <div tiplabel="Department / Publisher Location" tooltipcontent="Department name, or City,State (and Country, if relevant)">
+        <span id="publisher-hints"  book="Publisher" book_section="Publisher" journal_article="Publisher"  conference="Conference" thesis="Institution" other="Publisher">
+		    <@s.textfield id='publisher' label="Publisher" name='publisherName' cssClass="institution input-xxlarge"  />
+        </span>
 
-    <p tiplabel="Department / Publisher Location" tooltipcontent="Department name, or City,State (and Country, if relevant)"></p>
-    <@s.textfield id='publisher' label="Publisher" name='publisherName' cssClass="institution input-xxlarge"  />
-
-    <@s.textfield id='publisherLocation' label="Publisher Loc." name='${prefix}.publisherLocation' cssClass='input-xxlarge' />
-
+	    <span id="publisherLocation-hints" book="Publisher Loc." book_section="Publisher Loc." journal_article="Publisher Loc." conference="Location"  thesis="Department" other="Publisher Loc.">
+		    <@s.textfield id='publisherLocation' label="Publisher Loc." name='${prefix}.publisherLocation' cssClass='input-xxlarge' />
+	    </span>
+	</div>
     <#nested />
 
     <div id="divUrl" tiplabel="URL" tooltipcontent="Website address for this resource, if applicable"></div>
