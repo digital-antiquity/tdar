@@ -568,7 +568,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @Override
     public void setReadyToIndex(boolean ready) {
         // TODO Auto-generated method stub
-        
+
     }
 
 }

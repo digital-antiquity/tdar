@@ -51,7 +51,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         title="A title is required for all ${itemTypeLabel}s" name='${itemPrefix}.title' cssClass="required descriptiveTitle input-xxlarge" required=true maxlength="512"/>
 </span>
     <#if resource.resourceType != 'PROJECT'>
-    <span tiplabel="Year" tooltipcontent="Four digit year, e.g. 1966 or 2005."></span>
+    <span tiplabel="Year" tooltipcontent="Four digit year, e.g. 1966 or 2005.">
     <#local dateVal = ""/>
     <#if resource.date?? && resource.date != -1>
     <#local dateVal = resource.date?c />
@@ -59,6 +59,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <@s.textfield label="Year" id='dateCreated' name='${itemPrefix}.date' value="${dateVal}" cssClass="reasonableDate required input-mini" required=true
       title="Please enter the year this ${itemTypeLabel} was created" />
     </#if>
+    </span>
 </#if>
     <#nested>
 </div>
@@ -70,8 +71,9 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <h2>Abstract / Description</h2>
     <span id="t-abstract" class="clear"
         tiplabel="Abstract / Description"
-        tooltipcontent="Short description of the ${resource.resourceType.label}."></span>
-    <@s.textarea id='resourceDescription'  name='${itemPrefix}.description' cssClass='required resizable span6' required=true title="A description is required" />
+        tooltipcontent="Short description of the ${resource.resourceType.label}.">
+		    <@s.textarea id='resourceDescription'  name='${itemPrefix}.description' cssClass='required resizable span6' required=true title="A description is required" />
+        </span>
     
 </div>
 </#macro>
@@ -102,8 +104,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         Projects in ${siteAcronym} can contain a variety of different information resources and used to organize a set of related information resources such as documents, datasets, coding sheets, and images. A project's child resources can either inherit or override the metadata entered at this project level. For instance, if you enter the keywords "southwest" and "pueblo" on a project, resources associated with this project that choose to inherit those keywords will also be discovered by searches for the keywords "southwest" and "pueblo". Child resources that override those keywords would not be associated with those keywords (only as long as the overriden keywords are different of course). 
         </div>
 
-        <div class="indentFull" tiplabel="Inherit Metadata from Selected Project" tooltipcontent="#divSelectAllInheritanceTooltipContent" id="divInheritFromProject"></div>
-        <div class="control-group">
+        <div class="control-group" tiplabel="Inherit Metadata from Selected Project" tooltipcontent="#divSelectAllInheritanceTooltipContent" id="divInheritFromProject">
             <div class="controls">
                 <label class="checkbox" for="cbSelectAllInheritance">
                     <input type="checkbox" value="true" id="cbSelectAllInheritance" class="">
@@ -129,7 +130,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         </p>
     </div>
 
-    <p tiplabel="${siteAcronym} Collections" tooltipcontent="#divResourceCollectionListTips"></p>
+    <div tiplabel="${siteAcronym} Collections" tooltipcontent="#divResourceCollectionListTips">
     <p class="help-block">Collections enable you to organize and share resources within ${siteAcronym}</p>
     <table id="resourceCollectionTable" class="table repeatLastRow" addAnother="add another collection">
         <thead>
@@ -141,7 +142,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             </#list>
         </tbody>
     </table>
-
+	</div>
 </#macro>
 
 <#macro keywordRows label keywordList keywordField showDelete=true addAnother="add another keyword">
@@ -172,8 +173,10 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <h2>Spatial Terms</h2>
     <@inheritsection checkboxId="cbInheritingSpatialInformation" name='resource.inheritingSpatialInformation' showInherited=showInherited />
     <div id="divSpatialInformation">
-        <div tiplabel="Spatial Terms: Geographic" tooltipcontent="Keyword list: Geographic terms relevant to the document, e.g. &quot;Death Valley&quot; or &quot;Kauai&quot;." ></div>
+ 
+        <div tiplabel="Spatial Terms: Geographic" tooltipcontent="Keyword list: Geographic terms relevant to the document, e.g. &quot;Death Valley&quot; or &quot;Kauai&quot;." >
         <@keywordRows "Geographic Terms" geographicKeywords 'geographicKeywords' />
+        </div>
         
         <h4>Geographic Region</h4>
         <div id='editmapv3' class="tdar-map-large googlemap"
@@ -182,8 +185,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                 <br/>Note: to protect site security, ${siteAcronym} obfuscates all bounding boxes, bounding boxes smaller than 1 mile, especially.  This 'edit' view 
                 will always show the exact coordinates."
             ></div>
-        <br />
         <div id="divManualCoordinateEntry" tooltipcontent="#divManualCoordinateEntryTip">
+        <br />
             
             <@s.checkbox id="viewCoordinatesCheckbox" name="viewCoordinatesCheckbox" onclick="$('#explicitCoordinatesDiv').toggle(this.checked);" label='Enter / View Coordinates' labelposition='right'  />
             
@@ -871,7 +874,7 @@ $(function(){
         <li>Radiocarbon dates: 500 start, 300 end (number only, larger value first)</li>     
     </ul>
 </div>
-<div class="control-group repeatLastRow" id="coverageDateRepeatable" data-add-another="add another coverage date">
+<div class="control-group repeatLastRow" id="coverageDateRepeatable" data-add-another="add another coverage date" tooltipcontent="#coverageDatesTip">
     <label class="control-label">Coverage Dates</label>
     
     <#list _coverageDates as coverageDate>
@@ -1212,8 +1215,9 @@ jquery validation hooks?)
 	</div>
     <#nested />
 
-    <div id="divUrl" tiplabel="URL" tooltipcontent="Website address for this resource, if applicable"></div>
-    <@s.textfield name="${prefix}.url" id="txtUrl" label="URL" labelposition="left" cssClass="url input-xxlarge" placeholder="http://" />
+    <div id="divUrl" tiplabel="URL" tooltipcontent="Website address for this resource, if applicable">
+	    <@s.textfield name="${prefix}.url" id="txtUrl" label="URL" labelposition="left" cssClass="url input-xxlarge" placeholder="http://" />
+    </div>
     
 </div>
     </#if>
