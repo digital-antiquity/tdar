@@ -301,17 +301,24 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <@inheritsection checkboxId="cbInheritingOtherInformation" name='resource.inheritingOtherInformation'  showInherited=showInherited />
     <div id="divOtherInformation">
         <@keywordRows "Keyword" otherKeywords 'otherKeywords' />
-        
-        <p>fixme: replace above with below</p>
-    	<input type=text" name="test" id="otherKeywords" style="width:500px" value="<@combineValues2 otherKeywords/>"/>
-    	<script>
-    	        $(document).ready(function() {
-        $("#otherKeywords").select2({
-            tags:[<@combineValues otherKeywords />],
-            tokenSeparators: [";"]});
-    	});
-    	</script>
-
+    </div>
+    
+    <#--fixme:  moving 'tagstrip' experiment out of divOtherInformation so existing inheritance code doesn't break -->
+    <div class="row">
+                <p><span class="label label-warning">FIXME:</span> replace lame keyword lists with fancy taglists (like the one below!)</p><br>
+        <div class="control-group">
+            <label class="control-label">Other Keywords</label>
+            <div class="controls">
+                <input type=text" name="test" id="otherKeywords" style="width:500px" value="<@combineValues2 otherKeywords/>"/>
+            </div>
+        </div>
+        <script>
+        $(document).ready(function() {
+            $("#otherKeywords").select2({
+                tags:[<@combineValues otherKeywords />],
+                tokenSeparators: [";"]});
+        });
+        </script>
     </div>
 </div>
 </#macro>

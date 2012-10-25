@@ -1437,10 +1437,32 @@ TDAR.common = function() {
         }
     };
     
+    var _index = function(obj, key){
+        if(typeof obj === "undefined") return undefined;
+        return obj[key];
+    };
+    
+    //public: for a given object, return the value of the field specified using 'dot notation'
+    // e.g.:  getObjValue(obj, "foo.bar.baz") will return obj[foo][bar][baz]
+    
+    var _getObjValue = function(obj, strFieldName) {
+        //FIXME: add fallback impl. when  Array.prototype.reduce() not supported (IE8)
+        //https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/Reduce#Compatibility
+        return strFieldName.split(".").reduce(_index, obj);
+    }
+    
+    //return html-encoded copy of provided string
+    var _htmlEncode = function(str) {
+            if (typeof value === "undefined" || str === '') return "";
+            return $('<div />').text(str).html();
+    }
+    
     return {
         "initEditPage":_initEditPage,
         "initFormValidation": _setupFormValidate,
         "applyTreeviews": _applyTreeviews,
-        "initializeView": _initializeView
+        "initializeView": _initializeView,
+        "getObjValue": _getObjValue,
+        "htmlEncode": _htmlEncode
     };
 }();
