@@ -19,7 +19,6 @@ import org.tdar.core.service.external.auth.TdarGroup;
 import org.tdar.struts.RequiresTdarUserGroup;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.utils.Pair;
-import org.tdar.utils.activity.Activity;
 import org.tdar.utils.activity.IgnoreActivity;
 
 @Component
@@ -29,15 +28,13 @@ import org.tdar.utils.activity.IgnoreActivity;
 @RequiresTdarUserGroup(TdarGroup.TDAR_ADMIN)
 public class BuildSearchIndexAction extends AuthenticationAware.Base implements AsyncUpdateReceiver {
 
-
     private static final long serialVersionUID = -8927970945627420725L;
 
     private int percentDone;
     private String phase;
     private String callback;
-    
+
     LinkedList<Throwable> errors = new LinkedList<Throwable>();
-    
 
     @Autowired
     private transient SearchIndexService searchIndexService;
@@ -60,6 +57,11 @@ public class BuildSearchIndexAction extends AuthenticationAware.Base implements 
 
     @Action(value = "build", results = { @Result(name = "success", location = "build.ftl") })
     public String build() {
+        try {
+            logger.info("{} IS REBUILDING SEARCH INDEX", getAuthenticatedUser().getEmail().toUpperCase());
+        } catch (Exception e) {
+            logger.error("weird exception {} ", e);
+        }
         return SUCCESS;
     }
 
@@ -70,7 +72,7 @@ public class BuildSearchIndexAction extends AuthenticationAware.Base implements 
 
     @Override
     public void setPercentComplete(float pct) {
-        percentDone =  pct < 1f ? pct > 0 ? (int)(pct * 100) : 0 : 100;  //this is so wrong, but I couldn't resist
+        percentDone = pct < 1f ? pct > 0 ? (int) (pct * 100) : 0 : 100; // this is so wrong, but I couldn't resist
     }
 
     @Override
@@ -106,12 +108,12 @@ public class BuildSearchIndexAction extends AuthenticationAware.Base implements 
 
     @Override
     public void setDetails(List<Pair<Long, String>> details) {
-        //we ignore details for now
+        // we ignore details for now
     }
 
     @Override
     public void addDetail(Pair<Long, String> detail) {
-        //we ignore details for now
+        // we ignore details for now
     }
 
     @Override
@@ -122,7 +124,7 @@ public class BuildSearchIndexAction extends AuthenticationAware.Base implements 
     @Override
     public String getAsyncErrors() {
         StringBuilder sb = new StringBuilder();
-        for(Throwable t : errors) {
+        for (Throwable t : errors) {
             sb.append("\n").append(t.getMessage());
         }
         return sb.toString();
@@ -131,7 +133,7 @@ public class BuildSearchIndexAction extends AuthenticationAware.Base implements 
     @Override
     public String getHtmlAsyncErrors() {
         StringBuilder sb = new StringBuilder();
-        for(Throwable t : errors) {
+        for (Throwable t : errors) {
             sb.append("<br />").append(t.getMessage());
         }
         return sb.toString();
@@ -149,8 +151,7 @@ public class BuildSearchIndexAction extends AuthenticationAware.Base implements 
         setStatus(status);
         setPercentComplete(percent);
     }
-    
-    
+
     public boolean isAlreadyRunning() {
         return ActivityManager.getInstance().findActivity(SearchIndexService.BUILD_LUCENE_INDEX_ACTIVITY_NAME) == null;
     }
