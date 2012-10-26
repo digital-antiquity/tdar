@@ -124,9 +124,8 @@ html markup) you will probably not like the results
 <script>
 $(function() {
 
-  $("body").bind("mapready", function() {
+  $(".google-map", '#articleBody').one("mapready", function(e, myMap) {
 	var bounds = new google.maps.LatLngBounds();
-	var myMap = $(".google-map").data('gmap');
 	var markers = new Array();
 	var infowindows = new Array();
 	var i=0;

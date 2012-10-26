@@ -1392,12 +1392,27 @@ TDAR.common = function() {
             return $('<div />').text(str).html();
     }
     
+    //public: add escapes to string for use in css selector identifier 
+    var _cssEncode = function(str) {
+        var i;
+        var encoded = [];
+        var specialChars="!\"#$%&'()*+-./:;<=>?@[\]^`{|}~ ";
+        for(i =0; i < str.length; i++) {
+            if(specialChars.indexOf(str[i]) > -1) {
+                encoded.push("\\");
+            }
+            encoded.push(str[i]);
+        }
+        return encoded.join("");
+    }
+    
     return {
         "initEditPage":_initEditPage,
         "initFormValidation": _setupFormValidate,
         "applyTreeviews": _applyTreeviews,
         "initializeView": _initializeView,
         "getObjValue": _getObjValue,
-        "htmlEncode": _htmlEncode
+        "htmlEncode": _htmlEncode,
+        "cssEncode": _cssEncode
     };
 }();

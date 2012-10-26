@@ -191,7 +191,7 @@
 		   </aside>
 		</#if>
 
-		<article class="span${spanSize} results">
+		<article class="span${spanSize} results" id="articleBody">
 	        ${body}
 		</article>
 

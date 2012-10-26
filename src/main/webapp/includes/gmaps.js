@@ -136,7 +136,7 @@ TDAR.maps = function() {
         //TODO: draw a rect for parent project (but don't pan/zoom to it)
 
         //TODO: add "snap back" control, for when the user pans/zooms away from resource bounds
-        $('body').trigger("mapready");
+        $(mapDiv).trigger("mapready", gmap, rect);
     };
 
     //private: add rect to map, returns: google.maps.Rectangle
