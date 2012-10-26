@@ -204,6 +204,7 @@ CREATE TABLE collection (
     description text,
     name character varying(255),
     owner_id bigint,
+    updater_id bigint,
     parent_id bigint,
     collection orientation varchar(50) DEFAULT 'LIST',
     collection_type character varying(255),

@@ -98,3 +98,5 @@ update resource set uploader_id = submitter_id;
 -- 25/09/12 
 ALTER TABLE collection ADD COLUMN orientation VARCHAR(50) DEFAULT 'LIST';
 ALTER TABLE collection ADD COLUMN date_updated timestamp without time zone DEFAULT now();
+ALTER TABLE collection ADD COLUMN updater_id bigint REFERENCES person;
+update collection set updater_id = owner_id;

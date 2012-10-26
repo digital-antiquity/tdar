@@ -149,6 +149,9 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @JoinColumn(name = "owner_id", nullable = false)
     private Person owner;
 
+    @JoinColumn(name = "updater_id", nullable = true)
+    private Person updater;
+
     @Column(nullable = false, name = "date_created")
     private Date dateCreated;
 
@@ -303,7 +306,9 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         if (getDateCreated() == null || getOwner() == null) {
             setDateCreated(new Date());
             setOwner(p);
+            setUpdater(p);
         }
+        setUpdater(p);
         setDateUpdated(new Date());
 
     }
@@ -582,6 +587,14 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     public void setDateUpdated(Date dateUpdated) {
         this.dateUpdated = dateUpdated;
+    }
+
+    public Person getUpdater() {
+        return updater;
+    }
+
+    public void setUpdater(Person updater) {
+        this.updater = updater;
     }
 
 }
