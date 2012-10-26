@@ -95,4 +95,5 @@ ALTER TABLE data_table DROP COLUMN category_variable_id;
 ALTER TABLE resource ADD COLUMN uploader_id INT8 REFERENCES person;
 update resource set uploader_id = submitter_id;
 
+-- 25/09/12 
 ALTER TABLE collection ADD COLUMN orientation VARCHAR(50) DEFAULT 'LIST';

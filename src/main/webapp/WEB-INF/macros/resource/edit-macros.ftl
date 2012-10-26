@@ -84,22 +84,38 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <h4>Add to a Collection</h4>
          <@edit.resourceCollectionSection />
         
+
+        <#if !resource.resourceType.project>
+        <@chooseProjectSection />
+        </#if>   
+</div>
+</#macro>
+
+<#macro chooseProjectSection>
+    <#local _projectId = 'project.id' />
+    <#if resource.id == -1 >
+    <#local _projectId = request.getParameter('projectId')!'' />
+    </#if>
         <div id="projectTipText" style="display:none;">
         ${settings.helptext['projectTipText']!"Select a project with which your ${resource.resourceType.label} will be associated. This is an important choice because it  will allow metadata to be inherited from the project further down this form"}
         </div>
-
-        <#if !resource.resourceType.project>
         <h4>Choose a Project</h4>
         <div id="t-project" tooltipcontent="#projectTipText" tiplabel="Project">
-            <#if resource.id != -1>
-                <@s.select labelposition='left' label='Project' emptyOption='true' id='projectId' name='projectId' listKey='id' listValue='title' list='%{potentialParents}'
-                truncate="70" value='project.id' required="true" title="Please select a project" cssClass="required input-xlarge" />
-            <#else>
-                <@s.select labelposition='left' label='Project' title="Please select a project" emptyOption='true' id='projectId' name='projectId' listKey='id' listValue='title' list='%{potentialParents}'
-                truncate="70" value="${request.getParameter('projectId')!''}"required="true" cssClass="required input-xlarge" />
-            </#if>
         </div>
-
+        <@s.select labelposition='left' label='Project' title="Please select a project" emptyOption='true' id='projectId' name='projectId' listKey='id' listValue='title' list='%{potentialParents}'
+        truncate="70" value='${_projectId}' required="true"  cssClass="required input-xlarge" />
+        <div class="alert alert-block fade in " id="inheritOverwriteAlert">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <h4 class="alert-heading">Overwrite Existing Values?</h4>
+            <p>Inheriting from <span class="project-title">this project</this> will have the effect of overwriting the existing values in the following sections</p>
+            <ul id="ulInheritanceOverwriteWarnings">
+                <li><a href="#divFIXMESection">Temporal Information</a></li>
+            </ul>
+            <p>
+                <button type="button" class="btn btn-danger btn-small" >Inherit from project and overwrite values</button> 
+                <button type="button" class="btn btn-small" data-dismiss="inheritOverwriteAlert">Do not inherit from project</button>
+            </p>
+        </div>
         <div id="divSelectAllInheritanceTooltipContent" style="display:none"> 
         Projects in ${siteAcronym} can contain a variety of different information resources and used to organize a set of related information resources such as documents, datasets, coding sheets, and images. A project's child resources can either inherit or override the metadata entered at this project level. For instance, if you enter the keywords "southwest" and "pueblo" on a project, resources associated with this project that choose to inherit those keywords will also be discovered by searches for the keywords "southwest" and "pueblo". Child resources that override those keywords would not be associated with those keywords (only as long as the overriden keywords are different of course). 
         </div>
@@ -112,9 +128,6 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                 </label>
             </div>
         </div>
-        </#if>   
-    
-</div>
 </#macro>
 
 <#macro resourceCollectionSection>
@@ -1854,5 +1867,7 @@ function drawToolbar(projId) {
 	<div>
 	<br/>
 </#macro>
+
+
 
 </#escape>

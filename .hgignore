@@ -17,6 +17,8 @@ tags
 *.rej
 .idea/*
 nb-configuration.xml
+nbactions*
+glassfish-web.xml
 
 syntax: regexp
 ^src/main/webapp/robots\.txt$

@@ -75,7 +75,7 @@ function convertToFormJson(rawJson) {
         },
         collectionInformation : {
             sourceCollections : rawJson.sourceCollections,
-            relatedComparativeCollections : rawJson.relatedComparativeCollections,
+            relatedComparativeCollections : rawJson.relatedComparativeCollections
 
         },
         otherInformation : {
@@ -200,7 +200,7 @@ function inheritingMapIsSafe(rootElementSelector, spatialInformation) {
                      $('#miny').val(), 
                      $('#maxx').val(),
                      $('#maxy').val()
-                    ], function(v){if(v!=="") return parseFloat(v)});
+                    ], function(v){if(v!=="") return parseFloat(v);});
 
     return  !formVals.length || $.compareArray(jsonVals, formVals, false);
 }
@@ -223,7 +223,7 @@ function inheritingDatesIsSafe(rootElementSelector, temporalInformation) {
     // not okay to populate if the incoming list is a different size as the
     // current list
     $tableRows = $('.repeat-row', '#coverageDateRepeatable');
-    if (temporalInformation.coverageDates.length != $tableRows.length)
+    if (temporalInformation.coverageDates.length !== $tableRows.length)
         return false;
 
     // at this point it's we need to compare the contents of the form vs.
@@ -316,37 +316,6 @@ function inheritTemporalInformation(formId, json) {
     disableSection(sectionId);
 }
 
-function bindCheckboxToInheritSection(cbSelector, divSelector, isSafeCallback, inheritSectionCallback, enableSectionCallback) {
-    $(cbSelector).change(function(e) {
-        var cb = this;
-        var divid = divSelector;
-        var proceed = true;
-        if ($(cb).is(":checked")) {
-            // check if inheriting would overrwrite existing
-            // values
-            var isSafe = isSafeCallback();
-            if (!isSafe) {
-                proceed = confirm("Inheriting from '" + htmlEncode(project.title) + "' will overwrite existing values. Continue?");
-                if (!proceed) {
-                    $(cb).removeAttr("checked");
-                }
-            }
-            if (proceed) {
-                inheritSectionCallback();
-            }
-        } else {
-//            console.log(divid + " cleared");
-            if (enableSectionCallback) {
-                enableSectionCallback();
-            } else {
-                enableSection(divid);
-            }
-        }
-
-        updateSelectAllCheckboxState();
-    });
-}
-
 function applyInheritance(project, formSelector) {
     var $form = $(formSelector);
     //collection of 'options' objects for each inheritance section. options contain info about 
@@ -427,11 +396,7 @@ function projectChangedCallback(data) {
 
 
 function processInheritance(formId) {
-    // ---- bind inheritance tracking checkboxes
-    var registerSection = TDAR.inheritance.registerInheritSection;
-
-    
-
+    //declare options for each inheritSection; including the top-level div, criteria for overwrite "safety", how populate controls, etc.
     var optionsList = [ 
         {
             cbSelector : '#cbInheritingSiteInformation',
@@ -575,15 +540,16 @@ function processInheritance(formId) {
     ];
     
     $.each(optionsList, function(idx, options){
-        registerSection(options);
+        TDAR.inheritance.registerInheritSection(options);
     });
     
-    //the map won't be available immediately after load.  wait till map loaded, then disable if we are inheriting
+    //We don't want to have an editable map when resource inherits spatialInformation, however, the map won't be available immediately after pageload. So
+    //we wait till the map is loaded and ready
     $('#editmapv3').one('mapready', function(e) {
         if ($('#cbInheritingSpatialInformation').prop('checked')) {
             disableMap();
         }
-    })
+    });
 }
 
 function updateInheritanceCheckboxes() {
@@ -742,7 +708,7 @@ TDAR.inheritance = function() {
         $(':input', idSelector).prop('disabled', false);
         $('label', idSelector).removeClass('disabled');
         $('.addAnother, .minus', idSelector).show();
-    }
+    };
 
     var _registerInheritSection = function(options) {
         var $checkbox = $(options.cbSelector);
@@ -751,16 +717,42 @@ TDAR.inheritance = function() {
         var _options = {
                 isSafeCallback: function(){return true;},
                 //fixme: getObjValue(json, options.mappedData) instead?
-                inheritSectionCallback: function() {inheritInformation(formId, json[_options.mappedData])}, 
-                enableSectionCallback: enableSection, //fixme: move to namespace
+                inheritSectionCallback: function() {inheritInformation(formId, json[_options.mappedData]);}, 
+                enableSectionCallback: enableSection //fixme: move to namespace
         };
         $.extend(_options, options);
         $form.data("inheritOptionsList").push(_options);
         
-        //fixme: move this to body of this function
-        bindCheckboxToInheritSection(_options.cbSelector, _options.divSelector, _options.isSafeCallback, 
-                _options.inheritSectionCallback, _options.enableSectionCallback);     
+    var _confirm = function(msg, okaySelected, cancelSelected) {
         
+    };
+    
+    //update contents/state of section when checkbox for that section is toggled
+    $(_options.cbSelector).change(function(e) {
+        var cb = this;
+        var divid = _options.divSelector;
+        var proceed = true;
+        if ($(cb).prop("checked")) {
+            // determine if inheriting would overrwrite existing values
+            var isSafe = _options.isSafeCallback();
+            if (!isSafe) {
+                //not safe!  ask the user for confirmation
+                proceed = confirm("Inheriting from '" + htmlEncode(project.title) + "' will overwrite existing values. Continue?");
+                if (!proceed) {
+                    $(cb).removeAttr("checked");
+                }
+            }
+            if (proceed) {
+                _options.inheritSectionCallback();
+            }
+            } else {
+                    _options.enableSectionCallback();
+            }
+
+        updateSelectAllCheckboxState();
+    });
+
+    
     };
     
     return{
