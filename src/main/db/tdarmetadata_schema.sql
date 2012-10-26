@@ -208,7 +208,8 @@ CREATE TABLE collection (
     collection orientation varchar(50) DEFAULT 'LIST',
     collection_type character varying(255),
     visible boolean DEFAULT false NOT NULL,
-    date_created timestamp without time zone,
+    date_created timestamp without time zone DEFAULT now(),
+	date_updated timestamp without time zone DEFAULT now(),
     sort_order character varying(25)
 );
 

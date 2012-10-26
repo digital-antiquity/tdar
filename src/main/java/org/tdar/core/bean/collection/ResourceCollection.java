@@ -47,10 +47,10 @@ import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Store;
 import org.tdar.core.bean.DeHydratable;
+import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.SimpleSearch;
 import org.tdar.core.bean.Sortable;
 import org.tdar.core.bean.Updatable;
@@ -151,6 +151,9 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @Column(nullable = false, name = "date_created")
     private Date dateCreated;
+
+    @Column(nullable = false, name = "date_updated")
+    private Date dateUpdated;
 
     @ManyToOne
     @JoinColumn(name = "parent_id")
@@ -301,6 +304,8 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
             setDateCreated(new Date());
             setOwner(p);
         }
+        setDateUpdated(new Date());
+
     }
 
     /**
@@ -569,6 +574,14 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     public void setReadyToIndex(boolean ready) {
         // TODO Auto-generated method stub
 
+    }
+
+    public Date getDateUpdated() {
+        return dateUpdated;
+    }
+
+    public void setDateUpdated(Date dateUpdated) {
+        this.dateUpdated = dateUpdated;
     }
 
 }
