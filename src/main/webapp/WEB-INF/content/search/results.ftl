@@ -43,9 +43,9 @@
 	<#else>
 	Login
      </#if>
-        <li>Subscribe via &raquo;
+<!--        <li>Subscribe via &raquo;
         	<a class="subscribe"  href="${rssUrl}">RSS</a>
-        </li>
+        </li> -->
 				</ul>
 				<h3>View Options</h3> 
 		<ul class="tools">
