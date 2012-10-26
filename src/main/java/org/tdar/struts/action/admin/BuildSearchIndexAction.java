@@ -57,11 +57,15 @@ public class BuildSearchIndexAction extends AuthenticationAware.Base implements 
 
     @Action(value = "build", results = { @Result(name = "success", location = "build.ftl") })
     public String build() {
+        try {
+            logger.info("{} IS REBUILDING SEARCH INDEX", getAuthenticatedUser().getEmail().toUpperCase());
+        } catch (Exception e) {
+            logger.error("weird exception {} ", e);
+        }
         return SUCCESS;
     }
 
     private void buildIndex() {
-        logger.info("{} IS REBUILDING SEARCH INDEX", getAuthenticatedUser().getEmail().toUpperCase());
         searchIndexService.indexAll(this);
         percentDone = 100;
     }
@@ -89,7 +93,7 @@ public class BuildSearchIndexAction extends AuthenticationAware.Base implements 
     public void addError(Throwable t) {
         setStatus(t.getMessage());
         errors.addFirst(t);
-        logger.error(t.getMessage(),t);
+        logger.error(t.getMessage(), t);
     }
 
     @Override
