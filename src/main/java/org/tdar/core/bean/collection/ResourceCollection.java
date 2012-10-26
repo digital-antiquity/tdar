@@ -156,7 +156,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @Column(nullable = false, name = "date_created")
     private Date dateCreated;
 
-    @Column( name = "date_updated")
+    @Column(nullable=true, name = "date_updated")
     private Date dateUpdated;
 
     @ManyToOne
