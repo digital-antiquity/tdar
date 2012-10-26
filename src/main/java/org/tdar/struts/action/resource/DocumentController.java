@@ -8,7 +8,6 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
-import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.DegreeType;
@@ -149,5 +148,5 @@ public class DocumentController extends AbstractInformationResourceController<Do
     public void setDegree(DegreeType degree) {
         this.degree = degree;
     }
-    
+
 }

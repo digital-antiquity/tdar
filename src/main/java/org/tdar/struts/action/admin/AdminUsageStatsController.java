@@ -9,7 +9,6 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.joda.time.DateTime;
 import org.springframework.context.annotation.Scope;
-import org.springframework.format.datetime.joda.JodaTimeContext;
 import org.springframework.stereotype.Component;
 import org.tdar.core.service.external.auth.TdarGroup;
 import org.tdar.struts.RequiresTdarUserGroup;
