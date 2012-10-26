@@ -66,7 +66,7 @@ public class LoginAction extends AuthenticationAware.Base {
             })
     @WriteableSession
     public String authenticate() {
-        logger.debug("Trying to authenticate username:{}",  getLoginUsername());
+        logger.debug("Trying to authenticate username:{}", getLoginUsername());
         if (StringUtils.isNotBlank(getComment())) {
             logger.debug(String.format("we think this user was a spammer: %s  -- %s", getLoginUsername(), getComment()));
             addActionError("Could not authenticate");

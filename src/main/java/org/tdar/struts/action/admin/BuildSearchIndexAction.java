@@ -61,6 +61,7 @@ public class BuildSearchIndexAction extends AuthenticationAware.Base implements 
     }
 
     private void buildIndex() {
+        logger.info("{} IS REBUILDING SEARCH INDEX", getAuthenticatedUser().getEmail().toUpperCase());
         searchIndexService.indexAll(this);
         percentDone = 100;
     }
