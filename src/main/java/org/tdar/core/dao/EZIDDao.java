@@ -60,7 +60,7 @@ public class EZIDDao implements ExternalIDProvider {
     public static final String DATACITE_TITLE = DATACITE_PROFILE_NAME + ".title";
     public static final String DATACITE_CREATOR = DATACITE_PROFILE_NAME + ".creator";
     public static final String DATACITE_PUBLISHER = DATACITE_PROFILE_NAME + ".publisher";
-    public static final String DATACITE_RESOURCE_TYPE = DATACITE_PROFILE_NAME + ".resourceType";
+    public static final String DATACITE_RESOURCE_TYPE = DATACITE_PROFILE_NAME + ".resourcetype";
     public static final String DATACITE_PUBLICATIONYEAR = DATACITE_PROFILE_NAME + ".publicationyear";
     public static final String _PROFILE = "_profile";
     public static final String _TARGET = "_target";
