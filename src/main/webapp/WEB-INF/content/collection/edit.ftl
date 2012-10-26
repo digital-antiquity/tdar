@@ -51,7 +51,7 @@ function rowSelected(obj) {
         resourceTag += '            :title        ';
         resourceTag += '        </a>                                                                                  ';
         resourceTag += '    </td>                                                                                     ';
-        resourceTag += '    <td><button class="addAnother minus"  type="button" tabindex="-1" onclick="removeResourceClicked(:id, this);false;"><img src="/images/minus.gif" class="minus"></button></td>';
+        resourceTag += '    <td><button class="addAnother minus"  type="button" tabindex="-1" onclick="removeResourceClicked(:id, this);false;"><i class="icon-trash"></i></button></td>';
         resourceTag += '</tr>                                                                                         ';
 
        resourceTag = resourceTag.replace(/:id/g, obj.id);
