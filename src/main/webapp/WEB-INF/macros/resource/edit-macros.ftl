@@ -104,18 +104,22 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         </div>
         <@s.select labelposition='left' label='Project' title="Please select a project" emptyOption='true' id='projectId' name='projectId' listKey='id' listValue='title' list='%{potentialParents}'
         truncate="70" value='${_projectId}' required="true"  cssClass="required input-xlarge" />
-        <div class="alert alert-block fade in " id="inheritOverwriteAlert">
-            <button type="button" class="close" data-dismiss="alert">×</button>
-            <h4 class="alert-heading">Overwrite Existing Values?</h4>
-            <p>Inheriting from <span class="project-title">this project</this> will have the effect of overwriting the existing values in the following sections</p>
-            <ul id="ulInheritanceOverwriteWarnings">
-                <li><a href="#divFIXMESection">Temporal Information</a></li>
-            </ul>
-            <p>
-                <button type="button" class="btn btn-danger btn-small" >Inherit from project and overwrite values</button> 
-                <button type="button" class="btn btn-small" data-dismiss="inheritOverwriteAlert">Do not inherit from project</button>
-            </p>
-        </div>
+            
+        <div class="modal hide fade" id="inheritOverwriteAlert" tabindex="-1" role="dialog" aria-labelledby="validationErrorModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 id="validationErrorModalLabel">Overwrite Existing Values?</h3>
+            </div>
+            <div class="modal-body">
+                <p>Inheriting values from <span class="labeltext">the parent project</span> would overwrite existing information in the following sections</p>
+                <p class="list-container"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="btnInheritOverwriteOkay">Overwrite Existing Values</button>
+                <button type="button" class="btn"  id="btnInheritOverwriteCancel" data-dismiss="modal" aria-hidden="true">Cancel</button>
+            </div>
+        </div> 
+        
         <div id="divSelectAllInheritanceTooltipContent" style="display:none"> 
         Projects in ${siteAcronym} can contain a variety of different information resources and used to organize a set of related information resources such as documents, datasets, coding sheets, and images. A project's child resources can either inherit or override the metadata entered at this project level. For instance, if you enter the keywords "southwest" and "pueblo" on a project, resources associated with this project that choose to inherit those keywords will also be discovered by searches for the keywords "southwest" and "pueblo". Child resources that override those keywords would not be associated with those keywords (only as long as the overriden keywords are different of course). 
         </div>

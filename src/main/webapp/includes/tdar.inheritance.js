@@ -399,6 +399,8 @@ function processInheritance(formId) {
     //declare options for each inheritSection; including the top-level div, criteria for overwrite "safety", how populate controls, etc.
     var optionsList = [ 
         {
+            //todo:  derive section name from section header
+            sectionName: "Site Information",  
             cbSelector : '#cbInheritingSiteInformation',
             divSelector : '#divSiteInformation',
             mappedData : "siteInformation", // curently not used (fixme: implement tdar.common.getObjValue)
@@ -413,6 +415,7 @@ function processInheritance(formId) {
             }
         },
         {
+            sectionName: "Temporal Coverage",
             cbSelector : '#cbInheritingTemporalInformation',
             divSelector : '#divTemporalInformation',
             mappedData : "temporalInformation", // curently not used (fixme: implement tdar.common.getObjValue)
@@ -425,6 +428,7 @@ function processInheritance(formId) {
             }
         },
         {
+            sectionName: "Cultural Information",
             cbSelector : '#cbInheritingCulturalInformation',
             divSelector : '#divCulturalInformation',
             mappedData : "culturalInformation", // curently not used (fixme: implement tdar.common.getObjValue)
@@ -437,6 +441,7 @@ function processInheritance(formId) {
             }
         },
         {
+            sectionName: "General Keywords",
             cbSelector : '#cbInheritingOtherInformation',
             divSelector : '#divOtherInformation',
             mappedData : "otherInformation", // curently not used (fixme: implement tdar.common.getObjValue)
@@ -448,6 +453,7 @@ function processInheritance(formId) {
             }
         },
         {
+            sectionName: "Investigation Information",
             cbSelector : '#cbInheritingInvestigationInformation',
             divSelector : '#divInvestigationInformation',
             mappedData : "investigationInformation", // curently not used (fixme: implement tdar.common.getObjValue)
@@ -459,6 +465,7 @@ function processInheritance(formId) {
             }
         },
         {
+            sectionName: "Material Types",
             cbSelector : '#cbInheritingMaterialInformation',
             divSelector : '#divMaterialInformation',
             mappedData : "materialInformation", // curently not used (fixme: implement tdar.common.getObjValue)
@@ -470,6 +477,7 @@ function processInheritance(formId) {
             }
         },
         {
+            sectionName: "Notes",
             cbSelector : '#cbInheritingNoteInformation',
             divSelector : '#resourceNoteSection',
             mappedData : "noteInformation", // curently not used (fixme: implement tdar.common.getObjValue)
@@ -481,6 +489,7 @@ function processInheritance(formId) {
             }
         },
         {
+            sectionName: "Museum or Archive Collections",
             cbSelector : '#cbInheritingCollectionInformation',
             divSelector : '#relatedCollectionsSection',
             mappedData : "collectionInformation", // curently not used (fixme: implement tdar.common.getObjValue)
@@ -495,13 +504,14 @@ function processInheritance(formId) {
                 if(collectionInfo.sourceCollections.length) incomingVals.push(collectionInfo.sourceCollections[0].text);
                 if(collectionInfo.relatedComparativeCollections.length) incomingVals.push(collectionInfo.relatedComparativeCollections[0].text);
                 
-                return $.compareArray(existingVals, incomingVals);
+                return existingVals.length === 0 || $.compareArray(existingVals, incomingVals);
             },
             inheritSectionCallback : function() {
                 inheritCollectionInformation(formId, json);
             }
         },
         {
+            sectionName: "Agency Identifiers",
             cbSelector : '#cbInheritingIdentifierInformation',
             divSelector : '#divIdentifiers',
             mappedData : "resourceAnnotations", // curently not used (fixme: implement tdar.common.getObjValue)
@@ -521,6 +531,7 @@ function processInheritance(formId) {
             }
         },
         {
+            sectionName: "Spatial Terms / Agencey Information",
             cbSelector : '#cbInheritingSpatialInformation',
             divSelector : '#divSpatialInformation',
             mappedData : "collectionInformation", // curently not used (fixme: implement tdar.common.getObjValue)
@@ -621,9 +632,11 @@ function selectAllInheritanceClicked() {
         // make all of the section checkboxes just like this checkbox.
         if (checked) {
             // check all of the unchecked sections
-            $sectionCheckboxes.not(':checked').each(function() {
-                $(this).click();
-            });
+            
+//            $sectionCheckboxes.not(':checked').each(function() {
+//                $(this).click();
+//            });
+            attemptMultipleInheritance($sectionCheckboxes.not(':checked'));
         } else {
             // uncheck all of the checked sections
             $sectionCheckboxes.filter(':checked').each(function() {
@@ -636,6 +649,69 @@ function selectAllInheritanceClicked() {
         $elem.data('isUpdatingSections', false);
     }
 }
+
+//display modal dialog w/ list of affected sections.
+//TODO: Alert box might be better because user could inspect sections prior to decision, but managing state would be way harder 
+//(e.g. user changes additional values before they finally click 'okay' or 'cancel').
+function displayOverwritePrompt(optionsList, okaySelected, cancelSelected) {
+    $modalDiv = $('#inheritOverwriteAlert');
+    
+    //populate list of conflicting sections
+    $ul = $("<ul></ul>");
+    $.each(optionsList, function(idx, options){
+        $ul.append("<li>" + options.sectionName + "</li>");
+    });
+    $modalDiv.find('.list-container').empty().append($ul);
+
+    //modal is animated,  so we shouldn't do this dom-intensive stuff until animation is complete
+
+    //by default, treat 'hidden' event as a 'cancel'
+    $modalDiv.one("hidden", cancelSelected);
+    
+    //if 'okay' clicked,  swap out the 'cancel'  and perform multi-inheritance once the modal is completely gone
+    $('#btnInheritOverwriteOkay').one("click", function(){
+        $modalDiv.unbind("hidden", cancelSelected);
+        $modalDiv.one("hidden", okaySelected);
+        $modalDiv.modal('hide');
+    });
+    
+    $modalDiv.modal();
+}
+
+
+//get all unchecked boxes
+//get options for each
+//if any unsafe,   fire prompt
+//for prompt,  wire yes and no buttons
+function attemptMultipleInheritance($checkboxes) {
+    var unsafeSections = [];
+    var optionsList = $.map($checkboxes, function(checkbox, idx){
+        var options = $(checkbox).data("inheritOptions");
+        if(!options.isSafeCallback()) {
+            unsafeSections.push(options);
+        }
+        return options;
+    });
+    
+    //action we'll take if all sections safe OR user expressly permits overwrite
+    var _inheritMultiple = function() {
+        $checkboxes.prop("checked", true);
+        $.each(optionsList, function(idx, options){
+            options.inheritSectionCallback();
+        });
+    };
+    
+    //if any sections unsafe (i.e. inheritance would overwrite previous values),  throw a prompt to the user
+    if(unsafeSections.length) {
+        displayOverwritePrompt(unsafeSections, _inheritMultiple, function(){
+                $('#cbSelectAllInheritance').prop("checked", false);
+        });
+    //no conflicts; it's okay to go down the line and inherit the given sections
+    } else {
+        _inheritMultiple();
+    }
+}
+ 
 
 // determine whether to enable or disable the 'inherit all' checkbox based upon
 // the currently selected parent project.
@@ -710,11 +786,22 @@ TDAR.inheritance = function() {
         $('.addAnother, .minus', idSelector).show();
     };
 
+    //wrapper for modal inheritance confirm
+    var _confirm = function(msg, okaySelected, cancelSelected) {
+        var confirmed = confirm(msg);
+        if(confirmed) {
+            okaySelected();
+        } else {
+            cancelSelected();
+        }
+    };
+    
     var _registerInheritSection = function(options) {
         var $checkbox = $(options.cbSelector);
         var $form = $checkbox.closest("form");
         var formId = $form.attr("id");
         var _options = {
+                sectionName: "",
                 isSafeCallback: function(){return true;},
                 //fixme: getObjValue(json, options.mappedData) instead?
                 inheritSectionCallback: function() {inheritInformation(formId, json[_options.mappedData]);}, 
@@ -722,39 +809,39 @@ TDAR.inheritance = function() {
         };
         $.extend(_options, options);
         $form.data("inheritOptionsList").push(_options);
+        $checkbox.data("inheritOptions", _options);
         
-    var _confirm = function(msg, okaySelected, cancelSelected) {
-        
-    };
-    
-    //update contents/state of section when checkbox for that section is toggled
-    $(_options.cbSelector).change(function(e) {
-        var cb = this;
-        var divid = _options.divSelector;
-        var proceed = true;
-        if ($(cb).prop("checked")) {
-            // determine if inheriting would overrwrite existing values
-            var isSafe = _options.isSafeCallback();
-            if (!isSafe) {
-                //not safe!  ask the user for confirmation
-                proceed = confirm("Inheriting from '" + htmlEncode(project.title) + "' will overwrite existing values. Continue?");
-                if (!proceed) {
-                    $(cb).removeAttr("checked");
-                }
-            }
-            if (proceed) {
-                _options.inheritSectionCallback();
-            }
+        //update contents/state of section when checkbox for that section is toggled
+        $(_options.cbSelector).change(function(e) {
+            var cb = this;
+            var $cb = $(cb);
+            var divid = _options.divSelector;
+            if ($cb.prop("checked")) {
+                // determine if inheriting would overrwrite existing values
+                var isSafe = _options.isSafeCallback();
+                if(_options.isSafeCallback()) {
+                    _options.inheritSectionCallback();
+                } else {
+                    //not safe!  ask the user for confirmation
+                    _confirm("Inheriting from '" + htmlEncode(project.title) + "' will overwrite existing values. Continue?",
+                        function(){
+                            _options.inheritSectionCallback();
+                        },
+                        function(){
+                            $cb.prop("checked", false);
+                            _options.enableSectionCallback();
+                            updateSelectAllCheckboxState();
+                        }
+                    );
+                };
             } else {
+                //user unchecked inheritance - enable the controls
                     _options.enableSectionCallback();
+                    updateSelectAllCheckboxState();
             }
-
-        updateSelectAllCheckboxState();
-    });
-
-    
+        });
     };
-    
+
     return{
         resetRepeatable: _resetRepeatable,
         resetKeywords: _resetKeywords,
