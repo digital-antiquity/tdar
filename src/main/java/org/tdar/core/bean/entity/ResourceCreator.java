@@ -4,9 +4,11 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElementRef;
 
@@ -34,8 +36,10 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
 
     private static final long serialVersionUID = 7641781600023145104L;
 
-    @ManyToOne(optional = false, cascade = CascadeType.ALL)
+    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     @IndexedEmbedded
+    @JoinColumn(nullable = false, name = "creator_id")
+    @NotNull
     @BulkImportField(implementedSubclasses = { Person.class, Institution.class }, label = "Resource Creator", order = 1)
     private Creator creator;
 
