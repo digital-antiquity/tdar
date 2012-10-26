@@ -149,6 +149,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @JoinColumn(name = "owner_id", nullable = false)
     private Person owner;
 
+    @ManyToOne
     @JoinColumn(name = "updater_id", nullable = true)
     private Person updater;
 

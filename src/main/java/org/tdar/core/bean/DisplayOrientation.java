@@ -1,15 +1,14 @@
 package org.tdar.core.bean;
 
-
 public enum DisplayOrientation implements HasLabel {
     LIST("List"),
     GRID("Grid"),
     MAP("Map");
-    
+
     private String label;
-    
+
     private DisplayOrientation(String label) {
-    this.setLabel(label);    
+        this.setLabel(label);
     }
 
     public String getLabel() {
