@@ -1843,8 +1843,8 @@ function drawToolbar(projId) {
 
 
 <#macro subNavMenu>
-	<div id='subnavbar' class="affix-top navbar span12 row navbar-static"  data-offset-top="250" data-offset-bottom="250" data-spy="affix">
-	  <div class="navbar-inner">
+	<div id='subnavbar' class="affix-top resource-nav span12 row navbar-static"  data-offset-top="250" data-offset-bottom="250" data-spy="affix">
+	  <div class="">
 	    <div class="container" style="width: auto;">
 		<ul class="nav">
 			<li><a href="#basicInformationSection">Basic</a></li>
