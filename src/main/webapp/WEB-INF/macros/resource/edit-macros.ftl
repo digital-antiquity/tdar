@@ -1320,32 +1320,40 @@ jquery validation hooks?)
 <@s.textfield name="query" id="query" label="Title" cssClass='input-xlarge' /><br/>
 <div class="row">
 <div class="span4">
-<label for="project-selector">Project:</label>
-<select id="project-selector">
-    <option value="" selected='selected'>All Editable Projects</option>
-  <#if allSubmittedProjects?? && !allSubmittedProjects.empty>
-  <optgroup label="Your Projects">
-    <@s.iterator value='allSubmittedProjects' status='projectRowStatus' var='submittedProject'>
-        <option value="${submittedProject.id?c}" title="${submittedProject.title!""?html}"><@truncate submittedProject.title 70 /> </option>
-    </@s.iterator>
-  </optgroup>
-  </#if>
-  
-  <optgroup label="Projects you have been given access to">
-    <@s.iterator value='fullUserProjects' var='editableProject'>
-        <option value="${editableProject.id?c}" title="${editableProject.title!""?html}"><@truncate editableProject.title 70 /></option>
-    </@s.iterator>
-  </optgroup>
-</select>
+	<div class="control-group">
+		<label class="control-label" for="project-selector">Project</label>
+		<div class="controls">
+			<select id="project-selector">
+			    <option value="" selected='selected'>All Editable Projects</option>
+			  <#if allSubmittedProjects?? && !allSubmittedProjects.empty>
+			  <optgroup label="Your Projects">
+			    <@s.iterator value='allSubmittedProjects' status='projectRowStatus' var='submittedProject'>
+			        <option value="${submittedProject.id?c}" title="${submittedProject.title!""?html}"><@truncate submittedProject.title 70 /> </option>
+			    </@s.iterator>
+			  </optgroup>
+			  </#if>
+			  
+			  <optgroup label="Projects you have been given access to">
+			    <@s.iterator value='fullUserProjects' var='editableProject'>
+			        <option value="${editableProject.id?c}" title="${editableProject.title!""?html}"><@truncate editableProject.title 70 /></option>
+			    </@s.iterator>
+			  </optgroup>
+			</select>
+		</div>
+	</div>
 </div>
 <div class="span4">
-<label for="collection-selector">Collection:</label>
-<select id="collection-selector">
-    <option value="" selected='selected'>All Collections</option>
-    <@s.iterator value='resourceCollections' var='rc'>
-        <option value="${rc.id?c}" title="${rc.name!""?html}"><@truncate rc.name!"(No Name)" 70 /></option>
-    </@s.iterator>
-</select>
+	<div class="control-group">
+		<label class="control-label" for="collection-selector">Collection</label>
+		<div class="controls">
+			<select id="collection-selector">
+			    <option value="" selected='selected'>All Collections</option>
+			    <@s.iterator value='resourceCollections' var='rc'>
+			        <option value="${rc.id?c}" title="${rc.name!""?html}"><@truncate rc.name!"(No Name)" 70 /></option>
+			    </@s.iterator>
+			</select>
+		</div>
+	</div>
 </div>
 </div>
 <div class="row">
