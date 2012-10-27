@@ -356,9 +356,7 @@ public class ResourceService extends GenericService {
                     for (AuthorizedUser proxyAuthorizedUser : collection.getAuthorizedUsers()) {
                         AuthorizedUser newAuthorizedUser = new AuthorizedUser(proxyAuthorizedUser.getUser(),
                                 proxyAuthorizedUser.getGeneralPermission());
-                        // newAuthorizedUser.setResourceCollection(newInternal);
                         newInternal.getAuthorizedUsers().add(newAuthorizedUser);
-                        // getDao().save(newAuthorizedUser);
                     }
                     resource.getResourceCollections().add(newInternal);
                     newInternal.getResources().add(resource);
