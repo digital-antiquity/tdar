@@ -439,23 +439,6 @@ public class Resource extends JsonModel.Base implements Persistable,
         return users;
     }
 
-    // @Field(name = QueryFieldNames.RESOURCE_COLLECTION_PUBLIC_IDS)
-    // @IndexedEmbedded
-    // @ElementCollection
-    // @XmlTransient
-    // @JSONTransient
-    // public List<Long> getPublicCollectionsContaining() {
-    // Set<Long> collectionIds = new HashSet<Long>();
-    //
-    // for (ResourceCollection collection : getResourceCollections()) {
-    // if (collection.isShared() && collection.isVisible()) {
-    // collectionIds.add(collection.getId());
-    // collectionIds.addAll(Persistable.Base.extractIds(collection.getVisibleParents()));
-    // }
-    // }
-    // logger.trace("partOfPublicResourceCollection:" + collectionIds);
-    // return new ArrayList<Long>(collectionIds);
-    // }
 
     @Field(name = QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS)
     @IndexedEmbedded
