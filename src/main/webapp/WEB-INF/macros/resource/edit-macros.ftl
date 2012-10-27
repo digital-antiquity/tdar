@@ -512,7 +512,7 @@ The form will check for matches in the ${siteAcronym} database and populate the 
 <#local bDisabled = (authorizedUser.user.id == authenticatedUser.id) />
 <#local disabled =  bDisabled?string />
 
-    <div id='authorizedUserRow_${authorizedUser_index}_' class="repeat-row creatorPerson">
+    <div id='authorizedUserRow_${authorizedUser_index}_' class="repeat-row indent-row">
 
         <@s.hidden name='authorizedUsers[${authorizedUser_index}].user.id' value='${(authorizedUser.user.id!-1)?c}' id="authorizedUserId__id_${authorizedUser_index}_"  cssClass="validIdRequired" onchange="this.valid()"  autocompleteParentElement="#authorizedUserRow_${authorizedUser_index}_"  />
     <#if bDisabled>

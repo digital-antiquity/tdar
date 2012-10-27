@@ -780,7 +780,7 @@ table.repeatLastRow {
 	margin-bottom: -20px;
 }
 
-.creatorPerson .controls-row [class*="span"]+[class*="span"] {
+.indent-row .controls-row [class*="span"]+[class*="span"] , .creatorPerson .controls-row [class*="span"]+[class*="span"] {
 	margin-left: 10px;
 }
 
