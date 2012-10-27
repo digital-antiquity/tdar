@@ -731,7 +731,7 @@ table.legend {
 #drplist td div {
 	position: relative !important;
 	border-bottom: 1px solid #AEAEAE;
-	height: 3.2em;
+	//height: 3.2em;
 }
 
 .short .columnName {
@@ -873,4 +873,8 @@ ol.MAP .listItemPart {
 
 .repeat-row-delete {
 	float: right;
+}
+
+.no-indent {
+	margin-left:0px !important;
 }

@@ -98,7 +98,7 @@ applyZebraColors();
         <br/>
 </div>
 <div class="glide">
-                <@s.submit value='Next: select columns'/>
+                <@s.submit value='Next: select columns' cssClass="btn btn-primary submitButton"/>
 </div>
     </@s.form>
 </#if>

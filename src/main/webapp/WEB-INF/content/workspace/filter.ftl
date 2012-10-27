@@ -13,8 +13,7 @@ input[disabled] + label {
 font-weight: normal !important;
 }
 </style>
-<@edit.toolbar "filter-values"/>
-
+<h1>Filter Ontology Values</h1>
 <div class='glide'>
 You can filter data values for the datasets listed below.  Only checked values mapped to an 
 ontology will be reported below.  Select checkboxes next to the

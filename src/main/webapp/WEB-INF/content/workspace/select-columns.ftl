@@ -7,10 +7,10 @@
     position: fixed;
     top: 0;
     z-index:1000;
-    width: 922px !important;
     border: 1px solid #AAA;
     background-color: #DEDEDE;
     padding: 4px;
+    margin:0px;
     opacity:.95;
 }
 .buttontable .integrationTableNumber {
@@ -69,17 +69,20 @@ Drag columns from your selected data tables onto the integration table .
 
 </#macro>
 
-<div id="fixedList">
+<div id='fixedList' class="affix-top no-indent span12 row navbar-static"  data-offset-top="250" data-offset-bottom="250" data-spy="affix">
 <h4>Each Column Below will be a Column In Excel</h4>
 <table width="100%">
     <tr>
         <td>
-            <input type="checkbox" id="autoselect" />
-            <label for="autoselect">Auto-select integratable columns</label>
+            <label for="autoselect">
+            <input type="checkbox" id="autoselect" class="checkbox inline"/>
+            Auto-select integratable columns
+            </label>
         </td>
         <td>
-            <input type="checkbox" id="clear" /> 
-            <label for="clear">Clear all columns</label>
+            <label for="clear">
+            <input type="checkbox" id="clear"  class="checkbox inline" /> 
+            Clear all columns</label>
         </td>
     </tr>
 </table>
@@ -96,8 +99,8 @@ Drag columns from your selected data tables onto the integration table .
 </tr>
 </table>
   <div class="status"></div>
-<button class="addAnother" id="addColumn"><img src='/images/add.gif'> Add a new Column</button>
-<@s.submit value='Next: filter values' id="submitbutton" class="submitbutton" />
+<button class="addAnother btn" id="addColumn"><i class="icon-plus-sign"></i> Add a new Column</button>
+<@s.submit value='Next: filter values' id="submitbutton" cssClass="submitbutton submitButton btn button btn-primary" />
 
 </div>
 </div>
@@ -154,7 +157,7 @@ Drag columns from your selected data tables onto the integration table .
       </#list>
 
 <br/><br/>
-<@s.submit value='Next: filter values' class="submitbutton" />
+<@s.submit value='Next: filter values' cssClass="submitbutton btn btn-primary submitButton" />
 
 
 </div>
