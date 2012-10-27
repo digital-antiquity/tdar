@@ -512,7 +512,7 @@ The form will check for matches in the ${siteAcronym} database and populate the 
 <#local bDisabled = (authorizedUser.user.id == authenticatedUser.id) />
 <#local disabled =  bDisabled?string />
 
-    <div id='authorizedUserRow_${authorizedUser_index}_' class="repeat-row">
+    <div id='authorizedUserRow_${authorizedUser_index}_' class="repeat-row creatorPerson">
 
         <@s.hidden name='authorizedUsers[${authorizedUser_index}].user.id' value='${(authorizedUser.user.id!-1)?c}' id="authorizedUserId__id_${authorizedUser_index}_"  cssClass="validIdRequired" onchange="this.valid()"  autocompleteParentElement="#authorizedUserRow_${authorizedUser_index}_"  />
     <#if bDisabled>
@@ -1150,7 +1150,7 @@ jquery validation hooks?)
                     Reorder: <span class="link alphasort">Alphabetic</span> | <span class="link" onclick="customSort(this)">Custom</span>  
                 </div>
 
-        <table id="files" role="presentation" class="table table-striped sortable">
+        <table id="files" role="presentation" class="tableFormat table table-striped sortable">
             <thead>
                <th><!--preview-->&nbsp;</th>
                <th>Name</th>
