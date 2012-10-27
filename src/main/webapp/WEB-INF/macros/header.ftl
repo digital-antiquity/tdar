@@ -1,3 +1,6 @@
+<#global jquery_version="1.8.2">
+<#global jquery_ui_version="1.8.23">
+
 <#macro scripts combine=false>
 <!--[if IE]><script language="javascript" type="text/javascript" src="<@s.url value="/includes/Jit-2.0.1/Extras/excanvas.js"/>"></script><![endif]--> 
 

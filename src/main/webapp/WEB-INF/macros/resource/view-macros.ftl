@@ -997,23 +997,23 @@ $(function() {
 </#macro>
 
 
-<#macro tdarCitation resource_ showLabel = true>
-  <li>
-  	<#local url><@s.url value="/${resource_.urlNamespace}/${resource_.id?c}"/></#local>
-		<a href="${url}" target="_top"><@firstThumbnail resource_ /></a>
+<#macro tdarCitation resource=resource showLabel=true count=0>
+  <div class="item <#if count==0>active</#if>">
+  	<#local url><@s.url value="/${resource.urlNamespace}/${resource.id?c}"/></#local>
+		<a href="${url}" target="_top"><@firstThumbnail resource /></a>
 		<p class="title">
-			<a href="${url}">${resource_.title} </a><br>
-		    <#if resource_.formattedAuthorList?has_content>${resource_.formattedAuthorList}
+			<a href="${url}">${resource.title} </a><br>
+		    <#if resource.formattedAuthorList?has_content>${resource.formattedAuthorList}
 		    <br/></#if>
 		</p>
 	
-		<p><@truncate resource_.description 150 /></p>
+		<p><@truncate resource.description 150 /></p>
 	
 		<p>
-			<a href="${url}" class="button">View ${resource_.resourceType.label}</a> or &nbsp; <a href="">Browse all projects</a>
+			<a href="${url}" class="button">View ${resource.resourceType.label}</a> or &nbsp; <a href="">Browse all projects</a>
 		</p>    
 
-  </li>
+  </div>
 </#macro>
 
 <#macro toOpenURL resource>
