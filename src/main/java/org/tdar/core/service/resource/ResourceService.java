@@ -348,7 +348,9 @@ public class ResourceService extends GenericService {
                     logger.info("cloning collection: {}", collection);
                     ResourceCollection newInternal = new ResourceCollection(CollectionType.INTERNAL);
                     newInternal.setName(collection.getName());
-                    newInternal.markUpdated(collection.getOwner());
+                    Person owner = collection.getOwner();
+                    refresh(owner);
+                    newInternal.markUpdated(owner);
                     getDao().save(newInternal);
 
                     for (AuthorizedUser proxyAuthorizedUser : collection.getAuthorizedUsers()) {
