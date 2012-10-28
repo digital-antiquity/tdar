@@ -273,6 +273,9 @@ public class EZIDDao implements ExternalIDProvider {
                 case VIDEO:
                     resourceType = "Film";
                     break;
+                case IMAGE:
+                    resourceType = "Image";
+                    break;
             }
 
             buildAnvlLine(responseBuilder, DATACITE_RESOURCE_TYPE, aNVLEscape(resourceType));
