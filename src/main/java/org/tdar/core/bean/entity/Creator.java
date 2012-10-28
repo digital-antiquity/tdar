@@ -1,17 +1,23 @@
 package org.tdar.core.bean.entity;
 
 import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -33,6 +39,7 @@ import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Resolution;
 import org.hibernate.search.annotations.Store;
+import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Indexable;
@@ -137,6 +144,10 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
 
     @Column(length = 64)
     private String url;
+
+//    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+//    @JoinColumn(nullable = false, updatable = false, name = "creator_id")
+//    private Set<Address> addresses = new LinkedHashSet<Address>();
 
     private String location;
 
@@ -347,5 +358,13 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
     public void setReadyToIndex(boolean readyToIndex) {
         this.readyToIndex = readyToIndex;
     }
+
+//    public Set<Address> getAddresses() {
+//        return addresses;
+//    }
+//
+//    public void setAddresses(Set<Address> addresses) {
+//        this.addresses = addresses;
+//    }
 
 }

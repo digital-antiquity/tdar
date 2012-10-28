@@ -1,8 +1,11 @@
 package org.tdar.core.bean.billing;
 
 import java.util.Date;
+import java.util.List;
 
 import org.tdar.core.bean.Persistable.Base;
+import org.tdar.core.bean.entity.Address;
+import org.tdar.core.bean.entity.Person;
 
 /**
  * $Id$
@@ -15,61 +18,66 @@ import org.tdar.core.bean.Persistable.Base;
 public class Invoice extends Base {
 
     private static final long serialVersionUID = -3613460318580954253L;
-    
+
     private Date dateCreated = new Date();
-    // the confirmation id for this invoice 
+    // the confirmation id for this invoice
     private String transactionId;
-    private Integer numberOfRecords;
-    private Long numberOfBytes;
-    
+    private Person person;
+    private Address address;
+    private List<Item> items;
+
     /**
      * @return the dateCreated
      */
     public Date getDateCreated() {
         return dateCreated;
     }
+
     /**
-     * @param dateCreated the dateCreated to set
+     * @param dateCreated
+     *            the dateCreated to set
      */
     public void setDateCreated(Date dateCreated) {
         this.dateCreated = dateCreated;
     }
+
     /**
      * @return the transactionId
      */
     public String getTransactionId() {
         return transactionId;
     }
+
     /**
-     * @param transactionId the transactionId to set
+     * @param transactionId
+     *            the transactionId to set
      */
     public void setTransactionId(String transactionId) {
         this.transactionId = transactionId;
     }
-    /**
-     * @return the numberOfRecords
-     */
-    public Integer getNumberOfRecords() {
-        return numberOfRecords;
+
+    public Address getAddress() {
+        return address;
     }
-    /**
-     * @param numberOfRecords the numberOfRecords to set
-     */
-    public void setNumberOfRecords(Integer numberOfRecords) {
-        this.numberOfRecords = numberOfRecords;
+
+    public void setAddress(Address address) {
+        this.address = address;
     }
-    /**
-     * @return the numberOfBytes
-     */
-    public Long getNumberOfBytes() {
-        return numberOfBytes;
+
+    public Person getPerson() {
+        return person;
     }
-    /**
-     * @param numberOfBytes the numberOfBytes to set
-     */
-    public void setNumberOfBytes(Long numberOfBytes) {
-        this.numberOfBytes = numberOfBytes;
+
+    public void setPerson(Person person) {
+        this.person = person;
     }
-    
+
+    public List<Item> getItems() {
+        return items;
+    }
+
+    public void setItems(List<Item> items) {
+        this.items = items;
+    }
 
 }

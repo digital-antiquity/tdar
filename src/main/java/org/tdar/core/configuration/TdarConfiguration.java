@@ -479,5 +479,8 @@ public class TdarConfiguration {
         return assistant.getBooleanProperty("odata.enabled", false);
     }
 
+    public boolean isPayPerIngestEnabled() {
+        return assistant.getBooleanProperty("pay.per.contribution.enabled", false);
+    }
     
 }
