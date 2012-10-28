@@ -11,8 +11,8 @@ import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.service.external.auth.InternalTdarRights;
-import org.tdar.core.service.external.auth.TdarGroup;
+import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.search.query.QueryFieldNames;
 
 public class StatusQueryPart extends FieldQueryPart<Status> {

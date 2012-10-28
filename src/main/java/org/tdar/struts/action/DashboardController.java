@@ -1,7 +1,7 @@
 package org.tdar.struts.action;
 
-import static org.tdar.core.service.external.auth.InternalTdarRights.SEARCH_FOR_DELETED_RECORDS;
-import static org.tdar.core.service.external.auth.InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS;
+import static org.tdar.core.dao.external.auth.InternalTdarRights.SEARCH_FOR_DELETED_RECORDS;
+import static org.tdar.core.dao.external.auth.InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,7 +24,7 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.service.external.auth.InternalTdarRights;
+import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.search.query.SortOption;
 
 /**

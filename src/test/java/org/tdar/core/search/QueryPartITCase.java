@@ -13,7 +13,7 @@ import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.service.external.auth.TdarGroup;
+import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FreetextQueryPart;
 import org.tdar.search.query.part.StatusQueryPart;

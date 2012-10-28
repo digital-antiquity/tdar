@@ -1,4 +1,4 @@
-package org.tdar.core.service.external.auth.provider;
+package org.tdar.core.dao.external.auth;
 
 import java.rmi.RemoteException;
 
@@ -11,9 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.service.external.auth.AuthenticationProvider;
-import org.tdar.core.service.external.auth.AuthenticationResult;
-import org.tdar.core.service.external.auth.TdarGroup;
 
 import com.atlassian.crowd.integration.authentication.PasswordCredential;
 import com.atlassian.crowd.integration.exception.ApplicationAccessDeniedException;
@@ -42,7 +39,7 @@ import com.atlassian.crowd.integration.soap.SOAPPrincipal;
  * @see <a href='http://confluence.atlassian.com/display/CROWD/Creating+a+Crowd+Client+for+your+Custom+Application'>Crowd documentation</a>
  */
 @Service
-public class CrowdSoapService extends BaseAuthenticationProvider {
+public class CrowdSoapDao extends BaseAuthenticationProvider {
 
     private final SecurityServerClient securityServerClient;
 
@@ -50,13 +47,13 @@ public class CrowdSoapService extends BaseAuthenticationProvider {
 
     private String passwordResetURL;
 
-    public CrowdSoapService() {
+    public CrowdSoapDao() {
         this.httpAuthenticator = null;
         this.securityServerClient = null;
     }
 
     @Autowired(required = false)
-    public CrowdSoapService(SecurityServerClient securityServerClient, HttpAuthenticator httpAuthenticator) {
+    public CrowdSoapDao(SecurityServerClient securityServerClient, HttpAuthenticator httpAuthenticator) {
         this.securityServerClient = securityServerClient;
         this.httpAuthenticator = httpAuthenticator;
     }

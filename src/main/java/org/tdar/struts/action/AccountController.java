@@ -18,9 +18,9 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.request.ContributorRequest;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.dao.external.auth.AuthenticationResult;
+import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.external.auth.AuthenticationResult;
-import org.tdar.core.service.external.auth.InternalTdarRights;
 
 import com.opensymphony.xwork2.Preparable;
 

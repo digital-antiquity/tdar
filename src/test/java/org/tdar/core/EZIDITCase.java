@@ -19,8 +19,8 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.dao.EZIDDao;
-import org.tdar.core.dao.ExternalIDProvider;
+import org.tdar.core.dao.external.pid.EZIDDao;
+import org.tdar.core.dao.external.pid.ExternalIDProvider;
 import org.tdar.core.service.UrlService;
 import org.tdar.struts.action.search.AbstractSearchControllerITCase;
 

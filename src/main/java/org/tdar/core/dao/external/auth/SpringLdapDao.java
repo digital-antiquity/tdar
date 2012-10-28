@@ -1,4 +1,4 @@
-package org.tdar.core.service.external.auth.provider;
+package org.tdar.core.dao.external.auth;
 
 import java.util.List;
 
@@ -26,8 +26,6 @@ import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.filter.WhitespaceWildcardsFilter;
 import org.springframework.stereotype.Service;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.service.external.auth.AuthenticationResult;
-import org.tdar.core.service.external.auth.TdarGroup;
 
 /**
  * $Id$
@@ -42,7 +40,7 @@ import org.tdar.core.service.external.auth.TdarGroup;
  * 
  */
 @Service
-public class SpringLdapService extends BaseAuthenticationProvider {
+public class SpringLdapDao extends BaseAuthenticationProvider {
 
     private final LdapTemplate ldapTemplate;
     private String passwordResetURL;
@@ -50,12 +48,12 @@ public class SpringLdapService extends BaseAuthenticationProvider {
     private String userRDN;
     private String groupDN;
 
-    public SpringLdapService() {
+    public SpringLdapDao() {
         ldapTemplate = null;
     }
 
     @Autowired(required = false)
-    public SpringLdapService(LdapTemplate ldapTemplate) {
+    public SpringLdapDao(LdapTemplate ldapTemplate) {
         this.ldapTemplate = ldapTemplate;
     }
 

@@ -4,7 +4,7 @@
  * @author $Author$
  * @version $Revision$
  */
-package org.tdar.core.dao;
+package org.tdar.core.dao.external.pid;
 
 import java.io.IOException;
 import java.util.HashMap;

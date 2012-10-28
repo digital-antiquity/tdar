@@ -10,9 +10,9 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
-import org.tdar.core.service.external.auth.InternalTdarRights;
 import org.tdar.web.SessionDataAware;
 
 /**

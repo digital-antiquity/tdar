@@ -12,7 +12,7 @@ import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.dao.ExternalIDProvider;
+import org.tdar.core.dao.external.pid.ExternalIDProvider;
 import org.tdar.core.service.processes.DoiProcess;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.utils.Pair;

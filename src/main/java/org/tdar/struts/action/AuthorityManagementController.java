@@ -17,9 +17,9 @@ import org.springframework.util.CollectionUtils;
 import org.tdar.core.bean.DedupeableType;
 import org.tdar.core.bean.entity.Dedupable;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.AuthorityManagementService;
-import org.tdar.core.service.external.auth.TdarGroup;
 import org.tdar.struts.RequiresTdarUserGroup;
 import org.tdar.struts.WriteableSession;
 

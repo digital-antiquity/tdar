@@ -1,7 +1,6 @@
-package org.tdar.core.service.external.auth.provider;
+package org.tdar.core.dao.external.auth;
 
 import org.apache.log4j.Logger;
-import org.tdar.core.service.external.auth.AuthenticationProvider;
 
 public abstract class BaseAuthenticationProvider implements AuthenticationProvider {
 

@@ -1,4 +1,4 @@
-package org.tdar.core.service.external.auth;
+package org.tdar.core.dao.external.auth;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

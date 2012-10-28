@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.service.external.auth.AuthenticationResult;
+import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.struts.WriteableSession;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;

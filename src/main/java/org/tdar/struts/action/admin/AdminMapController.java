@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
-import org.tdar.core.service.external.auth.TdarGroup;
+import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.search.geosearch.GeoSearchDao.SpatialTables;
 import org.tdar.search.geosearch.GeoSearchService;
 import org.tdar.struts.RequiresTdarUserGroup;

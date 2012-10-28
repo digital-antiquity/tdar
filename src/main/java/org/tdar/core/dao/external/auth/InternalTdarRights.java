@@ -1,4 +1,4 @@
-package org.tdar.core.service.external.auth;
+package org.tdar.core.dao.external.auth;
 
 public enum InternalTdarRights {
     VIEW_AND_DOWNLOAD_CONFIDENTIAL_INFO(TdarGroup.TDAR_ADMIN, TdarGroup.TDAR_EDITOR),

@@ -17,6 +17,6 @@ import java.lang.annotation.Target;
 @Target({ ElementType.TYPE, ElementType.METHOD })
 public @interface RequiresTdarUserGroup {
 
-    public org.tdar.core.service.external.auth.TdarGroup value() default org.tdar.core.service.external.auth.TdarGroup.TDAR_USERS;
+    public org.tdar.core.dao.external.auth.TdarGroup value() default org.tdar.core.dao.external.auth.TdarGroup.TDAR_USERS;
 
 }

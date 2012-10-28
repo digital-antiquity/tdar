@@ -1,4 +1,4 @@
-package org.tdar.core.service.external.auth.provider;
+package org.tdar.core.dao.external.auth;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,8 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.stereotype.Service;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.service.external.auth.AuthenticationResult;
-import org.tdar.core.service.external.auth.TdarGroup;
 
 /*
  * This provider is designed specifically for testing where no valid connection to an external service

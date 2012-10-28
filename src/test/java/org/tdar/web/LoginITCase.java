@@ -4,7 +4,7 @@
 package org.tdar.web;
 
 import org.junit.Test;
-import org.tdar.core.service.external.auth.AuthenticationResult;
+import org.tdar.core.dao.external.auth.AuthenticationResult;
 
 /**
  * @author Adam Brin
