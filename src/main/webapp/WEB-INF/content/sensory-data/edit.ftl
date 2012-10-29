@@ -313,7 +313,7 @@
 
 </@s.form>
  
- 
+<@edit.asyncUploadTemplates />
 <@edit.resourceJavascript formSelector="#frmSensoryData" selPrefix="#sensoryData" includeAsync=true includeInheritance=true />
 <script>
 $(function() {
