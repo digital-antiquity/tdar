@@ -152,7 +152,13 @@ html markup) you will probably not like the results
         <${titleTag} class="${titleCssClass}">
     </#if>
     <a class="resourceLink" href="<@s.url value="/${result.urlNamespace}/${result.id?c}"/>"><#rt>
+    <#if result.title?has_content>
         ${result.title!"No Title"}<#t>
+    <#elseif result.properName?has_content>
+        ${result.properName!"No Name"}<#t>
+     <#else>
+     	No Title
+    </#if>
         <#if (result.date?has_content && (result.date > 0 || result.date < -1) )>(${result.date?c})</#if>
     </a><#lt>
     <@bookmark result false/>
