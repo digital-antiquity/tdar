@@ -276,7 +276,8 @@
 		        <@s.checkbox name="sensoryData.meshRgbIncluded" cssClass="" label="RGB Color Included" />
 		        <@s.checkbox name="sensoryData.meshdataReduction" cssClass="" label="Data Reduction" />
 		        <@s.checkbox name="sensoryData.meshSmoothing" cssClass="" label="Smoothing" />
-        	</div><divclass="span45">
+        	</div>
+        	<div class="span45">
 		        <@s.checkbox name="sensoryData.meshHolesFilled" cssClass="" label="Holes Filled"  />
 		        <@s.checkbox name="sensoryData.meshColorEditions" cssClass="" label="Color Editions"  /> 
 		        <@s.checkbox name="sensoryData.meshHealingDespiking" cssClass="" label="Healing/De-spiking"  /> 
@@ -304,7 +305,6 @@
             <@s.checkbox name="sensoryData.rgbPreservedFromOriginal" cssClass="indent" label="RGB Color Included" labelposition="right" />
         </fieldset>
     </div>
-    </p>
 </div>
 
 
