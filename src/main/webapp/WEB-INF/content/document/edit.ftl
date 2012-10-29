@@ -5,7 +5,6 @@
 <@edit.title />
 
 <meta name="lastModifiedDate" content="$Date$"/>
-
 </head>
 <body class="resource">
 <@edit.sidebar />

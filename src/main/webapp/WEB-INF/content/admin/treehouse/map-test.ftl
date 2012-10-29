@@ -26,5 +26,7 @@ $(function() {
 });
 </script>
 
+<div id="overlay"></div>
+<p id="popup">Loading...</p>
 </body>
 </#escape>

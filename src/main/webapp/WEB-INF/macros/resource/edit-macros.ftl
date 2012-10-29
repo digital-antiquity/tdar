@@ -106,8 +106,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             <label class="control-label">Project</label>
             <div class="controls controls-row">
                 <@s.select theme="simple" title="Please select a project" emptyOption='true' id='projectId' name='projectId' listKey='id' listValue='title' list='%{potentialParents}'
-                truncate="70" value='${_projectId}' required="true"  cssClass="required input-xlarge" />
-                <button type="button" id="btnOpenInNewWindow" class="btn btn-small hidden">View Project In Separate Window</button>
+                truncate="70" value='${_projectId}' required="true"  cssClass="required input-xxlarge" />
                 
             </div>
         </div>

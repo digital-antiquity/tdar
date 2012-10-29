@@ -1294,8 +1294,6 @@ TDAR.common = function() {
             $button.removeAttr('disabled').removeClass("waitingSpinner");
         });
         
-        //init map
-//        loadTdarMap();
 
         //init repeatrows
         TDAR.repeatrow.registerRepeatable(".repeatLastRow");
@@ -1359,6 +1357,28 @@ TDAR.common = function() {
         _setupEditForm(form);
 
         _applyTreeviews();
+        
+        //show project preview button when appropriate
+        $('#projectId').change(function() {
+            var $select = $(this);
+            var $row = $select.closest('.controls-row');
+            $('.view-project', $row).remove();
+            if($select.val().length > 0 && $select.val() !=="-1") {
+                var href = getURI('project/' + $select.val());
+                var $button = '<a class="view-project btn btn-small" target="_project" href="' + href + '">View project in new window</a>';
+                $row.append($button);
+            }
+        }).change();
+        
+        
+        //display generic wait message with ajax events
+        $('body').bind('ajaxSend', function(e){
+            $('#ajaxIndicator').show();
+            //TODO: include a timeout to dismiss loading or display warning mesage
+        });
+        $('body').bind('ajaxComplete', function(e) {
+           $('#ajaxIndicator').hide(); 
+        });
         
     };
     
