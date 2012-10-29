@@ -42,7 +42,9 @@ html markup) you will probably not like the results
   <#list resourcelist as resource>
     <#local key = "" />
     <#local defaultKeyLabel="No Project"/>
+    <#-- if we're a resource && are viewable -->
     <#if resource?? && (!resource.viewable?has_content || resource.viewable) >
+		<#-- handle grouping/sorting  -->
         <#if sortfield?contains('RESOURCE_TYPE') || sortfield?contains('PROJECT')>
             <#if sortfield?contains('RESOURCE_TYPE')>
                 <#local key = resource.resourceType.plural />
@@ -52,10 +54,11 @@ html markup) you will probably not like the results
                 <#local defaultKeyLabel="No Project"/>
                 <#if resource.project??>
                     <#local key = resource.project.titleSort />
-                <#elseif resource.resourceType == 'PROJECT'>
+                <#elseif resource.resourceType.project >
                     <#local key = resource.titleSort />
                 </#if>
             </#if>
+            <#-- print header and group/list tag -->
             <#if first || (prev != key) && key?has_content>
                 <#if prev?has_content></${listTag_}></#if>
                 <${headerTag}><#if key?has_content>${key}<#else>${defaultKeyLabel}</#if></${headerTag}>
@@ -63,12 +66,15 @@ html markup) you will probably not like the results
             </#if>
             <#local prev=key />
         <#elseif resource_index == 0>
+            <#-- default case for group tag -->
             <@printTag listTag_ "resource-list row ${orientation}" false />
         </#if>  
+		<#-- printing item tag -->
             <@printTag itemTag_ "listItem ${itemClass!''}" false>
             <#if orientation == 'MAP' && resource.firstActiveLatitudeLongitudeBox?has_content> data-lat="${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLatitude?c}"
 			data-long="${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLongitude?c}" </#if>
 			</@printTag>
+
             <#if itemTag_?lower_case != 'li'>
 				<#if resource_index != 0>
 				<#if orientation != 'GRID'>
@@ -79,34 +85,12 @@ html markup) you will probably not like the results
 				</#if>
             </#if>
             <#if orientation == 'GRID'>
-            			<a href="<@s.url value="/${resource.urlNamespace}/${resource.id?c}"/>" target="_top"><@view.firstThumbnail resource /></a><br/>
+    			<a href="<@s.url value="/${resource.urlNamespace}/${resource.id?c}"/>" target="_top"><@view.firstThumbnail resource /></a><br/>
             </#if>
             <@searchResultTitleSection resource titleTag />
+			<@printLuceneExplanation  resource />
+			<@printDescription resource=resource length=500 />
 
-            <blockquote class="luceneExplanation">
-    	        <#if resource.explanation?has_content><b>explanation:</b>${resource.explanation}<br/></#if>
-			</blockquote>
-            <blockquote class="luceneScore">
-	            <#if resource.score?has_content><b>score:</b>${resource.score}<br/></#if>
-			</blockquote>
-            
-            <#if expanded && orientation != 'GRID'>
-                <div class="listItemPart">
-    <#if (resource.citationRecord && resource.resourceType != 'PROJECT')>
-   			<span class='cartouche' title="Citation only; this record has no attached files.">Citation</span></#if>
-		    <@common.cartouch resource true><@listCreators resource/></@common.cartouch>  
-                <@view.unapiLink resource  />
-                <#if showProject && resource.resourceType != 'PROJECT'>
-                <p class="project">${resource.project.title}</p>
-                </#if>
-                <#if resource.description?has_content && !resource.description?starts_with("The information in this record has been migrated into tDAR from the National Archaeological Database Reports Module") >
-                    <p class="abstract">
-                        <@common.truncate resource.description!"No description specified." 500 />
-                    </p>
-                </#if>
-                <br/>
-                </div>
-            </#if>
             </${itemTag_}>
         <#local first=false/>
      </#if>
@@ -121,51 +105,83 @@ html markup) you will probably not like the results
 	</div>
 	</#if>	
 	</div>    
-<script>
-$(function() {
-
-  $(".google-map", '#articleBody').one("mapready", function(e, myMap) {
-	var bounds = new google.maps.LatLngBounds();
-	var markers = new Array();
-	var infowindows = new Array();
-	var i=0;
-	$("ol.MAP li").each(function() {
-		i++;
-		var $this = $(this);
-		if ($this.attr("data-lat") && $this.attr('data-long')) {
-			var infowindow = new google.maps.InfoWindow({
-			    content: $this.html()
-			});
-			var marker = new google.maps.Marker({
-			    position: new google.maps.LatLng($this.attr("data-lat"),$this.attr("data-long")),
-			    map: myMap,
-			    icon: 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld='+i+'|7a1501|FFFFFF',
-			    title:$("a.resourceLink", $this).text()
-			});
+	<#-- JIM FIXME: WHERE SHOULD I GO -->
+		<script>
+		$(function() {
 		
-			$(this).click(function() {
-				myMap.panTo(marker.getPosition());
-			  $(infowindows).each(function() {this.close(myMap);});
-			  infowindow.open(myMap,marker);
-			  return false;
-			});
-	
-			google.maps.event.addListener(marker, 'click', function() {
-			  $(infowindows).each(function() {this.close(myMap);});
-			  infowindow.open(myMap,marker);
-			});
-		
-			markers[markers.length] = marker;
-			infowindows[infowindows.length] = infowindow;
-			bounds.extend(marker.position);
-			myMap.fitBounds(bounds);
-		};
-	}); 
-});
-});
-</script>	  
+		  $(".google-map", '#articleBody').one("mapready", function(e, myMap) {
+			var bounds = new google.maps.LatLngBounds();
+			var markers = new Array();
+			var infowindows = new Array();
+			var i=0;
+			$("ol.MAP li").each(function() {
+				i++;
+				var $this = $(this);
+				if ($this.attr("data-lat") && $this.attr('data-long')) {
+					var infowindow = new google.maps.InfoWindow({
+					    content: $this.html()
+					});
+					var marker = new google.maps.Marker({
+					    position: new google.maps.LatLng($this.attr("data-lat"),$this.attr("data-long")),
+					    map: myMap,
+					    icon: 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld='+i+'|7a1501|FFFFFF',
+					    title:$("a.resourceLink", $this).text()
+					});
+				
+					$(this).click(function() {
+						myMap.panTo(marker.getPosition());
+					  $(infowindows).each(function() {this.close(myMap);});
+					  infowindow.open(myMap,marker);
+					  return false;
+					});
+			
+					google.maps.event.addListener(marker, 'click', function() {
+					  $(infowindows).each(function() {this.close(myMap);});
+					  infowindow.open(myMap,marker);
+					});
+				
+					markers[markers.length] = marker;
+					infowindows[infowindows.length] = infowindow;
+					bounds.extend(marker.position);
+					myMap.fitBounds(bounds);
+				};
+			}); 
+		});
+		});
+		</script>	  
   </#if>
 </#macro>
+
+
+<#macro printDescription resource=resource length=80>
+            <#if expanded && orientation != 'GRID'>
+                <div class="listItemPart">
+		    <#if (resource.citationRecord && !resource.resourceType.project)>
+   			<span class='cartouche' title="Citation only; this record has no attached files.">Citation</span></#if>
+		    <@common.cartouch resource true><@listCreators resource/></@common.cartouch>  
+                <@view.unapiLink resource  />
+                <#if showProject && !resource.resourceType.project >
+                <p class="project">${resource.project.title}</p>
+                </#if>
+                <#if resource.description?has_content && !resource.description?starts_with("The information in this record has been migrated into tDAR from the National Archaeological Database Reports Module") >
+                    <p class="abstract">
+                        <@common.truncate resource.description!"No description specified." length />
+                    </p>
+                </#if>
+                <br/>
+                </div>
+            </#if>
+</#macro>
+
+	<#macro printLuceneExplanation resource>
+            <blockquote class="luceneExplanation">
+    	        <#if resource.explanation?has_content><b>explanation:</b>${resource.explanation}<br/></#if>
+			</blockquote>
+            <blockquote class="luceneScore">
+	            <#if resource.score?has_content><b>score:</b>${resource.score}<br/></#if>
+			</blockquote>
+	</#macro>
+
 
 <#macro searchResultTitleSection result titleTag>
     <#local titleCssClass="search-result-title-${result.status!('ACTIVE')}" />

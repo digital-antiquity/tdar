@@ -439,7 +439,6 @@ public class Resource extends JsonModel.Base implements Persistable,
         return users;
     }
 
-
     @Field(name = QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS)
     @IndexedEmbedded
     @ElementCollection
