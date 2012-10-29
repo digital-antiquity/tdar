@@ -1203,9 +1203,6 @@ TDAR.common = function() {
         //fun fact: because we have a form field named "ID",  form.id actually refers to this DOM element,  not the ID attribute of the form.
         var formid = $(form).attr("id");
         
-        //warn user about leaving before saving
-        //FIXME: FormNavigate.js has bugs and is not being maintained. need to find/write replacement.
-        //$(form).FormNavigate("Leaving the page will cause any unsaved data to be lost!");
 
         //initialize form validation
         _setupFormValidate(form);
@@ -1224,6 +1221,9 @@ TDAR.common = function() {
 
             var $button = $('input[type=submit]', f);
             $button.siblings(".waitingSpinner").css('visibility', 'visible');
+
+            //warn user about leaving before saving
+            //FIXME: FormNavigate.js has bugs and is not being maintained. need to find/write replacement.
 
             return true;
         });
@@ -1255,6 +1255,7 @@ TDAR.common = function() {
         });
         showAccessRightsLinkIfNeeded();
         $('.fileProxyConfidential').change(showAccessRightsLinkIfNeeded);
+
 
     }
     
@@ -1383,7 +1384,9 @@ TDAR.common = function() {
         $('body').bind('ajaxComplete', function(e) {
            $('#ajaxIndicator').fadeOut('fast'); 
         });
-        
+
+        $(form).FormNavigate("Leaving the page will cause any unsaved data to be lost!");
+
     };
     
     var _initializeView = function() {

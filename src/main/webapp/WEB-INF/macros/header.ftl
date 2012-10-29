@@ -11,6 +11,7 @@
                      "/includes/jquery.xcolor-1.5.js",
                      "/includes/jquery.maphighlight.local.js",
 	                 "/includes/jquery.textarearesizer.js",
+	                 "/includes/jquery.FormNavigate.js",
 	                 "/includes/jquery.watermark-3.1.3.min.js",
 	                 "/includes/jquery.datatables-1.8.2/media/js/jquery.dataTables.js",
 	                 "/includes/jquery.datatables-1.8.2/extras/bootstrap-paging.js",
