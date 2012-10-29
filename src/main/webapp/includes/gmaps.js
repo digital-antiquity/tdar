@@ -386,6 +386,50 @@ TDAR.maps = function() {
         gmap.fitBounds(rect.getBounds());
     };
     
+    var _setupMapResult = function() {
+        $(function() {
+            
+            $(".google-map", '#articleBody').one("mapready", function(e, myMap) {
+              var bounds = new google.maps.LatLngBounds();
+              var markers = new Array();
+              var infowindows = new Array();
+              var i=0;
+              $("ol.MAP li").each(function() {
+                  i++;
+                  var $this = $(this);
+                  if ($this.attr("data-lat") && $this.attr('data-long')) {
+                      var infowindow = new google.maps.InfoWindow({
+                          content: $this.html()
+                      });
+                      var marker = new google.maps.Marker({
+                          position: new google.maps.LatLng($this.attr("data-lat"),$this.attr("data-long")),
+                          map: myMap,
+                          icon: 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld='+i+'|7a1501|FFFFFF',
+                          title:$("a.resourceLink", $this).text()
+                      });
+                  
+                      $(this).click(function() {
+                          myMap.panTo(marker.getPosition());
+                        $(infowindows).each(function() {this.close(myMap);});
+                        infowindow.open(myMap,marker);
+                        return false;
+                      });
+              
+                      google.maps.event.addListener(marker, 'click', function() {
+                        $(infowindows).each(function() {this.close(myMap);});
+                        infowindow.open(myMap,marker);
+                      });
+                  
+                      markers[markers.length] = marker;
+                      infowindows[infowindows.length] = infowindow;
+                      bounds.extend(marker.position);
+                      myMap.fitBounds(bounds);
+                  };
+              }); 
+          });
+          });        
+    };
+    
     return {
         _apiLoaded: _apiLoaded,
         initMapApi: _initGmapApi,
@@ -393,7 +437,8 @@ TDAR.maps = function() {
         googleApiKey: false,
         defaults: _defaults,
         updateResourceRect: _updateResourceRect,
-        setupEditMap: _setupEditMap
+        setupEditMap: _setupEditMap,
+        setupMapResult: _setupMapResult
     };
 }();
 

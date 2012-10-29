@@ -102,8 +102,15 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <h4>Choose a Project</h4>
         <div id="t-project" tooltipcontent="#projectTipText" tiplabel="Project">
         </div>
-        <@s.select labelposition='left' label='Project' title="Please select a project" emptyOption='true' id='projectId' name='projectId' listKey='id' listValue='title' list='%{potentialParents}'
-        truncate="70" value='${_projectId}' required="true"  cssClass="required input-xlarge" />
+        <div class="control-group">
+            <label class="control-label">Project</label>
+            <div class="controls controls-row">
+                <@s.select theme="simple" title="Please select a project" emptyOption='true' id='projectId' name='projectId' listKey='id' listValue='title' list='%{potentialParents}'
+                truncate="70" value='${_projectId}' required="true"  cssClass="required input-xlarge" />
+                <button type="button" id="btnOpenInNewWindow" class="btn btn-small hidden">View Project In Separate Window</button>
+                
+            </div>
+        </div>
             
         <div class="modal hide fade" id="inheritOverwriteAlert" tabindex="-1" role="dialog" aria-labelledby="validationErrorModalLabel" aria-hidden="true">
             <div class="modal-header">
@@ -721,11 +728,14 @@ The form will check for matches in the ${siteAcronym} database and populate the 
 </#macro>
 
 <#macro resourceJavascript formSelector="#resourceMetadataForm" selPrefix="#resource" includeAsync=false includeInheritance=false>
-
+<#noescape>
 <script type='text/javascript'>
+
 $(function(){
     'use strict';
-    var form = $("${formSelector}")[0];
+    var formSelector = "${formSelector}";
+    var includeInheritance = ${includeInheritance?string("true", "false")};
+    var form = $(formSelector)[0];
     
     <#if includeAsync>
     //init fileupload
@@ -747,8 +757,15 @@ $(function(){
         });
     }
     
+<#if includeInheritance>
+var project = ${projectAsJson};
+applyInheritance(project, formSelector);
+</#if>    
+    
+    
 });
 <#nested>
+</#noescape>
 </script>
   
 </#macro>

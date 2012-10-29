@@ -38,12 +38,6 @@
 <@edit.asyncUploadTemplates />
 <@edit.resourceJavascript formSelector="#ImageMetadataForm" selPrefix="#image" includeAsync=true includeInheritance=true />
 
-<#noescape><script>
-$(function() {
-    "use strict";
-    var project = ${projectAsJson};
-    applyInheritance(project, "#ImageMetadataForm" );
-});
-</script></#noescape>
+
 </body>
 </#escape>

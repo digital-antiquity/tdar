@@ -320,7 +320,7 @@ function applyInheritance(project, formSelector) {
     var $form = $(formSelector);
     //collection of 'options' objects for each inheritance section. options contain info about 
     //the a section (checkbox selector, div selector,  callbacks for isSafe, inheritSection, enableSection);
-    $form.data("inheritOptionsList", []);
+    $form.data("inheritOptionsList", [])
     
     //hack:  formId is no longer global, and updateInheritableSections() needs it...
     var formId = $(formSelector).attr("id");
@@ -336,7 +336,6 @@ function applyInheritance(project, formSelector) {
     // update the inherited form values when project selection changes.
     $('#projectId').change(function(e) {
         var sel = this;
-        $('.open-project', '#t-project').remove();
         
 //        console.log('project changed. new value:' + $(sel).val());
         if ($(sel).val() != '' && $(sel).val() > 0) {
@@ -385,9 +384,7 @@ function projectChangedCallback(data) {
         project = getBlankProject();
     } else  if (project.resourceType == 'INDEPENDENT_RESOURCES_PROJECT') {
         project = getBlankProject();
-    } else {
-        $('#t-project').append('<p class="open-project"><a class="btn btn-small" target="_project" href="/project/' + project.id + '">open project in new window</a></p>');
-    }
+    } 
 
     json = convertToFormJson(project);
     var formId = $('#projectId').closest('form').attr("id");
@@ -494,11 +491,13 @@ function processInheritance(formId) {
             divSelector : '#relatedCollectionsSection',
             mappedData : "collectionInformation", // curently not used (fixme: implement tdar.common.getObjValue)
             isSafeCallback : function() {
-                //need to escape name values that have special chars like [].
-                var css = TDAR.common.cssEncode;
-                var sourceSelector = "textarea[name=" + css("sourceCollections[0].text") + "]";
-                var relatedSelector = "textarea[name=" + css("relatedComparativeCollections[0].text") + "]";
-                var existingVals = [$(sourceSelector).val(), $(relatedSelector).val()];
+                
+                var existingVals = [];
+                var sourceElem = document.getElementsByName("sourceCollections[0].text");
+                var relatedElem = document.getElementsByName("relatedComparativeCollections[0].text");
+                if($(sourceElem).val().length) existingVals.push($(sourceElem).val().length);
+                if($(relatedElem).val().length) existingVals.push($(relatedElem).val().length);
+                
                 var collectionInfo = json.collectionInformation;
                 var incomingVals = [];
                 if(collectionInfo.sourceCollections.length) incomingVals.push(collectionInfo.sourceCollections[0].text);
@@ -798,6 +797,8 @@ TDAR.inheritance = function() {
     
     var _registerInheritSection = function(options) {
         var $checkbox = $(options.cbSelector);
+        if($checkbox.length === 0 ) return;
+        
         var $form = $checkbox.closest("form");
         var formId = $form.attr("id");
         var _options = {

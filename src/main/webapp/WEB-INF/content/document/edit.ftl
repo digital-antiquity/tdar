@@ -108,7 +108,7 @@
 </div>
 
 <@edit.asyncUploadTemplates />
-<@edit.resourceJavascript includeAsync=true />
+<@edit.resourceJavascript includeAsync=true  includeInheritance=true/>
 <script>
 $(function(){
     'use strict';
