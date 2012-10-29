@@ -1407,8 +1407,6 @@ margin-left: 0px !important;
 #ajaxIndicator {
     position: fixed;
     width:25%;
-    background-color:red;
-    color: white;
     z-index: 999;
     right: 5px;
     bottom: 5px;

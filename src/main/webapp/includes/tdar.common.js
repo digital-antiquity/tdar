@@ -1372,12 +1372,16 @@ TDAR.common = function() {
         
         
         //display generic wait message with ajax events
-        $('body').bind('ajaxSend', function(e){
-            $('#ajaxIndicator').show();
+        $('body').bind('ajaxSend', function(e, jqXHR, ajaxOptions){
+            var waitMessage = "Loading";
+            if(typeof ajaxOptions.waitMessage !== "undefined") {
+                waitMessage = ajaxOptions.waitMessage;
+            }
+            $('#ajaxIndicator').text(waitMessage + "...").fadeIn('fast');
             //TODO: include a timeout to dismiss loading or display warning mesage
         });
         $('body').bind('ajaxComplete', function(e) {
-           $('#ajaxIndicator').hide(); 
+           $('#ajaxIndicator').fadeOut('fast'); 
         });
         
     };

@@ -349,7 +349,8 @@ function applyInheritance(project, formSelector) {
                 success : projectChangedCallback,
                 error : function(msg) {
                     console.error("error");
-                }
+                },
+                waitMessage: "Loading project information"
             });
         } else {
             project = getBlankProject();

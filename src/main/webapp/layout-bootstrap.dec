@@ -237,6 +237,6 @@
     TDAR.maps.defaults.center.lat = ${mapDefaultLat};
     TDAR.maps.defaults.center.lng = ${mapDefaultLng};
     </script>
-    <div id="ajaxIndicator" style="display:none">Loading...</div>
+    <div id="ajaxIndicator" class="alert alert-info" style="display:none">Loading...</div>
     </body>
 </html>
