@@ -1199,16 +1199,20 @@ TDAR.common = function() {
     //setup other form edit controls
     //FIXME: wny is this broken out from  initEditPage?   If anything, break it out even further w/ smaller private functions
     var _setupEditForm = function (form) {
-        
+        var $form = $(form);
         //fun fact: because we have a form field named "ID",  form.id actually refers to this DOM element,  not the ID attribute of the form.
-        var formid = $(form).attr("id");
+        var formid = $form.attr("id");
         
+    	// prevent "enter" from submitting
+        $form.delegate('input,select',"keypress", function(event) {
+    		return event.keyCode != 13;
+    	});
 
         //initialize form validation
         _setupFormValidate(form);
         
         //prepwork prior to form submit (trimming fields)
-        $(form).submit(function(f) {
+        $form.submit(function(f) {
             try {
                 $.each($('.reasonableDate, .coverageStartYear, .coverageEndYear, .date, .number'), function(idx, elem) {
                     if ($(elem).val() !== undefined)  {
@@ -1233,13 +1237,14 @@ TDAR.common = function() {
             prepareDateFields(elem);
         });
 
-        if ($(formid + '_uploadedFiles').length > 0) {
+        var $uploaded = $(formid + '_uploadedFiles');
+        if ($uploaded.length > 0) {
             var validateUploadedFiles = function() {
-                if ($(formid + "_uploadedFiles").val().length > 0) {
+                if ($uploaded.val().length > 0) {
                     $("#reminder").hide();
                 }
             };
-            $(formid + '_uploadedFiles').change(validateUploadedFiles);
+            $uploaded.change(validateUploadedFiles);
             validateUploadedFiles();
         }
 
