@@ -2,6 +2,8 @@
 <#include "navigation-macros.ftl">
 <#import "view-macros.ftl" as view>
 <#import "common.ftl" as common>
+<#assign DEFAULT_SORT = 'PROJECT' />
+<#assign DEFAULT_ORIENTATION = 'LIST' />
 <#-- 
 Convert long string to shorter string with ellipses. If you pass it anything fancy (like 
 html markup) you will probably not like the results
@@ -12,7 +14,7 @@ html markup) you will probably not like the results
     	</#if>
     </#macro>
 
-<#macro listResources resourcelist=resources_ sortfield='PROJECT' editable=false bookmarkable=authenticated expanded=false listTag='ul' itemTag='li' headerTag="h3" titleTag="h3" orientation='' mapPosition="" mapHeight="">
+<#macro listResources resourcelist=resources_ sortfield=DEFAULT_SORT editable=false bookmarkable=authenticated expanded=false listTag='ul' itemTag='li' headerTag="h3" titleTag="h3" orientation=DEFAULT_ORIENTATION mapPosition="" mapHeight="">
   <#local showProject = false />
   <#local prev =""/>
   <#local first = true/>
@@ -89,7 +91,7 @@ html markup) you will probably not like the results
             </#if>
             <@searchResultTitleSection resource titleTag />
 			<@printLuceneExplanation  resource />
-			<@printDescription resource=resource length=500 />
+			<@printDescription resource=resource expanded=expanded orientation=orientation length=500 showProject=showProject/>
 
             </${itemTag_}>
         <#local first=false/>
@@ -153,7 +155,7 @@ html markup) you will probably not like the results
 </#macro>
 
 
-<#macro printDescription resource=resource length=80>
+<#macro printDescription resource=resource expanded=false orientation=DEFAULT_ORIENTATION length=80 showProject=false>
             <#if expanded && orientation != 'GRID'>
                 <div class="listItemPart">
 		    <#if (resource.citationRecord && !resource.resourceType.project)>
