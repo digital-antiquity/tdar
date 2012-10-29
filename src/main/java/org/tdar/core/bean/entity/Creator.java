@@ -39,7 +39,6 @@ import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Resolution;
 import org.hibernate.search.annotations.Store;
-import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Indexable;
@@ -145,9 +144,9 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
     @Column(length = 64)
     private String url;
 
-//    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-//    @JoinColumn(nullable = false, updatable = false, name = "creator_id")
-//    private Set<Address> addresses = new LinkedHashSet<Address>();
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(nullable = false, updatable = false, name = "creator_id")
+    private Set<Address> addresses = new LinkedHashSet<Address>();
 
     private String location;
 
@@ -359,12 +358,12 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
         this.readyToIndex = readyToIndex;
     }
 
-//    public Set<Address> getAddresses() {
-//        return addresses;
-//    }
-//
-//    public void setAddresses(Set<Address> addresses) {
-//        this.addresses = addresses;
-//    }
+    public Set<Address> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(Set<Address> addresses) {
+        this.addresses = addresses;
+    }
 
 }

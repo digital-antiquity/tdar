@@ -1,10 +1,19 @@
 package org.tdar.core.bean.billing;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
 import org.tdar.core.bean.Persistable;
 
+/*
+ * An activity represents a specific thing that can be "charged"
+ */
+@Entity
+@Table(name="pos_entity")
 public class Activity extends Persistable.Base {
 
     private static final long serialVersionUID = 6891881586235180640L;
+
     private String name;
     private Integer numberOfHours;
     private Long numberOfMb;

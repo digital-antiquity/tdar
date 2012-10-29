@@ -1,20 +1,32 @@
 package org.tdar.core.bean.entity;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Table;
+
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Persistable.Base;
 
+@Entity
+@Table(name = "creator_address")
 public class Address extends Base implements Persistable {
 
     /**
      * 
      */
     private static final long serialVersionUID = 3179122792715811371L;
+
     private String street1;
     private String street2;
     private String city;
     private String state;
     private String postal;
     private String phone;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type")
     private AddressType type;
 
     public String getStreet1() {
