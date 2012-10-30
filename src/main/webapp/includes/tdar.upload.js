@@ -47,11 +47,11 @@ TDAR.fileupload = function() {
         $fileupload.bind("fileuploadcompleted fileuploadfailed", _updateSequenceNumbers);
         
         //hack: disable until we have a valid ticket
-        $fileupload.fileupload("disable");
+        //$fileupload.fileupload("disable");
         
         $.post(TDAR.uri("upload/grab-ticket"), function(data) {
             $('#ticketId').val(data.id);
-            $fileupload.fileupload('enable');
+            //$fileupload.fileupload('enable');
         }, 'json');
         
         //populate list of peviously uploaded files,  if available.
