@@ -32,6 +32,7 @@ public enum DedupeableType implements HasLabel {
         return type;
     }
 
+    @Override
     public String getLabel() {
         return label;
     }

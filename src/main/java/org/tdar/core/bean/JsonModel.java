@@ -29,6 +29,7 @@ public interface JsonModel extends Serializable {
 
         // FIXME: does JsonConfig need to be instantiated a-new each time or could
         // we just initialize it once with a WhitelistFilter and re-use it?
+        @Override
         public JSONObject toJSON() {
             return toJSON(getIncludedJsonProperties());
         }

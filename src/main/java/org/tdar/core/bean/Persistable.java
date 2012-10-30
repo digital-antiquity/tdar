@@ -80,6 +80,7 @@ public interface Persistable extends Serializable {
         private Long id = -1L;
 
         // @XmlTransient
+        @Override
         @Field(store = Store.YES, analyzer = @Analyzer(impl = KeywordAnalyzer.class), name = QueryFieldNames.ID)
         @XmlAttribute(name = "id")
         public Long getId() {
@@ -91,6 +92,7 @@ public interface Persistable extends Serializable {
         // return getId().toString();
         // }
 
+        @Override
         public void setId(Long id) {
             this.id = id;
         }

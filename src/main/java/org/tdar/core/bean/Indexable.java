@@ -27,6 +27,7 @@ public interface Indexable extends Persistable {
     public Explanation getExplanation();
 
     
+    @Override
     public Long getId();
     
     /**

@@ -42,18 +42,22 @@ public interface AsyncUpdateReceiver {
         private List<Throwable> throwables = new ArrayList<Throwable>();
         private List<Pair<Long, String>> details = new ArrayList<Pair<Long, String>>();
 
+        @Override
         public float getPercentComplete() {
             return percentComplete;
         }
 
+        @Override
         public void setPercentComplete(float percentComplete) {
             this.percentComplete = percentComplete;
         }
 
+        @Override
         public String getStatus() {
             return status;
         }
 
+        @Override
         public void setStatus(String status) {
             this.status = status;
         }
@@ -82,6 +86,7 @@ public interface AsyncUpdateReceiver {
             getDetails().add(detail);
         }
 
+        @Override
         public String getAsyncErrors() {
             StringBuilder sb = new StringBuilder();
             for (Throwable throwable : getThrowables()) {
@@ -90,6 +95,7 @@ public interface AsyncUpdateReceiver {
             return sb.toString();
         }
 
+        @Override
         public String getHtmlAsyncErrors() {
             StringBuilder sb = new StringBuilder();
             for (Throwable throwable : getThrowables()) {
@@ -98,11 +104,13 @@ public interface AsyncUpdateReceiver {
             return sb.toString();
         }
 
+        @Override
         public void update(float percent, String status) {
             setStatus(status);
             setPercentComplete(percent);
         }
 
+        @Override
         public void setCompleted() {
             setPercentComplete(100f);
             setStatus("Complete");
