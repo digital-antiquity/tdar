@@ -100,3 +100,19 @@ ALTER TABLE collection ADD COLUMN orientation VARCHAR(50) DEFAULT 'LIST';
 ALTER TABLE collection ADD COLUMN date_updated timestamp without time zone DEFAULT now();
 ALTER TABLE collection ADD COLUMN updater_id bigint REFERENCES person;
 update collection set updater_id = owner_id;
+
+--30/10/12
+create table creator_address (
+    id  bigserial not null primary key,
+    city varchar(255),
+    phone varchar(255),
+    postal varchar(255),
+    state varchar(255),
+    street1 varchar(255),
+    street2 varchar(255),
+    type varchar(255),
+    creator_id int8 not null references creator
+);
+    
+    
+
