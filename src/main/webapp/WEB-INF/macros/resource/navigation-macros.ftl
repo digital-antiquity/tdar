@@ -38,8 +38,8 @@ $(document).ready(function() {
 
 <@s.form id='loginForm' method="post" action="%{#request.contextPath}/login/process" cssClass="form-horizontal">
     <input type="hidden" name="url" value="${Parameters.url!''}"/>
-    <@s.textfield spellcheck="false" id='loginUsername' name="loginUsername" label="Username" cssClass="required" />
-    <@s.password id='loginPassword' name="loginPassword" label="Password" cssClass="required" />
+    <@s.textfield theme="bootstrap" spellcheck="false" id='loginUsername' name="loginUsername" label="Username" cssClass="required" />
+    <@s.password theme="bootstrap" id='loginPassword' name="loginPassword" label="Password" cssClass="required" />
     <@s.checkbox  name="userCookieSet" label="Stay logged-in the next time I visit this page" />
     
     <div class="form-actions">

@@ -432,7 +432,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         Keyword list: Select the archaeological &quot;cultures&quot; discussed in the document. Use the Other field if needed. 
         <a href="${culturalTermsHelpUrl}">view all controlled terms</a>
     </div>
-    <h2>Cultural Terms<h2>
+    <h2>Cultural Terms</h2>
     <@inheritsection checkboxId="cbInheritingCulturalInformation" name='resource.inheritingCulturalInformation'  showInherited=showInherited />
     <div id="divCulturalInformation">
         <div class="control-group">
