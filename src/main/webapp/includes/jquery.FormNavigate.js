@@ -43,7 +43,7 @@ var global_formNavigate = true;		// Js Global Variable for onChange Flag
 //		$(this+ ":input[type='textarea']").keyup(function(){ 
 //			global_formNavigate = false; 
 //		}); 
-        $("button:submit",$this).click(function(){
+        $("input:submit",$this).click(function(){
             global_formNavigate = true;
         });
     }
