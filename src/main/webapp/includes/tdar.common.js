@@ -1378,17 +1378,7 @@ TDAR.common = function() {
         
         
         //display generic wait message with ajax events
-        $('body').bind('ajaxSend', function(e, jqXHR, ajaxOptions){
-            var waitMessage = "Loading";
-            if(typeof ajaxOptions.waitMessage !== "undefined") {
-                waitMessage = ajaxOptions.waitMessage;
-            }
-            $('#ajaxIndicator').text(waitMessage + "...").fadeIn('fast');
-            //TODO: include a timeout to dismiss loading or display warning mesage
-        });
-        $('body').bind('ajaxComplete', function(e) {
-           $('#ajaxIndicator').fadeOut('fast'); 
-        });
+        _registerAjaxEvents();
 
         // I must be "last"
         $(form).FormNavigate("Leaving the page will cause any unsaved data to be lost!");
@@ -1403,6 +1393,21 @@ TDAR.common = function() {
             TDAR.maps.initMapApi();
             TDAR.maps.setupMap(mapdiv, inputContainer);
         }
+    };
+    
+    //display generic wait message for ajax requests
+    var _registerAjaxEvents = function() {
+        $('body').bind('ajaxSend', function(e, jqXHR, ajaxOptions){
+            if(typeof ajaxOptions.waitMessage === "undefined") {
+                ajaxOptions.waitMessage = "Loading";
+            }
+            $('#ajaxIndicator').html("<strong>Waiting</strong>: " + ajaxOptions.waitMessage + "...").fadeIn('fast');
+            //TODO: include a timeout to dismiss loading or display warning mesage
+        });
+        $('body').bind('ajaxComplete', function(e, jqXHR, ajaxOptions) {
+            $('#ajaxIndicator').html("<strong>Complete</strong>: " + ajaxOptions.waitMessage + "...").fadeOut(1000);
+        });
+    	
     };
     
     var _index = function(obj, key){

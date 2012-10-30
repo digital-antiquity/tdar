@@ -19,6 +19,7 @@ tags
 nb-configuration.xml
 nbactions*
 glassfish-web.xml
+.DS_Store
 
 syntax: regexp
 ^src/main/webapp/robots\.txt$
