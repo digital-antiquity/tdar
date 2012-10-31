@@ -1,4 +1,4 @@
-.container {
+/* .container {
 	width: 1000px;
 }
 
@@ -61,7 +61,7 @@
 [class*="span"] {
 	margin-left: 40px;
 }
-
+ */
 header input[type="text"],.hero input[type="text"] {
 	background-color: white;
 	border: none;
@@ -95,7 +95,7 @@ body {
 	height: 1px; //
 	float: left;
 	display: block;
-	width: 1000px;
+//	width: 1000px;
 	margin: 30px 0 30px 40px;
 }
 
@@ -105,7 +105,7 @@ body {
 }
 
 .span9 hr {
-	width: 740px !important;
+/* 	width: 740px !important; */
 	margin-left: 0 !important;
 }
 
