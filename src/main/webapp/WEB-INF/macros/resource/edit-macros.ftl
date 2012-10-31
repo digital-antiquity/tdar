@@ -700,8 +700,8 @@ The form will check for matches in the ${siteAcronym} database and populate the 
     </div>
     <div id="error" class="row"><ul></ul></div>
     </#if>     
-    <#nested>
     <div class="form-actions">
+    <#nested>
     <@submitButton label=label id=buttonid />
        <img src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="visibility:hidden"/>
     </div> 

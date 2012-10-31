@@ -10,12 +10,48 @@
     <h1>Edit Table Metadata for ${dataset.title}</h1>
 
 <@edit.sidebar/>
+
+
+
+<#if dataTable.dataTableColumns?? && false>
+<style>
+.legend {
+    width: auto;
+    clear: none;
+    display: inline-block;
+    margin: 2px;
+}
+</style>
+    <div id='subnavbar' class="resource-nav affix-top navbar span12 navbar-static"  data-offset-top="250" data-offset-bottom="250" data-spy="affix">
+      <div class="navbar-inner">
+
+            <h3>The ${dataTable.displayName} table has ${dataTable.dataTableColumns?size } columns</h3>
+            
+            <span class="pull-right">
+                <span class="button btn btn-primary submitButton" id="fakeSubmitButton">Submit</span>
+            </span>
+            <div class="control-group">
+                <label class="control-label">Jump to a column:</label>
+                <div class="controls">
+                    <select name="chooseColumn" onChange="goToColumn(this)">
+                    <#list dataTableColumns?sort_by("sequenceNumber") as column>
+                     <option value="columnDiv_${column_index}">${column.displayName}</option>
+                    </#list>
+                    </select>
+                </div> 
+            </div>
+        </div>
+</div>
+</#if> 
+
+
+
 <@s.form method='post' id="edit-metadata-form" cssClass="form-horizontal"  action='save-column-metadata'>
 <@s.hidden name='id' value='${resource.id?c}'/>
 <@s.hidden name='dataTableId' value='${dataTable.id?c}'/>
-    <#if ( dataset.dataTables?size > 1 )>
-<div class='glide'>
-    <h2>Column Description and Mapping: ${dataTable.displayName}</h2>
+<#if ( dataset.dataTables?size > 1 )>
+<h2>Column Description and Mapping: ${dataTable.displayName}</h2>
+<div class="row">
     <p>
     There are multiple tables in your dataset.  You can switch between them by clicking
     on one of the links below.  Please remember to save any changes before you switch.
@@ -33,38 +69,8 @@
     </select>
 
 </div>
-    </#if>
+</#if>
 
-<#if dataTable.dataTableColumns??>
-<style>
-.legend {
-    width: auto;
-    clear: none;
-    display: inline-block;
-    margin: 2px;
-}
-</style>
-	<div id='subnavbar' class="resource-nav affix-top navbar span12 navbar-static"  data-offset-top="250" data-offset-bottom="250" data-spy="affix">
-	  <div class="navbar-inner">
-
-			<h3>The ${dataTable.displayName} table has ${dataTable.dataTableColumns?size } columns</h3>
-			
-			<span class="pull-right">
-				<span class="button btn btn-primary submitButton" id="fakeSubmitButton">Submit</span>
-			</span>
-			<div class="control-group">
-			    <label class="control-label">Jump to a column:</label>
-			    <div class="controls">
-					<select name="chooseColumn" onChange="goToColumn(this)">
-					<#list dataTableColumns?sort_by("sequenceNumber") as column>
-					 <option value="columnDiv_${column_index}">${column.displayName}</option>
-					</#list>
-					</select>
-			    </div> 
-			</div>
-		</div>
-</div>
-</#if> 
 
 
 <#if dataTable.dataTableColumns??>
@@ -72,7 +78,7 @@
 <#list dataTableColumns?sort_by("sequenceNumber") as column>
 	<#if column_index != 0><hr/></#if>
 
-<div class="glide datatablecolumn" id="columnDiv_${column_index}" >
+<div class="row datatablecolumn" id="columnDiv_${column_index}" >
   <h3> 
   <span id="columnDiv_${column_index}lgnd" tooltipcontent="#generalToolTip" tiplabel="Column Mapping Instructions" class="columnSquare">&nbsp;</span>
   <!-- Column: -->
@@ -259,20 +265,22 @@
 
 </div>
 </#if>
+<h2>Summary</h2>
+<table id="summaryTable" class="table tableFormat">
+    <tr><th></th><th></th></tr>
+    <tr><td><span class="columnSquare invalid">&nbsp;</span><span class="error_label"></span></td><td>columns with errors</td></tr>
+    <tr><td><span class="columnSquare measurement">&nbsp;</span><span class="measurement_label"></span></td><td>measurment columns</td></tr>
+    <tr><td><span class="columnSquare count">&nbsp;</span><span class="count_label"></span></td><td>count columns</td></tr>
+    <tr><td><span class="columnSquare coded">&nbsp;</span><span class="coded_label"></span></td><td>coded columns</td></tr>
+    <tr><td><span class="columnSquare uncoded">&nbsp;</span><span class="uncoded_label"></span></td><td>uncoded columns</td></tr>
+    <tr><td><span class="columnSquare integration">&nbsp;</span><span class="integration_label"></span></td><td>integration columns</td></tr>
+    <tr><td><span class="columnSquare mapped">&nbsp;</span><span class="mapped_label"></span></td><td>mapping columns</td></tr>
+</table>
 
-    <@edit.submit "Save" false><br/>
-    <table id="summaryTable" class=" tableFormat">
-        <tr><th></th><th>Summary</th></tr>
-        <tr><td><span class="columnSquare invalid">&nbsp;</span><span class="error_label"></span></td><td>columns with errors</td></tr>
-        <tr><td><span class="columnSquare measurement">&nbsp;</span><span class="measurement_label"></span></td><td>measurment columns</td></tr>
-        <tr><td><span class="columnSquare count">&nbsp;</span><span class="count_label"></span></td><td>count columns</td></tr>
-        <tr><td><span class="columnSquare coded">&nbsp;</span><span class="coded_label"></span></td><td>coded columns</td></tr>
-        <tr><td><span class="columnSquare uncoded">&nbsp;</span><span class="uncoded_label"></span></td><td>uncoded columns</td></tr>
-        <tr><td><span class="columnSquare integration">&nbsp;</span><span class="integration_label"></span></td><td>integration columns</td></tr>
-        <tr><td><span class="columnSquare mapped">&nbsp;</span><span class="mapped_label"></span></td><td>mapping columns</td></tr>
-        </table>
-        <@s.radio name="postSaveAction" listValue="label" emptyOption="false" list="%{allSaveActions}" numColumns=1 />
-    </@edit.submit>
+<@edit.submit "Save" false><br/>
+    <@s.radio name="postSaveAction" listValue="label" emptyOption="false" list="%{allSaveActions}" numColumns=1 />
+</@edit.submit>
+
 </@s.form>
 
 
