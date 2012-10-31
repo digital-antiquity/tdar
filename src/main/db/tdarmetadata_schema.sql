@@ -203,7 +203,7 @@ CREATE TABLE collection (
     id bigint NOT NULL,
     description text,
     name character varying(255),
-    owner_id bigint,
+    owner_id bigint references person,
     updater_id bigint,
     parent_id bigint,
     orientation character varying(50) DEFAULT 'LIST',

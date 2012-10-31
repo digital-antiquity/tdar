@@ -114,5 +114,6 @@ create table creator_address (
     creator_id int8 not null references creator
 );
     
-    
+-- 31/10/12
+alter table collection add foreign key (owner_id) references person;
 
