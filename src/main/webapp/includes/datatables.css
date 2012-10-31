@@ -1,0 +1,6 @@
+/* styles for use with jQuery.datatable.1.8.2 */
+
+/* Datatable plugin uses two tables to implement y-scrolling, so we need to  override bootstrap's table padding */
+div.dataTables_scrollHeadInner table {
+    margin:0px;
+}
