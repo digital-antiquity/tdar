@@ -375,7 +375,7 @@ public class Resource extends JsonModel.Base implements Persistable,
         // FIXME: decide whether right should inherit from projects (1) of (2)
         // change see authorizedUserDao
         // sb.append(getAdditionalUsersWhoCanModify());
-        logger.info("effectiveUsers:" + users);
+        logger.trace("effectiveUsers:" + users);
         return users;
     }
 
