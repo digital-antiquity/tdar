@@ -127,6 +127,7 @@ div.barlabel {
 	margin-bottom: 0px;
 }
 
+/*jtd: I'm moving this to datatables.css */
 div.dataTables_length label {
 	width: 460px;
 	float: left;
@@ -146,6 +147,7 @@ div.dataTables_info {
 	padding-top: 8px;
 }
 
+/* TODO: this is not necessary if you use bootstrap's pagination-right class, but i'm not sure how to get widget to inject this class into pagination section */
 div.dataTables_paginate {
 	float: right;
 	margin: 0;

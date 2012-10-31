@@ -28,10 +28,8 @@
 </#if>
 
 <div class="row">
-    <div class="span8">
-        <table id="dataTable" class="table tableFormat table-striped table-bordered" ></table>
-    </div>
 </div>
+<table id="dataTable" class="table tableFormat table-striped table-bordered" ></table>
 
 <script>
 $(document).ready(function() {
@@ -50,7 +48,10 @@ $(document).ready(function() {
         "bScrollCollapse": true,
         tableSelector: '#dataTable',
         sPaginationType:"bootstrap",
-        "sScrollY": "", 
+        //FIXME: scrollx must be css units. we want span9. currently 740px by observation, but it'd be nice if we can derive this programatically.
+        "sScrollX": "740px",  
+        //turn off vertical scrolling since we're paging (feels weird to advance through records using two mechanisms)
+        "sScrollY": "",
         "aoColumns":[
         
                  <#list dataTable.dataTableColumns?sort_by("sequenceNumber") as column>
@@ -71,28 +72,22 @@ $(document).ready(function() {
     registerLookupDataTable(options);    
 } );
 </script>
+
 </#if>
 
 <h3>Data Set Structure</h3>
-<style>
-#dataTable th { white-space:nowrap;padding-left:4px;padding-right:4px}
-.columnSquare {margin-left:20px;}
-.dataTables_length { top:0px !important} 
-</style>
 <div class="row">
-    <div class="span3"><span class="columnSquare measurement"></span> Measurement Column                  </div>
-    <div class="span3"><span class="columnSquare count"></span>Count Column                              </div>
-    <div class="span3"><span class="columnSquare coded"></span>Coded Column                              </div>
+    <div class="span3"><span class="columnSquare measurement"></span> Measurement Column</div>
+    <div class="span3"><span class="columnSquare count"></span>Count Column</div>
+    <div class="span3"><span class="columnSquare coded"></span>Coded Column</div>
 </div>
 <div class="row">
-    <div class="span3"><span class="columnSquare mapped"></span>Mapping Column                           </div>
-    <div class="span5"><span class="columnSquare integration"></span>Integration Column (has Ontology)   </div>
+    <div class="span3"><span class="columnSquare mapped"></span>Mapping Column</div>
+    <div class="span6"><span class="columnSquare integration"></span>Integration Column (has Ontology)</div>
 </div>
 
 <#list dataset.dataTables as dataTable>
  <h4>Table Information: ${dataTable.displayName}</h4>
- <div class="row">
- <div class="span8">
      <table class="tableFormat table table-striped table-bordered">
         <thead class='highlight'>
          <tr>
@@ -137,8 +132,6 @@ $(document).ready(function() {
             </tr>
             </#list>
          </table>
-     </div>
- </div>
  
 </#list>
 </#if>
