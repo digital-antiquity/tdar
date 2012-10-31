@@ -1,4 +1,5 @@
-/* .container {
+/*  REMOVE to RESET TO BASE bootstrap */
+.container {
 	width: 1000px;
 }
 
@@ -61,7 +62,8 @@
 [class*="span"] {
 	margin-left: 40px;
 }
- */
+ 
+ 
 header input[type="text"],.hero input[type="text"] {
 	background-color: white;
 	border: none;
@@ -92,10 +94,10 @@ body {
 	border: 0;
 	border-top: 1px solid #222;
 	border-bottom: none;
-	height: 1px; //
+	height: 1px; 
 	float: left;
 	display: block;
-//	width: 1000px;
+	width: 1000px; /*  REMOVE to RESET TO BASE bootstrap */
 	margin: 30px 0 30px 40px;
 }
 
@@ -105,7 +107,7 @@ body {
 }
 
 .span9 hr {
-/* 	width: 740px !important; */
+ 	width: 740px !important; /*  REMOVE to RESET TO BASE bootstrap */ 
 	margin-left: 0 !important;
 }
 
@@ -706,7 +708,7 @@ margin: -5px 0 0 0 !important;
 	font-weight: 700;
 	font-size: 20px;
 	line-height: 24px;
-	margin: 1em 0 0 0; //
+	margin: 1em 0 0 0; 
 	float: left;
 }
 
@@ -714,7 +716,7 @@ margin: -5px 0 0 0 !important;
 	font-family: "ff-tisa-web-pro";
 	font-size: 16px;
 	line-height: 23px;
-	margin: 15px 0 -5px 0; //
+	margin: 15px 0 -5px 0; 
 	float: left;
 }
 
