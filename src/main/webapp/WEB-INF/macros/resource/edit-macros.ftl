@@ -1896,6 +1896,22 @@ function drawToolbar(projId) {
 	<br/>
 </#macro>
 
-
+<#macro comboBox name target label autocompleteParentElement autocompleteIdElement placeholder value cssClass>
+            <div class="control-group">
+                <label class="control-label">${label}</label>
+                <div class="controls">
+                    <div class="input-append">
+                        <@s.textfield theme="simple" name="${name}"  target="${target}"
+                         label="${label}"
+                         autocompleteParentElement="${autocompleteParentElement}"
+                         autocompleteIdElement="${autocompleteIdElement}"
+                         placeholder="${placeholder}"
+                        value="${value}" cssClass="span5 ${cssClass}" />
+                        <button type="button" class="btn show-all"><i class="icon-chevron-down"></i></button>                    
+                    </div>
+                </div>
+            </div>
+            
+</#macro>
 
 </#escape>

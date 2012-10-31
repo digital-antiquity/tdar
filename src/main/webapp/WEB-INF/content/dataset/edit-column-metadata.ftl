@@ -44,7 +44,7 @@
     margin: 2px;
 }
 </style>
-	<div id='subnavbar' class="affix-top navbar span12 navbar-static"  data-offset-top="250" data-offset-bottom="250" data-spy="affix">
+	<div id='subnavbar' class="resource-nav affix-top navbar span12 navbar-static"  data-offset-top="250" data-offset-bottom="250" data-spy="affix">
 	  <div class="navbar-inner">
 
 			<h3>The ${dataTable.displayName} table has ${dataTable.dataTableColumns?size } columns</h3>
@@ -160,14 +160,12 @@
             </#if>
             <@s.hidden id="${column_index}_cid" name="dataTableColumns[${column_index}].defaultCodingSheet.id" cssClass="codingsheetidfield" value="${codingId}" />
             <small class="pull-right"><a target="_blank" onclick="setAdhocTarget(this);" href='<@s.url value="/coding-sheet/add?returnToResourceMappingId=${resource.id?c}"/>'>Create Coding Sheet</a> </small>
-            <@s.textfield name="dataTableColumns[${column_index}].defaultCodingSheet.title"  target="#columnDiv_${column_index}"
+            <@edit.comboBox name="dataTableColumns[${column_index}].defaultCodingSheet.title"  target="#columnDiv_${column_index}"
 			 label="Translate your data using a Coding Sheet:"
              autocompleteParentElement="#columnDiv_${column_index}"
              autocompleteIdElement="#${column_index}_cid"
              placeholder="Enter the name of a Coding Sheet"
-            value="${codingTxt}" cssClass="input-xxlarge codingsheetfield" />
-            <div class="down-arrow"></div>
-            <br/>
+            value="${codingTxt}" cssClass="codingsheetfield" />
     </div>
      <div id='divOntology-${column_index}' class="ontologyInfo " tooltipcontent="#ontologyToolTip" tiplabel="Ontology">
             <#assign ontologyId="" />
@@ -178,14 +176,13 @@
             </#if>
             <@s.hidden name="dataTableColumns[${column_index}].defaultOntology.id" value="${ontologyId}" id="${column_index}_oid" />
             <small class="pull-right"><a target="_blank" onclick="setAdhocTarget(this);" href='<@s.url value="/ontology/add?returnToResourceMappingId=${resource.id?c}"/>'>Create Ontology</a> </small>
-            <@s.textfield name="dataTableColumns[${column_index}].defaultOntology.title" target="#columnDiv_${column_index}"
+            <@edit.comboBox name="dataTableColumns[${column_index}].defaultOntology.title" target="#columnDiv_${column_index}"
              value="${ontologyTxt}"  
              label="Map it to an Ontology:"
              placeholder="Enter the name of an Ontology"
              autocompleteParentElement="#columnDiv_${column_index}"
              autocompleteIdElement="#${column_index}_oid"
              cssClass="input-xxlarge ontologyfield" />
-            <div class="down-arrow"></div>
     </div>
     <br/>
     <div class="mappingInfo" tooltipcontent="#mappingToolTip" tiplabel="Mapping ${siteAcronym} Resources">
@@ -284,6 +281,7 @@
 
 var pageInitialized = false;
 $(document).ready(function() {
+    var $form = $(formId);
     $.validator.addMethod("columnEncoding", function(value, element) {
         //when using this method on radio buttons, validate only calls this function once per radio group (using the first element of the group for value, element)
         //However, we still need to put put the error message in the title attr of the first element in group. Feels hokey but there you are.
@@ -329,17 +327,16 @@ $(document).ready(function() {
         window.location='?dataTableId='+$(this).val();
     });
 
-    $(formId).delegate(":input", "blur change", registerCheckboxInfo);
-    $(formId).delegate(".down-arrow", "click",autocompleteShowAll);
+    $form.delegate(":input", "blur change", registerCheckboxInfo);
+    
     initializeTooltipContent();
     
     console.debug('binding autocompletes');
-    $(formId).delegate('input.codingsheetfield',"focusin", function() {
-        applyResourceAutocomplete($('input.codingsheetfield'), "CODING_SHEET");
-    });
-    $(formId).delegate('input.ontologyfield',"focusin", function() {
-        applyResourceAutocomplete($('input.ontologyfield'), "ONTOLOGY");
-    });
+    
+    //bugfix: deferred registration didn't properly register expando button. If this is too slow,  but delegate inside of applyComboboxAutocomplete
+    applyComboboxAutocomplete($('input.codingsheetfield', $form), "CODING_SHEET");
+    applyComboboxAutocomplete($('input.ontologyfield', $form), "ONTOLOGY");
+    
     console.debug('intitializing columns');
     //determine when to show coding-sheet, ontology selection based on column encoding value
     // almost all of the startup time is spent here
@@ -347,7 +344,7 @@ $(document).ready(function() {
       pageInitialized = true;
       updateSummaryTable();
       // clear all hidden ontology/coding sheet hidden fields to avoid polluting the controller
-      $(formId).submit(function() {
+      $form.submit(function() {
            $('input', $('.ontologyInfo:hidden')).val('');
            $('input', $('.codingInfo:hidden')).val('');
       });

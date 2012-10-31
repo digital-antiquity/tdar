@@ -397,3 +397,21 @@ function applyInstitutionAutocomplete($elements, newOption) {
 function autocompleteShowAll() {
     $(this).siblings('input[type=text]').focus().autocomplete("search", "");
 }
+
+function applyComboboxAutocomplete($elements, type) {
+    "use strict";
+    
+    //register autocomplete text box
+    //TODO: defer autocomplete registration if better perf needed,  but "show all" button must be registered at onload
+    applyResourceAutocomplete($elements, type);
+    
+    //register "show-all" click
+    $elements.each(function() {
+            var $controls = $(this).closest('.controls');
+            var $textInput = $controls.find("input[type=text]");
+            var $button = $controls.find("button.show-all");
+            $button.click(function(){
+                $textInput.focus().autocomplete("search", "");
+            });
+    });
+}
