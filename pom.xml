@@ -25,7 +25,7 @@
 		<jetty.stop.port>12919</jetty.stop.port>
 		<use.test.classpath>false</use.test.classpath>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<geotools.version>8.0</geotools.version>
+		<geotools.version>8.3</geotools.version>
 		<tika.version>1.2</tika.version>
 		<odata4j.version>0.7.0</odata4j.version>
 		<jersey.version>1.13</jersey.version>
