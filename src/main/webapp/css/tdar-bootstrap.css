@@ -192,7 +192,8 @@ table.legend {
 	/* Opera11.10+ */
 	background: -ms-linear-gradient(top, #eeeeee 0%, #cccccc 100%);
 	/* IE10+ */
-	filter: progid:                           DXImageTransform.Microsoft.gradient(
+	filter: progid:                            DXImageTransform.Microsoft.gradient(
+		
 		
 		
 		
@@ -203,9 +204,9 @@ table.legend {
 		  
 		     
 		          
-		 startColorstr=                        
-		  '#eeeeee', endColorstr=                           '#cccccc',
-		GradientType=     
+		 startColorstr=                         
+		  '#eeeeee', endColorstr=                            '#cccccc',
+		GradientType=      
 		
 		
 		  
@@ -245,13 +246,14 @@ table.legend {
 	/* Opera11.10+ */
 	background: -ms-linear-gradient(top, #e5e696 0%, #d1d360 100%);
 	/* IE10+ */
-	filter: progid:                       DXImageTransform.Microsoft.gradient(
+	filter: progid:                        DXImageTransform.Microsoft.gradient(
+		
 		
 		
 		 
 		  
 		     
-		           startColorstr=              
+		           startColorstr=               
 		
 		
 		
@@ -259,7 +261,8 @@ table.legend {
 		
 		
 		 
-		'#e5e696', endColorstr=                       '#d1d360', GradientType=
+		'#e5e696', endColorstr=                        '#d1d360', GradientType=
+		
 		 
 		  
 		     
@@ -282,7 +285,8 @@ table.legend {
 	/* Opera11.10+ */
 	background: -ms-linear-gradient(top, #deefff 0%, #98bede 100%);
 	/* IE10+ */
-	filter: progid:                           DXImageTransform.Microsoft.gradient(
+	filter: progid:                            DXImageTransform.Microsoft.gradient(
+		
 		
 		
 		
@@ -293,9 +297,9 @@ table.legend {
 		  
 		     
 		          
-		 startColorstr=                        
-		  '#deefff', endColorstr=                           '#98bede',
-		GradientType=     
+		 startColorstr=                         
+		  '#deefff', endColorstr=                            '#98bede',
+		GradientType=      
 		
 		
 		  
@@ -319,7 +323,8 @@ table.legend {
 	/* Opera11.10+ */
 	background: -ms-linear-gradient(top, #e4efc0 0%, #abbd73 100%);
 	/* IE10+ */
-	filter: progid:                           DXImageTransform.Microsoft.gradient(
+	filter: progid:                            DXImageTransform.Microsoft.gradient(
+		
 		
 		
 		
@@ -330,9 +335,9 @@ table.legend {
 		  
 		     
 		          
-		 startColorstr=                        
-		  '#e4efc0', endColorstr=                           '#abbd73',
-		GradientType=     
+		 startColorstr=                         
+		  '#e4efc0', endColorstr=                            '#abbd73',
+		GradientType=      
 		
 		
 		  
@@ -362,7 +367,8 @@ table.legend {
 		-o-linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* Opera11.10+ */
 	background: url(/images/checked.gif) no-repeat scroll 50% 50%,
 		-ms-linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* IE10+ */
-	filter: progid:                           DXImageTransform.Microsoft.gradient(
+	filter: progid:                            DXImageTransform.Microsoft.gradient(
+		
 		
 		
 		
@@ -372,7 +378,7 @@ table.legend {
 		
 		 
 		    
-		         startColorstr=               
+		         startColorstr=                
 		
 		
 		
@@ -380,8 +386,8 @@ table.legend {
 		
 		
 		
-          '#eeeeee', endColorstr=                           '#cccccc',
-		GradientType=           
+          '#eeeeee', endColorstr=                            '#cccccc',
+		GradientType=            
 		
 		
 		 
@@ -407,13 +413,14 @@ table.legend {
 		-o-linear-gradient(top, #e5e696 0%, #d1d360 100%); /* Opera11.10+ */
 	background: url(/images/checked.gif) no-repeat scroll 50% 50%,
 		-ms-linear-gradient(top, #e5e696 0%, #d1d360 100%); /* IE10+ */
-	filter: progid:                       DXImageTransform.Microsoft.gradient(
+	filter: progid:                        DXImageTransform.Microsoft.gradient(
+		
 		
 		
 		 
 		  
 		     
-		           startColorstr=              
+		           startColorstr=               
 		
 		
 		
@@ -421,8 +428,8 @@ table.legend {
 		
 		
 		 
-        '#e5e696', endColorstr=                       '#d1d360',
-		GradientType=     
+        '#e5e696', endColorstr=                        '#d1d360',
+		GradientType=      
 		
 		
 		 
@@ -449,7 +456,8 @@ table.legend {
 		-o-linear-gradient(top, #deefff 0%, #98bede 100%); /* Opera11.10+ */
 	background: url(/images/checked.gif) no-repeat scroll 50% 50%,
 		-ms-linear-gradient(top, #deefff 0%, #98bede 100%); /* IE10+ */
-	filter: progid:                           DXImageTransform.Microsoft.gradient(
+	filter: progid:                            DXImageTransform.Microsoft.gradient(
+		
 		
 		
 		
@@ -459,7 +467,7 @@ table.legend {
 		
 		 
 		    
-		         startColorstr=               
+		         startColorstr=                
 		
 		
 		
@@ -467,8 +475,8 @@ table.legend {
 		
 		
 		
-          '#deefff', endColorstr=                           '#98bede',
-		GradientType=           
+          '#deefff', endColorstr=                            '#98bede',
+		GradientType=            
 		
 		
 		 
@@ -495,7 +503,8 @@ table.legend {
 		-o-linear-gradient(top, #e4efc0 0%, #abbd73 100%); /* Opera11.10+ */
 	background: url(/images/checked.gif) no-repeat scroll 50% 50%,
 		-ms-linear-gradient(top, #e4efc0 0%, #abbd73 100%); /* IE10+ */
-	filter: progid:                           DXImageTransform.Microsoft.gradient(
+	filter: progid:                            DXImageTransform.Microsoft.gradient(
+		
 		
 		
 		
@@ -505,7 +514,7 @@ table.legend {
 		
 		 
 		    
-		         startColorstr=               
+		         startColorstr=                
 		
 		
 		
@@ -513,8 +522,8 @@ table.legend {
 		
 		
 		
-          '#e4efc0', endColorstr=                           '#abbd73',
-		GradientType=           
+          '#e4efc0', endColorstr=                            '#abbd73',
+		GradientType=            
 		
 		
 		 
@@ -549,7 +558,8 @@ table.legend {
 		-o-linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* Opera11.10+ */
 	background: url(/images/unchecked.gif) no-repeat scroll 50% 50%,
 		-ms-linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* IE10+ */
-	filter: progid:                           DXImageTransform.Microsoft.gradient(
+	filter: progid:                            DXImageTransform.Microsoft.gradient(
+		
 		
 		
 		
@@ -559,7 +569,7 @@ table.legend {
 		
 		 
 		    
-		         startColorstr=               
+		         startColorstr=                
 		
 		
 		
@@ -567,8 +577,8 @@ table.legend {
 		
 		
 		
-          '#eeeeee', endColorstr=                           '#cccccc',
-		GradientType=           
+          '#eeeeee', endColorstr=                            '#cccccc',
+		GradientType=            
 		
 		
 		 
@@ -598,13 +608,14 @@ table.legend {
 		-o-linear-gradient(top, #e5e696 0%, #d1d360 100%); /* Opera11.10+ */
 	background: url(/images/unchecked.gif) no-repeat scroll 50% 50%,
 		-ms-linear-gradient(top, #e5e696 0%, #d1d360 100%); /* IE10+ */
-	filter: progid:                       DXImageTransform.Microsoft.gradient(
+	filter: progid:                        DXImageTransform.Microsoft.gradient(
+		
 		
 		
 		 
 		  
 		     
-		           startColorstr=              
+		           startColorstr=               
 		
 		
 		
@@ -612,8 +623,8 @@ table.legend {
 		
 		
 		 
-        '#e5e696', endColorstr=                       '#d1d360',
-		GradientType=     
+        '#e5e696', endColorstr=                        '#d1d360',
+		GradientType=      
 		
 		
 		 
@@ -640,7 +651,8 @@ table.legend {
 		-o-linear-gradient(top, #deefff 0%, #98bede 100%); /* Opera11.10+ */
 	background: url(/images/unchecked.gif) no-repeat scroll 50% 50%,
 		-ms-linear-gradient(top, #deefff 0%, #98bede 100%); /* IE10+ */
-	filter: progid:                           DXImageTransform.Microsoft.gradient(
+	filter: progid:                            DXImageTransform.Microsoft.gradient(
+		
 		
 		
 		
@@ -650,7 +662,7 @@ table.legend {
 		
 		 
 		    
-		         startColorstr=               
+		         startColorstr=                
 		
 		
 		
@@ -658,8 +670,8 @@ table.legend {
 		
 		
 		
-          '#deefff', endColorstr=                           '#98bede',
-		GradientType=           
+          '#deefff', endColorstr=                            '#98bede',
+		GradientType=            
 		
 		
 		 
@@ -686,7 +698,8 @@ table.legend {
 		-o-linear-gradient(top, #e4efc0 0%, #abbd73 100%); /* Opera11.10+ */
 	background: url(/images/unchecked.gif) no-repeat scroll 50% 50%,
 		-ms-linear-gradient(top, #e4efc0 0%, #abbd73 100%); /* IE10+ */
-	filter: progid:                           DXImageTransform.Microsoft.gradient(
+	filter: progid:                            DXImageTransform.Microsoft.gradient(
+		
 		
 		
 		
@@ -696,7 +709,7 @@ table.legend {
 		
 		 
 		    
-		         startColorstr=               
+		         startColorstr=                
 		
 		
 		
@@ -704,8 +717,8 @@ table.legend {
 		
 		
 		
-          '#e4efc0', endColorstr=                           '#abbd73',
-		GradientType=           
+          '#e4efc0', endColorstr=                            '#abbd73',
+		GradientType=            
 		
 		
 		 
@@ -807,8 +820,8 @@ table.repeatLastRow {
 	margin-bottom: -20px;
 }
 
-.indent-row .controls-row [class *="span"]+[class *="span"],.creatorPerson .controls-row [class
-	*="span"]+[class *="span"] {
+.indent-row .controls-row [class*="span"]+[class*="span"],.creatorPerson .controls-row [class*="span"]+[class*="span"]
+	{
 	margin-left: 10px;
 }
 
@@ -916,4 +929,9 @@ ol.MAP .listItemPart {
 label.help-inline[generated="true"] {
 	display: none;
 	visibility: hidden;
+}
+
+article+aside.span3>* {
+	margin-left: 40px !important;
+	float: right;
 }

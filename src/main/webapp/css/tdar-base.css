@@ -1,4 +1,4 @@
-/*  REMOVE to RESET TO BASE bootstrap */
+/*  REMOVE to RESET TO BASE bootstrap 
 .container {
 	width: 1000px;
 }
@@ -58,11 +58,16 @@
 .row {
 	margin-left: -40px;
 }
-
+*/
 [class*="span"] {
-	margin-left: 40px;
+//	margin-left: 40px;
 }
- 
+
+
+
+ .span45 {
+	width: 420px;
+}
  
 header input[type="text"],.hero input[type="text"] {
 	background-color: white;
@@ -95,9 +100,10 @@ body {
 	border-top: 1px solid #222;
 	border-bottom: none;
 	height: 1px; 
-	float: left;
+	float: left; /* weird ff issue w/o */
 	display: block;
-	width: 1000px; /*  REMOVE to RESET TO BASE bootstrap */
+	width: 100%;
+	/*width: 1000px; REMOVE to RESET TO BASE bootstrap */
 	margin: 30px 0 30px 40px;
 }
 
@@ -107,7 +113,7 @@ body {
 }
 
 .span9 hr {
- 	width: 740px !important; /*  REMOVE to RESET TO BASE bootstrap */ 
+ 	 /* width: 740px !important; REMOVE to RESET TO BASE bootstrap */ 
 	margin-left: 0 !important;
 }
 
@@ -709,7 +715,7 @@ margin: -5px 0 0 0 !important;
 	font-size: 20px;
 	line-height: 24px;
 	margin: 1em 0 0 0; 
-	float: left;
+	// float: left;
 }
 
 .cols p {
@@ -717,7 +723,7 @@ margin: -5px 0 0 0 !important;
 	font-size: 16px;
 	line-height: 23px;
 	margin: 15px 0 -5px 0; 
-	float: left;
+//	float: left;
 }
 
 .cols iframe {
@@ -1129,7 +1135,7 @@ contrib article h2,.contrib article p,.contrib article ul {
 	font-size: 20px;
 	line-height: 24px;
 	font-weight: 700;
-	float: left;
+	float: left; /* pagination balances sorting at top FIXME: should be specific, not general */
 	margin-top: 7px;
 	margin-bottom: 10px !important;
 }
