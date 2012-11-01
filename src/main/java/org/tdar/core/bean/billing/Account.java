@@ -59,7 +59,7 @@ public class Account extends Persistable.Base {
 
 //    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
 //    @JoinColumn(nullable = false, updatable = false, name = "resource_id")
-    private Set<Resource> resources = new HashSet<Resource>();
+//    private Set<Resource> resources = new HashSet<Resource>();
 
     /**
      * @return the invoices
@@ -136,19 +136,19 @@ public class Account extends Persistable.Base {
         this.lastModified = lastModified;
     }
 
-    /**
-     * @return the resources
-     */
-    public Set<Resource> getResources() {
-        return resources;
-    }
-
-    /**
-     * @param resources
-     *            the resources to set
-     */
-    public void setResources(Set<Resource> resources) {
-        this.resources = resources;
-    }
+//    /**
+//     * @return the resources
+//     */
+//    public Set<Resource> getResources() {
+//        return resources;
+//    }
+//
+//    /**
+//     * @param resources
+//     *            the resources to set
+//     */
+//    public void setResources(Set<Resource> resources) {
+//        this.resources = resources;
+//    }
 
 }
