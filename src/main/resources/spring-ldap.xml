@@ -8,6 +8,9 @@
     
     <context:property-placeholder location="classpath:ldap.properties" ignore-unresolvable="true" />
     
+    <bean id="springLdapDao" class="org.tdar.core.dao.external.auth.SpringLdapDao">
+        <property name="enabled" value="true"/>
+    </bean>
     <bean id="contextSource"
         class="org.springframework.ldap.core.support.LdapContextSource">
         <property name="url" value="${ldap.url}" />

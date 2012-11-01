@@ -20,8 +20,6 @@ import org.tdar.core.service.Configurable;
  *
  */
 public interface ExternalIDProvider extends Configurable {
-
-    public abstract boolean isConfigured();
     
     public abstract boolean connect() throws ClientProtocolException, IOException;
 

@@ -61,4 +61,9 @@ public class MockIdentifierDao implements ExternalIDProvider {
         return modify(r, resourceUrl, identifier);
     }
 
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
 }

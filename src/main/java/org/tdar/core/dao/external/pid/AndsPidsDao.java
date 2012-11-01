@@ -258,4 +258,9 @@ public class AndsPidsDao implements ExternalIDProvider {
         return assistant.getStringProperty(DOI_PROVIDER_HOSTNAME);
     }
 
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
 }

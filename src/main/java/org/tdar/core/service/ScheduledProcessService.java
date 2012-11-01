@@ -67,7 +67,6 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
 
     private static final long ONE_HOUR_MS = 3600000;
     private static final long ONE_MIN_MS = 60000;
-    @SuppressWarnings("unused")
     private static final long FIVE_MIN_MS = ONE_MIN_MS * 5;
     private static final long TWO_MIN_MS = ONE_MIN_MS * 2;
     public static String BAR = "\r\n========================================================\r\n";
@@ -114,6 +113,13 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
         long repositorySize = TdarConfiguration.getInstance().getFilestore().getSizeInBytes();
         stats.add(generateStatistics(StatisticType.REPOSITORY_SIZE, Long.valueOf(repositorySize), FileUtils.byteCountToDisplaySize(repositorySize)));
         genericService.save(stats);
+    }
+    
+    @Scheduled(fixedDelay = FIVE_MIN_MS)
+    public void checkAuthService() {
+        if (! authenticationService.getProvider().isConfigured()) {
+            logger.error("Unconfigured provider: {}", authenticationService.getProvider());
+        }
     }
 
     @Scheduled(cron = "16 0 0 * * SUN")

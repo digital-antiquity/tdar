@@ -60,13 +60,13 @@ public class CrowdSoapDao extends BaseAuthenticationProvider {
 
     public boolean isConfigured() {
         if (securityServerClient == null || httpAuthenticator == null) {
-            logger.debug("client and/or authenitcator are null " + securityServerClient + " " + httpAuthenticator);
+            logger.debug("client and/or authenticator are null " + securityServerClient + " " + httpAuthenticator);
             return false;
         }
         try {
             securityServerClient.authenticate();
         } catch (Exception e) {
-            logger.debug(e);
+            logger.info(e);
             return false;
         }
         return true;

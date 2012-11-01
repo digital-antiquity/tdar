@@ -11,9 +11,7 @@ public interface AuthenticationProvider extends Configurable {
     TdarGroup[] DEFAULT_GROUPS = { TdarGroup.TDAR_USERS, TdarGroup.JIRA_USERS, TdarGroup.CONFLUENCE_USERS };
 
     public abstract void logout(HttpServletRequest request, HttpServletResponse response);
-
-    public abstract boolean isConfigured();
-
+    
     public abstract AuthenticationResult authenticate(HttpServletRequest request, HttpServletResponse response, String name, String password);
 
     public abstract boolean isAuthenticated(HttpServletRequest request, HttpServletResponse response);
