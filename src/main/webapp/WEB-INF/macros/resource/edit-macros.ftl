@@ -79,7 +79,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </#macro>
 
 <#macro organizeResourceSection>
-    <div class="well-alt" id="organizeSection">
+<div class="" id="organizeSection">
         <h2>${siteAcronym} Collections &amp; Project</h2>
         <h4>Add to a Collection</h4>
          <@edit.resourceCollectionSection />
@@ -1896,7 +1896,7 @@ function drawToolbar(projId) {
 	<br/>
 </#macro>
 
-<#macro comboBox name target label autocompleteParentElement autocompleteIdElement placeholder value cssClass>
+<#macro combobox name target label autocompleteParentElement autocompleteIdElement placeholder value cssClass>
             <div class="control-group">
                 <label class="control-label">${label}</label>
                 <div class="controls">

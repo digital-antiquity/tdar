@@ -27,7 +27,7 @@
      
      
      <!-- FIXME: This screams to be refactored into a common format; one issue in a cursory try though is the ability to do the assignments of the defaultId and Text-->
-        <b>Map it to an Ontology:</b><br/>
+        <h4>Map To an Ontology</h4>
             <#assign ontologyId="" />
             <#assign ontologyTxt="" />
             <#if ontology??  && ontology.id??>
@@ -35,14 +35,27 @@
                 <#assign ontologyTxt="${ontology.title} (${ontology.id?c})"/>
             </#if>
             <@s.hidden name="ontology.id" value="${ontologyId}" id="oid" />
-            <@s.textfield name="ontology.title" target="#divOntology"
+            <@edit.combobox name="ontology.title"
+                label="Ontology Name" 
+                target="#divOntology"
                  value="${ontologyTxt}"  
-                 watermark="Enter the name of an Ontology"
+                 placeholder="Enter the name of an Ontology"
                  autocompleteParentElement="#divOntology"
                  autocompleteIdElement="#oid"
                  cssClass="longfield ontologyfield" />
-            <div class="down-arrow"></div>
-            <small><a target="_blank" onclick="setAdhocTarget(this);" href='<@s.url value="/ontology/add?returnToResourceMappingId=${resource.id?c}"/>'>Create Ontology</a> </small>
+                 
+             <div class="control-group">
+                <div class="controls">
+                    <span class="help-block">
+                        Alternately, you can create a new ontology by pressing the button below. TDAR will start the process in a new window, and return here when you are finished.
+                    </span>
+                    
+                        
+                    <a class="btn btn-small"target="_blank" 
+                        onclick="setAdhocTarget(this);" 
+                        href='<@s.url value="/ontology/add?returnToResourceMappingId=${resource.id?c}"/>'>Create An Ontology</a>
+                </div>
+             </div>
     </div>
 
 <@edit.organizeResourceSection />
@@ -66,11 +79,9 @@
 
 <@edit.resourceJavascript formSelector="#resourceRegistrationForm" selPrefix="#resourceRegistration" includeInheritance=true>
     $(function() {
+        var $form = $("#resourceRegistrationForm");
         setupSupportingResourceForm(${codingSheet.getTotalNumberOfFiles()?c}, "coding sheet");
-        $(formId).delegate(".down-arrow", "click",autocompleteShowAll);
-        $(formId).delegate('input.ontologyfield',"focusin", function() {
-            applyResourceAutocomplete($('input.ontologyfield'), "ONTOLOGY");
-        });
+        applyComboboxAutocomplete($('input.ontologyfield', $form), "ONTOLOGY");
     });
     
 </@edit.resourceJavascript>

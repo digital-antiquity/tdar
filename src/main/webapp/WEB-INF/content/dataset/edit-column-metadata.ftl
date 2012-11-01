@@ -166,7 +166,7 @@
             </#if>
             <@s.hidden id="${column_index}_cid" name="dataTableColumns[${column_index}].defaultCodingSheet.id" cssClass="codingsheetidfield" value="${codingId}" />
             <small class="pull-right"><a target="_blank" onclick="setAdhocTarget(this);" href='<@s.url value="/coding-sheet/add?returnToResourceMappingId=${resource.id?c}"/>'>Create Coding Sheet</a> </small>
-            <@edit.comboBox name="dataTableColumns[${column_index}].defaultCodingSheet.title"  target="#columnDiv_${column_index}"
+            <@edit.combobox name="dataTableColumns[${column_index}].defaultCodingSheet.title"  target="#columnDiv_${column_index}"
 			 label="Translate your data using a Coding Sheet:"
              autocompleteParentElement="#columnDiv_${column_index}"
              autocompleteIdElement="#${column_index}_cid"
@@ -182,7 +182,7 @@
             </#if>
             <@s.hidden name="dataTableColumns[${column_index}].defaultOntology.id" value="${ontologyId}" id="${column_index}_oid" />
             <small class="pull-right"><a target="_blank" onclick="setAdhocTarget(this);" href='<@s.url value="/ontology/add?returnToResourceMappingId=${resource.id?c}"/>'>Create Ontology</a> </small>
-            <@edit.comboBox name="dataTableColumns[${column_index}].defaultOntology.title" target="#columnDiv_${column_index}"
+            <@edit.combobox name="dataTableColumns[${column_index}].defaultOntology.title" target="#columnDiv_${column_index}"
              value="${ontologyTxt}"  
              label="Map it to an Ontology:"
              placeholder="Enter the name of an Ontology"
