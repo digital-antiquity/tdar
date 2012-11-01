@@ -35,7 +35,10 @@ public class Invoice extends Base {
     @Column(name = "date_created")
     private Date dateCreated = new Date();
     // the confirmation id for this invoice
+    
     private String transactionId;
+    
+    private TransactionType transactionType;
 
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     @JoinColumn(nullable = false, name = "owner_id")
@@ -113,6 +116,14 @@ public class Invoice extends Base {
 
     public void setTotal(Float total) {
         this.total = total;
+    }
+
+    public TransactionType getTransactionType() {
+        return transactionType;
+    }
+
+    public void setTransactionType(TransactionType transactionType) {
+        this.transactionType = transactionType;
     }
 
 }

@@ -32,7 +32,7 @@ import org.tdar.core.bean.resource.Status;
  * @version $Rev$
  */
 @Entity
-@Table(name="pos_account_group")
+@Table(name = "pos_account_group")
 public class AccountGroup extends Persistable.Base implements HasStatus {
 
     private static final long serialVersionUID = 3939132209828344622L;

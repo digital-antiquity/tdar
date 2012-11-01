@@ -9,11 +9,15 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.resource.Resource;
 
 /**
  * $Id$
@@ -40,11 +44,22 @@ public class Account extends Persistable.Base {
     @Column(name = "date_updated")
     private Date lastModified = new Date();
 
+    @NotNull
+    @Column(name = "date_expires")
+    private Date expires = new Date();
+
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = false, name = "account_id")
     private Set<Invoice> invoices = new HashSet<Invoice>();
 
-    // private Set<Resource> resources = new HashSet<Resource>();
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
+    @JoinTable(name = "pos_members", joinColumns = { @JoinColumn(nullable = false, name = "account_group_id") }, inverseJoinColumns = { @JoinColumn(
+            nullable = false, name = "account_id") })
+    private Set<Person> authorizedMembers = new HashSet<Person>();
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(nullable = false, updatable = false, name = "resource_id")
+    private Set<Resource> resources = new HashSet<Resource>();
 
     /**
      * @return the invoices
