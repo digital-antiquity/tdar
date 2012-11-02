@@ -13,7 +13,7 @@
 </#if>
 <div class="slider span12">
 <h3>Featured Content</h3>
-<div id="myCarousel" class="carousel slide">
+<div id="slider" class="carousel slide">
   <!-- Carousel items -->
   <div class="carousel-inner">
 		<#list featuredResources as featuredResource>
@@ -21,8 +21,8 @@
 	    </#list>
   </div>
   <!-- Carousel nav -->
-  <a class="carousel-control left" href="#myCarousel" data-slide="prev">&lsaquo;</a>
-  <a class="carousel-control right" href="#myCarousel" data-slide="next">&rsaquo;</a>
+  <a class="carousel-control left" href="#slider" data-slide="prev">&lsaquo;</a>
+  <a class="carousel-control right" href="#slider" data-slide="next">&rsaquo;</a>
 </div>
 
 </#if>

@@ -1,3 +1,7 @@
+/*
+	History: this file represents the original source code as provided by Fervor
+*/
+
 /*  REMOVE to RESET TO BASE bootstrap 
 .container {
 	width: 1000px;
@@ -69,27 +73,6 @@
 	width: 420px;
 }
  
-header input[type="text"],.hero input[type="text"] {
-	background-color: white;
-	border: none;
-	-webkit-box-shadow: none;
-	-moz-box-shadow: none;
-	box-shadow: none;
-	-webkit-transition: none;
-	-moz-transition: none;
-	-o-transition: color 0 ease-in;
-	transition: none;
-	display: inline-block;
-	height: auto;
-	padding: 0;
-	margin-bottom: 0;
-	color: inherit;
-	-webkit-border-radius: none;
-	-moz-border-radius: none;
-	border-radius: none;
-	line-height: inherit;
-}
-
 body {
 	color: #1b1a18;
 	font-family: helvetica, arial, sans-serif;
@@ -107,7 +90,7 @@ body {
 	margin: 30px 0 30px 40px;
 }
 
-#home hr.dbl,#alt hr.dbl {
+hr.dbl {
 	border-bottom: 1px solid #222 !important;
 	height: 2px;
 }
@@ -172,10 +155,33 @@ a.button:hover {
 	background: url(/images/r4/bg-sub.jpg) top center no-repeat;
 }
 
+/* header */
 header {
 	height: 115px;
 	position: relative;
 }
+
+header input.searchbox,.hero input.searchbox {
+	background-color: white;
+	border: none;
+	-webkit-box-shadow: none;
+	-moz-box-shadow: none;
+	box-shadow: none;
+	-webkit-transition: none;
+	-moz-transition: none;
+	-o-transition: color 0 ease-in;
+	transition: none;
+	display: inline-block;
+	height: auto;
+	padding: 0;
+	margin-bottom: 0;
+	color: inherit;
+	-webkit-border-radius: none;
+	-moz-border-radius: none;
+	border-radius: none;
+	line-height: inherit;
+}
+
 
 header h1 {
 	margin: 20px 0 0 0;
@@ -246,7 +252,7 @@ header nav li.button a {
 	margin: 45px -10px 0 25px;
 }
 
-header form input[type="text"] {
+header form input.searchbox {
 	width: 200px;
 	padding: 6px 10px;
 	margin: 40px 0 0 35px;
@@ -261,7 +267,7 @@ header form input[type="text"] {
 	background: url(/images/r4/bg-search.png) 195px 50% no-repeat;
 }
 
-.lt-ie9 header form input[type="text"] {
+.lt-ie9 header form input.searchbox {
 	padding: 9px 10px 3px 10px;
 }
 
@@ -320,14 +326,6 @@ header .welcome-drop ul {
 	position: relative;
 }
 
-.hero h2 {
-	font-family: "soleil", sans-serif;
-	font-weight: 700;
-	font-size: 60px;
-	line-height: 50px;
-	letter-spacing: -2px;
-	margin: 50px 0 0 0;
-}
 
 .hero p {
 	margin: 18px 0;
@@ -338,7 +336,7 @@ header .welcome-drop ul {
 	line-height: 24px;
 }
 
-.hero input {
+.hero input.searchbox {
 	width: 552px;
 	padding: 11px 0 13px 18px !important;
 	background: url(/images/r4/bg-hero-search.png) 0 0 no-repeat !important;
@@ -350,7 +348,7 @@ header .welcome-drop ul {
 	color: #7d7a77 !important;
 }
 
-.lt-ie9 .hero input {
+.lt-ie9 .hero input.searchbox {
 	padding: 15px 0 10px 18px !important;
 }
 
@@ -375,6 +373,8 @@ header .welcome-drop ul {
 	width: 105px;
 }
 
+
+/* Featured item slider */
 .slider {
 	position: relative;
 	padding-left: 70px;
@@ -426,11 +426,12 @@ header .welcome-drop ul {
 	margin-right: 7px;
 }
 
+/* should I be more specific? */
 #slider img {
 	float: right;
 }
 
-.car-btn {
+.carousel-control {
 	display: block;
 	width: 24px;
 	height: 38px;
@@ -448,15 +449,16 @@ header .welcome-drop ul {
 	opacity: 1;
 }
 
-.car-prev {
+.carousel-control.left {
 	left: 0;
 }
 
-.car-next {
+.carousel-control.right {
 	right: 0;
 	background-position: -24px 0;
 }
 
+/* homepage */
 .bucket {
 	text-align: center;
 }
@@ -477,29 +479,29 @@ header .welcome-drop ul {
 	margin: 0 0 13px 0;
 }
 
-.map h3 {
+#home .map h3 {
 	margin: 5px 0 30px 0;
 	float: left;
 }
 
-.map img.guide {
+#home .map img.guide {
 	float: right;
 	margin-top: 18px;
 }
 
-.news h3 {
+#home .news h3 {
 	margin: 5px 0 20px 0;
 	float: left;
 }
 
-.news ul,.news li {
+#home .news ul,#home  .news li {
 	margin: 0;
 	padding: 0;
 	list-style: none;
 	clear: left;
 }
 
-.news li {
+#home .news li {
 	font-family: "ff-tisa-web-pro", serif;
 	font-size: 12px;
 	line-height: 20px;
@@ -511,7 +513,7 @@ header .welcome-drop ul {
 	border-bottom: 1px solid #e8e3d7;
 }
 
-.news span {
+#home .news span {
 	font-family: "soleil", sans-serif;
 	font-weight: 700;
 	color: #e3dfd8;
@@ -526,12 +528,13 @@ header .welcome-drop ul {
 	font-style: normal;
 }
 
-.news em {
+#home .news em {
 	font-size: 30px;
 	font-style: normal;
+	display:block;
 }
 
-.news a.title {
+#home .news a.title {
 	font-family: helvetica, arial, sans-serif;
 	font-weight: 700;
 	font-size: 15px;
@@ -539,6 +542,7 @@ header .welcome-drop ul {
 	display: block;
 }
 
+/* subnav bar */
 .subnav {
 	position: relative;
 	height: 60px;
@@ -597,6 +601,7 @@ header .welcome-drop ul {
 	width: 105px;
 }
 
+/* resource navigation toolbar */
 .resource-nav {
 	height: 40px;
 	margin: 40px 0 40px 40px;
@@ -671,9 +676,17 @@ header .welcome-drop ul {
 	background: url(/images/r4/bg-cols.png) top right repeat-y;
 }
 
-section h1 {
+h1 {
 	font-family: "soleil", sans-serif;
 	font-weight: 700;
+}
+
+h2 {
+	font-family: "soleil", sans-serif;
+	font-weight: 700;
+}
+
+.why h1 , .contrib h1 , section h1 {
 	font-size: 60px;
 	line-height: 64px;
 	margin: 70px 0 0 40px;
@@ -681,8 +694,6 @@ section h1 {
 }
 
 #titlebar h1, article h1 {
-	font-family: "soleil", sans-serif;
-	font-weight: 700;
 	font-size: 45px;
 	line-height: 64px;
 	margin: 70px 0 0 0px;
@@ -692,30 +703,23 @@ section h1 {
 }
 
 .cols h1 {
-font-family: "soleil", sans-serif;
-font-weight: 700;
 font-size: 30px;
 line-height: 34px;
 margin: -5px 0 0 0 !important;
 }
-/* #titlebar h1 {
-	font-family: "soleil", sans-serif;
-	font-weight: 700;
-	font-size: 30px;
-	line-height: 34px;
-	margin-top: 45px !important;
-	margin-right: 0px;
-	margin-left: 0px;
-	margin-bottom: 50px !important;
+
+
+.hero h2 {
+	font-size: 60px;
+	line-height: 50px;
+	letter-spacing: -2px;
+	margin: 50px 0 0 0;
 }
- */
+
 .cols h2 {
-	font-family: "soleil", sans-serif;
-	font-weight: 700;
 	font-size: 20px;
 	line-height: 24px;
 	margin: 1em 0 0 0; 
-	// float: left;
 }
 
 .cols p {
@@ -913,15 +917,6 @@ aside.dataset,  aside.document, aside.coding_sheet, aside.sensory_data, aside.on
 	background: url(/images/r4/icn-pdf.png) 8px 14px no-repeat;
 }
 
-.why h1 {
-	font-family: "soleil", sans-serif;
-	font-weight: 700;
-	font-size: 60px;
-	line-height: 63px;
-	margin: 70px 0 100px 40px;
-	letter-spacing: -1px
-}
-
 .why article h2,.why article p,.why article ul {
 	width: 350px;
 	margin: 0;
@@ -994,14 +989,7 @@ h1 span {
 	margin-left: 100px;
 }
 
-.contrib h1 {
-	font-family: "soleil", sans-serif;
-	font-weight: 700;
-	font-size: 60px;
-	line-height: 64px;
-	margin: 70px 0 0 40px;
-	letter-spacing: -1px
-}
+
 
 .contrib h2,.contrib p,.contrib ul {
 	margin: 0;
@@ -1021,7 +1009,6 @@ contrib article h2,.contrib article p,.contrib article ul {
 .contrib h2 {
 	font-size: 24px;
 	line-height: 24px;
-	font-weight: 700;
 	color: #7a1501 !important;
 }
 
@@ -1116,8 +1103,15 @@ contrib article h2,.contrib article p,.contrib article ul {
 	margin-left: 520px;
 }
 
-#titlebar h1,.search h1,.search h2,.search h3,.search h4,.search p,.search aside li
-	{
+
+
+#titlebar h1,.search h1 {
+	margin: 0;
+	padding: 0;
+	
+}
+
+.search h2,.search h3,.search h4,.search p,.search aside li {
 	font-family: "soleil", sans-serif;
 	margin: 0;
 	padding: 0;
@@ -1131,10 +1125,9 @@ contrib article h2,.contrib article p,.contrib article ul {
 }
 
 
-.search h2 {
+.search h2.totalRecords {
 	font-size: 20px;
 	line-height: 24px;
-	font-weight: 700;
 	float: left; /* pagination balances sorting at top FIXME: should be specific, not general */
 	margin-top: 7px;
 	margin-bottom: 10px !important;

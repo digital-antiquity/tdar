@@ -87,7 +87,7 @@
 
 
 
-	 <h2>${totalRecords} Results</h2>
+	 <h2 class="totalRecords">${totalRecords} Results</h2>
 	 <div class="sort">
 		 <p>Sort By:</p>
 		 <form action=''>

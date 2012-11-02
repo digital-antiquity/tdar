@@ -11,8 +11,10 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import org.tdar.core.bean.Persistable;
@@ -57,9 +59,10 @@ public class Account extends Persistable.Base {
             nullable = false, name = "account_id") })
     private Set<Person> authorizedMembers = new HashSet<Person>();
 
-//    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+//    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 //    @JoinColumn(nullable = false, updatable = false, name = "resource_id")
-//    private Set<Resource> resources = new HashSet<Resource>();
+    @Transient
+    private Set<Resource> resources = new HashSet<Resource>();
 
     /**
      * @return the invoices
@@ -136,19 +139,19 @@ public class Account extends Persistable.Base {
         this.lastModified = lastModified;
     }
 
-//    /**
-//     * @return the resources
-//     */
-//    public Set<Resource> getResources() {
-//        return resources;
-//    }
-//
-//    /**
-//     * @param resources
-//     *            the resources to set
-//     */
-//    public void setResources(Set<Resource> resources) {
-//        this.resources = resources;
-//    }
+    /**
+     * @return the resources
+     */
+    public Set<Resource> getResources() {
+        return resources;
+    }
+
+    /**
+     * @param resources
+     *            the resources to set
+     */
+    public void setResources(Set<Resource> resources) {
+        this.resources = resources;
+    }
 
 }

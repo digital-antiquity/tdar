@@ -91,7 +91,7 @@
 					</ul>
 	
 					<#if bodyid != 'home'>
-						<form name="searchheader" action="<@s.url value="/search/results"/>">
+						<form name="searchheader" action="<@s.url value="/search/results"/>" class="searchbox">
 							<input type="text" name="query" placeholder="Search..." />
 						</form>
 					</#if>
@@ -107,7 +107,7 @@
 				<p><strong>The Digital Archaeological Record (tDAR)</strong> is your online archive <br/>for archaeological information.</p>
 
 						<form name="searchheader" action="<@s.url value="/search/results"/>">
-							<input type="text" name="query" placeholder="Find archaeological data...">
+							<input type="text" name="query" placeholder="Find archaeological data..." class="searchbox">
 						</form>
 
 				<@common.loginMenu true/>
