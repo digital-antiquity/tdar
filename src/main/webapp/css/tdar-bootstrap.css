@@ -935,3 +935,8 @@ article+aside.span3>* {
 	margin-left: 40px !important;
 	float: right;
 }
+
+/* Normally I like the default bootstrap styles... but hot pink for CODE tags?  Really? */
+code {
+    color: navy;
+}

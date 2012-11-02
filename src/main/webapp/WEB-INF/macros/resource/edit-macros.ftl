@@ -588,105 +588,37 @@ The form will check for matches in the ${siteAcronym} database and populate the 
     </div>
 </#macro>
 
-<#macro manualTextInput typeLabel="" type="">
-<div class="glide">
+<#macro manualTextInput typeLabel type uploadOptionText manualEntryText>
+<#-- show manual option by default -->
+<#local usetext=(resource.getLatestVersions().isEmpty() || (fileTextInput!"") != "")>
+<div>
     <h3>${(resource.id == -1)?string("Submit", "Replace")} ${typeLabel}</h3>
-    <div>
-    <label class='label' for='inputMethodId'>Submit as:</label>
-    <select id='inputMethodId' name='fileInputMethod' onchange='refreshInputDisplay()' cssClass="field">
-        <#-- show manual option by default -->
-        <#assign usetext=(resource.getLatestVersions().isEmpty() || (fileTextInput!"") != "")>
-        <#if type=="coding">
-            <option value='file' <#if !usetext>selected="selected"</#if>>Upload an Excel or CSV coding sheet file</option>
-            <option value='text' <#if usetext>selected="selected"</#if>>Manually enter coding rules into a textarea</option>
-        <#else>
-            <option value='file' <#if !usetext>selected="selected"</#if>>Upload an OWL file</option>
-            <option value='text' <#if usetext>selected="selected"</#if>>Manually enter your ontology into a textarea</option>
-        </#if>
-    </select>
+    <div class="control-group">
+        <label class='control-label' for='inputMethodId'>Submit as</label>
+        <div class="controls">
+            <select id='inputMethodId' name='fileInputMethod' onchange='refreshInputDisplay()' class="input-xxlarge">
+                <option value='file' <#if !usetext>selected="selected"</#if>>${uploadOptionText}</option>
+                <option value='text' <#if usetext>selected="selected"</#if>>${manualEntryText}</option>
+            </select>
+        </div>
     </div>
-    <br/>
 
     <div id='uploadFileDiv' style='display:none;'>
-    <div id='uploadFileExampleDiv' class='info'  >
-    <#if type=="coding">
-        <p>
-        To be parsed properly your coding sheet should have <b>Code, Term, Description (optional)</b> columns, in order.  For example,
-        </p>
-        <table class="zebracolors">
-        <thead>
-        <tr><th>Code</th><th>Term</th><th>Description (optional)</th></tr>
-        </thead>
-        <tbody>
-        <tr>
-        <td>18</td><td>Eutamias spp.</td><td>Tamias spp. is modern term</td>
-        </tr>
-        <tr>
-        <td>19</td><td>Ammospermophilus spp.</td><td></td>
-        </tr>
-        <tr>
-        <td>20</td><td>Spermophilus spp.</td><td></td>
-        </tr>
-        </tbody>
-        </table>
-        <br/>
-    <#else>
-        <p>
-        We currently support uploads of <a class='external' href='http://www.w3.org/TR/owl2-overview/'>OWL XML/RDF files</a>.  
-        You can create OWL files by hand (difficult) or with a tool like <a
-        class='external' href='http://protege.stanford.edu/'>the
-        Prot&eacute;g&eacute; ontology editor</a>.  Alternatively, choose the <b>Submit
-        as: Manually enter your ontology</b> option above and enter your ontology
-        into a text area.  
-        </p>
-    </#if>
-    </div>
-    <@singleFileUpload />
+        <div id="uploadFileExampleDiv" class="control-group">
+            <div class="controls">
+                <#nested 'upload'>
+            </div>
+        </div>
+        <@singleFileUpload />
     </div>
     
     <div id='textInputDiv'>
-    <div id='textInputExampleDiv' class='info'>
-    <#if type="coding">
-        <p>Enter your coding rules in the text area below.  Each line can have a maximum of three elements, separated by commas, 
-        and should be in the form <code>code, term, optional description</code>.  Codes can be numbers or arbitrary strings.  
-        For example, 
-        </p>
-        <p>
-        <code>1, Small Mammal, Small mammals are smaller than a breadbox</code><br/>
-        <code>2, Medium Mammal, Medium Mammals are coyote or dog-sized</code>
-        </p>
-        
-        <div class='note'>If a code, a term, or a description has an embedded comma, 
-            the whole value must be enclosed in double quotes, e.g. <br/>
-            <code>3, Large Mammal, &quot;Large mammals include deer, antelope, and bears&quot;</code>
+        <div id="textInputExampleDiv" class="control-group">
+            <div class="controls">
+                <#nested 'manualEntry'>
+            </div>
         </div>
-        <br/>
-    <#else>
-        <p>
-        You can enter your ontology in the text area below.  Separate each concept in
-        your ontology with newlines (hit enter), and indicate parent-child relationships
-        with tabs (make sure you use the tab key on your keyboard - spaces do not work).
-        To specify synonyms for a given term use comma-separated parentheses, e.g.,
-        <br/>
-        <code>Flake (Debris, Debitage)</code>. 
-        <br/> 
-        For lithic form, the following would be a simple ontology:
-        </p>
-        <pre>
-            Tool
-                Projectile Point
-                Scraper (Grattoir)
-                    End Scraper
-                    Side Scraper
-                Other Tool
-            Flake (Debris, Debitage)
-                Utilized
-                Unutilized
-            Core
-        </pre>
-    </#if>
-    </div>
-    <@s.textarea label='${typeLabel}' labelposition='top' id='fileInputTextArea' name='fileTextInput' rows="5" cssClass='resizable input-xxlarge' />
+        <@s.textarea label='${typeLabel}' labelposition='top' id='fileInputTextArea' name='fileTextInput' rows="5" cssClass='resizable input-xxlarge' />
     </div>
 </div>
 

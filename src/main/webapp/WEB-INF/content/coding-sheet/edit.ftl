@@ -65,7 +65,64 @@
 <div class="glide">
 <@view.codingRules />
 </div>
-<@edit.manualTextInput typeLabel="Coding Sheet" type="coding" />
+<@edit.manualTextInput 
+    typeLabel="Coding Sheet" 
+    type="coding" 
+    uploadOptionText="Upload an Excel or CSV coding sheet file" 
+    manualEntryText="Manually enter coding rules into a textarea"; _divid>
+        <#if _divid=="upload">
+        <p class="help-block">
+        To be parsed properly your coding sheet should have <b>Code, Term, Description (optional)</b> columns, in order.  For example:
+        </p>
+        
+        <table class="table">
+            <thead>
+               <tr>
+                    <th>Code</th>
+                    <th>Term</th>
+                    <th>Description (optional)</th>
+                </tr>
+            </thead>
+        <tbody>
+            <tr>
+                <td>18</td>
+                <td>Eutamias spp.</td>
+                <td>Tamias spp. is modern term</td>
+            </tr>
+            <tr>
+                <td>19</td>
+                <td>Ammospermophilus spp.</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>20</td>
+                <td>Spermophilus spp.</td>
+                <td></td>
+            </tr>
+        </tbody>
+        </table>
+        <#elseif _divid=="manualEntry">
+        <p class="help-block">
+            Enter your coding rules in the text area below.  Each line can have a maximum of three elements, separated by commas, 
+            and should be in the form <code>code, term, optional description</code>.  Codes can be numbers or arbitrary strings.  
+            For example:
+        </p>
+        <blockquote>
+            <p>
+                <code>1, Small Mammal, Small mammals are smaller than a breadbox</code><br/>
+                <code>2, Medium Mammal, Medium Mammals are coyote or dog-sized</code>
+            </p>
+        </blockquote>
+        
+        <p class="help-block">If a code, a term, or a description has an embedded comma, 
+            the whole value must be enclosed in double quotes, e.g. 
+        </p>
+        <blockquote>
+            <p><code>3, Large Mammal, &quot;Large mammals include deer, antelope, and bears&quot;</code></p>
+        </blockquote>
+        </#if>
+
+</@edit.manualTextInput>
 
 <@edit.allCreators 'Coding Sheet Creators' authorshipProxies 'authorship' />
 
