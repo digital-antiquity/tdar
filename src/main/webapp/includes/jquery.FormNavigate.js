@@ -29,12 +29,17 @@ var global_formNavigate = true;		// Js Global Variable for onChange Flag
 (function($){
     $.fn.FormNavigate = function(message) {
     	$(window).bind("beforeunload", function (event) {
-                if (global_formNavigate == true) {  event.cancelBubble = true;  }  else  { return message;              }
+                if (global_formNavigate) {  event.cancelBubble = true;  }  else  { return message;              }
     	});
     	var $this = $(this);
 //    	$this.delegate("input, select, textarea","keyup change", function() {
-    	$this.one("keyup change", function() {
-    		global_formNavigate = false;
+    	$this.one("keyup change", function(evt) {
+    	    console.log("Form #%s has become dirty. event:%s\t target:%s\t ", $this.attr("id"), evt.type, evt.target);
+    	    global_formNavigate = false ;
+    	    if($.cookie("tdarFormNavigateOverride")) {
+    	        console.log("FormNavigate: ignoring dirty form due to override");
+    	        global_formNavigate = true;
+    	    }
     	});
 //        $(this+ ":input[type='text'], :input[type='button'], :input[type='textarea'], :input[type='password'], :input[type='radio'], :input[type='checkbox'], :input[type='file'], select").change(function(){
 //            global_formNavigate = false;

@@ -26,14 +26,14 @@ import org.tdar.utils.DeleteOnCloseFileInputStream;
 @ParentPackage("secured")
 @Namespace("/filestore/{informationResourceFileId}")
 @Results({
-        @Result(name = "success", type = "stream",
-                params = {
-                        "contentType", "${contentType}",
-                        "inputName", "inputStream",
-                        "contentDisposition", "filename=\"${fileName}\"",
-                        "contentLength", "${contentLength}"
-                }
-        ),
+            @Result(name = "success", type = "stream",
+                    params = {
+                            "contentType", "${contentType}",
+                            "inputName", "inputStream",
+                            "contentDisposition", "${dispositionPrefix}filename=\"${fileName}\"",
+                            "contentLength", "${contentLength}"
+                    }
+            ),
         @Result(name = "error", type = "httpheader", params = { "error", "404" }),
         @Result(name = "forbidden", type = "httpheader", params = { "error", "403" })
 
@@ -51,6 +51,8 @@ public class DownloadController extends AuthenticationAware.Base {
     private Integer version;
     private VersionType type;
     private Long informationResourceId;
+    
+    private String dispositionPrefix = "";
 
     public static final String FORBIDDEN = "forbidden";
 
@@ -59,11 +61,11 @@ public class DownloadController extends AuthenticationAware.Base {
 
     @Action(value = "confirm", results = { @Result(name = "confirm", location = "/WEB-INF/content/confirm-download.ftl") })
     public String confirm() {
+        //FIXME: some of the work in execute() is unnecessary as we are only rendering the confirm page.
         String status = execute();
         if (status != SUCCESS) {
             return status;
-        }
-        ;
+        } ;
         return "confirm";
     }
 
@@ -148,6 +150,7 @@ public class DownloadController extends AuthenticationAware.Base {
                 InformationResourceFile irFile = irFileVersion.getInformationResourceFile();
                 FileDownloadStatistic stat = new FileDownloadStatistic(new Date(), irFile);
                 getInformationResourceService().save(stat);
+                initDispositionPrefix(irFile.getInformationResourceFileType());
             }
         } catch (FileNotFoundException e) {
             addActionErrorWithException("File not found", e);
@@ -156,7 +159,14 @@ public class DownloadController extends AuthenticationAware.Base {
 
         return SUCCESS;
     }
-
+    
+    //indicate in the header whether the file should be received as an attachment (e.g. give user download prompt)
+    private void initDispositionPrefix(InformationResourceFile.FileType fileType) {
+        if(InformationResourceFile.FileType.IMAGE != fileType) {
+            dispositionPrefix = "attachment;";
+        }
+    }
+    
     public InputStream getInputStream() {
         return inputStream;
     }
@@ -203,6 +213,10 @@ public class DownloadController extends AuthenticationAware.Base {
 
     public Long getInformationResourceId() {
         return informationResourceId;
+    }
+
+    public String getDispositionPrefix() {
+        return dispositionPrefix;
     }
 
 }

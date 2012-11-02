@@ -353,37 +353,37 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <#macro sharedUploadFile divTitle="Upload">
 <div class="well-alt" id="uploadSection">
     <h2>${divTitle}</h2>
-        <div class='fileupload-content'>
-            <#nested />
-            <#-- XXX: verify logic for rendering this -->
-            <#if multipleFileUploadEnabled || resource.hasFiles()>
-            <h4>Current ${multipleFileUploadEnabled?string("and Pending Files", "File")}</h4>
-            <table id="uploadFiles" class="files tableFormat">
-            </table>
-            <table id="files" class='files sortable tableFormat'>
-            <thead>
-                <tr class="reorder <#if (fileProxies?size < 2 )>hidden</#if>">
-                    <th colspan=2>Reorder: <span class="link alphasort">Alphabetic</span> | <span class="link" onclick="customSort(this)">Custom</span>  </th>
-                </tr>
-            </thead>
-            <tbody>
-            <#list fileProxies as fileProxy>
-                <#if fileProxy??>
-                <@fileProxyRow rowId=fileProxy_index filename=fileProxy.filename filesize=fileProxy.size fileid=fileProxy.fileId action=fileProxy.action versionId=fileProxy.originalFileVersionId/>
-                </#if>
-            </#list>
-            <#if fileProxies.empty>
-            <tr class="noFiles width99percent newRow">
-            <td><em>no files uploaded</em></td>
+    <div class='fileupload-content'>
+        <#nested />
+        <#-- XXX: verify logic for rendering this -->
+        <#if multipleFileUploadEnabled || resource.hasFiles()>
+        <h4>Current ${multipleFileUploadEnabled?string("and Pending Files", "File")}</h4>
+        <table id="uploadFiles" class="files table tableFormat">
+        </table>
+        <table id="files" class='files sortable tableFormat'>
+        <thead>
+            <tr class="reorder <#if (fileProxies?size < 2 )>hidden</#if>">
+                <th colspan=2>Reorder: <span class="link alphasort">Alphabetic</span> | <span class="link" onclick="customSort(this)">Custom</span>  </th>
             </tr>
+        </thead>
+        <tbody>
+        <#list fileProxies as fileProxy>
+            <#if fileProxy??>
+            <@fileProxyRow rowId=fileProxy_index filename=fileProxy.filename filesize=fileProxy.size fileid=fileProxy.fileId action=fileProxy.action versionId=fileProxy.originalFileVersionId/>
             </#if>
-            </tbody>
-            </table>
-            </#if>
-        </div>
-      <div id="divConfidentialAccessReminder" class="hidden">
-          <em>Embargoed records will become public in ${embargoPeriodInYears} years. Confidential records will not be made public. Use the &quot;Access Rights&quot; section to assign access to this file for specific users.</em>
-      </div>
+        </#list>
+        <#if fileProxies.empty>
+        <tr class="noFiles newRow">
+        <td><em>no files uploaded</em></td>
+        </tr>
+        </#if>
+        </tbody>
+        </table>
+        </#if>
+    </div>
+  <div id="divConfidentialAccessReminder" class="hidden">
+      <em>Embargoed records will become public in ${embargoPeriodInYears} years. Confidential records will not be made public. Use the &quot;Access Rights&quot; section to assign access to this file for specific users.</em>
+  </div>
 </div>
 </#macro>
 
@@ -577,15 +577,17 @@ The form will check for matches in the ${siteAcronym} database and populate the 
 
 
 <#macro singleFileUpload typeLabel="${resource.resourceType.label}">
-    <div tiplabel="Upload your ${typeLabel}<#if multipleFileUploadEnabled>(s)</#if>" 
-    tooltipcontent="The metadata entered on this form will be associated with this file. We accept ${typeLabel}s in the following formats: <@join sequence=validFileExtensions delimiter=", "/>"
-    >
-    <@s.file name='uploadedFiles' label='${typeLabel}' cssClass="validateFileType" id="fileUploadField" labelposition='left' size='40' />
-    <div class="field indentFull">
-    <i>Valid file types include: <@join sequence=validFileExtensions delimiter=", "/></i>
+<div class="control-group"
+        tiplabel="Upload your ${typeLabel}" 
+        tooltipcontent="The metadata entered on this form will be associated with this file. We accept the following formats: 
+                        <@join sequence=validFileExtensions delimiter=", "/>">
+    <label for="fileUploadField" class="control-label">${typeLabel}</label>
+    <div class="controls">
+        <@s.file theme="simple" name='uploadedFiles'  cssClass="validateFileType input-xxlarge" id="fileUploadField" labelposition='left' size='40' />
+        <span class="help-block">Valid file types include: <@join sequence=validFileExtensions delimiter=", "/></span>
     </div>
     <#nested>
-    </div>
+</div>
 </#macro>
 
 <#macro manualTextInput typeLabel type uploadOptionText manualEntryText>
