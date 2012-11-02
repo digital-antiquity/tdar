@@ -11,7 +11,6 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -34,6 +33,13 @@ import org.tdar.core.bean.resource.Resource;
 public class Account extends Persistable.Base {
 
     private static final long serialVersionUID = -1728904030701477101L;
+
+    private Account() {
+    }
+
+    public Account(String name) {
+        this.name = name;
+    }
 
     private String name;
     private String description;
@@ -59,8 +65,8 @@ public class Account extends Persistable.Base {
             nullable = false, name = "account_id") })
     private Set<Person> authorizedMembers = new HashSet<Person>();
 
-//    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    @JoinColumn(nullable = false, updatable = false, name = "resource_id")
+    // @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    // @JoinColumn(nullable = false, updatable = false, name = "resource_id")
     @Transient
     private Set<Resource> resources = new HashSet<Resource>();
 

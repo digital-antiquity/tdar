@@ -24,6 +24,7 @@ import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.AccountService;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.DataIntegrationService;
 import org.tdar.core.service.EntityService;
@@ -79,6 +80,8 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     @Autowired
     private transient ProjectService projectService;
+    @Autowired
+    private transient AccountService accountService;
     @Autowired
     private transient DatasetService datasetService;
     @Autowired
@@ -425,6 +428,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     public ResourceCollectionService getResourceCollectionService() {
         return resourceCollectionService;
+    }
+
+    public AccountService getAccountService() {
+        return accountService;
     }
 
     public StatisticService getStatisticService() {
