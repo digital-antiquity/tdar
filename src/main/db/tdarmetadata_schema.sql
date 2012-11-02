@@ -203,7 +203,6 @@ CREATE TABLE collection (
     id bigint NOT NULL,
     description text,
     name character varying(255),
-    owner_id bigint references person,
     updater_id bigint,
     parent_id bigint,
     orientation character varying(50) DEFAULT 'LIST',
@@ -2803,6 +2802,9 @@ ALTER TABLE ONLY person
 
 ALTER TABLE ONLY personal_filestore_ticket
     ADD CONSTRAINT personal_filestore_ticket_pkey PRIMARY KEY (id);
+
+--added by jtd. FK can only be added after person defined and person.id becomes PK
+ALTER TABLE collection ADD COLUMN owner_id bigint references person;
 
 
 --
