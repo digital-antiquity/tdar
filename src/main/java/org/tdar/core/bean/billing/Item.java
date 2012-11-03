@@ -21,15 +21,15 @@ public class Item extends Base {
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     @JoinColumn(nullable = false, name = "activity_id")
     @NotNull
-    private Activity activity;
+    private BillingActivity activity;
 
     private Integer quantity;
 
-    public Activity getActivity() {
+    public BillingActivity getActivity() {
         return activity;
     }
 
-    public void setActivity(Activity activity) {
+    public void setActivity(BillingActivity activity) {
         this.activity = activity;
     }
 
