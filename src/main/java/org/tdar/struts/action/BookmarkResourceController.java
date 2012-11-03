@@ -24,7 +24,7 @@ import org.tdar.struts.WriteableSession;
 @Component
 @Scope("prototype")
 @WriteableSession
-public class BookmarkResourceAction extends AuthenticationAware.Base {
+public class BookmarkResourceController extends AuthenticationAware.Base {
 	
 	private static final long serialVersionUID = -5396034976314292120L;
 	

@@ -9,10 +9,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks an Action method to only execute if the associated requests http method is POST
+ * Marks an Action method to only execute if the associated requests http method is Secure
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface PostOnly {
+public @interface HttpsOnly {
 }
 

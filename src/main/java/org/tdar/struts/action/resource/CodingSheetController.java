@@ -1,7 +1,5 @@
 package org.tdar.struts.action.resource;
 
-import static org.tdar.core.bean.Persistable.Base.isNullOrTransient;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,6 +15,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.InformationResourceFile;
@@ -28,9 +27,9 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.resource.datatable.DataTable;
-import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.parser.CodingSheetParserException;
+import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.struts.WriteableSession;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FileProxy;
@@ -77,7 +76,7 @@ public class CodingSheetController extends AbstractSupportingInformationResource
      */
     @Override
     protected String save(CodingSheet codingSheet) {
-        if (!isNullOrTransient(ontology)) {
+        if (!Persistable.Base.isNullOrTransient(ontology)) {
             // load the full hibernate entity and set it back on the incoming column
             ontology = getGenericService().find(Ontology.class, ontology.getId());
         }

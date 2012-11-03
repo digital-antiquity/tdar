@@ -1,6 +1,5 @@
 package org.tdar.core.service.resource;
 
-import static org.tdar.core.bean.Persistable.Base.isNullOrTransient;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -31,6 +30,7 @@ import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.CodingRule;
@@ -648,7 +648,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             CodingSheet incomingCodingSheet = incomingColumn.getDefaultCodingSheet();
             CodingSheet existingCodingSheet = existingColumn.getDefaultCodingSheet();
             Ontology defaultOntology = null;
-            if (!isNullOrTransient(incomingCodingSheet)) {
+            if (!Base.isNullOrTransient(incomingCodingSheet)) {
                 // load the full hibernate entity and set it back on the incoming column
                 incomingCodingSheet = getDao().find(CodingSheet.class, incomingCodingSheet.getId());
                 incomingColumn.setDefaultCodingSheet(incomingCodingSheet);
@@ -665,7 +665,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             logger.debug("default ontology: {}", defaultOntology);
             logger.debug("incoming coding sheet: {}", incomingCodingSheet);
             incomingColumn.setDefaultOntology(defaultOntology);
-            if (defaultOntology != null && isNullOrTransient(incomingCodingSheet)) {
+            if (defaultOntology != null && Base.isNullOrTransient(incomingCodingSheet)) {
                 incomingColumn.setColumnEncodingType(DataTableColumnEncodingType.CODED_VALUE);
                 CodingSheet generatedCodingSheet = dataIntegrationService.createGeneratedCodingSheet(existingColumn, authenticatedUser,
                         defaultOntology);
@@ -676,7 +676,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             // incoming ontology or coding sheet from the web was not null but the column encoding type was set to something that
             // doesn't support either, we set it to null
             // incoming ontology or coding sheet is explicitly set to null
-            if (!isNullOrTransient(defaultOntology)) {
+            if (!Base.isNullOrTransient(defaultOntology)) {
                 if (incomingColumn.getColumnEncodingType().isSupportsOntology()) {
                     hasOntologies = true;
                 }

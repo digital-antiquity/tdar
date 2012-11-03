@@ -155,7 +155,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         setVerifyTransactionCallback(new TransactionCallback<Person>() {
             @Override
             public Person doInTransaction(TransactionStatus status) {
-                LoginAction loginAction = generateNewInitializedController(LoginAction.class);
+                LoginController loginAction = generateNewInitializedController(LoginController.class);
                 loginAction.setLoginUsername(p.getEmail());
                 loginAction.setLoginPassword("password");
                 loginAction.setServletRequest(getServletPostRequest());
@@ -336,14 +336,14 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         assertEquals("user should have been successfully created", AccountController.SUCCESS, accountResponse);
         
         //okay,  now try to "login": mock a  POST request with empty session
-        LoginAction loginAction = generateNewController(LoginAction.class);
+        LoginController loginAction = generateNewController(LoginController.class);
         loginAction.setLoginUsername(p.getUsername());
         loginAction.setLoginPassword(password);
         loginAction.setServletRequest(httpServletPostRequest);
         loginAction.setSessionData(new SessionData());
         
        String loginResponse = loginAction.authenticate();
-        assertEquals("login should have been successful",  LoginAction.AUTHENTICATED, loginResponse);
+        assertEquals("login should have been successful",  LoginController.AUTHENTICATED, loginResponse);
     }
     
     //return a new person reference. an @after method will try to delete this person from crowd

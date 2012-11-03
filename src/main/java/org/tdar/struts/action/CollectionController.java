@@ -1,7 +1,5 @@
 package org.tdar.struts.action;
 
-import static org.tdar.core.dao.external.auth.InternalTdarRights.SEARCH_FOR_DELETED_RECORDS;
-import static org.tdar.core.dao.external.auth.InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -344,8 +342,8 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     public List<Status> getStatuses() {
         List<Status> toReturn = new ArrayList<Status>(getResourceService().findAllStatuses());
-        getAuthenticationAndAuthorizationService().removeIfNotAllowed(toReturn, Status.DELETED, SEARCH_FOR_DELETED_RECORDS, getAuthenticatedUser());
-        getAuthenticationAndAuthorizationService().removeIfNotAllowed(toReturn, Status.FLAGGED, SEARCH_FOR_FLAGGED_RECORDS, getAuthenticatedUser());
+        getAuthenticationAndAuthorizationService().removeIfNotAllowed(toReturn, Status.DELETED, InternalTdarRights.SEARCH_FOR_DELETED_RECORDS, getAuthenticatedUser());
+        getAuthenticationAndAuthorizationService().removeIfNotAllowed(toReturn, Status.FLAGGED, InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, getAuthenticatedUser());
         return toReturn;
     }
 

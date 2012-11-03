@@ -43,6 +43,9 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.Pair;
 
+import com.opensymphony.xwork2.ActionInvocation;
+import com.opensymphony.xwork2.ActionProxy;
+
 /**
  * @author Adam Brin
  * 
@@ -257,6 +260,22 @@ public class ReflectionService {
 
     }
 
+
+    public static boolean methodOrActionContainsAnnotation(ActionInvocation invocation, Class<? extends Annotation> annotationClass) throws SecurityException, NoSuchMethodException {
+        Object action = invocation.getAction();
+        ActionProxy proxy = invocation.getProxy();
+        String methodName = proxy.getMethod();
+        Method method = action.getClass().getMethod(methodName);
+
+        if (methodName == null) {
+            methodName = "execute";
+        }
+        Object class_ = AnnotationUtils.findAnnotation(method.getDeclaringClass(), annotationClass);
+        Object method_ = AnnotationUtils.findAnnotation(method, annotationClass);
+        return (class_ != null || method_ != null);
+    }
+
+    
     public static boolean classOrMethodContainsAnnotation(Method method, Class<? extends Annotation> annotationClass) {
         Object class_ = AnnotationUtils.findAnnotation(method.getDeclaringClass(), annotationClass);
         Object method_ = AnnotationUtils.findAnnotation(method, annotationClass);

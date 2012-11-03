@@ -26,6 +26,7 @@
     </result-types>
     <interceptors>
       <interceptor name="sessionSecurity" class="org.tdar.struts.interceptor.SessionSecurityInterceptor"/>
+      <interceptor name="httpsMethod" class="org.tdar.struts.interceptor.HttpsInterceptor"/>
       <interceptor name="httpMethod" class="org.tdar.struts.interceptor.HttpMethodInterceptor"/>
       <interceptor name="execAndWait" class="org.apache.struts2.interceptor.ExecuteAndWaitInterceptor"/>
       <interceptor-stack name="tdarDefaultStack">
@@ -35,6 +36,7 @@
           <param name="exception.logCategory">org.tdar.struts</param>
         </interceptor-ref>
         <interceptor-ref name="sessionSecurity"/>
+        <interceptor-ref name="httpsMethod"/>
         <interceptor-ref name="httpMethod"/>
         <interceptor-ref name="store">
           <param name="operationMode">AUTOMATIC</param>

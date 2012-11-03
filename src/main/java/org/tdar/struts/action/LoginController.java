@@ -33,7 +33,7 @@ import com.opensymphony.xwork2.validator.annotations.ValidatorType;
 @Results({
         @Result(name = "authenticated", type = "redirect", location = URLConstants.DASHBOARD),
         @Result(name = "input", location = "/WEB-INF/content/login.ftl") })
-public class LoginAction extends AuthenticationAware.Base {
+public class LoginController extends AuthenticationAware.Base {
 
     private static final long serialVersionUID = -1219398494032484272L;
 

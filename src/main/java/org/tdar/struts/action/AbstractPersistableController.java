@@ -1,6 +1,5 @@
 package org.tdar.struts.action;
 
-import static org.tdar.core.bean.Persistable.Base.isNullOrTransient;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -31,6 +30,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.struts.WriteableSession;
 import org.tdar.struts.action.resource.AbstractResourceController;
 import org.tdar.struts.data.ResourceSpaceUsageStatistic;
+import org.tdar.core.bean.Persistable.Base;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -384,7 +384,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         }
 
         Persistable persistable = action.getPersistable();
-        if (isNullOrTransient(persistable)) {
+        if (Persistable.Base.isNullOrTransient(persistable)) {
             // deal with the case that we have a new or not found resource
             logger.debug("Dealing with transient persistable {}", persistable);
             switch (userAction) {

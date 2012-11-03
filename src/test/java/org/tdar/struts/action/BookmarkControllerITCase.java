@@ -25,7 +25,7 @@ public class BookmarkControllerITCase extends AbstractAdminControllerITCase {
 
     @Override
     protected TdarActionSupport getController() {
-        return new BookmarkResourceAction();
+        return new BookmarkResourceController();
     }
 
     @Test

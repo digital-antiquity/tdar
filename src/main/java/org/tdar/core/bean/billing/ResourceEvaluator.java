@@ -9,19 +9,24 @@ import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.Status;
 
+/*
+ * This class is designed to help figure out what resources (files, resources, space) that a tDAR Resource is taking up. Some resources, like Ontologies, CodingSheets, etc. you get for free
+ */
 public class ResourceEvaluator implements Serializable {
 
     private static final long serialVersionUID = 3621509880429873050L;
     private boolean includeDeletedFilesInCounts = false;
     private boolean includeOlderVersionsInCounts = false;
     private List<ResourceType> uncountedResourceTypes = Arrays.asList(ResourceType.CODING_SHEET, ResourceType.ONTOLOGY, ResourceType.PROJECT);
+    private List<Status> uncountedResourceStatuses = Arrays.asList();
     private int resourcesUsed = 0;
     private int filesUsed = 0;
     private long spaceUsed = 0;
 
     public void evaluateResource(Resource resource) {
-        if (uncountedResourceTypes.contains(resource.getResourceType()))
+        if (uncountedResourceTypes.contains(resource.getResourceType()) || uncountedResourceStatuses.contains(resource.getStatus()))
             return;
 
         resourcesUsed++;
@@ -88,6 +93,13 @@ public class ResourceEvaluator implements Serializable {
     public void setSpaceUsed(long spaceUsed) {
         this.spaceUsed = spaceUsed;
     }
-    
-    
+
+    public List<Status> getUncountedResourceStatuses() {
+        return uncountedResourceStatuses;
+    }
+
+    public void setUncountedResourceStatuses(List<Status> uncountedResourceStatuses) {
+        this.uncountedResourceStatuses = uncountedResourceStatuses;
+    }
+
 }

@@ -26,7 +26,7 @@ import org.tdar.utils.activity.IgnoreActivity;
 @ParentPackage("secured")
 @Namespace("/admin/searchindex")
 @RequiresTdarUserGroup(TdarGroup.TDAR_ADMIN)
-public class BuildSearchIndexAction extends AuthenticationAware.Base implements AsyncUpdateReceiver {
+public class BuildSearchIndexController extends AuthenticationAware.Base implements AsyncUpdateReceiver {
 
     private static final long serialVersionUID = -8927970945627420725L;
 

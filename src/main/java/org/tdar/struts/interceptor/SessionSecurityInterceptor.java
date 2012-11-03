@@ -51,13 +51,13 @@ public class SessionSecurityInterceptor implements Interceptor {
         }
 
         Activity activity = null;
-        if (!ReflectionService.classOrMethodContainsAnnotation(action.getClass().getMethod(methodName), IgnoreActivity.class)) {
+        if (!ReflectionService.methodOrActionContainsAnnotation(invocation, IgnoreActivity.class)) {
             activity = new Activity(ServletActionContext.getRequest());
             ActivityManager.getInstance().addActivityToQueue(activity);
         }
 
         String mark = "READ ONLY";
-        if (ReflectionService.classOrMethodContainsAnnotation(action.getClass().getMethod(methodName), WriteableSession.class)) {
+        if (ReflectionService.methodOrActionContainsAnnotation(invocation, WriteableSession.class)) {
             genericService.markWritable();
             mark = "WRITEABLE";
         } else {

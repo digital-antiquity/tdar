@@ -70,7 +70,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
     }
 
     public void bookmarkResource(Resource r, boolean ajax) {
-        BookmarkResourceAction bookmarkController = generateNewInitializedController(BookmarkResourceAction.class);
+        BookmarkResourceController bookmarkController = generateNewInitializedController(BookmarkResourceController.class);
         logger.info("bookmarking " + r.getTitle() + " (" + r.getId() + ")");
         bookmarkController.setResourceId(r.getId());
         if (ajax) {
@@ -84,7 +84,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
     }
 
     public void removeBookmark(Resource r, boolean ajax) {
-        BookmarkResourceAction bookmarkController = generateNewInitializedController(BookmarkResourceAction.class);
+        BookmarkResourceController bookmarkController = generateNewInitializedController(BookmarkResourceController.class);
         int size = r.getBookmarks().size();
         logger.info("removing bookmark " + r.getTitle() + " (" + r.getId() + ")");
         bookmarkController.setResourceId(r.getId());

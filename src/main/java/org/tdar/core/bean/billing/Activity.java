@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.dao.external.auth.TdarGroup;
 
 /*
  * An activity represents a specific thing that can be "charged"
@@ -22,6 +23,7 @@ public class Activity extends Persistable.Base {
     private Float price;
     private String currency;
     private Boolean enabled;
+    private TdarGroup group;
 
     public Integer getNumberOfHours() {
         return numberOfHours;
@@ -88,6 +90,14 @@ public class Activity extends Persistable.Base {
 
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public TdarGroup getGroup() {
+        return group;
+    }
+
+    public void setGroup(TdarGroup group) {
+        this.group = group;
     }
 
 }

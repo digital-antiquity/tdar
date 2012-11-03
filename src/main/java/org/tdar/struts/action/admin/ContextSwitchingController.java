@@ -13,7 +13,7 @@ import org.tdar.struts.action.AuthenticationAware;
 @Namespace("/admin/switchContext")
 @Component
 @Scope("prototype")
-public class ContextSwitchingAction extends AuthenticationAware.Base {
+public class ContextSwitchingController extends AuthenticationAware.Base {
 
     private static final String CONTEXT_WARNING = "COULD NOT SWITCH CONTEXTS BECAUSE ENVIRONMENT VARIABLE WAS NOT SET PROPERLY -DenableContextSwitchingConfig=true";
     /**

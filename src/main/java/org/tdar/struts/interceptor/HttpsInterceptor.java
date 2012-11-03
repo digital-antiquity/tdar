@@ -11,31 +11,31 @@ import org.tdar.struts.action.TdarActionSupport;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.Interceptor;
 
-public class HttpMethodInterceptor implements Interceptor {
+public class HttpsInterceptor implements Interceptor {
 
-    public static final String ERROR_POST_ONLY = "Only POST requests accepted";
-    private static final long serialVersionUID = -3378318981792368491L;
+    private static final long serialVersionUID = 5032186873591920365L;
+    public static final String ERROR_HTTPS_ONLY = "Only Https requests accepted";
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
     public String intercept(ActionInvocation invocation) throws Exception {
 
-        if (ReflectionService.methodOrActionContainsAnnotation(invocation, PostOnly.class)) {
-            return doPostIntercept(invocation);
+        if (ReflectionService.methodOrActionContainsAnnotation(invocation, HttpsOnly.class)) {
+            return doHttpsIntercept(invocation);
         }
         // not annotated... business as usual.
         return invocation.invoke();
     }
 
-    private String doPostIntercept(ActionInvocation invocation) throws Exception {
+    private String doHttpsIntercept(ActionInvocation invocation) throws Exception {
         HttpServletRequest request = ServletActionContext.getRequest();
-        if (request.getMethod().equals("POST")) {
+        if (request.isSecure()) {
             return invocation.invoke();
         }
 
-        logger.warn("ERROR_POST_ONLY");
+        logger.warn("ERROR_HTTPS_ONLY");
         if (invocation.getAction() instanceof TdarActionSupport) {
-            ((TdarActionSupport) invocation.getAction()).addActionError(ERROR_POST_ONLY);
+            ((TdarActionSupport) invocation.getAction()).addActionError(ERROR_HTTPS_ONLY);
         }
 
         return TdarActionSupport.BAD_REQUEST;
