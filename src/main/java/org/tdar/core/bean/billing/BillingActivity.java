@@ -1,5 +1,6 @@
 package org.tdar.core.bean.billing;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -12,7 +13,7 @@ import org.tdar.core.dao.external.auth.TdarGroup;
  * An activity represents a specific thing that can be "charged"
  */
 @Entity
-@Table(name="pos_billing_activity")
+@Table(name = "pos_billing_activity")
 public class BillingActivity extends Persistable.Base {
 
     private static final long serialVersionUID = 6891881586235180640L;
@@ -25,7 +26,9 @@ public class BillingActivity extends Persistable.Base {
     private Float price;
     private String currency;
     private Boolean enabled;
+
     @Enumerated(EnumType.STRING)
+    @Column(name = "groupName")
     private TdarGroup group;
 
     public Integer getNumberOfHours() {
@@ -43,6 +46,7 @@ public class BillingActivity extends Persistable.Base {
     public Long getNumberOfBytes() {
         return getNumberOfMb() * 1048576L;
     }
+
     public void setNumberOfMb(Long numberOfMb) {
         this.numberOfMb = numberOfMb;
     }

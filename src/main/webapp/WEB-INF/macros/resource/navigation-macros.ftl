@@ -35,8 +35,8 @@ $(document).ready(function() {
     fld.val($.trim(fld.val()))});
 });
 </script>
-
-<@s.form id='loginForm' method="post" action="%{#request.contextPath}/login/process" cssClass="form-horizontal">
+<#assign formAction><@getFormUrl "/login/process"/></#assign>
+<@s.form id='loginForm' method="post" action="${formAction}" cssClass="form-horizontal">
     <input type="hidden" name="url" value="${Parameters.url!''}"/>
     <@s.textfield theme="bootstrap" spellcheck="false" id='loginUsername' name="loginUsername" label="Username" cssClass="required" />
     <@s.password theme="bootstrap" id='loginPassword' name="loginPassword" label="Password" cssClass="required" />
@@ -191,6 +191,18 @@ $(document).ready(function() {
 <#else>
 <button class="btn  btn-mini repeat-row-delete" type="button" tabindex="-1" onclick="TDAR.repeatrow.deleteRow(this)" title="${title}"><i class="icon-trash"></i></button>
 </#if>
+</#macro>
+
+<#macro getFormUrl path="">
+<#assign actionMethod><@s.url value="${path}" /></#assign>
+<#if httpsEnabled>
+	<#assign appPort = ""/>
+	<#if hostPort != 80>
+		<#assign appPort= ":" + hostPort/>
+	</#if>
+	<#assign actionMethod>https://${hostName}${appPort}<@s.url value="/login/process" /></#assign>
+</#if>
+${actionMethod}
 </#macro>
 
 

@@ -237,6 +237,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return getTdarConfiguration().getHostName();
     }
 
+    public int getHostPort() {
+        return getTdarConfiguration().getPort();
+    }
+
     public String getContactEmail() {
         return getTdarConfiguration().getContactEmail();
     }
@@ -469,4 +473,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return coverageTypes;
     }
 
+    public boolean isHttpsEnabled() {
+        return TdarConfiguration.getInstance().isHttpsEnabled();
+    }
 }

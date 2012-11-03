@@ -41,7 +41,7 @@ import com.sun.syndication.feed.synd.SyndEntry;
 @Results({
         @Result(name = "authenticated", type = "redirect", location = "/")
 })
-public class IndexController extends AuthenticationAware.Base {
+public class IndexAction extends AuthenticationAware.Base {
     private static final long serialVersionUID = -9216882130992021384L;
 
     private Project featuredProject;

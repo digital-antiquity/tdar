@@ -482,5 +482,9 @@ public class TdarConfiguration {
     public boolean isPayPerIngestEnabled() {
         return assistant.getBooleanProperty("pay.per.contribution.enabled", false);
     }
+
+    public boolean isHttpsEnabled() {
+        return assistant.getBooleanProperty("https.enabled", false);
+    }
     
 }
