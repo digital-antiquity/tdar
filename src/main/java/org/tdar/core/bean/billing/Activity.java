@@ -35,6 +35,9 @@ public class Activity extends Persistable.Base {
         return numberOfMb;
     }
 
+    public Long getNumberOfBytes() {
+        return getNumberOfMb() * 1048576L;
+    }
     public void setNumberOfMb(Long numberOfMb) {
         this.numberOfMb = numberOfMb;
     }

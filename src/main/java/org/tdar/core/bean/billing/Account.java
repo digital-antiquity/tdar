@@ -160,4 +160,88 @@ public class Account extends Persistable.Base {
         this.resources = resources;
     }
 
+    private transient Long totalResources;
+    private transient Long totalFiles;
+    private transient Long totalSpace;
+
+    private transient Long filesUsed;
+    private transient Long spaceUsed;
+    private transient Long resourcesUsed;
+
+    public void initTotals() {
+        for (Invoice invoice : getInvoices()) {
+            totalResources += invoice.getTotalResources();
+            totalFiles += invoice.getTotalNumberOfFiles();
+            totalSpace += invoice.getTotalSpace();
+        }
+
+        for (Resource resource : resources) {
+            ResourceEvaluator re = new ResourceEvaluator();
+            re.evaluateResource(resource);
+            filesUsed += re.getFilesUsed();
+            spaceUsed += re.getSpaceUsed();
+            resourcesUsed += re.getResourcesUsed();
+        }
+    }
+
+    public Long getTotalNumberOfResources() {
+        if (totalResources == null) {
+            initTotals();
+        }
+        return totalResources;
+    }
+
+    public Long getTotalNumberOfFiles() {
+        if (totalFiles == null) {
+            initTotals();
+        }
+        return totalFiles;
+    }
+
+    public Long getTotalNumberOfSpace() {
+        if (totalSpace == null) {
+            initTotals();
+        }
+        return totalSpace;
+    }
+
+    public Long getAvailableNumberOfFiles() {
+        Long totalFiles = getTotalNumberOfFiles();
+        return totalFiles - filesUsed;
+    }
+
+    public Long getAvailableSpace() {
+        Long totalSpace = getTotalNumberOfSpace();
+        return totalSpace - spaceUsed;
+    }
+
+    public Long getAvailableResources() {
+        Long totalResources = getTotalNumberOfResources();
+        return totalResources - resourcesUsed;
+    }
+
+    public enum AccountAdditionStatus {
+        CAN_ADD_RESOURCE,
+        NOT_ENOUGH_SPACE,
+        NOT_ENOUGH_FILES,
+        NOT_ENOUGH_RESOURCES;
+    }
+
+    public AccountAdditionStatus canAddResource(Resource resource) {
+        ResourceEvaluator re = new ResourceEvaluator();
+        re.evaluateResource(resource);
+        if (getAvailableNumberOfFiles() - re.getFilesUsed() < 0) {
+            return AccountAdditionStatus.NOT_ENOUGH_FILES;
+        }
+
+        if (getAvailableResources() - re.getResourcesUsed() < 0) {
+            return AccountAdditionStatus.NOT_ENOUGH_RESOURCES;
+        }
+
+        if (getAvailableSpace() - re.getSpaceUsed() < 0) {
+            return AccountAdditionStatus.NOT_ENOUGH_SPACE;
+        }
+        return AccountAdditionStatus.CAN_ADD_RESOURCE;
+    }
+
 }

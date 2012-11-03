@@ -35,9 +35,9 @@ public class Invoice extends Base {
     @Column(name = "date_created")
     private Date dateCreated = new Date();
     // the confirmation id for this invoice
-    
+
     private String transactionId;
-    
+
     private TransactionType transactionType;
 
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
@@ -125,5 +125,43 @@ public class Invoice extends Base {
     public void setTransactionType(TransactionType transactionType) {
         this.transactionType = transactionType;
     }
+
+    public Long getTotalResources() {
+        if (totalResources == null) {
+            initTotals();
+        }
+        return totalResources;
+    }
+
+    public Long getTotalSpace() {
+        if (totalSpace == null) {
+            initTotals();
+        }
+        return totalSpace;
+    }
+
+    public Long getTotalNumberOfFiles() {
+        if (totalFiles == null) {
+            initTotals();
+        }
+        return totalFiles;
+    }
+
+    private void initTotals() {
+        for (Item item : getItems()) {
+            Long numberOfFiles = item.getActivity().getNumberOfFiles();
+            Long space = item.getActivity().getNumberOfBytes();
+            Long numberOfResources = item.getActivity().getNumberOfResources();
+            if (numberOfFiles != 0) {
+                totalFiles += numberOfFiles * item.getQuantity().longValue();
+                totalSpace += space * item.getQuantity().longValue();
+                totalResources += numberOfResources * item.getQuantity().longValue();
+            }
+        }
+    }
+
+    private transient Long totalResources = null;
+    private transient Long totalSpace = null;
+    private transient Long totalFiles = null;
 
 }
