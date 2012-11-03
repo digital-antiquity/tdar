@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.ReflectionService;
 import org.tdar.struts.action.TdarActionSupport;
 
@@ -29,7 +30,7 @@ public class HttpsInterceptor implements Interceptor {
 
     private String doHttpsIntercept(ActionInvocation invocation) throws Exception {
         HttpServletRequest request = ServletActionContext.getRequest();
-        if (request.isSecure()) {
+        if (request.isSecure() || !TdarConfiguration.getInstance().isHttpsEnabled()) {
             return invocation.invoke();
         }
 
