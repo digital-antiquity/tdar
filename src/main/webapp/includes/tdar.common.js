@@ -1116,7 +1116,22 @@ function toggleLicense() {
 TDAR.namespace("common");
 TDAR.common = function() {
     "use strict";
-
+    
+    var _defaultValidateOptions = {
+        errorLabelContainer : $("#error ul"),
+        wrapper: "li",
+        highlight: function(element, errorClass, validClass) {
+             $(element).closest("div.control-group").addClass("error");
+         },
+         unhighlight:function(element, errorClass, validClass) {
+             $(element).closest("div.control-group").removeClass("error");
+         },
+        showErrors : function(errorMap, errorList) {
+            $('#error').show();
+            this.defaultShowErrors();
+        }
+                 
+    };
     
      // FIXME: the jquery validate documentation for onfocusout/onkeyup/onclick
      // doesn't jibe w/ what we see in practice. supposedly these take a boolean
@@ -1129,73 +1144,102 @@ TDAR.common = function() {
      // see http://whilefalse.net/2011/01/17/jquery-validation-onkeyup/ for
      // undocumented feature that lets you specify a function instead of a
      // boolean.
-     var _setupFormValidate = function(form) {
-         $(form)
-                 .validate(
-                         {
-                             errorLabelContainer : $("#error ul"),
-                             wrapper: "li",
-                             onkeyup : function() {
-                                 return;
-                             },
-                             onclick : function() {
-                                 return;
-                             },
-                             onfocusout : function(element) {
-                                 return;
-                                 // I WORK IN CHROME but FAIL in IE & FF
-                                 // if (!dialogOpen) return;
-                                 // if ( !this.checkable(element) && (element.name in
-                                 // this.submitted ||
-                                 // !this.optional(element)) ) {
-                                 // this.element(element);
-                                 // }
-                             },
-                             //invalidHandler : $.watermark.showAll,
-                             showErrors : function(errorMap, errorList) {
-                                 this.defaultShowErrors();
-                                 //spawn a modal widget and copy the errorLabelContainer contents (a separate div) into the widget's body section
-                                 //TODO: docs say this is only called when errorList is not empty - can we remove this check?
-                                 if (typeof errorList !== "undefined" && errorList.length > 0) {
-                                     $('#validationErrorModal .modal-body p').empty().append($('#error').html());
-                                     $('#validationErrorModal').modal();
-                                     
-                                 }
-                             },
-                             submitHandler : function(f) {
-                                 var $button = $('input[type=submit]', f);
-                                 $button.siblings(".waitingSpinner").css(
-                                         'visibility', 'visible');
-                                 // prevent multiple form submits (e.g. from
-                                 // double-clicking the submit button)
-                                 $button.attr('disabled', 'disabled');
-                                 f.submit();
-                             },
-                             
-                             highlight: function(element, errorClass, validClass) {
-                                 $(element).closest("div.control-group").addClass("error");
-                             },
-                             unhighlight:function(element, errorClass, validClass) {
-                                 $(element).closest("div.control-group").removeClass("error");
-                             }
-                         });
+    var _setupFormValidate = function(form) {
+        var options = {
+            onkeyup : function() {
+                return;
+            },
+            onclick : function() {
+                return;
+            },
+            onfocusout : function(element) {
+                return;
+                // I WORK IN CHROME but FAIL in IE & FF
+                // if (!dialogOpen) return;
+                // if ( !this.checkable(element) && (element.name in
+                // this.submitted ||
+                // !this.optional(element)) ) {
+                // this.element(element);
+                // }
+            },
+            showErrors : function(errorMap, errorList) {
+                this.defaultShowErrors();
+                //spawn a modal widget and copy the errorLabelContainer contents (a separate div) into the widget's body section
+                //TODO: docs say this is only called when errorList is not empty - can we remove this check?
+                if (typeof errorList !== "undefined" && errorList.length > 0) {
+                    $('#validationErrorModal .modal-body p').empty().append($('#error').html());
+                    $('#validationErrorModal').modal();
+
+                }
+            },
+            submitHandler : function(f) {
+                var $button = $('input[type=submit]', f);
+                $button.siblings(".waitingSpinner").css(
+                        'visibility', 'visible');
+                // prevent multiple form submits (e.g. from
+                // double-clicking the submit button)
+                $button.attr('disabled', 'disabled');
+                f.submit();
+            }
+                         
+        };
+                 
+         $(form).validate($.extend({}, _defaultValidateOptions, options));
     
          $(form).delegate(
                  "input.error",
                  "change blur",
                  function() {
-                     if ($("div.errorDialog:visible") == undefined
-                             || $("div.errorDialog:visible").length == 0) {
+                     if ($("div.errorDialog:visible").length === 0) {
                          $(this).valid();
                          console.log('revalidating...');
                      }
                  });
-    
-     }
-    
-    
-    
+     };
+     
+    var _initRegformValidation = function(form) {
+        var $form = $(form);
+        var options = {
+            errorLabelContainer:
+                    $("#error"),
+            rules: {
+                confirmEmail: {
+                    equalTo: "#emailAddress"
+                },
+                password: {
+                    minlength: 3
+                },
+                username: {
+                    minlength: 5
+                },
+                confirmPassword: {
+                    minlength: 3,
+                    equalTo: "#password"
+                },
+                'person.contributorReason': {
+                    maxlength: 512
+                }
+            },
+            messages: {
+                confirmEmail: {
+                    email: "Please enter a valid email address.",
+                    equalTo: "Your confirmation email doesn't match."
+                },
+                password: {
+                    required: "Please enter a password.",
+                    minlength: jQuery.format("Your password must be at least {0} characters.")
+                },
+                confirmPassword: {
+                    required: "Please confirm your password.",
+                    minlength: jQuery.format("Your password must be at least {0} characters."),
+                    equalTo: "Please make sure your passwords match."
+                }
+            }
+        };
+        $form.validate($.extend({},  _defaultValidateOptions, options));
 
+    };
+             
     //setup other form edit controls
     //FIXME: wny is this broken out from  initEditPage?   If anything, break it out even further w/ smaller private functions
     var _setupEditForm = function (form) {
@@ -1260,13 +1304,11 @@ TDAR.common = function() {
         });
         showAccessRightsLinkIfNeeded();
         $('.fileProxyConfidential').change(showAccessRightsLinkIfNeeded);
-
-
-    }
+    };
     
     
     var _applyTreeviews = function() {
-        console.debug("applying tdar-treeviews v3")
+        console.debug("applying tdar-treeviews v3");
         var $treeviews = $(".tdar-treeview");
         // Hack: a bug in Treeview plugin causes 'expand/collapse' icon to not show
         // for the last LI if it contains a sublist. So we arbitrarily
@@ -1288,7 +1330,6 @@ TDAR.common = function() {
     
     //public: initialize the edit page form
     var _initEditPage = function(form) {
-        
         //Multi-submit prevention disables submit button, so it will be disabled if we get here via back button. So we explicitly enable it. 
         var $button = $("#submitButton");
         $button.removeAttr('disabled').removeClass("waitingSpinner");
@@ -1430,19 +1471,7 @@ TDAR.common = function() {
             return $('<div />').text(str).html();
     }
     
-    //public: add escapes to string for use in css selector identifier 
-    var _cssEncode = function(str) {
-        var i;
-        var encoded = [];
-        var specialChars="!\"#$%&'()*+-./:;<=>?@[\]^`{|}~ ";
-        for(i =0; i < str.length; i++) {
-            if(specialChars.indexOf(str[i]) > -1) {
-                encoded.push("\\");
-            }
-            encoded.push(str[i]);
-        }
-        return encoded.join("");
-    }
+
     
     return {
         "initEditPage":_initEditPage,
@@ -1451,6 +1480,33 @@ TDAR.common = function() {
         "initializeView": _initializeView,
         "getObjValue": _getObjValue,
         "htmlEncode": _htmlEncode,
-        "cssEncode": _cssEncode
+        "initRegformValidation": _initRegformValidation
     };
 }();
+
+function getSymbolSets() {
+    var specialChars = "!\"#$%&'()*+-./:;<=>?@[\]^`{|}~ ";
+    var allowedChars = [];
+    allowedChars.push("-");
+    for (var charCode = "a".charCodeAt(); charCode <= "z".charCodeAt(); charCode++) {
+        allowedChars.push(String.fromCharCode(charCode));
+    }
+    for (var charCode = "A".charCodeAt(); charCode <= "Z".charCodeAt(); charCode++) {
+        allowedChars.push(String.fromCharCode(charCode));
+    }
+    return {specialChars: specialChars, allowedChars: allowedChars.join("")};
+}
+
+function getSampleStrings(sets, allowedCount, specialCount) {
+    var allowed = sets.allowedChars;
+    var special = sets.specialChars;
+    var i=0, j=0;
+    var len = allowedCount + specialCount;
+    var strings = [];
+    for(i = 0; i < len; i++) {
+        
+    }
+}
+
+
+

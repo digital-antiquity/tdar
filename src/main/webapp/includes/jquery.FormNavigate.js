@@ -36,10 +36,6 @@ var global_formNavigate = true;		// Js Global Variable for onChange Flag
     	$this.one("keyup change", function(evt) {
     	    console.log("Form #%s has become dirty. event:%s\t target:%s\t ", $this.attr("id"), evt.type, evt.target);
     	    global_formNavigate = false ;
-    	    if($.cookie("tdarFormNavigateOverride")) {
-    	        console.log("FormNavigate: ignoring dirty form due to override");
-    	        global_formNavigate = true;
-    	    }
     	});
 //        $(this+ ":input[type='text'], :input[type='button'], :input[type='textarea'], :input[type='password'], :input[type='radio'], :input[type='checkbox'], :input[type='file'], select").change(function(){
 //            global_formNavigate = false;

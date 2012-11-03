@@ -940,3 +940,7 @@ article+aside.span3>* {
 code {
     color: navy;
 }
+
+.horizontal-rule {
+    border-bottom: solid black 1px ;
+}

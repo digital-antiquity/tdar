@@ -1,5 +1,5 @@
-<h2><a name='terms'>Terms of Use</a></h2>
-<hr/>
+<a name='terms'></a>
+<h2>Terms of Use</h2>
 <p>
 Knowledge gained through the efforts of many researchers is shared through
 tDAR in order to encourage and facilitate archaeological and related research.
