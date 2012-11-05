@@ -11,12 +11,14 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
@@ -31,7 +33,7 @@ import org.tdar.core.bean.resource.Resource;
  */
 @Entity
 @Table(name = "pos_account")
-public class Account extends Persistable.Base {
+public class Account extends Persistable.Base implements Updatable {
 
     private static final long serialVersionUID = -1728904030701477101L;
 
@@ -52,6 +54,16 @@ public class Account extends Persistable.Base {
     @NotNull
     @Column(name = "date_updated")
     private Date lastModified = new Date();
+
+    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
+    @JoinColumn(nullable = false, name = "owner_id")
+    @NotNull
+    private Person owner;
+
+    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
+    @JoinColumn(nullable = false, name = "modifier_id")
+    @NotNull
+    private Person modifiedBy;
 
     @NotNull
     @Column(name = "date_expires")
@@ -245,6 +257,32 @@ public class Account extends Persistable.Base {
             return AccountAdditionStatus.NOT_ENOUGH_SPACE;
         }
         return AccountAdditionStatus.CAN_ADD_RESOURCE;
+    }
+
+    @Override
+    public void markUpdated(Person p) {
+        if (getOwner() == null) {
+            setDateCreated(new Date());
+            setOwner(p);
+        }
+        setLastModified(new Date());
+        setModifiedBy(p);
+    }
+
+    public Person getOwner() {
+        return owner;
+    }
+
+    public void setOwner(Person owner) {
+        this.owner = owner;
+    }
+
+    public Person getModifiedBy() {
+        return modifiedBy;
+    }
+
+    public void setModifiedBy(Person modifiedBy) {
+        this.modifiedBy = modifiedBy;
     }
 
 }

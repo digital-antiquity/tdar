@@ -22,9 +22,13 @@
 </#if>
 
 <#macro listAddress addresses>
+<#assign addressId = -1 />
+<#if invoice.address?has_content && invoice.address.id?has_content>
+ <#assign addressId =invoice.address.id />
+</#if>
 <#list addresses  as address>
 	<div class="controls-row">
-		<input type="radio" name="invoice.address.id" label="${address.type}" value="${address.id}"  <#if address.id==invoice.address.id>checked=checked</#if>/>
+		<input type="radio" name="invoice.address.id" label="${address.type}" value="${address.id}"  <#if address.id==addressId>checked=checked</#if>/>
 	<@common.printAddress  address />
 	</div>
 </#list>
@@ -32,7 +36,7 @@
 <div class="controls-row">
 		<input type="radio" name="invoice.address.id" label="Other" value="-1"   <#if !invoice.address?has_content>checked=checked</#if> />
 		<@s.textfield name="invoice.address.street1" cssClass="input-xlarge" label="Street" />
-		<@s.textfield name="invoice.address.street2" cssClass="input-xlarge"  />
+		<@s.textfield name="invoice.address.street2" cssClass="input-xlarge"  label="Street 2"/>
 		<@s.textfield name="invoice.address.city" cssClass="input-xlarge"  label="City" />
 		<@s.textfield name="invoice.address.state" cssClass="input-xlarge" label="State" />
 		<@s.textfield name="invoice.address.postal" cssClass="input-xlarge"  label="Postal"/>

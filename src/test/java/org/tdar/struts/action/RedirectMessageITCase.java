@@ -19,7 +19,7 @@ import static org.junit.Assert.*;
 public class RedirectMessageITCase extends AbstractControllerITCase {
 
     @Autowired
-    private AccountController controller;
+    private UserAccountController controller;
 
     @Autowired
     private AuthenticationAndAuthorizationService authService;
@@ -38,7 +38,7 @@ public class RedirectMessageITCase extends AbstractControllerITCase {
         boolean deleteUser = authService.getAuthenticationProvider().deleteUser(p);
         assertTrue("could not delete user", deleteUser);
         assertFalse("there should be an action message on successful creation ", controller.getActionMessages().isEmpty());
-        assertEquals(AccountController.SUCCESSFUL_REGISTRATION_MESSAGE, controller.getActionMessages().iterator().next());
+        assertEquals(UserAccountController.SUCCESSFUL_REGISTRATION_MESSAGE, controller.getActionMessages().iterator().next());
         assertTrue("no errors expected", controller.getActionErrors().isEmpty());
     }
     

@@ -40,7 +40,7 @@ import com.opensymphony.xwork2.Preparable;
 @Component
 @Scope("prototype")
 @Result(name = "new", type = "redirect", location = "new")
-public class AccountController extends AuthenticationAware.Base implements Preparable {
+public class UserAccountController extends AuthenticationAware.Base implements Preparable {
 
     private static final long serialVersionUID = 1147098995283237748L;
 

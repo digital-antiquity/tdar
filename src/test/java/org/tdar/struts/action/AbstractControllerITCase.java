@@ -252,11 +252,11 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         return TestConstants.USER_ID;
     }
 
-    public String setupValidUserInController(AccountController controller) {
+    public String setupValidUserInController(UserAccountController controller) {
         return setupValidUserInController(controller, "testuser@example.com");
     }
 
-    public String setupValidUserInController(AccountController controller, String email) {
+    public String setupValidUserInController(UserAccountController controller, String email) {
         Person p = new Person();
         p.setEmail(email);
         p.setUsername(email);
@@ -270,11 +270,11 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         return setupValidUserInController(controller, p);
     }
 
-    public String setupValidUserInController(AccountController controller, Person p) {
+    public String setupValidUserInController(UserAccountController controller, Person p) {
         return setupValidUserInController(controller, p, "password");
     }
 
-    public String setupValidUserInController(AccountController controller, Person p, String password) {
+    public String setupValidUserInController(UserAccountController controller, Person p, String password) {
         // cleanup crowd if we need to...
         authenticationAndAuthorizationService.getAuthenticationProvider().deleteUser(p);
         controller.setRequestingContributorAccess(true);

@@ -13,7 +13,7 @@ import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.struts.action.AbstractPersistableController;
-import org.tdar.struts.action.AccountController;
+import org.tdar.struts.action.UserAccountController;
 import org.tdar.struts.action.TdarActionException;
 
 @Component
@@ -77,7 +77,7 @@ public class PersonController extends AbstractPersistableController<Person> {
             return;
         if (!StringUtils.equals(password, confirmPassword)) {
             // change requested, passwords don't match
-            addActionError(AccountController.ERROR_PASSWORDS_DONT_MATCH);
+            addActionError(UserAccountController.ERROR_PASSWORDS_DONT_MATCH);
         } else {
             // passwords match, change the password
             getAuthenticationAndAuthorizationService().getAuthenticationProvider().updateUserPassword(getPerson(), password);
@@ -98,7 +98,7 @@ public class PersonController extends AbstractPersistableController<Person> {
 
         if (!StringUtils.equals(password, confirmPassword)) {
             // change requested, passwords don't match
-            addActionError(AccountController.ERROR_PASSWORDS_DONT_MATCH);
+            addActionError(UserAccountController.ERROR_PASSWORDS_DONT_MATCH);
         } else {
             // passwords match, change the password
             getAuthenticationAndAuthorizationService().updateUsername(getPerson(), newUsername, password);

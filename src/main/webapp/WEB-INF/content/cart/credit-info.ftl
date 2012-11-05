@@ -12,6 +12,7 @@
 
 <div>
 <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='process-payment-info'>
+<@s.hidden name="id" value="${invoice.id}"/>
 
 <@s.radio list="allTransactionTypes" name="invoice.transactionType" cssClass="transactionType" emptyOption='false' />
 	<@s.textfield name="invoice.billing.phone" cssClass="input-xlarge" label="Billing Phone #" />
