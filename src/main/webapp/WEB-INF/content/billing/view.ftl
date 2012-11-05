@@ -19,7 +19,7 @@
 	<tr>
 		<th>name</th><th>email</th>
 	</tr>
-<#list authorizedMembers as member>
+<#list account.authorizedMembers as member>
 <tr>
 	<td><a href="<@s.url value="/browse/creator/${member.id?c}"/>">${member.properName}</a></td><td>${member.email}</td>
 </tr>
@@ -31,7 +31,7 @@
 	<tr>
 		<th>Resource Type</th><th>Id</th><th>Name</th>
 	</tr>
-<#list resources as resource>
+<#list account.resources as resource>
 <tr>
 	<td>${resource.resourceType.label}</td>
 	<td>${resource.id}</td>

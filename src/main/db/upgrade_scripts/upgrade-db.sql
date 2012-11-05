@@ -206,3 +206,46 @@ create table pos_group_members (
 
 alter table resource add column account_id int8 references pos_account;
 create sequence account_sequence;
+
+drop table pos_account cascade;
+drop table pos_account_group cascade;
+drop table pos_members cascade;
+drop table pos_group_members cascade;
+drop sequence account_sequence;
+
+create table pos_account_group (
+    id  bigserial not null,
+    date_created timestamp,
+    description varchar(255),
+    date_updated timestamp,
+    name varchar(255),
+    modifier_id int8 not null references person,
+    owner_id int8 not null references person,
+    primary key (id)
+);
+
+create table pos_account (
+    id  bigserial not null,
+    date_created timestamp,
+    description varchar(255),
+    date_expires timestamp,
+    date_updated timestamp,
+    name varchar(255),
+    status varchar(255),
+    modifier_id int8 not null references person,
+    owner_id int8 not null references person,
+    account_group_id int8  references pos_account_group,
+    primary key (id)
+);
+
+create table pos_group_members (
+    user_id int8 not null references person,
+    account_id int8 not null references pos_account_group,
+    primary key (user_id, account_id)
+);
+
+create table pos_members (
+    user_id int8 not null references person,
+    account_id int8 not null references pos_account,
+    primary key (user_id, account_id)
+);
