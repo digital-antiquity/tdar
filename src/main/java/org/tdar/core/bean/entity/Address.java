@@ -13,9 +13,6 @@ import org.tdar.core.bean.Persistable.Base;
 @Table(name = "creator_address")
 public class Address extends Base implements Persistable {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 3179122792715811371L;
 
     private String street1;
@@ -23,12 +20,12 @@ public class Address extends Base implements Persistable {
     private String city;
     private String state;
     private String postal;
-    private String phone;
-
+    private String country;
+    
     @Enumerated(EnumType.STRING)
     @Column(name = "type")
     private AddressType type;
-
+ 
     public String getStreet1() {
         return street1;
     }
@@ -69,20 +66,20 @@ public class Address extends Base implements Persistable {
         this.postal = postal;
     }
 
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
     public AddressType getType() {
         return type;
     }
 
     public void setType(AddressType type) {
         this.type = type;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
     }
 
 }

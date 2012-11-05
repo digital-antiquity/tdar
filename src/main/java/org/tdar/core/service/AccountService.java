@@ -1,11 +1,15 @@
 package org.tdar.core.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.Account.AccountAdditionStatus;
+import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.AccountDao;
@@ -15,6 +19,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 @Service
 public class AccountService {
 
+    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
     @Autowired
     private GenericDao genericDao;
 
@@ -26,6 +31,18 @@ public class AccountService {
      */
     public List<Account> listAvailableAccountsForUser(Person user) {
         return accountDao.findAccountsForUser(user);
+    }
+
+    public List<BillingActivity> getActiveBillingActivities() {
+        List<BillingActivity> toReturn = new ArrayList<BillingActivity>();
+        for (BillingActivity activity : genericDao.findAll(BillingActivity.class)) {
+            if (activity.getEnabled()) {
+                toReturn.add(activity);
+            }
+        }
+        logger.info("{}" , toReturn);
+        return toReturn;
+
     }
 
     public void addResourceToAccount(Person user, Resource resource) {

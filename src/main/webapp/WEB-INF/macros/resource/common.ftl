@@ -786,6 +786,14 @@ this bit of freemarker is voodoo:
     
 </#if>
 </#macro>
+
+<#macro printAddress address >
+		<p>${address.street1}<br/>
+		   ${address.street2}<br/>
+		   ${address.city}, ${address.state}, ${address.postal}<br/>
+		   ${address.country}
+		</p>
+</#macro>
 </#escape>
 
 

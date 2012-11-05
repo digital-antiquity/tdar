@@ -22,8 +22,8 @@ label.error {display:block;}
 <div class="well">
     <@s.hidden name='personId' value='${person.id!-1}'/>
     
-    <@s.textfield spellcheck="false" required='true' id='firstName' label='First name'  name='person.firstName' cssClass="required" />
-    <@s.textfield spellcheck="false" required='true' id='lastName' label='Last name' name='person.lastName' cssClass="required" />
+    <@s.textfield spellcheck="false" required='true' id='firstName' label='First name'  name='person.firstName' cssClass="required input-xlarge" />
+    <@s.textfield spellcheck="false" required='true' id='lastName' label='Last name' name='person.lastName' cssClass="required input-xlarge" />
     <@s.textfield spellcheck="false" required='true' id='username' label="Username" name="person.username" cssClass="required username input-xlarge" />
     <@s.textfield spellcheck="false" required='true' id='emailAddress' label="Email address" name="person.email" cssClass="required email input-xlarge" />
     <@s.textfield spellcheck="false" required='true' id='confirmEmail' label="Confirm email address" name="confirmEmail" cssClass="required email input-xlarge"/>
@@ -44,10 +44,11 @@ label.error {display:block;}
         </div>
     </#if>
     
-    <@s.password required='true' label='Password' name='password' id='password'  cssClass="required" autocomplete="off" />
-    <@s.password required='true' label='Confirm password' name='confirmPassword' id='confirmPassword'  cssClass="required" autocomplete="off" />
-    <@s.textfield labelposition='left' label='Organization' name='institutionName' id='institutionName' />
-    <@s.textfield label='Work phone' labelposition='left' name='person.phone' id='phone' />
+    <@s.password required='true' label='Password' name='password' id='password'  cssClass="required input-xlarge" autocomplete="off" />
+    <@s.password required='true' label='Confirm password' name='confirmPassword' id='confirmPassword'  cssClass="required input-xlarge" autocomplete="off" />
+    <#-- FIXME: should I be an autocomplete" -->
+    <@s.textfield labelposition='left' label='Organization' name='institutionName' id='institutionName' cssClass="input-xlarge"/>
+    <@s.textfield label='Work phone' labelposition='left' name='person.phone' id='phone' cssClass=" input-xlarge"/>
 
      <#if privacyControlsEnabled>
         <div class="control-group">

@@ -14,6 +14,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import org.tdar.core.bean.Persistable.Base;
+import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.Person;
 
@@ -27,7 +28,7 @@ import org.tdar.core.bean.entity.Person;
  */
 @Entity
 @Table(name = "pos_invoice")
-public class Invoice extends Base {
+public class Invoice extends Base implements Updatable {
 
     private static final long serialVersionUID = -3613460318580954253L;
 
@@ -37,24 +38,31 @@ public class Invoice extends Base {
     // the confirmation id for this invoice
 
     private String transactionId;
-
     private TransactionType transactionType;
-
+    private Integer billingPhone;
+    
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     @JoinColumn(nullable = false, name = "owner_id")
     @NotNull
     private Person person;
 
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
-    @JoinColumn(nullable = false, name = "address_id")
+    @JoinColumn(nullable = false, name = "executor_id")
     @NotNull
+    private Person transactedBy;
+
+    @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
+    @JoinColumn(nullable = true, name = "address_id")
+    // @NotNull
     private Address address;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = false, name = "invoice_id")
-    private List<Item> items;
+    private List<BillingItem> items;
 
     private Float total;
+    
+    private String invoiceNumber;
 
     /**
      * @return the dateCreated
@@ -102,11 +110,11 @@ public class Invoice extends Base {
         this.person = person;
     }
 
-    public List<Item> getItems() {
+    public List<BillingItem> getItems() {
         return items;
     }
 
-    public void setItems(List<Item> items) {
+    public void setItems(List<BillingItem> items) {
         this.items = items;
     }
 
@@ -148,7 +156,7 @@ public class Invoice extends Base {
     }
 
     private void initTotals() {
-        for (Item item : getItems()) {
+        for (BillingItem item : getItems()) {
             Long numberOfFiles = item.getActivity().getNumberOfFiles();
             Long space = item.getActivity().getNumberOfBytes();
             Long numberOfResources = item.getActivity().getNumberOfResources();
@@ -164,4 +172,21 @@ public class Invoice extends Base {
     private transient Long totalSpace = null;
     private transient Long totalFiles = null;
 
+    @Override
+    public void markUpdated(Person p) {
+        if (getPerson() == null) {
+            setPerson(p);
+        }
+        if (dateCreated == null) {
+            setDateCreated(new Date());
+        }
+    }
+
+    public void setBillingPhone(Integer billingPhone) {
+        this.billingPhone = billingPhone;
+    }
+
+    public Integer getBillingPhone() {
+        return billingPhone;
+    }
 }

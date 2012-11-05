@@ -11,6 +11,8 @@ import org.tdar.core.dao.external.auth.TdarGroup;
 
 /*
  * An activity represents a specific thing that can be "charged"
+ * 
+ *  THIS CLASS IS DESIGNED TO BE IMMUTABLE -- SET ONCE, NEVER CAN CHANGE
  */
 @Entity
 @Table(name = "pos_billing_activity")
@@ -19,10 +21,20 @@ public class BillingActivity extends Persistable.Base {
     private static final long serialVersionUID = 6891881586235180640L;
 
     private String name;
+    @Column(updatable = false)
     private Integer numberOfHours;
+    @Column(updatable = false)
     private Long numberOfMb;
+    @Column(updatable = false)
     private Long numberOfResources;
+    @Column(updatable = false)
     private Long numberOfFiles;
+    // display values may be lower than actual values to give some wiggle room
+    private Long displayNumberOfMb;
+    private Long displayNumberOfResources;
+    private Long displayNumberOfFiles;
+
+    @Column(updatable = false)
     private Float price;
     private String currency;
     private Boolean enabled;
@@ -105,6 +117,30 @@ public class BillingActivity extends Persistable.Base {
 
     public void setGroup(TdarGroup group) {
         this.group = group;
+    }
+
+    public Long getDisplayNumberOfFiles() {
+        return displayNumberOfFiles;
+    }
+
+    public void setDisplayNumberOfFiles(Long displayNumberOfFiles) {
+        this.displayNumberOfFiles = displayNumberOfFiles;
+    }
+
+    public Long getDisplayNumberOfResources() {
+        return displayNumberOfResources;
+    }
+
+    public void setDisplayNumberOfResources(Long displayNumberOfResources) {
+        this.displayNumberOfResources = displayNumberOfResources;
+    }
+
+    public Long getDisplayNumberOfMb() {
+        return displayNumberOfMb;
+    }
+
+    public void setDisplayNumberOfMb(Long displayNumberOfMb) {
+        this.displayNumberOfMb = displayNumberOfMb;
     }
 
 }

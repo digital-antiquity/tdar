@@ -117,3 +117,45 @@ create table creator_address (
 -- 31/10/12
 alter table collection add foreign key (owner_id) references person;
 
+create table pos_billing_activity (
+    id  bigserial not null,
+    currency varchar(255),
+    enabled boolean,
+    groupName varchar(255),
+    name varchar(255),
+    numberOfFiles int8,
+    numberOfHours int4,
+    numberOfMb int8,
+    numberOfResources int8,
+    displayNumberOfFiles int8,
+    displayNumberOfMb int8,
+    displayNumberOfResources int8,
+    price float4,
+    primary key (id)
+);
+
+create table pos_invoice (
+    id  bigserial not null,
+    date_created timestamp,
+    total float4,
+    transactionId varchar(255),
+    transactionType int4,
+    address_id int8 references creator_address,
+    owner_id int8 references person,
+    executor_id int8 references person,
+    invoiceNumber varchar(25),
+    otherReason varchar(255),
+    account_id int8,
+    billingPhone int,
+    primary key (id)
+);
+
+create table pos_item (
+    id  bigserial not null,
+    quantity int4,
+    activity_id int8 not null references pos_billing_activity,
+    invoice_id int8 not null references pos_invoice,
+    primary key (id)
+);
+insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price) values (true, 'level1', 5,1,50,5, 10), (true,'level2', 10, 1,250,10,20);
+alter table address add column country varchar(255);

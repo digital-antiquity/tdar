@@ -6,15 +6,18 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.tdar.core.bean.Persistable.Base;
+import org.tdar.core.bean.Validatable;
+import org.tdar.core.configuration.JSONTransient;
 
 /*
  * an Activity + quanitty
  */
 @Entity
 @Table(name = "pos_item")
-public class Item extends Base {
+public class BillingItem extends Base implements Validatable {
 
     private static final long serialVersionUID = -2775737509085985555L;
 
@@ -39,5 +42,23 @@ public class Item extends Base {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+
+    @Override
+    @JSONTransient
+    @XmlTransient
+    public boolean isValidForController() {
+        return (getQuantity() > 0);
+    }
+
+    @Override
+    @JSONTransient
+    @XmlTransient
+    public boolean isValid() {
+        return isValidForController();
+    }
+
+    public Float getSubtotal() {
+        return activity.getPrice() * getQuantity().floatValue();
     }
 }

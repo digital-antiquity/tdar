@@ -30,7 +30,6 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.struts.WriteableSession;
 import org.tdar.struts.action.resource.AbstractResourceController;
 import org.tdar.struts.data.ResourceSpaceUsageStatistic;
-import org.tdar.core.bean.Persistable.Base;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -218,7 +217,9 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
                     ((Indexable) persistable).setReadyToIndex(false);
                 }
                 actionReturnStatus = save(persistable);
-//                getGenericService().saveOrUpdate(persistable);
+
+                // should there not be "one" save at all?  I think this should be here
+                getGenericService().saveOrUpdate(persistable);
                 if (persistable instanceof Indexable) {
                     ((Indexable) persistable).setReadyToIndex(true);
                     getSearchIndexService().index((Indexable) persistable);
@@ -304,6 +305,10 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     public String add() throws TdarActionException {
         checkValidRequest(RequestType.CREATE, this, InternalTdarRights.EDIT_ANY_RESOURCE);
         logAction("CREATING");
+        return loadAddMetadata();
+    }
+
+    public String loadAddMetadata() {
         return SUCCESS;
     }
 
@@ -369,7 +374,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             throws TdarActionException {
         // first check the session
         Object[] msg = { action.getAuthenticatedUser(), userAction, action.getPersistableClass().getSimpleName() };
-        logger.trace("user {} is TRYING to {} a {}", msg);
+        logger.info("user {} is TRYING to {} a {}", msg);
 
         if (userAction.isAuthenticationRequired()) {
             try {
@@ -395,7 +400,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
                     }
                 case EDIT:
                 default:
-
                     if (persistable == null) {
                         // persistable is null, so the lookup failed (aka not found)
                         abort(StatusCode.NOT_FOUND, String.format("Sorry, the page you requested cannot be found"));
@@ -555,7 +559,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             P p = loadFromId(getId());
             // from a permissions standpoint... being really strict, we should mark this as read-only
             // getGenericService().markReadOnly(p);
-            logger.trace("id:{}, persistable:{}", getId(), p);
+            logger.info("id:{}, persistable:{}", getId(), p);
             setPersistable(p);
         }
 
