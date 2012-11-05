@@ -10,13 +10,8 @@ View freemarker macros
 
 <#macro ontology sectionTitle="Parsed Ontology Nodes" previewSize=10 triggerSize=15>
 <#if resource.getTotalNumberOfFiles() &gt; 0  && resource.ontologyNodes??>
-    <h3>${sectionTitle}</h3>
-    <table cellpadding='2' class="zebracolors">
-    <thead class='highlight'>
-        <tr>
-            <th>Label</th>
-        </tr>
-    </thead>
+    <h2>${sectionTitle}</h2>
+    <table class="table">
     <tbody id="ontology-nodes-part1">
     <@s.iterator status='rowStatus' value='resource.sortedOntologyNodesByImportOrder' var='ontologyNode'>
     <tr>
