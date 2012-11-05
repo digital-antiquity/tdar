@@ -862,20 +862,32 @@ function getBrowserMajorVersion() {
 
 function setupDocumentEditForm() {
     // wire up document-type selection to dependent fields
-    $("#showmorecite").hide('slow');
-    $("#show-more-types").hide();
-    $("#link-more").click(function() {
-        $('#showmorecite').show('show');
-        $('#showCite').hide();
-        return false;
-    });
-    $(".doctype input[type=radio]").click(function() {switchType(this);});
-    switchType($(".doctype input[type=radio]:checked"));
+//    $("#showmorecite").hide('slow');
+//    $("#show-more-types").hide();
+//    $("#link-more").click(function() {
+//        $('#showmorecite').show('show');
+//        $('#showCite').hide();
+//        return false;
+//    });
+    $(".doctype input[type=radio]").click(function() {switchDocType(this);});
+    switchDocType($(".doctype input[type=radio]:checked"));
 }
 
 
-var $docItems = new Array();
-function switchType(el) {
+function switchType(radio, container) {
+    var type = $(radio).val().toLowerCase();
+
+    console.debug('switchType:start:' + type);
+    var $container = $(container);
+    $(".typeToggle",$container).hide();
+    $($("." + type) ,$container).show();
+
+}
+
+
+
+
+function switchDocType(el) {
     var doctype = $(el).val().toLowerCase();
 
     console.debug('switchType:start:' + doctype);

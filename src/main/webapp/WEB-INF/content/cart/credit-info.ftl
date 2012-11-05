@@ -12,21 +12,18 @@
 
 <div>
 <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='save'>
-<#-- s.radio name='resource.licenseType' groupLabel='License Type' emptyOption='false' listValue="label" 
-    list='%{licenseTypesList}' numColumns="1" cssClass="licenseRadio" value="%{'${currentLicenseType}'}" / -->
 
-<@s.radio list="allTransactionTypes" name="invoice.transactionType" />
-<#-- fixme implememnt switchtype  -->
+<@s.radio list="allTransactionTypes" name="invoice.transactionType" cssClass="transactionType" />
 	<@s.textfield name="invoice.billing.phone" cssClass="input-xlarge" label="Billing Phone #" />
-<div class="INVOICE">
+<div class="INVOICE typeToggle">
 	<@s.textfield name="invoice.invoiceNumber" cssClass="input-xlarge" label="Invoice #" />
 </div>
-<div class="INVOICE">
+<div class="OTHER typeToggle">
 	<@s.textarea name="invoice.otherReason" cssClass="input-xlarge" label="Other Reason" />
 </div>
 
 
-<div class="CREDIT_CARD">
+<div class="CREDIT_CARD typeToggle">
 	<@s.textfield name="creditCardNumber" cssClass="input-xlarge" label="Credit Cart #" />
 	<@s.textfield name="verificationNumber" cssClass="input-xlarge" label="Verification #" />
 	<@s.textfield name="expirationYear" cssClass="input-xlarge" label="Expiration Year" />
@@ -37,5 +34,12 @@
 
 </div>
 
+<script>
+$(document).ready(function() {
+    $(".transactionType input[type=radio]").click(function() {switchType(this,'#MetadataForm');});
+    switchType($(".transactionType input[type=radio]:checked",'#MetadataForm'));
+});
+
+</script>
 </body>
 </#escape>

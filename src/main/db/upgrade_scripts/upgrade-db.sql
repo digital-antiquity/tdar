@@ -140,6 +140,7 @@ create table pos_invoice (
     total float4,
     transactionId varchar(255),
     transactionType int4,
+    transactionStatus varchar(25),
     address_id int8 references creator_address,
     owner_id int8 references person,
     executor_id int8 references person,

@@ -17,6 +17,7 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
 
@@ -170,6 +171,8 @@ public class Account extends Persistable.Base {
 
     public void initTotals() {
         for (Invoice invoice : getInvoices()) {
+            if (invoice.getTransactionStatus() != TransactionStatus.TRANSACTION_SUCCESSFUL)
+                continue;
             totalResources += invoice.getTotalResources();
             totalFiles += invoice.getTotalNumberOfFiles();
             totalSpace += invoice.getTotalSpace();

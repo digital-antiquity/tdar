@@ -12,6 +12,7 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
@@ -33,11 +34,16 @@ public class CartController extends AbstractPersistableController<Invoice> {
     private Integer verificationNumber;
     private Integer expirationYear;
     private Integer expirationMonth;
+    private Long accountId = -1L;
+    public static final String SUCCESS_UPDATE_ACCOUNT = "success-update-account";
 
     @Override
     protected String save(Invoice persistable) {
         for (BillingItem item : persistable.getItems()) {
             item.setActivity(getGenericService().loadFromSparseEntity(item.getActivity(), BillingActivity.class));
+        }
+        if (accountId != -1) {
+            getGenericService().find(Account.class, accountId).getInvoices().add(getInvoice());
         }
         return SUCCESS;
     }
@@ -85,15 +91,25 @@ public class CartController extends AbstractPersistableController<Invoice> {
     @SkipValidation
     @WriteableSession
     @Action(value = "process-payment-info", results = {
-            @Result(name = SUCCESS, type = "redirect", location = "view?id=${invoice.id}&review=true")
+            @Result(name = SUCCESS, type = "redirect", location = "view?id=${invoice.id}&review=true"),
+            @Result(name = SUCCESS_UPDATE_ACCOUNT, type = "redirect", location = "account?invoiceId=${invoice.id}&id=${accountId}"),
     })
     public String processPayment() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
-        switch (getInvoice().getTransactionType()) {
+        TransactionType transactionType = getInvoice().getTransactionType();
+        String invoiceNumber = getInvoice().getInvoiceNumber();
+        String otherReason = getInvoice().getOtherReason();
+        setInvoice(getGenericService().loadFromSparseEntity(getInvoice(), Invoice.class));
+        getInvoice().setTransactionType(transactionType);
+        getInvoice().setOtherReason(otherReason);
+        switch (transactionType) {
             case CHECK:
+                break;
             case CREDIT_CARD:
-                
+                break;
             case INVOICE:
+                getInvoice().setInvoiceNumber(invoiceNumber);
+
             case MANUAL:
                 break;
         }
@@ -101,7 +117,6 @@ public class CartController extends AbstractPersistableController<Invoice> {
         // run transaction
         return SUCCESS;
     }
-
 
     @Override
     public Class<Invoice> getPersistableClass() {
@@ -177,9 +192,17 @@ public class CartController extends AbstractPersistableController<Invoice> {
 
     public List<TransactionType> getAllTransactionTypes() {
         if (isAdministrator()) {
-        return Arrays.asList(TransactionType.values());
+            return Arrays.asList(TransactionType.values());
         } else {
             return Arrays.asList(TransactionType.CREDIT_CARD);
         }
+    }
+
+    public Long getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(Long accountId) {
+        this.accountId = accountId;
     }
 }

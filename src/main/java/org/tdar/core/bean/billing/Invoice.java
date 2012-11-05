@@ -6,6 +6,8 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -32,6 +34,13 @@ public class Invoice extends Base implements Updatable {
 
     private static final long serialVersionUID = -3613460318580954253L;
 
+    public enum TransactionStatus {
+        PREPARED,
+        PENDING_TRANSACTION,
+        TRANSACTION_SUCCESSFUL,
+        TRANSACTION_FAILED
+    }
+
     @NotNull
     @Column(name = "date_created")
     private Date dateCreated = new Date();
@@ -40,7 +49,7 @@ public class Invoice extends Base implements Updatable {
     private String transactionId;
     private TransactionType transactionType;
     private Integer billingPhone;
-    
+
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     @JoinColumn(nullable = false, name = "owner_id")
     @NotNull
@@ -61,8 +70,12 @@ public class Invoice extends Base implements Updatable {
     private List<BillingItem> items;
 
     private Float total;
-    
+
     private String invoiceNumber;
+    private String otherReason;
+
+    @Enumerated(EnumType.STRING)
+    private TransactionStatus transactionStatus = TransactionStatus.PREPARED;
 
     /**
      * @return the dateCreated
@@ -188,5 +201,29 @@ public class Invoice extends Base implements Updatable {
 
     public Integer getBillingPhone() {
         return billingPhone;
+    }
+
+    public String getInvoiceNumber() {
+        return invoiceNumber;
+    }
+
+    public void setInvoiceNumber(String invoiceNumber) {
+        this.invoiceNumber = invoiceNumber;
+    }
+
+    public String getOtherReason() {
+        return otherReason;
+    }
+
+    public void setOtherReason(String otherReason) {
+        this.otherReason = otherReason;
+    }
+
+    public TransactionStatus getTransactionStatus() {
+        return transactionStatus;
+    }
+
+    public void setTransactionStatus(TransactionStatus transactionStatus) {
+        this.transactionStatus = transactionStatus;
     }
 }
