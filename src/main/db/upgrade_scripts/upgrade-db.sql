@@ -162,4 +162,4 @@ create table pos_item (
     primary key (id)
 );
 insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price) values (true, 'level1', 5,1,50,5, 10), (true,'level2', 10, 1,250,10,20);
-alter table address add column country varchar(255);
+alter table creator_address add column country varchar(255);
