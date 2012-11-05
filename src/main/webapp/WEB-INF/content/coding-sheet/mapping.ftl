@@ -35,11 +35,6 @@
         padding:0px !important;
     }
     
-    .smallauto .down-arrow {
-left: -28px !important;
-//    left: 289px !important;
-    top: 13px !important;  
-    }
 </style>
 
 <script type="text/javascript">
@@ -189,7 +184,12 @@ $(function() {
         $(this).removeClass("ui-state-hover");
     });
 
-    $(".down-arrow", "#mapontologyform").click(autocompleteShowAll);
+    $(".show-all", "#mapontologyform").click(function() {
+        var $button = $(this);
+        var $div = $button.closest('.input-append');
+        var $textfield = $div.find("input[type=text]");
+        $textfield.focus().autocomplete("search", "");
+    });
 
 });
 </script>
@@ -219,65 +219,61 @@ var ontology = [
 
 </head>
 <body>
+
 <@nav.toolbar "coding-sheet" "mapping" />
-<div>
 
 
-<div id='display' class="glide">
+<h2>Map Codes to Ontology Values</h2>
+<div id='display' class="">
 <@s.form method='post' id="mapontologyform" action='save-mapping'>
 <@s.hidden name='id' value='${resource.id?c}'/>
 <#assign isLast = false/>
 <#assign count = 0/>
 
-<table class="tableFormat width99percent zebracolors">
-<thead>
-<tr>
-<th>Coding Rules from <span class='highlight'>${codingSheet.title}</span></th>
-<th></th>
-<th>Ontology values from <span class='highlight'>${codingSheet.defaultOntology.title}</span></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-    <td>
-        <button type="button" id="autosuggest">Autosuggest Mappings</button>
-    </td><td>
-    </td><td>
-        <button type="button" id="clearAll">Clear all</button>
-    </td>
-</tr>
-<#list codingRules as rule>
-<tr>
-<td>
-    <@s.hidden name='codingRules[${rule_index}].id' />
-    <@s.textfield name='codingRules[${rule_index}].term' size='50' readonly=true/>
-</td>
-<td><img src="<@s.url value='/images/arrow_right.png'/>"/></td>
-<td class="smallauto">
-<script type="text/javascript">
-$(document).ready(function() {
-    applyLocalAutoComplete($("#autocomp_${rule_index}"),autocomp_${rule_index}Suggestions);
-});
-<#noescape>
-var autocomp_${rule_index}Suggestions = [
-{id:"", name:""}<#t>
-    <#list rule.suggestions as suggestion>
-    <#if suggestion_index == 0>,{id:"", name:" -- Suggested Values --"}</#if>
-    ,{id:"${suggestion.id?c}",  name:"${suggestion.displayName?js_string}"}
-    </#list>
-];
-</#noescape>
-</script>
-<@s.hidden name="codingRules[${rule_index}].ontologyNode.id" id="ontologyNodeId_${rule_index}" />
-<@s.textfield name="codingRules[${rule_index}].ontologyNode.displayName" id="autocomp_${rule_index}"
-     cssClass="manualAutocomplete" autocompleteIdElement="#ontologyNodeId_${rule_index}"/>
-<div class="down-arrow"></div>
+    
 
-</td>
-</tr>
-</#list>
-</tbody>
-</table>
+
+    <div class="btn-group">
+        <button class="btn" type="button" id="autosuggest">Autosuggest Mappings</button>
+        <button class="btn" type="button" id="clearAll">Clear all</button>
+    </div>
+    
+    <div class="control-group">
+        <label class="control-label">Mappings</label>
+        <#list codingRules as rule>
+        <div class="controls controls-row">
+                <@s.hidden name='codingRules[${rule_index}].id' />
+                <@s.textfield theme="simple" name='codingRules[${rule_index}].term' size='50' readonly=true cssClass="span4"/>
+        
+            <div class="span1">
+                <img src="<@s.url value='/images/arrow_right.png'/>"/>
+            </div>
+        
+            <div>
+                <script type="text/javascript">
+                $(document).ready(function() {
+                    applyLocalAutoComplete($("#autocomp_${rule_index}"),autocomp_${rule_index}Suggestions);
+                });
+                <#noescape>
+                var autocomp_${rule_index}Suggestions = [
+                {id:"", name:""}<#t>
+                    <#list rule.suggestions as suggestion>
+                    <#if suggestion_index == 0>,{id:"", name:" -- Suggested Values --"}</#if>
+                    ,{id:"${suggestion.id?c}",  name:"${suggestion.displayName?js_string}"}
+                    </#list>
+                ];
+                </#noescape>
+                </script>
+                <@s.hidden name="codingRules[${rule_index}].ontologyNode.id" id="ontologyNodeId_${rule_index}" />
+                <div class="input-append">
+                    <@s.textfield theme="simple" name="codingRules[${rule_index}].ontologyNode.displayName" id="autocomp_${rule_index}"
+                         cssClass="manualAutocomplete" autocompleteIdElement="#ontologyNodeId_${rule_index}" cssClass="span4" />
+                        <button type="button" class="btn show-all"><i class="icon-chevron-down"></i></button>                    
+                </div>
+            </div>
+        </div>    
+        </#list>
+    </div>
 </div>
 
     <@edit.submit "Save" false><br/>

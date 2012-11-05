@@ -1830,7 +1830,7 @@ function drawToolbar(projId) {
 	<br/>
 </#macro>
 
-<#macro combobox name target label autocompleteParentElement autocompleteIdElement placeholder value cssClass>
+<#macro combobox name target label autocompleteParentElement autocompleteIdElement placeholder value cssClass id="">
             <div class="control-group">
                 <label class="control-label">${label}</label>
                 <div class="controls">
@@ -1840,7 +1840,7 @@ function drawToolbar(projId) {
                          autocompleteParentElement="${autocompleteParentElement}"
                          autocompleteIdElement="${autocompleteIdElement}"
                          placeholder="${placeholder}"
-                        value="${value}" cssClass="span5 ${cssClass}" />
+                        value="${value}" cssClass="${cssClass}" />
                         <button type="button" class="btn show-all"><i class="icon-chevron-down"></i></button>                    
                     </div>
                 </div>
