@@ -47,6 +47,9 @@ public class Invoice extends Base implements Updatable {
     // the confirmation id for this invoice
 
     private String transactionId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "transactionType")
     private TransactionType transactionType;
     private Integer billingPhone;
     private transient Long creditCardNumber;
@@ -54,7 +57,7 @@ public class Invoice extends Base implements Updatable {
     private Integer expirationYear;
     private Integer expirationMonth;
     private String creditCardType;
-    
+
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     @JoinColumn(nullable = false, name = "owner_id")
     @NotNull

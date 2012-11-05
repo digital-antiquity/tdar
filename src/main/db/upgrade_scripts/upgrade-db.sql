@@ -148,6 +148,9 @@ create table pos_invoice (
     otherReason varchar(255),
     account_id int8,
     billingPhone int,
+    expirationYear int,
+    expirationMonth int,
+    creditCardType varchar(25),
     primary key (id)
 );
 

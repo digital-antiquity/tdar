@@ -11,19 +11,19 @@
 <h1>Your cart</h1>
 
 <div>
-<@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='save'>
+<@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='process-payment-info'>
 
-<@s.radio list="allTransactionTypes" name="invoice.transactionType" cssClass="transactionType" />
+<@s.radio list="allTransactionTypes" name="invoice.transactionType" cssClass="transactionType" emptyOption='false' />
 	<@s.textfield name="invoice.billing.phone" cssClass="input-xlarge" label="Billing Phone #" />
-<div class="INVOICE typeToggle">
+<div class="invoice typeToggle">
 	<@s.textfield name="invoice.invoiceNumber" cssClass="input-xlarge" label="Invoice #" />
 </div>
-<div class="OTHER typeToggle">
+<div class="manual typeToggle">
 	<@s.textarea name="invoice.otherReason" cssClass="input-xlarge" label="Other Reason" />
 </div>
 
 
-<div class="CREDIT_CARD typeToggle">
+<div class="credit_card typeToggle">
 	<@s.textfield name="creditCardNumber" cssClass="input-xlarge" label="Credit Cart #" />
 	<@s.textfield name="verificationNumber" cssClass="input-xlarge" label="Verification #" />
 	<@s.textfield name="expirationYear" cssClass="input-xlarge" label="Expiration Year" />
@@ -36,8 +36,11 @@
 
 <script>
 $(document).ready(function() {
-    $(".transactionType input[type=radio]").click(function() {switchType(this,'#MetadataForm');});
-    switchType($(".transactionType input[type=radio]:checked",'#MetadataForm'));
+    $(".transactionType[type=radio]").click(function() {switchType(this,'#MetadataForm');});
+   if (!$(".transactionType[type=radio]:checked").length) {
+	$($(".transactionType[type=radio]")[0]).click();
+   }
+    switchType($(".transactionType[type=radio]:checked",'#MetadataForm'));
 });
 
 </script>

@@ -41,6 +41,7 @@ public class CartController extends AbstractPersistableController<Invoice> {
     public static final String SUCCESS_UPDATE_ACCOUNT = "success-update-account";
 
     @Autowired
+    // I will be pushed down into a service later on...
     NelNetPaymentDao nelnetPaymentDao;
     
     @Override
@@ -100,7 +101,7 @@ public class CartController extends AbstractPersistableController<Invoice> {
     @WriteableSession
     @Action(value = "process-payment-info", results = {
             @Result(name = SUCCESS, type = "redirect", location = "view?id=${invoice.id}&review=true"),
-            @Result(name = SUCCESS_UPDATE_ACCOUNT, type = "redirect", location = "account?invoiceId=${invoice.id}&id=${accountId}"),
+            @Result(name = SUCCESS_UPDATE_ACCOUNT, type = "redirect", location = "account?invoiceId=${invoice.id}&id=${accountId}")
     })
     public String processPayment() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
