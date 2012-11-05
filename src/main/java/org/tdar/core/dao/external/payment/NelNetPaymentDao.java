@@ -3,8 +3,15 @@ package org.tdar.core.dao.external.payment;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.tdar.core.bean.billing.Invoice;
+import org.tdar.core.dao.GenericDao;
+
 public class NelNetPaymentDao {
 
+    @Autowired
+    GenericDao genericDao;
+    
     public void initializeTransaction() {
 
     }
@@ -32,5 +39,12 @@ public class NelNetPaymentDao {
     
     public List<PaymentMethod> getSupportedPaymentMethods() {
         return Arrays.asList(PaymentMethod.CREDIT_CARD);
+    }
+
+    public void processInvoice(Invoice invoice) {
+        genericDao.saveOrUpdate(invoice);
+        genericDao.markReadOnly(invoice);
+        
+        
     }
 }

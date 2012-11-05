@@ -49,7 +49,12 @@ public class Invoice extends Base implements Updatable {
     private String transactionId;
     private TransactionType transactionType;
     private Integer billingPhone;
-
+    private transient Long creditCardNumber;
+    private transient Integer verificationNumber;
+    private Integer expirationYear;
+    private Integer expirationMonth;
+    private String creditCardType;
+    
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     @JoinColumn(nullable = false, name = "owner_id")
     @NotNull
@@ -225,5 +230,53 @@ public class Invoice extends Base implements Updatable {
 
     public void setTransactionStatus(TransactionStatus transactionStatus) {
         this.transactionStatus = transactionStatus;
+    }
+
+    public Long getCreditCardNumber() {
+        return creditCardNumber;
+    }
+
+    public void setCreditCardNumber(Long creditCardNumber) {
+        this.creditCardNumber = creditCardNumber;
+    }
+
+    public Integer getVerificationNumber() {
+        return verificationNumber;
+    }
+
+    public void setVerificationNumber(Integer verificationNumber) {
+        this.verificationNumber = verificationNumber;
+    }
+
+    public Integer getExpirationYear() {
+        return expirationYear;
+    }
+
+    public void setExpirationYear(Integer expirationYear) {
+        this.expirationYear = expirationYear;
+    }
+
+    public Integer getExpirationMonth() {
+        return expirationMonth;
+    }
+
+    public void setExpirationMonth(Integer expirationMonth) {
+        this.expirationMonth = expirationMonth;
+    }
+
+    public String getCreditCardType() {
+        return creditCardType;
+    }
+
+    public void setCreditCardType(String creditCardType) {
+        this.creditCardType = creditCardType;
+    }
+
+    public Person getTransactedBy() {
+        return transactedBy;
+    }
+
+    public void setTransactedBy(Person transactedBy) {
+        this.transactedBy = transactedBy;
     }
 }
