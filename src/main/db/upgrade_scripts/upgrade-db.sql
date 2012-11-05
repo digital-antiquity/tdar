@@ -163,3 +163,46 @@ create table pos_item (
 );
 insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price) values (true, 'level1', 5,1,50,5, 10), (true,'level2', 10, 1,250,10,20);
 alter table creator_address add column country varchar(255);
+
+create table pos_account_group (
+    id int8 not null,
+    date_created timestamp,
+    description varchar(255),
+    date_expires timestamp,
+    date_updated timestamp,
+    name varchar(255),
+    status varchar(255),
+    modifier_id int8 not null,
+    owner_id int8 not null,
+    account_group_id int8 not null,
+    primary key (id)
+)
+
+create table pos_account (
+    id  bigserial not null,
+    date_created timestamp,
+    description varchar(255),
+    date_expires timestamp,
+    date_updated timestamp,
+    status varchar(25),
+    name varchar(255),
+    modifier_id int8 not null references person,
+    owner_id int8 not null references person,
+    account_group_id int8 references pos_account_group,
+    primary key (id)
+);
+
+create table pos_members (
+    user_id int8 not null references person,
+    account_id int8 not null references pos_account,
+    primary key (user_id, account_id)
+);
+
+create table pos_group_members (
+    user_id int8 not null references person,
+    account_id int8 not null references pos_account_group,
+    primary key (user_id, account_id)
+);
+
+alter table resource add column account_id int8 references pos_account;
+create sequence account_sequence;

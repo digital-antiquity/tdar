@@ -6,45 +6,40 @@
 <#import "/WEB-INF/macros/resource/common.ftl" as common>
 
 <head>
-<title>Your cart</title>
+<title>Your account ${account.name}</title>
 <meta name="lastModifiedDate" content="$Date$"/>
 
 </head>
 <body>
+<h1>${account.name!"Your account"}</h1>
+<p>${account.description}</p>
 
-<table>
-<tr>
-	<th>Item</th><th>Quantity</th><th>Cost</th><th>Subtotal</th>
-</tr>
-<#list invoice.items as item>
+<h3>Users who can charge to this account</h3>
+<table class="tableFormat">
 	<tr>
-	<td>${item.activity.name}</td>
-	<td>${item.quantity}</td>
-	<td>${item.activity.price}</td>
-	<td>${item.subtotal}</td>
+		<th>name</th><th>email</th>
 	</tr>
-</#list>
+<#list authorizedMembers as member>
 <tr>
-	<td colspan=3></td><td>${invoice.total!0}</td>
+	<td><a href="<@s.url value="/browse/creator/${member.id?c}"/>">${member.properName}</a></td><td>${member.email}</td>
 </tr>
+</#list>
 </table>
-<#if invoice.address?has_content>
-<h3>Billing Address</h3>
-<@common.printAddress invoice.address/>
 
-<#if invoice.transactionType?has_content>
-<h3>Transaction Info</h3>
-<b>Transaction Type: </b>${invoice.transactionType}<br/>
-<b>Transaction Status: </b>${invoice.transactionStatus}<br/>
+<h3>Resources associated with this account</h3>
+<table class="tableFormat">
+	<tr>
+		<th>Resource Type</th><th>Id</th><th>Name</th>
+	</tr>
+<#list resources as resource>
+<tr>
+	<td>${resource.resourceType.label}</td>
+	<td>${resource.id}</td>
+	<td><a href="<@s.url value="/${resource.resourceType.urlNamespace}/${resource.id?c}"/>">${resource.title}</a></td>
+</tr>
+</#list>
+</table>
 
-<#else>
-	<a class="button btn btn-primary submitButton" href="<@s.url value="/cart/${id?c}/credit" />">Pay</a>
-</#if>
-
-<#else>
-	<a class="button btn btn-primary submitButton" href="<@s.url value="/cart/${id?c}/billing" />">Add Billing Address</a>
-
-</#if>
 
 </body>
 </#escape>

@@ -14,7 +14,7 @@
 <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='save'>
 
 	<@s.textfield name="account.name" cssClass="input-xlarge" label="Account Name"/>
-	<@s.textfield name="account.description" cssClass="input-xlarge" label="Account Description"/>
+	<@s.textarea name="account.description" cssClass="input-xlarge" label="Account Description"/>
 	
 	<h3>Who can charge to this account</h3>
 	...

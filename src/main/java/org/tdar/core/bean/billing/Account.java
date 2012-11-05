@@ -1,27 +1,41 @@
 package org.tdar.core.bean.billing;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlTransient;
 
+import org.hibernate.search.annotations.DocumentId;
+import org.tdar.core.bean.HasStatus;
+import org.tdar.core.bean.JsonModel;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.Status;
 
 /**
  * $Id$
@@ -32,20 +46,30 @@ import org.tdar.core.bean.resource.Resource;
  * @version $Rev$
  */
 @Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Table(name = "pos_account")
-public class Account extends Persistable.Base implements Updatable {
+public class Account extends JsonModel.Base implements Persistable, Updatable, HasStatus {
 
     private static final long serialVersionUID = -1728904030701477101L;
 
-    private Account() {
+    public Account() {
     }
 
     public Account(String name) {
         this.name = name;
     }
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "account_sequence")
+    @SequenceGenerator(name = "account_sequence", allocationSize = 1, sequenceName = "account_sequence")
+    private Long id = -1L;
+
     private String name;
     private String description;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private Status status = Status.ACTIVE;
 
     @NotNull
     @Column(name = "date_created")
@@ -74,13 +98,12 @@ public class Account extends Persistable.Base implements Updatable {
     private Set<Invoice> invoices = new HashSet<Invoice>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
-    @JoinTable(name = "pos_members", joinColumns = { @JoinColumn(nullable = false, name = "account_group_id") }, inverseJoinColumns = { @JoinColumn(
+    @JoinTable(name = "pos_members", joinColumns = { @JoinColumn(nullable = false, name = "user_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false, name = "account_id") })
     private Set<Person> authorizedMembers = new HashSet<Person>();
 
-    // @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    // @JoinColumn(nullable = false, updatable = false, name = "resource_id")
-    @Transient
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(nullable = true, updatable = true, name = "account_id")
     private Set<Resource> resources = new HashSet<Resource>();
 
     /**
@@ -283,6 +306,61 @@ public class Account extends Persistable.Base implements Updatable {
 
     public void setModifiedBy(Person modifiedBy) {
         this.modifiedBy = modifiedBy;
+    }
+
+    @Override
+    public boolean isDeleted() {
+        return status == Status.DELETED;
+    }
+
+    @Override
+    public boolean isActive() {
+        return status == Status.ACTIVE;
+    }
+
+    /**
+     * @return the status
+     */
+    public Status getStatus() {
+        return status;
+    }
+
+    /**
+     * @param status
+     *            the status to set
+     */
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public Set<Person> getAuthorizedMembers() {
+        return authorizedMembers;
+    }
+
+    public void setAuthorizedMembers(Set<Person> authorizedMembers) {
+        this.authorizedMembers = authorizedMembers;
+    }
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    @Override
+    public List<?> getEqualityFields() {
+        return Arrays.asList(getId());
+    }
+
+    @Override
+    @XmlTransient
+    protected String[] getIncludedJsonProperties() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

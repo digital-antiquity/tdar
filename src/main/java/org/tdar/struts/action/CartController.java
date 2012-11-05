@@ -39,6 +39,7 @@ public class CartController extends AbstractPersistableController<Invoice> {
     private Integer expirationMonth;
     private Long accountId = -1L;
     public static final String SUCCESS_UPDATE_ACCOUNT = "success-update-account";
+    public static final String SUCCESS_ADD_ACCOUNT = "success-add-account";
 
     @Autowired
     // I will be pushed down into a service later on...
@@ -91,6 +92,7 @@ public class CartController extends AbstractPersistableController<Invoice> {
         } else {
             getInvoice().getAddress().setType(AddressType.BILLING);
             getInvoice().getPerson().getAddresses().add(getInvoice().getAddress());
+            getGenericService().saveOrUpdate(getInvoice().getPerson());
         }
         getGenericService().saveOrUpdate(getInvoice());
         // add the address to the person
@@ -101,10 +103,17 @@ public class CartController extends AbstractPersistableController<Invoice> {
     @WriteableSession
     @Action(value = "process-payment-info", results = {
             @Result(name = SUCCESS, type = "redirect", location = "view?id=${invoice.id}&review=true"),
-            @Result(name = SUCCESS_UPDATE_ACCOUNT, type = "redirect", location = "account?invoiceId=${invoice.id}&id=${accountId}")
+            @Result(name = SUCCESS_UPDATE_ACCOUNT, type = "redirect", location = "/billing/edit?invoiceId=${invoice.id}&id=${accountId}"),
+            @Result(name = SUCCESS_ADD_ACCOUNT, type = "redirect", location = "/billing/add?invoiceId=${invoice.id}")
     })
     public String processPayment() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+        String successReturn = SUCCESS_ADD_ACCOUNT;
+        Account account = getGenericService().find(Account.class, accountId);
+        if (account != null) {
+            successReturn = SUCCESS_UPDATE_ACCOUNT;
+        }
+        
         TransactionType transactionType = getInvoice().getTransactionType();
         String invoiceNumber = getInvoice().getInvoiceNumber();
         String otherReason = getInvoice().getOtherReason();
@@ -132,7 +141,7 @@ public class CartController extends AbstractPersistableController<Invoice> {
                 break;
             case MANUAL:
                 getInvoice().setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
-                return SUCCESS_UPDATE_ACCOUNT;
+                return successReturn;
         }
         // validate transaction
         // run transaction

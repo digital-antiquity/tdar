@@ -25,7 +25,7 @@
 	</tr>
 </#list>
 <tr>
-	<td colspan=3></td><td>${invoice.total!0}</td>
+	<td colspan=3><em>Total:</em></td><td>${invoice.total!0}</td>
 </tr>
 </table>
 <#if invoice.address?has_content>
