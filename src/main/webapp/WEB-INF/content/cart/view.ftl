@@ -11,8 +11,10 @@
 
 </head>
 <body>
+<h1>Invoice</h1>
 
-<table>
+<h3>Items <a href="<@s.url value="/cart/${invoice.id?c}/edit" />" class="small">(modify)</a></h3>
+<table class="tableFormat">
 <tr>
 	<th>Item</th><th>Quantity</th><th>Cost</th><th>Subtotal</th>
 </tr>
@@ -29,7 +31,7 @@
 </tr>
 </table>
 <#if invoice.address?has_content>
-<h3>Billing Address</h3>
+<h3>Billing Address <a href="<@s.url value="/cart/${invoice.id?c}/address" />" class="small">(modify)</a></h3>
 <@common.printAddress invoice.address/>
 
 <#if invoice.transactionType?has_content>
@@ -42,7 +44,7 @@
 </#if>
 
 <#else>
-	<a class="button btn btn-primary submitButton" href="<@s.url value="/cart/${id?c}/billing" />">Add Billing Address</a>
+	<a class="button btn btn-primary submitButton" href="<@s.url value="/cart/${id?c}/address" />">Add Billing Address</a>
 
 </#if>
 

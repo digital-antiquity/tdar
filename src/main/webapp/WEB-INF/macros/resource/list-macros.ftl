@@ -109,7 +109,9 @@ html markup) you will probably not like the results
 	</div>    
 	<#-- JIM FIXME: WHERE SHOULD I GO -->
 		<script>
+		$(document).ready(function() {
         TDAR.maps.setupMapResult();
+        });
 		</script>	  
   </#if>
 </#macro>

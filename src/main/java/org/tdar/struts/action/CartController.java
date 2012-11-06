@@ -65,7 +65,7 @@ public class CartController extends AbstractPersistableController<Invoice> {
     }
 
     @SkipValidation
-    @Action(value = "billing", results = { @Result(name = SUCCESS, location = "address-info.ftl") })
+    @Action(value = "address", results = { @Result(name = SUCCESS, location = "address-info.ftl") })
     public String editBillingAddress() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
 

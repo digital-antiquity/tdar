@@ -931,9 +931,9 @@ label.help-inline[generated="true"] {
 	visibility: hidden;
 }
 
-article+aside.span3>* {
+article+aside.span3>div {
 	margin-left: 40px !important;
-	float: right;
+//	float: right;
 }
 
 /* Normally I like the default bootstrap styles... but hot pink for CODE tags?  Really? */
@@ -1144,4 +1144,9 @@ h3.collection-mid-red::before {
 	height: 37px;
 	content: "";
 	margin-bottom: -2px;
+}
+
+
+.small {
+	font-size:70%;	
 }

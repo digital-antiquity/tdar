@@ -446,7 +446,7 @@ No categories or subcategories specified.
 		  </#if>
 		</#list>
 		<#if contents?has_content>
-		<strong>${role.label}(s):</strong> <#noescape>${contents}<#t/></#noescape> <br/>
+		<p><strong>${role.label}(s):</strong> <#noescape>${contents}<#t/></#noescape> </p>
 		</#if>
 	</#list>
 	</#if>
@@ -779,8 +779,9 @@ ${_date?string('MM/dd/yyyy')}<#t>
     <#else>
         <@keywords />
     </#if>
-    <@spatialCoverage />
     <@temporalCoverage />
+
+    <@spatialCoverage />
 
     <@indvidualInstitutionalCredit />
 
