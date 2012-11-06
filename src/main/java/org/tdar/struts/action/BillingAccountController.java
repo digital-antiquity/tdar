@@ -4,7 +4,9 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.Invoice;
 
 @Component
 @Scope("prototype")
@@ -17,7 +19,13 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     
     @Override
     protected String save(Account persistable) {
-
+        if (Persistable.Base.isNotNullOrTransient(invoiceId)) {
+            Invoice invoice = getGenericService().find(Invoice.class, invoiceId);
+            // if we have rights
+            if (true) {
+                getAccount().getInvoices().add(invoice);
+            }
+        }
         return SUCCESS;
     }
 

@@ -14,6 +14,19 @@
 <h1>${account.name!"Your account"}</h1>
 <p>${account.description}</p>
 
+<h3>Invoices</h3>
+<table class="tableFormat">
+	<tr>
+		<th>name</th><th>total</th>
+	</tr>
+<#list account.invoices as invoice>
+	<tr>
+		<td><a href="<@s.url value="/cart/${invoice.id?c}" />"/>${invoice.dateCreated}</a></td>
+		<td> ${invoice.total!0}</td>
+	</tr>
+</#list>
+</table>
+
 <h3>Users who can charge to this account</h3>
 <table class="tableFormat">
 	<tr>
