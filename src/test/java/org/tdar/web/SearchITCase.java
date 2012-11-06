@@ -1,14 +1,15 @@
 package org.tdar.web;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -215,9 +216,52 @@ public class SearchITCase extends AbstractAdminAuthenticatedWebTestCase {
                             type.name()), sawSomething);
         }
     }
-
+    
+    public void testInheritanceSpatialSearch() {
+        //create a "blank" project
+        gotoPage("/project/add");
+        setInput("project.title", "test project");
+        setInput("project.description", "test");
+        submitForm();
+        String projectUrl = getCurrentUrlPath();
+        
+        //now create a document that inherits from that project
+        clickLinkWithText("add new resource to project");
+        clickLinkWithText("Document");
+        final String DOCUMENT_TITLE = "document to search for";
+        setInput("document.title", DOCUMENT_TITLE);
+        setInput("document.description", "test");
+        setInput("resource.inheritingSpatialInformation", "true");
+        submitForm();
+        
+        //now go back and edit the project,  setting bounding region to northern territories (Ah, the motherland)
+        gotoPage(projectUrl);
+        String minx = "-122.958984375";
+        String miny = "63.194018438087845";
+        String maxx = "-117.158203125";
+        String maxy = "64.39693778132846";
+        clickLinkWithText("edit");
+        setInput("minx", minx);
+        setInput("miny", miny);
+        setInput("maxx", maxx);
+        setInput("maxy", maxy);
+        submitForm();
+        
+        //now we go to the search page and search within the region we just specified.
+        gotoPage("/search");
+        setInput("minx", minx);
+        setInput("miny", miny);
+        setInput("maxx", maxx);
+        setInput("maxy", maxy);
+        submitForm();
+        
+        assertTextPresent(DOCUMENT_TITLE);
+        
+    }
+    
     @Test
     @Rollback
+    @Ignore
     public void testSearchURLs() {
         List<String> urls = new ArrayList<String>();
         urls.add(SEARCH_RESULTS_BASE_URL
