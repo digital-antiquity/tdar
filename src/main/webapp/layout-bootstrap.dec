@@ -194,7 +194,7 @@
 		</article>
 
 		<#if page.properties["div.sidebar-right"]?has_content>
-			<aside class="span3 <#if resource?has_content>${resource.resourceType?lower_case}</#if>">
+			<aside class="span3 <#if resource?has_content>${resource.resourceType?lower_case}-bg-large tdar-icon</#if>">
 		    ${page.properties["div.sidebar-right"]}
 		   </aside>
 		</#if>

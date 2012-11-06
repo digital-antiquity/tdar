@@ -834,10 +834,10 @@ aside.dataset,  aside.document, aside.coding_sheet, aside.sensory_data, aside.on
 	padding-top: 250px;
 }
 
-#alt aside.dataset {
+/* #alt aside.dataset {
 	background: url(/images/r4/icn-dataset.png) 0 0 no-repeat;
 }
-
+ */
 #alt aside h3 {
 	font-size: 16px;
 	line-height: 22px;

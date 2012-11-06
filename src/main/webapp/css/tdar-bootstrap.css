@@ -944,3 +944,204 @@ code {
 .horizontal-rule {
     border-bottom: solid black 1px ;
 }
+
+aside.tdar-icon:before {
+   margin:0 5px 0 0;
+}
+
+
+
+.document-bg-large:before {
+	background: url(/images/r4/tdar-sprites.gif) -23px -23px no-repeat;
+	width: 220px;
+	height: 250px;
+	left: 40px;
+	display: inline-block;
+	content:"";
+	position:relative;
+}
+
+.dataset-bg-large:before {
+	background: url(/images/r4/tdar-sprites.gif) -261px -21px no-repeat;
+	width: 220px;
+	height: 250px;
+	left: 40px;
+	display: inline-block;
+	content:"";
+	position:relative;
+}
+
+.coding_sheet-bg-large:before {
+	background: url(/images/r4/tdar-sprites.gif) -497px -21px no-repeat;
+	width: 220px;
+	height: 250px;
+	left: 40px;
+	display: inline-block;
+	content:"";
+	position:relative;
+}
+
+.ontology-bg-large:before {
+	background: url(/images/r4/tdar-sprites.gif) -731px -21px no-reapeat;
+	width: 220px;
+	height: 250px;
+	left: 40px;
+	display: inline-block;
+	content:"";
+	position:relative;
+}
+
+.geospatial-bg-large:before {
+	background: url(/images/r4/tdar-sprites.gif) -968px -23px no-repeat;
+	width: 220px;
+	height: 250px;
+	left: 40px;
+	display: inline-block;
+	content:"";
+	position:relative;
+}
+
+.sensory_data-bg-large:before {
+	background: url(/images/r4/tdar-sprites.gif) -1212px -23px no-repeat;
+	width: 220px;
+	height: 250px;
+	left: 40px;
+	display: inline-block;
+	content:"";
+	position:relative;
+}
+
+.image-bg-large:before {
+	background: url(/images/r4/tdar-sprites.gif) -1457px -23px no-repeat;
+	width: 220px;
+	height: 250px;
+	left: 40px;
+	display: inline-block;
+	content:"";
+	position:relative;
+}
+
+.video-bg-large:before {
+	background: url(/images/r4/tdar-sprites.gif) -1708px -23px no-repeat;
+	width: 220px;
+	height: 250px;
+	left: 40px;
+	display: inline-block;
+	content:"";
+	position:relative;
+}
+
+.collection-bg-large:before {
+	background: url(/images/r4/tdar-sprites.gif) -1952px -23px no-repeat;
+	width: 220px;
+	height: 250px;
+	left: 40px;
+	display: inline-block;
+	content:"";
+	position:relative;
+}
+
+.project-bg-large:before {
+	background: url(/images/r4/tdar-sprites.gif) -2196px -23px no-repeat;
+	width: 220px;
+	height: 250px;
+	left: 40px;
+	display: inline-block;
+	content:"";
+	position:relative;
+}
+
+
+body.add h3 {
+	font-size:30px !important;
+}
+
+h3.document-mid-red::before {
+	background: url(/images/r4/tdar-sprites.gif) -471px -487px no-repeat;
+	display: inline-block;
+	width: 34px;
+	height: 37px;
+	content: "";
+	margin-bottom: -2px;
+}
+
+h3.dataset-mid-red::before {
+	background: url(/images/r4/tdar-sprites.gif) -508px -487px no-repeat;
+	display: inline-block;
+	width: 34px;
+	height: 37px;
+	content: "";
+	margin-bottom: -2px;
+}
+
+h3.coding_sheet-mid-red::before {
+	background: url(/images/r4/tdar-sprites.gif) -547px -487px no-repeat;
+	display: inline-block;
+	width: 34px;
+	height: 37px;
+	content: "";
+	margin-bottom: -2px;
+}
+
+h3.ontology-mid-red::before {
+	background: url(/images/r4/tdar-sprites.gif) -585px -487px no-repeat;
+	display: inline-block;
+	width: 34px;
+	height: 37px;
+	content: "";
+	margin-bottom: -2px;
+}
+
+h3.image-mid-red::before {
+	background: url(/images/r4/tdar-sprites.gif) -703px -487px no-repeat;
+	display: inline-block;
+	width: 34px;
+	height: 37px;
+	content: "";
+	margin-bottom: -2px;
+}
+
+h3.video-mid-red::before {
+	background: url(/images/r4/tdar-sprites.gif) -745px -487px no-repeat;
+	display: inline-block;
+	width: 34px;
+	height: 37px;
+	content: "";
+	margin-bottom: -2px;
+}
+
+h3.sensory_data-mid-red::before {
+	background: url(/images/r4/tdar-sprites.gif) -665px -487px no-repeat;
+	display: inline-block;
+	width: 34px;
+	height: 37px;
+	content: "";
+	margin-bottom: -2px;
+}
+
+h3.geospatial-mid-red::before {
+	background: url(/images/r4/tdar-sprites.gif) -623px -487px no-repeat;
+	display: inline-block;
+	width: 34px;
+	height: 37px;
+	content: "";
+	margin-bottom: -2px;
+}
+
+h3.project-mid-red::before {
+	background: url(/images/r4/tdar-sprites.gif) -825px -487px no-repeat;
+	display: inline-block;
+	width: 34px;
+	height: 37px;
+	content: "";
+	margin-bottom: -2px;
+}
+
+h3.collection-mid-red::before {
+	background: url(/images/r4/tdar-sprites.gif) -781px -487px no-repeat;
+	display: inline-block;
+	width: 40px;
+	height: 37px;
+	content: "";
+	margin-bottom: -2px;
+}
