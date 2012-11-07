@@ -16,7 +16,11 @@
 <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='save-address'>
 <@s.hidden name="id" value="${id?c}"/>
 <@s.hidden name="addressId" value="${addressId!-1}"/>
-<@s.hidden name="address.id" value="${address.id!-1}"/>
+<#assign addrId=-1/>
+<#if address?has_content>
+<#assign addrId=address.id?c!-1/>
+</#if>
+<@s.hidden name="address.id" value="${addrId}"/>
 
 <div class="controls-row">
 	<@s.radio labelposition='top' label='Address Type' name='address.type' 

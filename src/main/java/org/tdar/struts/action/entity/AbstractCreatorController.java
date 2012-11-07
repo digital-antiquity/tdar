@@ -25,7 +25,7 @@ public abstract class AbstractCreatorController<T extends Creator> extends Abstr
     @SkipValidation
     @WriteableSession
     @Action(value = "save-address", results = {
-            @Result(name = SUCCESS, type = "redirect", location = "../../creator/browse?id=${id}")
+            @Result(name = SUCCESS, type = "redirect", location = "../../browse/creators?id=${id}")
     })
     public String saveAddress() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);

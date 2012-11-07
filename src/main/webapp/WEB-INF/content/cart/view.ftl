@@ -61,10 +61,11 @@
 	<#if address.type?has_content>
 	<#assign label = address.type.label>
 	</#if>
-		<input type="radio" name="invoice.address.id" label="${label}" value="${address.id}"  <#if address.id==addressId>checked=checked</#if>/>
-	<@common.printAddress  address=address modifiable=false />
+	<@common.printAddress  address=address modifiable=true><input type="radio" name="invoice.address.id" label="${label}" value="${address.id}"  <#if address.id==addressId>checked=checked</#if>/></@common.printAddress>
 	</div>
 </#list>
+	<a class="button btn btn-primary submitButton" href="<@s.url value="/entity/person/${invoice.person.id?c}/address" />">Add a new address</a>
+
     <@edit.submit fileReminder=false />
 
 </@s.form>

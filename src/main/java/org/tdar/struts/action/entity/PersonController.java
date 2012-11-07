@@ -12,9 +12,8 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ObfuscationService;
-import org.tdar.struts.action.AbstractPersistableController;
-import org.tdar.struts.action.UserAccountController;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.UserAccountController;
 
 @Component
 @Scope("prototype")

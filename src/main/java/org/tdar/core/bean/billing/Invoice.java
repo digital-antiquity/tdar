@@ -51,6 +51,7 @@ public class Invoice extends Base implements Updatable {
     @Enumerated(EnumType.STRING)
     @Column(name = "transactionType")
     private TransactionType transactionType;
+
     private Integer billingPhone;
     private transient Long creditCardNumber;
     private transient Integer verificationNumber;

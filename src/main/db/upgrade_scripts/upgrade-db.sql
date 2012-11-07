@@ -139,7 +139,7 @@ create table pos_invoice (
     date_created timestamp,
     total float4,
     transactionId varchar(255),
-    transactionType int4,
+    transactionType varchar(50),
     transactionStatus varchar(25),
     address_id int8 references creator_address,
     owner_id int8 references person,
@@ -249,3 +249,7 @@ create table pos_members (
     account_id int8 not null references pos_account,
     primary key (user_id, account_id)
 );
+
+alter table pos_invoice drop column transactionType;
+alter table pos_invoice add column transactiontype varchar(50);
+alter table resource add column account_id int8 references pos_account;

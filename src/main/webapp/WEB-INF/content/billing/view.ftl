@@ -52,11 +52,6 @@
 </tr>
 </#list>
 </table>
-<@listAddress invoice.person.addresses />
-<#if invoice.person.institution?has_content>
-	<@listAddress invoice.person.institution.addresses />
-</#if>
-
 
 </body>
 </#escape>
