@@ -154,27 +154,6 @@ function applyLocalAutoComplete(selector, db) {
         }
     });
 
-    //add a button to expand the full list        
-    $(selector).each(function(k, v) {
-        var input = $(v);
-        var container = $(input).siblings("button").first();
-        container.click(function() {
-            var expanded = input.autocomplete("widget").is(":visible");
-            console.debug("expanded:" + expanded);
-            //close the droplist if already expanded, otherwise show the full list
-            if (expanded) {
-                input.autocomplete('close');
-            } else {
-                input.autocomplete('search', '');
-                input.focus();
-            }
-            return false;
-        });
-
-        //FIXME: the 'text' option is being ignored, so i'm just having the content of the button be blank
-        container.removeClass("ui-corner-all");
-        container.addClass("ui-corner-right ui-button-icon");
-    });
 }
 
 $(function() {
@@ -184,10 +163,11 @@ $(function() {
         $(this).removeClass("ui-state-hover");
     });
 
-    $(".show-all", "#mapontologyform").click(function() {
+    $(".show-all").click(function() {
         var $button = $(this);
         var $div = $button.closest('.input-append');
         var $textfield = $div.find("input[type=text]");
+        var $widget = $textfield.autocomplete("widget");
         $textfield.focus().autocomplete("search", "");
     });
 
@@ -267,7 +247,7 @@ var ontology = [
                 <@s.hidden name="codingRules[${rule_index}].ontologyNode.id" id="ontologyNodeId_${rule_index}" />
                 <div class="input-append">
                     <@s.textfield theme="simple" name="codingRules[${rule_index}].ontologyNode.displayName" id="autocomp_${rule_index}"
-                         cssClass="manualAutocomplete" autocompleteIdElement="#ontologyNodeId_${rule_index}" cssClass="span4" />
+                         cssClass="manualAutocomplete span4" autocompleteIdElement="#ontologyNodeId_${rule_index}"/>
                         <button type="button" class="btn show-all"><i class="icon-chevron-down"></i></button>                    
                 </div>
             </div>
