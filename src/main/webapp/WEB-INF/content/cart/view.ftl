@@ -1,5 +1,6 @@
 <#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
+<#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 <#import "/WEB-INF/macros/resource/common.ftl" as common>
 <#import "/WEB-INF/macros/resource/list-macros.ftl" as list>
 <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
@@ -48,8 +49,25 @@
 </#if>
 
 <#else>
-	<a class="button btn btn-primary submitButton" href="<@s.url value="/cart/${id?c}/address" />">Add Billing Address</a>
+<@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='save-billing-address'>
+<@s.hidden name="id" value="${invoice.id?c}" />
+<#assign addressId = -1 />
+<#if invoice.address?has_content && invoice.address.id?has_content>
+ <#assign addressId =invoice.address.id />
+</#if>
+<#list invoice.person.addresses  as address>
+	<div class="controls-row">
+	<#assign label = ""/>
+	<#if address.type?has_content>
+	<#assign label = address.type.label>
+	</#if>
+		<input type="radio" name="invoice.address.id" label="${label}" value="${address.id}"  <#if address.id==addressId>checked=checked</#if>/>
+	<@common.printAddress  address=address modifiable=false />
+	</div>
+</#list>
+    <@edit.submit fileReminder=false />
 
+</@s.form>
 </#if>
 </div>
 </body>

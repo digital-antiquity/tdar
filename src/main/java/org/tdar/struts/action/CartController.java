@@ -72,9 +72,19 @@ public class CartController extends AbstractPersistableController<Invoice> {
     @Action(value = "credit", results = { @Result(name = SUCCESS, location = "credit-info.ftl") })
     public String editCredit() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
-        if (!getInvoice().isModifiable()) {
-            throw new TdarRecoverableRuntimeException("cannot modify");
-        }
+
+        return SUCCESS;
+    }
+
+    @SkipValidation
+    @WriteableSession
+    @Action(value = "save-billing-address", results = {
+            @Result(name = SUCCESS, type = "redirect", location = "view?id=${invoice.id}&review=true")
+    })
+    public String saveBilling() throws TdarActionException {
+        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+        getInvoice().setAddress(getGenericService().loadFromSparseEntity(getInvoice().getAddress(), Address.class));
+        getGenericService().saveOrUpdate(getInvoice());
 
         return SUCCESS;
     }

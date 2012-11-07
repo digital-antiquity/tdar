@@ -57,19 +57,6 @@
 	<@listAddress invoice.person.institution.addresses />
 </#if>
 
-<#macro listAddress addresses>
-<#assign addressId = -1 />
-<#if invoice.address?has_content && invoice.address.id?has_content>
- <#assign addressId =invoice.address.id />
-</#if>
-<#list addresses  as address>
-	<div class="controls-row">
-		<input type="radio" name="invoice.address.id" label="${address.type}" value="${address.id}"  <#if address.id==addressId>checked=checked</#if>/>
-	<@common.printAddress  address />
-	</div>
-</#list>
-</#macro>
-
 
 </body>
 </#escape>
