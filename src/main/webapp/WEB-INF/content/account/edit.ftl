@@ -10,9 +10,8 @@ label.error {display:block;}
 <#include "/${themeDir}/terms.ftl" />
 
 <h2>Account Registration</h2>
-<#assign action><@nav.getFormUrl "/register"/></#assign>
 
-<@s.form id="accountForm" method="post" action="${action}" cssClass="form-horizontal">
+<@s.form id="accountForm" method="post" action="register" cssClass="form-horizontal">
 
 <div class="alert alert-block alert-error" style="display:none" id="error">
   <h4>Please correct the following issues with your submission</h4>

@@ -8,9 +8,9 @@ vim:sts=2:sw=2:filetype=jsp
 </script>
 </head>
 <body>
-<div class="glide">
-<h3>Welcome, ${person.properName}  </h3>
-Now that you've successfully registered an account with ${siteAcronym}.  Here are some nice places to start:
+<div class="hero-unit">
+<h1>Welcome, ${person.properName}  </h1>
+<p>Now that you've successfully registered an account with ${siteAcronym}.  Here are some nice places to start:</p>
 <ol>
 <#if contributor>
 <li><a href="<@s.url value="/project/add"/>">Create a new project</a>.  (Projects in ${siteAcronym} are simple, easy ways to organize similar Documents, Images, and Datasets which share metadata.)</li>
@@ -21,49 +21,29 @@ Now that you've successfully registered an account with ${siteAcronym}.  Here ar
 </ol>
 
 </div>
-<div class="glide">
-<h3>Account Details</h3>
-<table>
-<tr>
-<td>Name:</td>
-<td>${person.properName}</td>
-</tr>
-<tr>
-<td>Email:</td>
-<#if person.email??>
-<td>${person.email}</td>
-<#else>
-<td>Not Shown</td>
-</#if>
-</tr>
-<#if person.institution??>
-<tr>
-<td>Institution:</td>
-<td>${person.institution}</td>
-</tr>
-<#else>
-<tr>
-<td>Institution:</td>
-<td>Not Provided</td>
-</tr>
-</#if>
-<#if person.contributorReason??>
-<tr>
-<td>Requested contributor access for the following reason(s):</td>
-<td>${person.contributorReason}</td>
-</tr>
-</#if>
-<#if RPAEnabled>
-<tr>
-<td>RPA?</td>
-<td>
-<#if person.rpaNumber?has_content>
-    ${person.rpaNumber}
-</#if>
-    </td>
-</tr>
-</#if>
-</table>
-<a href="<@s.url value='/entity/person/edit?id=${sessionData.person.id?c}'/>">Edit your Account Settings</a>
+
+<div class="well">
+<h2>Account Details</h2>
+<dl class="dl-horizontal">
+    <dt>Name:</dt>
+    <dd>${person.properName}</dd>
+    
+    <dt>Email:</dt>
+    <dd>${person.email!"Not Shown"}</dd>
+    
+    <dt>Institution:</dt>
+    <dd>${person.institution!"Not Provided"}</dd>
+
+    <#if person.contributorReason??>
+    <dt>Requested contributor access for the following reason(s):</dt>
+    <dd>${person.contributorReason}</dd>
+    </#if>
+    
+    <#if RPAEnabled>
+    <dt>RPA?</dt>
+    <dd>${person.rpaNumber!""}</dd>
+    </#if>
+</dl>
+<a class="btn btn-primary" href="<@s.url value='/entity/person/edit?id=${sessionData.person.id?c}'/>">Edit your Account Settings</a>
 </div>
 </body> 
