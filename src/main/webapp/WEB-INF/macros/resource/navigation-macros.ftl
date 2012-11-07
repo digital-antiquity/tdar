@@ -35,7 +35,7 @@ $(document).ready(function() {
     fld.val($.trim(fld.val()))});
 });
 </script>
-<#assign formAction><@getFormUrl "/login/process"/></#assign>
+<#assign formAction><@getFormUrl absolutePath="/login/process"/></#assign>
 <@s.form id='loginForm' method="post" action="${formAction}" cssClass="form-horizontal">
     <input type="hidden" name="url" value="${Parameters.url!''}"/>
     <@s.textfield theme="bootstrap" spellcheck="false" id='loginUsername' name="loginUsername" label="Username" cssClass="required" />
