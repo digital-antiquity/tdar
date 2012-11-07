@@ -787,11 +787,13 @@ this bit of freemarker is voodoo:
 </#if>
 </#macro>
 
-<#macro printAddress address >
-		<p>${address.street1}<br/>
+<#macro printAddress address=address creatorId=-1 creatorType='person' >
+		<p><b><#if address.type?has_content>${address.type.label!""}</#if></b><br>
+		   ${address.street1}<br/>
 		   ${address.street2}<br/>
 		   ${address.city}, ${address.state}, ${address.postal}<br/>
-		   ${address.country}
+		   ${address.country}<br/>
+		   <a href="<@s.url value="/entity/${creatorType}/${creatorId?c}/address?addressId=${address.id}"/>">edit</a> | <a href="<@s.url value="/entity/${creatorType}/${creatorId?c}/delete-address?addressId=${address.id}"/>">delete</a>
 		</p>
 </#macro>
 </#escape>

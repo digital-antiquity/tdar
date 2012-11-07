@@ -75,7 +75,7 @@
 <#if (editor || id == authenticatedUser.id) >
 <#list creator.addresses  as address>
 	<div class="controls-row">
-		<@common.printAddress  address />
+		<@common.printAddress  address=address creatorType=creator.creatorType?lower_case creatorId=creator.id />
 	</div>
 </#list>
 

@@ -34,7 +34,22 @@ public abstract class AbstractCreatorController<T extends Creator> extends Abstr
         return SUCCESS;
     }
 
+
     @SkipValidation
+    @WriteableSession
+    @Action(value = "delete-address", results = {
+            @Result(name = SUCCESS, type = "redirect", location = "../../creator/browse?id=${id}")
+    })
+    public String deleteAddress() throws TdarActionException {
+        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+        getPersistable().getAddresses().remove(getAddress());
+        // this is likely superflouous, but I'm tired
+        getGenericService().delete(getAddress());
+        getGenericService().saveOrUpdate(getPersistable());
+        return SUCCESS;
+    }
+
+@SkipValidation
     @Action(value = "address", results = { @Result(name = SUCCESS, location = "../address-info.ftl") })
     public String editBillingAddress() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
