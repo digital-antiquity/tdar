@@ -195,6 +195,8 @@ $(document).ready(function() {
 
 <#macro getFormUrl absolutePath="/login/process">
 <#compress>
+<#-- NOTE: as Jim says, this can be done insetad with an @s.url scheme="https|http", but with tDAR running on so-many ports 
+	in testing, I'm not sure if the right way is the best way for us  -->
 <#assign actionMethod>${absolutePath}</#assign>
 <#if httpsEnabled>
 	<#assign appPort = ""/>
