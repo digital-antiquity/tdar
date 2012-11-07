@@ -194,7 +194,7 @@ $(document).ready(function() {
 </#macro>
 
 <#macro getFormUrl path="">
-<#local actionMethod><@s.url value="${path}" /></#local>
+<#compress>
 <#if httpsEnabled>
 	<#local appPort = ""/>
 	<#if hostPort != 80>
@@ -203,7 +203,7 @@ $(document).ready(function() {
 	<#local actionMethod>https://${hostName}${appPort}<@s.url value="/login/process" /></#local>
 </#if>
 ${actionMethod}
-</#macro>
+</#compress></#macro>
 
 
 </#escape>

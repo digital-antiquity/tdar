@@ -8,6 +8,7 @@ import org.apache.commons.lang.ObjectUtils;
 public enum TdarGroup implements Comparable<TdarGroup> {
 
     TDAR_ADMIN("tdar-admins", 1000),
+    TDAR_BILLING_MANAGER("tdar-billing",600),
     TDAR_EDITOR("tdar-editors", 500),
     TDAR_USERS("tdar-users", 1),
     JIRA_USERS("jira-users", -1),

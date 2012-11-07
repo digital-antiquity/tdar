@@ -757,7 +757,7 @@ this bit of freemarker is voodoo:
 	<ul class="subnav-rht">
  </#if>
 		<#if !(authenticatedUser??) > 
-				<li><a href="<@s.url value="/register" />" class="button">Sign Up</a></li>
+				<li><a href="<@s.url value="/account/new" />" class="button">Sign Up</a></li>
 				<li><a href="<@s.url value="/login" />" class="button">Log In</a></li>
 		<#else>
 				<li><a href="<@s.url value="/logout" />" class="button">Logout</a></li>

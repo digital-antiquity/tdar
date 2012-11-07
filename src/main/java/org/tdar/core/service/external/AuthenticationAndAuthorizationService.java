@@ -61,6 +61,10 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
         return checkAndUpdateCache(person, TdarGroup.TDAR_ADMIN);
     }
 
+    public boolean isBillingManager(Person person) {
+        return checkAndUpdateCache(person, TdarGroup.TDAR_BILLING_MANAGER);
+    }
+    
     public boolean isEditor(Person person) {
         return checkAndUpdateCache(person, TdarGroup.TDAR_EDITOR);
     }

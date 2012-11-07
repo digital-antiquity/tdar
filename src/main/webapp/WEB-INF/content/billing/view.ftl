@@ -11,7 +11,7 @@
 
 </head>
 <body>
-<h1>${account.name!"Your account"}</h1>
+<h1>${account.name!"Your account"} <#if accountGroup?has_content><span>${accountGroup.name}</span></#if></h1>
 <p>${account.description}</p>
 
 <h3>Invoices</h3>

@@ -1,10 +1,10 @@
 package org.tdar.core.dao;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.AccountGroup;
 import org.tdar.core.bean.entity.Person;
 
 /**
@@ -23,7 +23,15 @@ public class AccountDao extends Dao.HibernateBase<Account> {
         super(Account.class);
     }
 
+    /*
+     * FixMe: replace with a HQL query this should find all accounts the user is an owner on or all child account they're the owner of an account group; if
+     * administrator, or finance person should be "all accounts".
+     */
     public List<Account> findAccountsForUser(Person user) {
-        return Arrays.asList(new Account("test account"));
+        return findAll();
+    }
+
+    public AccountGroup getAccountGroup(Account account) {
+        return null;
     }
 }

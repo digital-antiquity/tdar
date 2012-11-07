@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.Account.AccountAdditionStatus;
+import org.tdar.core.bean.billing.AccountGroup;
 import org.tdar.core.bean.billing.BillingActivity;
+import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.AccountDao;
@@ -40,7 +42,7 @@ public class AccountService {
                 toReturn.add(activity);
             }
         }
-        logger.info("{}" , toReturn);
+        logger.info("{}", toReturn);
         return toReturn;
 
     }
@@ -59,5 +61,16 @@ public class AccountService {
         if (canAddResource != AccountAdditionStatus.CAN_ADD_RESOURCE) {
             throw new TdarRecoverableRuntimeException(String.format("Cannot add resource because %s", canAddResource));
         }
+    }
+
+    public AccountGroup getAccountGroup(Account account) {
+        return accountDao.getAccountGroup(account);
+    }
+
+    public boolean checkThatInvoiceBeAssigned(Invoice find, Account account) {
+        if (false) {
+            throw new TdarRecoverableRuntimeException("cannot assign invoice to account");
+        }
+        return true;
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.AccountGroup;
 import org.tdar.core.bean.billing.Invoice;
 
 @Component
@@ -24,6 +25,10 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     private static final String NEW_ACCOUNT = "new_account";
     private Long invoiceId;
     private List<Account> accounts;
+    private String name;
+    private String description;
+    private AccountGroup accountGroup;
+    private Long accountGroupId;
 
     @SkipValidation
     @Action(value = "choose", results = {
@@ -31,8 +36,9 @@ public class BillingAccountController extends AbstractPersistableController<Acco
             @Result(name = NEW_ACCOUNT, location = "add")
     })
     public String selectAccount() throws TdarActionException {
-        accounts = getAccountService().listAvailableAccountsForUser(getAuthenticatedUser());
-        if (CollectionUtils.isNotEmpty(accounts)) {
+        getAccountService().checkThatInvoiceBeAssigned(getGenericService().find(Invoice.class, invoiceId), null);
+        setAccounts(getAccountService().listAvailableAccountsForUser(getAuthenticatedUser()));
+        if (CollectionUtils.isNotEmpty(getAccounts())) {
             return SUCCESS;
         }
         return NEW_ACCOUNT;
@@ -45,11 +51,14 @@ public class BillingAccountController extends AbstractPersistableController<Acco
             Invoice invoice = getGenericService().find(Invoice.class, invoiceId);
             logger.info("attaching invoice: {} ", invoice);
             // if we have rights
-            if (true) {
-                getAccount().getInvoices().add(invoice);
-                getGenericService().saveOrUpdate(invoice);
-                getGenericService().saveOrUpdate(getAccount());
-            }
+            getAccountService().checkThatInvoiceBeAssigned(invoice, getAccount()); // throw exception if you cannot
+            getAccount().getInvoices().add(invoice);
+            getGenericService().saveOrUpdate(invoice);
+            getGenericService().saveOrUpdate(getAccount());
+        }
+        if (Persistable.Base.isTransient(persistable)) {
+            persistable.setName(name);
+            persistable.setDescription(description);
         }
         return SUCCESS;
     }
@@ -67,6 +76,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
 
     @Override
     public String loadMetadata() {
+        setAccountGroup(getAccountService().getAccountGroup(getAccount()));
         return SUCCESS;
     }
 
@@ -92,5 +102,45 @@ public class BillingAccountController extends AbstractPersistableController<Acco
 
     public void setInvoiceId(Long invoiceId) {
         this.invoiceId = invoiceId;
+    }
+
+    public List<Account> getAccounts() {
+        return accounts;
+    }
+
+    public void setAccounts(List<Account> accounts) {
+        this.accounts = accounts;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public AccountGroup getAccountGroup() {
+        return accountGroup;
+    }
+
+    public void setAccountGroup(AccountGroup accountGroup) {
+        this.accountGroup = accountGroup;
+    }
+
+    public Long getAccountGroupId() {
+        return accountGroupId;
+    }
+
+    public void setAccountGroupId(Long accountGroupId) {
+        this.accountGroupId = accountGroupId;
     }
 }
