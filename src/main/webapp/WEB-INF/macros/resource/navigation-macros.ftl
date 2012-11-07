@@ -193,17 +193,19 @@ $(document).ready(function() {
 </#if>
 </#macro>
 
-<#macro getFormUrl path="">
+<#macro getFormUrl absolutePath="/login/process">
 <#compress>
+<#assign actionMethod>${absolutePath}</#assign>
 <#if httpsEnabled>
-	<#local appPort = ""/>
+	<#assign appPort = ""/>
 	<#if hostPort != 80>
-		<#local appPort= ":" + hostPort/>
+		<#assign appPort= ":" + hostPort/>
 	</#if>
-	<#local actionMethod>https://${hostName}${appPort}<@s.url value="/login/process" /></#local>
+	<#assign actionMethod>https://${hostName}${appPort}${absolutePath}</#assign>
 </#if>
 ${actionMethod}
-</#compress></#macro>
+</#compress>
+</#macro>
 
 
 </#escape>
