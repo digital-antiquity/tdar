@@ -23,6 +23,7 @@ import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.AddressType;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.external.payment.NelNetPaymentDao;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.struts.WriteableSession;
 
 @Component
@@ -47,6 +48,9 @@ public class CartController extends AbstractPersistableController<Invoice> {
     
     @Override
     protected String save(Invoice persistable) {
+        if (!getInvoice().isModifiable()) {
+            throw new TdarRecoverableRuntimeException("cannot modify");
+        }
         for (BillingItem item : persistable.getItems()) {
             item.setActivity(getGenericService().loadFromSparseEntity(item.getActivity(), BillingActivity.class));
         }
@@ -65,37 +69,13 @@ public class CartController extends AbstractPersistableController<Invoice> {
     }
 
     @SkipValidation
-    @Action(value = "address", results = { @Result(name = SUCCESS, location = "address-info.ftl") })
-    public String editBillingAddress() throws TdarActionException {
-        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
-
-        return SUCCESS;
-    }
-
-    @SkipValidation
     @Action(value = "credit", results = { @Result(name = SUCCESS, location = "credit-info.ftl") })
     public String editCredit() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
-
-        return SUCCESS;
-    }
-
-    @SkipValidation
-    @WriteableSession
-    @Action(value = "save-billing-address", results = {
-            @Result(name = SUCCESS, type = "redirect", location = "view?id=${invoice.id}&review=true")
-    })
-    public String saveBilling() throws TdarActionException {
-        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
-        if (Persistable.Base.isNotNullOrTransient(getInvoice().getAddress())) {
-            getInvoice().setAddress(getGenericService().loadFromSparseEntity(getInvoice().getAddress(), Address.class));
-        } else {
-            getInvoice().getAddress().setType(AddressType.BILLING);
-            getInvoice().getPerson().getAddresses().add(getInvoice().getAddress());
-            getGenericService().saveOrUpdate(getInvoice().getPerson());
+        if (!getInvoice().isModifiable()) {
+            throw new TdarRecoverableRuntimeException("cannot modify");
         }
-        getGenericService().saveOrUpdate(getInvoice());
-        // add the address to the person
+
         return SUCCESS;
     }
 
@@ -129,18 +109,21 @@ public class CartController extends AbstractPersistableController<Invoice> {
             case CHECK:
                 break;
             case CREDIT_CARD:
-                
-                break;
-            case INVOICE:
-                getInvoice().setInvoiceNumber(invoiceNumber);
                 getInvoice().setCreditCardNumber(getCreditCardNumber());
                 getInvoice().setVerificationNumber(getVerificationNumber());
                 getInvoice().setExpirationMonth(getExpirationMonth());
                 getInvoice().setExpirationYear(getExpirationYear());
+                getGenericService().saveOrUpdate(getInvoice());
                 nelnetPaymentDao.processInvoice(getInvoice());
+                getGenericService().saveOrUpdate(getInvoice());
+                break;
+            case INVOICE:
+                getInvoice().setInvoiceNumber(invoiceNumber);
+                getGenericService().saveOrUpdate(getInvoice());
                 break;
             case MANUAL:
                 getInvoice().setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
+                getGenericService().saveOrUpdate(getInvoice());
                 return successReturn;
         }
         // validate transaction

@@ -20,7 +20,7 @@ import org.tdar.struts.action.TdarActionException;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/entity/person")
-public class PersonController extends AbstractPersistableController<Person> {
+public class PersonController extends AbstractCreatorController<Person> {
 
     private static final long serialVersionUID = 1L;
 

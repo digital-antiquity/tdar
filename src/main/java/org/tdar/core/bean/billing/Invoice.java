@@ -70,7 +70,6 @@ public class Invoice extends Base implements Updatable {
 
     @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     @JoinColumn(nullable = true, name = "address_id")
-    // @NotNull
     private Address address;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
@@ -281,5 +280,15 @@ public class Invoice extends Base implements Updatable {
 
     public void setTransactedBy(Person transactedBy) {
         this.transactedBy = transactedBy;
+    }
+
+    public boolean isModifiable() {
+        switch (transactionStatus) {
+            case TRANSACTION_FAILED:
+            case TRANSACTION_SUCCESSFUL:
+                return false;
+            default:
+                return true;
+        }
     }
 }

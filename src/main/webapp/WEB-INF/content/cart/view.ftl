@@ -11,9 +11,9 @@
 
 </head>
 <body>
-<h1>Invoice</h1>
+<h1>Invoice <span class="small">{${invoice.transactionStatus}}</span></h1>
 
-<h3>Items <a href="<@s.url value="/cart/${invoice.id?c}/edit" />" class="small">(modify)</a></h3>
+<h3>Items <#if invoice.modifiable><a href="<@s.url value="/cart/${invoice.id?c}/edit" />" class="small">(modify)</a></#if></h3>
 <table class="tableFormat">
 <tr>
 	<th>Item</th><th>Quantity</th><th>Cost</th><th>Subtotal</th>
@@ -30,15 +30,19 @@
 	<td colspan=3><em>Total:</em></td><td>${invoice.total!0}</td>
 </tr>
 </table>
+<div class="container row">
 <#if invoice.address?has_content>
-<h3>Billing Address <a href="<@s.url value="/cart/${invoice.id?c}/address" />" class="small">(modify)</a></h3>
-<@common.printAddress invoice.address/>
+<div class="span3">
+	<h3>Billing Address <#if invoice.modifiable><a href="<@s.url value="/cart/${invoice.id?c}/address" />" class="small">(modify)</a></#if></h3>
+	<@common.printAddress invoice.address/>
+</div>
+	<#if invoice.transactionType?has_content>
+<div class="span3">
+	<h3>Transaction Info</h3>
+	<b>Transaction Type: </b>${invoice.transactionType}<br/>
+	<b>Transaction Status: </b>${invoice.transactionStatus}<br/>
 
-<#if invoice.transactionType?has_content>
-<h3>Transaction Info</h3>
-<b>Transaction Type: </b>${invoice.transactionType}<br/>
-<b>Transaction Status: </b>${invoice.transactionStatus}<br/>
-
+</div>
 <#else>
 	<a class="button btn btn-primary submitButton" href="<@s.url value="/cart/${id?c}/credit" />">Pay</a>
 </#if>
@@ -47,6 +51,6 @@
 	<a class="button btn btn-primary submitButton" href="<@s.url value="/cart/${id?c}/address" />">Add Billing Address</a>
 
 </#if>
-
+</div>
 </body>
 </#escape>

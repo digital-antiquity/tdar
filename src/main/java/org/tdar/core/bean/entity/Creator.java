@@ -22,6 +22,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -144,8 +145,11 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
     @Column(length = 64)
     private String url;
 
+    
+    
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = false, name = "creator_id")
+    @NotNull
     private Set<Address> addresses = new LinkedHashSet<Address>();
 
     private String location;

@@ -72,6 +72,14 @@
 
 				<@common.resourceUsageInfo />
 
+<#if (editor || id == authenticatedUser.id) >
+<#list creator.addresses  as address>
+	<div class="controls-row">
+		<@common.printAddress  address />
+	</div>
+</#list>
+
+</#if>
             </#if>
 <br/>        
         </#if>
