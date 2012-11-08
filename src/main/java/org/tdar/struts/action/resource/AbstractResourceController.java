@@ -43,6 +43,7 @@ import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.bean.resource.ResourceNoteType;
+import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.dao.GenericDao.FindOptions;
@@ -107,7 +108,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private List<LatitudeLongitudeBox> latitudeLongitudeBoxes;
     private List<CoverageDate> coverageDates;
     private Status status;
-
+    private List<ResourceRevisionLog> logEntries;
     // citation data.
     // private List<String> sourceCitations;
     private List<SourceCollection> sourceCollections;
@@ -856,6 +857,24 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public void setSubmitterId(Long submitterId) {
         this.submitterId = submitterId;
+    }
+    
+
+    @SkipValidation
+    @Action(value = "admin")
+    public String viewAdmin() throws TdarActionException {
+        checkValidRequest(RequestType.VIEW, this, InternalTdarRights.VIEW_ANYTHING);
+        // checkValidRequest(UserIs.ANONYMOUS, UsersCanModify.NONE, isEditable(), InternalTdarRights.VIEW_ANYTHING);
+        return SUCCESS;
+    }
+
+
+    public List<ResourceRevisionLog> getLogEntries() {
+        return logEntries;
+    }
+
+    public void setLogEntries(List<ResourceRevisionLog> logEntries) {
+        this.logEntries = logEntries;
     }
 
 }
