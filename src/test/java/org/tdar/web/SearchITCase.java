@@ -217,10 +217,11 @@ public class SearchITCase extends AbstractAdminAuthenticatedWebTestCase {
         }
     }
     
+    @Test
     public void testInheritanceSpatialSearch() {
         //create a "blank" project
         gotoPage("/project/add");
-        setInput("project.title", "test project");
+        setInput("project.title", "testInheritanceSpatialSearch project");
         setInput("project.description", "test");
         submitForm();
         String projectUrl = getCurrentUrlPath();
@@ -228,9 +229,10 @@ public class SearchITCase extends AbstractAdminAuthenticatedWebTestCase {
         //now create a document that inherits from that project
         clickLinkWithText("add new resource to project");
         clickLinkWithText("Document");
-        final String DOCUMENT_TITLE = "document to search for";
+        final String DOCUMENT_TITLE = "testnheritancepatialearchdocument";
         setInput("document.title", DOCUMENT_TITLE);
         setInput("document.description", "test");
+        setInput("document.date", "2002");
         setInput("resource.inheritingSpatialInformation", "true");
         submitForm();
         
@@ -241,19 +243,19 @@ public class SearchITCase extends AbstractAdminAuthenticatedWebTestCase {
         String maxx = "-117.158203125";
         String maxy = "64.39693778132846";
         clickLinkWithText("edit");
-        setInput("minx", minx);
-        setInput("miny", miny);
-        setInput("maxx", maxx);
-        setInput("maxy", maxy);
+        setInput("latitudeLongitudeBoxes[0].minimumLongitude", minx);
+        setInput("latitudeLongitudeBoxes[0].minimumLatitude" , miny);
+        setInput("latitudeLongitudeBoxes[0].maximumLongitude", maxx);
+        setInput("latitudeLongitudeBoxes[0].maximumLatitude" , maxy);
         submitForm();
         
         //now we go to the search page and search within the region we just specified.
         gotoPage("/search");
-        setInput("minx", minx);
-        setInput("miny", miny);
-        setInput("maxx", maxx);
-        setInput("maxy", maxy);
-        submitForm();
+        setInput("groups[0].latitudeLongitudeBoxes[0].minimumLongitude", minx);
+        setInput("groups[0].latitudeLongitudeBoxes[0].minimumLatitude" , miny);
+        setInput("groups[0].latitudeLongitudeBoxes[0].maximumLongitude", maxx);
+        setInput("groups[0].latitudeLongitudeBoxes[0].maximumLatitude" , maxy);
+        submitForm("Search");
         
         assertTextPresent(DOCUMENT_TITLE);
         
@@ -261,7 +263,6 @@ public class SearchITCase extends AbstractAdminAuthenticatedWebTestCase {
     
     @Test
     @Rollback
-    @Ignore
     public void testSearchURLs() {
         List<String> urls = new ArrayList<String>();
         urls.add(SEARCH_RESULTS_BASE_URL
