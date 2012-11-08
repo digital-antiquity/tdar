@@ -233,8 +233,6 @@ public class SearchIndexService {
             FullTextSession fullTextSession = getFullTextSession();
 
             for (C toIndex : indexable) {
-                // fullTextSession.purge(toIndex.getClass(), toIndex.getId());
-                index(fullTextSession, toIndex);
                 log.debug("indexing: " + toIndex);
                 try {
                     fullTextSession.purge(toIndex.getClass(), toIndex.getId());
