@@ -14,6 +14,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.AccountGroup;
 import org.tdar.core.bean.billing.Invoice;
+import org.tdar.core.bean.entity.Person;
 
 @Component
 @Scope("prototype")
@@ -142,5 +143,9 @@ public class BillingAccountController extends AbstractPersistableController<Acco
 
     public void setAccountGroupId(Long accountGroupId) {
         this.accountGroupId = accountGroupId;
+    }
+    
+    public Person getBlankPerson() {
+        return new Person();
     }
 }

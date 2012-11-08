@@ -560,6 +560,7 @@ The form will check for matches in the ${siteAcronym} database and populate the 
 
 </#macro>
 
+
 <#macro categoryVariable>
 <div class="control-group row">
 	<div id='categoryDivId' class="span4">
@@ -1474,6 +1475,17 @@ $(document).ready(function() {
 
 });
 
+
+function drawToolbar(projId) {
+    var toolbar = $("#proj-toolbar");
+    toolbar.empty();
+    if (projId != undefined && projId != '') {
+        toolbar.append(projToolbarItem('/project/' + projId + '/view', '/images/zoom.png', ' View selected project'));
+        toolbar.append(projToolbarItem('/project/' + projId + '/edit', '/images/pencil.png', ' Edit project'));
+        toolbar.append(projToolbarItem('/resource/add?projectId=' + projId, '/images/database_add.png', ' Add new resource to project'));
+    }
+}
+
 function fnRenderTitle(oObj) {
     //in spite of name, aData is an object containing the resource record for this row
     var objResource = oObj.aData;
@@ -1488,17 +1500,6 @@ function fnRenderTitle(oObj) {
     </#if> 
     return html;
 }
-
-function drawToolbar(projId) {
-    var toolbar = $("#proj-toolbar");
-    toolbar.empty();
-    if (projId != undefined && projId != '') {
-        toolbar.append(projToolbarItem('/project/' + projId + '/view', '/images/zoom.png', ' View selected project'));
-        toolbar.append(projToolbarItem('/project/' + projId + '/edit', '/images/pencil.png', ' Edit project'));
-        toolbar.append(projToolbarItem('/resource/add?projectId=' + projId, '/images/database_add.png', ' Add new resource to project'));
-    }
-}
-
 </script>
 </#macro>
 
@@ -1847,5 +1848,59 @@ function drawToolbar(projId) {
             </div>
             
 </#macro>
+
+<#macro listMemberUsers >
+<#local _authorizedUsers=account.authorizedMembers />
+<#if _authorizedUsers.empty><#local _authorizedUsers=[blankPerson]></#if>
+
+<div id="accessRightsRecords" class="repeatLastRow" data-addAnother="add another user">
+    <div class="control-group">
+        <label class="control-label">Users</label>
+        <#list _authorizedUsers as user>
+            <#if user??>
+                <@userRow user user_index />
+            </#if>
+        </#list>
+    </div>
+</div>
+
+</#macro>
+
+<#macro userRow person _index=0>
+<#local bDisabled = (person.id == authenticatedUser.id) />
+<#local disabled =  bDisabled?string />
+<#local strutsPrefix="authorizedMembers[${_index}]" />
+<#local rowIdElement="authorizedUserRow_${_index}_" />
+<#local idIdElement="authorizedUserId__id_${_index}_" />
+    <div id='authorizedUserRow_${_index}_' class="repeat-row indent-row">
+
+        <@s.hidden name='${strutsPrefix}.id' value='${(person.id!-1)?c}' id="${idIdElement}"  cssClass="validIdRequired" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"  />
+        <div class="controls controls-row">
+            <@s.textfield theme="tdar" cssClass="span2 userAutoComplete" placeholder="Last Name"  readonly="${disabled}" autocompleteParentElement="#${rowIdElement}"
+                autocompleteIdElement="#${idIdElement}" autocompleteName="lastName" autocomplete="off"
+                name="${strutsPrefix}.lastName" maxlength="255" /> 
+            <@s.textfield theme="tdar" cssClass="span2 userAutoComplete" placeholder="First Name"  readonly="${disabled}" autocomplete="off"
+                name="${strutsPrefix}.firstName" maxlength="255" autocompleteName="firstName"
+                autocompleteIdElement="#${idIdElement}" 
+                autocompleteParentElement="#${rowIdElement}"  />
+            <@s.textfield theme="tdar" cssClass="span2 userAutoComplete" placeholder="Email (optional)" readonly="${disabled}" autocomplete="off"
+                autocompleteIdElement="#${idIdElement}" autocompleteName="email" autocompleteParentElement="#${rowIdElement}"
+                name="${strutsPrefix}.email" maxlength="255"/>
+          
+          <@clearDeleteButton id="authorizedUserRow" disabled="${disabled}" />
+        </div>
+  
+   
+        <div class="controls controls-row">
+        <@s.textfield theme="tdar" cssClass="span3 userAutoComplete" placeholder="Institution Name (Optional)" readonly="${disabled}" autocomplete="off"
+            autocompleteIdElement="#${idIdElement}" 
+            autocompleteName="institution" 
+            autocompleteParentElement="#${rowIdElement}"
+            name="${strutsPrefix}.institution.name" maxlength="255" />
+        </div>
+  </div>
+
+</#macro>
+
 
 </#escape>
