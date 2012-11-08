@@ -15,7 +15,8 @@
 
 	<@s.textfield name="account.name" cssClass="input-xlarge" label="Account Name"/>
 	<@s.textarea name="account.description" cssClass="input-xlarge" label="Account Description"/>
-	<@s.hidden name="invoiceId" />	
+	<@s.hidden name="id" value="${account.id?c}" />	
+	<@s.hidden name="account.id" />	
 	<h3>Who can charge to this account</h3>
 	<@edit.listMemberUsers />
 	<br/>
@@ -23,6 +24,13 @@
 </@s.form>
 
 </div>
+<script>
+$(document).ready(function(){
+    'use strict';
+    TDAR.common.initEditPage($('#MetadataForm')[0]);
+	delegateCreator('#accessRightsRecords', true, false);
+});
+</script>
 
 </body>
 </#escape>

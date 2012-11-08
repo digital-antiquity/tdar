@@ -82,8 +82,8 @@ public class Account extends Persistable.Base implements Updatable, HasStatus {
     private Set<Invoice> invoices = new HashSet<Invoice>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
-    @JoinTable(name = "pos_members", joinColumns = { @JoinColumn(nullable = false, name = "user_id") }, inverseJoinColumns = { @JoinColumn(
-            nullable = false, name = "account_id") })
+    @JoinTable(name = "pos_members", joinColumns = { @JoinColumn(nullable = false, name = "account_id") }, inverseJoinColumns = { @JoinColumn(
+            nullable = false, name = "user_id") })
     private Set<Person> authorizedMembers = new HashSet<Person>();
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)

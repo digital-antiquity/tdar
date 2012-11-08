@@ -1,5 +1,6 @@
 package org.tdar.struts.action;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -29,6 +30,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     private String name;
     private String description;
     private AccountGroup accountGroup;
+    private List<Person> authorizedMembers = new ArrayList<Person>();
     private Long accountGroupId;
 
     @SkipValidation
@@ -57,6 +59,9 @@ public class BillingAccountController extends AbstractPersistableController<Acco
             getGenericService().saveOrUpdate(invoice);
             getGenericService().saveOrUpdate(getAccount());
         }
+        getAccount().getAuthorizedMembers().clear();
+        getAccount().getAuthorizedMembers().addAll(getGenericService().loadFromSparseEntities(getAuthorizedMembers(), Person.class));
+        logger.info("authorized members: {}", getAccount().getAuthorizedMembers());
         if (Persistable.Base.isTransient(persistable)) {
             persistable.setName(name);
             persistable.setDescription(description);
@@ -78,6 +83,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     @Override
     public String loadMetadata() {
         setAccountGroup(getAccountService().getAccountGroup(getAccount()));
+        getAuthorizedMembers().addAll(getAccount().getAuthorizedMembers());
         return SUCCESS;
     }
 
@@ -144,8 +150,16 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     public void setAccountGroupId(Long accountGroupId) {
         this.accountGroupId = accountGroupId;
     }
-    
+
     public Person getBlankPerson() {
         return new Person();
+    }
+
+    public List<Person> getAuthorizedMembers() {
+        return authorizedMembers;
+    }
+
+    public void setAuthorizedMembers(List<Person> authorizedMembers) {
+        this.authorizedMembers = authorizedMembers;
     }
 }

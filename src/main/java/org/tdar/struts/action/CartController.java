@@ -111,6 +111,8 @@ public class CartController extends AbstractPersistableController<Invoice> {
         getInvoice().setOtherReason(otherReason);
         getInvoice().setBillingPhone(billingPhone);
         getGenericService().saveOrUpdate(getInvoice());
+        //finalize the cost and cache it
+        getInvoice().setTotal(getInvoice().getCalculatedCost());
         getInvoice().setTransactionStatus(TransactionStatus.PENDING_TRANSACTION);
 
         switch (transactionType) {

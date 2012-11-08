@@ -32,7 +32,7 @@
 		<td>${act.price} ${act.currency!"USD"}</td>
 		<td>
 			<@s.hidden name="invoice.items[${act_index}].activity.id" value="${act.id}" />
-			<@s.textfield name="invoice.items[${act_index}].quantity" />
+			<@s.textfield name="invoice.items[${act_index}].quantity" cssClass="integer" />
 		</td>
 	</tr> 
 	
@@ -42,6 +42,11 @@
 </@s.form>
 
 </div>
-
+<script>
+$(document).ready(function(){
+    'use strict';
+    TDAR.common.initEditPage($('#MetadataForm')[0]);
+});
+</script>
 </body>
 </#escape>

@@ -185,6 +185,7 @@ public class Invoice extends Base implements Updatable {
                 totalFiles += numberOfFiles * item.getQuantity().longValue();
                 totalSpace += space * item.getQuantity().longValue();
                 totalResources += numberOfResources * item.getQuantity().longValue();
+                calculatedCost += item.getSubtotal();
             }
         }
     }
@@ -192,6 +193,7 @@ public class Invoice extends Base implements Updatable {
     private transient Long totalResources = null;
     private transient Long totalSpace = null;
     private transient Long totalFiles = null;
+    private transient Float calculatedCost = null;
 
     @Override
     public void markUpdated(Person p) {
@@ -291,5 +293,16 @@ public class Invoice extends Base implements Updatable {
             default:
                 return true;
         }
+    }
+
+    public Float getCalculatedCost() {
+        return calculatedCost;
+    }
+
+    public void setCalculatedCost(Float calculatedCost) {
+        if (calculatedCost == null) {
+            initTotals();
+        }
+        this.calculatedCost = calculatedCost;
     }
 }

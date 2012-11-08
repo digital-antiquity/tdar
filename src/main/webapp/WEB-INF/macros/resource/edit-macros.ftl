@@ -1851,7 +1851,7 @@ function fnRenderTitle(oObj) {
 
 <#macro listMemberUsers >
 <#local _authorizedUsers=account.authorizedMembers />
-<#if _authorizedUsers.empty><#local _authorizedUsers=[blankPerson]></#if>
+<#if !_authorizedUsers?has_content><#local _authorizedUsers=[blankPerson]></#if>
 
 <div id="accessRightsRecords" class="repeatLastRow" data-addAnother="add another user">
     <div class="control-group">

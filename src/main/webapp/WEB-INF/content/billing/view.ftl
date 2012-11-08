@@ -34,7 +34,7 @@
 	</tr>
 <#list account.authorizedMembers as member>
 <tr>
-	<td><a href="<@s.url value="/browse/creator/${member.id?c}"/>">${member.properName}</a></td><td>${member.email}</td>
+	<td><a href="<@s.url value="/browse/creators/${member.id?c}"/>">${member.properName}</a></td><td>${member.email}</td>
 </tr>
 </#list>
 </table>

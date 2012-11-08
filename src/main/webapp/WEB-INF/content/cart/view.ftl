@@ -28,7 +28,7 @@
 	</tr>
 </#list>
 <tr>
-	<td colspan=3><em>Total:</em></td><td>${invoice.total!0}</td>
+	<td colspan=3><em>Total:</em></td><td>${invoice.calculatedCost!0}</td>
 </tr>
 </table>
 <div class="container row">
