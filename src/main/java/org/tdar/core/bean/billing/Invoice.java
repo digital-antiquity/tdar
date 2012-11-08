@@ -177,6 +177,10 @@ public class Invoice extends Base implements Updatable {
     }
 
     private void initTotals() {
+        totalResources = 0L;
+        totalFiles = 0L;
+        totalSpace = 0L;
+        calculatedCost = 0f;
         for (BillingItem item : getItems()) {
             Long numberOfFiles = item.getActivity().getNumberOfFiles();
             Long space = item.getActivity().getNumberOfBytes();
@@ -296,13 +300,13 @@ public class Invoice extends Base implements Updatable {
     }
 
     public Float getCalculatedCost() {
+        if (calculatedCost == null) {
+            initTotals();
+        }
         return calculatedCost;
     }
 
     public void setCalculatedCost(Float calculatedCost) {
-        if (calculatedCost == null) {
-            initTotals();
-        }
         this.calculatedCost = calculatedCost;
     }
 }
