@@ -257,11 +257,28 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     }
 
     public boolean isValid() {
-        if (isValidLatitude(maximumLatitude) && isValidLatitude(minimumLatitude) && isValidLongitude(minimumLongitude) && isValidLongitude(maximumLongitude) &&
-                maximumLatitude >= minimumLatitude && maximumLongitude >= minimumLongitude && Math.abs(maximumLatitude - minimumLatitude) < 180) {
+        if (
+                isValidLatitude(maximumLatitude) 
+                && isValidLatitude(minimumLatitude) 
+                && isValidLongitude(minimumLongitude) 
+                && isValidLongitude(maximumLongitude) 
+                && maximumLatitude >= minimumLatitude 
+                && isValidLongitudeSpan(minimumLongitude, maximumLongitude) 
+                && Math.abs(maximumLatitude - minimumLatitude) < 180
+                ) {
             return true;
         }
         return false;
+    }
+    
+    //this logic assumes no span greater than 180°, and that zero-length span is invalid.
+    private boolean isValidLongitudeSpan(double min, double max) {
+        if(max < 0 && min > 0) {
+            //when spanning IDL, pretend that flat map repeats as it extends past 180°E, e.g. 170°W is now 190°E
+            max += 360;
+        }
+        logger.debug("min:{}\tmax:{}", min, max);
+        return min < max;  
     }
 
     public String toString() {
