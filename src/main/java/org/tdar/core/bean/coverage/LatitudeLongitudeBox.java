@@ -391,6 +391,12 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         this.geographicKeywords = geographicKeywords;
     }
 
+    /*
+     * scale is a ratio based on the relative size of the latLong box and the overall map
+     * it works like zoom level in google, but, it allows us to ignore regions that are a lot
+     * bigger or a lot smaller than the bounding box we've created
+     * if I draw a box around the city of Chandler, ignore items that have a box around the US
+     */
     @FieldBridge(impl = TdarPaddedNumberBridge.class)
     @Field(norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     @Transient
