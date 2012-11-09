@@ -395,7 +395,11 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
      * scale is a ratio based on the relative size of the latLong box and the overall map
      * it works like zoom level in google, but, it allows us to ignore regions that are a lot
      * bigger or a lot smaller than the bounding box we've created
-     * if I draw a box around the city of Chandler, ignore items that have a box around the US
+     * if I draw a box around the city of Chandler, ignore items that have a box around the US.
+	 *
+	 * The goal of this is not to control the bounding region, but to keep the results matching 
+	 * the relative scale of the bounding box. The smaller the scale the smaller the bounding region
+	 * the more regional the search.
      */
     @FieldBridge(impl = TdarPaddedNumberBridge.class)
     @Field(norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
