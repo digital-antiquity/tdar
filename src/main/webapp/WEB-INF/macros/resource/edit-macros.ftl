@@ -853,8 +853,8 @@ applyInheritance(project, formSelector);
     </tr>
 
 </#macro>
-<#macro join sequence delimiter=",">
-  <#if sequence??>
+<#macro join sequence=[] delimiter=",">
+  <#if sequence?has_content>
     <#list sequence as item>
         ${item}<#if item_has_next><#noescape>${delimiter}</#noescape></#if><#t>
     </#list>
