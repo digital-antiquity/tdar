@@ -121,11 +121,12 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
         }
         if (where != null) {
             SpatialQueryPart sqp = new SpatialQueryPart();
-            sqp.add(new LatitudeLongitudeBox(
-                    where.getMinLongitude().doubleValue(),
-                    where.getMaxLongitude().doubleValue(),
-                    where.getMinLatitude().doubleValue(),
-                    where.getMaxLatitude().doubleValue()));
+            LatitudeLongitudeBox latLong = new LatitudeLongitudeBox();
+            latLong.setMinimumLatitude(where.getMinLatitude().doubleValue());
+            latLong.setMaximumLatitude(where.getMaxLatitude().doubleValue());
+            latLong.setMinimumLongitude(where.getMinLongitude().doubleValue());
+            latLong.setMaximumLongitude(where.getMaxLongitude().doubleValue());
+            sqp.add(latLong);
             logger.debug("Spatial query clause:" + sqp.generateQueryString());
             qb.append(sqp);
         }
