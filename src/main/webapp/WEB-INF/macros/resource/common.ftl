@@ -166,7 +166,7 @@ TDAR.uri = function(path) {
     <#if effectiveResourceCollections_?has_content>
     <h4>Access Permissions</h4>
     <#nested />
-    <table class="tableFormat zebracolors">
+    <table class="tableFormat table">
     <thead><th>Collection</th><th>User</th><th>Permission</th></thead>
     <#list effectiveResourceCollections_ as collection_ >
       <#if collection_.authorizedUsers?has_content >
@@ -800,6 +800,74 @@ this bit of freemarker is voodoo:
 		   </#if>
 		</p>
 </#macro>
+
+
+<#macro checkedif arg1 arg2><#t>
+<@valif "checked='checked'" arg1 arg2 />
+</#macro>
+
+<#macro selectedif arg1 arg2>
+<@valif "selected='selected'" arg1 arg2 />
+</#macro>
+
+<#macro valif val arg1 arg2><#t>
+<#if arg1=arg2>${val}</#if><#t>
+</#macro>
+
+<#macro boolfield name label id  value labelPosition="left" type="checkbox" labelTrue="Yes" labelFalse="No" cssClass="">
+    <@boolfieldCheckbox name label id  value labelPosition cssClass />
+</#macro>
+
+<#macro boolfieldCheckbox name label id value labelPosition cssClass>
+<#if value?? && value?string == 'true'>
+    <@s.checkbox name="${name}" label="${label}" labelPosition="${labelPosition}" id="${id}"  value=value cssClass="${cssClass}" 
+        checked="checked"/>
+<#else>
+    <@s.checkbox name="${name}" label="${label}" labelPosition="${labelPosition}" id="${id}"  value=value cssClass="${cssClass}" />
+</#if>
+</#macro>
+
+<#macro boolfieldRadio name label id value labelPosition labelTrue labelFalse>
+    <label>${label}</label>
+    <input type="radio" name="${name}" id="${id}-true" value="true"  <@checkedif true value />  />
+    <label for="${id}-true" class="datatable-cell-unstyled"> ${labelTrue}</label>
+    <#if (labelPosition=="top")><br />
+    <input type="radio" name="${name}" id="${id}-false" value="false" <@checkedif false value />   />
+    <label for="${id}-false" class="datatable-cell-unstyled"> ${labelFalse}</label>
+    <#else>
+    <input type="radio" name="${name}" id="${id}-false" value="false"   />
+    <label for="${id}-false" class="datatable-cell-unstyled"> ${labelFalse}</label>
+    </#if>
+</#macro>
+
+<#macro boolfieldSelect name label id value labelPosition labelTrue labelFalse>
+    <label>${label}</label>
+    <select id="${id}" name="${name}">
+    <#if (labelPosition=="top")><br /></#if>
+        <option id="${id}-true" value="true" <@selectedif true value/> />${labelTrue}</option>
+        <option id="${id}-false" value="false" <@selectedif false value/> />${labelFalse}</option>
+    </select>
+</#macro>
+
+
+<#macro combobox name target label autocompleteParentElement autocompleteIdElement placeholder value cssClass id="">
+            <div class="control-group">
+                <label class="control-label">${label}</label>
+                <div class="controls">
+                    <div class="input-append">
+                        <@s.textfield theme="simple" name="${name}"  target="${target}"
+                         label="${label}"
+                         autocompleteParentElement="${autocompleteParentElement}"
+                         autocompleteIdElement="${autocompleteIdElement}"
+                         placeholder="${placeholder}"
+                        value="${value}" cssClass="${cssClass}" />
+                        <button type="button" class="btn show-all"><i class="icon-chevron-down"></i></button>                    
+                    </div>
+                </div>
+            </div>
+</#macro>
+
+
 </#escape>
 
 

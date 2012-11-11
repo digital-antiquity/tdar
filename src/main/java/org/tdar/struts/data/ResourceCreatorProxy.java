@@ -118,7 +118,7 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
             return null;
         }
         if (!institution.hasNoPersistableValues() && !person.hasNoPersistableValues()) {
-            throw new TdarRecoverableRuntimeException("Both Proxies were Populated");
+            throw new TdarRecoverableRuntimeException(String.format("Both Proxies were Populated p:[%s] i:[%s]",getPerson(), getInstitution()));
         }
 
         if (!person.hasNoPersistableValues()) {
