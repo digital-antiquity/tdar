@@ -37,7 +37,7 @@ public class LatLongClassBridge implements FieldBridge {
         opts.addFieldToDocument(QueryFieldNames.MAXX, TdarIndexNumberFormatter.format(maxx), doc);
         opts.addFieldToDocument(QueryFieldNames.MINY, TdarIndexNumberFormatter.format(miny), doc);
         opts.addFieldToDocument(QueryFieldNames.MAXY, TdarIndexNumberFormatter.format(maxy), doc);
-
+        opts.addFieldToDocument(QueryFieldNames.SCALE, TdarIndexNumberFormatter.format(box.getScale()), doc);
         // required for searching boxes that cross the prime meridian
         if (minx > maxx) {
             opts.addFieldToDocument(QueryFieldNames.MINXPRIME, TdarIndexNumberFormatter.format(minx - 360), doc);
