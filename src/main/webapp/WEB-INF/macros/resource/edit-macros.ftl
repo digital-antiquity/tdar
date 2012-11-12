@@ -438,9 +438,11 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <div class="control-group">
         <label class="control-label">Users</label>
         <#list _authorizedUsers as authorizedUser>
+        <div class="controls-row">
             <#if authorizedUser??>
-            	<@userRow person=authorizedUser.user _indexNumber=authorizedUser_index includeRole=false _personPrefix="user" prefix="authorizedUsers" includeRights=true isUser=true includeRepeatRow=true />
+            	<@userRow person=authorizedUser.user _indexNumber=authorizedUser_index includeRole=false _personPrefix="user" prefix="authorizedUsers" includeRights=true isUser=true includeRepeatRow=true includeDelete=true/>
             </#if>
+        </div>
         </#list>
     </div>
 </div>
@@ -1585,9 +1587,7 @@ function fnRenderTitle(oObj) {
 <#local rowIdElement="${prefix}Row_${_indexNumber}_p" />
 <#local idIdElement="${prefix}Id__id_${_indexNumber}_p" />
 <#local requiredClass><#if required>required</#if></#local>
-    <span class="creatorPerson <#if hidden>hidden</#if>"  id="${prefix}Row_${_index}_p">
-    <div id='${rowIdElement}' class="<#if includeRepeatRow>repeat-row</#if> indent-row">
-
+    <div id='${rowIdElement}' class="creatorPerson <#if hidden>hidden</#if> <#if includeRepeatRow>repeat-row</#if> indent-row">
         <@s.hidden name='${strutsPrefix}${personPrefix}.id' value='${(person.id!-1)?c}' id="${idIdElement}"  cssClass="validIdRequired" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"   />
         <div class="control-group">
 	        <div class="controls controls-row">
@@ -1603,7 +1603,7 @@ function fnRenderTitle(oObj) {
 					<#if includeRole>
 				        <@s.select theme="tdar" name="${strutsPrefix}.role"  autocomplete="off" listValue='label' list=relevantPersonRoles  cssClass="creator-role-select span3" />
 				    <#else>
-				        <@s.select theme="tdar" cssClass="span3" name="${strutsPrefix}.generalPermission" emptyOption='false' listValue='label' list='%{availablePermissions}' disabled=bDisabled />
+				        <@s.select theme="tdar" cssClass="span3 creator-role-select" name="${strutsPrefix}.generalPermission" emptyOption='false' listValue='label' list='%{availablePermissions}' disabled=bDisabled />
 				    </#if>
 				<#else>
 	
@@ -1624,7 +1624,6 @@ function fnRenderTitle(oObj) {
           </#if>
   </div>
   </div>
-</span>
 </#macro>
 
 <#macro institutionRow institution _indexNumber=0 prefix="authorizedMembers" required=false includeRole=false _institutionPrefix="" includeDelete=false hidden=false includeRepeatRow=false>
@@ -1635,8 +1634,8 @@ function fnRenderTitle(oObj) {
 <#local strutsPrefix="${prefix}${_index}" />
 <#local rowIdElement="${prefix}Row_${_indexNumber}_i" />
 <#local idIdElement="${prefix}Id__id_${_indexNumber}_i" />
-    <span class="creatorInstitution <#if hidden >hidden</#if>" id="${rowIdElement}">
-    <div id='${prefix}Row_${_index}_' class="<#if includeRepeatRow>repeat-row</#if> indent-row">
+
+    <div id='${rowIdElement}' class="creatorInstitution <#if hidden >hidden</#if> <#if includeRepeatRow>repeat-row</#if> indent-row">
 
         <@s.hidden name='${strutsPrefix}${institutionPrefix}.id' value='${(institution.id!-1)?c}' id="${idIdElement}"  cssClass="validIdRequired" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"  />
             <div class="control-group">
@@ -1655,7 +1654,6 @@ function fnRenderTitle(oObj) {
 	          <@clearDeleteButton id="${prefix}${_index}" />
           </#if>
 	</div>
-	</span>
 </#macro>
 
 
