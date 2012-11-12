@@ -438,11 +438,9 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <div class="control-group">
         <label class="control-label">Users</label>
         <#list _authorizedUsers as authorizedUser>
-        <div class="controls-row">
             <#if authorizedUser??>
             	<@userRow person=authorizedUser.user _indexNumber=authorizedUser_index includeRole=false _personPrefix="user" prefix="authorizedUsers" includeRights=true isUser=true includeRepeatRow=true includeDelete=true/>
             </#if>
-        </div>
         </#list>
     </div>
 </div>

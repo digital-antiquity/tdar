@@ -81,7 +81,7 @@
 					</div>
 				</#if>
 
-				<nav>
+				<nav class="span8 pull-right">
 					<ul>
 						<li><a href="">ABOUT</a></li>
 						<li><a href="">WHY tDAR?</a></li>

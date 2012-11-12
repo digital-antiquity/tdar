@@ -63,16 +63,14 @@
 	margin-left: -40px;
 }
 */
-[class*="span"] {
-//	margin-left: 40px;
+[class*="span"] { //
+	margin-left: 40px;
 }
 
-
-
- .span45 {
+.span45 {
 	width: 420px;
 }
- 
+
 body {
 	color: #1b1a18;
 	font-family: helvetica, arial, sans-serif;
@@ -82,7 +80,7 @@ body {
 	border: 0;
 	border-top: 1px solid #222;
 	border-bottom: none;
-	height: 1px; 
+	height: 1px;
 	float: left; /* weird ff issue w/o */
 	display: block;
 	width: 100%;
@@ -96,7 +94,7 @@ hr.dbl {
 }
 
 .span9 hr {
- 	 /* width: 740px !important; REMOVE to RESET TO BASE bootstrap */ 
+	/* width: 740px !important; REMOVE to RESET TO BASE bootstrap */
 	margin-left: 0 !important;
 }
 
@@ -182,7 +180,6 @@ header input.searchbox,.hero input.searchbox {
 	line-height: inherit;
 }
 
-
 header h1 {
 	margin: 20px 0 0 0;
 	float: left;
@@ -198,6 +195,8 @@ header h1 a {
 
 header nav,header form {
 	float: right;
+	overflow: hidden;
+	height: 100px;
 }
 
 .lt-ie8 header nav {
@@ -326,7 +325,6 @@ header .welcome-drop ul {
 	position: relative;
 }
 
-
 .hero p {
 	margin: 18px 0;
 	width: 552px;
@@ -372,7 +370,6 @@ header .welcome-drop ul {
 	margin-left: 12px;
 	width: 105px;
 }
-
 
 /* Featured item slider */
 .slider {
@@ -531,7 +528,7 @@ header .welcome-drop ul {
 #home .news em {
 	font-size: 30px;
 	font-style: normal;
-	display:block;
+	display: block;
 }
 
 #home .news a.title {
@@ -686,14 +683,14 @@ h2 {
 	font-weight: 700;
 }
 
-.why h1 , .contrib h1 , section h1 {
+.why h1,.contrib h1,section h1 {
 	font-size: 60px;
 	line-height: 64px;
 	margin: 70px 0 0 40px;
 	letter-spacing: -1px;
 }
 
-#titlebar h1, article h1 {
+#titlebar h1,article h1 {
 	font-size: 45px;
 	line-height: 64px;
 	margin: 70px 0 0 0px;
@@ -703,11 +700,10 @@ h2 {
 }
 
 .cols h1 {
-font-size: 30px;
-line-height: 34px;
-margin: -5px 0 0 0 !important;
+	font-size: 30px;
+	line-height: 34px;
+	margin: -5px 0 0 0 !important;
 }
-
 
 .hero h2 {
 	font-size: 60px;
@@ -719,15 +715,15 @@ margin: -5px 0 0 0 !important;
 .cols h2 {
 	font-size: 20px;
 	line-height: 24px;
-	margin: 1em 0 0 0; 
+	margin: 1em 0 0 0;
 }
 
 .cols p {
 	font-family: "ff-tisa-web-pro";
 	font-size: 16px;
 	line-height: 23px;
-	margin: 15px 0 -5px 0; 
-//	float: left;
+	margin: 15px 0 -5px 0; //
+	float: left;
 }
 
 .cols iframe {
@@ -760,14 +756,14 @@ margin: -5px 0 0 0 !important;
 }
 
  */
- 
+
 /*
 jtd notes:
     -float:left no effect on style?
     -width:100 already defined by bootstrap.css
     -margin: conflicts w/ header styles
 */
- 
+
 /* .tableFormat {
 	float: left; 
 	margin: 22px 0 0 0; 
@@ -830,7 +826,8 @@ jtd notes:
 	width: 350px;
 }
 
-aside.dataset,  aside.document, aside.coding_sheet, aside.sensory_data, aside.ontology, aside.project, aside.image {
+aside.dataset,aside.document,aside.coding_sheet,aside.sensory_data,aside.ontology,aside.project,aside.image
+	{
 	padding-top: 250px;
 }
 
@@ -989,8 +986,6 @@ h1 span {
 	margin-left: 100px;
 }
 
-
-
 .contrib h2,.contrib p,.contrib ul {
 	margin: 0;
 	font-family: "soleil", sans-serif;
@@ -1103,12 +1098,9 @@ contrib article h2,.contrib article p,.contrib article ul {
 	margin-left: 520px;
 }
 
-
-
 #titlebar h1,.search h1 {
 	margin: 0;
 	padding: 0;
-	
 }
 
 .search h2,.search h3,.search h4,.search p,.search aside li {
@@ -1124,11 +1116,11 @@ contrib article h2,.contrib article p,.contrib article ul {
 	margin: 45px 0 50px 40px;
 }
 
-
 .search h2.totalRecords {
 	font-size: 20px;
 	line-height: 24px;
-	float: left; /* pagination balances sorting at top FIXME: should be specific, not general */
+	float: left;
+	/* pagination balances sorting at top FIXME: should be specific, not general */
 	margin-top: 7px;
 	margin-bottom: 10px !important;
 }
@@ -1412,16 +1404,16 @@ B.fmCheckbox.checked {
 }
 
 .span12 hr {
-margin-left: 0px !important;
+	margin-left: 0px !important;
 }
 
 #ajaxIndicator {
-    position: fixed;
-    width:25%;
-    z-index: 999;
-    right: 5px;
-    bottom: 5px;
-    opacity: .9;
+	position: fixed;
+	width: 25%;
+	z-index: 999;
+	right: 5px;
+	bottom: 5px;
+	opacity: .9;
 }
 
 .searchbox {

@@ -9,19 +9,6 @@
 <meta name="lastModifiedDate" content="$Date$"/>
 
 
-<script type='text/javascript'>
-try {
-    $(function() {
-        //here we assume that IE reports browser versions as a string, leading w/ major version
-        if($.browser.msie &&  getBrowserMajorVersion() < 8) {
-            $('#message-ie-obsolete').show();
-        }
-    });
-} catch(ex) {
-    console.error("browser check failed");
-}
-</script>
-
 <@edit.resourceDataTableJavascript />
 
 </head>
@@ -36,7 +23,7 @@ try {
 </div>
 
 
-<div id="messages" style="margin:2px">
+<div id="messages" style="margin:2px" "hidden lt-ie8">
     <div id="message-ie-obsolete" class="message-error" style="display:none">
     You appear to be using an older version of Internet Explorer.  Note that certain features in ${siteAcronym} may not work properly.  
     <a href="http://www.microsoft.com/ie">Click here to learn more about Internet Explorer</a>

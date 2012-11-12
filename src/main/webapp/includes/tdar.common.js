@@ -691,14 +691,6 @@ function getBrowserMajorVersion() {
 }
 
 function setupDocumentEditForm() {
-    // wire up document-type selection to dependent fields
-//    $("#showmorecite").hide('slow');
-//    $("#show-more-types").hide();
-//    $("#link-more").click(function() {
-//        $('#showmorecite').show('show');
-//        $('#showCite').hide();
-//        return false;
-//    });
     $(".doctype input[type=radio]").click(function() {switchDocType(this);});
     switchDocType($(".doctype input[type=radio]:checked"));
 }
