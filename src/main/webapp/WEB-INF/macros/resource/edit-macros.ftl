@@ -1618,7 +1618,7 @@ function fnRenderTitle(oObj) {
             name="${strutsPrefix}${personPrefix}.institution.name" maxlength="255" />
         </div>
 	      <#if includeDelete>          
-	          <@clearDeleteButton id="${prefix}${_index}" disabled="${disabled}" />
+	          <@clearDeleteButton id="${prefix}${_index}" disabled=bDisabled />
           </#if>
   </div>
   </div>

@@ -185,12 +185,8 @@ $(document).ready(function() {
 </#macro>
 
 
-<#macro clearDeleteButton id="" disabled="false" title="delete this item from the list">
-<#if disabled="true">
-<button class="btn  btn-mini repeat-row-delete" type="button" tabindex="-1" onclick="TDAR.repeatrow.deleteRow(this)" title="${title}" disabled="disabled"><i class="icon-trash"></i></button>
-<#else>
-<button class="btn  btn-mini repeat-row-delete" type="button" tabindex="-1" onclick="TDAR.repeatrow.deleteRow(this)" title="${title}"><i class="icon-trash"></i></button>
-</#if>
+<#macro clearDeleteButton id="" disabled=false title="delete this item from the list">
+	<button class="btn  btn-mini repeat-row-delete" type="button" tabindex="-1" title="${title}" <#if disabled> disabled="disabled"</#if>><i class="icon-trash"></i></button>
 </#macro>
 
 <#macro getFormUrl absolutePath="/login/process">

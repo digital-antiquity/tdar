@@ -38,6 +38,9 @@ TDAR.repeatrow = function() {
                 $(parentElement).trigger("repeatrowadded", parentElement, $clone[0]);
             });
             $(parentElement).after($button);
+            $(parentElement).delegate(".repeat-row-delete","click", function(e){
+            	TDAR.repeatrow.deleteRow($(this).parents(".repeat-row")[0]);
+            });
         });
     };
 

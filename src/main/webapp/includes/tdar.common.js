@@ -114,20 +114,20 @@ function navigateTempIgnore() {
     }, 2000);
 }
 
-function deleteRow(rowId) {
-    try {
-        if (typeof global_formNavigate != 'undefined') {
-            global_formNavigate = false;
-        }
-    } catch (e) {
-    }
-    if ($(rowId).parent().children().size() > 1) {
-        $(rowId).remove();
-    } else {
-        clearRow(rowId);
-    }
-    return false;
-}
+//function deleteRow(rowId) {
+//    try {
+//        if (typeof global_formNavigate != 'undefined') {
+//            global_formNavigate = false;
+//        }
+//    } catch (e) {
+//    }
+//    if ($(rowId).parent().children().size() > 1) {
+//        $(rowId).remove();
+//    } else {
+//        clearRow(rowId);
+//    }
+//    return false;
+//}
 
 // delete the nearest parent TR of the provided element
 function deleteParentRow(elem) {
