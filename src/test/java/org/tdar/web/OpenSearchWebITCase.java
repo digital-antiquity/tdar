@@ -13,7 +13,7 @@ import org.tdar.core.configuration.TdarConfiguration;
  * 
  * @author Martin Paulo
  */
-public class OpenSearchITCase extends AbstractWebTestCase {
+public class OpenSearchWebITCase extends AbstractWebTestCase {
 
     private static final TdarConfiguration CONFIG = TdarConfiguration.getInstance();
 

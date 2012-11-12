@@ -11,7 +11,7 @@ import static org.junit.Assert.assertEquals;
 import org.apache.commons.httpclient.HttpStatus;
 import org.junit.Test;
 
-public class BrowseITCase extends AbstractAnonymousWebTestCase {
+public class BrowseWebITCase extends AbstractAnonymousWebTestCase {
 
     @Test
     public void testOntologyView() {

@@ -18,7 +18,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.struts.data.FileProxy;
 
 
-public class ThumbnailITCase extends AbstractAdminAuthenticatedWebTestCase {
+public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     public static HashMap<String, String> docValMap = new HashMap<String, String>();
     public static HashMap<String, List<String>> docMultiValMap = new HashMap<String, List<String>>();
@@ -35,7 +35,7 @@ public class ThumbnailITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     public static String REGEX_IMAGE_VIEW = "\\/image\\/\\d+$";
 
-    public ThumbnailITCase() {
+    public ThumbnailWebITCase() {
     }
 
     @Test

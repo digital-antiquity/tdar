@@ -8,7 +8,7 @@ import org.tdar.TestConstants;
 
 import com.gargoylesoftware.htmlunit.util.NameValuePair;
 
-public class UploadITCase extends AbstractAdminAuthenticatedWebTestCase {
+public class UploadITWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     @Test
     public void testSendFile() throws Exception {

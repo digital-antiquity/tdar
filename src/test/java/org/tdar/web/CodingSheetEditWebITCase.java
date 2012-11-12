@@ -7,7 +7,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.configuration.TdarConfiguration;
 
-public class CodingSheetEditITCase extends AbstractAdminAuthenticatedWebTestCase {
+public class CodingSheetEditWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     private static final String PARENT_PROJECT_ID_FIELD = "projectId";
     private static final Long PARENT_PROJECT_ID_VALUE = 3805L;

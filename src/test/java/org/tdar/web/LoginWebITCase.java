@@ -10,7 +10,7 @@ import org.tdar.core.dao.external.auth.AuthenticationResult;
  * @author Adam Brin
  *
  */
-public class LoginITCase extends AbstractAuthenticatedWebTestCase {
+public class LoginWebITCase extends AbstractAuthenticatedWebTestCase {
 	
 	@Test
 	public void testAbstractLogin() {

@@ -20,7 +20,7 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.configuration.TdarConfiguration;
 
-public class EditInheritingSectionsITCase extends AbstractAdminAuthenticatedWebTestCase {
+public class EditInheritingSectionsWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     private static final String INHERITING_CULTURAL_INFORMATION_FIELDNAME = "resource.inheritingCulturalInformation";
     private static final String INHERITING_INVESTIGATION_INFORMATION_FIELDNAME = "resource.inheritingInvestigationInformation";
@@ -30,7 +30,7 @@ public class EditInheritingSectionsITCase extends AbstractAdminAuthenticatedWebT
 
     private Map<String, String> docValMap = new HashMap<String, String>();
 
-    public EditInheritingSectionsITCase() {
+    public EditInheritingSectionsWebITCase() {
         for (String inherit : InformationResource.JSON_PROPERTIES) {
             if (inherit.equals("inheritingCollectionInformation")) {
                 //not on project page

@@ -23,7 +23,7 @@ import org.w3c.dom.Element;
 import com.gargoylesoftware.htmlunit.html.HtmlOption;
 
 
-public class EditITCase extends AbstractAdminAuthenticatedWebTestCase {
+public class EditWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     public static String PROJECT_ID_FIELDNAME = "projectId";
     public static String DOCUMENT_TITLE_FIELDNAME = "document.title";

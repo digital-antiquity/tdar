@@ -6,7 +6,7 @@ import org.junit.Test;
  * @author Adam Brin
  *
  */
-public class AdminLoginITCase extends AbstractAdminAuthenticatedWebTestCase {
+public class AdminLoginWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     @Test
     public void testAdminLogin() {

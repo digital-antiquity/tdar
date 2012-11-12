@@ -30,14 +30,14 @@ import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 
 //@RunWith(MultipleTdarConfigurationRunner.class)
-public class CompleteDocumentITCase extends AbstractAdminAuthenticatedWebTestCase {
+public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     public static HashMap<String, String> docValMap;
     public static HashMap<String, List<String>> docMultiValMap = new HashMap<String, List<String>>();
     public static HashMap<String, List<String>> docMultiValMapLab = new HashMap<String, List<String>>();
 
     public static String REGEX_DOCUMENT_VIEW = "\\/document\\/\\d+$";
 
-    public CompleteDocumentITCase() {
+    public CompleteDocumentWebITCase() {
         docValMap = new HashMap<String, String>();
         // removing inline implementation of HashMap to remove serialization warning
         docValMap.put("projectId", "1");

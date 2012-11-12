@@ -6,7 +6,7 @@ import org.tdar.URLConstants;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 
-public class WorkspaceITCase extends AbstractAuthenticatedWebTestCase {
+public class WorkspaceWebITCase extends AbstractAuthenticatedWebTestCase {
 
     // ensure that a 'deleted item no longer shows up in bookmarks
     @Test

@@ -32,7 +32,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlElement;
  * @author jimdevos
  * 
  */
-public class SearchITCase extends AbstractAdminAuthenticatedWebTestCase {
+public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     private static final String ADVANCED_SEARCH_BASE_URL = "/search/advanced";
     private static final String BASIC_SEARCH_BASE_URL = "/search/basic";

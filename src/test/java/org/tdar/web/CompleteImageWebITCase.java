@@ -25,7 +25,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 
-public class CompleteImageITCase extends AbstractAdminAuthenticatedWebTestCase {
+public class CompleteImageWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     private static final String COPYRIGHT_HOLDER_PERSON_FIRST_NAME = "copyrightHolderProxy.person.firstName";
     private static final String COPYRIGHT_HOLDER_PERSON_LAST_NAME = "copyrightHolderProxy.person.lastName";
@@ -38,7 +38,7 @@ public class CompleteImageITCase extends AbstractAdminAuthenticatedWebTestCase {
     public static final String TEST_IMAGE_NAME = "5127663428_42ef7f4463_b.jpg";
     public static final String TEST_IMAGE = TestConstants.TEST_IMAGE_DIR + TEST_IMAGE_NAME;
 
-    public CompleteImageITCase() {
+    public CompleteImageWebITCase() {
         docValMap.put("projectId", "1");
         docValMap.put("image.title", "My Sample Image");
         docValMap.put("image.description", "A resource description");

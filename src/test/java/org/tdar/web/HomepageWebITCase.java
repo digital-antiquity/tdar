@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.tdar.core.configuration.TdarConfiguration;
 
 
-public class HomepageITCase extends AbstractAnonymousWebTestCase {
+public class HomepageWebITCase extends AbstractAnonymousWebTestCase {
 
 	@Test
 	public void testSuccessfulHomepageLoad() throws Exception {

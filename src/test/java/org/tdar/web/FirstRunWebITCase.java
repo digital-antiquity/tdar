@@ -22,7 +22,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
  * @author Adam Brin
  * 
  */
-public class FirstRunITCase extends AbstractAuthenticatedWebTestCase {
+public class FirstRunWebITCase extends AbstractAuthenticatedWebTestCase {
 
     public static final String TEST_TITLE = "This is a test title";
     public static final String TEST_ABSTRACT = "This is a test abstract";
