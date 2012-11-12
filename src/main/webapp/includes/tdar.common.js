@@ -327,6 +327,14 @@ $.validator.addMethod('integer', function(value, element) {
             || /^-?(?:\d+)$/.test(value);
 }, $.validator.messages.number);
 
+$.validator.addMethod('required-visible', function(value, element) {
+	var $element = $(element);
+	if ($element.is(':hidden')) return true; 
+    return $element.val() != '';
+}, "this element is required");
+
+
+
 // $.validator.addClassRules("radiocarbonDate", {range:[0,100000]});
 // $.validator.addClassRules("julianYear", {range:[-99900, 2100]});
 
