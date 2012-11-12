@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.dao.external.auth.AuthenticationResult;
+import org.tdar.core.service.external.AuthenticationAndAuthorizationService.AuthenticationStatus;
 import org.tdar.struts.WriteableSession;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
@@ -36,6 +36,8 @@ import com.opensymphony.xwork2.validator.annotations.ValidatorType;
 public class LoginController extends AuthenticationAware.Base {
 
     private static final long serialVersionUID = -1219398494032484272L;
+
+    private static final String NEW = "new";
 
     private String loginUsername;
     private String loginPassword;
@@ -61,8 +63,8 @@ public class LoginController extends AuthenticationAware.Base {
 
     @Action(value = "process",
             results = {
-                    @Result(name = "new", type = "redirect", location = "/account/new"),
-                    @Result(name = "return", type = "redirect", location = "${returnUrl}")
+                    @Result(name = NEW, type = "redirect", location = "/account/new"),
+                    @Result(name = REDIRECT, type = "redirect", location = "${returnUrl}")
             })
     @WriteableSession
     public String authenticate() {
@@ -77,56 +79,39 @@ public class LoginController extends AuthenticationAware.Base {
             return INPUT;
         }
 
-        AuthenticationResult result = getAuthenticationAndAuthorizationService().getAuthenticationProvider().authenticate(getServletRequest(),
-                getServletResponse(), loginUsername, loginPassword);
-        if (result.isValid()) {
-            person = getEntityService().findByUsername(loginUsername);
-            if (person == null) {
-                // FIXME: person exists in Crowd but not in tDAR..
-                logger.debug("Person successfully authenticated by authentication service but not present in site database: " + loginUsername);
-                person = new Person();
-                person.setUsername(loginUsername);
-                // how to pass along authentication information..?
-                // username was in Crowd but not in tDAR? Redirect them to the account creation page
-                return "new";
-            }
-
-            // enable us to force group cache to be cleared
-            getAuthenticationAndAuthorizationService().clearPermissionsCache(person);
-
-            // another way to pass a url manually
-            if (!StringUtils.isEmpty(url)) {
-                logger.info("url {} ", url);
-                setReturnUrl(UrlUtils.urlDecode(url));
-            }
-            logger.debug(loginUsername.toUpperCase() + " logged in from " + getServletRequest().getRemoteAddr() + " using: "
-                    + getServletRequest().getHeader("User-Agent"));
-            createAuthenticationToken(person);
-            getEntityService().registerLogin(person);
-            if (getSessionData().getReturnUrl() != null) {
-                setReturnUrl(getSessionData().getReturnUrl());
-                if (getReturnUrl().contains("filestore/")) {
-                    if (getReturnUrl().endsWith("/get")) {
-                        setReturnUrl(getReturnUrl().replace("/get", "/confirm"));
-                        logger.debug(getReturnUrl());
-                    } else if (getReturnUrl().matches("^(.+)filestore/(\\d+)$")) {
-                        setReturnUrl(getReturnUrl() + "/confirm");
-                        logger.debug(getReturnUrl());
-                    }
-                    logger.info(getReturnUrl());
-                }
-
-                logger.debug("Redirecting to return url: " + getReturnUrl());
-                return "return";
-            }
-            getSessionData().setReturnUrl(null);
-            // FIXME: return SUCCESS instead?
-            return AUTHENTICATED;
-        } else {
-            addActionError(result.getMessage());
-            getLogger().debug(String.format("Couldn't authenticate %s - (reason: %s)", loginUsername, result));
-            return INPUT;
+        AuthenticationStatus status = AuthenticationStatus.ERROR;
+        try {
+            status = getAuthenticationAndAuthorizationService().authenticatePerson(loginUsername, loginPassword, getServletRequest(), getServletResponse(),
+                    getSessionData());
+        } catch (Exception e) {
+            addActionError(e.getMessage());
+            return ERROR;
         }
+
+        if (status != AuthenticationStatus.AUTHENTICATED) {
+            return status.name().toLowerCase();
+        }
+
+        if (getSessionData().getReturnUrl() != null || !StringUtils.isEmpty(url)) {
+            logger.info("url {} ", url);
+            setReturnUrl(UrlUtils.urlDecode(url));
+            setReturnUrl(getSessionData().getReturnUrl());
+            if (getReturnUrl().contains("filestore/")) {
+                if (getReturnUrl().endsWith("/get")) {
+                    setReturnUrl(getReturnUrl().replace("/get", "/confirm"));
+                    logger.debug(getReturnUrl());
+                } else if (getReturnUrl().matches("^(.+)filestore/(\\d+)$")) {
+                    setReturnUrl(getReturnUrl() + "/confirm");
+                    logger.debug(getReturnUrl());
+                }
+                logger.info(getReturnUrl());
+            }
+
+            logger.debug("Redirecting to return url: " + getReturnUrl());
+            return REDIRECT;
+        }
+        getSessionData().setReturnUrl(null);
+        return SUCCESS;
     }
 
     public String getLoginUsername() {

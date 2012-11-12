@@ -90,12 +90,6 @@ public interface AuthenticationAware extends SessionDataAware {
             return getSessionData().isAuthenticated();
         }
 
-        protected void createAuthenticationToken(Person person) {
-            AuthenticationToken token = AuthenticationToken.create(person);
-            getEntityService().save(token);
-            getSessionData().setAuthenticationToken(token);
-        }
-
         /**
          * @param <T>
          * @param modifiedResource

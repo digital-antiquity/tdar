@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.WeakHashMap;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -20,6 +23,7 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.InformationResource;
@@ -30,11 +34,13 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.dao.entity.PersonDao;
 import org.tdar.core.dao.external.auth.AuthenticationProvider;
+import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.AbstractConfigurableService;
 import org.tdar.struts.action.search.ReservedSearchParameters;
+import org.tdar.web.SessionData;
 
 @Service
 public class AuthenticationAndAuthorizationService extends AbstractConfigurableService<AuthenticationProvider> implements Accessible {
@@ -64,7 +70,7 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
     public boolean isBillingManager(Person person) {
         return checkAndUpdateCache(person, TdarGroup.TDAR_BILLING_MANAGER);
     }
-    
+
     public boolean isEditor(Person person) {
         return checkAndUpdateCache(person, TdarGroup.TDAR_EDITOR);
     }
@@ -401,9 +407,9 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
             }
 
             if (item instanceof InformationResource) {
-                setTransientViewableStatus((InformationResource)item, authenticatedUser);
+                setTransientViewableStatus((InformationResource) item, authenticatedUser);
             }
-            
+
             if (!viewable && canEdit(authenticatedUser, p)) {
                 viewable = true;
             }
@@ -428,6 +434,48 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
                 irfv.setViewable(viewable);
             }
         }
+    }
+
+    public enum AuthenticationStatus {
+        AUTHENTICATED,
+        ERROR,
+        NEW;
+    }
+
+    public AuthenticationStatus authenticatePerson(String loginUsername, String loginPassword, HttpServletRequest request, HttpServletResponse response,
+            SessionData sessionData) {
+        AuthenticationResult result = getAuthenticationProvider().authenticate(request, response, loginUsername, loginPassword);
+        if (result.isValid()) {
+            Person person = personDao.findByUsername(loginUsername);
+            if (person == null) {
+                // FIXME: person exists in Crowd but not in tDAR..
+                logger.debug("Person successfully authenticated by authentication service but not present in site database: " + loginUsername);
+                person = new Person();
+                person.setUsername(loginUsername);
+                // how to pass along authentication information..?
+                // username was in Crowd but not in tDAR? Redirect them to the account creation page
+                return AuthenticationStatus.NEW;
+            }
+
+            // enable us to force group cache to be cleared
+            clearPermissionsCache(person);
+
+            logger.debug(loginUsername.toUpperCase() + " logged in from " + request.getRemoteAddr() + " using: "
+                    + request.getHeader("User-Agent"));
+            createAuthenticationToken(person, sessionData);
+            personDao.registerLogin(person);
+            return AuthenticationStatus.AUTHENTICATED;
+        } else {
+            logger.debug(String.format("Couldn't authenticate %s - (reason: %s)", loginUsername, result));
+            throw new TdarRecoverableRuntimeException(result.getMessage());
+        }
+        // return AuthenticationStatus.ERROR;
+    }
+
+    public void createAuthenticationToken(Person person, SessionData session) {
+        AuthenticationToken token = AuthenticationToken.create(person);
+        personDao.save(token);
+        session.setAuthenticationToken(token);
     }
 
 }

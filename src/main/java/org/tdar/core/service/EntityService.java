@@ -200,10 +200,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
 
     @Transactional(readOnly = false)
     public void registerLogin(Person authenticatedUser) {
-        authenticatedUser.setLastLogin(new Date());
-        authenticatedUser.incrementLoginCount();
-        logger.trace("login {} {}", authenticatedUser.getLastLogin(), authenticatedUser.getTotalLogins());
-        saveOrUpdate(authenticatedUser);
+        getDao().registerLogin(authenticatedUser);
     }
 
     @Transactional(readOnly = true)

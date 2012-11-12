@@ -21,6 +21,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.external.AuthenticationAndAuthorizationService.AuthenticationStatus;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -151,7 +152,16 @@ public class UserAccountController extends AuthenticationAware.Base implements P
             return INPUT;
         }
         try {
-            reconcilePersonWithTransient(getEntityService().findByUsername(person.getUsername()), ERROR_USERNAME_ALREADY_REGISTERED);
+            Person findByUsername = getEntityService().findByUsername(person.getUsername());
+            // short circut the login process -- if there username and password are registered and valid -- just move on. 
+            if (Persistable.Base.isNotNullOrTransient(findByUsername)) {
+                AuthenticationStatus status = getAuthenticationAndAuthorizationService().authenticatePerson(findByUsername.getUsername(), password, getServletRequest(), getServletResponse(),
+                        getSessionData());
+                if (status == AuthenticationStatus.AUTHENTICATED) {
+                    return SUCCESS;
+                }
+            }
+            reconcilePersonWithTransient(findByUsername, ERROR_USERNAME_ALREADY_REGISTERED);
             reconcilePersonWithTransient(getEntityService().findByEmail(person.getEmail()), ERROR_DUPLICATE_EMAIL);
             person.setRegistered(true);
             Institution institution = getEntityService().findInstitutionByName(institutionName);
@@ -195,7 +205,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
             if (result.isValid()) {
                 getLogger().debug("Authenticated successfully with auth service.");
                 getEntityService().registerLogin(person);
-                createAuthenticationToken(person);
+                getAuthenticationAndAuthorizationService().createAuthenticationToken(person, getSessionData());
                 addActionMessage(SUCCESSFUL_REGISTRATION_MESSAGE);
                 return SUCCESS;
             }
