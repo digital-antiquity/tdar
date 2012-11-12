@@ -669,7 +669,7 @@ header .welcome-drop ul {
 	background-position: 12px -258px;
 }
 
-.cols {
+.cols { //
 	background: url(/images/r4/bg-cols.png) top right repeat-y;
 }
 
@@ -1418,4 +1418,14 @@ B.fmCheckbox.checked {
 
 .searchbox {
 	margin-top: 43px;
+}
+
+.view .sidebar {
+	background: url(/images/r4/bg-cols-right.png) top left repeat-y;
+	margin-left: 0px;
+	padding-left: 0px;
+}
+
+.edit .sidebar {
+	margin-top:80px;
 }

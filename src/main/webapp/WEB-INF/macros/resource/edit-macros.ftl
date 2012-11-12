@@ -1083,7 +1083,7 @@ jquery validation hooks?)
 </#macro>
 
 <#macro sidebar>
-<div id="sidebar-right" parse="true">
+<div id="sidebar-right" parse="true" class="span3">
     <div id="notice">
     <h3>Introduction</h3>
     This is the page for editing metadata associated with ${resource.resourceType.plural}.

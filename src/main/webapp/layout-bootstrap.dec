@@ -12,7 +12,7 @@
 	    <link rel="unapi-server" type="application/xml" title="unAPI" href="<@s.url value='/unapi'/>" />
     	<link rel="search" type="application/opensearchdescription+xml" href='<@s.url value="/includes/opensearch.xml"/>' title="Search ${siteAcronym}" /> 
         <title>${title!siteName}</title>
-        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.0/css/bootstrap-combined.min.css" rel="stylesheet">
+        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href='//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_version}/themes/base/jquery-ui.css'></link> 
 
         <!-- fixme: figure out differences -->
@@ -39,13 +39,9 @@
 
     <@common.globalJavascript />
 
-<!-- fixme -- optimize -->
-    <#-- respond.1.1.0.min.js currently 404.
-	<script src="http://tdar.fervorinteractive.com/js/vendor/modernizr-2.6.1-respond-1.1.0.min.js"></script>
-     -->
 	<script type="text/javascript" src="//use.typekit.net/czp6njc.js"></script>
 	<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
-
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body id="${bodyid}" data-spy="scroll" data-target="#subnavbar" class="results ${actionName}">
 	<div class="container">
@@ -194,7 +190,7 @@
 		</article>
 
 		<#if page.properties["div.sidebar-right"]?has_content>
-			<aside class="span3 <#if actionName=='view' &&  resource?has_content>${resource.resourceType?lower_case}-bg-large tdar-icon</#if>">
+			<aside class="span3 sidebar <#if actionName=='view' &&  resource?has_content>${resource.resourceType?lower_case}-bg-large tdar-icon</#if>">
 		    ${page.properties["div.sidebar-right"]}
 		   </aside>
 		</#if>
@@ -211,9 +207,7 @@
 		<script src="//ajax.aspnetcdn.com/ajax/modernizr/modernizr-2.0.6-development-only.js"></script>
         <script src="//ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"></script>        
         <#--TODO: decide whether it's wise to use a bootstrap CDN.  For now I'm using this for convenience -->
-        <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.0/js/bootstrap.min.js"></script>
-        <#--<script src='http://tdar.fervorinteractive.com/js/plugins.js'></script> -->
-        <#--<script src='http://tdar.fervorinteractive.com/js/main.js'></script> -->
+        <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
         <script src="<@s.url value='/includes/plugins.js' />"></script>
         <script type="text/javascript">
         //functionality for "welcome back, so-and-so!" (pulled from main.js)

@@ -1,6 +1,5 @@
 package org.tdar.struts.action;
 
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -70,15 +69,14 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     private ResourceSpaceUsageStatistic totalResourceAccessStatistic;
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
 
-
     public static String formatTime(long millis) {
         Date dt = new Date(millis);
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
-        //SimpleDateFormat sdf = new SimpleDateFormat("H'h, 'm'm, 's's, 'S'ms'");
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC")); //no offset
+        // SimpleDateFormat sdf = new SimpleDateFormat("H'h, 'm'm, 's's, 'S'ms'");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC")); // no offset
         return sdf.format(dt);
     }
-    
+
     protected P loadFromId(final Long id) {
         return getGenericService().find(getPersistableClass(), id);
     }
@@ -218,8 +216,10 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
                 }
                 actionReturnStatus = save(persistable);
 
-                // should there not be "one" save at all?  I think this should be here
-                getGenericService().saveOrUpdate(persistable);
+                // should there not be "one" save at all? I think this should be here
+                if (shouldSaveResource()) {
+                    getGenericService().saveOrUpdate(persistable);
+                }
                 if (persistable instanceof Indexable) {
                     ((Indexable) persistable).setReadyToIndex(true);
                     getSearchIndexService().index((Indexable) persistable);
@@ -254,7 +254,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         if (isNew && getPersistable() != null) {
             logger.debug("Created Id: {}", getPersistable().getId());
         }
-        logger.debug("EDIT TOOK: {} SAVE TOOK: {} (edit:{}  save:{})", new Object[] {editTime, saveTime, formatTime(editTime), formatTime(saveTime)});
+        logger.debug("EDIT TOOK: {} SAVE TOOK: {} (edit:{}  save:{})", new Object[] { editTime, saveTime, formatTime(editTime), formatTime(saveTime) });
 
         // don't allow SUCCESS response if there are actionErrors, but give the other callbacks leeway in setting their own error message.
         if (CollectionUtils.isNotEmpty(getActionErrors()) && SUCCESS.equals(actionReturnStatus)) {
@@ -708,7 +708,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     public void setDeletionReason(String deletionReason) {
         this.deletionReason = deletionReason;
     }
-
 
     public ResourceSpaceUsageStatistic getUploadedResourceAccessStatistic() {
         return uploadedResourceAccessStatistic;
