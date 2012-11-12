@@ -14,7 +14,7 @@ label.error {display:block;}
 <@s.actionmessage />
 <#if sessionData.returnUrl?? && sessionData.returnUrl.contains("/filestore/") >
 <div class="infoNote">
-<b>Note:</b> Currently users must be logged-in to download materials.  Please login below, or signup for a free user account.
+<b>Note:</b> You must be logged-in to download materials.  Please login below, or signup for a free user account.
 </div>
 </#if>
  <@nav.loginForm />
