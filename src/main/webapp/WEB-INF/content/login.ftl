@@ -24,7 +24,7 @@ vim:sts=2:sw=2:filetype=jsp
 <#if sessionData.returnUrl?? && sessionData.returnUrl.contains("/filestore/") >
 <div class="alert alert-warning">
     <button type="button" class="close" data-dismiss="alert">×</button>
-    <strong>Note:</strong> Currently users must be logged-in to download materials.  Please login below, or signup for a free user account.
+    <strong>Note:</strong>You must be logged-in to download materials.  Please login below, or signup for a free user account.
 </div>
 </#if>
 <h1>Login to ${siteAcronym}</h1>
