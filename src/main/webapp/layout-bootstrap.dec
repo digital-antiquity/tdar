@@ -77,17 +77,17 @@
 					</div>
 				</#if>
 
-				<nav class="span8 pull-right">
+				<nav >
 					<ul>
 						<li><a href="">ABOUT</a></li>
 						<li><a href="">WHY tDAR?</a></li>
 						<li><a href="">USING tDAR</a></li>
-						<li class="button"><a href="<@s.url value="/search/results"/>">BROWSE</a></li>
-						<li class="button"><a href="<@s.url value="/resource/add"/>">UPLOAD</a></li>
+						<li class="button hidden-phone"><a href="<@s.url value="/search/results"/>">BROWSE</a></li>
+						<li class="button hidden-phone"><a href="<@s.url value="/resource/add"/>">UPLOAD</a></li>
 					</ul>
 	
 					<#if bodyid != 'home'>
-						<form name="searchheader" action="<@s.url value="/search/results"/>" class="searchbox">
+						<form name="searchheader" action="<@s.url value="/search/results"/>" class="searchbox hidden-phone hidden-tablet">
 							<input type="text" name="query" placeholder="Search..." />
 						</form>
 					</#if>

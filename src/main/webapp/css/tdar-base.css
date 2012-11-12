@@ -1418,6 +1418,16 @@ B.fmCheckbox.checked {
 
 .searchbox {
 	margin-top: 43px;
+	margin-left: 40px;
+}
+
+header nav {
+	position: absolute !important;
+	right: 0px;
+}
+
+nav ul {
+	padding-right: 10px !important;
 }
 
 .view .sidebar {
@@ -1427,5 +1437,5 @@ B.fmCheckbox.checked {
 }
 
 .edit .sidebar {
-	margin-top:80px;
+	margin-top: 80px;
 }
