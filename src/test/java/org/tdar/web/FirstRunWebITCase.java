@@ -37,7 +37,7 @@ public class FirstRunWebITCase extends AbstractAuthenticatedWebTestCase {
         // assume that you're at /project/list
 //        logger.info(getPageText());
 
-        clickLinkWithText("Contribute");
+        clickLinkWithText("Upload");
         clickLinkWithText(ResourceType.DOCUMENT.getLabel());
         assertTextPresentInPage("Create a new Document");
         setInput("document.title", TEST_TITLE);
@@ -80,7 +80,7 @@ public class FirstRunWebITCase extends AbstractAuthenticatedWebTestCase {
     @Test
     public void confirmCreateCodingSheet() {
         // assume that you're at /project/list
-        clickLinkWithText("Contribute");
+        clickLinkWithText("Upload");
         clickLinkWithText(ResourceType.CODING_SHEET.getLabel());
 
         String codingSheetRules = "1,test,test description\r\n";

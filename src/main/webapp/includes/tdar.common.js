@@ -180,7 +180,7 @@ function setToolTipContents(targetElem) {
     } else {
         console.error("unable to bind tooltip - no tooltip element or tooltipcontent found");
     }
-    var $notice = $("#notice");
+    var $notice = $("#notice:visible");
     if ($notice.length > 0 ) {
 	    var noteOff = $notice.offset();
 	    $notice.offset({

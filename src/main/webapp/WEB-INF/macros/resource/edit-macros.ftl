@@ -353,8 +353,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <div class="well-alt" id="siteSection">
     <h2>${divTitle}</h2>
     <@inheritsection checkboxId='cbInheritingSiteInformation' name='resource.inheritingSiteInformation'  showInherited=showInherited />
-    <div id="divSiteInformation">
     <@helptext.siteName />
+    <div id="divSiteInformation" tooltipcontent="#siteinfohelp">
         <@keywordRows "Site Name" siteNameKeywords 'siteNameKeywords' />
         
         <div class="control-group">
@@ -388,7 +388,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <@helptext.cultureTerms />
     <h2>Cultural Terms</h2>
     <@inheritsection checkboxId="cbInheritingCulturalInformation" name='resource.inheritingCulturalInformation'  showInherited=showInherited />
-    <div id="divCulturalInformation">
+    <div id="divCulturalInformation" tooltipcontent="#culturehelp">
         <div class="control-group">
             <label class="control-label">Culture</label>
             <div class="controls">
@@ -402,6 +402,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </div>
 </#macro>
 
+<#--
 <#macro uncontrolledCultureKeywordRow uncontrolledCultureKeyword_index=0>
             <tr id='uncontrolledCultureKeywordRow_${uncontrolledCultureKeyword_index}_'>
             <td>
@@ -410,7 +411,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             </td>
             </tr>
 </#macro>
-
+-->
 <#macro investigationTypes showInherited=true >
 <div class="well-alt" tiplabel="Investigation Types" tooltipcontent="#investigationtypehelp" id="investigationSection">
     <h2>Investigation Types</h2>
