@@ -120,6 +120,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         resourceCollection.setParent(genericService.find(ResourceCollection.class, parentId));
         controller.setParentId(parentId);
         resourceCollection.setType(type);
+        controller.setAsync(false);
         resourceCollection.setVisible(visible);
         resourceCollection.setDescription(description);
         if (resources != null) {

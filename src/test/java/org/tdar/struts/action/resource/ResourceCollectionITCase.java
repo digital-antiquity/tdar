@@ -693,10 +693,11 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
     @Rollback
     public void testResourceCollectionDraftDisplay() throws Exception
     {
-        InformationResource draftDocument = generateDocumentWithUser();
-        InformationResource activeDocument = generateDocumentWithUser();
+        Document draftDocument = generateDocumentWithUser();
+        Document activeDocument = generateDocumentWithUser();
         draftDocument.setStatus(Status.DRAFT);
         genericService.save(draftDocument);
+        genericService.synchronize();
         ResourceCollection collection = generateResourceCollection("test collection w/Draft", "testing draft...", CollectionType.SHARED, true, null,
                 Arrays.asList(draftDocument, activeDocument), null);
         collection.setOwner(getAdminUser());

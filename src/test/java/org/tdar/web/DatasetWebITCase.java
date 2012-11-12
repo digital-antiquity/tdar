@@ -116,7 +116,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         logger.trace(getPageText());
         submitForm();
         assertCurrentUrlContains("columns");
-        clickLinkWithText("view");
+        gotoPage("/dataset/" + extractTdarIdFromCurrentURL() );
         logger.trace(getPageText());
         for (String key : docValMap.keySet()) {
             // avoid the issue of the fuzzy distances or truncation... use just the
