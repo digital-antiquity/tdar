@@ -20,7 +20,7 @@ public class LoginWebITCase extends AbstractAuthenticatedWebTestCase {
 	@Test
 	public void testSecondLogin() {
 		gotoPage("/login");
-		assertTextPresentInPage("Search");
+		assertTextPresentInPage("Featured Content");
 	}
 
 	

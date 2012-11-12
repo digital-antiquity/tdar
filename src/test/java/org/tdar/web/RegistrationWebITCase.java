@@ -50,7 +50,7 @@ public class RegistrationWebITCase extends AbstractWebTestCase {
         setupBasicUser(personmap,"contributor");
         testLogin(personmap, true);
         assertTextPresent("Create a new project");
-        clickLinkWithText("New");
+        clickLinkWithText("Contribute");
         gotoPage("/account/view?personId=1");
         assertPageTitleEquals("Page not found");
         gotoPage("/logout");

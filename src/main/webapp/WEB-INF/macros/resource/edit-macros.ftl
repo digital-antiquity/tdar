@@ -1601,7 +1601,7 @@ function fnRenderTitle(oObj) {
 					<#if includeRole>
 				        <@s.select theme="tdar" name="${strutsPrefix}.role"  autocomplete="off" listValue='label' list=relevantPersonRoles  cssClass="creator-role-select span3" />
 				    <#else>
-				        <@s.select theme="tdar" cssClass="span3 creator-role-select" name="${strutsPrefix}.generalPermission" emptyOption='false' listValue='label' list='%{availablePermissions}' disabled=bDisabled />
+				        <@s.select theme="tdar" cssClass="span3 creator-rights-select" name="${strutsPrefix}.generalPermission" emptyOption='false' listValue='label' list='%{availablePermissions}' disabled=bDisabled />
 				    </#if>
 				<#else>
 	

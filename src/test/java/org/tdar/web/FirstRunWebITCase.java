@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.tdar.TestConstants;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 
@@ -36,7 +37,8 @@ public class FirstRunWebITCase extends AbstractAuthenticatedWebTestCase {
         // assume that you're at /project/list
 //        logger.info(getPageText());
 
-        clickLinkWithText("New Document");
+        clickLinkWithText("Contribute");
+        clickLinkWithText(ResourceType.DOCUMENT.getLabel());
         assertTextPresentInPage("Create a new Document");
         setInput("document.title", TEST_TITLE);
         setInput("document.description", TEST_ABSTRACT);
@@ -78,7 +80,8 @@ public class FirstRunWebITCase extends AbstractAuthenticatedWebTestCase {
     @Test
     public void confirmCreateCodingSheet() {
         // assume that you're at /project/list
-        clickLinkWithText("New Coding Sheet");
+        clickLinkWithText("Contribute");
+        clickLinkWithText(ResourceType.CODING_SHEET.getLabel());
 
         String codingSheetRules = "1,test,test description\r\n";
         codingSheetRules += "2,test2,\"another description\"";
