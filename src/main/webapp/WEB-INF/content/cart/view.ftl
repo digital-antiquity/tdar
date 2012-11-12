@@ -55,15 +55,22 @@
 <#if invoice.address?has_content && invoice.address.id?has_content>
  <#assign addressId =invoice.address.id />
 </#if>
+<div class="row">
 <#list invoice.person.addresses  as address>
-	<div class="controls-row">
+	<div class="span3">
 	<#assign label = ""/>
 	<#if address.type?has_content>
 	<#assign label = address.type.label>
 	</#if>
-	<@common.printAddress  address=address modifiable=true><input type="radio" name="invoice.address.id" label="${label}" value="${address.id}"  <#if address.id==addressId>checked=checked</#if>/></@common.printAddress>
+	<@common.printAddress  address=address modifiable=true showLabel=false>
+		<label class="radio inline">
+		<input type="radio" name="invoice.address.id" label="${label}" value="${address.id}"  <#if address.id==addressId || !address.id?has_content && address_index==0>checked=checked</#if>/>
+		<b><#if address.type?has_content>${address.type.label!""}</#if></b>
+		</label><br/>
+	</@common.printAddress>
 	</div>
 </#list>
+	</div>
 	<a class="button btn btn-primary submitButton" href="<@s.url value="/entity/person/${invoice.person.id?c}/address" />">Add a new address</a>
 
     <@edit.submit fileReminder=false />

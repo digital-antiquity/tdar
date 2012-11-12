@@ -787,8 +787,8 @@ this bit of freemarker is voodoo:
 </#if>
 </#macro>
 
-<#macro printAddress address=address creatorId=-1 creatorType='person'  modifiable=false deletable=false>
-		<p><#nested><b><#if address.type?has_content>${address.type.label!""}</#if></b><br>
+<#macro printAddress address=address creatorId=-1 creatorType='person'  modifiable=false deletable=false showLabel=true>
+		<p><#nested><#if address.type?has_content && showLabel><b>${address.type.label!""}</b><br></#if>
 		   ${address.street1}<br/>
 		   ${address.street2}<br/>
 		   ${address.city}, ${address.state}, ${address.postal}<br/>

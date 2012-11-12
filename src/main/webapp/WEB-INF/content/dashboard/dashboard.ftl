@@ -23,8 +23,8 @@
 </div>
 
 
-<div id="messages" style="margin:2px" "hidden lt-ie8">
-    <div id="message-ie-obsolete" class="message-error" style="display:none">
+<div id="messages" style="margin:2px" class="hidden lt-ie8">
+    <div id="message-ie-obsolete" class="message-error">
     You appear to be using an older version of Internet Explorer.  Note that certain features in ${siteAcronym} may not work properly.  
     <a href="http://www.microsoft.com/ie">Click here to learn more about Internet Explorer</a>
     </div>

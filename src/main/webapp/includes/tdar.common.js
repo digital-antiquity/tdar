@@ -224,6 +224,14 @@ $.validator.addMethod("reasonableDate",
                     && intVal < 3000));
         }, "a date in the last millenia is expected");
 
+
+$.validator.addMethod("month",
+        function(value, element) {
+            var intVal = parseInt(value);
+            // allow -1 for internal management of things that don't have dates
+            return (intVal == value && (intVal > 0 && intVal < 13));
+        }, "please enter a valid month");
+
 $.validator
         .addMethod(
                 "isbn",
@@ -239,6 +247,13 @@ $.validator.addMethod("issn", function(value, element) {
         return true;// skip validation if not showing
     return value.match(/^((\d{4})-?(\d{3})(\d|X|x)|)$/);
 }, "you must include a valid 8 Digit ISSN");
+
+
+$.validator.addMethod("phoneUS", function(phone_number, element) {
+    phone_number = phone_number.replace(/\s+/g, ""); 
+	return this.optional(element) || phone_number.length > 9 &&
+		phone_number.match(/^(1-?)?(\([2-9]\d{2}\)|[2-9]\d{2})-?[2-9]\d{2}-?\d{4}$/);
+}, "Please specify a valid phone number");
 
 $.validator
         .addMethod(
