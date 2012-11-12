@@ -22,6 +22,7 @@ import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.search.SearchFieldType;
 import org.w3c.dom.Element;
 
+import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.HtmlCheckBoxInput;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 
@@ -41,7 +42,7 @@ public class SearchITCase extends AbstractAdminAuthenticatedWebTestCase {
     SearchIndexService indexService;
 
     private void selectAllResourceTypes() {
-        List<HtmlElement> iter = getHtmlPage().getElementsByName("resourceTypes");
+        List<DomElement> iter = getHtmlPage().getElementsByName("resourceTypes");
         for (int i = 0; i < iter.size(); i++) {
             HtmlCheckBoxInput cb = ((HtmlCheckBoxInput) iter.get(i));
             cb.setChecked(false);
@@ -57,9 +58,9 @@ public class SearchITCase extends AbstractAdminAuthenticatedWebTestCase {
     public void thisTestIsBroken() {
         // search with all input fields unchecked/cleared.
         gotoPage(BASIC_SEARCH_BASE_URL);
-        List<HtmlElement> elements = getHtmlPage().getElementsByName(
+        List<DomElement> elements = getHtmlPage().getElementsByName(
                 "resourceTypes");
-        for (HtmlElement element : elements) {
+        for (DomElement element : elements) {
             HtmlCheckBoxInput checkbox = (HtmlCheckBoxInput) element;
             checkbox.setChecked(false);
         }

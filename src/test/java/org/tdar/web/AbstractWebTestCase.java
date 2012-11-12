@@ -37,6 +37,7 @@ import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.TextPage;
 import com.gargoylesoftware.htmlunit.UnexpectedPage;
 import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlCheckBoxInput;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
@@ -278,11 +279,11 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         updateMainFormIfNull(id);
     }
 
-    private String checkRadioButton(String value, List<HtmlElement> radioButtons) {
+    private String checkRadioButton(String value, List<DomElement> radioButtons) {
         List<HtmlInput> buttonsFound = new ArrayList<HtmlInput>();
-        for (HtmlElement radioButton : radioButtons) {
+        for (DomElement radioButton : radioButtons) {
             if (radioButton.getId().toLowerCase().endsWith(value.toLowerCase())) {
-                buttonsFound.add((HtmlInput)radioButton);
+                buttonsFound.add((HtmlInput) radioButton);
             }
         }
         assertTrue("found more than one candidate radiobutton for value " + value, buttonsFound.size() == 1);
@@ -292,7 +293,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     }
 
     public void createInput(String inputName, String name, String value) {
-        HtmlElement createdElement = ((HtmlPage) internalPage).createElement("input");
+        HtmlElement createdElement = (HtmlElement) ((HtmlPage) internalPage).createElement("input");
         createdElement.setAttribute("type", inputName);
         createdElement.setAttribute("name", name);
         createdElement.setAttribute("value", value);
@@ -327,9 +328,9 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     public boolean removeElementsByName(String elementName) {
         if (htmlPage == null)
             return false;
-        List<HtmlElement> elements = htmlPage.getElementsByName(elementName);
+        List<DomElement> elements = htmlPage.getElementsByName(elementName);
         int count = 0;
-        for (HtmlElement element : elements) {
+        for (DomElement element : elements) {
             element.remove();
             count++;
         }
@@ -337,8 +338,8 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     }
 
     public boolean checkInput(String name, String val) {
-        List<HtmlElement> els = getHtmlPage().getElementsByName(name);
-        for (HtmlElement el : els) {
+        List<DomElement> els = getHtmlPage().getElementsByName(name);
+        for (DomElement el : els) {
             logger.trace(String.format("checkinput[%s --> %s] %s", name, val, el.asXml()));
             if (el instanceof HtmlTextArea && ((HtmlTextArea) el).getText().equals(val)) {
                 return true;
@@ -371,7 +372,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     public void setInput(String name, String... values) {
         HtmlPage page = (HtmlPage) internalPage;
         String id = null;
-        for (HtmlElement input : page.getElementsByName(name)) {
+        for (DomElement input : page.getElementsByName(name)) {
             if (input instanceof HtmlCheckBoxInput) {
                 HtmlCheckBoxInput chk = (HtmlCheckBoxInput) input;
                 for (String val : values) {
@@ -388,7 +389,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
     public void assertButtonPresentWithText(String buttonText) {
         HtmlElement input = getButtonWithName(buttonText);
-        assertNotNull(String.format("button with text [%s] not found in form [%s]", buttonText,getForm() ), input);
+        assertNotNull(String.format("button with text [%s] not found in form [%s]", buttonText, getForm()), input);
         assertTrue(input.getAttribute("type").equalsIgnoreCase("submit"));
     }
 
@@ -421,19 +422,21 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             HtmlElement buttonByName = getButtonWithName(buttonText);
             changePage(buttonByName.click());
         } catch (IOException iox) {
-            logger.error("exception while trying to submit from via button labeled "+ buttonText, iox );
+            logger.error("exception while trying to submit from via button labeled " + buttonText, iox);
         }
     }
 
     private HtmlElement getButtonWithName(String buttonText) {
-        //get all the likely suspects we consider to be a "button" and return the best match
+        // get all the likely suspects we consider to be a "button" and return the best match
         logger.trace("get button by name, form {}", _internalForm);
         List<HtmlElement> elements = new ArrayList<HtmlElement>();
         elements.addAll(getForm().getButtonsByName(buttonText));
         elements.addAll(getForm().getInputsByValue(buttonText));
-        elements.addAll(getHtmlPage().getElementsByName(buttonText));
-        
-        if(elements.isEmpty()) {
+        for (DomElement el : getHtmlPage().getElementsByName(buttonText)) {
+            elements.add((HtmlElement) el);
+        }
+
+        if (elements.isEmpty()) {
             logger.error("could not find button or element with name or value '{}'", buttonText);
             return null;
         } else {
@@ -700,8 +703,8 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         if (_internalForm != null || StringUtils.isBlank(id))
             return;
         for (HtmlForm form : getHtmlPage().getForms()) {
-            if (form.getFirstByXPath("descendant-or-self::*[contains(@id,'"+id+"')]")  != null) {
-                logger.info("updating main for for id: " + id + " to form: " +form);
+            if (form.getFirstByXPath("descendant-or-self::*[contains(@id,'" + id + "')]") != null) {
+                logger.info("updating main for for id: " + id + " to form: " + form);
                 setMainForm(form);
                 return;
             }
