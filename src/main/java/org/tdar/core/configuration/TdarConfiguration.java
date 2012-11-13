@@ -486,5 +486,9 @@ public class TdarConfiguration {
     public boolean isHttpsEnabled() {
         return assistant.getBooleanProperty("https.enabled", false);
     }
+
+    public String getNelnetOrderType() {
+        return assistant.getStringProperty("nelnet.order.type");
+    }
     
 }

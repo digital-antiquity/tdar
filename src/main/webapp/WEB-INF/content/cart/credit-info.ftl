@@ -26,14 +26,6 @@
 		<@s.textarea name="invoice.otherReason" cssClass="input-xlarge" label="Other Reason" />
 	</div>
 	
-	
-	<div class="credit_card typeToggle">
-		<@s.textfield name="creditCardNumber" cssClass="creditcard required-visible input-xlarge" label="Credit Cart #" />
-		<@s.textfield name="verificationNumber" cssClass="ccverify input-xlarge required-visible " label="Verification #" />
-		<@s.textfield name="expirationYear" cssClass="currentyearorlater required-visible input-xlarge" label="Expiration Year" />
-		<@s.textfield name="expirationMonth" cssClass="month required-visible input-xlarge" label="Expiration Month" />
-	</div>	
-
     <@edit.submit fileReminder=false />
 </@s.form>
 

@@ -53,8 +53,6 @@ public class Invoice extends Base implements Updatable {
     private TransactionType transactionType;
 
     private Integer billingPhone;
-    private transient Long creditCardNumber;
-    private transient Integer verificationNumber;
     private Integer expirationYear;
     private Integer expirationMonth;
     private String creditCardType;
@@ -239,22 +237,6 @@ public class Invoice extends Base implements Updatable {
 
     public void setTransactionStatus(TransactionStatus transactionStatus) {
         this.transactionStatus = transactionStatus;
-    }
-
-    public Long getCreditCardNumber() {
-        return creditCardNumber;
-    }
-
-    public void setCreditCardNumber(Long creditCardNumber) {
-        this.creditCardNumber = creditCardNumber;
-    }
-
-    public Integer getVerificationNumber() {
-        return verificationNumber;
-    }
-
-    public void setVerificationNumber(Integer verificationNumber) {
-        this.verificationNumber = verificationNumber;
     }
 
     public Integer getExpirationYear() {
