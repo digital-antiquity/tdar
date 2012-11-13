@@ -111,7 +111,7 @@ public class LoginController extends AuthenticationAware.Base {
             return REDIRECT;
         }
         getSessionData().setReturnUrl(null);
-        return SUCCESS;
+        return AUTHENTICATED;
     }
 
     public String getLoginUsername() {

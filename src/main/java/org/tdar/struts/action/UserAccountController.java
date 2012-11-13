@@ -155,10 +155,14 @@ public class UserAccountController extends AuthenticationAware.Base implements P
             Person findByUsername = getEntityService().findByUsername(person.getUsername());
             // short circut the login process -- if there username and password are registered and valid -- just move on. 
             if (Persistable.Base.isNotNullOrTransient(findByUsername)) {
+                try {
                 AuthenticationStatus status = getAuthenticationAndAuthorizationService().authenticatePerson(findByUsername.getUsername(), password, getServletRequest(), getServletResponse(),
                         getSessionData());
                 if (status == AuthenticationStatus.AUTHENTICATED) {
                     return SUCCESS;
+                }
+                } catch (Exception e) {
+                    logger.warn("could not authenticate" ,e);
                 }
             }
             reconcilePersonWithTransient(findByUsername, ERROR_USERNAME_ALREADY_REGISTERED);
