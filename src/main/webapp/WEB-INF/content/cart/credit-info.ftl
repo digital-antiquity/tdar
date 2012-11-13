@@ -29,8 +29,8 @@
 	
 	<div class="credit_card typeToggle">
 		<@s.textfield name="creditCardNumber" cssClass="creditcard required-visible input-xlarge" label="Credit Cart #" />
-		<@s.textfield name="verificationNumber" cssClass="input-xlarge required-visible " label="Verification #" />
-		<@s.textfield name="expirationYear" cssClass="reasonableDate required-visible input-xlarge" label="Expiration Year" />
+		<@s.textfield name="verificationNumber" cssClass="ccverify input-xlarge required-visible " label="Verification #" />
+		<@s.textfield name="expirationYear" cssClass="currentyearorlater required-visible input-xlarge" label="Expiration Year" />
 		<@s.textfield name="expirationMonth" cssClass="month required-visible input-xlarge" label="Expiration Month" />
 	</div>	
 
@@ -42,13 +42,13 @@
 <script>
 $(document).ready(function() {
     'use strict';
+    TDAR.common.initEditPage($('#MetadataForm')[0]);
     $(".transactionType[type=radio]").click(function() {switchType(this,'#MetadataForm');});
-    switchType($(".transactionType[type=radio]:checked",'#MetadataForm'));
    if (!$(".transactionType[type=radio]:checked").length) {
 	$($(".transactionType[type=radio]")[0]).click();
    }
+    switchType($(".transactionType[type=radio]:checked",'#MetadataForm'));
 
-    TDAR.common.initEditPage($('#MetadataForm')[0]);
 
 });
 

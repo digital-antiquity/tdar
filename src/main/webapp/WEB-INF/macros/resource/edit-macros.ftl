@@ -371,7 +371,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 
 <#macro materialTypes showInherited=true>
-<div class="well-alt">
+<div class="well-alt" tooltipcontent="#materialtypehelp">
 <@helptext.materialType />
     <h2>Material Types</h2>
     <@inheritsection checkboxId='cbInheritingMaterialInformation' name='resource.inheritingMaterialInformation'  showInherited=showInherited />
@@ -1563,7 +1563,7 @@ function fnRenderTitle(oObj) {
         <label class="control-label">Users</label>
         <#list _authorizedUsers as user>
             <#if user??>
-                <@userRow user user_index isUser=true />
+                <@userRow person=user _indexNumber=user_index isUser=true includeRepeatRow=true includeDelete=true/>
             </#if>
         </#list>
     </div>

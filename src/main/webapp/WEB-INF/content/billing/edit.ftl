@@ -11,6 +11,9 @@
 <h1>Billing Account</h1>
 
 <div>
+<div class="well">
+Note: you may have multiple accounts to simplify billing and allow different people to charge to different accounts within an organization.
+</div>
 <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='save'>
 
 	<@s.textfield name="account.name" cssClass="input-xlarge" label="Account Name"/>

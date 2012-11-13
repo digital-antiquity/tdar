@@ -31,13 +31,18 @@
 		<td>${act.numberOfHours}</td>
 		<td>${act.price} ${act.currency!"USD"}</td>
 		<td>
-			<@s.hidden name="invoice.items[${act_index}].activity.id" value="${act.id}" />
+			<@s.hidden name="invoice.items[${act_index}].activity.id" value="${act.id?c}" />
 			<@s.textfield name="invoice.items[${act_index}].quantity" cssClass="integer" />
 		</td>
 	</tr> 
 	
 	</#list>
 	</table>
+	<#if invoice.address?has_content>
+	<@s.hidden name="invoice.addresss.id" value="${invoice.address.id?c}" />
+	</#if>
+	<@s.hidden name="id" value="${invoice.id?c!-1}" />
+	<@s.hidden name="invoice.id" />
     <@edit.submit fileReminder=false />
 </@s.form>
 

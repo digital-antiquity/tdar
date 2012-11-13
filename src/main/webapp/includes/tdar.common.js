@@ -224,6 +224,14 @@ $.validator.addMethod("reasonableDate",
                     && intVal < 3000));
         }, "a date in the last millenia is expected");
 
+$.validator.addMethod("currentyearorlater",
+        function(value, element) {
+            var intVal = parseInt(value);
+            // allow -1 for internal management of things that don't have dates
+            return (intVal == value && (intVal >= 1900 + (new Date()).getYear()
+                    && intVal < 2050));
+        }, "a date in the last millenia is expected");
+
 
 $.validator.addMethod("month",
         function(value, element) {
@@ -252,8 +260,14 @@ $.validator.addMethod("issn", function(value, element) {
 $.validator.addMethod("phoneUS", function(phone_number, element) {
     phone_number = phone_number.replace(/\s+/g, ""); 
 	return this.optional(element) || phone_number.length > 9 &&
-		phone_number.match(/^(1-?)?(\([2-9]\d{2}\)|[2-9]\d{2})-?[2-9]\d{2}-?\d{4}$/);
+		phone_number.match(/^(1-?)?(\([2-9]\d{2}\)|[2-9]\d{2})(\s?-?)+[2-9]\d{2}(-?\s?)+\d{4}$/);
 }, "Please specify a valid phone number");
+
+
+$.validator.addMethod("ccverify", function(ccverify, element) {
+    ccverify = ccverify.replace(/\s+/g, ""); 
+	return this.optional(element) || ccverify.match(/^\d{3,4}$/);
+}, "Please specify a valid verification number");
 
 $.validator
         .addMethod(

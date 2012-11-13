@@ -33,18 +33,19 @@
 </table>
 <div class="container row">
 <#if invoice.address?has_content>
-<div class="span3">
-	<h3>Billing Address <#if invoice.modifiable><a href="<@s.url value="/cart/${invoice.id?c}/address" />" class="small">(modify)</a></#if></h3>
-	<@common.printAddress invoice.address/>
-</div>
-	<#if invoice.transactionType?has_content>
-<div class="span3">
-	<h3>Transaction Info</h3>
-	<b>Transaction Type: </b>${invoice.transactionType}<br/>
-	<b>Transaction Status: </b>${invoice.transactionStatus}<br/>
+	<div class="span3">
+		<h3>Billing Address <#if invoice.modifiable><a href="<@s.url value="/cart/${invoice.id?c}/address" />" class="small">(modify)</a></#if></h3>
+		<@common.printAddress invoice.address/>
+	</div>
 
-</div>
+	<#if invoice.transactionType?has_content>
+	<div class="span3">
+		<h3>Transaction Info</h3>
+		<b>Transaction Type: </b>${invoice.transactionType}<br/>
+		<b>Transaction Status: </b>${invoice.transactionStatus}<br/>
+	</div>	
 <#else>
+</div>
 	<a class="button btn btn-primary submitButton" href="<@s.url value="/cart/${id?c}/credit" />">Pay</a>
 </#if>
 
