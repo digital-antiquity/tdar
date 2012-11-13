@@ -181,7 +181,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         </div>
         <@helptext.geo />
         <h4>Geographic Region</h4>
-        <div id='editmapv3' class="tdar-map-large googlemap"
+        <div id='editmapv3' class="tdar-map-large google-map"
             tiplabel="Geographic Coordinates"
             tooltipcontent="#geoHelpDiv"
             ></div>
