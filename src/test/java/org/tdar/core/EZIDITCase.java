@@ -7,7 +7,6 @@
 package org.tdar.core;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -20,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.pid.EZIDDao;
-import org.tdar.core.dao.external.pid.ExternalIDProvider;
 import org.tdar.core.service.UrlService;
 import org.tdar.struts.action.search.AbstractSearchControllerITCase;
 
@@ -29,8 +27,8 @@ import org.tdar.struts.action.search.AbstractSearchControllerITCase;
  * 
  */
 public class EZIDITCase extends AbstractSearchControllerITCase {
-    public static final String EZID_URL = "https://n2t.net/ezid";
-    public static final String SHOULDER = "doi:10.5072/FK2";
+//    public static final String EZID_URL = "https://n2t.net/ezid";
+//    public static final String SHOULDER = "doi:10.5072/FK2";
 
     public static final String TEST_USER = "apitest";
     public static final String TEST_PASSWORD = "apitest";

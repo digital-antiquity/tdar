@@ -49,6 +49,7 @@ public class EZIDDao implements ExternalIDProvider {
 
     // DOCUMENTATION: http://n2t.net/ezid/doc/apidoc.html#operation-get-identifier-metadata
 
+    private static final String DATACITE_UNAV = "(:unav)";
     private static final String DOI_PROVIDER_PASSWORD = "doi.provider.password";
     private static final String DOI_PROVIDER_USERNAME = "doi.provider.username";
     private static final String DOI_PROVIDER_HOSTNAME = "doi.provider.hostname";
@@ -68,6 +69,7 @@ public class EZIDDao implements ExternalIDProvider {
     public static final String DOI_ARK_CREATION_REGEX = "\\s((\\w+)\\:(?:[^\\s]+))";
     public static final String _SHADOWED_BY = "_shadowedby";
     public static final String _STATUS = "_status";
+    public static final String _EXPORT = "_export";
     public static final String _STATUS_UNAVAILABLE = "unavailable";
     private static final String _STATUS_AVAILABLE = "public";
     public final Logger logger = LoggerFactory.getLogger(getClass());
@@ -263,8 +265,8 @@ public class EZIDDao implements ExternalIDProvider {
         String status = _STATUS_AVAILABLE;
 
         if (r.getStatus() == Status.ACTIVE) {
-            buildAnvlLine(responseBuilder, DATACITE_CREATOR, aNVLEscape(StringUtils.join(doc.getCreator(), "; ")));
-            buildAnvlLine(responseBuilder, DATACITE_TITLE, aNVLEscape(r.getTitle()));
+            buildAnvlLine(responseBuilder, DATACITE_CREATOR, aNVLEscape(StringUtils.join(doc.getCreator(), "; ")), DATACITE_UNAV);
+            buildAnvlLine(responseBuilder, DATACITE_TITLE, aNVLEscape(r.getTitle()), DATACITE_UNAV);
 
             String resourceType = r.getResourceType().toDcmiTypeString();
             // as PER API-DOC, http://n2t.net/ezid/doc/apidoc.html , a subset of these do not exactly MATCH DCMI TYPES?
@@ -279,8 +281,8 @@ public class EZIDDao implements ExternalIDProvider {
 
             buildAnvlLine(responseBuilder, DATACITE_RESOURCE_TYPE, aNVLEscape(resourceType));
             if (r instanceof InformationResource) {
-                buildAnvlLine(responseBuilder, DATACITE_PUBLISHER, aNVLEscape(((InformationResource) r).getPublisherName()));
-                buildAnvlLine(responseBuilder, DATACITE_PUBLICATIONYEAR, (((InformationResource) r).getDate()).toString());
+                buildAnvlLine(responseBuilder, DATACITE_PUBLISHER, aNVLEscape(((InformationResource) r).getPublisherName()), DATACITE_UNAV);
+                buildAnvlLine(responseBuilder, DATACITE_PUBLICATIONYEAR, (((InformationResource) r).getDate()).toString(), DATACITE_UNAV);
             }
         }
 
@@ -295,9 +297,18 @@ public class EZIDDao implements ExternalIDProvider {
         }
 
         buildAnvlLine(responseBuilder, _STATUS, status);
+        buildAnvlLine(responseBuilder, _EXPORT, "no");
         buildAnvlLine(responseBuilder, _TARGET, url);
         buildAnvlLine(responseBuilder, _PROFILE, DATACITE_PROFILE_NAME);
         return responseBuilder.toString();
+    }
+
+    public StringBuilder buildAnvlLine(StringBuilder sb, String key, String val_, String fallback) {
+        String val = val_;
+        if (StringUtils.isBlank(val) && StringUtils.isNotBlank(fallback)) {
+            val = fallback;
+        }
+        return buildAnvlLine(sb, key, val);
     }
 
     public StringBuilder buildAnvlLine(StringBuilder sb, String key, String val) {
