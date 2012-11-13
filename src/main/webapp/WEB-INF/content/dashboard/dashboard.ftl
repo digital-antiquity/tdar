@@ -35,7 +35,8 @@
 <div class="span9">
 Welcome back, ${authenticatedUser.firstName}! 
 <#if contributor>
- The resources you can access are listed below.  To create a <a href="<@s.url value="/resource/add"/>">new resource</a> or <a href="<@s.url value="/project/add"/>">project</a>, or <a href="<@s.url value="/collection/add"/>">collection</a>, use the "new" menu above.
+ The resources you can access are listed below.  To create a <a href="<@s.url value="/resource/add"/>">new resource</a> or 
+ <a href="<@s.url value="/project/add"/>">project</a>, or <a href="<@s.url value="/collection/add"/>">collection</a>, click on  the "upload" button above.
 </#if>
 <br/>
 </div>
