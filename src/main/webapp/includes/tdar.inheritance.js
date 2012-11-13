@@ -246,16 +246,16 @@ function inheritingDatesIsSafe(rootElementSelector, temporalInformation) {
 function inheritInformation(formId, json, sectionId, tableId) {
     console.debug("inheritInformation(formId:%s, json:%s, sectionId:%s, tableId:%s)", formId, json, sectionId, tableId);
     clearFormSection(sectionId);
-    if (tableId != undefined) {
-        if (document.getElementById("uncontrolled" + tableId + "Repeatable") != undefined) {
+    if (tableId !== undefined) {
+        if (document.getElementById("uncontrolled" + tableId + "Repeatable") !== null) {
             TDAR.inheritance.resetRepeatable("#" + 'uncontrolled' + tableId + 'Repeatable', json['uncontrolled' + tableId].length);
         }
-        if (document.getElementById("approved" + tableId + "Repeatable") != undefined) {
+        if (document.getElementById("approved" + tableId + "Repeatable") !== null) {
             TDAR.inheritance.resetRepeatable("#" + 'approved' + tableId + 'Repeatable', json['approved' + tableId].length);
         }
         var simpleId = tableId;
         simpleId[0] = simpleId[0].toLowerCase();
-        if (document.getElementById(simpleId + "Repeatable") != undefined) {
+        if (document.getElementById(simpleId + "Repeatable") !== null) {
             TDAR.inheritance.resetRepeatable("#" + simpleId + 'Repeatable', json[simpleId].length);
         }
     }
@@ -272,6 +272,16 @@ function inheritSiteInformation(formId, json) {
     populateSection(formId, json.siteInformation);
     disableSection('#divSiteInformation');
 }
+
+function inheritCulturalInformation(formId, json) {
+    //                inheritInformation(formId, json.culturalInformation, "#divCulturalInformation", "CultureKeywords");
+
+    clearFormSection('#divCulturalInformation');
+    TDAR.inheritance.resetRepeatable('#uncontrolledCultureKeywordsRepeatable', json.culturalInformation['uncontrolledCultureKeywords'].length);
+    populateSection(formId, json.culturalInformation);
+    disableSection('#divCulturalInformation');
+}
+
 
 function inheritIdentifierInformation(formId, json) {
     clearFormSection('#divIdentifiers');
@@ -320,7 +330,7 @@ function applyInheritance(project, formSelector) {
     var $form = $(formSelector);
     //collection of 'options' objects for each inheritance section. options contain info about 
     //the a section (checkbox selector, div selector,  callbacks for isSafe, inheritSection, enableSection);
-    $form.data("inheritOptionsList", [])
+    $form.data("inheritOptionsList", []);
     
     //hack:  formId is no longer global, and updateInheritableSections() needs it...
     var formId = $(formSelector).attr("id");
@@ -337,9 +347,7 @@ function applyInheritance(project, formSelector) {
     $('#projectId').change(function(e) {
         var sel = this;
         
-//        console.log('project changed. new value:' + $(sel).val());
-        if ($(sel).val() != '' && $(sel).val() > 0) {
-//            console.log('about to make ajax call for project info');
+        if ($(sel).val() !== '' && $(sel).val() > 0) {
             $.ajax({
                 url : getBaseURI() + "project/json",
                 dataType : "jsonp",
@@ -383,7 +391,7 @@ function projectChangedCallback(data) {
     // if user picked blank option, then clear the sections
     if (!project.id) {
         project = getBlankProject();
-    } else  if (project.resourceType == 'INDEPENDENT_RESOURCES_PROJECT') {
+    } else  if (project.resourceType === 'INDEPENDENT_RESOURCES_PROJECT') {
         project = getBlankProject();
     } 
 
@@ -435,7 +443,7 @@ function processInheritance(formId) {
                         && inheritingRepeatRowsIsSafe('#divCulturalInformation', json.culturalInformation.uncontrolledCultureKeywords);
             },
             inheritSectionCallback : function() {
-                inheritInformation(formId, json.culturalInformation, "#divCulturalInformation", "CultureKeywords");
+                inheritCulturalInformation(formId, json);
             }
         },
         {
@@ -546,7 +554,7 @@ function processInheritance(formId) {
                 enableSection('#divSpatialInformation');
                 enableMap();
             }
-        },
+        }
         
     ];
     
