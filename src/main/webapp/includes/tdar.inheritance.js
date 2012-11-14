@@ -5,9 +5,10 @@
  */
 var indexExclusions = [ 'investigationTypeIds', 'approvedSiteTypeKeywordIds', 'materialKeywordIds', 'approvedCultureKeywordIds' ];
 
-function populateSection(elem, formdata) {
 
-    $(elem).populate(formdata, {
+function populateSection(elemSelector, formdata) {
+
+    $(elemSelector).populate(formdata, {
         resetForm : false,
         phpNaming : false,
         phpIndices : true,
@@ -244,7 +245,7 @@ function inheritingDatesIsSafe(rootElementSelector, temporalInformation) {
 
 
 function inheritInformation(formId, json, sectionId, tableId) {
-    console.debug("inheritInformation(formId:%s, json:%s, sectionId:%s, tableId:%s)", formId, json, sectionId, tableId);
+    //console.debug("inheritInformation(formId:%s, json:%s, sectionId:%s, tableId:%s)", formId, json, sectionId, tableId);
     clearFormSection(sectionId);
     if (tableId !== undefined) {
         if (document.getElementById("uncontrolled" + tableId + "Repeatable") !== null) {
@@ -408,7 +409,7 @@ function processInheritance(formId) {
             //todo:  derive section name from section header
             sectionName: "Site Information",  
             cbSelector : '#cbInheritingSiteInformation',
-            divSelector : '#divSiteInformation',
+            divSelector : '#siteSection',
             mappedData : "siteInformation", // curently not used (fixme: implement tdar.common.getObjValue)
             isSafeCallback : function() {
                 var allKeywords = json.siteInformation.siteNameKeywords.concat(json.siteInformation.uncontrolledSiteTypeKeywords);
@@ -417,20 +418,20 @@ function processInheritance(formId) {
     
             },
             inheritSectionCallback : function() {
-                inheritSiteInformation(formId, json);
+                inheritSiteInformation("#siteSection", json);
             }
         },
         {
             sectionName: "Temporal Coverage",
             cbSelector : '#cbInheritingTemporalInformation',
-            divSelector : '#divTemporalInformation',
+            divSelector : '#temporalSection',
             mappedData : "temporalInformation", // curently not used (fixme: implement tdar.common.getObjValue)
             isSafeCallback : function() {
                 return inheritingRepeatRowsIsSafe('#temporalKeywordsRepeatable', json.temporalInformation.temporalKeywords)
                         && inheritingDatesIsSafe('#divTemporalInformation', json.temporalInformation);
             },
             inheritSectionCallback : function() {
-                inheritTemporalInformation(formId, json);
+                inheritTemporalInformation("#temporalSection", json);
             }
         },
         {
@@ -443,7 +444,7 @@ function processInheritance(formId) {
                         && inheritingRepeatRowsIsSafe('#divCulturalInformation', json.culturalInformation.uncontrolledCultureKeywords);
             },
             inheritSectionCallback : function() {
-                inheritCulturalInformation(formId, json);
+                inheritCulturalInformation('#divCulturalInformation', json);
             }
         },
         {
@@ -455,7 +456,7 @@ function processInheritance(formId) {
                 return inheritingRepeatRowsIsSafe('#divOtherInformation', json.otherInformation.otherKeywords);
             },
             inheritSectionCallback : function() {
-                inheritInformation(formId, json.otherInformation, "#divOtherInformation", "otherKeywords");
+                inheritInformation('#divOtherInformation', json.otherInformation, "#divOtherInformation", "otherKeywords");
             }
         },
         {
@@ -467,7 +468,7 @@ function processInheritance(formId) {
                 return inheritingCheckboxesIsSafe('#divInvestigationInformation', json.investigationInformation.investigationTypeIds);
             },
             inheritSectionCallback : function() {
-                inheritInformation(formId, json.investigationInformation, '#divInvestigationInformation');
+                inheritInformation('#divInvestigationInformation', json.investigationInformation, '#divInvestigationInformation');
             }
         },
         {
@@ -479,7 +480,7 @@ function processInheritance(formId) {
                 return inheritingCheckboxesIsSafe('#divMaterialInformation', json.materialInformation.materialKeywordIds);
             },
             inheritSectionCallback : function() {
-                inheritInformation(formId, json.materialInformation, '#divMaterialInformation');
+                inheritInformation('#divMaterialInformation', json.materialInformation, '#divMaterialInformation');
             }
         },
         {
@@ -491,7 +492,7 @@ function processInheritance(formId) {
                 return inheritingRepeatRowsIsSafe('#resourceNoteSection', json.noteInformation);
             },
             inheritSectionCallback : function() {
-                inheritNoteInformation(formId, json);
+                inheritNoteInformation('#resourceNoteSection', json);
             }
         },
         {
@@ -515,7 +516,7 @@ function processInheritance(formId) {
                 return existingVals.length === 0 || $.compareArray(existingVals, incomingVals);
             },
             inheritSectionCallback : function() {
-                inheritCollectionInformation(formId, json);
+                inheritCollectionInformation('#relatedCollectionsSection', json);
             }
         },
         {
@@ -535,7 +536,7 @@ function processInheritance(formId) {
                 return inheritingRepeatRowsIsSafe('#divIdentifiers', vals);
             },
             inheritSectionCallback : function() {
-                inheritIdentifierInformation(formId, json);
+                inheritIdentifierInformation('#divIdentifiers', json);
             }
         },
         {
@@ -548,7 +549,7 @@ function processInheritance(formId) {
                 && inheritingRepeatRowsIsSafe('#geographicKeywordsRepeatable', json.spatialInformation.geographicKeywords);
             },
             inheritSectionCallback : function() {
-                inheritSpatialInformation(formId, json);
+                inheritSpatialInformation("#divSpatialInformation", json);
             },
             enableSectionCallback: function() {
                 enableSection('#divSpatialInformation');

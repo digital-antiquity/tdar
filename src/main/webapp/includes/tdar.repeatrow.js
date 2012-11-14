@@ -36,12 +36,17 @@ TDAR.repeatrow = function() {
                 var element = $(_options.rowSelector, parentElement).last();
                 var $clone = _cloneSection(element, parentElement);
                 $(parentElement).trigger("repeatrowadded", parentElement, $clone[0]);
+
+                // set focus on the first input field (or designate w/ repeatrow-focus class).
+                $("input[type=text], textarea, .repeatrow-focus", $clone).filter(":visible:first").focus();
+                
             });
             $(parentElement).after($button);
             $(parentElement).delegate(".repeat-row-delete","click", function(e){
             	TDAR.repeatrow.deleteRow($(this).parents(".repeat-row")[0]);
             });
         });
+        
     };
 
         
@@ -102,9 +107,6 @@ TDAR.repeatrow = function() {
         // maybe clear before appending?
         _clearInputs($clone);
 
-        // set focus on the first input field (or designate w/ repeatrow-focus class).
-        $("input[type=text], textarea, .repeatrow-focus", $clone).filter(":visible:first").focus();
-        
         return $clone;
     }
     
