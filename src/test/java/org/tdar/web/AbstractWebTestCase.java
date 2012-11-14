@@ -8,6 +8,7 @@ import static org.junit.Assert.fail;
 import static org.tdar.TestConstants.DEFAULT_BASE_URL;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -570,8 +571,10 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         // need to disable javascript
         // testing on the mac :(
         // if (System.getProperty("os.name").toLowerCase().contains("mac os x"))
-        webClient.setJavaScriptEnabled(false);
-        webClient.setTimeout(0);
+        webClient.getOptions().setUseInsecureSSL(true);
+        webClient.getOptions().setJavaScriptEnabled(false);
+        webClient.getOptions().setTimeout(0);
+//        webClient.getOptions().setSSLClientCertificate(certificateUrl, certificatePassword, certificateType)
         webClient.setJavaScriptTimeout(0);
 
         // reset encoding error exclusions for each test
