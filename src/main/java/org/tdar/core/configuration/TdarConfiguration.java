@@ -491,4 +491,8 @@ public class TdarConfiguration {
         return assistant.getStringProperty("nelnet.order.type");
     }
     
+    
+    public Integer getHttpsPort() {
+        return assistant.getIntProperty("https.port", 443);
+    }
 }

@@ -476,4 +476,8 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public boolean isHttpsEnabled() {
         return TdarConfiguration.getInstance().isHttpsEnabled();
     }
+
+    public Integer getHttpsPort() {
+        return TdarConfiguration.getInstance().getHttpsPort();
+    }
 }

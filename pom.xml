@@ -843,6 +843,7 @@
 		</testResources>
 		<plugins>
 			<plugin>
+				<!-- http://mojo.codehaus.org/keytool/keytool-maven-plugin/generateKeyPair-mojo.html -->
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>keytool-maven-plugin</artifactId>
 				<executions>

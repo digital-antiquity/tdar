@@ -196,8 +196,8 @@ $(document).ready(function() {
 <#assign actionMethod>${absolutePath}</#assign>
 <#if httpsEnabled>
 	<#assign appPort = ""/>
-	<#if hostPort != 80>
-		<#assign appPort= ":" + hostPort/>
+	<#if httpsPort != 443>
+		<#assign appPort= ":" + httpsPort?c/>
 	</#if>
 	<#assign actionMethod>https://${hostName}${appPort}${absolutePath}</#assign>
 </#if>
