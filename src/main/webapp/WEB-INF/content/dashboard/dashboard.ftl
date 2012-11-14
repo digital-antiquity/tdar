@@ -62,35 +62,7 @@ Welcome back, ${authenticatedUser.firstName}!
 	    <br/>
 	</div>
 	<hr />	
-	<!--TODO: remove this div once cartouches ready -->
-    <div class="span9 noindent REMOVE_THIS_DIV">
-        <h3>Item(s) You've Recently Updated</h3>
-            <table class="table">
-                <tbody>
-                <#list recentlyEditedResources as res>
-                    <tr>
-                    <td style="width:10em;text-align:right">
-                        <span class="badge"><@common.upperPersistableTypeLabel res /></span>
-                    </td>
-
-                    <td>
-                            <a href="<@s.url value='/${res.urlNamespace}/view'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@common.truncate res.title 65 /></a>
-                    </td>
-
-                    <td style="text-align: right">
-                        <span class="recent-nav" >
-                            <a  class="btn btn-small" href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>">edit</a> 
-                            <a class="btn btn-small btn-danger" href="<@s.url value='/${res.urlNamespace}/delete'><@s.param name="id" value="${res.id?c}"/></@s.url>">delete</a>
-                        </span>
-                    </td>
-                    </tr>
-                </#list>
-                </tbody>
-            </table>
-    </div>
     
-<!--TODO: commented out, pending updated cartouche images -->
-<!--
     <div class="span9 noindent">
         <h3>Item(s) You've Recently Updated</h3>
         <ol id='recentlyEditedResources'>
@@ -111,7 +83,6 @@ Welcome back, ${authenticatedUser.firstName}!
         </ol>
     </div>
 
--->
 </#if>
 
 

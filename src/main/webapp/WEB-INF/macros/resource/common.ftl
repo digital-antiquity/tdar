@@ -737,6 +737,10 @@ this bit of freemarker is voodoo:
     <#if (persistable.status)?? && !persistable.active>
         ${persistable.status} <#t>
     </#if> 
+    <!-- FIXME: REMOVE WHEN CARTOUCHES ARE FINISHED -->
+    <span class="badge" style="clear:none;margin-right:20px"><@upperPersistableTypeLabel persistable /></span>
+    <!-- /FIXME: REMOVE WHEN CARTOUCHES ARE FINISHED -->
+
 	<#nested /></p>
 </#macro>
 
