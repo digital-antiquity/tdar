@@ -49,7 +49,7 @@ public class Invoice extends Base implements Updatable {
     private String transactionId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "transactionType")
+    @Column(name = "transaction_type")
     private TransactionType transactionType;
 
     private Integer billingPhone;

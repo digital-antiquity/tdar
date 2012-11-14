@@ -122,7 +122,7 @@ html markup) you will probably not like the results
                 <div class="listItemPart">
 		    <#if (resource.citationRecord && !resource.resourceType.project)>
    			<span class='cartouche' title="Citation only; this record has no attached files.">Citation</span></#if>
-		    <@common.cartouch resource true><@listCreators resource/></@common.cartouch>  
+		    <@common.cartouche resource true><@listCreators resource/></@common.cartouche>  
                 <@view.unapiLink resource  />
                 <#if showProject && !resource.resourceType.project >
                 <p class="project">${resource.project.title}</p>

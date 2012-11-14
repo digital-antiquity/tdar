@@ -62,26 +62,56 @@ Welcome back, ${authenticatedUser.firstName}!
 	    <br/>
 	</div>
 	<hr />	
-	<div class="span9 noindent">
-		<h3>Item(s) You've Recently Updated</h3>
-		<ol id='recentlyEditedResources'>
-		    <#list recentlyEditedResources as res>
-		    <li id="li-recent-resource-${res.id?c}">
-	           <span class="fixed">
-	           		    <@common.cartouch res true>
-		        <span class="recent-nav">
-		            <a href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>">edit</a> |
-		            <a href="<@s.url value='/${res.urlNamespace}/delete'><@s.param name="id" value="${res.id?c}"/></@s.url>">delete</a>
-		        </span>
-	           		    <a href="<@s.url value='/${res.urlNamespace}/view'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@common.truncate res.title 65 /></a>
-	           		    </@common.cartouch>
-       		    </span>
-		    </li>
-		    </#list>
-		</ol>
-	</div>
-	<hr />
+	<!--TODO: remove this div once cartouches ready -->
+    <div class="span9 noindent REMOVE_THIS_DIV">
+        <h3>Item(s) You've Recently Updated</h3>
+            <table class="table">
+                <tbody>
+                <#list recentlyEditedResources as res>
+                    <tr>
+                    <td style="width:10em;text-align:right">
+                        <span class="badge"><@common.upperPersistableTypeLabel res /></span>
+                    </td>
 
+                    <td>
+                            <a href="<@s.url value='/${res.urlNamespace}/view'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@common.truncate res.title 65 /></a>
+                    </td>
+
+                    <td style="text-align: right">
+                        <span class="recent-nav" >
+                            <a  class="btn btn-small" href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>">edit</a> 
+                            <a class="btn btn-small btn-danger" href="<@s.url value='/${res.urlNamespace}/delete'><@s.param name="id" value="${res.id?c}"/></@s.url>">delete</a>
+                        </span>
+                    </td>
+                    </tr>
+                </#list>
+                </tbody>
+            </table>
+    </div>
+    
+<!--TODO: commented out, pending updated cartouche images -->
+<!--
+    <div class="span9 noindent">
+        <h3>Item(s) You've Recently Updated</h3>
+        <ol id='recentlyEditedResources'>
+          
+            <#list recentlyEditedResources as res>
+            <li id="li-recent-resource-${res.id?c}">
+               <span class="fixed">
+                        <@common.cartouche res true>
+                <span class="recent-nav">
+                    <a href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>">edit</a> |
+                    <a href="<@s.url value='/${res.urlNamespace}/delete'><@s.param name="id" value="${res.id?c}"/></@s.url>">delete</a>
+                </span>
+                        <a href="<@s.url value='/${res.urlNamespace}/view'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@common.truncate res.title 65 /></a>
+                        </@common.cartouche>
+                </span>
+            </li>
+            </#list>
+        </ol>
+    </div>
+
+-->
 </#if>
 
 
@@ -94,7 +124,7 @@ Welcome back, ${authenticatedUser.firstName}!
 	            <a href="<@s.url value='/${res.urlNamespace}/view'><@s.param name="id" value="${res.id?c}"/></@s.url>">
 	                <@common.truncate res.title 70 />
 	            </a> 
-	        <div class="recent-nav">
+	        <div class="recent-nav pull-right">
 	            <a href="<@s.url value='/resource/add?projectId=${res.id?c}'><@s.param name="id" value="${res.id?c}"/></@s.url>" title="add a resource to this project">add resource</a> |
 	            <a href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>">edit</a> |
 	            <a href="<@s.url value='/${res.urlNamespace}/delete'><@s.param name="id" value="${res.id?c}"/></@s.url>" >delete</a>

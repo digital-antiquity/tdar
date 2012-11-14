@@ -731,7 +731,7 @@ this bit of freemarker is voodoo:
  </#if>
 </#macro>
 
-<#macro cartouch persistable useDocumentType=false>
+<#macro cartouche persistable useDocumentType=false>
     <#local cartouchePart><@upperPersistableTypeLabel persistable /></#local>
 	<p class="cartouche ${cartouchePart?replace(" ","")?lower_case}"><#t>
     <#if (persistable.status)?? && !persistable.active>

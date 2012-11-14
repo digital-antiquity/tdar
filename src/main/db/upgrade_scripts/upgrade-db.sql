@@ -117,6 +117,8 @@ create table creator_address (
 -- 31/10/12
 alter table collection add foreign key (owner_id) references person;
 
+
+-- 07/11/12
 create table pos_billing_activity (
     id  bigserial not null,
     currency varchar(255),
@@ -176,7 +178,7 @@ create table pos_account_group (
     owner_id int8 not null,
     account_group_id int8 not null,
     primary key (id)
-)
+);
 
 create table pos_account (
     id  bigserial not null,
@@ -251,5 +253,6 @@ create table pos_members (
 );
 
 alter table pos_invoice drop column transactionType;
-alter table pos_invoice add column transactiontype varchar(50);
+alter table pos_invoice add column transaction_type varchar(50);
+alter table resource drop column account_id;
 alter table resource add column account_id int8 references pos_account;
