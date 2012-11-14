@@ -26,7 +26,7 @@
                      "/includes/blueimp-jquery-file-upload-3c5d440/js/locale.js",
                      "/includes/jquery.populate.js",
                      "/includes/latLongUtil-1.0.js",
-                     "/includes/gmaps.js",
+                     "/includes/tdar.gmaps.js",
                      "/includes/tdar.common.js",
                      "/includes/tdar.upload.js",
                      "/includes/tdar.repeatrow.js",

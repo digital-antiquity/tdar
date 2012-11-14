@@ -66,7 +66,7 @@ TDAR.maps = function() {
     var _initGmapApi = function() {
         var script = document.createElement("script");
         script.type = "text/javascript";
-        script.src = "http://maps.googleapis.com/maps/api/js?libraries=drawing&key=" +
+        script.src = "//maps.googleapis.com/maps/api/js?libraries=drawing&key=" +
         		TDAR.maps.googleApiKey +
         		"&sensor=false&callback=TDAR.maps._apiLoaded";
         document.body.appendChild(script);
