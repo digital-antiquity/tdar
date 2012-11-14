@@ -1462,6 +1462,7 @@
 			<properties>
 				<webapp.deploy.dir>/tmp/tdar-clover</webapp.deploy.dir>
 				<jetty.port>8180</jetty.port>
+				<jetty.ssl.port>8143</jetty.ssl.port>
 				<use.test.classpath>true</use.test.classpath>
 			</properties>
 			<build>
