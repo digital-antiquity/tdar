@@ -3,9 +3,6 @@
  */
 package org.tdar.web;
 
-import static org.tdar.TestConstants.ADMIN_PROJECT_ID;
-import static org.tdar.TestConstants.TEST_DOCUMENT;
-import static org.tdar.TestConstants.TEST_DOCUMENT_NAME;
 
 import java.net.URL;
 
@@ -32,7 +29,7 @@ public class FirstRunWebITCase extends AbstractAuthenticatedWebTestCase {
     public void confirmCreateDocument() {
         String originalLocation = getCurrentUrlPath();
         String ticketId = getPersonalFilestoreTicketId();
-        uploadFileToPersonalFilestore(ticketId, TEST_DOCUMENT);
+        uploadFileToPersonalFilestore(ticketId, TestConstants.TEST_DOCUMENT);
         gotoPage(originalLocation);
         // assume that you're at /project/list
 //        logger.info(getPageText());
@@ -44,13 +41,13 @@ public class FirstRunWebITCase extends AbstractAuthenticatedWebTestCase {
         setInput("document.description", TEST_ABSTRACT);
         setInput("document.date", "1934");
         setInput("ticketId", ticketId);
-        setInput("projectId", Long.toString(ADMIN_PROJECT_ID));
+        setInput("projectId", Long.toString(TestConstants.ADMIN_PROJECT_ID));
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
             setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
             setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
         }
         
-        addFileProxyFields(0, FileAccessRestriction.PUBLIC, TEST_DOCUMENT_NAME);
+        addFileProxyFields(0, FileAccessRestriction.PUBLIC, TestConstants.TEST_DOCUMENT_NAME);
 //        logger.info(getPageCode());
         submitForm();
         HtmlPage page = (HtmlPage) internalPage;
@@ -59,7 +56,7 @@ public class FirstRunWebITCase extends AbstractAuthenticatedWebTestCase {
         // make sure we're on the view page
         assertPageTitleEquals(TEST_TITLE);
         assertTextPresentInPage(TEST_ABSTRACT);
-        assertTextPresentInPage(TEST_DOCUMENT_NAME);
+        assertTextPresentInPage(TestConstants.TEST_DOCUMENT_NAME);
         URL url = internalPage.getUrl();
 
         // change resource to draft, assert you can still see the view page
@@ -72,7 +69,7 @@ public class FirstRunWebITCase extends AbstractAuthenticatedWebTestCase {
         // now delete it, assert you cannot go to view page anymore
         clickLinkWithText("delete");
         submitForm("delete");
-        assertCurrentUrlEquals(getBaseUrl() + URLConstants.DASHBOARD);
+        assertCurrentUrlContains(URLConstants.DASHBOARD);
         gotoPage(url.toString());
         assertPageTitleEquals("Access Denied");
     }
@@ -91,7 +88,7 @@ public class FirstRunWebITCase extends AbstractAuthenticatedWebTestCase {
         setInput("codingSheet.date", "1934");
         setInput("codingSheet.description", TEST_ABSTRACT);
         setInput("fileTextInput", codingSheetRules);
-        setInput("projectId", Long.toString(ADMIN_PROJECT_ID));
+        setInput("projectId", Long.toString(TestConstants.ADMIN_PROJECT_ID));
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
             setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
             setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
@@ -106,7 +103,7 @@ public class FirstRunWebITCase extends AbstractAuthenticatedWebTestCase {
 
         clickLinkWithText("delete");
         submitForm("delete");
-        assertCurrentUrlEquals(getBaseUrl() + URLConstants.DASHBOARD);
+        assertCurrentUrlContains(URLConstants.DASHBOARD);
 
         gotoPage(url.toString());
         assertPageTitleEquals("Access Denied");
