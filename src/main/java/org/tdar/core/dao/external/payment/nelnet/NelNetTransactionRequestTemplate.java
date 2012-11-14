@@ -1,5 +1,6 @@
 package org.tdar.core.dao.external.payment.nelnet;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,7 +15,9 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.configuration.TdarConfiguration;
 
-public class NelNetTransactionTemplate {
+public class NelNetTransactionRequestTemplate implements Serializable  {
+
+    private static final long serialVersionUID = -6993533612215066367L;
 
     public enum ItemType {
         NUMERIC,

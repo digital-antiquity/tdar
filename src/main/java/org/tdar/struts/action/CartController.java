@@ -3,12 +3,14 @@ package org.tdar.struts.action;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.httpclient.URIException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.interceptor.ParameterAware;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -24,12 +26,13 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.external.payment.nelnet.NelNetPaymentDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.struts.WriteableSession;
+import org.tdar.struts.interceptor.PostOnly;
 
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/cart")
-public class CartController extends AbstractPersistableController<Invoice> {
+public class CartController extends AbstractPersistableController<Invoice> implements ParameterAware {
 
     private static final long serialVersionUID = 1592977664145682926L;
     private List<BillingActivity> activities = new ArrayList<BillingActivity>();
@@ -89,12 +92,13 @@ public class CartController extends AbstractPersistableController<Invoice> {
     }
 
     private String redirectUrl;
-    
+    private Map<String, String[]> parameters;
+
     @SkipValidation
     @WriteableSession
-    @Action(value = "process-payment-info", results = {
+    @Action(value = "process-payment-request", results = {
             @Result(name = SUCCESS, type = "redirect", location = "view?id=${invoice.id}&review=true"),
-            @Result(name= REDIRECT, type = "redirect", location = "${redirectUrl}"),
+            @Result(name = REDIRECT, type = "redirect", location = "${redirectUrl}"),
             @Result(name = SUCCESS_UPDATE_ACCOUNT, type = "redirect", location = "/billing/choose?invoiceId=${invoice.id}&id=${accountId}"),
             @Result(name = SUCCESS_ADD_ACCOUNT, type = "redirect", location = "/billing/choose?invoiceId=${invoice.id}")
     })
@@ -115,7 +119,7 @@ public class CartController extends AbstractPersistableController<Invoice> {
         getInvoice().setOtherReason(otherReason);
         getInvoice().setBillingPhone(billingPhone);
         getGenericService().saveOrUpdate(getInvoice());
-        //finalize the cost and cache it
+        // finalize the cost and cache it
         getInvoice().setTotal(getInvoice().getCalculatedCost());
         getInvoice().setTransactionStatus(TransactionStatus.PENDING_TRANSACTION);
 
@@ -125,7 +129,7 @@ public class CartController extends AbstractPersistableController<Invoice> {
             case CREDIT_CARD:
                 getGenericService().saveOrUpdate(getInvoice());
                 try {
-                    setRedirectUrl(nelnetPaymentDao.processInvoice(getInvoice()));
+                    setRedirectUrl(nelnetPaymentDao.prepareRequest(getInvoice()));
                 } catch (URIException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
@@ -140,6 +144,34 @@ public class CartController extends AbstractPersistableController<Invoice> {
                 getGenericService().saveOrUpdate(getInvoice());
                 return successReturn;
         }
+        // validate transaction
+        // run transaction
+        return SUCCESS;
+    }
+
+    @SkipValidation
+    @WriteableSession
+    @PostOnly
+    @Action(value = "process-external-payment-response", results = {
+            @Result(name = SUCCESS, type = "redirect", location = "view?id=${invoice.id}&review=true"),
+            @Result(name = SUCCESS_UPDATE_ACCOUNT, type = "redirect", location = "/billing/choose?invoiceId=${invoice.id}&id=${accountId}"),
+            @Result(name = SUCCESS_ADD_ACCOUNT, type = "redirect", location = "/billing/choose?invoiceId=${invoice.id}")
+    })
+    public String processPaymentResponse() throws TdarActionException {
+        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+        String successReturn = SUCCESS_ADD_ACCOUNT;
+        Account account = getGenericService().find(Account.class, accountId);
+        if (account != null) {
+            successReturn = SUCCESS_UPDATE_ACCOUNT;
+        }
+
+        setInvoice(getGenericService().loadFromSparseEntity(getInvoice(), Invoice.class));
+
+        TransactionStatus status = nelnetPaymentDao.processResponse(getInvoice(), getParameters());
+
+        getGenericService().saveOrUpdate(getInvoice());
+        getInvoice().setTransactionStatus(status);
+
         // validate transaction
         // run transaction
         return SUCCESS;
@@ -239,5 +271,14 @@ public class CartController extends AbstractPersistableController<Invoice> {
 
     public void setRedirectUrl(String redirectUrl) {
         this.redirectUrl = redirectUrl;
+    }
+
+    @Override
+    public void setParameters(Map<String, String[]> arg0) {
+        this.parameters = arg0;
+    }
+
+    public Map<String, String[]> getParameters() {
+        return parameters;
     }
 }
