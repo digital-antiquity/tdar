@@ -74,8 +74,7 @@ View freemarker macros
 <#macro adminFileActions>
   <#if (resource.getTotalNumberOfFiles?has_content)>
         <#if ableToReprocessDerivatives>
-        <div class="adminFileTasks">
-        <b>Admin File Tasks</b>
+        <h2> Admin File Actions</h2>
         <br/><small>
             <#if resource.resourceType=='DATASET'>
                 <a href="<@s.url value='/${resource.urlNamespace}/reimport?id=${resource.id?c}' />">Reimport this dataset</a><br/>
@@ -83,7 +82,6 @@ View freemarker macros
             </#if>
             <a href="<@s.url value='/${resource.urlNamespace}/reprocess'><@s.param name="id" value="${resource.id?c}"/></@s.url>">Reprocess all derivatives for this resource</a>
           </small>
-        </div>
         </#if>
         
         <#assign processingErrors = "">

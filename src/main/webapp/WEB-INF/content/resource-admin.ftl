@@ -1,4 +1,5 @@
 <#escape _untrusted as _untrusted?html >
+<#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
 
 <h1>Administrative info for ${resource.title}</h1>
 
@@ -31,5 +32,7 @@
 	</tr>
 </#list>
 </table>
+
+<@view.adminFileActions />
 
 </#escape>
