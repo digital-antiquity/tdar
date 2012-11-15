@@ -1367,6 +1367,19 @@ function getSymbolSets() {
     }
     return {specialChars: specialChars, allowedChars: allowedChars.join("")};
 }
+function checkWindowSize() {
+    var width = $(window).width(),
+    new_class = width > 979 ? 'responsive-desktop' :
+                width > 767 ? 'responsive-tablet' :
+                width > 1 ? 'responsive-phone' : '';
+//                console.log(new_class);
+    $(document.body).removeClass('responsive-desktop responsive-tablet responsive-phone').addClass(new_class);
+}
+
+$(document).ready(function() {
+	checkWindowSize();
+	$(window).resize(checkWindowSize);
+});
 /*
 function getSampleStrings(sets, allowedCount, specialCount) {
     var allowed = sets.allowedChars;
