@@ -25,8 +25,6 @@
     </#if>
 </div>
 
-
-
 <div class="row">
     <h3>Explore</h3>
     <div class="span6">
@@ -54,6 +52,7 @@
 
 				<h3>What&rsquo;s New at ${siteAcronym}?</h3>
 
+				<#if rssEntries?has_content>
 				<ul>
 					<#assign maxEntries =5 />
 					<#list rssEntries as entry>
@@ -68,7 +67,7 @@
 					</li>
 					</#list>
 				</ul>
-
+				</#if>
 			</div>
 
 </body>

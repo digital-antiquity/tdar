@@ -5,7 +5,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <#-- include navigation menu in edit and view macros -->
 <#escape _untrusted as _untrusted?html>
 <#include "common.ftl">
-<#import "../helptext.ftl" as  helptext>
+<#import "/${themeDir}/local-helptext.ftl" as  helptext>
 <#import "/${themeDir}/settings.ftl" as settings>
 <#include "navigation-macros.ftl">
 
@@ -23,7 +23,6 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
      	</div>
         <#if resource.resourceType.project><span class="help-block">Note: project status does not affect status of child resources.</span></#if>
     
-        <#-- TODO: use bootstrap tooltips (need to decide how to toggle. click? hover?) -->
 		<@helptext.status />
 <#if isBulk>
 
