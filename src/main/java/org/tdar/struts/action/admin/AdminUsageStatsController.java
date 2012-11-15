@@ -51,8 +51,8 @@ public class AdminUsageStatsController extends AuthenticationAware.Base {
         if (StringUtils.isNotBlank(dateStart)) {
             DateTime.parse(dateStart);
         }
-        setUsageStats(getResourceService().getUsageStats(granularity, start.toDate(), end.toDate(), 1L));
-        setDownloadStats(getResourceService().getDownloadStats(granularity, start.toDate(), end.toDate(), 0L));
+        setUsageStats(getResourceService().getAggregateUsageStats(granularity, start.toDate(), end.toDate(), 1L));
+        setDownloadStats(getResourceService().getAggregateDownloadStats(granularity, start.toDate(), end.toDate(), 0L));
         return SUCCESS;
     }
 

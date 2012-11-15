@@ -29,6 +29,7 @@ import org.tdar.core.bean.keyword.GeographicKeyword.Level;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.VersionType;
@@ -86,6 +87,13 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
             criteria.add(eq);
         }
         return findByCriteria(criteria);
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<ResourceRevisionLog> getLogEntriesForResource(Resource resource) {
+        Query query = getCurrentSession().getNamedQuery(LOGS_FOR_RESOURCE);
+        query.setParameter("resourceId", resource.getId());
+        return (List<ResourceRevisionLog>) query.list();
     }
 
     /*
@@ -271,7 +279,7 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         return (List<E>) findAll(ids);
     }
 
-    public List<AggregateViewStatistic> getUsageStats(DateGranularity granularity, Date start, Date end, Long minCount) {
+    public List<AggregateViewStatistic> getAggregateUsageStats(DateGranularity granularity, Date start, Date end, Long minCount) {
         List<AggregateViewStatistic> toReturn = new ArrayList<AggregateViewStatistic>();
         Query query = setupStatsQuery(granularity, start, end, minCount, false);
         for (Object obj_ : query.list()) {
@@ -282,6 +290,15 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
             toReturn.add(view);
         }
         return toReturn;
+    }
+
+    public List<AggregateViewStatistic> getUsageStatsForResource(DateGranularity granularity, Date start, Date end, Long minCount, List<Long> resourceIds) {
+        Query query = getCurrentSession().getNamedQuery(RESOURCE_ACCESS_HISTORY);
+        query.setParameter("start", start);
+        query.setParameter("end", end);
+        query.setParameter("minCount", minCount);
+        query.setParameterList("resourceIds", resourceIds);
+        return query.list();
     }
 
     private Query setupStatsQuery(DateGranularity granularity, Date start, Date end, Long minCount, boolean download) {
@@ -296,12 +313,12 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         return query;
     }
 
-    public List<AggregateDownloadStatistic> getDownloadStats(DateGranularity granularity, Date start, Date end, Long minCount) {
+    public List<AggregateDownloadStatistic> getAggregateDownloadStats(DateGranularity granularity, Date start, Date end, Long minCount) {
         List<AggregateDownloadStatistic> toReturn = new ArrayList<AggregateDownloadStatistic>();
         Query query = setupStatsQuery(granularity, start, end, minCount, true);
         for (Object obj_ : query.list()) {
             Object[] obj = (Object[]) obj_;
-            InformationResourceFile irf = find(InformationResourceFile.class, (Long)obj[2]);
+            InformationResourceFile irf = find(InformationResourceFile.class, (Long) obj[2]);
             toReturn.add(new AggregateDownloadStatistic((Date) obj[0], (Number) obj[1], irf.getFileName(), irf.getId(), irf.getInformationResource().getId()));
         }
         return toReturn;

@@ -289,6 +289,10 @@
                 query = "select ref.id, ref.title, ref.resourceType, date_trunc('day', ras.date), count(ref) FROM ResourceAccessStatistic ras inner join ras.reference as ref where ras.date between :start and :end group by date_trunc('day', ras.date), ref having count(ref) > :minCount order by count(ref) desc"
         ),
         @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.RESOURCE_ACCESS_HISTORY,
+                query = "select new org.tdar.struts.data.AggregateViewStatistic(ref.id, date_trunc('day', ras.date), count(ref)) FROM ResourceAccessStatistic ras inner join ras.reference as ref where ref.id in (:resourceIds) and ras.date between :start and :end group by date_trunc('day', ras.date), ref having count(ref) > :minCount order by count(ref) desc"
+        ),
+        @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.DOWNLOAD_BY,
                 query = "select date_trunc('day', ras.date),  count(ref),  ref.id  FROM FileDownloadStatistic ras inner join ras.reference as ref where ras.date between :start and :end group by date_trunc('day', ras.date), ref having count(ref) > :minCount order by count(ref) desc"
         ),
@@ -299,7 +303,12 @@
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.ACCOUNTS_FOR_PERSON,
                 query = " from Account act left join act.authorizedMembers as person where act.owner.id =:personId or person.id=:personId"
+        ),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.LOGS_FOR_RESOURCE,
+                query = " from ResourceRevisionLog rlog where rlog.resource.id = :resourceId order by rlog.timestamp desc"
         )
+
 })
 package org.tdar.core.dao;
 

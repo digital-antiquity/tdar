@@ -12,7 +12,8 @@ public class AggregateViewStatistic implements Serializable {
     Date aggregateDate;
     Number count;
     Resource resource;
-
+    private Long resourceId;
+    
     public AggregateViewStatistic() {
     }
 
@@ -20,6 +21,12 @@ public class AggregateViewStatistic implements Serializable {
         this.aggregateDate = date;
         this.count = count;
         this.resource = resource;
+    }
+
+    public AggregateViewStatistic(Long resourceId, Date date, Number count) {
+        this.aggregateDate = date;
+        this.count = count;
+        this.resourceId = resourceId;
     }
 
     public Date getAggregateDate() {
@@ -44,6 +51,14 @@ public class AggregateViewStatistic implements Serializable {
 
     public void setResource(Resource resource) {
         this.resource = resource;
+    }
+
+    public Long getResourceId() {
+        return resourceId;
+    }
+
+    public void setResourceId(Long resourceId) {
+        this.resourceId = resourceId;
     }
 
 }

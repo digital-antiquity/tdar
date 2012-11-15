@@ -3,6 +3,7 @@ package org.tdar.core.service.resource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -419,7 +420,7 @@ public class ResourceService extends GenericService {
                 T clone = (T) BeanUtils.cloneBean(t);
                 targetCollection.add(clone);
             } catch (Exception e) {
-                logger.warn("Exception in clone set: {} ",e);
+                logger.warn("Exception in clone set: {} ", e);
             }
         }
         // getDao().save(targetCollection);
@@ -427,18 +428,31 @@ public class ResourceService extends GenericService {
     }
 
     @Transactional
-    public ResourceSpaceUsageStatistic getResourceSpaceUsageStatistics(List<Long> personId, List<Long> resourceId, List<Long> collectionId, List<Long> projectId,
+    public ResourceSpaceUsageStatistic getResourceSpaceUsageStatistics(List<Long> personId, List<Long> resourceId, List<Long> collectionId,
+            List<Long> projectId,
             List<Status> statuses, List<VersionType> types) {
         return datasetDao.getResourceSpaceUsageStatistics(personId, resourceId, collectionId, projectId, statuses, types);
     }
 
     @Transactional
-    public List<AggregateViewStatistic> getUsageStats(DateGranularity granularity, Date start, Date end, Long minCount) {
-        return datasetDao.getUsageStats(granularity, start, end, minCount);
+    public List<AggregateViewStatistic> getAggregateUsageStats(DateGranularity granularity, Date start, Date end, Long minCount) {
+        return datasetDao.getAggregateUsageStats(granularity, start, end, minCount);
     }
 
     @Transactional
-    public List<AggregateDownloadStatistic> getDownloadStats(DateGranularity granularity, Date start, Date end, Long minCount) {
-        return datasetDao.getDownloadStats(granularity, start, end, minCount);
+    public List<AggregateDownloadStatistic> getAggregateDownloadStats(DateGranularity granularity, Date start, Date end, Long minCount) {
+        return datasetDao.getAggregateDownloadStats(granularity, start, end, minCount);
+    }
+
+    @Transactional
+    public List<AggregateViewStatistic> getUsageStatsForResources(DateGranularity granularity, Date start, Date end, Long minCount, List<Long> resourceIds) {
+        return datasetDao.getUsageStatsForResource(granularity, start, end, minCount, resourceIds);
+    }
+
+    @Transactional
+    public List<ResourceRevisionLog> getLogsForResource(Resource resource) {
+        if (Persistable.Base.isNullOrTransient(resource))
+            return Collections.EMPTY_LIST;
+        return datasetDao.getLogEntriesForResource(resource);
     }
 }

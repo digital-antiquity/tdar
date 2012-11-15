@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -54,6 +55,8 @@ import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.data.AggregateViewStatistic;
+import org.tdar.struts.data.DateGranularity;
 import org.tdar.struts.data.KeywordNode;
 import org.tdar.struts.data.ResourceCreatorProxy;
 import org.tdar.transform.DcTransformer;
@@ -128,6 +131,10 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private ObfuscationService obfuscationService;
 
     private List<ResourceCollection> viewableResourceCollections;
+    
+    private List<ResourceRevisionLog> resourceLogEntries;
+
+    private List<AggregateViewStatistic> usageStatsForResources;
 
     private void initializeResourceCreatorProxyLists() {
         if (getPersistable().getResourceCreators() == null)
@@ -861,10 +868,13 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     
 
     @SkipValidation
-    @Action(value = "admin")
+    @Action(value = "admin", results = {
+            @Result(name=SUCCESS, location="../resource-admin.ftl")
+    })
     public String viewAdmin() throws TdarActionException {
-        checkValidRequest(RequestType.VIEW, this, InternalTdarRights.VIEW_ANYTHING);
-        // checkValidRequest(UserIs.ANONYMOUS, UsersCanModify.NONE, isEditable(), InternalTdarRights.VIEW_ANYTHING);
+        checkValidRequest(RequestType.VIEW, this, InternalTdarRights.VIEW_ADMIN_INFO);
+        setResourceLogEntries(getResourceService().getLogsForResource(getPersistable()));
+        setUsageStatsForResources(getResourceService().getUsageStatsForResources(DateGranularity.WEEK, new Date(0L), new Date(), 1L, Arrays.asList(getPersistable().getId())));
         return SUCCESS;
     }
 
@@ -875,6 +885,22 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public void setLogEntries(List<ResourceRevisionLog> logEntries) {
         this.logEntries = logEntries;
+    }
+
+    public List<ResourceRevisionLog> getResourceLogEntries() {
+        return resourceLogEntries;
+    }
+
+    public void setResourceLogEntries(List<ResourceRevisionLog> resourceLogEntries) {
+        this.resourceLogEntries = resourceLogEntries;
+    }
+
+    public List<AggregateViewStatistic> getUsageStatsForResources() {
+        return usageStatsForResources;
+    }
+
+    public void setUsageStatsForResources(List<AggregateViewStatistic> usageStatsForResources) {
+        this.usageStatsForResources = usageStatsForResources;
     }
 
 }

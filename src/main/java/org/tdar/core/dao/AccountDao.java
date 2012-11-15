@@ -28,6 +28,7 @@ public class AccountDao extends Dao.HibernateBase<Account> {
      * FixMe: replace with a HQL query this should find all accounts the user is an owner on or all child account they're the owner of an account group; if
      * administrator, or finance person should be "all accounts".
      */
+    @SuppressWarnings("unchecked")
     public List<Account> findAccountsForUser(Person user) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.ACCOUNTS_FOR_PERSON);
         query.setParameter("personId", user.getId());

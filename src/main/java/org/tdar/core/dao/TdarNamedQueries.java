@@ -80,6 +80,8 @@ public interface TdarNamedQueries {
     public static final String SPACE_BY_SUBMITTER = "admin.size.submitter";
     public static final String ACCESS_BY = "admin.access";
     public static final String DOWNLOAD_BY = "admin.download";
+    public static final String LOGS_FOR_RESOURCE = "admin.logsforResource";
+    public static final String RESOURCE_ACCESS_HISTORY = "admin.accessHistory";
     
     public static final String ACCOUNT_GROUP_FOR_ACCOUNT = "account.group";
     public static final String ACCOUNTS_FOR_PERSON = "accounts.forPerson";
