@@ -488,22 +488,23 @@ $(".bar").each(function() {
 </#macro>
 
 <#macro worldMap>
-<div class="mapcontainer" style="height:340px;width:480px; display:block">
+<div class="mapcontainer" style="margin-left:-40px;position:relative;right:0px">
 <script type="text/javascript">
 $(function() {
-    $('.map').maphilight({
+
+$('.worldmap').maphilight({
       fade: true, 
       groupBy:"alt",
       strokeColor:'#ffffff'
     });
- 
-  $(".map").delegate('area', 'mouseover',function(e) {
+    
+  $(".worldmap").delegate('area', 'mouseover',function(e) {
         $('[iso='+$(this).attr('iso')+']').each(function(index,val) {
             hightlight(true,val);
         });
    });
 
-  $(".map").delegate('area', 'mouseout',function(e) {
+  $(".worldmap").delegate('area', 'mouseout',function(e) {
         $('[iso='+$(this).attr('iso')+']').each(function(index,val) {
             hightlight(false,val);
         });
@@ -557,7 +558,7 @@ this bit of freemarker is voodoo:
 
 </script> 
 <!-- div style="height:353px;border:1px solid #CCC;background-color:#fff;width:550px;padding-top:5px" -->
-<img class=map src="<@s.url value="/images/world_480_2.png" />" width=480 height=304 usemap="#world" > 
+<img class="worldmap" src="<@s.url value="/images/world_480_2.png" />" width=480 height=304 usemap="#world" > 
  <div id="map_legend">
   <div><span class='legendText'>none</span> 
     <#list settings.mapColors as color>
@@ -758,7 +759,7 @@ this bit of freemarker is voodoo:
 
 <#macro loginMenu showMenu=false>
  <#if showMenu>
-	<ul class="subnav-rht">
+	<ul class="subnav-rht hidden-phone hidden-tablet">
  </#if>
 		<#if !(authenticatedUser??) > 
 				<li><a href="<@s.url value="/account/new" />" class="button">Sign Up</a></li>

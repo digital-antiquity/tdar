@@ -12,13 +12,13 @@
 </head>
 <body>
 <div class="row">
-    <div class="<#if !sessionData?? || !sessionData.authenticated>span6</#if>">
+    <div class="<#if !sessionData?? || !sessionData.authenticated>span8</#if>">
     <h3>About</h3>
     <#include "/${themeDir}notice.ftl">
     </div>
 
     <#if !sessionData?? || !sessionData.authenticated>
-        <div class="span3">
+        <div class="span4">
         <h3>Login</h3>
          <@nav.loginForm />
         </div>
@@ -38,7 +38,7 @@
         <li> <a href="<@s.url value="/browse/explore"/>">explore</a> ${siteAcronym} by keyword</li>
         </ul>
     </div>
-    <div class="span3">
+    <div class="span6">
         <@common.barGraph resourceCacheObjects=homepageResourceCountCache graphLabel="${siteAcronym} by the Numbers" graphHeight=354 />
     </div>
 </div>

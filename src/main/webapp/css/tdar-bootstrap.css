@@ -9,9 +9,9 @@ section.row.cols {
 
 .mapcontainer #map_legend {
 	position: relative;
-	right: -262px;
+/* 	right: -262px;
 	top: -21px;
-	background-color: #EEE;
+ */	background-color: #EEE;
 	display: block;
 	width: 280px;
 	height: 1.8em
@@ -162,8 +162,14 @@ table.display.tableFormat {
 	margin-top: 0px !important;
 }
 
-div.map {
+div.mapcontainer div {
+	/* float:right; */
+}
+div.mapcontainer img {
 	height: 304px !Important;
+	right:0px;
+	display:block;
+	position:relative;
 }
 
 #cbCheckAllToggle,.sorting_1 input[type='checkbox'] {
@@ -1167,4 +1173,8 @@ h3.collection-mid-red::before {
 
 .small {
 	font-size: 70%;
+}
+
+#loginForm {
+	margin-left:-80px;	
 }

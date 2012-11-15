@@ -110,6 +110,7 @@
 				<@common.loginMenu true/>
 
 			</div>
+				<ul class="inline-menu hidden-desktop"><@common.loginMenu false/></ul>
 <#else>
 	<div class="span12 subnav">
 		<ul class="subnav-lft">
