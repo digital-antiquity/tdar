@@ -43,6 +43,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     private Long accountId = -1L;
     public static final String SUCCESS_UPDATE_ACCOUNT = "success-update-account";
     public static final String SUCCESS_ADD_ACCOUNT = "success-add-account";
+    private static final String INVOICE = "invoice";
 
     @Autowired
     // I will be pushed down into a service later on...
@@ -153,7 +154,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     @WriteableSession
     @PostOnly
     @Action(value = "process-external-payment-response", results = {
-            @Result(name = SUCCESS, type = "redirect", location = "view?id=${invoice.id}&review=true"),
+            @Result(name = INVOICE, type = "redirect", location = "view?id=${invoice.id}&review=true"),
             @Result(name = SUCCESS_UPDATE_ACCOUNT, type = "redirect", location = "/billing/choose?invoiceId=${invoice.id}&id=${accountId}"),
             @Result(name = SUCCESS_ADD_ACCOUNT, type = "redirect", location = "/billing/choose?invoiceId=${invoice.id}")
     })
@@ -171,10 +172,13 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
         getGenericService().saveOrUpdate(getInvoice());
         getInvoice().setTransactionStatus(status);
+        switch (status) {
+            case TRANSACTION_SUCCESSFUL:
+                return successReturn;
+            default:
+                return INVOICE;
 
-        // validate transaction
-        // run transaction
-        return SUCCESS;
+        }
     }
 
     @Override

@@ -17,7 +17,7 @@ public class NelNetPaymentDao {
 
     @Autowired
     GenericDao genericDao;
-    
+
     public void initializeTransaction() {
 
     }
@@ -34,15 +34,14 @@ public class NelNetPaymentDao {
         return true;
     }
 
-
     public String getTransactionReturnUrl() {
         return "";
     }
-    
+
     public String getTransactionPostUrl() {
         return "https://quikpayasp.com/asu/commerce_manager/payer.do";
     }
-    
+
     public List<PaymentMethod> getSupportedPaymentMethods() {
         return Arrays.asList(PaymentMethod.CREDIT_CARD);
     }

@@ -2,6 +2,7 @@ package org.tdar.core.dao;
 
 import java.util.List;
 
+import org.hibernate.Query;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.AccountGroup;
@@ -28,10 +29,14 @@ public class AccountDao extends Dao.HibernateBase<Account> {
      * administrator, or finance person should be "all accounts".
      */
     public List<Account> findAccountsForUser(Person user) {
-        return findAll();
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.ACCOUNTS_FOR_PERSON);
+        query.setParameter("personId", user.getId());
+        return (List<Account>) query.list();
     }
 
     public AccountGroup getAccountGroup(Account account) {
-        return null;
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.ACCOUNT_GROUP_FOR_ACCOUNT);
+        query.setParameter("accountId", account.getId());
+        return (AccountGroup) query.uniqueResult();
     }
 }

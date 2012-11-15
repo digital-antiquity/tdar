@@ -291,6 +291,14 @@
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.DOWNLOAD_BY,
                 query = "select date_trunc('day', ras.date),  count(ref),  ref.id  FROM FileDownloadStatistic ras inner join ras.reference as ref where ras.date between :start and :end group by date_trunc('day', ras.date), ref having count(ref) > :minCount order by count(ref) desc"
+        ),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.ACCOUNT_GROUP_FOR_ACCOUNT,
+                query = " from AccountGroup grp inner join grp.accounts as account where account.id =:accountId"
+        ),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.ACCOUNTS_FOR_PERSON,
+                query = " from Account act left join act.authorizedMembers as person where act.owner.id =:personId or person.id=:personId"
         )
 })
 package org.tdar.core.dao;
