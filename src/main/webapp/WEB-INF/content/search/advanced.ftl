@@ -215,7 +215,7 @@ $(document).ready(function(){
                 <table id="groups[${groupid}].materialTypeTable[${fieldIndex}]" class="field">
                 <tbody>
                     <tr><td>
-                        <@s.checkboxlist name='groups[${groupid}].materialKeywordIdLists[${fieldIndex}]' list='allMaterialKeywords' listKey='id' listValue='label'  numColumns=2  cssClass="smallIndent" />
+                        <@s.checkboxlist name='groups[${groupid}].materialKeywordIdLists[${fieldIndex}]' list='allMaterialKeywords' listKey='id' listValue='label'  numColumns=2 />
                     </td></tr>
                 </tbody>
                 </table>

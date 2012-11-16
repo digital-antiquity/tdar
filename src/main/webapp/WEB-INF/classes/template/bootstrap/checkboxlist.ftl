@@ -1,4 +1,6 @@
-<#include "/${parameters.templateDir}/${parameters.theme}/controlheader.ftl" />
+<#include "/${parameters.templateDir}/${parameters.theme}/controlheader.ftl"  />
+<#-- controlheader defines _numColumns (will always be number, default 1) -->
+
 <#--
 /*
  * $Id$
@@ -22,67 +24,79 @@
  */
 -->
 <#assign itemCount = 0/>
-<#assign numCols = (parameters.numColumns!0)?number />
-<#assign span = ""/>
-<#if numCols !=0>
-	<#assign span = "span${parameters.spanSize!4?number}" />
+<#assign spanClass = "">
+<#assign hasColumns = _numColumns &gt; 1 />
+<#if hasColumns>
+    <#assign spanClass = "${parameters.spanClass!'span3'}" />
+    <div class="${spanClass}">
 </#if>
-<#list 0 .. numCols as place>
-	<#if numCols != 0>
-         <div class="controls ${span}">
-     </#if>
-<@s.iterator value="parameters.list" status='checkboxNumber'>
+<#if parameters.list??>
+    <#--arrange items in column-major order. if list can't neatly fit in NxM grid, place remaining items in last column -->
+    <#assign _numRows = (parameters.list?size / _numColumns)?ceiling />
+    
+    <@s.iterator value="parameters.list" var="key">
         <#assign itemCount = itemCount + 1/>
-    <#if ( numCols == 0 || itemCount % numCols - place == 0)>
+    <#if hasColumns>
+       <#if itemCount &gt; 1 && itemCount % _numRows == 1>
+         </div><div class="${spanClass}">
+       </#if>
+    </#if>
     <#if parameters.listKey??>
         <#assign itemKey = stack.findValue(parameters.listKey)/>
     <#else>
         <#assign itemKey = stack.findValue('top')/>
     </#if>
-
-    <#assign itemKeyStr = itemKey.toString() />
     <#if parameters.listValue??>
         <#assign itemValue = stack.findString(parameters.listValue)/>
     <#else>
         <#assign itemValue = stack.findString('top')/>
     </#if>
-<label class="checkbox <#if ! parameters.numColumns?has_content>inline</#if>" for="${parameters.id?html}${itemKeyStr?html}"><#rt/>
-<input type="checkbox"<#rt/>
-<#if parameters.name??>
- name="${parameters.name?html}"<#rt/>
+    <#if parameters.listTitle??>
+        <#assign itemTitle = stack.findString(parameters.listTitle)!"" />
+    <#elseif parameters.title??>
+        <#assign itemTitle = parameters.title />
+    </#if>
+    
+    <#assign itemKeyStr = itemKey.toString() />
+    <label class="checkbox"
+    <#if itemTitle??>
+     title="${itemTitle?html}"<#rt/>
+    </#if>
+    ><#rt/>
+    <input type="checkbox"<#rt/>
+    <#if parameters.name??>
+     name="${parameters.name?html}"<#rt/>
+    </#if>
+     id="${parameters.id?html}${itemKeyStr?html}"<#rt/>
+    <#if tag.contains(parameters.nameValue, itemKey) >
+     checked="checked"<#rt/>
+    </#if>
+    <#if itemKey??>
+     value="${itemKeyStr?html}"<#rt/>
+    </#if>
+    <#if parameters.disabled?default(false)>
+     disabled="disabled"<#rt/>
+    </#if>
+    <#if parameters.tabindex??>
+     tabindex="${parameters.tabindex?html}"<#rt/>
+    </#if>
+    <#if parameters.cssClass??>
+     class="${parameters.cssClass?html}"<#rt/>
+    </#if>
+    <#if parameters.cssStyle??>
+     style="${parameters.cssStyle?html}"<#rt/>
+    </#if>
+    <#include "/${parameters.templateDir}/simple/scripting-events.ftl" />
+    <#include "/${parameters.templateDir}/simple/common-attributes.ftl" />
+    /><#rt/>
+        ${itemValue}<#t/>
+    </label>
+    </@s.iterator>
+    <#if hasColumns>
+    </div>
+    </#if>
+    <#else>
+  &nbsp;
 </#if>
- id="${parameters.id?html}${itemKeyStr?html}"<#rt/>
-<#if tag.contains(parameters.nameValue, itemKey) >
- checked="checked"<#rt/>
-</#if>
-<#if itemKey??>
- value="${itemKeyStr?html}"<#rt/>
-</#if>
-<#if parameters.disabled?default(false)>
- disabled="disabled"<#rt/>
-</#if>
-<#if parameters.tabindex??>
- tabindex="${parameters.tabindex?html}"<#rt/>
-</#if>
-<#if parameters.cssClass??>
- class="${parameters.cssClass?html}"<#rt/>
-</#if>
-<#if parameters.cssStyle??>
- style="${parameters.cssStyle?html}"<#rt/>
-</#if>
-<#if parameters.title??>
- title="${parameters.title?html}"<#rt/>
-</#if>
-<#include "/${parameters.templateDir}/simple/scripting-events.ftl" />
-<#include "/${parameters.templateDir}/simple/common-attributes.ftl" />
-/><#rt/>
-    ${itemValue}<#t/>
-</label>
-</#if>
-</@s.iterator>
-<#if numCols != 0>
-		</div>
-</#if>
-</#list>
 
 <#include "/${parameters.templateDir}/${parameters.theme}/controlfooter.ftl" />

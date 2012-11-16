@@ -7,7 +7,7 @@ navigation freemarker macros
 <#import "edit-macros.ftl" as edit>
 
 
-<#macro loginForm>
+<#macro loginForm cssClass="">
 
 <script type="text/javascript">
 $(document).ready(function() {
@@ -35,8 +35,8 @@ $(document).ready(function() {
     fld.val($.trim(fld.val()))});
 });
 </script>
-<#assign formAction><@getFormUrl absolutePath="/login/process"/></#assign>
-<@s.form id='loginForm' method="post" action="${formAction}" cssClass="form-horizontal">
+<#local formAction><@getFormUrl absolutePath="/login/process"/></#local>
+<@s.form id='loginForm' method="post" action="${formAction}" cssClass="${cssClass}">
     <input type="hidden" name="url" value="${Parameters.url!''}"/>
     <@s.textfield theme="bootstrap" spellcheck="false" id='loginUsername' name="loginUsername" label="Username" cssClass="required" />
     <@s.password theme="bootstrap" id='loginPassword' name="loginPassword" label="Password" cssClass="required" />

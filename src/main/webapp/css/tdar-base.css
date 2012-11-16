@@ -1439,3 +1439,11 @@ nav ul {
 .edit .sidebar, .add .sidebar {
 	margin-top: 80px;
 }
+
+/* remove margin for first column when using grid-layout in a control-group so that they line up a little better with other fields. **/
+/* TODO: determine if this is necessary, or if I'm using the bootstrap elements incorrectly */
+.controls.controls-row > div[class*="span"]:first-child {
+    margin-left:0;
+}
+
+

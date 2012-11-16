@@ -1175,6 +1175,11 @@ TDAR.common = function() {
         });
         showAccessRightsLinkIfNeeded();
         $('.fileProxyConfidential').change(showAccessRightsLinkIfNeeded);
+        
+        //FIXME: idea is nice, but default options produce more annoying UI than original browser treatment of 'title' attribute. also, bootstrap docs
+        //       tell you how to delegate to selectors but I couldn't figure it out.
+        //$(form).find('label[title]').tooltip();
+        
     };
     
     
