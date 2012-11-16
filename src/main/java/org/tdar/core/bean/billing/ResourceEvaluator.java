@@ -12,7 +12,8 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 
 /*
- * This class is designed to help figure out what resources (files, resources, space) that a tDAR Resource is taking up. Some resources, like Ontologies, CodingSheets, etc. you get for free
+ * This class is designed to help figure out what resources (files, resources, space) that a tDAR Resource is taking up.
+ * Some resources, like Ontologies, CodingSheets, etc. you get for free
  */
 public class ResourceEvaluator implements Serializable {
 
@@ -25,6 +26,16 @@ public class ResourceEvaluator implements Serializable {
     private int filesUsed = 0;
     private long spaceUsed = 0;
 
+    /*
+     * IOC putting all of the logic in one place
+     */
+    public boolean invoiceHasMinimumForNewResource(Account account) {
+        return account.getAvailableResources() > 0;
+    }
+
+    /*
+     * Evaluate whether a resource can be added and how it counts when added to an account
+     */
     public void evaluateResource(Resource resource) {
         if (uncountedResourceTypes.contains(resource.getResourceType()) || uncountedResourceStatuses.contains(resource.getStatus()))
             return;

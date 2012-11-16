@@ -68,9 +68,17 @@ public class AccountService {
     }
 
     public boolean checkThatInvoiceBeAssigned(Invoice find, Account account) {
-        if (false) {
-            throw new TdarRecoverableRuntimeException("cannot assign invoice to account");
+        if (account.getOwner().equals(find.getTransactedBy()) || account.getAuthorizedMembers().contains(find.getTransactedBy())) {
+            return true;
         }
-        return true;
+        throw new TdarRecoverableRuntimeException("cannot assign invoice to account");
+    }
+
+    public boolean hasSpaceInAnAccount(Person user) {
+        for (Account account : listAvailableAccountsForUser(user)) {
+            if (account.isActive() && account.hasMinimumForNewRescord())
+                return true;
+        }
+        return false;
     }
 }

@@ -230,7 +230,10 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     @Override
     public boolean isCreatable() throws TdarActionException {
-        if (getAuthenticatedUser().getContributor()) {
+        if (!getAuthenticatedUser().getContributor()) {
+            return false;
+        }
+        if (!getTdarConfiguration().isPayPerIngestEnabled() || getAccountService().hasSpaceInAnAccount(getAuthenticatedUser())) {
             return true;
         }
         return false;

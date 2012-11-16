@@ -77,7 +77,6 @@ label.error {display:block;}
          </div>
     </#if>
     
-    
     <div class="control-group">
         <div class="controls">
             <label class="checkbox">

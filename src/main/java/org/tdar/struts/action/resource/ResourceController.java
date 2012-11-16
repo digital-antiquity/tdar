@@ -78,6 +78,13 @@ public class ResourceController extends AuthenticationAware.Base {
         return resourceType.name();
     }
 
+    public boolean isAllowedToCreateResource() {
+        if (!getTdarConfiguration().isPayPerIngestEnabled() || getAccountService().hasSpaceInAnAccount(getAuthenticatedUser())) {
+            return true;
+        }
+        return false;
+    }
+
     /**
      * Used to edit an existing resource's resource type / document type / etc.
      * 
