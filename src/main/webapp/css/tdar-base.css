@@ -280,6 +280,7 @@ header .welcome {
 	color: #999;
 	text-transform: uppercase;
 	letter-spacing: 1px;
+	z-index: 200;
 }
 
 header .welcome a {
@@ -295,7 +296,7 @@ header .welcome-drop {
 	background: url(/images/r4/bg-welcome-drop.png) bottom center no-repeat;
 	padding-bottom: 12px;
 	display: none;
-	z-index: 100;
+	z-index: 200;
 }
 
 header .welcome-drop p {
@@ -1424,6 +1425,7 @@ B.fmCheckbox.checked {
 header nav {
 	position: absolute !important;
 	right: 0px;
+	z-index: 100;
 }
 
 nav ul {

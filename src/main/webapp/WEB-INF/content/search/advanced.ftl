@@ -8,46 +8,6 @@
 <head>
 <title>Search ${siteAcronym}</title>
 <style type="text/css">
-/*    
-    #searchTemplate {
-        background-color: lightgreen
-    }
-    
-    .searchfor {width:70%}
-    
-    tr.template {display:none}
-  */  
-    /*FIXME: the difference in the widths of checkboxlabels (and hence the need for these hacks) is because (i think) ie8 has different size 'em' unit */
-  /*  .checkboxtable tr > td {
-        width: 60%;
-    }
-    .ie8-cbt-hack > .checkboxtable tr > td {
-       width: inherit !important;
-    }
-    .ie8-cbt-hack label {
-       position: static;
-    }
-    .ie8-cbt-hack table.checkboxtable {
-       width: 400px !important;
-    }
-    
-    
-    
-
-    td.searchTypeCell {vertical-align:top}
-
-    tr.termrow, tr.termrow td {background-color:#ddc;}
-    
-    table label+input{
-        margin-left:11em;
-    }
-    
-
-.addAnother {
-    font-weight:bold;
-    font-size:90%;
-}
-*/     
 </style>
 
 </head>
@@ -64,8 +24,8 @@
 <div id="resource" class="tab-pane active" >
 
 <@s.form action="results" method="GET" id="searchGroups" cssClass="form-horizontal">
-    <div class="glide searchgroup" >
-        <h3>Choose Search Terms</h3>
+<div class="searchgroup" >
+<h2>Choose Search Terms</h2>
 <#assign currentIndex = 0 />
 <#if (g?size > 0) >
  <#list g as group>
@@ -84,8 +44,7 @@
 
     <div>
         <div id="error"></div>
-        <@s.submit id="searchButton" value="Search"  /> 
-<!--        <input type='button' value='Reset' id='formResetButton'/> -->
+        <@s.submit id="searchButton" value="Search" cssClass="btn btn-large btn-primary" /> 
     </div>
         
     </div>
@@ -305,7 +264,7 @@ $(document).ready(function(){
 </#macro>
 
 <#macro searchTypeSelect id="0" init="" groupid="0" >
-    <select id="group${id}searchType" name="groups[${groupid}].fieldTypes[${id}]" class="searchType">
+    <select id="group${id}searchType" name="groups[${groupid}].fieldTypes[${id}]" class="control-label searchType" style="font-size:smaller" >
         <#assign groupName = ""/>
         <#list allSearchFieldTypes as fieldType>
             <#if !fieldType.hidden>
@@ -338,41 +297,44 @@ $(document).ready(function(){
                 <option value="OR" <#if defaultOperator=="OR">selected</#if>>Show results that match ANY of the terms below</option>
             </select>
         </div>
-        <br />        
-        <table id="groupTable0" class="grouptable repeatLastRow" style="width:100%" callback="setDefaultTerm" data-groupnum="0" data-add-another="add another search term">
+        <div id="groupTable0" class="grouptable repeatLastRow" style="width:100%" callback="setDefaultTerm" data-groupnum="0" data-add-another="add another search term">
         
             <#if group_?is_hash >
                 <#list group_.fieldTypes as fieldType >
                 <#if fieldType??>
-                    <tr id="grouptablerow_0_" class="termrow repeat-row">
-                        <td class="searchTypeCell"> 
-                            <@searchTypeSelect id="${fieldType_index}" init="${fieldType}" groupid="${groupid}" />
-                        </td>
-                        <td class="searchfor" > 
+                    <div id="grouptablerow_0_" class="control-group termrow repeat-row">
+                        <@searchTypeSelect id="${fieldType_index}" init="${fieldType}" groupid="${groupid}" />
+                        <div class="controls controls-row">
+                            <div class="span8 term-container">
                                 <@fieldTemplate fieldType=fieldType fieldIndex=fieldType_index groupid=groupid />
-                        </td>
-	                    <td> <@removeRowButton /> </td>
-                    </tr>
+                            </div>
+                            <div class="span1">
+                                <@removeRowButton />
+                            </div>
+                        </div>
+                    </div>
                 </#if>
                 </#list>
             <#else>
                 <@blankRow />
             </#if>
-        </table>
+        </div>
 </#macro>
 
 <#macro blankRow groupid=0 fieldType_index=0>
-                <tr id="grouptablerow_${groupid}_" class="termrow repeat-row">
-                    <td class="searchTypeCell"> 
-                        <@searchTypeSelect />
-                    </td>
-                    <td class="searchfor" > 
-                        <div class="term retain  ALL_FIELDS">
-                            <input type="text" name="groups[${groupid}].allFields[${fieldType_index}]" class="input-xxlarge" />
+                <div id="grouptablerow_${groupid}_" class="control-group termrow repeat-row">
+                    <@searchTypeSelect />
+                    <div class="controls controls-row">
+                        <div class="span8 term-container">
+                            <span class="term retain  ALL_FIELDS">
+                                <input type="text" name="groups[${groupid}].allFields[${fieldType_index}]" class="input-xxlarge" />
+                            </span>
                         </div>
-                    </td>
-                    <td> <@removeRowButton /> </td>
-                </tr>
+                        <div class="span1">
+                            <@removeRowButton />
+                        </div>
+                    </div>
+                </div>
 </#macro>
 
 <#macro removeRowButton>
@@ -390,9 +352,9 @@ $(document).ready(function(){
 <#macro templateProject fieldIndex="{termid}" groupid="{groupid}">
         <div class="term PROJECT">
             <@s.hidden name="groups[${groupid}].projects[${fieldIndex}].id" id="projects_${groupid}_${fieldIndex}_id" />
-            <@s.textfield cssClass="input-xxlarge projectcombo" name="groups[${groupid}].projects[${fieldIndex}].title" 
-                autocompleteIdElement="#projects_${groupid}_${fieldIndex}_id" />
-            <div class="down-arrow"></div>
+            <@common.combobox cssClass="input-xxlarge projectcombo" name="groups[${groupid}].projects[${fieldIndex}].title" 
+                autocompleteIdElement="#projects_${groupid}_${fieldIndex}_id" 
+                target="" label="" placeholder="enter project name" value=""  bootstrapControl=false />
         </div>
 </#macro>
 
@@ -400,9 +362,9 @@ $(document).ready(function(){
 <#macro templateCollection fieldIndex="{termid}" groupid="{groupid}">
         <div class="term COLLECTION">
             <@s.hidden name="groups[${groupid}].collections[${fieldIndex}].id" id="collections_${groupid}_${fieldIndex}_id" />
-            <@s.textfield name="groups[${groupid}].collections[${fieldIndex}].name" id="collections_${groupid}_${fieldIndex}_name"  
-                cssClass="input-xxlarge collectioncombo" autocompleteIdElement="#collections_${groupid}_${fieldIndex}_id" />
-            <div class="down-arrow"></div>
+            <@common.combobox name="groups[${groupid}].collections[${fieldIndex}].name" id="collections_${groupid}_${fieldIndex}_name"  
+                cssClass="input-xxlarge collectioncombo" autocompleteIdElement="#collections_${groupid}_${fieldIndex}_id" 
+                target="" label="" placeholder="enter collection name" value="" bootstrapControl=false/>
         </div>
 </#macro>
 

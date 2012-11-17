@@ -1,8 +1,8 @@
 <#macro queryField freeTextLabel="Search" showAdvancedLink=true showLimits=false submitLabel="Search">
 
- <@s.textfield label="${freeTextLabel}" id='queryField' name='query' size='81' value="${query!}" cssClass="input-xxlarge"/>
+ <@s.textfield placeholder="${freeTextLabel}" id='queryField' name='query' size='81' value="${query!}" cssClass="input-xxlarge"/>
 	<#if showAdvancedLink><span class="help-inline"><a style="display:inline" href="<@s.url value="/search/advanced"/>">advanced search</a></span></#if>
-    <@s.submit value="${submitLabel}" />
+    <@s.submit value="${submitLabel}" cssClass="btn btn-primary" />
 	<#nested>
 	<#if showLimits>
 		<br/>
@@ -12,30 +12,31 @@
 </#macro>
 
 <#macro narrowAndSort>
-        <h3>Narrow Your Search</h3>
+        <h2>Narrow Your Search</h2>
 
-        <@s.checkboxlist id="includedResourceTypes" name='resourceTypes' list='allResourceTypes'  listValue='label' label="Limit by resource type"/>
+        <@s.checkboxlist id="includedResourceTypes" numColumns=4 spanClass="span2" name='resourceTypes' list='allResourceTypes'  listValue='label' label="Resource Type"/>
 
         <#if editor!false>
-        <h4>Status</h4>
-        <span class="ie8-cbt-hack">
-        <@s.checkboxlist id="myincludedstatuses" name='includedStatuses' list='allStatuses'  listValue='label' />
-        </span>
+        <#--FIXME: there seems to be a bug in numColumns when the value is 'too high' (not sure what that number is yet) -->
+        <#--FIXME: also,  we need a good,efficient way to emit bootstrap's version of an inline checkboxlist -->
+        <@s.checkboxlist id="myincludedstatuses" name='includedStatuses' list='allStatuses'  listValue='label' label="Status" />
         </#if>
         
         <h4>Limit by geographic region:</h4>
         <div id="latlongoptions">
-            <div id='large-google-map' style="height:450px;"></div>     
-            <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].maximumLongitude" id="maxx" class="ne-lng-display" />
-            <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].minimumLatitude"  id="miny" class="sw-lat-display" />
-            <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].minimumLongitude" id="minx" class="sw-lng-display" />
-            <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].maximumLatitude"  id="maxy" class="ne-lat-display" />
+            <div id='large-google-map'></div>     
+            <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].maximumLongitude" id="maxx" cssClass="ne-lng" />
+            <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].minimumLatitude"  id="miny" cssClass="sw-lat" />
+            <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].minimumLongitude" id="minx" cssClass="sw-lng" />
+            <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].maximumLatitude"  id="maxy" cssClass="ne-lat" />
         </div>
         
-    <h3>Sorting Options and Submit</h3>
-    <label for="sortField">Sort By:</label>
-     <@search.sortFields />
-    <br/>
+    <h2>Sorting Options and Submit</h2>
+    <div class="control-group">
+        
+        <label class="control-label">Sort By</label>
+        <@sortFields />
+    </div>
 </#macro>
 
 <#macro typeSelected type>

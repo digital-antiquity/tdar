@@ -175,7 +175,7 @@
 		<#assign spanSize = 6/>
 	</#if> 
 
-	<#if request.requestURI?contains("/search/") ><#assign part="search" /></#if>
+	<#if request.requestURI?contains("/search/results") ><#assign part="search" /></#if>
 		<#if page.properties["div.titlebar"]?has_content>
 			${page.properties["div.titlebar"]}
 		</#if>
@@ -213,6 +213,7 @@
         <script type="text/javascript">
         //functionality for "welcome back, so-and-so!" (pulled from main.js)
         //FIXME: needs refactoring
+        /**
         $(function(){
             $(".welcome a").click(function(){
                 $(".welcome-drop").toggle();
@@ -223,7 +224,7 @@
               $('.welcome-drop').hide();
             });
         });
-        
+        **/
         </script>
     <@header.scripts production />
     <script type="text/javascript">

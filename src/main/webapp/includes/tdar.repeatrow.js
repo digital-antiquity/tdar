@@ -35,7 +35,8 @@ TDAR.repeatrow = function() {
             $('button', $button).click(function() {
                 var element = $(_options.rowSelector, parentElement).last();
                 var $clone = _cloneSection(element, parentElement);
-                $(parentElement).trigger("repeatrowadded", parentElement, $clone[0]);
+                var idx = $(parentElement).find('.repeat-row').length
+                $(parentElement).trigger("repeatrowadded", [parentElement, $clone[0], idx]);
 
                 // set focus on the first input field (or designate w/ repeatrow-focus class).
                 $("input[type=text], textarea, .repeatrow-focus", $clone).filter(":visible:first").focus();
@@ -43,7 +44,9 @@ TDAR.repeatrow = function() {
             });
             $(parentElement).after($button);
             $(parentElement).delegate(".repeat-row-delete","click", function(e){
-            	TDAR.repeatrow.deleteRow($(this).parents(".repeat-row")[0]);
+                var rowElem = $(this).parents(".repeat-row")[0];
+            	TDAR.repeatrow.deleteRow(rowElem);
+            	$(rowElem).trigger('repeatrowdeleted');
             });
         });
         

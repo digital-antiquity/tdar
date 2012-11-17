@@ -855,10 +855,12 @@ this bit of freemarker is voodoo:
 </#macro>
 
 
-<#macro combobox name target label autocompleteParentElement autocompleteIdElement placeholder value cssClass id="">
+<#macro combobox name target autocompleteIdElement placeholder value cssClass autocompleteParentElement="" label="" bootstrapControl=true id="">
+            <#if bootstrapControl>
             <div class="control-group">
                 <label class="control-label">${label}</label>
                 <div class="controls">
+            </#if>
                     <div class="input-append">
                         <@s.textfield theme="simple" name="${name}"  target="${target}"
                          label="${label}"
@@ -868,10 +870,28 @@ this bit of freemarker is voodoo:
                         value="${value}" cssClass="${cssClass}" />
                         <button type="button" class="btn show-all"><i class="icon-chevron-down"></i></button>                    
                     </div>
+            <#if bootstrapControl>
                 </div>
             </div>
+            </#if>
 </#macro>
 
+<#--TODO: generify this so that you can choose radios or checkboxes -->
+<#-- FIXME: not finished!!! -->
+<#macro inlineCheckboxlist  name list id="inlineCheckboxList" listValue='label' label="">
+    <div class="control-group" >
+        <#if label != "" ><label class="control-label">${label}</label></#if>
+        <div class="controls">
+            <#list list as listItem>
+                <label class="checkbox inline">
+                    <@s.checkbox theme="simple" name="${name}" id="${id}_${listItem_index}" value="" />
+                </label>
+            </#list>
+        </div>
+        
+        
+    </div>
+</#macro>
 
 </#escape>
 
