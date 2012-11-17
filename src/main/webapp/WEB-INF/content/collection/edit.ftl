@@ -175,7 +175,7 @@ The form will check for matches in the ${siteAcronym} database and populate the 
     <dd>User can edit resources listed in the collection, and also modify the contents of the collection.<dd>
 </dl>
 </div>
-<@edit.fullAccessRights "#divCollectionAccessRightsTips"/>
+<@edit.fullAccessRights tipsSelector="#divCollectionAccessRightsTips" disableSelfUser=true/>
 
 <div class="glide" tiplabel="Add/Remove Resources" tooltipcontent="Check the items in this table to add them to your collection.  Navigate the pages
                     in this list by clicking the left/right arrows at the bottom of this table.  Use the input fields above the table to limit the number

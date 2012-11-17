@@ -425,7 +425,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 
 <#-- provides a fieldset just for full user access -->
-<#macro fullAccessRights tipsSelector="#divAccessRightsTips">
+<#macro fullAccessRights tipsSelector="#divAccessRightsTips" disableSelfUser=false>
 <#local _authorizedUsers=authorizedUsers />
 <#if _authorizedUsers.empty><#local _authorizedUsers=[blankAuthorizedUser]></#if>
 <@helptext.accessRights />
@@ -439,7 +439,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <label class="control-label">Users</label>
         <#list _authorizedUsers as authorizedUser>
             <#if authorizedUser??>
-            	<@userRow person=authorizedUser.user disableSelfUser=true _indexNumber=authorizedUser_index includeRole=false _personPrefix="user" 
+            	<@userRow person=authorizedUser.user disableSelfUser=disableSelfUser _indexNumber=authorizedUser_index includeRole=false _personPrefix="user" 
             	   prefix="authorizedUsers" includeRights=true isUser=true includeRepeatRow=true includeDelete=true/>
             </#if>
         </#list>
@@ -1359,7 +1359,7 @@ function fnRenderTitle(oObj) {
     <div class="glide" tiplabel="Primary Copyright Holder" tooltipcontent="Use this field to nominate a primary copyright holder. Other information about copyright can be added in the 'notes' section by creating a new 'Rights & Attribution note.">
         <h3>${sectionTitle}</h3>
 
-    <table>
+    <table id="copyrightHolderTable">
 	  <@creatorProxyRow proxy=copyrightHolderProxy proxy_index="" prefix="copyrightHolder" required=true includeRole=false required=true/>
 	</table>
 </#if>

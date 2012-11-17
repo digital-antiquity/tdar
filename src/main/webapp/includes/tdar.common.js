@@ -1241,19 +1241,19 @@ TDAR.common = function() {
         delegateCreator("#divAccessRights", true, false);
         delegateCreator("#copyrightHolderTable",false,true);
         delegateAnnotationKey("#resourceAnnotationsTable", "annotation", "annotationkey");
-        delegateKeyword("#siteNameKeywordTable", "sitename", "SiteNameKeyword");
-        delegateKeyword("#uncontrolledSiteTypeKeywordTable", "siteType", "SiteTypeKeyword");
-        delegateKeyword("#uncontrolledCultureKeywordTable", "culture", "CultureKeyword");
-        delegateKeyword("#temporalKeywordTable", "temporal", "TemporalKeyword");
-        delegateKeyword("#otherKeywordTable", "other", "OtherKeyword");
-        delegateKeyword("#geographicKeywordTable", "geographic", "GeographicKeyword");
+        delegateKeyword("#siteNameKeywordsRepeatable", "sitename", "SiteNameKeyword");
+        delegateKeyword("#uncontrolledSiteTypeKeywordsRepeatable", "siteType", "SiteTypeKeyword");
+        delegateKeyword("#uncontrolledCultureKeywordsRepeatable", "culture", "CultureKeyword");
+        delegateKeyword("#temporalKeywordsRepeatable", "temporal", "TemporalKeyword");
+        delegateKeyword("#otherKeywordsRepeatable", "other", "OtherKeyword");
+        delegateKeyword("#geographicKeywordsRepeatable", "geographic", "GeographicKeyword");
         applyInstitutionAutocomplete($('#txtResourceProviderInstitution'), true);
         applyInstitutionAutocomplete($('#publisher'), true);
         $('#resourceCollectionTable').on(
+                "repeatrowadded",
                 ".collectionAutoComplete",
-                "focusin",
                 function() {
-                    applyCollectionAutocomplete($(".collectionAutoComplete", $('#resourceCollectionTable')), {showCreate:true});
+                    applyCollectionAutocomplete($('#resourceCollectionTable').find(".collectionAutoComplete"), {showCreate:true});
                 });
 
         // prevent "enter" from submitting

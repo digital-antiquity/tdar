@@ -63,14 +63,17 @@ TDAR.repeatrow = function() {
          * we assume that the table row will have an ID that follows the convention _num_, and we will use this same convention for choosing the next ID
          * addribute for the row as well as any element inside the row that uses the same convention for the NAME and ID attributes.
          */
-        var rex = /_(\d+)_/i;
-        var match = rex.exec($element.attr("id"));
+        var rex = /^(.*?_)(\d+)(_.*)$/i;
+        var elementIdAttr = $element.attr("id");
+        var match = rex.exec(elementIdAttr);
         
-        //the last occurance _num_ is our current id
-        var currentId = parseInt(match[1]); 
+        //if element's id is in right format the rownum will be the 2nd submatch
+        var currentId = parseInt(match[2]); 
 
         var nextId = currentId + 1;
         var newRowId = nextId;
+        
+        //FIXME: bit.ly/Qk6UPe
         if ($element.attr("id") != undefined && $element.attr("id").indexOf("_") != -1) {
             while ("a" != "b") {
                 newRowId = $element.attr("id").substring(0, $element.attr("id").lastIndexOf('_' + currentId + '_')) + "_" + nextId + '_';
@@ -79,10 +82,12 @@ TDAR.repeatrow = function() {
             }
         }
         
+        var cloneIdAttr = elementIdAttr.replace(rex, "$1" + nextId + "$3");
+        
         //TODO: remove error/warning labels from $clone (e.g.  form validation fails on last row, then you click 'add new row').
 
         // update the id for our new row
-        $clone.attr('id', newRowId);
+        $clone.attr('id', cloneIdAttr);
 
         /*
          * Now that we've cloned the row, certain element attributes may need to be renamed (for example, input tags with name attributes of the form
