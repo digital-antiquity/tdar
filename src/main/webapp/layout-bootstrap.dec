@@ -213,7 +213,6 @@
         <script type="text/javascript">
         //functionality for "welcome back, so-and-so!" (pulled from main.js)
         //FIXME: needs refactoring
-        /**
         $(function(){
             $(".welcome a").click(function(){
                 $(".welcome-drop").toggle();
@@ -224,7 +223,6 @@
               $('.welcome-drop').hide();
             });
         });
-        **/
         </script>
     <@header.scripts production />
     <script type="text/javascript">
