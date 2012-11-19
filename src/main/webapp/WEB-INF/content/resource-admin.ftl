@@ -9,7 +9,7 @@
 		<th>views</th>
 		<th>day</th>
 	</tr>
-<#list usageStats as stats>
+<#list usageStatsForResources as stats>
 	<tr>
 		<td>${stats.count}</td>
 		<td>${stats.aggregateDate}</td>
@@ -27,12 +27,15 @@
 <#list resourceLogEntries as entry>
 	<tr>
 		<td>${entry.timestamp}</td>
-		<td>${person.properName}</td>
-		<td>${logMessage}</td>
+		<td>${entry.person.properName}</td>
+		<td>${entry.logMessage}</td>
 	</tr>
 </#list>
 </table>
 
-<@view.adminFileActions />
 
+
+<@view.accessRights />
+
+<@view.adminFileActions />
 </#escape>
