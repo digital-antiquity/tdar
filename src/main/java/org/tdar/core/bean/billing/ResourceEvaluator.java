@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
@@ -25,6 +27,7 @@ public class ResourceEvaluator implements Serializable {
     private int resourcesUsed = 0;
     private int filesUsed = 0;
     private long spaceUsed = 0;
+    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     /*
      * IOC putting all of the logic in one place

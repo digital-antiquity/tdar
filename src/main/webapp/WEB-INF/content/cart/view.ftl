@@ -22,7 +22,7 @@
 <#list invoice.items as item>
 	<tr>
 	<td>${item.activity.name}</td>
-	<td>${item.quantity}</td>
+	<td>${item.quantity!0}</td>
 	<td>${item.activity.price}</td>
 	<td>${item.subtotal}</td>
 	</tr>

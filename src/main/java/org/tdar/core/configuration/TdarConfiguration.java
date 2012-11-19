@@ -487,11 +487,6 @@ public class TdarConfiguration {
         return assistant.getBooleanProperty("https.enabled", false);
     }
 
-    public String getNelnetOrderType() {
-        return assistant.getStringProperty("nelnet.order.type");
-    }
-    
-    
     public Integer getHttpsPort() {
         return assistant.getIntProperty("https.port", 443);
     }

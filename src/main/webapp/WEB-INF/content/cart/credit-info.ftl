@@ -16,13 +16,13 @@
 
 	<@s.radio list="allTransactionTypes" name="invoice.transactionType" cssClass="transactionType" emptyOption='false' />
 
-	<div class="toggleType credit_card">
-	<@s.textfield name="invoice.billing.phone" cssClass="input-xlarge phoneUS  required-visible" label="Billing Phone #" />
+	<div class="typeToggle credit_card invoice manual">
+		<@s.textfield name="invoice.billingPhone" cssClass="input-xlarge phoneUS  required-visible" label="Billing Phone #" />
 	</div>
-	<div class="invoice typeToggle">
+	<div class="typeToggle invoice">
 		<@s.textfield name="invoice.invoiceNumber" cssClass="input-xlarge" label="Invoice #" />
 	</div>
-	<div class="manual typeToggle">
+	<div class="typeToggle manual">
 		<@s.textarea name="invoice.otherReason" cssClass="input-xlarge" label="Other Reason" />
 	</div>
 	
@@ -39,7 +39,7 @@ $(document).ready(function() {
    if (!$(".transactionType[type=radio]:checked").length) {
 	$($(".transactionType[type=radio]")[0]).click();
    }
-    switchType($(".transactionType[type=radio]:checked",'#MetadataForm'));
+   switchType($(".transactionType[type=radio]:checked",$('#MetadataForm')));
 
 
 });

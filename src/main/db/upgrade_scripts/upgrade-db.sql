@@ -149,7 +149,7 @@ create table pos_invoice (
     invoiceNumber varchar(25),
     otherReason varchar(255),
     account_id int8,
-    billingPhone int,
+    billingPhone int8,
     expirationYear int,
     expirationMonth int,
     creditCardType varchar(25),
@@ -256,3 +256,4 @@ alter table pos_invoice drop column transactionType;
 alter table pos_invoice add column transaction_type varchar(50);
 alter table resource drop column account_id;
 alter table resource add column account_id int8 references pos_account;
+alter table pos_invoice alter column billingPhone type int8;

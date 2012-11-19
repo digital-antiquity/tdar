@@ -56,7 +56,10 @@ public class NelNetPaymentDao extends Configurable {
     public String getTransactionPostUrl() {
         return assistant.getStringProperty("post.url");
     }
-
+    public String getOrderType() {
+        return assistant.getStringProperty("order.type");
+    }
+    
     public List<PaymentMethod> getSupportedPaymentMethods() {
         return Arrays.asList(PaymentMethod.CREDIT_CARD);
     }
@@ -64,7 +67,7 @@ public class NelNetPaymentDao extends Configurable {
     public String prepareRequest(Invoice invoice) throws URIException {
         genericDao.saveOrUpdate(invoice);
         genericDao.markReadOnly(invoice);
-        NelNetTransactionRequestTemplate template = new NelNetTransactionRequestTemplate();
+        NelNetTransactionRequestTemplate template = new NelNetTransactionRequestTemplate(getOrderType(), getSecretWord());
         template.populateHashMapFromInvoice(invoice);
         template.constructHashKey();
         String urlSuffix = template.constructUrlSuffix();

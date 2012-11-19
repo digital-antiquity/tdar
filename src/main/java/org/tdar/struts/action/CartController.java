@@ -44,6 +44,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     public static final String SUCCESS_UPDATE_ACCOUNT = "success-update-account";
     public static final String SUCCESS_ADD_ACCOUNT = "success-add-account";
     private static final String INVOICE = "invoice";
+    private static final String REDIRECT_URL = "redirect-url";
 
     @Autowired
     // I will be pushed down into a service later on...
@@ -94,12 +95,11 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
     private String redirectUrl;
     private Map<String, String[]> parameters;
-
     @SkipValidation
     @WriteableSession
     @Action(value = "process-payment-request", results = {
             @Result(name = SUCCESS, type = "redirect", location = "view?id=${invoice.id}&review=true"),
-            @Result(name = REDIRECT, type = "redirect", location = "${redirectUrl}"),
+            @Result(name = REDIRECT_URL, type = "redirect", location = "${redirectUrl}"),
             @Result(name = SUCCESS_UPDATE_ACCOUNT, type = "redirect", location = "/billing/choose?invoiceId=${invoice.id}&id=${accountId}"),
             @Result(name = SUCCESS_ADD_ACCOUNT, type = "redirect", location = "/billing/choose?invoiceId=${invoice.id}")
     })
@@ -114,7 +114,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         TransactionType transactionType = getInvoice().getTransactionType();
         String invoiceNumber = getInvoice().getInvoiceNumber();
         String otherReason = getInvoice().getOtherReason();
-        Integer billingPhone = getInvoice().getBillingPhone();
+        Long billingPhone = getInvoice().getBillingPhone();
         setInvoice(getGenericService().loadFromSparseEntity(getInvoice(), Invoice.class));
         getInvoice().setTransactionType(transactionType);
         getInvoice().setOtherReason(otherReason);
@@ -135,7 +135,8 @@ public class CartController extends AbstractPersistableController<Invoice> imple
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
-                break;
+                logger.info("redirecting to : {}" , getRedirectUrl());
+                return REDIRECT_URL;
             case INVOICE:
                 getInvoice().setInvoiceNumber(invoiceNumber);
                 getGenericService().saveOrUpdate(getInvoice());

@@ -12,12 +12,14 @@ import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.billing.Invoice;
-import org.tdar.core.configuration.TdarConfiguration;
 
-public class NelNetTransactionRequestTemplate implements Serializable  {
+public class NelNetTransactionRequestTemplate implements Serializable {
 
     private static final long serialVersionUID = -6993533612215066367L;
+    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     public enum ItemType {
         NUMERIC,
@@ -28,6 +30,13 @@ public class NelNetTransactionRequestTemplate implements Serializable  {
     }
 
     private HashMap<String, String> values = new HashMap<String, String>();
+    private String orderType = "";
+    private String secretWord = "";
+
+    public NelNetTransactionRequestTemplate(String orderType, String secret) {
+        this.setOrderType(orderType);
+        this.setSecretWord(secret);
+    }
 
     public enum NelnetTransactionItem {
         ORDER_TYPE(1, "orderType", ItemType.STRING, 32),
@@ -58,10 +67,11 @@ public class NelNetTransactionRequestTemplate implements Serializable  {
         STATE(26, "state", ItemType.STRING, 2),
         ZIP(27, "zip", ItemType.STRING, 10),
         COUNTRY(28, "country", ItemType.STRING, 20),
-        DAYTIME_PHONE(29, "datetimePhone", ItemType.STRING, 20),
+        DAYTIME_PHONE(29, "daytimePhone", ItemType.STRING, 20),
         EVENING_PHONE(30, "eveningPhone", ItemType.STRING, 20),
         EMAIL(31, "email", ItemType.STRING, 50),
         TIMESTAMP(36, "timestamp", ItemType.TIMESTAMP, 13),
+        SECRET(400, null, ItemType.STRING, 40),
         HASH(500, "hash", ItemType.STRING, 999);
 
         private ItemType type;
@@ -167,10 +177,14 @@ public class NelNetTransactionRequestTemplate implements Serializable  {
                     value = Integer.toString(val.intValue());
                     break;
                 case ORDER_TYPE:
-                    value = TdarConfiguration.getInstance().getNelnetOrderType();
+                    value = getOrderType();
                     break;
                 case DAYTIME_PHONE:
-                    value = invoice.getBillingPhone().toString();
+                case EVENING_PHONE:
+                    logger.info("invoice: {} phone: {} ", invoice, invoice.getBillingPhone());
+                    if (invoice.getBillingPhone() != null) {
+                        value = invoice.getBillingPhone().toString();
+                    }
                     break;
                 case CITY:
                     value = StringUtils.substring(invoice.getAddress().getCity(), 0, item.length);
@@ -180,9 +194,6 @@ public class NelNetTransactionRequestTemplate implements Serializable  {
                     break;
                 case EMAIL:
                     value = invoice.getTransactedBy().getEmail();
-                    break;
-                case EVENING_PHONE:
-                    value = invoice.getBillingPhone().toString();
                     break;
                 case ORDER_NUMBER:
                     value = invoice.getId().toString();
@@ -202,6 +213,8 @@ public class NelNetTransactionRequestTemplate implements Serializable  {
                 case TIMESTAMP:
                     value = Long.toString(System.currentTimeMillis());
                     break;
+                case SECRET:
+                    value = getSecretWord();
                 default:
                     break;
             }
@@ -224,10 +237,26 @@ public class NelNetTransactionRequestTemplate implements Serializable  {
         for (NelnetTransactionItem item : NelnetTransactionItem.values()) {
             String key = item.key;
             String value = values.get(key);
-            if (values.containsKey(key) && StringUtils.isNotBlank(value)) {
+            if (values.containsKey(key) && StringUtils.isNotBlank(value) && StringUtils.isNotBlank(key)) {
                 suffix.append(key).append("=").append(URIUtil.encodeQuery(value)).append("&");
             }
         }
         return suffix.toString();
+    }
+
+    public String getOrderType() {
+        return orderType;
+    }
+
+    public void setOrderType(String orderType) {
+        this.orderType = orderType;
+    }
+
+    public String getSecretWord() {
+        return secretWord;
+    }
+
+    public void setSecretWord(String secretWord) {
+        this.secretWord = secretWord;
     }
 }

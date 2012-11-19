@@ -15,6 +15,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.entity.Address;
@@ -33,6 +35,7 @@ import org.tdar.core.bean.entity.Person;
 public class Invoice extends Base implements Updatable {
 
     private static final long serialVersionUID = -3613460318580954253L;
+    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     public enum TransactionStatus {
         PREPARED,
@@ -52,7 +55,7 @@ public class Invoice extends Base implements Updatable {
     @Column(name = "transaction_type")
     private TransactionType transactionType;
 
-    private Integer billingPhone;
+    private Long billingPhone;
     private Integer expirationYear;
     private Integer expirationMonth;
     private String creditCardType;
@@ -207,11 +210,15 @@ public class Invoice extends Base implements Updatable {
         }
     }
 
-    public void setBillingPhone(Integer billingPhone) {
+    public void setBillingPhone(Long billingPhone) {
         this.billingPhone = billingPhone;
     }
 
-    public Integer getBillingPhone() {
+    public void setBillingPhone(String phone) {
+        this.billingPhone = Long.parseLong(phone.replaceAll("\\D", ""));
+    }
+
+    public Long getBillingPhone() {
         return billingPhone;
     }
 

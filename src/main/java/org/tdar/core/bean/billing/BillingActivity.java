@@ -6,6 +6,8 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.dao.external.auth.TdarGroup;
 
@@ -19,16 +21,17 @@ import org.tdar.core.dao.external.auth.TdarGroup;
 public class BillingActivity extends Persistable.Base {
 
     private static final long serialVersionUID = 6891881586235180640L;
+    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private String name;
     @Column(updatable = false)
-    private Integer numberOfHours;
+    private Integer numberOfHours = 0;
     @Column(updatable = false)
-    private Long numberOfMb;
+    private Long numberOfMb = 0L;
     @Column(updatable = false)
-    private Long numberOfResources;
+    private Long numberOfResources = 0L;
     @Column(updatable = false)
-    private Long numberOfFiles;
+    private Long numberOfFiles = 0L;
     // display values may be lower than actual values to give some wiggle room
     private Long displayNumberOfMb;
     private Long displayNumberOfResources;

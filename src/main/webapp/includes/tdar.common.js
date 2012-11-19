@@ -1182,13 +1182,15 @@ TDAR.common = function() {
         
         
         
-        $('#explicitCoordinatesDiv').toggle($('#viewCoordinatesCheckbox')[0].checked);
+        if ($('#explicitCoordinatesDiv').length > 0) {
+        	$('#explicitCoordinatesDiv').toggle($('#viewCoordinatesCheckbox')[0].checked);
         
+        }
         $(".latLong").each(function(index, value){
-            $(this).hide();
-            //copy value of hidden original to the visible text input
-            var id = $(this).attr('id'); 
-            $('#d_' + id).val($('#' + id).val());
+        	$(this).hide();
+        	//copy value of hidden original to the visible text input
+        	var id = $(this).attr('id'); 
+        	$('#d_' + id).val($('#' + id).val());
         });
 
     };

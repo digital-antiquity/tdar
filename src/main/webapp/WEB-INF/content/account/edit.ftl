@@ -102,18 +102,18 @@ label.error {display:block;}
             </div>
         </div>    
 
-        <#if RPAEnabled>
-        <div class="control-group">
-            <label class="control-label" for="rpaNumber">RPA Number</label>
-            <div class="controls">
-                <@s.textfield theme="simple" name='person.rpaNumber' id='rpaNumber' />
-                <span class="help-block"> 
-                    Are you a <a target='_blank' href='http://www.rpanet.org/'>Registered Professional Archaeologist?</a>
-                </span>
-            </div>
-        </div>
-        </#if>
     </div>
+    <#if RPAEnabled>
+    <div class="control-group">
+        <label class="control-label" for="rpaNumber">RPA Number</label>
+        <div class="controls">
+            <@s.textfield theme="simple" name='person.rpaNumber' id='rpaNumber' />
+            <span class="help-block"> 
+                Are you a <a target='_blank' href='http://www.rpanet.org/'>Registered Professional Archaeologist?</a>
+            </span>
+        </div>
+    </div>
+    </#if>
     
     
     <#if recaptcha_public_key??>
