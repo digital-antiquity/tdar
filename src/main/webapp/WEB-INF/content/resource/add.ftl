@@ -12,7 +12,7 @@
 <body>
     <h1>Create Resources </h1>
     
-    <#if allowedToCreateResource>
+    <#if !allowedToCreateResource>
 		You currently do not have space on your account to add resources. Please ... <a href="<@s.url value="/cart/add"/>">recharge or create an account</a><br/>    
     <#else>
     <div class="row">
