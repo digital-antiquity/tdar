@@ -138,11 +138,11 @@ Welcome back, ${authenticatedUser.firstName}!
 <hr />
 <div class="span9 noindent" id="divAccountInfo">
 <h3>About Your Account</h3>
-    <em class="label">Full Name</em>${authenticatedUser.properName}<#if authenticatedUser.institution??>, ${authenticatedUser.institution.name}</#if><br />
+    <strong>Full Name: </strong>${authenticatedUser.properName}<#if authenticatedUser.institution??>, ${authenticatedUser.institution.name}</#if><br />
     <#if authenticatedUser.penultimateLogin??>
-        <em class="label">Last Login</em>${authenticatedUser.penultimateLogin?datetime}<br/>
+        <strong>Last Login: </strong>${authenticatedUser.penultimateLogin?datetime}<br/>
     </#if>
-<em class="label">&nbsp;</em><a href="<@s.url value='/entity/person/edit?id=${sessionData.person.id?c}'/>">edit your profile</a>
+	<a href="<@s.url value='/entity/person/edit?id=${sessionData.person.id?c}'/>">edit your profile</a>
 </div>
 
 <#macro listCollections resourceCollections_ >
