@@ -493,7 +493,7 @@ No categories or subcategories specified.
 <p class="meta">
 	<@showCreatorProxy proxyList=authorshipProxies />
 	<#if resource.date?has_content>
-		<strong>Year:</strong> ${resource.date?c}<br/>
+		<p><strong>Year:</strong> ${resource.date?c}</p>
 	</#if>
 	
 	<#if copyrightMandatory && resource.copyrightHolder?? >
@@ -502,7 +502,7 @@ No categories or subcategories specified.
 	</#if>
 </p>
 
-
+<p class="visible-phone"><a href="#sidebar-right">&raquo; Downloads &amp; Basic Metadata</a></p>
 <hr class="span9 dbl">
 
 <h2>Summary</h2>
