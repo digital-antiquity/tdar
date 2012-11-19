@@ -1180,6 +1180,17 @@ TDAR.common = function() {
         //       tell you how to delegate to selectors but I couldn't figure it out.
         //$(form).find('label[title]').tooltip();
         
+        
+        
+        $('#explicitCoordinatesDiv').toggle($('#viewCoordinatesCheckbox')[0].checked);
+        
+        $(".latLong").each(function(index, value){
+            $(this).hide();
+            //copy value of hidden original to the visible text input
+            var id = $(this).attr('id'); 
+            $('#d_' + id).val($('#' + id).val());
+        });
+
     };
     
     
@@ -1385,18 +1396,12 @@ $(document).ready(function() {
 	checkWindowSize();
 	$(window).resize(checkWindowSize);
 });
-/*
-function getSampleStrings(sets, allowedCount, specialCount) {
-    var allowed = sets.allowedChars;
-    var special = sets.specialChars;
-    var i=0, j=0;
-    var len = allowedCount + specialCount;
-    var strings = [];
-    for(i = 0; i < len; i++) {
-        
-    }
+
+
+function elipsify(text, n, useWordBoundary){
+	/* from: http://stackoverflow.com/questions/1199352/smart-way-to-shorten-long-strings-with-javascript */
+	var toLong = text.length>n,
+	    s_ = toLong ? text.substr(0,n-1) : text;
+	s_ = useWordBoundary && toLong ? s_.substr(0,s_.lastIndexOf(' ')) : s_;
+	return  toLong ? s_ + '...' : s_;
 }
-
-
-
-*/

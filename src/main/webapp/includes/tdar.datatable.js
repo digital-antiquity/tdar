@@ -138,4 +138,140 @@ function fnRenderIdColumn(oObj) {
 }
 
 
+function projToolbarItem(link, image, text) {
+    return '<li><a href="' + link + '"><img alt="toolbar item" src="' + image + '"/>' + text + '</a></li>';
+ }
+ 
+
+
+
+function drawToolbar(projId) {
+    var toolbar = $("#proj-toolbar");
+    toolbar.empty();
+    if (projId != undefined && projId != '') {
+        toolbar.append(projToolbarItem('/project/' + projId + '/view', '/images/zoom.png', ' View selected project'));
+        toolbar.append(projToolbarItem('/project/' + projId + '/edit', '/images/pencil.png', ' Edit project'));
+        toolbar.append(projToolbarItem('/resource/add?projectId=' + projId, '/images/database_add.png', ' Add new resource to project'));
+    }
+}
+
+function fnRenderTitle(oObj) {
+    //in spite of name, aData is an object containing the resource record for this row
+    var objResource = oObj.aData;
+    var html = '<a href="'  + getURI(objResource.urlNamespace + '/' + objResource.id) + '" class=\'title\'>' + htmlEncode(objResource.title) + '</a>';
+    html += ' (ID: ' + objResource.id 
+    if (objResource.status != 'ACTIVE') {
+    html += " " + objResource.status;
+    }
+    html += ')';
+    if (datatable_showDescription) {
+    	html += '<br /> <p>' + htmlEncode(elipsify(objResource.description,80)) + '</p>';
+    }; 
+    return html;
+}
+
+
+function setupDashboardDataTable() {
+    // set the project selector to the last project viewed from this page
+    // if not found, then select the first item 
+    var prevSelected = $.cookie("tdar_datatable_selected_project");
+    if (prevSelected != null) {
+        var elem = $('#project-selector option[value=' + prevSelected + ']');
+        if(elem.length) {
+            elem.attr("selected", "selected");
+        } else {
+            $("#project-selector").find("option :first").attr("selected", "selected");
+        }
+
+    }
+    drawToolbar($("#project-selector").val());
+    var prevSelected = $.cookie("tdar_datatable_selected_collection");
+    if (prevSelected != null) {
+        var elem = $('#collection-selector option[value=' + prevSelected + ']');
+        if(elem.length) {
+            elem.attr("selected", "selected");
+        } else {
+            $("#collection-selector").find("option :first").attr("selected", "selected");
+        }
+
+    }
+
+    jQuery.fn.dataTableExt.oPagination.iFullNumbersShowPages =3;
+	$.extend( $.fn.dataTableExt.oStdClasses, {
+	    "sWrapper": "dataTables_wrapper form-inline"
+	} );
+//        sDom:'<"datatabletop"ilrp>t<>', //omit the search box
+	    
+	  var aoColumns_ = [{ "mDataProp": "title",  sWidth: '65%', fnRender: fnRenderTitle, bUseRendered:false ,"bSortable":false},
+          { "mDataProp": "resourceTypeLabel",  sWidth: '15%',"bSortable":false }];
+          if (datatable_isSelectable) {
+          aoColumns_[2] = { "mDataProp": "id", tdarSortOption: "ID", sWidth:'5em' ,"bSortable":false};
+          };
+    $dataTable = registerLookupDataTable({
+        tableSelector: '#resource_datatable',
+        sAjaxSource:'/lookup/resource',
+        "bLengthChange": true,
+        "bFilter": false,
+        aoColumns: aoColumns_,
+		"sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span4'i><'span5'p>>",
+        sPaginationType:"bootstrap",
+        sAjaxDataProp: 'resources',
+        requestCallback: function(searchBoxContents){
+                return {title: searchBoxContents,
+                    'resourceTypes': $("#resourceTypes").val() == undefined ? "" : $("#resourceTypes").val(),
+                    'includedStatuses': $("#statuses").val() == undefined ? "" : $("#statuses").val() ,
+                    'sortField':$("#sortBy").val(),
+                    'term':$("#query").val(),
+                    'projectId':$("#project-selector").val(),
+                    'collectionId':$("#collection-selector").val(),
+                     useSubmitterContext: !datatable_isAdministrator
+            }
+        },
+        selectableRows: datatable_isSelectable,
+        rowSelectionCallback: function(id, obj, isAdded){
+            if(isAdded) {
+                rowSelected(obj);
+            } else {
+                rowUnselected(obj);
+            }
+        }
+    });
+
+    $("#project-selector").change(function() {
+        var projId = $(this).val();
+        $.cookie("tdar_datatable_selected_project", projId);
+        drawToolbar(projId);
+        $("#resource_datatable").dataTable().fnDraw();
+    });
+
+    $("#collection-selector").change(function() {
+        var projId = $(this).val();
+        $.cookie("tdar_datatable_selected_collection", projId);
+        drawToolbar(projId);
+        $("#resource_datatable").dataTable().fnDraw();
+    });
+    
+    $("#resourceTypes").change(function() {
+      $("#resource_datatable").dataTable().fnDraw();
+      $.cookie($(this).attr("id"), $(this).val());
+    });
+
+
+    $("#statuses").change(function() {
+      $("#resource_datatable").dataTable().fnDraw();
+      $.cookie($(this).attr("id"), $(this).val());
+    });
+    
+    $("#sortBy").change(function() {
+      $("#resource_datatable").dataTable().fnDraw();
+      $.cookie($(this).attr("id"), $(this).val());
+    });
+    
+    $("#query").change(function() {
+      $("#resource_datatable").dataTable().fnDraw();
+      $.cookie($(this).attr("id"), $(this).val());
+    });
+    
+    $("#query").bindWithDelay("keyup", function() {$("#resource_datatable").dataTable().fnDraw();} ,500);
+}
 
