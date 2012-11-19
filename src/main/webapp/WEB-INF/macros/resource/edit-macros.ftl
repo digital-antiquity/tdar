@@ -425,7 +425,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 
 <#-- provides a fieldset just for full user access -->
-<#macro fullAccessRights tipsSelector="#divAccessRightsTips" disableSelfUser=false>
+<#macro fullAccessRights tipsSelector="#divAccessRightsTips">
 <#local _authorizedUsers=authorizedUsers />
 <#if _authorizedUsers.empty><#local _authorizedUsers=[blankAuthorizedUser]></#if>
 <@helptext.accessRights />
@@ -439,7 +439,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <label class="control-label">Users</label>
         <#list _authorizedUsers as authorizedUser>
             <#if authorizedUser??>
-            	<@userRow person=authorizedUser.user disableSelfUser=disableSelfUser _indexNumber=authorizedUser_index includeRole=false _personPrefix="user" 
+            	<@userRow person=authorizedUser.user disableSelfUser=true _indexNumber=authorizedUser_index includeRole=false _personPrefix="user" 
             	   prefix="authorizedUsers" includeRights=true isUser=true includeRepeatRow=true includeDelete=true/>
             </#if>
         </#list>
