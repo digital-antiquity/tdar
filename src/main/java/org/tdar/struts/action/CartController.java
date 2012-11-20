@@ -173,15 +173,15 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 //
 //        TransactionStatus status = nelnetPaymentDao.processResponse(getInvoice(), getParameters());
 
-        getGenericService().saveOrUpdate(getInvoice());
-        getInvoice().setTransactionStatus(status);
-        switch (status) {
-            case TRANSACTION_SUCCESSFUL:
-                return successReturn;
-            default:
+//        getGenericService().saveOrUpdate(getInvoice());
+//        getInvoice().setTransactionStatus(status);
+//        switch (status) {
+//            case TRANSACTION_SUCCESSFUL:
+//                return successReturn;
+//            default:
                 return INVOICE;
-
-        }
+//
+//        }
     }
 
     @Override
