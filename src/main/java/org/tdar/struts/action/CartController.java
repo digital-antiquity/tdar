@@ -163,16 +163,15 @@ public class CartController extends AbstractPersistableController<Invoice> imple
             @Result(name = SUCCESS_ADD_ACCOUNT, type = "redirect", location = "/billing/choose?invoiceId=${invoice.id}")
     })
     public String processPaymentResponse() throws TdarActionException {
-        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+//        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         String successReturn = SUCCESS_ADD_ACCOUNT;
-        Account account = getGenericService().find(Account.class, accountId);
-        if (account != null) {
-            successReturn = SUCCESS_UPDATE_ACCOUNT;
-        }
-
-        setInvoice(getGenericService().loadFromSparseEntity(getInvoice(), Invoice.class));
-
-        TransactionStatus status = nelnetPaymentDao.processResponse(getInvoice(), getParameters());
+//        Account account = getGenericService().find(Account.class, accountId);
+//        if (account != null) {
+//            successReturn = SUCCESS_UPDATE_ACCOUNT;
+//        }
+//        setInvoice(getGenericService().loadFromSparseEntity(getInvoice(), Invoice.class));
+//
+//        TransactionStatus status = nelnetPaymentDao.processResponse(getInvoice(), getParameters());
 
         getGenericService().saveOrUpdate(getInvoice());
         getInvoice().setTransactionStatus(status);
@@ -284,6 +283,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     @Override
     public void setParameters(Map<String, String[]> arg0) {
         this.parameters = arg0;
+        logger.info("parameters: {} ", getParameters());
     }
 
     public Map<String, String[]> getParameters() {
