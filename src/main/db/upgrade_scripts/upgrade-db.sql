@@ -257,3 +257,6 @@ alter table pos_invoice add column transaction_type varchar(50);
 alter table resource drop column account_id;
 alter table resource add column account_id int8 references pos_account;
 alter table pos_invoice alter column billingPhone type int8;
+alter table pos_invoice add column account_type varchar(50);
+alter table pos_invoice add column response text;
+alter table pos_invoice add column transaction_date timestamp;

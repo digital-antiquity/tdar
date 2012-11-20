@@ -71,10 +71,15 @@ public class Invoice extends Base implements Updatable {
     private TransactionType transactionType;
 
     private Long billingPhone;
+    @Column(name = "account_type")
     private String accountType;
+    
+    @Column(name = "transaction_date")
     private Date transactionDate;
+
     @Lob
     @Type(type = "org.hibernate.type.StringClobType")
+    @Column(name="response")
     private String responseInJson;
 
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })

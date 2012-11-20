@@ -1387,7 +1387,7 @@ $(function() {
 	  <div class="">
 	    <div class="container" style="width: auto;">
 		<ul class="nav">
-			<li><a href="#basicInformationSection">Basic</a></li>
+			<li class="hidden-tablet hidden-phone"><a href="#basicInformationSection">Basic</a></li>
 			<li><a href="#authorshipSection">Authors</a></li>
 			<#if persistable.resourceType?has_content && persistable.resourceType != 'PROJECT' ><li><a href="#divFileUpload">Upload</a></li></#if>
 			<#nested />
@@ -1395,8 +1395,8 @@ $(function() {
 			<li><a href="#spatialSection">Where</a></li>
 			<li><a href="#temporalSection">When</a></li>
 			<li><a href="#investigationSection">What</a></li>
-			<li><a href="#siteSection">Site</a></li>
-			<li><a href="#resourceNoteSectionGlide">Notes</a></li>
+			<li class="hidden-phone"><a href="#siteSection">Site</a></li>
+			<li class="hidden-tablet hidden-phone"><a href="#resourceNoteSectionGlide">Notes</a></li>
 			<li><a href="#divAccessRights">Permissions</a></li>
 		</ul>
 		<span class="brand">

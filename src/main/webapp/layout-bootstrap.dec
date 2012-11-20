@@ -120,7 +120,7 @@
 			<li><a href="<@s.url value="/dashboard"/>">Dashboard</a></li>
   			<#if sessionData?? && sessionData.authenticated>
   				<li><a href="<@s.url value="/workspace/select-tables"/>">Integrate</a></li>
-				<#if administrator>
+				<#if editor>
 					<li><a href="<@s.url value="/admin"/>">Admin</a></li>
 				</#if>
 			</#if>
@@ -149,7 +149,7 @@
 		     </#list>
 		     </ul>
 		     <#if stackTraces?has_content >
-			     <a href="#" id="pToggleStackTrace" onclick="$('#stackTraceList').toggle();return false;">Show/Hide Detailed Error Information</a>
+			     <a href="#" id="pToggleStackTrace" onclick="$('#stackTraceList').toggleClass('hidden');return false;">Show/Hide Detailed Error Information</a>
 			     <div id="stackTraceList" class="hidden">
 			        <#list stackTraces as _stacktrace>
 			        <p>

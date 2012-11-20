@@ -167,7 +167,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     @Action(value = "process-external-payment-response",
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
             results = {
-                    @Result(name = INVOICE, type = "redirect", location = "cc-result.ftl"),
+                    @Result(name = INVOICE, type = "redirect", location = "cc-result.ftl")
             })
     public String processPaymentResponse() throws TdarActionException {
         NelNetTransactionResponseTemplate response = paymentTransactionProcessor.processResponse(getParameters());
