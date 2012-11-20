@@ -5,67 +5,94 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import net.sf.json.JSONObject;
+import net.sf.json.JsonConfig;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
 public class NelNetTransactionResponseTemplate implements Serializable {
 
     private static final long serialVersionUID = -5575891484534148580L;
+    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private Map<String, String[]> values = new HashMap<String, String[]>();
     private TransactionStatus transactionStatus;
 
     public enum NelnetTransactionItemResponse {
-        ORDER_TYPE(1, "Order Type", "orderType"),
-        ORDER_NUMBER(2, "Order Number", "orderNumber"),
-        ORDER_NAME(3, "Order Name", "orderName"),
-        ORDER_DESCRIPTION(4, "Order Description", "orderDescription"),
-        AMOUNT(5, "Amount", "amount"),
-        ORDER_FEE(6, "Order Fee", "orderFee"),
-        AMOUNT_DUE(7, "Amount Due", "amountDue"),
-        CURRENT_AMOUNT_DUE(8, "Current Amount Due", "currentAmountDue"),
-        BALANCE(9, "Balance", "balance"),
-        CURRENT_BALANCE(10, "Current Balance", "currentBalance"),
-        DUE_DATE(11, "Due Date", "dueDate"),
-        USER_CHOICE_1(12, "User Choice 1", "userChoice1"),
-        USER_CHOICE_2(13, "User Choice 2", "userChoice2"),
-        USER_CHOICE_3(14, "User Choice 3", "userChoice3"),
-        USER_CHOICE_4(15, "User Choice 4", "userChoice4"),
-        USER_CHOICE_5(16, "User Choice 5", "userChoice5"),
-        USER_CHOICE_6(17, "User Choice 6", "userChoice6"),
-        USER_CHOICE_7(18, "User Choice 7", "userChoice7"),
-        USER_CHOICE_8(19, "User Choice 8", "userChoice8"),
-        USER_CHOICE_9(20, "User Choice 9", "userChoice9"),
-        USER_CHOICE_10(21, "User Choice 10", "userChoice10"),
-        PAYMENT_METHOD(22, "Payment Method (1),", "paymentMethod"),
-        STREET_ONE(23, "Street One", "streetOne"),
-        STREET_TWO(24, "Street Two", "streetTwo"),
-        CITY(25, "City", "city"),
-        STATE(26, "State", "state"),
-        ZIP(27, "Zip", "zip"),
-        COUNTRY(28, "Country", "country"),
-        DAYTIME_PHONE(29, "Day time Phone", "daytimePhone"),
-        EVENING_PHONE(30, "Night time Phone", "eveningPhone"),
-        EMAIL(31, "Email", "email"),
-        REDIRECT_URL(32, "Redirect URL (2),", "redirectUrl"),
-        REDIRECT_URL_PARAMS(33, "Redirect URL Parameters", "redirectUrlParameters"),
-        RETRIES_ALLOWED(34, "Retries Allowed", "retriesAllowed"),
-        CONTENT_EMBEDDED(35, "Content Embedded (3),", "contentEmbedded"),
-        TIMESTAMP(36, "Time Stamp", "timestamp"),
-        KEY(37, "Key", "key"),
-        HASH(1000, "HASH", "hash");
-        ;
+        TRANSACTION_TYPE("transactionType", "transactionType", 1),
+        TRANSACTION_STATUS("transactionStatus", "transactionStatus", 2),
+        TRANSACTION_SOURCE("transactionSource", "transactionSource", 3),
+        TRANSACTION_SOURCE_REF("transactionSourceRef", "transactionSourceRef", 4),
+        TRANSACTION_ID("transactionId", "transactionId", 5),
+        ORIGINAL_TRANSACTION_ID("originalTransactionId", "originalTransactionId", 6),
+        TRANSACTION_TOTAL("transactionTotalAmount", "transactionTotalAmount", 7),
+        TRANSACTION_DATE("transactionDate", "transactionDate", 8),
+        TRANSACTION_ACCOUNT_TYPE("transactionAcountType", "transactionAcountType", 9),
+        TRANSACTION_EFFECTIVE_DATE("transactionEffectiveDate", "transactionEffectiveDate", 10),
+        TRANSACTION_DESCRIPTION("transactionDescription", "transactionDescription", 11),
+        TRANSACTION_RESULT_DATE("transactionResultDate", "transactionResultDate", 12),
+        TRANSACTION_RESULT_EFFECTIVE_DATE("transactionResultEffectiveDate", "transactionResultEffectiveDate", 13),
+        TRANSACTION_RESULT_CODE("transactionResultCode", "transactionResultCode", 14),
+        TRANSACTION_RESULT_MESSAGE("transactionResultMessage", "transactionResultMessage", 15),
+        ORDER_NUMBER("orderNumber", "orderNumber", 16),
+        ORDER_TYPE("orderType", "orderType", 17),
+        ORDER_NAME("orderName", "orderName", 18),
+        ORDER_DESCRIPTION("orderDescription", "orderDescription", 19),
+        ORDER_AMOUNT("orderAmount", "orderAmount", 20),
+        ORDER_FEE("orderFee", "orderFee", 21),
+        ORDER_DUE_DATE("orderDueDate", "orderDueDate", 22),
+        ORDER_AMOUNT_DUE("orderAmountDue", "orderAmountDue", 23),
+        ORDER_BALANCE("orderBalance", "orderBalance", 24),
+        ORDER_CURRENT_STATUS_BALANCE("orderCurrentStatusBalance", "orderCurrentStatusBalance", 25),
+        ORDER_CURRENT_STATUS_AMOUNT_DUE("orderCurrentStatusAmountDue", "orderCurrentStatusAmountDue", 26),
+        PAYER_TYPE("payerType", "payerType", 27),
+        PAYER_IDENTIFIER("payerIdentifier", "payerIdentifier", 28),
+        PAYER_FULL_NAME("payerFullName", "payerFullName", 29),
+        ACTUAL_PAYER_TYPE("actualPayerType", "actualPayerType", 30),
+        ACTUAL_PAYER_IDENTIFIER("actualPayerIdentifier", "actualPayerIdentifier", 31),
+        ACTUAL_PAYER_FULL_NAME("actualPayerFullName", "actualPayerFullName", 32),
+        ACCOUNT_HOLDER_NAME("accountHolderName", "accountHolderName", 33),
+        STREET_ONE("streetOne", "streetOne", 34),
+        STREET_TWO("streetTwo", "streetTwo", 35),
+        CITY("city", "city", 36),
+        STATE("state", "state", 37),
+        ZIP("zip", "zip", 38),
+        COUNTRY("country", "country", 39),
+        DAYTIME_PHONE("daytimePhone", "daytimePhone", 40),
+        EVENING_PHONE("eveningPhone", "eveningPhone", 41),
+        EMAIL("email", "email", 42),
+        USER_CHOICE_1("userChoice1", "userChoice1", 43),
+        USER_CHOICE_2("userChoice2", "userChoice2", 44),
+        USER_CHOICE_3("userChoice3", "userChoice3", 45),
+        USER_CHOICE_4("userChoice4", "userChoice4", 46),
+        USER_CHOICE_5("userChoice5", "userChoice5", 47),
+        USER_CHOICE_6("userChoice6", "userChoice6", 48),
+        USER_CHOICE_7("userChoice7", "userChoice7", 49),
+        USER_CHOICE_8("userChoice8", "userChoice8", 50),
+        USER_CHOICE_9("userChoice9", "userChoice9", 51),
+        USER_CHOICE_10("userChoice10", "userChoice10", 52),
+        TIMESTAMP("Time Stamp", "timestamp", 53),
+        KEY("Key", "key", 54),
+        HASH("HASH", "hash", 1000);
         private String key;
         private String label;
         private int order;
 
-        private NelnetTransactionItemResponse(int order, String label, String key) {
+        private NelnetTransactionItemResponse(String label, String key, int order) {
             this.setKey(key);
             this.setLabel(label);
             this.setOrder(order);
@@ -96,7 +123,7 @@ public class NelNetTransactionResponseTemplate implements Serializable {
         }
     }
 
-    public String validateHashKey() {
+    public boolean validateHashKey() {
         ArrayList<NelnetTransactionItemResponse> list = new ArrayList<NelnetTransactionItemResponse>(Arrays.asList(NelnetTransactionItemResponse.values()));
         Collections.sort(list, new Comparator<NelnetTransactionItemResponse>() {
             @Override
@@ -110,37 +137,51 @@ public class NelNetTransactionResponseTemplate implements Serializable {
             if (item == NelnetTransactionItemResponse.HASH)
                 continue;
             String key = item.getKey();
-            String value = StringUtils.join(getValues().get(key));
+            String value = getValuesFor(key);
             if (getValues().containsKey(key) && StringUtils.isNotBlank(value)) {
                 toHash.append(value);
             }
         }
-        return DigestUtils.md5Hex(toHash.toString());
+        String hashkey = DigestUtils.md5Hex(toHash.toString());
+        String actual = getValuesFor(NelnetTransactionItemResponse.HASH.getKey());
+        if (!actual.equals(hashkey)) {
+            throw new TdarRecoverableRuntimeException(String.format("hash keys do not match actual: %s computed: %s ", actual, hashkey));
+        }
+        return true;
     }
 
     public void updateInvoiceFromResponse(Invoice invoice) {
+        JsonConfig config = new JsonConfig();
+        JSONObject jsonObject = JSONObject.fromObject(getValues(), config);
+        invoice.setResponseInJson(jsonObject.toString());
+
         for (NelnetTransactionItemResponse item : NelnetTransactionItemResponse.values()) {
-            String value = StringUtils.join(getValues().get(item.key));
+            String value = getValuesFor(item.key);
+            Number numericValue = null;
+            Date dateValue = null;
+            try {
+                numericValue = NumberUtils.createNumber(value);
+            } catch (Exception e) {
+                logger.debug("cannot parse: {} as a number, {}", value, e);
+            }
+            try {
+                DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyyMMddHHmm");
+                dateValue = DateTime.parse(value, fmt).toDate();
+            } catch (Exception e) {
+                logger.debug("cannot parse: {} as a date , {}", value, e);
+            }
             switch (item) {
-                case AMOUNT:
+                case ACCOUNT_HOLDER_NAME:
+                case ACTUAL_PAYER_FULL_NAME:
+                case ACTUAL_PAYER_IDENTIFIER:
                     break;
-                case AMOUNT_DUE:
-                    break;
-                case BALANCE:
+                case ACTUAL_PAYER_TYPE:
                     break;
                 case CITY:
                     break;
-                case CONTENT_EMBEDDED:
-                    break;
                 case COUNTRY:
                     break;
-                case CURRENT_AMOUNT_DUE:
-                    break;
-                case CURRENT_BALANCE:
-                    break;
                 case DAYTIME_PHONE:
-                    break;
-                case DUE_DATE:
                     break;
                 case EMAIL:
                     break;
@@ -150,7 +191,19 @@ public class NelNetTransactionResponseTemplate implements Serializable {
                     break;
                 case KEY:
                     break;
+                case ORDER_AMOUNT:
+                    break;
+                case ORDER_AMOUNT_DUE:
+                    break;
+                case ORDER_BALANCE:
+                    break;
+                case ORDER_CURRENT_STATUS_AMOUNT_DUE:
+                    break;
+                case ORDER_CURRENT_STATUS_BALANCE:
+                    break;
                 case ORDER_DESCRIPTION:
+                    break;
+                case ORDER_DUE_DATE:
                     break;
                 case ORDER_FEE:
                     break;
@@ -160,21 +213,51 @@ public class NelNetTransactionResponseTemplate implements Serializable {
                     break;
                 case ORDER_TYPE:
                     break;
-                case PAYMENT_METHOD:
+                case ORIGINAL_TRANSACTION_ID:
                     break;
-                case REDIRECT_URL:
+                case PAYER_FULL_NAME:
                     break;
-                case REDIRECT_URL_PARAMS:
+                case PAYER_IDENTIFIER:
                     break;
-                case RETRIES_ALLOWED:
+                case PAYER_TYPE:
                     break;
                 case STATE:
-                    break;
                 case STREET_ONE:
-                    break;
                 case STREET_TWO:
-                    break;
                 case TIMESTAMP:
+                    break;
+                case TRANSACTION_ACCOUNT_TYPE:
+                    invoice.setAccountType(value);
+                    break;
+                case TRANSACTION_DATE:
+                    invoice.setTransactionDate(dateValue);
+                    break;
+                case TRANSACTION_DESCRIPTION:
+                    break;
+                case TRANSACTION_EFFECTIVE_DATE:
+                    break;
+                case TRANSACTION_ID:
+                    invoice.setTransactionId(value);
+                    break;
+                case TRANSACTION_RESULT_CODE:
+                    break;
+                case TRANSACTION_RESULT_DATE:
+                    break;
+                case TRANSACTION_RESULT_EFFECTIVE_DATE:
+                    break;
+                case TRANSACTION_RESULT_MESSAGE:
+                    break;
+                case TRANSACTION_SOURCE:
+                    break;
+                case TRANSACTION_SOURCE_REF:
+                    break;
+                case TRANSACTION_STATUS:
+                    // TransactionStatus status = TransactionStatus.forValue(numericValue);
+                    // invoice.setTransactionStatus(transactionStatus)
+                    break;
+                case TRANSACTION_TOTAL:
+                    break;
+                case TRANSACTION_TYPE:
                     break;
                 case USER_CHOICE_1:
                     break;
@@ -198,8 +281,7 @@ public class NelNetTransactionResponseTemplate implements Serializable {
                     break;
                 case ZIP:
                     break;
-                default:
-                    break;
+
             }
         }
     }
@@ -210,6 +292,13 @@ public class NelNetTransactionResponseTemplate implements Serializable {
 
     public void setValues(Map<String, String[]> values) {
         this.values = values;
+    }
+
+    public String getValuesFor(String key) {
+        if (!values.containsKey(key)) {
+            return null;
+        }
+        return StringUtils.join(values.get(key));
     }
 
     public TransactionStatus getTransactionStatus() {

@@ -15,6 +15,7 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.billing.Invoice;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
 public class NelNetTransactionRequestTemplate implements Serializable {
 
@@ -97,6 +98,15 @@ public class NelNetTransactionRequestTemplate implements Serializable {
         public ItemType getType() {
             return type;
         }
+        
+        public String getUserIdKey() {
+            return USER_CHOICE_2.name();
+        }
+
+        public String getInvoiceIdKey() {
+            return USER_CHOICE_3.name();
+        }
+
 
         public void setType(ItemType type) {
             this.type = type;
@@ -157,9 +167,7 @@ public class NelNetTransactionRequestTemplate implements Serializable {
                 case ORDER_DESCRIPTION:
                 case ORDER_FEE:
                 case PAYMENT_METHOD:
-                case USER_CHOICE_1:
-                case USER_CHOICE_2:
-                case USER_CHOICE_3:
+                case USER_CHOICE_1: // DISABLED AS USED BY ASU
                 case USER_CHOICE_4:
                 case USER_CHOICE_5:
                 case USER_CHOICE_6:
@@ -167,6 +175,18 @@ public class NelNetTransactionRequestTemplate implements Serializable {
                 case USER_CHOICE_8:
                 case USER_CHOICE_9:
                 case USER_CHOICE_10:
+                    break;
+                case USER_CHOICE_2:
+                    if (!item.getUserIdKey().equals(item.name())) {
+                        throw new TdarRecoverableRuntimeException("user id key has been changed");
+                    }
+                    value = invoice.getPerson().getId().toString();
+                    break;
+                case USER_CHOICE_3:
+                    if (!item.getInvoiceIdKey().equals(item.name())) {
+                        throw new TdarRecoverableRuntimeException("invoice id key has been changed");
+                    }
+                    value = invoice.getId().toString();
                     break;
                 case ORDER_NAME:
                     value = "tDAR Ingest Payment";

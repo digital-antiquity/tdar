@@ -10,11 +10,13 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.annotations.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Persistable.Base;
@@ -41,7 +43,20 @@ public class Invoice extends Base implements Updatable {
         PREPARED,
         PENDING_TRANSACTION,
         TRANSACTION_SUCCESSFUL,
-        TRANSACTION_FAILED
+        TRANSACTION_FAILED;
+
+        public static TransactionStatus forValue(int value) {
+            // if (value == ) {
+            //
+            // } else if () {
+            //
+            // } else if () {
+            //
+            // } else {
+            //
+            // }
+            return null;
+        }
     }
 
     @NotNull
@@ -56,9 +71,11 @@ public class Invoice extends Base implements Updatable {
     private TransactionType transactionType;
 
     private Long billingPhone;
-    private Integer expirationYear;
-    private Integer expirationMonth;
-    private String creditCardType;
+    private String accountType;
+    private Date transactionDate;
+    @Lob
+    @Type(type = "org.hibernate.type.StringClobType")
+    private String responseInJson;
 
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     @JoinColumn(nullable = false, name = "owner_id")
@@ -246,30 +263,6 @@ public class Invoice extends Base implements Updatable {
         this.transactionStatus = transactionStatus;
     }
 
-    public Integer getExpirationYear() {
-        return expirationYear;
-    }
-
-    public void setExpirationYear(Integer expirationYear) {
-        this.expirationYear = expirationYear;
-    }
-
-    public Integer getExpirationMonth() {
-        return expirationMonth;
-    }
-
-    public void setExpirationMonth(Integer expirationMonth) {
-        this.expirationMonth = expirationMonth;
-    }
-
-    public String getCreditCardType() {
-        return creditCardType;
-    }
-
-    public void setCreditCardType(String creditCardType) {
-        this.creditCardType = creditCardType;
-    }
-
     public Person getTransactedBy() {
         return transactedBy;
     }
@@ -297,5 +290,29 @@ public class Invoice extends Base implements Updatable {
 
     public void setCalculatedCost(Float calculatedCost) {
         this.calculatedCost = calculatedCost;
+    }
+
+    public String getResponseInJson() {
+        return responseInJson;
+    }
+
+    public void setResponseInJson(String responseInJson) {
+        this.responseInJson = responseInJson;
+    }
+
+    public String getAccountType() {
+        return accountType;
+    }
+
+    public void setAccountType(String accountType) {
+        this.accountType = accountType;
+    }
+
+    public Date getTransactionDate() {
+        return transactionDate;
+    }
+
+    public void setTransactionDate(Date transactionDate) {
+        this.transactionDate = transactionDate;
     }
 }

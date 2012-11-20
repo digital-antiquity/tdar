@@ -24,7 +24,8 @@ import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.billing.TransactionType;
 import org.tdar.core.bean.entity.Address;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
-import org.tdar.core.dao.external.payment.nelnet.NelNetPaymentDao;
+import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionResponseTemplate;
+import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.struts.WriteableSession;
 import org.tdar.struts.interceptor.PostOnly;
@@ -46,10 +47,10 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     public static final String SUCCESS_ADD_ACCOUNT = "success-add-account";
     private static final String INVOICE = "invoice";
     private static final String REDIRECT_URL = "redirect-url";
+    private static final String POLLING = "polling";
 
     @Autowired
-    // I will be pushed down into a service later on...
-    NelNetPaymentDao nelnetPaymentDao;
+    PaymentTransactionProcessor paymentTransactionProcessor;
 
     @Override
     protected String save(Invoice persistable) {
@@ -96,11 +97,16 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
     private String redirectUrl;
     private Map<String, String[]> parameters;
+
+    /*
+     * This method will take the response and prepare it for the CC processing transaction; admin(s) will have additional rights. Ultimately, the redirect URL
+     * will open in a "new frame" or window and the resulting window will poll for a response.
+     */
     @SkipValidation
     @WriteableSession
     @Action(value = "process-payment-request", results = {
             @Result(name = SUCCESS, type = "redirect", location = "view?id=${invoice.id}&review=true"),
-            @Result(name = REDIRECT_URL, type = "redirect", location = "${redirectUrl}"),
+            @Result(name = POLLING, type = "redirect", location = "polling"),
             @Result(name = SUCCESS_UPDATE_ACCOUNT, type = "redirect", location = "/billing/choose?invoiceId=${invoice.id}&id=${accountId}"),
             @Result(name = SUCCESS_ADD_ACCOUNT, type = "redirect", location = "/billing/choose?invoiceId=${invoice.id}")
     })
@@ -131,12 +137,12 @@ public class CartController extends AbstractPersistableController<Invoice> imple
             case CREDIT_CARD:
                 getGenericService().saveOrUpdate(getInvoice());
                 try {
-                    setRedirectUrl(nelnetPaymentDao.prepareRequest(getInvoice()));
+                    setRedirectUrl(paymentTransactionProcessor.prepareRequest(getInvoice()));
                 } catch (URIException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
-                logger.info("redirecting to : {}" , getRedirectUrl());
+                logger.info("redirecting to : {}", getRedirectUrl());
                 return REDIRECT_URL;
             case INVOICE:
                 getInvoice().setInvoiceNumber(invoiceNumber);
@@ -152,36 +158,26 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         return SUCCESS;
     }
 
+    /*
+     * This method will function under an exec-and-wait response model whereby once this is called, the transaction can move forward to the next step in the
+     * process
+     */
     @SkipValidation
-    @WriteableSession
     @PostOnly
-    @Action(value = "process-external-payment-response", 
+    @Action(value = "process-external-payment-response",
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
             results = {
-            @Result(name = INVOICE, type = "redirect", location = "view?id=${invoice.id}&review=true"),
-            @Result(name = SUCCESS_UPDATE_ACCOUNT, type = "redirect", location = "/billing/choose?invoiceId=${invoice.id}&id=${accountId}"),
-            @Result(name = SUCCESS_ADD_ACCOUNT, type = "redirect", location = "/billing/choose?invoiceId=${invoice.id}")
-    })
+                    @Result(name = INVOICE, type = "redirect", location = "cc-result.ftl"),
+            })
     public String processPaymentResponse() throws TdarActionException {
-//        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
-        String successReturn = SUCCESS_ADD_ACCOUNT;
-//        Account account = getGenericService().find(Account.class, accountId);
-//        if (account != null) {
-//            successReturn = SUCCESS_UPDATE_ACCOUNT;
-//        }
-//        setInvoice(getGenericService().loadFromSparseEntity(getInvoice(), Invoice.class));
-//
-//        TransactionStatus status = nelnetPaymentDao.processResponse(getInvoice(), getParameters());
-
-//        getGenericService().saveOrUpdate(getInvoice());
-//        getInvoice().setTransactionStatus(status);
-//        switch (status) {
-//            case TRANSACTION_SUCCESSFUL:
-//                return successReturn;
-//            default:
-                return INVOICE;
-//
-//        }
+        NelNetTransactionResponseTemplate response = paymentTransactionProcessor.processResponse(getParameters());
+        // if transaction is valid (hashKey matches) then mark the session as writeable and go on
+        if (paymentTransactionProcessor.validateResponse(response)) {
+            getGenericService().markWritable();
+            Invoice invoice = paymentTransactionProcessor.locateInvoice(response);
+            paymentTransactionProcessor.updateInvoiceFromResponse(response, invoice);
+        }
+        return INVOICE;
     }
 
     @Override

@@ -11,15 +11,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tdar.core.bean.billing.Invoice;
-import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.configuration.ConfigurationAssistant;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.external.payment.PaymentMethod;
+import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplate.NelnetTransactionItem;
 
 import freemarker.core.Configurable;
 
 @Service
-public class NelNetPaymentDao extends Configurable {
+public class NelNetPaymentDao extends Configurable implements PaymentTransactionProcessor {
 
     @Autowired
     GenericDao genericDao;
@@ -29,6 +29,10 @@ public class NelNetPaymentDao extends Configurable {
 
     private String configIssue = "";
 
+    /* (non-Javadoc)
+     * @see org.tdar.core.dao.external.payment.nelnet.TransactionProcessor#initializeTransaction()
+     */
+    @Override
     public void initializeTransaction() {
 
     }
@@ -37,12 +41,12 @@ public class NelNetPaymentDao extends Configurable {
         try {
             assistant.loadProperties("nelnet.properties");
         } catch (Throwable t) {
-            configIssue  = t.getMessage();
+            configIssue = t.getMessage();
         }
     }
 
     public boolean isConfigured() {
-        if (StringUtils.isNotBlank(getSecretWord()) && StringUtils.isNotBlank(getTransactionPostUrl()) ) {
+        if (StringUtils.isNotBlank(getSecretWord()) && StringUtils.isNotBlank(getTransactionPostUrl())) {
             return true;
         }
         logger.debug("a required parameter for the EzidDao was not provided. " + configIssue);
@@ -53,17 +57,26 @@ public class NelNetPaymentDao extends Configurable {
         return assistant.getStringProperty("secret.word");
     }
 
+    /* (non-Javadoc)
+     * @see org.tdar.core.dao.external.payment.nelnet.TransactionProcessor#getTransactionPostUrl()
+     */
+    @Override
     public String getTransactionPostUrl() {
         return assistant.getStringProperty("post.url");
     }
+
     public String getOrderType() {
         return assistant.getStringProperty("order.type");
     }
-    
+
     public List<PaymentMethod> getSupportedPaymentMethods() {
         return Arrays.asList(PaymentMethod.CREDIT_CARD);
     }
 
+    /* (non-Javadoc)
+     * @see org.tdar.core.dao.external.payment.nelnet.TransactionProcessor#prepareRequest(org.tdar.core.bean.billing.Invoice)
+     */
+    @Override
     public String prepareRequest(Invoice invoice) throws URIException {
         genericDao.saveOrUpdate(invoice);
         genericDao.markReadOnly(invoice);
@@ -74,12 +87,43 @@ public class NelNetPaymentDao extends Configurable {
         return getTransactionPostUrl() + "?" + urlSuffix;
     }
 
-    public TransactionStatus processResponse(Invoice invoice, Map<String, String[]> parameters) {
+    /* (non-Javadoc)
+     * @see org.tdar.core.dao.external.payment.nelnet.TransactionProcessor#processResponse(java.util.Map)
+     */
+    @Override
+    public NelNetTransactionResponseTemplate processResponse(Map<String, String[]> parameters) {
         logger.info("parameters: {}  ", parameters);
         NelNetTransactionResponseTemplate response = new NelNetTransactionResponseTemplate();
         response.setValues(parameters);
-        response.validateHashKey();
+
+        return response;
+    }
+
+    /* (non-Javadoc)
+     * @see org.tdar.core.dao.external.payment.nelnet.TransactionProcessor#validateResponse(org.tdar.core.dao.external.payment.nelnet.NelNetTransactionResponseTemplate)
+     */
+    @Override
+    public boolean validateResponse(NelNetTransactionResponseTemplate response) {
+        return response.validateHashKey(); // I throw an exception if not working
+    }
+
+    /* (non-Javadoc)
+     * @see org.tdar.core.dao.external.payment.nelnet.TransactionProcessor#locateInvoice(org.tdar.core.dao.external.payment.nelnet.NelNetTransactionResponseTemplate)
+     */
+    @Override
+    public Invoice locateInvoice(NelNetTransactionResponseTemplate response) {
+        // Long personId = Long.valueOf(response.getValuesFor(NelnetTransactionItem.USER_CHOICE_2.getUserIdKey()));
+        Long invoiceId = Long.valueOf(response.getValuesFor(NelnetTransactionItem.USER_CHOICE_3.getInvoiceIdKey()));
+        Invoice invoice = genericDao.find(Invoice.class, invoiceId);
+        return invoice;
+    }
+
+    /* (non-Javadoc)
+     * @see org.tdar.core.dao.external.payment.nelnet.TransactionProcessor#updateInvoiceFromResponse(org.tdar.core.dao.external.payment.nelnet.NelNetTransactionResponseTemplate, org.tdar.core.bean.billing.Invoice)
+     */
+    @Override
+    public void updateInvoiceFromResponse(NelNetTransactionResponseTemplate response, Invoice invoice) {
         response.updateInvoiceFromResponse(invoice);
-        return response.getTransactionStatus();
+        genericDao.saveOrUpdate(invoice);
     }
 }
