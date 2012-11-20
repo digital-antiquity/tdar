@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.commons.httpclient.URIException;
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
@@ -154,7 +155,9 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     @SkipValidation
     @WriteableSession
     @PostOnly
-    @Action(value = "process-external-payment-response", results = {
+    @Action(value = "process-external-payment-response", 
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
+            results = {
             @Result(name = INVOICE, type = "redirect", location = "view?id=${invoice.id}&review=true"),
             @Result(name = SUCCESS_UPDATE_ACCOUNT, type = "redirect", location = "/billing/choose?invoiceId=${invoice.id}&id=${accountId}"),
             @Result(name = SUCCESS_ADD_ACCOUNT, type = "redirect", location = "/billing/choose?invoiceId=${invoice.id}")
