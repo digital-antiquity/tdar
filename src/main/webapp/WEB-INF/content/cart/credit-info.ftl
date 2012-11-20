@@ -39,8 +39,7 @@ $(document).ready(function() {
    if (!$(".transactionType[type=radio]:checked").length) {
 	$($(".transactionType[type=radio]")[0]).click();
    }
-   switchType($(".transactionType[type=radio]:checked",$('#MetadataForm')));
-
+   switchType($(".transactionType[type=radio]:checked",$('#MetadataForm')),"#MetadataForm");
 
 });
 

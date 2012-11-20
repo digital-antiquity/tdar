@@ -75,6 +75,7 @@ public class NelNetPaymentDao extends Configurable {
     }
 
     public TransactionStatus processResponse(Invoice invoice, Map<String, String[]> parameters) {
+        logger.info("parameters: {}  ", parameters);
         NelNetTransactionResponseTemplate response = new NelNetTransactionResponseTemplate();
         response.setValues(parameters);
         response.validateHashKey();
