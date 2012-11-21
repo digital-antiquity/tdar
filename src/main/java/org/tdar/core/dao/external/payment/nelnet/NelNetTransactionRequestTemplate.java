@@ -98,7 +98,7 @@ public class NelNetTransactionRequestTemplate implements Serializable {
         public ItemType getType() {
             return type;
         }
-        
+
         public String getUserIdKey() {
             return USER_CHOICE_2.name();
         }
@@ -106,7 +106,6 @@ public class NelNetTransactionRequestTemplate implements Serializable {
         public String getInvoiceIdKey() {
             return USER_CHOICE_3.name();
         }
-
 
         public void setType(ItemType type) {
             this.type = type;

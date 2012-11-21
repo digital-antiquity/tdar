@@ -29,7 +29,9 @@ public class NelNetPaymentDao extends Configurable implements PaymentTransaction
 
     private String configIssue = "";
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.dao.external.payment.nelnet.TransactionProcessor#initializeTransaction()
      */
     @Override
@@ -57,7 +59,9 @@ public class NelNetPaymentDao extends Configurable implements PaymentTransaction
         return assistant.getStringProperty("secret.word");
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.dao.external.payment.nelnet.TransactionProcessor#getTransactionPostUrl()
      */
     @Override
@@ -73,7 +77,9 @@ public class NelNetPaymentDao extends Configurable implements PaymentTransaction
         return Arrays.asList(PaymentMethod.CREDIT_CARD);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.dao.external.payment.nelnet.TransactionProcessor#prepareRequest(org.tdar.core.bean.billing.Invoice)
      */
     @Override
@@ -87,7 +93,9 @@ public class NelNetPaymentDao extends Configurable implements PaymentTransaction
         return getTransactionPostUrl() + "?" + urlSuffix;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.dao.external.payment.nelnet.TransactionProcessor#processResponse(java.util.Map)
      */
     @Override
@@ -99,16 +107,23 @@ public class NelNetPaymentDao extends Configurable implements PaymentTransaction
         return response;
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.dao.external.payment.nelnet.TransactionProcessor#validateResponse(org.tdar.core.dao.external.payment.nelnet.NelNetTransactionResponseTemplate)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.tdar.core.dao.external.payment.nelnet.TransactionProcessor#validateResponse(org.tdar.core.dao.external.payment.nelnet.NelNetTransactionResponseTemplate
+     * )
      */
     @Override
     public boolean validateResponse(NelNetTransactionResponseTemplate response) {
         return response.validateHashKey(); // I throw an exception if not working
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.dao.external.payment.nelnet.TransactionProcessor#locateInvoice(org.tdar.core.dao.external.payment.nelnet.NelNetTransactionResponseTemplate)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.tdar.core.dao.external.payment.nelnet.TransactionProcessor#locateInvoice(org.tdar.core.dao.external.payment.nelnet.NelNetTransactionResponseTemplate)
      */
     @Override
     public Invoice locateInvoice(NelNetTransactionResponseTemplate response) {
@@ -118,8 +133,11 @@ public class NelNetPaymentDao extends Configurable implements PaymentTransaction
         return invoice;
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.dao.external.payment.nelnet.TransactionProcessor#updateInvoiceFromResponse(org.tdar.core.dao.external.payment.nelnet.NelNetTransactionResponseTemplate, org.tdar.core.bean.billing.Invoice)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.dao.external.payment.nelnet.TransactionProcessor#updateInvoiceFromResponse(org.tdar.core.dao.external.payment.nelnet.
+     * NelNetTransactionResponseTemplate, org.tdar.core.bean.billing.Invoice)
      */
     @Override
     public void updateInvoiceFromResponse(NelNetTransactionResponseTemplate response, Invoice invoice) {

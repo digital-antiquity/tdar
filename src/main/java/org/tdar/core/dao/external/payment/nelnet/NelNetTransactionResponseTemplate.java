@@ -21,7 +21,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.billing.Invoice;
-import org.tdar.core.bean.billing.Invoice.TransactionStatus;
+import org.tdar.core.bean.billing.NelnetTransactionStatus;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
 public class NelNetTransactionResponseTemplate implements Serializable {
@@ -30,7 +30,6 @@ public class NelNetTransactionResponseTemplate implements Serializable {
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private Map<String, String[]> values = new HashMap<String, String[]>();
-    private TransactionStatus transactionStatus;
 
     public enum NelnetTransactionItemResponse {
         TRANSACTION_TYPE("transactionType", "transactionType", 1),
@@ -252,12 +251,13 @@ public class NelNetTransactionResponseTemplate implements Serializable {
                 case TRANSACTION_SOURCE_REF:
                     break;
                 case TRANSACTION_STATUS:
-                    // TransactionStatus status = TransactionStatus.forValue(numericValue);
-                    // invoice.setTransactionStatus(transactionStatus)
+                    NelnetTransactionStatus status = NelnetTransactionStatus.fromOrdinal(numericValue.intValue());
+                    invoice.setTransactionStatus(status.getStatus());
                     break;
                 case TRANSACTION_TOTAL:
                     break;
                 case TRANSACTION_TYPE:
+                    invoice.setPaymentMethod(NelnetTransactionType.fromOrdinalToPaymentMethod(numericValue.intValue()));
                     break;
                 case USER_CHOICE_1:
                     break;
@@ -299,14 +299,6 @@ public class NelNetTransactionResponseTemplate implements Serializable {
             return null;
         }
         return StringUtils.join(values.get(key));
-    }
-
-    public TransactionStatus getTransactionStatus() {
-        return transactionStatus;
-    }
-
-    public void setTransactionStatus(TransactionStatus transactionStatus) {
-        this.transactionStatus = transactionStatus;
     }
 
 }

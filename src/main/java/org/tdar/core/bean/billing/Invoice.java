@@ -23,6 +23,7 @@ import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.dao.external.payment.PaymentMethod;
 
 /**
  * $Id$
@@ -68,18 +69,18 @@ public class Invoice extends Base implements Updatable {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "transaction_type")
-    private TransactionType transactionType;
+    private PaymentMethod paymentMethod;
 
     private Long billingPhone;
     @Column(name = "account_type")
     private String accountType;
-    
+
     @Column(name = "transaction_date")
     private Date transactionDate;
 
     @Lob
     @Type(type = "org.hibernate.type.StringClobType")
-    @Column(name="response")
+    @Column(name = "response")
     private String responseInJson;
 
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
@@ -170,12 +171,12 @@ public class Invoice extends Base implements Updatable {
         this.total = total;
     }
 
-    public TransactionType getTransactionType() {
-        return transactionType;
+    public PaymentMethod getPaymentMethod() {
+        return paymentMethod;
     }
 
-    public void setTransactionType(TransactionType transactionType) {
-        this.transactionType = transactionType;
+    public void setPaymentMethod(PaymentMethod transactionType) {
+        this.paymentMethod = transactionType;
     }
 
     public Long getTotalResources() {

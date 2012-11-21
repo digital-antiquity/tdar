@@ -21,9 +21,9 @@ import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
-import org.tdar.core.bean.billing.TransactionType;
 import org.tdar.core.bean.entity.Address;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionResponseTemplate;
 import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -118,12 +118,12 @@ public class CartController extends AbstractPersistableController<Invoice> imple
             successReturn = SUCCESS_UPDATE_ACCOUNT;
         }
 
-        TransactionType transactionType = getInvoice().getTransactionType();
+        PaymentMethod paymentMethod = getInvoice().getPaymentMethod();
         String invoiceNumber = getInvoice().getInvoiceNumber();
         String otherReason = getInvoice().getOtherReason();
         Long billingPhone = getInvoice().getBillingPhone();
         setInvoice(getGenericService().loadFromSparseEntity(getInvoice(), Invoice.class));
-        getInvoice().setTransactionType(transactionType);
+        getInvoice().setPaymentMethod(paymentMethod);
         getInvoice().setOtherReason(otherReason);
         getInvoice().setBillingPhone(billingPhone);
         getGenericService().saveOrUpdate(getInvoice());
@@ -131,7 +131,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         getInvoice().setTotal(getInvoice().getCalculatedCost());
         getInvoice().setTransactionStatus(TransactionStatus.PENDING_TRANSACTION);
 
-        switch (transactionType) {
+        switch (paymentMethod) {
             case CHECK:
                 break;
             case CREDIT_CARD:
@@ -252,11 +252,11 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         this.expirationMonth = expirationMonth;
     }
 
-    public List<TransactionType> getAllTransactionTypes() {
+    public List<PaymentMethod> getAllPaymentMethods() {
         if (isAdministrator()) {
-            return Arrays.asList(TransactionType.values());
+            return Arrays.asList(PaymentMethod.values());
         } else {
-            return Arrays.asList(TransactionType.CREDIT_CARD);
+            return Arrays.asList(PaymentMethod.CREDIT_CARD);
         }
     }
 
