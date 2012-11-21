@@ -76,7 +76,7 @@ public class AccountService {
 
     public boolean hasSpaceInAnAccount(Person user) {
         for (Account account : listAvailableAccountsForUser(user)) {
-            if (account.isActive() && account.hasMinimumForNewRescord())
+            if (account.isActive() && account.hasMinimumForNewRecord())
                 return true;
         }
         return false;

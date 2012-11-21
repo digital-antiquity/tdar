@@ -39,22 +39,24 @@ public class ResourceEvaluator implements Serializable {
     /*
      * Evaluate whether a resource can be added and how it counts when added to an account
      */
-    public void evaluateResource(Resource resource) {
-        if (uncountedResourceTypes.contains(resource.getResourceType()) || uncountedResourceStatuses.contains(resource.getStatus()))
-            return;
+    public void evaluateResource(Resource... resources) {
+        for (Resource resource : resources) {
+            if (uncountedResourceTypes.contains(resource.getResourceType()) || uncountedResourceStatuses.contains(resource.getStatus()))
+                continue;
 
-        resourcesUsed++;
+            resourcesUsed++;
 
-        if (resource instanceof InformationResource) {
-            InformationResource informationResource = (InformationResource) resource;
-            for (InformationResourceFile file : informationResource.getInformationResourceFiles()) {
-                if (file.isDeleted() && !includeDeletedFilesInCounts)
-                    continue;
-                filesUsed++;
-                for (InformationResourceFileVersion version : file.getInformationResourceFileVersions()) {
-                    if (!includeOlderVersionsInCounts && !version.getVersion().equals(file.getLatestVersion()) || !version.isUploaded())
+            if (resource instanceof InformationResource) {
+                InformationResource informationResource = (InformationResource) resource;
+                for (InformationResourceFile file : informationResource.getInformationResourceFiles()) {
+                    if (file.isDeleted() && !includeDeletedFilesInCounts)
                         continue;
-                    spaceUsed += version.getFileLength();
+                    filesUsed++;
+                    for (InformationResourceFileVersion version : file.getInformationResourceFileVersions()) {
+                        if (!includeOlderVersionsInCounts && !version.getVersion().equals(file.getLatestVersion()) || !version.isUploaded())
+                            continue;
+                        spaceUsed += version.getFileLength();
+                    }
                 }
             }
         }

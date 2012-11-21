@@ -2,7 +2,7 @@
 <h1>Checking Billing Status<h1>
 
 <h2>Complete Billing Form</h2>
-If the payment window does not open automatically <a href="${redirectUrl}" target="_blank">click here</a></h2>
+If the payment window does not open automatically <a href="<#noescape>${redirectUrl}</#noescape>" target="_blank">click here</a></h2>
 ...
 <div class="" id="polling-status">
 

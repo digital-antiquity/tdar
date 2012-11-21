@@ -325,10 +325,13 @@ public class Account extends Persistable.Base implements Updatable, HasStatus {
         this.authorizedMembers = authorizedMembers;
     }
 
-    public boolean hasMinimumForNewRescord() {
+    public boolean hasMinimumForNewRecord() {
         initTotals();
         ResourceEvaluator re = new ResourceEvaluator();
         return (re.invoiceHasMinimumForNewResource(this));
     }
 
+    
+    // set current values as saved fields
+    // save trasnactions update available values...
 }
