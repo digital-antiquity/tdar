@@ -180,13 +180,13 @@ public class Account extends Persistable.Base implements Updatable, HasStatus {
         this.resources = resources;
     }
 
-    private transient Long totalResources;
-    private transient Long totalFiles;
-    private transient Long totalSpace;
-
-    private transient Long filesUsed;
-    private transient Long spaceUsed;
-    private transient Long resourcesUsed;
+    private transient Long totalResources = 0L;
+    private transient Long totalFiles = 0L;
+    private transient Long totalSpace = 0L;
+    private transient boolean initialized = false;
+    private transient Long filesUsed = 0L;
+    private transient Long spaceUsed = 0L;
+    private transient Long resourcesUsed = 0L;
 
     public void initTotals() {
         for (Invoice invoice : getInvoices()) {
@@ -207,21 +207,21 @@ public class Account extends Persistable.Base implements Updatable, HasStatus {
     }
 
     public Long getTotalNumberOfResources() {
-        if (totalResources == null) {
+        if (!initialized) {
             initTotals();
         }
         return totalResources;
     }
 
     public Long getTotalNumberOfFiles() {
-        if (totalFiles == null) {
+        if (!initialized) {
             initTotals();
         }
         return totalFiles;
     }
 
     public Long getTotalNumberOfSpace() {
-        if (totalSpace == null) {
+        if (!initialized) {
             initTotals();
         }
         return totalSpace;

@@ -106,6 +106,10 @@ public class LoginController extends AuthenticationAware.Base {
                 }
                 logger.info(getReturnUrl());
             }
+            
+            if (getReturnUrl().contains("lookup") || getReturnUrl().contains("check")) {
+                return AUTHENTICATED;
+            }
 
             logger.debug("Redirecting to return url: " + getReturnUrl());
             return REDIRECT;

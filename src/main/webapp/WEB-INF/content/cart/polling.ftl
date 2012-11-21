@@ -1,48 +1,49 @@
 <#escape _untrusted as _untrusted?html>
-<#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
-<#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
-<#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
-<head>
-<title>Your cart</title>
-<meta name="lastModifiedDate" content="$Date$"/>
-</head>
-<body>
+<h1>Checking Billing Status<h1>
 
-<h1>Your cart</h1>
-
-<div>
-<@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='process-payment-request'>
-	<@s.hidden name="id" value="${invoice.id}"/>
-
-	<@s.radio list="allTransactionTypes" name="invoice.transactionType" cssClass="transactionType" emptyOption='false' />
-
-	<div class="typeToggle credit_card invoice manual">
-		<@s.textfield name="invoice.billingPhone" cssClass="input-xlarge phoneUS  required-visible" label="Billing Phone #" />
-	</div>
-	<div class="typeToggle invoice">
-		<@s.textfield name="invoice.invoiceNumber" cssClass="input-xlarge" label="Invoice #" />
-	</div>
-	<div class="typeToggle manual">
-		<@s.textarea name="invoice.otherReason" cssClass="input-xlarge" label="Other Reason" />
-	</div>
-	
-    <@edit.submit fileReminder=false />
-</@s.form>
+<h2>Complete Billing Form</h2>
+If the payment window does not open automatically <a href="${redirectUrl}" target="_blank">click here</a></h2>
+...
+<div class="" id="polling-status">
 
 </div>
-
+<div id="async-errors">
+</div>
 <script>
-$(document).ready(function() {
-    'use strict';
-    TDAR.common.initEditPage($('#MetadataForm')[0]);
-    $(".transactionType[type=radio]").click(function() {switchType(this,'#MetadataForm');});
-   if (!$(".transactionType[type=radio]:checked").length) {
-	$($(".transactionType[type=radio]")[0]).click();
-   }
-   switchType($(".transactionType[type=radio]:checked",$('#MetadataForm')),"#MetadataForm");
-
+var TIMEOUT = 1500; //2fps is all we need.
+var newWindow;
+$(document).ready(function(){
+ updateProgress();
 });
 
+setTimeout(function(){newWindow = window.open("<#noescape>${redirectUrl}</#noescape>", "payement window");}, 500);
+
+var updateProgress = function() {
+    console.log("updating progress");
+ 
+    var url = "<@s.url value="polling-check"/>";
+    $.ajax({
+      url: url,
+      dataType: 'json',
+      type:'POST',
+      success: function(data) {
+            if (data.transactionStatus == 'PENDING_TRANSACTION') {
+            	$("#polling-status").html("still pending...");
+                setTimeout(updateProgress, TIMEOUT);
+            } else {
+            	$("#polling-status").html("done: " + data.transactionStatus);
+            }
+            if (data.errors  != undefined && data.errors != "") {
+                $("#asyncErrors").html("<div class='action-errors ui-corner-all'>"+data.errors+"</div>");
+            }        
+        },
+      error: function(xhr,txtStatus, errorThrown) {
+        console.error("error: %s, %s", txtStatus, errorThrown);
+      }
+    });
+    
+    console.log("registered ajax callback");
+};
+
 </script>
-</body>
 </#escape>

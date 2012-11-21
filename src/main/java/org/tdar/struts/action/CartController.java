@@ -44,7 +44,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     private static final String INVOICE = "invoice";
     private static final String REDIRECT_URL = "redirect-url";
     private static final String POLLING = "polling";
-
+    private String callback;
     @Autowired
     PaymentTransactionProcessor paymentTransactionProcessor;
 
@@ -79,6 +79,29 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     }
 
     @SkipValidation
+    @Action(value = "polling", results = { @Result(name = SUCCESS, location = "polling.ftl") })
+    public String polling() throws TdarActionException {
+        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+        try {
+            setRedirectUrl(paymentTransactionProcessor.prepareRequest(getInvoice()));
+        } catch (URIException e) {
+            logger.warn("error happend {}",e);
+        }
+        logger.info("redirecting to : {}", getRedirectUrl());
+
+        return SUCCESS;
+    }
+
+    @SkipValidation
+    @Action(value = "polling-check", results = {
+            @Result(name = "wait", type = "freemarker", location = "polling-check.ftl", params = { "contentType", "application/json" }) })
+    public String pollingCheck() throws TdarActionException {
+        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+
+        return "wait";
+    }
+
+    @SkipValidation
     @WriteableSession
     @Action(value = "save-billing-address", results = {
             @Result(name = SUCCESS, type = "redirect", location = "view?id=${invoice.id}&review=true")
@@ -102,7 +125,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     @WriteableSession
     @Action(value = "process-payment-request", results = {
             @Result(name = SUCCESS, type = "redirect", location = "view?id=${invoice.id}&review=true"),
-            @Result(name = POLLING, type = "redirect", location = "polling"),
+            @Result(name = POLLING, location = "polling.ftl"),
             @Result(name = SUCCESS_UPDATE_ACCOUNT, type = "redirect", location = "/billing/choose?invoiceId=${invoice.id}&id=${accountId}"),
             @Result(name = SUCCESS_ADD_ACCOUNT, type = "redirect", location = "/billing/choose?invoiceId=${invoice.id}")
     })
@@ -132,14 +155,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
                 break;
             case CREDIT_CARD:
                 getGenericService().saveOrUpdate(getInvoice());
-                try {
-                    setRedirectUrl(paymentTransactionProcessor.prepareRequest(getInvoice()));
-                } catch (URIException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                logger.info("redirecting to : {}", getRedirectUrl());
-                return REDIRECT_URL;
+                return POLLING;
             case INVOICE:
                 getInvoice().setInvoiceNumber(invoiceNumber);
                 getGenericService().saveOrUpdate(getInvoice());
@@ -249,5 +265,13 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
     public Map<String, String[]> getParameters() {
         return parameters;
+    }
+
+    public String getCallback() {
+        return callback;
+    }
+
+    public void setCallback(String callback) {
+        this.callback = callback;
     }
 }

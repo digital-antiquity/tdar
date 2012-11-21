@@ -14,6 +14,7 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.Type;
@@ -40,24 +41,15 @@ public class Invoice extends Base implements Updatable {
     private static final long serialVersionUID = -3613460318580954253L;
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
+    @Transient
+    private final static String[] JSON_PROPERTIES = { "id", "paymentMethod", "transactionStatus", "totalFiles", "totalResources", "totalSpace",
+            "calculatedCost", "total" };
+
     public enum TransactionStatus {
         PREPARED,
         PENDING_TRANSACTION,
         TRANSACTION_SUCCESSFUL,
         TRANSACTION_FAILED;
-
-        public static TransactionStatus forValue(int value) {
-            // if (value == ) {
-            //
-            // } else if () {
-            //
-            // } else if () {
-            //
-            // } else {
-            //
-            // }
-            return null;
-        }
     }
 
     @NotNull
@@ -180,31 +172,27 @@ public class Invoice extends Base implements Updatable {
     }
 
     public Long getTotalResources() {
-        if (totalResources == null) {
+        if (!initialized) {
             initTotals();
         }
         return totalResources;
     }
 
     public Long getTotalSpace() {
-        if (totalSpace == null) {
+        if (!initialized) {
             initTotals();
         }
         return totalSpace;
     }
 
     public Long getTotalNumberOfFiles() {
-        if (totalFiles == null) {
+        if (!initialized) {
             initTotals();
         }
         return totalFiles;
     }
 
     private void initTotals() {
-        totalResources = 0L;
-        totalFiles = 0L;
-        totalSpace = 0L;
-        calculatedCost = 0f;
         for (BillingItem item : getItems()) {
             Long numberOfFiles = item.getActivity().getNumberOfFiles();
             Long space = item.getActivity().getNumberOfBytes();
@@ -218,10 +206,11 @@ public class Invoice extends Base implements Updatable {
         }
     }
 
-    private transient Long totalResources = null;
-    private transient Long totalSpace = null;
-    private transient Long totalFiles = null;
-    private transient Float calculatedCost = null;
+    private transient Long totalResources = 0L;
+    private transient Long totalSpace = 0L;
+    private transient Long totalFiles = 0L;
+    private transient Float calculatedCost = 0F;
+    private transient boolean initialized = false;
 
     @Override
     public void markUpdated(Person p) {
@@ -288,7 +277,7 @@ public class Invoice extends Base implements Updatable {
     }
 
     public Float getCalculatedCost() {
-        if (calculatedCost == null) {
+        if (!initialized) {
             initTotals();
         }
         return calculatedCost;
@@ -320,5 +309,10 @@ public class Invoice extends Base implements Updatable {
 
     public void setTransactionDate(Date transactionDate) {
         this.transactionDate = transactionDate;
+    }
+
+    @Override
+    public String[] getIncludedJsonProperties() {
+        return JSON_PROPERTIES;
     }
 }

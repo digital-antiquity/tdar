@@ -302,11 +302,11 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.ACCOUNTS_FOR_PERSON,
-                query = " from Account act left join act.authorizedMembers as person where act.owner.id =:personId or person.id=:personId"
+                query = "select act from Account act left join act.authorizedMembers as person where act.owner.id =:personId or person.id=:personId"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.LOGS_FOR_RESOURCE,
-                query = " from ResourceRevisionLog rlog where rlog.resource.id = :resourceId order by rlog.timestamp desc"
+                query = "select rlog from ResourceRevisionLog rlog where rlog.resource.id = :resourceId order by rlog.timestamp desc"
         )
 
 })

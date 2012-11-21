@@ -78,7 +78,7 @@ public class ResourceController extends AuthenticationAware.Base {
         return resourceType.name();
     }
 
-    public Boolean isAllowedToCreateResource() {
+    public boolean isAllowedToCreateResource() {
         if (!getTdarConfiguration().isPayPerIngestEnabled() || getAccountService().hasSpaceInAnAccount(getAuthenticatedUser())) {
             return true;
         }
