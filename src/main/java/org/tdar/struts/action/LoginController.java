@@ -106,8 +106,7 @@ public class LoginController extends AuthenticationAware.Base {
                 }
                 logger.info(getReturnUrl());
             }
-            
-            if (getReturnUrl().contains("lookup") || getReturnUrl().contains("check")) {
+            if (getReturnUrl().contains("/lookup") || getReturnUrl().contains("/check") || getReturnUrl().contains("/bookmark")) {
                 return AUTHENTICATED;
             }
 
