@@ -38,10 +38,6 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
     private static final long serialVersionUID = 1592977664145682926L;
     private List<BillingActivity> activities = new ArrayList<BillingActivity>();
-    private Long creditCardNumber;
-    private Integer verificationNumber;
-    private Integer expirationYear;
-    private Integer expirationMonth;
     private Long accountId = -1L;
     public static final String SUCCESS_UPDATE_ACCOUNT = "success-update-account";
     public static final String SUCCESS_ADD_ACCOUNT = "success-add-account";
@@ -205,6 +201,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
     @Override
     public boolean isEditable() throws TdarActionException {
+        // FIXME: I should be smarter
         return true;
     }
 
@@ -218,38 +215,6 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
     public void setActivities(List<BillingActivity> activities) {
         this.activities = activities;
-    }
-
-    public Long getCreditCardNumber() {
-        return creditCardNumber;
-    }
-
-    public void setCreditCardNumber(Long creditCardNumber) {
-        this.creditCardNumber = creditCardNumber;
-    }
-
-    public Integer getVerificationNumber() {
-        return verificationNumber;
-    }
-
-    public void setVerificationNumber(Integer verificationNumber) {
-        this.verificationNumber = verificationNumber;
-    }
-
-    public Integer getExpirationYear() {
-        return expirationYear;
-    }
-
-    public void setExpirationYear(Integer expirationYear) {
-        this.expirationYear = expirationYear;
-    }
-
-    public Integer getExpirationMonth() {
-        return expirationMonth;
-    }
-
-    public void setExpirationMonth(Integer expirationMonth) {
-        this.expirationMonth = expirationMonth;
     }
 
     public List<PaymentMethod> getAllPaymentMethods() {
