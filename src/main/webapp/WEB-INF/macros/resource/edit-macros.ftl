@@ -1389,15 +1389,16 @@ $(function() {
 		<ul class="nav">
 			<li class="hidden-tablet hidden-phone"><a href="#basicInformationSection">Basic</a></li>
 			<li><a href="#authorshipSection">Authors</a></li>
-			<#if persistable.resourceType?has_content && persistable.resourceType != 'PROJECT' ><li><a href="#divFileUpload">Upload</a></li></#if>
-			<#nested />
-			<li><a href="#organizeSection">Project</a></li>
+			<#if persistable.resourceType?has_content && persistable.resourceType != 'PROJECT' ><li><a href="#divFileUpload">Files</a></li></#if>
+			<span class="hidden-tablet hidden-phone" >
+			<#nested /></span>
+			<li><a href="#organizeSection"><span class="visible-phone visible-tablet" title="Project">Proj.</span><span class="hidden-phone hidden-tablet">Project</span></a></li>
 			<li><a href="#spatialSection">Where</a></li>
 			<li><a href="#temporalSection">When</a></li>
 			<li><a href="#investigationSection">What</a></li>
 			<li class="hidden-phone"><a href="#siteSection">Site</a></li>
 			<li class="hidden-tablet hidden-phone"><a href="#resourceNoteSectionGlide">Notes</a></li>
-			<li><a href="#divAccessRights">Permissions</a></li>
+			<li><a href="#divAccessRights"><span class="visible-phone visible-tablet" title="Permissions">Permis.</span><span class="hidden-phone hidden-tablet">Permissions</span></a></li>
 		</ul>
 		<span class="brand">
 			<span class="button btn btn-primary submitButton" id="fakeSubmitButton">Submit</span>

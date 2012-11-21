@@ -189,10 +189,12 @@ function setToolTipContents(targetElem) {
 	    });
 	
 	    $notice.html(label + "<div id='noticecontent'>" + content + "</div>");
+	    $targetElem.popover("destroy");
 	} else {
 		$targetElem.popover({
 			placement:'top',
 			trigger:'hover',
+			html:true,
 			'title': label,
 			'content': content
 		});
@@ -910,7 +912,7 @@ function dynamicSort(property, caseSensitive) {
             return (a[property] < b[property]) ? -1
                     : (a[property] > b[property]) ? 1 : 0;
         }
-    }
+    };
 }
 
 function sortFilesAlphabetically() {
@@ -925,7 +927,7 @@ function sortFilesAlphabetically() {
 
     rowList.sort(dynamicSort("filename"));
 
-    for (i = 0; i < rowList.length; i++) {
+    for (var i = 0; i < rowList.length; i++) {
         $("#" + rowList[i]["id"]).appendTo("#files");
     }
 }

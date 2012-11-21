@@ -1,7 +1,7 @@
 <#escape _untrusted as _untrusted?html >
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
 
-<h1>Administrative info for ${resource.title}</h1>
+<h1>Administrative info for <span>${resource.title}</span></h1>
 
 <h2>Usage Stats</h2>
 <table class="tableFormat table">

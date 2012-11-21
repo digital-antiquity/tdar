@@ -916,8 +916,9 @@ ol.MAP .listItemPart {
 }
 
 .resource-nav.navbar-static li  a {
-	padding-left: 20px !important;
-	background-image: none !important;
+	padding-left: 15px !important;
+	padding-right: 15px !important;
+background-image: none !important;
 }
 
 .navbar-static.affix {

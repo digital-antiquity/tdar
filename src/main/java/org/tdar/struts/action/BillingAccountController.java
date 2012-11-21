@@ -39,7 +39,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
             @Result(name = NEW_ACCOUNT, location = "add")
     })
     public String selectAccount() throws TdarActionException {
-        getAccountService().checkThatInvoiceBeAssigned(getGenericService().find(Invoice.class, invoiceId), null);
+//        getAccountService().checkThatInvoiceBeAssigned(getGenericService().find(Invoice.class, invoiceId), null);
         setAccounts(getAccountService().listAvailableAccountsForUser(getAuthenticatedUser()));
         if (CollectionUtils.isNotEmpty(getAccounts())) {
             return SUCCESS;
