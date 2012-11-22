@@ -48,7 +48,6 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -112,7 +111,7 @@ public class SearchService {
         fullTextSession.setDefaultReadOnly(true);
         setupQueryParser(queryBuilder);
         Query query = new MatchAllDocsQuery();
-        if(!queryBuilder.isEmpty()) {
+        if (!queryBuilder.isEmpty()) {
             query = queryBuilder.buildQuery();
         }
         FullTextQuery ftq = fullTextSession.createFullTextQuery(query, queryBuilder.getClasses());

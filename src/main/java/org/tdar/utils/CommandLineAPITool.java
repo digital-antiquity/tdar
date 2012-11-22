@@ -45,8 +45,8 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
-
 import org.tdar.core.configuration.TdarConfiguration;
+
 /**
  * @author Adam Brin
  * 
@@ -82,7 +82,7 @@ public class CommandLineAPITool {
     @SuppressWarnings("static-access")
     public static void main(String[] args) {
         CommandLineAPITool importer = new CommandLineAPITool();
-        
+
         String siteAcronym = TdarConfiguration.getInstance().getSiteAcronym();
         Options options = new Options();
         options.addOption(OptionBuilder.withArgName(OPTION_USERNAME).hasArg().withDescription(siteAcronym + " username")

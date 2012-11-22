@@ -87,7 +87,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     private transient boolean viewable;
 
-    private transient boolean readyToIndex = true;
+//    private transient boolean readyToIndex = true;
 
     public enum CollectionType {
         INTERNAL("Internal"),
@@ -156,7 +156,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @Column(nullable = false, name = "date_created")
     private Date dateCreated;
 
-    @Column(nullable=true, name = "date_updated")
+    @Column(nullable = true, name = "date_updated")
     private Date dateUpdated;
 
     @ManyToOne

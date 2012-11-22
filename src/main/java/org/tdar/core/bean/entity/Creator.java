@@ -145,8 +145,6 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
     @Column(length = 64)
     private String url;
 
-    
-    
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = false, name = "creator_id")
     @NotNull

@@ -3,8 +3,6 @@ package org.tdar.struts.data;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.tdar.core.bean.resource.InformationResourceFile;
-
 public class AggregateDownloadStatistic implements Serializable {
 
     private static final long serialVersionUID = 1698960536676588440L;

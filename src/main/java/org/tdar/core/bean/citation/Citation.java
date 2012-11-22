@@ -32,7 +32,6 @@ public abstract class Citation extends Persistable.Base implements HasResource<R
 
     private static final long serialVersionUID = 4174558394278154078L;
 
-    @SuppressWarnings("unused")
     @Transient
     private final static String[] JSON_PROPERTIES = { "id", "text" };
 

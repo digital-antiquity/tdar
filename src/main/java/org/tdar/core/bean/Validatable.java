@@ -12,6 +12,7 @@ import org.tdar.core.configuration.JSONTransient;
 
 /**
  * This is intended to help streamline the validation process of resource from the controller to the persistance layer
+ * 
  * @author Adam Brin
  * 
  */

@@ -38,6 +38,7 @@ import org.tdar.search.query.QueryFieldNames;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Rev$
  */
+@SuppressWarnings("rawtypes")
 public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
 
     public String getLabel();
@@ -52,7 +53,7 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
 
     @MappedSuperclass
     @XmlType(name = "kwdbase")
-    public static abstract class Base<T extends Base<?>> extends Persistable.Base implements Keyword, HasStatus,Comparable<T> {
+    public static abstract class Base<T extends Base<?>> extends Persistable.Base implements Keyword, HasStatus, Comparable<T> {
 
         private static final long serialVersionUID = -7516574981065004043L;
 
@@ -63,7 +64,7 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
         @Fields({ @Field(name = "label", analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
                 @Field(name = "label_auto", norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)),
                 @Field(name = "labelKeyword", analyzer = @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)),
-                @Field(name = QueryFieldNames.LABEL_SORT, norms = Norms.NO, store = Store.YES, analyze=Analyze.NO) })
+                @Field(name = QueryFieldNames.LABEL_SORT, norms = Norms.NO, store = Store.YES, analyze = Analyze.NO) })
         private String label;
 
         @Lob
@@ -158,11 +159,11 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
         public Status getStatus() {
             return this.status;
         }
-            
+
         public void setStatus(Status status) {
             this.status = status;
         }
-            
+
         public boolean isActive() {
             return this.status == Status.ACTIVE;
         }

@@ -6,10 +6,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Session;
 import org.odata4j.exceptions.NotAuthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,7 +49,7 @@ public class ODataRepositoryService implements RepositoryService, SessionDataAwa
      * We could probably return a set here as Datasets have unique names.
      */
     @Override
-    @Transactional(propagation=Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED)
     public List<Dataset> findAllOwnedDatasets() {
         // TODO RR: check if authenticatedUser is a persisted entity.
         List<Dataset> ownedDatasets = new ArrayList<Dataset>();
@@ -74,7 +72,7 @@ public class ODataRepositoryService implements RepositoryService, SessionDataAwa
      * We could probably return a set here as DataTables have unique names.
      */
     @Override
-    @Transactional(propagation=Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED)
     public List<DataTable> findAllOwnedDataTables() {
         // TODO RR: check if authenticatedUser is a persisted entity.
         List<DataTable> ownedDataTables = new ArrayList<DataTable>();
@@ -87,7 +85,7 @@ public class ODataRepositoryService implements RepositoryService, SessionDataAwa
                 if (authService.canView(knownPerson, dataSet)) {
                     Set<DataTable> dataTables = dataSet.getDataTables();
                     assert dataTables != null;
-                    //session..initialize(dataTables);
+                    // session..initialize(dataTables);
                     ownedDataTables.addAll(dataTables);
                 }
             }
@@ -96,7 +94,7 @@ public class ODataRepositoryService implements RepositoryService, SessionDataAwa
     }
 
     @Override
-    @Transactional(propagation=Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED)
     public DataTable findOwnedDataTableByName(String entitySetName) {
         assert entitySetName != null;
         assert entitySetName.length() > 0;
@@ -127,7 +125,7 @@ public class ODataRepositoryService implements RepositoryService, SessionDataAwa
      * We return a list since AbstractDataRecord will only obey the set contract if it has a unique id.
      */
     @Override
-    @Transactional(propagation=Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED)
     public List<AbstractDataRecord> findAllOwnedDataRecords() {
 
         List<AbstractDataRecord> ownedDataRecords = new ArrayList<AbstractDataRecord>();
@@ -155,7 +153,7 @@ public class ODataRepositoryService implements RepositoryService, SessionDataAwa
      * We return a list since AbstractDataRecord will only obey the set contract if it has a unique id.
      */
     @Override
-    @Transactional(propagation=Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED)
     public List<AbstractDataRecord> findAllDataRecordsForDataTable(DataTable dataTable) {
 
         List<AbstractDataRecord> dataRecords = new ArrayList<AbstractDataRecord>();
@@ -174,7 +172,7 @@ public class ODataRepositoryService implements RepositoryService, SessionDataAwa
     }
 
     @Override
-    @Transactional(propagation=Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED)
     public void updateRecord(AbstractDataRecord dataRecord) {
         Person authenticatedUser = getSessionData().getPerson();
         Person knownPerson = genericService.findByProperty(Person.class, "username", authenticatedUser.getUsername());

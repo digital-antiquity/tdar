@@ -25,7 +25,6 @@ import org.tdar.core.bean.DeHydratable;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Validatable;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;

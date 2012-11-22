@@ -60,6 +60,7 @@ public class ConfigurationAssistant implements Serializable {
         IOUtils.closeQuietly(stream);
     }
 
+    @SuppressWarnings("resource")
     public InputStream toInputStream(String resource) {
         // first try to read it as a file
         InputStream stream = null;

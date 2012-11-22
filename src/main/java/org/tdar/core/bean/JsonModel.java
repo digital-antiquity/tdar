@@ -39,7 +39,7 @@ public interface JsonModel extends Serializable {
             // filter out any properties not defined in the whitelist
             WhitelistFilter whitelist = new WhitelistFilter(properties);
             config.setJsonPropertyFilter(whitelist);
-            config.addIgnoreFieldAnnotation(JSONTransient.class);
+        config.addIgnoreFieldAnnotation(JSONTransient.class);
             // config.registerJsonValueProcessor(String.class, new JsonValueProcessor() {
             //
             // @Override

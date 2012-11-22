@@ -13,12 +13,10 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
-import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-import org.tdar.URLConstants;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.InformationResource;
@@ -27,7 +25,6 @@ import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.XmlService;
 import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
-import org.tdar.struts.action.resource.AbstractResourceController;
 import org.tdar.struts.data.FileProxy;
 
 @SuppressWarnings("serial")
@@ -35,12 +32,11 @@ import org.tdar.struts.data.FileProxy;
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
-
-//@Results({@Result(name = "exception", type = "stream",
-//    params = {
-//            "contentType", "application/json",
-//            "inputName", "jsonInputStream"})
-//})
+// @Results({@Result(name = "exception", type = "stream",
+// params = {
+// "contentType", "application/json",
+// "inputName", "jsonInputStream"})
+// })
 public class UploadController extends AuthenticationAware.Base {
 
     @Autowired
@@ -184,7 +180,6 @@ public class UploadController extends AuthenticationAware.Base {
 
         return SUCCESS;
     }
-    
 
     public List<File> getUploadFile() {
         return uploadFile;

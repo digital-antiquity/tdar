@@ -1,7 +1,6 @@
 package org.tdar.core.service;
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -82,7 +81,6 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         return contributorRequestDao.findAllPending();
     }
 
-
     public Person findByEmail(String email) {
         if (email == null || email.isEmpty()) {
             return null;
@@ -96,7 +94,6 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         }
         return getDao().findByUsername(username);
     }
-
 
     public Set<Person> findByFullName(String fullName) {
         return getDao().findByFullName(fullName);
@@ -121,15 +118,15 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
     public <C extends Creator> C findOrSaveCreator(C transientCreator) {
         C creatorToReturn = null;
         if (transientCreator instanceof Person) {
-            creatorToReturn =(C)findOrSavePerson((Person) transientCreator);
+            creatorToReturn = (C) findOrSavePerson((Person) transientCreator);
         }
         if (transientCreator instanceof Institution) {
-            creatorToReturn =(C) findOrSaveInstitution((Institution) transientCreator);
+            creatorToReturn = (C) findOrSaveInstitution((Institution) transientCreator);
         }
         if (creatorToReturn != null && creatorToReturn.isDeleted()) {
             creatorToReturn.setStatus(Status.ACTIVE);
         }
-        
+
         return creatorToReturn;
     }
 
@@ -169,7 +166,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
 
     @Transactional(readOnly = false)
     private Institution findOrSaveInstitution(Institution transientInstitution) {
-        if (transientInstitution == null || StringUtils.isBlank(transientInstitution.getName())) 
+        if (transientInstitution == null || StringUtils.isBlank(transientInstitution.getName()))
             return null;
         Institution blessedInstitution = getDao().findByExample(Institution.class, transientInstitution,
                 Arrays.asList(Institution.getIgnorePropertiesForUniqueness()),
@@ -187,7 +184,6 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
     public void findOrSaveResourceCreator(ResourceCreator resourceCreator) {
         resourceCreator.setCreator(findOrSaveCreator(resourceCreator.getCreator()));
     }
-
 
     @Transactional
     public List<ResourceCollection> findAccessibleResourceCollections(Person user) {
