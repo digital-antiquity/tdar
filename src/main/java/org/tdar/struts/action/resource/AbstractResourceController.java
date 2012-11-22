@@ -17,6 +17,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -117,6 +118,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private List<SourceCollection> sourceCollections;
     // private List<String> relatedCitations;
     private List<RelatedComparativeCollection> relatedComparativeCollections;
+    private Long accountId;
+    private List<Account> activeAccounts;
 
     private List<ResourceNote> resourceNotes;
     private List<ResourceCreatorProxy> authorshipProxies;
@@ -131,7 +134,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private ObfuscationService obfuscationService;
 
     private List<ResourceCollection> viewableResourceCollections;
-    
+
     private List<ResourceRevisionLog> resourceLogEntries;
 
     private List<AggregateViewStatistic> usageStatsForResources;
@@ -177,6 +180,9 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             return ERROR;
         loadBasicMetadata();
         loadCustomMetadata();
+        if (getTdarConfiguration().isPayPerIngestEnabled()) {
+            setActiveAccounts(getAccountService().listAvailableAccountsForUser(getAuthenticatedUser()));
+        }
         getResourceService().incrementAccessCounter(getPersistable());
         if (isEditor()) {
             if (getPersistableClass().equals(Project.class)) {
@@ -217,6 +223,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     protected void postSaveCallback() {
+        updateQuota(getGenericService().find(Account.class, getAccountId()), getResource());
+
         if (shouldSaveResource() && getResource() != null) {
             getResourceService().saveRecordToFilestore(getPersistable());
         }
@@ -334,6 +342,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
      * Saves keywords, full / read user access, and confidentiality.
      */
     protected void saveBasicResourceMetadata() {
+        initializeQuota(getResource());
+
         if (shouldSaveResource()) {
             getResourceService().saveOrUpdate(getPersistable());
         }
@@ -868,20 +878,19 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     public void setSubmitterId(Long submitterId) {
         this.submitterId = submitterId;
     }
-    
 
     @SkipValidation
     @Action(value = "admin", results = {
-            @Result(name=SUCCESS, location="../resource-admin.ftl")
+            @Result(name = SUCCESS, location = "../resource-admin.ftl")
     })
     public String viewAdmin() throws TdarActionException {
         checkValidRequest(RequestType.VIEW, this, InternalTdarRights.VIEW_ADMIN_INFO);
         view();
         setResourceLogEntries(getResourceService().getLogsForResource(getPersistable()));
-        setUsageStatsForResources(getResourceService().getUsageStatsForResources(DateGranularity.WEEK, new Date(0L), new Date(), 1L, Arrays.asList(getPersistable().getId())));
+        setUsageStatsForResources(getResourceService().getUsageStatsForResources(DateGranularity.WEEK, new Date(0L), new Date(), 1L,
+                Arrays.asList(getPersistable().getId())));
         return SUCCESS;
     }
-
 
     public List<ResourceRevisionLog> getLogEntries() {
         return logEntries;
@@ -905,6 +914,22 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public void setUsageStatsForResources(List<AggregateViewStatistic> usageStatsForResources) {
         this.usageStatsForResources = usageStatsForResources;
+    }
+
+    public Long getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(Long accountId) {
+        this.accountId = accountId;
+    }
+
+    public List<Account> getActiveAccounts() {
+        return activeAccounts;
+    }
+
+    public void setActiveAccounts(List<Account> activeAccounts) {
+        this.activeAccounts = activeAccounts;
     }
 
 }

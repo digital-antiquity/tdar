@@ -15,6 +15,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.Resource;
@@ -55,6 +56,8 @@ public class APIController extends AuthenticationAware.Base {
     private String message;
     private List<String> confidentialFiles = new ArrayList<String>();
     private Long id;
+
+    private Long accountId;
     public final static String msg_ = "%s is %s %s (%s): %s";
 
     private void logMessage(String action_, Class<?> cls, Long id_, String name_) {
@@ -82,7 +85,10 @@ public class APIController extends AuthenticationAware.Base {
 
         try {
             Resource incoming = (Resource) xmlService.parseXml(new StringReader(getRecord()));
+            // I don't know that this is "right"
+            initializeQuota(incoming);
             Resource loadedRecord = importService.bringObjectOntoSession(incoming, getAuthenticatedUser(), proxies, projectId);
+            updateQuota(getGenericService().find(Account.class, getAccountId()), loadedRecord);
 
             setImportedRecord(loadedRecord);
             setId(loadedRecord.getId());
@@ -218,6 +224,14 @@ public class APIController extends AuthenticationAware.Base {
 
     public void setConfidentialFiles(List<String> confidentialFiles) {
         this.confidentialFiles = confidentialFiles;
+    }
+
+    public Long getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(Long accountId) {
+        this.accountId = accountId;
     }
 
 }

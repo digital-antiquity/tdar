@@ -17,7 +17,6 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PersonalFilestoreTicket;
-import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
@@ -33,7 +32,6 @@ import org.tdar.core.bean.resource.LicenseType;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.VersionType;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.PersonalFilestoreService;
@@ -74,8 +72,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     private List<String> uploadedFilesFileNames;
     private Language resourceLanguage;
     private Language metadataLanguage;
-    private Long accountId;
-    private List<Account> activeAccounts;
     private List<Language> languages;
     private List<FileProxy> fileProxies = new ArrayList<FileProxy>();
 
@@ -460,9 +456,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     }
 
     protected void loadInformationResourceProperties() {
-        if (getTdarConfiguration().isPayPerIngestEnabled()) {
-            setActiveAccounts(getAccountService().listAvailableAccountsForUser(getAuthenticatedUser()));
-        }
         setResourceLanguage(getResource().getResourceLanguage());
         setMetadataLanguage(getResource().getMetadataLanguage());
         loadResourceProviderInformation();
@@ -771,19 +764,4 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         this.publisherName = publisherName;
     }
 
-    public Long getAccountId() {
-        return accountId;
-    }
-
-    public void setAccountId(Long accountId) {
-        this.accountId = accountId;
-    }
-
-    public List<Account> getActiveAccounts() {
-        return activeAccounts;
-    }
-
-    public void setActiveAccounts(List<Account> activeAccounts) {
-        this.activeAccounts = activeAccounts;
-    }
 }

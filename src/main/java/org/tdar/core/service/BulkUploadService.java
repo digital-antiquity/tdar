@@ -61,6 +61,8 @@ import org.tdar.core.bean.AsyncUpdateReceiver.DefaultReceiver;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PersonalFilestoreTicket;
+import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.ResourceEvaluator;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
@@ -118,6 +120,9 @@ public class BulkUploadService {
     private ResourceService resourceService;
 
     @Autowired
+    private AccountService accountService;
+    
+    @Autowired
     private FileAnalyzer analyzer;
 
     @Autowired
@@ -144,13 +149,13 @@ public class BulkUploadService {
     @Async
     public void saveAsync(final InformationResource image,
             final Person submitter, final Long ticketId,
-            final File excelManifest, final Collection<FileProxy> fileProxies) {
-        save(image, submitter, ticketId, excelManifest, fileProxies);
+            final File excelManifest, final Collection<FileProxy> fileProxies, Long accountId) {
+        save(image, submitter, ticketId, excelManifest, fileProxies, accountId);
     }
 
     public void save(final InformationResource image, final Person submitter,
             final Long ticketId, final File excelManifest,
-            final Collection<FileProxy> fileProxies) {
+            final Collection<FileProxy> fileProxies, Long accountId) {
 
         logger.debug("BEGIN ASYNC: " + image + fileProxies);
 
@@ -238,6 +243,10 @@ public class BulkUploadService {
             filestoreService.getPersonalFilestore(findPersonalFilestoreTicket).purgeQuietly(findPersonalFilestoreTicket);
         } catch (Exception e) {
             receiver.addError(e);
+        }
+        if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
+            Account account = genericDao.find(Account.class, accountId);
+            accountService.updateQuota(new ResourceEvaluator(), account, resourcesCreated.values().toArray(new Resource[0]));
         }
         receiver.setCompleted();
         logger.info("bulk upload complete");

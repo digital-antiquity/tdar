@@ -12,6 +12,7 @@ import org.tdar.core.bean.billing.Account.AccountAdditionStatus;
 import org.tdar.core.bean.billing.AccountGroup;
 import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.Invoice;
+import org.tdar.core.bean.billing.ResourceEvaluator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.AccountDao;
@@ -80,5 +81,11 @@ public class AccountService {
                 return true;
         }
         return false;
+    }
+
+    public void updateQuota(ResourceEvaluator initialEvaluation, Account account, Resource ... resources) {
+        ResourceEvaluator endingEvaluator = new ResourceEvaluator(resources);
+        endingEvaluator.subtract(initialEvaluation);
+        account.updateQuotas(endingEvaluator);
     }
 }

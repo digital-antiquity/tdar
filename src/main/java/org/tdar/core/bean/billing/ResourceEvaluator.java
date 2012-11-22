@@ -29,6 +29,13 @@ public class ResourceEvaluator implements Serializable {
     private long spaceUsed = 0;
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
+    public ResourceEvaluator() {
+    }
+
+    public ResourceEvaluator(Resource... resources) {
+        evaluateResource(resources);
+    }
+
     /*
      * IOC putting all of the logic in one place
      */
@@ -116,6 +123,12 @@ public class ResourceEvaluator implements Serializable {
 
     public void setUncountedResourceStatuses(List<Status> uncountedResourceStatuses) {
         this.uncountedResourceStatuses = uncountedResourceStatuses;
+    }
+
+    public void subtract(ResourceEvaluator initialEvaluation) {
+        setSpaceUsed(getSpaceUsed() - initialEvaluation.getSpaceUsed());
+        setFilesUsed(getFilesUsed() - initialEvaluation.getFilesUsed());
+        setResourcesUsed(getResourcesUsed() - initialEvaluation.getResourcesUsed());
     }
 
 }

@@ -42,7 +42,6 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     public static final String SUCCESS_UPDATE_ACCOUNT = "success-update-account";
     public static final String SUCCESS_ADD_ACCOUNT = "success-add-account";
     private static final String INVOICE = "invoice";
-    private static final String REDIRECT_URL = "redirect-url";
     private static final String POLLING = "polling";
     private String callback;
     @Autowired
@@ -85,7 +84,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         try {
             setRedirectUrl(paymentTransactionProcessor.prepareRequest(getInvoice()));
         } catch (URIException e) {
-            logger.warn("error happend {}",e);
+            logger.warn("error happend {}", e);
         }
         logger.info("redirecting to : {}", getRedirectUrl());
 

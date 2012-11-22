@@ -7,7 +7,8 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.entity.AuthenticationToken;
+import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.ResourceEvaluator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
@@ -125,6 +126,20 @@ public interface AuthenticationAware extends SessionDataAware {
                 }
             }
             return validIds;
+        }
+
+        private ResourceEvaluator initialEvaluator;
+
+        public void initializeQuota(Resource resource) {
+            if (getTdarConfiguration().isPayPerIngestEnabled()) {
+                initialEvaluator = new ResourceEvaluator(resource);
+            }
+        }
+
+        public void updateQuota(Account account, Resource resource) {
+            if (getTdarConfiguration().isPayPerIngestEnabled()) {
+                getAccountService().updateQuota(initialEvaluator, account, resource);
+            }
         }
 
         public int getSessionTimeout() {

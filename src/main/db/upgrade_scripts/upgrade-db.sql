@@ -260,3 +260,6 @@ alter table pos_invoice alter column billingPhone type int8;
 alter table pos_invoice add column account_type varchar(50);
 alter table pos_invoice add column response text;
 alter table pos_invoice add column transaction_date timestamp;
+alter table pos_invoice add column files_used int8 default 0;
+alter table pos_invoice add column space_used int8 default 0;
+alter table pos_invoice add column resources_used int8 default 0;

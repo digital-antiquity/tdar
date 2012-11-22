@@ -90,6 +90,18 @@ public class Account extends Persistable.Base implements Updatable, HasStatus {
     @JoinColumn(nullable = true, updatable = true, name = "account_id")
     private Set<Resource> resources = new HashSet<Resource>();
 
+
+    private transient Long totalResources = 0L;
+    private transient Long totalFiles = 0L;
+    private transient Long totalSpace = 0L;
+    private transient boolean initialized = false;
+    @Column(name="files_used")
+    private Long filesUsed = 0L;
+    @Column(name="space_used")
+    private Long spaceUsed = 0L;
+    @Column(name="resources_used")
+    private Long resourcesUsed = 0L;
+
     /**
      * @return the invoices
      */
@@ -180,14 +192,6 @@ public class Account extends Persistable.Base implements Updatable, HasStatus {
         this.resources = resources;
     }
 
-    private transient Long totalResources = 0L;
-    private transient Long totalFiles = 0L;
-    private transient Long totalSpace = 0L;
-    private transient boolean initialized = false;
-    private transient Long filesUsed = 0L;
-    private transient Long spaceUsed = 0L;
-    private transient Long resourcesUsed = 0L;
-
     public void initTotals() {
         for (Invoice invoice : getInvoices()) {
             if (invoice.getTransactionStatus() != TransactionStatus.TRANSACTION_SUCCESSFUL)
@@ -197,13 +201,11 @@ public class Account extends Persistable.Base implements Updatable, HasStatus {
             totalSpace += invoice.getTotalSpace();
         }
 
-        for (Resource resource : resources) {
-            ResourceEvaluator re = new ResourceEvaluator();
-            re.evaluateResource(resource);
-            filesUsed += re.getFilesUsed();
-            spaceUsed += re.getSpaceUsed();
-            resourcesUsed += re.getResourcesUsed();
-        }
+        ResourceEvaluator re = new ResourceEvaluator();
+        re.evaluateResource((Resource[]) resources.toArray());
+        setFilesUsed(getFilesUsed() + re.getFilesUsed());
+        setSpaceUsed(getSpaceUsed() + re.getSpaceUsed());
+        setResourcesUsed(getResourcesUsed() + re.getResourcesUsed());
     }
 
     public Long getTotalNumberOfResources() {
@@ -229,17 +231,17 @@ public class Account extends Persistable.Base implements Updatable, HasStatus {
 
     public Long getAvailableNumberOfFiles() {
         Long totalFiles = getTotalNumberOfFiles();
-        return totalFiles - filesUsed;
+        return totalFiles - getFilesUsed();
     }
 
     public Long getAvailableSpace() {
         Long totalSpace = getTotalNumberOfSpace();
-        return totalSpace - spaceUsed;
+        return totalSpace - getSpaceUsed();
     }
 
     public Long getAvailableResources() {
         Long totalResources = getTotalNumberOfResources();
-        return totalResources - resourcesUsed;
+        return totalResources - getResourcesUsed();
     }
 
     public enum AccountAdditionStatus {
@@ -250,8 +252,11 @@ public class Account extends Persistable.Base implements Updatable, HasStatus {
     }
 
     public AccountAdditionStatus canAddResource(Resource resource) {
-        ResourceEvaluator re = new ResourceEvaluator();
-        re.evaluateResource(resource);
+        ResourceEvaluator re = new ResourceEvaluator(resource);
+        return canAddResource(re);
+    }
+
+    public AccountAdditionStatus canAddResource(ResourceEvaluator re) {
         if (getAvailableNumberOfFiles() - re.getFilesUsed() < 0) {
             return AccountAdditionStatus.NOT_ENOUGH_FILES;
         }
@@ -331,7 +336,38 @@ public class Account extends Persistable.Base implements Updatable, HasStatus {
         return (re.invoiceHasMinimumForNewResource(this));
     }
 
-    
+    public void updateQuotas(ResourceEvaluator endingEvaluator) {
+        if (canAddResource(endingEvaluator) == AccountAdditionStatus.CAN_ADD_RESOURCE) {
+            setFilesUsed(getFilesUsed() + endingEvaluator.getFilesUsed());
+            setResourcesUsed(getResourcesUsed() + endingEvaluator.getResourcesUsed());
+            setSpaceUsed(getSpaceUsed() + endingEvaluator.getSpaceUsed());
+        }
+    }
+
+    public Long getFilesUsed() {
+        return filesUsed;
+    }
+
+    public void setFilesUsed(Long filesUsed) {
+        this.filesUsed = filesUsed;
+    }
+
+    public Long getSpaceUsed() {
+        return spaceUsed;
+    }
+
+    public void setSpaceUsed(Long spaceUsed) {
+        this.spaceUsed = spaceUsed;
+    }
+
+    public Long getResourcesUsed() {
+        return resourcesUsed;
+    }
+
+    public void setResourcesUsed(Long resourcesUsed) {
+        this.resourcesUsed = resourcesUsed;
+    }
+
     // set current values as saved fields
     // save trasnactions update available values...
 }

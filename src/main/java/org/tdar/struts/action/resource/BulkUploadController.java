@@ -99,10 +99,10 @@ public class BulkUploadController extends AbstractInformationResourceController<
 
         if (isAsync()) {
             logger.info("running asyncronously");
-            bulkUploadService.saveAsync(image, getAuthenticatedUser(), getTicketId(), excelManifest, fileProxiesToProcess);
+            bulkUploadService.saveAsync(image, getAuthenticatedUser(), getTicketId(), excelManifest, fileProxiesToProcess, getAccountId());
         } else {
             logger.info("running inline");
-            bulkUploadService.save(image, getAuthenticatedUser(), getTicketId(), excelManifest, fileProxiesToProcess);
+            bulkUploadService.save(image, getAuthenticatedUser(), getTicketId(), excelManifest, fileProxiesToProcess, getAccountId());
         }
         getGenericService().markReadOnly(getPersistable());
         getGenericService().detachFromSession(getPersistable());
