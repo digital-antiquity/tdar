@@ -719,6 +719,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         // FIXME: trying to avoid concurrent modification exceptions
         // NOTE: this processes deleted ones again too
+        // NOTE2: this is ignored in the quota on purpose -- it's on us
         getInformationResourceService().reprocessInformationResourceFiles(new ArrayList<InformationResourceFile>(getResource().getInformationResourceFiles()));
 
         return SUCCESS;

@@ -139,6 +139,7 @@ public class DatasetController extends AbstractInformationResourceController<Dat
     @WriteableSession
     public String reimport() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+        // note this ignores the quota changes -- it's on us
         getDatasetService().reprocess(getPersistable());
         return SUCCESS;
     }
@@ -150,6 +151,7 @@ public class DatasetController extends AbstractInformationResourceController<Dat
     @Action(value = "retranslate", results = { @Result(name = SUCCESS, type = "redirect", location = "view?id=${resource.id}") })
     @WriteableSession
     public String retranslate() throws TdarActionException {
+        // note this ignores the quota changes -- it's on us
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         for (DataTable table : getPersistable().getDataTables()) {
             getDatasetService().retranslate(table.getDataTableColumns());

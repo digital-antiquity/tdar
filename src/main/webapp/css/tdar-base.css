@@ -846,7 +846,7 @@ aside.dataset,aside.document,aside.coding_sheet,aside.sensory_data,aside.ontolog
 
 #sidebar-left ul, #sidebar-left li {
 	margin: 0;
-	padding: 0;
+	//padding: 0;
 	list-style: none;
 }
 
@@ -1281,6 +1281,11 @@ footer h4 {
 	font-size: 16px;
 	color: #fff;
 	margin: 0 0 15px 0;
+}
+
+.unstyled-list {
+	list-style:none;
+	margin-left:0px;
 }
 
 footer ul,footer li {

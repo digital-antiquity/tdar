@@ -109,7 +109,7 @@ View freemarker macros
 					<span class="downloadNumber">${resource.totalNumberOfFiles?c}</span>
 				</h3>
       <@embargoCheck/>
-		<ul class="downloads">
+		<ul class="downloads unstyled-list">
         <#list resource.informationResourceFiles as irfile>
               <#if irfile.latestUploadedVersion??>
 					<li class="${irfile.latestUploadedVersion.extension} <#if irfile.deleted>view-deleted-file</#if>">
@@ -823,7 +823,7 @@ ${_date?string('MM/dd/yyyy')}<#t>
 
 				<p>
 
-				<ul>
+				<ul class="unstyled-list">
 					<@view.resourceProvider />
 				    <#if resource.seriesName?has_content>
 				    <li><strong>Series name</strong><br>${resource.seriesName}</li>
