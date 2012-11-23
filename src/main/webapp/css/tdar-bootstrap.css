@@ -163,7 +163,11 @@ table.display.tableFormat {
 	margin-top: 0px !important;
 }
 
-div.mapcontainer div { /* float:right; */
+div.mapcontainer { 
+	position: relative;
+	right: 0px;
+	float: right;
+	margin-right: 40px;
 	
 }
 
@@ -1211,3 +1215,4 @@ h3.collection-mid-red::before {
 	padding: 10px;
 	font-weight: 700;
 }
+

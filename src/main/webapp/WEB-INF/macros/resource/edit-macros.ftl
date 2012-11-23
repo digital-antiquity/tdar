@@ -782,13 +782,14 @@ applyInheritance(project, formSelector);
 
     <tr id="${prefix}Row_${proxy_index}_" class="repeat-row">
           <#assign creatorType = proxy.actualCreatorType!"PERSON" />
-         <td>
+          <!-- fixme: careful with this styling -->
+        <td style="margin-right:0px !important;padding-right:2px !important">
          	<div class="btn-group creator-toggle-button" data-toggle="buttons-radio">
 	           <button type="button" class="btn btn-small personButton <#if type_override == "PERSON" || (creatorType=='PERSON' && type_override=='NONE') >btn-active active</#if>" data-toggle="button">Person</button>
 	           <button type="button" class="btn btn-small institutionButton <#if creatorType =='INSTITUTION' || type_override == "INSTITUTION">btn-active active</#if>" data-toggle="button">Institution</button>
 			</div>
 		</td>
-        <td>
+        <td style="margin-left:0px !important;padding-left:0px !important">
         	<@userRow person=proxy.person _indexNumber=proxy_index _personPrefix="person" prefix="${prefix}Proxies" 
         		includeRole=includeRole hidden=(creatorType =='INSTITUTION' || type_override == "INSTITUTION") required=(creatorType=='PERSON' && required) />
 
@@ -1394,7 +1395,7 @@ $(function() {
 			<#nested /></span>
 			<li><a href="#organizeSection"><span class="visible-phone visible-tablet" title="Project">Proj.</span><span class="hidden-phone hidden-tablet">Project</span></a></li>
 			<li><a href="#spatialSection">Where</a></li>
-			<li><a href="#temporalSection">When</a></li>
+			<li class="hidden-phone"><a href="#temporalSection">When</a></li>
 			<li><a href="#investigationSection">What</a></li>
 			<li class="hidden-phone"><a href="#siteSection">Site</a></li>
 			<li class="hidden-tablet hidden-phone"><a href="#resourceNoteSectionGlide">Notes</a></li>
