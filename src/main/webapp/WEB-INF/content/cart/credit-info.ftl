@@ -11,8 +11,8 @@
 <h1>Your cart</h1>
 
 <div>
-<@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='process-payment-request'>
-	<@s.hidden name="id" value="${invoice.id}"/>
+<@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='/cart/process-payment-request?id=${invoice.id?c}'>
+	<@s.hidden name="id" value="${invoice.id?c}"/>
 
 	<@s.radio list="allPaymentMethods" name="invoice.paymentMethod" cssClass="transactionType" emptyOption='false' />
 

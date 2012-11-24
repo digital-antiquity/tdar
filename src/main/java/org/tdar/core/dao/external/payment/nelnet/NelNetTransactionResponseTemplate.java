@@ -30,6 +30,10 @@ public class NelNetTransactionResponseTemplate implements Serializable {
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private Map<String, String[]> values = new HashMap<String, String[]>();
+    private String secret = "";
+    public NelNetTransactionResponseTemplate(String secret) {
+        this.secret = secret;
+    }
 
     public enum NelnetTransactionItemResponse {
         TRANSACTION_TYPE("transactionType", "transactionType", 1),
@@ -123,8 +127,16 @@ public class NelNetTransactionResponseTemplate implements Serializable {
     }
 
     public boolean validateHashKey() {
-        ArrayList<NelnetTransactionItemResponse> list = new ArrayList<NelnetTransactionItemResponse>(Arrays.asList(NelnetTransactionItemResponse.values()));
-        Collections.sort(list, new Comparator<NelnetTransactionItemResponse>() {
+        String hashkey = generateHashKey();
+        String actual = getValuesFor(NelnetTransactionItemResponse.HASH.getKey());
+        if (!actual.equals(hashkey)) {
+            throw new TdarRecoverableRuntimeException(String.format("hash keys do not match actual: %s computed: %s ", actual, hashkey));
+        }
+        return true;
+    }
+
+    public String generateHashKey() {
+        Collections.sort(new ArrayList<NelnetTransactionItemResponse>(Arrays.asList(NelnetTransactionItemResponse.values())), new Comparator<NelnetTransactionItemResponse>() {
             @Override
             public int compare(NelnetTransactionItemResponse o1, NelnetTransactionItemResponse o2) {
                 return NumberUtils.compare(o1.getOrder(), o2.getOrder());
@@ -132,21 +144,19 @@ public class NelNetTransactionResponseTemplate implements Serializable {
         });
 
         StringBuilder toHash = new StringBuilder();
-        for (NelnetTransactionItemResponse item : list) {
-            if (item == NelnetTransactionItemResponse.HASH)
+        for (NelnetTransactionItemResponse item : NelnetTransactionItemResponse.values()) {
+            if (item == NelnetTransactionItemResponse.HASH || item == NelnetTransactionItemResponse.KEY)
                 continue;
             String key = item.getKey();
             String value = getValuesFor(key);
             if (getValues().containsKey(key) && StringUtils.isNotBlank(value)) {
                 toHash.append(value);
+                logger.info("{}[{}]", key, value);
             }
         }
+        toHash.append(secret);
         String hashkey = DigestUtils.md5Hex(toHash.toString());
-        String actual = getValuesFor(NelnetTransactionItemResponse.HASH.getKey());
-        if (!actual.equals(hashkey)) {
-            throw new TdarRecoverableRuntimeException(String.format("hash keys do not match actual: %s computed: %s ", actual, hashkey));
-        }
-        return true;
+        return hashkey;
     }
 
     public void updateInvoiceFromResponse(Invoice invoice) {
@@ -161,13 +171,13 @@ public class NelNetTransactionResponseTemplate implements Serializable {
             try {
                 numericValue = NumberUtils.createNumber(value);
             } catch (Exception e) {
-                logger.debug("cannot parse: {} as a number, {}", value, e);
+                logger.trace("cannot parse: {} as a number, {}", value, e);
             }
             try {
                 DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyyMMddHHmm");
                 dateValue = DateTime.parse(value, fmt).toDate();
             } catch (Exception e) {
-                logger.debug("cannot parse: {} as a date , {}", value, e);
+                logger.trace("cannot parse: {} as a date , {}", value, e);
             }
             switch (item) {
                 case ACCOUNT_HOLDER_NAME:

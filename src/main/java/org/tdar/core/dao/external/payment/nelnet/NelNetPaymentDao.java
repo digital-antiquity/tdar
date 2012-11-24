@@ -101,7 +101,7 @@ public class NelNetPaymentDao extends Configurable implements PaymentTransaction
     @Override
     public NelNetTransactionResponseTemplate processResponse(Map<String, String[]> parameters) {
         logger.info("parameters: {}  ", parameters);
-        NelNetTransactionResponseTemplate response = new NelNetTransactionResponseTemplate();
+        NelNetTransactionResponseTemplate response = new NelNetTransactionResponseTemplate(getSecretWord());
         response.setValues(parameters);
 
         return response;

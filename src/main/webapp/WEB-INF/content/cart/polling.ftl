@@ -21,7 +21,7 @@ setTimeout(function(){newWindow = window.open("<#noescape>${redirectUrl}</#noesc
 var updateProgress = function() {
     console.log("updating progress");
  
-    var url = "<@s.url value="polling-check"/>";
+    var url = "<@s.url value="/cart/${invoice.id?c}/polling-check"/>";
     $.ajax({
       url: url,
       dataType: 'json',

@@ -78,25 +78,11 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     }
 
     @SkipValidation
-    @Action(value = "polling", results = { @Result(name = SUCCESS, location = "polling.ftl") })
-    public String polling() throws TdarActionException {
-        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
-        try {
-            setRedirectUrl(paymentTransactionProcessor.prepareRequest(getInvoice()));
-        } catch (URIException e) {
-            logger.warn("error happend {}", e);
-        }
-        logger.info("redirecting to : {}", getRedirectUrl());
-
-        return SUCCESS;
-    }
-
-    @SkipValidation
     @Action(value = "polling-check", results = {
             @Result(name = "wait", type = "freemarker", location = "polling-check.ftl", params = { "contentType", "application/json" }) })
     public String pollingCheck() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
-
+        
         return "wait";
     }
 
@@ -154,6 +140,11 @@ public class CartController extends AbstractPersistableController<Invoice> imple
                 break;
             case CREDIT_CARD:
                 getGenericService().saveOrUpdate(getInvoice());
+                try {
+                    setRedirectUrl(paymentTransactionProcessor.prepareRequest(getInvoice()));
+                } catch (URIException e) {
+                    logger.warn("error happend {}", e);
+                }
                 return POLLING;
             case INVOICE:
                 getInvoice().setInvoiceNumber(invoiceNumber);
@@ -181,12 +172,18 @@ public class CartController extends AbstractPersistableController<Invoice> imple
                     @Result(name = INVOICE, type = "redirect", location = "cc-result.ftl")
             })
     public String processPaymentResponse() throws TdarActionException {
+        try {
+        logger.info("PROCESS RESPONSE {}", getParameters());
         NelNetTransactionResponseTemplate response = paymentTransactionProcessor.processResponse(getParameters());
         // if transaction is valid (hashKey matches) then mark the session as writeable and go on
         if (paymentTransactionProcessor.validateResponse(response)) {
             getGenericService().markWritable();
             Invoice invoice = paymentTransactionProcessor.locateInvoice(response);
             paymentTransactionProcessor.updateInvoiceFromResponse(response, invoice);
+            logger.info("processing payment response: {}  -> {} ", invoice, invoice.getTransactionStatus());
+        }
+        } catch (Exception e) {
+            logger.error("{}", e);
         }
         return INVOICE;
     }
