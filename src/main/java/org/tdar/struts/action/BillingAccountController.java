@@ -16,6 +16,7 @@ import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.AccountGroup;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.dao.external.auth.InternalTdarRights;
 
 @Component
 @Scope("prototype")
@@ -39,7 +40,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
             @Result(name = NEW_ACCOUNT, location = "add")
     })
     public String selectAccount() throws TdarActionException {
-//        getAccountService().checkThatInvoiceBeAssigned(getGenericService().find(Invoice.class, invoiceId), null);
+        // getAccountService().checkThatInvoiceBeAssigned(getGenericService().find(Invoice.class, invoiceId), null);
         setAccounts(getAccountService().listAvailableAccountsForUser(getAuthenticatedUser()));
         if (CollectionUtils.isNotEmpty(getAccounts())) {
             return SUCCESS;
@@ -72,9 +73,25 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     @Override
     protected void delete(Account persistable) {
         // TODO Auto-generated method stub
-
     }
 
+    @Override
+    public boolean isViewable() throws TdarActionException {
+        if (Persistable.Base.isNullOrTransient(getAuthenticatedUser())) {
+            return false;
+        }
+        
+        if (getAuthenticationAndAuthorizationService().can(InternalTdarRights.VIEW_BILLING_INFO, getAuthenticatedUser())) {
+            return true;
+        }
+        
+        if (getAuthenticatedUser().equals(getAccount().getOwner()) || getAccount().getAuthorizedMembers().contains(getAuthenticatedUser())) {
+            return true;
+        }
+        
+        return false;
+    }
+    
     @Override
     public Class<Account> getPersistableClass() {
         return Account.class;

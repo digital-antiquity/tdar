@@ -75,15 +75,11 @@ $(document).ready(function() {
       $(this).next().toggle();
       return false;
   });
-applyZebraColors();
 });
 </script>
 </head>
 
-<@rlist.toolbar "select-tables" />
-
     <div class="glide">
-
 
 <#if bookmarkedDataTables.empty >
     <p>

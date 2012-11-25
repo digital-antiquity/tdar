@@ -33,6 +33,7 @@ import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.struts.data.ResourceCreatorProxy;
 import org.tdar.struts.data.ResourceSpaceUsageStatistic;
+import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
 
 /**
  * $Id$
@@ -49,6 +50,7 @@ import org.tdar.struts.data.ResourceSpaceUsageStatistic;
 @ParentPackage("default")
 @Component
 @Scope("prototype")
+@HttpOnlyIfUnauthenticated
 public class BrowseController extends AbstractLookupController {
 
     private static final String ALL_TDAR_COLLECTIONS = "All Collections";

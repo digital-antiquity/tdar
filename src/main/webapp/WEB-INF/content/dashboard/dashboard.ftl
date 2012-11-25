@@ -90,7 +90,7 @@ Welcome back, ${authenticatedUser.firstName}!
 	<div class="span9 noindent" id="divEmptyProjects">
 	    <h3>Empty Projects</h3>
 	    <ol style='list-style-position:inside' id="emptyProjects">
-	    <@s.iterator value='emptyProjects' status='recentEditStatus' var='res'>
+	    <#list emptyProjects as res>
 	    <li id="li-recent-resource-${res.id?c}">
 	            <a href="<@s.url value='/${res.urlNamespace}/view'><@s.param name="id" value="${res.id?c}"/></@s.url>">
 	                <@common.truncate res.title 70 />
@@ -101,7 +101,7 @@ Welcome back, ${authenticatedUser.firstName}!
 	            <a href="<@s.url value='/${res.urlNamespace}/delete'><@s.param name="id" value="${res.id?c}"/></@s.url>" >delete</a>
 	        </div>
 	    </li>
-	    </@s.iterator>
+	    </#list>
 	    </ol>
 	</div>
 <hr />
@@ -120,6 +120,25 @@ Welcome back, ${authenticatedUser.firstName}!
  </#if>
 </#macro>
 
+<div id="divAccountInfo">
+<h3>About You</h3>
+    <strong>Full Name: </strong>${authenticatedUser.properName}<#if authenticatedUser.institution??>, ${authenticatedUser.institution.name}</#if><br />
+    <#if authenticatedUser.penultimateLogin??>
+        <strong>Last Login: </strong>${authenticatedUser.penultimateLogin?datetime}<br/>
+    </#if>
+	<a href="<@s.url value='/entity/person/edit?id=${sessionData.person.id?c}'/>">edit your profile</a>
+</div>
+
+	<div>
+		<h3>Your Account(s)</h3>
+		<ul>
+		<#list accounts as account>
+			<li>
+				<a href="<@s.url value="/billing/${account.id?c}" />">${account.name!"unamed"}</a>
+			</li>
+		</#list>
+		</ul>		
+	</div>
    <div class="glide"><h3>Collections You Created </h3>
       <@listCollections resourceCollections>
         <#if (!resourceCollections?has_content )>
@@ -136,14 +155,10 @@ Welcome back, ${authenticatedUser.firstName}!
 </div>
 </#if>
 <hr />
-<div class="span9 noindent" id="divAccountInfo">
-<h3>About Your Account</h3>
-    <strong>Full Name: </strong>${authenticatedUser.properName}<#if authenticatedUser.institution??>, ${authenticatedUser.institution.name}</#if><br />
-    <#if authenticatedUser.penultimateLogin??>
-        <strong>Last Login: </strong>${authenticatedUser.penultimateLogin?datetime}<br/>
-    </#if>
-	<a href="<@s.url value='/entity/person/edit?id=${sessionData.person.id?c}'/>">edit your profile</a>
-</div>
+
+<h3>Your Bookmarks</h3>
+<@rlist.listResources resourcelist=bookmarkedResources sortfield='RESOURCE_TYPE' editable=false bookmarkable=true  expanded=true listTag='ol' headerTag="h3" />
+
 
 <#macro listCollections resourceCollections_ >
       <ul>

@@ -1,10 +1,10 @@
 package org.tdar.struts.action;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,6 +17,7 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -42,8 +43,7 @@ public class DashboardController extends AuthenticationAware.Base {
     private static final long serialVersionUID = -2959809512424441740L;
     private List<Resource> recentlyEditedResources = new ArrayList<Resource>();
     private List<Project> emptyProjects = new ArrayList<Project>();
-    // private List<Resource> bookmarkedResources;
-    // private PartitionedResourceResult partitionedBookmarkedResources;
+    private List<Resource> bookmarkedResources;
     private Long activeResourceCount = 0l;
     private int maxRecentResources = 5;
     private List<Resource> filteredFullUserProjects;
@@ -53,6 +53,7 @@ public class DashboardController extends AuthenticationAware.Base {
     private List<ResourceCollection> sharedResourceCollections = new ArrayList<ResourceCollection>();
     private Map<ResourceType, Long> resourceCountForUser = new HashMap<ResourceType, Long>();
     private Map<Status, Long> statusCountForUser = new HashMap<Status, Long>();
+    private Set<Account> accounts = new HashSet<Account>();
 
     @Override
     @Action("dashboard")
@@ -66,6 +67,7 @@ public class DashboardController extends AuthenticationAware.Base {
         getSharedResourceCollections().removeAll(getResourceCollections());
         Collections.sort(resourceCollections);
         Collections.sort(sharedResourceCollections);
+        getAccounts().addAll(getAccountService().listAvailableAccountsForUser(getAuthenticatedUser()));
         activeResourceCount += getStatusCountForUser().get(Status.ACTIVE);
         activeResourceCount += getStatusCountForUser().get(Status.DRAFT);
         logger.trace("{}", resourceCollections);
@@ -121,25 +123,17 @@ public class DashboardController extends AuthenticationAware.Base {
         return emptyProjects;
     }
 
-    // /**
-    // * @return the bookmarkedResources
-    // */
-    // public List<Resource> getBookmarkedResources() {
-    // if (bookmarkedResources == null) {
-    // bookmarkedResources = getBookmarkedResourceService().findResourcesByPerson(getAuthenticatedUser());
-    // }
-    // return bookmarkedResources;
-    // }
-    //
-    // /**
-    // * @return the partitionedBookmarkedResources
-    // */
-    // public PartitionedResourceResult getPartitionedBookmarkedResources() {
-    // if (partitionedBookmarkedResources == null) {
-    // partitionedBookmarkedResources = new PartitionedResourceResult(getBookmarkedResources());
-    // }
-    // return partitionedBookmarkedResources;
-    // }
+
+    public List<Resource> getBookmarkedResources() {
+        if (bookmarkedResources == null) {
+            bookmarkedResources = getBookmarkedResourceService().findResourcesByPerson(getAuthenticatedUser(), Arrays.asList(Status.ACTIVE, Status.DRAFT));
+        }
+
+        for (Resource res : bookmarkedResources) {
+            getAuthenticationAndAuthorizationService().applyTransientViewableFlag(res, getAuthenticatedUser());
+        }
+        return bookmarkedResources;
+    }
 
     public List<Project> getAllSubmittedProjects() {
         List<Project> allSubmittedProjects = getProjectService().findBySubmitter(getAuthenticatedUser());
@@ -230,8 +224,10 @@ public class DashboardController extends AuthenticationAware.Base {
 
     public List<Status> getStatuses() {
         List<Status> toReturn = new ArrayList<Status>(getResourceService().findAllStatuses());
-        getAuthenticationAndAuthorizationService().removeIfNotAllowed(toReturn, Status.DELETED, InternalTdarRights.SEARCH_FOR_DELETED_RECORDS, getAuthenticatedUser());
-        getAuthenticationAndAuthorizationService().removeIfNotAllowed(toReturn, Status.FLAGGED, InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, getAuthenticatedUser());
+        getAuthenticationAndAuthorizationService().removeIfNotAllowed(toReturn, Status.DELETED, InternalTdarRights.SEARCH_FOR_DELETED_RECORDS,
+                getAuthenticatedUser());
+        getAuthenticationAndAuthorizationService().removeIfNotAllowed(toReturn, Status.FLAGGED, InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS,
+                getAuthenticatedUser());
 
         return toReturn;
     }
@@ -267,6 +263,14 @@ public class DashboardController extends AuthenticationAware.Base {
      */
     public void setSharedResourceCollections(List<ResourceCollection> sharedResourceCollections) {
         this.sharedResourceCollections = sharedResourceCollections;
+    }
+
+    public Set<Account> getAccounts() {
+        return accounts;
+    }
+
+    public void setAccounts(Set<Account> accounts) {
+        this.accounts = accounts;
     }
 
 }

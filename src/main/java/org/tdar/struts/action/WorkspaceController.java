@@ -75,9 +75,9 @@ public class WorkspaceController extends AuthenticationAware.Base {
      * Pass through actions that will go to <action-name>.ftl or <action-name>.jsp
      */
     @Actions({
-            @Action(value = "select-tables"),
-            @Action("list")
+            @Action(value = "select-tables")
     })
+//            ,@Action("list")
     @Override
     public String execute() {
         return SUCCESS;
