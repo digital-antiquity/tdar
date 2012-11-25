@@ -29,6 +29,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.struts.WriteableSession;
 import org.tdar.struts.action.resource.AbstractResourceController;
 import org.tdar.struts.data.ResourceSpaceUsageStatistic;
+import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -127,6 +128,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     }
 
     @SkipValidation
+    @HttpOnlyIfUnauthenticated
     @Action(value = "view",
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
             results = {

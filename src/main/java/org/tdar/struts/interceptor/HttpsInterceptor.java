@@ -1,12 +1,14 @@
 package org.tdar.struts.interceptor;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.ReflectionService;
+import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.TdarActionSupport;
 
 import com.opensymphony.xwork2.ActionInvocation;
@@ -24,7 +26,26 @@ public class HttpsInterceptor implements Interceptor {
         if (ReflectionService.methodOrActionContainsAnnotation(invocation, HttpsOnly.class)) {
             return doHttpsIntercept(invocation);
         }
+        if (ReflectionService.methodOrActionContainsAnnotation(invocation, HttpOnlyIfUnauthenticated.class)) {
+            return doHttpIntercept(invocation);
+        }
         // not annotated... business as usual.
+        return invocation.invoke();
+    }
+
+    private String doHttpIntercept(ActionInvocation invocation) throws Exception {
+        HttpServletRequest request = ServletActionContext.getRequest();
+        HttpServletResponse response = ServletActionContext.getResponse();
+        /*
+         * If we're not secured or user is authenticated, just go on as usual, otherwise, force unauthenticated users to HTTP 
+         * this means you google.
+         */
+        if (request.isSecure() && invocation.getAction() instanceof AuthenticationAware && !((AuthenticationAware) invocation.getAction()).isAuthenticated()) {
+            TdarConfiguration config = TdarConfiguration.getInstance();
+            String baseUrl = String.format("http://%s%s%s%s", config.getHostName(), config.getPort() == 80 ? "" : ":" + config.getPort(),
+                    request.getServletPath(), request.getQueryString() == null ? "" : "?" + request.getQueryString());
+            response.sendRedirect(baseUrl);
+        }
         return invocation.invoke();
     }
 

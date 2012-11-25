@@ -21,6 +21,7 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.RssService;
+import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
 
 import com.sun.syndication.feed.synd.SyndEntry;
 
@@ -38,6 +39,7 @@ import com.sun.syndication.feed.synd.SyndEntry;
 @ParentPackage("default")
 @Component
 @Scope("prototype")
+@HttpOnlyIfUnauthenticated
 @Results({
         @Result(name = "authenticated", type = "redirect", location = "/")
 })

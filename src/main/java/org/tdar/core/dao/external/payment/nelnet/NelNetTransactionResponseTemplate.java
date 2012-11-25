@@ -151,7 +151,7 @@ public class NelNetTransactionResponseTemplate implements Serializable {
             String value = getValuesFor(key);
             if (getValues().containsKey(key) && StringUtils.isNotBlank(value)) {
                 toHash.append(value);
-                logger.info("{}[{}]", key, value);
+                logger.trace("{}[{}]", key, value);
             }
         }
         toHash.append(secret);

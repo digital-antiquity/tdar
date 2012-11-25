@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.httpclient.URIException;
+import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -16,6 +17,7 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.BillingItem;
@@ -73,6 +75,9 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     @Action(value = "credit", results = { @Result(name = SUCCESS, location = "credit-info.ftl") })
     public String editCredit() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+        if (!getInvoice().isModifiable()) {
+            throw new TdarRecoverableRuntimeException("cannot modify");
+        }
 
         return SUCCESS;
     }
@@ -82,7 +87,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
             @Result(name = "wait", type = "freemarker", location = "polling-check.ftl", params = { "contentType", "application/json" }) })
     public String pollingCheck() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
-        
+
         return "wait";
     }
 
@@ -93,6 +98,9 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     })
     public String saveBilling() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+        if (!getInvoice().isModifiable()) {
+            throw new TdarRecoverableRuntimeException("cannot modify");
+        }
         getInvoice().setAddress(getGenericService().loadFromSparseEntity(getInvoice().getAddress(), Address.class));
         getGenericService().saveOrUpdate(getInvoice());
 
@@ -101,6 +109,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
     private String redirectUrl;
     private Map<String, String[]> parameters;
+    private String successPath;
 
     /*
      * This method will take the response and prepare it for the CC processing transaction; admin(s) will have additional rights. Ultimately, the redirect URL
@@ -111,17 +120,14 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     @Action(value = "process-payment-request", results = {
             @Result(name = SUCCESS, type = "redirect", location = "view?id=${invoice.id}&review=true"),
             @Result(name = POLLING, location = "polling.ftl"),
-            @Result(name = SUCCESS_UPDATE_ACCOUNT, type = "redirect", location = "/billing/choose?invoiceId=${invoice.id}&id=${accountId}"),
-            @Result(name = SUCCESS_ADD_ACCOUNT, type = "redirect", location = "/billing/choose?invoiceId=${invoice.id}")
+            @Result(name = SUCCESS_ADD_ACCOUNT, location = "${successPath}")
     })
     public String processPayment() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
-        String successReturn = SUCCESS_ADD_ACCOUNT;
-        Account account = getGenericService().find(Account.class, accountId);
-        if (account != null) {
-            successReturn = SUCCESS_UPDATE_ACCOUNT;
+        if (!getInvoice().isModifiable()) {
+            return SUCCESS;
         }
-
+        getSuccessPath(); //initialize
         PaymentMethod paymentMethod = getInvoice().getPaymentMethod();
         String invoiceNumber = getInvoice().getInvoiceNumber();
         String otherReason = getInvoice().getOtherReason();
@@ -153,7 +159,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
             case MANUAL:
                 getInvoice().setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
                 getGenericService().saveOrUpdate(getInvoice());
-                return successReturn;
+                return SUCCESS_ADD_ACCOUNT;
         }
         // validate transaction
         // run transaction
@@ -173,15 +179,17 @@ public class CartController extends AbstractPersistableController<Invoice> imple
             })
     public String processPaymentResponse() throws TdarActionException {
         try {
-        logger.info("PROCESS RESPONSE {}", getParameters());
-        NelNetTransactionResponseTemplate response = paymentTransactionProcessor.processResponse(getParameters());
-        // if transaction is valid (hashKey matches) then mark the session as writeable and go on
-        if (paymentTransactionProcessor.validateResponse(response)) {
-            getGenericService().markWritable();
-            Invoice invoice = paymentTransactionProcessor.locateInvoice(response);
-            paymentTransactionProcessor.updateInvoiceFromResponse(response, invoice);
-            logger.info("processing payment response: {}  -> {} ", invoice, invoice.getTransactionStatus());
-        }
+            logger.trace("PROCESS RESPONSE {}", getParameters());
+            NelNetTransactionResponseTemplate response = paymentTransactionProcessor.processResponse(getParameters());
+            // if transaction is valid (hashKey matches) then mark the session as writeable and go on
+            if (paymentTransactionProcessor.validateResponse(response)) {
+                getGenericService().markWritable();
+                Invoice invoice = paymentTransactionProcessor.locateInvoice(response);
+                invoice = getGenericService().markWritable(invoice);
+                paymentTransactionProcessor.updateInvoiceFromResponse(response, invoice);
+                logger.info("processing payment response: {}  -> {} ", invoice, invoice.getTransactionStatus());
+                getGenericService().saveOrUpdate(invoice);
+            }
         } catch (Exception e) {
             logger.error("{}", e);
         }
@@ -212,9 +220,31 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     }
 
     @Override
+    public boolean isViewable() throws TdarActionException {
+        if (Persistable.Base.isNullOrTransient(getAuthenticatedUser() )) {
+            return false;
+        }
+        if (getAuthenticationAndAuthorizationService().can(InternalTdarRights.VIEW_BILLING_INFO, getAuthenticatedUser())) {
+            return true;
+        }
+        if (getAuthenticatedUser().equals(getInvoice().getPerson())) {
+            return true;
+        }
+        return false;
+    }
+    
+    @Override
     public boolean isEditable() throws TdarActionException {
-        // FIXME: I should be smarter
-        return true;
+        if (Persistable.Base.isNullOrTransient(getAuthenticatedUser() )) {
+            return false;
+        }
+        if (getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_BILLING_INFO, getAuthenticatedUser())) {
+            return true;
+        }
+        if (getAuthenticatedUser().equals(getInvoice().getPerson())) {
+            return true;
+        }
+        return false;
     }
 
     public void setInvoice(Invoice invoice) {
@@ -269,5 +299,20 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
     public void setCallback(String callback) {
         this.callback = callback;
+    }
+
+    public String getSuccessPath() {
+        if (StringUtils.isBlank(successPath)) {
+            successPath = String.format("/billing/choose?invoiceId=%d", getInvoice().getId());
+            Account account = getGenericService().find(Account.class, accountId);
+            if (account != null) {
+                successPath = String.format("/billing/choose?invoiceId=%d&id=%d", getInvoice().getId(), account.getId());
+            }
+        }
+        return successPath;
+    }
+
+    public void setSuccessPath(String successPath) {
+        this.successPath = successPath;
     }
 }

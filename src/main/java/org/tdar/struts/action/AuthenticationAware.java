@@ -30,6 +30,10 @@ public interface AuthenticationAware extends SessionDataAware {
 
     public AuthenticationAndAuthorizationService getAuthenticationAndAuthorizationService();
 
+    Person getAuthenticatedUser();
+
+    boolean isAuthenticated();
+
     public abstract static class Base extends TdarActionSupport implements AuthenticationAware {
 
         private static final long serialVersionUID = -7792905441259237588L;

@@ -32,6 +32,9 @@ var updateProgress = function() {
                 setTimeout(updateProgress, TIMEOUT);
             } else {
             	$("#polling-status").html("done: " + data.transactionStatus);
+            	if (data.transactionStatus == 'TRANSACTION_SUCCESSFUL') {
+            		window.document.location = "${successPath}";
+            	}
             }
             if (data.errors  != undefined && data.errors != "") {
                 $("#asyncErrors").html("<div class='action-errors ui-corner-all'>"+data.errors+"</div>");

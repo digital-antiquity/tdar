@@ -15,7 +15,9 @@ public enum InternalTdarRights {
     EDIT_ANYTHING(TdarGroup.TDAR_EDITOR, TdarGroup.TDAR_ADMIN),
     VIEW_ANYTHING(TdarGroup.TDAR_EDITOR, TdarGroup.TDAR_ADMIN),
     REPROCESS_DERIVATIVES(TdarGroup.TDAR_EDITOR, TdarGroup.TDAR_ADMIN),
-    VIEW_ADMIN_INFO(TdarGroup.TDAR_ADMIN, TdarGroup.TDAR_EDITOR);
+    VIEW_ADMIN_INFO(TdarGroup.TDAR_ADMIN, TdarGroup.TDAR_EDITOR), 
+    VIEW_BILLING_INFO(TdarGroup.TDAR_ADMIN, TdarGroup.TDAR_BILLING_MANAGER, TdarGroup.TDAR_EDITOR),
+    EDIT_BILLING_INFO(TdarGroup.TDAR_ADMIN, TdarGroup.TDAR_BILLING_MANAGER);
 
     private TdarGroup[] permittedGroups;
 

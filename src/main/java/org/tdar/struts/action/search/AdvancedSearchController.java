@@ -66,6 +66,7 @@ import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.GeneralSearchQueryPart;
 import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.struts.data.KeywordNode;
+import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
 
 /**
  * Eventual replacement for LuceneSearchController. extending
@@ -79,6 +80,7 @@ import org.tdar.struts.data.KeywordNode;
 @Component
 @Scope("prototype")
 @ParentPackage("default")
+@HttpOnlyIfUnauthenticated
 public class AdvancedSearchController extends
         AbstractLookupController<Resource> {
 
