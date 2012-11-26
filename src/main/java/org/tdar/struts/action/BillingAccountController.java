@@ -37,7 +37,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     @SkipValidation
     @Action(value = "choose", results = {
             @Result(name = SUCCESS, location = "select-account.ftl"),
-            @Result(name = NEW_ACCOUNT, location = "add")
+            @Result(name = NEW_ACCOUNT, location = "add?invoiceId=${invoiceId}", type = "redirect")
     })
     public String selectAccount() throws TdarActionException {
         // getAccountService().checkThatInvoiceBeAssigned(getGenericService().find(Invoice.class, invoiceId), null);
@@ -80,18 +80,18 @@ public class BillingAccountController extends AbstractPersistableController<Acco
         if (Persistable.Base.isNullOrTransient(getAuthenticatedUser())) {
             return false;
         }
-        
+
         if (getAuthenticationAndAuthorizationService().can(InternalTdarRights.VIEW_BILLING_INFO, getAuthenticatedUser())) {
             return true;
         }
-        
+
         if (getAuthenticatedUser().equals(getAccount().getOwner()) || getAccount().getAuthorizedMembers().contains(getAuthenticatedUser())) {
             return true;
         }
-        
+
         return false;
     }
-    
+
     @Override
     public Class<Account> getPersistableClass() {
         return Account.class;
