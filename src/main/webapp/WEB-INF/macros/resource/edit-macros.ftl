@@ -278,7 +278,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <@keywordRows "Keyword" otherKeywords 'otherKeywords' />
     </div>
     
-    <#--fixme:  moving 'tagstrip' experiment out of divOtherInformation so existing inheritance code doesn't break -->
+    <#--fixme:  moving 'tagstrip' experiment out of divOtherInformation so existing inheritance code doesn't break
     <div class="row">
                 <p><span class="label label-warning">FIXME:</span> replace lame keyword lists with fancy taglists (like the one below!)</p><br>
         <div class="control-group">
@@ -295,6 +295,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         });
         </script>
     </div>
+     -->
 </div>
 </#macro>
 
