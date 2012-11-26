@@ -230,9 +230,9 @@ function setupDashboardDataTable() {
         selectableRows: datatable_isSelectable,
         rowSelectionCallback: function(id, obj, isAdded){
             if(isAdded) {
-                rowSelected(obj);
+                _rowSelected(obj);
             } else {
-                rowUnselected(obj);
+                _rowUnselected(obj);
             }
         }
     });
@@ -275,3 +275,88 @@ function setupDashboardDataTable() {
     $("#query").bindWithDelay("keyup", function() {$("#resource_datatable").dataTable().fnDraw();} ,500);
 }
 
+
+function registerResourceCollectionDataTable() {
+    //if user is editing existing collection, gather the hidden elements and put them in the 'seleted rows' object
+    var selectedRows = {};
+    $.each($('input', '#divSelectedResources'), function(ignored, item){
+        var elem = this;
+        selectedRows[elem.value] = {id:elem.value, title:'n/a', description:'n/a'};
+        console.debug('adding id to preselected rows:' + elem.value);  
+    });
+    $dataTable.data('selectedRows', selectedRows);
+    
+    //hide the selected items table if server hasn't prepopulated it
+    var $table = $('#tblCollectionResources');
+    if($table.find('tr').length==1) {
+        $table.hide();
+    }
+}
+
+
+function _rowSelected(obj) {
+
+    //first, add the hidden input tag to the dom
+    var tag = '<input type="hidden" name="resources.id" value="' + obj.id + '" id="hdnResourceId' + obj.id + '"/>';
+    console.log("adding selected resource:" + tag);
+    $('#divSelectedResources').append(tag);
+
+    //next, add a new row to the 'selected items' table.
+    var $table = $('#tblCollectionResources');
+    var $tbody = $('tbody', $table);
+    var resourceTag = '';
+        resourceTag += '<tr id="dataTableRow_:id">                                                                   ';
+        resourceTag += '    <td>:id</td>                                                                             ';
+        resourceTag += '    <td>                                                                                      ';
+        resourceTag += '        <a href="/:urlNamespace/:id" target="resourcedetail" >                                    ';
+        resourceTag += '            :title        ';
+        resourceTag += '        </a>                                                                                  ';
+        resourceTag += '    </td>                                                                                     ';
+        resourceTag += '    <td><button class="addAnother minus"  type="button" tabindex="-1" onclick="_removeResourceClicked(:id, this);false;"><i class="icon-trash"></i></button></td>';
+        resourceTag += '</tr>                                                                                         ';
+
+       resourceTag = resourceTag.replace(/:id/g, obj.id);
+       resourceTag = resourceTag.replace(/:urlNamespace/g, obj.urlNamespace);
+       resourceTag = resourceTag.replace(/:title/g, obj.title);
+       resourceTag = resourceTag.replace(/:description/g, obj.description);
+       resourceTag = resourceTag.replace(/:status/g, obj.status);
+       
+       $tbody.append(resourceTag);
+       //$table.closest('div').show();
+       $table.show();
+       applyZebraColors();
+}
+
+function _rowUnselected(obj) {
+    console.log('removing selected reosurce:' + obj.id);
+    $('#hdnResourceId' + obj.id).remove();
+    
+    var $row = $('#dataTableRow_' + obj.id);
+    var $table = $row.closest('table');
+    //var $div = $row.closest('div');
+    $row.remove();
+    if($table.find('tr').length == 1) $table.hide(); //FIXME: DRY
+
+}
+
+function _removeResourceClicked(id, elem) {
+    //delete the element from the selectedrows structure and remove the hidden input tag
+    delete $dataTable.data('selectedRows')[id];
+    $('#hdnResourceId' + id).remove();
+    
+    //now delete the row from the table
+    var $elem = $(elem);
+    var $tr = $elem.closest('tr');  
+    var $div = $elem.closest('div');
+    $tr.remove();
+    
+    //if the table is empty,  hide the section
+    if($('tr', $div).length == 1) { //one header row
+        //$div.hide();
+        $table.hide();
+    }
+    
+    //if the datatable is on a page that shows the corresponding checkbox,  clear the checkbox it
+    $('#cbEntityId_' + id, $dataTable).prop('checked', false);
+    
+}

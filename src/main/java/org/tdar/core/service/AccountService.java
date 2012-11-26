@@ -1,12 +1,14 @@
 package org.tdar.core.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.Account.AccountAdditionStatus;
 import org.tdar.core.bean.billing.AccountGroup;
@@ -83,9 +85,12 @@ public class AccountService {
         return false;
     }
 
+    @Transactional
     public void updateQuota(ResourceEvaluator initialEvaluation, Account account, Resource ... resources) {
         ResourceEvaluator endingEvaluator = new ResourceEvaluator(resources);
         endingEvaluator.subtract(initialEvaluation);
         account.updateQuotas(endingEvaluator);
+        account.getResources().addAll(Arrays.asList(resources));
+        genericDao.saveOrUpdate(account);
     }
 }

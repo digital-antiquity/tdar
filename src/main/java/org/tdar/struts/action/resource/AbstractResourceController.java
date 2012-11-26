@@ -119,7 +119,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     // private List<String> relatedCitations;
     private List<RelatedComparativeCollection> relatedComparativeCollections;
     private Long accountId;
-    private List<Account> activeAccounts;
+    private List<Account> activeAccounts = new ArrayList<Account>();
 
     private List<ResourceNote> resourceNotes;
     private List<ResourceCreatorProxy> authorshipProxies;
@@ -173,16 +173,24 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     public Long getActiveResourceCount() {
         return activeResourceCount;
     }
+    
+    @Override
+    public String loadAddMetadata() {
+        if (getTdarConfiguration().isPayPerIngestEnabled()) {
+            setActiveAccounts(getAccountService().listAvailableAccountsForUser(getAuthenticatedUser()));
+            logger.info("setting active accounts to {} ", getActiveAccounts());
+        }
+        return SUCCESS;
+    }
+
 
     @Override
     public String loadMetadata() {
         if (getResource() == null)
             return ERROR;
+        loadAddMetadata();  
         loadBasicMetadata();
         loadCustomMetadata();
-        if (getTdarConfiguration().isPayPerIngestEnabled()) {
-            setActiveAccounts(getAccountService().listAvailableAccountsForUser(getAuthenticatedUser()));
-        }
         getResourceService().incrementAccessCounter(getPersistable());
         if (isEditor()) {
             if (getPersistableClass().equals(Project.class)) {

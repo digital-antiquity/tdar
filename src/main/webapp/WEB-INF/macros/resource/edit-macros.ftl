@@ -690,7 +690,13 @@ applyInheritance(project, formSelector);
 <#if payPerIngestEnabled>
 	<div class="well-alt" id="accountsection">
 		<h2>Choose an account to bill from:</h2>
-		<@s.select name="account.id" list="activeAccounts" listValue="id" listKey="name" required=true cssClass="Required"/>
+		<@s.select name="accountId" list="%{activeAccounts}" listValue="name" listKey="id" required=true cssClass="Required"/>
+<#-- 
+<@s.select labelposition='left' label='Parent Collection' emptyOption='true' name='parentId' 
+    listKey='id' listValue='name' list='%{candidateParentResourceCollections}'
+    truncate="80" title="Please select a parent collection" />
+
+-->
 	</div>
 </#if>
 </#macro>
