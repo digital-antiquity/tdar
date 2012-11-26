@@ -28,8 +28,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     private static final String NEW_ACCOUNT = "new_account";
     private Long invoiceId;
     private List<Account> accounts;
-    private String name;
-    private String description;
+
     private AccountGroup accountGroup;
     private List<Person> authorizedMembers = new ArrayList<Person>();
     private Long accountGroupId;
@@ -63,10 +62,10 @@ public class BillingAccountController extends AbstractPersistableController<Acco
         getAccount().getAuthorizedMembers().clear();
         getAccount().getAuthorizedMembers().addAll(getGenericService().loadFromSparseEntities(getAuthorizedMembers(), Person.class));
         logger.info("authorized members: {}", getAccount().getAuthorizedMembers());
-        if (Persistable.Base.isTransient(persistable)) {
-            persistable.setName(name);
-            persistable.setDescription(description);
-        }
+//        if (Persistable.Base.isTransient(persistable)) {
+//            persistable.setName(name);
+//            persistable.setDescription(description);
+//        }
         return SUCCESS;
     }
 
@@ -134,22 +133,6 @@ public class BillingAccountController extends AbstractPersistableController<Acco
 
     public void setAccounts(List<Account> accounts) {
         this.accounts = accounts;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public AccountGroup getAccountGroup() {
