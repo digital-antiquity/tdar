@@ -39,7 +39,6 @@ import com.sun.syndication.feed.synd.SyndEntry;
 @ParentPackage("default")
 @Component
 @Scope("prototype")
-@HttpOnlyIfUnauthenticated
 @Results({
         @Result(name = "authenticated", type = "redirect", location = "/")
 })
@@ -58,17 +57,12 @@ public class IndexAction extends AuthenticationAware.Base {
     private List<SyndEntry> rssEntries;
 
     @Override
+    @HttpOnlyIfUnauthenticated
     @Actions({
             @Action("terms"),
             @Action("contact"),
             @Action(value = "page-not-found", results = { @Result(name = SUCCESS, location = "errors/page-not-found.ftl") }),
-            @Action(value = "access-denied", results = { @Result(name = SUCCESS, location = "errors/access-denied.ftl") })
-    })
-    public String execute() {
-        return SUCCESS;
-    }
-
-    @Actions({
+            @Action(value = "access-denied", results = { @Result(name = SUCCESS, location = "errors/access-denied.ftl") }),
             @Action(value = "opensearch", results = {
                     @Result(name = SUCCESS, location = "opensearch.ftl", type = "freemarker", params = { "contentType", "application/xml" })
             }),
@@ -76,7 +70,7 @@ public class IndexAction extends AuthenticationAware.Base {
                     @Result(name = SUCCESS, location = "robots.ftl", type = "freemarker", params = { "contentType", "text/plain" })
             })
     })
-    public String emptyText() {
+    public String execute() {
         return SUCCESS;
     }
 
@@ -89,6 +83,7 @@ public class IndexAction extends AuthenticationAware.Base {
                     "text/html" }) }),
             @Action(value = "map", results = { @Result(name = SUCCESS, location = "map.ftl", type = "freemarker", params = { "contentType", "text/html" }) })
     })
+    @HttpOnlyIfUnauthenticated
     public String about() {
         setGeographicKeywordCache(getGenericService().findAll(HomepageGeographicKeywordCache.class));
         setHomepageResourceCountCache(getGenericService().findAll(HomepageResourceCountCache.class));
