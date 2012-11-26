@@ -2,6 +2,7 @@ package org.tdar.core.bean.billing;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -43,6 +44,9 @@ public class ResourceEvaluator implements Serializable {
         return account.getAvailableResources() > 0;
     }
 
+    public void evaluateResource(Collection<Resource> resources) {
+        evaluateResource(resources.toArray(new Resource[0]));
+    }
     /*
      * Evaluate whether a resource can be added and how it counts when added to an account
      */

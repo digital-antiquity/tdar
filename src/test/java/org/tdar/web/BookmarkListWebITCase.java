@@ -6,7 +6,7 @@ import org.tdar.URLConstants;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 
-public class WorkspaceWebITCase extends AbstractAuthenticatedWebTestCase {
+public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
 
     // ensure that a 'deleted item no longer shows up in bookmarks
     @Test
@@ -23,14 +23,14 @@ public class WorkspaceWebITCase extends AbstractAuthenticatedWebTestCase {
         // bookmark it, confirm it's on workspace
         clickLinkOnPage("bookmark");
         gotoPage(viewPage);
-        gotoPage(URLConstants.WORKSPACE);
+        gotoPage(URLConstants.DASHBOARD);
         assertTextPresentInCode(docTitle);
 
         // now delete it, and check again: it should be gone.
         gotoPage(viewPage);
         clickLinkOnPage("delete");
         submitForm("delete");
-        gotoPage(URLConstants.WORKSPACE);
+        gotoPage(URLConstants.DASHBOARD);
         assertTextNotPresent(docTitle);
 
         // have an admin undelete the resource
@@ -45,7 +45,7 @@ public class WorkspaceWebITCase extends AbstractAuthenticatedWebTestCase {
 
         // log back in as regular user, we should be able to see the resource in the workspace again
         login();
-        gotoPage(URLConstants.WORKSPACE);
+        gotoPage(URLConstants.DASHBOARD);
         assertTextPresentInCode(docTitle);
     }
 
@@ -76,7 +76,7 @@ public class WorkspaceWebITCase extends AbstractAuthenticatedWebTestCase {
         // bookmark it, confirm it's on workspace
         clickLinkOnPage("bookmark");
         gotoPage(viewPage);
-        gotoPage(URLConstants.WORKSPACE);
+        gotoPage(URLConstants.DASHBOARD);
         
         assertTextPresentInCode(docTitle);
 
@@ -86,7 +86,7 @@ public class WorkspaceWebITCase extends AbstractAuthenticatedWebTestCase {
             clickLinkOnPage("edit");
             setInput("status", status.name());
             submitForm();
-            gotoPage(URLConstants.WORKSPACE);
+            gotoPage(URLConstants.DASHBOARD);
             assertTextNotPresent(docTitle);
         }
 
@@ -96,7 +96,7 @@ public class WorkspaceWebITCase extends AbstractAuthenticatedWebTestCase {
         clickLinkOnPage("edit");
         setInput("status", Status.ACTIVE.name());
         submitForm();
-        gotoPage(URLConstants.WORKSPACE);
+        gotoPage(URLConstants.DASHBOARD);
         assertTextPresentInCode(docTitle);
     }
 

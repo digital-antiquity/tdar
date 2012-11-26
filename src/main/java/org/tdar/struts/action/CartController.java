@@ -120,14 +120,14 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     @Action(value = "process-payment-request", results = {
             @Result(name = SUCCESS, type = "redirect", location = "view?id=${invoice.id}&review=true"),
             @Result(name = POLLING, location = "polling.ftl"),
-            @Result(name = SUCCESS_ADD_ACCOUNT, location = "${successPath}")
+            @Result(name = SUCCESS_ADD_ACCOUNT,type="redirect",  location = "${successPath}")
     })
     public String processPayment() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         if (!getInvoice().isModifiable()) {
             return SUCCESS;
         }
-        getSuccessPath(); //initialize
+        getSuccessPath(); // initialize
         PaymentMethod paymentMethod = getInvoice().getPaymentMethod();
         String invoiceNumber = getInvoice().getInvoiceNumber();
         String otherReason = getInvoice().getOtherReason();
@@ -221,7 +221,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
     @Override
     public boolean isViewable() throws TdarActionException {
-        if (Persistable.Base.isNullOrTransient(getAuthenticatedUser() )) {
+        if (Persistable.Base.isNullOrTransient(getAuthenticatedUser())) {
             return false;
         }
         if (getAuthenticationAndAuthorizationService().can(InternalTdarRights.VIEW_BILLING_INFO, getAuthenticatedUser())) {
@@ -232,10 +232,10 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         }
         return false;
     }
-    
+
     @Override
     public boolean isEditable() throws TdarActionException {
-        if (Persistable.Base.isNullOrTransient(getAuthenticatedUser() )) {
+        if (Persistable.Base.isNullOrTransient(getAuthenticatedUser())) {
             return false;
         }
         if (getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_BILLING_INFO, getAuthenticatedUser())) {
@@ -302,13 +302,12 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     }
 
     public String getSuccessPath() {
-        if (StringUtils.isBlank(successPath)) {
-            successPath = String.format("/billing/choose?invoiceId=%d", getInvoice().getId());
-            Account account = getGenericService().find(Account.class, accountId);
-            if (account != null) {
-                successPath = String.format("/billing/choose?invoiceId=%d&id=%d", getInvoice().getId(), account.getId());
-            }
+        successPath = String.format("/billing/choose?invoiceId=%d", getInvoice().getId());
+        Account account = getGenericService().find(Account.class, accountId);
+        if (account != null) {
+            successPath = String.format("/billing/choose?invoiceId=%d&id=%d", getInvoice().getId(), account.getId());
         }
+        logger.info("successpath: {} " , successPath);
         return successPath;
     }
 

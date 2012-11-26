@@ -302,7 +302,7 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.ACCOUNTS_FOR_PERSON,
-                query = "select act from Account act left join act.authorizedMembers as person where act.owner.id =:personId or person.id=:personId"
+                query = "select act from Account act left join act.authorizedMembers as person where ( act.owner.id =:personId or person.id=:personId) and act.status in (:statuses)"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.LOGS_FOR_RESOURCE,

@@ -686,6 +686,15 @@ applyInheritance(project, formSelector);
 </div>
 </#macro>
 
+<#macro accountSection>
+<#if payPerIngestEnabled>
+	<div class="well-alt" id="accountsection">
+		<h2>Choose an account to bill from:</h2>
+		<@s.select name="account.id" list="activeAccounts" listValue="id" listKey="name" required=true cssClass="Required"/>
+	</div>
+</#if>
+</#macro>
+
 <#macro noteRow proxy note_index=0>
       <div id="resourceNoteRow_${note_index}_" class="repeat-row">
           <div class="controls controls-row">
@@ -1048,6 +1057,8 @@ jquery validation hooks?)
     <@generalKeywords showInherited />
 
     <@resourceNoteSection showInherited />
+
+	<@accountSection />
 
     <#if !resource.resourceType.document>
       <@relatedCollections showInherited />

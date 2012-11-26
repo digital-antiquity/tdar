@@ -1,5 +1,6 @@
 package org.tdar.core.dao;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.hibernate.Query;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.AccountGroup;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.resource.Status;
 
 /**
  * $Id$
@@ -32,6 +34,7 @@ public class AccountDao extends Dao.HibernateBase<Account> {
     public List<Account> findAccountsForUser(Person user) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.ACCOUNTS_FOR_PERSON);
         query.setParameter("personId", user.getId());
+        query.setParameterList("statuses", Arrays.asList(Status.ACTIVE));
         return (List<Account>) query.list();
     }
 

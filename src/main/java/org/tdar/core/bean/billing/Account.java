@@ -23,6 +23,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 
@@ -36,7 +37,7 @@ import org.tdar.core.bean.resource.Status;
  */
 @Entity
 @Table(name = "pos_account")
-public class Account extends Persistable.Base implements Updatable, HasStatus {
+public class Account extends Persistable.Base implements Updatable, HasStatus, Addressable {
 
     private static final long serialVersionUID = -1728904030701477101L;
 
@@ -202,7 +203,7 @@ public class Account extends Persistable.Base implements Updatable, HasStatus {
         }
 
         ResourceEvaluator re = new ResourceEvaluator();
-        re.evaluateResource((Resource[]) resources.toArray());
+        re.evaluateResource(resources);
         setFilesUsed(getFilesUsed() + re.getFilesUsed());
         setSpaceUsed(getSpaceUsed() + re.getSpaceUsed());
         setResourcesUsed(getResourcesUsed() + re.getResourcesUsed());
@@ -368,6 +369,8 @@ public class Account extends Persistable.Base implements Updatable, HasStatus {
         this.resourcesUsed = resourcesUsed;
     }
 
-    // set current values as saved fields
-    // save trasnactions update available values...
+    @Override
+    public String getUrlNamespace() {
+        return "billing";
+    }
 }
