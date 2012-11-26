@@ -306,16 +306,27 @@ function inheritNoteInformation(formId, json) {
 
 function inheritSpatialInformation(formId, json) {
     var mapdiv = $('#editmapv3')[0];
-    clearFormSection('#divSpatialInformation');
-    TDAR.inheritance.resetRepeatable('#geographicKeywordsRepeatable', json.spatialInformation['geographicKeywords'].length);
-    populateSection(formId, json.spatialInformation);
-    disableSection('#divSpatialInformation');
+    var mapReadyCallback = function(){
+        clearFormSection('#divSpatialInformation');
+        TDAR.inheritance.resetRepeatable('#geographicKeywordsRepeatable', json.spatialInformation['geographicKeywords'].length);
+        populateSection(formId, json.spatialInformation);
+        disableSection('#divSpatialInformation');
+        
+        // clear the existing redbox and draw new one;
+        populateLatLongTextFields();
+        
+        var si = json.spatialInformation;
+        TDAR.maps.updateResourceRect(mapdiv,  si.miny, si.minx, si.maxy, si.maxx);
+    };
 
-    // clear the existing redbox and draw new one;
-    populateLatLongTextFields();
+    //need to wait until map api is ready *and* this page's map is ready.
+    if(!$(mapdiv).data("gmap")) {
+        $(mapdiv).one("mapready", mapReadyCallback)
+    } else {
+        mapReadyCallback();
+    } 
+        
     
-    var si = json.spatialInformation;
-    TDAR.maps.updateResourceRect(mapdiv,  si.miny, si.minx, si.maxy, si.maxx);
 }
 
 function inheritTemporalInformation(formId, json) {
@@ -339,10 +350,10 @@ function applyInheritance(project, formSelector) {
     
     
     // if we are editing, set up the initial form values
-    if (project) {
-        json = convertToFormJson(project);
-        updateInheritableSections(json, formId);
-    }
+//    if (project) {
+//        json = convertToFormJson(project);
+//        updateInheritableSections(json, formId);
+//    }
 
     // update the inherited form values when project selection changes.
     $('#projectId').change(function(e) {
@@ -382,6 +393,8 @@ function applyInheritance(project, formSelector) {
     // FIXME: forward-references to function statements are not advised. replace
     // with forward-reference to function expression/variable?
     $cbSelectAllInheritance.click(selectAllInheritanceClicked);
+    
+    projectChangedCallback(project);
 }
 
 
