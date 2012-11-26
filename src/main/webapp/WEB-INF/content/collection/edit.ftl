@@ -44,7 +44,6 @@ $(function(){
 <@s.select labelposition='left' label='Parent Collection' emptyOption='true' name='parentId' 
     listKey='id' listValue='name' list='%{candidateParentResourceCollections}'
     truncate="80" title="Please select a parent collection" />
-<br />
 <@s.textfield labelposition='left' label='Collection Name' name='resourceCollection.name'  cssClass="required descriptiveTitle input-xxlarge"  title="A title is required for all collections." maxlength="512" />
 <p class='field'>
 </p>
@@ -71,11 +70,8 @@ $(function(){
 </div>
 </div>
 
-<br/>
 <@s.select labelposition='top' label='When Browsing Sort Resource By:' name='resourceCollection.sortBy' 
      listValue='label' list='%{sortOptions}' title="Sort resource by" />
-
-<br/>
 
 <@s.select labelposition='top' label='Display Collection as:' name='resourceCollection.orientation' 
      list='%{ResultsOrientations}'  listValue='label'  title="Display as" />
