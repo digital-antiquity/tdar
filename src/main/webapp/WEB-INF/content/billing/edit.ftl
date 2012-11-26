@@ -20,6 +20,8 @@ Note: you may have multiple accounts to simplify billing and allow different peo
 	<@s.textarea name="account.description" cssClass="input-xlarge" label="Account Description"/>
 	<@s.hidden name="id" value="${account.id?c}" />	
 	<@s.hidden name="account.id" />	
+	<@s.hidden name="invoiceId" />	
+	
 	<h3>Who can charge to this account</h3>
 	<@edit.listMemberUsers />
 	<br/>
