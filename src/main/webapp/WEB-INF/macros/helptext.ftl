@@ -26,7 +26,10 @@
 <#macro resourceCollection>
     <div style="display:none" id="divResourceCollectionListTips">
         <p>
-            Specify the names of the collections that ${siteAcronym} should add this resource to.  Alternately you can start a new, <em>public</em>  collection 
+            Collections enable you to organize and share resources within ${siteAcronym}.
+        </p>
+        <p>
+            To associate this resource with a collection, specify the names of the collections that ${siteAcronym} should add this resource to.  Alternately you can start a new, <em>public</em>  collection 
             by typing the desired name and selecting the last option in the list of pop-up results.  The newly-created collection will contain only this 
             resource, but can be modified at any time. 
         </p>

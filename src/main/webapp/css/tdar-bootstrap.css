@@ -1216,3 +1216,8 @@ h3.collection-mid-red::before {
 	font-weight: 700;
 }
 
+
+.resizable.resize-vertical {
+    resize:vertical;
+}
+

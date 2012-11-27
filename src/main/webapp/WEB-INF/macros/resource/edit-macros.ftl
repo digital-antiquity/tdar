@@ -60,7 +60,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <span id="t-abstract" class="clear"
         tiplabel="Abstract / Description"
         tooltipcontent="Short description of the ${resource.resourceType.label}.">
-		    <@s.textarea id='resourceDescription'  name='${itemPrefix}.description' cssClass='required resizable span6' required=true title="A description is required" />
+		    <@s.textarea id='resourceDescription'  name='${itemPrefix}.description' cssClass='required resizable resize-vertical input-xxlarge' required=true title="A description is required" />
         </span>
     
 </div>
@@ -68,14 +68,15 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 <#macro organizeResourceSection>
 <div class="" id="organizeSection">
-        <h2>${siteAcronym} Collections &amp; Project</h2>
-        <h4>Add to a Collection</h4>
-         <@edit.resourceCollectionSection />
-        
-
-        <#if !resource.resourceType.project>
-        <@chooseProjectSection />
-        </#if>   
+    <#if !resource.resourceType.project>
+    <h2>${siteAcronym} Collections &amp; Project</h2>
+    <h4>Add to a Collection</h4>
+    <@edit.resourceCollectionSection />
+    <@chooseProjectSection />
+    <#else>
+    <h2>${siteAcronym} Collections</h2>
+    <@edit.resourceCollectionSection />
+    </#if>   
 </div>
 </#macro>
 
@@ -132,18 +133,23 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     </#if>
 	<@helptext.resourceCollection />
     <div tiplabel="${siteAcronym} Collections" tooltipcontent="#divResourceCollectionListTips">
-    <p class="help-block">Collections enable you to organize and share resources within ${siteAcronym}</p>
-    <table id="resourceCollectionTable" class="table repeatLastRow" addAnother="add another collection">
-        <thead>
-            <th colspan=2>Collection Name</th>
-        </thead>
-        <tbody>
+        <div id="resourceCollectionTable" class="control-group repeatLastRow" addAnother="add another collection">
+            <label class="control-label">Collection Name(s)</label>
             <#list _resourceCollections as resourceCollection>
             <@resourceCollectionRow resourceCollection resourceCollection_index/>
             </#list>
-        </tbody>
-    </table>
+        </div>
 	</div>
+</#macro>
+
+<#macro resourceCollectionRow resourceCollection collection_index = 0 type="internal">
+    <div id="resourceCollectionRow_${collection_index}_" class="controls controls-row repeat-row">
+            <@s.hidden name="resourceCollections[${collection_index}].id"  id="resourceCollectionRow_${collection_index}_id" />
+            <@s.textfield theme="simple" id="resourceCollectionRow_${collection_index}_id" name="resourceCollections[${collection_index}].name" cssClass="input-xxlarge collectionAutoComplete "  autocomplete="off"
+            autocompleteIdElement="#resourceCollectionRow_${collection_index}_id"
+            autocompleteParentElement="#resourceCollectionRow_${collection_index}_" />
+        <@clearDeleteButton id="resourceCollectionRow" />
+    </div>
 </#macro>
 
 <#macro keywordRows label keywordList keywordField showDelete=true addAnother="add another keyword">
@@ -505,7 +511,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                 <#nested 'manualEntry'>
             </div>
         </div>
-        <@s.textarea label='${typeLabel}' labelposition='top' id='fileInputTextArea' name='fileTextInput' rows="5" cssClass='resizable input-xxlarge' />
+        <@s.textarea label='${typeLabel}' labelposition='top' id='fileInputTextArea' name='fileTextInput' rows="5" cssClass='resizable resize-vertical input-xxlarge' />
     </div>
 </div>
 
@@ -609,15 +615,15 @@ applyInheritance(project, formSelector);
     <h2>Museum or Archive Collections</h2>
     <@inheritsection checkboxId="cbInheritingCollectionInformation" name='resource.inheritingCollectionInformation' showInherited=showInherited />
     <div id="relatedCollectionsSection" >
-        <div id="divSourceCollectionControl" class="control-group">
-            <label class="control-label">Source Collection</label>
+        <div id="divSourceCollectionControl" class="control-group repeatLastRow">
+            <label class="control-label">Source Collections</label>
             <#list _sourceCollections as sourceCollection>
 	            <@sourceCollectionRow sourceCollection "sourceCollection" sourceCollection_index/>
             </#list>
         </div>
     
-        <div id="divRelatedComparativeCitationControl" class="control-group">
-            <label class="control-label">Related or Comparative Collection</label></label>
+        <div id="divRelatedComparativeCitationControl" class="control-group repeatLastRow">
+            <label class="control-label">Related or Comparative Collections</label>
             <#list _relatedComparativeCollections as relatedComparativeCollection>
     	        <@sourceCollectionRow relatedComparativeCollection "relatedComparativeCollection" relatedComparativeCollection_index/>
             </#list>
@@ -629,10 +635,12 @@ applyInheritance(project, formSelector);
 
 <#macro sourceCollectionRow sourceCollection prefix index=0>
 <#local plural = "${prefix}s" />
-    <div class="controls control-row">
-    <@s.hidden name="${plural}[${index}].id" />
-    <@s.textarea theme="tdar" name='${plural}[${index}].text' cssClass="input-xxlarge" /></td>
-    <@edit.clearDeleteButton id="${prefix}Row" />
+    <div class="controls controls-row repeat-row" id="${prefix}Row_${index}_">
+        <@s.hidden name="${plural}[${index}].id" />
+        <@s.textarea theme="tdar" name='${plural}[${index}].text' cssClass="span6 resizable resize-vertical" />
+        <div class="span1">
+            <@edit.clearDeleteButton id="${prefix}Row${index}" />
+        </div>
     </div>
 </#macro>
 
@@ -654,17 +662,6 @@ applyInheritance(project, formSelector);
     </div>    
 </#macro>
 
-<#macro resourceCollectionRow resourceCollection collection_index = 0 type="internal">
-      <tr id="resourceCollectionRow_${collection_index}_" class="repeat-row">
-          <td> 
-              <@s.hidden name="resourceCollections[${collection_index}].id"  id="resourceCollectionRow_${collection_index}_id" />
-              <@s.textfield id="resourceCollectionRow_${collection_index}_id" name="resourceCollections[${collection_index}].name" cssClass="input-xlarge collectionAutoComplete "  autocomplete="off"
-              autocompleteIdElement="#resourceCollectionRow_${collection_index}_id" label="${siteAcronym} Collection"
-              autocompleteParentElement="#resourceCollectionRow_${collection_index}_" />
-          </td>
-          <td><@clearDeleteButton id="resourceCollectionRow" /> </td>
-      </tr>
-</#macro>
 
 
 
@@ -703,16 +700,23 @@ applyInheritance(project, formSelector);
 </#macro>
 
 <#macro noteRow proxy note_index=0>
-      <div id="resourceNoteRow_${note_index}_" class="repeat-row">
-          <div class="controls controls-row">
-              <@s.hidden name="resourceNotes[${note_index}].id" />
-              <@s.select theme="tdar" emptyOption='false' name='resourceNotes[${note_index}].type' list='%{noteTypes}' listValue="label" /> 
-          <@clearDeleteButton id="resourceNoteRow" />
-          </div>
-          <div class="controls">
-              <@s.textarea theme="tdar" name='resourceNotes[${note_index}].note' placeholder="enter note contents" cssClass='resizable input-xxlarge'  rows='3' maxlength='5000' />
-          </div>
-      </div>
+<div id="resourceNoteRow_${note_index}_" class="repeat-row">
+    <div class="controls controls-row">
+        <div class="span6">
+            <div class="controls-row">
+                <@s.hidden name="resourceNotes[${note_index}].id" />
+                <@s.select theme="tdar" emptyOption='false' name='resourceNotes[${note_index}].type' list='%{noteTypes}' listValue="label" />
+            </div>
+            <div class="controls-row">
+                <@s.textarea theme="tdar" name='resourceNotes[${note_index}].note' placeholder="enter note contents" cssClass='span6 resizable resize-vertical' 
+                    maxlength='5000' />
+            </div>
+        </div>
+        <div class="span1">
+            <@clearDeleteButton id="resourceNoteRow" />
+        </div>
+    </div>
+</div>
 </#macro>
 
 
