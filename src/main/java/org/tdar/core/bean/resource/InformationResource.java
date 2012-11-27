@@ -246,6 +246,7 @@ public abstract class InformationResource extends Resource {
     private String mappedDataKeyValue;
 
     @Transient
+    @XmlTransient
     private Map<DataTableColumn, String> relatedDatasetData = new HashMap<DataTableColumn, String>();
 
     public Language getMetadataLanguage() {

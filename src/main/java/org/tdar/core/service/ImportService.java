@@ -206,7 +206,11 @@ public class ImportService {
 
             if (property instanceof Validatable) {
                 if (!((Validatable) property).isValidForController()) {
-                    throw new APIException(String.format("Object (%s) is invalid", property), StatusCode.FORBIDDEN);
+                    if (property instanceof Project) {
+                        property = (P) Project.NULL;
+                    } else {
+                        throw new APIException(String.format("Object (%s) is invalid", property), StatusCode.FORBIDDEN);
+                    }
                 }
             }
         }
