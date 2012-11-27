@@ -136,7 +136,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
         CodingSheet.class, Dataset.class, Ontology.class, Image.class,
         SensoryData.class, Video.class })
 @XmlAccessorType(XmlAccessType.PROPERTY)
-@XmlType(name = "resource")
+@XmlType(name = "resource", propOrder = {})
 @FetchProfile(name = "resource-with-people", fetchOverrides = {
         @FetchOverride(association = "resourceCreators", mode = FetchMode.JOIN, entity = Resource.class),
         @FetchOverride(association = "submitter", mode = FetchMode.JOIN, entity = Resource.class) })
@@ -147,8 +147,11 @@ public class Resource extends JsonModel.Base implements Persistable,
 
     private static final long serialVersionUID = -230400285817185637L;
 
+    @Transient
     private transient boolean obfuscated;
+    @Transient
     private transient boolean viewable;
+    @Transient
     private transient Long transientAccessCount;
     // TODO: anything that gets returned in a tdar search should be included in
     // json results

@@ -7,6 +7,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -40,6 +41,7 @@ import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 @Entity
 @Indexed
 @Table(name = "document")
+@XmlType(propOrder={})
 @XmlRootElement(name = "document")
 public class Document extends InformationResource {
 

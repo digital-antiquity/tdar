@@ -30,6 +30,7 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -96,6 +97,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 @Table(name = "information_resource")
 @DynamicBoost(impl = InformationResourceBoostStrategy.class)
 @Inheritance(strategy = InheritanceType.JOINED)
+@XmlType(propOrder={})
 public abstract class InformationResource extends Resource {
 
     private static final long serialVersionUID = -1534799746444826257L;
@@ -170,6 +172,7 @@ public abstract class InformationResource extends Resource {
     private String licenseText;
 
     @Column(name = "external_reference", nullable = true)
+    @XmlTransient
     private boolean externalReference;
 
     @BulkImportField(label = "Copy Located At", comment = BulkImportField.COPY_LOCATION_DESCRIPTION)
@@ -190,6 +193,7 @@ public abstract class InformationResource extends Resource {
     @Column(name = "date_created_normalized")
     @FieldBridge(impl = TdarPaddedNumberBridge.class)
     @Field(norms = Norms.NO, store = Store.YES, name = QueryFieldNames.DATE_CREATED_DECADE, analyze = Analyze.NO)
+    @XmlTransient
     private Integer dateNormalized = -1;
 
     // The institution providing this InformationResource

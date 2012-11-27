@@ -71,7 +71,7 @@ public class JAXBITCase extends AbstractSearchControllerITCase {
 
     @Test
     public void testJAXBProjectConversion() throws Exception {
-        Project project = genericService.find(Project.class, 3805l);
+        Project project = genericService.find(Project.class, 2420l);
         String xml = xmlService.convertToXML(project);
         logger.info(xml);
     }

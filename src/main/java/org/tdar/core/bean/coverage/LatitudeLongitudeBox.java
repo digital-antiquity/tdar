@@ -10,6 +10,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
 
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.ClassBridge;
@@ -42,6 +43,7 @@ import org.tdar.search.index.bridge.TdarPaddedNumberBridge;
 @Table(name = "latitude_longitude")
 @ClassBridge(impl = LatLongClassBridge.class)
 @XmlRootElement
+@XmlType(propOrder = {})
 // (name="latitudeLongitudeBox")
 public class LatitudeLongitudeBox extends Persistable.Base implements HasResource<Resource>, Obfuscatable {
 
