@@ -136,7 +136,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
         CodingSheet.class, Dataset.class, Ontology.class, Image.class,
         SensoryData.class, Video.class })
 @XmlAccessorType(XmlAccessType.PROPERTY)
-@XmlType(name = "resource", propOrder = {})
+@XmlType(name = "resource")
 @FetchProfile(name = "resource-with-people", fetchOverrides = {
         @FetchOverride(association = "resourceCreators", mode = FetchMode.JOIN, entity = Resource.class),
         @FetchOverride(association = "submitter", mode = FetchMode.JOIN, entity = Resource.class) })

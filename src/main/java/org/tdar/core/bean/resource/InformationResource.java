@@ -30,7 +30,6 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -97,7 +96,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 @Table(name = "information_resource")
 @DynamicBoost(impl = InformationResourceBoostStrategy.class)
 @Inheritance(strategy = InheritanceType.JOINED)
-@XmlType(propOrder={})
+
 public abstract class InformationResource extends Resource {
 
     private static final long serialVersionUID = -1534799746444826257L;
