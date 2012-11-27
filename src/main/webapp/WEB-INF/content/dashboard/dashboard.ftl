@@ -156,7 +156,7 @@ Welcome back, ${authenticatedUser.firstName}!
 </#if>
 <hr />
 
-<h3>Your Bookmarks</h3>
+<h3 id="bookmarks">Your Bookmarks</h3>
 <@rlist.listResources resourcelist=bookmarkedResources sortfield='RESOURCE_TYPE' editable=false bookmarkable=true  expanded=true listTag='ol' headerTag="h3" />
 
 

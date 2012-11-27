@@ -37,7 +37,7 @@
 <@search.basicPagination "Records" />
 
 <hr/>
-        <@list.listResources resourcelist=results sortfield=resourceCollection.sortBy  titleTag="h5" orientation="MAP" mapPosition="left"/>
+    <@list.listResources resourcelist=results sortfield=resourceCollection.sortBy  titleTag="h5" orientation=resourceCollection.orientation mapPosition="left" />
     
 <div class="glide">
 </div>

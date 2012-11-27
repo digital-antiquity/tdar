@@ -263,3 +263,5 @@ alter table pos_invoice add column transaction_date timestamp;
 alter table pos_account add column files_used int8 default 0;
 alter table pos_account add column space_used int8 default 0;
 alter table pos_account add column resources_used int8 default 0;
+
+ALTER TABLE project ADD COLUMN orientation VARCHAR(50) DEFAULT 'LIST';

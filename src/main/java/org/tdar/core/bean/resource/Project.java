@@ -21,6 +21,7 @@ import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Store;
+import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Sortable;
 import org.tdar.core.configuration.JSONTransient;
 import org.tdar.search.query.QueryFieldNames;
@@ -120,6 +121,10 @@ public class Project extends Resource implements Sortable {
     @Column(name = "sort_order", columnDefinition = "varchar(50) default 'RESOURCE_TYPE'")
     private SortOption sortBy = SortOption.RESOURCE_TYPE;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "orientation")
+    private DisplayOrientation orientation = DisplayOrientation.LIST;
+
     @Override
     protected String[] getIncludedJsonProperties() {
         List<String> list = new ArrayList<String>(Arrays.asList(super.getIncludedJsonProperties()));
@@ -155,6 +160,14 @@ public class Project extends Resource implements Sortable {
 
     public void setSortBy(SortOption sortBy) {
         this.sortBy = sortBy;
+    }
+
+    public DisplayOrientation getOrientation() {
+        return orientation;
+    }
+
+    public void setOrientation(DisplayOrientation orientation) {
+        this.orientation = orientation;
     }
 
 }

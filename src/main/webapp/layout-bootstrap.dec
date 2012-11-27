@@ -64,7 +64,7 @@
 							<li><a href="<@s.url value="/project/add"/>">Create a project</a></li>
 							<li><a href="<@s.url value="/collection/add"/>">Create a collection</a></li>
 							<li><a href="<@s.url value="/dashboard"/>">View my resources</a></li>
-							<li><a href="<@s.url value="/workspace/list"/>">Bookmarks</a></li>
+							<li><a href="<@s.url value="/dashboard#bookmarks"/>">Bookmarks</a></li>
 						</ul>
 	
 						<ul>
@@ -80,9 +80,7 @@
 
 				<nav >
 					<ul>
-						<li><a href="">ABOUT</a></li>
-						<li><a href="">WHY tDAR?</a></li>
-						<li><a href="">USING tDAR</a></li>
+					    <#include "${themeDir}/nav-items.dec" />
 						<li class="button hidden-phone"><a href="<@s.url value="/search/results"/>">BROWSE</a></li>
 						<li class="button hidden-phone"><a href="<@s.url value="/resource/add"/>">UPLOAD</a></li>
 					</ul>
@@ -98,17 +96,8 @@
 <#if bodyid == 'home'>
 
 			<div class="span12 hero">
-
-				<h2>What can you dig up?</h2>
-
-				<p><strong>The Digital Archaeological Record (tDAR)</strong> is your online archive <br/>for archaeological information.</p>
-
-						<form name="searchheader" action="<@s.url value="/search/results"/>">
-							<input type="text" name="query" placeholder="Find archaeological data..." class="searchbox">
-						</form>
-
+		    <#include "${themeDir}/homepage-banner.dec" />
 				<@common.loginMenu true/>
-
 			</div>
 				<ul class="inline-menu hidden-desktop"><@common.loginMenu false/></ul>
 <#else>
