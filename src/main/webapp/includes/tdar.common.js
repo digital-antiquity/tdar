@@ -1265,10 +1265,10 @@ TDAR.common = function() {
         applyInstitutionAutocomplete($('#txtResourceProviderInstitution'), true);
         applyInstitutionAutocomplete($('#publisher'), true);
         $('#resourceCollectionTable').on(
-                "repeatrowadded",
+                "focus",
                 ".collectionAutoComplete",
                 function() {
-                    applyCollectionAutocomplete($('#resourceCollectionTable').find(".collectionAutoComplete"), {showCreate:true});
+                    applyCollectionAutocomplete($(this), {showCreate:true});
                 });
 
         // prevent "enter" from submitting

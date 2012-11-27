@@ -130,7 +130,6 @@ function evaluateAutocompleteRowAsEmpty(element, minCount) {
 }
 
 function applyGenericAutocomplete($elements, options) {
-
     // if there's a change in the autocomplete, reset the ID to ""
     $elements.change(function() {
         var $element = $(this);
@@ -312,6 +311,9 @@ function applyKeywordAutocomplete(selector, lookupType, extraData, newOption) {
 }
 
 function applyCollectionAutocomplete($elements, options, extraData) {
+    //FIXME: HACK: this is a bandaid.  need better way to not bind multiple autocompletes
+    if($elements.data("autocompleteApplied")) return true;
+    $elements.data("autocompleteApplied", true);
     var _options = {};
     if (typeof options === "object") {
         _options = options;
