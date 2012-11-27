@@ -181,7 +181,11 @@ public class ReflectionService {
      */
     public <T> void callFieldSetter(Object obj, Field field, T fieldValue) {
         String setterName = generateSetterName(field);
-        logger.debug("Calling {}.{}({})", new Object[] { field.getDeclaringClass().getSimpleName(), setterName, fieldValue.getClass().getSimpleName() });
+        String valClass = "null";
+        if (fieldValue != null ) {
+            valClass = fieldValue.getClass().getSimpleName();
+        }
+        logger.debug("Calling {}.{}({})", new Object[] { field.getDeclaringClass().getSimpleName(), setterName, valClass });
         // here we assume that field's type is assignable from the fieldValue
         Method setter = ReflectionUtils.findMethod(field.getDeclaringClass(), setterName, field.getType());
         try {

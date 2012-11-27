@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.keyword.ControlledKeyword;
@@ -208,8 +209,10 @@ public class ImportService {
                 if (!((Validatable) property).isValidForController()) {
                     if (property instanceof Project) {
                         toReturn = (P) Project.NULL;
+                    } else if (property instanceof Creator && ((Creator)property).hasNoPersistableValues()) {
+                        toReturn = null;
                     } else {
-                        throw new APIException(String.format("Object (%s) is invalid", property), StatusCode.FORBIDDEN);
+                        throw new APIException(String.format("Object (%s: %s) is invalid", property.getClass(),property ), StatusCode.FORBIDDEN);
                     }
                 }
             }

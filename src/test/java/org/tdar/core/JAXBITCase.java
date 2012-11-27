@@ -103,7 +103,7 @@ public class JAXBITCase extends AbstractSearchControllerITCase {
             }
         });
     }
-
+    
     // make sure we're detecting enum errors.
     @Test
     @Rollback
