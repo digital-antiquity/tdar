@@ -1197,7 +1197,7 @@ h3.collection-mid-red::before {
 	-moz-transform: rotate(-90deg);
 	-ms-transform: rotate(-90deg);
 	-o-transform: rotate(-90deg);
-	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3 );
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2 );
 }
 
 .rotate-90 {
@@ -1206,7 +1206,7 @@ h3.collection-mid-red::before {
 	-moz-transform: rotate(90deg);
 	-ms-transform: rotate(90deg);
 	-o-transform: rotate(90deg);
-	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1 );
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=4 );
 }
 
 .adminbox {

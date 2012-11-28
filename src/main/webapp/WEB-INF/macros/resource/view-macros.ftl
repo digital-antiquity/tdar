@@ -72,7 +72,7 @@ View freemarker macros
 </#macro>
 
 <#macro adminFileActions>
-  <#if (resource.totalNumberOfFiles > 0)>
+  <#if (resource.totalNumberOfFiles?has_content)>
         <#if ableToReprocessDerivatives>
         <h2> Admin File Actions</h2>
         <br/><small>
