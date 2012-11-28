@@ -34,7 +34,9 @@
 </#if>
 
     <#if ( results?has_content )>
-<@search.basicPagination "Records" />
+<div class="search">
+    <@search.basicPagination "Records" />
+</div>
 
 <hr/>
     <@list.listResources resourcelist=results sortfield=resourceCollection.sortBy  titleTag="h5" orientation=resourceCollection.orientation mapPosition="left" />

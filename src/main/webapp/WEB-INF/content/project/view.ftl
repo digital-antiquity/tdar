@@ -21,11 +21,11 @@
 
     <#if ( results?has_content )>
               <@rlist.listResources resourcelist=results expanded=true listTag="ol" headerTag="h4" 
-              sortfield=project.sortBy  orientation=project.orientation mapPosition="left" />
+              sortfield=project.sortBy  orientation="GRID" mapPosition="left" />
     </#if>
 
     <#if ( results?? && numPages > 1)>
-        <div style="border-top:1px solid #999;padding:2px 2px 2px 2px">
+        <div class="search" style="border-top:1px solid #999;padding:2px 2px 2px 2px">
              <@search.pagination ""/>
         </div>
     </#if>
