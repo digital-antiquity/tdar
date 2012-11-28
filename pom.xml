@@ -863,7 +863,7 @@
 				</executions>
 				<configuration>
 					<keystore>${project.build.directory}/jetty-ssl.keystore</keystore>
-					<dname>cn=www.tdar.org</dname>
+					<dname>cn=localhost</dname>
 					<keypass>jetty6</keypass>
 					<storepass>jetty6</storepass>
 					<alias>jetty6</alias>
