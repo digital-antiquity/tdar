@@ -841,10 +841,6 @@ table.legend {
 	content: "\002022  "
 }
 
-.noindent {
-	margin-left: 0px !important;
-}
-
 #project-list .dataTables_wrapper { //
 	width: 700px
 }
