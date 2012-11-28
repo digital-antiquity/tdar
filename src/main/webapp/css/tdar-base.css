@@ -1426,11 +1426,11 @@ B.fmCheckbox.checked {
 	opacity: .9;
 }
 
-/* .searchbox {
+.searchbox {
 	margin-top: 43px;
 	margin-left: 40px;
 }
- */
+
 header nav {
 	position: absolute !important;
 	right: 0px;
@@ -1458,3 +1458,6 @@ nav ul {
 }
 
 
+.searchheader input[type=text] {
+	margin:0px !important;
+}

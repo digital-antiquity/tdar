@@ -2,6 +2,7 @@ package org.tdar.core.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -9,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.Account.AccountAdditionStatus;
 import org.tdar.core.bean.billing.AccountGroup;
@@ -35,6 +37,9 @@ public class AccountService {
      * Find all accounts for user: return accounts that are active and have not met their quota
      */
     public List<Account> listAvailableAccountsForUser(Person user) {
+        if (Persistable.Base.isNullOrTransient(user)) {
+            return Collections.EMPTY_LIST;
+        }
         return accountDao.findAccountsForUser(user);
     }
 

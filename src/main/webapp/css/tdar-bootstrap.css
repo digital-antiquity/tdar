@@ -4,12 +4,12 @@
 }
 
 /* FIXME: jtd: I don't think the section.row.cols rule is necessary; need to check all pages to confirm I'm right,*/
-/*
+/* ab: undoing as this breaks the top of the view page! and the edit page! */
 section.row.cols {
 	margin-top: 3em !important;
 	
 }
-	*/
+	
 
 .mapcontainer #map_legend {
 	position: relative;
@@ -138,6 +138,7 @@ div.barlabel {
 }
 
 /*jtd: I'm moving this to datatables.css */
+/*ab: ok, then why is it still here :( */
 div.dataTables_length label {
 	width: 460px;
 	float: left;
