@@ -92,17 +92,23 @@
 					</#if>
 				</nav>
 			</header>
-    
+    </div> <!-- end of header -->
 <#if bodyid == 'home'>
-
-			<div class="span12 hero">
+        <div class="row">
+			<div class="hero">
 		    <#include "${themeDir}/homepage-banner.dec" />
 				<@common.loginMenu true/>
 			</div>
-				<ul class="inline-menu hidden-desktop"><@common.loginMenu false/></ul>
-				
+			<ul class="inline-menu hidden-desktop"><@common.loginMenu false/></ul>
+	   </div>
+			
+			
+        <div class="row">				
 			<#include "${themeDir}/homepage-column-one.dec" />
+		</div>
+    
 <#else>
+<div class="row">
 	<div class="span12 subnav">
 		<ul class="subnav-lft">
 			<li><a href="<@s.url value="/search"/>">Search</a></li>
@@ -118,43 +124,44 @@
 		</ul>
 		<@common.loginMenu true />
 	</div>
-
+</div>
 
 
 
 </#if>
-    <div>
-		<#if  page.properties["div.toolbars"]?? && page.properties["div.toolbars"] != "">
-		    ${page.properties["div.toolbars"]}
-		</#if>
-		<#if  page.properties["div.messages"]?? && page.properties["div.messages"] != "">
-		    ${page.properties["div.messages"]}
-		</#if>
-        <@s.actionmessage theme="bootstrap" />
-		<#if (actionErrors?has_content)>
-		   <div class="action-errors ui-corner-all">
-		     <b>The following errors were found with your submission</b> <br />
-		     <ul>
-		     <#list actionErrors as err>
-			      <li class="action-error">${err!"unknown error"}</li>
-		     </#list>
-		     </ul>
-		     <#if stackTraces?has_content >
-			     <a href="#" id="pToggleStackTrace" onclick="$('#stackTraceList').toggleClass('hidden');return false;">Show/Hide Detailed Error Information</a>
-			     <div id="stackTraceList" class="hidden">
-			        <#list stackTraces as _stacktrace>
-			        <p>
-			        <em>Stacktrace ${_stacktrace_index + 1} of ${stackTraces?size}</em><br />
-			        ${_stacktrace?html}
-			        </p>
-			        </#list>
-			     </div>
-		     </#if>
-		   </div>
-		</#if>
-        <@s.fielderror theme="bootstrap" />
-	</div>
-</div>
+    <div class="row">
+        <div class="span12">
+    		<#if  page.properties["div.toolbars"]?? && page.properties["div.toolbars"] != "">
+    		    ${page.properties["div.toolbars"]}
+    		</#if>
+    		<#if  page.properties["div.messages"]?? && page.properties["div.messages"] != "">
+    		    ${page.properties["div.messages"]}
+    		</#if>
+            <@s.actionmessage theme="bootstrap" />
+    		<#if (actionErrors?has_content)>
+    		   <div class="action-errors ui-corner-all">
+    		     <b>The following errors were found with your submission</b> <br />
+    		     <ul>
+    		     <#list actionErrors as err>
+    			      <li class="action-error">${err!"unknown error"}</li>
+    		     </#list>
+    		     </ul>
+    		     <#if stackTraces?has_content >
+    			     <a href="#" id="pToggleStackTrace" onclick="$('#stackTraceList').toggleClass('hidden');return false;">Show/Hide Detailed Error Information</a>
+    			     <div id="stackTraceList" class="hidden">
+    			        <#list stackTraces as _stacktrace>
+    			        <p>
+    			        <em>Stacktrace ${_stacktrace_index + 1} of ${stackTraces?size}</em><br />
+    			        ${_stacktrace?html}
+    			        </p>
+    			        </#list>
+    			     </div>
+    		     </#if>
+    		   </div>
+    		</#if>
+            <@s.fielderror theme="bootstrap" />
+    	</div>
+    </div>
 
 	<#assign part="" />
 	<#assign spanSize = 12/>
@@ -167,9 +174,10 @@
 	</#if> 
 
 	<#if request.requestURI?contains("/search/results") ><#assign part="search" /></#if>
-		<#if page.properties["div.titlebar"]?has_content>
-			${page.properties["div.titlebar"]}
-		</#if>
+	<#if page.properties["div.titlebar"]?has_content>
+		${page.properties["div.titlebar"]}
+	</#if>
+
 	<section class="row ${part}">
 
 		<#if page.properties["div.sidebar-left"]?has_content>
@@ -179,6 +187,8 @@
 		</#if>
 
 		<article class="span${spanSize} results" id="articleBody">
+		    <#--Keep in mind.your body is inside a div.span element. now would be a good time to review bootstrap grid layout conventions (esp. 'Nesting Columns') -->
+		    <#--http://twitter.github.com/bootstrap/scaffolding.html#gridSystem -->
 	        ${body}
 		</article>
 
