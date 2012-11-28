@@ -180,6 +180,7 @@ header input.searchbox,.hero input.searchbox {
 	line-height: inherit;
 }
 
+
 header h1 {
 	margin: 20px 0 0 0;
 	float: left;
@@ -1422,11 +1423,11 @@ B.fmCheckbox.checked {
 	opacity: .9;
 }
 
-.searchbox {
+/* .searchbox {
 	margin-top: 43px;
 	margin-left: 40px;
 }
-
+ */
 header nav {
 	position: absolute !important;
 	right: 0px;

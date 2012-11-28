@@ -315,7 +315,7 @@ TDAR.uri = function(path) {
     
 <#assign barWidth = (graphWidth  / (totalItems) -6)/>
 <div class="barGraph" style="width:${graphWidth?c}px;height:${graphHeight?c}px;" >
-    <p style="margin-right: auto;margin-left: auto;text-align:center;margin-top:10px;margin-bottom:0px"><b>${graphLabel}</b></p>
+    <h3>${graphLabel}</h3>
    <table style="width:${graphWidth -5}px;height:${graphHeight - 15}px;">
   <tr>
   <#assign resourceTypeCount = 0>
