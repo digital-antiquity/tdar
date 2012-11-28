@@ -29,8 +29,9 @@ public class AutocompleteTitleQueryPart implements QueryPart<String> {
             return null;
         QueryPartGroup titleGroup = new QueryPartGroup(Operator.OR);
         FieldQueryPart<String> autoPart = new FieldQueryPart<String>(QueryFieldNames.TITLE_AUTO, title).setBoost(TITLE_BOOST).setPhraseFormatters(
-                PhraseFormatter.ESCAPED);
+                PhraseFormatter.ESCAPE_QUOTED);
         autoPart.setOperator(Operator.AND);
+        //FIXME: while allowed, I'm not sure it's helpful to include non-analyzed fields in a search, especially considering the fact that it will use a default analyzer at search-time. arguments otherwise?
         FieldQueryPart<String> part = new FieldQueryPart<String>(QueryFieldNames.TITLE_SORT, value).setPhraseFormatters(PhraseFormatter.ESCAPED,
                 PhraseFormatter.WILDCARD);
         FieldQueryPart<String> part2 = new FieldQueryPart<String>(QueryFieldNames.TITLE, value);

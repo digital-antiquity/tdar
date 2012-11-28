@@ -159,7 +159,10 @@ header {
 	position: relative;
 }
 
-header input.searchbox,.hero input.searchbox {
+/*fixme: the "header input.searchbox" selector doesn't match any elements in current layout, but looks funny when we correct it ("header .searchbox input") */
+header input.searchbox,
+/* this selector works fine, however */
+.hero input.searchbox {
 	background-color: white;
 	border: none;
 	-webkit-box-shadow: none;
