@@ -3,9 +3,13 @@
 	visibility: hidden !important;
 }
 
+/* FIXME: jtd: I don't think the section.row.cols rule is necessary; need to check all pages to confirm I'm right,*/
+/*
 section.row.cols {
 	margin-top: 3em !important;
+	
 }
+	*/
 
 .mapcontainer #map_legend {
 	position: relative;

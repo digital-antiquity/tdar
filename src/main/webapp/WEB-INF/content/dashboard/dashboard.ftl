@@ -26,45 +26,47 @@
 <div id="messages" style="margin:2px" class="hidden lt-ie8">
     <div id="message-ie-obsolete" class="message-error">
     You appear to be using an older version of Internet Explorer.  Note that certain features in ${siteAcronym} may not work properly.  
-    <a href="http://www.microsoft.com/ie">Click here to learn more about Internet Explorer</a>
+    <a href="http://www.microsoft.com/ie" target="_blank">Click here to learn more about Internet Explorer</a>
     </div>
 </div>
 
-<br/>
 <div class="row">
-<div class="span9">
-Welcome back, ${authenticatedUser.firstName}! 
-<#if contributor>
- The resources you can access are listed below.  To create a <a href="<@s.url value="/resource/add"/>">new resource</a> or 
- <a href="<@s.url value="/project/add"/>">project</a>, or <a href="<@s.url value="/collection/add"/>">collection</a>, click on  the "upload" button above.
-</#if>
-<br/>
+    <div class="span9">
+    Welcome back, ${authenticatedUser.firstName}! 
+    <#if contributor>
+     The resources you can access are listed below.  To create a <a href="<@s.url value="/resource/add"/>">new resource</a> or 
+     <a href="<@s.url value="/project/add"/>">project</a>, or <a href="<@s.url value="/collection/add"/>">collection</a>, click on  the "upload" button above.
+    </#if>
+    </div>
 </div>
-</div>
-<br/>
 
 <#if contributor>
 <#if (activeResourceCount == 0)>
-	<div class="span9 noindent">
-		<h3>Getting Started</h3>
+<div class="row">
+	<div class="span9">
+		<h2>Getting Started</h2>
 		<ol style='list-style-position:inside'>
 		    <li><a href="<@s.url value="/project/add"/>">Start a new Project</a></li>
 		    <li><a href="<@s.url value="/resource/add"/>">Add a new Resource</a></li>
 		</ol>
 	</div>
+</div>
 <#else>
-	<div class="span9 noindent">
-		<h3>At a glance</h3>
+<div class="row">
+	<div class="span9">
+		<h2>At a glance</h2>
 		<div class="row">
-	    <div class="span4"><@common.pieChart statusCountForUser "statusForUser" "userSubmitterContext=true&includedStatuses" /></div>
-	    <div class="span4"><@common.pieChart resourceCountForUser "resourceForUser" "useSubmitterContext=true&resourceTypes" /></div>
+    	    <div class="span4"><@common.pieChart statusCountForUser "statusForUser" "userSubmitterContext=true&includedStatuses" /></div>
+    	    <div class="span5"><@common.pieChart resourceCountForUser "resourceForUser" "useSubmitterContext=true&resourceTypes" /></div>
 	    </div>
-	    <br/>
 	</div>
-	<hr />	
-    
-    <div class="span9 noindent">
-        <h3>Item(s) You've Recently Updated</h3>
+</div>
+
+<hr />	
+
+<div class="row">
+    <div class="span9">
+        <h2>Item(s) You've Recently Updated</h2>
         <ol id='recentlyEditedResources'>
           
             <#list recentlyEditedResources as res>
@@ -82,13 +84,14 @@ Welcome back, ${authenticatedUser.firstName}!
             </#list>
         </ol>
     </div>
-
+</div>
 </#if>
 
 
 <#if (emptyProjects?? && !emptyProjects.empty )>
-	<div class="span9 noindent" id="divEmptyProjects">
-	    <h3>Empty Projects</h3>
+<div class="row">
+	<div class="span9" id="divEmptyProjects">
+	    <h2>Empty Projects</h2>
 	    <ol style='list-style-position:inside' id="emptyProjects">
 	    <#list emptyProjects as res>
 	    <li id="li-recent-resource-${res.id?c}">
@@ -104,15 +107,17 @@ Welcome back, ${authenticatedUser.firstName}!
 	    </#list>
 	    </ol>
 	</div>
+</div>
 <hr />
 </#if>
 
-<div class="span9 noindent" id="project-list">
-<h3>Browse Resources</h3>
-<form action=''>
-<@edit.resourceDataTable />
-</form>
+<div class="" id="project-list">
+    <h2>Browse Resources</h2>
+    <form action=''>
+    <@edit.resourceDataTable />
+    </form>
 </div>
+
 <div id="sidebar-right" parse="true">
 <#macro repeat num val>
  <#if (num > 0)>
@@ -121,7 +126,7 @@ Welcome back, ${authenticatedUser.firstName}!
 </#macro>
 
 <div id="divAccountInfo">
-<h3>About You</h3>
+<h2>About You</h2>
     <strong>Full Name: </strong>${authenticatedUser.properName}<#if authenticatedUser.institution??>, ${authenticatedUser.institution.name}</#if><br />
     <#if authenticatedUser.penultimateLogin??>
         <strong>Last Login: </strong>${authenticatedUser.penultimateLogin?datetime}<br/>
@@ -130,7 +135,7 @@ Welcome back, ${authenticatedUser.firstName}!
 </div>
 
 	<div>
-		<h3>Your Account(s)</h3>
+		<h2>Your Account(s)</h2>
 		<ul>
 		<#list accounts as account>
 			<li>
@@ -139,7 +144,7 @@ Welcome back, ${authenticatedUser.firstName}!
 		</#list>
 		</ul>		
 	</div>
-   <div class="glide"><h3>Collections You Created </h3>
+   <div class=""><h2>Collections You Created </h2>
       <@listCollections resourceCollections>
         <#if (!resourceCollections?has_content )>
           <li><a href="<@s.url value="/collection/add"/>">create one</a></li>
@@ -148,7 +153,7 @@ Welcome back, ${authenticatedUser.firstName}!
    </div>
    <br/>
    <#if sharedResourceCollections?? && !sharedResourceCollections.empty >
-     <div class="glide"><h3>Collections Shared With You</h3>
+     <div class=""><h2>Collections Shared With You</h2>
        <@listCollections sharedResourceCollections />
     </div>
   </#if>
@@ -156,7 +161,7 @@ Welcome back, ${authenticatedUser.firstName}!
 </#if>
 <hr />
 
-<h3 id="bookmarks">Your Bookmarks</h3>
+<h2 id="bookmarks">Your Bookmarks</h2>
 <@rlist.listResources resourcelist=bookmarkedResources sortfield='RESOURCE_TYPE' editable=false bookmarkable=true  expanded=true listTag='ol' headerTag="h3" />
 
 
