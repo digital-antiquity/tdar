@@ -27,9 +27,10 @@
 </div>
 -->
 
-<div class="row">
+<div class="row mannnnnn">
 		<#include "featured.ftl" />
 </div>
+
 <div class="row">
     <div class="span6 map">
 	    <h3>${siteAcronym} Worldwide</h3>
