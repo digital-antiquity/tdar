@@ -94,14 +94,17 @@ public class APIController extends AuthenticationAware.Base {
             setId(loadedRecord.getId());
 
             logMessage("SAVING", loadedRecord.getClass(), loadedRecord.getId(), loadedRecord.getTitle());
+            message = "updated:" + loadedRecord.getId();
+            status = StatusCode.UPDATED.getResultName();
+            int statuscode = StatusCode.UPDATED.getHttpStatusCode();
             if (loadedRecord.isCreated()) {
                 status = StatusCode.CREATED.getResultName();
                 message = "created:" + loadedRecord.getId();
-                getServletResponse().setStatus(StatusCode.CREATED.getHttpStatusCode());
-                return SUCCESS;
+                statuscode = StatusCode.CREATED.getHttpStatusCode();
             }
-            status = StatusCode.UPDATED.getResultName();
-            getServletResponse().setStatus(StatusCode.UPDATED.getHttpStatusCode());
+            
+            getServletResponse().setStatus(statuscode);
+            getResourceService().logResourceModification(loadedRecord, getAuthenticatedUser(), message + " " + loadedRecord.getTitle());
             return SUCCESS;
         } catch (Exception e) {
             getLogger().debug("an exception occured when processing the xml import", e);
