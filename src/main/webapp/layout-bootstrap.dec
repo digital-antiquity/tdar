@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<html lang="en">
+<#import "/WEB-INF/macros/resource/common.ftl" as common><#t>
+<#import "/WEB-INF/macros/header.ftl" as header>
+
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8"/> 
+	    <link rel="unapi-server" type="application/xml" title="unAPI" href="<@s.url value='/unapi'/>" />
+    	<link rel="search" type="application/opensearchdescription+xml" href='<@s.url value="/includes/opensearch.xml"/>' title="Search ${siteAcronym}" /> 
+        <title>${title!siteName}</title>
+        <script src="//ajax.aspnetcdn.com/ajax/modernizr/modernizr-2.0.6-development-only.js"></script>
+        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href='//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_version}/themes/base/jquery-ui.css'></link> 
+
+        <!-- fixme: figure out differences -->
+        
+        <link href="<@s.url value="/css/tdar-base.css"/>" rel="stylesheet" />
+        
+        <script src="<@s.url value="/includes/tdar.core.js"/>"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/${jquery_version}/jquery.min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_version}/jquery-ui.min.js"></script>
+        <#--maps support.  TODO: only include maps when we use them.  put this in (sharedFormCompoenents head section?) -->
+
+        <script type="text/javascript" src="//www.google.com/jsapi"></script>
+        <#--end maps support -->
+
+
+    <#assign uri = request.requestURI />
+    <#assign bodyid = 'home' />
+	<#if (uri != '' && uri != '/')>
+		<#assign bodyid = "alt" />
+	</#if>
+    <@header.css production />
+        
+    ${head}
+
+    <@common.globalJavascript />
+
+	<script type="text/javascript" src="//use.typekit.net/czp6njc.js"></script>
+	<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body id="${bodyid}" data-spy="scroll" data-target="#subnavbar" class="results ${actionName}">
+	<div class="container">
+		<div class="row">
+			<header class="span12">
+				<h1><a href="/"><#if siteAcronym?has_content>${siteAcronym} - </#if>${siteName}</a></h1>
+				<#if (authenticatedUser??) > 
+
+					<p class="welcome">
+						Welcome back, <a href="">${authenticatedUser.properName}</a>
+					</p>
+	
+					<div class="welcome-drop">
+	
+						<p>${authenticatedUser.properName}</p>
+	
+						<ul>
+							<li><a href="<@s.url value="/resource/add"/>">Upload a resource</a></li>
+							<li><a href="<@s.url value="/project/add"/>">Create a project</a></li>
+							<li><a href="<@s.url value="/collection/add"/>">Create a collection</a></li>
+							<li><a href="<@s.url value="/dashboard"/>">View my resources</a></li>
+							<li><a href="<@s.url value="/dashboard#bookmarks"/>">Bookmarks</a></li>
+						</ul>
+	
+						<ul>
+							<#if administrator >
+								<li><a href="<@s.url value="/admin/searchindex/build"/>">reindex</a></li>
+							</#if>
+							<li><a href="<@s.url value='/entity/person/edit?id=${sessionData.person.id?c}'/>">Account Settings</a></li>
+							<li><a href="<@s.url value="/contact"/>">Contact Us</a></li>
+							<li><a href="<@s.url value="/logout"/>">Sign Out</a></li>
+						</ul>
+					</div>
+				</#if>
+
+				<nav >
+					<ul>
+					    <#include "${themeDir}/nav-items.dec" />
+						<li class="button hidden-phone"><a href="<@s.url value="/search/results"/>">BROWSE</a></li>
+						<li class="button hidden-phone"><a href="<@s.url value="/resource/add"/>">UPLOAD</a></li>
+					</ul>
+	
+					<#if bodyid != 'home'>
+						<form name="searchheader" action="<@s.url value="/search/results"/>" class="searchbox hidden-phone hidden-tablet">
+							<input type="text" name="query" placeholder="Search..." />
+						</form>
+					</#if>
+				</nav>
+			</header>
+    
+<#if bodyid == 'home'>
+
+			<div class="span12 hero">
+		    <#include "${themeDir}/homepage-banner.dec" />
+				<@common.loginMenu true/>
+			</div>
+				<ul class="inline-menu hidden-desktop"><@common.loginMenu false/></ul>
+				
+			<#include "${themeDir}/homepage-column-one.dec" />
+<#else>
+	<div class="span12 subnav">
+		<ul class="subnav-lft">
+			<li><a href="<@s.url value="/search"/>">Search</a></li>
+			<li><a href="<@s.url value="/search/results"/>">Browse</a></li>
+			<li><a href="<@s.url value="/browse/explore"/>">Explore</a></li>
+			<li><a href="<@s.url value="/dashboard"/>">Dashboard</a></li>
+  			<#if sessionData?? && sessionData.authenticated>
+  				<li><a href="<@s.url value="/workspace/select-tables"/>">Integrate</a></li>
+				<#if editor>
+					<li><a href="<@s.url value="/admin"/>">Admin</a></li>
+				</#if>
+			</#if>
+		</ul>
+		<@common.loginMenu true />
+	</div>
+
+
+
+
+</#if>
+    <div>
+		<#if  page.properties["div.toolbars"]?? && page.properties["div.toolbars"] != "">
+		    ${page.properties["div.toolbars"]}
+		</#if>
+		<#if  page.properties["div.messages"]?? && page.properties["div.messages"] != "">
+		    ${page.properties["div.messages"]}
+		</#if>
+        <@s.actionmessage theme="bootstrap" />
+		<#if (actionErrors?has_content)>
+		   <div class="action-errors ui-corner-all">
+		     <b>The following errors were found with your submission</b> <br />
+		     <ul>
+		     <#list actionErrors as err>
+			      <li class="action-error">${err!"unknown error"}</li>
+		     </#list>
+		     </ul>
+		     <#if stackTraces?has_content >
+			     <a href="#" id="pToggleStackTrace" onclick="$('#stackTraceList').toggleClass('hidden');return false;">Show/Hide Detailed Error Information</a>
+			     <div id="stackTraceList" class="hidden">
+			        <#list stackTraces as _stacktrace>
+			        <p>
+			        <em>Stacktrace ${_stacktrace_index + 1} of ${stackTraces?size}</em><br />
+			        ${_stacktrace?html}
+			        </p>
+			        </#list>
+			     </div>
+		     </#if>
+		   </div>
+		</#if>
+        <@s.fielderror theme="bootstrap" />
+	</div>
+</div>
+
+	<#assign part="" />
+	<#assign spanSize = 12/>
+	<#if  page.properties["div.sidebar-left"]?has_content ||  page.properties["div.sidebar-right"]?has_content >
+		<#assign part="cols" />
+		<#assign spanSize = 9/>
+	<#elseif page.properties["div.sidebar-left"]?has_content && page.properties["div.sidebar-right"]?has_content >
+		<#assign part="cols" />
+		<#assign spanSize = 6/>
+	</#if> 
+
+	<#if request.requestURI?contains("/search/results") ><#assign part="search" /></#if>
+		<#if page.properties["div.titlebar"]?has_content>
+			${page.properties["div.titlebar"]}
+		</#if>
+	<section class="row ${part}">
+
+		<#if page.properties["div.sidebar-left"]?has_content>
+			<aside class="span3">
+		    ${page.properties["div.sidebar-left"]}
+		   </aside>
+		</#if>
+
+		<article class="span${spanSize} results" id="articleBody">
+	        ${body}
+		</article>
+
+		<#if page.properties["div.sidebar-right"]?has_content>
+			<aside class="span3 sidebar <#if actionName=='edit' || actionName='add'>hidden-tablet hidden-phone</#if> <#if actionName=='view' &&  resource?has_content>${resource.resourceType?lower_case}-bg-large tdar-icon</#if>">
+		    ${page.properties["div.sidebar-right"]}
+		   </aside>
+		</#if>
+	</section>
+
+
+</div>
+	<footer>
+		<div class="container">
+		    <#include "${themeDir}/footer.dec" />
+		</div>
+
+	</footer>
+        <script src="//ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"></script>        
+        <#--TODO: decide whether it's wise to use a bootstrap CDN.  For now I'm using this for convenience -->
+        <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+        <script src="<@s.url value='/includes/plugins.js' />"></script>
+        <script type="text/javascript">
+        //functionality for "welcome back, so-and-so!" (pulled from main.js)
+        //FIXME: needs refactoring
+        $(function(){
+            $(".welcome a").click(function(){
+                $(".welcome-drop").toggle();
+                return false;
+            });
+            
+            $(document).click(function(){  
+              $('.welcome-drop').hide();
+            });
+        });
+        </script>
+    <@header.scripts production />
+    <script type="text/javascript">
+    //this is temporary - our localhost v2 api key apparently incompatible with v3 api key.
+    TDAR.maps.googleApiKey = "AIzaSyB532T66Gm5utEfPxiexOWhDc9tr2kyzsI";
+    TDAR.maps.defaults.center.lat = ${mapDefaultLat};
+    TDAR.maps.defaults.center.lng = ${mapDefaultLng};
+    </script>
+    <div id="ajaxIndicator" class="alert alert-info" style="display:none">Loading...</div>
+    </body>
+</html>
