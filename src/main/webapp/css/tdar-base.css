@@ -464,6 +464,10 @@ header .welcome-drop ul {
 .bucket {
     text-align: center;
 }
+.bucket .bucket-text {
+    text-align:justify;
+    min-height: 6em;
+}
 
 .bucket img {
     margin: 40px 0 20px 0;

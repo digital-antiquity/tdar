@@ -1,31 +1,32 @@
             <div class="span3 bucket">
                 <img src="http://new.tdar.org/wp-uploads/new.tdar.org//2012/10/icn-data.png" />
                 <h3>Access & Use</h3>
-                <p>tDAR supports broadening the access to a wide variety of archaeological data through simple search and browse functionality.</p>
+                <p class="bucket-text">tDAR supports broadening the access to a wide variety of archaeological data through simple search and browse functionality.</p>
                 <p>
-                    <a href="http://new.tdar.org/why-tdar/data-access/" class="button">Learn More</a>
+                    <a href="http://new.tdar.org/why-tdar/data-access/" class="button">Access</a>
                 </p>
             </div>
                 <div class="span3 bucket">
                 <img src="http://new.tdar.org/wp-uploads/new.tdar.org//2012/10/icn-pres.png" />
                 <h3>Preservation</h3>
-                <p>Under its parent organization, Digital Antiquity, tDAR is dedicated to ensuring long-term preservation of digital archaeological data.</p>
+                <p class="bucket-text">Under its parent organization, Digital Antiquity, tDAR is dedicated to ensuring long-term preservation of digital archaeological data.</p>
                 <p>
-                    <a href="http://new.tdar.org/why-tdar/preservation/" class="button">Learn More</a>
+                    <a href="http://new.tdar.org/why-tdar/preservation/" class="button">Preserve</a>
                 </p>
             </div>
                 <div class="span3 bucket">
                 <img src="http://new.tdar.org/wp-uploads/new.tdar.org//2012/10/icn-stew.png" />
                 <h3>Upload Resources</h3>
-                <p>put things in</p>
+                <#--FIXME: need official verbiage for UPLOAD RESOURCES. Winging it for now -->
+                <p class="bucket-text">tDAR can accept all aspects of your research: documents, images, coding-sheets... even entire databases.</p>
                 <p>
-                    <a href="http://new.tdar.org/why-tdar/stewardship/" class="button">Learn More</a>
+                    <a href="http://new.tdar.org/why-tdar/stewardship/" class="button">Create</a>
                 </p>
             </div>
                 <div class="span3 bucket">
                 <img src="http://new.tdar.org/wp-uploads/new.tdar.org//2012/10/icn-uses.png" />
                 <h3>Who Uses tDAR</h3>
-                <p>Researchers like you. tDAR helps you effectively create knowledge of the human past and preserve and protect archaeological resources.</p>
+                <p class="bucket-text">Researchers like you. tDAR helps you effectively create knowledge of the human past and preserve and protect archaeological resources.</p>
                 <p>
                     <a href="http://new.tdar.org/why-tdar/who-uses-tdar/" class="button">Learn More</a>
                 </p>
