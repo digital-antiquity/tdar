@@ -29,12 +29,13 @@ $(function(){
     This is the editing form for a Collection.
     </div>
 </div>
+
 <h1>Editing ${persistable.name!"New Collection"}</h1>
 
-<div>
-<@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='save'>
+<@s.form name='metadataForm' id='metadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='save'>
 
-<div class="glide" tiplabel="Basic Information"  tooltipcontent="Enter a name and description for this collection.  You may also choose a &quot;parent 
+<h2>Basic Information</h2>
+<div class="" tiplabel="Basic Information"  tooltipcontent="Enter a name and description for this collection.  You may also choose a &quot;parent 
     collection&quot; which allows you to inherit all of the access permissions defined by the parent.">
   <#if resourceCollection.id?? &&  resourceCollection.id != -1>
       <@s.hidden name="id"  value="${resourceCollection.id?c}" />
@@ -43,7 +44,9 @@ $(function(){
 
 <@s.select labelposition='left' label='Parent Collection' emptyOption='true' name='parentId' 
     listKey='id' listValue='name' list='%{candidateParentResourceCollections}'
-    truncate="80" title="Please select a parent collection" />
+    truncate="80" title="Please select a parent collection"
+    cssClass="input-xxlarge"
+    />
 <@s.textfield labelposition='left' label='Collection Name' name='resourceCollection.name'  cssClass="required descriptiveTitle input-xxlarge"  title="A title is required for all collections." maxlength="512" />
 <p class='field'>
 </p>
@@ -61,7 +64,7 @@ $(function(){
     </ul>
 </div>
 <div class="glide" tiplabel="Browse and Display Options" tooltipcontent="#divBrowseOptionsTips">
-<h3>Browse and Display Options</h3>
+<h2>Browse and Display Options</h2>
 <div class="control-group">
 <label class="control-label">Make this collection public?</label>
 <div class="controls">
@@ -70,10 +73,10 @@ $(function(){
 </div>
 </div>
 
-<@s.select labelposition='top' label='When Browsing Sort Resource By:' name='resourceCollection.sortBy' 
+<@s.select labelposition='top' label='When Browsing Sort Resource By' name='resourceCollection.sortBy' 
      listValue='label' list='%{sortOptions}' title="Sort resource by" />
 
-<@s.select labelposition='top' label='Display Collection as:' name='resourceCollection.orientation' 
+<@s.select labelposition='top' label='Display Collection as' name='resourceCollection.orientation' 
      list='%{ResultsOrientations}'  listValue='label'  title="Display as" />
 </div>
 
@@ -95,7 +98,7 @@ The form will check for matches in the ${siteAcronym} database and populate the 
 <div class="glide" tiplabel="Add/Remove Resources" tooltipcontent="Check the items in this table to add them to your collection.  Navigate the pages
                     in this list by clicking the left/right arrows at the bottom of this table.  Use the input fields above the table to limit the number
                     of results.">
-    <h3>Add/Remove Resources</h3>
+    <h2>Add/Remove Resources</h2>
     <@edit.resourceDataTable false true />
 
 
@@ -108,7 +111,7 @@ The form will check for matches in the ${siteAcronym} database and populate the 
 </div>    
 
 <div class="glide" >
-    <h3>Selected Resources</h3>
+    <h2>Selected Resources</h2>
     <@view.resourceCollectionTable true />
 </div>
 
@@ -116,7 +119,6 @@ The form will check for matches in the ${siteAcronym} database and populate the 
     <@edit.submit fileReminder=false />
 </@s.form>
 
-</div>
 
 </body>
 </#escape>

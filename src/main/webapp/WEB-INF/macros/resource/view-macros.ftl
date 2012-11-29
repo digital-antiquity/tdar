@@ -721,12 +721,17 @@ ${_date?string('MM/dd/yyyy')}<#t>
 </#macro>
 
 <#macro resourceCollectionTable removeable=false>
-    <table class="zebracolors tableFormat" id="tblCollectionResources">
+    <table class="table table-condensed table-hover" id="tblCollectionResources">
+        <colgroup>
+            <col style="width:4em">
+            <col>
+            <col style="width:3em">
+        </colgroup>
         <thead>
             <tr>
                 <th style="width: 4em">${siteAcronym} ID</th>
-                <th>Name</th>
-                <#if removeable><th></th></#if>
+                <th <#if removeable>colspan="2"</#if>>Name</th>
+                
             </tr>
         </thead>
         <tbody>
@@ -738,7 +743,7 @@ ${_date?string('MM/dd/yyyy')}<#t>
                     </td>
                     <#if removeable>
                     <td>
-                    <button class="btn  btn-mini repeat-row-delete" 
+                    <button class="btn btn-mini repeat-row-delete" 
                                 type="button" tabindex="-1" 
                                 onclick='_removeResourceClicked(${resource.id?c}, this);false;'><i class="icon-trash"></i></button></td>
                     </#if>
