@@ -10,7 +10,7 @@
 </#if>
 <meta name="lastModifiedDate" content="$Date$"/>
 
-<@edit.resourceJavascript formSelector="#MetadataForm" />
+<@edit.resourceJavascript formSelector="#metadataForm" />
 <@edit.resourceDataTableJavascript false true />
 <script type="text/javascript">
 
