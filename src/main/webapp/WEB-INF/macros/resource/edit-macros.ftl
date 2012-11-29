@@ -1425,7 +1425,7 @@ $(function() {
 			<li><a href="#divAccessRights"><span class="visible-phone visible-tablet" title="Permissions">Permis.</span><span class="hidden-phone hidden-tablet">Permissions</span></a></li>
 		</ul>
 		<span class="brand">
-			<span class="button btn btn-primary submitButton" id="fakeSubmitButton">Submit</span>
+			<span class="button btn btn-primary submitButton" id="fakeSubmitButton">Save</span>
 		</span>
 		</div>
 	  </div>

@@ -3,7 +3,8 @@ package org.tdar.struts.data;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.Institution;
@@ -23,7 +24,16 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
  * @version $Rev$
  */
 public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
-    private Logger logger = Logger.getLogger(ResourceCreatorProxy.class);
+    
+    //In the rare situation where javascript does not catch/correct an invalid creator proxy in client form, we need to 
+    //raise exceptions w/ human readable feedback so user has at least some idea what they need to fix.
+    private static final String ERR_DETERMINE_CREATOR_INSUFFICIENT_INFO = "This resource CreatorProxy was initialized improperly";
+    private static final String ERR_FMT2_DETERMINE_CREATOR_TOO_MUCH_INFO = "" +
+            "There was a problem with one of your author/creator/contributor entries. " +
+            "a single creator record may contain either person name, but the system encountered both. Please revise this record with " +
+            "either \"%s\" or \"%s\".";
+
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
     private boolean initialized = false;
 
     // either person or institution will be updated by the view and then
@@ -66,7 +76,7 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
     private void resolveResourceCreator() {
         if (!initialized) {
             try {
-                if (getActualCreatorType() == CreatorType.PERSON) {
+                if (determineActualCreatorType() == CreatorType.PERSON) {
                     resourceCreator.setCreator(person);
                     Institution institution = person.getInstitution();
                     // FIXME: what is the purpose of this check?
@@ -108,17 +118,25 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
         return resourceCreator;
     }
 
-    @Transient
-    public CreatorType getActualCreatorType() {
-        // figure out from the form if this proxy is a person or an institution
+
+    /**
+     * figure out whether this proxy object represents a person or an institution.
+     * 
+     * @throws TdarRecoverableRuntimeException if system cannot reliably determine creatorType.  Use  {@link #getActualCreatorType() getActualCreatorType}
+     *              if you do not want to deal w/ exceptions (e.g. calling from freemarker).
+     * 
+     * @return creatorType, if system can figure out based on available info.  otherwise null.
+     */
+    private CreatorType determineActualCreatorType() {
         if (institution == null && person == null) {
-            throw new TdarRecoverableRuntimeException("This resource CreatorProxy was initialized improperly");
+            throw new TdarRecoverableRuntimeException(ERR_DETERMINE_CREATOR_INSUFFICIENT_INFO);
         }
         if (institution.hasNoPersistableValues() && person.hasNoPersistableValues()) {
             return null;
         }
         if (!institution.hasNoPersistableValues() && !person.hasNoPersistableValues()) {
-            throw new TdarRecoverableRuntimeException(String.format("Both Proxies were Populated p:[%s] i:[%s]",getPerson(), getInstitution()));
+            String err = String.format(ERR_FMT2_DETERMINE_CREATOR_TOO_MUCH_INFO, getPerson(), getInstitution());
+            throw new TdarRecoverableRuntimeException(err);
         }
 
         if (!person.hasNoPersistableValues()) {
@@ -126,6 +144,17 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
         } else {
             return CreatorType.INSTITUTION;
         }
+    }
+    
+    @Transient
+    public CreatorType getActualCreatorType() {
+        CreatorType creatorType = null;
+        try {
+            creatorType = determineActualCreatorType();
+        }  catch(TdarRecoverableRuntimeException trex) {
+            logger.warn("Cannot derive actual creator: the incoming proxy is either incomplete or ambiguous: {}", this);
+        }
+        return creatorType;
     }
 
     /**

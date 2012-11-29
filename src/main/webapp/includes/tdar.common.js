@@ -1006,6 +1006,22 @@ TDAR.common = function() {
                  
     };
     
+    //TODO: remove redundant code -- this is very similar to repeatrow._clearInputs.
+    var _clearInputs = function($parents) {
+        //clear any non-showing creator proxy fields so server knows the actualCreatorType for each
+        console.log("clearing unused proxy fields");
+        // most input elements should have value attribute cleared (but not radiobuttons, checkboxes, or buttons)
+        $parents.find("input[type!=button],textarea").not('input[type=checkbox],input[type=radio]').val("");
+        // uncheck any checkboxes/radios
+        $parents.find("input[type=checkbox],input[type=radio]").prop("checked", false);
+        // remove "selected" from options that were already selected
+        $parents.find("option[selected=selected]").removeAttr("selected");
+        // revert all select inputs to first option. 
+        $parents.find("select").find('option:first').attr("selected", "selected");
+    }
+
+    
+    
      // FIXME: the jquery validate documentation for onfocusout/onkeyup/onclick
      // doesn't jibe w/ what we see in practice. supposedly these take a boolean
      // argument specifying 'true' causes an error. since true is the default for
@@ -1047,27 +1063,19 @@ TDAR.common = function() {
             },
             submitHandler : function(f) {
                 var $button = $('input[type=submit]', f);
-                $button.siblings(".waitingSpinner").css(
-                        'visibility', 'visible');
-                // prevent multiple form submits (e.g. from
-                // double-clicking the submit button)
+                $button.siblings(".waitingSpinner").css('visibility', 'visible');
+                // prevent multiple form submits (e.g. from double-clicking the submit button)
                 $button.attr('disabled', 'disabled');
+                
+                _clearInputs($form.find(".creatorPerson.hidden, .creatorInstitution.hidden")); 
+                
                 f.submit();
             }
-                         
         };
-                 
-         $(form).validate($.extend({}, _defaultValidateOptions, options));
-    
-         $(form).delegate(
-                 "input.error",
-                 "change blur",
-                 function() {
-                     if ($("div.errorDialog:visible").length === 0) {
-                         $(this).valid();
-                         console.log('revalidating...');
-                     }
-                 });
+        
+         var allValidateOptions = $.extend({}, _defaultValidateOptions, options);
+         $(form).validate(allValidateOptions);
+
      };
      
     var _initRegformValidation = function(form) {
