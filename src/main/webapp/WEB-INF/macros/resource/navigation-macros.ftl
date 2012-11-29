@@ -43,11 +43,13 @@ $(document).ready(function() {
     <@s.checkbox  name="userCookieSet" label="Stay logged-in the next time I visit this page" />
     
     <div class="form-actions">
-        <button type="submit" class="button btn btn-primary submitButton" name="Login">Login</button>
-        <p class="pull-right">
-            <a href='<@s.url value="/account/new"/>'>Register </a> |
-            <a href='<@s.url value="/account/recover"/>'>Reset Password</a>
-        </p>
+        <button type="submit" class="button btn btn-primary input-small submitButton" id="btnLogin">Login</button>
+        <div class="pull-right">
+            <div class="btn-group">
+                <a class="btn " href='<@s.url value="/account/new"/>'>Register </a> 
+                <a class="btn " href='<@s.url value="/account/recover"/>'>Reset Password</a>
+            </div>
+        </div>
     </div>
 </@s.form>
 <div id="error"></div>

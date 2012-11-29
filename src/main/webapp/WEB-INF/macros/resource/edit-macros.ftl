@@ -425,7 +425,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 <div id="divAccessRights" class="well-alt" tooltipcontent="${tipsSelector}">
 <h2><a name="accessRights"></a>Access Rights</h2>
-<h4>Users who can view or modify this resource</h4>
+<h3>Users who can view or modify this resource</h3>
 
 <div id="accessRightsRecords" class="repeatLastRow" data-addAnother="add another user">
     <div class="control-group">
@@ -1456,7 +1456,8 @@ $(function() {
 <#macro userRow person=person _indexNumber=0 disableSelfUser=false prefix="authorizedMembers" required=false _personPrefix="" includeRole=false
 	includeRepeatRow=false includeRights=false includeDelete=false hidden=false isUser=false>
 <#local bDisabled = (person.id == authenticatedUser.id && disableSelfUser) />
-<#local disabled =  bDisabled?string />
+<#local disabled =  bDisabled?string("disabled", "") />
+<#local readonly = bDisabled?string("readonly", "") />
 <#local lookupType="nameAutoComplete"/>
 <#if isUser><#local lookupType="userAutoComplete"/></#if>
 <#local _index=""/>
@@ -1471,39 +1472,43 @@ $(function() {
         <@s.hidden name='${strutsPrefix}${personPrefix}.id' value='${(person.id!-1)?c}' id="${idIdElement}"  cssClass="validIdRequired" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"   />
         <div class="control-group">
 	        <div class="controls controls-row">
-	            <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass}" placeholder="Last Name"  readonly="${disabled}" autocompleteParentElement="#${rowIdElement}"
+	            <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass}" placeholder="Last Name"  readonly=bDisabled autocompleteParentElement="#${rowIdElement}"
 	                autocompleteIdElement="#${idIdElement}" autocompleteName="lastName" autocomplete="off"
 	                name="${strutsPrefix}${personPrefix}.lastName" maxlength="255" /> 
-	            <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass}" placeholder="First Name"  readonly="${disabled}" autocomplete="off"
+	            <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass}" placeholder="First Name"  readonly=bDisabled autocomplete="off"
 	                name="${strutsPrefix}${personPrefix}.firstName" maxlength="255" autocompleteName="firstName"
 	                autocompleteIdElement="#${idIdElement}" 
 	                autocompleteParentElement="#${rowIdElement}"  />
 	
 				<#if includeRole || includeRights>
 					<#if includeRole>
-				        <@s.select theme="tdar" name="${strutsPrefix}.role"  autocomplete="off" listValue='label' list=relevantPersonRoles  cssClass="creator-role-select span3" />
+				        <@s.select theme="tdar" name="${strutsPrefix}.role"  autocomplete="off" listValue='label' list=relevantPersonRoles  
+				            cssClass="creator-role-select span3" />
 				    <#else>
-				        <@s.select theme="tdar" cssClass="span3 creator-rights-select" name="${strutsPrefix}.generalPermission" emptyOption='false' listValue='label' list='%{availablePermissions}' disabled=bDisabled />
+				        <@s.select theme="tdar" cssClass="span3 creator-rights-select" name="${strutsPrefix}.generalPermission" emptyOption='false' 
+				            listValue='label' list='%{availablePermissions}' disabled=bDisabled />
+				        <#--HACK: disabled fields do not get sent in request, so we copy generalPermission via hidden field and prevent it from being cloned -->
+				        <@s.hidden name="${strutsPrefix}.generalPermission" cssClass="repeat-row-remove" />
 				    </#if>
 				<#else>
 	
 				</#if>
 	        </div>
-        <div class="controls controls-row">
-        <@s.textfield theme="tdar" cssClass="span2 ${lookupType}" placeholder="Email (optional)" readonly="${disabled}" autocomplete="off"
-            autocompleteIdElement="#${idIdElement}" autocompleteName="email" autocompleteParentElement="#${rowIdElement}"
-            name="${strutsPrefix}${personPrefix}.email" maxlength="255"/>
-        <@s.textfield theme="tdar" cssClass="span3 ${lookupType}" placeholder="Institution Name (Optional)" readonly="${disabled}" autocomplete="off"
-            autocompleteIdElement="#${idIdElement}" 
-            autocompleteName="institution" 
-            autocompleteParentElement="#${rowIdElement}"
-            name="${strutsPrefix}${personPrefix}.institution.name" maxlength="255" />
+            <div class="controls controls-row">
+            <@s.textfield theme="tdar" cssClass="span2 ${lookupType}" placeholder="Email (optional)" readonly=bDisabled autocomplete="off"
+                autocompleteIdElement="#${idIdElement}" autocompleteName="email" autocompleteParentElement="#${rowIdElement}"
+                name="${strutsPrefix}${personPrefix}.email" maxlength="255"/>
+            <@s.textfield theme="tdar" cssClass="span3 ${lookupType}" placeholder="Institution Name (Optional)" readonly=bDisabled autocomplete="off"
+                autocompleteIdElement="#${idIdElement}" 
+                autocompleteName="institution" 
+                autocompleteParentElement="#${rowIdElement}"
+                name="${strutsPrefix}${personPrefix}.institution.name" maxlength="255" />
+            </div>
+    	      <#if includeDelete>          
+    	          <@clearDeleteButton id="${prefix}${_index}" disabled=bDisabled />
+              </#if>
         </div>
-	      <#if includeDelete>          
-	          <@clearDeleteButton id="${prefix}${_index}" disabled=bDisabled />
-          </#if>
-  </div>
-  </div>
+    </div>
 </#macro>
 
 <#macro institutionRow institution _indexNumber=0 prefix="authorizedMembers" required=false includeRole=false _institutionPrefix="" includeDelete=false hidden=false includeRepeatRow=false>

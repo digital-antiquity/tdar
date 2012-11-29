@@ -8,7 +8,6 @@ import static org.junit.Assert.fail;
 import static org.tdar.TestConstants.DEFAULT_BASE_URL;
 
 import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -20,10 +19,9 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletResponse;
 
-import junit.framework.Assert;
-
 import org.apache.commons.lang.StringUtils;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -540,6 +538,16 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             changePage(anchor.click());
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    //click on element that ostensibly should trigger a request (links, submit inputs,  submit guttons)
+    public void clickElementWithId(String id) {
+        HtmlElement el = (HtmlElement)getHtmlPage().getElementById(id);
+        try {
+            changePage(el.click());
+        } catch (IOException e) {
+            Assert.fail("click failed:" + e);
         }
     }
 

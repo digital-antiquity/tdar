@@ -8,7 +8,6 @@ vim:sts=2:sw=2:filetype=jsp
     <meta name="lastModifiedDate" content="$Date$" />
 </head>
 <body>
-<@s.actionmessage />
  
 <#if (actionErrors?size > 0)>
 <div class="alert alert-error">

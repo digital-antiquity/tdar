@@ -90,7 +90,7 @@ public abstract class AbstractAuthenticatedWebTestCase extends AbstractWebTestCa
             submitFormWithoutErrorCheck("Login");
             webClient.setThrowExceptionOnFailingStatusCode(true);
         } else {
-            submitForm("Login");
+            clickElementWithId("btnLogin");
         }
         return internalPage.getWebResponse().getStatusCode();
     }

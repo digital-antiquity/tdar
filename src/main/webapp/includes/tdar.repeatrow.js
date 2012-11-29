@@ -53,7 +53,9 @@ TDAR.repeatrow = function() {
     };
 
         
-    // public: clone an element, append it to another element
+    // clone an element, append it to another element.  
+    //  -To prevent attribute renaming for an element in a repeat-row div, apply ".repeat-row-skip" class
+    //  -To prevent a repeat-row child elemnent from being copied, apply ".repeat-row-remove"
     var _cloneSection = function(element, appendTo) {
 
         var $element = $(element);
@@ -85,30 +87,30 @@ TDAR.repeatrow = function() {
         var cloneIdAttr = elementIdAttr.replace(rex, "$1" + nextId + "$3");
         
         //TODO: remove error/warning labels from $clone (e.g.  form validation fails on last row, then you click 'add new row').
-
+        $clone.find(".repeat-row-remove").remove();
         // update the id for our new row
         $clone.attr('id', cloneIdAttr);
-
+        
+        
         /*
          * Now that we've cloned the row, certain element attributes may need to be renamed (for example, input tags with name attributes of the form
          * "fieldval[0]" should be renamed "fieldval[1]". Our assumption is that every ID or NAME attribute that contains either "_num_" or "[num]" will
          * renamed.
          * 
-         * However, we do not modify any tags that that have the css class"repeatRowSkip".
          */
-        // console.debug("about to find each elment in $clone:" + currentId);
-        $clone.find('*').each(function() {
-            var elem = this;
-            // skip any tags that with the repeatRowSkip attribute
-            if (!$(elem).hasClass('repeatRowSkip')) {
-                $([ "id", "autoVal", "name", "autocompleteIdElement", "autocompleteParentElement" ]).each(function(i, attrName) {
-                    // replace occurances of [num]
-                    _replaceAttribute(elem, attrName, '[' + currentId + ']', '[' + nextId + ']');
 
-                    // replace occurances of _num_
-                    _replaceAttribute(elem, attrName, '_' + currentId + '_', '_' + nextId + '_');
-                });
-            }
+        //remove any tags that shouldn't be copied
+        $clone
+        // skip any tags that with the repeat-row-skip attribute
+        $clone.find('*').not(".repeat-row-skip").each(function() {
+            var elem = this;
+            $([ "id", "autoVal", "name", "autocompleteIdElement", "autocompleteParentElement" ]).each(function(i, attrName) {
+                // replace occurances of [num]
+                _replaceAttribute(elem, attrName, '[' + currentId + ']', '[' + nextId + ']');
+
+                // replace occurances of _num_
+                _replaceAttribute(elem, attrName, '_' + currentId + '_', '_' + nextId + '_');
+            });
         });
 
         $element.after($clone);
