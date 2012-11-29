@@ -1205,6 +1205,60 @@ aside.tdar-icon:before {
     display: inline-block;
 }
 
+.search-map-icon-red {
+    background: url(/images/r4/resource-types-large.png) -75px -2531px no-repeat;
+    width: 14px;
+    height: 14px;
+    display: inline-block;
+}
+
+
+.search-grid-icon-red {
+    background: url(/images/r4/resource-types-large.png) -91px -2531px no-repeat;
+    width: 14px;
+    height: 14px;
+    display: inline-block;
+}
+
+.search-download-icon-red {
+	background: url(/images/r4/resource-types-large.png) -58px -2531px no-repeat;
+    width: 14px;
+    height: 14px;
+    display: inline-block;
+	
+}
+
+.search-magnify-icon-red {
+    background: url(/images/r4/resource-types-large.png) -40px -2531px no-repeat;
+    width: 14px;
+    height: 14px;
+    display: inline-block;
+	
+}
+
+.search-list-icon-red {
+    background: url(/images/r4/resource-types-large.png) -124px -2531px no-repeat;
+    width: 14px;
+    height: 14px;
+    display: inline-block;
+}
+
+.search-list-checkbox-grey {
+    background: url(/images/r4/resource-types-large.png) -30px -2563px no-repeat;
+    width: 14px;
+    height: 14px;
+    margin-bottom:-2px;
+    display: inline-block;
+}
+
+.search-list-checkedbox-grey {
+    background: url(/images/r4/resource-types-large.png) -30px -2578px no-repeat;
+    width: 14px;
+    margin-bottom:-2px;
+	height: 14px;
+    display: inline-block;
+}
+
 
 body.add h3 {
     font-size: 30px !important;

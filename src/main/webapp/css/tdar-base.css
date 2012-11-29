@@ -2,69 +2,8 @@
     History: this file represents the original source code as provided by Fervor
 */
 
-/*  REMOVE to RESET TO BASE bootstrap 
-.container {
-    width: 1000px;
-}
-
-.span12 {
-    width: 1000px;
-}
-
-.span11 {
-    width: 860px;
-}
-
-.span10 {
-    width: 780px;
-}
-
-.span9 {
-    width: 740px;
-}
-
-.span8 {
-    width: 620px;
-}
-
-.span7 {
-    width: 540px;
-}
-
-.span6 {
-    width: 480px;
-}
-
-.span5 {
-    width: 380px;
-}
-
-.span4 {
-    width: 305px;
-}
-
-.span45 {
-    width: 330px;
-}
-
-.span3 {
-    width: 220px;
-}
-
-.span2 {
-    width: 140px;
-}
-
-.span1 {
-    width: 80px;
-}
-
-.row {
-    margin-left: -40px;
-}
-*/
-[class*="span"] { //
-    margin-left: 40px;
+[class*="span"] { 
+//    margin-left: 40px;
 }
 
 .span45 {
@@ -1185,9 +1124,7 @@ contrib article h2,.contrib article p,.contrib article ul {
 }
 
 .search ul.tools li {
-    background: url(/images/r4/bg-tools.png) left -18px no-repeat;
     line-height: 14px;
-    padding-left: 20px;
     margin-bottom: 5px !important;
 }
 

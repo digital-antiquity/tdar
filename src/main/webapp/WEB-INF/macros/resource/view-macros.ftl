@@ -109,7 +109,7 @@ View freemarker macros
                     <span class="downloadNumber hidden-tablet">${resource.totalNumberOfFiles?c}</span>
                 </h3>
       <@embargoCheck/>
-        <ul class="downloads unstyled-list">
+        <ul class="downloads media-list">
         <#assign extensionMap = { 'pdf':'page-white-acrobat', 'doc':'page-white-word','docx':'page-white-word' ,'DOCUMENT','page-white-text',
                         'mdb':'page-white-key','mdbx':'page-white-key','accdb':'page-white-key',
                         'xls':'page-excel','xlsx':'page-excel','DATASET':'page-white-text','CODING_SHEET':'page-white-text',

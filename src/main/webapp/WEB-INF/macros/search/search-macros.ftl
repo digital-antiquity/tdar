@@ -127,15 +127,10 @@
 
 
 <#macro searchLink path linkText>
-    <a href="
-    <@s.url includeParams="all" value="${path}">
-    <#if path?? && path!="results">
-    <@s.param name="id" value=""/>
-    </#if>
-        <#nested>
-    </@s.url> 
-    ">${linkText}</a>
+    <a href="<@searchUrl path><#nested></@searchUrl>">${linkText}</a>
 </#macro>
+
+<#macro searchUrl path><@s.url includeParams="all" value="${path}"><#if path?? && path!="results"><@s.param name="id" value=""/></#if><#nested></@s.url></#macro>
 
 <#macro paginationLink startRecord path linkText>
     <span class="paginationLink">

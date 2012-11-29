@@ -30,9 +30,9 @@
                 
                 <h2>Search Options</h2>
 
-    <ul class="tools">
-        <li><@search.searchLink "advanced" "Refine your search &raquo;" /></li>
-        <li>Download these results &raquo;
+    <ul class="tools media-list">
+        <li class="media"><a href="<@search.searchUrl "advanced"/>"><i class="pull-left search-magnify-icon-red" ></i>Refine your search &raquo;</a></li>
+        <li class="media"><i class="pull-left search-download-icon-red" ></i>Download these results &raquo;
         <#if sessionData?? && sessionData.authenticated && (totalRecords > 0) && (actionName=="results")>
             <@search.searchLink "download" "to Excel" />
             <#if totalRecords &gt; maxDownloadRecords>
@@ -49,16 +49,16 @@
         </ul>
 
         <h3>View Options</h3> 
-        <ul class="tools">
-                <li><a class="list" href="<@s.url includeParams="all">
-                    <@s.param name="orientation"></@s.param>
-                </@s.url>">List</a></li>
-                <li><a class="grid" href="<@s.url includeParams="all">
+        <ul class="tools media-list">
+                <li class="media"><a href="<@s.url includeParams="all">
+                    <@s.param name="orientation">LIST</@s.param>
+                </@s.url>"><i class="pull-left search-list-icon-red"></i>List</a></li>
+                <li class="media"><a href="<@s.url includeParams="all">
                     <@s.param name="orientation">GRID</@s.param>
-                </@s.url>">Grid</a></li>
-                <li><a class="grid" href="<@s.url includeParams="all">
+                </@s.url>"><i class="pull-left search-grid-icon-red"></i>Grid</a></li>
+                <li class="media"><a href="<@s.url includeParams="all">
                     <@s.param name="orientation">MAP</@s.param>
-                </@s.url>">Map</a></li>
+                </@s.url>"><i class="pull-left search-map-icon-red"></i>Map</a></li>
         </ul>
 
                 <form>
@@ -113,7 +113,7 @@
 <#macro facetBy facetlist=[] currentValues=[] label="Facet Label" facetParam="">
 <#if (facetlist?? && !facetlist.empty)>
 <h4>${label}:</h4>
-<ul>
+<ul class="media-list tools">
     <#list facetlist as facet>
         <#assign facetLabel = facet />
         <#if facet.plural?has_content>
@@ -121,9 +121,7 @@
         <#elseif facet.label?has_content>
             <#assign facetLabel = facet.label />
         </#if>
-        <li>
-            <input type="checkbox" <#if currentValues?size == 1>checked=checked</#if>>
-            <label class="<#if currentValues?size == 1>checked</#if>">
+        <li class="media">
             <#if (facetlist?size > 1)>
                 <a href="<@s.url includeParams="all">
                     <@s.param name="${facetParam}">${facet}</@s.param>
@@ -135,7 +133,7 @@
                         <@s.param name="integratableOptions" value=""/>
                     </#if>
                     <#nested>
-                </@s.url>">${facetLabel}</a>
+                </@s.url>"><i class="pull-left search-list-check<#if currentValues?size == 1>ed</#if>box-grey"></i>${facetLabel}</a>
             <#elseif currentValues?size == 1>
                 <@removeFacet facetlist=currentValues facetParam=facetParam />
             <#else>
@@ -174,7 +172,7 @@
                 <@s.param name="integratableOptions" value=""/>
             </#if>
             <#nested>
-        </@s.url>">${facetText}</a>
+        </@s.url>"><i class="pull-left search-list-checkedbox-grey"></i>${facetText}</a>
     </#if>
     </#if>
 </#macro>
