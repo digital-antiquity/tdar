@@ -214,28 +214,7 @@ table.legend {
     /* Opera11.10+ */
     background: -ms-linear-gradient(top, #eeeeee 0%, #cccccc 100%);
     /* IE10+ */
-    filter: progid:                              DXImageTransform.Microsoft.gradient(
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-          
-             
-                  
-         startColorstr=                           
-          '#eeeeee', endColorstr=                              '#cccccc',
-        GradientType=        
-        
-        
-          
-             
-                  0 );
+    filter: progid: DXImageTransform.Microsoft.gradient( startColorstr= '#eeeeee', endColorstr= '#cccccc', GradientType= 0 );
     /* IE6-9 */
     background: linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* W3C */
     //
@@ -270,30 +249,7 @@ table.legend {
     /* Opera11.10+ */
     background: -ms-linear-gradient(top, #e5e696 0%, #d1d360 100%);
     /* IE10+ */
-    filter: progid:                          DXImageTransform.Microsoft.gradient(
-        
-        
-        
-        
-        
-         
-          
-             
-                   startColorstr=                 
-        
-        
-        
-        
-        
-        
-         
-        '#e5e696', endColorstr=                          '#d1d360',
-        GradientType=  
-        
-         
-          
-             
-                   0 );
+    filter: progid: DXImageTransform.Microsoft.gradient( startColorstr= '#e5e696', endColorstr= '#d1d360', GradientType= 0 );
     /* IE6-9 */
     background: linear-gradient(top, #e5e696 0%, #d1d360 100%); /* W3C */;
     border: 1px solid #999999;
@@ -312,28 +268,7 @@ table.legend {
     /* Opera11.10+ */
     background: -ms-linear-gradient(top, #deefff 0%, #98bede 100%);
     /* IE10+ */
-    filter: progid:                              DXImageTransform.Microsoft.gradient(
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-          
-             
-                  
-         startColorstr=                           
-          '#deefff', endColorstr=                              '#98bede',
-        GradientType=        
-        
-        
-          
-             
-                  0 );
+    filter: progid: DXImageTransform.Microsoft.gradient( startColorstr= '#deefff', endColorstr= '#98bede', GradientType= 0 );
     /* IE6-9 */
     background: linear-gradient(top, #deefff 0%, #98bede 100%); /* W3C */
     border: 1px solid #999999;
@@ -352,28 +287,7 @@ table.legend {
     /* Opera11.10+ */
     background: -ms-linear-gradient(top, #e4efc0 0%, #abbd73 100%);
     /* IE10+ */
-    filter: progid:                              DXImageTransform.Microsoft.gradient(
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-          
-             
-                  
-         startColorstr=                           
-          '#e4efc0', endColorstr=                              '#abbd73',
-        GradientType=        
-        
-        
-          
-             
-                  0 );
+    filter: progid: DXImageTransform.Microsoft.gradient( startColorstr= '#e4efc0', endColorstr= '#abbd73', GradientType= 0 );
     /* IE6-9 */
     background: linear-gradient(top, #e4efc0 0%, #abbd73 100%); /* W3C */;
     border: 1px solid #999999;
@@ -398,34 +312,7 @@ table.legend {
         -o-linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* Opera11.10+ */
     background: url(/images/checked.gif) no-repeat scroll 50% 50%,
         -ms-linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* IE10+ */
-    filter: progid:                              DXImageTransform.Microsoft.gradient(
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-         
-            
-                 startColorstr=                  
-        
-        
-        
-        
-        
-        
-        
-          '#eeeeee', endColorstr=                              '#cccccc',
-        GradientType=              
-        
-        
-         
-           
-               0 );
+    filter: progid: DXImageTransform.Microsoft.gradient( startColorstr= '#eeeeee', endColorstr= '#cccccc', GradientType= 0 );
     /* IE6-9 */
     background: linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* W3C */
     border: 1px solid #999999;
@@ -446,30 +333,7 @@ table.legend {
         -o-linear-gradient(top, #e5e696 0%, #d1d360 100%); /* Opera11.10+ */
     background: url(/images/checked.gif) no-repeat scroll 50% 50%,
         -ms-linear-gradient(top, #e5e696 0%, #d1d360 100%); /* IE10+ */
-    filter: progid:                          DXImageTransform.Microsoft.gradient(
-        
-        
-        
-        
-        
-         
-          
-             
-                   startColorstr=                 
-        
-        
-        
-        
-        
-        
-         
-        '#e5e696', endColorstr=                          '#d1d360',
-        GradientType=        
-        
-        
-         
-            
-                0 );
+    filter: progid: DXImageTransform.Microsoft.gradient( startColorstr= '#e5e696', endColorstr= '#d1d360', GradientType= 0 );
     /* IE6-9 */
     background: url(/images/checked.gif) no-repeat scroll 50% 50%,
         linear-gradient(top, #e5e696 0%, #d1d360 100%); /* W3C */;
@@ -491,34 +355,7 @@ table.legend {
         -o-linear-gradient(top, #deefff 0%, #98bede 100%); /* Opera11.10+ */
     background: url(/images/checked.gif) no-repeat scroll 50% 50%,
         -ms-linear-gradient(top, #deefff 0%, #98bede 100%); /* IE10+ */
-    filter: progid:                              DXImageTransform.Microsoft.gradient(
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-         
-            
-                 startColorstr=                  
-        
-        
-        
-        
-        
-        
-        
-          '#deefff', endColorstr=                              '#98bede',
-        GradientType=              
-        
-        
-         
-           
-               0 );
+    filter: progid: DXImageTransform.Microsoft.gradient( startColorstr= '#deefff', endColorstr= '#98bede', GradientType= 0 );
     /* IE6-9 */
     background: url(/images/checked.gif) no-repeat scroll 50% 50%,
         linear-gradient(top, #deefff 0%, #98bede 100%); /* W3C */
@@ -540,34 +377,7 @@ table.legend {
         -o-linear-gradient(top, #e4efc0 0%, #abbd73 100%); /* Opera11.10+ */
     background: url(/images/checked.gif) no-repeat scroll 50% 50%,
         -ms-linear-gradient(top, #e4efc0 0%, #abbd73 100%); /* IE10+ */
-    filter: progid:                              DXImageTransform.Microsoft.gradient(
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-         
-            
-                 startColorstr=                  
-        
-        
-        
-        
-        
-        
-        
-          '#e4efc0', endColorstr=                              '#abbd73',
-        GradientType=              
-        
-        
-         
-           
-               0 );
+    filter: progid: DXImageTransform.Microsoft.gradient( startColorstr= '#e4efc0', endColorstr= '#abbd73', GradientType= 0 );
     /* IE6-9 */
     background: url(/images/checked.gif) no-repeat scroll 50% 50%,
         linear-gradient(top, #e4efc0 0%, #abbd73 100%); /* W3C */;
@@ -597,34 +407,7 @@ table.legend {
         -o-linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* Opera11.10+ */
     background: url(/images/unchecked.gif) no-repeat scroll 50% 50%,
         -ms-linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* IE10+ */
-    filter: progid:                              DXImageTransform.Microsoft.gradient(
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-         
-            
-                 startColorstr=                  
-        
-        
-        
-        
-        
-        
-        
-          '#eeeeee', endColorstr=                              '#cccccc',
-        GradientType=              
-        
-        
-         
-           
-               0 );
+    filter: progid: DXImageTransform.Microsoft.gradient( startColorstr= '#eeeeee', endColorstr= '#cccccc', GradientType= 0 );
     /* IE6-9 */
     background: linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* W3C */
     border: 1px solid #999999;
@@ -649,30 +432,7 @@ table.legend {
         -o-linear-gradient(top, #e5e696 0%, #d1d360 100%); /* Opera11.10+ */
     background: url(/images/unchecked.gif) no-repeat scroll 50% 50%,
         -ms-linear-gradient(top, #e5e696 0%, #d1d360 100%); /* IE10+ */
-    filter: progid:                          DXImageTransform.Microsoft.gradient(
-        
-        
-        
-        
-        
-         
-          
-             
-                   startColorstr=                 
-        
-        
-        
-        
-        
-        
-         
-        '#e5e696', endColorstr=                          '#d1d360',
-        GradientType=        
-        
-        
-         
-            
-                0 );
+    filter: progid: DXImageTransform.Microsoft.gradient( startColorstr= '#e5e696', endColorstr= '#d1d360', GradientType= 0 );
     /* IE6-9 */
     background: url(/images/unchecked.gif) no-repeat scroll 50% 50%,
         linear-gradient(top, #e5e696 0%, #d1d360 100%); /* W3C */;
@@ -694,34 +454,7 @@ table.legend {
         -o-linear-gradient(top, #deefff 0%, #98bede 100%); /* Opera11.10+ */
     background: url(/images/unchecked.gif) no-repeat scroll 50% 50%,
         -ms-linear-gradient(top, #deefff 0%, #98bede 100%); /* IE10+ */
-    filter: progid:                              DXImageTransform.Microsoft.gradient(
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-         
-            
-                 startColorstr=                  
-        
-        
-        
-        
-        
-        
-        
-          '#deefff', endColorstr=                              '#98bede',
-        GradientType=              
-        
-        
-         
-           
-               0 );
+    filter: progid: DXImageTransform.Microsoft.gradient( startColorstr= '#deefff', endColorstr= '#98bede', GradientType= 0 );
     /* IE6-9 */
     background: url(/images/unchecked.gif) no-repeat scroll 50% 50%,
         linear-gradient(top, #deefff 0%, #98bede 100%); /* W3C */
@@ -743,34 +476,7 @@ table.legend {
         -o-linear-gradient(top, #e4efc0 0%, #abbd73 100%); /* Opera11.10+ */
     background: url(/images/unchecked.gif) no-repeat scroll 50% 50%,
         -ms-linear-gradient(top, #e4efc0 0%, #abbd73 100%); /* IE10+ */
-    filter: progid:                              DXImageTransform.Microsoft.gradient(
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-         
-            
-                 startColorstr=                  
-        
-        
-        
-        
-        
-        
-        
-          '#e4efc0', endColorstr=                              '#abbd73',
-        GradientType=              
-        
-        
-         
-           
-               0 );
+    filter: progid: DXImageTransform.Microsoft.gradient( startColorstr= '#e4efc0', endColorstr= '#abbd73', GradientType= 0 );
     /* IE6-9 */
     background: url(/images/unchecked.gif) no-repeat scroll 50% 50%,
         linear-gradient(top, #e4efc0 0%, #abbd73 100%); /* W3C */;
