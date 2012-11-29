@@ -16,6 +16,7 @@
 </ul>
 <#if collection??>
   <@list.listResources resourcelist=results sortfield=collection.sortBy />
+
 </#if>
 </body>
 </#escape>

@@ -20,8 +20,8 @@
 <h3>There are ${totalRecords?c} Resources within this Project</h3>
 
     <#if ( results?has_content )>
-              <@rlist.listResources resourcelist=results expanded=true listTag="ol" headerTag="h4" 
-              sortfield=project.sortBy  orientation="GRID" mapPosition="left" />
+              <@rlist.listResources resourcelist=results expanded=true listTag="ol" headerTag="h4" titleTag="h5" 
+              sortfield=project.sortBy  orientation=project.orientation mapPosition="left" />
     </#if>
 
     <#if ( results?? && numPages > 1)>

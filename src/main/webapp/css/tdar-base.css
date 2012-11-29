@@ -606,7 +606,7 @@ header .welcome-drop ul {
 /* resource navigation toolbar */
 .resource-nav {
 	height: 40px;
-	margin: 40px 0 40px 40px;
+	margin: 40px 0px 40px 0px;
 	background: #f0eeeb;
 	float: left;
 }

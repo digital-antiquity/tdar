@@ -39,10 +39,10 @@
 </div>
 
 <hr/>
-    <@list.listResources resourcelist=results sortfield=resourceCollection.sortBy  titleTag="h5" orientation=resourceCollection.orientation mapPosition="left" />
-    
-<div class="glide">
-</div>
+    <@list.listResources resourcelist=results sortfield=resourceCollection.sortBy  titleTag="h5" listTag="ul" itemTag="li"
+    	orientation=resourceCollection.orientation mapPosition="left" />
+    <#-- <@rlist.listResources resourcelist=results sortfield=sortField expanded=false listTag="" itemTag="" titleTag="h3" orientation=orientation mapPosition="top" mapHeight="450"/>
+    -->
     </#if>
 
 <#if editable>

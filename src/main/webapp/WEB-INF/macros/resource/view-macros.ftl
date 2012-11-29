@@ -816,6 +816,7 @@ ${_date?string('MM/dd/yyyy')}<#t>
 
 <#macro sidebar>
 		<div id="sidebar-right" parse="true">
+				<i class="${resource.resourceType?lower_case}-bg-large"></i>	
 				
 			    <@uploadedFileInfo />
 

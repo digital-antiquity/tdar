@@ -993,105 +993,218 @@ aside.tdar-icon:before {
 	margin: 0 5px 0 0;
 }
 
-.document-bg-large:before {
-	background: url(/images/r4/tdar-sprites.gif) -23px -23px no-repeat;
-	width: 220px;
-	height: 250px;
-	left: 40px;
+.responsive-large-desktop i.document-bg-large {
+	background: url(/images/r4/resource-types-large.png) 0px 0px no-repeat;
+	width: 230px;
+	height: 230px;
 	display: inline-block;
-	content: "";
-	position: relative;
 }
 
-.dataset-bg-large:before {
-	background: url(/images/r4/tdar-sprites.gif) -261px -21px no-repeat;
-	width: 220px;
-	height: 250px;
-	left: 40px;
+.responsive-large-desktop i.dataset-bg-large {
+	background: url(/images/r4/resource-types-large.png) 0px -245px no-repeat;
+	width: 230px;
+	height: 230px;
 	display: inline-block;
-	content: "";
-	position: relative;
 }
 
-.coding_sheet-bg-large:before {
-	background: url(/images/r4/tdar-sprites.gif) -497px -21px no-repeat;
-	width: 220px;
-	height: 250px;
-	left: 40px;
+.responsive-large-desktop i.coding_sheet-bg-large {
+	background: url(/images/r4/resource-types-large.png) 0px -491px no-repeat;
+	width: 230px;
+	height: 230px;
 	display: inline-block;
-	content: "";
-	position: relative;
 }
 
-.ontology-bg-large:before {
-	background: url(/images/r4/tdar-sprites.gif) -731px -21px no-reapeat;
-	width: 220px;
-	height: 250px;
-	left: 40px;
+.responsive-large-desktop i.ontology-bg-large {
+	background: url(/images/r4/resource-types-large.png) 0px -736px no-repeat;
+	width: 230px;
+	height: 230px;
 	display: inline-block;
-	content: "";
-	position: relative;
 }
 
-.geospatial-bg-large:before {
-	background: url(/images/r4/tdar-sprites.gif) -968px -23px no-repeat;
-	width: 220px;
-	height: 250px;
-	left: 40px;
+.responsive-large-desktop i.geospatial-bg-large {
+	background: url(/images/r4/resource-types-large.png) 0px -982px no-repeat;
+	width: 230px;
+	height: 230px;
 	display: inline-block;
-	content: "";
-	position: relative;
 }
 
-.sensory_data-bg-large:before {
-	background: url(/images/r4/tdar-sprites.gif) -1212px -23px no-repeat;
-	width: 220px;
-	height: 250px;
-	left: 40px;
+.responsive-large-desktop i.sensory_data-bg-large {
+	background: url(/images/r4/resource-types-large.png) 0px -1227px no-repeat;
+	width: 230px;
+	height: 230px;
 	display: inline-block;
-	content: "";
-	position: relative;
 }
 
-.image-bg-large:before {
-	background: url(/images/r4/tdar-sprites.gif) -1457px -23px no-repeat;
-	width: 220px;
-	height: 250px;
-	left: 40px;
+.responsive-large-desktop i.image-bg-large {
+	background: url(/images/r4/resource-types-large.png) 0px -1964px no-repeat;
+	width: 230px;
+	height: 230px;
 	display: inline-block;
-	content: "";
-	position: relative;
 }
 
-.video-bg-large:before {
-	background: url(/images/r4/tdar-sprites.gif) -1708px -23px no-repeat;
-	width: 220px;
-	height: 250px;
-	left: 40px;
+.responsive-large-desktop i.video-bg-large {
+	background: url(/images/r4/resource-types-large.png) 0px -1473px no-repeat;
+	width: 230px;
+	height: 230px;
 	display: inline-block;
-	content: "";
-	position: relative;
 }
 
-.collection-bg-large:before {
-	background: url(/images/r4/tdar-sprites.gif) -1952px -23px no-repeat;
-	width: 220px;
-	height: 250px;
-	left: 40px;
+.responsive-large-desktop i.collection-bg-large {
+	background: url(/images/r4/resource-types-large.png) 0px -1719px no-repeat;
+	width: 230px;
+	height: 230px;
 	display: inline-block;
-	content: "";
-	position: relative;
 }
 
-.project-bg-large:before {
-	background: url(/images/r4/tdar-sprites.gif) -2196px -23px no-repeat;
-	width: 220px;
-	height: 250px;
-	left: 40px;
+.responsive-large-desktop i.project-bg-large {
+	background: url(/images/r4/resource-types-large.png) 0px -2210px no-repeat;
+	width: 230px;
+	height: 230px;
 	display: inline-block;
-	content: "";
-	position: relative;
 }
+
+
+.responsive-desktop i.document-bg-large {
+	background: url(/images/r4/resource-types-large.png) -299px 0px no-repeat;
+	width: 180px;
+	height: 180px;
+	display: inline-block;
+}
+
+.responsive-desktop i.dataset-bg-large {
+	background: url(/images/r4/resource-types-large.png) -299px -245px no-repeat;
+	width: 180px;
+	height: 180px;
+	display: inline-block;
+}
+
+.responsive-desktop i.coding_sheet-bg-large {
+	background: url(/images/r4/resource-types-large.png) -299px -491px no-repeat;
+	width: 180px;
+	height: 180px;
+	display: inline-block;
+}
+
+.responsive-desktop i.ontology-bg-large {
+	background: url(/images/r4/resource-types-large.png) -299px -736px no-repeat;
+	width: 180px;
+	height: 180px;
+	display: inline-block;
+}
+
+.responsive-desktop i.geospatial-bg-large {
+	background: url(/images/r4/resource-types-large.png) -299px -982px no-repeat;
+	width: 180px;
+	height: 180px;
+	display: inline-block;
+}
+
+.responsive-desktop i.sensory_data-bg-large {
+	background: url(/images/r4/resource-types-large.png) -299px -1227px no-repeat;
+	width: 180px;
+	height: 180px;
+	display: inline-block;
+}
+
+.responsive-desktop i.image-bg-large {
+	background: url(/images/r4/resource-types-large.png) -299px -1964px no-repeat;
+	width: 180px;
+	height: 180px;
+	display: inline-block;
+}
+
+.responsive-desktop i.video-bg-large {
+	background: url(/images/r4/resource-types-large.png) -299px -1473px no-repeat;
+	width: 180px;
+	height: 180px;
+	display: inline-block;
+}
+
+.responsive-desktop i.collection-bg-large {
+	background: url(/images/r4/resource-types-large.png) -299px -1719px no-repeat;
+	width: 180px;
+	height: 180px;
+	display: inline-block;
+}
+
+.responsive-desktop i.project-bg-large {
+	background: url(/images/r4/resource-types-large.png) -299px -2210px no-repeat;
+	width: 180px;
+	height: 180px;
+	display: inline-block;
+}
+
+
+.responsive-tablet i.document-bg-large {
+	background: url(/images/r4/resource-types-large.png) -548px 0px no-repeat;
+	width: 125px;
+	height: 125px;
+	display: inline-block;
+}
+
+.responsive-tablet i.dataset-bg-large {
+	background: url(/images/r4/resource-types-large.png) -548px -245px no-repeat;
+	width: 125px;
+	height: 125px;
+	display: inline-block;
+}
+
+.responsive-tablet i.coding_sheet-bg-large {
+	background: url(/images/r4/resource-types-large.png) -548px -491px no-repeat;
+	width: 125px;
+	height: 125px;
+	display: inline-block;
+}
+
+.responsive-tablet i.ontology-bg-large {
+	background: url(/images/r4/resource-types-large.png) -548px -736px no-repeat;
+	width: 125px;
+	height: 125px;
+	display: inline-block;
+}
+
+.responsive-tablet i.geospatial-bg-large {
+	background: url(/images/r4/resource-types-large.png) -548px -982px no-repeat;
+	width: 125px;
+	height: 125px;
+	display: inline-block;
+}
+
+.responsive-tablet i.sensory_data-bg-large {
+	background: url(/images/r4/resource-types-large.png) -548px -1227px no-repeat;
+	width: 125px;
+	height: 125px;
+	display: inline-block;
+}
+
+.responsive-tablet i.image-bg-large {
+	background: url(/images/r4/resource-types-large.png) -548px -1964px no-repeat;
+	width: 125px;
+	height: 125px;
+	display: inline-block;
+}
+
+.responsive-tablet i.video-bg-large {
+	background: url(/images/r4/resource-types-large.png) -548px -1473px no-repeat;
+	width: 125px;
+	height: 125px;
+	display: inline-block;
+}
+
+.responsive-tablet i.collection-bg-large {
+	background: url(/images/r4/resource-types-large.png) -548px -1719px no-repeat;
+	width: 125px;
+	height: 125px;
+	display: inline-block;
+}
+
+.responsive-tablet i.project-bg-large {
+	background: url(/images/r4/resource-types-large.png) -548px -2210px no-repeat;
+	width: 125px;
+	height: 125px;
+	display: inline-block;
+}
+
 
 body.add h3 {
 	font-size: 30px !important;
