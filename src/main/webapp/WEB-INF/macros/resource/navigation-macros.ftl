@@ -59,10 +59,10 @@ $(document).ready(function() {
   <#if resource??>
     <#if resource.id == -1>
         <#return>
-	</#if>
+    </#if>
   </#if>
   <#if sessionData?? && sessionData.authenticated>
-	<div class="span12 resource-nav" id="toolbars" parse="true">
+    <div class="span12 resource-nav" id="toolbars" parse="true">
       <ul >
        <#if persistable??>
         <@makeViewLink namespace current />
@@ -124,14 +124,14 @@ $(document).ready(function() {
         </#if>
     
   <#if sessionData?? && sessionData.authenticated>
-	<div class="span12 resource-nav" id="toolbars" parse="true">
+    <div class="span12 resource-nav" id="toolbars" parse="true">
       <ul >
     <@nav.makeLink "browse" "creators" "view" "view" current true />
 
     <#if "edit" != current>
-	    <@nav.makeLink "entity/${creatorType}" "edit" "edit" "edit" current true  />
+        <@nav.makeLink "entity/${creatorType}" "edit" "edit" "edit" current true  />
     <#else>
-	    <@nav.makeLink "entity/${creatorType}" "edit" "edit" "edit" current true />
+        <@nav.makeLink "entity/${creatorType}" "edit" "edit" "edit" current true />
     </#if>
       </ul>
     </div>
@@ -143,41 +143,41 @@ $(document).ready(function() {
 
 
 <#macro makeLink namespace action label name current includeResourceId=true disabled=false>
-	<#assign state = "" />
+    <#assign state = "" />
     <#if disabled>
-    	<#assign state="disabled" />
+        <#assign state="disabled" />
     <#elseif current?string == name?string>
-		<#assign state="active" />
-	</#if>
-	<li class="${state} ${action}">
+        <#assign state="active" />
+    </#if>
+    <li class="${state} ${action}">
                 <a href='<@s.url value="/${namespace}/${action}">
-	            <#if includeResourceId>
-	                <#if persistable??>
-	                    <#local _id = persistable.id />
-	                <#else>
-	                    <#local _id = creator.id />
-	                </#if>
-	                <@s.param name="id" value="${_id?c}" />
-	            </#if>
-				</@s.url>'>
+                <#if includeResourceId>
+                    <#if persistable??>
+                        <#local _id = persistable.id />
+                    <#else>
+                        <#local _id = creator.id />
+                    </#if>
+                    <@s.param name="id" value="${_id?c}" />
+                </#if>
+                </@s.url>'>
                 <#nested> ${label}</a>
     </li>
 </#macro>
 
 <#macro makeEditLink namespace current url="edit" label="edit">
-	<@makeLink namespace url label "edit" current />
+    <@makeLink namespace url label "edit" current />
 </#macro>
 
 <#macro makeDeleteLink namespace current url="delete" label="delete">
-	<#if persistable.status?? && persistable.status.toString().toLowerCase().equals('deleted')>
-	  <@makeLink namespace url label "delete" current true true />
-	<#else>
-	  <@makeLink namespace url label "delete" current true false />
-	</#if>
+    <#if persistable.status?? && persistable.status.toString().toLowerCase().equals('deleted')>
+      <@makeLink namespace url label "delete" current true true />
+    <#else>
+      <@makeLink namespace url label "delete" current true false />
+    </#if>
 </#macro>
 
 <#macro makeViewLink namespace current url="view" label="view">
-	<@makeLink namespace url label "view" current />
+    <@makeLink namespace url label "view" current />
 </#macro>
 
 <#macro img url alt="">
@@ -188,20 +188,20 @@ $(document).ready(function() {
 
 
 <#macro clearDeleteButton id="" disabled=false title="delete this item from the list">
-	<button class="btn  btn-mini repeat-row-delete" type="button" tabindex="-1" title="${title}" <#if disabled> disabled="disabled"</#if>><i class="icon-trash"></i></button>
+    <button class="btn  btn-mini repeat-row-delete" type="button" tabindex="-1" title="${title}" <#if disabled> disabled="disabled"</#if>><i class="icon-trash"></i></button>
 </#macro>
 
 <#macro getFormUrl absolutePath="/login/process">
 <#compress>
 <#-- NOTE: as Jim says, this can be done insetad with an @s.url scheme="https|http", but with tDAR running on so-many ports 
-	in testing, I'm not sure if the right way is the best way for us  -->
+    in testing, I'm not sure if the right way is the best way for us  -->
 <#assign actionMethod>${absolutePath}</#assign>
 <#if httpsEnabled>
-	<#assign appPort = ""/>
-	<#if httpsPort != 443>
-		<#assign appPort= ":" + httpsPort?c/>
-	</#if>
-	<#assign actionMethod>https://${hostName}${appPort}${absolutePath}</#assign>
+    <#assign appPort = ""/>
+    <#if httpsPort != 443>
+        <#assign appPort= ":" + httpsPort?c/>
+    </#if>
+    <#assign actionMethod>https://${hostName}${appPort}${absolutePath}</#assign>
 </#if>
 ${actionMethod}
 </#compress>

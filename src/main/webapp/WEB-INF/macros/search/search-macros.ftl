@@ -1,14 +1,14 @@
 <#macro queryField freeTextLabel="Search" showAdvancedLink=true showLimits=false submitLabel="Search">
 
  <@s.textfield placeholder="${freeTextLabel}" id='queryField' name='query' size='81' value="${query!}" cssClass="input-xxlarge"/>
-	<#if showAdvancedLink><span class="help-inline"><a style="display:inline" href="<@s.url value="/search/advanced"/>">advanced search</a></span></#if>
+    <#if showAdvancedLink><span class="help-inline"><a style="display:inline" href="<@s.url value="/search/advanced"/>">advanced search</a></span></#if>
     <@s.submit value="${submitLabel}" cssClass="btn btn-primary" />
-	<#nested>
-	<#if showLimits>
-		<br/>
-		<@narrowAndSort />
-	</#if>
-	<br/>
+    <#nested>
+    <#if showLimits>
+        <br/>
+        <@narrowAndSort />
+    </#if>
+    <br/>
 </#macro>
 
 <#macro narrowAndSort>
@@ -104,25 +104,25 @@
 </#macro>
 
 <#macro initResultPagination>
-	<#global firstRec = (startRecord + 1) />
-	<#global curPage = ((startRecord/recordsPerPage)?floor + 1) />
-	<#global numPages = ((totalRecords/recordsPerPage)?ceiling) />
-	<#global lastRec = nextPageStartRecord>
-	
-	<#if (firstRec > totalRecords)>
-	 <#assign numPages = 0 />
-	 <#assign firstRec = totalRecords/>
-	</#if>
-	
-	<#if (nextPageStartRecord > totalRecords) >
-	    <#assign lastRec = totalRecords>
-	</#if>
-	
-	<#if (firstRec - recordsPerPage) < 1 >
-	    <#assign prevPageStartRec = 0>
-	<#else>
-	    <#assign prevPageStartRec = firstRec - recordsPerPage - 1>
-	</#if>
+    <#global firstRec = (startRecord + 1) />
+    <#global curPage = ((startRecord/recordsPerPage)?floor + 1) />
+    <#global numPages = ((totalRecords/recordsPerPage)?ceiling) />
+    <#global lastRec = nextPageStartRecord>
+    
+    <#if (firstRec > totalRecords)>
+     <#assign numPages = 0 />
+     <#assign firstRec = totalRecords/>
+    </#if>
+    
+    <#if (nextPageStartRecord > totalRecords) >
+        <#assign lastRec = totalRecords>
+    </#if>
+    
+    <#if (firstRec - recordsPerPage) < 1 >
+        <#assign prevPageStartRec = 0>
+    <#else>
+        <#assign prevPageStartRec = firstRec - recordsPerPage - 1>
+    </#if>
 </#macro>
 
 
@@ -166,52 +166,52 @@
     <#assign end = curPage + 19>
   </#if> 
 
-	<table class="pagin">
-					<tr>
-				        <#if (firstRec > 1)>
-						<td class="prev">
-				            <@paginationLink startRecord=prevPageStartRec path="${path}" linkText="Previous" />
-						</td>
-				        </#if>
-						<td class="page">
-							<ul>
-							  <#if start != 0>
-								<li>
-							      <@paginationLink startRecord=(0 * recordsPerPage) path="${path}" linkText="first" />
-	 						    </li>
-								<li>...</li>
-							  </#if>
-					        <#if (numPages > 1)>
-					            <#list start..end as i>
-					            <li>
-					                <#if (i + 1) = curPage>
-					                                        <#-- FIXME: there are 2 of these spans with
-					                                        the same id being generated.  Turn this into
-					                                        a CSS class instead or is this a bug?
-					                                        -->
-					                    <span id="currentResultPage">${i + 1}</span>
-					                <#else>
-					                    <@paginationLink startRecord=(i * recordsPerPage) path="${path}" linkText=(i + 1) />
-					                </#if>
-				                </li>
-					            </#list>
-					            <#else>
-					            <li>1</li>
-					        </#if>
-							<#if (end != numPages && nextPageStartRecord < totalRecords)>
-							    <li>
-							          <@paginationLink startRecord=(totalRecords - totalRecords % recordsPerPage) path="${path}" linkText="Last" />
-								</li>
-							</#if>
-							</ul>
-						</td>
-					        <#if (nextPageStartRecord < totalRecords) >
-						<td class="next">
-					            <@paginationLink startRecord=nextPageStartRecord path="${path}" linkText="Next" />
-						</td>
-					        </#if>
-					</tr>
-				</table>
+    <table class="pagin">
+                    <tr>
+                        <#if (firstRec > 1)>
+                        <td class="prev">
+                            <@paginationLink startRecord=prevPageStartRec path="${path}" linkText="Previous" />
+                        </td>
+                        </#if>
+                        <td class="page">
+                            <ul>
+                              <#if start != 0>
+                                <li>
+                                  <@paginationLink startRecord=(0 * recordsPerPage) path="${path}" linkText="first" />
+                                 </li>
+                                <li>...</li>
+                              </#if>
+                            <#if (numPages > 1)>
+                                <#list start..end as i>
+                                <li>
+                                    <#if (i + 1) = curPage>
+                                                            <#-- FIXME: there are 2 of these spans with
+                                                            the same id being generated.  Turn this into
+                                                            a CSS class instead or is this a bug?
+                                                            -->
+                                        <span id="currentResultPage">${i + 1}</span>
+                                    <#else>
+                                        <@paginationLink startRecord=(i * recordsPerPage) path="${path}" linkText=(i + 1) />
+                                    </#if>
+                                </li>
+                                </#list>
+                                <#else>
+                                <li>1</li>
+                            </#if>
+                            <#if (end != numPages && nextPageStartRecord < totalRecords)>
+                                <li>
+                                      <@paginationLink startRecord=(totalRecords - totalRecords % recordsPerPage) path="${path}" linkText="Last" />
+                                </li>
+                            </#if>
+                            </ul>
+                        </td>
+                            <#if (nextPageStartRecord < totalRecords) >
+                        <td class="next">
+                                <@paginationLink startRecord=nextPageStartRecord path="${path}" linkText="Next" />
+                        </td>
+                            </#if>
+                    </tr>
+                </table>
 </#macro>
 
 <#macro bcad _year>

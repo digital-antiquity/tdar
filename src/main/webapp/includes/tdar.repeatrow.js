@@ -45,8 +45,8 @@ TDAR.repeatrow = function() {
             $(parentElement).after($button);
             $(parentElement).delegate(".repeat-row-delete","click", function(e){
                 var rowElem = $(this).parents(".repeat-row")[0];
-            	TDAR.repeatrow.deleteRow(rowElem);
-            	$(rowElem).trigger('repeatrowdeleted');
+                TDAR.repeatrow.deleteRow(rowElem);
+                $(rowElem).trigger('repeatrowdeleted');
             });
         });
         
@@ -169,10 +169,10 @@ TDAR.repeatrow = function() {
     // private: return a dom button
     var _button = function(label) {
         var html = "<div class='control-group'>" +
-        		"<div class='controls'>" +
-        		"<button class='btn' type='button'><i class='icon-plus-sign'></i>" + label + "</button>" +
-        		"</div>" +
-        		"</div>"
+                "<div class='controls'>" +
+                "<button class='btn' type='button'><i class='icon-plus-sign'></i>" + label + "</button>" +
+                "</div>" +
+                "</div>"
        return $(html);
     };
     

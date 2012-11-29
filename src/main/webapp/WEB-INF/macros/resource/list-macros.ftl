@@ -9,13 +9,13 @@ Convert long string to shorter string with ellipses. If you pass it anything fan
 html markup) you will probably not like the results
 -->
     <#macro printTag tagName className closing>
-    	<#if tagName?has_content>
-    		<<#if closing>/</#if>${tagName} class="${className}" <#nested><#rt/>>
-    	</#if>
+        <#if tagName?has_content>
+            <<#if closing>/</#if>${tagName} class="${className}" <#nested><#rt/>>
+        </#if>
     </#macro>
 
 <#macro listResources resourcelist=resources_ sortfield=DEFAULT_SORT editable=false bookmarkable=authenticated itemsPerRow=4
-	expanded=false listTag='ul' itemTag='li' headerTag="h3" titleTag="h3" orientation=DEFAULT_ORIENTATION mapPosition="" mapHeight="">
+    expanded=false listTag='ul' itemTag='li' headerTag="h3" titleTag="h3" orientation=DEFAULT_ORIENTATION mapPosition="" mapHeight="">
   <#local showProject = false />
   <#local prev =""/>
   <#local first = true/>
@@ -24,20 +24,20 @@ html markup) you will probably not like the results
   <#assign itemClass = ""/>
   
   <#if orientation == "GRID">
-	<#assign listTag_="div"/>  
+    <#assign listTag_="div"/>  
     <#assign itemClass = "span2"/>
-	<#assign itemTag_="div"/> 
+    <#assign itemTag_="div"/> 
   <#elseif orientation == "MAP" >
-	<#assign listTag_="ol"/>  
-	<#assign itemTag_="li"/> 
-	<div class="resource-list controls-row">
-  	<#if mapPosition=="top" || mapPosition == "right">
-  	<div class="span9 google-map" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if>>
+    <#assign listTag_="ol"/>  
+    <#assign itemTag_="li"/> 
+    <div class="resource-list controls-row">
+      <#if mapPosition=="top" || mapPosition == "right">
+      <div class="span9 google-map" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if>>
   
-	</div>
-	</#if>	
-	
-		<div class="<#if mapPosition=='left' || mapPosition=="right">span3<#else>span9</#if>">
+    </div>
+    </#if>    
+    
+        <div class="<#if mapPosition=='left' || mapPosition=="right">span3<#else>span9</#if>">
 
 
   </#if>
@@ -47,7 +47,7 @@ html markup) you will probably not like the results
     <#local defaultKeyLabel="No Project"/>
     <#-- if we're a resource && are viewable -->
     <#if resource?? && (!resource.viewable?has_content || resource.viewable) >
-		<#-- handle grouping/sorting  -->
+        <#-- handle grouping/sorting  -->
         <#if sortfield?contains('RESOURCE_TYPE') || sortfield?contains('PROJECT')>
             <#if sortfield?contains('RESOURCE_TYPE')>
                 <#local key = resource.resourceType.plural />
@@ -72,33 +72,33 @@ html markup) you will probably not like the results
             <#-- default case for group tag -->
             <@printTag listTag_ "resource-list  controls-row ${orientation}" false />
         </#if>  
-		<#-- printing item tag -->
+        <#-- printing item tag -->
             <@printTag itemTag_ "listItem ${itemClass!''}" false>
             <#if orientation == 'MAP' && resource.firstActiveLatitudeLongitudeBox?has_content> data-lat="${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLatitude?c}"
-			data-long="${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLongitude?c}" </#if>
-			</@printTag>
+            data-long="${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLongitude?c}" </#if>
+            </@printTag>
 
             <#if itemTag_?lower_case != 'li'>
-				<#if resource_index != 0>
-				<#if orientation != 'GRID'>
-					<hr/>
-				<#elseif resource_index   % itemsPerRow = 0>
-            		</div>	</div><hr /><div class=" ${orientation} resource-list controls-row"><div class="span2">
-				</#if>
-				</#if>
+                <#if resource_index != 0>
+                <#if orientation != 'GRID'>
+                    <hr/>
+                <#elseif resource_index   % itemsPerRow = 0>
+                    </div>    </div><hr /><div class=" ${orientation} resource-list controls-row"><div class="span2">
+                </#if>
+                </#if>
             </#if>
             <#if orientation == 'GRID'>
-    			<a href="<@s.url value="/${resource.urlNamespace}/${resource.id?c}"/>" target="_top">
-    				<#if resource.supportsThumbnails>
-    					<@view.firstThumbnail resource />
-    				<#else>
-    					<i class="${resource.resourceType?lower_case}-125"></i>
-    				</#if>
-    				</a><br/>
+                <a href="<@s.url value="/${resource.urlNamespace}/${resource.id?c}"/>" target="_top">
+                    <#if resource.supportsThumbnails>
+                        <@view.firstThumbnail resource />
+                    <#else>
+                        <i class="${resource.resourceType?lower_case}-125"></i>
+                    </#if>
+                    </a><br/>
             </#if>
             <@searchResultTitleSection resource titleTag />
-			<@printLuceneExplanation  resource />
-			<@printDescription resource=resource expanded=expanded orientation=orientation length=500 showProject=showProject/>
+            <@printLuceneExplanation  resource />
+            <@printDescription resource=resource expanded=expanded orientation=orientation length=500 showProject=showProject/>
 
             </${itemTag_}>
         <#local first=false/>
@@ -108,18 +108,18 @@ html markup) you will probably not like the results
   </#if>
   <#if orientation == "MAP">
   </div>
-  	<#if mapPosition=="left" || mapPosition == "bottom">
-  	<#-- fixme: should be a span 9, but this seems to flow down instead of fit in 1 column -->
-	<div class="span8 google-map" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if> >
-	
-	</div>
-	</#if>	
-	</div>    
-		<script>
-		$(document).ready(function() {
+      <#if mapPosition=="left" || mapPosition == "bottom">
+      <#-- fixme: should be a span 9, but this seems to flow down instead of fit in 1 column -->
+    <div class="span8 google-map" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if> >
+    
+    </div>
+    </#if>    
+    </div>    
+        <script>
+        $(document).ready(function() {
         TDAR.maps.setupMapResult();
         });
-		</script>	  
+        </script>      
   </#if>
 </#macro>
 
@@ -127,9 +127,9 @@ html markup) you will probably not like the results
 <#macro printDescription resource=resource expanded=false orientation=DEFAULT_ORIENTATION length=80 showProject=false>
             <#if expanded && orientation != 'GRID'>
                 <div class="listItemPart">
-		    <#if (resource.citationRecord && !resource.resourceType.project)>
-   			<span class='cartouche' title="Citation only; this record has no attached files.">Citation</span></#if>
-		    <@common.cartouche resource true><@listCreators resource/></@common.cartouche>  
+            <#if (resource.citationRecord && !resource.resourceType.project)>
+               <span class='cartouche' title="Citation only; this record has no attached files.">Citation</span></#if>
+            <@common.cartouche resource true><@listCreators resource/></@common.cartouche>  
                 <@view.unapiLink resource  />
                 <#if showProject && !resource.resourceType.project >
                 <p class="project">${resource.project.title}</p>
@@ -144,19 +144,19 @@ html markup) you will probably not like the results
             </#if>
 </#macro>
 
-	<#macro printLuceneExplanation resource>
+    <#macro printLuceneExplanation resource>
             <blockquote class="luceneExplanation">
-    	        <#if resource.explanation?has_content><b>explanation:</b>${resource.explanation}<br/></#if>
-			</blockquote>
+                <#if resource.explanation?has_content><b>explanation:</b>${resource.explanation}<br/></#if>
+            </blockquote>
             <blockquote class="luceneScore">
-	            <#if resource.score?has_content><b>score:</b>${resource.score}<br/></#if>
-			</blockquote>
-	</#macro>
+                <#if resource.score?has_content><b>score:</b>${resource.score}<br/></#if>
+            </blockquote>
+    </#macro>
 
 
 <#macro searchResultTitleSection result titleTag>
     <#local titleCssClass="search-result-title-${result.status!('ACTIVE')}" />
-	<!-- <h3><a href="">Casa Grande Ruins National Monument, A Centennial History of the First Prehistoric Reserve, 1892-1992</a></h3> -->
+    <!-- <h3><a href="">Casa Grande Ruins National Monument, A Centennial History of the First Prehistoric Reserve, 1892-1992</a></h3> -->
     <#if titleTag?has_content>
         <${titleTag} class="${titleCssClass}">
     </#if>
@@ -166,7 +166,7 @@ html markup) you will probably not like the results
     <#elseif result.properName?has_content>
         ${result.properName!"No Name"}<#t>
      <#else>
-     	No Title
+         No Title
     </#if>
         <#if (result.date?has_content && (result.date > 0 || result.date < -1) )>(${result.date?c})</#if>
     </a><#lt>
@@ -215,14 +215,14 @@ html markup) you will probably not like the results
       <#assign status = "disabled-bookmark" />
 
         <#if bookmarkedResourceService.isAlreadyBookmarked(_resource, authenticatedUser)>
-	       <#assign status = "un-bookmark" />
-		<#else>
-	       <#assign status = "bookmark" />
-		</#if>
-		
-		<#if useListItem>
-			<li class="${status}">
-		</#if>
+           <#assign status = "un-bookmark" />
+        <#else>
+           <#assign status = "bookmark" />
+        </#if>
+        
+        <#if useListItem>
+            <li class="${status}">
+        </#if>
 
         <#if _resource.deleted?? && _resource.deleted>
             <#if !useListItem><img src='<@s.url value="/images/desaturated/bookmark.png"/>' alt='bookmark(unavailable)' title='Deleted items cannot be bookmarked.' /><#t></#if>
@@ -245,10 +245,10 @@ html markup) you will probably not like the results
             </a><#t>    
         </#if>
 
-		<#if useListItem>
-			</li>
-		</#if>
-		
+        <#if useListItem>
+            </li>
+        </#if>
+        
       </#if>
   </#if>
 </#macro>

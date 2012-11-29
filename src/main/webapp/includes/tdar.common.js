@@ -182,23 +182,23 @@ function setToolTipContents(targetElem) {
     }
     var $notice = $("#notice:visible");
     if ($notice.length > 0 ) {
-	    var noteOff = $notice.offset();
-	    $notice.offset({
-	        left : noteOff.left,
-	        top : fieldOff.top
-	    });
-	
-	    $notice.html(label + "<div id='noticecontent'>" + content + "</div>");
-	    $targetElem.popover("destroy");
-	} else {
-		$targetElem.popover({
-			placement:'top',
-			trigger:'hover',
-			html:true,
-			'title': label,
-			'content': content
-		});
-	}
+        var noteOff = $notice.offset();
+        $notice.offset({
+            left : noteOff.left,
+            top : fieldOff.top
+        });
+    
+        $notice.html(label + "<div id='noticecontent'>" + content + "</div>");
+        $targetElem.popover("destroy");
+    } else {
+        $targetElem.popover({
+            placement:'top',
+            trigger:'hover',
+            html:true,
+            'title': label,
+            'content': content
+        });
+    }
 }
 
 // expand those nodes where children are selected
@@ -261,14 +261,14 @@ $.validator.addMethod("issn", function(value, element) {
 
 $.validator.addMethod("phoneUS", function(phone_number, element) {
     phone_number = phone_number.replace(/\s+/g, ""); 
-	return this.optional(element) || phone_number.length > 9 &&
-		phone_number.match(/^(1-?)?(\([2-9]\d{2}\)|[2-9]\d{2})(\s?-?)+[2-9]\d{2}(-?\s?)+\d{4}$/);
+    return this.optional(element) || phone_number.length > 9 &&
+        phone_number.match(/^(1-?)?(\([2-9]\d{2}\)|[2-9]\d{2})(\s?-?)+[2-9]\d{2}(-?\s?)+\d{4}$/);
 }, "Please specify a valid phone number");
 
 
 $.validator.addMethod("ccverify", function(ccverify, element) {
     ccverify = ccverify.replace(/\s+/g, ""); 
-	return this.optional(element) || ccverify.match(/^\d{3,4}$/);
+    return this.optional(element) || ccverify.match(/^\d{3,4}$/);
 }, "Please specify a valid verification number");
 
 $.validator
@@ -344,8 +344,8 @@ $.validator.addMethod('integer', function(value, element) {
 }, $.validator.messages.number);
 
 $.validator.addMethod('required-visible', function(value, element) {
-	var $element = $(element);
-	if ($element.is(':hidden')) return true; 
+    var $element = $(element);
+    if ($element.is(':hidden')) return true; 
     return $element.val() != '';
 }, "this element is required");
 
@@ -444,9 +444,9 @@ function removeBookmark(resourceId, link) {
 }
 
 function updateBookmarkTag($elem, url, strOnclick, imgSrc, txt) {
-	var css = "";
+    var css = "";
     if (txt != undefined & txt != '') {
-    	css = txt;
+        css = txt;
         txt = "<span class='bookmark'>&nbsp;" + txt + "</span>";
     } else {
         txt = "";
@@ -456,10 +456,10 @@ function updateBookmarkTag($elem, url, strOnclick, imgSrc, txt) {
     var parent = $elem.parent().get(0);
 
     if (parent.tagName.toLowerCase() == 'li') {
-    	img = "";
-    	var $parent = $(parent);
-    	$parent.removeClass();
-    	$parent.addClass(css);
+        img = "";
+        var $parent = $(parent);
+        $parent.removeClass();
+        $parent.addClass(css);
     }
     var newElem = $("<a href='" + getURI(url) + "' onclick='" + strOnclick
             + "; return false;'>" + img + txt
@@ -494,12 +494,12 @@ function formSubmitEnable() {
 
 //apply watermark input tags in context with watermark attribute.  'context' can be any valid argument to jQuery(selector[, context])
 function applyWatermarks(context) {
-	if(!Modernizr.input.placeholder){
-	    $("input[placeholder]", context).each(function() {
-	        //todo: see if its any faster to do direct call to attr, e.g. this.attributes["watermark"].value
-	        $(this).watermark($(this).attr("placeholder"));
-	    });
-	}
+    if(!Modernizr.input.placeholder){
+        $("input[placeholder]", context).each(function() {
+            //todo: see if its any faster to do direct call to attr, e.g. this.attributes["watermark"].value
+            $(this).watermark($(this).attr("placeholder"));
+        });
+    }
 }
 
 
@@ -622,7 +622,7 @@ function initializeView() {
     if(maps.length) {
         TDAR.maps.initMapApi();
         maps.each(function() {
-        	TDAR.maps.setupMap(this, this);
+            TDAR.maps.setupMap(this, this);
         });
     }
     
@@ -1128,10 +1128,10 @@ TDAR.common = function() {
         //fun fact: because we have a form field named "ID",  form.id actually refers to this DOM element,  not the ID attribute of the form.
         var formid = $form.attr("id");
         
-    	// prevent "enter" from submitting
+        // prevent "enter" from submitting
         $form.delegate('input,select',"keypress", function(event) {
-    		return event.keyCode != 13;
-    	});
+            return event.keyCode != 13;
+        });
 
         //initialize form validation
         _setupFormValidate(form);
@@ -1193,14 +1193,14 @@ TDAR.common = function() {
         
         
         if ($('#explicitCoordinatesDiv').length > 0) {
-        	$('#explicitCoordinatesDiv').toggle($('#viewCoordinatesCheckbox')[0].checked);
+            $('#explicitCoordinatesDiv').toggle($('#viewCoordinatesCheckbox')[0].checked);
         
         }
         $(".latLong").each(function(index, value){
-        	$(this).hide();
-        	//copy value of hidden original to the visible text input
-        	var id = $(this).attr('id'); 
-        	$('#d_' + id).val($('#' + id).val());
+            $(this).hide();
+            //copy value of hidden original to the visible text input
+            var id = $(this).attr('id'); 
+            $('#d_' + id).val($('#' + id).val());
         });
 
     };
@@ -1246,15 +1246,15 @@ TDAR.common = function() {
         
         //init person/institution buttons
         $("table.creatorProxyTable").delegate('.creator-toggle-button', "click",function(event){
-        	var $this = $(this);
-        	var $top = $this.parents("tr").first();
-        	if ($(event.target).hasClass("personButton")) {
+            var $this = $(this);
+            var $top = $this.parents("tr").first();
+            if ($(event.target).hasClass("personButton")) {
                 $(".creatorPerson", $top).removeClass("hidden");
                 $(".creatorInstitution",$top).removeClass("hidden").addClass("hidden");
-        	} else {
+            } else {
                 $(".creatorPerson", $top).removeClass("hidden").addClass("hidden");
                 $(".creatorInstitution",$top).removeClass("hidden");
-        	}
+            }
         });    
         
 
@@ -1347,7 +1347,7 @@ TDAR.common = function() {
         $('body').bind('ajaxComplete', function(e, jqXHR, ajaxOptions) {
             $('#ajaxIndicator').html("<strong>Complete</strong>: " + ajaxOptions.waitMessage + "...").fadeOut(1000);
         });
-    	
+        
     };
     
     var _index = function(obj, key){
@@ -1398,23 +1398,23 @@ function getSymbolSets() {
 function checkWindowSize() {
     var width = $(window).width(),
     new_class = width > 1200 ? 'responsive-large-desktop' :
-    			width > 979 ? 'responsive-desktop' :
-    			width > 767 ? 'responsive-tablet' :
+                width > 979 ? 'responsive-desktop' :
+                width > 767 ? 'responsive-tablet' :
                 width > 1 ? 'responsive-phone' : '';
 //                console.log(new_class);
     $(document.body).removeClass('responsive-large-desktop responsive-desktop responsive-tablet responsive-phone').addClass(new_class);
 }
 
 $(document).ready(function() {
-	checkWindowSize();
-	$(window).resize(checkWindowSize);
+    checkWindowSize();
+    $(window).resize(checkWindowSize);
 });
 
 
 function elipsify(text, n, useWordBoundary){
-	/* from: http://stackoverflow.com/questions/1199352/smart-way-to-shorten-long-strings-with-javascript */
-	var toLong = text.length>n,
-	    s_ = toLong ? text.substr(0,n-1) : text;
-	s_ = useWordBoundary && toLong ? s_.substr(0,s_.lastIndexOf(' ')) : s_;
-	return  toLong ? s_ + '...' : s_;
+    /* from: http://stackoverflow.com/questions/1199352/smart-way-to-shorten-long-strings-with-javascript */
+    var toLong = text.length>n,
+        s_ = toLong ? text.substr(0,n-1) : text;
+    s_ = useWordBoundary && toLong ? s_.substr(0,s_.lastIndexOf(' ')) : s_;
+    return  toLong ? s_ + '...' : s_;
 }

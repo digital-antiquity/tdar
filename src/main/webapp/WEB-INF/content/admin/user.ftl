@@ -16,7 +16,7 @@ $(function() {
     var settings  = {
         tableSelector: '#dataTable',
         sAjaxSource:'/lookup/person',
-  		"sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span4'i><'span5'p>>",
+          "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span4'i><'span5'p>>",
         sPaginationType:"bootstrap",
         "bLengthChange": true,
         "bFilter": true,

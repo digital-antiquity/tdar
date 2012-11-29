@@ -12,7 +12,7 @@
     </div>
     <div class="span6 map">
         <@common.worldMap />
-	</div>
+    </div>
 </div>
 <br/><br/>
  <h2>Browse Resources by Title</h2>

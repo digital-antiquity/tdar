@@ -12,6 +12,6 @@
 
 
 <@rlist.listResources resourcelist=bookmarkedResources sortfield='RESOURCE_TYPE' editable=false 
-	bookmarkable=true  expanded=true listTag='ol' headerTag="h3" />
+    bookmarkable=true  expanded=true listTag='ol' headerTag="h3" />
 
 </#escape>

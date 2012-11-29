@@ -20,10 +20,10 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
         <div id="spanStatus" tooltipcontent="#spanStatusToolTip">   
         <@s.select label="Status" value="resource.status" name='status'  emptyOption='false' listValue='label' list='%{statuses}'/>
-     	</div>
+         </div>
         <#if resource.resourceType.project><span class="help-block">Note: project status does not affect status of child resources.</span></#if>
     
-		<@helptext.status />
+        <@helptext.status />
 <#if isBulk>
 
     <@s.hidden labelposition='left' id='resourceTitle' label='Title' name='image.title' cssClass="" value="BULK_TEMPLATE_TITLE"/>
@@ -60,7 +60,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <span id="t-abstract" class="clear"
         tiplabel="Abstract / Description"
         tooltipcontent="Short description of the ${resource.resourceType.label}.">
-		    <@s.textarea id='resourceDescription'  name='${itemPrefix}.description' cssClass='required resizable resize-vertical input-xxlarge' required=true title="A description is required" />
+            <@s.textarea id='resourceDescription'  name='${itemPrefix}.description' cssClass='required resizable resize-vertical input-xxlarge' required=true title="A description is required" />
         </span>
     
 </div>
@@ -115,7 +115,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             </div>
         </div> 
         
-		<@helptext.inheritance />
+        <@helptext.inheritance />
         <div class="control-group" tiplabel="Inherit Metadata from Selected Project" tooltipcontent="#divSelectAllInheritanceTooltipContent" id="divInheritFromProject">
             <div class="controls">
                 <label class="checkbox" for="cbSelectAllInheritance">
@@ -131,7 +131,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <#if (resourceCollections?? && !resourceCollections.empty)>
     <#local _resourceCollections = resourceCollections />
     </#if>
-	<@helptext.resourceCollection />
+    <@helptext.resourceCollection />
     <div tiplabel="${siteAcronym} Collections" tooltipcontent="#divResourceCollectionListTips">
         <div id="resourceCollectionTable" class="control-group repeatLastRow" addAnother="add another collection">
             <label class="control-label">Collection Name(s)</label>
@@ -139,7 +139,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             <@resourceCollectionRow resourceCollection resourceCollection_index/>
             </#list>
         </div>
-	</div>
+    </div>
 </#macro>
 
 <#macro resourceCollectionRow resourceCollection collection_index = 0 type="internal">
@@ -258,18 +258,18 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </#macro>
 
 <#macro combineValues list=[]>
-	<#compress>
-		<#list list as item>
-			<#if item_index !=0>,</#if>"${item?html}"
-		</#list>
-	</#compress>
+    <#compress>
+        <#list list as item>
+            <#if item_index !=0>,</#if>"${item?html}"
+        </#list>
+    </#compress>
 </#macro>
 <#macro combineValues2 list=[]>
-	<#compress>
-		<#list list as item>
-			<#if item_index !=0>,</#if>${item?html}
-		</#list>
-	</#compress>
+    <#compress>
+        <#list list as item>
+            <#if item_index !=0>,</#if>${item?html}
+        </#list>
+    </#compress>
 </#macro>
 
 
@@ -432,8 +432,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <label class="control-label">Users</label>
         <#list _authorizedUsers as authorizedUser>
             <#if authorizedUser??>
-            	<@userRow person=authorizedUser.user disableSelfUser=true _indexNumber=authorizedUser_index includeRole=false _personPrefix="user" 
-            	   prefix="authorizedUsers" includeRights=true isUser=true includeRepeatRow=true includeDelete=true/>
+                <@userRow person=authorizedUser.user disableSelfUser=true _indexNumber=authorizedUser_index includeRole=false _personPrefix="user" 
+                   prefix="authorizedUsers" includeRights=true isUser=true includeRepeatRow=true includeDelete=true/>
             </#if>
         </#list>
     </div>
@@ -453,16 +453,16 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 <#macro categoryVariable>
 <div class="control-group row">
-	<div id='categoryDivId' class="span4">
-	<@s.select labelposition='left' label='Category' id='categoryId' name='categoryId' 
-	    onchange='changeSubcategory("#categoryId","#subcategoryId")'
-	                autocompleteName="sortCategoryId"
-	    listKey='id' listValue='name' emptyOption='true' list='%{allDomainCategories}' />
-	</div>
-	<div id='subcategoryDivId' class="span3">
-	<@s.select labelposition='left' label='Subcategory' id='subcategoryId' name='subcategoryId' 
-	    autocompleteName="subCategoryId" headerKey="-1" listKey='id' headerValue="N/A" list='%{subcategories}'/>
-	</div>
+    <div id='categoryDivId' class="span4">
+    <@s.select labelposition='left' label='Category' id='categoryId' name='categoryId' 
+        onchange='changeSubcategory("#categoryId","#subcategoryId")'
+                    autocompleteName="sortCategoryId"
+        listKey='id' listValue='name' emptyOption='true' list='%{allDomainCategories}' />
+    </div>
+    <div id='subcategoryDivId' class="span3">
+    <@s.select labelposition='left' label='Subcategory' id='subcategoryId' name='subcategoryId' 
+        autocompleteName="subCategoryId" headerKey="-1" listKey='id' headerValue="N/A" list='%{subcategories}'/>
+    </div>
 </div>
 </#macro>
 
@@ -618,17 +618,17 @@ applyInheritance(project, formSelector);
         <div id="divSourceCollectionControl" class="control-group repeatLastRow">
             <label class="control-label">Source Collections</label>
             <#list _sourceCollections as sourceCollection>
-	            <@sourceCollectionRow sourceCollection "sourceCollection" sourceCollection_index/>
+                <@sourceCollectionRow sourceCollection "sourceCollection" sourceCollection_index/>
             </#list>
         </div>
     
         <div id="divRelatedComparativeCitationControl" class="control-group repeatLastRow">
             <label class="control-label">Related or Comparative Collections</label>
             <#list _relatedComparativeCollections as relatedComparativeCollection>
-    	        <@sourceCollectionRow relatedComparativeCollection "relatedComparativeCollection" relatedComparativeCollection_index/>
+                <@sourceCollectionRow relatedComparativeCollection "relatedComparativeCollection" relatedComparativeCollection_index/>
             </#list>
         </div> 
-		<@helptext.sourceRelatedCollection />    
+        <@helptext.sourceRelatedCollection />    
     </div>
 </div>
 </#macro>
@@ -686,16 +686,16 @@ applyInheritance(project, formSelector);
 
 <#macro accountSection>
 <#if payPerIngestEnabled>
-	<div class="well-alt" id="accountsection">
-		<h2>Choose an account to bill from:</h2>
-		<@s.select name="accountId" list="%{activeAccounts}" listValue="name" listKey="id" required=true cssClass="Required"/>
+    <div class="well-alt" id="accountsection">
+        <h2>Choose an account to bill from:</h2>
+        <@s.select name="accountId" list="%{activeAccounts}" listValue="name" listKey="id" required=true cssClass="Required"/>
 <#-- 
 <@s.select labelposition='left' label='Parent Collection' emptyOption='true' name='parentId' 
     listKey='id' listValue='name' list='%{candidateParentResourceCollections}'
     truncate="80" title="Please select a parent collection" />
 
 -->
-	</div>
+    </div>
 </#if>
 </#macro>
 
@@ -763,8 +763,8 @@ applyInheritance(project, formSelector);
 <#macro resourceCreators sectionTitle proxies prefix inline=false showInherited=false>
 <#if !inline>
 <div class="well-alt" tiplabel="${sectionTitle}" 
-	id="${prefix}Section"
-	tooltipcontent="Use these fields to properly credit individuals and institutions for their contribution to the resource. Use the '+' sign to add fields for either persons or institutions, and use the drop-down menu to select roles">
+    id="${prefix}Section"
+    tooltipcontent="Use these fields to properly credit individuals and institutions for their contribution to the resource. Use the '+' sign to add fields for either persons or institutions, and use the drop-down menu to select roles">
     <h2>${sectionTitle}</h2>
 <#else>
 <label class="toplabel">${sectionTitle}</label> <br />
@@ -804,17 +804,17 @@ applyInheritance(project, formSelector);
           <#assign creatorType = proxy.actualCreatorType!"PERSON" />
           <!-- fixme: careful with this styling -->
         <td style="margin-right:0px !important;padding-right:2px !important">
-         	<div class="btn-group creator-toggle-button" data-toggle="buttons-radio">
-	           <button type="button" class="btn btn-small personButton <#if type_override == "PERSON" || (creatorType=='PERSON' && type_override=='NONE') >btn-active active</#if>" data-toggle="button">Person</button>
-	           <button type="button" class="btn btn-small institutionButton <#if creatorType =='INSTITUTION' || type_override == "INSTITUTION">btn-active active</#if>" data-toggle="button">Institution</button>
-			</div>
-		</td>
+             <div class="btn-group creator-toggle-button" data-toggle="buttons-radio">
+               <button type="button" class="btn btn-small personButton <#if type_override == "PERSON" || (creatorType=='PERSON' && type_override=='NONE') >btn-active active</#if>" data-toggle="button">Person</button>
+               <button type="button" class="btn btn-small institutionButton <#if creatorType =='INSTITUTION' || type_override == "INSTITUTION">btn-active active</#if>" data-toggle="button">Institution</button>
+            </div>
+        </td>
         <td style="margin-left:0px !important;padding-left:0px !important">
-        	<@userRow person=proxy.person _indexNumber=proxy_index _personPrefix="person" prefix="${prefix}Proxies" 
-        		includeRole=includeRole hidden=(creatorType =='INSTITUTION' || type_override == "INSTITUTION") required=(creatorType=='PERSON' && required) />
+            <@userRow person=proxy.person _indexNumber=proxy_index _personPrefix="person" prefix="${prefix}Proxies" 
+                includeRole=includeRole hidden=(creatorType =='INSTITUTION' || type_override == "INSTITUTION") required=(creatorType=='PERSON' && required) />
 
-	        <@institutionRow institution=proxy.institution _indexNumber=proxy_index includeRole=includeRole _institutionPrefix="institution" prefix="${prefix}Proxies" 
-	        	hidden=(type_override == "PERSON" || (creatorType=='PERSON' && type_override=='NONE')) required=(creatorType=='INSTITUTION' && required)/>
+            <@institutionRow institution=proxy.institution _indexNumber=proxy_index includeRole=includeRole _institutionPrefix="institution" prefix="${prefix}Proxies" 
+                hidden=(type_override == "PERSON" || (creatorType=='PERSON' && type_override=='NONE')) required=(creatorType=='INSTITUTION' && required)/>
         </td>
         <td>
             <button class="btn  btn-mini repeat-row-delete " type="button" tabindex="-1" onclick="deleteParentRow(this)"><i class="icon-trash"></i></button>
@@ -830,7 +830,7 @@ applyInheritance(project, formSelector);
     <#local _resourceAnnotations = [blankResourceAnnotation] />
     </#if>
     <div class="well-alt" id="divIdentifiersGlide" tiplabel="${resource.resourceType.label} Specific or Agency Identifiers" tooltipcontent="#divIdentifiersTip">
-		<@helptext.identifiers />
+        <@helptext.identifiers />
         <h2>${resource.resourceType.label} Specific or Agency Identifiers</h2>
         <@inheritsection checkboxId="cbInheritingIdentifierInformation" name='resource.inheritingIdentifierInformation' showInherited=showInherited />
         <div id="divIdentifiers">
@@ -972,14 +972,14 @@ jquery validation hooks?)
             </td>
             <td class="size"><span>${filesize} bytes</span></td>
             <td colspan="2">
-		<div class="control-group">
-		
-		    <div class="controls">
-		        <@s.select id="proxy${rowId}_conf"  name="fileProxies[${rowId}].restriction" labelposition="right" 
-		        style="padding-left: 20px;" list=fileAccessRestrictions listValue="label"  class="fileProxyConfidential" onchange="TDAR.fileupload.updateFileAction(this)" style="padding-left: 20px;" />
-		    </div> 
-		</div>
-		</td>
+        <div class="control-group">
+        
+            <div class="controls">
+                <@s.select id="proxy${rowId}_conf"  name="fileProxies[${rowId}].restriction" labelposition="right" 
+                style="padding-left: 20px;" list=fileAccessRestrictions listValue="label"  class="fileProxyConfidential" onchange="TDAR.fileupload.updateFileAction(this)" style="padding-left: 20px;" />
+            </div> 
+        </div>
+        </td>
         
         <td class="delete">
                 <button class="btn btn-danger delete-button" data-type="DELETE" data-url="">
@@ -1015,17 +1015,17 @@ jquery validation hooks?)
     
     <div tiplabel="Department / Publisher Location" tooltipcontent="Department name, or City,State (and Country, if relevant)">
         <span id="publisher-hints"  book="Publisher" book_section="Publisher" journal_article="Publisher"  conference="Conference" thesis="Institution" other="Publisher">
-		    <@s.textfield id='publisher' label="Publisher" name='publisherName' cssClass="institution input-xxlarge"  />
+            <@s.textfield id='publisher' label="Publisher" name='publisherName' cssClass="institution input-xxlarge"  />
         </span>
 
-	    <span id="publisherLocation-hints" book="Publisher Loc." book_section="Publisher Loc." journal_article="Publisher Loc." conference="Location"  thesis="Department" other="Publisher Loc.">
-		    <@s.textfield id='publisherLocation' label="Publisher Loc." name='${prefix}.publisherLocation' cssClass='input-xxlarge' />
-	    </span>
-	</div>
+        <span id="publisherLocation-hints" book="Publisher Loc." book_section="Publisher Loc." journal_article="Publisher Loc." conference="Location"  thesis="Department" other="Publisher Loc.">
+            <@s.textfield id='publisherLocation' label="Publisher Loc." name='${prefix}.publisherLocation' cssClass='input-xxlarge' />
+        </span>
+    </div>
     <#nested />
 
     <div id="divUrl" tiplabel="URL" tooltipcontent="Website address for this resource, if applicable">
-	    <@s.textfield name="${prefix}.url" id="txtUrl" label="URL" labelposition="left" cssClass="url input-xxlarge" placeholder="http://" />
+        <@s.textfield name="${prefix}.url" id="txtUrl" label="URL" labelposition="left" cssClass="url input-xxlarge" placeholder="http://" />
     </div>
     
 </div>
@@ -1069,7 +1069,7 @@ jquery validation hooks?)
 
     <@resourceNoteSection showInherited />
 
-	<@accountSection />
+    <@accountSection />
 
     <#if !resource.resourceType.document>
       <@relatedCollections showInherited />
@@ -1114,51 +1114,51 @@ jquery validation hooks?)
 <@s.textfield name="query" id="query" label="Title" cssClass='input-xxlarge' placeholder="Enter a full or partial title to filter results" />
 <div class="row">
     <div class="span4">
-    	<div class="control-group">
-    		<label class="control-label" for="project-selector">Project</label>
-    		<div class="controls">
-    			<select id="project-selector">
-    			    <option value="" selected='selected'>All Editable Projects</option>
-    			  <#if allSubmittedProjects?? && !allSubmittedProjects.empty>
-    			  <optgroup label="Your Projects">
-    			    <@s.iterator value='allSubmittedProjects' status='projectRowStatus' var='submittedProject'>
-    			        <option value="${submittedProject.id?c}" title="${submittedProject.title!""?html}"><@truncate submittedProject.title 70 /> </option>
-    			    </@s.iterator>
-    			  </optgroup>
-    			  </#if>
-    			  
-    			  <optgroup label="Projects you have been given access to">
-    			    <@s.iterator value='fullUserProjects' var='editableProject'>
-    			        <option value="${editableProject.id?c}" title="${editableProject.title!""?html}"><@truncate editableProject.title 70 /></option>
-    			    </@s.iterator>
-    			  </optgroup>
-    			</select>
-    		</div>
-    	</div>
+        <div class="control-group">
+            <label class="control-label" for="project-selector">Project</label>
+            <div class="controls">
+                <select id="project-selector">
+                    <option value="" selected='selected'>All Editable Projects</option>
+                  <#if allSubmittedProjects?? && !allSubmittedProjects.empty>
+                  <optgroup label="Your Projects">
+                    <@s.iterator value='allSubmittedProjects' status='projectRowStatus' var='submittedProject'>
+                        <option value="${submittedProject.id?c}" title="${submittedProject.title!""?html}"><@truncate submittedProject.title 70 /> </option>
+                    </@s.iterator>
+                  </optgroup>
+                  </#if>
+                  
+                  <optgroup label="Projects you have been given access to">
+                    <@s.iterator value='fullUserProjects' var='editableProject'>
+                        <option value="${editableProject.id?c}" title="${editableProject.title!""?html}"><@truncate editableProject.title 70 /></option>
+                    </@s.iterator>
+                  </optgroup>
+                </select>
+            </div>
+        </div>
     </div>
     <div class="span4">
-    	<div class="control-group">
-    		<label class="control-label" for="collection-selector">Collection</label>
-    		<div class="controls">
-    			<select id="collection-selector">
-    			    <option value="" selected='selected'>All Collections</option>
-    			    <@s.iterator value='resourceCollections' var='rc'>
-    			        <option value="${rc.id?c}" title="${rc.name!""?html}"><@truncate rc.name!"(No Name)" 70 /></option>
-    			    </@s.iterator>
-    			</select>
-    		</div>
-    	</div>
+        <div class="control-group">
+            <label class="control-label" for="collection-selector">Collection</label>
+            <div class="controls">
+                <select id="collection-selector">
+                    <option value="" selected='selected'>All Collections</option>
+                    <@s.iterator value='resourceCollections' var='rc'>
+                        <option value="${rc.id?c}" title="${rc.name!""?html}"><@truncate rc.name!"(No Name)" 70 /></option>
+                    </@s.iterator>
+                </select>
+            </div>
+        </div>
     </div>
 </div>
 
 <div class="row">
-	<div class="span4">
-	    <@s.select labelposition='left' id="statuses" headerKey="" headerValue="Any" label='Status' name='status'  emptyOption='false' listValue='label' list='%{statuses}'/></span>
-	</div>
-	<div class="span4">
-	    
-	    <@s.select labelposition='left' id="resourceTypes" label='Resource Type' name='resourceType'  headerKey="" headerValue="All" emptyOption='false' listValue='label' list='%{resourceTypes}'/></span>
-	</div>
+    <div class="span4">
+        <@s.select labelposition='left' id="statuses" headerKey="" headerValue="Any" label='Status' name='status'  emptyOption='false' listValue='label' list='%{statuses}'/></span>
+    </div>
+    <div class="span4">
+        
+        <@s.select labelposition='left' id="resourceTypes" label='Resource Type' name='resourceType'  headerKey="" headerValue="All" emptyOption='false' listValue='label' list='%{resourceTypes}'/></span>
+    </div>
 </div>
 
     <@s.select labelposition='left' label='Sort By' emptyOption='false' name='sortBy' 
@@ -1207,7 +1207,7 @@ var datatable_showDescription = ${showDescription?string};
  
 
 $(function() {
-	setupDashboardDataTable();
+    setupDashboardDataTable();
 });
 
 </script>
@@ -1240,8 +1240,8 @@ $(function() {
         <h3>${sectionTitle}</h3>
 
     <table id="copyrightHolderTable">
-	  <@creatorProxyRow proxy=copyrightHolderProxy proxy_index="" prefix="copyrightHolder" required=true includeRole=false required=true/>
-	</table>
+      <@creatorProxyRow proxy=copyrightHolderProxy proxy_index="" prefix="copyrightHolder" required=true includeRole=false required=true/>
+    </table>
 </#if>
 </#macro>
 
@@ -1407,31 +1407,31 @@ $(function() {
 
 
 <#macro subNavMenu>
-	<div id='subnavbar' class="affix-top resource-nav span12 row navbar-static"  data-offset-top="250" data-offset-bottom="250" data-spy="affix">
-	  <div class="">
-	    <div class="container" style="width: auto;">
-		<ul class="nav">
-			<li class="hidden-tablet hidden-phone"><a href="#basicInformationSection">Basic</a></li>
-			<li><a href="#authorshipSection">Authors</a></li>
-			<#if persistable.resourceType?has_content && persistable.resourceType != 'PROJECT' ><li><a href="#divFileUpload">Files</a></li></#if>
-			<span class="hidden-tablet hidden-phone" >
-			<#nested /></span>
-			<li><a href="#organizeSection"><span class="visible-phone visible-tablet" title="Project">Proj.</span><span class="hidden-phone hidden-tablet">Project</span></a></li>
-			<li><a href="#spatialSection">Where</a></li>
-			<li class="hidden-phone"><a href="#temporalSection">When</a></li>
-			<li><a href="#investigationSection">What</a></li>
-			<li class="hidden-phone"><a href="#siteSection">Site</a></li>
-			<li class="hidden-tablet hidden-phone"><a href="#resourceNoteSectionGlide">Notes</a></li>
-			<li><a href="#divAccessRights"><span class="visible-phone visible-tablet" title="Permissions">Permis.</span><span class="hidden-phone hidden-tablet">Permissions</span></a></li>
-		</ul>
-		<span class="brand">
-			<span class="button btn btn-primary submitButton" id="fakeSubmitButton">Save</span>
-		</span>
-		</div>
-	  </div>
-	</div>
-	<div>
-	<br/>
+    <div id='subnavbar' class="affix-top resource-nav span12 row navbar-static"  data-offset-top="250" data-offset-bottom="250" data-spy="affix">
+      <div class="">
+        <div class="container" style="width: auto;">
+        <ul class="nav">
+            <li class="hidden-tablet hidden-phone"><a href="#basicInformationSection">Basic</a></li>
+            <li><a href="#authorshipSection">Authors</a></li>
+            <#if persistable.resourceType?has_content && persistable.resourceType != 'PROJECT' ><li><a href="#divFileUpload">Files</a></li></#if>
+            <span class="hidden-tablet hidden-phone" >
+            <#nested /></span>
+            <li><a href="#organizeSection"><span class="visible-phone visible-tablet" title="Project">Proj.</span><span class="hidden-phone hidden-tablet">Project</span></a></li>
+            <li><a href="#spatialSection">Where</a></li>
+            <li class="hidden-phone"><a href="#temporalSection">When</a></li>
+            <li><a href="#investigationSection">What</a></li>
+            <li class="hidden-phone"><a href="#siteSection">Site</a></li>
+            <li class="hidden-tablet hidden-phone"><a href="#resourceNoteSectionGlide">Notes</a></li>
+            <li><a href="#divAccessRights"><span class="visible-phone visible-tablet" title="Permissions">Permis.</span><span class="hidden-phone hidden-tablet">Permissions</span></a></li>
+        </ul>
+        <span class="brand">
+            <span class="button btn btn-primary submitButton" id="fakeSubmitButton">Save</span>
+        </span>
+        </div>
+      </div>
+    </div>
+    <div>
+    <br/>
 </#macro>
 
 
@@ -1454,7 +1454,7 @@ $(function() {
 
 
 <#macro userRow person=person _indexNumber=0 disableSelfUser=false prefix="authorizedMembers" required=false _personPrefix="" includeRole=false
-	includeRepeatRow=false includeRights=false includeDelete=false hidden=false isUser=false>
+    includeRepeatRow=false includeRights=false includeDelete=false hidden=false isUser=false>
 <#local bDisabled = (person.id == authenticatedUser.id && disableSelfUser) />
 <#local disabled =  bDisabled?string("disabled", "") />
 <#local readonly = bDisabled?string("readonly", "") />
@@ -1471,29 +1471,29 @@ $(function() {
     <div id='${rowIdElement}' class="creatorPerson <#if hidden>hidden</#if> <#if includeRepeatRow>repeat-row</#if> indent-row">
         <@s.hidden name='${strutsPrefix}${personPrefix}.id' value='${(person.id!-1)?c}' id="${idIdElement}"  cssClass="validIdRequired" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"   />
         <div class="control-group">
-	        <div class="controls controls-row">
-	            <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass}" placeholder="Last Name"  readonly=bDisabled autocompleteParentElement="#${rowIdElement}"
-	                autocompleteIdElement="#${idIdElement}" autocompleteName="lastName" autocomplete="off"
-	                name="${strutsPrefix}${personPrefix}.lastName" maxlength="255" /> 
-	            <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass}" placeholder="First Name"  readonly=bDisabled autocomplete="off"
-	                name="${strutsPrefix}${personPrefix}.firstName" maxlength="255" autocompleteName="firstName"
-	                autocompleteIdElement="#${idIdElement}" 
-	                autocompleteParentElement="#${rowIdElement}"  />
-	
-				<#if includeRole || includeRights>
-					<#if includeRole>
-				        <@s.select theme="tdar" name="${strutsPrefix}.role"  autocomplete="off" listValue='label' list=relevantPersonRoles  
-				            cssClass="creator-role-select span3" />
-				    <#else>
-				        <@s.select theme="tdar" cssClass="span3 creator-rights-select" name="${strutsPrefix}.generalPermission" emptyOption='false' 
-				            listValue='label' list='%{availablePermissions}' disabled=bDisabled />
-				        <#--HACK: disabled fields do not get sent in request, so we copy generalPermission via hidden field and prevent it from being cloned -->
-				        <@s.hidden name="${strutsPrefix}.generalPermission" cssClass="repeat-row-remove" />
-				    </#if>
-				<#else>
-	
-				</#if>
-	        </div>
+            <div class="controls controls-row">
+                <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass}" placeholder="Last Name"  readonly=bDisabled autocompleteParentElement="#${rowIdElement}"
+                    autocompleteIdElement="#${idIdElement}" autocompleteName="lastName" autocomplete="off"
+                    name="${strutsPrefix}${personPrefix}.lastName" maxlength="255" /> 
+                <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass}" placeholder="First Name"  readonly=bDisabled autocomplete="off"
+                    name="${strutsPrefix}${personPrefix}.firstName" maxlength="255" autocompleteName="firstName"
+                    autocompleteIdElement="#${idIdElement}" 
+                    autocompleteParentElement="#${rowIdElement}"  />
+    
+                <#if includeRole || includeRights>
+                    <#if includeRole>
+                        <@s.select theme="tdar" name="${strutsPrefix}.role"  autocomplete="off" listValue='label' list=relevantPersonRoles  
+                            cssClass="creator-role-select span3" />
+                    <#else>
+                        <@s.select theme="tdar" cssClass="span3 creator-rights-select" name="${strutsPrefix}.generalPermission" emptyOption='false' 
+                            listValue='label' list='%{availablePermissions}' disabled=bDisabled />
+                        <#--HACK: disabled fields do not get sent in request, so we copy generalPermission via hidden field and prevent it from being cloned -->
+                        <@s.hidden name="${strutsPrefix}.generalPermission" cssClass="repeat-row-remove" />
+                    </#if>
+                <#else>
+    
+                </#if>
+            </div>
             <div class="controls controls-row">
             <@s.textfield theme="tdar" cssClass="span2 ${lookupType}" placeholder="Email (optional)" readonly=bDisabled autocomplete="off"
                 autocompleteIdElement="#${idIdElement}" autocompleteName="email" autocompleteParentElement="#${rowIdElement}"
@@ -1504,8 +1504,8 @@ $(function() {
                 autocompleteParentElement="#${rowIdElement}"
                 name="${strutsPrefix}${personPrefix}.institution.name" maxlength="255" />
             </div>
-    	      <#if includeDelete>          
-    	          <@clearDeleteButton id="${prefix}${_index}" disabled=bDisabled />
+              <#if includeDelete>          
+                  <@clearDeleteButton id="${prefix}${_index}" disabled=bDisabled />
               </#if>
         </div>
     </div>
@@ -1525,20 +1525,20 @@ $(function() {
         <@s.hidden name='${strutsPrefix}${institutionPrefix}.id' value='${(institution.id!-1)?c}' id="${idIdElement}"  cssClass="validIdRequired" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"  />
             <div class="control-group">
                 <div class="controls controls-row">
-			        <@s.textfield theme="tdar" cssClass="institutionAutoComplete institution span4" placeholder="Institution Name" autocomplete="off"
-			            autocompleteIdElement="#${idIdElement}" autocompleteName="name" 
-			            autocompleteParentElement="#${rowIdElement}"
-			            name="${strutsPrefix}${institutionPrefix}.name" maxlength="255" />
+                    <@s.textfield theme="tdar" cssClass="institutionAutoComplete institution span4" placeholder="Institution Name" autocomplete="off"
+                        autocompleteIdElement="#${idIdElement}" autocompleteName="name" 
+                        autocompleteParentElement="#${rowIdElement}"
+                        name="${strutsPrefix}${institutionPrefix}.name" maxlength="255" />
 
-				<#if includeRole>
+                <#if includeRole>
                     <@s.select theme="tdar" name="${strutsPrefix}.role" listValue='label' list=relevantInstitutionRoles cssClass="creator-role-select span3" />
                  </#if>
-			  </div>
-		  </div>
-	      <#if includeDelete>          
-	          <@clearDeleteButton id="${prefix}${_index}" />
+              </div>
+          </div>
+          <#if includeDelete>          
+              <@clearDeleteButton id="${prefix}${_index}" />
           </#if>
-	</div>
+    </div>
 </#macro>
 
 

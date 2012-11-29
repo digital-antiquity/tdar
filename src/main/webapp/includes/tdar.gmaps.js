@@ -67,8 +67,8 @@ TDAR.maps = function() {
         var script = document.createElement("script");
         script.type = "text/javascript";
         script.src = "//maps.googleapis.com/maps/api/js?libraries=drawing&key=" +
-        		TDAR.maps.googleApiKey +
-        		"&sensor=false&callback=TDAR.maps._apiLoaded";
+                TDAR.maps.googleApiKey +
+                "&sensor=false&callback=TDAR.maps._apiLoaded";
         document.body.appendChild(script);
         console.log("api loaded");
     }
@@ -100,7 +100,7 @@ TDAR.maps = function() {
             var $mapDiv = $(mapDiv);
             // if we have not specified a height, setting the height to the height of the parent DIV
             if ($mapDiv.height() < 5) {
-            	$mapDiv.height($mapDiv.parent().height() -5);
+                $mapDiv.height($mapDiv.parent().height() -5);
             }
 
             var map = new google.maps.Map(mapDiv, mapOptions);
@@ -125,7 +125,7 @@ TDAR.maps = function() {
             
             var rect = _addBound(mapDiv, style, lat1, lng1, lat2, lng2);
             if (rect) {
-            	gmap.fitBounds(rect.getBounds());
+                gmap.fitBounds(rect.getBounds());
             }
             //pan/zoom the 
         };
@@ -141,10 +141,10 @@ TDAR.maps = function() {
 
     //private: add rect to map, returns: google.maps.Rectangle
     var _addBound = function(mapDiv, rectStyleOptions, lat1, lng1, lat2, lng2) {
-//    	console.debug("%s %s %s %s", lat1, lng1, lat2, lng2);
-    	if (!(parseInt(lat1) && parseInt(lat2) && parseInt(lng1) && parseInt(lng2))) 
-    		return;
-    	
+//        console.debug("%s %s %s %s", lat1, lng1, lat2, lng2);
+        if (!(parseInt(lat1) && parseInt(lat2) && parseInt(lng1) && parseInt(lng2))) 
+            return;
+        
         var p1 = new google.maps.LatLng(lat1, lng1);
         var p2 = new google.maps.LatLng(lat2, lng2);
         var bounds = new google.maps.LatLngBounds(p1, p2);
@@ -161,7 +161,7 @@ TDAR.maps = function() {
         
         //move/pan the map to contain the rectangle w/ context
         return rect;
-	        
+            
     }
     
     var _updateBound = function(rect, lat1, lng1, lat2, lng2) {
@@ -351,8 +351,8 @@ TDAR.maps = function() {
                 }
 
                 if (rect) {
-                	$(mapDiv).data("resourceRect", rect);
-                	gmap.fitBounds(rect.getBounds());
+                    $(mapDiv).data("resourceRect", rect);
+                    gmap.fitBounds(rect.getBounds());
                 }
             };
         });

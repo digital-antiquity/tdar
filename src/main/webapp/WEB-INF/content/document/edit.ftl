@@ -27,8 +27,8 @@
 
 <@edit.citationInfo "document">
     <span tiplabel="Document Type"  tooltipcontent="Select the document type. Appropriate citation fields will be displayed below." class="doctype">
-	    <@s.radio name='document.documentType' id="documentType" emptyOption='false' listValue="label"  
-	        list='%{documentTypes}' label="Document Type" theme="bootstrap" />
+        <@s.radio name='document.documentType' id="documentType" emptyOption='false' listValue="label"  
+            list='%{documentTypes}' label="Document Type" theme="bootstrap" />
     </span>
             
     
@@ -46,24 +46,24 @@
 
 
     <span tiplabel="Language" tooltipcontent="Select the language in which the document is written.">
-	    <@s.select label='Language'  emptyOption='false' name='resourceLanguage'  listValue="label" list='%{languages}' cssClass="right-shortfield "/>
+        <@s.select label='Language'  emptyOption='false' name='resourceLanguage'  listValue="label" list='%{languages}' cssClass="right-shortfield "/>
     </span>
 
     <div class="doctypeToggle journal_article other controls-row" id="t-vol">
-	    <label class="control-label">Volume Information</label>
-	    <div class="controls controls-row">
+        <label class="control-label">Volume Information</label>
+        <div class="controls controls-row">
         <@s.textfield id='volume' theme="tdar" placeholder='Volume' name='document.volume' cssClass="span2"  />
         <@s.textfield id='journalNumber' theme="tdar" placeholder='Issue Number' name='document.journalNumber' cssClass="span2" />
     </div>
     </div>
     
     <div class='doctypeToggle book_section book other control-group' id="t-series">
-	    <label class="control-label">Series Information</label>
-	    <div class="controls controls-row">
-	        <@s.textfield id='seriesName' theme="tdar" placeholder='Series Title' name='document.seriesName' cssClass="span4" />
-	        <@s.textfield id='seriesNumber' theme="tdar" placeholder='Series #' name='document.seriesNumber' cssClass="span1" />
-	        <@s.textfield id='edition' theme="tdar" placeholder='Edition' name='document.edition' cssClass="span1" />
-	    </div>
+        <label class="control-label">Series Information</label>
+        <div class="controls controls-row">
+            <@s.textfield id='seriesName' theme="tdar" placeholder='Series Title' name='document.seriesName' cssClass="span4" />
+            <@s.textfield id='seriesNumber' theme="tdar" placeholder='Series #' name='document.seriesNumber' cssClass="span1" />
+            <@s.textfield id='edition' theme="tdar" placeholder='Edition' name='document.edition' cssClass="span1" />
+        </div>
     </div>
     
     <div class="doctypeToggle book_section journal_article other" id="t-start-end">
@@ -85,15 +85,15 @@
     </div>
 
     <span id="t-doi" tiplabel="DOI" tooltipcontent="Digital Object Identifier.">
-	    <@s.textfield labelposition='left' id='doi' label='DOI' name='document.doi' cssClass="shortfield" />
+        <@s.textfield labelposition='left' id='doi' label='DOI' name='document.doi' cssClass="shortfield" />
     </span>
     
     <span id="t-isbn" placeholder="XXXX-XXXX" tiplabel="ISBN" tooltipcontent="International Standard Book Number." class="book_section book other doctypeToggle">
-	    <@s.textfield labelposition='left' id='isbn' title="please add a valid ISBN" label='ISBN' name='document.isbn' cssClass="isbn " />
+        <@s.textfield labelposition='left' id='isbn' title="please add a valid ISBN" label='ISBN' name='document.isbn' cssClass="isbn " />
     </span>
     
     <span id="t-issn" placeholder="XXXX-XXXX" tiplabel="ISSN" tooltipcontent="International Standard Serial Number, an eight-digit number assigned to many serial publications." class="journal_article doctypeToggle">
-	    <@s.textfield labelposition='left' id='issn' title="please add a valid ISSN" label='ISSN' name='document.issn' cssClass="issn journal_article" />
+        <@s.textfield labelposition='left' id='issn' title="please add a valid ISSN" label='ISSN' name='document.issn' cssClass="issn journal_article" />
     </span>
 
 

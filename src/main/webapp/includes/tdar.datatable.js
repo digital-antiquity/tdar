@@ -165,7 +165,7 @@ function fnRenderTitle(oObj) {
     }
     html += ')';
     if (datatable_showDescription) {
-    	html += '<br /> <p>' + htmlEncode(elipsify(objResource.description,80)) + '</p>';
+        html += '<br /> <p>' + htmlEncode(elipsify(objResource.description,80)) + '</p>';
     }; 
     return html;
 }
@@ -197,12 +197,12 @@ function setupDashboardDataTable() {
     }
 
     jQuery.fn.dataTableExt.oPagination.iFullNumbersShowPages =3;
-	$.extend( $.fn.dataTableExt.oStdClasses, {
-	    "sWrapper": "dataTables_wrapper form-inline"
-	} );
+    $.extend( $.fn.dataTableExt.oStdClasses, {
+        "sWrapper": "dataTables_wrapper form-inline"
+    } );
 //        sDom:'<"datatabletop"ilrp>t<>', //omit the search box
-	    
-	  var aoColumns_ = [{ "mDataProp": "title",  sWidth: '65%', fnRender: fnRenderTitle, bUseRendered:false ,"bSortable":false},
+        
+      var aoColumns_ = [{ "mDataProp": "title",  sWidth: '65%', fnRender: fnRenderTitle, bUseRendered:false ,"bSortable":false},
           { "mDataProp": "resourceTypeLabel",  sWidth: '15%',"bSortable":false }];
           if (datatable_isSelectable) {
           aoColumns_[2] = { "mDataProp": "id", tdarSortOption: "ID", sWidth:'5em' ,"bSortable":false};
@@ -213,7 +213,7 @@ function setupDashboardDataTable() {
         "bLengthChange": true,
         "bFilter": false,
         aoColumns: aoColumns_,
-		"sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span4'i><'span5'p>>",
+        "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span4'i><'span5'p>>",
         sPaginationType:"bootstrap",
         sAjaxDataProp: 'resources',
         requestCallback: function(searchBoxContents){

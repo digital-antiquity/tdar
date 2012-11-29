@@ -5,31 +5,31 @@
 
 <h2>Usage Stats</h2>
 <table class="tableFormat table">
-	<tr>
-		<th>views</th>
-		<th>day</th>
-	</tr>
+    <tr>
+        <th>views</th>
+        <th>day</th>
+    </tr>
 <#list usageStatsForResources as stats>
-	<tr>
-		<td>${stats.count}</td>
-		<td>${stats.aggregateDate}</td>
-	</tr>
+    <tr>
+        <td>${stats.count}</td>
+        <td>${stats.aggregateDate}</td>
+    </tr>
 </#list>
 </table>
 
 <h2>Resource Revision History</h2>
 <table class="table tableFormat">
-	<tr>
-		<th>When</th>
-		<th>Who</th>
-		<th>Event</th>
-	</tr>
+    <tr>
+        <th>When</th>
+        <th>Who</th>
+        <th>Event</th>
+    </tr>
 <#list resourceLogEntries as entry>
-	<tr>
-		<td>${entry.timestamp}</td>
-		<td>${entry.person.properName}</td>
-		<td>${entry.logMessage}</td>
-	</tr>
+    <tr>
+        <td>${entry.timestamp}</td>
+        <td>${entry.person.properName}</td>
+        <td>${entry.logMessage}</td>
+    </tr>
 </#list>
 </table>
 

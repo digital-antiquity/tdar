@@ -104,26 +104,26 @@ View freemarker macros
 
 <#macro uploadedFileInfo>
   <#if (resource.totalNumberOfFiles?has_content)>
-				<h3 class="downloads">
-					Downloads
-					<span class="downloadNumber hidden-tablet">${resource.totalNumberOfFiles?c}</span>
-				</h3>
+                <h3 class="downloads">
+                    Downloads
+                    <span class="downloadNumber hidden-tablet">${resource.totalNumberOfFiles?c}</span>
+                </h3>
       <@embargoCheck/>
-		<ul class="downloads unstyled-list">
-		<#assign extensionMap = { 'pdf':'page-white-acrobat', 'doc':'page-white-word','docx':'page-white-word' ,'DOCUMENT','page-white-text',
-						'mdb':'page-white-key','mdbx':'page-white-key','accdb':'page-white-key',
-						'xls':'page-excel','xlsx':'page-excel','DATASET':'page-white-text','CODING_SHEET':'page-white-text',
-						'IMAGE':'page-white-picture','SENSORY_DATA':'page-white-picture','ONTOLOGY','page-white-text'
-		  } />
+        <ul class="downloads unstyled-list">
+        <#assign extensionMap = { 'pdf':'page-white-acrobat', 'doc':'page-white-word','docx':'page-white-word' ,'DOCUMENT','page-white-text',
+                        'mdb':'page-white-key','mdbx':'page-white-key','accdb':'page-white-key',
+                        'xls':'page-excel','xlsx':'page-excel','DATASET':'page-white-text','CODING_SHEET':'page-white-text',
+                        'IMAGE':'page-white-picture','SENSORY_DATA':'page-white-picture','ONTOLOGY','page-white-text'
+          } />
 
         <#list resource.informationResourceFiles as irfile>
               <#if irfile.latestUploadedVersion??>
-			  		<#local ext = extensionMap[irfile.latestUploadedVersion.extension?lower_case ]!'' />
-              		<#if !ext?has_content>
-              		<#local ext = extensionMap[resource.resourceType ] />
-              		</#if>
-					<li class="<#if irfile.deleted>view-deleted-file</#if> media">
-	                    <i class="iconf ${ext} pull-left"></i><@createFileLink irfile />
+                      <#local ext = extensionMap[irfile.latestUploadedVersion.extension?lower_case ]!'' />
+                      <#if !ext?has_content>
+                      <#local ext = extensionMap[resource.resourceType ] />
+                      </#if>
+                    <li class="<#if irfile.deleted>view-deleted-file</#if> media">
+                        <i class="iconf ${ext} pull-left"></i><@createFileLink irfile />
               </#if>
               <#if irfile.latestTranslatedVersion?? && resource.resourceType == 'DATASET' >
                 <blockquote>
@@ -133,14 +133,14 @@ View freemarker macros
         <br/><small>(<a href="<@s.url value='/dataset/retranslate'><@s.param name="id" value="${resource.id?c}"/></@s.url>">Retranslate this dataset</a> - <b>Note: this process may take some time</b>)</small>
                   </#if>
                 </blockquote>
-					</li>
+                    </li>
             </#if>
         </#list>
-		<#if (resource.totalNumberOfFiles == 0)>
-			<li class="citationNote">This Resource is a citation<#if resource.copyLocation?has_content> a physical copy is located at ${resource.copyLocation}</#if></li>
-		</#if>
+        <#if (resource.totalNumberOfFiles == 0)>
+            <li class="citationNote">This Resource is a citation<#if resource.copyLocation?has_content> a physical copy is located at ${resource.copyLocation}</#if></li>
+        </#if>
 
-		</ul>
+        </ul>
         <#if hasDeletedFiles><div><a href="#" id="showHiddenFiles" onClick="$('.view-deleted-file').toggle();$('#showHiddenFiles').toggle();return false;">show deleted files</a></div></#if>
     <#nested>
 </#if>
@@ -204,17 +204,17 @@ No categories or subcategories specified.
 
 <#macro spatialCoverage>
   <#if (resource.activeLatitudeLongitudeBoxes?has_content )>
-		<h2>Spatial Coverage</h2>
-			<div class="title-data">
-				<p>
-				  min long: ${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLongitude}; min lat: ${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLatitude} ;
-	              max long: ${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLongitude}; max lat: ${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLatitude} ;
-	              <!-- ${resource.firstActiveLatitudeLongitudeBox.scale } -->
-	              <!-- ${resource.managedGeographicKeywords } -->
-				</p>
-			</div>
+        <h2>Spatial Coverage</h2>
+            <div class="title-data">
+                <p>
+                  min long: ${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLongitude}; min lat: ${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLatitude} ;
+                  max long: ${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLongitude}; max lat: ${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLatitude} ;
+                  <!-- ${resource.firstActiveLatitudeLongitudeBox.scale } -->
+                  <!-- ${resource.managedGeographicKeywords } -->
+                </p>
+            </div>
 
-    	<div class="row">
+        <div class="row">
           <div id='large-google-map' class="google-map span9"></div>
        </div>
        <div id="divCoordContainer" style="display:none">
@@ -227,85 +227,85 @@ No categories or subcategories specified.
 </#macro>
 
 <#macro keywordSection label keywordList searchParam>
-	<#if keywordList?has_content>
-		<p>
-			<strong>${label}</strong><br>
-			 <@keywordSearch keywordList searchParam false />
-		</p>
-	</#if>
+    <#if keywordList?has_content>
+        <p>
+            <strong>${label}</strong><br>
+             <@keywordSearch keywordList searchParam false />
+        </p>
+    </#if>
 </#macro>
 
 <#macro keywords showParentProjectKeywords=true>
   <#if resource.containsActiveKeywords >
-		<h2>Keywords</h2>
-	    <#if resource.project?? && !resource.project.active && resource.inheritingSomeMetadata>
-		    <em>Note: Inherited values from this project are not available because the project is not active</em>
-	    </#if>
-	    <div class="row">
-				<#if (resource.keywordProperties?size > 1)>	    
-					<div class="span45">
-				<#elseif resource.keywordProperties?size == 1>
-					<div class="span9">
-				</#if>
-				
-				<#list resource.keywordProperties as prop>
-				<#-- FIXME: somehow this should be folded into SearchFieldType to not have all of this if/else -->
-					<#if ((resource.keywordProperties?size /2)?ceiling == prop_index)>	    
-						</div><div class="span45">
-					</#if>
-					<#if prop == "activeSiteNameKeywords">
-						<@keywordSection "Site Name" resource.activeSiteNameKeywords "siteNameKeywords" />
-					</#if>
-					<#if prop == "activeSiteTypeKeywords">
-						<@keywordSection "Site Type" resource.activeSiteTypeKeywords "uncontrolledSiteTypeKeywords" />
-					</#if>
-					<#if prop == "activeCultureKeywords">
-						<@keywordSection "Culture" resource.activeCultureKeywords "uncontrolledCultureKeywords" />
-					</#if>					
-					<#if prop == "activeMaterialKeywords">
-						<@keywordSection "Material" resource.activeMaterialKeywords "query" />
-					</#if>
-					<#if prop == "activeInvestigationTypes">
-						<@keywordSection "Investigation Types" resource.activeInvestigationTypes "query" />
-					</#if>
-					<#if prop == "activeOtherKeywords">
-						<@keywordSection "General" resource.activeOtherKeywords "query" />
-					</#if>
-					<#if prop == "activeTemporalKeywords">
-						<@keywordSection "Temporal Keywords" resource.activeTemporalKeywords "query" />
-					</#if>
-					<#if prop == "activeGeographicKeywords">
-					   	<@keywordSection "Geographic Keywords" resource.activeGeographicKeywords "query" />
-					</#if>
-				</#list>
-				<#if (resource.keywordProperties?size > 0)>	    
-					</div>
-				</#if>				
-		</div>
-		<hr/>
+        <h2>Keywords</h2>
+        <#if resource.project?? && !resource.project.active && resource.inheritingSomeMetadata>
+            <em>Note: Inherited values from this project are not available because the project is not active</em>
+        </#if>
+        <div class="row">
+                <#if (resource.keywordProperties?size > 1)>        
+                    <div class="span45">
+                <#elseif resource.keywordProperties?size == 1>
+                    <div class="span9">
+                </#if>
+                
+                <#list resource.keywordProperties as prop>
+                <#-- FIXME: somehow this should be folded into SearchFieldType to not have all of this if/else -->
+                    <#if ((resource.keywordProperties?size /2)?ceiling == prop_index)>        
+                        </div><div class="span45">
+                    </#if>
+                    <#if prop == "activeSiteNameKeywords">
+                        <@keywordSection "Site Name" resource.activeSiteNameKeywords "siteNameKeywords" />
+                    </#if>
+                    <#if prop == "activeSiteTypeKeywords">
+                        <@keywordSection "Site Type" resource.activeSiteTypeKeywords "uncontrolledSiteTypeKeywords" />
+                    </#if>
+                    <#if prop == "activeCultureKeywords">
+                        <@keywordSection "Culture" resource.activeCultureKeywords "uncontrolledCultureKeywords" />
+                    </#if>                    
+                    <#if prop == "activeMaterialKeywords">
+                        <@keywordSection "Material" resource.activeMaterialKeywords "query" />
+                    </#if>
+                    <#if prop == "activeInvestigationTypes">
+                        <@keywordSection "Investigation Types" resource.activeInvestigationTypes "query" />
+                    </#if>
+                    <#if prop == "activeOtherKeywords">
+                        <@keywordSection "General" resource.activeOtherKeywords "query" />
+                    </#if>
+                    <#if prop == "activeTemporalKeywords">
+                        <@keywordSection "Temporal Keywords" resource.activeTemporalKeywords "query" />
+                    </#if>
+                    <#if prop == "activeGeographicKeywords">
+                           <@keywordSection "Geographic Keywords" resource.activeGeographicKeywords "query" />
+                    </#if>
+                </#list>
+                <#if (resource.keywordProperties?size > 0)>        
+                    </div>
+                </#if>                
+        </div>
+        <hr/>
   </#if>
 </#macro>
 
 
 <#macro temporalCoverage showParentCoverage=true>
-	<#if resource.activeCoverageDates?has_content>
-		<h2>Temporal Coverage</h2>
-	    <#list resource.activeCoverageDates as coverageDate>
-		    <b>${coverageDate.dateType.label}</b>: 
-		        <#if coverageDate.startDate?has_content>${coverageDate.startDate?c}<#else>?</#if> to 
-		                <#if coverageDate.endDate?has_content>${coverageDate.endDate?c}<#else>?</#if>
-		                 <#if (coverageDate.description?has_content)> (${coverageDate.description})</#if><br/>
-	    </#list>
-		<hr/>
+    <#if resource.activeCoverageDates?has_content>
+        <h2>Temporal Coverage</h2>
+        <#list resource.activeCoverageDates as coverageDate>
+            <b>${coverageDate.dateType.label}</b>: 
+                <#if coverageDate.startDate?has_content>${coverageDate.startDate?c}<#else>?</#if> to 
+                        <#if coverageDate.endDate?has_content>${coverageDate.endDate?c}<#else>?</#if>
+                         <#if (coverageDate.description?has_content)> (${coverageDate.description})</#if><br/>
+        </#list>
+        <hr/>
     </#if>
 </#macro>
 
 <#macro resourceProvider>
   <#if resource.resourceProviderInstitution?? && resource.resourceProviderInstitution.id != -1>
-	<li>
-		<strong>Resource Provider</strong><br>
+    <li>
+        <strong>Resource Provider</strong><br>
         <@browse creator=resource.resourceProviderInstitution />
-	</li>
+    </li>
   </#if>
 </#macro>
 
@@ -353,7 +353,7 @@ No categories or subcategories specified.
   <#if sessionData?? && sessionData.authenticated>
 <h2>Administrative Information</h2>
 
-	<@resourceUsageInfo />
+    <@resourceUsageInfo />
     <div class="row">
         <dl class="dl-horizontal">
             <dt>Created by</dt>
@@ -391,20 +391,20 @@ No categories or subcategories specified.
 
 <#macro indvidualInstitutionalCredit>
     <#if creditProxies?has_content >
-	    <h3>Individual &amp; Institutional Roles</h3>
-		<@showCreatorProxy proxyList=creditProxies />
-		<hr/>
-	</#if>
+        <h3>Individual &amp; Institutional Roles</h3>
+        <@showCreatorProxy proxyList=creditProxies />
+        <hr/>
+    </#if>
 
 </#macro>
 
 <#macro resourceNotes>
     <#if resource.activeResourceNotes?has_content>
-		<h2>Notes</h2>
+        <h2>Notes</h2>
         <#list resource.activeResourceNotes.toArray()?sort_by("sequenceNumber") as resourceNote>
-			<p class="sml"><strong>${resourceNote.type.label}:</strong> ${resourceNote.note}</p>
+            <p class="sml"><strong>${resourceNote.type.label}:</strong> ${resourceNote.note}</p>
         </#list>
-		<hr />
+        <hr />
     </#if>
 </#macro>
 
@@ -419,7 +419,7 @@ No categories or subcategories specified.
             </tr>
         </#list>
         </table>
-		<hr/>
+        <hr/>
     </#if>
 
 </#macro>
@@ -445,19 +445,19 @@ No categories or subcategories specified.
 </#macro>
 
 <#macro showCreatorProxy proxyList=authorshipProxies>
-	<#if proxyList?has_content>
-	<#list allResourceCreatorRoles as role>
-		<#assign contents = "" />
-		<#list proxyList as proxy>
-	      <#if proxy.valid && proxy.role == role >
-		    <#assign contents><#noescape>${contents}<#t/></#noescape><#if contents?has_content>,</#if> <@browse creator=proxy.resourceCreator.creator /><#t/></#assign>
-		  </#if>
-		</#list>
-		<#if contents?has_content>
-		<p><strong>${role.label}(s):</strong> <#noescape>${contents}<#t/></#noescape> </p>
-		</#if>
-	</#list>
-	</#if>
+    <#if proxyList?has_content>
+    <#list allResourceCreatorRoles as role>
+        <#assign contents = "" />
+        <#list proxyList as proxy>
+          <#if proxy.valid && proxy.role == role >
+            <#assign contents><#noescape>${contents}<#t/></#noescape><#if contents?has_content>,</#if> <@browse creator=proxy.resourceCreator.creator /><#t/></#assign>
+          </#if>
+        </#list>
+        <#if contents?has_content>
+        <p><strong>${role.label}(s):</strong> <#noescape>${contents}<#t/></#noescape> </p>
+        </#if>
+    </#list>
+    </#if>
 </#macro>
 
 
@@ -505,15 +505,15 @@ No categories or subcategories specified.
 </#if>
 
 <p class="meta">
-	<@showCreatorProxy proxyList=authorshipProxies />
-	<#if resource.date?has_content>
-		<p><strong>Year:</strong> ${resource.date?c}</p>
-	</#if>
-	
-	<#if copyrightMandatory && resource.copyrightHolder?? >
-	    <strong>Primary Copyright Holder:</strong>
-	    <@browse resource.copyrightHolder /><br/>
-	</#if>
+    <@showCreatorProxy proxyList=authorshipProxies />
+    <#if resource.date?has_content>
+        <p><strong>Year:</strong> ${resource.date?c}</p>
+    </#if>
+    
+    <#if copyrightMandatory && resource.copyrightHolder?? >
+        <strong>Primary Copyright Holder:</strong>
+        <@browse resource.copyrightHolder /><br/>
+    </#if>
 </p>
 
 <p class="visible-phone"><a href="#sidebar-right">&raquo; Downloads &amp; Basic Metadata</a></p>
@@ -650,19 +650,19 @@ No categories or subcategories specified.
     </#list>
     <#assign publisherFieldName = "DC.publisher" />
     <#if resource.resourceType == 'DOCUMENT'>
-	     <#if document.documentType == 'CONFERENCE_PRESENTATION'>
-	       <#assign publisherFieldName="citation_conference_title" />
-	     <#elseif document.documentType == 'JOURNAL_ARTICLE' && document.journalName??>
-	        <meta name="citation_journal_title" content="${document.journalName?html}">
-	    </#if>
-	    <#if document.volume?has_content><meta name="citation_volume" content="${document.volume}"></#if>
+         <#if document.documentType == 'CONFERENCE_PRESENTATION'>
+           <#assign publisherFieldName="citation_conference_title" />
+         <#elseif document.documentType == 'JOURNAL_ARTICLE' && document.journalName??>
+            <meta name="citation_journal_title" content="${document.journalName?html}">
+        </#if>
+        <#if document.volume?has_content><meta name="citation_volume" content="${document.volume}"></#if>
         <#if document.journalNumber?has_content><meta name="citation_issue" content="${document.journalNumber}"></#if>
         <#if document.issn?has_content><meta name="citation_issn" content="${document.issn}"></#if>
         <#if document.isbn?has_content><meta name="citation_isbn" content="${document.isbn}"></#if>
         <#if document.startPage?has_content><meta name="citation_firstpage" content="${document.startPage}"></#if>
         <#if document.endPage?has_content><meta name="citation_lastpage" content="${document.endPage}"></#if>
         <#if document.documentType == 'THESIS'>
-		      <#assign publisherFieldName="citation_dissertation_institution" />
+              <#assign publisherFieldName="citation_dissertation_institution" />
        </#if>
     </#if>
    <#if resource.publisher?has_content>
@@ -751,31 +751,31 @@ ${_date?string('MM/dd/yyyy')}<#t>
 
 <#macro resourceCollections>
     <#if !viewableResourceCollections.empty>
-	    <h3>This Resource is Part of the Following Collections</h3>
-	    <#list viewableResourceCollections as collection>
-	            <a href="<@s.url value="/collection/${collection.id?c}"/>">
-	                ${collection.name}
-	            </a> <br/>
-	    </#list>
-		<hr />
+        <h3>This Resource is Part of the Following Collections</h3>
+        <#list viewableResourceCollections as collection>
+                <a href="<@s.url value="/collection/${collection.id?c}"/>">
+                    ${collection.name}
+                </a> <br/>
+        </#list>
+        <hr />
     </#if>
 </#macro>
 
 
 
 <#macro sharedViewComponents resource_ >
-		<h2>Cite this Record</h2>
+        <h2>Cite this Record</h2>
     <div class="citeMe">
-		<p class="sml">
-	    ${resource_.title}. <#if resource_.formattedAuthorList?has_content>${resource_.formattedAuthorList}.</#if> 
-	     <#if resource_.formattedSourceInformation?has_content>${resource_.formattedSourceInformation}</#if> (${siteAcronym} ID: ${resource_.id?c})<br/>
-	    <#if resource_.doi?has_content>${resource_.doi}
-	    <#elseif resource_.lessThanDayOld && !resource_.citationRecord>
-	    	<em>Note:</em>A DOI will be generated in the next day for this resource.
-	    </#if>
-		</p>
-	</div>
-	<hr />	    
+        <p class="sml">
+        ${resource_.title}. <#if resource_.formattedAuthorList?has_content>${resource_.formattedAuthorList}.</#if> 
+         <#if resource_.formattedSourceInformation?has_content>${resource_.formattedSourceInformation}</#if> (${siteAcronym} ID: ${resource_.id?c})<br/>
+        <#if resource_.doi?has_content>${resource_.doi}
+        <#elseif resource_.lessThanDayOld && !resource_.citationRecord>
+            <em>Note:</em>A DOI will be generated in the next day for this resource.
+        </#if>
+        </p>
+    </div>
+    <hr />        
 
         <#if resource_.resourceType == 'CODING_SHEET' ||  resource_.resourceType == 'ONTOLOGY'>
             <@categoryVariables />
@@ -806,9 +806,9 @@ ${_date?string('MM/dd/yyyy')}<#t>
     <#-- <@relatedSimpleItem resource.relatedCitations "Related Citations"/> -->
     <@relatedSimpleItem resource.activeSourceCollections "Source Collections"/>
     <@relatedSimpleItem resource.activeRelatedComparativeCollections "Related Comparative Collections" />
-	<#if resource.activeSourceCollections?has_content || resource.activeRelatedComparativeCollections?has_content>
-	 	<hr />
- 	</#if>
+    <#if resource.activeSourceCollections?has_content || resource.activeRelatedComparativeCollections?has_content>
+         <hr />
+     </#if>
     <#-- display linked data <-> ontology nodes -->
     <@relatedResourceSection label=resource_.resourceType.label />
     
@@ -826,92 +826,92 @@ ${_date?string('MM/dd/yyyy')}<#t>
 </#macro>
 
 <#macro sidebar>
-		<div id="sidebar-right" parse="true">
-				<i class="${resource.resourceType?lower_case}-bg-large"></i>	
-				
-			    <@uploadedFileInfo />
+        <div id="sidebar-right" parse="true">
+                <i class="${resource.resourceType?lower_case}-bg-large"></i>    
+                
+                <@uploadedFileInfo />
 
-				<h3>Basic Information</h3>
+                <h3>Basic Information</h3>
 
-				<p>
+                <p>
 
-				<ul class="unstyled-list">
-					<@view.resourceProvider />
-				    <#if resource.seriesName?has_content>
-				    <li><strong>Series name</strong><br>${resource.seriesName}</li>
-				    </#if>
-				    <#if resource.seriesNumber?has_content>
-				    <li><strong>Series number</strong><br>${resource.seriesNumber}</li>
-				    </#if>
-				    <#if resource.journalName?has_content>
-				        <li><strong>Journal</strong><br>${resource.journalName}<#if resource.volume?has_content>, ${resource.volume}</#if>
-						    <!-- issue -->
-						    <#if resource.journalNumber?has_content> (${resource.journalNumber}) </#if>
-				        </li>
-				    </#if>
-					  <#if resource.bookTitle?has_content>
-						  <li><strong>Book Title</strong><br>${resource.bookTitle}</li>
-					  </#if>
-				    <#if resource.numberOfVolumes??>
-					    <li><strong>Number of volumes</strong><br>${resource.numberOfVolumes}</li>
-				    </#if>
-				    </li>
-				    <#if resource.edition?has_content>
-				    <li><strong>Edition</strong><br>${resource.edition}</li>
-				    </#if>
-				    <#if (resource.publisher?has_content ||  resource.publisherLocation?has_content)>
-					    <li><strong>Publisher</strong><br>${resource.publisher.name} 
-						    <#if resource.degree?has_content>${resource.degree.label}</#if>
-					        <#if resource.publisherLocation?has_content> (${resource.publisherLocation}) </#if>
-				        </li>
-				    </#if>
-				    <#if resource.isbn?has_content>
-					    <li><strong>ISBN</strong><br>${resource.isbn}</li>
-				    </#if>
-				    <#if resource.issn?has_content>
-				    	<li><strong>ISSN</strong><br>${resource.issn}</li>
-				    </#if>
-				    <#if resource.doi?has_content>
-				    	<li><strong>DOI</strong><br>${resource.doi}</li>
-				    </#if>
+                <ul class="unstyled-list">
+                    <@view.resourceProvider />
+                    <#if resource.seriesName?has_content>
+                    <li><strong>Series name</strong><br>${resource.seriesName}</li>
+                    </#if>
+                    <#if resource.seriesNumber?has_content>
+                    <li><strong>Series number</strong><br>${resource.seriesNumber}</li>
+                    </#if>
+                    <#if resource.journalName?has_content>
+                        <li><strong>Journal</strong><br>${resource.journalName}<#if resource.volume?has_content>, ${resource.volume}</#if>
+                            <!-- issue -->
+                            <#if resource.journalNumber?has_content> (${resource.journalNumber}) </#if>
+                        </li>
+                    </#if>
+                      <#if resource.bookTitle?has_content>
+                          <li><strong>Book Title</strong><br>${resource.bookTitle}</li>
+                      </#if>
+                    <#if resource.numberOfVolumes??>
+                        <li><strong>Number of volumes</strong><br>${resource.numberOfVolumes}</li>
+                    </#if>
+                    </li>
+                    <#if resource.edition?has_content>
+                    <li><strong>Edition</strong><br>${resource.edition}</li>
+                    </#if>
+                    <#if (resource.publisher?has_content ||  resource.publisherLocation?has_content)>
+                        <li><strong>Publisher</strong><br>${resource.publisher.name} 
+                            <#if resource.degree?has_content>${resource.degree.label}</#if>
+                            <#if resource.publisherLocation?has_content> (${resource.publisherLocation}) </#if>
+                        </li>
+                    </#if>
+                    <#if resource.isbn?has_content>
+                        <li><strong>ISBN</strong><br>${resource.isbn}</li>
+                    </#if>
+                    <#if resource.issn?has_content>
+                        <li><strong>ISSN</strong><br>${resource.issn}</li>
+                    </#if>
+                    <#if resource.doi?has_content>
+                        <li><strong>DOI</strong><br>${resource.doi}</li>
+                    </#if>
 
 
-					<#if resource.documentType?has_content>
-				    <#if (resource.startPage?has_content) || (resource.endPage?has_content) || (resource.totalNumberOfPages?has_content)>
-					<li>
-						<strong>Pages</strong><br>
-					        ${resource.startPage!} <#if resource.startPage?has_content && resource.endPage?has_content>-</#if> ${resource.endPage!}
-					    </#if>
-					      <#if resource.totalNumberOfPages?? > 
-					      <#if (resource.startPage?has_content) || (resource.endPage?has_content) >(</#if>
-					        ${resource.totalNumberOfPages}
-					      <#if (resource.startPage?has_content) || (resource.endPage?has_content) >)</#if>
-				   	</li>
-			        </#if>
-					<li>
-						<strong>Document Type</strong><br>
-						${resource.documentType.label}
-					</li>
-					</#if>
-					<#if resource.resourceLanguage?has_content>
-					<li>
-						<strong>Language</strong><br>
-						${resource.resourceLanguage.label}
-					</li>
-					</#if>
-					<#if resource.copyLocation?has_content>
-					<li>
-						<strong>Location</strong><br>
-						${resource.copyLocation}
-					</li>
-					</#if>
-					<li>
-						<strong>${siteAcronym} ID</strong><br>
-						${resource.id?c}
-					</li>
-				</ul>
+                    <#if resource.documentType?has_content>
+                    <#if (resource.startPage?has_content) || (resource.endPage?has_content) || (resource.totalNumberOfPages?has_content)>
+                    <li>
+                        <strong>Pages</strong><br>
+                            ${resource.startPage!} <#if resource.startPage?has_content && resource.endPage?has_content>-</#if> ${resource.endPage!}
+                        </#if>
+                          <#if resource.totalNumberOfPages?? > 
+                          <#if (resource.startPage?has_content) || (resource.endPage?has_content) >(</#if>
+                            ${resource.totalNumberOfPages}
+                          <#if (resource.startPage?has_content) || (resource.endPage?has_content) >)</#if>
+                       </li>
+                    </#if>
+                    <li>
+                        <strong>Document Type</strong><br>
+                        ${resource.documentType.label}
+                    </li>
+                    </#if>
+                    <#if resource.resourceLanguage?has_content>
+                    <li>
+                        <strong>Language</strong><br>
+                        ${resource.resourceLanguage.label}
+                    </li>
+                    </#if>
+                    <#if resource.copyLocation?has_content>
+                    <li>
+                        <strong>Location</strong><br>
+                        ${resource.copyLocation}
+                    </li>
+                    </#if>
+                    <li>
+                        <strong>${siteAcronym} ID</strong><br>
+                        ${resource.id?c}
+                    </li>
+                </ul>
 
-			</div>
+            </div>
 
 
 </#macro>
@@ -1007,19 +1007,19 @@ $(function() {
 
 <#macro tdarCitation resource=resource showLabel=true count=0>
   <div class="item <#if count==0>active</#if>">
-  	<#local url><@s.url value="/${resource.urlNamespace}/${resource.id?c}"/></#local>
-		<a href="${url}" target="_top"><@firstThumbnail resource /></a>
-		<p class="title">
-			<a href="${url}">${resource.title} </a><br>
-		    <#if resource.formattedAuthorList?has_content>${resource.formattedAuthorList}
-		    <br/></#if>
-		</p>
-	
-		<p><@truncate resource.description 150 /></p>
-	
-		<p>
-			<a href="${url}" class="button">View ${resource.resourceType.label}</a> or &nbsp; <a href="">Browse all projects</a>
-		</p>    
+      <#local url><@s.url value="/${resource.urlNamespace}/${resource.id?c}"/></#local>
+        <a href="${url}" target="_top"><@firstThumbnail resource /></a>
+        <p class="title">
+            <a href="${url}">${resource.title} </a><br>
+            <#if resource.formattedAuthorList?has_content>${resource.formattedAuthorList}
+            <br/></#if>
+        </p>
+    
+        <p><@truncate resource.description 150 /></p>
+    
+        <p>
+            <a href="${url}" class="button">View ${resource.resourceType.label}</a> or &nbsp; <a href="">Browse all projects</a>
+        </p>    
 
   </div>
 </#macro>

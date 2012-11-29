@@ -37,7 +37,7 @@
     </span>
         <input label="Survey End" type="text" id="txtSurveyDateEnd" name="sensoryData.surveyDateEnd" class="right-shortfield date formatUS watermarked" placeholder="mm/dd/yyyy"
             value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateEnd /></#if>"  />
-	</div>
+    </div>
     <!--
     <br />
     <span tiplabel="" tooltipcontent=""><@s.textfield maxLength="255" name="sensoryData.surveyLocation" cssClass="input-xxlarge" label="Survey Location" labelposition="left" title="Survey Location" /></span>
@@ -93,36 +93,36 @@
         <tr id="sensoryDataScanRow_${_scan_index}_">
             <td class="enhancedTableRow">
             <div class="controls-row">
-	            <div class="span45">
-	                <span tiplabel="Scan Filename" tooltipcontent="The name of the scan. A suggested filename for original raw scans for archiving is in this format: ProjectName_scan1.txt.">
-	                <@s.textfield maxLength="255"    name="sensoryDataScans[${_scan_index}].filename" placeholder="Filename" cssClass="shortfield" /></span>
-	                <@s.hidden name="sensoryDataScans[${_scan_index}].id" />
-	                <span tiplabel="Object / Monument Name" tooltipcontent="Name of monument or object being scanned"><@s.textfield maxLength="255"    name="sensoryDataScans[${_scan_index}].monumentName" placeholder="Object / Monument Name" cssClass="shortfield" /></span>
-		        </div>
+                <div class="span45">
+                    <span tiplabel="Scan Filename" tooltipcontent="The name of the scan. A suggested filename for original raw scans for archiving is in this format: ProjectName_scan1.txt.">
+                    <@s.textfield maxLength="255"    name="sensoryDataScans[${_scan_index}].filename" placeholder="Filename" cssClass="shortfield" /></span>
+                    <@s.hidden name="sensoryDataScans[${_scan_index}].id" />
+                    <span tiplabel="Object / Monument Name" tooltipcontent="Name of monument or object being scanned"><@s.textfield maxLength="255"    name="sensoryDataScans[${_scan_index}].monumentName" placeholder="Object / Monument Name" cssClass="shortfield" /></span>
+                </div>
           
-	            <div class="span3">
-	                <#assign _scanDate="" />
-	                <#if _scan.scanDate?? >
-	                  <#assign _scanDate><@view.shortDate _scan.scanDate!"" /></#assign>
-	                </#if>
-	                <span tiplabel="Scan Date" tooltipcontent="Date the object/monument was scanned"><@s.textfield maxLength="255"    name="sensoryDataScans[${_scan_index}].scanDate" value="${_scanDate}" placeholder="mm/dd/yyyy" cssClass=" date" /> </span>
-	                <span tiplabel="Data Resolution"  tooltipcontent="Fixed resolution or data resolution at specific range.">
-	                    <@s.textfield maxLength="255"    name="sensoryDataScans[${_scan_index}].resolution" placeholder="Resolution" cssClass="number" />
-	                </span>
-	                <span tiplabel="Number of Points in Scan" tooltipcontent="Number of points generated in scan"><@s.textfield maxLength="255"    name="sensoryDataScans[${_scan_index}].pointsInScan" placeholder="# points" cssClass="shortfield number" /></span>
-	          </div>
+                <div class="span3">
+                    <#assign _scanDate="" />
+                    <#if _scan.scanDate?? >
+                      <#assign _scanDate><@view.shortDate _scan.scanDate!"" /></#assign>
+                    </#if>
+                    <span tiplabel="Scan Date" tooltipcontent="Date the object/monument was scanned"><@s.textfield maxLength="255"    name="sensoryDataScans[${_scan_index}].scanDate" value="${_scanDate}" placeholder="mm/dd/yyyy" cssClass=" date" /> </span>
+                    <span tiplabel="Data Resolution"  tooltipcontent="Fixed resolution or data resolution at specific range.">
+                        <@s.textfield maxLength="255"    name="sensoryDataScans[${_scan_index}].resolution" placeholder="Resolution" cssClass="number" />
+                    </span>
+                    <span tiplabel="Number of Points in Scan" tooltipcontent="Number of points generated in scan"><@s.textfield maxLength="255"    name="sensoryDataScans[${_scan_index}].pointsInScan" placeholder="# points" cssClass="shortfield number" /></span>
+              </div>
             </div>
             <div class="controls-row">
-	            <div class="span45">
-	                <span tiplabel="Scan Transformation Matrix" tooltipcontent="The name of the transformation matrix used in Global Registration. Suggested file name: ProjectName_scan1_mtrx.txt">
-	                    <@s.textfield maxLength="255"    name="sensoryDataScans[${_scan_index}].transformationMatrix" placeholder="Transformation Matrix" cssClass="" />
-	                </span>
-	
-	                <span class="checkboxLabel"  tooltipcontent="Check this box if transformation matrix has been applied to the archived scan">
-	                    <@s.checkbox label="Matrix Applied to Scan" name="sensoryDataScans[${_scan_index}].matrixApplied" id="cbMatrixApplied_${_scan_index}_" />Matrix Applied</label>
-	                </span>
-			  </div>
-		  </div>
+                <div class="span45">
+                    <span tiplabel="Scan Transformation Matrix" tooltipcontent="The name of the transformation matrix used in Global Registration. Suggested file name: ProjectName_scan1_mtrx.txt">
+                        <@s.textfield maxLength="255"    name="sensoryDataScans[${_scan_index}].transformationMatrix" placeholder="Transformation Matrix" cssClass="" />
+                    </span>
+    
+                    <span class="checkboxLabel"  tooltipcontent="Check this box if transformation matrix has been applied to the archived scan">
+                        <@s.checkbox label="Matrix Applied to Scan" name="sensoryDataScans[${_scan_index}].matrixApplied" id="cbMatrixApplied_${_scan_index}_" />Matrix Applied</label>
+                    </span>
+              </div>
+          </div>
         <fieldset><legend>Scanner Technology</legend>
                     <@s.select  headerValue="" headerKey="" name='sensoryDataScans[${_scan_index}].scannerTechnology'  
                         listValue="label" list='%{scannerTechnologyTypes}' labelposition="left" cssClass="scannerTechnology shortfield" />
@@ -236,17 +236,17 @@
     <br />
     <div class="controls-group">
         <span tiplabel="Processing Operations" tooltipcontent="Check all the processing operations that apply">
-		<label class="control-label">Processing Operations</label>
+        <label class="control-label">Processing Operations</label>
         <div class="controls-row">
-        	<div class="span45">
-	            <@s.checkbox name="sensoryData.premeshOverlapReduction" cssClass="" label="Overlap Reduction"  />
-	            <@s.checkbox name="sensoryData.premeshSmoothing" cssClass="" label="Smoothing" />
-			</div>
-        	<div class="span45">
-	            <@s.checkbox name="sensoryData.premeshSubsampling"  label="Subsampling"  />
-	            <@s.checkbox name="sensoryData.premeshColorEditions"  label="Color Editions"  />
-			</div>
-		</div>
+            <div class="span45">
+                <@s.checkbox name="sensoryData.premeshOverlapReduction" cssClass="" label="Overlap Reduction"  />
+                <@s.checkbox name="sensoryData.premeshSmoothing" cssClass="" label="Smoothing" />
+            </div>
+            <div class="span45">
+                <@s.checkbox name="sensoryData.premeshSubsampling"  label="Subsampling"  />
+                <@s.checkbox name="sensoryData.premeshColorEditions"  label="Color Editions"  />
+            </div>
+        </div>
         </span>
     </div>
     <span tiplabel="Point Editing Summary" tooltipcontent="Include a description of major editing operations (IE overlap reduction, point deletion, etc...) that have been performed on the dataset">
@@ -270,18 +270,18 @@
     <br />
     <div class="controls-group">
         <span tiplabel="Processing Operations" tooltipcontent="Check all the processing operations that apply">
-		<label class="control-label">Processing Operations</label>
+        <label class="control-label">Processing Operations</label>
         <div class="controls-row">
-        	<div class="span45">
-		        <@s.checkbox name="sensoryData.meshRgbIncluded" cssClass="" label="RGB Color Included" />
-		        <@s.checkbox name="sensoryData.meshdataReduction" cssClass="" label="Data Reduction" />
-		        <@s.checkbox name="sensoryData.meshSmoothing" cssClass="" label="Smoothing" />
-        	</div>
-        	<div class="span45">
-		        <@s.checkbox name="sensoryData.meshHolesFilled" cssClass="" label="Holes Filled"  />
-		        <@s.checkbox name="sensoryData.meshColorEditions" cssClass="" label="Color Editions"  /> 
-		        <@s.checkbox name="sensoryData.meshHealingDespiking" cssClass="" label="Healing/De-spiking"  /> 
-	        </div>
+            <div class="span45">
+                <@s.checkbox name="sensoryData.meshRgbIncluded" cssClass="" label="RGB Color Included" />
+                <@s.checkbox name="sensoryData.meshdataReduction" cssClass="" label="Data Reduction" />
+                <@s.checkbox name="sensoryData.meshSmoothing" cssClass="" label="Smoothing" />
+            </div>
+            <div class="span45">
+                <@s.checkbox name="sensoryData.meshHolesFilled" cssClass="" label="Holes Filled"  />
+                <@s.checkbox name="sensoryData.meshColorEditions" cssClass="" label="Color Editions"  /> 
+                <@s.checkbox name="sensoryData.meshHealingDespiking" cssClass="" label="Healing/De-spiking"  /> 
+            </div>
         </div>
     </div>
     <br />

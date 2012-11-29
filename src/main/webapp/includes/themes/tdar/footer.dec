@@ -1,44 +1,44 @@
 <div class="row">
-	<div class="span3">
-		<h4>About</h4> 
-		 <ul> 
-						<li><a href="">News</a></li>
-						<li><a href="">Our Team</a></li>
-						<li><a href="">Organization</a></li>
-						<li><a href="">Contact Us</a></li>
-						<li><a href="">History</a></li>
-						<li><a href="">Current Version of tDAR</a></li>
-		</ul> 
-	</div> 
-	<div class="span3">
-	    <h4>Use</h4> 
-		<ul> 
-		      <li><a href='http://www.guidestogoodpractice.org/'>Guides to Good Practice</a></li> 
-				<li><a href="">Help & Tutorials</a></li>
-				<li><a href="">Policies</a></li>
-				<li><a href="">Contributing Resources to tDAR</a></li>
-				<li><a href="">Pricing</a></li>
-		</ul> 
-	</div> 
-	<div class="span3">
-	    <h4>Contact</h4> 
-	    <ul>
-	        <li><a href="${commentUrlEscaped}?subject=tDAR%20comments">&#99;&#111;&#109;&#109;&#101;&#110;&#116;&#115;&#64;&#116;&#100;&#97;&#114;&#46;&#111;&#114;&#103;</a> </li>
-	        <li><a href="https://twitter.com/DigArcRec" class="twitter-follow-button" data-show-count="false">Follow @DigArcRec on twitter</a></li>
-	        <li><a href="http://facebook.com/digarcrec">Follow tDAR on Facebook</a></li>
-	
-	    </ul>
-	</div> 
-	<div class="span3">
-		<h4>Start Digging</h4>
-		<ul>
-			<li><a href="<@s.url value="/search/results"/>">Browse</a></li>
-			<li><a href="<@s.url value="/resource/add"/>">Start a project &amp; add data</a></li>
-			<li><a href="<@s.url value="/login"/>">Log In</a></li>
-			<li><a href="<@s.url value="/register"/>">Sign Up</a></li>
-		</ul>
+    <div class="span3">
+        <h4>About</h4> 
+         <ul> 
+                        <li><a href="">News</a></li>
+                        <li><a href="">Our Team</a></li>
+                        <li><a href="">Organization</a></li>
+                        <li><a href="">Contact Us</a></li>
+                        <li><a href="">History</a></li>
+                        <li><a href="">Current Version of tDAR</a></li>
+        </ul> 
+    </div> 
+    <div class="span3">
+        <h4>Use</h4> 
+        <ul> 
+              <li><a href='http://www.guidestogoodpractice.org/'>Guides to Good Practice</a></li> 
+                <li><a href="">Help & Tutorials</a></li>
+                <li><a href="">Policies</a></li>
+                <li><a href="">Contributing Resources to tDAR</a></li>
+                <li><a href="">Pricing</a></li>
+        </ul> 
+    </div> 
+    <div class="span3">
+        <h4>Contact</h4> 
+        <ul>
+            <li><a href="${commentUrlEscaped}?subject=tDAR%20comments">&#99;&#111;&#109;&#109;&#101;&#110;&#116;&#115;&#64;&#116;&#100;&#97;&#114;&#46;&#111;&#114;&#103;</a> </li>
+            <li><a href="https://twitter.com/DigArcRec" class="twitter-follow-button" data-show-count="false">Follow @DigArcRec on twitter</a></li>
+            <li><a href="http://facebook.com/digarcrec">Follow tDAR on Facebook</a></li>
+    
+        </ul>
+    </div> 
+    <div class="span3">
+        <h4>Start Digging</h4>
+        <ul>
+            <li><a href="<@s.url value="/search/results"/>">Browse</a></li>
+            <li><a href="<@s.url value="/resource/add"/>">Start a project &amp; add data</a></li>
+            <li><a href="<@s.url value="/login"/>">Log In</a></li>
+            <li><a href="<@s.url value="/register"/>">Sign Up</a></li>
+        </ul>
 
-	</div>
+    </div>
 </div> 
 <br/>
 <div class="row" id="copyright"> 

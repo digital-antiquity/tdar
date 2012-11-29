@@ -7,15 +7,15 @@
   <#-- formnavigate broken, abandoned. pls. fix kthxbye -->
   <#-- "/includes/jquery.FormNavigate.js",  -->
     <#local srcs = [
-                 	 "/includes/jquery.cookie.js",
+                      "/includes/jquery.cookie.js",
                      "/includes/jquery.xcolor-1.5.js",
-					 "/includes/jquery.metadata.2.1/jquery.metadata.js",
+                     "/includes/jquery.metadata.2.1/jquery.metadata.js",
                      "/includes/jquery.maphighlight.local.js",
-	                 "/includes/jquery.textarearesizer.js",
-	                 "/includes/jquery.FormNavigate.js",
-	                 "/includes/jquery.watermark-3.1.3.min.js",
-	                 "/includes/jquery.datatables-1.8.2/media/js/jquery.dataTables.js",
-	                 "/includes/jquery.datatables-1.8.2/extras/bootstrap-paging.js",
+                     "/includes/jquery.textarearesizer.js",
+                     "/includes/jquery.FormNavigate.js",
+                     "/includes/jquery.watermark-3.1.3.min.js",
+                     "/includes/jquery.datatables-1.8.2/media/js/jquery.dataTables.js",
+                     "/includes/jquery.datatables-1.8.2/extras/bootstrap-paging.js",
                      "/includes/jquery-treeview/jquery.treeview.js"
                      "/includes/blueimp-javascript-templates/tmpl.min.js",
                      "/includes/Jit-2.0.1/jit.js",
@@ -32,21 +32,21 @@
                      "/includes/tdar.upload.js",
                      "/includes/tdar.repeatrow.js",
                      "/includes/tdar.autocomplete.js",
-                 	 "/includes/tdar.datatable.js",
+                      "/includes/tdar.datatable.js",
                      "/includes/tdar.dataintegration.js", 
                      "/includes/tdar.advanced-search.js",
                      "/includes/tdar.inheritance.js",
-	                 "/includes/bindWithDelay.js",
-	                 "/includes/flot-0.7/jquery.flot.min.js",
-	                 "/includes/flot-0.7/excanvas.min.js",
-	                 "/includes/flot-0.7/jquery.flot.pie.min.js",
+                     "/includes/bindWithDelay.js",
+                     "/includes/flot-0.7/jquery.flot.min.js",
+                     "/includes/flot-0.7/excanvas.min.js",
+                     "/includes/flot-0.7/jquery.flot.pie.min.js",
                      "/includes/ivaynberg-select2-817453b/select2.js"
     ] />
     
     
     <#--TODO figure out a way to enable individual pages to append to this array -->
-	<#--TODONT  this defeats the purpose of the caching -->
-	<#--TOTHINKABOUT  yeah, but cached or not this is a lot of javascript for a browser to ingest -->
+    <#--TODONT  this defeats the purpose of the caching -->
+    <#--TOTHINKABOUT  yeah, but cached or not this is a lot of javascript for a browser to ingest -->
     
  <!-- this conflicts with JIT when loading in the context of a single script -->
 <script type="text/javascript" src="/includes/jquery.tabby-0.12.js"></script>

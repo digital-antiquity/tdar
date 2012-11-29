@@ -16,9 +16,9 @@
     <div id="slider" class="carousel slide">
       <!-- Carousel items -->
       <div class="carousel-inner">
-    		<#list featuredResources as featuredResource>
-    		    <@view.tdarCitation resource=featuredResource showLabel=false count=featuredResource_index />
-    	    </#list>
+            <#list featuredResources as featuredResource>
+                <@view.tdarCitation resource=featuredResource showLabel=false count=featuredResource_index />
+            </#list>
       </div>
       <!-- Carousel nav -->
       <a class="carousel-control left" href="#slider" data-slide="prev">&lsaquo;</a>

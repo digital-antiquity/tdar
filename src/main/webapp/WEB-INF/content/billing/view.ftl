@@ -16,39 +16,39 @@
 
 <h3>Invoices</h3>
 <table class="tableFormat">
-	<tr>
-		<th>name</th><th>total</th>
-	</tr>
+    <tr>
+        <th>name</th><th>total</th>
+    </tr>
 <#list account.invoices as invoice>
-	<tr>
-		<td><a href="<@s.url value="/cart/${invoice.id?c}" />"/>${invoice.dateCreated}</a></td>
-		<td> ${invoice.total!0}</td>
-	</tr>
+    <tr>
+        <td><a href="<@s.url value="/cart/${invoice.id?c}" />"/>${invoice.dateCreated}</a></td>
+        <td> ${invoice.total!0}</td>
+    </tr>
 </#list>
 </table>
 
 <h3>Users who can charge to this account</h3>
 <table class="tableFormat">
-	<tr>
-		<th>name</th><th>email</th>
-	</tr>
+    <tr>
+        <th>name</th><th>email</th>
+    </tr>
 <#list account.authorizedMembers as member>
 <tr>
-	<td><a href="<@s.url value="/browse/creators/${member.id?c}"/>">${member.properName}</a></td><td>${member.email}</td>
+    <td><a href="<@s.url value="/browse/creators/${member.id?c}"/>">${member.properName}</a></td><td>${member.email}</td>
 </tr>
 </#list>
 </table>
 
 <h3>Resources associated with this account</h3>
 <table class="tableFormat">
-	<tr>
-		<th>Resource Type</th><th>Id</th><th>Name</th>
-	</tr>
+    <tr>
+        <th>Resource Type</th><th>Id</th><th>Name</th>
+    </tr>
 <#list account.resources as resource>
 <tr>
-	<td>${resource.resourceType.label}</td>
-	<td>${resource.id}</td>
-	<td><a href="<@s.url value="/${resource.resourceType.urlNamespace}/${resource.id?c}"/>">${resource.title}</a></td>
+    <td>${resource.resourceType.label}</td>
+    <td>${resource.id}</td>
+    <td><a href="<@s.url value="/${resource.resourceType.urlNamespace}/${resource.id?c}"/>">${resource.title}</a></td>
 </tr>
 </#list>
 </table>

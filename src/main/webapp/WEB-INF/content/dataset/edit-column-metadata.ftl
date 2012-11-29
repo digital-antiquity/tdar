@@ -76,7 +76,7 @@
 <#if dataTable.dataTableColumns??>
 <div id="datatablecolumns">
 <#list dataTableColumns?sort_by("sequenceNumber") as column>
-	<#if column_index != 0><hr/></#if>
+    <#if column_index != 0><hr/></#if>
 
 <div class="row datatablecolumn" id="columnDiv_${column_index}" >
   <h3> 
@@ -99,59 +99,59 @@
          label="Meas. Unit:" listValue='fullName' emptyOption='true' list='%{allMeasurementUnits}'/>
     </div>
     <div tooltipcontent="#categoryVariableToolTip" tiplabel="Category Variable" class="control-group">
-	    <label class="control-label">Category:</label>
-	    <#assign subCategoryId="" />
-	    <#assign categoryId="" />
-	    <#if column.categoryVariable??>
-	        <#assign subCategoryId="${column.categoryVariable.id?c}" />
-	        <#if column.categoryVariable.parent??>
-	            <#assign categoryId="${column.categoryVariable.parent.id?c}" />
-	        <#else>
-	            <#assign categoryId="${column.categoryVariable.id?c}" />
-	        </#if> 
-	    </#if> 
-	    <div class="controls">
-	        <@s.select id='categoryVariableId_${column_index}' 
-	                name='dataTableColumns[${column_index}].categoryVariable.id' 
-	                onchange='changeSubcategory("#categoryVariableId_${column_index}","#subcategoryId_${column_index}")'
-	                headerKey="-1"
-	                headerValue=""
-	                cssClass="categorySelect span3"
-	                listKey='id'
-	                listValue='name'
-	                list='%{allDomainCategories}'
-	                label="Category:"
-	                theme="simple"
-	                autocompleteName="sortCategoryId"
-	                value="${categoryId}"
-	                />
-	        
-	        <span id="subcategoryDivId_${column_index}">
-	            <#if subCategoryId != "">
-	            <@s.select  target="#columnDiv_${column_index}"
-	                id='subcategoryId_${column_index}'
-	                cssClass="subcategorySelect span3" 
-	                name='dataTableColumns[${column_index}].tempSubCategoryVariable.id'
-	                list='%{subcategories[${column_index}]}'
-	                theme="simple"
-	                headerKey="-1"
-	                headerValue=""
-	                listKey='id'
-	                listValue='name'
-	                emptyOption='false'
-	                label="Subcategory:"
-	                autocompleteName="subCategoryId"
-	                value="${subCategoryId}"
-	            />
-	            <#else>
-	                <select id='subcategoryId_${column_index}' name='dataTableColumns[${column_index}].tempSubCategoryVariable.id'
-	                        class="span3"    autocompleteName="subCategoryId">
-	                    <option value='-1'>N/A</option>
-	                </select>
-	            </#if>
-	        </span>
-	           <img src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="visibility:hidden"/>
-	    </div>
+        <label class="control-label">Category:</label>
+        <#assign subCategoryId="" />
+        <#assign categoryId="" />
+        <#if column.categoryVariable??>
+            <#assign subCategoryId="${column.categoryVariable.id?c}" />
+            <#if column.categoryVariable.parent??>
+                <#assign categoryId="${column.categoryVariable.parent.id?c}" />
+            <#else>
+                <#assign categoryId="${column.categoryVariable.id?c}" />
+            </#if> 
+        </#if> 
+        <div class="controls">
+            <@s.select id='categoryVariableId_${column_index}' 
+                    name='dataTableColumns[${column_index}].categoryVariable.id' 
+                    onchange='changeSubcategory("#categoryVariableId_${column_index}","#subcategoryId_${column_index}")'
+                    headerKey="-1"
+                    headerValue=""
+                    cssClass="categorySelect span3"
+                    listKey='id'
+                    listValue='name'
+                    list='%{allDomainCategories}'
+                    label="Category:"
+                    theme="simple"
+                    autocompleteName="sortCategoryId"
+                    value="${categoryId}"
+                    />
+            
+            <span id="subcategoryDivId_${column_index}">
+                <#if subCategoryId != "">
+                <@s.select  target="#columnDiv_${column_index}"
+                    id='subcategoryId_${column_index}'
+                    cssClass="subcategorySelect span3" 
+                    name='dataTableColumns[${column_index}].tempSubCategoryVariable.id'
+                    list='%{subcategories[${column_index}]}'
+                    theme="simple"
+                    headerKey="-1"
+                    headerValue=""
+                    listKey='id'
+                    listValue='name'
+                    emptyOption='false'
+                    label="Subcategory:"
+                    autocompleteName="subCategoryId"
+                    value="${subCategoryId}"
+                />
+                <#else>
+                    <select id='subcategoryId_${column_index}' name='dataTableColumns[${column_index}].tempSubCategoryVariable.id'
+                            class="span3"    autocompleteName="subCategoryId">
+                        <option value='-1'>N/A</option>
+                    </select>
+                </#if>
+            </span>
+               <img src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="visibility:hidden"/>
+        </div>
     </div>
     <span tooltipcontent="#descriptionToolTip" tiplabel="Column Description">
     <@s.textarea label="Please describe the data collected in this column" name='dataTableColumns[${column_index}].description' rows='2' cols='12' cssClass="resizable input-xxlarge" />
@@ -167,7 +167,7 @@
             <@s.hidden id="${column_index}_cid" name="dataTableColumns[${column_index}].defaultCodingSheet.id" cssClass="codingsheetidfield" value="${codingId}" />
             <small class="pull-right"><a target="_blank" onclick="setAdhocTarget(this);" href='<@s.url value="/coding-sheet/add?returnToResourceMappingId=${resource.id?c}"/>'>Create Coding Sheet</a> </small>
             <@edit.combobox name="dataTableColumns[${column_index}].defaultCodingSheet.title"  target="#columnDiv_${column_index}"
-			 label="Translate your data using a Coding Sheet:"
+             label="Translate your data using a Coding Sheet:"
              autocompleteParentElement="#columnDiv_${column_index}"
              autocompleteIdElement="#${column_index}_cid"
              placeholder="Enter the name of a Coding Sheet"
@@ -357,7 +357,7 @@ $(document).ready(function() {
            $('input', $('.codingInfo:hidden')).val('');
       });
 
-	$("#fakeSubmitButton").click(function() {$("#submitButton").click();});      
+    $("#fakeSubmitButton").click(function() {$("#submitButton").click();});      
 });
 
 

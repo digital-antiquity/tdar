@@ -8,100 +8,100 @@
 
 
 
-	<@search.initResultPagination/>
+    <@search.initResultPagination/>
 
-	<div id="titlebar" parse="true">
-		<#if searchPhrase?? && !explore>
-			<h1>Search Results: <span>"${searchPhrase}"</span></h1>
-			
-		<#elseif explore && exploreKeyword?? && exploreKeyword.definition?has_content >
-		    <h1>${exploreKeyword.label?html}</h1>
-			<div class="glide">
-			    <#if exploreKeyword.definition??>
-			        ${exploreKeyword.definition?html}
-			    </#if>
-			</div>
-	    </#if>
-	</div>
+    <div id="titlebar" parse="true">
+        <#if searchPhrase?? && !explore>
+            <h1>Search Results: <span>"${searchPhrase}"</span></h1>
+            
+        <#elseif explore && exploreKeyword?? && exploreKeyword.definition?has_content >
+            <h1>${exploreKeyword.label?html}</h1>
+            <div class="glide">
+                <#if exploreKeyword.definition??>
+                    ${exploreKeyword.definition?html}
+                </#if>
+            </div>
+        </#if>
+    </div>
 
 <#if (totalRecords > 0)>
 
-	<div id="sidebar-left" parse="true" class="options hidden-phone">
-				
-				<h2>Search Options</h2>
+    <div id="sidebar-left" parse="true" class="options hidden-phone">
+                
+                <h2>Search Options</h2>
 
-	<ul class="tools">
-		<li><@search.searchLink "advanced" "Refine your search &raquo;" /></li>
+    <ul class="tools">
+        <li><@search.searchLink "advanced" "Refine your search &raquo;" /></li>
         <li>Download these results &raquo;
-	    <#if sessionData?? && sessionData.authenticated && (totalRecords > 0) && (actionName=="results")>
-	        <@search.searchLink "download" "to Excel" />
-	        <#if totalRecords &gt; maxDownloadRecords>
-	            Limited to the first ${maxDownloadRecords} results.    
-	        </#if>
-	
-		<#else>
-		Login
-	     </#if>
+        <#if sessionData?? && sessionData.authenticated && (totalRecords > 0) && (actionName=="results")>
+            <@search.searchLink "download" "to Excel" />
+            <#if totalRecords &gt; maxDownloadRecords>
+                Limited to the first ${maxDownloadRecords} results.    
+            </#if>
+    
+        <#else>
+        Login
+         </#if>
         </li>
 <!--        <li>Subscribe via &raquo;
-        	<a class="subscribe"  href="${rssUrl}">RSS</a>
+            <a class="subscribe"  href="${rssUrl}">RSS</a>
         </li> -->
-		</ul>
+        </ul>
 
-		<h3>View Options</h3> 
-		<ul class="tools">
-				<li><a class="list" href="<@s.url includeParams="all">
-					<@s.param name="orientation"></@s.param>
-				</@s.url>">List</a></li>
-				<li><a class="grid" href="<@s.url includeParams="all">
-					<@s.param name="orientation">GRID</@s.param>
-				</@s.url>">Grid</a></li>
-				<li><a class="grid" href="<@s.url includeParams="all">
-					<@s.param name="orientation">MAP</@s.param>
-				</@s.url>">Map</a></li>
-		</ul>
+        <h3>View Options</h3> 
+        <ul class="tools">
+                <li><a class="list" href="<@s.url includeParams="all">
+                    <@s.param name="orientation"></@s.param>
+                </@s.url>">List</a></li>
+                <li><a class="grid" href="<@s.url includeParams="all">
+                    <@s.param name="orientation">GRID</@s.param>
+                </@s.url>">Grid</a></li>
+                <li><a class="grid" href="<@s.url includeParams="all">
+                    <@s.param name="orientation">MAP</@s.param>
+                </@s.url>">Map</a></li>
+        </ul>
 
-				<form>
-					<@facetBy facetlist=resourceTypeFacets currentValues=resourceTypes label="Resource Type(s)" facetParam="resourceTypes" />
-					<@facetBy facetlist=documentTypeFacets currentValues=documentType label="Document Type(s)" facetParam="documentType" />
-					<@facetBy facetlist=integratableOptionFacets currentValues=integratableOptions label="Integratable" facetParam="integratableOptions" />
-					<@facetBy facetlist=fileAccessFacets currentValues=fileAccess label="File Access" facetParam="fileAccess" />
-				</form>
-	</div>
-	<div class="visible-phone">
-	<@search.searchLink "advanced" "Refine your search &raquo;" />
-	</div>
+                <form>
+                    <@facetBy facetlist=resourceTypeFacets currentValues=resourceTypes label="Resource Type(s)" facetParam="resourceTypes" />
+                    <@facetBy facetlist=documentTypeFacets currentValues=documentType label="Document Type(s)" facetParam="documentType" />
+                    <@facetBy facetlist=integratableOptionFacets currentValues=integratableOptions label="Integratable" facetParam="integratableOptions" />
+                    <@facetBy facetlist=fileAccessFacets currentValues=fileAccess label="File Access" facetParam="fileAccess" />
+                </form>
+    </div>
+    <div class="visible-phone">
+    <@search.searchLink "advanced" "Refine your search &raquo;" />
+    </div>
 
-	
-	<#if (referrer?? && referrer == 'TAG')>
-		<div class="notice">
-		<b>Welcome TAG Users</b><br/>
-		If you'd like to perform an integration:
-		<ol>
-			<#if !sessionData?? || !sessionData.authenticated>
-			<#assign returnurl><@s.url value="/search/search?url=" includeParams="all" /></#assign>
-			<li><a href="<@s.url value="/login"/>?url=${returnurl?url}">Login or Register</a></li>
-			</#if>
-			<li>Bookmark datasets you'd like to integrate</li>
-			<li>Visit your workspace to begin the integration process</li>
-		</ol>
-		<a href="http://dev.tdar.org/confluence/display/TDAR/Data+Integration">visit our documentation for more details</a>
-		</div>
-	</#if>
+    
+    <#if (referrer?? && referrer == 'TAG')>
+        <div class="notice">
+        <b>Welcome TAG Users</b><br/>
+        If you'd like to perform an integration:
+        <ol>
+            <#if !sessionData?? || !sessionData.authenticated>
+            <#assign returnurl><@s.url value="/search/search?url=" includeParams="all" /></#assign>
+            <li><a href="<@s.url value="/login"/>?url=${returnurl?url}">Login or Register</a></li>
+            </#if>
+            <li>Bookmark datasets you'd like to integrate</li>
+            <li>Visit your workspace to begin the integration process</li>
+        </ol>
+        <a href="http://dev.tdar.org/confluence/display/TDAR/Data+Integration">visit our documentation for more details</a>
+        </div>
+    </#if>
 
 
 
-	 <h2 class="totalRecords">${totalRecords} Results</h2>
-	 <div class="sort">
-		 <p>Sort By:</p>
-		 <form action=''>
-		    <@search.sortFields true/>
-		 </form>
-	 </div>
+     <h2 class="totalRecords">${totalRecords} Results</h2>
+     <div class="sort">
+         <p>Sort By:</p>
+         <form action=''>
+            <@search.sortFields true/>
+         </form>
+     </div>
 
-	<hr class="dbl" />
+    <hr class="dbl" />
     <@rlist.listResources resourcelist=results sortfield=sortField expanded=true listTag="" itemTag="" titleTag="h3" orientation=orientation mapPosition="top" mapHeight="450"/>
-	<hr class="dbl" />
+    <hr class="dbl" />
     <@search.pagination ""/>
 </div>
 <#else>
@@ -122,8 +122,8 @@
             <#assign facetLabel = facet.label />
         </#if>
         <li>
-			<input type="checkbox" <#if currentValues?size == 1>checked=checked</#if>>
-			<label class="<#if currentValues?size == 1>checked</#if>">
+            <input type="checkbox" <#if currentValues?size == 1>checked=checked</#if>>
+            <label class="<#if currentValues?size == 1>checked</#if>">
             <#if (facetlist?size > 1)>
                 <a href="<@s.url includeParams="all">
                     <@s.param name="${facetParam}">${facet}</@s.param>
@@ -137,12 +137,12 @@
                     <#nested>
                 </@s.url>">${facetLabel}</a>
             <#elseif currentValues?size == 1>
-				<@removeFacet facetlist=currentValues facetParam=facetParam />
+                <@removeFacet facetlist=currentValues facetParam=facetParam />
             <#else>
-	                ${facetLabel}
+                    ${facetLabel}
             </#if>
            <span>(${facet.count})</span>
-			</label>
+            </label>
         </li>
     </#list>
 </ul>
@@ -186,8 +186,8 @@
         $(function() {
             $('.sort form').NiceIt();
             $('.options form').NiceIt();
-		    $(initializeView);
-			
+            $(initializeView);
+            
         });
 </script>
 

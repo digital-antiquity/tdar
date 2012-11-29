@@ -16,7 +16,7 @@
 
 
 $(function(){
-	registerResourceCollectionDataTable();
+    registerResourceCollectionDataTable();
 });
 
 
@@ -65,8 +65,8 @@ $(function(){
 <div class="control-group">
 <label class="control-label">Make this collection public?</label>
 <div class="controls">
-	<label for="rdoVisibleTrue" class="radio inline"><input type="radio" id="rdoVisibleTrue" name="resourceCollection.visible" value="true" <@edit.checkedif resourceCollection.visible true /> />Yes</label> 
-	<label for="rdoVisibleFalse" class="radio inline"><input type="radio" id="rdoVisibleFalse" name="resourceCollection.visible" value="false" <@edit.checkedif resourceCollection.visible false /> />No</label>
+    <label for="rdoVisibleTrue" class="radio inline"><input type="radio" id="rdoVisibleTrue" name="resourceCollection.visible" value="true" <@edit.checkedif resourceCollection.visible true /> />Yes</label> 
+    <label for="rdoVisibleFalse" class="radio inline"><input type="radio" id="rdoVisibleFalse" name="resourceCollection.visible" value="false" <@edit.checkedif resourceCollection.visible false /> />No</label>
 </div>
 </div>
 

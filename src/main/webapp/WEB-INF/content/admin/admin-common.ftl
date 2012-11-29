@@ -16,9 +16,9 @@
         <td><a href="<@s.url value="/admin/usage/stats"/>">Usage Statistics</a> </td>
         <td><a href="<@s.url value="/admin/user"/>">User Statistics</a> </td>
         <td><a href="<@s.url value="/admin/keyword-stats"/>">Keyword Statistics</a> </td>
-		<#if administrator >
-			<td><a href="<@s.url value="/admin/searchindex/build"/>">reindex</a></td>
-		</#if>
+        <#if administrator >
+            <td><a href="<@s.url value="/admin/searchindex/build"/>">reindex</a></td>
+        </#if>
 </tr>
     </table>
 </div>    

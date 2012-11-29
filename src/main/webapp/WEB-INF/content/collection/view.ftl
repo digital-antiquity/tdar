@@ -40,16 +40,16 @@
 
 <hr/>
 
-    	 
+         
     <@list.listResources resourcelist=results sortfield=resourceCollection.sortBy  titleTag="h5" listTag="ul" itemTag="li" itemsPerRow=5
-    	orientation=resourceCollection.orientation	mapPosition="left" />
+        orientation=resourceCollection.orientation    mapPosition="left" />
     </#if>
 
 <#if editable>
 <div class="glide">
   <h3>Administrative Information</h3>
   
-	<@common.resourceUsageInfo />
+    <@common.resourceUsageInfo />
   
     <p><b>Collection Type:</b> ${resourceCollection.type.label}</p>
     <p><b>Visible:</b> ${resourceCollection.visible?string}</p>

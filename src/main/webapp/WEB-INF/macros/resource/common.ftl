@@ -734,7 +734,7 @@ this bit of freemarker is voodoo:
 
 <#macro cartouche persistable useDocumentType=false>
     <#local cartouchePart><@upperPersistableTypeLabel persistable /></#local>
-	<p class="cartouche ${cartouchePart?replace(" ","")?lower_case}"><#t>
+    <p class="cartouche ${cartouchePart?replace(" ","")?lower_case}"><#t>
     <#if (persistable.status)?? && !persistable.active>
         ${persistable.status} <#t>
     </#if> 
@@ -742,7 +742,7 @@ this bit of freemarker is voodoo:
     <span class="badge" style="clear:none;margin-right:20px"><@upperPersistableTypeLabel persistable /></span>
     <!-- /FIXME: REMOVE WHEN CARTOUCHES ARE FINISHED -->
 
-	<#nested /></p>
+    <#nested /></p>
 </#macro>
 
 <#-- FIXME: freemarker docs advise against setting locals w/ macro contents -->
@@ -759,51 +759,51 @@ this bit of freemarker is voodoo:
 
 <#macro loginMenu showMenu=false>
  <#if showMenu>
-	<ul class="subnav-rht hidden-phone hidden-tablet">
+    <ul class="subnav-rht hidden-phone hidden-tablet">
  </#if>
-		<#if !(authenticatedUser??) > 
-				<li><a href="<@s.url value="/account/new" />" class="button">Sign Up</a></li>
-				<li><a href="<@s.url value="/login" />" class="button">Log In</a></li>
-		<#else>
-				<li><a href="<@s.url value="/logout" />" class="button">Logout</a></li>
-		</#if>						
+        <#if !(authenticatedUser??) > 
+                <li><a href="<@s.url value="/account/new" />" class="button">Sign Up</a></li>
+                <li><a href="<@s.url value="/login" />" class="button">Log In</a></li>
+        <#else>
+                <li><a href="<@s.url value="/logout" />" class="button">Logout</a></li>
+        </#if>                        
  <#if showMenu>
-	</ul>
+    </ul>
  </#if>
 </#macro>
 
 <#macro resourceUsageInfo>
 <#if uploadedResourceAccessStatistic?has_content && totalResourceAccessStatistic?has_content>
-    	<table class="table tableFormat">
-    		<tr>
-    			<#if !persistable?has_content || !persistable.resourceType?has_content || persistable.resourceType == 'PROJECT' ><th>Total # of Resource</th></#if>
-    			<th>Total # of Files</th>
-    			<th>Total Space (Uploaded Only)</th>
-    			<th>Total Space (Used by System)</th>
-    		</tr>
-    		<tr>
-    			<#if !persistable?has_content || !persistable.resourceType?has_content || persistable.resourceType == 'PROJECT' ><td>${uploadedResourceAccessStatistic.countResources}</td></#if>
-    			<td>${uploadedResourceAccessStatistic.countFiles}</td>
-    			<td><@convertFileSize uploadedResourceAccessStatistic.totalSpace /></td>
-    			<td><@convertFileSize totalResourceAccessStatistic.totalSpace /></td>
-    		</tr>
-    	</table>
+        <table class="table tableFormat">
+            <tr>
+                <#if !persistable?has_content || !persistable.resourceType?has_content || persistable.resourceType == 'PROJECT' ><th>Total # of Resource</th></#if>
+                <th>Total # of Files</th>
+                <th>Total Space (Uploaded Only)</th>
+                <th>Total Space (Used by System)</th>
+            </tr>
+            <tr>
+                <#if !persistable?has_content || !persistable.resourceType?has_content || persistable.resourceType == 'PROJECT' ><td>${uploadedResourceAccessStatistic.countResources}</td></#if>
+                <td>${uploadedResourceAccessStatistic.countFiles}</td>
+                <td><@convertFileSize uploadedResourceAccessStatistic.totalSpace /></td>
+                <td><@convertFileSize totalResourceAccessStatistic.totalSpace /></td>
+            </tr>
+        </table>
     
 </#if>
 </#macro>
 
 <#macro printAddress address=address creatorId=-1 creatorType='person'  modifiable=false deletable=false showLabel=true>
-		<p><#nested><#if address.type?has_content && showLabel><b>${address.type.label!""}</b><br></#if>
-		   ${address.street1}<br/>
-		   ${address.street2}<br/>
-		   ${address.city}, ${address.state}, ${address.postal}<br/>
-		   ${address.country}<#if modifiable><br/>
-		   <a href="<@s.url value="/entity/${creatorType}/${creatorId?c}/address?addressId=${address.id}"/>">edit</a>
-		   </#if><#if deletable && modifiable> |</#if> 
-		   <#if deletable>
-			   <a href="<@s.url value="/entity/${creatorType}/${creatorId?c}/delete-address?addressId=${address.id}"/>">delete</a>
-		   </#if>
-		</p>
+        <p><#nested><#if address.type?has_content && showLabel><b>${address.type.label!""}</b><br></#if>
+           ${address.street1}<br/>
+           ${address.street2}<br/>
+           ${address.city}, ${address.state}, ${address.postal}<br/>
+           ${address.country}<#if modifiable><br/>
+           <a href="<@s.url value="/entity/${creatorType}/${creatorId?c}/address?addressId=${address.id}"/>">edit</a>
+           </#if><#if deletable && modifiable> |</#if> 
+           <#if deletable>
+               <a href="<@s.url value="/entity/${creatorType}/${creatorId?c}/delete-address?addressId=${address.id}"/>">delete</a>
+           </#if>
+        </p>
 </#macro>
 
 

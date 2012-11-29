@@ -28,13 +28,13 @@ var updateProgress = function() {
       type:'POST',
       success: function(data) {
             if (data.transactionStatus == 'PENDING_TRANSACTION') {
-            	$("#polling-status").html("still pending...");
+                $("#polling-status").html("still pending...");
                 setTimeout(updateProgress, TIMEOUT);
             } else {
-            	$("#polling-status").html("done: " + data.transactionStatus);
-            	if (data.transactionStatus == 'TRANSACTION_SUCCESSFUL') {
-            		window.document.location = "${successPath}";
-            	}
+                $("#polling-status").html("done: " + data.transactionStatus);
+                if (data.transactionStatus == 'TRANSACTION_SUCCESSFUL') {
+                    window.document.location = "${successPath}";
+                }
             }
             if (data.errors  != undefined && data.errors != "") {
                 $("#asyncErrors").html("<div class='action-errors ui-corner-all'>"+data.errors+"</div>");

@@ -12,20 +12,20 @@
 
 <div>
 <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='process-payment-request'>
-	<@s.hidden name="id" value="${invoice.id}"/>
+    <@s.hidden name="id" value="${invoice.id}"/>
 
-	<@s.radio list="allTransactionTypes" name="invoice.transactionType" cssClass="transactionType" emptyOption='false' />
+    <@s.radio list="allTransactionTypes" name="invoice.transactionType" cssClass="transactionType" emptyOption='false' />
 
-	<div class="typeToggle credit_card invoice manual">
-		<@s.textfield name="invoice.billingPhone" cssClass="input-xlarge phoneUS  required-visible" label="Billing Phone #" />
-	</div>
-	<div class="typeToggle invoice">
-		<@s.textfield name="invoice.invoiceNumber" cssClass="input-xlarge" label="Invoice #" />
-	</div>
-	<div class="typeToggle manual">
-		<@s.textarea name="invoice.otherReason" cssClass="input-xlarge" label="Other Reason" />
-	</div>
-	
+    <div class="typeToggle credit_card invoice manual">
+        <@s.textfield name="invoice.billingPhone" cssClass="input-xlarge phoneUS  required-visible" label="Billing Phone #" />
+    </div>
+    <div class="typeToggle invoice">
+        <@s.textfield name="invoice.invoiceNumber" cssClass="input-xlarge" label="Invoice #" />
+    </div>
+    <div class="typeToggle manual">
+        <@s.textarea name="invoice.otherReason" cssClass="input-xlarge" label="Other Reason" />
+    </div>
+    
     <@edit.submit fileReminder=false />
 </@s.form>
 
@@ -37,7 +37,7 @@ $(document).ready(function() {
     TDAR.common.initEditPage($('#MetadataForm')[0]);
     $(".transactionType[type=radio]").click(function() {switchType(this,'#MetadataForm');});
    if (!$(".transactionType[type=radio]:checked").length) {
-	$($(".transactionType[type=radio]")[0]).click();
+    $($(".transactionType[type=radio]")[0]).click();
    }
    switchType($(".transactionType[type=radio]:checked",$('#MetadataForm')),"#MetadataForm");
 

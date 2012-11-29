@@ -14,12 +14,12 @@
 </head>
 
 <div id="titlebar" parse="true">
-	<h1>${authenticatedUser.properName}'s Dashboard</h1>
-	
-	<div class="news alert">
-	<B>${siteAcronym} Update:</B>
-	We just upgraded tDAR with a bunch of additional features, a list of features are available <a href="http://www.tdar.org/news/2012/07/tdar-software-update-harris/">here</a> on the tDAR website. 
-	</div>
+    <h1>${authenticatedUser.properName}'s Dashboard</h1>
+    
+    <div class="news alert">
+    <B>${siteAcronym} Update:</B>
+    We just upgraded tDAR with a bunch of additional features, a list of features are available <a href="http://www.tdar.org/news/2012/07/tdar-software-update-harris/">here</a> on the tDAR website. 
+    </div>
 </div>
 
 
@@ -43,26 +43,26 @@
 <#if contributor>
 <#if (activeResourceCount == 0)>
 <div class="row">
-	<div class="span9">
-		<h2>Getting Started</h2>
-		<ol style='list-style-position:inside'>
-		    <li><a href="<@s.url value="/project/add"/>">Start a new Project</a></li>
-		    <li><a href="<@s.url value="/resource/add"/>">Add a new Resource</a></li>
-		</ol>
-	</div>
+    <div class="span9">
+        <h2>Getting Started</h2>
+        <ol style='list-style-position:inside'>
+            <li><a href="<@s.url value="/project/add"/>">Start a new Project</a></li>
+            <li><a href="<@s.url value="/resource/add"/>">Add a new Resource</a></li>
+        </ol>
+    </div>
 </div>
 <#else>
 <div class="row">
-	<div class="span9">
-		<h2>At a glance</h2>
-		<div class="row">
-    	    <div class="span4"><@common.pieChart statusCountForUser "statusForUser" "userSubmitterContext=true&includedStatuses" /></div>
-    	    <div class="span5"><@common.pieChart resourceCountForUser "resourceForUser" "useSubmitterContext=true&resourceTypes" /></div>
-	    </div>
-	</div>
+    <div class="span9">
+        <h2>At a glance</h2>
+        <div class="row">
+            <div class="span4"><@common.pieChart statusCountForUser "statusForUser" "userSubmitterContext=true&includedStatuses" /></div>
+            <div class="span5"><@common.pieChart resourceCountForUser "resourceForUser" "useSubmitterContext=true&resourceTypes" /></div>
+        </div>
+    </div>
 </div>
 
-<hr />	
+<hr />    
 
 <div class="row">
     <div class="span9">
@@ -90,23 +90,23 @@
 
 <#if (emptyProjects?? && !emptyProjects.empty )>
 <div class="row">
-	<div class="span9" id="divEmptyProjects">
-	    <h2>Empty Projects</h2>
-	    <ol style='list-style-position:inside' id="emptyProjects">
-	    <#list emptyProjects as res>
-	    <li id="li-recent-resource-${res.id?c}">
-	            <a href="<@s.url value='/${res.urlNamespace}/view'><@s.param name="id" value="${res.id?c}"/></@s.url>">
-	                <@common.truncate res.title 70 />
-	            </a> 
-	        <div class="recent-nav pull-right">
-	            <a href="<@s.url value='/resource/add?projectId=${res.id?c}'><@s.param name="id" value="${res.id?c}"/></@s.url>" title="add a resource to this project">add resource</a> |
-	            <a href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>">edit</a> |
-	            <a href="<@s.url value='/${res.urlNamespace}/delete'><@s.param name="id" value="${res.id?c}"/></@s.url>" >delete</a>
-	        </div>
-	    </li>
-	    </#list>
-	    </ol>
-	</div>
+    <div class="span9" id="divEmptyProjects">
+        <h2>Empty Projects</h2>
+        <ol style='list-style-position:inside' id="emptyProjects">
+        <#list emptyProjects as res>
+        <li id="li-recent-resource-${res.id?c}">
+                <a href="<@s.url value='/${res.urlNamespace}/view'><@s.param name="id" value="${res.id?c}"/></@s.url>">
+                    <@common.truncate res.title 70 />
+                </a> 
+            <div class="recent-nav pull-right">
+                <a href="<@s.url value='/resource/add?projectId=${res.id?c}'><@s.param name="id" value="${res.id?c}"/></@s.url>" title="add a resource to this project">add resource</a> |
+                <a href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>">edit</a> |
+                <a href="<@s.url value='/${res.urlNamespace}/delete'><@s.param name="id" value="${res.id?c}"/></@s.url>" >delete</a>
+            </div>
+        </li>
+        </#list>
+        </ol>
+    </div>
 </div>
 <hr />
 </#if>
@@ -131,19 +131,19 @@
     <#if authenticatedUser.penultimateLogin??>
         <strong>Last Login: </strong>${authenticatedUser.penultimateLogin?datetime}<br/>
     </#if>
-	<a href="<@s.url value='/entity/person/edit?id=${sessionData.person.id?c}'/>">edit your profile</a>
+    <a href="<@s.url value='/entity/person/edit?id=${sessionData.person.id?c}'/>">edit your profile</a>
 </div>
 
-	<div>
-		<h2>Your Account(s)</h2>
-		<ul>
-		<#list accounts as account>
-			<li>
-				<a href="<@s.url value="/billing/${account.id?c}" />">${account.name!"unamed"}</a>
-			</li>
-		</#list>
-		</ul>		
-	</div>
+    <div>
+        <h2>Your Account(s)</h2>
+        <ul>
+        <#list accounts as account>
+            <li>
+                <a href="<@s.url value="/billing/${account.id?c}" />">${account.name!"unamed"}</a>
+            </li>
+        </#list>
+        </ul>        
+    </div>
    <div class=""><h2>Collections You Created </h2>
       <@listCollections resourceCollections>
         <#if (!resourceCollections?has_content )>

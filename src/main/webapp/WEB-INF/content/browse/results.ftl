@@ -26,19 +26,19 @@
                             <B>Registered Public Archaeologist</B>:${creator.rpaNumber!"no"}
                     </td>
                     <td>
-                    	<#assign registered = false />
-	                    <#if creator.registered?has_content>
-	                        <#assign registered = creator.registered>
+                        <#assign registered = false />
+                        <#if creator.registered?has_content>
+                            <#assign registered = creator.registered>
                         </#if>
-    	                <#if registered && (editor || id == authenticatedUser.id)>
+                        <#if registered && (editor || id == authenticatedUser.id)>
                             <#if creator.lastLogin?has_content>
                                 <@view.datefield "Last Login"  creator.lastLogin />
                             <#else>
                                 <@view.textfield "Last Login"  "No record" />
                             </#if>                    
-	                    <#else>
-	                        <@view.boolean "Registered User" registered />
-    	                </#if>
+                        <#else>
+                            <@view.boolean "Registered User" registered />
+                        </#if>
                     </td>
                 </tr>
                 <tr>
@@ -70,13 +70,13 @@
                 </tr>
                 </table>
 
-				<@common.resourceUsageInfo />
+                <@common.resourceUsageInfo />
 
 <#if (editor || id == authenticatedUser.id) >
 <#list creator.addresses  as address>
-	<div class="controls-row">
-		<@common.printAddress  address=address creatorType=creator.creatorType?lower_case creatorId=creator.id />
-	</div>
+    <div class="controls-row">
+        <@common.printAddress  address=address creatorType=creator.creatorType?lower_case creatorId=creator.id />
+    </div>
 </#list>
 
 </#if>

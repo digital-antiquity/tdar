@@ -34,14 +34,14 @@
 <script>
 $(document).ready(function() {
     jQuery.fn.dataTableExt.oPagination.iFullNumbersShowPages =3;
-    	$.extend( $.fn.dataTableExt.oStdClasses, {
-	    "sWrapper": "dataTables_wrapper form-inline"
-	} );
+        $.extend( $.fn.dataTableExt.oStdClasses, {
+        "sWrapper": "dataTables_wrapper form-inline"
+    } );
     
 //        sDom:'<"datatabletop"ilrp>t<>', //omit the search box
     var options = { 
         "sAjaxDataProp":"results.results",
-  		"sDom": "<'row'<'span6'l><'span6'>r>t<'row'<'span4'i><'span5'p>>",
+          "sDom": "<'row'<'span6'l><'span6'>r>t<'row'<'span4'i><'span5'p>>",
         "bProcessing": true,
         "bServerSide":true,
         "bScrollInfinite": false,
