@@ -931,7 +931,7 @@ ol.MAP .listItemPart {
 }
 
 .showcase-content-container {
-	margin-left: -2px !important;
+//	margin-left: -2px !important;
 }
 
 .resource-nav.navbar-static li  a {
@@ -1335,3 +1335,7 @@ h3.collection-mid-red::before {
     resize:vertical;
 }
 
+.showcase-button-wrapper {
+	visibility:hidden;
+	display:none;
+}

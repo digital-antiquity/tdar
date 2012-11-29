@@ -69,6 +69,7 @@
 
     <#local srcs = [
                     "/css/tdar-bootstrap.css",
+                    "/css/famfamfam.css",
                     "/includes/ivaynberg-select2-817453b/select2.css",
                     "/includes/jquery.aw-showcase.1.1.1/jquery.aw-showcase/css/style.css",
                     "/includes/blueimp-jquery-file-upload-3c5d440/css/jquery.fileupload-ui.css",

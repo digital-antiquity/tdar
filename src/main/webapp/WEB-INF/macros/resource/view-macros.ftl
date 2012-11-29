@@ -110,10 +110,20 @@ View freemarker macros
 				</h3>
       <@embargoCheck/>
 		<ul class="downloads unstyled-list">
+		<#assign extensionMap = { 'pdf':'page-white-acrobat', 'doc':'page-white-word','docx':'page-white-word' ,'DOCUMENT','page-white-text',
+						'mdb':'page-white-key','mdbx':'page-white-key','accdb':'page-white-key',
+						'xls':'page-excel','xlsx':'page-excel','DATASET':'page-white-text','CODING_SHEET':'page-white-text',
+						'IMAGE':'page-white-picture','SENSORY_DATA':'page-white-picture','ONTOLOGY','page-white-text'
+		  } />
+
         <#list resource.informationResourceFiles as irfile>
               <#if irfile.latestUploadedVersion??>
-					<li class="${irfile.latestUploadedVersion.extension} <#if irfile.deleted>view-deleted-file</#if>">
-	                    <@createFileLink irfile />
+			  		<#local ext = extensionMap[irfile.latestUploadedVersion.extension?lower_case ]!'' />
+              		<#if !ext?has_content>
+              		<#local ext = extensionMap[resource.resourceType ] />
+              		</#if>
+					<li class="<#if irfile.deleted>view-deleted-file</#if> media">
+	                    <i class="iconf ${ext} pull-left"></i><@createFileLink irfile />
               </#if>
               <#if irfile.latestTranslatedVersion?? && resource.resourceType == 'DATASET' >
                 <blockquote>
@@ -526,7 +536,7 @@ No categories or subcategories specified.
 <#macro showcase>
     <#local numImagesToDisplay= resource.visibleFilesWithThumbnails?size />
   <#assign numImagesToDisplay=0/>
-  <div id="showcase" class="showcase" style="display:none;<#if !authenticatedUser??>margin:0px !important</#if>"> 
+  <div id="showcase" class="showcase controls-row" style="display:none;<#if !authenticatedUser??>margin:0px !important</#if>"> 
     <#list resource.visibleFilesWithThumbnails as irfile>
           <div class="showcase-slide"> 
             <#if authenticatedUser??>
