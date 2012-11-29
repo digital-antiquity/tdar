@@ -1135,70 +1135,70 @@ aside.tdar-icon:before {
 }
 
 
-.responsive-tablet i.document-bg-large {
+.responsive-tablet i.document-bg-large, i.document-125 {
 	background: url(/images/r4/resource-types-large.png) -548px 0px no-repeat;
 	width: 125px;
 	height: 125px;
 	display: inline-block;
 }
 
-.responsive-tablet i.dataset-bg-large {
+.responsive-tablet i.dataset-bg-large, i.dataset-125 {
 	background: url(/images/r4/resource-types-large.png) -548px -245px no-repeat;
 	width: 125px;
 	height: 125px;
 	display: inline-block;
 }
 
-.responsive-tablet i.coding_sheet-bg-large {
+.responsive-tablet i.coding_sheet-bg-large, i.coding_sheet-125 {
 	background: url(/images/r4/resource-types-large.png) -548px -491px no-repeat;
 	width: 125px;
 	height: 125px;
 	display: inline-block;
 }
 
-.responsive-tablet i.ontology-bg-large {
+.responsive-tablet i.ontology-bg-large, i.ontology-125 {
 	background: url(/images/r4/resource-types-large.png) -548px -736px no-repeat;
 	width: 125px;
 	height: 125px;
 	display: inline-block;
 }
 
-.responsive-tablet i.geospatial-bg-large {
+.responsive-tablet i.geospatial-bg-large, i.geospatial-125 {
 	background: url(/images/r4/resource-types-large.png) -548px -982px no-repeat;
 	width: 125px;
 	height: 125px;
 	display: inline-block;
 }
 
-.responsive-tablet i.sensory_data-bg-large {
+.responsive-tablet i.sensory_data-bg-large, i.sensory_data-125 {
 	background: url(/images/r4/resource-types-large.png) -548px -1227px no-repeat;
 	width: 125px;
 	height: 125px;
 	display: inline-block;
 }
 
-.responsive-tablet i.image-bg-large {
+.responsive-tablet i.image-bg-large, i.image-125 {
 	background: url(/images/r4/resource-types-large.png) -548px -1964px no-repeat;
 	width: 125px;
 	height: 125px;
 	display: inline-block;
 }
 
-.responsive-tablet i.video-bg-large {
+.responsive-tablet i.video-bg-large, i.video-125 {
 	background: url(/images/r4/resource-types-large.png) -548px -1473px no-repeat;
 	width: 125px;
 	height: 125px;
 	display: inline-block;
 }
 
-.responsive-tablet i.collection-bg-large {
+.responsive-tablet i.collection-bg-large, i.collection-125 {
 	background: url(/images/r4/resource-types-large.png) -548px -1719px no-repeat;
 	width: 125px;
 	height: 125px;
 	display: inline-block;
 }
 
-.responsive-tablet i.project-bg-large {
+.responsive-tablet i.project-bg-large, i.project-125 {
 	background: url(/images/r4/resource-types-large.png) -548px -2210px no-repeat;
 	width: 125px;
 	height: 125px;

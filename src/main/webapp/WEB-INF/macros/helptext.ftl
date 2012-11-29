@@ -99,6 +99,7 @@ view all investigation types</a></div>
 <div id="divAccessRightsTips" style="display:none">
 <p>Determines who can edit a document or related metadata. Enter the first few letters of the person's last name. 
 The form will check for matches in the ${siteAcronym} database and populate the related fields.</p>
+<br/>
 <em>Types of Permissions</em>
 <dl>
     <dt>View All</dt>

@@ -14,7 +14,7 @@ html markup) you will probably not like the results
     	</#if>
     </#macro>
 
-<#macro listResources resourcelist=resources_ sortfield=DEFAULT_SORT editable=false bookmarkable=authenticated 
+<#macro listResources resourcelist=resources_ sortfield=DEFAULT_SORT editable=false bookmarkable=authenticated itemsPerRow=4
 	expanded=false listTag='ul' itemTag='li' headerTag="h3" titleTag="h3" orientation=DEFAULT_ORIENTATION mapPosition="" mapHeight="">
   <#local showProject = false />
   <#local prev =""/>
@@ -30,7 +30,7 @@ html markup) you will probably not like the results
   <#elseif orientation == "MAP" >
 	<#assign listTag_="ol"/>  
 	<#assign itemTag_="li"/> 
-	<div class="row">
+	<div class="resource-list controls-row">
   	<#if mapPosition=="top" || mapPosition == "right">
   	<div class="span9 google-map" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if>>
   
@@ -65,12 +65,12 @@ html markup) you will probably not like the results
             <#if first || (prev != key) && key?has_content>
                 <#if prev?has_content></${listTag_}></#if>
                 <${headerTag}><#if key?has_content>${key}<#else>${defaultKeyLabel}</#if></${headerTag}>
-                <${listTag_} class='resource-list'>
+                <${listTag_} class='resource-list  controls-row ${orientation}'>
             </#if>
             <#local prev=key />
         <#elseif resource_index == 0>
             <#-- default case for group tag -->
-            <@printTag listTag_ "resource-list row ${orientation}" false />
+            <@printTag listTag_ "resource-list  controls-row ${orientation}" false />
         </#if>  
 		<#-- printing item tag -->
             <@printTag itemTag_ "listItem ${itemClass!''}" false>
@@ -82,13 +82,19 @@ html markup) you will probably not like the results
 				<#if resource_index != 0>
 				<#if orientation != 'GRID'>
 					<hr/>
-				<#elseif resource_index   % 4 = 0>
-            		</div>	</div><hr /><div class="row ${orientation} resource-list"><div class="span2">
+				<#elseif resource_index   % itemsPerRow = 0>
+            		</div>	</div><hr /><div class=" ${orientation} resource-list controls-row"><div class="span2">
 				</#if>
 				</#if>
             </#if>
             <#if orientation == 'GRID'>
-    			<a href="<@s.url value="/${resource.urlNamespace}/${resource.id?c}"/>" target="_top"><@view.firstThumbnail resource /></a><br/>
+    			<a href="<@s.url value="/${resource.urlNamespace}/${resource.id?c}"/>" target="_top">
+    				<#if resource.supportsThumbnails>
+    					<@view.firstThumbnail resource />
+    				<#else>
+    					<i class="${resource.resourceType?lower_case}-125"></i>
+    				</#if>
+    				</a><br/>
             </#if>
             <@searchResultTitleSection resource titleTag />
 			<@printLuceneExplanation  resource />
@@ -103,12 +109,12 @@ html markup) you will probably not like the results
   <#if orientation == "MAP">
   </div>
   	<#if mapPosition=="left" || mapPosition == "bottom">
-	<div class="span9 google-map" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if> >
+  	<#-- fixme: should be a span 9, but this seems to flow down instead of fit in 1 column -->
+	<div class="span8 google-map" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if> >
 	
 	</div>
 	</#if>	
 	</div>    
-	<#-- JIM FIXME: WHERE SHOULD I GO -->
 		<script>
 		$(document).ready(function() {
         TDAR.maps.setupMapResult();

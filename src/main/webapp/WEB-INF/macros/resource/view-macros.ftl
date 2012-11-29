@@ -106,7 +106,7 @@ View freemarker macros
   <#if (resource.totalNumberOfFiles?has_content)>
 				<h3 class="downloads">
 					Downloads
-					<span class="downloadNumber">${resource.totalNumberOfFiles?c}</span>
+					<span class="downloadNumber hidden-tablet">${resource.totalNumberOfFiles?c}</span>
 				</h3>
       <@embargoCheck/>
 		<ul class="downloads unstyled-list">
@@ -727,9 +727,10 @@ ${_date?string('MM/dd/yyyy')}<#t>
                         <@linkToResource resource resource.title!'<em>(no title)</em>' />
                     </td>
                     <#if removeable>
-                    <td><button class="addAnother minus" 
+                    <td>
+                    <button class="btn  btn-mini repeat-row-delete" 
                                 type="button" tabindex="-1" 
-                                onclick='removeResourceClicked(${resource.id?c}, this);false;'><img src="/images/minus.gif" class="minus"></button></td>
+                                onclick='_removeResourceClicked(${resource.id?c}, this);false;'><i class="icon-trash"></i></button></td>
                     </#if>
                 </tr>
             </#list>
