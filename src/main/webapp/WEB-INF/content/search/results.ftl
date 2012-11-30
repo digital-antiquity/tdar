@@ -28,7 +28,7 @@
 
     <div id="sidebar-left" parse="true" class="options hidden-phone">
                 
-                <h2>Search Options</h2>
+                <h2 class="totalRecords">Search Options</h2>
 
     <ul class="tools media-list">
         <li class="media"><a href="<@search.searchUrl "advanced"/>"><i class="pull-left search-magnify-icon-red" ></i>Refine your search &raquo;</a></li>
@@ -182,8 +182,8 @@
 <script type="text/javascript">
         //pretty controls for sort options, sidebar options (pulled from main.js)
         $(function() {
-            $('.sort form').NiceIt();
-            $('.options form').NiceIt();
+//            $('.sort form').NiceIt();
+//            $('.options form').NiceIt();
             $(initializeView);
             
         });
