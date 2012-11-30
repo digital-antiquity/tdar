@@ -1194,3 +1194,7 @@ select.searchType {
 	width:40px;
 	padding-right:6px;
 }
+
+p.copyright-notice {
+    margin-top: 1em;    
+}

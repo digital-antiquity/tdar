@@ -18,7 +18,7 @@
 
         <!-- fixme: figure out differences -->
         
-        <link href="<@s.url value="/css/tdar-base.css"/>" rel="stylesheet" />
+        <link href="<@s.url value="/css/vc/${common.tdarBuildId}/tdar-base.css"/>" rel="stylesheet" />
         
         <script src="<@s.url value="/includes/tdar.core.js"/>"></script>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/${jquery_version}/jquery.min.js"></script>
@@ -203,6 +203,14 @@ ${_stacktrace?html}
     <footer>
         <div class="container">
             <#include "${themeDir}/footer.dec" />
+            <div>
+                <p><small>
+                    build #: ${common.tdarBuildId}
+                    <#if authenticatedUser??>
+                       - logged in as: <a href="<@s.url value="/browse/creators/${sessionData.person.id?c}"/>">${sessionData.person.email}</a>
+                    </#if>
+                </small></p>
+            </div>
         </div>
 
     </footer>

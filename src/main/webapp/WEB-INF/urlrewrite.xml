@@ -175,8 +175,8 @@
 
     <rule>
         <name>remove version hash</name>
-        <from>^/includes/vc/[0-9a-f]+/(.*)$</from>
-        <to>/includes/$1</to>
+        <from>^(/[a-z]+)/vc/[0-9a-f]+/(.*)$</from>
+        <to>/$1/$2</to>
     </rule>
 	<rule>
 		<from>^/workspace$</from>

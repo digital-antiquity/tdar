@@ -1,11 +1,11 @@
 <#escape _untrusted as _untrusted?html>
-<#import "/${themeDir}/settings.ftl" as settings>
+<#import "/${themeDir}/settings.ftl" as settings />
 <#-- 
 $Id:Exp$
 Common macros used in multiple contexts
 -->
-<#macro convertFileSize filesize=0>
 <#assign mb = 1048576 />
+<#macro convertFileSize filesize=0>
 <#assign kb = 1024 />
 <#if (filesize > mb)>
 ${(filesize / mb)?string(",##0.00")}mb
@@ -15,7 +15,8 @@ ${(filesize / kb)?string(",##0.00")}kb
 ${filesize?string(",##0.00")}b
 </#if>
 </#macro>
-
+<#assign tdarBuildId><#include  "/version.txt" parse=false/></#assign>
+<#assign tdarBuildId = tdarBuildId?trim?replace("+", "000" + .now?string("yyMMddHHmmss")) />
 
 <#macro globalJavascript>
 <script type="text/javascript">
