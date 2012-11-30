@@ -1426,7 +1426,7 @@ $(function() {
             <li><a href="#divAccessRights"><span class="visible-phone visible-tablet" title="Permissions">Permis.</span><span class="hidden-phone hidden-tablet">Permissions</span></a></li>
         </ul>
             <div id="fakeSubmitDiv" class="pull-right">
-                <button type=button class="button btn btn-primary submitButton" id="fakeSubmitButton">Save Now</button>
+                <button type=button class="button btn btn-primary submitButton" id="fakeSubmitButton">Save</button>
                 <img src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner fade" />
             </div>
         </div>

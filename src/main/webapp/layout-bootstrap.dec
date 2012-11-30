@@ -129,11 +129,15 @@
 
 
 </#if>
+    <#if  page.properties["div.toolbars"]?? && page.properties["div.toolbars"] != "">
+    	<!-- toolbar -->
+        ${page.properties["div.toolbars"]}
+    </#if>
+    
+
     <div class="row">
+    <!-- action errors  fix me only show if visible -->
         <div class="span12">
-            <#if  page.properties["div.toolbars"]?? && page.properties["div.toolbars"] != "">
-                ${page.properties["div.toolbars"]}
-            </#if>
             <#if  page.properties["div.messages"]?? && page.properties["div.messages"] != "">
                 ${page.properties["div.messages"]}
             </#if>

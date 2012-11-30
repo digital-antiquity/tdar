@@ -12,7 +12,7 @@
 <@edit.sidebar /> 
 <@edit.subNavMenu />
  
-<@s.form name='sensoryDataForm' id='frmSensoryData'  cssClass="form-horizontal" method='post' action='save' enctype='multipart/form-data'>
+<@s.form name='sensoryDataForm' id='frmSensoryData'  cssClass="span9 form-horizontal" method='post' action='save' enctype='multipart/form-data'>
 
 <@edit.basicInformation "sensory object" "sensoryData">
     <br/>

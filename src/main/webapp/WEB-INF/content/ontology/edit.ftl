@@ -11,7 +11,7 @@
 <@edit.subNavMenu />
 <div>
 
-<@s.form id='resourceMetadataForm' method='post' action='save' enctype='multipart/form-data' cssClass="form-horizontal">
+<@s.form id='resourceMetadataForm' method='post' action='save' enctype='multipart/form-data' cssClass="span9 form-horizontal">
 
 <@edit.basicInformation "ontology" "ontology"/>
 <@edit.citationInfo "ontology" />

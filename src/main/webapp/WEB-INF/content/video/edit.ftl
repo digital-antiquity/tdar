@@ -12,7 +12,7 @@
 <@edit.sidebar />
 <@edit.subNavMenu />
 
-<@s.form name='VideoMetadataForm' id='VideoMetadataForm'  cssClass="form-horizontal"  method='post' enctype='multipart/form-data' action='save'>
+<@s.form name='VideoMetadataForm' id='VideoMetadataForm'  cssClass="span9 form-horizontal"  method='post' enctype='multipart/form-data' action='save'>
 
 <@edit.basicInformation "video" "video">
 
