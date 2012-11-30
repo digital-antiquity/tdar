@@ -865,7 +865,8 @@ ${_date?string('MM/dd/yyyy')}<#t>
                     <li><strong>Edition</strong><br>${resource.edition}</li>
                     </#if>
                     <#if (resource.publisher?has_content ||  resource.publisherLocation?has_content)>
-                        <li><strong>Publisher</strong><br>${resource.publisher.name} 
+                        <li><strong>Publisher</strong><br>
+                        	<#if resource.publisher?has_content>${resource.publisher.name}</#if> 
                             <#if resource.degree?has_content>${resource.degree.label}</#if>
                             <#if resource.publisherLocation?has_content> (${resource.publisherLocation}) </#if>
                         </li>
