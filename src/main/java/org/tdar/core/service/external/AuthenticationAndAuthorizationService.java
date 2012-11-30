@@ -442,6 +442,7 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
         NEW;
     }
 
+    @Transactional
     public AuthenticationStatus authenticatePerson(String loginUsername, String loginPassword, HttpServletRequest request, HttpServletResponse response,
             SessionData sessionData) {
         AuthenticationResult result = getAuthenticationProvider().authenticate(request, response, loginUsername, loginPassword);

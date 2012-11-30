@@ -134,6 +134,7 @@
     <a href="<@s.url value='/entity/person/edit?id=${sessionData.person.id?c}'/>">edit your profile</a>
 </div>
 
+<#if payPerIngestEnabled>
     <div>
         <h2>Your Account(s)</h2>
         <ul>
@@ -144,6 +145,7 @@
         </#list>
         </ul>        
     </div>
+    </#if>
    <div class=""><h2>Collections You Created </h2>
       <@listCollections resourceCollections>
         <#if (!resourceCollections?has_content )>
