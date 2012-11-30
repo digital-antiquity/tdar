@@ -303,7 +303,7 @@ header .welcome-drop ul {
 
 .hero ul {
     position: absolute;
-    top: 0;
+    top: -50px;
     right: -11px;
     background-color: rgba(106, 83, 58, 0.2);
     padding: 12px 12px 12px 0;
