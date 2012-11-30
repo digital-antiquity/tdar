@@ -111,7 +111,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         controller.setUploadFile(Arrays.asList(new File(TestConstants.TEST_DOCUMENT)));
         controller.setUploadFileFileName(Arrays.asList(TestConstants.TEST_DOCUMENT_NAME));
         String uploadStatus = controller.upload();
-        assertNull(controller.getErrorMessage());
+        assertTrue(controller.getErrorMessage().contains("updated"));
         assertEquals(APIController.SUCCESS, uploadStatus);
         assertEquals(StatusCode.UPDATED.getResultName(), controller.getStatus());
 
