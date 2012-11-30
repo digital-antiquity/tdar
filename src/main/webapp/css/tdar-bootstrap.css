@@ -1104,3 +1104,7 @@ h3.collection-mid-red::before {
 select.searchType {
 	text-align: left !important;
 }
+
+.sort + .dbl {
+	margin-top:2px !important;
+}
