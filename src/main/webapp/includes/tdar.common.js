@@ -467,31 +467,6 @@ function updateBookmarkTag($elem, url, strOnclick, imgSrc, txt) {
     $elem.replaceWith(newElem);
 }
 
-function formSubmitDisable(optionalMsg) {
-    var waitmsg = optionalMsg;
-    var $button = $('#submitButton');
-    if (!waitmsg)
-        waitmsg = "Please wait...";
-    if ($button.data('oldVal') == undefined) {
-        $button.data('oldVal', $('#submitButton').val());
-    }
-    $button.val(waitmsg);
-    $button.attr('disabled', 'disabled');
-}
-
-// enable the save button and replace it's former label (e.g. from 'please wait'
-// to 'save')
-function formSubmitEnable() {
-    var $button = $('#submitButton');
-    var oldVal = $button.data('oldVal');
-    // it's likely formSubmitDisable was called at least once before now, but
-    // don't assume
-    if (oldVal) {
-        $button.val($button.data('oldVal'));
-    }
-    $button.removeAttr('disabled');
-}
-
 //apply watermark input tags in context with watermark attribute.  'context' can be any valid argument to jQuery(selector[, context])
 function applyWatermarks(context) {
     if(!Modernizr.input.placeholder){
@@ -1062,11 +1037,8 @@ TDAR.common = function() {
                 }
             },
             submitHandler : function(f) {
-                var $button = $('input[type=submit]', f);
-                $button.siblings(".waitingSpinner").css('visibility', 'visible');
-                // prevent multiple form submits (e.g. from double-clicking the submit button)
-                $button.attr('disabled', 'disabled');
-                
+                //prevent double submit and dazzle user with animated gif
+                _submitButtonStartWait();
                 _clearInputs($form.find(".creatorPerson.hidden, .creatorInstitution.hidden")); 
                 
                 f.submit();
@@ -1225,21 +1197,35 @@ TDAR.common = function() {
     };
 
     
+   var _submitButtonStartWait = function(){
+       var $submitDivs = $('#editFormActions, #fakeSubmitDiv');
+       var $buttons = $submitDivs.find(".submitButton");
+       $buttons.prop("disabled", true);
+       
+       //fade in the wait icon
+       $submitDivs.find(".waitingSpinner").addClass("in");
+       
+       //reenable after reasonable time, e.g. so user can resubmit if user stopped the request (can't trust window.onstop)
+       window.setTimeout(_submitButtonStopWait, 20 * 1000);
+       
+   };
+   
+   var _submitButtonStopWait = function() {
+       var $submitDivs = $('#editFormActions, #fakeSubmitDiv');
+       var $buttons = $submitDivs.find(".submitButton");
+       $buttons.prop("disabled", false);
+       
+       //fade in the wait icon
+       $submitDivs.find(".waitingSpinner").removeClass("in");
+   } 
     
     
     //public: initialize the edit page form
     var _initEditPage = function(form) {
-        //Multi-submit prevention disables submit button, so it will be disabled if we get here via back button. So we explicitly enable it. 
-        var $button = $("#submitButton");
-        $button.removeAttr('disabled').removeClass("waitingSpinner");
+       //Multi-submit prevention disables submit button, so it will be disabled if we get here via back button. So we explicitly enable it. 
+        _submitButtonStopWait();
         
         $("#fakeSubmitButton").click(function() {$("#submitButton").click();});
-        //FIXME: we should figure out if a) $.ready is not always called for bfcached pages, and b)if not, where to hook into 'pageshow' event.
-        //I'm 99% sure the following code in this pageshow handler will never execute because caller runs in a $.ready handler.
-        $(window).bind("pageshow", function() {
-            $button.removeAttr('disabled').removeClass("waitingSpinner");
-        });
-        
 
         //init repeatrows
         TDAR.repeatrow.registerRepeatable(".repeatLastRow");

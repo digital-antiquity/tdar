@@ -443,7 +443,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
  <#if persistable.resourceType??>
   <@resourceCollectionsRights effectiveResourceCollections >
-  Note: this does not reflect changes to resource collection you have made until you save.
+  <#--Note: this does not reflect changes to resource collection you have made until you save.-->
   </@resourceCollectionsRights>
  </#if>
 
@@ -520,15 +520,16 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <#macro submit label="Save" fileReminder=true buttonid="submitButton">
 <div class="errorsection"> 
     <#if fileReminder>
-    <div id="reminder" class="row">
+    <div id="reminder" class="">
         <p><span class="label label-info">Reminder</span> No files are attached to this record. </p>
     </div>
-    <div id="error" class="row"><ul></ul></div>
+    <div id="error" class=""><ul></ul></div>
     </#if>     
-    <div class="form-actions">
-    <#nested>
-    <@submitButton label=label id=buttonid />
-       <img src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="visibility:hidden"/>
+    <div class="form-actions" id="editFormActions">
+        <#nested>
+        
+        <@submitButton label=label id=buttonid />
+        <img src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner fade" />
     </div> 
 
 <div class="modal hide fade" id="validationErrorModal" tabindex="-1" role="dialog" aria-labelledby="validationErrorModalLabel" aria-hidden="true">
@@ -1409,7 +1410,7 @@ $(function() {
 <#macro subNavMenu>
     <div id='subnavbar' class="affix-top resource-nav span12 row navbar-static"  data-offset-top="250" data-offset-bottom="250" data-spy="affix">
       <div class="">
-        <div class="container" style="width: auto;">
+        <div class="container" >
         <ul class="nav">
             <li class="hidden-tablet hidden-phone"><a href="#basicInformationSection">Basic</a></li>
             <li><a href="#authorshipSection">Authors</a></li>
@@ -1424,9 +1425,10 @@ $(function() {
             <li class="hidden-tablet hidden-phone"><a href="#resourceNoteSectionGlide">Notes</a></li>
             <li><a href="#divAccessRights"><span class="visible-phone visible-tablet" title="Permissions">Permis.</span><span class="hidden-phone hidden-tablet">Permissions</span></a></li>
         </ul>
-        <span class="brand">
-            <span class="button btn btn-primary submitButton" id="fakeSubmitButton">Save</span>
-        </span>
+            <div id="fakeSubmitDiv" class="pull-right">
+                <button type=button class="button btn btn-primary submitButton" id="fakeSubmitButton">Save</button>
+                <img src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner fade" />
+            </div>
         </div>
       </div>
     </div>
