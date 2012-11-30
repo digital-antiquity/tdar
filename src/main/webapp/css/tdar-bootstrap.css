@@ -1108,3 +1108,80 @@ select.searchType {
 .sort + .dbl {
 	margin-top:2px !important;
 }
+
+.icon-document {
+    background: url(/images/r4/resource-types-large.gif) -298px -2473px no-repeat;
+    width: 14px;
+    height: 14px;
+    display: inline-block;
+}
+
+.icon-dataset {
+    background: url(/images/r4/resource-types-large.gif) -344px -2473px no-repeat;
+    width: 14px;
+    height: 14px;
+    display: inline-block;
+}
+
+.icon-image {
+    background: url(/images/r4/resource-types-large.gif) -328px -2473px no-repeat;
+    width: 14px;
+    height: 14px;
+    display: inline-block;
+}
+
+.icon-coding_sheet {
+    background: url(/images/r4/resource-types-large.gif) -362px -2473px no-repeat;
+    width: 14px;
+    height: 14px;
+    display: inline-block;
+}
+
+
+.icon-project {
+    background: url(/images/r4/resource-types-large.gif) -398px -2473px no-repeat;
+    width: 14px;
+    height: 14px;
+    display: inline-block;
+}
+
+
+.icon-collection {
+    background: url(/images/r4/resource-types-large.gif) -447px -2472px no-repeat;
+    width: 14px;
+    height: 14px;
+    display: inline-block;
+}
+
+
+.icon-geospatial {
+    background: url(/images/r4/resource-types-large.gif) -431px -2472px no-repeat;
+    width: 14px;
+    height: 14px;
+    display: inline-block;
+}
+
+
+.icon-sensory_data {
+    background: url(/images/r4/resource-types-large.gif) -462px -2472px no-repeat;
+    width: 14px;
+    height: 14px;
+    display: inline-block;
+}
+
+
+.icon-ontology {
+    background: url(/images/r4/resource-types-large.gif) -381px -2472px no-repeat;
+    width: 14px;
+    height: 14px;
+    display: inline-block;
+}
+
+
+.icon-video {
+    background: url(/images/r4/resource-types-large.gif) -415px -2472px no-repeat;
+    width: 14px;
+    height: 14px;
+    display: inline-block;
+}
+

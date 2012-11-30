@@ -734,15 +734,13 @@ this bit of freemarker is voodoo:
 
 <#macro cartouche persistable useDocumentType=false>
     <#local cartouchePart><@upperPersistableTypeLabel persistable /></#local>
-    <p class="cartouche ${cartouchePart?replace(" ","")?lower_case}"><#t>
-    <#if (persistable.status)?? && !persistable.active>
+    <span class="cartouche"><i class="icon-${cartouchePart?replace(" ","")?lower_case}"></i> 
+        <#if (persistable.status)?? && !persistable.active>
         ${persistable.status} <#t>
     </#if> 
-    <!-- FIXME: REMOVE WHEN CARTOUCHES ARE FINISHED -->
-    <span class="badge" style="clear:none;margin-right:20px"><@upperPersistableTypeLabel persistable /></span>
-    <!-- /FIXME: REMOVE WHEN CARTOUCHES ARE FINISHED -->
-
-    <#nested /></p>
+    <@upperPersistableTypeLabel persistable />
+     </span>
+    <#nested />
 </#macro>
 
 <#-- FIXME: freemarker docs advise against setting locals w/ macro contents -->

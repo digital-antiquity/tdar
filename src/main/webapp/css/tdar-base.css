@@ -854,13 +854,6 @@ aside.dataset,aside.document,aside.coding_sheet,aside.sensory_data,aside.ontolog
     border-bottom: 1px solid #fff;
 }
 
-#alt aside ul.downloads li.pdf {
-    background: url(/images/r4/icn-pdf.png) 8px 14px no-repeat;
-}
-
-#alt aside ul.downloads li.xls {
-    background: url(/images/r4/icn-pdf.png) 8px 14px no-repeat;
-}
 
 .why article h2,.why article p,.why article ul {
     width: 350px;
@@ -1253,107 +1246,6 @@ footer a:hover {
 
 /* Form Styles */
 
-/*  CHECKBOX */
-B.fmCheckbox {
-    float: left;
-    width: 12px;
-    height: 12px;
-    background: red;
-    position: relative;
-    cursor: pointer;
-    background: url("/images/r4/checkbox.png") no-repeat left -12px;
-    margin-top: 7px;
-    margin-right: 7px;
-    font-size: 9px;
-    line-height: 1%;
-    text-indent: -1000em;
-}
-
-B.fmCheckbox.checked {
-    background-position: left top;
-}
-
-/*  TEXTAREA */
-
-/*    SELECT BOX    */
-.fmSelect {
-    width: 40%;
-    float: left;
-    position: relative;
-    outline: none;
-    background: white;
-    z-index: 150;
-}
-
-.fmSelect STRONG {
-    float: left;
-    width: 100%;
-    background: url("/images/r4/select-box-left.png") no-repeat left top;
-    cursor: pointer;
-    position: relative;
-}
-
-.fmSelect STRONG SPAN {
-    display: block;
-    font-size: 13px;
-    font-weight: normal;
-    background: url("/images/r4/select-box-right.png") no-repeat right top;
-}
-
-.fmSelect STRONG SPAN CITE {
-    font-size: 13px;
-    font-weight: 700;
-    display: block;
-    padding: 8px;
-    white-space: nowrap;
-    overflow: hidden;
-    font-style: normal;
-    margin-right: 0;
-    width: 200px;
-}
-
-.fmSelect UL {
-    position: absolute;
-    left: 0;
-    top: 35px;
-    margin: 0 !important;
-    padding: 0;
-    border: 1px solid #dedede;
-    width: 99%;
-    list-style: none;
-    background: white;
-    padding-top: 1px;
-    max-height: 108px;
-    _height: 108px;
-    overflow-y: scroll;
-    z-index: 1500;
-    display: none;
-}
-
-.fmSelect UL LI {
-    display: block;
-    padding: 5px 7px;
-    border-bottom: 1px solid white;
-    font-size: 13px;
-    font-weight: 5000;
-    font-family: helvetica, arial, sans-serif;
-}
-
-.fmSelect UL LI.active {
-    background: #D3E9F6;
-    cursor: pointer;
-}
-
-/* * */
-.fmZero {
-    margin: 0 !important;
-    position: relative !important;
-}
-
-.fmHidden {
-    display: none;
-}
-
 .span12 hr {
     margin-left: 0px !important;
 }
@@ -1401,4 +1293,15 @@ nav ul {
 
 .searchheader input[type=text] {
     margin:0px !important;
+}
+
+span.cartouche {
+	background-color:#888;
+	padding: 3px 9px 4px 5px;
+	font-size:9px;
+	margin-left:2px;
+	margin-right:5px;
+	font-weight:700;
+	color:white;
+	line-height:16px;
 }
