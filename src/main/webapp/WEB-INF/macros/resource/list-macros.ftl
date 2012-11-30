@@ -74,8 +74,8 @@ html markup) you will probably not like the results
         </#if>  
         <#-- printing item tag -->
             <@printTag itemTag_ "listItem ${itemClass!''}" false>
-            <#if orientation == 'MAP' && resource.firstActiveLatitudeLongitudeBox?has_content> data-lat="${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLatitude?c}"
-            data-long="${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLongitude?c}" </#if>
+            <#if orientation == 'MAP' && resource.firstActiveLatitudeLongitudeBox?has_content> data-lat="${resource.firstActiveLatitudeLongitudeBox.centerLatitude?c}"
+            data-long="${resource.firstActiveLatitudeLongitudeBox.centerLongitude?c}" </#if>
             </@printTag>
 
             <#if itemTag_?lower_case != 'li'>

@@ -62,6 +62,12 @@ Projects in ${siteAcronym} contain and help organize a variety of different info
 <@edit.basicInformation "project" "project" />
 <@edit.citationInfo "project" />
 
+<@s.select labelposition='top' label='When Browsing Sort Resource By' name='project.sortBy' 
+     listValue='label' list='%{sortOptions}' title="Sort resource by" />
+
+<@s.select labelposition='top' label='Display Project contents as' name='project.orientation' 
+     list='%{ResultsOrientations}'  listValue='label'  title="Display as" />
+
 
 <@edit.sharedFormComponents showInherited=false />
 

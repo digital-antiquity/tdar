@@ -1,5 +1,6 @@
 package org.tdar.struts.action.resource;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -13,6 +14,7 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.hibernate.search.FullTextQuery;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
@@ -262,4 +264,20 @@ public class ProjectController extends AbstractResourceController<Project> imple
     public List<String> getProjections() {
         return ListUtils.EMPTY_LIST;
     }
+
+    public List<SortOption> getSortOptions() {
+        List<SortOption> options = SortOption.getOptionsForContext(Resource.class);
+        options.remove(SortOption.RESOURCE_TYPE);
+        options.remove(SortOption.RESOURCE_TYPE_REVERSE);
+        options.add(0, SortOption.RESOURCE_TYPE);
+        options.add(1, SortOption.RESOURCE_TYPE_REVERSE);
+        return options;
+    }
+
+
+    public List<DisplayOrientation> getResultsOrientations() {
+        List<DisplayOrientation> options = Arrays.asList(DisplayOrientation.values());
+        return options;
+    }
+
 }
