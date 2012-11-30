@@ -1099,3 +1099,8 @@ h3.collection-mid-red::before {
     visibility:hidden;
     display:none;
 }
+
+/* counter-acting ff's rendering of right-aligned elements in labels */
+select.searchType {
+	text-align: left !important;
+}
