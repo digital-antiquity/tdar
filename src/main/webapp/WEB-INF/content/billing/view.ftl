@@ -11,7 +11,10 @@
 
 </head>
 <body>
+<@view.toolbar "${account.urlNamespace}" "view" />
+
 <h1>${account.name!"Your account"} <#if accountGroup?has_content><span>${accountGroup.name}</span></#if></h1>
+
 <p>${account.description!""}</p>
 
 <h3>Invoices</h3>

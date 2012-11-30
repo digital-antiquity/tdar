@@ -197,7 +197,7 @@ TDAR.uri = function(path) {
 <#macro pieChart map name type width=300 height=150>
     <#assign ilist = map />
     <#assign ikeys=ilist?keys />
-    <div id="${name}" style="width:${width}px;height:${height}px"></div>
+    <div id="${name}"  style="width:${width}px;height:${height}px;"></div>
     
     <script>
 <#noescape>

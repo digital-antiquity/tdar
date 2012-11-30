@@ -56,8 +56,8 @@
     <div class="span9">
         <h2>At a glance</h2>
         <div class="row">
-            <div class="span4"><@common.pieChart statusCountForUser "statusForUser" "userSubmitterContext=true&includedStatuses" /></div>
-            <div class="span5"><@common.pieChart resourceCountForUser "resourceForUser" "useSubmitterContext=true&resourceTypes" /></div>
+            <div class="span4 piechart"><@common.pieChart statusCountForUser "statusForUser" "userSubmitterContext=true&includedStatuses" /></div>
+            <div class="span5 piechart"><@common.pieChart resourceCountForUser "resourceForUser" "useSubmitterContext=true&resourceTypes" /></div>
         </div>
     </div>
 </div>

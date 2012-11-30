@@ -82,11 +82,11 @@ function applyPersonAutoComplete($elements, usersOnly, showCreate) {
             institution = item.institution.name;
         }
         //double-encode on custom render
-        var htmlSnippet = "<p style='min-height:4em'><img class='silhouette' src=\"" + getBaseURI() +
-                "images/man_silhouette_clip_art_9510.jpg\" width=\"40\"/>" + "<span class='name'>" + htmlEncode(htmlEncode(item.properName)) + "(" +
+        var htmlSnippet = "<p style='min-height:4em'><img class='silhouette pull-left' src=\"" + getBaseURI() +
+                "images/man_silhouette_clip_art_9510.jpg\" />" + "<span class='name'>" + htmlEncode(htmlEncode(item.properName)) + "(" +
                 htmlEncode(htmlEncode(item.email)) + ")</span><br/><span class='institution'>" + htmlEncode(htmlEncode(institution)) + "</span></p>";
         if (item.id == -1 && options.showCreate) {
-            htmlSnippet = "<p style='min-height:4em'><img class='silhouette' src=\"" + getURI("images/man_silhouette_clip_art_9510.jpg") + "\" width=\"40\"/>" +
+            htmlSnippet = "<p style='min-height:4em'><img class='silhouette pull-left' src=\"" + getURI("images/man_silhouette_clip_art_9510.jpg") + "\" />" +
                     "<span class='name'><em>Create a new person record</em></span> </p>";
         }
         return $("<li></li>").data("item.autocomplete", item).append("<a>" + htmlSnippet + "</a>").appendTo(ul);

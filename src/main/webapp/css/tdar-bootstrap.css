@@ -763,7 +763,7 @@ aside.tdar-icon:before {
 }
 
 .responsive-large-desktop i.project-bg-large {
-    background: url(/images/r4/resource-types-large.gif) 0px -2210px no-repeat;
+    background: url(/images/r4/resource-types-large.gif) 0px -2200px no-repeat;
     width: 230px;
     height: 230px;
     display: inline-block;
@@ -1185,3 +1185,12 @@ select.searchType {
     display: inline-block;
 }
 
+.piechart {
+	padding-top:10px;
+	padding-bottom:10px;
+}
+
+.silhouette {
+	width:40px;
+	padding-right:6px;
+}
