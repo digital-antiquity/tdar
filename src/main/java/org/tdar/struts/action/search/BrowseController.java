@@ -24,6 +24,7 @@ import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
+import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
@@ -31,6 +32,7 @@ import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
+import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.data.ResourceCreatorProxy;
 import org.tdar.struts.data.ResourceSpaceUsageStatistic;
 import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
@@ -243,7 +245,6 @@ public class BrowseController extends AbstractLookupController {
         this.totalResourceAccessStatistic = totalResourceAccessStatistic;
     }
 
-
     public List<HomepageGeographicKeywordCache> getGeographicKeywordCache() {
         return geographicKeywordCache;
     }
@@ -260,5 +261,9 @@ public class BrowseController extends AbstractLookupController {
         this.homepageResourceCountCache = homepageResourceCountCache;
     }
 
+    @Override
+    public List<FacetGroup<? extends Facetable>> getFacetFields() {
+        return null;
+    }
 
 }

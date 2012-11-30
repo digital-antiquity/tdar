@@ -47,7 +47,7 @@ public class Dataset extends InformationResource {
 
     private static final long serialVersionUID = -5796154884019127904L;
 
-    public enum IntegratableOptions implements HasLabel, Facetable {
+    public enum IntegratableOptions implements HasLabel, Facetable<IntegratableOptions> {
         YES("Ready for Data Integration"), NO("Needs Ontology Mappings");
 
         private String label;
@@ -69,6 +69,15 @@ public class Dataset extends InformationResource {
         @Override
         public void setCount(Integer count) {
             this.count = count;
+        }
+        
+        public String getLuceneFieldName() {
+            return QueryFieldNames.INTEGRATABLE;
+        }
+
+        @Override
+        public IntegratableOptions getValueOf(String val) {
+            return valueOf(val);
         }
     }
 

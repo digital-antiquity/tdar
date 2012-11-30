@@ -24,15 +24,11 @@ import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
-import org.hibernate.search.FullTextQuery;
-import org.hibernate.search.query.facet.Facet;
-import org.hibernate.search.query.facet.FacetSortOrder;
-import org.hibernate.search.query.facet.FacetingRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.DisplayOrientation;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
@@ -65,6 +61,7 @@ import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.GeneralSearchQueryPart;
 import org.tdar.search.query.part.QueryPartGroup;
+import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.data.KeywordNode;
 import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
 
@@ -81,8 +78,7 @@ import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
 @Scope("prototype")
 @ParentPackage("default")
 @HttpOnlyIfUnauthenticated
-public class AdvancedSearchController extends
-        AbstractLookupController<Resource> {
+public class AdvancedSearchController extends AbstractLookupController<Resource> {
 
     @Autowired
     private RssService rssService;
@@ -98,7 +94,7 @@ public class AdvancedSearchController extends
     public static final String TITLE_BY_TDAR_ID = "Search by TDAR ID";
     public static final String TITLE_TAG_KEYWORD_PHRASE = "Referred Query from the Transatlantic Archaeology Gateway";
 
-    private DisplayOrientation orientation = DisplayOrientation.LIST; 
+    private DisplayOrientation orientation = DisplayOrientation.LIST;
     // error message of last resort. User entered something we did not
     // anticipate, and we ultimately translated it into query that lucene can't
     // parse
@@ -119,10 +115,10 @@ public class AdvancedSearchController extends
             .getOptionsForContext(Resource.class);
 
     // facet statistics for results.ftl
-    private List<ResourceType> resourceTypeFacets = new ArrayList<ResourceType>();
-    private List<DocumentType> documentTypeFacets = new ArrayList<DocumentType>();
-    private List<ResourceAccessType> fileAccessFacets = new ArrayList<ResourceAccessType>();
-    private List<IntegratableOptions> integratableOptionFacets = new ArrayList<IntegratableOptions>();
+    private ArrayList<ResourceType> resourceTypeFacets = new ArrayList<ResourceType>();
+    private ArrayList<DocumentType> documentTypeFacets = new ArrayList<DocumentType>();
+    private ArrayList<ResourceAccessType> fileAccessFacets = new ArrayList<ResourceAccessType>();
+    private ArrayList<IntegratableOptions> integratableOptionFacets = new ArrayList<IntegratableOptions>();
 
     // we plan to support some types of legacy requests. For example, the old
     // querystring format for id searches, basic search, and search by keyword
@@ -510,36 +506,31 @@ public class AdvancedSearchController extends
         return fileAccessFacets;
     }
 
-    private <C extends Enum<C> & Facetable> FacetingRequest facetOn(
-            String name, String field, FullTextQuery ftq, List<C> facetList,
-            Class<C> enumClass) {
-        FacetingRequest facetRequest = getSearchService()
-                .getQueryBuilder(Resource.class).facet().name(name)
-                .onField(field).discrete().orderedBy(FacetSortOrder.COUNT_DESC)
-                .includeZeroCounts(false).createFacetingRequest();
-
-        ftq.getFacetManager().enableFaceting(facetRequest);
-        for (Facet facet : ftq.getFacetManager().getFacets(name)) {
-            C enumVersion = (C) Enum.valueOf(enumClass, facet.getValue());
-            enumVersion.setCount(facet.getCount());
-            facetList.add(enumVersion);
-        }
-
-        return facetRequest;
-    }
-
     @Override
-    public void addFacets(FullTextQuery ftq) {
-        facetOn(QueryFieldNames.RESOURCE_TYPE, QueryFieldNames.RESOURCE_TYPE,
-                ftq, resourceTypeFacets, ResourceType.class);
-        facetOn(QueryFieldNames.INTEGRATABLE, QueryFieldNames.INTEGRATABLE,
-                ftq, integratableOptionFacets, IntegratableOptions.class);
-        facetOn(QueryFieldNames.DOCUMENT_TYPE, QueryFieldNames.DOCUMENT_TYPE,
-                ftq, documentTypeFacets, DocumentType.class);
-        facetOn(QueryFieldNames.RESOURCE_ACCESS_TYPE,
-                QueryFieldNames.RESOURCE_ACCESS_TYPE, ftq, fileAccessFacets,
-                ResourceAccessType.class);
+    public List<FacetGroup<? extends Facetable>> getFacetFields() {
+        List<FacetGroup<?>> group = new ArrayList<FacetGroup<?>>();
+        group.add(new FacetGroup<ResourceType>(ResourceType.class, QueryFieldNames.RESOURCE_TYPE, resourceTypeFacets, ResourceType.DOCUMENT));
+        group.add(new FacetGroup<IntegratableOptions>(IntegratableOptions.class, QueryFieldNames.INTEGRATABLE, integratableOptionFacets,
+                IntegratableOptions.YES));
+        group.add(new FacetGroup<ResourceAccessType>(ResourceAccessType.class, QueryFieldNames.RESOURCE_ACCESS_TYPE, fileAccessFacets,
+                ResourceAccessType.CITATION));
+        group.add(new FacetGroup<DocumentType>(DocumentType.class, QueryFieldNames.DOCUMENT_TYPE, documentTypeFacets, DocumentType.BOOK));
+        return group;
     }
+
+    // @Override
+    // public void addFacets(FullTextQuery ftq) {
+    // QueryFieldNames.RESOURCE_TYPE,
+    // facetOn(QueryFieldNames.RESOURCE_TYPE, QueryFieldNames.RESOURCE_TYPE,
+    // ftq, resourceTypeFacets, ResourceType.class);
+    // facetOn(QueryFieldNames.INTEGRATABLE, QueryFieldNames.INTEGRATABLE,
+    // ftq, integratableOptionFacets, IntegratableOptions.class);
+    // facetOn(QueryFieldNames.DOCUMENT_TYPE, QueryFieldNames.DOCUMENT_TYPE,
+    // ftq, documentTypeFacets, DocumentType.class);
+    // facetOn(QueryFieldNames.RESOURCE_ACCESS_TYPE,
+    // QueryFieldNames.RESOURCE_ACCESS_TYPE, ftq, fileAccessFacets,
+    // ResourceAccessType.class);
+    // }
 
     // alias for faceted search.
     public void setDocumentType(DocumentType doctype) {

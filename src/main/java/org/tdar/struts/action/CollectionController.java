@@ -1,6 +1,5 @@
 package org.tdar.struts.action;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -19,6 +18,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
+import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
@@ -30,6 +30,7 @@ import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
+import org.tdar.struts.data.FacetGroup;
 
 @Component
 @Scope("prototype")
@@ -342,8 +343,10 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     public List<Status> getStatuses() {
         List<Status> toReturn = new ArrayList<Status>(getResourceService().findAllStatuses());
-        getAuthenticationAndAuthorizationService().removeIfNotAllowed(toReturn, Status.DELETED, InternalTdarRights.SEARCH_FOR_DELETED_RECORDS, getAuthenticatedUser());
-        getAuthenticationAndAuthorizationService().removeIfNotAllowed(toReturn, Status.FLAGGED, InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, getAuthenticatedUser());
+        getAuthenticationAndAuthorizationService().removeIfNotAllowed(toReturn, Status.DELETED, InternalTdarRights.SEARCH_FOR_DELETED_RECORDS,
+                getAuthenticatedUser());
+        getAuthenticationAndAuthorizationService().removeIfNotAllowed(toReturn, Status.FLAGGED, InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS,
+                getAuthenticatedUser());
         return toReturn;
     }
 
@@ -376,10 +379,6 @@ public class CollectionController extends AbstractPersistableController<Resource
     @Override
     public int getRecordsPerPage() {
         return this.recordsPerPage;
-    }
-
-    @Override
-    public void addFacets(FullTextQuery ftq) {
     }
 
     @Override
@@ -475,5 +474,10 @@ public class CollectionController extends AbstractPersistableController<Resource
     @Override
     public List<String> getProjections() {
         return ListUtils.EMPTY_LIST;
+    }
+
+    @Override
+    public List<FacetGroup<? extends Facetable>> getFacetFields() {
+        return null;
     }
 }

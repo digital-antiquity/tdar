@@ -2,6 +2,7 @@ package org.tdar.core.bean.resource;
 
 import org.apache.commons.lang.StringUtils;
 import org.tdar.core.bean.HasLabel;
+import org.tdar.search.query.QueryFieldNames;
 
 /**
  * $Id$
@@ -177,5 +178,14 @@ public enum ResourceType implements HasLabel, Comparable<ResourceType>,
     public String getUrlNamespace() {
         String urlToReturn = name();
         return urlToReturn.toLowerCase().replaceAll("_", "-");
+    }
+    
+    public String getLuceneFieldName() {
+        return QueryFieldNames.RESOURCE_TYPE;
+    }
+
+    @Override
+    public ResourceType getValueOf(String val) {
+        return valueOf(val);
     }
 }

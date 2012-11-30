@@ -11,6 +11,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Indexable;
+import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.InstitutionQueryBuilder;
@@ -21,6 +22,7 @@ import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.struts.RequiresTdarUserGroup;
 import org.tdar.struts.action.search.AbstractLookupController;
+import org.tdar.struts.data.FacetGroup;
 
 @Component
 @Scope("prototype")
@@ -102,5 +104,10 @@ public class AdminSearchController extends AbstractLookupController<Indexable> {
 
     public List<SortOption> getSortOptions() {
         return Arrays.asList(SortOption.values());
+    }
+
+    @Override
+    public List<FacetGroup<? extends Facetable>> getFacetFields() {
+        return null;
     }
 }

@@ -34,6 +34,7 @@ import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -49,6 +50,7 @@ import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.RangeQueryPart;
 import org.tdar.struts.data.DateRange;
+import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.data.oai.OAIMetadataFormat;
 import org.tdar.struts.data.oai.OAIParameter;
 import org.tdar.struts.data.oai.OAIRecordProxy;
@@ -826,5 +828,10 @@ public class OAIController extends AbstractLookupController<Indexable> implement
     @Override
     public List<String> getProjections() {
         return ListUtils.EMPTY_LIST;
+    }
+
+    @Override
+    public List<FacetGroup<? extends Facetable>> getFacetFields() {
+        return null;
     }
 }

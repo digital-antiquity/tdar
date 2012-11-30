@@ -1,6 +1,7 @@
 package org.tdar.core.bean.resource;
 
 import org.tdar.core.bean.HasLabel;
+import org.tdar.search.query.QueryFieldNames;
 
 /**
  * $Id$
@@ -10,7 +11,7 @@ import org.tdar.core.bean.HasLabel;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
  */
-public enum DocumentType implements HasLabel, Facetable {
+public enum DocumentType implements HasLabel, Facetable<DocumentType> {
 
     BOOK("Book / Report", "Books / Reports", "book"),
     BOOK_SECTION("Book Chapter / Section", "Book Chapters / Sections", "bookitem"),
@@ -78,4 +79,12 @@ public enum DocumentType implements HasLabel, Facetable {
         return plural;
     }
 
+    public String getLuceneFieldName() {
+        return QueryFieldNames.DOCUMENT_TYPE;
+    }
+
+    @Override
+    public DocumentType getValueOf(String val) {
+        return valueOf(val);
+    }
 }

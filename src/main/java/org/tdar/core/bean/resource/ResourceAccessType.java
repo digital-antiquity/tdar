@@ -7,6 +7,7 @@
 package org.tdar.core.bean.resource;
 
 import org.tdar.core.bean.HasLabel;
+import org.tdar.search.query.QueryFieldNames;
 
 /**
  * @author Adam Brin
@@ -41,4 +42,12 @@ public enum ResourceAccessType implements HasLabel, Facetable {
         this.count = count;
     }
 
+    public String getLuceneFieldName() {
+        return QueryFieldNames.RESOURCE_ACCESS_TYPE;
+    }
+
+    @Override
+    public ResourceAccessType getValueOf(String val) {
+        return valueOf(val);
+    }
 }

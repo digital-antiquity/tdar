@@ -37,6 +37,9 @@ import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.query.facet.Facet;
+import org.hibernate.search.query.facet.FacetSortOrder;
+import org.hibernate.search.query.facet.FacetingRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +51,8 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.resource.Facetable;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -63,6 +68,7 @@ import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.QueryGroup;
 import org.tdar.search.query.part.QueryPart;
 import org.tdar.struts.action.search.ReservedSearchParameters;
+import org.tdar.struts.data.FacetGroup;
 import org.tdar.utils.Pair;
 
 @Service
@@ -336,7 +342,7 @@ public class SearchService {
         long lucene = System.currentTimeMillis() - num;
         num = System.currentTimeMillis();
         logger.trace("begin adding facets");
-        resultHandler.addFacets(ftq);
+        processFacets(ftq, resultHandler);
         logger.trace("completed adding facets");
         List<String> projections = setupProjectionsForSearch(resultHandler, ftq);
         List list = ftq.list();
@@ -353,6 +359,23 @@ public class SearchService {
         logger.debug("{}: {} (SORT:{},{})\t LUCENE: {} | HYDRATION: {} | # RESULTS: {} | START #: {}", searchMetadata);
         logger.trace("returning: {}", toReturn);
         resultHandler.setResults(toReturn);
+    }
+
+    private <F extends Facetable> void processFacets(FullTextQuery ftq, SearchResultHandler<?> resultHandler) {
+        if (resultHandler.getFacetFields() == null) 
+            return;
+        
+        for (FacetGroup<? extends Facetable> facet : resultHandler.getFacetFields()) {
+            FacetingRequest facetRequest = getQueryBuilder(Resource.class).facet().name(facet.getFacetField())
+                    .onField(facet.getFacetField()).discrete().orderedBy(FacetSortOrder.COUNT_DESC)
+                    .includeZeroCounts(false).createFacetingRequest();
+            ftq.getFacetManager().enableFaceting(facetRequest);
+        }
+        for (FacetGroup<? extends Facetable> facet : resultHandler.getFacetFields()) {
+            for (Facet facetResult : ftq.getFacetManager().getFacets(facet.getFacetField())) {
+                facet.add(facetResult.getValue(), facetResult.getCount());
+            }
+        }
     }
 
     /*

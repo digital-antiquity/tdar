@@ -11,11 +11,11 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
-import org.hibernate.search.FullTextQuery;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -24,6 +24,7 @@ import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
+import org.tdar.struts.data.FacetGroup;
 
 /**
  * $Id$
@@ -176,10 +177,6 @@ public class ProjectController extends AbstractResourceController<Project> imple
     }
 
     @Override
-    public void addFacets(FullTextQuery ftq) {
-    }
-
-    @Override
     public boolean isDebug() {
         return false;
     }
@@ -274,10 +271,13 @@ public class ProjectController extends AbstractResourceController<Project> imple
         return options;
     }
 
-
     public List<DisplayOrientation> getResultsOrientations() {
         List<DisplayOrientation> options = Arrays.asList(DisplayOrientation.values());
         return options;
     }
 
+    @Override
+    public List<FacetGroup<? extends Facetable>> getFacetFields() {
+        return null;
+    }
 }

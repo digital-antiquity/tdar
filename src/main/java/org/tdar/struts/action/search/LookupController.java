@@ -20,6 +20,7 @@ import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.search.query.QueryFieldNames;
@@ -36,6 +37,7 @@ import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.InstitutionQueryPart;
 import org.tdar.search.query.part.PersonQueryPart;
 import org.tdar.search.query.part.QueryPartGroup;
+import org.tdar.struts.data.FacetGroup;
 
 /**
  * $Id$
@@ -103,7 +105,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
             incomingPerson.setWildcardName(term);
             valid = true;
         }
-        
+
         if (checkMinString(lastName)) {
             incomingPerson.setLastName(lastName);
             valid = true;
@@ -159,7 +161,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
         if (checkMinString(this.institution)) {
             InstitutionQueryPart iqp = new InstitutionQueryPart();
             Institution testInstitution = new Institution(this.institution);
-            if(StringUtils.isNotBlank(this.institution)) {
+            if (StringUtils.isNotBlank(this.institution)) {
                 iqp.add(testInstitution);
                 q.append(iqp);
             }
@@ -482,4 +484,8 @@ public class LookupController extends AbstractLookupController<Indexable> {
         this.permission = permission;
     }
 
+    @Override
+    public List<FacetGroup<? extends Facetable>> getFacetFields() {
+        return null;
+    }
 }
