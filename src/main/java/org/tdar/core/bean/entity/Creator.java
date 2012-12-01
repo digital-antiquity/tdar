@@ -345,7 +345,7 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
     }
 
     public String getUrlNamespace() {
-        return "browse/creator";
+        return "browse/creators";
     }
 
     public abstract boolean hasNoPersistableValues();

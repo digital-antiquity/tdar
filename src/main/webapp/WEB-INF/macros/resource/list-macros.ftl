@@ -127,7 +127,7 @@ html markup) you will probably not like the results
 <#macro printDescription resource=resource expanded=false orientation=DEFAULT_ORIENTATION length=80 showProject=false>
             <#if expanded && orientation != 'GRID'>
                 <div class="listItemPart">
-            <#if (resource.citationRecord && !resource.resourceType.project)>
+            <#if (resource.citationRecord?has_content && resource.citationRecord && !resource.resourceType.project)>
                <span class='cartouche' title="Citation only; this record has no attached files.">Citation</span></#if>
             <@common.cartouche resource true><@listCreators resource/></@common.cartouche>  
                 <@view.unapiLink resource  />

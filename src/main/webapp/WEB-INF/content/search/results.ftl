@@ -23,6 +23,8 @@
                     ${exploreKeyword.definition?html}
                 </#if>
             </div>
+        <#else>
+        <h1> ${lookupSource.proper} Search Results: <span><#if query?has_content>${query}<#else>all results</#if></span></h1>
         </#if>
     </div>
 
@@ -110,7 +112,14 @@
 <#else>
 	<#list results as result>
 	<#if result_index != 0> <hr/></#if>
-	 <p>${result.properName}</p>
+<div class="listItemPart">
+      <h3 class="search-result-title-${result.status}">
+    	<a class="resourceLink" href="/${result.urlNamespace}/${result.id?c}">${result.properName}</a>
+        </h3>
+        <#if result.institution?has_content><p>${result.institution.name}</p></#if>
+            <blockquote class="luceneExplanation">${result.explanation!""}</blockquote>
+            <blockquote class="luceneScore"<b>score:</b>${result.score!""}<br/> </blockquote>
+	</div>
 	</#list>
 </#if>
     <hr class="dbl" />

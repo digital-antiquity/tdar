@@ -185,6 +185,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             @Result(name = INPUT, location = "advanced.ftl") })
     public String searchInstitutions() {
         setSortOptions(SortOption.getOptionsForContext(Institution.class));
+        setMinLookupLength(0);
         try {
             return findInstitution(getQuery());
         } catch (TdarRecoverableRuntimeException trex) {
@@ -198,6 +199,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             @Result(name = INPUT, location = "advanced.ftl") })
     public String searchPeople() {
         setSortOptions(SortOption.getOptionsForContext(Person.class));
+        setMinLookupLength(0);
         try {
             return findPerson(null, getQuery(), null, null, null, null);
         } catch (TdarRecoverableRuntimeException trex) {

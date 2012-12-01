@@ -37,9 +37,9 @@ public enum SortOption {
     CREATOR_NAME(Creator.class, "Name", QueryFieldNames.CREATOR_NAME_SORT),               
     CREATOR_NAME_REVERSE(Creator.class, "Name", QueryFieldNames.CREATOR_NAME_SORT, true),
     FIRST_NAME(Person.class, "First Name", QueryFieldNames.FIRST_NAME_SORT),
-    FIRST_NAME_REVERSE(Person.class, "First Name", QueryFieldNames.FIRST_NAME_SORT, true),
+    FIRST_NAME_REVERSE(Person.class, "First Name (Reversed)", QueryFieldNames.FIRST_NAME_SORT, true),
     LAST_NAME(Person.class, "Last Name", QueryFieldNames.LAST_NAME_SORT),
-    LAST_NAME_REVERSE(Person.class, "Last Name", QueryFieldNames.LAST_NAME_SORT, true);
+    LAST_NAME_REVERSE(Person.class, "Last Name (Reversed)", QueryFieldNames.LAST_NAME_SORT, true);
 
     private String label;
     private String sortField;

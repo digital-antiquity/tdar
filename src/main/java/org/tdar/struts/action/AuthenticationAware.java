@@ -5,7 +5,10 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.tdar.URLConstants;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.ResourceEvaluator;
@@ -14,7 +17,10 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.struts.action.resource.AbstractResourceController;
 import org.tdar.web.SessionDataAware;
+
+import com.opensymphony.xwork2.Action;
 
 /**
  * $Id$
@@ -26,6 +32,10 @@ import org.tdar.web.SessionDataAware;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Rev$
  */
+@Results({ @Result(name = AbstractResourceController.REDIRECT_HOME, type = "redirect", location = URLConstants.HOME),
+    @Result(name = AbstractResourceController.REDIRECT_PROJECT_LIST, type = "redirect", location = URLConstants.DASHBOARD)
+}
+)
 public interface AuthenticationAware extends SessionDataAware {
 
     public AuthenticationAndAuthorizationService getAuthenticationAndAuthorizationService();

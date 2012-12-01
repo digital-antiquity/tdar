@@ -73,6 +73,10 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         public String getCollectionName() {
             return this.collectionName;
         }
+        
+        public String getProper() {
+            return StringUtils.capitalize(name().toLowerCase());
+        }
     }
 
     private LookupSource lookupSource;
