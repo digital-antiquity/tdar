@@ -37,7 +37,7 @@
     <ul class="tools media-list">
         <li class="media"><a href="<@search.searchUrl "advanced"/>"><i class="pull-left search-magnify-icon-red" ></i>Refine your search &raquo;</a></li>
 <#if lookupSource == 'RESOURCE'>
-        <li class="media"><i class="pull-left search-download-icon-red" ></i>Download these results &raquo;
+        <li class="media"><i class="pull-left search-download-icon-red" ></i><div class="media-body">Download these results &raquo;
         <#if sessionData?? && sessionData.authenticated && (totalRecords > 0) && (actionName=="results")>
             <@search.searchLink "download" "to Excel" />
             <#if totalRecords &gt; maxDownloadRecords>
@@ -46,7 +46,7 @@
     
         <#else>
         Login
-         </#if>
+         </#if></div>
         </li>
 </#if>
 <!--        <li>Subscribe via &raquo;

@@ -2,6 +2,7 @@
 <#global jquery_ui_version="1.8.23">
 
 <#macro scripts combine=false>
+<!-- fyi -- two excanvas calls aready (flot + jit ) should we use just one? also, use Modernizr -->
 <!--[if lte IE 8]><script language="javascript" type="text/javascript" src="<@s.url value="/includes/Jit-2.0.1/Extras/excanvas.js"/>"></script><![endif]--> 
 
     <#--if not using mergeservlet, use a fake directory name that corresponds to build number so that client will pull up-to-date version -->
@@ -45,8 +46,6 @@
     ] />
     
     
- <!-- this conflicts with JIT when loading in the context of a single script -->
-<script type="text/javascript" src="/includes/jquery.tabby-0.12.js"></script>
 
 <#if combine>
    <!-- call to http://code.google.com/p/webutilities/wiki/JSCSSMergeServlet#URLs_in_CSS -->

@@ -6,8 +6,9 @@
  */
 
 //Define a dummy console for browsers that don't support logging
-if (!window.console)
+if (!window.console) {
     console = {};
+}
 console.log = console.log || function() {
 };
 console.warn = console.warn || function() {
@@ -133,7 +134,7 @@ function navigateTempIgnore() {
 function deleteParentRow(elem) {
     if ($(elem).parents("tr").length > 0) {
         var id = $(elem).parents("tr").first().attr('id');
-        console.debug("deleteParentRow id:" + id);
+//        console.debug("deleteParentRow id:" + id);
         deleteRow('#' + id);
     }
 }

@@ -49,7 +49,7 @@
         <@s.select label='Language'  emptyOption='false' name='resourceLanguage'  listValue="label" list='%{languages}' cssClass="right-shortfield "/>
     </span>
 
-    <div class="doctypeToggle journal_article other controls-row" id="t-vol">
+    <div class="doctypeToggle journal_article other control-group" id="t-vol">
         <label class="control-label">Volume Information</label>
         <div class="controls controls-row">
         <@s.textfield id='volume' theme="tdar" placeholder='Volume' name='document.volume' cssClass="span2"  />
