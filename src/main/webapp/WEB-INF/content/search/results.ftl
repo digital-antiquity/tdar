@@ -2,7 +2,9 @@
 <#import "/WEB-INF/macros/search/search-macros.ftl" as search />
 <head>
   <title>Search Results: <#if searchSubtitle??>${searchSubtitle?html}</#if></title>
+<#if lookupSource == 'RESOURCE'>
   <@search.headerLinks includeRss=(actionName=="results") />
+</#if>
 </head>
 <body>
 
@@ -32,6 +34,7 @@
 
     <ul class="tools media-list">
         <li class="media"><a href="<@search.searchUrl "advanced"/>"><i class="pull-left search-magnify-icon-red" ></i>Refine your search &raquo;</a></li>
+<#if lookupSource == 'RESOURCE'>
         <li class="media"><i class="pull-left search-download-icon-red" ></i>Download these results &raquo;
         <#if sessionData?? && sessionData.authenticated && (totalRecords > 0) && (actionName=="results")>
             <@search.searchLink "download" "to Excel" />
@@ -43,11 +46,13 @@
         Login
          </#if>
         </li>
+</#if>
 <!--        <li>Subscribe via &raquo;
             <a class="subscribe"  href="${rssUrl}">RSS</a>
         </li> -->
         </ul>
 
+<#if lookupSource == 'RESOURCE'>
         <h3>View Options</h3> 
         <ul class="tools media-list">
                 <li class="media"><a href="<@s.url includeParams="all">
@@ -60,7 +65,7 @@
                     <@s.param name="orientation">MAP</@s.param>
                 </@s.url>"><i class="pull-left search-map-icon-red"></i>Map</a></li>
         </ul>
-
+</#if>
                 <form>
                     <@facetBy facetlist=resourceTypeFacets currentValues=resourceTypes label="Resource Type(s)" facetParam="resourceTypes" />
                     <@facetBy facetlist=documentTypeFacets currentValues=documentType label="Document Type(s)" facetParam="documentType" />
@@ -100,7 +105,14 @@
      </div>
 
     <hr class="dbl" />
+<#if lookupSource == 'COLLECTION' || lookupSource='RESOURCE'>
     <@rlist.listResources resourcelist=results sortfield=sortField expanded=true listTag="" itemTag="" titleTag="h3" orientation=orientation mapPosition="top" mapHeight="450"/>
+<#else>
+	<#list results as result>
+	<#if result_index != 0> <hr/></#if>
+	 <p>${result.properName}</p>
+	</#list>
+</#if>
     <hr class="dbl" />
     <@search.pagination ""/>
 </div>

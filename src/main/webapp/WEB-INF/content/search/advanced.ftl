@@ -15,13 +15,13 @@
 <h1>Search ${siteAcronym}</h1>
 <div class="usual">
 <ul class="nav nav-tabs" id="myTab"> 
-  <li  class="active"><a href="#resource" data-toggle="tab">Resource</a></li> 
-  <li><a href="#collection" data-toggle="tab">Collection</a></li> 
-  <li><a href="#institution" data-toggle="tab">Institution</a></li> 
-  <li><a href="#person" data-toggle="tab">Person</a></li> 
+  <li class="<#if  actionName == 'basic' || actionName == 'advanced'>active</#if>"><a href="advanced" >Resource</a></li> 
+  <li class="<#if actionName == 'collection'>active</#if>"><a href="collection" >Collection</a></li> 
+  <li class="<#if actionName == 'institution'>active</#if>"><a href="institution" >Institution</a></li> 
+  <li class="<#if actionName == 'person'>active</#if>"><a href="person" >Person</a></li> 
 </ul> 
 <div class="tab-content">
-<div id="resource" class="tab-pane active" >
+<div id="resource" class="tab-pane <#if actionName == 'basic' || actionName == 'advanced'>active</#if>" >
 
 <@s.form action="results" method="GET" id="searchGroups" cssClass="form-horizontal">
 <div class="searchgroup" >
@@ -50,7 +50,7 @@
     </div>
 
 </@s.form>
-    <div id="collection" class="tab-pane">
+    <div id="collection" class="tab-pane <#if actionName == 'collection'>active</#if>">
         <div class="glide">
         <h3>Search For Collections By Name</h3>
         <@s.form action="collections" method="GET" id='searchForm2'>
@@ -59,7 +59,7 @@
         </div>
         <div id="collection-spacer" style="height:850px"></div>
     </div>
-    <div id="institution" class="tab-pane">
+    <div id="institution" class="tab-pane <#if actionName == 'institution'>active</#if>">
         <div class="glide">
         <h3>Search For Institutions By Name</h3>
         <@s.form action="institutions" method="GET" id='searchForm3'>
@@ -69,7 +69,7 @@
         <div id="collection-spacer" style="height:850px"></div>
     </div>
 
-    <div id="person" class="tab-pane">
+    <div id="person" class="tab-pane <#if actionName == 'person'>active</#if>">
         <div class="glide">
         <h3>Search For Person By Name</h3>
         <@s.form action="people" method="GET" id='searchForm4'>

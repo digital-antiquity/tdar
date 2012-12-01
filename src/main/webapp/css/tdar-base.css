@@ -774,11 +774,11 @@ jtd notes:
     width: 350px;
 }
 
-aside.dataset,aside.document,aside.coding_sheet,aside.sensory_data,aside.ontology,aside.project,aside.image
+/* aside.dataset,aside.document,aside.coding_sheet,aside.sensory_data,aside.ontology,aside.project,aside.image
     {
     padding-top: 250px;
 }
-
+ */
 /* #alt aside.dataset {
     background: url(/images/r4/icn-dataset.png) 0 0 no-repeat;
 }

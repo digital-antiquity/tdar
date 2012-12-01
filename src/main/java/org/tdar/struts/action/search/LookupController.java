@@ -17,25 +17,19 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
-import org.tdar.core.bean.entity.Institution;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
-import org.tdar.search.query.builder.InstitutionQueryBuilder;
 import org.tdar.search.query.builder.KeywordQueryBuilder;
-import org.tdar.search.query.builder.PersonQueryBuilder;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceAnnotationKeyQueryBuilder;
 import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.AutocompleteTitleQueryPart;
 import org.tdar.search.query.part.FieldQueryPart;
-import org.tdar.search.query.part.InstitutionQueryPart;
-import org.tdar.search.query.part.PersonQueryPart;
 import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.struts.data.FacetGroup;
 
@@ -68,21 +62,6 @@ public class LookupController extends AbstractLookupController<Indexable> {
     private String keywordType;
     private String term;
 
-    private enum LookupSource {
-        PERSON("people"), INSTITUTION("institutions"), KEYWORD("items"), RESOURCE("resources"), COLLECTION("collections");
-
-        private String collectionName;
-
-        private LookupSource(String name) {
-            this.collectionName = name;
-        }
-
-        public String getCollectionName() {
-            return this.collectionName;
-        }
-    }
-
-    private LookupSource lookupSource;
     private Long sortCategoryId;
     private List<String> projections = new ArrayList<String>();
     private boolean includeCompleteRecord = false;
@@ -92,89 +71,16 @@ public class LookupController extends AbstractLookupController<Indexable> {
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
             results = { @Result(name = "success", location = "lookup.ftl", type = "freemarker", params = { "contentType", "application/json" }) })
     public String lookupPerson() {
-        QueryBuilder q = new PersonQueryBuilder(Operator.AND);
-        boolean valid = false;
-        this.lookupSource = LookupSource.PERSON;
         setMode("personLookup");
-        Person incomingPerson = new Person();
-        if (checkMinString(firstName)) {
-            incomingPerson.setFirstName(firstName);
-            valid = true;
-        }
-        if (checkMinString(term)) {
-            incomingPerson.setWildcardName(term);
-            valid = true;
-        }
-
-        if (checkMinString(lastName)) {
-            incomingPerson.setLastName(lastName);
-            valid = true;
-        }
-        if (checkMinString(institution)) {
-            valid = true;
-            Institution incomingInstitution = new Institution(institution);
-            incomingPerson.setInstitution(incomingInstitution);
-            getGenericService().detachFromSession(incomingInstitution);
-        }
-
-        // ignore email field for unauthenticated users.
-        if (isAuthenticated() && checkMinString(email)) {
-            incomingPerson.setEmail(email);
-            valid = true;
-        }
-        getGenericService().detachFromSession(incomingPerson);
-
-        PersonQueryPart pqp = new PersonQueryPart();
-        pqp.add(incomingPerson);
-        q.append(pqp);
-        q.append(new FieldQueryPart<Status>("status", Status.ACTIVE));
-        if (valid || getMinLookupLength() == 0) {
-            if (StringUtils.isNotBlank(registered)) {
-                try {
-                    pqp.setRegistered(Boolean.parseBoolean(registered));
-                } catch (Exception e) {
-                    addActionErrorWithException("Invalid query syntax, please try using simpler terms without special characters.", e);
-                    return ERROR;
-                }
-            }
-
-            try {
-                handleSearch(q);
-                // sanitize results if the user is not logged in
-            } catch (ParseException e) {
-                addActionErrorWithException("Invalid query syntax, please try using simpler terms without special characters.", e);
-                return ERROR;
-            }
-        }
-        return SUCCESS;
+        return findPerson(firstName, term, lastName, institution, email, registered);
     }
 
     @Action(value = "institution",
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
             results = { @Result(name = "success", location = "lookup.ftl", type = "freemarker", params = { "contentType", "application/json" }) })
     public String lookupInstitution() {
-        QueryBuilder q = new InstitutionQueryBuilder(Operator.AND);
         setMode("institutionLookup");
-
-        this.lookupSource = LookupSource.INSTITUTION;
-
-        if (checkMinString(this.institution)) {
-            InstitutionQueryPart iqp = new InstitutionQueryPart();
-            Institution testInstitution = new Institution(this.institution);
-            if (StringUtils.isNotBlank(this.institution)) {
-                iqp.add(testInstitution);
-                q.append(iqp);
-            }
-            q.append(new FieldQueryPart<Status>("status", Status.ACTIVE));
-            try {
-                handleSearch(q);
-            } catch (ParseException e) {
-                addActionErrorWithException("Invalid query syntax, please try using simpler terms without special characters.", e);
-                return ERROR;
-            }
-        }
-
-        return SUCCESS;
+        return findInstitution(institution);
     }
 
     @Action(value = "resource",
@@ -182,7 +88,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
             results = { @Result(name = "success", location = "lookup.ftl", type = "freemarker", params = { "contentType", "application/json" }) })
     public String lookupResource() {
         QueryBuilder q = new ResourceQueryBuilder();
-        this.lookupSource = LookupSource.RESOURCE;
+        this.setLookupSource(LookupSource.RESOURCE);
         setMode("resourceLookup");
         // if we're doing a coding sheet lookup, make sure that we have access to all of the information here
         if (!isIncludeCompleteRecord() || getAuthenticatedUser() == null) {
@@ -250,7 +156,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
             return SUCCESS;
 
         QueryBuilder q = new KeywordQueryBuilder(Operator.AND);
-        this.lookupSource = LookupSource.KEYWORD;
+        this.setLookupSource(LookupSource.KEYWORD);
         QueryPartGroup group = new QueryPartGroup();
 
         group.setOperator(Operator.AND);
@@ -279,7 +185,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
         setMinLookupLength(2);
         setMode("annotationLookup");
 
-        this.lookupSource = LookupSource.KEYWORD;
+        this.setLookupSource(LookupSource.KEYWORD);
         logger.trace("looking up:'" + term + "'");
 
         // only return results if query length has enough characters
@@ -303,7 +209,7 @@ public class LookupController extends AbstractLookupController<Indexable> {
         QueryBuilder q = new ResourceCollectionQueryBuilder();
         setMinLookupLength(0);
 
-        this.lookupSource = LookupSource.COLLECTION;
+        this.setLookupSource(LookupSource.COLLECTION);
         logger.trace("looking up:'" + term + "'");
         setMode("collectionLookup");
 
@@ -385,12 +291,6 @@ public class LookupController extends AbstractLookupController<Indexable> {
 
     public void setUrl(String url) {
         this.url = url;
-    }
-
-    // lookupSource defines the type of records contained in the jsonResults collection. To be
-    // used in a ftl template /give hints to client-side javascript
-    public String getLookupSource() {
-        return lookupSource.getCollectionName();
     }
 
     public void setProjectId(String projectId) {

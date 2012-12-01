@@ -34,6 +34,8 @@ import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Creator.CreatorType;
+import org.tdar.core.bean.entity.Institution;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.keyword.CultureKeyword;
@@ -145,6 +147,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             @Result(name = "success", location = "results.ftl"),
             @Result(name = INPUT, location = "advanced.ftl") })
     public String search() {
+        setLookupSource(LookupSource.RESOURCE);
         if (explore)
             exploreSearch();
         boolean resetSearch = processLegacySearch();
@@ -177,6 +180,32 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         }
     }
 
+    @Action(value = "institutions", results = {
+            @Result(name = "success", location = "results.ftl"),
+            @Result(name = INPUT, location = "advanced.ftl") })
+    public String searchInstitutions() {
+        setSortOptions(SortOption.getOptionsForContext(Institution.class));
+        try {
+            return findInstitution(getQuery());
+        } catch (TdarRecoverableRuntimeException trex) {
+            addActionError(trex.getMessage());
+            return INPUT;
+        }
+    }
+
+    @Action(value = "people", results = {
+            @Result(name = "success", location = "results.ftl"),
+            @Result(name = INPUT, location = "advanced.ftl") })
+    public String searchPeople() {
+        setSortOptions(SortOption.getOptionsForContext(Person.class));
+        try {
+            return findPerson(null, getQuery(), null, null, null, null);
+        } catch (TdarRecoverableRuntimeException trex) {
+            addActionError(trex.getMessage());
+            return INPUT;
+        }
+    }
+
     // FIXME: "explore" results belong in a separate controller.
     public String exploreSearch() {
         processExploreRequest();
@@ -185,6 +214,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     }
 
     private String collectionSearch() {
+        setLookupSource(LookupSource.COLLECTION);
         determineCollectionSearchTitle();
         QueryBuilder queryBuilder = new ResourceCollectionQueryBuilder();
         queryBuilder.setOperator(Operator.AND);
@@ -352,7 +382,11 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
     @Actions({
             @Action(value = "basic", results = { @Result(name = SUCCESS, location = "advanced.ftl") }),
-            @Action(value = "advanced") })
+            @Action(value = "advanced"),
+            @Action(value = "collection", results = { @Result(name = SUCCESS, location = "advanced.ftl") }),
+            @Action(value = "person", results = { @Result(name = SUCCESS, location = "advanced.ftl") }),
+            @Action(value = "institution", results = { @Result(name = SUCCESS, location = "advanced.ftl") })
+    })
     public String execute() {
         return SUCCESS;
     }
