@@ -50,7 +50,7 @@ View freemarker macros
 </#if>
 </#macro>
 
-<#macro createFileLink irfile >
+<#macro createFileLink irfile newline=false >
     <#assign version=irfile />
          <#if version.latestUploadedVersion?? >
             <#assign version=version.latestUploadedVersion />        
@@ -60,7 +60,7 @@ View freemarker macros
     <#if resource.resourceType == 'IMAGE'>target='_blank'</#if>
           title="${version.filename?html}">
               <@truncate version.filename 65 />
-          </a>
+          </a><#if newline><br /></#if>
          <#else>
              <@truncate version.filename 65 /> 
          </#if>
@@ -108,7 +108,9 @@ View freemarker macros
                     Downloads
                     <span class="downloadNumber hidden-tablet">${resource.totalNumberOfFiles?c}</span>
                 </h3>
+    <#if resource.totalNumberOfFiles != 0>
       <@embargoCheck/>
+    </#if>
         <ul class="downloads media-list">
         <#assign extensionMap = { 'pdf':'page-white-acrobat', 'doc':'page-white-word','docx':'page-white-word' ,'DOCUMENT','page-white-text',
                         'mdb':'page-white-key','mdbx':'page-white-key','accdb':'page-white-key',
@@ -123,7 +125,8 @@ View freemarker macros
                       <#local ext = extensionMap[resource.resourceType ] />
                       </#if>
                     <li class="<#if irfile.deleted>view-deleted-file</#if> media">
-                        <i class="iconf ${ext} pull-left"></i><@createFileLink irfile />
+                        <i class="iconf ${ext} pull-left"></i>
+                        <div class="media-body"><@createFileLink irfile true /></div>
               </#if>
               <#if irfile.latestTranslatedVersion?? && resource.resourceType == 'DATASET' >
                 <blockquote>
@@ -492,10 +495,10 @@ No categories or subcategories specified.
 <div id="subtitle"> 
     Part of the  
   <#if resource.project.active || editable>
-    <a href="<@s.url value='/project/view'><@s.param name="id" value="${resource.project.id?c}"/></@s.url>">
+    <a href="<@s.url value='/project/view'><@s.param name="id" value="${resource.project.id?c}"/></@s.url>">${resource.project.coreTitle}</a>
+  <#else>
+  ${resource.project.coreTitle}
   </#if>
-    ${resource.project.coreTitle}
-  <#if resource.project.active || editable ></a></#if>
         <#if resource.project.draft>(DRAFT)</#if> project
 </div>
 </#if>
