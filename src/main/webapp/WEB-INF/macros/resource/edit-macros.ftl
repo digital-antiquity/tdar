@@ -31,15 +31,13 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <@s.hidden id='ImageDescription' name='image.description' value="placeholder description"/>
 
 <#else>
-    <span
-    tiplabel="Title"
+    <div tiplabel="Title"
     tooltipcontent="Enter the entire title, including sub-title, if appropriate.">
-   
-    <@s.textfield label="Title" id="resourceRegistrationTitle"  
-        title="A title is required for all ${itemTypeLabel}s" name='${itemPrefix}.title' cssClass="required descriptiveTitle input-xxlarge" required=true maxlength="512"/>
-</span>
+        <@s.textfield label="Title" id="resourceRegistrationTitle"  
+            title="A title is required for all ${itemTypeLabel}s" name='${itemPrefix}.title' cssClass="required descriptiveTitle input-xxlarge" required=true maxlength="512"/>
+    </div>
     <#if resource.resourceType != 'PROJECT'>
-    <span tiplabel="Year" tooltipcontent="Four digit year, e.g. 1966 or 2005.">
+    <div tiplabel="Year" tooltipcontent="Four digit year, e.g. 1966 or 2005.">
     <#local dateVal = ""/>
     <#if resource.date?? && resource.date != -1>
     <#local dateVal = resource.date?c />
@@ -47,7 +45,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <@s.textfield label="Year" id='dateCreated' name='${itemPrefix}.date' value="${dateVal}" cssClass="reasonableDate required input-mini" required=true
       title="Please enter the year this ${itemTypeLabel} was created" />
     </#if>
-    </span>
+    </div>
 </#if>
     <#nested>
 </div>
@@ -57,11 +55,11 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <#macro abstractSection itemPrefix="resource">
 <div class="well-alt">
     <h2>Abstract / Description</h2>
-    <span id="t-abstract" class="clear"
+    <div id="t-abstract" class="clear"
         tiplabel="Abstract / Description"
         tooltipcontent="Short description of the ${resource.resourceType.label}.">
             <@s.textarea id='resourceDescription'  name='${itemPrefix}.description' cssClass='required resizable resize-vertical input-xxlarge' required=true title="A description is required" />
-        </span>
+        </div>
     
 </div>
 </#macro>
@@ -1013,7 +1011,7 @@ jquery validation hooks?)
 <div id="citationInformation" class="well-alt"> 
     <h2>Additional Citation Information</h2>
 
-    
+    <#if resource.resourceType != 'PROJECT'>
     <div tiplabel="Department / Publisher Location" tooltipcontent="Department name, or City,State (and Country, if relevant)">
         <span id="publisher-hints"  book="Publisher" book_section="Publisher" journal_article="Publisher"  conference="Conference" thesis="Institution" other="Publisher">
             <@s.textfield id='publisher' label="Publisher" name='publisherName' cssClass="institution input-xxlarge"  />
@@ -1023,6 +1021,7 @@ jquery validation hooks?)
             <@s.textfield id='publisherLocation' label="Publisher Loc." name='${prefix}.publisherLocation' cssClass='input-xxlarge' />
         </span>
     </div>
+    </#if>
     <#nested />
 
     <div id="divUrl" tiplabel="URL" tooltipcontent="Website address for this resource, if applicable">

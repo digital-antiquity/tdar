@@ -695,7 +695,7 @@ function sessionTimeoutWarning() {
         setTimeout(sessionTimeoutWarning, 60000);
     }
 }
-
+/*
 function getBrowserMajorVersion() {
     var browserMajorVersion = 1;
     try {
@@ -704,7 +704,7 @@ function getBrowserMajorVersion() {
     }
     return browserMajorVersion;
 }
-
+*/
 function setupDocumentEditForm() {
     $(".doctype input[type=radio]").click(function() {switchDocType(this);});
     switchDocType($(".doctype input[type=radio]:checked"));

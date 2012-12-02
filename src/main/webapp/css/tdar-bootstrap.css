@@ -1206,3 +1206,8 @@ p.copyright-notice {
 .nowrap {
 	white-space:nowrap;
 }
+
+.popover h3, .popover h2 {
+    margin-top:0px !important;
+    paddding:10px 0px 10px 0px !important;
+}

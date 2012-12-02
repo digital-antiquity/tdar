@@ -26,10 +26,10 @@
 <@edit.allCreators "Authors / Editors" authorshipProxies 'authorship' false />
 
 <@edit.citationInfo "document">
-    <span tiplabel="Document Type"  tooltipcontent="Select the document type. Appropriate citation fields will be displayed below." class="doctype">
+    <div tiplabel="Document Type"  tooltipcontent="Select the document type. Appropriate citation fields will be displayed below." class="doctype">
         <@s.radio name='document.documentType' id="documentType" emptyOption='false' listValue="label"  
             list='%{documentTypes}' label="Document Type" theme="bootstrap" />
-    </span>
+    </div>
             
     
     <div  tiplabel="Additional Title" tooltipcontent="Enter the title of the book, report, or journal this document is part of"
@@ -45,9 +45,9 @@
 
 
 
-    <span tiplabel="Language" tooltipcontent="Select the language in which the document is written.">
+    <div tiplabel="Language" tooltipcontent="Select the language in which the document is written.">
         <@s.select label='Language'  emptyOption='false' name='resourceLanguage'  listValue="label" list='%{languages}' cssClass="right-shortfield "/>
-    </span>
+    </div>
 
     <div class="doctypeToggle journal_article other control-group" id="t-vol">
         <label class="control-label">Volume Information</label>
@@ -84,17 +84,17 @@
         <@s.textfield id='copyLocation' label='Copy Location' name='document.copyLocation' cssClass="input-xxlarge"/>
     </div>
 
-    <span id="t-doi" tiplabel="DOI" tooltipcontent="Digital Object Identifier.">
+    <div id="t-doi" tiplabel="DOI" tooltipcontent="Digital Object Identifier.">
         <@s.textfield labelposition='left' id='doi' label='DOI' name='document.doi' cssClass="shortfield" />
-    </span>
+    </div>
     
-    <span id="t-isbn" placeholder="XXXX-XXXX" tiplabel="ISBN" tooltipcontent="International Standard Book Number." class="book_section book other doctypeToggle">
+    <div id="t-isbn" placeholder="XXXX-XXXX" tiplabel="ISBN" tooltipcontent="International Standard Book Number." class="book_section book other doctypeToggle">
         <@s.textfield labelposition='left' id='isbn' title="please add a valid ISBN" label='ISBN' name='document.isbn' cssClass="isbn " />
-    </span>
+    </div>
     
-    <span id="t-issn" placeholder="XXXX-XXXX" tiplabel="ISSN" tooltipcontent="International Standard Serial Number, an eight-digit number assigned to many serial publications." class="journal_article doctypeToggle">
+    <div id="t-issn" placeholder="XXXX-XXXX" tiplabel="ISSN" tooltipcontent="International Standard Serial Number, an eight-digit number assigned to many serial publications." class="journal_article doctypeToggle">
         <@s.textfield labelposition='left' id='issn' title="please add a valid ISSN" label='ISSN' name='document.issn' cssClass="issn journal_article" />
-    </span>
+    </div>
 
 
 </@edit.citationInfo>
