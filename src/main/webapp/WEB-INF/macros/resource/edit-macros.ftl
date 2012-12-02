@@ -1089,7 +1089,9 @@ jquery validation hooks?)
 <#if resource.id == -1>
 <title>Create a new ${resource.resourceType.label}</title>
 <#else>
-<title>Editing ${resource.resourceType.label} Metadata for ${resource.title} (${siteAcronym} id: ${resource.id?c})</title>
+<#-- expose pageTitle so edit pages can use it elsewhere -->
+<#assign pageTitle = "Editing ${resource.resourceType.label} Metadata for ${resource.title} (${siteAcronym} id: ${resource.id?c})" />
+<title>${pageTitle}</title>
 </#if>
 </#macro>
 

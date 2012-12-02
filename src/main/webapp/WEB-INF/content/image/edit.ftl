@@ -11,9 +11,9 @@
 <@edit.sidebar />
 <@edit.subNavMenu />
 
-
 <@s.form name='imageMetadataForm' id='ImageMetadataForm'  cssClass="span9 form-horizontal"  method='post' enctype='multipart/form-data' action='save'>
 
+<h1>${edit.pageTitle}</h1>
 <@edit.basicInformation "image" "image">
 
     <p id="t-located"  tooltipcontent="Actual physical location of a copy of the image, e.g. an agency, repository, 
