@@ -23,22 +23,22 @@
          
          console.log("you selected %s", $this);
     
-         //verify some basic assertions
          var _verifyRow = function($row) {
              if(!$row.is(".row, .controls-row, .row-fluid"))  { 
                  console.error("element isn't a bootstap row. terminating");
                  return $this;
              }
              //assert row's direct children all specify grid-size
-             var $children = $row.children().not("[class*=span]");
+             var $badKids = $row.children().not("[class*=span]");
              
              //direct block-elements of a row should have  grid-size
-             $children.each(function() {
+             $badKids.each(function() {
                  console.error(this);
                  $(this).css("background-color", "red");
              });
-             
          }
+         
+         //return jquery selection when finished
          return $this.find(".row, .controls-row, .row-fluid").each(function() {
              _verifyRow($(this));
          });
