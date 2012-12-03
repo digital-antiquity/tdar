@@ -41,9 +41,9 @@
                      "/includes/bindWithDelay.js",
                      "/includes/flot-0.7/jquery.flot.min.js",
                      "/includes/flot-0.7/excanvas.min.js",
-                     "/includes/flot-0.7/jquery.flot.pie.min.js",
-                     "/includes/ivaynberg-select2-817453b/select2.js"
+                     "/includes/flot-0.7/jquery.flot.pie.min.js"
     ] />
+<#--                     "/includes/ivaynberg-select2-817453b/select2.js" -->
 
     <#if !production> <#local srcs = srcs + ["/includes${fakeDirectory}/tdar.test.js"]> </#if> 
     
