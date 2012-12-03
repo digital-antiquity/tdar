@@ -1396,7 +1396,8 @@ $(function() {
             class="replace-menu-item"
             data-action="rename"
             data-filename="{%=$('.fileReplaceName', row).val()%}" 
-            data-target="" >{%=$('.fileReplaceName', row).val()%}</a></li>
+            data-target="#{%=$(row).attr('id')}" 
+            >{%=$('.fileReplaceName', row).val()%}</a></li>
 {% } %}
    <li class="divider"></li> 
    <li><a href="#" class="cancel" >Cancel previous operation</a></li>

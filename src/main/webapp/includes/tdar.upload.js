@@ -204,6 +204,43 @@ TDAR.fileupload = function() {
         }
     };
     
+    var _replacementFileItemClicked = function(e) {
+        var $anchor = $(this);
+        var $tr = $anchor.parents(".existing-file");
+        var $hidden = $tr.find('.fileReplaceName');
+        if(!$anchor.hasClass("cancel")) {
+            // -change the replacefilename, change action to "REPLACE"
+            // -find replacer,  remove from DOM
+            _replaceFile($tr, $anchor.data("target"));
+        } else {
+            //FIXME: implement cancel
+            console.error("cancel not implemented: %s", e);
+        }
+    };
+    
+    var _replaceFile($originalRow, $targetRow) {
+        var targetFilename = $targetRow.find("input.fileReplaceName").val();
+        var originalFilename = $originalRow.find("input.fileReplaceName").val();
+        $originalRow.find('.replacement-text').text("will be replaced by " + targetFilename + ")";
+        $originalRow.find('.fileAction').val("REPLACE");
+        
+        //effectively 'remove' the target file proxy fields from the form by removing the name attribute.
+        $targetRow.find("input[type=hidden]").each(function(){
+            $hidden = $(this);
+            $hidden.data("original-name", $hidden.attr("name"));
+            $hidden.removeAttr("name");
+        });
+        //have original row point to target,  in the event we need to cancel later and set everything back to normal
+        $originalRow.data("jqTargetRow", $targetRow);
+        
+        $targetRow.find('.replacement-text').text("(replacing " + originalFilename + ")");
+        _disableRow($targetRow);
+    }
+    
+    var _cancelFileReplace = function($originalRow, $targetRow) {
+        
+    }
+    
     
     var _enableRow = function(row) {
         $('button:not(.delete-button), select', row).prop('disabled', false);
