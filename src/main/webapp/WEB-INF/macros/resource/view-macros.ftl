@@ -539,7 +539,9 @@ No categories or subcategories specified.
 <#macro showcase>
     <#local numImagesToDisplay= resource.visibleFilesWithThumbnails?size />
   <#assign numImagesToDisplay=0/>
-  <div id="showcase" class="showcase controls-row" style="display:none;<#if !authenticatedUser??>margin:0px !important</#if>"> 
+  <div class="span9">
+  <div id="showcase" class="showcase controls-row" style="display:none;<#if !authenticatedUser??>margin:0px !important</#if>">
+ 
     <#list resource.visibleFilesWithThumbnails as irfile>
           <div class="showcase-slide"> 
             <#if authenticatedUser??>
@@ -561,6 +563,7 @@ No categories or subcategories specified.
             <!-- Put the caption content in a div with the class .showcase-caption --> 
           </div>   
    </#list>
+  </div>
   </div>
 
    <#if (authenticatedUser?? && numImagesToDisplay > 0 ) || ( numImagesToDisplay > 1) >
