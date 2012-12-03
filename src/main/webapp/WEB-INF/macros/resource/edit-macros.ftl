@@ -949,12 +949,13 @@ jquery validation hooks?)
                <th colspan="2">Access Restrictions</th>
                <th colspan="2">Action</th>
             </thead>
-            <tbody id="fileProxyUploadBody" class="files"></tbody>
+            <tbody id="fileProxyUploadBody" class="files">
             <#list fileProxies as fileProxy>
                 <#if fileProxy??>
                 <@fileProxyRow rowId=fileProxy_index filename=fileProxy.filename filesize=fileProxy.size fileid=fileProxy.fileId action=fileProxy.action versionId=fileProxy.originalFileVersionId/>
                 </#if>
             </#list>
+            </tbody>
         </table>
     
 </div>
@@ -1088,7 +1089,7 @@ jquery validation hooks?)
 <#-- expose pageTitle so edit pages can use it elsewhere -->
 <#assign pageTitle = "Create a new ${resource.resourceType.label}" />
 <#if resource.id != -1>
-	<#assign pageTitle = "Editing ${resource.resourceType.label} Metadata for ${resource.title} (${siteAcronym} id: ${resource.id?c})" />
+<#assign pageTitle = "Editing ${resource.resourceType.label} Metadata for ${resource.title} (${siteAcronym} id: ${resource.id?c})" />
 </#if>
 <title>${pageTitle}</title>
 </#macro>

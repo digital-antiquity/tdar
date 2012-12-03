@@ -16,7 +16,7 @@ ${filesize?string(",##0.00")}b
 </#if>
 </#macro>
 <#assign tdarBuildId><#include  "/version.txt" parse=false/></#assign>
-<#assign tdarBuildId = tdarBuildId?trim?replace("+", "000" + .now?string("yyMMddHHmmss")) />
+<#assign tdarBuildId = tdarBuildId?trim?replace("+", "001") />
 
 <#macro globalJavascript>
 <script type="text/javascript">
