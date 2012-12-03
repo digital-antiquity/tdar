@@ -149,18 +149,19 @@ $(document).ready(function() {
     <#elseif current?string == name?string>
         <#assign state="active" />
     </#if>
-    <li class="${state} ${action}">
-                <a href='<@s.url value="/${namespace}/${action}">
-                <#if includeResourceId>
-                    <#if persistable??>
-                        <#local _id = persistable.id />
-                    <#else>
-                        <#local _id = creator.id />
-                    </#if>
-                    <@s.param name="id" value="${_id?c}" />
-                </#if>
-                </@s.url>'>
-                <#nested> ${label}</a>
+    <li class="${state}">
+        <a href='<@s.url value="/${namespace}/${action}">
+        <#if includeResourceId>
+            <#if persistable??>
+                <#local _id = persistable.id />
+            <#else>
+                <#local _id = creator.id />
+            </#if>
+            <@s.param name="id" value="${_id?c}" />
+        </#if>
+        </@s.url>'>
+        <i class="tdar-icon-${action}<#if state?has_content>-${state}</#if>"></i>
+        <#nested> ${label}</a>
     </li>
 </#macro>
 

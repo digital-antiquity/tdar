@@ -9,11 +9,13 @@
 <p>${collection.description!""}</p>
 </#if>
 
+<#if collections?has_content>
 <ul>
   <#list collections as collection_>
    <li><a href="<@s.url value="/collection/${collection_.id?c}"/>">${collection_.name}</a></li>
   </#list>
 </ul>
+</#if>
 <#if collection??>
   <@list.listResources resourcelist=results sortfield=collection.sortBy />
 
