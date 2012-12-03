@@ -23,6 +23,7 @@ html markup) you will probably not like the results
   <#assign itemTag_=itemTag/> 
   <#assign itemClass = ""/>
   
+  <#-- setup default -->
   <#if orientation == "GRID">
     <#assign listTag_="div"/>  
     <#assign itemClass = "span2"/>
@@ -32,29 +33,26 @@ html markup) you will probably not like the results
     <#assign itemTag_="li"/> 
     <div class="resource-list controls-row">
       <#if mapPosition=="top" || mapPosition == "right">
-      <div class="span9 google-map" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if>>
-  
-    </div>
-    </#if>    
+        <div class="span9 google-map" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if> > </div>
+      </#if>    
     
-        <div class="<#if mapPosition=='left' || mapPosition=="right">span3<#else>span9</#if>">
-
-
+      <div class="<#if mapPosition=='left' || mapPosition=="right">span3<#else>span9</#if>">
   </#if>
+  
+  
   <#if resourcelist??>
   <#list resourcelist as resource>
     <#local key = "" />
     <#local defaultKeyLabel="No Project"/>
     <#-- if we're a resource && are viewable -->
     <#if resource?? && (!resource.viewable?has_content || resource.viewable) >
-        <#-- handle grouping/sorting  -->
+        <#-- handle grouping/sorting with indentation -->
         <#if sortfield?contains('RESOURCE_TYPE') || sortfield?contains('PROJECT')>
             <#if sortfield?contains('RESOURCE_TYPE')>
                 <#local key = resource.resourceType.plural />
                 <#local defaultKeyLabel="No Resource Type"/>  
             </#if>
             <#if sortfield?contains('PROJECT')>
-                <#local defaultKeyLabel="No Project"/>
                 <#if resource.project??>
                     <#local key = resource.project.titleSort />
                 <#elseif resource.resourceType.project >
@@ -63,7 +61,7 @@ html markup) you will probably not like the results
             </#if>
             <#-- print header and group/list tag -->
             <#if first || (prev != key) && key?has_content>
-                <#if prev?has_content></${listTag_}></#if>
+                <#if prev?has_content || sortField?contains("RESOURCE_TYPE") || sortField?contains("PROJECT")></${listTag_}></#if>
                 <${headerTag}><#if key?has_content>${key}<#else>${defaultKeyLabel}</#if></${headerTag}>
                 <${listTag_} class='resource-list  controls-row ${orientation}'>
             </#if>
@@ -72,7 +70,7 @@ html markup) you will probably not like the results
             <#-- default case for group tag -->
             <@printTag listTag_ "resource-list  controls-row ${orientation}" false />
         </#if>  
-        <#-- printing item tag -->
+	        <#-- printing item tag -->
             <@printTag itemTag_ "listItem ${itemClass!''}" false>
             <#if orientation == 'MAP' && resource.firstActiveLatitudeLongitudeBox?has_content> data-lat="${resource.firstActiveLatitudeLongitudeBox.centerLatitude?c}"
             data-long="${resource.firstActiveLatitudeLongitudeBox.centerLongitude?c}" </#if>
