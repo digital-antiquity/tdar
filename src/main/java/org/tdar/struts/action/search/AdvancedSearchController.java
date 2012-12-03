@@ -542,6 +542,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         return fileAccessFacets;
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public List<FacetGroup<? extends Facetable>> getFacetFields() {
         List<FacetGroup<?>> group = new ArrayList<FacetGroup<?>>();
@@ -553,20 +554,6 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         group.add(new FacetGroup<DocumentType>(DocumentType.class, QueryFieldNames.DOCUMENT_TYPE, documentTypeFacets, DocumentType.BOOK));
         return group;
     }
-
-    // @Override
-    // public void addFacets(FullTextQuery ftq) {
-    // QueryFieldNames.RESOURCE_TYPE,
-    // facetOn(QueryFieldNames.RESOURCE_TYPE, QueryFieldNames.RESOURCE_TYPE,
-    // ftq, resourceTypeFacets, ResourceType.class);
-    // facetOn(QueryFieldNames.INTEGRATABLE, QueryFieldNames.INTEGRATABLE,
-    // ftq, integratableOptionFacets, IntegratableOptions.class);
-    // facetOn(QueryFieldNames.DOCUMENT_TYPE, QueryFieldNames.DOCUMENT_TYPE,
-    // ftq, documentTypeFacets, DocumentType.class);
-    // facetOn(QueryFieldNames.RESOURCE_ACCESS_TYPE,
-    // QueryFieldNames.RESOURCE_ACCESS_TYPE, ftq, fileAccessFacets,
-    // ResourceAccessType.class);
-    // }
 
     // alias for faceted search.
     public void setDocumentType(DocumentType doctype) {

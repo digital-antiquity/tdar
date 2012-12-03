@@ -58,10 +58,21 @@
 		<from>^/(.+)/$</from>
 		<to>/$1</to>
 	</rule>
-        <rule>
-            <from>^/search/search(.*)</from>
-            <to>/search/results$1</to>
-        </rule>
+     <rule>
+         <from>^/search/search(.*)</from>
+         <to>/search/results$1</to>
+     </rule>
+
+     <rule>
+         <from>^/search/$</from>
+         <to>/search/basic</to>
+     </rule>
+     <rule>
+         <from>^/search$</from>
+         <to>/search/basic</to>
+     </rule>
+
+
 	<rule>
 		<from>^/(project|dataset|ontology|image|billing|video|document|sensory-data|cart|coding-sheet|collection)/([0-9]+)/(admin|view|edit|upload|delete|columns|mapping|citations|dc|mods|json|xml)$</from>
 		<to>/$1/$3?id=$2</to>
