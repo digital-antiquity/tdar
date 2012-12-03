@@ -8,6 +8,7 @@ import java.util.LinkedHashSet;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jetty.client.ContentExchange;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"Placeholder-context.xml"})
+@Ignore
 public class TDataSetFeedRequestIntegrationITCase extends AbstractLightFitTest {
 
     private final Logger logger = Logger.getLogger(getClass());

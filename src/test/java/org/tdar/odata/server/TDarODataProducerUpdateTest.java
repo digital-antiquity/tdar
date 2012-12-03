@@ -7,6 +7,7 @@ import java.util.List;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.odata4j.core.OEntity;
@@ -21,6 +22,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.odata.server.MetaData.EntitySet;
 
 @RunWith(JMock.class)
+@Ignore
 public class TDarODataProducerUpdateTest {
 
     private Mockery context = new Mockery();

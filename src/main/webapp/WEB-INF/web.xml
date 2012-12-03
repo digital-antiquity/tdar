@@ -170,7 +170,8 @@ vim:sts=2:sw=2
     <url-pattern>*.dec</url-pattern>
   </servlet-mapping>
   
-    <servlet>
+<!-- 
+ <servlet>
     <servlet-name>OData_service</servlet-name>
     <servlet-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</servlet-class>
     <init-param>
@@ -186,5 +187,5 @@ vim:sts=2:sw=2
 		<servlet-name>OData_service</servlet-name>
 		<url-pattern>/odata.svc/*</url-pattern>
 	</servlet-mapping>
-
+-->
 </web-app>

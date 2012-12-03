@@ -15,6 +15,7 @@ import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
 import org.jmock.integration.junit4.JUnit4Mockery;
 import org.jmock.lib.legacy.ClassImposteriser;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.odata4j.exceptions.NotAuthorizedException;
@@ -27,6 +28,7 @@ import org.tdar.odata.server.AbstractDataRecord;
 import org.tdar.web.SessionData;
 
 @RunWith(JMock.class)
+@Ignore
 public class ODataRepositoryServiceTest {
 
     Mockery context = new JUnit4Mockery() {{

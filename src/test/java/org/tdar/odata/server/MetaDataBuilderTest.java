@@ -9,6 +9,7 @@ import java.util.List;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.odata4j.edm.EdmDataServices;
@@ -18,6 +19,7 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 
 @RunWith(JMock.class)
+@Ignore
 public class MetaDataBuilderTest {
 
     private Mockery context = new Mockery();

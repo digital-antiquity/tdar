@@ -8,6 +8,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.odata4j.edm.EdmEntityType;
@@ -24,6 +25,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"Placeholder-context.xml"})
 @DirtiesContext
+@Ignore
 public class TDarProducerFactoryITCase extends AbstractLightFitTest{
 
     private final Logger logger = Logger.getLogger(getClass());
