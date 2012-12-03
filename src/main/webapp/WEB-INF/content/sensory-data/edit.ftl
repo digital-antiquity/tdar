@@ -26,54 +26,46 @@
 
 <div class="well-alt" id="divSurveyInfo">
     <h2>Survey Information</h2>
-    <div class='control-group' tiplabel='Survey Information'>
-    <span tiplabel="Survey Date(s)" tooltipcontent="Date of survey, or date range of survey.">
+    <div class='control-group' tiplabel="Survey Date(s)" tooltipcontent="Date of survey, or date range of survey.">
     <@s.textfield label="Survey Begin" id="txtSurveyDateBegin" name="sensoryData.surveyDateBegin" cssClass="shortfield date formatUS" placeholder="mm/dd/yyyy" />
-    </span>
     <@s.textfield label="Survey End" id="txtSurveyDateEnd" name="sensoryData.surveyDateEnd" cssClass="right-shortfield date formatUS" placeholder="mm/dd/yyyy" />
-<#-- FIXME:  how to replace these conditionals? 
+<#-- FIXME: need to convert surveyDateEnd and surveyDateBegin to short forms when editing existing sensory data
 value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateEnd /></#if>"
 -->
-    </div>
     <!-- FIXME: why is this commented out?
-    <br />
     <span tiplabel="" tooltipcontent=""><@s.textfield maxLength="255" name="sensoryData.surveyLocation" cssClass="input-xxlarge" label="Survey Location" labelposition="left" title="Survey Location" /></span>
     -->
-    <br />
     <@s.textfield maxLength="255" name="sensoryData.surveyConditions" 
         tiplabel="Survey Conditions" tooltipcontent="The overall weather trend during survey (sunny, overcast, indoors, etc.)"
-        cssClass="input-xxlarge" label="Conditions" labelposition="left" /></span>
-    <br />
-    <span tiplabel="Scanner Details" tooltipcontent="Details of the instrument(s) with serial number(s) and scan units"><@s.textfield maxLength="255" name="sensoryData.scannerDetails" cssClass="input-xxlarge" label="Scanner Details" labelposition="left" /></span>
-    <br />
-    <span tiplabel="Company / Operator Name" tooltipcontent="Details of company and scan operator name"><@s.textfield maxLength="255" name="sensoryData.companyName" cssClass="input-xxlarge" label="Company Name" labelposition="left" /></span>
-    <br />
-    <span tiplabel="Estimated Data Resolution" tooltipcontent="The estimated data resolution across the monument or object"><@s.textfield maxLength="255" name="sensoryData.estimatedDataResolution" cssClass="shortfield number" label="Data Resolution" labelposition="left" /></span>
-    <span tiplabel="Total Number of Scans in Project" tooltipcontent="Total number of scans"><@s.textfield maxLength="255" name="sensoryData.totalScansInProject" cssClass="right-shortfield number" label="# Scans" labelposition="left" /></span>
-    <br />
-    <span tiplabel="Turntable used" tooltipcontent="Check this box if a turntable was used for this survey.">
+        cssClass="input-xxlarge" label="Conditions" labelposition="left" />
+    <div tiplabel="Scanner Details" tooltipcontent="Details of the instrument(s) with serial number(s) and scan units">
+    <@s.textfield maxLength="255" name="sensoryData.scannerDetails" cssClass="input-xxlarge" label="Scanner Details" labelposition="left" />
+    </div>
+    <div tiplabel="Company / Operator Name" tooltipcontent="Details of company and scan operator name">
+    <@s.textfield maxLength="255" name="sensoryData.companyName" cssClass="input-xxlarge" label="Company Name" labelposition="left" />
+    </div>
+    <div tiplabel="Estimated Data Resolution" tooltipcontent="The estimated data resolution across the monument or object">
+    <@s.textfield maxLength="255" name="sensoryData.estimatedDataResolution" cssClass="shortfield number" label="Data Resolution" labelposition="left" />
+    </div>
+    <div tiplabel="Total Number of Scans in Project" tooltipcontent="Total number of scans">
+    <@s.textfield maxLength="255" name="sensoryData.totalScansInProject" cssClass="right-shortfield number" label="# Scans" labelposition="left" />
+    </div>
+    <div tiplabel="Turntable used" tooltipcontent="Check this box if a turntable was used for this survey.">
         <@s.checkbox  label="Turntable Used" name="sensoryData.turntableUsed"  id="cbTurntableUsed"  />
-    </span>
-    <div class="">
-        <br />
-        <span tiplabel="Planimetric Map Filename" tooltipcontent="If applicable, then provide the image name."><@s.textfield maxLength="255" name="sensoryData.planimetricMapFilename" cssClass="reallyinput-xxlarge" label="Planimetric Map Filename" labelposition="top" /></span>
-        <br />
-        <span tiplabel="Control Data Filename" tooltipcontent="If control data was collected, enter the control data filename."><@s.textfield maxLength="255" name="sensoryData.controlDataFilename" cssClass="reallyinput-xxlarge" label="Control Data Filename" labelposition="top" /></span>
     </div>
-    <div class='well-alt' tooltipfor="rgbDataCaptureInfo">
-        <h2>RGB Data Capture Information</h2>
-        <@s.textarea name="sensoryData.rgbDataCaptureInfo" id="rgbDataCaptureInfo" cssClass="resizable input-xxlarge" label="RGB Data Capture Information" labelposition="top" rows="5" />
-        If yes, then specify whether:
-        <ul>
-        <li>Internal or external?</li>
-        <li>Was an additional lighting system used? If yes, then provide a brief description of the lighting system.</li>        
-        </ul>
+    <div tiplabel="Planimetric Map Filename" tooltipcontent="If applicable, then provide the image name.">
+    <@s.textfield maxLength="255" name="sensoryData.planimetricMapFilename" cssClass="reallyinput-xxlarge" label="Planimetric Map Filename" labelposition="top" />
     </div>
-    <br />
-    <span tiplabel="Description of Final Datasets for Archive" tooltipcontent="What datasets will be archived (include file names if possible).">
+    <div tiplabel="Control Data Filename" tooltipcontent="If control data was collected, enter the control data filename.">
+    <@s.textfield maxLength="255" name="sensoryData.controlDataFilename" cssClass="reallyinput-xxlarge" label="Control Data Filename" labelposition="top" />
+    </div>
+    <div tiplabel='RGB Data Capture Information' tooltipcontent="Please specify it is (1) internal or external and (2) describe any additional lighting systems used if applicable">
+    <@s.textarea name="sensoryData.rgbDataCaptureInfo" id="rgbDataCaptureInfo" cssClass="resizable input-xxlarge" label="RGB Data Capture Information" labelposition="top" rows="5" />
+    </div>
+    <div tiplabel="Description of Final Datasets for Archive" tooltipcontent="What datasets will be archived (include file names if possible).">
         <@s.textarea name="sensoryData.finalDatasetDescription" cssClass="resizable input-xxlarge" label="Description of Final Datasets for Archive" labelposition="top" rows="5" />
-    </span>
-
+    </div>
+    </div>
 </div>
 
 <div class="well-alt" id="divScanInfo">
