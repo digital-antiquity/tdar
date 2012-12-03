@@ -950,10 +950,9 @@ aside.tdar-icon:before {
 }
 
 .search-list-checkbox-grey {
-    background: url(/images/r4/resource-types-large.gif) -30px -2563px no-repeat;
+    background: url(/images/r4/resource-types-large.gif) -30px -2564px no-repeat;
     width: 14px;
-    height: 14px;
-    margin-bottom:-2px;
+    height: 13.5px;
     display: inline-block;
 }
 
@@ -1110,28 +1109,28 @@ select.searchType {
 }
 
 .icon-document {
-    background: url(/images/r4/resource-types-large.gif) -298px -2473px no-repeat;
+    background: url(/images/r4/resource-types-large.gif) -296px -2477px no-repeat;
     width: 14px;
-    height: 14px;
+    height: 18px;
     display: inline-block;
 }
 
 .icon-dataset {
-    background: url(/images/r4/resource-types-large.gif) -344px -2473px no-repeat;
+    background: url(/images/r4/resource-types-large.gif) -344px -2477px no-repeat;
     width: 14px;
     height: 14px;
     display: inline-block;
 }
 
 .icon-image {
-    background: url(/images/r4/resource-types-large.gif) -328px -2473px no-repeat;
+    background: url(/images/r4/resource-types-large.gif) -328px -2477px no-repeat;
     width: 14px;
     height: 14px;
     display: inline-block;
 }
 
-.icon-coding_sheet {
-    background: url(/images/r4/resource-types-large.gif) -362px -2473px no-repeat;
+.icon-codingsheet {
+    background: url(/images/r4/resource-types-large.gif) -361px -2476px no-repeat;
     width: 14px;
     height: 14px;
     display: inline-block;
@@ -1139,15 +1138,16 @@ select.searchType {
 
 
 .icon-project {
-    background: url(/images/r4/resource-types-large.gif) -398px -2473px no-repeat;
+    background: url(/images/r4/resource-types-large.gif) -398px -2474px no-repeat;
     width: 14px;
-    height: 14px;
+    height: 16px;
+    margin-top:-1px;
     display: inline-block;
 }
 
 
 .icon-collection {
-    background: url(/images/r4/resource-types-large.gif) -447px -2472px no-repeat;
+    background: url(/images/r4/resource-types-large.gif) -447px -2477px no-repeat;
     width: 14px;
     height: 14px;
     display: inline-block;
@@ -1155,15 +1155,15 @@ select.searchType {
 
 
 .icon-geospatial {
-    background: url(/images/r4/resource-types-large.gif) -431px -2472px no-repeat;
+    background: url(/images/r4/resource-types-large.gif) -431px -2477px no-repeat;
     width: 14px;
     height: 14px;
     display: inline-block;
 }
 
 
-.icon-sensory_data {
-    background: url(/images/r4/resource-types-large.gif) -462px -2472px no-repeat;
+.icon-sensorydata {
+    background: url(/images/r4/resource-types-large.gif) -462px -2477px no-repeat;
     width: 14px;
     height: 14px;
     display: inline-block;
@@ -1171,7 +1171,7 @@ select.searchType {
 
 
 .icon-ontology {
-    background: url(/images/r4/resource-types-large.gif) -381px -2472px no-repeat;
+    background: url(/images/r4/resource-types-large.gif) -378px -2477px no-repeat;
     width: 14px;
     height: 14px;
     display: inline-block;
