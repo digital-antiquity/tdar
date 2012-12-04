@@ -60,6 +60,28 @@ TDAR.uri = function(path) {
     ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
   })();
+
+function getPerfStats() {
+  var timing = window.performance.timing;
+  return {
+    dns: timing.domainLookupEnd - timing.domainLookupStart,
+    connect: timing.connectEnd - timing.connectStart,
+    ttfb: timing.responseStart - timing.connectEnd,
+    basePage: timing.responseEnd - timing.responseStart,
+    frontEnd: timing.loadEventStart - timing.responseEnd
+  };
+}
+  
+  $(document).ready(function() {
+  if (window.performance && window.performance.timing) {
+    var ntStats = getPerfStats();
+    _gaq.push(["_trackEvent", "Navigation Timing", "DNS", undefined, ntStats.dns, true]);
+    _gaq.push(["_trackEvent", "Navigation Timing", "Connect", undefined, ntStats.connect, true]);
+    _gaq.push(["_trackEvent", "Navigation Timing", "TTFB", undefined, ntStats.ttfb, true]);
+    _gaq.push(["_trackEvent", "Navigation Timing", "BasePage", undefined, ntStats.basePage, true]);
+    _gaq.push(["_trackEvent", "Navigation Timing", "FrontEnd", undefined, ntStats.frontEnd, true]);
+  }
+  });
 </#noescape>
 </#macro>
 

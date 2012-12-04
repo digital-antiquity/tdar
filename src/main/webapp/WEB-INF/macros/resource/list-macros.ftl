@@ -137,6 +137,7 @@ html markup) you will probably not like the results
                         <@common.truncate resource.description!"No description specified." length />
                     </p>
                 </#if>
+	 <p><b>tDAR id:</b> ${resource.id?c}</p>
                 <br/>
                 </div>
             </#if>

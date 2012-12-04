@@ -163,15 +163,8 @@ public class ReflectionService {
         if (method.getReturnType() != Void.TYPE)
             try {
                 return (T) method.invoke(obj);
-            } catch (IllegalArgumentException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            } catch (Exception e) {
+                logger.debug("cannot call field getter:", e);
             }
         return null;
     }
@@ -190,15 +183,8 @@ public class ReflectionService {
         Method setter = ReflectionUtils.findMethod(field.getDeclaringClass(), setterName, field.getType());
         try {
             setter.invoke(obj, fieldValue);
-        } catch (IllegalArgumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.debug("cannot call field setter:", e);
         }
 
     }

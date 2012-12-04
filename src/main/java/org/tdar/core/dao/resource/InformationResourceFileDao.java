@@ -39,7 +39,7 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
                 toReturn.put(String.format("%s (%s)", objs[0], objs[1]), ((Long) objs[1]).floatValue());
                 total += (Long) objs[1];
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.debug("exception get admin file extension stats", e);
             }
         }
 

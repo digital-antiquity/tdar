@@ -122,7 +122,6 @@ public class MessageService {
         } catch (Exception e) {
             // trying to get a more useful debug message...
             logger.warn("Unhandled exception while processing file: " + version, e);
-            e.printStackTrace();
         }
         // }
         return success;

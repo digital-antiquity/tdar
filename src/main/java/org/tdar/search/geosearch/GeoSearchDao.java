@@ -173,7 +173,7 @@ public class GeoSearchDao {
                 logger.error("PostGIS connection is not configured");
                 setEnabled(false);
             } catch (Exception e) {
-                e.printStackTrace();
+               logger.debug("exception in geosearch:",e );
                 setEnabled(false);
             }
         }
@@ -193,7 +193,7 @@ public class GeoSearchDao {
             logger.error("gis database connection not enabled");
             databaseEnabled = false;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.debug("exception in geosearch:",e );
             databaseEnabled = false;
         }
         return queryForList;
@@ -206,7 +206,7 @@ public class GeoSearchDao {
             setEnabled(true);
             setJdbcTemplate(new JdbcTemplate(dataSource));
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.debug("exception in geosearch:",e );
             setEnabled(false);
         }
     }

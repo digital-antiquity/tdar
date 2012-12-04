@@ -162,8 +162,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     // properties in resourceType
     // properties in submitter (Person)
     // "firstName", "lastName", "institution", "email","label","submitter",
-    protected final static transient Logger logger = LoggerFactory
-            .getLogger(Resource.class);
+    protected final static transient Logger logger = LoggerFactory.getLogger(Resource.class);
 
     public Resource() {
     }
@@ -1102,7 +1101,6 @@ public class Resource extends JsonModel.Base implements Persistable,
         } catch (ClassCastException e) {
             logger.debug("{} <==> {} ", candidate.getClass(), getClass());
             logger.debug("{}", e);
-            e.printStackTrace();
             return false;
         }
     }

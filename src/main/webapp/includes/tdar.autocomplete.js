@@ -133,7 +133,8 @@ function applyGenericAutocomplete($elements, options) {
     // if there's a change in the autocomplete, reset the ID to ""
     $elements.change(function() {
         var $element = $(this);
-        //TODO: add comment describing what on earth is the mission of this gargantuan IF statement??????????x10^5000
+        // if the existing autocomplete value stored in the "autoVal" attribute does is not undefined and is not the same as the current
+        // evaluate it for being significant (important when trying to figure out if a minimum set of fields have been filled in
         if (($element.attr("autoVal") != undefined && $element.attr("autoVal") != $element.val()) ||
                 evaluateAutocompleteRowAsEmpty(this, options.ignoreRequestOptionsWhenEvaluatingEmptyRow == undefined ? []
                         : options.ignoreRequestOptionsWhenEvaluatingEmptyRow)) {
@@ -253,7 +254,6 @@ function applyGenericAutocomplete($elements, options) {
                 complete : function() {
 
                     $elem.removeData('responseHolder');
-                    //                            console.log("clearing responseholder. this should be blank -->" + $elem.data('reponseHolder') );
                 }
             };
             $.ajax(ajaxRequest);

@@ -1123,16 +1123,16 @@ jquery validation hooks?)
                     <option value="" selected='selected'>All Editable Projects</option>
                   <#if allSubmittedProjects?? && !allSubmittedProjects.empty>
                   <optgroup label="Your Projects">
-                    <@s.iterator value='allSubmittedProjects' status='projectRowStatus' var='submittedProject'>
+                    <#list allSubmittedProjects?sort_by("titleSort") as submittedProject>
                         <option value="${submittedProject.id?c}" title="${submittedProject.title!""?html}"><@truncate submittedProject.title 70 /> </option>
-                    </@s.iterator>
+                    </#list>
                   </optgroup>
                   </#if>
                   
                   <optgroup label="Projects you have been given access to">
-                    <@s.iterator value='fullUserProjects' var='editableProject'>
+                    <#list fullUserProjects?sort_by("titleSort") as editableProject>
                         <option value="${editableProject.id?c}" title="${editableProject.title!""?html}"><@truncate editableProject.title 70 /></option>
-                    </@s.iterator>
+                    </#list>
                   </optgroup>
                 </select>
             </div>
@@ -1410,11 +1410,11 @@ $(function() {
 
 
 <#macro subNavMenu>
-    <div id='subnavbar' class="affix-top resource-nav span12 row navbar-static"  data-offset-top="250" data-offset-bottom="250" data-spy="affix">
+    <div id='subnavbar' class="affix-top resource-nav span12 row navbar-static"  data-offset-top="250" data-spy="affix">
       <div class="">
         <div class="container" >
         <ul class="nav">
-            <li class="hidden-tablet hidden-phone"><a href="#basicInformationSection">Basic</a></li>
+            <li class="active hidden-tablet hidden-phone"><a href="#basicInformationSection">Basic</a></li>
             <li><a href="#authorshipSection">Authors</a></li>
             <#if persistable.resourceType?has_content && persistable.resourceType != 'PROJECT' ><li><a href="#divFileUpload">Files</a></li></#if>
             <span class="hidden-tablet hidden-phone" >

@@ -1,6 +1,43 @@
 <#escape _untrusted as _untrusted?html>
 
 
+<#macro projectInheritance>
+<div tooltipfor="cbInheritingInvestigationInformationhint,cbInheritingSiteInformationhint,cbInheritingMaterialInformationhint,cbInheritingCulturalInformationhint,cbInheritingTemporalInformationhint,cbInheritingOtherInformationhint,cbInheritingSpatialInformationhint" class="hidden">
+    <h2>&quot;Inheriting&quot; Project Metadata</h2>
+    <div>
+        <dl>
+        <dt>About</dt>
+        <dd>
+            For certain sections, you can re-use information to simplify metadata entry for resources you want to associate with your project. 
+        </dd>
+        
+        <dt>What if I change values in my project?</dt>
+        <dd>
+        If you change any metadata values at the project level, ${siteAcronym} will update those "inherited" values at the resource level. 
+
+For example, if you change "Investigation Types" for your project, any resource that inherited "Investigation Types" from that project will be automatically updated.
+        </dd>
+
+        </dl>
+    </div>
+</div>
+
+<div class="glide">
+<h3>${siteAcronym} project metadata</h3>
+<p>
+Projects in ${siteAcronym} contain and help organize a variety of different information resources such as documents,
+ datasets, coding sheets, and images. The project also functions as a template to pass shared metadata
+  (keywords) to child resources. Child resources may either inherit metadata from the parent project or 
+  the child resource may have unique metadata. For instance, if you enter the keywords &quot;Southwest&quot; and 
+  &quot;Pueblo&quot; for a project, resources associated with this project that you choose to inherit metadata
+   will be discovered in searches including those keywords. Child resources that override those keywords
+    would not be associated with keywords defined at the project level.
+</p>
+</div>
+
+
+</#macro>
+
 <#macro status>
     <div id="spanStatusToolTip" class="hidden">
         <h2>Status</h2>

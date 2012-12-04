@@ -932,10 +932,10 @@ ${_date?string('MM/dd/yyyy')}<#t>
     <#if resource_.resourceType != 'PROJECT'>
         <#assign map = resource_.relatedDatasetData />
         <#if map?? && !map.empty>
-            <h3>Additional Data</h3>
+            <h3>Additional Metadata</h3>
             <#list map?keys as key>
                 <#if key?? && map.get(key)?? && key.visible?? && key.visible>
-                   <b>${key.displayName}</b> : ${map.get(key) }<br/>
+				   <p class="sml"><strong>${key.displayName}:</strong> ${map.get(key)}</p>
                 </#if>
             </#list>
         </#if>

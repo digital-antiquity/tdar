@@ -310,7 +310,7 @@ public class PairtreeFilestore extends BaseFilestore {
                         new File(file.getParentFile().getCanonicalPath() + DELETED_SUFFIX).getAbsoluteFile());
                 FileUtils.moveDirectory(file.getParentFile(), new File(file.getParentFile().getCanonicalPath() + DELETED_SUFFIX));
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.warn("cannot purge file", e);
             }
         } else {
             FileUtils.deleteQuietly(file);

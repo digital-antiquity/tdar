@@ -179,7 +179,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
             logger.debug(numUpdates.length + " inserts/updates commited " + success + " successful");
             // cleanup
         } catch (SQLException e) {
-            e.getNextException().printStackTrace();
+            logger.warn("sql exception", e.getNextException());
             throw new TdarRecoverableRuntimeException("an error ocurred while processing a prepared statement ", e);
         } finally {
             try {
@@ -323,7 +323,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
     public JdbcTemplate getJdbcTemplate() {
         return jdbcTemplate;
     }
-    
+
     public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -343,9 +343,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
                     });
             return columnExists;
         } catch (MetaDataAccessException e) {
-            e.printStackTrace();
-            logger.error("Couldn't access tdar data import database metadata",
-                    e);
+            logger.error("Couldn't access tdar data import database metadata", e);
         }
         return false;
     }
@@ -904,7 +902,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
 
     @Override
     public void editRow(DataTable dataTable, Long rowId, Map<?, ?> data) {
-        
+
         String columnAssignments = "";
         final List<Object> values = new ArrayList<Object>();
         String separator = "";
@@ -919,16 +917,16 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
         }
         // Put id last so WHERE id = ? will work.
         values.add(data.get("id"));
-        
+
         // TODO RR: should this fail with an exception?
         // Probably should log it.
         if (values.size() > 1)
         {
             String sqlTemplate = "UPDATE \"%s\" SET %s WHERE id = ?";
             String sql = String.format(sqlTemplate, dataTable.getName(), columnAssignments);
-            
+
             jdbcTemplate.update(sql, values.toArray());
-        }               
+        }
     }
 
     @Override

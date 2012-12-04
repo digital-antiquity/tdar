@@ -199,7 +199,6 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
             try {
                 analyzer.processFile(original);
             } catch (Exception e) {
-                e.printStackTrace();
                 logger.warn("caught exception {} while analyzing file {}", e, original.getFilename());
             }
         }
@@ -220,7 +219,6 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                 try {
                     analyzer.processFile(version);
                 } catch (Exception e) {
-                    e.printStackTrace();
                     logger.warn("caught exception {} while analyzing file {}", e, filename);
                 }
                 break;

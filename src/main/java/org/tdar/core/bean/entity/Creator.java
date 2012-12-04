@@ -40,6 +40,8 @@ import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Resolution;
 import org.hibernate.search.annotations.Store;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Indexable;
@@ -75,6 +77,7 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
         Obfuscatable,
         Addressable {
 
+    protected final static transient Logger logger = LoggerFactory.getLogger(Creator.class);
     private transient boolean obfuscated;
 
     private static final long serialVersionUID = 2296217124845743224L;
@@ -223,7 +226,7 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
         try {
             return Persistable.Base.isEqual(this, Creator.class.cast(candidate));
         } catch (ClassCastException e) {
-            e.printStackTrace();
+            logger.debug("cannot cast creator: ", e);
             return false;
         }
     }

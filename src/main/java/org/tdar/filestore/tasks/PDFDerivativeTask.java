@@ -104,7 +104,7 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
             try {
                 document.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                getLogger().warn("cannot close PDF", e);
             }
         }
     }

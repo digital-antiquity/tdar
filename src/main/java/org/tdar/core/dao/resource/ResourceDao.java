@@ -158,7 +158,7 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
                     continue;
                 cache.add(new HomepageGeographicKeywordCache((String) objs[0], (Level) objs[1], (Long) objs[2]));
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.debug("cannot get iso counts:", e);
             }
         }
         return cache;
@@ -187,7 +187,7 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
                 }
                 types.remove(resourceType);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.debug("cannot get homepage resource cache:", e);
             }
         }
 

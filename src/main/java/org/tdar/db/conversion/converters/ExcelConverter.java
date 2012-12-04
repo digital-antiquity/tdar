@@ -74,14 +74,13 @@ public class ExcelConverter extends DatasetConverter.Base {
         try {
             workbook = WorkbookFactory.create(new FileInputStream(excelFile));
         } catch (InvalidFormatException exception) {
-            exception.printStackTrace();
+            logger.debug("cannot read excel file (invalid format)", exception);
             String errorMessage = "Couldn't create workbook from "
                     + excelFile.getAbsolutePath();
             logger.error(errorMessage, exception);
             throw new TdarRecoverableRuntimeException(errorMessage, exception);
         } catch (IllegalArgumentException exception) {
-            exception.printStackTrace();
-            logger.error("Couldn't create workbook, likely due to invalid Excel file or Excel 2003 file.");
+            logger.error("Couldn't create workbook, likely due to invalid Excel file or Excel 2003 file.",exception);
             throw new TdarRecoverableRuntimeException(
                     ERROR_WRONG_EXCEL_FORMAT,
                     exception);

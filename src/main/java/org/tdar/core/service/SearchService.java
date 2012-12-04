@@ -583,10 +583,8 @@ public class SearchService {
                 if (cmp.getAnalyzer() != null) {
                     try {
                         analyzer.addAnalyzer(cmp.getLabel(), (org.apache.lucene.analysis.Analyzer) cmp.getAnalyzer().newInstance());
-                    } catch (InstantiationException e) {
-                        e.printStackTrace();
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
+                    } catch (Exception e) {
+                        logger.debug("cannot add analyzer:", e);
                     }
                     logger.trace(cmp.getLabel() + " : " + cmp.getAnalyzer().getCanonicalName());
                 }

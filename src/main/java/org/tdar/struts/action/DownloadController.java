@@ -139,7 +139,7 @@ public class DownloadController extends AuthenticationAware.Base {
             try {
                 getLogger().debug("downloading file:" + resourceFile.getCanonicalPath());
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.debug("exception:", e);
             }
             contentLength = resourceFile.length();
             contentType = irFileVersion.getMimeType();

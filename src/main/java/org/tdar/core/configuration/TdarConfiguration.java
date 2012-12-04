@@ -282,7 +282,7 @@ public class TdarConfiguration {
             InetAddress localMachine = InetAddress.getLocalHost();
             host = localMachine.getHostName();
         } catch (UnknownHostException e) {
-            e.printStackTrace();
+            logger.debug("unknownhost: ", e);
         }
         return host + ".";
     }

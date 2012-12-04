@@ -62,7 +62,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
             logger.trace("{}", list);
             return list;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.debug("cannot find parent owner collection:", e);
         }
         return null;
     }

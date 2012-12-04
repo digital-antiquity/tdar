@@ -338,7 +338,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             }
         } catch (Exception e) {
             logger.warn("an error occured when trying to cleanup the filestore: {} for {} ", ticketId, getAuthenticatedUser());
-            e.printStackTrace();
+            logger.debug("exception:", e);
         }
     }
 
@@ -630,7 +630,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             try {
                 return FileUtils.readFileToString(version.getFile());
             } catch (Exception e) {
-                e.printStackTrace();
                 logger.debug("an error occurred when trying to load the text version of a file", e);
             }
         }

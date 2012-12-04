@@ -82,10 +82,8 @@ public class CrowdSoapDao extends BaseAuthenticationProvider {
         try {
             httpAuthenticator.logoff(request, response);
         } catch (RemoteException e) {
-            e.printStackTrace();
             logger.error("Couldn't reach crowd server", e);
         } catch (InvalidAuthorizationTokenException e) {
-            e.printStackTrace();
             logger.error("Application didn't authenticate properly with the crowd server, check crowd.properties", e);
         }
     }
@@ -133,15 +131,12 @@ public class CrowdSoapDao extends BaseAuthenticationProvider {
         try {
             return httpAuthenticator.isAuthenticated(request, response);
         } catch (InvalidAuthorizationTokenException exception) {
-            exception.printStackTrace();
             logger.error("Invalid authorization token", exception);
             return false;
         } catch (RemoteException exception) {
-            exception.printStackTrace();
             logger.error("Unable to connect to crowd authorization server", exception);
             throw new RuntimeException(exception);
         } catch (ApplicationAccessDeniedException e) {
-            e.printStackTrace();
             logger.error("This application denied access to crowd server, check crowd.properties and crowd server configuration", e);
             throw new RuntimeException(e);
         }
@@ -167,11 +162,9 @@ public class CrowdSoapDao extends BaseAuthenticationProvider {
         } catch (ObjectNotFoundException expected) {
             logger.debug("Object not found, as expected.");
         } catch (RemoteException e) {
-            e.printStackTrace();
             logger.error("Caught RemoteException while trying to contact the crowd server", e);
             throw new RuntimeException(e);
         } catch (InvalidAuthorizationTokenException e) {
-            e.printStackTrace();
             logger.error("Invalid auth token", e);
             throw new RuntimeException(e);
         }
@@ -197,24 +190,18 @@ public class CrowdSoapDao extends BaseAuthenticationProvider {
                 securityServerClient.addPrincipalToGroup(login, group.getGroupName());
             }
         } catch (RemoteException e) {
-            e.printStackTrace();
             logger.error("Unable to connect to crowd server", e);
             throw new RuntimeException(e);
         } catch (ApplicationPermissionException e) {
-            e.printStackTrace();
             logger.error("Crowd server does not permit this application to connect", e);
             throw new RuntimeException(e);
         } catch (InvalidAuthorizationTokenException e) {
-            e.printStackTrace();
             logger.debug("invalid auth token", e);
         } catch (InvalidCredentialException e) {
-            e.printStackTrace();
             logger.debug("invalid credentials", e);
         } catch (InvalidUserException e) {
-            e.printStackTrace();
             logger.error("Unable to add user: " + login, e);
         } catch (ObjectNotFoundException e) {
-            e.printStackTrace();
             logger.error("Unable to add principal " + principal + " to group", e);
         }
         return true;
@@ -237,18 +224,15 @@ public class CrowdSoapDao extends BaseAuthenticationProvider {
             securityServerClient.removePrincipal(principal.getName());
 
         } catch (ObjectNotFoundException expected) {
-            logger.debug("Object not found, as expected.");
+            logger.debug("Object not found, as expected.", expected);
         } catch (RemoteException e) {
-            e.printStackTrace();
             logger.error("Caught RemoteException while trying to contact the crowd server", e);
             throw new RuntimeException(e);
         } catch (InvalidAuthorizationTokenException e) {
-            e.printStackTrace();
             logger.error("Invalid auth token", e);
             throw new RuntimeException(e);
         } catch (ApplicationPermissionException e) {
-            logger.error("could not remove user");
-            e.printStackTrace();
+            logger.error("could not remove user", e);
         }
         logger.debug("Removed user : " + person);
         return true;

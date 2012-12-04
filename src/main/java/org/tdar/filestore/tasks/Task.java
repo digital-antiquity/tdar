@@ -79,7 +79,7 @@ public interface Task extends Serializable {
             try {
                 ctx.getFilestore().store(f, version);
             } catch (IOException e) {
-                e.printStackTrace();
+                getLogger().warn("cannot store version", e);
             }
             return version;
         }
@@ -89,7 +89,7 @@ public interface Task extends Serializable {
             try {
                 outputFileDirectory.mkdirs();
             } catch (Exception e) {
-                e.printStackTrace();
+                getLogger().warn("cannot make parent directories", e);
             }
         }
 

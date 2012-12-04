@@ -121,7 +121,7 @@ public class BulkUploadService {
 
     @Autowired
     private AccountService accountService;
-    
+
     @Autowired
     private FileAnalyzer analyzer;
 
@@ -700,7 +700,7 @@ public class BulkUploadService {
                 try {
                     BeanUtils.setProperty(beanToProcess, name, Enum.valueOf(propertyType, value));
                 } catch (IllegalArgumentException e) {
-                    e.printStackTrace();
+                    logger.debug("cannot set property:", e);
                     throw new TdarRecoverableRuntimeException(value + " is not a valid value for the " + name + " field", e);
                 }
             } else {
@@ -708,8 +708,7 @@ public class BulkUploadService {
                     try {
                         Double dbl = Double.valueOf(value);
                         if (dbl == Math.floor(dbl)) {
-                            value = new Integer((int) Math.floor(dbl))
-                                    .toString();
+                            value = new Integer((int) Math.floor(dbl)).toString();
                         }
                     } catch (NumberFormatException nfe) {
                         throw new TdarRecoverableRuntimeException("the field " + name + " is expecting an integer value, but found: " + value);

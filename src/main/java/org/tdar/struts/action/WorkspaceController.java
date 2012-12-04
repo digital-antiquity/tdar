@@ -193,7 +193,6 @@ public class WorkspaceController extends AuthenticationAware.Base {
             filestoreService.store(ticket, file, "integration-context.xml");
             setTicketId(ticket.getId());
         } catch (Throwable e) {
-            e.printStackTrace();
             addActionErrorWithException(e.getMessage(), e);
             return INPUT;
         }

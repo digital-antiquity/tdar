@@ -320,7 +320,7 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
                 ldapTemplate.modifyAttributes(groupContext);
             } catch (Exception e) {
                 logger.debug("Could not add person: " + person + " to group: " + groupName);
-                e.printStackTrace();
+                logger.debug("Exception: ",e);
             }
         }
 
@@ -372,8 +372,7 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
 
                 return groups.toArray(new String[0]);
             } catch (Exception e) {
-                logger.debug("Could not find membership for person: " + uid);
-                e.printStackTrace();
+                logger.debug("Could not find membership for person: " + uid,e);
             }
 
             return new String[0];

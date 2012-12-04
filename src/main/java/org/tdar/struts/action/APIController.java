@@ -108,7 +108,6 @@ public class APIController extends AuthenticationAware.Base {
             return SUCCESS;
         } catch (Exception e) {
             getLogger().debug("an exception occured when processing the xml import", e);
-            e.printStackTrace();
             StringBuilder error = new StringBuilder();
             error.append(e.getMessage());
             error.append("\r\n");
