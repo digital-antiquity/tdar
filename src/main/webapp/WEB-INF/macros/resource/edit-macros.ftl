@@ -1392,12 +1392,14 @@ $(function() {
 
 <script id="template-replace-menu" type="text/x-tmpl">
 {% for(var i = 0, row; row = o.jqnewfiles[i]; i++) { %}
+<#noparse>
    <li><a href="#" 
             class="replace-menu-item"
             data-action="rename"
             data-filename="{%=$('.fileReplaceName', row).val()%}" 
             data-target="#{%=$(row).attr('id')}" 
             >{%=$('.fileReplaceName', row).val()%}</a></li>
+</#noparse>
 {% } %}
    <li class="divider"></li> 
    <li><a href="#" class="cancel" >Cancel previous operation</a></li>

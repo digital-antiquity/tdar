@@ -85,7 +85,7 @@ public class LoginController extends AuthenticationAware.Base {
                     getSessionData());
         } catch (Exception e) {
             addActionError(e.getMessage());
-            return ERROR;
+            return INPUT;
         }
 
         if (status != AuthenticationStatus.AUTHENTICATED) {
