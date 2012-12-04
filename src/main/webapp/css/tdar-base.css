@@ -688,12 +688,6 @@ h2 {
 	line-height: 19px;
 }
 
-/* ensure proper spacing in view page metadata name/value pairs, and don't wrap in the middle */
-.cols p.meta span.name-value  {
-    margin-right:0.5em;
-    display: inline-block;
-}
-
 .cols p.sml {
 	margin: 15px 0;
 	font-size: 14px;
