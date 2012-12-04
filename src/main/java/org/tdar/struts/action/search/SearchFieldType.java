@@ -11,7 +11,6 @@ public enum SearchFieldType implements HasLabel {
     ALL_FIELDS("allFields", SearchFieldGroup.BASIC_FIELDS, "All Fields"),
     TITLE("titles", SearchFieldGroup.BASIC_FIELDS, "Title"),
     CONTENTS("contents", SearchFieldGroup.BASIC_FIELDS, "Full-Text"),
-    FILENAME("filenames", SearchFieldGroup.BASIC_FIELDS, "File Name"),
     RESOURCE_CREATOR_PERSON("resourceCreatorProxies", SearchFieldGroup.BASIC_FIELDS, "Person", false),
     RESOURCE_CREATOR_INSTITUTION("resourceCreatorProxies", SearchFieldGroup.BASIC_FIELDS, "Institution", false),
     TDAR_ID("resourceIds", SearchFieldGroup.BASIC_FIELDS, "Id"),
@@ -19,6 +18,7 @@ public enum SearchFieldType implements HasLabel {
     COVERAGE_DATE_RADIOCARBON("coverageDates", SearchFieldGroup.BASIC_FIELDS, "RadioCarbon Dates", false),
     PROJECT("projects", SearchFieldGroup.BASIC_FIELDS, "Project", false),
     COLLECTION("collections", SearchFieldGroup.BASIC_FIELDS, "Collection", false),
+    FILENAME("filenames", SearchFieldGroup.BASIC_FIELDS, "File Name"),
 
     // freeform keywords
     FFK_GEOGRAPHIC("geographicKeywords", SearchFieldGroup.FREEFORM_KEYWORDS, "Geographic Keywords"),

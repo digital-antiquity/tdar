@@ -195,19 +195,19 @@ $(document).ready(function(){
             <div class="control-group">
                 <div class="controls controls-row">
                     <@s.hidden name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.id" id="group_${groupid}_${fieldIndex}_person_id" onchange="this.valid()"  autocompleteParentElement="#group_${groupid}_row_${fieldIndex}_parent"  />
-                    <@s.textfield cssClass="nameAutoComplete" placeholder="Last Name"  theme="simple"  
+                    <@s.textfield cssClass="span2 nameAutoComplete" placeholder="Last Name"  theme="simple"  
                          autocompleteName="lastName" autocompleteIdElement="#group_${groupid}_${fieldIndex}_person_id" autocompleteParentElement="#group_${groupid}_row_${fieldIndex}_parent"
-                        name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.lastName" maxlength="255" cssClass="span2" /> 
-                    <@s.textfield cssClass="nameAutoComplete" placeholder="First Name" theme="simple" 
+                        name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.lastName" maxlength="255" /> 
+                    <@s.textfield cssClass="span2 nameAutoComplete" placeholder="First Name" theme="simple" 
                          autocompleteName="firstName" autocompleteIdElement="#group_${groupid}_${fieldIndex}_person_id" autocompleteParentElement="#group_${groupid}_row_${fieldIndex}_parent"
-                        name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.firstName" maxlength="255" cssClass="span2"  />
+                        name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.firstName" maxlength="255"  />
                 <@s.select theme="simple"  name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].role" emptyOption=true listValue='label' label="Role" list=relevantPersonRoles cssClass="creator-role-select span3" />
                 </div>
                 <div class="controls controls-row">
                 <#if authenticated>
-                    <@s.textfield cssClass="nameAutoComplete" placeholder="Email (Optional)" theme="simple" 
+                    <@s.textfield cssClass="span3 nameAutoComplete" placeholder="Email (Optional)" theme="simple" 
                          autocompleteName="email" autocompleteIdElement="#group_${groupid}_${fieldIndex}_person_id" autocompleteParentElement="#group_${groupid}_row_${fieldIndex}_parent"
-                        name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.email" maxlength="255" cssClass="span3" />
+                        name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.email" maxlength="255" />
                 </#if>
                 <@s.textfield cssClass="nameAutoComplete" placeholder="Institution Name (Optional)" theme="simple" 
                      autocompleteName="institution" autocompleteIdElement="#group_${groupid}_${fieldIndex}_person_id" autocompleteParentElement="group_${groupid}_row_${fieldIndex}_parent"
@@ -224,9 +224,9 @@ $(document).ready(function(){
             <div class="control-group">
                 <@s.hidden name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].institution.id" id="group_${groupid}_${fieldIndex}_institution_id"/>
             <div class="controls control-row">
-                <@s.textfield theme="simple" cssClass="institutionAutoComplete institution" placeholder="Institution Name" theme="simple" 
+                <@s.textfield theme="simple" cssClass="span4 institutionAutoComplete institution" placeholder="Institution Name" theme="simple" 
                      autocompleteName="name" autocompleteIdElement="#group_${groupid}_${fieldIndex}_institution_id" autocompleteParentElement="#group_${groupid}_${fieldIndex}_institution_parent"
-                    name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].institution.name" maxlength="255" cssClass="span4" />
+                    name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].institution.name" maxlength="255" />
                 <@s.select theme="simple" name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].role" theme="simple" 
                 emptyOption=true listValue='label' label="Role " list=relevantInstitutionRoles />
             </div>
