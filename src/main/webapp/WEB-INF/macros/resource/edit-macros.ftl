@@ -968,7 +968,7 @@ jquery validation hooks?)
                         
                 <a href="<@s.url value='/filestore/${versionId?c}/get'/>" title="${filename?html}" download="${filename?html}">${filename?html}</a>
                  
-                <span class="replacement-text" style="display:none"></span>
+                <span class="replacement-text"></span>
             </td>
             <td class="size"><span>${filesize} bytes</span></td>
             <td colspan="2">
@@ -1326,7 +1326,7 @@ $(function() {
 {% for (var i=0, file; file=o.files[i]; i++) { %}
 {% var idx = '' + TDAR.fileupload.getRowId();%}
 {% var rowclass = file.fileId ? "existing-file" : "new-file" ;%}
-    <tr class="template-download fade {%=rowclass%}">
+    <tr class="template-download fade {%=rowclass%}" id="files-row-{%=idx%}">
         {% if (file.error) { %}        
             <td></td>
             <td class="name"><span>{%=file.name%}</span></td>
@@ -1340,7 +1340,7 @@ $(function() {
                 {% } else { %}
                 {%=file.name%}
                 {% } %} 
-                <span class="replacement-text" style="display:none"></span>
+                <span class="replacement-text"></span>
             </td>
             <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
             <td colspan="2">
@@ -1397,12 +1397,14 @@ $(function() {
             class="replace-menu-item"
             data-action="rename"
             data-filename="{%=$('.fileReplaceName', row).val()%}" 
-            data-target="#{%=$(row).attr('id')}" 
+            data-target="#{%=$(row).attr('id')%}" 
             >{%=$('.fileReplaceName', row).val()%}</a></li>
 </#noparse>
 {% } %}
+{% if(o.bReplacePending) { %}
    <li class="divider"></li> 
    <li><a href="#" class="cancel" >Cancel previous operation</a></li>
+{% } %}
 </script>
 </#macro>
 

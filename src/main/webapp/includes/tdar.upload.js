@@ -179,66 +179,64 @@ TDAR.fileupload = function() {
                 bReplacePending: $tr.hasClass('replacement-selected')};
         
         var $listItems = $(tmpl("template-replace-menu", data));
-        $listItems.find('a').bind("click", _replacementFileSelected);
+        $listItems.find('a').bind("click", _replacementFileItemClicked);
         $ul.empty();
         $ul.append($listItems);
     };
 
     //"replacement file chosen" event handler.  update the hidden replacement filename field of the replacement file row, and mark target as selected
-    var _replacementFileSelected = function(e) {
-        var anchorElement = this;
-        var $tr = $(anchorElement).parents("tr.existing-file");
-        var $filename  = $('.fileReplaceName', $tr);
-        
-        if($(e).hasClass("cancel")) {
-            $filename.val($filename.data("original-value"));
-            $('.replacement-text', $tr).text("").fadeOut();
-            $tr.removeClass('replacement-selected');
-        } else {
-            var newFilename = $(anchorElement).data("filename");
-            $filename.data("original-value", $filename.val());
-            $filename.val(newFilename);
-            $('.replacement-text', $tr).text(" (will be replaced by '" + newFilename + "')").fadeIn();
-            $tr.addClass('replacement-selected');
-            //TODO: figure out how to prevent user from selecting same target for two existing files.
-        }
-    };
-    
     var _replacementFileItemClicked = function(e) {
+        //FIXME: I don't think preventDefault should be necessary, but browser follows href ("#", e.g. scrolls to top of page) unless I do.
+        e.preventDefault();  
+        
         var $anchor = $(this);
         var $tr = $anchor.parents(".existing-file");
         var $hidden = $tr.find('.fileReplaceName');
+        var $target =  $($anchor.data("target"));
         if(!$anchor.hasClass("cancel")) {
-            // -change the replacefilename, change action to "REPLACE"
-            // -find replacer,  remove from DOM
-            _replaceFile($tr, $anchor.data("target"));
+            if($target.data('jqOriginalRow')) {
+                //if this replace operation overwrites a pending replace, cancel the pending replace first.
+                _cancelFileReplace($target.data('jqOriginalRow'), $target);
+            }
+            _replaceFile($tr, $target);
         } else {
-            //FIXME: implement cancel
-            console.error("cancel not implemented: %s", e);
+            //the 'cancel' link doesn't have a data-target attr; but we did add a reference to the target in the original
+            _cancelFileReplace($tr, $tr.data("jqTargetRow"));
         }
     };
     
-    var _replaceFile($originalRow, $targetRow) {
+    var _replaceFile = function($originalRow, $targetRow) {
         var targetFilename = $targetRow.find("input.fileReplaceName").val();
         var originalFilename = $originalRow.find("input.fileReplaceName").val();
-        $originalRow.find('.replacement-text').text("will be replaced by " + targetFilename + ")";
+        $originalRow.find('.replacement-text').text("will be replaced by " + targetFilename + ")");
         $originalRow.find('.fileAction').val("REPLACE");
         
         //effectively 'remove' the target file proxy fields from the form by removing the name attribute.
-        $targetRow.find("input[type=hidden]").each(function(){
-            $hidden = $(this);
+        $targetRow.find("input,select").each(function(){
+            var $hidden = $(this);
             $hidden.data("original-name", $hidden.attr("name"));
             $hidden.removeAttr("name");
         });
         //have original row point to target,  in the event we need to cancel later and set everything back to normal
-        $originalRow.data("jqTargetRow", $targetRow);
+        $originalRow.data("jqTargetRow", $targetRow).addClass("replacement-selected");
+        
+        //implicitly cancel a pending replace if user initiates a another replace operate on the same targetRow
+        $targetRow.data("jqOriginalRow", $originalRow);
         
         $targetRow.find('.replacement-text').text("(replacing " + originalFilename + ")");
-        _disableRow($targetRow);
+        $targetRow.find('input, select').prop("disabled", true);
+        
     }
     
     var _cancelFileReplace = function($originalRow, $targetRow) {
+        $targetRow.find('.replacement-text').text("");
+        $targetRow.find('input, select').prop("disabled", false).each(function() {
+            $(this).attr("name", $(this).data("original-name"));
+        });
         
+        $originalRow.find('.replacement-text').text('');
+        $originalRow.removeClass("replacement-selected");
+        $.removeData($originalRow[0], "jqTargetRow");
     }
     
     
