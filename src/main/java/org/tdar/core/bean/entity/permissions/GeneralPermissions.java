@@ -18,7 +18,8 @@ import org.tdar.core.bean.collection.ResourceCollection;
  */
 public enum GeneralPermissions implements HasLabel {
     VIEW_ALL("View All", 100),
-    MODIFY_RECORD("Modify Record", 500),
+    MODIFY_METADATA("Modify Metadata", 400),
+    MODIFY_RECORD("Modify Entire Record", 500),
     ADMINISTER_GROUP("Add/Remove Items from Collection", ResourceCollection.class, 5000);
 
     private Integer effectivePermissions;
