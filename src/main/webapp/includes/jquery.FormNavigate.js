@@ -47,5 +47,8 @@ var global_formNavigate = true;		// Js Global Variable for onChange Flag
         $("input:submit",$this).click(function(){
             global_formNavigate = true;
         });
+        $(".submitButton",$this).click(function(){
+            global_formNavigate = true;
+        });
     }
 })(jQuery);
