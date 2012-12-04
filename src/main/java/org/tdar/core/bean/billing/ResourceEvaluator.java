@@ -66,7 +66,9 @@ public class ResourceEvaluator implements Serializable {
                     for (InformationResourceFileVersion version : file.getInformationResourceFileVersions()) {
                         if (!includeOlderVersionsInCounts && !version.getVersion().equals(file.getLatestVersion()) || !version.isUploaded())
                             continue;
-                        spaceUsed += version.getFileLength();
+                        if(version.getFileLength() != null) {
+                            spaceUsed += version.getFileLength();
+                        }
                     }
                 }
             }
