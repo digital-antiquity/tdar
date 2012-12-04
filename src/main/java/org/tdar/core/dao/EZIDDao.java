@@ -284,6 +284,8 @@ public class EZIDDao implements ExternalIDProvider {
             if (r instanceof InformationResource) {
                 if (r instanceof Document) {
                     buildAnvlLine(responseBuilder, DATACITE_PUBLISHER, aNVLEscape(((Document) r).getPublisher()), DATACITE_UNAV);
+                } else {
+                    buildAnvlLine(responseBuilder, DATACITE_PUBLISHER, null, DATACITE_UNAV);
                 }
                 buildAnvlLine(responseBuilder, DATACITE_PUBLICATIONYEAR, (((InformationResource) r).getDate()).toString(), DATACITE_UNAV);
             }
