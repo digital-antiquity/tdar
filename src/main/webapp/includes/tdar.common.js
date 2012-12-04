@@ -499,22 +499,24 @@ function showAccessRightsLinkIfNeeded() {
 // display the proper fields that correspond to the current value of the
 // supplend scanner technology dropdown element.
 function showScannerTechFields(elemScannerTech) {
-    // get the parent element of
-    $(elemScannerTech).siblings('.scantech-fields-tof').hide();
-    $(elemScannerTech).siblings('.scantech-fields-phase').hide();
-    $(elemScannerTech).siblings('.scantech-fields-tri').hide();
-
-    // determine which div to show based on teh value of the scanner tech
+    // get the parent element of the scanner tech field
+    console.debug("showing scanner tech fields for:");
+    console.debug(elemScannerTech);
+    // determine which div to show based on the value of the scanner tech
     var divmap = {
         'TIME_OF_FLIGHT' : '.scantech-fields-tof',
         'PHASE_BASED' : '.scantech-fields-phase',
         'TRIANGULATION' : '.scantech-fields-tri'
     };
-
-    if ($(elemScannerTech).val()) {
-        $(elemScannerTech).siblings(divmap[$(elemScannerTech).val()]).show();
-
-        $(elemScannerTech).parent().find('.scantech-fields-tof');
+    var parent = $(elemScannerTech).parents('.scantech-fields');
+    parent.find('.scantech-field').addClass('hide');
+    var scannerTechnologyValue = $(elemScannerTech).val();
+    if (scannerTechnologyValue) {
+        var targetClass = divmap[scannerTechnologyValue];
+        console.log("showing all elements of class: " + targetClass);
+        parent.find(targetClass).removeClass('hide');
+//        $(elemScannerTech).siblings(targetClass).removeClass('hide');
+        // $(elemScannerTech).parent().find('.scantech-fields-tof');
     }
 
 }
