@@ -404,68 +404,45 @@ function prepareDateFields(selectElem) {
  * AJAX BOOKMARKING FUNCTIONS
  */
 
-function bookmarkResource(resourceId, link) {
-    $waitingElem = $("<img src='" + getURI('images/ui-anim_basic_16x16.gif')
-            + "' />");
-    var $link = $(link);
-    $link.replaceWith($waitingElem);
-    var newtext = undefined;
-    if ($link.children("span.bookmark:first").length != 0) {
-        newtext = "un-bookmark";
-    }
-    $.getJSON(getBaseURI() + "resource/bookmarkAjax?resourceId=" + resourceId,
+$(document).ready(function() {
+	$(document).delegate(".bookmark-link","click",bookmark);
+});
+
+function bookmark() {
+	var $this = $(this);
+	var resourceId = $this.attr("resource-id");
+	var state = $this.attr("bookmark-state");
+	$waitingElem = $("<img src='" + getURI('images/ui-anim_basic_16x16.gif') + "' class='waiting' />");
+	$this.prepend($waitingElem);
+	var $icon = $(".bookmark-icon",$this);
+	$icon.hide();
+	console.log(resourceId + ": " + state);
+	var oldclass = "tdar-icon-" + state;
+	var newtext = "un-bookmark";
+	var newstate = "bookmarked";
+	var action = "bookmarkAjax";
+	var newUrl = "/resource/removeBookmark?resourceId=" + resourceId;
+	
+	if (state == 'bookmarked') {
+		newtext = "bookmark";
+		newstate = "bookmark";
+		action = "removeBookmarkAjax";
+		newUrl = "/resource/bookmark?resourceId=" + resourceId;
+	}
+	var newclass = "tdar-icon-" + newstate;
+	
+    $.getJSON(getBaseURI() + "resource/"+action+"?resourceId=" + resourceId,
             function(data) {
                 if (data.success) {
-                    updateBookmarkTag($waitingElem,
-                            "resource/removeBookmark?resourceId=" + resourceId,
-                            "removeBookmark(" + resourceId + ", this)",
-                            "images/bookmark.gif", newtext);
+                	$(".bookmark-label",$this).text(newtext);
+                	$icon.removeClass(oldclass).addClass(newclass).show();
+                	$this.attr("bookmark-state",newstate);
+                	$this.attr("href",newUrl);
+                	$(".waiting",$this).remove();
                 }
             });
-}
-
-function removeBookmark(resourceId, link) {
-    $waitingElem = $("<img src='" + getURI('images/ui-anim_basic_16x16.gif')
-            + "' />");
-    var $link = $(link);
-    var newtext = undefined;
-    if ($link.children("span.bookmark:first").length != 0) {
-        newtext = "bookmark";
-    }
-    $link.replaceWith($waitingElem);
-    $.getJSON(getBaseURI() + "resource/removeBookmarkAjax?resourceId="
-            + resourceId, function(data) {
-        if (data.success) {
-            updateBookmarkTag($waitingElem, "resource/bookmark?resourceId="
-                    + resourceId, "bookmarkResource(" + resourceId + ", this)",
-                    "images/unbookmark.gif", newtext);
-        }
-
-    });
-}
-
-function updateBookmarkTag($elem, url, strOnclick, imgSrc, txt) {
-    var css = "";
-    if (txt != undefined & txt != '') {
-        css = txt;
-        txt = "<span class='bookmark'>&nbsp;" + txt + "</span>";
-    } else {
-        txt = "";
-    }
-    
-    var img = "<img src='" + getURI(imgSrc) + "' />";
-    var parent = $elem.parent().get(0);
-
-    if (parent.tagName.toLowerCase() == 'li') {
-        img = "";
-        var $parent = $(parent);
-        $parent.removeClass();
-        $parent.addClass(css);
-    }
-    var newElem = $("<a href='" + getURI(url) + "' onclick='" + strOnclick
-            + "; return false;'>" + img + txt
-            + "</a>");
-    $elem.replaceWith(newElem);
+	
+	return false;
 }
 
 //apply watermark input tags in context with watermark attribute.  'context' can be any valid argument to jQuery(selector[, context])

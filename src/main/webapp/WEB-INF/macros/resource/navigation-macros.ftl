@@ -150,18 +150,22 @@ $(document).ready(function() {
         <#assign state="active" />
     </#if>
     <li class="${state}">
-        <a href='<@s.url value="/${namespace}/${action}">
-        <#if includeResourceId>
-            <#if persistable??>
-                <#local _id = persistable.id />
-            <#else>
-                <#local _id = creator.id />
-            </#if>
-            <@s.param name="id" value="${_id?c}" />
-        </#if>
-        </@s.url>'>
+    	<#if disabled>
+    		<span class="disabled">
+    	<#else>
+	        <a href='<@s.url value="/${namespace}/${action}">
+	        <#if includeResourceId>
+	            <#if persistable??>
+	                <#local _id = persistable.id />
+	            <#else>
+	                <#local _id = creator.id />
+	            </#if>
+	            <@s.param name="id" value="${_id?c}" />
+	        </#if>
+	        </@s.url>'>
+	     </#if>
         <i class="tdar-icon-${action}<#if state?has_content>-${state}</#if>"></i>
-        <#nested> ${label}</a>
+        <#nested> ${label}<#if disabled></span><#else></a></#if>
     </li>
 </#macro>
 

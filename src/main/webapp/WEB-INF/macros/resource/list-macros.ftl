@@ -224,22 +224,22 @@ html markup) you will probably not like the results
         </#if>
 
         <#if _resource.deleted?? && _resource.deleted>
-            <#if !useListItem><img src='<@s.url value="/images/desaturated/bookmark.png"/>' alt='bookmark(unavailable)' title='Deleted items cannot be bookmarked.' /><#t></#if>
+                	<i class="bookmark-icon tdar-icon-bookmark-disabled"></i>
             <#if showLabel>
                 <span class="disabled" title='Deleted items cannot be bookmarked.'>bookmark</span><#t>
             </#if>
         <#elseif bookmarkedResourceService.isAlreadyBookmarked(_resource, authenticatedUser)>
-            <a href="<@s.url value='/resource/removeBookmark' resourceId='${_resource.id?c}'/>" class="bookmark" onclick='removeBookmark(${_resource.id?c}, this); return false;'>
-                <#if !useListItem><img src='<@s.url value="/images/bookmark.gif"/>'/><#t></#if>
+            <a href="<@s.url value='/resource/removeBookmark' resourceId='${_resource.id?c}'/>" class="bookmark-link" resource-id="${_resource.id?c}" bookmark-state="bookmarked" href="#">
+                	<i class="tdar-icon-bookmarked bookmark-icon"></i>
                 <#if showLabel>
-                    <span class="bookmark">un-bookmark</span><#t>
+                    <span class="bookmark-label">un-bookmark</span><#t>
                 </#if>
             </a><#t>
         <#else>
-            <a href="<@s.url value='/resource/bookmark' resourceId='${_resource.id?c}'/>" onclick='bookmarkResource(${_resource.id?c}, this); return false;'>
-                <#if !useListItem><img src='<@s.url value="/images/unbookmark.gif"/>'/><#t></#if>
+            <a href="<@s.url value='/resource/bookmark' resourceId='${_resource.id?c}'/>"  class="bookmark-link" resource-id="${_resource.id?c}" bookmark-state="bookmark" href="#">
+                	<i class="bookmark-icon tdar-icon-bookmark"></i>
                 <#if showLabel>
-                    <span class="bookmark"> bookmark</span><#t>
+                    <span class="bookmark-label"> bookmark</span><#t>
                 </#if>
             </a><#t>    
         </#if>

@@ -46,7 +46,7 @@ public class BookmarkResourceController extends AuthenticationAware.Base {
 	@Action(
 		value="bookmark",
     	results={
-			@Result(name="success", type="redirect", location=URLConstants.WORKSPACE)
+			@Result(name="success", type="redirect", location=URLConstants.BOOKMARKS)
     	}
     )
 	public String bookmarkResourceAction() {
@@ -68,7 +68,7 @@ public class BookmarkResourceController extends AuthenticationAware.Base {
 	@Action(
 		value="removeBookmark",
     	results={
-			@Result(name="success", type="redirect", location=URLConstants.WORKSPACE)
+			@Result(name="success", type="redirect", location=URLConstants.BOOKMARKS)
     	}
     )
 	public String removeBookmarkAction() {

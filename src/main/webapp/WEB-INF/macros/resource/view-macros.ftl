@@ -189,17 +189,16 @@ No coding rules have been entered for this coding sheet yet.
 <#if resource.categoryVariable??>
   <#-- this might be a subcategory variable, check if parent exists -->
   <#if resource.categoryVariable.parent??>
-      <b>Category:</b> ${resource.categoryVariable.parent}
-      <br/>
+      <p class="sml"><strong>Category:</strong> ${resource.categoryVariable.parent}</p>
     <#if resource.categoryVariable.parent != resource.categoryVariable >
-      <b>Subcategory:</b> ${resource.categoryVariable}
+      <p class="sml"><strong>Subcategory:</strong> ${resource.categoryVariable}</p>
     </#if>
   <#else>
     <#-- only the parent category exists -->
-    <b>Category:</b> ${resource.categoryVariable}
+      <p class="sml"><strong>Category:</strong> ${resource.categoryVariable}</p>
   </#if>
 <#else>
-No categories or subcategories specified.
+<p class="sml">No categories or subcategories specified.</p>
 </#if>
 </div>
 </#macro>
