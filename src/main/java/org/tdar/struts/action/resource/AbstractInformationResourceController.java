@@ -77,6 +77,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     private String fileInputMethod;
     private String fileTextInput;
+    private boolean isAbleToUploadFiles = false;
 
     private List<PersonalFilestoreFile> pendingFiles;
 
@@ -448,6 +449,13 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     }
 
     @Override
+    public String loadAddMetadata() {
+        String toReturn = super.loadAddMetadata();
+        setAbleToUploadFiles(getAuthenticationAndAuthorizationService().canUploadFiles(getAuthenticatedUser(), getPersistable()));
+        return toReturn;
+    }
+    
+    @Override
     protected void loadCustomMetadata() {
         super.loadCustomMetadata();
         loadInformationResourceProperties();
@@ -762,6 +770,14 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     public void setPublisherName(String publisherName) {
         this.publisherName = publisherName;
+    }
+
+    public boolean isAbleToUploadFiles() {
+        return isAbleToUploadFiles;
+    }
+
+    public void setAbleToUploadFiles(boolean isAbleToUploadFiles) {
+        this.isAbleToUploadFiles = isAbleToUploadFiles;
     }
 
 }

@@ -20,8 +20,6 @@ import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.struts.action.resource.AbstractResourceController;
 import org.tdar.web.SessionDataAware;
 
-import com.opensymphony.xwork2.Action;
-
 /**
  * $Id$
  * 
@@ -33,9 +31,8 @@ import com.opensymphony.xwork2.Action;
  * @version $Rev$
  */
 @Results({ @Result(name = AbstractResourceController.REDIRECT_HOME, type = "redirect", location = URLConstants.HOME),
-    @Result(name = AbstractResourceController.REDIRECT_PROJECT_LIST, type = "redirect", location = URLConstants.DASHBOARD)
-}
-)
+        @Result(name = AbstractResourceController.REDIRECT_PROJECT_LIST, type = "redirect", location = URLConstants.DASHBOARD)
+})
 public interface AuthenticationAware extends SessionDataAware {
 
     public AuthenticationAndAuthorizationService getAuthenticationAndAuthorizationService();

@@ -232,7 +232,7 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
 
         // finally, check if user has been granted permission
         // FIXME: technically the dao layer is doing some stuff that we should be, but I don't want to mess w/ it right now.
-        return authorizedUserDao.isAllowedTo(person, resource, GeneralPermissions.MODIFY_RECORD);
+        return authorizedUserDao.isAllowedTo(person, resource, GeneralPermissions.MODIFY_METADATA);
     }
 
     /**
@@ -309,6 +309,14 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
      * @return
      */
     public boolean canViewConfidentialInformation(Person person, Resource resource) {
+        return canDo(person, resource, InternalTdarRights.VIEW_AND_DOWNLOAD_CONFIDENTIAL_INFO, GeneralPermissions.VIEW_ALL);
+    }
+
+    public boolean canUploadFiles(Person person, Resource resource) {
+        return canDo(person, resource, InternalTdarRights.EDIT_ANY_RESOURCE, GeneralPermissions.MODIFY_RECORD);
+    }
+
+    public boolean canDo(Person person, Resource resource, InternalTdarRights equivalentAdminRight, GeneralPermissions permission) {
         // This function used to pre-test on the resource, but it doesn't have to and is now more granular
         if (resource == null)
             return false;
@@ -323,11 +331,11 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
             return true;
         }
 
-        if (can(InternalTdarRights.VIEW_AND_DOWNLOAD_CONFIDENTIAL_INFO, person)) {
+        if (can(equivalentAdminRight, person)) {
             return true;
         }
 
-        if (authorizedUserDao.isAllowedTo(person, resource, GeneralPermissions.VIEW_ALL)) {
+        if (authorizedUserDao.isAllowedTo(person, resource, permission)) {
             logger.debug("person is an authorized user");
             return true;
         }

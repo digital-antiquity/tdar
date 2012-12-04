@@ -210,7 +210,7 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         // Query sqlQuery = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_DASHBOARD);
         SQLQuery sqlQuery = NamedNativeQueries.generateDashboardGraphQuery(getCurrentSession());
         sqlQuery.setLong("submitterId", p.getId());
-        sqlQuery.setInteger("effectivePermissions", GeneralPermissions.MODIFY_RECORD.getEffectivePermissions() - 1);
+        sqlQuery.setInteger("effectivePermissions", GeneralPermissions.MODIFY_METADATA.getEffectivePermissions() - 1);
         // SQLQuery sqlQuery = getCurrentSession().createSQLQuery(NamedNativeQueries.generateDashboardGraphQuery(p, GeneralPermissions.MODIFY_RECORD));
         Set<Long> ids = new HashSet<Long>();
         Map<ResourceType, Map<Status, Long>> toReturn = new HashMap<ResourceType, Map<Status, Long>>();

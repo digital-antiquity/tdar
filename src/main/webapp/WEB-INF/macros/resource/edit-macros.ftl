@@ -466,17 +466,21 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 
 <#macro singleFileUpload typeLabel="${resource.resourceType.label}">
-<div class="control-group"
-        tiplabel="Upload your ${typeLabel}" 
-        tooltipcontent="The metadata entered on this form will be associated with this file. We accept the following formats: 
-                        <@join sequence=validFileExtensions delimiter=", "/>">
-    <label for="fileUploadField" class="control-label">${typeLabel}</label>
-    <div class="controls">
-        <@s.file theme="simple" name='uploadedFiles'  cssClass="validateFileType input-xxlarge" id="fileUploadField" labelposition='left' size='40' />
-        <span class="help-block">Valid file types include: <@join sequence=validFileExtensions delimiter=", "/></span>
-    </div>
-    <#nested>
-</div>
+<#if !ableToUploadFiles>
+	<b>note:</b> you have not been granted permission to upload or modify files<br/>
+<#else>
+	<div class="control-group"
+	        tiplabel="Upload your ${typeLabel}" 
+	        tooltipcontent="The metadata entered on this form will be associated with this file. We accept the following formats: 
+	                        <@join sequence=validFileExtensions delimiter=", "/>">
+	    <label for="fileUploadField" class="control-label">${typeLabel}</label>
+	    <div class="controls">
+	        <@s.file theme="simple" name='uploadedFiles'  cssClass="validateFileType input-xxlarge" id="fileUploadField" labelposition='left' size='40' />
+	        <span class="help-block">Valid file types include: <@join sequence=validFileExtensions delimiter=", "/></span>
+	    </div>
+	    <#nested>
+	</div>
+</#if>
 </#macro>
 
 <#macro manualTextInput typeLabel type uploadOptionText manualEntryText>
@@ -568,7 +572,9 @@ $(function(){
     <#if includeAsync>
     //init fileupload
     var id = $('input[name=id]').val();
-    TDAR.fileupload.registerUpload({informationResourceId: id, acceptFileTypes: acceptFileTypes, formSelector:"${formSelector}"});
+    <#if ableToUploadFiles>
+	    TDAR.fileupload.registerUpload({informationResourceId: id, acceptFileTypes: acceptFileTypes, formSelector:"${formSelector}"});
+    </#if>
     </#if>
 
     TDAR.common.initEditPage(form);
@@ -891,6 +897,9 @@ jquery validation hooks?)
 <div id="${divId}" class="well-alt">
     <@s.hidden name="ticketId" id="ticketId" />
     <h2>${uploadLabel}</h2>
+    <#if !ableToUploadFiles>
+    <b>note:</b> you have not been granted permission to upload or modify files<br/>
+    <#else>
     <div class="row fileupload-buttonbar">
         <div class="span2">
             <!-- The fileinput-button span is used to style the file input field as button -->
@@ -917,11 +926,11 @@ jquery validation hooks?)
             <input type="checkbox" class="toggle">
            -->
         </div>
-    <#if validFileExtensions??>
-    <span class="help-block">
-        Accepted file types: .<@join validFileExtensions ", ." />
-    </span>
-    </#if>
+	    <#if validFileExtensions??>
+	    <span class="help-block">
+	        Accepted file types: .<@join validFileExtensions ", ." />
+	    </span>
+	    </#if>
         <!-- The global progress information -->
         <div class="span5 fileupload-progress fade">
             <!-- The global progress bar -->
@@ -940,7 +949,7 @@ jquery validation hooks?)
                 <div class="reorder <#if (fileProxies?size < 2 )>hidden</#if>">
                     Reorder: <span class="link alphasort">Alphabetic</span> | <span class="link" onclick="customSort(this)">Custom</span>  
                 </div>
-
+	</#if>
         <table id="files" role="presentation" class="tableFormat table table-striped sortable">
             <thead>
                <th><!--preview-->&nbsp;</th>
@@ -971,7 +980,9 @@ jquery validation hooks?)
                 <span class="replacement-text"></span>
             </td>
             <td class="size"><span>${filesize} bytes</span></td>
+        <#if ableToUploadFiles>
             <td colspan="2">
+            
         <div class="control-group">
         
             <div class="controls">
@@ -1004,6 +1015,7 @@ jquery validation hooks?)
         <input type="hidden" class="fileSequenceNumber" name="fileProxies[${rowId}].sequenceNumber" value=${rowId} />
             
         </td>
+	</#if>
     </tr>
 </#macro>
 

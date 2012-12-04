@@ -99,7 +99,7 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
         query.setLong("userId", person.getId());
         query.setParameter("admin", isAdmin);
         query.setParameterList("resourceTypes", resourceTypes);
-        query.setParameter("effectivePermission", GeneralPermissions.MODIFY_RECORD.getEffectivePermissions() - 1);
+        query.setParameter("effectivePermission", GeneralPermissions.MODIFY_METADATA.getEffectivePermissions() - 1);
         if (resourceTypes.size() == ResourceType.values().length) {
             query.setParameter("allResourceTypes", true);
         } else {

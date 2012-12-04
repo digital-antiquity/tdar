@@ -398,7 +398,7 @@ public class Resource extends JsonModel.Base implements Persistable,
         writable.add(getUpdatedBy());
         for (ResourceCollection collection : getResourceCollections()) {
             writable.addAll(collection.getUsersWhoCan(
-                    GeneralPermissions.MODIFY_RECORD, true));
+                    GeneralPermissions.MODIFY_METADATA, true));
         }
         for (Person p : writable) {
             if (p == null || p.getId() == null)
