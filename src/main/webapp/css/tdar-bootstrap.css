@@ -1111,7 +1111,7 @@ select.searchType {
 .icon-document {
     background: url(/images/r4/resource-types-large.gif) -296px -2477px no-repeat;
     width: 14px;
-    height: 18px;
+    height: 15px;
     display: inline-block;
 }
 
@@ -1163,9 +1163,10 @@ select.searchType {
 
 
 .icon-sensorydata {
-    background: url(/images/r4/resource-types-large.gif) -462px -2477px no-repeat;
+    background: url(/images/r4/resource-types-large.gif) -462px -2473px no-repeat;
     width: 14px;
     height: 14px;
+    margin-top:-2px;
     display: inline-block;
 }
 

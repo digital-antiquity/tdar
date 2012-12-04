@@ -1159,24 +1159,6 @@ contrib article h2,.contrib article p,.contrib article ul {
     line-height: 20px;
 }
 
-p.cartouche {
-    font-size: 12px;
-    color: #999;
-    font-style: italic;
-    margin: 10px 0;
-    background-image: url(/images/r4/bg-meta.png);
-    background-repeat: no-repeat;
-}
-
-p.cartouche.document {
-    background-position: 0 0;
-    padding-left: 93px;
-}
-
-p.cartouche.image {
-    background-position: 0 -20px;
-    padding-left: 75px;
-}
 
 .search .pagin {
     width: 100%;
@@ -1304,4 +1286,6 @@ span.cartouche {
 	font-weight:700;
 	color:white;
 	line-height:16px;
+	display:inline-block;
+	height:15px !important;
 }
