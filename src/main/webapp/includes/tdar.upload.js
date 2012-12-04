@@ -27,7 +27,7 @@ TDAR.fileupload = function() {
             singleFileUploads: false,
             url: TDAR.uri('upload/upload'),
             autoUpload: true,
-            maxNumberOfFiles: 5,
+            maxNumberOfFiles: 8,
             destroy: _destroy
         }, _options));
         
@@ -208,8 +208,11 @@ TDAR.fileupload = function() {
     var _replaceFile = function($originalRow, $targetRow) {
         var targetFilename = $targetRow.find("input.fileReplaceName").val();
         var originalFilename = $originalRow.find("input.fileReplaceName").val();
+        
+        
         $originalRow.find('.replacement-text').text("will be replaced by " + targetFilename + ")");
-        $originalRow.find('.fileAction').val("REPLACE");
+        $originalRow.find('.fileReplaceName').val(targetFilename);
+        $originalRow.find('.fileReplaceName').data("original-filename", originalFilename)
         
         //effectively 'remove' the target file proxy fields from the form by removing the name attribute.
         $targetRow.find("input,select").each(function(){
@@ -219,15 +222,20 @@ TDAR.fileupload = function() {
         });
         //have original row point to target,  in the event we need to cancel later and set everything back to normal
         $originalRow.data("jqTargetRow", $targetRow).addClass("replacement-selected");
-        
+
         //implicitly cancel a pending replace if user initiates a another replace operate on the same targetRow
         $targetRow.data("jqOriginalRow", $originalRow);
         
+        //Change action to "REPLACE", and store original in event of cancel 
+        var $fileAction = $originalRow.find('.fileAction');
+        $fileAction.data('original-fileAction', $fileAction.val());
+        $fileAction.val("REPLACE");
+        
         $targetRow.find('.replacement-text').text("(replacing " + originalFilename + ")");
         $targetRow.find('input, select').prop("disabled", true);
-        
     }
     
+    //TODO: pull out redundant sections before adam has a chance to put this in a ticket for me.
     var _cancelFileReplace = function($originalRow, $targetRow) {
         $targetRow.find('.replacement-text').text("");
         $targetRow.find('input, select').prop("disabled", false).each(function() {
@@ -236,6 +244,12 @@ TDAR.fileupload = function() {
         
         $originalRow.find('.replacement-text').text('');
         $originalRow.removeClass("replacement-selected");
+        
+        var $fileAction = $originalRow.find('.fileAction');
+        $fileAction.val($fileAction.data('original-fileAction'));
+        
+        var $filename = $originalRow.find('.fileReplaceName');
+        $filename.val($filename.data('original-filename'));
         $.removeData($originalRow[0], "jqTargetRow");
     }
     
