@@ -520,19 +520,24 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </#macro>
 
 <#macro submit label="Save" fileReminder=true buttonid="submitButton">
-<div class="errorsection"> 
-    <#if fileReminder>
-    <div id="reminder" class="">
-        <p><span class="label label-info">Reminder</span> No files are attached to this record. </p>
+<div class="errorsection row">
+    <div class="span9">
+        <#if fileReminder>
+        <div id="reminder" class="">
+            <p><span class="label label-info">Reminder</span> No files are attached to this record. </p>
+        </div>
+        </#if>     
+        <div id="error" class="alert alert-error" style="display:none">
+            <ul></ul>
+        </div>
+        <div class="form-actions" id="editFormActions">
+            <#nested>
+            
+            <@submitButton label=label id=buttonid />
+            <img src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner fade" />
+        </div> 
     </div>
-    <div id="error" class=""><ul></ul></div>
-    </#if>     
-    <div class="form-actions" id="editFormActions">
-        <#nested>
-        
-        <@submitButton label=label id=buttonid />
-        <img src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner fade" />
-    </div> 
+</div> 
 
 <div class="modal hide fade" id="validationErrorModal" tabindex="-1" role="dialog" aria-labelledby="validationErrorModalLabel" aria-hidden="true">
     <div class="modal-header">

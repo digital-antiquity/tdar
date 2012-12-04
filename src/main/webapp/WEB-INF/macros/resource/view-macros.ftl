@@ -456,7 +456,7 @@ No coding rules have been entered for this coding sheet yet.
           </#if>
         </#list>
         <#if contents?has_content>
-        <p><strong>${role.label}(s):</strong> <#noescape>${contents}<#t/></#noescape> </p>
+        <span class="name-value"><strong>${role.label}(s):</strong> <#noescape>${contents}<#t/></#noescape> </span>
         </#if>
     </#list>
     </#if>
@@ -509,12 +509,12 @@ No coding rules have been entered for this coding sheet yet.
 <p class="meta">
     <@showCreatorProxy proxyList=authorshipProxies />
     <#if resource.date?has_content>
-        <p><strong>Year:</strong> ${resource.date?c}</p>
+        <span class="name-value"><strong>Year:</strong> ${resource.date?c}</span>
     </#if>
     
     <#if copyrightMandatory && resource.copyrightHolder?? >
         <strong>Primary Copyright Holder:</strong>
-        <@browse resource.copyrightHolder /><br/>
+        <@browse resource.copyrightHolder />
     </#if>
 </p>
 

@@ -674,8 +674,9 @@ h2 {
 	font-family: "ff-tisa-web-pro";
 	font-size: 16px;
 	line-height: 23px;
-	margin: 15px 0 -5px 0; //
-	float: left;
+	margin: 15px 0 -5px 0;
+	/* FIXME: this is breaking too much stuff on edit pages in browser-specific ways - use class="pull-left" for specific paragraphs  */
+	/* float: left; */
 }
 
 .cols iframe {
@@ -685,6 +686,12 @@ h2 {
 .cols p.meta {
 	font-size: 14px;
 	line-height: 19px;
+}
+
+/* ensure proper spacing in view page metadata name/value pairs, and don't wrap in the middle */
+.cols p.meta span.name-value  {
+    margin-right:0.5em;
+    display: inline-block;
 }
 
 .cols p.sml {

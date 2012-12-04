@@ -954,8 +954,7 @@ TDAR.common = function() {
          unhighlight:function(element, errorClass, validClass) {
              $(element).closest("div.control-group").removeClass("error");
          },
-        showErrors : function(errorMap, errorList) {
-            $('#error').show();
+        showErrors: function(errorMap, errorList) {
             this.defaultShowErrors();
         }
                  
@@ -1006,22 +1005,24 @@ TDAR.common = function() {
                 // this.element(element);
                 // }
             },
-            showErrors : function(errorMap, errorList) {
+            showErrors: function(errorMap, errorList) {
                 this.defaultShowErrors();
                 //spawn a modal widget and copy the errorLabelContainer contents (a separate div) into the widget's body section
                 //TODO: docs say this is only called when errorList is not empty - can we remove this check?
                 if (typeof errorList !== "undefined" && errorList.length > 0) {
-                    $('#validationErrorModal .modal-body p').empty().append($('#error').html());
+                    $('#validationErrorModal .modal-body p').empty().append($("<ul></ul>").append($('#error ul').html()));
                     $('#validationErrorModal').modal();
 
                 }
+                $('#error').show();
             },
             submitHandler : function(f) {
                 //prevent double submit and dazzle user with animated gif
                 _submitButtonStartWait();
                 _clearInputs($form.find(".creatorPerson.hidden, .creatorInstitution.hidden")); 
-                
+                $('#error').hide();
                 f.submit();
+                
             }
         };
         
