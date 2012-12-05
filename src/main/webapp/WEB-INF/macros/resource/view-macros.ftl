@@ -1035,7 +1035,7 @@ $(function() {
         <p><@truncate resource.description 150 /></p>
     
         <p>
-            <a href="${url}" class="button">View ${resource.resourceType.label}</a> or &nbsp; <a href="">Browse all projects</a>
+            <a href="${url}" class="button">View ${resource.resourceType.label}</a> or &nbsp; <a href="/search/results">Browse all Resources</a>
         </p>    
 
   </div>

@@ -61,7 +61,7 @@ html markup) you will probably not like the results
             </#if>
             <#-- print header and group/list tag -->
             <#if first || (prev != key) && key?has_content>
-                <#if prev?has_content || sortField?has_content && (sortField?contains("RESOURCE_TYPE") || sortField?contains("PROJECT"))></${listTag_}></#if>
+                <#if prev != '' || sortField?has_content && (sortField?contains("RESOURCE_TYPE") || sortField?contains("PROJECT"))></${listTag_}></#if>
                 <${headerTag}><#if key?has_content>${key}<#else>${defaultKeyLabel}</#if></${headerTag}>
                 <${listTag_} class='resource-list  controls-row ${orientation}'>
             </#if>
