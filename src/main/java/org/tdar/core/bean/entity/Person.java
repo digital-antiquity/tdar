@@ -22,14 +22,19 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.annotations.Norms;
+import org.hibernate.search.annotations.Store;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.resource.BookmarkedResource;
+import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
+import org.tdar.search.query.QueryFieldNames;
 
 /**
  * $Id$
@@ -68,19 +73,18 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
         this.email = email;
     }
 
-    
     private transient String wildcardName;
-    
+
     @Column(nullable = false, name = "last_name")
-    @Field(name = "lastName")
     @BulkImportField(label = "Last Name", comment = BulkImportField.CREATOR_LNAME_DESCRIPTION, order = 2)
-    @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
+    @Fields({ @Field(name = QueryFieldNames.LAST_NAME, analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
+            @Field(name = QueryFieldNames.LAST_NAME_SORT, norms = Norms.NO, store = Store.YES) })
     private String lastName;
 
     @Column(nullable = false, name = "first_name")
-    @Field(name = "firstName")
     @BulkImportField(label = "First Name", comment = BulkImportField.CREATOR_FNAME_DESCRIPTION, order = 1)
-    @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
+    @Fields({ @Field(name = QueryFieldNames.FIRST_NAME, analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
+            @Field(name = QueryFieldNames.FIRST_NAME_SORT, norms = Norms.NO, store = Store.YES) })
     private String firstName;
 
     @Column(unique = true, nullable = true)
@@ -277,7 +281,6 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
         return registered;
     }
 
-
     public void setRegistered(boolean registered) {
         this.registered = registered;
     }
@@ -442,7 +445,6 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     public void setSynonyms(Set<Person> synonyms) {
         this.synonyms = synonyms;
     }
-
 
     @Transient
     @XmlTransient

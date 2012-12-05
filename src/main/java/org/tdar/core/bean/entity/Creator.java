@@ -108,8 +108,7 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @DocumentId
-    @Field
-    @Analyzer(impl = KeywordAnalyzer.class)
+    @Field(store = Store.YES, analyzer = @Analyzer(impl = KeywordAnalyzer.class), name = QueryFieldNames.ID)
     private Long id = -1L;
     /*
      * @Boost(.5f)

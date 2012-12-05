@@ -16,9 +16,9 @@
 <div class="usual">
 <ul class="nav nav-tabs" id="myTab"> 
   <li class="<#if  actionName == 'basic' || actionName == 'advanced'>active</#if>"><a href="advanced" >Resource</a></li> 
-  <li class="<#if actionName == 'collection'>active</#if>"><a href="collection" >Collection</a></li> 
-  <li class="<#if actionName == 'institution'>active</#if>"><a href="institution" >Institution</a></li> 
-  <li class="<#if actionName == 'person'>active</#if>"><a href="person" >Person</a></li> 
+  <li class="<#if actionName == 'collection'>active</#if>"><a href="/search/collection" >Collection</a></li> 
+  <li class="<#if actionName == 'institution'>active</#if>"><a href="/search/institution" >Institution</a></li> 
+  <li class="<#if actionName == 'person'>active</#if>"><a href="/search/person" >Person</a></li> 
 </ul> 
 <div class="tab-content">
 <div id="resource" class="tab-pane <#if actionName == 'basic' || actionName == 'advanced'>active</#if>" >
