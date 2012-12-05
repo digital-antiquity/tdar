@@ -18,10 +18,13 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
   
   <@s.hidden name="startTime" value="${currentTime?c}" />
 
-        <div id="spanStatus" tooltipcontent="#spanStatusToolTip">   
-        <@s.select label="Status" value="resource.status" name='status'  emptyOption='false' listValue='label' list='%{statuses}'/>
-         </div>
-        <#if resource.resourceType.project><span class="help-block">Note: project status does not affect status of child resources.</span></#if>
+        <div id="spanStatus" tooltipcontent="#spanStatusToolTip" class="control-group">
+            <label class="control-label">Status</label>
+            <div class="controls">
+                <@s.select theme="tdar" value="resource.status" name='status'  emptyOption='false' listValue='label' list='%{statuses}'/>
+                <#if resource.resourceType.project><span class="help-block">Note: project status does not affect status of child resources.</span></#if>
+            </div>  
+        </div>
     
         <@helptext.status />
 <#if isBulk>
@@ -38,14 +41,14 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     </div>
     <#if resource.resourceType != 'PROJECT'>
     <div tiplabel="Year" tooltipcontent="Four digit year, e.g. 1966 or 2005.">
-    <#local dateVal = ""/>
-    <#if resource.date?? && resource.date != -1>
-    <#local dateVal = resource.date?c />
-    </#if>
-    <@s.textfield label="Year" id='dateCreated' name='${itemPrefix}.date' value="${dateVal}" cssClass="reasonableDate required input-mini" required=true
-      title="Please enter the year this ${itemTypeLabel} was created" />
-    </#if>
+        <#local dateVal = ""/>
+        <#if resource.date?? && resource.date != -1>
+        <#local dateVal = resource.date?c />
+        </#if>
+        <@s.textfield label="Year" id='dateCreated' name='${itemPrefix}.date' value="${dateVal}" cssClass="reasonableDate required input-mini" required=true
+          title="Please enter the year this ${itemTypeLabel} was created" />
     </div>
+    </#if>
 </#if>
     <#nested>
 </div>
@@ -58,9 +61,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <div id="t-abstract" class="clear"
         tiplabel="Abstract / Description"
         tooltipcontent="Short description of the ${resource.resourceType.label}.">
-            <@s.textarea id='resourceDescription'  name='${itemPrefix}.description' cssClass='required resizable resize-vertical input-xxlarge' required=true title="A description is required" />
-        </div>
-    
+            <@s.textarea id='resourceDescription'  label="Abstract / Description" name='${itemPrefix}.description' cssClass='required resizable resize-vertical input-xxlarge' required=true title="A description is required" />
+    </div>
 </div>
 </#macro>
 

@@ -24,13 +24,13 @@ public class CreatorQueryPart<C extends Creator> extends AbstractHydrateableQuer
             try {
                 ResourceCreatorProxy proxy = proxyList.get(i);
                 ResourceCreator rc = proxy.getResourceCreator();
-                if (Persistable.Base.isNotNullOrTransient(rc.getCreator())) {
-                    if (proxy.isValid()) {
-                        this.roles.add(rc.getRole());
-                        this.getFieldValues().add((C) rc.getCreator());
+                if (proxy.isValid()) {
+                    if(Persistable.Base.isTransient(rc.getCreator())) {
+                        //user entered a complete-ish creator record but autocomplete callback did fire successfully
+                        throw new TdarRecoverableRuntimeException(String.format("Please use autocomplete when looking for creator %s", rc.getCreator()));
                     }
-                } else {
-                    throw new TdarRecoverableRuntimeException(String.format("Please use autocomplete when looking for creator %s", rc.getCreator()));
+                    this.roles.add(rc.getRole());
+                    this.getFieldValues().add((C) rc.getCreator());
                 }
             } catch (NullPointerException npe) {
                 logger.trace("NPE in creator construction, skipping...", npe);

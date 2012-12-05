@@ -50,6 +50,7 @@ import org.tdar.core.bean.OaiDcProvider;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Updatable;
+import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.JSONTransient;
@@ -74,7 +75,7 @@ import org.tdar.search.query.QueryFieldNames;
 @XmlSeeAlso({ Person.class, Institution.class })
 @XmlAccessorType(XmlAccessType.PROPERTY)
 public abstract class Creator extends JsonModel.Base implements Persistable, HasName, HasStatus, Indexable, Updatable, OaiDcProvider,
-        Obfuscatable,
+        Obfuscatable, Validatable,
         Addressable {
 
     protected final static transient Logger logger = LoggerFactory.getLogger(Creator.class);
