@@ -13,7 +13,11 @@
         <link rel="search" type="application/opensearchdescription+xml" href='<@s.url value="/includes/opensearch.xml"/>' title="Search ${siteAcronym}" /> 
         <title>${title!siteName}</title>
 
+		<#-- dev only 
         <script src="//ajax.aspnetcdn.com/ajax/modernizr/modernizr-2.0.6-development-only.js"></script>
+        -->
+		<script src="/includes/modernizr-custom-2.6.2.min.js"></script>
+        
         <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href='//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_version}/themes/base/jquery-ui.css'></link> 
         <link href="<@s.url value="/css/vc/${common.tdarBuildId}/tdar-base.css"/>" rel="stylesheet" />
