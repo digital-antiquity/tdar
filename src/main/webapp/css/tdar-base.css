@@ -37,7 +37,7 @@ hr.dbl {
 }
 
 #alt h3 {
-	font-family: "soleil", sans-serif;
+	font-family: helvetica, sans-serif;
 	font-weight: 700;
 	font-size: 20px;
 	line-height: 20px;
@@ -198,7 +198,7 @@ header form input.searchbox {
 	font-size: 13px;
 	line-height: 13px;
 	color: #7d7a77;
-	font-family: "ff-tisa-web-pro";
+//	font-family: "ff-tisa-web-pro";
 	font-style: italic;
 	border: 1px solid #dedede !important;
 	-webkit-border-radius: 2px;
@@ -243,7 +243,7 @@ header .welcome-drop p {
 	background: url(/images/r4/bg-welcome-top.png) 0 0 no-repeat;
 	margin: 0;
 	padding: 30px 20px 0 20px;
-	font-family: "soleil", sans-serif;
+//	font-family: "soleil", sans-serif;
 	font-weight: 700;
 	font-size: 18px;
 	z-index: 200;
@@ -252,7 +252,7 @@ header .welcome-drop p {
 header .welcome-drop ul {
 	margin: 10px 20px;
 	padding: 0;
-	font-family: "ff-tisa-web-pro";
+//	font-family: "ff-tisa-web-pro";
 	font-size: 13px;
 	list-style: none;
 }
@@ -269,7 +269,7 @@ header .welcome-drop ul {
 .hero p {
 	margin: 18px 0;
 	width: 552px;
-	font-family: "soleil", sans-serif;
+//	font-family: "soleil", sans-serif;
 	font-weight: 500;
 	font-size: 18px;
 	line-height: 24px;
@@ -280,7 +280,7 @@ header .welcome-drop ul {
 	padding: 11px 0 13px 18px !important;
 	background: url(/images/r4/bg-hero-search.png) 0 0 no-repeat !important;
 	border: none;
-	font-family: "ff-tisa-web-pro";
+//	font-family: "ff-tisa-web-pro";
 	font-style: italic;
 	font-size: 16px !important;
 	line-height: 16px !important;
@@ -338,7 +338,7 @@ header .welcome-drop ul {
 
 #slider p {
 	width: 370px;
-	font-family: "ff-tisa-web-pro", serif;
+	//font-family: "ff-tisa-web-pro", serif;
 	font-size: 14px;
 	line-height: 19px;
 	color: #7d7a77;
@@ -354,7 +354,7 @@ header .welcome-drop ul {
 }
 
 #slider span {
-	font-family: "ff-tisa-web-pro", serif;
+//	font-family: "ff-tisa-web-pro", serif;
 	font-size: 12px;
 	line-height: 20px;
 	font-weight: 300;
@@ -416,7 +416,7 @@ header .welcome-drop ul {
 }
 
 .bucket p {
-	font-family: "ff-tisa-web-pro", serif;
+//	font-family: "ff-tisa-web-pro", serif;
 	font-size: 13px;
 	line-height: 18px;
 	color: #7d7a77;
@@ -446,7 +446,7 @@ header .welcome-drop ul {
 }
 
 #home .news li {
-	font-family: "ff-tisa-web-pro", serif;
+//	font-family: "ff-tisa-web-pro", serif;
 	font-size: 12px;
 	line-height: 20px;
 	color: #7d7a77;
@@ -458,7 +458,7 @@ header .welcome-drop ul {
 }
 
 #home .news span {
-	font-family: "soleil", sans-serif;
+//	font-family: "soleil", sans-serif;
 	font-weight: 700;
 	color: #e3dfd8;
 	display: block;
@@ -626,12 +626,12 @@ header .welcome-drop ul {
 }
 
 h1 {
-	font-family: "soleil", sans-serif;
+//	font-family: "soleil", sans-serif;
 	font-weight: 700;
 }
 
 h2 {
-	font-family: "soleil", sans-serif;
+//	font-family: "soleil", sans-serif;
 	font-weight: 700;
 }
 
@@ -671,7 +671,7 @@ h2 {
 }
 
 .cols p {
-	font-family: "ff-tisa-web-pro";
+//	font-family: "ff-tisa-web-pro";
 	font-size: 16px;
 	line-height: 23px;
 	margin: 15px 0 -5px 0;
@@ -735,14 +735,14 @@ jtd notes:
 }
 
 .tableFormat th {
-	font-family: "soleil", sans-serif;
+//	font-family: "soleil", sans-serif;
 	font-weight: 700;
 	background: #1b1a18;
 	color: #fff;
 }
 
 .tableFormat td {
-	font-family: "ff-tisa-web-pro";
+//	font-family: "ff-tisa-web-pro";
 	background: #eee;
 }
 
@@ -803,7 +803,7 @@ jtd notes:
 }
 
 #alt aside li {
-	font-family: "ff-tisa-web-pro";
+//	font-family: "ff-tisa-web-pro";
 	font-size: 13px;
 	line-height: 17px;
 	color: #7d7a77;
@@ -862,7 +862,7 @@ jtd notes:
 .why article h2,.why article p,.why article ul {
 	width: 350px;
 	margin: 0;
-	font-family: "soleil", sans-serif;
+//	font-family: "soleil", sans-serif;
 }
 
 h1 span {
@@ -889,7 +889,7 @@ h1 span {
 }
 
 .why article li {
-	font-family: "ff-tisa-web-pro";
+//	font-family: "ff-tisa-web-pro";
 	font-size: 14px;
 	line-height: 20px;
 	color: #7d7a77;
@@ -933,7 +933,7 @@ h1 span {
 
 .contrib h2,.contrib p,.contrib ul {
 	margin: 0;
-	font-family: "soleil", sans-serif;
+//	font-family: "soleil", sans-serif;
 }
 
 contrib article h2,.contrib article p,.contrib article ul {
@@ -966,7 +966,7 @@ contrib article h2,.contrib article p,.contrib article ul {
 }
 
 .contrib li {
-	font-family: "ff-tisa-web-pro";
+//	font-family: "ff-tisa-web-pro";
 	font-size: 14px;
 	line-height: 20px;
 	color: #7d7a77;
@@ -1001,12 +1001,12 @@ contrib article h2,.contrib article p,.contrib article ul {
 }
 
 .contrib .span3 li {
-	font-family: "soleil", sans-serif;
+//	font-family: "soleil", sans-serif;
 	color: #1b1a18;
 }
 
 .contrib .span3 p {
-	font-family: "ff-tisa-web-pro";
+//	font-family: "ff-tisa-web-pro";
 	font-size: 14px;
 	line-height: 20px;
 	color: #7d7a77;
@@ -1049,7 +1049,7 @@ contrib article h2,.contrib article p,.contrib article ul {
 }
 
 .search h2,.search h3,.search h4,.search p,.search aside li {
-	font-family: "soleil", sans-serif;
+//	font-family: "soleil", sans-serif;
 	margin: 0;
 	padding: 0;
 }
@@ -1091,7 +1091,7 @@ contrib article h2,.contrib article p,.contrib article ul {
 }
 
 .search aside li,.search aside label {
-	font-family: "ff-tisa-web-pro";
+//	font-family: "ff-tisa-web-pro";
 	font-size: 13px;
 	line-height: 23px;
 	color: #1b1a18;
@@ -1134,7 +1134,7 @@ contrib article h2,.contrib article p,.contrib article ul {
 }
 
 .search .sort p,.search .sort form {
-	font-family: "soleil", sans-serif !important;
+//	font-family: "soleil", sans-serif !important;
 	float: left;
 	margin: 0;
 	padding: 0;
@@ -1158,7 +1158,7 @@ contrib article h2,.contrib article p,.contrib article ul {
 }
 
 .search article p {
-	font-family: "ff-tisa-web-pro";
+//	font-family: "ff-tisa-web-pro";
 	font-size: 14px;
 	line-height: 20px;
 }
@@ -1172,7 +1172,7 @@ contrib article h2,.contrib article p,.contrib article ul {
 }
 
 .search .pagin td.prev,.search .pagin td.next {
-	font-family: "soleil", sans-serif !important;
+//	font-family: "soleil", sans-serif !important;
 	font-weight: 700;
 	text-transform: uppercase;
 	width: 1px;
@@ -1186,7 +1186,7 @@ contrib article h2,.contrib article p,.contrib article ul {
 }
 
 .search .pagin li {
-	font-family: "soleil", sans-serif !important;
+//	font-family: "soleil", sans-serif !important;
 	font-weight: 600;
 	font-size: 13px;
 	margin: 0 6px;
@@ -1199,7 +1199,7 @@ footer { /*    height: 154px; */
 }
 
 footer h4 {
-	font-family: "soleil", sans-serif;
+//	font-family: "soleil", sans-serif;
 	font-weight: 700;
 	font-size: 16px;
 	color: #fff;
@@ -1216,7 +1216,7 @@ footer ul,footer li {
 	padding: 0;
 	list-style: none;
 	clear: left;
-	font-family: "ff-tisa-web-pro", serif;
+//	font-family: "ff-tisa-web-pro", serif;
 	font-size: 13px;
 	line-height: 22px;
 }
