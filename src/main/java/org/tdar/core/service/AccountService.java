@@ -2,6 +2,7 @@ package org.tdar.core.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -114,5 +115,10 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         account.updateQuotas(endingEvaluator);
         account.getResources().addAll(resourcesToEvaluate);
         genericDao.saveOrUpdate(account);
+    }
+
+    @Transactional
+    public void updateTransientAccountInfo(Collection<Resource> resources) {
+        getDao().updateTransientAccountOnResources(resources);
     }
 }

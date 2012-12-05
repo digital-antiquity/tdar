@@ -173,22 +173,23 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     public Long getActiveResourceCount() {
         return activeResourceCount;
     }
-    
+
+    @SuppressWarnings("unchecked")
     @Override
     public String loadAddMetadata() {
         if (getTdarConfiguration().isPayPerIngestEnabled()) {
             setActiveAccounts(getAccountService().listAvailableAccountsForUser(getAuthenticatedUser()));
+            getAccountService().updateTransientAccountInfo((List<Resource>)Arrays.asList(getResource()));
             logger.info("setting active accounts to {} ", getActiveAccounts());
         }
         return SUCCESS;
     }
 
-
     @Override
     public String loadMetadata() {
         if (getResource() == null)
             return ERROR;
-        loadAddMetadata();  
+        loadAddMetadata();
         loadBasicMetadata();
         loadCustomMetadata();
         getResourceService().incrementAccessCounter(getPersistable());
