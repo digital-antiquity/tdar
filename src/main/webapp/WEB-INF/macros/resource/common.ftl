@@ -187,7 +187,7 @@ function getPerfStats() {
 
 <#macro resourceCollectionsRights effectiveResourceCollections_>
     <#if effectiveResourceCollections_?has_content>
-    <h4>Access Permissions</h4>
+    <h3>Access Permissions</h3>
     <#nested />
     <table class="tableFormat table">
     <thead><th>Collection</th><th>User</th>

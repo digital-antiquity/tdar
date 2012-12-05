@@ -189,13 +189,13 @@ No coding rules have been entered for this coding sheet yet.
 <#if resource.categoryVariable??>
   <#-- this might be a subcategory variable, check if parent exists -->
   <#if resource.categoryVariable.parent??>
-      <p class="sml"><strong>Category:</strong> ${resource.categoryVariable.parent}</p>
+      <@kvp key="Category:" val=resource.categoryVariable.parent />
     <#if resource.categoryVariable.parent != resource.categoryVariable >
-      <p class="sml"><strong>Subcategory:</strong> ${resource.categoryVariable}</p>
+      <@kvp key="Subcategory:" val=resource.categoryVariable />
     </#if>
   <#else>
     <#-- only the parent category exists -->
-      <p class="sml"><strong>Category:</strong> ${resource.categoryVariable}</p>
+      <@kvp key="Category:" val=resource.categoryVariable />
   </#if>
 <#else>
 <p class="sml">No categories or subcategories specified.</p>
@@ -293,10 +293,12 @@ No coding rules have been entered for this coding sheet yet.
     <#if resource.activeCoverageDates?has_content>
         <h2>Temporal Coverage</h2>
         <#list resource.activeCoverageDates as coverageDate>
-            <b>${coverageDate.dateType.label}</b>: 
+				<#assign value>
                 <#if coverageDate.startDate?has_content>${coverageDate.startDate?c}<#else>?</#if> to 
                         <#if coverageDate.endDate?has_content>${coverageDate.endDate?c}<#else>?</#if>
-                         <#if (coverageDate.description?has_content)> (${coverageDate.description})</#if><br/>
+                         <#if (coverageDate.description?has_content)> (${coverageDate.description})</#if>
+				</#assign>
+				<@kvp key=coverageDate.dateType.label val=value />
         </#list>
         <hr/>
     </#if>
@@ -400,11 +402,17 @@ No coding rules have been entered for this coding sheet yet.
 
 </#macro>
 
+<#macro kvp key="" val="" noescape=false>
+	<#if val?has_content>
+       <p class="sml"><strong>${key}:</strong> <#if noescape><#noescape>${val}</#noescape><#else>${val}</#if></p>
+    </#if>
+</#macro>
+
 <#macro resourceNotes>
     <#if resource.activeResourceNotes?has_content>
         <h2>Notes</h2>
         <#list resource.activeResourceNotes.toArray()?sort_by("sequenceNumber") as resourceNote>
-            <p class="sml"><strong>${resourceNote.type.label}:</strong> ${resourceNote.note}</p>
+            <@kvp key=resourceNote.type.label val=resourceNote.note />
         </#list>
         <hr />
     </#if>
@@ -413,14 +421,9 @@ No coding rules have been entered for this coding sheet yet.
 <#macro resourceAnnotations>
     <#if ! resource.activeResourceAnnotations.isEmpty()>
     <h3>Record Identifiers</h3>
-        <table>
         <#list resource.activeResourceAnnotations as resourceAnnotation>
-            <tr>
-                <td><b>${resourceAnnotation.resourceAnnotationKey.key}:</b></td>
-                <td>${resourceAnnotation.value}</td>
-            </tr>
+			<@kvp key=resourceAnnotation.resourceAnnotationKey.key val=resourceAnnotation.value />
         </#list>
-        </table>
         <hr/>
     </#if>
 
@@ -456,7 +459,7 @@ No coding rules have been entered for this coding sheet yet.
           </#if>
         </#list>
         <#if contents?has_content>
-        <span class="name-value"><strong>${role.label}(s):</strong> <#noescape>${contents}<#t/></#noescape> </span> <br />
+            <@kvp key=role.label val=contents noescape=true />
         </#if>
     </#list>
     </#if>
@@ -508,9 +511,7 @@ No coding rules have been entered for this coding sheet yet.
 
 <p class="meta">
     <@showCreatorProxy proxyList=authorshipProxies />
-    <#if resource.date?has_content>
-        <span class="name-value"><strong>Year:</strong> ${resource.date?c}</span><br />
-    </#if>
+    <@kvp key="Year" val=resource.date?c />
     
     <#if copyrightMandatory && resource.copyrightHolder?? >
         <strong>Primary Copyright Holder:</strong>
@@ -763,9 +764,7 @@ ${_date?string('MM/dd/yyyy')}<#t>
     <#if !viewableResourceCollections.empty>
         <h3>This Resource is Part of the Following Collections</h3>
         <#list viewableResourceCollections as collection>
-                <a href="<@s.url value="/collection/${collection.id?c}"/>">
-                    ${collection.name}
-                </a> <br/>
+                <a href="<@s.url value="/collection/${collection.id?c}"/>">${collection.name}</a> <br/>
         </#list>
         <hr />
     </#if>
@@ -934,7 +933,7 @@ ${_date?string('MM/dd/yyyy')}<#t>
             <h3>Additional Metadata</h3>
             <#list map?keys as key>
                 <#if key?? && map.get(key)?? && key.visible?? && key.visible>
-				   <p class="sml"><strong>${key.displayName}:</strong> ${map.get(key)}</p>
+				   <@kvp key=key.displayName val=map.get(key) />
                 </#if>
             </#list>
         </#if>
