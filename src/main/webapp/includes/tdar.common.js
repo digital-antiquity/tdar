@@ -405,10 +405,10 @@ function prepareDateFields(selectElem) {
  */
 
 $(document).ready(function() {
-	$(document).delegate(".bookmark-link","click",bookmark);
+	$(document).delegate(".bookmark-link","click",applyBookmarks);
 });
 
-function bookmark() {
+function applyBookmarks() {
 	var $this = $(this);
 	var resourceId = $this.attr("resource-id");
 	var state = $this.attr("bookmark-state");

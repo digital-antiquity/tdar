@@ -217,7 +217,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         } else {
             reason = "reason not specified";
         }
-        String logMessage = String.format("%s id:%s deleted by:%s reason: ", resource.getResourceType().getLabel(), resource.getId(),
+        String logMessage = String.format("%s id:%s deleted by:%s reason: %s", resource.getResourceType().getLabel(), resource.getId(),
                 getAuthenticatedUser(), reason);
 
         getResourceService().logResourceModification(resource, getAuthenticatedUser(), logMessage);
