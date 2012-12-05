@@ -190,7 +190,10 @@ function getPerfStats() {
     <h4>Access Permissions</h4>
     <#nested />
     <table class="tableFormat table">
-    <thead><th>Collection</th><th>User</th><th>Permission</th></thead>
+    <thead><th>Collection</th><th>User</th>
+    <#list availablePermissions as permission>
+    <th>${permission.label}</th>
+    </#list>
     <#list effectiveResourceCollections_ as collection_ >
       <#if collection_.authorizedUsers?has_content >
         <#list collection_.authorizedUsers as user>
@@ -205,9 +208,15 @@ function getPerfStats() {
           <td>
             ${user.user.properName}
           </td>
+           <#list availablePermissions as permission>
           <td>
-           ${user.generalPermission.label}
+           <#if (user.generalPermission.effectivePermissions >= permission.effectivePermissions )>
+           	<i class="icon-ok"></i>
+           <#else>
+            <i class="icon-remove"></i>
+           </#if>
            </td>
+	       </#list>
          </tr>
         </#list>
       </#if>
