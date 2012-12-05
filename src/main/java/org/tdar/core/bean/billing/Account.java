@@ -373,4 +373,12 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     public String getUrlNamespace() {
         return "billing";
     }
+
+    public Date getExpires() {
+        return expires;
+    }
+
+    public void setExpires(Date expires) {
+        this.expires = expires;
+    }
 }

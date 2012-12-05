@@ -1619,6 +1619,7 @@ public class Resource extends JsonModel.Base implements Persistable,
         return toReturn;
     }
 
+    @XmlTransient
     public Account getAccount() {
         return account;
     }

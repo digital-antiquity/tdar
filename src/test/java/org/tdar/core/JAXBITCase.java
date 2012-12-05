@@ -151,6 +151,7 @@ public class JAXBITCase extends AbstractSearchControllerITCase {
             FileUtils.copyFile(generateSchema, schemaFile);
             testValidXMLSchemaResponse(FileUtils.readFileToString(generateSchema));
         } catch (Exception e) {
+            logger.warn("exception",e);
             assertFalse("I should not exist. fix me, please?", true);
         }
     }
