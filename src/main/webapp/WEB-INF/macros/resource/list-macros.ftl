@@ -224,20 +224,20 @@ html markup) you will probably not like the results
         </#if>
 
         <#if _resource.deleted?? && _resource.deleted>
-                	<i class="bookmark-icon tdar-icon-bookmark-disabled"></i>
+                	<i title="disabled boomkark" class="bookmark-icon tdar-icon-bookmark-disabled"></i>
             <#if showLabel>
                 <span class="disabled" title='Deleted items cannot be bookmarked.'>bookmark</span><#t>
             </#if>
         <#elseif bookmarkedResourceService.isAlreadyBookmarked(_resource, authenticatedUser)>
             <a href="<@s.url value='/resource/removeBookmark' resourceId='${_resource.id?c}'/>" class="bookmark-link" resource-id="${_resource.id?c}" bookmark-state="bookmarked" href="#">
-                	<i class="tdar-icon-bookmarked bookmark-icon"></i>
+                	<i title="bookmark or unbookmark" class="tdar-icon-bookmarked bookmark-icon"></i>
                 <#if showLabel>
                     <span class="bookmark-label">un-bookmark</span><#t>
                 </#if>
             </a><#t>
         <#else>
             <a href="<@s.url value='/resource/bookmark' resourceId='${_resource.id?c}'/>"  class="bookmark-link" resource-id="${_resource.id?c}" bookmark-state="bookmark" href="#">
-                	<i class="bookmark-icon tdar-icon-bookmark"></i>
+                	<i title="bookmark or unbookmark"  class="bookmark-icon tdar-icon-bookmark"></i>
                 <#if showLabel>
                     <span class="bookmark-label"> bookmark</span><#t>
                 </#if>
