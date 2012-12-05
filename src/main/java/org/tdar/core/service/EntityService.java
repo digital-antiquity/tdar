@@ -36,8 +36,6 @@ import org.tdar.core.dao.request.ContributorRequestDao;
 @Service
 public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonDao> {
 
-    public final static String BEAN_ID = "personService";
-
     @Autowired
     private InstitutionDao institutionDao;
     @Autowired

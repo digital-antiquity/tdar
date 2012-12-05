@@ -22,16 +22,15 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.AccountDao;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.exception.TdarRuntimeException;
 
+@Transactional(readOnly = true)
 @Service
-public class AccountService {
+public class AccountService extends ServiceInterface.TypedDaoBase<Account, AccountDao> {
 
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
     @Autowired
     private GenericDao genericDao;
-
-    @Autowired
-    private AccountDao accountDao;
 
     /*
      * Find all accounts for user: return accounts that are active and have not met their quota
@@ -40,7 +39,7 @@ public class AccountService {
         if (Persistable.Base.isNullOrTransient(user)) {
             return Collections.EMPTY_LIST;
         }
-        return accountDao.findAccountsForUser(user);
+        return getDao().findAccountsForUser(user);
     }
 
     public List<BillingActivity> getActiveBillingActivities() {
@@ -72,7 +71,7 @@ public class AccountService {
     }
 
     public AccountGroup getAccountGroup(Account account) {
-        return accountDao.getAccountGroup(account);
+        return getDao().getAccountGroup(account);
     }
 
     public boolean checkThatInvoiceBeAssigned(Invoice find, Account account) {
@@ -91,11 +90,29 @@ public class AccountService {
     }
 
     @Transactional
-    public void updateQuota(ResourceEvaluator initialEvaluation, Account account, Resource ... resources) {
+    public void updateQuota(ResourceEvaluator initialEvaluation, Account account, Resource... resources) {
         ResourceEvaluator endingEvaluator = new ResourceEvaluator(resources);
         endingEvaluator.subtract(initialEvaluation);
+        List<Resource> resourcesToEvaluate = Arrays.asList(resources);
+        getDao().updateTransientAccountOnResources(resourcesToEvaluate);
+        // if the account is null ...
+
+        Account localAccount = account;
+        for (Resource resource : resources) {
+            // if the account is null -- die
+            if (Persistable.Base.isNullOrTransient(resource.getAccount())) {
+                throw new TdarRecoverableRuntimeException(String.format("resource: %s is not assigned to an account", resource));
+            }
+            // if we're dealing with multiple accounts ... die
+            if (Persistable.Base.isNotNullOrTransient(localAccount) && !localAccount.equals(resource.getAccount())) {
+                throw new TdarRuntimeException(String.format("we don't yet support multiple accounts applied to a single action, %s and %s", localAccount,
+                        resource.getAccount()));
+            }
+            localAccount = resource.getAccount();
+        }
+
         account.updateQuotas(endingEvaluator);
-        account.getResources().addAll(Arrays.asList(resources));
+        account.getResources().addAll(resourcesToEvaluate);
         genericDao.saveOrUpdate(account);
     }
 }

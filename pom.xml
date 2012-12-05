@@ -846,6 +846,7 @@
 				<!-- http://mojo.codehaus.org/keytool/keytool-maven-plugin/generateKeyPair-mojo.html -->
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>keytool-maven-plugin</artifactId>
+				<version>1.2</version>
 				<executions>
 					<execution>
 						<phase>generate-resources</phase>

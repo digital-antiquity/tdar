@@ -82,7 +82,9 @@ public interface TdarNamedQueries {
     public static final String DOWNLOAD_BY = "admin.download";
     public static final String LOGS_FOR_RESOURCE = "admin.logsforResource";
     public static final String RESOURCE_ACCESS_HISTORY = "admin.accessHistory";
-    
+
+    public static final String RESOURCES_WITH_NULL_ACCOUNT_ID = "account.resourceNull";
+    public static final String RESOURCES_WITH_NON_MATCHING_ACCOUNT_ID = "account.resourceDifferent";
     public static final String ACCOUNT_GROUP_FOR_ACCOUNT = "account.group";
     public static final String ACCOUNTS_FOR_PERSON = "accounts.forPerson";
     // raw SQL/HQL queries
@@ -102,7 +104,6 @@ public interface TdarNamedQueries {
             + "(select count(distinct information_resource_id) from information_resource_file irf join resource rr on (rr.id = irf.information_resource_id) where rr.resource_type = rt.resource_type and rr.status = 'ACTIVE') as with_files,"
             + "(select count(distinct information_resource_id) from information_resource_file irf join resource rr on (rr.id = irf.information_resource_id) where rr.resource_type = rt.resource_type and rr.status = 'ACTIVE' and irf.restriction = 'CONFIDENTIAL') as with_conf,"
             + "rt.* from (select distinct resource_type from resource) as rt";
-
     // generated HQL formats
 
     // e.g."from Resource r1 where exists (from Resource r2 inner join r2.cultureKeywords ck where r2.id = r1.id and ck.id in (:idlist))"
@@ -132,5 +133,6 @@ public interface TdarNamedQueries {
             " where (TRUE=:admin or authUser.user.id=:userId and authUser.effectiveGeneralPermission > :effectivePermission))) ";
     public static final String QUERY_CLEAR_REFERENCED_ONTOLOGYNODE_RULES = "update.clearOntologyNodeReferences";
     public static final String UPDATE_DATATABLECOLUMN_ONTOLOGIES = "update.dataTableColumnOntologies";
+    public static final String QUERY_ACCOUNTS_FOR_RESOURCES = "select id, account_id from Resource res where res.id in (%s) ";
 
 }

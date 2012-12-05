@@ -307,6 +307,14 @@
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.LOGS_FOR_RESOURCE,
                 query = "select rlog from ResourceRevisionLog rlog where rlog.resource.id = :resourceId order by rlog.timestamp desc"
+        ),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.RESOURCES_WITH_NULL_ACCOUNT_ID,
+                query = "select id from Resource res where res.id in (:ids) and account_id is null"
+        ),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.RESOURCES_WITH_NON_MATCHING_ACCOUNT_ID,
+                query = "select id from Resource res where res.id in (:ids) and account_id is not null and account_id !=:accountId"
         )
 
 })

@@ -85,6 +85,7 @@ import org.tdar.core.bean.SimpleSearch;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.Viewable;
+import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -351,6 +352,8 @@ public class Resource extends JsonModel.Base implements Persistable,
     @IndexedEmbedded(depth = 1)
     private Set<ResourceCollection> resourceCollections = new LinkedHashSet<ResourceCollection>();
 
+    private transient Account account;
+    
     // used by the import service to determine whether a record has been
     // "created" or updated
     // does not persist
@@ -1614,6 +1617,14 @@ public class Resource extends JsonModel.Base implements Persistable,
             toReturn.add("activeTemporalKeywords");
         }
         return toReturn;
+    }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
     }
 
 }

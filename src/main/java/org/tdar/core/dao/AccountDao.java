@@ -1,13 +1,19 @@
 package org.tdar.core.dao;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.Query;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.AccountGroup;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 
 /**
@@ -42,5 +48,34 @@ public class AccountDao extends Dao.HibernateBase<Account> {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.ACCOUNT_GROUP_FOR_ACCOUNT);
         query.setParameter("accountId", account.getId());
         return (AccountGroup) query.uniqueResult();
+    }
+
+    public List<Long> findResourcesWithDifferentAccount(List<Resource> resourcesToEvaluate, Account account) {
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.RESOURCES_WITH_NON_MATCHING_ACCOUNT_ID);
+        query.setParameter("accountId", account.getId());
+        query.setParameterList("ids", Persistable.Base.extractIds(resourcesToEvaluate));
+        return (List<Long>) query.list();
+    }
+
+    public List<Long> findResourcesWithNullAccount(List<Resource> resourcesToEvaluate) {
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.RESOURCES_WITH_NULL_ACCOUNT_ID);
+        query.setParameterList("ids", Persistable.Base.extractIds(resourcesToEvaluate));
+        return (List<Long>) query.list();
+    }
+
+    public void updateTransientAccountOnResources(List<Resource> resourcesToEvaluate) {
+        Map<Long, Resource> resourceIdMap = Persistable.Base.createIdMap(resourcesToEvaluate);
+        Query query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_ACCOUNTS_FOR_RESOURCES,StringUtils.join(resourceIdMap.keySet().toArray())));
+        Map<Long, Account> accountIdMap = new HashMap<Long, Account>();
+        for (Object objs : query.list()) {
+            Object[] obj = (Object[]) objs;
+            Long resourceId = (Long) obj[0];
+            Long accountId = (Long) obj[1];
+            Account account = accountIdMap.get(accountId);
+            if (account == null) {
+                accountIdMap.put(accountId, find(accountId));
+            }
+            resourceIdMap.get(resourceId).setAccount(account);
+        }
     }
 }
