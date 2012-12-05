@@ -189,13 +189,13 @@ No coding rules have been entered for this coding sheet yet.
 <#if resource.categoryVariable??>
   <#-- this might be a subcategory variable, check if parent exists -->
   <#if resource.categoryVariable.parent??>
-      <@kvp key="Category:" val=resource.categoryVariable.parent />
+      <@kvp key="Category" val=resource.categoryVariable.parent />
     <#if resource.categoryVariable.parent != resource.categoryVariable >
-      <@kvp key="Subcategory:" val=resource.categoryVariable />
+      <@kvp key="Subcategory" val=resource.categoryVariable />
     </#if>
   <#else>
     <#-- only the parent category exists -->
-      <@kvp key="Category:" val=resource.categoryVariable />
+      <@kvp key="Category" val=resource.categoryVariable />
   </#if>
 <#else>
 <p class="sml">No categories or subcategories specified.</p>
@@ -511,8 +511,10 @@ No coding rules have been entered for this coding sheet yet.
 
 <p class="meta">
     <@showCreatorProxy proxyList=authorshipProxies />
-    <@kvp key="Year" val=resource.date?c />
-    
+    <#if resource.date?has_content>
+	    <@kvp key="Year" val=resource.date?c />
+    </#if>
+
     <#if copyrightMandatory && resource.copyrightHolder?? >
         <strong>Primary Copyright Holder:</strong>
         <@browse resource.copyrightHolder />
