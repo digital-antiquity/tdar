@@ -43,14 +43,19 @@ TDAR.repeatrow = function() {
                 
             });
             $(parentElement).after($button);
-            $(parentElement).delegate(".repeat-row-delete","click", function(e){
-                var rowElem = $(this).parents(".repeat-row")[0];
-                TDAR.repeatrow.deleteRow(rowElem);
-                $(rowElem).trigger('repeatrowdeleted');
-            });
+            _registerDeleteButtons(parentElement);
         });
         
     };
+    
+    // delete/clear .repeat-row element and fire event
+    var _registerDeleteButtons = function(parentElement) {
+        $(parentElement).on("click", ".repeat-row-delete", function(e){
+            var rowElem = $(this).parents(".repeat-row")[0];
+            TDAR.repeatrow.deleteRow(rowElem);
+            $(rowElem).trigger('repeatrowdeleted');
+        });
+    }
 
         
     // clone an element, append it to another element.  
@@ -168,7 +173,7 @@ TDAR.repeatrow = function() {
     
     // private: return a dom button
     var _button = function(label) {
-        var html = "<div class='control-group'>" +
+        var html = "<div class='control-group add-another-control'>" +
                 "<div class='controls'>" +
                 "<button class='btn' type='button'><i class='icon-plus-sign'></i>" + label + "</button>" +
                 "</div>" +
@@ -182,6 +187,7 @@ TDAR.repeatrow = function() {
     console.log("repeatrow loaded");
     return {
         registerRepeatable: _registerRepeatable,
+        registerDeleteButtons: _registerDeleteButtons,
         cloneSection: _cloneSection,
         deleteRow: _deleteRow
     };

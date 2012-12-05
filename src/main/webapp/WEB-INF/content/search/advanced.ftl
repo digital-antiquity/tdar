@@ -3,7 +3,14 @@
 <#import "/WEB-INF/macros/resource/common.ftl" as common>
 <#include "/WEB-INF/macros/resource/navigation-macros.ftl">
 
-
+<#--FIXME: this method for determining active tab won't work if (for example) controller returns INPUT for collection/institution/person search -->
+<#function activeWhen _actionNames>
+    <#local _active = false>
+    <#list _actionNames?split(",") as _actionName>
+        <#local _active = _active || (_actionName?trim == actionName)>
+    </#list>
+    <#return _active?string("active", "") />
+</#function>
 
 <head>
 <title>Search ${siteAcronym}</title>
@@ -14,14 +21,16 @@
 <body>
 <h1>Search ${siteAcronym}</h1>
 <div class="usual">
+
 <ul class="nav nav-tabs" id="myTab"> 
-  <li class="<#if  actionName == 'basic' || actionName == 'advanced'>active</#if>"><a href="advanced" >Resource</a></li> 
-  <li class="<#if actionName == 'collection'>active</#if>"><a href="/search/collection" >Collection</a></li> 
-  <li class="<#if actionName == 'institution'>active</#if>"><a href="/search/institution" >Institution</a></li> 
-  <li class="<#if actionName == 'person'>active</#if>"><a href="/search/person" >Person</a></li> 
+  <li class="${activeWhen('basic,advanced,results')}"><a href="advanced" >Resource</a></li> 
+  <li class="${activeWhen('collection')}"><a href="/search/collection" >Collection</a></li> 
+  <li class="${activeWhen('institution')}"><a href="/search/institution" >Institution</a></li> 
+  <li class="${activeWhen('person')}"><a href="/search/person" >Person</a></li> 
 </ul> 
+
 <div class="tab-content">
-<div id="resource" class="tab-pane <#if actionName == 'basic' || actionName == 'advanced'>active</#if>" >
+<div id="resource" class="tab-pane ${activeWhen('basic,advanced,results')}" >
 
 <@s.form action="results" method="GET" id="searchGroups" cssClass="form-horizontal">
 <div class="searchgroup" >
@@ -50,7 +59,7 @@
     </div>
 
 </@s.form>
-    <div id="collection" class="tab-pane <#if actionName == 'collection'>active</#if>">
+    <div id="collection" class="tab-pane ${activeWhen('collection')}">
         <div class="glide">
         <h3>Search For Collections By Name</h3>
         <@s.form action="collections" method="GET" id='searchForm2'>
@@ -59,7 +68,7 @@
         </div>
         <div id="collection-spacer" style="height:850px"></div>
     </div>
-    <div id="institution" class="tab-pane <#if actionName == 'institution'>active</#if>">
+    <div id="institution" class="tab-pane ${activeWhen('institution')}">
         <div class="glide">
         <h3>Search For Institutions By Name</h3>
         <@s.form action="institutions" method="GET" id='searchForm3'>
@@ -69,7 +78,7 @@
         <div id="collection-spacer" style="height:850px"></div>
     </div>
 
-    <div id="person" class="tab-pane <#if actionName == 'person'>active</#if>">
+    <div id="person" class="tab-pane ${activeWhen('person')}">
         <div class="glide">
         <h3>Search For Person By Name</h3>
         <@s.form action="people" method="GET" id='searchForm4'>
@@ -98,6 +107,7 @@ $(document).ready(function(){
 
     if ($("#autosave").val() != '') {
         $("#searchGroups").html($("#autosave").val());
+        $('.add-another-control').remove();
     }
     initAdvancedSearch();
     
@@ -109,24 +119,14 @@ $(document).ready(function(){
 <textarea  id="autosave"></textarea>
 </form>
 
-<table id="template" style="display:none;visibility:hidden">
-        <tr class="basicTemplate termrow">
-            <td class="searchTypeCell">
-                <@searchTypeSelect "{termid}" />
-            </td>
-            <td class="searchfor"> 
-            </td>
-            <td> <@removeRowButton /> </td>
-        </tr>
-        <tr>
-            <td></td>
-            <td class="searchfor">
+<div id="template" style="display:none;visibility:hidden">
     <#list allSearchFieldTypes as fieldType>
         <@fieldTemplate fieldType=fieldType fieldIndex="{termid}" groupid="{groupid}" />
     </#list>
-    </td>
-    </tr>
-</table>        
+</div>
+
+
+  
 </body>
 <#macro fieldTemplate fieldType="NONE" fieldIndex=0 groupid=0>
     <#assign proxy_index="0"/>
@@ -187,7 +187,6 @@ $(document).ready(function(){
                 </tbody>
                 </table>
             </div>
-        </div>
         <#elseif fieldType ="RESOURCE_CREATOR_PERSON">
         <div class="term RESOURCE_CREATOR_PERSON">
         <!-- FIXME: REPLACE WITH REFERENCE TO EDIT-MACROS -->
@@ -297,7 +296,7 @@ $(document).ready(function(){
                 <option value="OR" <#if defaultOperator=="OR">selected</#if>>Show results that match ANY of the terms below</option>
             </select>
         </div>
-        <div id="groupTable0" class="grouptable repeatLastRow" style="width:100%" callback="setDefaultTerm" data-groupnum="0" data-add-another="add another search term">
+        <div id="groupTable0" class="grouptable repeatLastRow" style="width:100%" callback="setDefaultTerm" data-groupnum="0"  data-add-another="add another search term">
         
             <#if group_?is_hash >
                 <#list group_.fieldTypes as fieldType >
@@ -319,10 +318,11 @@ $(document).ready(function(){
                 <@blankRow />
             </#if>
         </div>
+        
 </#macro>
 
-<#macro blankRow groupid=0 fieldType_index=0>
-                <div id="grouptablerow_${groupid}_" class="control-group termrow repeat-row">
+<#macro blankRow groupid=0 fieldType_index=0 idAttr="grouptablerow_${groupid}_">
+                <div id="${idAttr}" class="control-group termrow repeat-row">
                     <@searchTypeSelect />
                     <div class="controls controls-row">
                         <div class="span8 term-container">
@@ -338,7 +338,7 @@ $(document).ready(function(){
 </#macro>
 
 <#macro removeRowButton>
-            <button class="btn  btn-mini repeat-row-delete " type="button" tabindex="-1" onclick="deleteParentRow(this)"><i class="icon-trash"></i></button>
+            <button class="btn  btn-mini repeat-row-delete " type="button" tabindex="-1"><i class="icon-trash"></i></button>
 </#macro>
 
 

@@ -2,6 +2,14 @@ function initAdvancedSearch() {
     TDAR.common.initFormValidation($('#searchGroups')[0]);
     TDAR.repeatrow.registerRepeatable(".repeatLastRow");
     
+    //HACK: clicking delete button when only one row present resets fieldType select  and may become out of sync w/ term control
+    $('#searchGroups').on('click', '.repeat-row-delete', function(){
+        if($('#searchGroups').find('.searchType').length === 1) {
+            $('#searchGroups').find('.searchType').trigger("change");
+        }
+    });
+    
+    
     // when user changes searchType: swap out the term ui snippet
     $('#searchGroups').on('change', '.searchType', function(evt) {
         "use strict";
@@ -51,6 +59,8 @@ function initAdvancedSearch() {
         var $row = $(row);
         // console.log('added row:' + $row + ' p2:' + idx);
         var $repeatable = $(this);
+        var $select = $row.find('.searchType');
+        $select.val($select.find("option:first").val()).trigger("change");
         updateAttributesForRow($row, $repeatable.data('groupnum'), idx);
     });
 
