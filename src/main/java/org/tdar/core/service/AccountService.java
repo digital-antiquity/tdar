@@ -101,9 +101,15 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         Account localAccount = account;
         for (Resource resource : resources) {
             // if the account is null -- die
-            if (Persistable.Base.isNullOrTransient(resource.getAccount())) {
+            if (Persistable.Base.isNotNullOrTransient(localAccount) && Persistable.Base.isNullOrTransient(resource.getAccount()) ||
+                    localAccount.getResources().contains(resource)) {
+                continue;
+            }
+            
+            if (Persistable.Base.isNullOrTransient(localAccount) && Persistable.Base.isNullOrTransient(resource.getAccount())) {
                 throw new TdarRecoverableRuntimeException(String.format("resource: %s is not assigned to an account", resource));
             }
+            
             // if we're dealing with multiple accounts ... die
             if (Persistable.Base.isNotNullOrTransient(localAccount) && !localAccount.equals(resource.getAccount())) {
                 throw new TdarRuntimeException(String.format("we don't yet support multiple accounts applied to a single action, %s and %s", localAccount,

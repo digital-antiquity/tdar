@@ -87,7 +87,7 @@ $(document).ready(function() {
 </div>
 
 <#list dataset.dataTables as dataTable>
- <h4>Table Information: ${dataTable.displayName}</h4>
+ <h4>Table Information: <span>${dataTable.displayName}</span></h4>
      <table class="tableFormat table table-striped table-bordered">
         <thead class='highlight'>
          <tr>

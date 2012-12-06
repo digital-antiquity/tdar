@@ -864,7 +864,7 @@ jtd notes:
 	font-family: "soleil", sans-serif;
 }
 
-h1 span {
+h1 span, h4 span {
 	color: #7a1501;
 }
 

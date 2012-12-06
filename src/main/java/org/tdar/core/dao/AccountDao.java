@@ -73,7 +73,10 @@ public class AccountDao extends Dao.HibernateBase<Account> {
         for (Object objs : query.list()) {
             Object[] obj = (Object[]) objs;
             Long resourceId = ((BigInteger) obj[0]).longValue();
-            Long accountId = ((BigInteger) obj[1]).longValue();
+            Long accountId = null;
+            if (obj[1] != null) {
+                ((BigInteger) obj[1]).longValue();
+            }
             Account account = accountIdMap.get(accountId);
             if (account == null) {
                 accountIdMap.put(accountId, find(accountId));
