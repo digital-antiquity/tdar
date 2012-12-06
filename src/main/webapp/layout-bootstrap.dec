@@ -22,6 +22,7 @@
 
         <link rel="stylesheet" type="text/css" href='//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_version}/themes/base/jquery-ui.css'>
         <link href="<@s.url value="/css/vc/${common.tdarBuildId}/tdar-base.css"/>" rel="stylesheet">
+        <link href="<@s.url value="/css/vc/${common.tdarBuildId}/tdar-print.css"/>" rel="stylesheet" media="print">
         
         <script src="<@s.url value="/includes/tdar.core.js"/>"></script>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/${jquery_version}/jquery.min.js"></script>
@@ -49,7 +50,7 @@
     <div class="container">
         <div class="row">
             <header class="span12">
-                <h1><a href="/"><#if siteAcronym?has_content>${siteAcronym} - </#if>${siteName}</a></h1>
+                <#include "${themeDir}/header.dec" />
                 <#if (authenticatedUser??) > 
 
                     <p class="welcome">
@@ -87,7 +88,7 @@
                     </ul>
     
                     <#if bodyid != 'home'>
-                        <form name="searchheader" action="<@s.url value="/search/results"/>" class="searchbox hidden-phone hidden-tablet">
+                        <form name="searchheader" action="<@s.url value="/search/results"/>" class="searchbox hidden-phone hidden-tablet no-print">
                             <input type="text" name="query" placeholder="Search..." >
                         </form>
                     </#if>

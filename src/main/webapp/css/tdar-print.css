@@ -1,7 +1,7 @@
 @media print {
 	
 	
-	.inline-menu,  {
+	.inline-menu, .subnav, .no-print {
 		display:none;
 		visibility:hidden;
 	}

@@ -125,13 +125,6 @@ header h1 {
 	float: left;
 }
 
-header h1 a {
-	display: block;
-	width: 187px;
-	height: 77px;
-	background: url(/images/r4/bg-logo.png);
-	text-indent: -999em;
-}
 
 header nav,header form {
 	float: right;
