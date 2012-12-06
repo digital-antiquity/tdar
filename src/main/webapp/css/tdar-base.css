@@ -1,7 +1,7 @@
 /*
     History: this file represents the original source code as provided by Fervor
 */
-[class *="span"] { //
+[class*="span"] { //
 	margin-left: 40px;
 }
 
@@ -197,8 +197,8 @@ header form input.searchbox {
 	margin: 40px 0 0 35px;
 	font-size: 13px;
 	line-height: 13px;
-	color: #7d7a77;
-//	font-family: "ff-tisa-web-pro";
+	color: #7d7a77; //
+	font-family: "ff-tisa-web-pro";
 	font-style: italic;
 	border: 1px solid #dedede !important;
 	-webkit-border-radius: 2px;
@@ -242,8 +242,8 @@ header .welcome-drop {
 header .welcome-drop p {
 	background: url(/images/r4/bg-welcome-top.png) 0 0 no-repeat;
 	margin: 0;
-	padding: 30px 20px 0 20px;
-//	font-family: "soleil", sans-serif;
+	padding: 30px 20px 0 20px; //
+	font-family: "soleil", sans-serif;
 	font-weight: 700;
 	font-size: 18px;
 	z-index: 200;
@@ -251,8 +251,8 @@ header .welcome-drop p {
 
 header .welcome-drop ul {
 	margin: 10px 20px;
-	padding: 0;
-//	font-family: "ff-tisa-web-pro";
+	padding: 0; //
+	font-family: "ff-tisa-web-pro";
 	font-size: 13px;
 	list-style: none;
 }
@@ -268,8 +268,8 @@ header .welcome-drop ul {
 
 .hero p {
 	margin: 18px 0;
-	width: 552px;
-//	font-family: "soleil", sans-serif;
+	width: 552px; //
+	font-family: "soleil", sans-serif;
 	font-weight: 500;
 	font-size: 18px;
 	line-height: 24px;
@@ -279,8 +279,8 @@ header .welcome-drop ul {
 	width: 552px;
 	padding: 11px 0 13px 18px !important;
 	background: url(/images/r4/bg-hero-search.png) 0 0 no-repeat !important;
-	border: none;
-//	font-family: "ff-tisa-web-pro";
+	border: none; //
+	font-family: "ff-tisa-web-pro";
 	font-style: italic;
 	font-size: 16px !important;
 	line-height: 16px !important;
@@ -337,8 +337,8 @@ header .welcome-drop ul {
 }
 
 #slider p {
-	width: 370px;
-	//font-family: "ff-tisa-web-pro", serif;
+	width: 370px; //
+	font-family: "ff-tisa-web-pro", serif;
 	font-size: 14px;
 	line-height: 19px;
 	color: #7d7a77;
@@ -353,8 +353,8 @@ header .welcome-drop ul {
 	margin-bottom: 15px;
 }
 
-#slider span {
-//	font-family: "ff-tisa-web-pro", serif;
+#slider span { //
+	font-family: "ff-tisa-web-pro", serif;
 	font-size: 12px;
 	line-height: 20px;
 	font-weight: 300;
@@ -415,8 +415,8 @@ header .welcome-drop ul {
 	margin: 0 0 8px 0;
 }
 
-.bucket p {
-//	font-family: "ff-tisa-web-pro", serif;
+.bucket p { //
+	font-family: "ff-tisa-web-pro", serif;
 	font-size: 13px;
 	line-height: 18px;
 	color: #7d7a77;
@@ -445,8 +445,8 @@ header .welcome-drop ul {
 	clear: left;
 }
 
-#home .news li {
-//	font-family: "ff-tisa-web-pro", serif;
+#home .news li { //
+	font-family: "ff-tisa-web-pro", serif;
 	font-size: 12px;
 	line-height: 20px;
 	color: #7d7a77;
@@ -457,8 +457,8 @@ header .welcome-drop ul {
 	border-bottom: 1px solid #e8e3d7;
 }
 
-#home .news span {
-//	font-family: "soleil", sans-serif;
+#home .news span { //
+	font-family: "soleil", sans-serif;
 	font-weight: 700;
 	color: #e3dfd8;
 	display: block;
@@ -564,7 +564,7 @@ header .welcome-drop ul {
 	display: inline;
 }
 
-.resource-nav li a,  .resource-nav li span.disabled {
+.resource-nav li a,.resource-nav li span.disabled {
 	font-weight: 700;
 	font-size: 12px;
 	line-height: 11px;
@@ -588,10 +588,9 @@ header .welcome-drop ul {
 
 .resource-nav li.disabled a:hover {
 	background-color: inherit !important;
-	color:inherit !important;
+	color: inherit !important;
 	text-decoration: none;
 }
-
 
 .resource-nav li.edit a {
 	background-position-y: -40px;
@@ -625,13 +624,13 @@ header .welcome-drop ul {
 	background: url(/images/r4/bg-cols.png) top right repeat-y;
 }
 
-h1 {
-//	font-family: "soleil", sans-serif;
+h1 { //
+	font-family: "soleil", sans-serif;
 	font-weight: 700;
 }
 
-h2 {
-//	font-family: "soleil", sans-serif;
+h2 { //
+	font-family: "soleil", sans-serif;
 	font-weight: 700;
 }
 
@@ -670,8 +669,8 @@ h2 {
 	margin: 1em 0 0 0;
 }
 
-.cols p {
-//	font-family: "ff-tisa-web-pro";
+.cols p { //
+	font-family: "ff-tisa-web-pro";
 	font-size: 16px;
 	line-height: 23px;
 	margin: 15px 0 -5px 0;
@@ -734,15 +733,15 @@ jtd notes:
 	border-bottom: 1px solid #fff;
 }
 
-.tableFormat th {
-//	font-family: "soleil", sans-serif;
+.tableFormat th { //
+	font-family: "soleil", sans-serif;
 	font-weight: 700;
 	background: #1b1a18;
 	color: #fff;
 }
 
-.tableFormat td {
-//	font-family: "ff-tisa-web-pro";
+.tableFormat td { //
+	font-family: "ff-tisa-web-pro";
 	background: #eee;
 }
 
@@ -802,8 +801,8 @@ jtd notes:
 	list-style: none;
 }
 
-#alt aside li {
-//	font-family: "ff-tisa-web-pro";
+#alt aside li { //
+	font-family: "ff-tisa-web-pro";
 	font-size: 13px;
 	line-height: 17px;
 	color: #7d7a77;
@@ -861,8 +860,8 @@ jtd notes:
 
 .why article h2,.why article p,.why article ul {
 	width: 350px;
-	margin: 0;
-//	font-family: "soleil", sans-serif;
+	margin: 0; //
+	font-family: "soleil", sans-serif;
 }
 
 h1 span {
@@ -888,8 +887,8 @@ h1 span {
 	padding: 0 0 0 20px;
 }
 
-.why article li {
-//	font-family: "ff-tisa-web-pro";
+.why article li { //
+	font-family: "ff-tisa-web-pro";
 	font-size: 14px;
 	line-height: 20px;
 	color: #7d7a77;
@@ -932,8 +931,8 @@ h1 span {
 }
 
 .contrib h2,.contrib p,.contrib ul {
-	margin: 0;
-//	font-family: "soleil", sans-serif;
+	margin: 0; //
+	font-family: "soleil", sans-serif;
 }
 
 contrib article h2,.contrib article p,.contrib article ul {
@@ -965,8 +964,8 @@ contrib article h2,.contrib article p,.contrib article ul {
 	padding: 0 0 0 20px;
 }
 
-.contrib li {
-//	font-family: "ff-tisa-web-pro";
+.contrib li { //
+	font-family: "ff-tisa-web-pro";
 	font-size: 14px;
 	line-height: 20px;
 	color: #7d7a77;
@@ -1000,13 +999,13 @@ contrib article h2,.contrib article p,.contrib article ul {
 	list-style: none;
 }
 
-.contrib .span3 li {
-//	font-family: "soleil", sans-serif;
+.contrib .span3 li { //
+	font-family: "soleil", sans-serif;
 	color: #1b1a18;
 }
 
-.contrib .span3 p {
-//	font-family: "ff-tisa-web-pro";
+.contrib .span3 p { //
+	font-family: "ff-tisa-web-pro";
 	font-size: 14px;
 	line-height: 20px;
 	color: #7d7a77;
@@ -1048,8 +1047,8 @@ contrib article h2,.contrib article p,.contrib article ul {
 	padding: 0;
 }
 
-.search h2,.search h3,.search h4,.search p,.search aside li {
-//	font-family: "soleil", sans-serif;
+.search h2,.search h3,.search h4,.search p,.search aside li { //
+	font-family: "soleil", sans-serif;
 	margin: 0;
 	padding: 0;
 }
@@ -1090,8 +1089,8 @@ contrib article h2,.contrib article p,.contrib article ul {
 	margin-bottom: 15px;
 }
 
-.search aside li,.search aside label {
-//	font-family: "ff-tisa-web-pro";
+.search aside li,.search aside label { //
+	font-family: "ff-tisa-web-pro";
 	font-size: 13px;
 	line-height: 23px;
 	color: #1b1a18;
@@ -1133,8 +1132,8 @@ contrib article h2,.contrib article p,.contrib article ul {
 	float: right;
 }
 
-.search .sort p,.search .sort form {
-//	font-family: "soleil", sans-serif !important;
+.search .sort p,.search .sort form { //
+	font-family: "soleil", sans-serif !important;
 	float: left;
 	margin: 0;
 	padding: 0;
@@ -1157,8 +1156,8 @@ contrib article h2,.contrib article p,.contrib article ul {
 	margin: 24px 0;
 }
 
-.search article p {
-//	font-family: "ff-tisa-web-pro";
+.search article p { //
+	font-family: "ff-tisa-web-pro";
 	font-size: 14px;
 	line-height: 20px;
 }
@@ -1171,8 +1170,8 @@ contrib article h2,.contrib article p,.contrib article ul {
 	text-align: center;
 }
 
-.search .pagin td.prev,.search .pagin td.next {
-//	font-family: "soleil", sans-serif !important;
+.search .pagin td.prev,.search .pagin td.next { //
+	font-family: "soleil", sans-serif !important;
 	font-weight: 700;
 	text-transform: uppercase;
 	width: 1px;
@@ -1185,8 +1184,8 @@ contrib article h2,.contrib article p,.contrib article ul {
 	display: inline;
 }
 
-.search .pagin li {
-//	font-family: "soleil", sans-serif !important;
+.search .pagin li { //
+	font-family: "soleil", sans-serif !important;
 	font-weight: 600;
 	font-size: 13px;
 	margin: 0 6px;
@@ -1198,8 +1197,8 @@ footer { /*    height: 154px; */
 	padding: 50px 0;
 }
 
-footer h4 {
-//	font-family: "soleil", sans-serif;
+footer h4 { //
+	font-family: "soleil", sans-serif;
 	font-weight: 700;
 	font-size: 16px;
 	color: #fff;
@@ -1215,8 +1214,8 @@ footer ul,footer li {
 	margin: 0;
 	padding: 0;
 	list-style: none;
-	clear: left;
-//	font-family: "ff-tisa-web-pro", serif;
+	clear: left; //
+	font-family: "ff-tisa-web-pro", serif;
 	font-size: 13px;
 	line-height: 22px;
 }
@@ -1270,7 +1269,7 @@ nav ul {
 
 /* remove margin for first column when using grid-layout in a control-group so that they line up a little better with other fields. **/
 /* TODO: determine if this is necessary, or if I'm using the bootstrap elements incorrectly */
-.controls.controls-row>div[class *="span"]:first-child {
+.controls.controls-row>div[class*="span"]:first-child {
 	margin-left: 0;
 }
 
@@ -1385,4 +1384,9 @@ i.tdar-icon-bookmark-disabled {
 i.tdar-icon-bookmark-disabled,a:hover i.tdar-icon-bookmark-disabled,.resource-nav li:hover i.tdar-icon-bookmark-disabled
 	{
 	background-position: -210px -2490px !important;
+}
+
+#toolbars i {
+	margin-top: -4px;
+	margin-bottom: -2px;
 }
