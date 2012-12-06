@@ -1,5 +1,6 @@
 package org.tdar.core.dao;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -65,13 +66,14 @@ public class AccountDao extends Dao.HibernateBase<Account> {
 
     public void updateTransientAccountOnResources(Collection<Resource> resourcesToEvaluate) {
         Map<Long, Resource> resourceIdMap = Persistable.Base.createIdMap(resourcesToEvaluate);
-        Query query = getCurrentSession().createQuery(
+        Query query = getCurrentSession().createSQLQuery(
                 String.format(TdarNamedQueries.QUERY_ACCOUNTS_FOR_RESOURCES, StringUtils.join(resourceIdMap.keySet().toArray())));
+        
         Map<Long, Account> accountIdMap = new HashMap<Long, Account>();
         for (Object objs : query.list()) {
             Object[] obj = (Object[]) objs;
-            Long resourceId = (Long) obj[0];
-            Long accountId = (Long) obj[1];
+            Long resourceId = ((BigInteger) obj[0]).longValue();
+            Long accountId = ((BigInteger) obj[1]).longValue();
             Account account = accountIdMap.get(accountId);
             if (account == null) {
                 accountIdMap.put(accountId, find(accountId));

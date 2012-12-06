@@ -203,7 +203,7 @@ public class CollectionController extends AbstractPersistableController<Resource
     }
 
     @Override
-    public String loadMetadata() {
+    public String loadViewMetadata() {
         getAuthorizedUsers().addAll(getPersistable().getAuthorizedUsers());
         resources.addAll(getPersistable().getResources());
         for (Resource resource : getPersistable().getResources()) {

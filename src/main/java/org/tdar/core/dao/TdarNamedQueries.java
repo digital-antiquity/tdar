@@ -133,6 +133,6 @@ public interface TdarNamedQueries {
             " where (TRUE=:admin or authUser.user.id=:userId and authUser.effectiveGeneralPermission > :effectivePermission))) ";
     public static final String QUERY_CLEAR_REFERENCED_ONTOLOGYNODE_RULES = "update.clearOntologyNodeReferences";
     public static final String UPDATE_DATATABLECOLUMN_ONTOLOGIES = "update.dataTableColumnOntologies";
-    public static final String QUERY_ACCOUNTS_FOR_RESOURCES = "select id, account_id from Resource res where res.id in (%s) ";
+    public static final String QUERY_ACCOUNTS_FOR_RESOURCES = "select id, account_id from resource res where res.id in (%s) ";
 
 }

@@ -58,7 +58,7 @@ public class InstitutionController extends AbstractPersistableController<Institu
     }
 
     @Override
-    public String loadMetadata() {
+    public String loadViewMetadata() {
         return SUCCESS;
     }
 

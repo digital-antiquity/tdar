@@ -62,7 +62,7 @@ public class JimsTreehouse extends AbstractInformationResourceController<Documen
         prodcheck();
         super.prepare();
         if (id != -1L) {
-            loadMetadata();
+            loadViewMetadata();
         }
     }
     

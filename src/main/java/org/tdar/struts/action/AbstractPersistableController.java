@@ -137,7 +137,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         // ensureValidViewRequest();
         checkValidRequest(RequestType.VIEW, this, InternalTdarRights.VIEW_ANYTHING);
         // checkValidRequest(UserIs.ANYONE, UsersCanModify.NONE, isViewable(), InternalTdarRights.VIEW_ANYTHING);
-        resultName = loadMetadata();
+        resultName = loadViewMetadata();
         loadExtraViewMetadata();
         return resultName;
     }
@@ -319,7 +319,11 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
 
         logAction("EDITING");
-        return loadMetadata();
+        return loadEditMetadata();
+    }
+
+    public String loadEditMetadata() {
+        return loadViewMetadata();
     }
 
     // @SuppressWarnings("unused")
@@ -573,7 +577,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         this.persistableClass = persistableClass;
     }
 
-    public abstract String loadMetadata();
+    public abstract String loadViewMetadata();
 
     protected boolean isNullOrNew() {
         return !isPersistableIdSet();

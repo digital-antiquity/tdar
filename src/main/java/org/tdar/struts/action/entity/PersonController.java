@@ -125,7 +125,7 @@ public class PersonController extends AbstractCreatorController<Person> {
     }
 
     @Override
-    public String loadMetadata() {
+    public String loadViewMetadata() {
         // nothing to do here, the person record was already loaded by prepare()
         return SUCCESS;
     }

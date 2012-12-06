@@ -186,11 +186,19 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     @Override
-    public String loadMetadata() {
-        if (getResource() == null)
-            return ERROR;
+    public String loadEditMetadata() {
         loadAddMetadata();
         loadBasicMetadata();
+        loadCustomMetadata();
+        return SUCCESS;
+    }
+    
+    @Override
+    public String loadViewMetadata() {
+        if (getResource() == null)
+            return ERROR;
+//        loadBasicMetadata();
+        initializeResourceCreatorProxyLists();
         loadCustomMetadata();
         getResourceService().incrementAccessCounter(getPersistable());
         if (isEditor()) {

@@ -97,7 +97,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     }
 
     @Override
-    public String loadMetadata() {
+    public String loadViewMetadata() {
         setAccountGroup(getAccountService().getAccountGroup(getAccount()));
         getAuthorizedMembers().addAll(getAccount().getAuthorizedMembers());
         return SUCCESS;

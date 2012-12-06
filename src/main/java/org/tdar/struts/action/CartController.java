@@ -203,11 +203,11 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
     @Override
     public String loadAddMetadata() {
-        return loadMetadata();
+        return loadViewMetadata();
     }
 
     @Override
-    public String loadMetadata() {
+    public String loadViewMetadata() {
         setActivities(getAccountService().getActiveBillingActivities());
         return SUCCESS;
     }
