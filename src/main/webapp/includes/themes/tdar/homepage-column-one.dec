@@ -1,3 +1,4 @@
+<div class="row">
             <div class="span3 bucket">
                 <img src="http://new.tdar.org/wp-uploads/new.tdar.org//2012/10/icn-data.png" />
                 <h3>Access & Use</h3>
@@ -30,3 +31,4 @@
                     <a href="http://new.tdar.org/why-tdar/who-uses-tdar/" class="button">Learn More</a>
                 </p>
             </div>
+</div>

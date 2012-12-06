@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.httpclient.URIException;
-import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -120,7 +119,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     @Action(value = "process-payment-request", results = {
             @Result(name = SUCCESS, type = "redirect", location = "view?id=${invoice.id}&review=true"),
             @Result(name = POLLING, location = "polling.ftl"),
-            @Result(name = SUCCESS_ADD_ACCOUNT,type="redirect",  location = "${successPath}")
+            @Result(name = SUCCESS_ADD_ACCOUNT, type = "redirect", location = "${successPath}")
     })
     public String processPayment() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
@@ -307,7 +306,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         if (account != null) {
             successPath = String.format("/billing/choose?invoiceId=%d&id=%d", getInvoice().getId(), account.getId());
         }
-        logger.info("successpath: {} " , successPath);
+        logger.info("successpath: {} ", successPath);
         return successPath;
     }
 

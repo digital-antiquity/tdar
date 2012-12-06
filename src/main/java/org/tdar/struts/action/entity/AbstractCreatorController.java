@@ -3,6 +3,7 @@ package org.tdar.struts.action.entity;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
@@ -19,21 +20,27 @@ public abstract class AbstractCreatorController<T extends Creator> extends Abstr
 
     private static final long serialVersionUID = -2125910954088505227L;
 
+    private static final String RETURN_URL = "RETURN_URL";
+
     private Long addressId;
     private Address address;
+    private String returnUrl;
 
     @SkipValidation
     @WriteableSession
     @Action(value = "save-address", results = {
-            @Result(name = SUCCESS, type = "redirect", location = "../../browse/creators?id=${id}")
+            @Result(name = SUCCESS, type = "redirect", location = "../../browse/creators?id=${id}"),
+            @Result(name = RETURN_URL, type = "redirect", location = "${returnUrl}")
     })
     public String saveAddress() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         getPersistable().getAddresses().add(getAddress());
         getGenericService().saveOrUpdate(getPersistable());
+        if (StringUtils.isNotBlank(getReturnUrl())) {
+            return RETURN_URL;
+        }
         return SUCCESS;
     }
-
 
     @SkipValidation
     @WriteableSession
@@ -49,7 +56,7 @@ public abstract class AbstractCreatorController<T extends Creator> extends Abstr
         return SUCCESS;
     }
 
-@SkipValidation
+    @SkipValidation
     @Action(value = "address", results = { @Result(name = SUCCESS, location = "../address-info.ftl") })
     public String editBillingAddress() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
@@ -77,6 +84,14 @@ public abstract class AbstractCreatorController<T extends Creator> extends Abstr
 
     public List<AddressType> getAllAddressTypes() {
         return Arrays.asList(AddressType.values());
+    }
+
+    public String getReturnUrl() {
+        return returnUrl;
+    }
+
+    public void setReturnUrl(String returnUrl) {
+        this.returnUrl = returnUrl;
     }
 
 }

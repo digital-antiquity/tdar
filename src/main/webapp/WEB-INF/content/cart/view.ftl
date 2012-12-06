@@ -72,7 +72,7 @@
     </div>
 </#list>
     </div>
-    <a class="button btn btn-primary submitButton" href="<@s.url value="/entity/person/${invoice.person.id?c}/address" />">Add a new address</a>
+    <a class="button btn btn-primary submitButton" href="<@s.url value="/entity/person/${invoice.person.id?c}/address&returnUrl=/cart/${id?c}" />">Add a new address</a>
 
     <@edit.submit fileReminder=false />
 
