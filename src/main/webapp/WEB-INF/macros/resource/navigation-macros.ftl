@@ -143,7 +143,7 @@ $(document).ready(function() {
 
 
 
-<#macro makeLink namespace action label name current includeResourceId=true disabled=false>
+<#macro makeLink namespace=namespace action=action label=label name=name current=false includeResourceId=true disabled=false>
     <#assign state = "" />
     <#if disabled>
         <#assign state="disabled" />
