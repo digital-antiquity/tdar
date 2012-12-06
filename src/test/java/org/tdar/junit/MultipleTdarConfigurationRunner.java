@@ -70,7 +70,7 @@ public class MultipleTdarConfigurationRunner extends SpringJUnit4ClassRunner {
             }
         }
         setConfiguration(method, currentConfig);
-        super.runChild(method, notifier);
+//        super.runChild(method, notifier);
     }
 
     private void setConfiguration(final FrameworkMethod method, String config) {
