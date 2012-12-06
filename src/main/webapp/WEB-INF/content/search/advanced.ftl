@@ -22,75 +22,77 @@
 <h1>Search ${siteAcronym}</h1>
 <div class="usual">
 
-<ul class="nav nav-tabs" id="myTab"> 
-  <li class="${activeWhen('basic,advanced,results')}"><a href="advanced" >Resource</a></li> 
-  <li class="${activeWhen('collection')}"><a href="/search/collection" >Collection</a></li> 
-  <li class="${activeWhen('institution')}"><a href="/search/institution" >Institution</a></li> 
-  <li class="${activeWhen('person')}"><a href="/search/person" >Person</a></li> 
-</ul> 
-
-<div class="tab-content">
-<div id="resource" class="tab-pane ${activeWhen('basic,advanced,results')}" >
-
-<@s.form action="results" method="GET" id="searchGroups" cssClass="form-horizontal">
-<div class="searchgroup" >
-<h2>Choose Search Terms</h2>
-<#assign currentIndex = 0 />
-<#if (g?size > 0) >
- <#list g as group>
-    <#assign currentIndex = currentIndex + 1 />
-         
-     <@searchGroup group_index group />
- </#list>
-<#else>
-     <@searchGroup 0 "" />
-</#if>
-    </div>
-
-    <div class="glide"  id="searchFilter">
-    <@search.narrowAndSort />
-    </div>
-
-    <div>
-        <div id="error"></div>
-        <@s.submit id="searchButton" value="Search" cssClass="btn btn-large btn-primary" /> 
-    </div>
+    <ul class="nav nav-tabs" id="myTab"> 
+      <li class="${activeWhen('basic,advanced,results')}"><a href="advanced" >Resource</a></li> 
+      <li class="${activeWhen('collection')}"><a href="/search/collection" >Collection</a></li> 
+      <li class="${activeWhen('institution')}"><a href="/search/institution" >Institution</a></li> 
+      <li class="${activeWhen('person')}"><a href="/search/person" >Person</a></li> 
+    </ul> 
+    
+    <div class="tab-content">
+        <div id="resource" class="tab-pane ${activeWhen('basic,advanced,results')}" >
+            <@s.form action="results" method="GET" id="searchGroups" cssClass="form-horizontal">
+                <div class="searchgroup" >
+                    <h2>Choose Search Terms</h2>
+                    <#assign currentIndex = 0 />
+                    <#if (g?size > 0) >
+                     <#list g as group>
+                        <#assign currentIndex = currentIndex + 1 />
+                             
+                         <@searchGroup group_index group />
+                     </#list>
+                    <#else>
+                         <@searchGroup 0 "" />
+                    </#if>
+                </div>
+            
+                <div class="glide"  id="searchFilter">
+                    <@search.narrowAndSort />
+                </div>
+            
+                <div>
+                    <div id="error"></div>
+                    <@s.submit id="searchButton" value="Search" cssClass="btn btn-large btn-primary" /> 
+                </div>
+                    
+            
+            </@s.form>
+        </div>
+        
+        <div id="collection" class="tab-pane ${activeWhen('collection')}">
+            <div class="glide">
+            <h3>Search For Collections By Name</h3>
+            <@s.form action="collections" method="GET" id='searchForm2'>
+                <@search.queryField freeTextLabel="Collection Name" showLimits=false showAdvancedLink=false />
+            </@s.form>
+            </div>
+            <div id="collection-spacer" style="height:850px"></div>
+        </div>
+        
+        <div id="institution" class="tab-pane ${activeWhen('institution')}">
+            <div class="glide">
+            <h3>Search For Institutions By Name</h3>
+            <@s.form action="institutions" method="GET" id='searchForm3'>
+                <@search.queryField freeTextLabel="Institution Name" showLimits=false showAdvancedLink=false />
+            </@s.form>
+            </div>
+            <div id="collection-spacer" style="height:850px"></div>
+        </div>
+    
+        <div id="person" class="tab-pane ${activeWhen('person')}">
+            <div class="glide">
+            <h3>Search For Person By Name</h3>
+            <@s.form action="people" method="GET" id='searchForm4'>
+                <@search.queryField freeTextLabel="Person Name" showLimits=false showAdvancedLink=false />
+            </@s.form>
+            </div>
+            <div id="collection-spacer" style="height:850px"></div>
+        </div>
         
     </div>
 
-</@s.form>
-    <div id="collection" class="tab-pane ${activeWhen('collection')}">
-        <div class="glide">
-        <h3>Search For Collections By Name</h3>
-        <@s.form action="collections" method="GET" id='searchForm2'>
-            <@search.queryField freeTextLabel="Collection Name" showLimits=false showAdvancedLink=false />
-        </@s.form>
-        </div>
-        <div id="collection-spacer" style="height:850px"></div>
-    </div>
-    <div id="institution" class="tab-pane ${activeWhen('institution')}">
-        <div class="glide">
-        <h3>Search For Institutions By Name</h3>
-        <@s.form action="institutions" method="GET" id='searchForm3'>
-            <@search.queryField freeTextLabel="Institution Name" showLimits=false showAdvancedLink=false />
-        </@s.form>
-        </div>
-        <div id="collection-spacer" style="height:850px"></div>
-    </div>
+</div>
 
-    <div id="person" class="tab-pane ${activeWhen('person')}">
-        <div class="glide">
-        <h3>Search For Person By Name</h3>
-        <@s.form action="people" method="GET" id='searchForm4'>
-            <@search.queryField freeTextLabel="Person Name" showLimits=false showAdvancedLink=false />
-        </@s.form>
-        </div>
-        <div id="collection-spacer" style="height:850px"></div>
-    </div>
-    
-</div> 
-</div>
-</div>
 <script>
 $(document).ready(function(){
     //switch to the correct tab if coming from collection search

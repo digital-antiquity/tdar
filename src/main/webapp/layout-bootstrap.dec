@@ -3,14 +3,13 @@
 <!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
 <!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
-<html lang="en">
 <#import "/WEB-INF/macros/resource/common.ftl" as common><#t>
 <#import "/WEB-INF/macros/header.ftl" as header>
 
     <head>
-        <meta http-equiv="content-type" content="text/html; charset=utf-8"/> 
-        <link rel="unapi-server" type="application/xml" title="unAPI" href="<@s.url value='/unapi'/>" />
-        <link rel="search" type="application/opensearchdescription+xml" href='<@s.url value="/includes/opensearch.xml"/>' title="Search ${siteAcronym}" /> 
+        <meta http-equiv="content-type" content="text/html; charset=utf-8"> 
+        <link rel="unapi-server" type="application/xml" title="unAPI" href="<@s.url value='/unapi'/>">
+        <link rel="search" type="application/opensearchdescription+xml" href='<@s.url value="/includes/opensearch.xml"/>' title="Search ${siteAcronym}"> 
         <title>${title!siteName}</title>
 
 		<#-- dev only 
@@ -19,8 +18,8 @@
 		<script src="/includes/modernizr-custom-2.6.2.min.js"></script>
         
         <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
-        <link rel="stylesheet" type="text/css" href='//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_version}/themes/base/jquery-ui.css'></link> 
-        <link href="<@s.url value="/css/vc/${common.tdarBuildId}/tdar-base.css"/>" rel="stylesheet" />
+        <link rel="stylesheet" type="text/css" href='//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_version}/themes/base/jquery-ui.css'>
+        <link href="<@s.url value="/css/vc/${common.tdarBuildId}/tdar-base.css"/>" rel="stylesheet">
         
         <script src="<@s.url value="/includes/tdar.core.js"/>"></script>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/${jquery_version}/jquery.min.js"></script>
@@ -87,7 +86,7 @@
     
                     <#if bodyid != 'home'>
                         <form name="searchheader" action="<@s.url value="/search/results"/>" class="searchbox hidden-phone hidden-tablet">
-                            <input type="text" name="query" placeholder="Search..." />
+                            <input type="text" name="query" placeholder="Search..." >
                         </form>
                     </#if>
                 </nav>
@@ -189,7 +188,7 @@ ${_stacktrace?html}
             <#--Keep in mind.your body is inside a div.span element. now would be a good time to review bootstrap grid layout conventions (esp. 'Nesting Columns') -->
             <#--http://twitter.github.com/bootstrap/scaffolding.html#gridSystem -->
             ${body}
-        </article>
+        </article> <!-- 191 -->
 
         <#if page.properties["div.sidebar-right"]?has_content>
             <aside class="span3 sidebar <#if actionName=='edit' || actionName='add'>hidden-tablet hidden-phone</#if> <#if actionName=='view' &&  resource?has_content>${resource.resourceType?lower_case}-bg-large tdar-icon</#if>">

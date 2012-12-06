@@ -1334,7 +1334,7 @@ TDAR.common = function() {
     //return html-encoded copy of provided string
     var _htmlEncode = function(str) {
             if (typeof value === "undefined" || str === '') return "";
-            return $('<div />').text(str).html();
+            return $('<div></div>').text(str).html();
     }
     
     return {

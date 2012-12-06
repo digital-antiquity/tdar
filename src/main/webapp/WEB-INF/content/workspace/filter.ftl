@@ -6,13 +6,14 @@
 <title>Filter Ontology Values</title>
 <meta name="lastModifiedDate" content="$Date$"/>
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-</head>
 <style type='text/css'>
 input+label {position: relative; }
 input[disabled] + label {
 font-weight: normal !important;
 }
 </style>
+</head>
+<body>
 <h1>Filter Ontology Values</h1>
 <div class='glide'>
 You can filter data values for the datasets listed below.  Only checked values mapped to an 
@@ -27,7 +28,6 @@ checks, absent values are indicated with red x's.
 
 <#assign integrationcolumn_index =0>
 
-<div class="glide">
 <!--
 <div class="parent-info">
   ${siteAcronym} has automatically selected values that occur accross all datasets below.  To clear this, please click "clear all" below.
@@ -118,7 +118,6 @@ checks, absent values are indicated with red x's.
 <#assign integrationcolumn_index = integrationcolumn_index+1>
  
  </#list>
-</div>
 
 <@edit.submit "Next: Apply filter" false/>
 
@@ -170,4 +169,5 @@ $(document).ready(function() {
   applyZebraColors();
   });
 </script>
+</body>
 </#escape>

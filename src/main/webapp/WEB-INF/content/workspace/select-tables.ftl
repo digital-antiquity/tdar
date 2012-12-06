@@ -14,7 +14,7 @@
         <#if ! dataset.dataTables.isEmpty()>
             <tbody class="integrate_dataset" id="dataset_${dataset.id?c}">
                     <@listDataTables dataset />
-            </tbody>
+            </tbody> 
         </#if>
     </#list>
             </table>
@@ -32,7 +32,7 @@
              &nbsp;(<a href="#" class="column_toggle" > show/hide columns</a>)            
                   <div class="datatable_columns" id="datatable_columns_${table.id?c}" style="display:none;">
                     <@listDataTableColumns table.getDataTableColumns() />
-                </div>    
+                  </div>
             </td>
         </tr>
         </#list>
@@ -55,7 +55,7 @@
                 <td>${column.columnDataType}</td>
                 <td>
                 <#if column.defaultOntology??>
-                    ${column.defaultOntology.title}</td>
+                    ${column.defaultOntology.title}
                 <#else>
                   None
                 </#if>
@@ -70,7 +70,7 @@
 <title>Data Integration: Select Tables</title>
 <meta name="lastModifiedDate" content="$Date$"/>
 <script type='text/javascript'>
-$(document).ready(function() {
+$(function() {
   $('.column_toggle').click(function() {
       $(this).next().toggle();
       return false;
@@ -79,7 +79,8 @@ $(document).ready(function() {
 </script>
 </head>
 
-    <div class="glide">
+<body>
+<div class="glide">
 
 <#if bookmarkedDataTables.empty >
     <p>
@@ -91,12 +92,13 @@ $(document).ready(function() {
     <h3>Step 1: Select Datasets to Integrate or Display</h3>
     <@s.form name='selectDTForm' method='post' action='select-columns'>
         <@listDatasets bookmarkedDatasets />
-        <br/>
-</div>
-<div class="glide">
-                <@s.submit value='Next: select columns' cssClass="btn btn-primary submitButton"/>
+
+<div class="form-actions">
+    <@s.submit value='Next: select columns' cssClass="btn btn-primary submitButton"/>
 </div>
     </@s.form>
 </#if>
-    </div>
+</div>
+</body>
+
 </#escape>

@@ -2,7 +2,6 @@
 <#global jquery_ui_version="1.8.23">
 
 <#macro scripts combine=false>
-<!-- fyi -- two excanvas calls aready (flot + jit ) should we use just one? also, use Modernizr -->
 <!--[if lte IE 8]><script language="javascript" type="text/javascript" src="<@s.url value="/includes/Jit-2.0.1/Extras/excanvas.js"/>"></script><![endif]--> 
 
     <#--if not using mergeservlet, use a fake directory name that corresponds to build number so that client will pull up-to-date version -->
@@ -40,7 +39,6 @@
                      "/includes${fakeDirectory}/tdar.inheritance.js",
                      "/includes/bindWithDelay.js",
                      "/includes/flot-0.7/jquery.flot.min.js",
-                     "/includes/flot-0.7/excanvas.min.js",
                      "/includes/flot-0.7/jquery.flot.pie.min.js"
     ] />
 <#--                     "/includes/ivaynberg-select2-817453b/select2.js" -->
@@ -77,11 +75,11 @@
                     ] />
 <#if combine>
 <!-- call to http://code.google.com/p/webutilities/wiki/JSCSSMergeServlet#URLs_in_CSS -->
-    <link rel="stylesheet" type="text/css" href="<#list srcs as src><#if src_index != 0>,</#if>${src?replace(".css","")}</#list>.css"></link>
+    <link rel="stylesheet" type="text/css" href="<#list srcs as src><#if src_index != 0>,</#if>${src?replace(".css","")}</#list>.css">
 
 <#else>
 <#list srcs as src>
-  <link rel="stylesheet" type="text/css" href="${src}" data-version="${common.tdarBuildId}"></link>
+  <link rel="stylesheet" type="text/css" href="${src}" data-version="${common.tdarBuildId}">
 </#list>
 
 </#if>

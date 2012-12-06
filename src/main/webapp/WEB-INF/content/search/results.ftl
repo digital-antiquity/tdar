@@ -82,7 +82,7 @@
     
     <#if (referrer?? && referrer == 'TAG')>
         <div class="notice">
-        <b>Welcome TAG Users</b><br/>
+        <b>Welcome TAG Users</b><br>
         If you'd like to perform an integration:
         <ol>
             <#if !sessionData?? || !sessionData.authenticated>
@@ -113,23 +113,34 @@
 	<#list results as result>
 	<#if result_index != 0> <hr/></#if>
 <div class="listItemPart">
-      <h3 class="search-result-title-${result.status}">
-    	<a class="resourceLink" href="/${result.urlNamespace}/${result.id?c}">${result.properName}</a>
-        </h3>
-        <#if result.institution?has_content><p>${result.institution.name}</p></#if>
-            <blockquote class="luceneExplanation">${result.explanation!""}</blockquote>
-            <blockquote class="luceneScore"<b>score:</b>${result.score!""}<br/> </blockquote>
-	</div>
+    <h3 class="search-result-title-${result.status}">
+        <a class="resourceLink" href="/${result.urlNamespace}/${result.id?c}">${result.properName}</a>
+    </h3>
+    <#if result.institution?has_content><p>${result.institution.name}</p></#if>
+    <blockquote class="luceneExplanation">${result.explanation!""}</blockquote>
+    <blockquote class="luceneScore"<b>score:</b>${result.score!""}<br> </blockquote>
+</div>
 	</#list>
 </#if>
     <hr class="dbl" />
     <@search.pagination ""/>
-</div>
 <#else>
     <h2>No records match the query.</h2>
 </#if>
 
 
+
+<script type="text/javascript">
+        //pretty controls for sort options, sidebar options (pulled from main.js)
+        $(function() {
+//            $('.sort form').NiceIt();
+//            $('.options form').NiceIt();
+            initializeView();
+            
+        });
+</script>
+
+</body>
 
 <#macro facetBy facetlist=[] currentValues=[] label="Facet Label" facetParam="">
 <#if (facetlist?? && !facetlist.empty)>
@@ -161,7 +172,6 @@
                     ${facetLabel}
             </#if>
            <span>(${facet.count})</span>
-            </label>
         </li>
     </#list>
 </ul>
@@ -197,17 +207,3 @@
     </#if>
     </#if>
 </#macro>
-
-</div>
-
-<script type="text/javascript">
-        //pretty controls for sort options, sidebar options (pulled from main.js)
-        $(function() {
-//            $('.sort form').NiceIt();
-//            $('.options form').NiceIt();
-            $(initializeView);
-            
-        });
-</script>
-
-</body>

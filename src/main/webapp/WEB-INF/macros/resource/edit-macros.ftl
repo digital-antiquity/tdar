@@ -1178,11 +1178,12 @@ jquery validation hooks?)
 
 <div class="row">
     <div class="span4">
-        <@s.select labelposition='left' id="statuses" headerKey="" headerValue="Any" label='Status' name='status'  emptyOption='false' listValue='label' list='%{statuses}'/></span>
+        <@s.select labelposition='left' id="statuses" headerKey="" headerValue="Any" label='Status' name='status'  emptyOption='false' listValue='label' 
+                    list='%{statuses}'/>
     </div>
     <div class="span4">
-        
-        <@s.select labelposition='left' id="resourceTypes" label='Resource Type' name='resourceType'  headerKey="" headerValue="All" emptyOption='false' listValue='label' list='%{resourceTypes}'/></span>
+        <@s.select labelposition='left' id="resourceTypes" label='Resource Type' name='resourceType'  headerKey="" headerValue="All" emptyOption='false' 
+                    listValue='label' list='%{resourceTypes}'/>
     </div>
 </div>
 
