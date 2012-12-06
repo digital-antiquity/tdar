@@ -217,9 +217,8 @@ table.legend {
     filter: progid: DXImageTransform.Microsoft.gradient( startColorstr= '#eeeeee', endColorstr= '#cccccc', GradientType= 0 );
     /* IE6-9 */
     background: linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* W3C */
-    //
-    margin: 3px; //
-    padding: 3px;
+/*    margin: 3px; 
+    padding: 3px;*/
     border: 1px solid #999999;
 }
 
@@ -523,8 +522,8 @@ table.legend {
 
 #drplist td div {
     position: relative !important;
-    border-bottom: 1px solid #AEAEAE; //
-    height: 3.2em;
+    border-bottom: 1px solid #AEAEAE; 
+/*    height: 3.2em; */
 }
 
 .short .columnName {
@@ -548,8 +547,8 @@ table.legend {
     content: "\002022  "
 }
 
-#project-list .dataTables_wrapper { //
-    width: 700px
+#project-list .dataTables_wrapper { 
+/*    width: 700px */
 }
 
 #home .form-actions {
@@ -637,7 +636,7 @@ ol.MAP .listItemPart {
 }
 
 .showcase-content-container {
-//    margin-left: -2px !important;
+/*    margin-left: -2px !important; */
 }
 
 .resource-nav.navbar-static li  a {
@@ -682,8 +681,8 @@ label.help-inline[generated="true"] {
 }
 
 article+aside.span3>div {
-    margin-left: 40px !important; //
-    float: right;
+    margin-left: 40px !important; 
+/*    float: right; */
 }
 
 /* Normally I like the default bootstrap styles... but hot pink for CODE tags?  Really? */

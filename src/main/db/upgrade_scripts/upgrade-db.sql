@@ -265,3 +265,10 @@ alter table pos_account add column space_used int8 default 0;
 alter table pos_account add column resources_used int8 default 0;
 
 ALTER TABLE project ADD COLUMN orientation VARCHAR(50) DEFAULT 'LIST';
+
+-- 12-06-12 -- adding some invalid billing values
+insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price) values (true, 'good', 15,21,50,5, 505);
+insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price) values (true, 'error', 5,1,50,5, 55.21);
+insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price) values (true, 'decline', 5,1,50,5, 55.11);
+insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price) values (true, 'unknown', 5,1,50,5, 55.31);
+insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price) values (false, 'inactive', 5,1,50,5, 550);
