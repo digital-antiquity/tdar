@@ -1129,61 +1129,86 @@ jquery validation hooks?)
 
 
 <#macro resourceDataTable showDescription=true selectable=false>
-<div class="well">
-<@s.textfield name="query" id="query" label="Title" cssClass='input-xxlarge' placeholder="Enter a full or partial title to filter results" />
-<div class="row">
-    <div class="span4">
-        <div class="control-group">
-            <label class="control-label" for="project-selector">Project</label>
-            <div class="controls">
-                <select id="project-selector">
-                    <option value="" selected='selected'>All Editable Projects</option>
-                  <#if allSubmittedProjects?? && !allSubmittedProjects.empty>
-                  <optgroup label="Your Projects">
-                    <#list allSubmittedProjects?sort_by("titleSort") as submittedProject>
-                        <option value="${submittedProject.id?c}" title="${submittedProject.title!""?html}"><@truncate submittedProject.title 70 /> </option>
-                    </#list>
-                  </optgroup>
-                  </#if>
-                  
-                  <optgroup label="Projects you have been given access to">
-                    <#list fullUserProjects?sort_by("titleSort") as editableProject>
-                        <option value="${editableProject.id?c}" title="${editableProject.title!""?html}"><@truncate editableProject.title 70 /></option>
-                    </#list>
-                  </optgroup>
-                </select>
+<div class="well"> <#--you are in a span9, but assume span8 so we fit inside well -->
+    <div class="control-group">
+        <label for="query" class="control-label">Title</label>
+        <div class="controls controls-row">
+            <@s.textfield theme="tdar" name="query" id="query" cssClass='span8' 
+                    placeholder="Enter a full or partial title to filter results" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="span4">
+            <div class="control-group">
+                <label class="control-label" for="project-selector">Project</label>
+                <div class="controls controls-row">
+                    <select id="project-selector" class="span4">
+                        <option value="" selected='selected'>All Editable Projects</option>
+                      <#if allSubmittedProjects?? && !allSubmittedProjects.empty>
+                      <optgroup label="Your Projects">
+                        <#list allSubmittedProjects?sort_by("titleSort") as submittedProject>
+                            <option value="${submittedProject.id?c}" title="${submittedProject.title!""?html}"><@truncate submittedProject.title 70 /> </option>
+                        </#list>
+                      </optgroup>
+                      </#if>
+                      
+                      <optgroup label="Projects you have been given access to">
+                        <#list fullUserProjects?sort_by("titleSort") as editableProject>
+                            <option value="${editableProject.id?c}" title="${editableProject.title!""?html}"><@truncate editableProject.title 70 /></option>
+                        </#list>
+                      </optgroup>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="span4">
+            <div class="control-group">
+                <label class="control-label" for="collection-selector">Collection</label>
+                <div class="controls controls-row">
+                    <select id="collection-selector" class="span4">
+                        <option value="" selected='selected'>All Collections</option>
+                        <@s.iterator value='resourceCollections' var='rc'>
+                            <option value="${rc.id?c}" title="${rc.name!""?html}"><@truncate rc.name!"(No Name)" 70 /></option>
+                        </@s.iterator>
+                    </select>
+                </div>
             </div>
         </div>
     </div>
-    <div class="span4">
-        <div class="control-group">
-            <label class="control-label" for="collection-selector">Collection</label>
-            <div class="controls">
-                <select id="collection-selector">
-                    <option value="" selected='selected'>All Collections</option>
-                    <@s.iterator value='resourceCollections' var='rc'>
-                        <option value="${rc.id?c}" title="${rc.name!""?html}"><@truncate rc.name!"(No Name)" 70 /></option>
-                    </@s.iterator>
-                </select>
+    
+    <div class="row">
+        <div class="span4">
+            <div class="control-group">
+                <label class="control-label">Status</label>
+                <div class="controls controls-row">
+                    <@s.select theme="tdar" id="statuses" headerKey="" headerValue="Any" name='status'  emptyOption='false' listValue='label' 
+                                list='%{statuses}' cssClass="span4"/>
+                </div>
             </div>
         </div>
+        <div class="span4">
+ 
+             <div class="control-group">
+                <label class="control-label">Resource Type</label>
+                <div class="controls controls-row">
+                    <@s.select theme="tdar" id="resourceTypes" name='resourceType'  headerKey="" headerValue="All" emptyOption='false' 
+                                listValue='label' list='%{resourceTypes}' cssClass="span4"/>
+                </div>
+            </div>
+        
+        </div>
     </div>
-</div>
 
-<div class="row">
-    <div class="span4">
-        <@s.select labelposition='left' id="statuses" headerKey="" headerValue="Any" label='Status' name='status'  emptyOption='false' listValue='label' 
-                    list='%{statuses}'/>
+    <div class="control-group">
+        <label class="control-label">Sort  by</label>
+        <div class="controls controls-row">
+                <@s.select theme="tdar" emptyOption='false' name='sortBy' listValue='label' list='%{resourceDatatableSortOptions}' id="sortBy"
+                            value="ID_REVERSE" cssClass="span4"/>
+                 
+                 <!-- per bootstrap grid-sized children need to add up to parent -->
+                 <p class="span4">&nbsp</p>
+         </div>
     </div>
-    <div class="span4">
-        <@s.select labelposition='left' id="resourceTypes" label='Resource Type' name='resourceType'  headerKey="" headerValue="All" emptyOption='false' 
-                    listValue='label' list='%{resourceTypes}'/>
-    </div>
-</div>
-
-    <@s.select labelposition='left' label='Sort By' emptyOption='false' name='sortBy' 
-     listValue='label' list='%{resourceDatatableSortOptions}' id="sortBy"
-     value="ID_REVERSE" title="Sort resource by" />
 
 <!-- <ul id="proj-toolbar" class="projectMenu"><li></li></ul> -->
 </div>

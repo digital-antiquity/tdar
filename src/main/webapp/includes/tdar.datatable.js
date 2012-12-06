@@ -213,7 +213,8 @@ function setupDashboardDataTable() {
         "bLengthChange": true,
         "bFilter": false,
         aoColumns: aoColumns_,
-        "sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span4'i><'span5'p>>",
+        //"sDom": "<'row'<'span9'l><'span6'f>r>t<'row'<'span4'i><'span5'p>>",  
+        "sDom": "<<l><'pull-right'r>>t<'row'<'span4'i><'span5'p>>",  //no text filter!
         sPaginationType:"bootstrap",
         sAjaxDataProp: 'resources',
         requestCallback: function(searchBoxContents){
