@@ -18,7 +18,7 @@
 <p>${account.description!""}</p>
 
 <h3>Invoices</h3>
-<table class="tableFormat  table">
+<table class="tableFormat table">
     <tr>
         <th>name</th><th>total</th>
     </tr>
