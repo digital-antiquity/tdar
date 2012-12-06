@@ -1337,10 +1337,8 @@ TDAR.common = function() {
             return $('<div />').text(str).html();
     }
     
-
-    
     return {
-        "initEditPage":_initEditPage,
+        "initEditPage": _initEditPage,
         "initFormValidation": _setupFormValidate,
         "applyTreeviews": _applyTreeviews,
         "initializeView": _initializeView,
@@ -1372,6 +1370,7 @@ function checkWindowSize() {
     $(document.body).removeClass('responsive-large-desktop responsive-desktop responsive-tablet responsive-phone').addClass(new_class);
 }
 
+//TODO: what am I? Why am I here?
 $(document).ready(function() {
     checkWindowSize();
     $(window).resize(checkWindowSize);

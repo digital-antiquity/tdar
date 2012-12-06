@@ -61,27 +61,51 @@ TDAR.uri = function(path) {
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
   })();
 
-function getPerfStats() {
-  var timing = window.performance.timing;
-  return {
-    dns: timing.domainLookupEnd - timing.domainLookupStart,
-    connect: timing.connectEnd - timing.connectStart,
-    ttfb: timing.responseStart - timing.connectEnd,
-    basePage: timing.responseEnd - timing.responseStart,
-    frontEnd: timing.loadEventStart - timing.responseEnd
-  };
-}
-  
-  $(document).ready(function() {
-  if (window.performance && window.performance.timing) {
-    var ntStats = getPerfStats();
-    _gaq.push(["_trackEvent", "Navigation Timing", "DNS", undefined, ntStats.dns, true]);
-    _gaq.push(["_trackEvent", "Navigation Timing", "Connect", undefined, ntStats.connect, true]);
-    _gaq.push(["_trackEvent", "Navigation Timing", "TTFB", undefined, ntStats.ttfb, true]);
-    _gaq.push(["_trackEvent", "Navigation Timing", "BasePage", undefined, ntStats.basePage, true]);
-    _gaq.push(["_trackEvent", "Navigation Timing", "FrontEnd", undefined, ntStats.frontEnd, true]);
-  }
-  });
+//return basic perf stats (excellent diagram: http://dvcs.w3.org/hg/webperf/raw-file/tip/specs/NavigationTiming/Overview.html#processing-model)
+(function() {
+    var _getPerfStats = function() {
+        var timing = window.performance.timing;
+        return {
+            //dns lookup timespan
+            dns: timing.domainLookupEnd - timing.domainLookupStart,
+            //connection timespan
+            connect: timing.connectEnd - timing.connectStart,
+            //time to first byte 
+            ttfb: timing.responseStart - timing.connectEnd,
+            //timespan of response load
+            basePage: timing.responseEnd - timing.responseStart,
+            //time to document.load
+            frontEnd: timing.loadEventStart - timing.responseEnd
+        };
+    };
+    
+    var _trackEvent = function() {
+        var arr = ["_trackEvent"].concat(Array.prototype.slice.call(arguments));
+        _gaq.push(arr);
+    };
+    
+    var _reportPerfStats = function() {
+        if (!(window.performance && window.performance.timing )) return;
+        var nav = window.performance.navigation;
+        var navtype = undefined; 
+        //backbutton navigation may skew stats. try to identify and tag w/ label (only supported in IE/chrome for now)
+        if(nav && nav.type === nav.TYPE_BACK_FORWARD) {
+            navtype = "backbutton";
+        }
+        
+        if (typeof _gaq === "undefined") return;
+        var perf = _getPerfStats();
+        var key;
+        for(key in perf) {
+            _trackEvent("Navigation Timing(ms)", key, navtype, perf[key] ,  true);
+        }
+    };
+    
+    //here we explicitly hook into 'onload' since DOM timing stats are incomplete upon 'ready'.
+    $(window).load(_reportPerfStats);
+})();
+    
+
 </#noescape>
 </#macro>
 
