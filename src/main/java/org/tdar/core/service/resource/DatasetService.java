@@ -576,7 +576,12 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             }
         }
         for (DataTableColumn key : results.keySet()) {
-            results.put(key, rs.getString(key.getName()));
+            String val = "NULL";
+            Object obj = rs.getObject(key.getName());
+            if (obj != null) {
+                val =obj.toString();
+            }
+            results.put(key, val);
         }
         return results;
     }
