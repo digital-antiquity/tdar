@@ -820,7 +820,7 @@ function registerDownload(url, tdarId) {
 function changeSubcategory(categoryIdSelect, subCategoryIdSelect) {
     var $categoryIdSelect = $(categoryIdSelect);
     var $subCategoryIdSelect = $(subCategoryIdSelect);
-    $categoryIdSelect.siblings(".waitingSpinner").css('visibility', 'visible');
+    $categoryIdSelect.siblings(".waitingSpinner").show();
     $.get(getBaseURI() + "resource/ajax/column-metadata-subcategories", {
         "categoryVariableId" : $categoryIdSelect.val()
     }, function(data_, textStatus) {
@@ -832,8 +832,7 @@ function changeSubcategory(categoryIdSelect, subCategoryIdSelect) {
                     + data[i]['label'] + "</option>\n";
         }
 
-        $categoryIdSelect.siblings(".waitingSpinner").css('visibility',
-                'hidden');
+        $categoryIdSelect.siblings(".waitingSpinner").hide();
         $subCategoryIdSelect.html(result);
     });
 }
@@ -1102,7 +1101,7 @@ TDAR.common = function() {
             }
 
             var $button = $('input[type=submit]', f);
-            $button.siblings(".waitingSpinner").css('visibility', 'visible');
+            $button.siblings(".waitingSpinner").show();
 
             //warn user about leaving before saving
             //FIXME: FormNavigate.js has bugs and is not being maintained. need to find/write replacement.
@@ -1184,7 +1183,7 @@ TDAR.common = function() {
        $buttons.prop("disabled", true);
        
        //fade in the wait icon
-       $submitDivs.find(".waitingSpinner").addClass("in");
+       $submitDivs.find(".waitingSpinner").show();
        
        //reenable after reasonable time, e.g. so user can resubmit if user stopped the request (can't trust window.onstop)
        window.setTimeout(_submitButtonStopWait, 20 * 1000);
@@ -1197,7 +1196,7 @@ TDAR.common = function() {
        $buttons.prop("disabled", false);
        
        //fade in the wait icon
-       $submitDivs.find(".waitingSpinner").removeClass("in");
+       $submitDivs.find(".waitingSpinner").hide();
    } 
     
     

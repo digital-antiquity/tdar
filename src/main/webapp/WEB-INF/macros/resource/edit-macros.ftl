@@ -536,7 +536,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             <#nested>
             
             <@submitButton label=label id=buttonid />
-            <img src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner fade" />
+            <img src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none" />
         </div> 
     </div>
 </div> 
@@ -1457,7 +1457,7 @@ $(function() {
         </ul>
             <div id="fakeSubmitDiv" class="pull-right">
                 <button type=button class="button btn btn-primary submitButton" id="fakeSubmitButton">Save</button>
-                <img src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner fade" />
+                <img src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner"  style="display:none"/>
             </div>
         </div>
       </div>
