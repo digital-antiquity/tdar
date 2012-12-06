@@ -507,7 +507,7 @@ No coding rules have been entered for this coding sheet yet.
 </#if>
 
 <#if editor>
-<div data-spy="affix" class="affix adminbox rotate-90"><a href="<@s.url value="/${resource.urlNamespace}/${resource.id?c}/admin"/>">ADMIN</a></div>
+<div data-spy="affix" class="affix no-print adminbox rotate-90"><a href="<@s.url value="/${resource.urlNamespace}/${resource.id?c}/admin"/>">ADMIN</a></div>
 </#if>
 
 <p class="meta">

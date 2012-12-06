@@ -53,11 +53,11 @@
                 <#include "${themeDir}/header.dec" />
                 <#if (authenticatedUser??) > 
 
-                    <p class="welcome">
+                    <p class="welcome no-print ">
                         Welcome back, <a href="">${authenticatedUser.properName}</a>
                     </p>
     
-                    <div class="welcome-drop">
+                    <div class="welcome-drop no-print ">
     
                         <p>${authenticatedUser.properName}</p>
     

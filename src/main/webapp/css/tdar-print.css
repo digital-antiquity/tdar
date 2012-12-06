@@ -1,10 +1,9 @@
 @media print {
-	
-	
-	.inline-menu, .subnav, .no-print {
-		display:none;
-		visibility:hidden;
+	.inline-menu,.subnav,.no-print {
+		display: none;
+		visibility: hidden;
 	}
-	
-	
+	header {
+		border-bottom: 2px solid #444;
+	}
 }

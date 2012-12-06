@@ -62,7 +62,7 @@ $(document).ready(function() {
     </#if>
   </#if>
   <#if sessionData?? && sessionData.authenticated>
-    <div class="span12 resource-nav" id="toolbars" parse="true">
+    <div class="span12 resource-nav no-print " id="toolbars" parse="true">
       <ul >
        <#if persistable??>
         <@makeViewLink namespace current />
@@ -125,7 +125,7 @@ $(document).ready(function() {
         </#if>
     
   <#if sessionData?? && sessionData.authenticated>
-    <div class="span12 resource-nav" id="toolbars" parse="true">
+    <div class="span12 resource-nav no-print " id="toolbars" parse="true">
       <ul >
     <@nav.makeLink "browse" "creators" "view" "view" current true />
 

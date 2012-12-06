@@ -18,7 +18,7 @@
 <p>${account.description!""}</p>
 
 <h3>Invoices</h3>
-<table class="tableFormat">
+<table class="tableFormat  table">
     <tr>
         <th>name</th><th>total</th>
     </tr>
@@ -31,7 +31,7 @@
 </table>
 
 <h3>Users who can charge to this account</h3>
-<table class="tableFormat">
+<table class="tableFormat table">
     <tr>
         <th>name</th><th>email</th>
     </tr>
@@ -43,14 +43,14 @@
 </table>
 
 <h3>Resources associated with this account</h3>
-<table class="tableFormat">
+<table class="tableFormat table">
     <tr>
         <th>Resource Type</th><th>Id</th><th>Name</th>
     </tr>
 <#list account.resources as resource>
 <tr>
     <td>${resource.resourceType.label}</td>
-    <td>${resource.id}</td>
+    <td>${resource.id?c}</td>
     <td><a href="<@s.url value="/${resource.resourceType.urlNamespace}/${resource.id?c}"/>">${resource.title}</a></td>
 </tr>
 </#list>
