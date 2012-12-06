@@ -75,7 +75,8 @@ $(document).ready(function() {
         <#if persistable.resourceType??>
         <@list.bookmark resource true true />
         <#if resource.resourceType == "PROJECT">                
-          <@makeLink "resource" "add?projectId=${resource.id?c}" "add new resource to project" "add" "" false />
+          <@makeLink "resource" "add?projectId=${resource.id?c}" "add new resource to project" "add" "" false>
+          </@makeLink>
         </#if>
         <#if editable>
             <#if resource.resourceType == 'DATASET'>
@@ -149,6 +150,10 @@ $(document).ready(function() {
     <#elseif current?string == name?string>
         <#assign state="active" />
     </#if>
+    <#local action_ = action/>
+    <#if (action?last_index_of("?") > 0)>
+    	<#local action_ = action?substring(0,action?last_index_of("?")) />
+    </#if>
     <li class="${state}">
     	<#if disabled>
     		<span class="disabled">
@@ -164,7 +169,7 @@ $(document).ready(function() {
 	        </#if>
 	        </@s.url>'>
 	     </#if>
-        <i class="tdar-icon-${action}<#if state?has_content>-${state}</#if>"></i>
+        <i class="tdar-icon-${action_}<#if state?has_content>-${state}</#if>"></i>
         <#nested> ${label}<#if disabled></span><#else></a></#if>
     </li>
 </#macro>

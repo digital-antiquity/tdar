@@ -1130,8 +1130,9 @@ select.searchType {
 }
 
 .icon-codingsheet {
-    background: url(/images/r4/resource-types-large.gif) -361px -2476px no-repeat;
+    background: url(/images/r4/resource-types-large.gif) -361px -2475px no-repeat;
     width: 14px;
+    margin-top:-1px;
     height: 14px;
     display: inline-block;
 }

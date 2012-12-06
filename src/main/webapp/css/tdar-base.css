@@ -1308,6 +1308,15 @@ span.cartouche {
 	background-position: -31px -2490px !important;
 }
 
+.resource-nav li i.tdar-icon-add {
+	background-position: -228px -2437px !important;
+}
+
+.resource-nav li i.tdar-icon-add-active,.resource-nav li:hover i.tdar-icon-add
+	{
+	background-position: -228px -2490px !important;
+}
+
 .resource-nav li i.tdar-icon-view {
 	background-position: -1px -2437px !important;
 }

@@ -459,7 +459,8 @@ No coding rules have been entered for this coding sheet yet.
           </#if>
         </#list>
         <#if contents?has_content>
-            <@kvp key=role.label val=contents noescape=true />
+        	<#assign key>${role.label}(s)</#assign>
+            <@kvp key=key val=contents noescape=true />
         </#if>
     </#list>
     </#if>
