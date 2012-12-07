@@ -108,11 +108,15 @@ function replaceAttribute(elem, attrName, str, rep) {
     }
 }
 
+
 function navigateTempIgnore() {
-    global_formNavigate = true;
-    setTimeout(function() {
-        global_formNavigate = false;
-    }, 2000);
+    $.each(document.forms, function(){
+        var $form = $(this);
+        var oldVal = $form.data("formNavigate");
+        $form.data("formNavigate", true);
+        setTimeout(function(){$form.data("formNavigate", oldVal)}, 100);
+    });
+    
 }
 
 //function deleteRow(rowId) {
