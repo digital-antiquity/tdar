@@ -46,7 +46,9 @@
     </div>    
 <#else>
 </div>
-    <a class="button btn btn-primary submitButton" href="<@s.url value="/cart/${id?c}/credit" />">Pay</a>
+	<#if invoice.transactionStatus == 'PENDING_TRANSACTION'>
+       <a class="button btn btn-primary submitButton" href="<@s.url value="/cart/${id?c}/credit" />">Pay</a>
+    </#if>
 </#if>
 
 <#else>

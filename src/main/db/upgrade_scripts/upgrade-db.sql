@@ -272,3 +272,7 @@ insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, n
 insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price) values (true, 'decline', 5,1,50,5, 55.11);
 insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price) values (true, 'unknown', 5,1,50,5, 55.31);
 insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price) values (false, 'inactive', 5,1,50,5, 550);
+
+
+-- 12-07-12 -- adding new column
+alter table pos_billing_activity add column min_allowed_files int8;

@@ -32,6 +32,11 @@ public class BillingActivity extends Persistable.Base {
     private Long numberOfResources = 0L;
     @Column(updatable = false)
     private Long numberOfFiles = 0L;
+
+    // if the rates are based on total # of files; you might have a different rate based on 50 or 500 files
+    @Column(updatable = false,name="min_allowed_files")
+    private Long minAllowedNumberOfFiles = 0L;
+
     // display values may be lower than actual values to give some wiggle room
     private Long displayNumberOfMb;
     private Long displayNumberOfResources;
@@ -144,6 +149,14 @@ public class BillingActivity extends Persistable.Base {
 
     public void setDisplayNumberOfMb(Long displayNumberOfMb) {
         this.displayNumberOfMb = displayNumberOfMb;
+    }
+
+    public Long getMinAllowedNumberOfFiles() {
+        return minAllowedNumberOfFiles;
+    }
+
+    public void setMinAllowedNumberOfFiles(Long minAllowedNumberOfFiles) {
+        this.minAllowedNumberOfFiles = minAllowedNumberOfFiles;
     }
 
 }

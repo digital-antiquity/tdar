@@ -22,7 +22,7 @@ Note: you may have multiple accounts to simplify billing and allow different peo
     <@s.hidden name="account.id" />    
     <@s.hidden name="invoiceId" />    
     
-    <h3>Who can charge to this account</h3>
+    <h3>Who can charge to this account </h3>
     <@edit.listMemberUsers />
     <br/>
     <@edit.submit fileReminder=false />

@@ -53,9 +53,17 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         if (!getInvoice().isModifiable()) {
             throw new TdarRecoverableRuntimeException("cannot modify");
         }
+
+        List<BillingItem> invalid = new ArrayList<BillingItem>();
         for (BillingItem item : persistable.getItems()) {
-            item.setActivity(getGenericService().loadFromSparseEntity(item.getActivity(), BillingActivity.class));
+            if (item.getQuantity() == 0) {
+                invalid.add(item);
+            } else {
+                item.setActivity(getGenericService().loadFromSparseEntity(item.getActivity(), BillingActivity.class));
+            }
         }
+        persistable.getItems().removeAll(invalid);
+        
         if (accountId != -1) {
             getGenericService().find(Account.class, accountId).getInvoices().add(getInvoice());
         }
