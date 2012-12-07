@@ -148,8 +148,9 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             @Result(name = INPUT, location = "advanced.ftl") })
     public String search() {
         setLookupSource(LookupSource.RESOURCE);
-        if (explore)
-            exploreSearch();
+        if (explore) {
+            return exploreSearch();
+        }
         boolean resetSearch = processLegacySearch();
 
         try {

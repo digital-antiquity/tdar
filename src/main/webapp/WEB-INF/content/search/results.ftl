@@ -20,7 +20,7 @@
             <h1>${exploreKeyword.label?html}</h1>
             <div class="glide">
                 <#if exploreKeyword.definition??>
-                    ${exploreKeyword.definition?html}
+		            <p>${exploreKeyword.definition?html}</p>
                 </#if>
             </div>
         <#else>
