@@ -504,8 +504,8 @@ $(function() {
             show: true,
             barWidth: 9,
             align: "center"
-          },
-        },
+          }
+        }
       ],
     {
          grid: { hoverable: true, clickable: true },
