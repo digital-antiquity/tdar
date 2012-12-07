@@ -191,7 +191,11 @@
     </rule>
 	<rule>
 		<from>^/workspace$</from>
-		<to>/workspace/list</to>
+		<to>/workspace/select-tables</to>
+	</rule>
+	<rule>
+		<from>^/workspace/list$</from>
+		<to>/workspace/select-tables</to>
 	</rule>
 	
 	

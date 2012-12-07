@@ -77,7 +77,6 @@ public class WorkspaceController extends AuthenticationAware.Base {
     @Actions({
             @Action(value = "select-tables")
     })
-//            ,@Action("list")
     @Override
     public String execute() {
         return SUCCESS;
