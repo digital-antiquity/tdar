@@ -8,6 +8,10 @@ View freemarker macros
 <#include "navigation-macros.ftl">
 <#setting url_escaping_charset='UTF-8'>
 
+<#macro canonical object>
+	<link rel="canonical" href="http://${hostName}/${object.urlNamespace}/${object.id?c}" /> 
+</#macro>
+
 <#macro ontology sectionTitle="Parsed Ontology Nodes" previewSize=10 triggerSize=15>
 <#if resource.getTotalNumberOfFiles() &gt; 0  && resource.ontologyNodes??>
     <h2>${sectionTitle}</h2>
@@ -635,6 +639,7 @@ No coding rules have been entered for this coding sheet yet.
   <head>
     <title>${resource.title}</title>
     <#nested>
+	<@canonical resource />
   </head>
 </#macro>
 

@@ -155,7 +155,8 @@
         </#if>
         <li class="media">
             <#if (facetlist?size > 1)>
-                <a href="<@s.url includeParams="all">
+				<i class="pull-left search-list-check<#if currentValues?size == 1>ed</#if>box-grey"></i>
+                <div class="media-body"><a href="<@s.url includeParams="all">
                     <@s.param name="${facetParam}">${facet}</@s.param>
                     <@s.param name="startRecord" value="0"/>
                     <#if facetParam != "documentType">
@@ -165,13 +166,13 @@
                         <@s.param name="integratableOptions" value=""/>
                     </#if>
                     <#nested>
-                </@s.url>"><i class="pull-left search-list-check<#if currentValues?size == 1>ed</#if>box-grey"></i>${facetLabel}</a>
+                </@s.url>">
+                ${facetLabel}</a> <span>(${facet.count})</span></div>
             <#elseif currentValues?size == 1>
                 <@removeFacet facetlist=currentValues facetParam=facetParam />
             <#else>
-                    ${facetLabel}
+                <div class="media-body">${facetLabel} <span>(${facet.count})</span></div>
             </#if>
-           <span>(${facet.count})</span>
         </li>
     </#list>
 </ul>
@@ -191,7 +192,7 @@
     <#if facet?has_content>
         <#assign facetText=facet/>
         <#if facet.plural?has_content><#assign facetText=facet.plural/>
-        <#elseif facet.label?has_content><#assign facetText=label/>
+        <#elseif facet.label?has_content><#assign facetText=facet.label/>
         </#if>
         <a href="<@s.url includeParams="all">
             <@s.param name="${facetParam}"value="" />
@@ -203,7 +204,8 @@
                 <@s.param name="integratableOptions" value=""/>
             </#if>
             <#nested>
-        </@s.url>"><i class="pull-left search-list-checkedbox-grey"></i>${facetText}</a>
+        </@s.url>"><i class="pull-left search-list-checkedbox-grey"></i> 
+                       <div class="media-body">${facetText}</div></a>
     </#if>
     </#if>
 </#macro>

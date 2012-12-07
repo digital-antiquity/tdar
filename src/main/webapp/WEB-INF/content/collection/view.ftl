@@ -10,6 +10,7 @@
 <head>
 <title>${resourceCollection.name!"untitled collection"}</title>
 <meta name="lastModifiedDate" content="$Date$"/>
+<@view.canonical resourceCollection />
 
 </head>
 <body>
