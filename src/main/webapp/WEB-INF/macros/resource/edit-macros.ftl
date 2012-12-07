@@ -1387,7 +1387,8 @@ $(function() {
             </td>
             <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
             <td colspan="2">
-                <@s.select id="proxy{%=idx%}_conf"  name="fileProxies[{%=idx%}].restriction" 
+                <#-- FIXME:supposedly struts 2.1+ allows custom data attributes but I get a syntax error.  What gives? -->
+                <@s.select id="proxy{%=idx%}_conf" datarestriction="{%=file.restriction%}" name="fileProxies[{%=idx%}].restriction" 
                 style="padding-left: 20px;" list=fileAccessRestrictions listValue="label"  
                 onchange="TDAR.fileupload.updateFileAction(this)" 
                 cssClass="fileProxyConfidential"/>

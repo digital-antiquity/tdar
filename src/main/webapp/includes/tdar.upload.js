@@ -31,6 +31,7 @@ TDAR.fileupload = function() {
             destroy: _destroy
         }, _options));
         
+        var $filesContainer = $fileupload.fileupload('option', 'fileContainer');
         
         $fileupload.bind("fileuploadcompleted", _updateReplaceButtons);
         
@@ -69,7 +70,15 @@ TDAR.fileupload = function() {
                             if (files.length) {
                                 $("#fileProxyUploadBody").empty();
                             }
+                            //fake out the fileupload widget to render our previously uploaded files by invoking it's 'uploadComplete' callback
                             $fileupload.fileupload('option', 'done').call($fileupload[0], null, {result: files});
+                            
+                            //FIXME: the file.restriction select boxes won't have the correct state,  so as a hack we put the correct value in a data attr and reset it here
+                            $filesContainer.find("select.fileProxyConfidential").each(function(){
+                                var restriction = $(this).attr("datarestriction");
+                                if(restriction) $(this).val(restriction);
+                            });
+                            
                         },
                         error: function(jqxhr, textStatus, errorThrown) {
                             console.error("textStatus:%s    error:%s", textStatus, errorThrown);
@@ -101,16 +110,13 @@ TDAR.fileupload = function() {
     //convert json returned from tDAR into something understood by upload-plugin, as well as fileproxy fields to send back to server
     var _translateIrFiles = function(fileProxies) {
         return $.map(fileProxies, function(proxy, i) {
-            return {
+            return $.extend({
                 name: proxy.filename,
-                size: proxy.size,
                 url: TDAR.uri("filestore/" + proxy.originalFileVersionId),
-                thumbnail_url: null, //TODO
+                thumbnail_url: null, 
                 delete_url: null,
-                delete_type: "DELETE", //required, no purpose (future use?)
-                action: proxy.action,
-                fileId: proxy.fileId
-            };
+                delete_type: "DELETE" 
+            }, proxy);
         });
     };
 
