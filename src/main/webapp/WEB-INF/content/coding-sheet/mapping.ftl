@@ -103,7 +103,6 @@ function applyLocalAutoComplete(selector, db) {
             var $input = $(this); //'this' points to the target element 
             //get the hidden input next to the textbox and set the id field
             var $idElement = $($input.attr("autocompleteIdElement"));
-            global_formNavigate = false;
             $idElement.val(ui.item.id);
             $input.removeClass("error");
         },
