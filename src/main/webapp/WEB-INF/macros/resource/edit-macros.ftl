@@ -427,12 +427,16 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <h2><a name="accessRights"></a>Access Rights</h2>
 <h3>Users who can view or modify this resource</h3>
 
-<div id="accessRightsRecords" class="repeatLastRow" data-addAnother="add another user">
+<div id="accessRightsRecords" class="<#if !ableToUploadFiles?has_content || ableToUploadFiles>repeatLastRow</#if>" data-addAnother="add another user">
     <div class="control-group">
         <label class="control-label">Users</label>
         <#list _authorizedUsers as authorizedUser>
             <#if authorizedUser??>
-                <@userRow person=authorizedUser.user disableSelfUser=true _indexNumber=authorizedUser_index includeRole=false _personPrefix="user" 
+            	<#local disabled = false>
+            	<#if authorizedUser.user.id == authenticatedUser.id || ableToUploadFiles?has_content && !ableToUploadFiles>
+	            	<#local disabled = true>
+            	</#if>
+                <@userRow person=authorizedUser.user isDisabled=disabled _indexNumber=authorizedUser_index includeRole=false _personPrefix="user" 
                    prefix="authorizedUsers" includeRights=true isUser=true includeRepeatRow=true includeDelete=true/>
             </#if>
         </#list>
@@ -1510,11 +1514,10 @@ $(function() {
 </#macro>
 
 
-<#macro userRow person=person _indexNumber=0 disableSelfUser=false prefix="authorizedMembers" required=false _personPrefix="" includeRole=false
+<#macro userRow person=person _indexNumber=0 isDisabled=false prefix="authorizedMembers" required=false _personPrefix="" includeRole=false
     includeRepeatRow=false includeRights=false includeDelete=false hidden=false isUser=false>
-<#local bDisabled = (person.id == authenticatedUser.id && disableSelfUser) />
-<#local disabled =  bDisabled?string("disabled", "") />
-<#local readonly = bDisabled?string("readonly", "") />
+<#local disabled =  isDisabled?string("disabled", "") />
+<#local readonly = isDisabled?string("readonly", "") />
 <#local lookupType="nameAutoComplete"/>
 <#if isUser><#local lookupType="userAutoComplete"/></#if>
 <#local _index=""/>
@@ -1529,10 +1532,10 @@ $(function() {
         <@s.hidden name='${strutsPrefix}${personPrefix}.id' value='${(person.id!-1)?c}' id="${idIdElement}"  cssClass="validIdRequired" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"   />
         <div class="control-group">
             <div class="controls controls-row">
-                <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass}" placeholder="Last Name"  readonly=bDisabled autocompleteParentElement="#${rowIdElement}"
+                <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass}" placeholder="Last Name"  readonly=isDisabled autocompleteParentElement="#${rowIdElement}"
                     autocompleteIdElement="#${idIdElement}" autocompleteName="lastName" autocomplete="off"
                     name="${strutsPrefix}${personPrefix}.lastName" maxlength="255" /> 
-                <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass}" placeholder="First Name"  readonly=bDisabled autocomplete="off"
+                <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass}" placeholder="First Name"  readonly=isDisabled autocomplete="off"
                     name="${strutsPrefix}${personPrefix}.firstName" maxlength="255" autocompleteName="firstName"
                     autocompleteIdElement="#${idIdElement}" 
                     autocompleteParentElement="#${rowIdElement}"  />
@@ -1543,7 +1546,7 @@ $(function() {
                             cssClass="creator-role-select span3" />
                     <#else>
                         <@s.select theme="tdar" cssClass="span3 creator-rights-select" name="${strutsPrefix}.generalPermission" emptyOption='false' 
-                            listValue='label' list='%{availablePermissions}' disabled=bDisabled />
+                            listValue='label' list='%{availablePermissions}' disabled=isDisabled />
                         <#--HACK: disabled fields do not get sent in request, so we copy generalPermission via hidden field and prevent it from being cloned -->
                         <@s.hidden name="${strutsPrefix}.generalPermission" cssClass="repeat-row-remove" />
                     </#if>
@@ -1552,17 +1555,17 @@ $(function() {
                 </#if>
             </div>
             <div class="controls controls-row">
-            <@s.textfield theme="tdar" cssClass="span2 ${lookupType}" placeholder="Email (optional)" readonly=bDisabled autocomplete="off"
+            <@s.textfield theme="tdar" cssClass="span2 ${lookupType}" placeholder="Email (optional)" readonly=isDisabled autocomplete="off"
                 autocompleteIdElement="#${idIdElement}" autocompleteName="email" autocompleteParentElement="#${rowIdElement}"
                 name="${strutsPrefix}${personPrefix}.email" maxlength="255"/>
-            <@s.textfield theme="tdar" cssClass="span3 ${lookupType}" placeholder="Institution Name (Optional)" readonly=bDisabled autocomplete="off"
+            <@s.textfield theme="tdar" cssClass="span3 ${lookupType}" placeholder="Institution Name (Optional)" readonly=isDisabled autocomplete="off"
                 autocompleteIdElement="#${idIdElement}" 
                 autocompleteName="institution" 
                 autocompleteParentElement="#${rowIdElement}"
                 name="${strutsPrefix}${personPrefix}.institution.name" maxlength="255" />
             </div>
               <#if includeDelete>          
-                  <@clearDeleteButton id="${prefix}${_index}" disabled=bDisabled />
+                  <@clearDeleteButton id="${prefix}${_index}" disabled=isDisabled />
               </#if>
         </div>
     </div>
