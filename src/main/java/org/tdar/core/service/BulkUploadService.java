@@ -794,20 +794,27 @@ public class BulkUploadService {
         exampleImage.put("ResourceCreator.Person.lastName", "Last Name");
 
         CellMetadata creatorInstitutionRole = null;
+        CellMetadata filename = null;
         int pos = -1;
         // cleanup for roles and creators to separate individual from
         // institution to
         // help users
         for (int i = 0; i < fieldnames.size(); i++) {
-            if (fieldnames.get(i).getName().equals("ResourceCreator.role")) {
-                creatorInstitutionRole = fieldnames.get(i);
+            CellMetadata field = fieldnames.get(i);
+            if (field.getName().equals("ResourceCreator.role")) {
+                creatorInstitutionRole = field;
+            } 
+            if (field.getName().equals(FILENAME)) {
+                filename = field;
             }
-            if (fieldnames.get(i).getName().equals("ResourceCreator.Institution.name")) {
+            if (field.getName().equals("ResourceCreator.Institution.name")) {
                 pos = i;
             }
         }
 
         CellMetadata institutionalCreator = fieldnames.remove(pos);
+        fieldnames.remove(filename);
+        fieldnames.add(0, filename);
         fieldnames.add(4, institutionalCreator);
         fieldnames.add(5, creatorInstitutionRole);
         // end cleanup

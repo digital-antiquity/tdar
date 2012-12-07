@@ -216,11 +216,4 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
         assertTrue(noException);
     }
 
-    @Ignore
-    @Test
-    @Rollback
-    public void testInheritanceSelections() {
-        // Martin: The test is here, but has no body? Is this a TODO left undone?
-    }
-
 }
