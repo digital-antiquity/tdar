@@ -14,6 +14,8 @@
 
 <@s.form name='VideoMetadataForm' id='VideoMetadataForm'  cssClass="span9 form-horizontal"  method='post' enctype='multipart/form-data' action='save'>
 
+<@edit.resourceTitle />
+
 <@edit.basicInformation "video" "video">
 
     <p id="t-located"  tooltipcontent="Actual physical location of a copy of the video, e.g. an agency, repository, 

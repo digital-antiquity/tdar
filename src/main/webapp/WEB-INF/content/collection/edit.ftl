@@ -30,8 +30,8 @@ $(function(){
     </div>
 </div>
 
-<h1>Editing ${persistable.name!"New Collection"}</h1>
 
+<h1><#if persistable.id == -1>Creating<#else>Editing</#if>: <span> ${persistable.name!"New Collection"}</span></h1>
 <@s.form name='metadataForm' id='metadataForm'  method='post' cssClass="span9 form-horizontal" enctype='multipart/form-data' action='save'>
 
 <h2>Basic Information</h2>

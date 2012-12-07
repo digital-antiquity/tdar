@@ -32,7 +32,7 @@
                 <@s.file label="Upload a Mapping File" cssClass="validateFileType" labelposition='top' name='uploadedFiles' size='40'/>
 </div>
 
-<@edit.asyncFileUpload "Image" true "Upload" "divFileUpload">
+<@edit.asyncFileUpload "Files For Batch Upload" true "Upload" "divFileUpload">
 
 select all of the files you'd like to add to ${siteAcronym}.  Each one will be associated with a new record along with any metadata specified either in the excel spreadsheet specified above, or with any values selected on this form.
 

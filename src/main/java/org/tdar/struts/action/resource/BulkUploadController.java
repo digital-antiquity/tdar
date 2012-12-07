@@ -264,4 +264,10 @@ public class BulkUploadController extends AbstractInformationResourceController<
     public void setTemplateFile(File templateFile) {
         this.templateFile = templateFile;
     }
+
+    @Override
+    public boolean isBulkUpload() {
+        return true;
+    }
+
 }

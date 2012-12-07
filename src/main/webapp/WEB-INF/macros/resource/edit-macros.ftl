@@ -60,7 +60,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <h2>Abstract / Description</h2>
     <div id="t-abstract" class="clear"
         tiplabel="Abstract / Description"
-        tooltipcontent="Short description of the ${resource.resourceType.label}.">
+        tooltipcontent="Short description of the <@resourceTypeLabel />.">
             <@s.textarea id='resourceDescription'  label="Abstract / Description" name='${itemPrefix}.description' cssClass='required resizable resize-vertical input-xxlarge' required=true title="A description is required" />
     </div>
 </div>
@@ -86,7 +86,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <#local _projectId = request.getParameter('projectId')!'' />
     </#if>
         <div id="projectTipText" style="display:none;">
-        ${settings.helptext['projectTipText']!"Select a project with which your ${resource.resourceType.label} will be associated. This is an important choice because it  will allow metadata to be inherited from the project further down this form"}
+        Select a project with which your <@resourceTypeLabel /> will be associated. This is an important choice because it  will allow metadata to be inherited from the project further down this form
         </div>
         <h4>Choose a Project</h4>
         <div id="t-project" tooltipcontent="#projectTipText" tiplabel="Project">
@@ -235,10 +235,17 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 </div>
 </#macro>
 
+<#macro resourceTypeLabel>
+<#if bulkUpload>
+	Resource
+<#else>
+${resource.resourceType.label}
+</#if>
+</#macro>
 
 <#macro resourceProvider showInherited=true>
 <div class="well-alt" id="divResourceProvider" tiplabel="Resource Provider" tooltipcontent="The institution authorizing ${siteAcronym} to ingest the resource for the purpose of preservation and access.">
-    <h2>Institution Authorizing Upload of this ${resource.resourceType.label}</h2>
+    <h2>Institution Authorizing Upload of this <@resourceTypeLabel /></h2>
     <@s.textfield label='Institution' name='resourceProviderInstitutionName' id='txtResourceProviderInstitution' cssClass="institution input-xxlarge" size='40'/>
     <br/>
 </div>
@@ -848,9 +855,9 @@ applyInheritance(project, formSelector);
     <#if _resourceAnnotations.empty>
     <#local _resourceAnnotations = [blankResourceAnnotation] />
     </#if>
-    <div class="well-alt" id="divIdentifiersGlide" tiplabel="${resource.resourceType.label} Specific or Agency Identifiers" tooltipcontent="#divIdentifiersTip">
+    <div class="well-alt" id="divIdentifiersGlide" tiplabel="<@resourceTypeLabel /> Specific or Agency Identifiers" tooltipcontent="#divIdentifiersTip">
         <@helptext.identifiers />
-        <h2>${resource.resourceType.label} Specific or Agency Identifiers</h2>
+        <h2><@resourceTypeLabel /> Specific or Agency Identifiers</h2>
         <@inheritsection checkboxId="cbInheritingIdentifierInformation" name='resource.inheritingIdentifierInformation' showInherited=showInherited />
         <div id="divIdentifiers">
         <table id="resourceAnnotationsTable" class="table repeatLastRow" addAnother="add another identifier" >
@@ -1111,11 +1118,16 @@ jquery validation hooks?)
     </#if>
 </#macro>
 
+<#macro resourceTitle>
+<#assign newTitle>New <#noescape>${resource.resourceType.label}</#noescape></#assign>
+<h1><#if resource.id == -1>Creating<#else>Editing</#if>:<span> <#if resource.title?has_content>${resource.title}<#else>${newTitle}</#if> </span></h1>
+</#macro>
+
 <#macro title>
 <#-- expose pageTitle so edit pages can use it elsewhere -->
-<#assign pageTitle = "Create a new ${resource.resourceType.label}" />
+<#assign pageTitle>Create a new <@resourceTypeLabel /></#assign>
 <#if resource.id != -1>
-<#assign pageTitle = "Editing ${resource.resourceType.label} Metadata for ${resource.title} (${siteAcronym} id: ${resource.id?c})" />
+<#assign pageTitle>Editing <@resourceTypeLabel /> Metadata for ${resource.title} (${siteAcronym} id: ${resource.id?c})</#assign>
 </#if>
 <title>${pageTitle}</title>
 </#macro>

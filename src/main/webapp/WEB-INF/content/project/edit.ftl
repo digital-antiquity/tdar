@@ -16,8 +16,11 @@
 <body>
 <@edit.sidebar />
 <@edit.subNavMenu />
+<@edit.resourceTitle />
+
 
 <@helptext.projectInheritance />
+
 
 
 <#if (totalRecords > 0) >

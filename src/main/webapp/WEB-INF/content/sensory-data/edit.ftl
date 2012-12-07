@@ -11,7 +11,9 @@
 <body>
 <@edit.sidebar /> 
 <@edit.subNavMenu />
-<h1>Editing:<span> <#if resource.title?has_content>${resource.title}<#else>New Sensory Data Object</#if> </span></h1>
+
+<@edit.resourceTitle />
+
 <@s.form name='resourceMetadataForm' id='frmSensoryData'  cssClass="span9 form-horizontal" method='post' action='save' enctype='multipart/form-data'>
 <@edit.basicInformation "sensory object" "sensoryData">
     <div tiplabel="Object / Monument Number" tooltipcontent="The ID number or code, if applicable, of the object or monument">

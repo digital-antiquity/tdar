@@ -28,6 +28,7 @@ $(function(){
 
 <@s.form name='datasetMetadataForm' id='datasetMetadataForm'   cssClass="form-horizontal span9" method='post' enctype='multipart/form-data' action='save'>
 
+<@edit.resourceTitle />
 
 <@edit.basicInformation 'dataset' 'dataset' >
 <br/>

@@ -13,6 +13,10 @@
     <h1>Create Resources </h1>
     
     <#if allowedToCreateResource>
+	<div class="row">
+	 <h3>Have lots of resources?</h3>
+       <a class="button btn submitButton" href="<@s.url value="/batch/add" />">Bulk Upload</a>
+	</div>
     <div class="row">
     
         <div class="span45">

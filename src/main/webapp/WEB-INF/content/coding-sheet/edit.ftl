@@ -14,6 +14,8 @@
 
 <@s.form name='resourceRegistrationForm' id='resourceRegistrationForm' method='post' enctype='multipart/form-data' action='save' cssClass="span9 form-horizontal">
 
+<@edit.resourceTitle />
+
 <@edit.basicInformation "coding sheet" "codingSheet"/>
 <@edit.citationInfo "codingSheet" />
 
