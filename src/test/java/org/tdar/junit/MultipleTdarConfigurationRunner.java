@@ -23,30 +23,33 @@ public class MultipleTdarConfigurationRunner extends SpringJUnit4ClassRunner {
         super(klass);
     }
 
-    //
-    // @Override
-    // protected Description describeChild(FrameworkMethod method) {
-    // // if (method.getAnnotation(RunWithTdarConfiguration.class) != null &&
-    // // method.getAnnotation(Ignore.class) == null) {
-    // // return describeTest(method);
-    // // }
-    // return super.describeChild(method);
-    // }
+//    @Override
+//    protected Description describeChild(FrameworkMethod method) {
+        // if (method.getAnnotation(RunWithTdarConfiguration.class) != null &&
+        // method.getAnnotation(Ignore.class) == null) {
+//        return describeTest(method);
+        // }
+        // return super.describeChild(method);
+//    }
 
     private Description describeTest(FrameworkMethod method) {
-        RunWithTdarConfiguration annotation = method.getAnnotation(RunWithTdarConfiguration.class);
         Description description = Description.createSuiteDescription(testName(method), method.getAnnotations());
+        try {
+            RunWithTdarConfiguration annotation = method.getAnnotation(RunWithTdarConfiguration.class);
 
-        if (annotation == null) {
-            return description;
+            if (annotation == null) {
+                return description;
+            }
+            String[] configs = annotation.runWith();
+            logger.info("RunWith: {} -- {}",testName(method), configs);
+            
+            for (int i = 0; i < configs.length; i++) {
+                description.addChild(Description.createTestDescription(getTestClass().getJavaClass(), testName(method) + "[" + configs[i] + "] "));
+            }
+
+        } catch (Exception e) {
+            logger.error(":", e);
         }
-        String[] configs = annotation.runWith();
-        logger.info(testName(method));
-
-        for (int i = 0; i < configs.length; i++) {
-            description.addChild(Description.createTestDescription(getTestClass().getJavaClass(), testName(method) + "[" + configs[i] + "] "));
-        }
-
         return description;
     }
 
@@ -68,16 +71,17 @@ public class MultipleTdarConfigurationRunner extends SpringJUnit4ClassRunner {
                     runLeaf(methodBlock(method), description.getChildren().get(i), notifier);
                 }
             }
+        } else {
+             super.runChild(method, notifier);
         }
         setConfiguration(method, currentConfig);
-//        super.runChild(method, notifier);
     }
 
     private void setConfiguration(final FrameworkMethod method, String config) {
         if (AbstractWebTestCase.class.isAssignableFrom(getTestClass().getJavaClass())) {
             try {
-                String url  = AbstractWebTestCase.getBaseUrl() + "/admin/switchContext/denied?configurationFile=" + config;
-                logger.info("LOADING CONFIG : "+ url);
+                String url = AbstractWebTestCase.getBaseUrl() + "/admin/switchContext/denied?configurationFile=" + config;
+                logger.info("LOADING CONFIG : " + url);
                 webClient.getPage(url);
             } catch (Exception e) {
                 logger.warn("Exception {}", e);

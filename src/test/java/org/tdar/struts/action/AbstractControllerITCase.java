@@ -16,6 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.PersonalFilestoreTicket;
+import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingItem;
+import org.tdar.core.bean.billing.Invoice;
+import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -67,6 +71,31 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
 
     public void removeBookmark(Resource r) {
         removeBookmark(r, false);
+    }
+
+    public Account createAccount(Person owner) {
+        Account account = new Account("my account");
+        account.setDescription("this is an account for : " + owner.getProperName());
+        account.setOwner(owner);
+        account.markUpdated(owner);
+        genericService.saveOrUpdate(account);
+        return account;
+    }
+
+//    public Account createAccountWithOneItem(Person person) {
+//        return createA
+//    }
+    
+    public Invoice createInvoice(Person person, TransactionStatus status, BillingItem... items) {
+        Invoice invoice = new Invoice();
+        invoice.setItems(new ArrayList<BillingItem>());
+        for (BillingItem item : items) {
+            invoice.getItems().add(item);
+        }
+        invoice.setPerson(person);
+        invoice.setTransactionStatus(status);
+        genericService.saveOrUpdate(invoice);
+        return invoice;
     }
 
     public void bookmarkResource(Resource r, boolean ajax) {
@@ -177,7 +206,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         resource.setDescription("This resource was created as a result of a test: " + getClass());
         if ((resource instanceof InformationResource) && TdarConfiguration.getInstance().getCopyrightMandatory()) {
             Creator copyrightHolder = genericService.find(Person.class, 1L);
-            ((InformationResource)resource).setCopyrightHolder(copyrightHolder );
+            ((InformationResource) resource).setCopyrightHolder(copyrightHolder);
         }
 
         List<File> files = new ArrayList<File>();

@@ -84,7 +84,7 @@ public class ImageThumbnailTask extends AbstractTask {
         ijSource = new Opener().openImage(sourceFile.getAbsolutePath());
         if (ijSource == null) {
             getLogger().debug("Unable to load source image: " + sourceFile);
-            throw new TdarRecoverableRuntimeException("processing error");
+            throw new TdarRecoverableRuntimeException("Please check that the image you uploaded is not corrupt and was not saved with any compression");
         } else {
             try {
                 createJpegDerivative(ijSource, origFileName, MEDIUM, false);
