@@ -13,6 +13,9 @@ vim:sts=2:sw=2:filetype=jsp
 <p>Now that you've successfully registered an account with ${siteAcronym}.  Here are some nice places to start:</p>
 <ol>
 <#if contributor>
+	<#if payPerIngestEnabled>
+	    <li><a href="<@s.url value="/cart/add"/>">Charge your account</a>.</li>
+	</#if>
     <li><a href="<@s.url value="/project/add"/>">Create a new project</a>.  Projects in ${siteAcronym} are simple, easy ways to organize similar Documents, Images, and Datasets which share metadata.</li>
     <li><a href="<@s.url value="/resource/add"/>">Create a new resource</a>.</li>
 </#if>

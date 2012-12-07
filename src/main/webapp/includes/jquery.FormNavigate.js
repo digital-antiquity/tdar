@@ -38,7 +38,7 @@ and off of window.onbeforeunload event.
     	});
     	
     	this.find("input:submit, .submitButton").click(function(){
-    	    global_formNavigate = true;
+    	    $this.data("formNavigate", true);
     	});
     }
 })(jQuery);

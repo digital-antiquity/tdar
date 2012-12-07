@@ -25,6 +25,7 @@
 <div class="controls-row">
     <@s.radio labelposition='top' label='Address Type' name='address.type' 
          list='%{allAddressTypes}'  listValue='label'  title="Address Type" />
+    <@s.hidden name="returnUrl" />
         <@s.textfield name="address.street1" cssClass="input-xlarge" label="Street" />
         <@s.textfield name="address.street2" cssClass="input-xlarge"  label="Street 2"/>
         <@s.textfield name="address.city" cssClass="input-xlarge"  label="City" />
