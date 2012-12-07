@@ -44,8 +44,8 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
     <div tiplabel="Company / Operator Name" tooltipcontent="Details of company and scan operator name">
     <@s.textfield maxLength="255" name="sensoryData.companyName" cssClass="input-xxlarge" label="Company Name" labelposition="left" />
     </div>
-    <div tiplabel="Estimated Data Resolution" tooltipcontent="The estimated data resolution across the monument or object">
-    <@s.textfield maxLength="255" name="sensoryData.estimatedDataResolution" cssClass="shortfield number" label="Data Resolution" labelposition="left" />
+    <div tiplabel="Estimated Data Resolution" tooltipcontent="The estimated average data resolution across the monument or object">
+    <@s.textfield maxLength="255" name="sensoryData.estimatedDataResolution" cssClass="shortfield number" label="Average Data Resolution" labelposition="left" />
     </div>
     <div tiplabel="Total Number of Scans in Project" tooltipcontent="Total number of scans">
     <@s.textfield maxLength="255" name="sensoryData.totalScansInProject" cssClass="right-shortfield number" label="# Scans" labelposition="left" />
@@ -73,21 +73,16 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
     <#if _scans.isEmpty()>
     <#assign _scans=blankSensoryDataScan />
     </#if>  
-    <h2>Scan Information</h2>
+    <h2>Level 1: Original Scan Files</h2>
     <div id='sensoryDataScans' class='repeatLastRow' addAnother='add another scan' callback='scanAdded'>
         <#list _scans as _scan>
-        <div class='' id="sensoryDataScanRow_${_scan_index}_" class='repeat-row'>
+        <div id="sensoryDataScanRow_${_scan_index}_" class='repeat-row'>
             <@s.hidden name="sensoryDataScans[${_scan_index}].id" />
             <div class='control-group'>
                 <div class='controls controls-row'>
                     <span tiplabel="Scan Filename" tooltipcontent="The name of the scan. A suggested filename for original raw scans for archiving is in this format: ProjectName_scan1.txt.">
                         <@s.textfield theme='simple' maxLength="255" name="sensoryDataScans[${_scan_index}].filename" placeholder="Filename" cssClass="span3 shortfield" />
                     </span>
-                    <span tiplabel="Object / Monument Name" tooltipcontent="Name of monument or object being scanned">
-                        <@s.textfield maxLength="255" theme='simple' name="sensoryDataScans[${_scan_index}].monumentName" placeholder="Object / Monument Name" cssClass="span4 shortfield" />
-                    </span>
-                </div>
-                <div class='controls controls-row'>
                     <#assign _scanDate="" />
                     <#if _scan.scanDate?? >
                       <#assign _scanDate><@view.shortDate _scan.scanDate!"" /></#assign>
@@ -95,6 +90,8 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
                     <span tiplabel="Scan Date" tooltipcontent="Date the object/monument was scanned">
                     <@s.textfield maxLength="255" theme='simple' name="sensoryDataScans[${_scan_index}].scanDate" value="${_scanDate}" placeholder="mm/dd/yyyy" cssClass="span2 date" />
                     </span>
+                </div>
+                <div class='controls controls-row'>
                     <span tiplabel="Data Resolution" tooltipcontent="Fixed resolution or data resolution at specific range.">
                     <@s.textfield maxLength="255" theme='simple' name="sensoryDataScans[${_scan_index}].resolution" placeholder="Resolution" cssClass="span3 number" />
                     </span>
@@ -104,41 +101,42 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
                 </div>
                 <div class='controls controls-row'>
                     <span tiplabel="Scan Transformation Matrix" tooltipcontent="The name of the transformation matrix used in Global Registration. Suggested file name: ProjectName_scan1_mtrx.txt">
-                    <@s.textfield maxLength="255" theme='simple' name="sensoryDataScans[${_scan_index}].transformationMatrix" placeholder="Transformation Matrix" cssClass="span3" />
+                    <label class='checkbox'>
+                    <@s.checkbox theme='simple' name="sensoryDataScans[${_scan_index}].transformationMatrix" />
+                    Transformation Matrix Available
+                    </label>
                     </span>
                     <span tooltipcontent="Check this box if transformation matrix has been applied to the archived scan">
-                    <label class='checkbox span3'>
+                    <label class='checkbox'>
                     <@s.checkbox theme='simple' name="sensoryDataScans[${_scan_index}].matrixApplied" id="cbMatrixApplied_${_scan_index}_" />
                     Matrix Applied to Scan
                     </label>
                     </span>
                 </div>
+            </div>
+            <div class='control-group'>
                 <div class='scantech-fields'>
-                <@s.select label='Scanner Technology' headerValue="" headerKey="" name='sensoryDataScans[${_scan_index}].scannerTechnology' listValue="label" list='%{scannerTechnologyTypes}' labelposition="left" cssClass="scannerTechnology shortfield" />
-                <div class='controls controls-row'>
-                <label class='control-label scantech-fields-tof hide'>
-                Last Return
-                <@s.select name="sensoryDataScans[${_scan_index}].tofReturn" emptyOption='true' list=['First Return','Last Return'] theme='simple' cssClass="scantech-fields-tof" />
-                </label>
-                <@s.textfield theme='simple' maxLength="255" name="sensoryDataScans[${_scan_index}].cameraExposureSettings" placeholder="Camera Exposure Settings" 
-                cssClass="hide shortfield scantech-field scantech-fields-phase span2 scantech-fields-tof" />
-                <@s.textfield theme='simple' maxLength="255" name="sensoryDataScans[${_scan_index}].phaseFrequencySettings" placeholder="Frequency Settings" 
-                cssClass="hide shortfield scantech-field scantech-fields-phase" />
-                <@s.textfield theme='simple' maxLength="255" name="sensoryDataScans[${_scan_index}].phaseNoiseSettings" placeholder="Noise Settings" 
-                cssClass="hide shortfield scantech-field scantech-fields-phase" />
-                <@s.textfield theme='simple' maxLength="255"  name="sensoryDataScans[${_scan_index}].triangulationDetails" placeholder="Lens/FOV Details" 
-                cssClass="hide shortfield scantech-field scantech-fields-tri" />
-                </div>
+                    <@s.select label='Scanner Technology' headerValue="" headerKey="" name='sensoryDataScans[${_scan_index}].scannerTechnology' listValue="label" list='%{scannerTechnologyTypes}' labelposition="left" cssClass="scannerTechnology shortfield" />
+                    <label for='returnType_${_scan_index}' class='control-label scantech-field scantech-fields-tof'>
+                    Return Type
+                    </label>
+                    <div class='controls controls-row'>
+                    <@s.select id='returnType_${_scan_index}' name="sensoryDataScans[${_scan_index}].tofReturn" emptyOption='true' list=['First Return','Last Return'] theme='simple' cssClass="scantech-fields-tof scantech-field" />
+                    <@s.textfield theme='simple' maxLength="255" name="sensoryDataScans[${_scan_index}].cameraExposureSettings" placeholder="Camera Exposure Settings" 
+                    cssClass="shortfield scantech-field scantech-fields-phase scantech-fields-tof" />
+                    <@s.textfield theme='simple' maxLength="255" name="sensoryDataScans[${_scan_index}].phaseFrequencySettings" placeholder="Frequency Settings" 
+                    cssClass="shortfield scantech-field scantech-fields-phase" />
+                    <@s.textfield theme='simple' maxLength="255" name="sensoryDataScans[${_scan_index}].phaseNoiseSettings" placeholder="Noise Settings" 
+                    cssClass="shortfield scantech-field scantech-fields-phase" />
+                    <@s.textfield theme='simple' maxLength="255"  name="sensoryDataScans[${_scan_index}].triangulationDetails" placeholder="Lens/FOV Details" 
+                    cssClass="shortfield scantech-field scantech-fields-tri" />
+                    </div>
                 </div>
                 <div tiplabel="Additional Scan Notes" tooltipcontent="Additional notes related to this scan">
                 <@s.textarea name="sensoryDataScans[${_scan_index}].scanNotes" label="Scan Notes" labelposition="top" cssClass="resizable input-xxlarge" rows="5" />
                 </div>
             </div>
-            <div class='control-group'>
-                <div class='controls'>
-                <@edit.clearDeleteButton id="sensoryDataScanRow" />
-                </div>
-            </div>
+            <@edit.clearDeleteButton id="sensoryDataScanRow" />
         </div>
         </#list>
     </div>
@@ -185,8 +183,8 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
 
 
 
-<div id="divRegistrationInfo">
-    <h2>Registration Information</h2>
+<div id="registeredDatasetDiv">
+    <h2>Level 2: Registered Dataset</h2>
     <div tiplabel="Name of Registered Dataset" tooltipcontent="Filename for the dataset, a suggested naming structure for registered dataset for archiving: ProjectName_GR.txt">
         <@s.textfield maxLength="255" name="sensoryData.registeredDatasetName" label="Dataset Name" cssClass="input-xxlarge" labelposition="left" />
     </div>
@@ -203,10 +201,8 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
     </div>
 </div>
 
-
-
-<div id="divMeshIfno">
-    <h2>Mesh Information</h2>
+<div id="polygonalMeshDatasetDiv">
+    <h2>Level 3: Polygonal Mesh Dataset</h2>
 
     <h4>Pre-mesh</h4>
     <div tiplabel="Name of Mesh Dataset" tooltipcontent="The filename, a suggested naming convention for the polygonal mesh dataset is *ProjectName_origmesh">
@@ -282,6 +278,7 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
             </label>
             <label class='checkbox'>
             <@s.checkbox name="sensoryData.meshHealingDespiking" theme='simple' label="Healing/De-spiking"  /> 
+            Healing/De-spiking
             </label>
         </div>
     </div>
