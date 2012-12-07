@@ -358,30 +358,30 @@ TDAR.uri = function(path) {
 </#macro>
 
 <#macro barGraph  resourceCacheObjects graphWidth=360 graphHeight=800 graphLabel="" rotateColors=true labelRotation=0 minWidth=50 searchKey="resourceTypes">
-<#assign totalItems = resourceCacheObjects?size />
+<#local totalItems = resourceCacheObjects?size />
    <#list resourceCacheObjects?sort_by("key") as key>
       <#if (key.count == 0) >
-          <#assign totalItems = totalItems - 1/>
+          <#local totalItems = totalItems - 1/>
       </#if>
     </#list>
 
     <#if (totalItems < 1)>
-        <#assign totalItems = 1 />
+        <#local totalItems = 1 />
     </#if>
     
-<#assign barWidth = (graphWidth  / (totalItems) -6)/>
+<#local barWidth = (graphWidth  / (totalItems) -6)/>
 <div class="barGraph" style="width:${graphWidth?c}px;height:${graphHeight?c}px;" >
     <h3>${graphLabel}</h3>
    <table style="width:${graphWidth -5}px;height:${graphHeight - 15}px;">
   <tr>
-  <#assign resourceTypeCount = 0>
+  <#local resourceTypeCount = 0>
    <#list resourceCacheObjects?sort_by("key") as key>
       <#if (key.count > 0) >
-        <#assign calulatedValue= key.key >
+        <#local calulatedValue= key.key >
         <#if calulatedValue?is_number>
-            <#assign calulatedValue=calulatedValue?c?string/>
+            <#local calulatedValue=calulatedValue?c?string/>
         </#if>
-        <#assign resourceTypeCount = key.logCount + resourceTypeCount >
+        <#local resourceTypeCount = key.logCount + resourceTypeCount >
         <td>
               <a href="<@s.url value="/search/results?${searchKey}=${calulatedValue}"/>">
               <div class="barlabel">${key.count}</div><div class="bar" id="${key.cssId}"></div></a>
@@ -411,14 +411,14 @@ TDAR.uri = function(path) {
 table td  {vertical-align:bottom;}
 
     <#if resourceTypeCount == 0><#-- if database is empty, to prevent division by zero -->
-        <#assign resourceTypeCount = 1>
+        <#local resourceTypeCount = 1>
     </#if>
 
    <#list resourceCacheObjects?sort_by("key") as key>
     <#if (key.count > 0)>
-       <#assign color_= settings.barColors[0] />
+       <#local color_= settings.barColors[0] />
         <#if rotateColors>
-           <#assign color_=settings.barColors[key.resourceType.order - 1] />
+           <#local color_=settings.barColors[key.resourceType.order - 1] />
         </#if>
           #${key.cssId} {background-color: ${color_}; height: ${(2 * graphHeight * (key.logCount / resourceTypeCount))?floor}px }
     </#if>
@@ -466,29 +466,28 @@ $(".bar").each(function() {
 </#macro>
 
 <#macro flotBarGraph  resourceCacheObjects graphWidth=368 graphHeight=800 graphLabel="" rotateColors=true labelRotation=0 minWidth=50 searchKey="g[0].creationDecade" explore=false max=100000 min=-1 minDataVal=10 >
-<#assign totalItems = resourceCacheObjects?size />
+<#local totalItems = resourceCacheObjects?size />
 <#if (totalItems < 1)>
-    <#assign totalItems = 1 />
+    <#local totalItems = 1 />
 </#if>
 
 
 
 
-<#assign barWidth = (graphWidth  / (totalItems) - 10 )/>
+<#local barWidth = (graphWidth  / (totalItems) - 10 )/>
 <div class="barGraph" style="width:${graphWidth?c}px;height:${graphHeight?c}px;display:block;position:relative;clear:none;left:0px"> 
 <script>
-  <#assign resourceTypeCount = 0>
+  <#local resourceTypeCount = 0>
    var data = [];
    var ticks = [];
    <#list resourceCacheObjects?sort_by("key") as key>
-    <#assign calulatedValue= key.key >
+    <#local calulatedValue= key.key >
     <#if calulatedValue?is_number>
-        <#assign calulatedValue=calulatedValue?c?string/>
+        <#local calulatedValue=calulatedValue?c?string/>
     </#if>
-    ${key.label?is_number?string}
     <#if ((min?is_number && key.label?number > min ) 
         && (max?is_number && key.label?number < max ) && key.count > minDataVal )>
-      <#assign resourceTypeCount = key.logCount + resourceTypeCount >
+      <#local resourceTypeCount = key.logCount + resourceTypeCount >
       data[${key_index}] = ["${key.label}",${key.count?c}];
       ticks[${key_index}] = ["${key.label}",${key.label}];
     </#if>
