@@ -1155,29 +1155,29 @@ contrib article h2,.contrib article p,.contrib article ul {
 	line-height: 20px;
 }
 
-.search .pagin {
+.pagin {
 	width: 100%;
 }
 
-.search .pagin td {
+.pagin td {
 	text-align: center;
 }
 
-.search .pagin td.prev,.search .pagin td.next { 
+.pagin td.prev, .pagin td.next { 
 /*	font-family: "soleil", sans-serif !important;*/
 	font-weight: 700;
 	text-transform: uppercase;
 	width: 1px;
 }
 
-.search .pagin ul,.search .pagin li {
+.pagin ul,.pagin li {
 	margin: 0;
 	padding: 0;
 	list-style: none;
 	display: inline;
 }
 
-.search .pagin li { 
+.pagin li { 
 /*	font-family: "soleil", sans-serif !important;*/
 	font-weight: 600;
 	font-size: 13px;
