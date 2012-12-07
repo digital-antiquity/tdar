@@ -78,5 +78,6 @@ $(function(){
 });
 </@edit.resourceJavascript>
 
+<@edit.asyncUploadTemplates />
 
 </body>

@@ -580,7 +580,12 @@ $(function(){
     //init fileupload
     var id = $('input[name=id]').val();
     <#if ableToUploadFiles>
-	    TDAR.fileupload.registerUpload({informationResourceId: id, acceptFileTypes: acceptFileTypes, formSelector:"${formSelector}"});
+	    TDAR.fileupload.registerUpload({
+	       informationResourceId: id, 
+	       acceptFileTypes: acceptFileTypes, 
+	       formSelector:"${formSelector}",
+	       fileInput: $('#fileAsyncUpload')
+	       });
     </#if>
     </#if>
 
@@ -911,7 +916,7 @@ jquery validation hooks?)
             <span class="btn btn-success fileinput-button">
                 <i class="icon-plus icon-white"></i>
                 <span>Add files...</span>
-            <input type="file" name="uploadFile" multiple="multiple" 
+            <input type="file" name="uploadFile" id="fileAsyncUpload" multiple="multiple" 
                 data-form-data='{"ticketId":$("#ticketId").val()}'>
             </span>
             <#-- we don't want the 'bulk operations' for now,  might be handy later -->
