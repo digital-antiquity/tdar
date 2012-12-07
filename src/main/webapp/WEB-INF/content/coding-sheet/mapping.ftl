@@ -205,12 +205,10 @@ var ontology = [
 
 <h2>Map Codes to Ontology Values</h2>
 <div id='display' class="">
-<@s.form method='post' id="mapontologyform" action='save-mapping'>
-<@s.hidden name='id' value='${resource.id?c}'/>
-<#assign isLast = false/>
-<#assign count = 0/>
-
-    
+    <@s.form method='post' id="mapontologyform" action='save-mapping'>
+    <@s.hidden name='id' value='${resource.id?c}'/>
+    <#assign isLast = false/>
+    <#assign count = 0/>
 
 
     <div class="btn-group">
@@ -254,10 +252,8 @@ var ontology = [
         </div>    
         </#list>
     </div>
-</div>
 
-    <@edit.submit "Save" false><br/>
-    </@edit.submit>
+    <@edit.submit "Save" false />
 </@s.form>
 </div>
 

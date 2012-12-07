@@ -41,6 +41,7 @@ import org.tdar.core.service.workflow.GenericColumnarDataWorkflow;
 @Transactional
 public class CodingSheetService extends AbstractInformationResourceService<CodingSheet, CodingSheetDao> {
 
+    private static final String ERROR_PARSE_UNKNOWN = "The system was unable to parse your coding sheet. Please review your submission try again.";
     public static final String ERROR_PARSE_DUPLICATE_CODES = "Codes in your coding sheet must be unique.  We detected the following duplicate codes: ";
 
     public List<CodingSheet> findSparseCodingSheetList() {
@@ -70,7 +71,7 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
         } catch (Exception e) {
             version.getInformationResourceFile().setStatus(FileStatus.PROCESSING_ERROR);
             getDao().saveOrUpdate(version.getInformationResourceFile());
-            throw new TdarRecoverableRuntimeException("something happened");
+            throw new TdarRecoverableRuntimeException(ERROR_PARSE_UNKNOWN);
         } finally {
             if (stream != null)
                 IOUtils.closeQuietly(stream);

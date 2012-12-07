@@ -10,7 +10,6 @@
     <#local srcs = [
                      "/includes/jquery.cookie.js",
                      "/includes/jquery.xcolor-1.5.js",
-                     "/includes/jquery.metadata.2.1/jquery.metadata.js",
                      "/includes/jquery.maphighlight.local.js",
                      "/includes/jquery.textarearesizer.js",
                      "/includes/jquery.FormNavigate.js",
@@ -27,6 +26,7 @@
                      "/includes/blueimp-jquery-file-upload-3c5d440/js/jquery.fileupload-ui.js",
                      "/includes/blueimp-jquery-file-upload-3c5d440/js/locale.js",
                      "/includes/jquery.populate.js",
+                     "/includes/jquery.tabby-0.12.js",
                      "/includes/latLongUtil-1.0.js",
                      "/includes${fakeDirectory}/tdar.gmaps.js",
                      "/includes${fakeDirectory}/tdar.common.js",
