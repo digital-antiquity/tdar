@@ -29,9 +29,9 @@
       <interceptor name="execAndWait" class="org.apache.struts2.interceptor.ExecuteAndWaitInterceptor"/>
       <interceptor-stack name="tdarDefaultStack">
         <interceptor-ref name="exception">
-          <param name="exception.logEnabled">true</param>
-          <param name="exception.logLevel">ERROR</param>
-          <param name="exception.logCategory">org.tdar.struts</param>
+          <param name="logEnabled">true</param>
+          <param name="logLevel">ERROR</param>
+          <param name="logCategory">org.tdar.struts</param>
         </interceptor-ref>
         <interceptor-ref name="sessionSecurity"/>
         <interceptor-ref name="store">
