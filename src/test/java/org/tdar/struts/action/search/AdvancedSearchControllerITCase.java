@@ -131,7 +131,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         }
     }
 
-@Test
+    @Test
     @Rollback
     public void testSearchDecade() {
         Document doc = createAndSaveNewResource(Document.class);
@@ -410,7 +410,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         for (ResourceType type : ResourceType.values()) {
             Resource resource = createAndSaveNewResource(type.getResourceClass());
             for (Status status : Status.values()) {
-                if (Status.DUPLICATE == status) {
+                if (Status.DUPLICATE == status || Status.FLAGGED_ACCOUNT_BALANCE == status) {
                     continue;
                 }
                 resource.setStatus(status);
@@ -619,9 +619,9 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         Person submitter = new Person("Evelyn", "deVos", "ecd@mailinator.com");
         genericService.save(submitter);
         Document doc = createAndSaveNewInformationResource(Document.class, submitter);
-        ResourceCreator rc = new ResourceCreator( new Person("Kelly", "deVos", "kellyd@mailinator.com"), ResourceCreatorRole.AUTHOR);
+        ResourceCreator rc = new ResourceCreator(new Person("Kelly", "deVos", "kellyd@mailinator.com"), ResourceCreatorRole.AUTHOR);
         genericService.save(rc.getCreator());
-//        genericService.save(rc);
+        // genericService.save(rc);
         doc.getResourceCreators().add(rc);
         genericService.saveOrUpdate(doc);
         searchIndexService.index(doc);
@@ -855,7 +855,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     private Resource constructActiveResourceWithCreator(Creator creator, ResourceCreatorRole role) {
         try {
             Document doc = createAndSaveNewInformationResource(Document.class);
-            ResourceCreator resourceCreator = new ResourceCreator( creator, role);
+            ResourceCreator resourceCreator = new ResourceCreator(creator, role);
             doc.getResourceCreators().add(resourceCreator);
             return doc;
         } catch (Exception ignored) {

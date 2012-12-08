@@ -52,7 +52,13 @@ public class ResourceEvaluator implements Serializable {
      */
     public void evaluateResource(Resource... resources) {
         for (Resource resource : resources) {
-            if (uncountedResourceTypes.contains(resource.getResourceType()) || uncountedResourceStatuses.contains(resource.getStatus()))
+            if (resource == null)
+                continue;
+            Status status = Status.ACTIVE;
+            if (resource.getStatus() != null) {
+                status = resource.getStatus();
+            }
+            if (uncountedResourceTypes.contains(resource.getResourceType()) || uncountedResourceStatuses.contains(status))
                 continue;
 
             resourcesUsed++;

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Query;
 import org.springframework.stereotype.Component;
@@ -66,9 +67,12 @@ public class AccountDao extends Dao.HibernateBase<Account> {
 
     public void updateTransientAccountOnResources(Collection<Resource> resourcesToEvaluate) {
         Map<Long, Resource> resourceIdMap = Persistable.Base.createIdMap(resourcesToEvaluate);
-        Query query = getCurrentSession().createSQLQuery(
-                String.format(TdarNamedQueries.QUERY_ACCOUNTS_FOR_RESOURCES, StringUtils.join(resourceIdMap.keySet().toArray())));
-        
+        String sql = String.format(TdarNamedQueries.QUERY_ACCOUNTS_FOR_RESOURCES, StringUtils.join(resourceIdMap.keySet().toArray()));
+        if (CollectionUtils.isEmpty(resourceIdMap.keySet()) || resourceIdMap.keySet().size() == 1 && resourceIdMap.keySet().contains(-1L)) {
+            return;
+        }
+        Query query = getCurrentSession().createSQLQuery(sql);
+
         Map<Long, Account> accountIdMap = new HashMap<Long, Account>();
         for (Object objs : query.list()) {
             Object[] obj = (Object[]) objs;

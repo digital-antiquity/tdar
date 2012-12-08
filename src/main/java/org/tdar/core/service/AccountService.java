@@ -98,29 +98,31 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         getDao().updateTransientAccountOnResources(resourcesToEvaluate);
         // if the account is null ...
 
-        Account localAccount = account;
+//        Account localAccount = account;
         for (Resource resource : resources) {
             // if the account is null -- die
-            if (Persistable.Base.isNotNullOrTransient(localAccount) && Persistable.Base.isNullOrTransient(resource.getAccount()) ||
-                    localAccount.getResources().contains(resource)) {
+            if (resource == null) {
+                continue;
+            }
+            if (Persistable.Base.isNotNullOrTransient(account) && Persistable.Base.isNullOrTransient(resource.getAccount()) ||
+                    account.getResources().contains(resource)) {
                 continue;
             }
             
-            if (Persistable.Base.isNullOrTransient(localAccount) && Persistable.Base.isNullOrTransient(resource.getAccount())) {
+            if (Persistable.Base.isNullOrTransient(account) && Persistable.Base.isNullOrTransient(resource.getAccount())) {
                 throw new TdarRecoverableRuntimeException(String.format("resource: %s is not assigned to an account", resource));
             }
             
             // if we're dealing with multiple accounts ... die
-            if (Persistable.Base.isNotNullOrTransient(localAccount) && !localAccount.equals(resource.getAccount())) {
-                throw new TdarRuntimeException(String.format("we don't yet support multiple accounts applied to a single action, %s and %s", localAccount,
+            if (Persistable.Base.isNotNullOrTransient(account) && !account.equals(resource.getAccount())) {
+                throw new TdarRuntimeException(String.format("we don't yet support multiple accounts applied to a single action, %s and %s", account,
                         resource.getAccount()));
             }
-            localAccount = resource.getAccount();
         }
-
+        getDao().merge(account);
         account.updateQuotas(endingEvaluator);
         account.getResources().addAll(resourcesToEvaluate);
-        genericDao.saveOrUpdate(account);
+        saveOrUpdate(account);
     }
 
     @Transactional
