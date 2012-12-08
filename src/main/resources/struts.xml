@@ -31,9 +31,9 @@
       <interceptor name="execAndWait" class="org.apache.struts2.interceptor.ExecuteAndWaitInterceptor"/>
       <interceptor-stack name="tdarDefaultStack">
         <interceptor-ref name="exception">
-          <param name="exception.logEnabled">true</param>
-          <param name="exception.logLevel">ERROR</param>
-          <param name="exception.logCategory">org.tdar.struts</param>
+          <param name="logEnabled">true</param>
+          <param name="logLevel">ERROR</param>
+<!--           <param name="exception.logCategory">org.tdar.struts</param> -->
         </interceptor-ref>
         <interceptor-ref name="sessionSecurity"/>
         <interceptor-ref name="httpsMethod"/>
@@ -80,10 +80,10 @@
       <result name="not_found" type="freemarker">/WEB-INF/content/errors/page-not-found.ftl</result>
       <result name="invalid.token" type="freemarker">/WEB-INF/content/errors/double-submit.ftl</result>
     </global-results>
-    <global-exception-mappings>
       <!-- XXX: swallows all unhandled RuntimeExceptions and sends them to the
            exception result configured above -->
-      <exception-mapping exception="java.lang.RuntimeException" result="exception"/>
+    <global-exception-mappings>
+      <exception-mapping exception="java.lang.RuntimeException" result="exception"/>   
     </global-exception-mappings>
   </package>
   <package name="secured" extends="default" abstract="true">
