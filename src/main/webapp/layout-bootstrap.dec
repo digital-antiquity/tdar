@@ -148,7 +148,7 @@
             	
             <#if ((stackTraces![])?size > 0)>
             <a href="#" id="pToggleStackTrace" onclick="$('#stackTraceList').toggleClass('hidden');return false;" class="btn btn-mini btn-warning btn-invert">Show/Hide Details</a>
-            <div id="stackTraceList" class="hidden">
+            <div id="stackTraceList" class="<#if production>hidden</#if>">
                 <#list stackTraces as _stacktrace>
 <#--don't indent this pre section  -->
 <pre class="pre-scrollable">
