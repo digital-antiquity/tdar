@@ -540,7 +540,8 @@ ${resource.resourceType.label}
             <p><span class="label label-info">Reminder</span> No files are attached to this record. </p>
         </div>
         </#if>     
-        <div id="error" class="alert alert-error" style="display:none">
+        <#-- if you put an error class on this, then you get a pink box at the bottom of every page visible on submit, ugly -->
+        <div id="error" class="" style="display:none">
             <ul></ul>
         </div>
         <div class="form-actions" id="editFormActions">

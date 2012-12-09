@@ -31,6 +31,13 @@ public class BillingItem extends Base implements Validatable {
 
     private Integer quantity = 0;
 
+    public BillingItem() {}
+    
+    public BillingItem(BillingActivity activity, int quantity) {
+        this.activity = activity;
+        this.quantity = quantity;
+    }
+    
     public BillingActivity getActivity() {
         return activity;
     }

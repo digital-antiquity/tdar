@@ -1,5 +1,6 @@
 package org.tdar.core.bean.billing;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -91,7 +92,7 @@ public class Invoice extends Base implements Updatable {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = false, name = "invoice_id")
-    private List<BillingItem> items;
+    private List<BillingItem> items = new ArrayList<BillingItem>();
 
     private Float total;
 
@@ -197,12 +198,16 @@ public class Invoice extends Base implements Updatable {
             Long numberOfFiles = item.getActivity().getNumberOfFiles();
             Long space = item.getActivity().getNumberOfBytes();
             Long numberOfResources = item.getActivity().getNumberOfResources();
-            if (numberOfFiles != 0) {
+            if (numberOfFiles != null) {
                 totalFiles += numberOfFiles * item.getQuantity().longValue();
-                totalSpace += space * item.getQuantity().longValue();
-                totalResources += numberOfResources * item.getQuantity().longValue();
-                calculatedCost += item.getSubtotal();
             }
+            if (space != null) {
+                totalSpace += space * item.getQuantity().longValue();
+            }
+            if (numberOfResources != null) {
+                totalResources += numberOfResources * item.getQuantity().longValue();
+            }
+            calculatedCost += item.getSubtotal();
         }
     }
 

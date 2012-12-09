@@ -45,6 +45,9 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     private static final String INVOICE = "invoice";
     private static final String POLLING = "polling";
     private String callback;
+    private Integer numberOfMb = 0;
+    private Integer numberOfFiles = 0;
+
     @Autowired
     PaymentTransactionProcessor paymentTransactionProcessor;
 
@@ -54,16 +57,22 @@ public class CartController extends AbstractPersistableController<Invoice> imple
             throw new TdarRecoverableRuntimeException("cannot modify");
         }
 
-        List<BillingItem> invalid = new ArrayList<BillingItem>();
-        for (BillingItem item : persistable.getItems()) {
-            if (item.getQuantity() == 0) {
-                invalid.add(item);
-            } else {
-                item.setActivity(getGenericService().loadFromSparseEntity(item.getActivity(), BillingActivity.class));
+        List<BillingItem> items = new ArrayList<BillingItem>();
+        persistable.getItems().clear();
+        for (BillingActivity activity : getAccountService().getActiveBillingActivities()) {
+            if (activity.getNumberOfFiles().intValue() >= numberOfFiles) {
+                items.add(new BillingItem(activity, numberOfFiles));
             }
         }
-        persistable.getItems().removeAll(invalid);
-        
+        BillingItem lowest = null;
+        for (BillingItem item : items) {
+            if (lowest == null) {
+                lowest = item;
+            } else if (lowest.getSubtotal() > item.getSubtotal()) {
+                lowest = item;
+            }
+        }
+        getInvoice().getItems().add(lowest);
         if (accountId != -1) {
             getGenericService().find(Account.class, accountId).getInvoices().add(getInvoice());
         }
@@ -320,5 +329,21 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
     public void setSuccessPath(String successPath) {
         this.successPath = successPath;
+    }
+
+    public Integer getNumberOfFiles() {
+        return numberOfFiles;
+    }
+
+    public void setNumberOfFiles(Integer numberOfFiles) {
+        this.numberOfFiles = numberOfFiles;
+    }
+
+    public Integer getNumberOfMb() {
+        return numberOfMb;
+    }
+
+    public void setNumberOfMb(Integer numberOfMb) {
+        this.numberOfMb = numberOfMb;
     }
 }

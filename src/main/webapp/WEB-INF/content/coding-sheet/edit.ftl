@@ -105,7 +105,7 @@
         </table>
         <#elseif _divid=="manualEntry">
         <p class="help-block">
-            Enter your coding rules in the text area below.  Each line can have a maximum of three elements, separated by commas, 
+            Please enter your coding rules in the text area below.  Each line can have a maximum of three elements, separated by commas, 
             and should be in the form <code>code, term, optional description</code>.  Codes can be numbers or arbitrary strings.  
             For example:
         </p>

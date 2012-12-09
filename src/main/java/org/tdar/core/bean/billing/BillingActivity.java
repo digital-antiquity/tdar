@@ -45,7 +45,7 @@ public class BillingActivity extends Persistable.Base {
     @Column(updatable = false)
     private Float price;
     private String currency;
-    private Boolean enabled;
+    private Boolean enabled = Boolean.FALSE;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "groupName")

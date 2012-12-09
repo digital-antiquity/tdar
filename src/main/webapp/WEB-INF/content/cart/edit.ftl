@@ -12,28 +12,47 @@
 
 <div>
 <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='save'>
+
+<@s.textfield name="numberOfFiles" label="Number of Files" />
+<@s.textfield name="numberOfMb" label="Number of Mb" />
+
+
+
+<script>
+
+var fileData = [];
+<#list activities as act>
+ fileData[fileData.length] = {'name':'${act.name?js_string}', 'numFiles':${act.numberOfFiles?c},'cost':${act.price}};
+</#list>
+
+$("#MetadataForm_numberOfFiles").change(function() { 
+	var current=1;
+	var val = $(this).val();  
+	$('#estimated').html('');
+	for (index in fileData) {
+		if (val >= fileData[index].numFiles) {
+			$('#estimated').append('<p><strong>$' + fileData[index].cost * val + ' ' + (val * 10) + 'MB </strong> (' + fileData[index].name +')</p>');
+		}
+	}
+	
+	});
+</script>
+<div id="estimated">
+
+</div>
 <table class="tableFormat">
     <tr>
-        <th>item</th>
-        <th># of resources</th>
+        <th>Level</th>
         <th># of files</th>
         <th># of mb</th>
-        <th># of support hours</th>
-        <th>cost</th>
-        <th>quantity</th>
+        <th>cost / file</th>
     </tr>
     <#list activities as act>
     <tr>
         <td>${act.name}</td>
-        <td>${act.displayNumberOfResources!act.numberOfResources}</td>
         <td>${act.displayNumberOfFiles!act.numberOfFiles}</td>
         <td>${act.displayNumberOfMb!act.numberOfMb}</td>
-        <td>${act.numberOfHours}</td>
         <td>${act.price} ${act.currency!"USD"}</td>
-        <td>
-            <@s.hidden name="invoice.items[${act_index}].activity.id" value="${act.id?c}" />
-            <@s.textfield name="invoice.items[${act_index}].quantity" cssClass="integer" />
-        </td>
     </tr> 
     
     </#list>
