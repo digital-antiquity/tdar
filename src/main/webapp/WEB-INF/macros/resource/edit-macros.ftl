@@ -1480,20 +1480,24 @@ $(function() {
 
 
 <#macro subNavMenu>
-    <div id='subnavbar' class="affix-top resource-nav span12 row navbar-static"  data-offset-top="250" data-spy="affix">
+    <#local supporting = (resource.resourceType.supporting)!false >
+    <div id='subnavbar' class="affix-top resource-nav navbar-static"  data-offset-top="250" data-spy="affix">
       <div class="">
         <div class="container" >
         <ul class="nav">
             <li class="active hidden-tablet hidden-phone"><a href="#basicInformationSection">Basic</a></li>
             <li><a href="#authorshipSection">Authors</a></li>
-            <#if persistable.resourceType?has_content && persistable.resourceType != 'PROJECT' ><li><a href="#divFileUpload">Files</a></li></#if>
+            <#if persistable.resourceType?has_content && persistable.resourceType != 'PROJECT'  && (!supporting)><li><a href="#divFileUpload">Files</a></li></#if>
             <span class="hidden-tablet hidden-phone" >
-            <#nested /></span>
+            <#nested />
+            </span>
             <li><a href="#organizeSection"><span class="visible-phone visible-tablet" title="Project">Proj.</span><span class="hidden-phone hidden-tablet">Project</span></a></li>
+            <#if !supporting>
             <li><a href="#spatialSection">Where</a></li>
             <li class="hidden-phone"><a href="#temporalSection">When</a></li>
             <li><a href="#investigationSection">What</a></li>
             <li class="hidden-phone"><a href="#siteSection">Site</a></li>
+            </#if>
             <li class="hidden-tablet hidden-phone"><a href="#resourceNoteSectionGlide">Notes</a></li>
             <li><a href="#divAccessRights"><span class="visible-phone visible-tablet" title="Permissions">Permis.</span><span class="hidden-phone hidden-tablet">Permissions</span></a></li>
         </ul>

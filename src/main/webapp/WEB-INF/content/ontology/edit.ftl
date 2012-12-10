@@ -17,6 +17,7 @@
 
 <@edit.basicInformation "ontology" "ontology"/>
 <@edit.citationInfo "ontology" />
+<@edit.allCreators 'Ontology Creators' authorshipProxies 'authorship' />
 <@edit.organizeResourceSection />
 
 <#if (resource.latestVersions?has_content )>
@@ -69,7 +70,6 @@ Core
     </#if>
 </@edit.manualTextInput>
 
-<@edit.allCreators 'Ontology Creators' authorshipProxies 'authorship' />
 
 <@edit.resourceNoteSection />
 

@@ -17,6 +17,7 @@
 <@edit.resourceTitle />
 
 <@edit.basicInformation "coding sheet" "codingSheet"/>
+<@edit.allCreators 'Coding Sheet Creators' authorshipProxies 'authorship' />
 <@edit.citationInfo "codingSheet" />
 
     <span class="hidden" id="ontologyToolTip">
@@ -64,7 +65,7 @@
 
 
 
-<div class="glide">
+<div class="">
 <@view.codingRules />
 </div>
 <@edit.manualTextInput 
@@ -126,7 +127,6 @@
 
 </@edit.manualTextInput>
 
-<@edit.allCreators 'Coding Sheet Creators' authorshipProxies 'authorship' />
 
 <@edit.resourceNoteSection />
 
