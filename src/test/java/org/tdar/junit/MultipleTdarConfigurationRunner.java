@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.service.ReflectionService;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.web.AbstractWebTestCase;
 
@@ -35,7 +36,7 @@ public class MultipleTdarConfigurationRunner extends SpringJUnit4ClassRunner {
     private Description describeTest(FrameworkMethod method) {
         Description description = Description.createSuiteDescription(testName(method), method.getAnnotations());
         try {
-            RunWithTdarConfiguration annotation = method.getAnnotation(RunWithTdarConfiguration.class);
+            RunWithTdarConfiguration annotation = ReflectionService.getAnnotationFromMethodOrClass(method.getMethod(), RunWithTdarConfiguration.class);
 
             if (annotation == null) {
                 return description;
@@ -60,9 +61,11 @@ public class MultipleTdarConfigurationRunner extends SpringJUnit4ClassRunner {
         Description description = describeTest(method);
         String testName = testName(method);
         final String currentConfig = TdarConfiguration.getInstance().getConfigurationFile();
-        if (method.getAnnotation(RunWithTdarConfiguration.class) != null &&
+        RunWithTdarConfiguration annotation = ReflectionService.getAnnotationFromMethodOrClass(method.getMethod(), RunWithTdarConfiguration.class);
+
+        if (annotation != null &&
                 method.getAnnotation(Ignore.class) == null) {
-            String[] configs = method.getAnnotation(RunWithTdarConfiguration.class).runWith();
+            String[] configs = annotation.runWith();
 
             if (configs.length > 0) {
                 for (int i = 0; i < configs.length; i++) {

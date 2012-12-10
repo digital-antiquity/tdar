@@ -16,6 +16,7 @@ import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.ResourceCreatorProxy;
 
 @RunWith(MultipleTdarConfigurationRunner.class)
+@RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.cc.properties" })
 public class PaymentResourceControllerITCase extends AbstractResourceControllerITCase {
 
     @Autowired
@@ -29,7 +30,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
     public void initControllerFields() {
         controller.prepare();
         controller.setProjectId(TestConstants.PARENT_PROJECT_ID);
-    }  
+    }
 
     private ResourceCreatorProxy getNewResourceCreator(String last, String first, String email, Long id, ResourceCreatorRole role) {
         ResourceCreatorProxy rcp = new ResourceCreatorProxy();
@@ -52,7 +53,6 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
 
     @Test
     @Rollback()
-    @RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.cc.properties" })
     public void testSaveWithoutValidAccount() throws Exception {
         Assert.assertTrue(getTdarConfiguration().isPayPerIngestEnabled());
         initControllerFields();
@@ -60,7 +60,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         getLogger().trace("controller:" + controller);
         getLogger().trace("controller.resource:" + controller.getResource());
         controller.getAuthorshipProxies().add(getNewResourceCreator("newLast", "newFirst", "new@email.com", null, ResourceCreatorRole.AUTHOR));
-        
+
         Document d = controller.getDocument();
         d.setTitle("doc title");
         d.setDescription("desc");
@@ -74,5 +74,5 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         Assert.assertEquals("resource id should be -1 after unpaid resource addition", newId, Long.valueOf(-1L));
         Assert.assertEquals("controller should not be successful", result, TdarActionSupport.INPUT);
     }
-    
+
 }

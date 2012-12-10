@@ -265,11 +265,20 @@ public class ReflectionService {
         return (class_ != null || method_ != null);
     }
 
+    public static <C extends Annotation> C getAnnotationFromMethodOrClass(Method method, Class<C> annotationClass) {
+        C method_ = AnnotationUtils.findAnnotation(method, annotationClass);
+        if (method_ != null) {
+            return method_;
+        }
+        C class_ = AnnotationUtils.findAnnotation(method.getDeclaringClass(), annotationClass);
+        if (class_ != null) {
+            return class_;
+        }
+        return null;
+    }
     
     public static boolean classOrMethodContainsAnnotation(Method method, Class<? extends Annotation> annotationClass) {
-        Object class_ = AnnotationUtils.findAnnotation(method.getDeclaringClass(), annotationClass);
-        Object method_ = AnnotationUtils.findAnnotation(method, annotationClass);
-        return (class_ != null || method_ != null);
+        return getAnnotationFromMethodOrClass(method, annotationClass) != null;
     }
 
     public static Class<?>[] scanForAnnotation(Class<? extends Annotation>... annots) throws NoSuchBeanDefinitionException, ClassNotFoundException {

@@ -46,7 +46,7 @@
     </div>    
 <#else>
 </div>
-	<#if invoice.transactionStatus == 'PENDING_TRANSACTION'>
+	<#if invoice.transactionStatus == 'PENDING_TRANSACTION' || invoice.transactionStatus == 'PREPARED'>
        <a class="button btn btn-primary submitButton" href="<@s.url value="/cart/${id?c}/credit" />">Pay</a>
     </#if>
 </#if>
@@ -59,23 +59,25 @@
  <#assign addressId =invoice.address.id />
 </#if>
 <div class="row">
-<#list invoice.person.addresses  as address>
+	<#list invoice.person.addresses  as address>
+	    <div class="span3">
+	    <#assign label = ""/>
+	    <#if address.type?has_content>
+	    <#assign label = address.type.label>
+	    </#if>
+	    <@common.printAddress  address=address modifiable=true showLabel=false>
+	        <label class="radio inline">
+	        <input type="radio" name="invoice.address.id" label="${label}" value="${address.id}"  <#if address.id==addressId || (!addressId?has_content || addressId == -1) && address_index==0>checked=checked</#if>/>
+	        <b><#if address.type?has_content>${address.type.label!""}</#if></b>
+	        </label><br/>
+	    </@common.printAddress>
+	    </div>
+	</#list>
     <div class="span3">
-    <#assign label = ""/>
-    <#if address.type?has_content>
-    <#assign label = address.type.label>
-    </#if>
-    <@common.printAddress  address=address modifiable=true showLabel=false>
-        <label class="radio inline">
-        <input type="radio" name="invoice.address.id" label="${label}" value="${address.id}"  <#if address.id==addressId || !address.id?has_content && address_index==0>checked=checked</#if>/>
-        <b><#if address.type?has_content>${address.type.label!""}</#if></b>
-        </label><br/>
-    </@common.printAddress>
+	    <a class="button btn btn-primary submitButton" href="<@s.url value="/entity/person/${invoice.person.id?c}/address?returnUrl=/cart/${id?c}" />">Add Address</a>
     </div>
-</#list>
-    </div>
-    <a class="button btn btn-primary submitButton" href="<@s.url value="/entity/person/${invoice.person.id?c}/address?returnUrl=/cart/${id?c}" />">Add a new address</a>
-
+</div>
+    
     <@edit.submit fileReminder=false />
 
 </@s.form>

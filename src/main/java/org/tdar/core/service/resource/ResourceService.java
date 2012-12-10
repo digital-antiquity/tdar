@@ -169,7 +169,6 @@ public class ResourceService extends GenericService {
     @Transactional(readOnly = false)
     public void incrementAccessCounter(Resource r) {
         ResourceAccessStatistic rac = new ResourceAccessStatistic(new Date(), r);
-        logger.info("hi {} ", rac);
         getDao().markWritable(rac);
         save(rac);
     }

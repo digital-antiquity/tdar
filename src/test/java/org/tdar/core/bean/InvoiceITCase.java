@@ -28,7 +28,7 @@ public class InvoiceITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testInvoicePricingInBetween() {
+    public void testInvoicePricingInBetweenLevels() {
         /* expect that this is activity 2 -- not 1 */
         Invoice invoice = new Invoice();
         long numberOfFiles = 4L;
