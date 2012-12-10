@@ -283,8 +283,12 @@ drop table test;
 --DONT-PROCESS-- update site_type_keyword set status='ACTIVE';
 --DONT-PROCESS-- update temporal_keyword set status='ACTIVE';
 -- 12-06-12 -- adding some invalid billing values
---DONT-PROCESS-- insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price) values (true, 'good', 15,21,50,5, 505);
---DONT-PROCESS-- insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price) values (true, 'error', 5,1,50,5, 55.21);
---DONT-PROCESS-- insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price) values (true, 'decline', 5,1,50,5, 55.11);
---DONT-PROCESS-- insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price) values (true, 'unknown', 5,1,50,5, 55.31);
---DONT-PROCESS-- insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price) values (false, 'inactive', 5,1,50,5, 550);
+--DONT-PROCESS-- insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price, min_allowed_files) values (true, 'good', 15,21,50,5, 505,400);
+--DONT-PROCESS-- insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price, min_allowed_files) values (true, 'error', 5,1,50,5, 55.21,400);
+--DONT-PROCESS-- insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price, min_allowed_files) values (true, 'decline', 5,1,50,5, 55.11,400);
+--DONT-PROCESS-- insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price, min_allowed_files) values (true, 'unknown', 5,1,50,5, 55.31,400);
+--DONT-PROCESS-- insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price, min_allowed_files) values (false, 'inactive', 5,1,50,5, 550,400);
+--DONT-PROCESS-- insert into pos_billing_activity (enabled, name, numberoffiles, min_allowed_files, numberofmb, price) values (true, ' 1-  4', 1, 1, 10, 50);
+--DONT-PROCESS-- insert into pos_billing_activity (enabled, name, numberoffiles, min_allowed_files, numberofmb, price) values (true, ' 5- 19', 1, 5, 10, 45);
+--DONT-PROCESS-- insert into pos_billing_activity (enabled, name, numberoffiles, min_allowed_files, numberofmb, price) values (true, '20- 49', 1, 20, 10, 40);
+--DONT-PROCESS-- insert into pos_billing_activity (enabled, name, numberoffiles, min_allowed_files, numberofmb, price) values (true, '50-500', 1, 50, 10, 33);

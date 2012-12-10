@@ -93,8 +93,8 @@ public class LoginController extends AuthenticationAware.Base {
         }
 
         if (getSessionData().getReturnUrl() != null || !StringUtils.isEmpty(url)) {
-            logger.info("url {} ", url);
             setReturnUrl(UrlUtils.urlDecode(url));
+            logger.info("url {} ", getReturnUrl());
             setReturnUrl(getSessionData().getReturnUrl());
             if (getReturnUrl().contains("filestore/")) {
                 if (getReturnUrl().endsWith("/get")) {

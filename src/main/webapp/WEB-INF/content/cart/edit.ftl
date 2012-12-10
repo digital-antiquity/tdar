@@ -22,10 +22,12 @@
 
 var fileData = [];
 <#list activities as act>
- fileData[fileData.length] = {'name':'${act.name?js_string}', 'numFiles':${act.numberOfFiles?c},'cost':${act.price}};
+ <#if act.enabled && act.minAllowedNumberOfFiles?has_content >
+ fileData[fileData.length] = {'name':'${act.name?js_string}', 'numFiles':${act.minAllowedNumberOfFiles?c},'cost':${act.price}};
+ </#if>
 </#list>
 
-$("#MetadataForm_numberOfFiles").change(function() { 
+$("#MetadataForm_invoice_numberOfFiles").change(function() { 
 	var current=1;
 	var val = $(this).val();  
 	$('#estimated').html('');

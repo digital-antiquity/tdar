@@ -2684,8 +2684,12 @@ update site_name_keyword set status='ACTIVE';
 update site_type_keyword set status='ACTIVE';
 update temporal_keyword set status='ACTIVE';
 -- 12-06-12 -- adding some invalid billing values
-insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price) values (true, 'good', 15,21,50,5, 505);
-insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price) values (true, 'error', 5,1,50,5, 55.21);
-insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price) values (true, 'decline', 5,1,50,5, 55.11);
-insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price) values (true, 'unknown', 5,1,50,5, 55.31);
-insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price) values (false, 'inactive', 5,1,50,5, 550);
+insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price, min_allowed_files) values (true, 'good', 15,21,50,5, 505,400);
+insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price, min_allowed_files) values (true, 'error', 5,1,50,5, 55.21,400);
+insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price, min_allowed_files) values (true, 'decline', 5,1,50,5, 55.11,400);
+insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price, min_allowed_files) values (true, 'unknown', 5,1,50,5, 55.31,400);
+insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price, min_allowed_files) values (false, 'inactive', 5,1,50,5, 550,400);
+insert into pos_billing_activity (enabled, name, numberoffiles, min_allowed_files, numberofmb, price) values (true, ' 1-  4', 1, 1, 10, 50);
+insert into pos_billing_activity (enabled, name, numberoffiles, min_allowed_files, numberofmb, price) values (true, ' 5- 19', 1, 5, 10, 40);
+insert into pos_billing_activity (enabled, name, numberoffiles, min_allowed_files, numberofmb, price) values (true, '20- 49', 1, 20, 10, 35);
+insert into pos_billing_activity (enabled, name, numberoffiles, min_allowed_files, numberofmb, price) values (true, '50-500', 1, 50, 10, 31);

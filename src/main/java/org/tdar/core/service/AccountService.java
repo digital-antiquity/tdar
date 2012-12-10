@@ -16,6 +16,7 @@ import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.Account.AccountAdditionStatus;
 import org.tdar.core.bean.billing.AccountGroup;
 import org.tdar.core.bean.billing.BillingActivity;
+import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.ResourceEvaluator;
 import org.tdar.core.bean.entity.Person;
@@ -98,7 +99,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         getDao().updateTransientAccountOnResources(resourcesToEvaluate);
         // if the account is null ...
 
-//        Account localAccount = account;
+        // Account localAccount = account;
         for (Resource resource : resources) {
             // if the account is null -- die
             if (resource == null) {
@@ -108,11 +109,11 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
                     account.getResources().contains(resource)) {
                 continue;
             }
-            
+
             if (Persistable.Base.isNullOrTransient(account) && Persistable.Base.isNullOrTransient(resource.getAccount())) {
                 throw new TdarRecoverableRuntimeException(String.format("resource: %s is not assigned to an account", resource));
             }
-            
+
             // if we're dealing with multiple accounts ... die
             if (Persistable.Base.isNotNullOrTransient(account) && !account.equals(resource.getAccount())) {
                 throw new TdarRuntimeException(String.format("we don't yet support multiple accounts applied to a single action, %s and %s", account,
@@ -129,4 +130,72 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     public void updateTransientAccountInfo(Collection<Resource> resources) {
         getDao().updateTransientAccountOnResources(resources);
     }
+
+    public BillingActivity getSpaceActivity() {
+        for (BillingActivity activity : getActiveBillingActivities()) {
+            if (activity.getNumberOfFiles() == null && activity.getNumberOfResources() == null && activity.getNumberOfMb() != null
+                    && activity.getNumberOfMb() > 0) {
+                return activity;
+            }
+        }
+        return null;
+    }
+
+    public BillingItem getCheapestActivityByFiles(List<BillingItem> items, Long numFiles) {
+        for (BillingActivity activity : getActiveBillingActivities()) {
+            // 2 cases (1) exact value; (2) where the next step up might actually be cheaper
+            int files = numFiles.intValue();
+            if (activity.getMinAllowedNumberOfFiles() > numFiles) {
+                files = activity.getMinAllowedNumberOfFiles().intValue();
+            }
+            BillingItem e = new BillingItem(activity, files);
+            logger.info(" -- {}", e);
+            items.add(e);
+        }
+        BillingItem lowest = null;
+        for (BillingItem item : items) {
+            if (lowest == null) {
+                lowest = item;
+            } else if (lowest.getSubtotal() > item.getSubtotal()) {
+                lowest = item;
+            }
+        }
+        return lowest;
+    }
+
+    public BillingItem getCheapestActivityBySpace(List<BillingItem> items, Long numFiles, Long spaceInMb) {
+        for (BillingActivity activity : getActiveBillingActivities()) {
+            if (activity.getMinAllowedNumberOfFiles() <= numFiles && activity.getNumberOfMb() * numFiles > spaceInMb) {
+                items.add(new BillingItem(activity, numFiles.intValue()));
+            }
+        }
+        BillingItem lowest = null;
+        for (BillingItem item : items) {
+            if (lowest == null) {
+                lowest = item;
+            } else if (lowest.getSubtotal() > item.getSubtotal()) {
+                lowest = item;
+            }
+        }
+        return lowest;
+    }
+
+    public BillingItem calculateCheapestActivities(Invoice invoice) {
+        List<BillingItem> items = new ArrayList<BillingItem>();
+        BillingItem lowest = getCheapestActivityByFiles(items, invoice.getNumberOfFiles());
+        BillingItem lowest2 = getCheapestActivityBySpace(items, invoice.getNumberOfFiles(), invoice.getNumberOfMb());
+        BillingItem lowestBySpace = null;
+        BillingActivity spaceActivity = getSpaceActivity();
+        if (spaceActivity != null) {
+            Long spaceUsed = lowest.getQuantity() * lowest.getActivity().getNumberOfMb();
+            spaceUsed -= invoice.getNumberOfMb();
+            int qty = (int) Math.ceil(Math.abs(spaceUsed) / spaceActivity.getNumberOfMb());
+            lowestBySpace = new BillingItem(spaceActivity, qty);
+        }
+        logger.info("lowest by files: {}", lowest);
+        logger.info("lowest by space: {}", lowest2);
+        logger.info("lowest combo: {}", lowestBySpace);
+        return lowest;
+    }
+
 }

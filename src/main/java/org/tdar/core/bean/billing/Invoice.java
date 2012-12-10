@@ -326,4 +326,20 @@ public class Invoice extends Base implements Updatable {
     public String[] getIncludedJsonProperties() {
         return JSON_PROPERTIES;
     }
+
+    public Long getNumberOfFiles() {
+        return numberOfFiles;
+    }
+
+    public void setNumberOfFiles(Long numberOfFiles) {
+        this.numberOfFiles = numberOfFiles;
+    }
+
+    public Long getNumberOfMb() {
+        return numberOfMb;
+    }
+
+    public void setNumberOfMb(Long numberOfMb) {
+        this.numberOfMb = numberOfMb;
+    }
 }

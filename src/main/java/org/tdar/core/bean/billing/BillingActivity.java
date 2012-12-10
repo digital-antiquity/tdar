@@ -159,4 +159,8 @@ public class BillingActivity extends Persistable.Base {
         this.minAllowedNumberOfFiles = minAllowedNumberOfFiles;
     }
 
+    @Override
+    public String toString() {
+        return getName();
+    }
 }

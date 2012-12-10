@@ -45,8 +45,6 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     private static final String INVOICE = "invoice";
     private static final String POLLING = "polling";
     private String callback;
-    private Integer numberOfMb = 0;
-    private Integer numberOfFiles = 0;
 
     @Autowired
     PaymentTransactionProcessor paymentTransactionProcessor;
@@ -57,18 +55,8 @@ public class CartController extends AbstractPersistableController<Invoice> imple
             throw new TdarRecoverableRuntimeException("cannot modify");
         }
 
-        List<BillingItem> items = new ArrayList<BillingItem>();
         persistable.getItems().clear();
-        BillingItem lowest = getCheapestActivityByFiles(items, getNumberOfFiles());
-        BillingItem lowest2 = getCheapestActivityBySpace(items, getNumberOfFiles(), getNumberOfMb());
-        BillingItem lowestBySpace = null;
-        BillingActivity spaceActivity = getSpaceActivity();
-        if (spaceActivity != null) {
-            Long spaceUsed = lowest.getQuantity() * lowest.getActivity().getNumberOfMb();
-            spaceUsed -= getNumberOfMb();
-            int qty = (int) Math.ceil(Math.abs(spaceUsed) / spaceActivity.getNumberOfMb());
-            lowestBySpace = new BillingItem(spaceActivity, qty);
-        }
+        BillingItem lowest = getAccountService().calculateCheapestActivities(getInvoice());
         getInvoice().getItems().add(lowest);
         if (accountId != -1) {
             getGenericService().find(Account.class, accountId).getInvoices().add(getInvoice());
@@ -78,49 +66,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         return SUCCESS;
     }
 
-    private BillingActivity getSpaceActivity() {
-        for (BillingActivity activity : getAccountService().getActiveBillingActivities()) {
-            if (activity.getNumberOfFiles() == null && activity.getNumberOfResources() == null && activity.getNumberOfMb() != null
-                    && activity.getNumberOfMb() > 0) {
-                return activity;
-            }
-        }
-        return null;
-    }
 
-    private BillingItem getCheapestActivityByFiles(List<BillingItem> items, int numFiles) {
-        for (BillingActivity activity : getAccountService().getActiveBillingActivities()) {
-            if (activity.getNumberOfFiles().intValue() >= numFiles) {
-                items.add(new BillingItem(activity, numFiles));
-            }
-        }
-        BillingItem lowest = null;
-        for (BillingItem item : items) {
-            if (lowest == null) {
-                lowest = item;
-            } else if (lowest.getSubtotal() > item.getSubtotal()) {
-                lowest = item;
-            }
-        }
-        return lowest;
-    }
-
-    private BillingItem getCheapestActivityBySpace(List<BillingItem> items, int numFiles, int spaceInMb) {
-        for (BillingActivity activity : getAccountService().getActiveBillingActivities()) {
-            if (activity.getNumberOfFiles().intValue() >= numFiles && activity.getNumberOfMb() * numFiles > spaceInMb) {
-                items.add(new BillingItem(activity, numFiles));
-            }
-        }
-        BillingItem lowest = null;
-        for (BillingItem item : items) {
-            if (lowest == null) {
-                lowest = item;
-            } else if (lowest.getSubtotal() > item.getSubtotal()) {
-                lowest = item;
-            }
-        }
-        return lowest;
-    }
 
     @Override
     protected void delete(Invoice persistable) {
@@ -372,19 +318,4 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         this.successPath = successPath;
     }
 
-    public Integer getNumberOfFiles() {
-        return numberOfFiles;
-    }
-
-    public void setNumberOfFiles(Integer numberOfFiles) {
-        this.numberOfFiles = numberOfFiles;
-    }
-
-    public Integer getNumberOfMb() {
-        return numberOfMb;
-    }
-
-    public void setNumberOfMb(Integer numberOfMb) {
-        this.numberOfMb = numberOfMb;
-    }
 }
