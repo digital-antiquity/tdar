@@ -276,3 +276,11 @@ insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, n
 
 -- 12-07-12 -- adding new column
 alter table pos_billing_activity add column min_allowed_files int8;
+
+-- 12-09-12 
+alter table pos_invoice add column number_of_files int8;
+alter table pos_invoice add column number_of_mb int8;
+insert into pos_billing_activity (enabled, name, numberoffiles, min_allowed_files, numberofmb, price) values (true, ' 1-  4', 1, 0, 10, 50);
+insert into pos_billing_activity (enabled, name, numberoffiles, min_allowed_files, numberofmb, price) values (true, ' 5- 19', 5, 0, 10, 45);
+insert into pos_billing_activity (enabled, name, numberoffiles, min_allowed_files, numberofmb, price) values (true, '20- 49', 1, 0, 10, 40);
+insert into pos_billing_activity (enabled, name, numberoffiles, min_allowed_files, numberofmb, price) values (true, '50-500', 1, 0, 10, 33);
