@@ -33,7 +33,7 @@ public class InvoiceITCase extends AbstractIntegrationTestCase {
         Invoice invoice = new Invoice();
         long numberOfFiles = 4L;
         BillingItem item = setupBillingItme(invoice, numberOfFiles);
-        Assert.assertTrue(item.getActivity().getMinAllowedNumberOfFiles() < numberOfFiles);
+        Assert.assertFalse(item.getActivity().getMinAllowedNumberOfFiles() < numberOfFiles);
         Assert.assertEquals(5L, item.getActivity().getMinAllowedNumberOfFiles().longValue());
     }
 

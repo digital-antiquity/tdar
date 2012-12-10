@@ -149,7 +149,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
                 files = activity.getMinAllowedNumberOfFiles().intValue();
             }
             BillingItem e = new BillingItem(activity, files);
-            logger.info(" -- {}", e);
+            logger.trace(" -- {}", e);
             items.add(e);
         }
         BillingItem lowest = null;
