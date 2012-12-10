@@ -444,7 +444,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     }
 
     public void assertErrorsPresent() {
-        assertTextPresent("The following errors were found with your submission");
+        assertTextPresent("the following problems with your submission");
     }
 
     public void assertTextNotPresent(String text) {

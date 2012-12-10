@@ -103,10 +103,7 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
                 </div>
                 <div class='controls controls-row'>
                     <span tiplabel="Scan Transformation Matrix" tooltipcontent="The name of the transformation matrix used in Global Registration. Suggested file name: ProjectName_scan1_mtrx.txt">
-                    <label class='checkbox'>
-                    <@s.checkbox theme='simple' name="sensoryDataScans[${_scan_index}].transformationMatrix" />
-                    Transformation Matrix Available
-                    </label>
+                    <@s.textfield maxLength="255" theme='simple' name="sensoryDataScans[${_scan_index}].transformationMatrix" placeholder="Transformation Matrix" cssClass="span3" />
                     </span>
                     <span tooltipcontent="Check this box if transformation matrix has been applied to the archived scan">
                     <label class='checkbox'>

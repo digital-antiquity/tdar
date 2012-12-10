@@ -62,7 +62,7 @@ public class SensoryDataWebITCase extends AbstractAdminAuthenticatedWebTestCase 
         sensoryHash.put("sensoryData.finalDatasetDescription", "finaldatasetsarchive val");
         sensoryHash.put("sensoryDataScans[0].filename", "filename0");
         sensoryHash.put("sensoryDataScans[0].transformationMatrix", "matrix0");
-        sensoryHash.put("sensoryDataScans[0].monumentName", "objmon_name0");
+//        sensoryHash.put("sensoryDataScans[0].monumentName", "objmon_name0");
         sensoryHash.put("sensoryDataScans[0].scanDate", "11/01/2002");
         sensoryHash.put("sensoryDataScans[0].pointsInScan", "0");
         sensoryHash.put("sensoryDataScans[0].scannerTechnology", "TIME_OF_FLIGHT");
@@ -72,7 +72,7 @@ public class SensoryDataWebITCase extends AbstractAdminAuthenticatedWebTestCase 
         sensoryHash.put("sensoryDataScans[0].scanNotes", "scan notes 0");
         sensoryHash.put("sensoryDataScans[1].filename", "filename1");
         sensoryHash.put("sensoryDataScans[1].transformationMatrix", "matrix1");
-        sensoryHash.put("sensoryDataScans[1].monumentName", "objmon_name1");
+//        sensoryHash.put("sensoryDataScans[1].monumentName", "objmon_name1");
         sensoryHash.put("sensoryDataScans[1].scanDate", "11/03/1974");
         sensoryHash.put("sensoryDataScans[1].pointsInScan", "1");
         sensoryHash.put("sensoryDataScans[1].scannerTechnology", "TRIANGULATION");
@@ -166,7 +166,7 @@ public class SensoryDataWebITCase extends AbstractAdminAuthenticatedWebTestCase 
         sensoryHash2.put("sensoryDataScans[1].id", "");
         sensoryHash2.put("sensoryDataScans[1].filename", "");
         sensoryHash2.put("sensoryDataScans[1].transformationMatrix", "");
-        sensoryHash2.put("sensoryDataScans[1].monumentName", "");
+//        sensoryHash2.put("sensoryDataScans[1].monumentName", "");
         sensoryHash2.put("sensoryDataScans[1].scanDate", "");
         sensoryHash2.put("sensoryDataScans[1].matrixApplied", "");
         sensoryHash2.put("sensoryDataScans[1].pointsInScan", "");

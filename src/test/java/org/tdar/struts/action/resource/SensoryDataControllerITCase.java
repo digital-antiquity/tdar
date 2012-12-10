@@ -111,12 +111,12 @@ public class SensoryDataControllerITCase extends AbstractResourceControllerITCas
         controller.edit();
         controller.getSensoryDataScans().remove(0);
         saveAndReload(false);
-        
+
         setVerifyTransactionCallback(new TransactionCallback<Image>() {
             @Override
             public Image doInTransaction(TransactionStatus status) {
                 SensoryData resource = genericService.find(SensoryData.class, id);
-//                resource.getSensoryDataImages();
+                // resource.getSensoryDataImages();
                 logger.info("calling refresh");
                 genericService.refresh(resource);
                 logger.info("done calling refresh");

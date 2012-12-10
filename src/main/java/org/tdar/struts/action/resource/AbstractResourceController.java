@@ -201,6 +201,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         initializeResourceCreatorProxyLists();
         loadCustomMetadata();
         getResourceService().incrementAccessCounter(getPersistable());
+        loadEffectiveResourceCollections();
+
         if (isEditor()) {
             if (getPersistableClass().equals(Project.class)) {
                 setTotalResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, null, null, Arrays.asList(getId()), null, null));
@@ -471,6 +473,10 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         getResourceCollections().addAll(getResource().getSharedResourceCollections());
         initializeResourceCreatorProxyLists();
         getResourceAnnotations().addAll(getResource().getResourceAnnotations());
+        loadEffectiveResourceCollections();
+    }
+
+    private void loadEffectiveResourceCollections() {
         Set<ResourceCollection> tempSet = new HashSet<ResourceCollection>();
         for (ResourceCollection collection : getResourceCollections()) {
             if (collection != null && CollectionUtils.isNotEmpty(collection.getAuthorizedUsers())) {

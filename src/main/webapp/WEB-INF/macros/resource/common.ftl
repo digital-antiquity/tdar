@@ -230,7 +230,7 @@ TDAR.uri = function(path) {
             </#if>
           </td>
           <td>
-            ${user.user.properName}
+            ${user.user.properName} <!-- ${user.user.properName}:${user.generalPermission} -->
           </td>
            <#list availablePermissions as permission>
           <td>

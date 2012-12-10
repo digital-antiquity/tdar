@@ -59,7 +59,6 @@
             <th>Filename</th>
             <th title="Transformation Matrix">Transformation Matrix</th>
             <th>Matrix Applied</th>
-            <th>Monument / Object</th>
             <th>Scan Date</th>
             <th>Scanner Technology</th>
             <th>Resolution</th>
@@ -75,9 +74,8 @@
         
         <tr>
             <td>${_scan.filename!""}</td>
-            <td>${_scan.transformationMatrix}</td>
+            <td>${_scan.transformationMatrix!""}</td>
             <td><#if _scan.matrixApplied?? && _scan.matrixApplied>Yes</#if></td>
-            <td>${_scan.monumentName!""}</td>
             <td>${_scanDate}</td>
             <td>
                 <#if (_scan.scannerTechnology?? && _scan.scannerTechnology.label.length()>0)>
