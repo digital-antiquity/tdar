@@ -17,8 +17,8 @@
         -->
 		<script src="/includes/modernizr-custom-2.6.2.min.js"></script>
         
-		<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap.min.css" rel="stylesheet">
-		<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
+		<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet">
+		<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
 
         <link rel="stylesheet" type="text/css" href='//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_version}/themes/base/jquery-ui.css'>
         <link href="<@s.url value="/css/vc/${common.tdarBuildId}/tdar-base.css"/>" rel="stylesheet">
@@ -217,7 +217,7 @@ ${_stacktrace?html}
     </footer>
         <script src="//ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"></script>        
         <#--TODO: decide whether it's wise to use a bootstrap CDN.  For now I'm using this for convenience -->
-        <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+        <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
         <script src="<@s.url value='/includes/plugins.js' />"></script>
         <script type="text/javascript">
         //functionality for "welcome back, so-and-so!" (pulled from main.js)

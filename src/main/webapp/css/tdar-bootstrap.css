@@ -1222,3 +1222,15 @@ p.copyright-notice {
 .tdar-gmap-control button:disabled {
     display: none;
 }
+
+/* bootstrap removes the input margin-bottom for horizontal forms (because control-group has a margn).  This messes up our datatable widget, so we put the margin
+    back in */
+.tdar-widget  input, 
+.tdar-widget select, 
+.tdar-widget textarea {
+    margin-bottom: 10px;    
+}
+.tdar-widget label {
+    font-weight: bold;
+}
+
