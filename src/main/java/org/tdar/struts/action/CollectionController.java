@@ -11,11 +11,10 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
-import org.hibernate.search.FullTextQuery;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.DisplayOrientation;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.resource.Facetable;
@@ -136,7 +135,7 @@ public class CollectionController extends AbstractPersistableController<Resource
     }
 
     @Override
-    public void postSaveCleanup() {
+    public void postSaveCleanup(String returnString) {
         /*
          * if we want to be really "aggressive" we only need to do this if
          * (a) permissions change

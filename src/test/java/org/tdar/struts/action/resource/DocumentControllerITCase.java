@@ -229,7 +229,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 
     // return a populated "new" resource creator person (i.e. all person fields
     // set but null id)
-    private ResourceCreatorProxy getNewResourceCreator(String name, Long id, ResourceCreatorRole role) {
+    public ResourceCreatorProxy getNewResourceCreator(String name, Long id, ResourceCreatorRole role) {
         ResourceCreatorProxy rcp = new ResourceCreatorProxy();
         rcp.getInstitution().setName(name);
         // FIXME: THIS NEEDS TO WORK WITHOUT SETTING AN ID as well as when an ID
@@ -237,21 +237,6 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         if (System.currentTimeMillis() % 2 == 0) {
             rcp.getInstitution().setId(-1L);
         }
-        rcp.setRole(role);
-        return rcp;
-    }
-
-    private ResourceCreatorProxy getNewResourceCreator(String last, String first, String email, Long id, ResourceCreatorRole role) {
-        ResourceCreatorProxy rcp = new ResourceCreatorProxy();
-        Person p = rcp.getPerson();
-        rcp.getPerson().setLastName(last);
-        rcp.getPerson().setFirstName(first);
-        rcp.getPerson().setEmail(email);
-        // id may be null
-        rcp.getPerson().setId(id);
-        Institution inst = new Institution();
-        inst.setName("University of TEST");
-        p.setInstitution(inst);
         rcp.setRole(role);
         return rcp;
     }
@@ -312,7 +297,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         // loading the view page
         controller = generateNewInitializedController(DocumentController.class);
         loadResourceFromId(controller, newId);
-        logger.info("{}" , controller.getAuthorshipProxies());
+        logger.info("{}", controller.getAuthorshipProxies());
         Assert.assertEquals("expecting size zero", 0, controller.getAuthorshipProxies().size());
         logger.debug("{}", controller.getAuthorshipProxies().size());
         Assert.assertTrue("expecting invaled proxy", controller.getAuthorshipProxies().isEmpty());

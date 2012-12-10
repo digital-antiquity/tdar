@@ -66,8 +66,8 @@ public class ProjectController extends AbstractResourceController<Project> imple
     }
 
     @Override
-    public void postSaveCleanup() {
-        super.postSaveCleanup();
+    public void postSaveCleanup(String returnString) {
+        super.postSaveCleanup(returnString);
         // reindex any child resources so that that searches will pick up any new keywords they should "inherit"
         logger.debug("reindexing project contents");
         getProject().setCachedInformationResources(new HashSet<InformationResource>(getProjectService().findAllResourcesInProject(getProject())));

@@ -21,6 +21,7 @@ import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.ResourceEvaluator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.AccountDao;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -85,14 +86,29 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     public boolean hasSpaceInAnAccount(Person user) {
         for (Account account : listAvailableAccountsForUser(user)) {
-            if (account.isActive() && account.hasMinimumForNewRecord())
+            if (account.isActive() && account.hasMinimumForNewRecord()) {
+                logger.info("account {} has minimum balance for {}", account.getName(), user.getProperName());
                 return true;
+            }
         }
+        logger.info("user {} has no accounts or balance", user.getProperName());
         return false;
     }
 
+    public void markResourcesAsFlagged(Collection<Resource> resources) {
+        for (Resource resource: resources) {
+            resource.setStatus(Status.FLAGGED_ACCOUNT_BALANCE);
+        }
+        saveOrUpdateAll(resources);
+    }
+    
     @Transactional
     public void updateQuota(ResourceEvaluator initialEvaluation, Account account, Resource... resources) {
+        logger.info("updating quota(s)");
+        if (account == null) {
+            markResourcesAsFlagged(Arrays.asList(resources));
+            throw new TdarRecoverableRuntimeException("account is null");
+        }
         ResourceEvaluator endingEvaluator = new ResourceEvaluator(resources);
         endingEvaluator.subtract(initialEvaluation);
         List<Resource> resourcesToEvaluate = Arrays.asList(resources);
@@ -121,7 +137,11 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             }
         }
         getDao().merge(account);
+        try {
         account.updateQuotas(endingEvaluator);
+        } catch (TdarRecoverableRuntimeException e) {
+            markResourcesAsFlagged(Arrays.asList(resources));
+        }
         account.getResources().addAll(resourcesToEvaluate);
         saveOrUpdate(account);
     }

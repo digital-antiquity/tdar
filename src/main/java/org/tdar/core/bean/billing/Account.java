@@ -26,6 +26,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
 /**
  * $Id$
@@ -342,6 +343,8 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
             setFilesUsed(getFilesUsed() + endingEvaluator.getFilesUsed());
             setResourcesUsed(getResourcesUsed() + endingEvaluator.getResourcesUsed());
             setSpaceUsed(getSpaceUsed() + endingEvaluator.getSpaceUsed());
+        } else {
+            throw new TdarRecoverableRuntimeException("account is overdrawn");
         }
     }
 

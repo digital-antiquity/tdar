@@ -29,6 +29,7 @@ public class ResourceEvaluator implements Serializable {
     private int filesUsed = 0;
     private long spaceUsed = 0;
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private Resource[] resources;
 
     public ResourceEvaluator() {
     }
@@ -47,10 +48,13 @@ public class ResourceEvaluator implements Serializable {
     public void evaluateResource(Collection<Resource> resources) {
         evaluateResource(resources.toArray(new Resource[0]));
     }
+
     /*
      * Evaluate whether a resource can be added and how it counts when added to an account
      */
     public void evaluateResource(Resource... resources) {
+        this.setResources(resources);
+
         for (Resource resource : resources) {
             if (resource == null)
                 continue;
@@ -72,7 +76,7 @@ public class ResourceEvaluator implements Serializable {
                     for (InformationResourceFileVersion version : file.getInformationResourceFileVersions()) {
                         if (!includeOlderVersionsInCounts && !version.getVersion().equals(file.getLatestVersion()) || !version.isUploaded())
                             continue;
-                        if(version.getFileLength() != null) {
+                        if (version.getFileLength() != null) {
                             spaceUsed += version.getFileLength();
                         }
                     }
@@ -141,6 +145,14 @@ public class ResourceEvaluator implements Serializable {
         setSpaceUsed(getSpaceUsed() - initialEvaluation.getSpaceUsed());
         setFilesUsed(getFilesUsed() - initialEvaluation.getFilesUsed());
         setResourcesUsed(getResourcesUsed() - initialEvaluation.getResourcesUsed());
+    }
+
+    public Resource[] getResources() {
+        return resources;
+    }
+
+    public void setResources(Resource[] resources) {
+        this.resources = resources;
     }
 
 }

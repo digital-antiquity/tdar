@@ -327,7 +327,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     }
 
     @Override
-    protected void postSaveCleanup() {
+    protected void postSaveCleanup(String returnString) {
         if (isAsync()) {
             return;
         }
@@ -454,7 +454,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         setAbleToUploadFiles(getAuthenticationAndAuthorizationService().canUploadFiles(getAuthenticatedUser(), getPersistable()));
         return toReturn;
     }
-    
+
     @Override
     protected void loadCustomMetadata() {
         super.loadCustomMetadata();

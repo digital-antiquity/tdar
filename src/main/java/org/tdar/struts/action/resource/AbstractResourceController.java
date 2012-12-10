@@ -179,7 +179,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     public String loadAddMetadata() {
         if (getTdarConfiguration().isPayPerIngestEnabled()) {
             setActiveAccounts(getAccountService().listAvailableAccountsForUser(getAuthenticatedUser()));
-            getAccountService().updateTransientAccountInfo((List<Resource>)Arrays.asList(getResource()));
+            getAccountService().updateTransientAccountInfo((List<Resource>) Arrays.asList(getResource()));
             logger.info("setting active accounts to {} ", getActiveAccounts());
         }
         return SUCCESS;
@@ -192,12 +192,12 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         loadCustomMetadata();
         return SUCCESS;
     }
-    
+
     @Override
     public String loadViewMetadata() {
         if (getResource() == null)
             return ERROR;
-//        loadBasicMetadata();
+        // loadBasicMetadata();
         initializeResourceCreatorProxyLists();
         loadCustomMetadata();
         getResourceService().incrementAccessCounter(getPersistable());
@@ -232,6 +232,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         getResourceService().logResourceModification(resource, getAuthenticatedUser(), logMessage);
     }
 
+    @Override
     protected void preSaveCallback() {
         if (status == null) {
             status = Status.ACTIVE;
@@ -239,8 +240,11 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         getPersistable().setStatus(status);
     }
 
-    protected void postSaveCallback() {
-        updateQuota(getGenericService().find(Account.class, getAccountId()), getResource());
+    @Override
+    protected void postSaveCallback(String actionMessage) {
+        if (actionMessage == SUCCESS) {
+            updateQuota(getGenericService().find(Account.class, getAccountId()), getResource());
+        }
 
         if (shouldSaveResource() && getResource() != null) {
             getResourceService().saveRecordToFilestore(getPersistable());

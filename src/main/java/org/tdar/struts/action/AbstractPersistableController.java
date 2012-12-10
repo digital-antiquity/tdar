@@ -225,6 +225,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
                 // who cares what the save implementation says. if there's errors return INPUT
                 if (!getActionErrors().isEmpty()) {
                     logger.debug("Action errors found; Replacing return status of {} with {}", actionReturnStatus, INPUT);
+                    // FIXME: if INPUT -- should I just "return"?
                     actionReturnStatus = INPUT;
                 }
             } else {
@@ -237,10 +238,10 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             return INPUT;
         } finally {
             // FIXME: make sure this doesn't cause issues with SessionSecurityInterceptor now handling TdarActionExceptions
-            postSaveCleanup();
+            postSaveCleanup(actionReturnStatus);
         }
         try {
-            postSaveCallback();
+            postSaveCallback(actionReturnStatus);
         } catch (TdarRecoverableRuntimeException tex) {
             addActionErrorWithException(tex.getMessage(), tex);
         }
@@ -287,13 +288,14 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     protected void preSaveCallback() {
     }
 
-    protected void postSaveCallback() {
+    protected void postSaveCallback(String actionReturnStatus) {
     }
 
     /**
      * override if needed
+     * @param actionReturnStatus 
      */
-    protected void postSaveCleanup() {
+    protected void postSaveCleanup(String actionReturnStatus) {
     }
 
     @SkipValidation
