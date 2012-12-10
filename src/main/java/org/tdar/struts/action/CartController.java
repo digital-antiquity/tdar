@@ -59,9 +59,39 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
         List<BillingItem> items = new ArrayList<BillingItem>();
         persistable.getItems().clear();
+        BillingItem lowest = getCheapestActivityByFiles(items, getNumberOfFiles());
+        BillingItem lowest2 = getCheapestActivityBySpace(items, getNumberOfFiles(), getNumberOfMb());
+        BillingItem lowestBySpace = null;
+        BillingActivity spaceActivity = getSpaceActivity();
+        if (spaceActivity != null) {
+            Long spaceUsed = lowest.getQuantity() * lowest.getActivity().getNumberOfMb();
+            spaceUsed -= getNumberOfMb();
+            int qty = (int) Math.ceil(Math.abs(spaceUsed) / spaceActivity.getNumberOfMb());
+            lowestBySpace = new BillingItem(spaceActivity, qty);
+        }
+        getInvoice().getItems().add(lowest);
+        if (accountId != -1) {
+            getGenericService().find(Account.class, accountId).getInvoices().add(getInvoice());
+        }
+        // this may be 'different' from the owner
+        getInvoice().setTransactedBy(getAuthenticatedUser());
+        return SUCCESS;
+    }
+
+    private BillingActivity getSpaceActivity() {
         for (BillingActivity activity : getAccountService().getActiveBillingActivities()) {
-            if (activity.getNumberOfFiles().intValue() >= numberOfFiles) {
-                items.add(new BillingItem(activity, numberOfFiles));
+            if (activity.getNumberOfFiles() == null && activity.getNumberOfResources() == null && activity.getNumberOfMb() != null
+                    && activity.getNumberOfMb() > 0) {
+                return activity;
+            }
+        }
+        return null;
+    }
+
+    private BillingItem getCheapestActivityByFiles(List<BillingItem> items, int numFiles) {
+        for (BillingActivity activity : getAccountService().getActiveBillingActivities()) {
+            if (activity.getNumberOfFiles().intValue() >= numFiles) {
+                items.add(new BillingItem(activity, numFiles));
             }
         }
         BillingItem lowest = null;
@@ -72,13 +102,24 @@ public class CartController extends AbstractPersistableController<Invoice> imple
                 lowest = item;
             }
         }
-        getInvoice().getItems().add(lowest);
-        if (accountId != -1) {
-            getGenericService().find(Account.class, accountId).getInvoices().add(getInvoice());
+        return lowest;
+    }
+
+    private BillingItem getCheapestActivityBySpace(List<BillingItem> items, int numFiles, int spaceInMb) {
+        for (BillingActivity activity : getAccountService().getActiveBillingActivities()) {
+            if (activity.getNumberOfFiles().intValue() >= numFiles && activity.getNumberOfMb() * numFiles > spaceInMb) {
+                items.add(new BillingItem(activity, numFiles));
+            }
         }
-        // this may be 'different' from the owner
-        getInvoice().setTransactedBy(getAuthenticatedUser());
-        return SUCCESS;
+        BillingItem lowest = null;
+        for (BillingItem item : items) {
+            if (lowest == null) {
+                lowest = item;
+            } else if (lowest.getSubtotal() > item.getSubtotal()) {
+                lowest = item;
+            }
+        }
+        return lowest;
     }
 
     @Override

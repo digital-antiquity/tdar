@@ -93,6 +93,12 @@ public class Invoice extends Base implements Updatable {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = false, name = "invoice_id")
     private List<BillingItem> items = new ArrayList<BillingItem>();
+    
+    @Column(name="number_of_files")
+    private Long numberOfFiles = 0L;
+    
+    @Column(name="number_of_mb")
+    private Long numberOfMb = 0L;
 
     private Float total;
 

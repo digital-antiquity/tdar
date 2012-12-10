@@ -22,6 +22,9 @@ Note: you may have multiple accounts to simplify billing and allow different peo
     <@s.hidden name="account.id" />    
     <@s.hidden name="invoiceId" />    
     
+    <#if billingAdmin>
+    	<b>allow user to change owner of account</b>
+    </#if>
     <h3>Who can charge to this account </h3>
     <@edit.listMemberUsers />
     <br/>

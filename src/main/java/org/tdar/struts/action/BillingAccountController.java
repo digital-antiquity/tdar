@@ -17,6 +17,7 @@ import org.tdar.core.bean.billing.AccountGroup;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.dao.external.auth.TdarGroup;
 
 @Component
 @Scope("prototype")
@@ -62,10 +63,10 @@ public class BillingAccountController extends AbstractPersistableController<Acco
         getAccount().getAuthorizedMembers().clear();
         getAccount().getAuthorizedMembers().addAll(getGenericService().loadFromSparseEntities(getAuthorizedMembers(), Person.class));
         logger.info("authorized members: {}", getAccount().getAuthorizedMembers());
-//        if (Persistable.Base.isTransient(persistable)) {
-//            persistable.setName(name);
-//            persistable.setDescription(description);
-//        }
+        // if (Persistable.Base.isTransient(persistable)) {
+        // persistable.setName(name);
+        // persistable.setDescription(description);
+        // }
         return SUCCESS;
     }
 
@@ -162,4 +163,9 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     public void setAuthorizedMembers(List<Person> authorizedMembers) {
         this.authorizedMembers = authorizedMembers;
     }
+
+    public boolean isBillingAdmin() {
+        return getAuthenticationAndAuthorizationService().isMember(getAuthenticatedUser(), TdarGroup.TDAR_BILLING_MANAGER);
+    }
+
 }
