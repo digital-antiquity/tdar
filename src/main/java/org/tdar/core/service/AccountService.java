@@ -91,7 +91,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
                 return true;
             }
         }
-        logger.info("user {} has no accounts or balance", user.getProperName());
+//        logger.info("user {} has no accounts or balance", user.getProperName());
         return false;
     }
 

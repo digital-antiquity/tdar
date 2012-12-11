@@ -340,6 +340,12 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
             return true;
         }
 
+        //ab added:12/11/12 
+        if (Persistable.Base.isTransient(resource) && resource.getSubmitter() == null) {
+            logger.debug("resource is transient");
+            return true;
+        }
+
         logger.debug("returning false... access denied");
         return false;
     }

@@ -30,6 +30,7 @@ public class ResourceEvaluator implements Serializable {
     private long spaceUsed = 0;
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
     private Resource[] resources;
+    private boolean countResources = false;
 
     public ResourceEvaluator() {
     }
@@ -42,6 +43,8 @@ public class ResourceEvaluator implements Serializable {
      * IOC putting all of the logic in one place
      */
     public boolean invoiceHasMinimumForNewResource(Account account) {
+        if (!countResources ) 
+            return true;
         return account.getAvailableResources() > 0;
     }
 
