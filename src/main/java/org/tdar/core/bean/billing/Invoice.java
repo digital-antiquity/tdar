@@ -55,7 +55,7 @@ public class Invoice extends Base implements Updatable {
 
     @NotNull
     @Column(name = "date_created")
-    private Date dateCreated = new Date();
+    private Date dateCreated;
     // the confirmation id for this invoice
 
     private String transactionId;

@@ -79,8 +79,7 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     private Date expires = new Date();
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    @JoinColumn(nullable = false, updatable = true, name = "account_id")
-    @NotNull
+    @JoinColumn(nullable = true, updatable = true, name = "account_id")
     private Set<Invoice> invoices = new HashSet<Invoice>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)

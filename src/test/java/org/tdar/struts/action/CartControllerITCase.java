@@ -10,7 +10,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
-    public void testCart() throws TdarActionException {
+    public void testCartBasicInvalid() throws TdarActionException {
         CartController controller = generateNewInitializedController(CartController.class);
         controller.prepare();
         String result = controller.add();
@@ -29,6 +29,22 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         assertTrue(controller.getActionErrors().contains(CartController.SPECIFY_SOMETHING));
         assertEquals(CartController.INPUT,save);
         setIgnoreActionErrors(true);
+    }
+
+    @Test
+    @Rollback
+    public void testCartBasicValid() throws TdarActionException {
+        CartController controller = generateNewInitializedController(CartController.class);
+        controller.prepare();
+        String result = controller.add();
+        assertEquals(TdarActionSupport.SUCCESS, result);
+        controller = generateNewInitializedController(CartController.class);
+        controller.prepare();
+        controller.getInvoice().setNumberOfFiles(10L);
+        controller.setServletRequest(getServletPostRequest());
+        String save = controller.save();
+
+        assertEquals(CartController.SUCCESS,save);
     }
 
     @Override
