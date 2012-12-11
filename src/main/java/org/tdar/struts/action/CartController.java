@@ -42,6 +42,8 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     private Long accountId = -1L;
     public static final String SUCCESS_UPDATE_ACCOUNT = "success-update-account";
     public static final String SUCCESS_ADD_ACCOUNT = "success-add-account";
+    public static final String SUCCESS_ADD_ADDRESS = "add-address";
+    public static final String SUCCESS_ADD_PAY = "add-payment";
     private static final String INVOICE = "invoice";
     private static final String POLLING = "polling";
     public static final String SPECIFY_SOMETHING = "please choose something";
@@ -69,6 +71,9 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         }
         // this may be 'different' from the owner
         getInvoice().setTransactedBy(getAuthenticatedUser());
+        if (Persistable.Base.isNullOrTransient(getInvoice().getAddress())) {
+            setSaveSuccessPath(SUCCESS_ADD_ADDRESS);
+        }
         return SUCCESS;
     }
 
@@ -76,6 +81,11 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     protected void delete(Invoice persistable) {
         // TODO Auto-generated method stub
 
+    }
+    
+    @Action(value = SUCCESS_ADD_ADDRESS)
+    public String chooseAddress() throws TdarActionException {
+        return super.view();
     }
 
     @SkipValidation
@@ -101,7 +111,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     @SkipValidation
     @WriteableSession
     @Action(value = "save-billing-address", results = {
-            @Result(name = SUCCESS, type = "redirect", location = "view?id=${invoice.id}&review=true")
+            @Result(name = SUCCESS_ADD_PAY, type = "redirect", location = "add-payment?id=${invoice.id}&review=true")
     })
     public String saveBilling() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
@@ -111,7 +121,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         getInvoice().setAddress(getGenericService().loadFromSparseEntity(getInvoice().getAddress(), Address.class));
         getGenericService().saveOrUpdate(getInvoice());
 
-        return SUCCESS;
+        return SUCCESS_ADD_PAY;
     }
 
     private String redirectUrl;
