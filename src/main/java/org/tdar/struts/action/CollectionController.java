@@ -295,8 +295,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         Collections.sort(collections);
 
         if (isEditor()) {
-            List<Long> collectionIds = Persistable.Base.extractIds(getResourceCollectionService().findAllDirectChildCollections(getId(), null,
-                    CollectionType.SHARED));
+            List<Long> collectionIds = Persistable.Base.extractIds(getResourceCollectionService().findAllChildCollectionsRecursive(getPersistable(), CollectionType.SHARED));
             collectionIds.add(getId());
             setTotalResourceAccessStatistic(getResourceService().getResourceUsageStatistics(null, null, collectionIds, null, null, null));
             setUploadedResourceAccessStatistic(getResourceService().getResourceUsageStatistics(null, null, collectionIds, null,
