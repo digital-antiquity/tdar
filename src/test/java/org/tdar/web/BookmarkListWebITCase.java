@@ -1,10 +1,12 @@
 package org.tdar.web;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.tdar.TestConstants;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.w3c.dom.Element;
 
 public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
 
@@ -87,7 +89,14 @@ public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
             setInput("status", status.name());
             submitForm();
             gotoPage(URLConstants.DASHBOARD);
-            assertTextNotPresent(docTitle);
+            boolean seen = false;
+            for (Element el : querySelectorAll("bookmarks")) {
+                    if (el.toString().contains(docTitle)) {
+                        seen = true;
+                    }
+                    logger.info(el.toString());
+            }
+            Assert.assertFalse(seen);
         }
 
         // undelete it, should be back on workspace again
