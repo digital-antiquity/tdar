@@ -90,7 +90,7 @@ public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
             submitForm();
             gotoPage(URLConstants.DASHBOARD);
             boolean seen = false;
-            for (Element el : querySelectorAll("bookmarks")) {
+            for (Element el : querySelectorAll("#bookmarks")) {
                     if (el.toString().contains(docTitle)) {
                         seen = true;
                     }

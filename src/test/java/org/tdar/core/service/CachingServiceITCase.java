@@ -6,6 +6,9 @@
  */
 package org.tdar.core.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+
 import java.util.List;
 
 import org.junit.Test;
@@ -23,14 +26,11 @@ import org.tdar.core.service.resource.CodingSheetService;
 import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.TdarActionSupport;
 
-import static org.junit.Assert.*;
-
 /**
  * @author Adam Brin
  * 
  */
 public class CachingServiceITCase extends AbstractControllerITCase {
-
 
     @Autowired
     private RebuildHomepageCache cacheRebuilder;
