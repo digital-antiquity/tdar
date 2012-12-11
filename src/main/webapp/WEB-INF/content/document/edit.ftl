@@ -24,7 +24,7 @@
 
 </@edit.basicInformation>
 
-<@edit.allCreators "Authors / Editors" authorshipProxies 'authorship' false />
+<@edit.allCreators "Authors / Editors" authorshipProxies 'authorship' />
 
 <@edit.citationInfo "document">
     <div tiplabel="Document Type"  tooltipcontent="Select the document type. Appropriate citation fields will be displayed below." class="doctype">

@@ -780,10 +780,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return new ResourceCreatorProxy();
     }
 
-    public ResourceCreatorProxy getBlankCreatorProxy2() {
-        return new ResourceCreatorProxy();
-    }
-
     public CoverageDate getBlankCoverageDate() {
         return new CoverageDate(CoverageType.CALENDAR_DATE);
     }

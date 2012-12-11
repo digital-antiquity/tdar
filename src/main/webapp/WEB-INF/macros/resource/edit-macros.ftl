@@ -443,8 +443,15 @@ ${resource.resourceType.label}
             	<#if authorizedUser.user.id == authenticatedUser.id || ableToUploadFiles?has_content && !ableToUploadFiles>
 	            	<#local disabled = true>
             	</#if>
-                <@userRow person=authorizedUser.user isDisabled=disabled _indexNumber=authorizedUser_index includeRole=false _personPrefix="user" 
-                   prefix="authorizedUsers" includeRights=true isUser=true includeRepeatRow=true includeDelete=true/>
+           	    <div class="controls controls-row">
+               	    <div class="span6">
+                        <@userRow person=authorizedUser.user isDisabled=disabled _indexNumber=authorizedUser_index includeRole=false _personPrefix="user" 
+                           prefix="authorizedUsers" includeRights=true isUser=true includeRepeatRow=true/>
+                    </div>
+                    <div class="span1">
+                        <@clearDeleteButton id="accessRightsRecordsDelete${authorizedUser_index}" disabled=disabled />
+                    </div>
+                </div>
             </#if>
         </#list>
     </div>
@@ -782,40 +789,24 @@ applyInheritance(project, formSelector);
 
 
 <#macro allCreators sectionTitle proxies prefix inline=false showInherited=false>
-    <@resourceCreators sectionTitle proxies prefix inline showInherited />
-    <style>
-    </style>
+    <@resourceCreators sectionTitle proxies prefix  />
 </#macro>
 
-<#macro resourceCreators sectionTitle proxies prefix inline=false showInherited=false>
-<#if !inline>
-<div class="well-alt" tiplabel="${sectionTitle}" 
+<#macro resourceCreators sectionTitle proxies prefix>
+<#local _proxies = proxies >
+<#if proxies?size == 0><#local _proxies = [blankCreatorProxy]></#if>
+<div class="" tiplabel="${sectionTitle}" 
     id="${prefix}Section"
     tooltipcontent="Use these fields to properly credit individuals and institutions for their contribution to the resource. Use the '+' sign to add fields for either persons or institutions, and use the drop-down menu to select roles">
     <h2>${sectionTitle}</h2>
-<#else>
-<label class="toplabel">${sectionTitle}</label> <br />
-</#if>
-
-    <table 
-        id="${prefix}Table"
-        class="table repeatLastRow creatorProxyTable">
-        <tbody>
-            <#if proxies?has_content >
-              <#list proxies as proxy>
-                <@creatorProxyRow proxy  prefix proxy_index/>
-              </#list>
-            <#else>
-              <@creatorProxyRow blankCreatorProxy prefix 0 />
-            </#if>
-        </tbody>
-    </table>
-<#if !inline>
-</div>
-</#if>
-
+       
+    <div id="${prefix}Table" class="table repeatLastRow creatorProxyTable">
+        <#list _proxies as proxy>
+        <@creatorProxyRow proxy  prefix proxy_index/>
+        </#list>
+    </div>
+</div> <!-- section -->
 </#macro>
-
 
 <#macro creatorProxyRow proxy=proxy prefix=prefix proxy_index=proxy_index type_override="NONE" required=false includeRole=true>
     <#assign relevantPersonRoles=personAuthorshipRoles />
@@ -827,29 +818,31 @@ applyInheritance(project, formSelector);
 
     <#if proxy??>
 
-    <tr id="${prefix}Row_${proxy_index}_" class="repeat-row">
+    <div id="${prefix}Row_${proxy_index}_" class="repeat-row control-group">
           <#assign creatorType = proxy.actualCreatorType!"PERSON" />
           <!-- fixme: careful with this styling -->
-        <td style="margin-right:0px !important;padding-right:2px !important">
+        <div class="control-label">
              <div class="btn-group creator-toggle-button" data-toggle="buttons-radio">
                <button type="button" class="btn btn-small personButton <#if type_override == "PERSON" || (creatorType=='PERSON' && type_override=='NONE') >btn-active active</#if>" data-toggle="button">Person</button>
                <button type="button" class="btn btn-small institutionButton <#if creatorType =='INSTITUTION' || type_override == "INSTITUTION">btn-active active</#if>" data-toggle="button">Institution</button>
             </div>
-        </td>
-        <td style="margin-left:0px !important;padding-left:0px !important">
-            <@userRow person=proxy.person _indexNumber=proxy_index _personPrefix="person" prefix="${prefix}Proxies" 
-                includeRole=includeRole hidden=(creatorType =='INSTITUTION' || type_override == "INSTITUTION") required=(creatorType=='PERSON' && required) />
-
-            <@institutionRow institution=proxy.institution _indexNumber=proxy_index includeRole=includeRole _institutionPrefix="institution" prefix="${prefix}Proxies" 
-                hidden=(type_override == "PERSON" || (creatorType=='PERSON' && type_override=='NONE')) required=(creatorType=='INSTITUTION' && required)/>
-        </td>
-        <td>
-            <button class="btn  btn-mini repeat-row-delete " type="button" tabindex="-1" onclick="deleteParentRow(this)"><i class="icon-trash"></i></button>
-        </td>
-    </tr>
+        </div>
+        <div class="controls controls-row">
+            <#--assuming we are in a span9 and that a controls-div is 2 cells narrower, our width should be span 7 -->
+            <div class="span6">
+                <@userRow person=proxy.person _indexNumber=proxy_index _personPrefix="person" prefix="${prefix}Proxies" 
+                    includeRole=includeRole hidden=(creatorType =='INSTITUTION' || type_override == "INSTITUTION") required=(creatorType=='PERSON' && required) />
+    
+                <@institutionRow institution=proxy.institution _indexNumber=proxy_index includeRole=includeRole _institutionPrefix="institution" prefix="${prefix}Proxies" 
+                    hidden=(type_override == "PERSON" || (creatorType=='PERSON' && type_override=='NONE')) required=(creatorType=='INSTITUTION' && required)/>
+            </div>
+            <div class="span1">
+                <button class="btn  btn-mini repeat-row-delete " type="button" tabindex="-1" onclick="deleteParentRow(this)"><i class="icon-trash"></i></button>
+            </div>
+        </div>
+    </div>
     </#if>
 </#macro>
-
 
 <#macro identifiers showInherited=true>
     <#local _resourceAnnotations = resourceAnnotations />
@@ -1514,7 +1507,7 @@ $(function() {
         <label class="control-label">Users</label>
         <#list _authorizedUsers as user>
             <#if user??>
-                <@userRow person=user _indexNumber=user_index isUser=true includeRepeatRow=true includeDelete=true/>
+                <@userRow person=user _indexNumber=user_index isUser=true includeRepeatRow=true/>
             </#if>
         </#list>
     </div>
@@ -1524,7 +1517,7 @@ $(function() {
 
 
 <#macro userRow person=person _indexNumber=0 isDisabled=false prefix="authorizedMembers" required=false _personPrefix="" includeRole=false
-    includeRepeatRow=false includeRights=false includeDelete=false hidden=false isUser=false>
+    includeRepeatRow=false includeRights=false  hidden=false isUser=false>
 <#local disabled =  isDisabled?string("disabled", "") />
 <#local readonly = isDisabled?string("readonly", "") />
 <#local lookupType="nameAutoComplete"/>
@@ -1537,50 +1530,48 @@ $(function() {
 <#local rowIdElement="${prefix}Row_${_indexNumber}_p" />
 <#local idIdElement="${prefix}Id__id_${_indexNumber}_p" />
 <#local requiredClass><#if required>required</#if></#local>
-    <div id='${rowIdElement}' class="creatorPerson <#if hidden>hidden</#if> <#if includeRepeatRow>repeat-row</#if> indent-row">
+    <div id='${rowIdElement}' class="creatorPerson <#if hidden>hidden</#if> <#if includeRepeatRow>repeat-row</#if>">
         <@s.hidden name='${strutsPrefix}${personPrefix}.id' value='${(person.id!-1)?c}' id="${idIdElement}"  cssClass="validIdRequired" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"   />
-        <div class="control-group">
-            <div class="controls controls-row">
-                <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass}" placeholder="Last Name"  readonly=isDisabled autocompleteParentElement="#${rowIdElement}"
-                    autocompleteIdElement="#${idIdElement}" autocompleteName="lastName" autocomplete="off"
-                    name="${strutsPrefix}${personPrefix}.lastName" maxlength="255" /> 
-                <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass}" placeholder="First Name"  readonly=isDisabled autocomplete="off"
-                    name="${strutsPrefix}${personPrefix}.firstName" maxlength="255" autocompleteName="firstName"
-                    autocompleteIdElement="#${idIdElement}" 
-                    autocompleteParentElement="#${rowIdElement}"  />
-    
-                <#if includeRole || includeRights>
-                    <#if includeRole>
-                        <@s.select theme="tdar" name="${strutsPrefix}.role"  autocomplete="off" listValue='label' list=relevantPersonRoles  
-                            cssClass="creator-role-select span3" />
-                    <#else>
-                        <@s.select theme="tdar" cssClass="span3 creator-rights-select" name="${strutsPrefix}.generalPermission" emptyOption='false' 
-                            listValue='label' list='%{availablePermissions}' disabled=isDisabled />
-                        <#--HACK: disabled fields do not get sent in request, so we copy generalPermission via hidden field and prevent it from being cloned -->
-                        <@s.hidden name="${strutsPrefix}.generalPermission" cssClass="repeat-row-remove" />
-                    </#if>
-                <#else>
-    
-                </#if>
-            </div>
-            <div class="controls controls-row">
-            <@s.textfield theme="tdar" cssClass="span2 ${lookupType}" placeholder="Email (optional)" readonly=isDisabled autocomplete="off"
-                autocompleteIdElement="#${idIdElement}" autocompleteName="email" autocompleteParentElement="#${rowIdElement}"
-                name="${strutsPrefix}${personPrefix}.email" maxlength="255"/>
-            <@s.textfield theme="tdar" cssClass="span3 ${lookupType}" placeholder="Institution Name (Optional)" readonly=isDisabled autocomplete="off"
+        <div class="controls-row">
+            <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass}" placeholder="Last Name"  readonly=isDisabled autocompleteParentElement="#${rowIdElement}"
+                autocompleteIdElement="#${idIdElement}" autocompleteName="lastName" autocomplete="off"
+                name="${strutsPrefix}${personPrefix}.lastName" maxlength="255" /> 
+            <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass}" placeholder="First Name"  readonly=isDisabled autocomplete="off"
+                name="${strutsPrefix}${personPrefix}.firstName" maxlength="255" autocompleteName="firstName"
                 autocompleteIdElement="#${idIdElement}" 
-                autocompleteName="institution" 
-                autocompleteParentElement="#${rowIdElement}"
-                name="${strutsPrefix}${personPrefix}.institution.name" maxlength="255" />
+                autocompleteParentElement="#${rowIdElement}"  />
+
+            <div class="span2">
+            <#if includeRole || includeRights>
+            
+                <#if includeRole>
+                    <@s.select theme="tdar" name="${strutsPrefix}.role"  autocomplete="off" listValue='label' list=relevantPersonRoles  
+                        cssClass="creator-role-select input-block-level" />
+                <#else>
+                    <@s.select theme="tdar" cssClass="creator-rights-select input-block-level" name="${strutsPrefix}.generalPermission" emptyOption='false' 
+                        listValue='label' list='%{availablePermissions}' disabled=isDisabled />
+                    <#--HACK: disabled fields do not get sent in request, so we copy generalPermission via hidden field and prevent it from being cloned -->
+                    <@s.hidden name="${strutsPrefix}.generalPermission" cssClass="repeat-row-remove" />
+                </#if>
+            <#else>
+                &nbsp; 
+            </#if>
             </div>
-              <#if includeDelete>          
-                  <@clearDeleteButton id="${prefix}${_index}" disabled=isDisabled />
-              </#if>
+        </div>
+        <div class="controls-row">
+        <@s.textfield theme="tdar" cssClass="span3 ${lookupType}" placeholder="Email (optional)" readonly=isDisabled autocomplete="off"
+            autocompleteIdElement="#${idIdElement}" autocompleteName="email" autocompleteParentElement="#${rowIdElement}"
+            name="${strutsPrefix}${personPrefix}.email" maxlength="255"/>
+        <@s.textfield theme="tdar" cssClass="span3 ${lookupType}" placeholder="Institution Name (Optional)" readonly=isDisabled autocomplete="off"
+            autocompleteIdElement="#${idIdElement}" 
+            autocompleteName="institution" 
+            autocompleteParentElement="#${rowIdElement}"
+            name="${strutsPrefix}${personPrefix}.institution.name" maxlength="255" />
         </div>
     </div>
 </#macro>
 
-<#macro institutionRow institution _indexNumber=0 prefix="authorizedMembers" required=false includeRole=false _institutionPrefix="" includeDelete=false hidden=false includeRepeatRow=false>
+<#macro institutionRow institution _indexNumber=0 prefix="authorizedMembers" required=false includeRole=false _institutionPrefix=""  hidden=false includeRepeatRow=false>
 <#local _index=""/>
 <#if _indexNumber?string!=''><#local _index="[${_indexNumber}]" /></#if>
 <#local institutionPrefix="" />
@@ -1589,7 +1580,7 @@ $(function() {
 <#local rowIdElement="${prefix}Row_${_indexNumber}_i" />
 <#local idIdElement="${prefix}Id__id_${_indexNumber}_i" />
 
-    <div id='${rowIdElement}' class="creatorInstitution <#if hidden >hidden</#if> <#if includeRepeatRow>repeat-row</#if> indent-row">
+    <div id='${rowIdElement}' class="creatorInstitution <#if hidden >hidden</#if> <#if includeRepeatRow>repeat-row</#if> ">
 
         <@s.hidden name='${strutsPrefix}${institutionPrefix}.id' value='${(institution.id!-1)?c}' id="${idIdElement}"  cssClass="validIdRequired" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"  />
             <div class="control-group">
@@ -1604,9 +1595,6 @@ $(function() {
                  </#if>
               </div>
           </div>
-          <#if includeDelete>          
-              <@clearDeleteButton id="${prefix}${_index}" />
-          </#if>
     </div>
 </#macro>
 

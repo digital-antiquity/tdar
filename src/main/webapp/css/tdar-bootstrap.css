@@ -568,14 +568,6 @@ table.repeatLastRow {
     margin-bottom: -20px;
 }
 
-div>.indent-row {
-    margin-left: 170px;
-}
-
-.indent-row .controls-row [class *="span"]+[class *="span"],.creatorPerson .controls-row [class
-    *="span"]+[class *="span"] {
-    margin-left: 10px;
-}
 
 body.edit h2 {
     margin-top: 3em;
