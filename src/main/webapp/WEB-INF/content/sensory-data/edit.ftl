@@ -3,10 +3,7 @@
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
 <head>
 <@edit.title />
-
-
 <meta name="lastModifiedDate" content="$Id$"/>
-
 </head>
 <body>
 <@edit.sidebar /> 
@@ -106,8 +103,8 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
                     <span tiplabel="Scan Transformation Matrix" tooltipcontent="The name of the transformation matrix used in Global Registration. Suggested file name: ProjectName_scan1_mtrx.txt">
                     <@s.textfield maxLength="255" theme='simple' name="sensoryDataScans[${_scan_index}].transformationMatrix" placeholder="Transformation Matrix" cssClass="span3" />
                     </span>
-                    <span tooltipcontent="Check this box if transformation matrix has been applied to the archived scan">
-                    <label class='checkbox'>
+                    <span tooltipcontent="Check this box if this transformation matrix has been applied to the archived scan">
+                    <label class='checkbox span2'>
                     <@s.checkbox theme='simple' name="sensoryDataScans[${_scan_index}].matrixApplied" id="cbMatrixApplied_${_scan_index}_" />
                     Matrix Applied to Scan
                     </label>
@@ -140,7 +137,7 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
         </#list>
     </div>
 </div>
-<div id="divImageInfo">
+<div id="divImageInfo" tooltipcontent='#imageInfoTooltip'>
     <#assign _images=sensoryDataImages />
     <#if _images.isEmpty()>
     <#assign _images=blankSensoryDataImage />
@@ -161,7 +158,7 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
         </#list>
     </div>
 </div>
-<div tooltipfor="divImageInfo" class="hidden">
+<div id="imageInfoTooltip" class="hide">
     <div>
         Use this section to specify information about reference images included in with this resource.
         <dl>
