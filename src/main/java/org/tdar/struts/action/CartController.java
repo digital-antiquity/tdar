@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.commons.httpclient.URIException;
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -83,7 +84,10 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
     }
     
-    @Action(value = SUCCESS_ADD_ADDRESS)
+    @Actions({
+        @Action(value = SUCCESS_ADD_ADDRESS),
+        @Action(value = SUCCESS_ADD_PAY)
+    })
     public String chooseAddress() throws TdarActionException {
         return super.view();
     }
@@ -111,7 +115,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     @SkipValidation
     @WriteableSession
     @Action(value = "save-billing-address", results = {
-            @Result(name = SUCCESS_ADD_PAY, type = "redirect", location = "add-payment?id=${invoice.id}&review=true")
+            @Result(name = SUCCESS_ADD_PAY, type = "redirect", location = "add-payment?id=${invoice.id}")
     })
     public String saveBilling() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
