@@ -5,6 +5,11 @@
 /*	margin-left: 40px;*/
 }
 
+.alwaysHidden {
+	display:none !important;
+	visibility:hidden !important;
+}
+
 .span45 {
 	width: 420px;
 }

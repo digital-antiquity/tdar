@@ -1,6 +1,7 @@
               <div id="title">
-                  <a href="http://www.ahad.edu.au"><img src="<@s.url value="/${themeDir}images/ahad_logo.jpg"/>" alt='' 
-                    width='90' /> </a></div>
+              		<!-- note: make sure the id =top is always in this header -->
+                  <h1 id="top"><a href="http://www.ahad.edu.au"><img src="<@s.url value="/${themeDir}images/ahad_logo.jpg"/>" alt='' 
+                    width='90' /> </a></h1></div>
                   <div id="description"> the Australian Historical<br/>Archaeological Database
                   <#if !production >
                       ${tdarConfiguration.serverEnvironmentStatus} Server

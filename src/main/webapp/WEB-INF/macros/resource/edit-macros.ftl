@@ -1472,10 +1472,11 @@ $(function() {
 
 <#macro subNavMenu>
     <#local supporting = (resource.resourceType.supporting)!false >
-    <div id='subnavbar' class="affix-top resource-nav navbar-static"  data-offset-top="250" data-spy="affix">
+    <div id='subnavbar' class="affix-top resource-nav navbar-static"  data-offset-top="250" data-spy="affix" >
       <div class="">
         <div class="container" >
         <ul class="nav">
+        	<li class="alwaysHidden"><a href="#top">top</a></li>
             <li class="active hidden-tablet hidden-phone"><a href="#basicInformationSection">Basic</a></li>
             <li><a href="#authorshipSection">Authors</a></li>
             <#if persistable.resourceType?has_content && persistable.resourceType != 'PROJECT'  && (!supporting)><li><a href="#divFileUpload">Files</a></li></#if>
