@@ -298,11 +298,15 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.ACCOUNT_GROUP_FOR_ACCOUNT,
-                query = " from AccountGroup grp inner join grp.accounts as account where account.id =:accountId"
+                query = "select grp from AccountGroup grp inner join grp.accounts as account where account.id =:accountId"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.ACCOUNTS_FOR_PERSON,
                 query = "select act from Account act left join act.authorizedMembers as person where ( act.owner.id =:personId or person.id=:personId) and act.status in (:statuses)"
+        ),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.ACCOUNT_GROUPS_FOR_PERSON,
+                query = "select act from AccountGroup act left join act.authorizedMembers as person where ( act.owner.id =:personId or person.id=:personId) and act.status in (:statuses)"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.LOGS_FOR_RESOURCE,

@@ -4,8 +4,10 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -34,16 +36,26 @@ public class AccountDao extends Dao.HibernateBase<Account> {
         super(Account.class);
     }
 
-    /*
-     * FixMe: replace with a HQL query this should find all accounts the user is an owner on or all child account they're the owner of an account group; if
-     * administrator, or finance person should be "all accounts".
-     */
     @SuppressWarnings("unchecked")
-    public List<Account> findAccountsForUser(Person user) {
+    public Set<Account> findAccountsForUser(Person user) {
+        Set<Account> accountGroups = new HashSet<Account>();
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.ACCOUNTS_FOR_PERSON);
         query.setParameter("personId", user.getId());
         query.setParameterList("statuses", Arrays.asList(Status.ACTIVE));
-        return (List<Account>) query.list();
+        accountGroups.addAll(query.list());
+        for (AccountGroup group : findAccountGroupsForUser(user)) {
+            accountGroups.addAll(group.getAccounts());
+        }
+        return accountGroups;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<AccountGroup> findAccountGroupsForUser(Person user) {
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.ACCOUNT_GROUPS_FOR_PERSON);
+        query.setParameter("personId", user.getId());
+        query.setParameterList("statuses", Arrays.asList(Status.ACTIVE));
+        return query.list();
+
     }
 
     public AccountGroup getAccountGroup(Account account) {

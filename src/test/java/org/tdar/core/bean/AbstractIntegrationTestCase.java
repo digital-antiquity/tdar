@@ -566,6 +566,10 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         this.ignoreActionErrors = ignoreActionErrors;
     }
 
+    public void ignoreActionErrors(boolean ignoreActionErrors) {
+        this.ignoreActionErrors = ignoreActionErrors;
+    }
+
     /**
      * @return the ignoreActionErrors
      */

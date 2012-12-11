@@ -44,6 +44,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     public static final String SUCCESS_ADD_ACCOUNT = "success-add-account";
     private static final String INVOICE = "invoice";
     private static final String POLLING = "polling";
+    public static final String SPECIFY_SOMETHING = "please choose something";
     private String callback;
 
     @Autowired
@@ -53,6 +54,11 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     protected String save(Invoice persistable) {
         if (!getInvoice().isModifiable()) {
             throw new TdarRecoverableRuntimeException("cannot modify");
+        }
+
+        if ((persistable.getNumberOfFiles() == null || persistable.getNumberOfFiles() < 1) &&
+                (persistable.getNumberOfMb() == null || persistable.getNumberOfMb() < 1)) {
+            throw new TdarRecoverableRuntimeException(SPECIFY_SOMETHING);
         }
 
         persistable.getItems().clear();
@@ -65,8 +71,6 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         getInvoice().setTransactedBy(getAuthenticatedUser());
         return SUCCESS;
     }
-
-
 
     @Override
     protected void delete(Invoice persistable) {

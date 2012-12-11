@@ -1,9 +1,12 @@
 package org.tdar.core.bean;
 
+import static org.junit.Assert.*;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.service.AccountService;
@@ -38,6 +41,19 @@ public class InvoiceITCase extends AbstractIntegrationTestCase {
     }
 
     
+    @Test
+    @Rollback
+    public void testBillingItem() {
+        BillingItem item = new BillingItem();
+        assertFalse(item.isValid());
+        assertFalse(item.isValidForController());
+        item.setQuantity(1);
+        assertFalse(item.isValid());
+        assertFalse(item.isValidForController());
+        item.setActivity(new BillingActivity());
+        assertTrue(item.isValid());
+        assertTrue(item.isValidForController());
+    }
     
     private BillingItem setupBillingItme(Invoice invoice, long numberOfFiles) {
         invoice.setNumberOfFiles(numberOfFiles);

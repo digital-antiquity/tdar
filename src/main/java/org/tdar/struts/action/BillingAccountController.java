@@ -2,6 +2,7 @@ package org.tdar.struts.action;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.struts2.convention.annotation.Action;
@@ -28,7 +29,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     private static final long serialVersionUID = 2912533895769561917L;
     private static final String NEW_ACCOUNT = "new_account";
     private Long invoiceId;
-    private List<Account> accounts;
+    private Set<Account> accounts;
 
     private AccountGroup accountGroup;
     private List<Person> authorizedMembers = new ArrayList<Person>();
@@ -128,11 +129,11 @@ public class BillingAccountController extends AbstractPersistableController<Acco
         this.invoiceId = invoiceId;
     }
 
-    public List<Account> getAccounts() {
+    public Set<Account> getAccounts() {
         return accounts;
     }
 
-    public void setAccounts(List<Account> accounts) {
+    public void setAccounts(Set<Account> accounts) {
         this.accounts = accounts;
     }
 

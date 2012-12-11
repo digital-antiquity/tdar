@@ -119,7 +119,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     // private List<String> relatedCitations;
     private List<RelatedComparativeCollection> relatedComparativeCollections;
     private Long accountId;
-    private List<Account> activeAccounts = new ArrayList<Account>();
+    private Set<Account> activeAccounts = new HashSet<Account>();
 
     private List<ResourceNote> resourceNotes;
     private List<ResourceCreatorProxy> authorshipProxies;
@@ -951,11 +951,11 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         this.accountId = accountId;
     }
 
-    public List<Account> getActiveAccounts() {
+    public Set<Account> getActiveAccounts() {
         return activeAccounts;
     }
 
-    public void setActiveAccounts(List<Account> activeAccounts) {
+    public void setActiveAccounts(Set<Account> activeAccounts) {
         this.activeAccounts = activeAccounts;
     }
 

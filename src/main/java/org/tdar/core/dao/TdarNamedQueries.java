@@ -87,6 +87,7 @@ public interface TdarNamedQueries {
     public static final String RESOURCES_WITH_NON_MATCHING_ACCOUNT_ID = "account.resourceDifferent";
     public static final String ACCOUNT_GROUP_FOR_ACCOUNT = "account.group";
     public static final String ACCOUNTS_FOR_PERSON = "accounts.forPerson";
+    public static final String ACCOUNT_GROUPS_FOR_PERSON = "accountgroups.forPerson";
     // raw SQL/HQL queries
 
     public static final String QUERY_SQL_DASHBOARD =

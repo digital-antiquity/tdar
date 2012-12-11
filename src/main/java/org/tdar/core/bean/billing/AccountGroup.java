@@ -7,6 +7,8 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -17,7 +19,9 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import org.tdar.core.bean.Persistable.Base;
+import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.resource.Status;
 
 /**
  * $Id$
@@ -29,7 +33,7 @@ import org.tdar.core.bean.entity.Person;
  */
 @Entity
 @Table(name = "pos_account_group")
-public class AccountGroup extends Base {
+public class AccountGroup extends Base implements Updatable {
 
     private static final long serialVersionUID = 3939132209828344622L;
 
@@ -39,7 +43,11 @@ public class AccountGroup extends Base {
 
     private String name;
     private String description;
-    
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private Status status = Status.ACTIVE;
+
     @NotNull
     @Column(name = "date_created")
     private Date dateCreated = new Date();
@@ -65,6 +73,15 @@ public class AccountGroup extends Base {
 
     public Set<Account> getAccounts() {
         return accounts;
+    }
+
+    public void markUpdated(Person p) {
+        if (getOwner() == null) {
+            setDateCreated(new Date());
+            setOwner(p);
+        }
+        setLastModified(new Date());
+        setModifiedBy(p);
     }
 
     public void setAccounts(Set<Account> accounts) {
@@ -126,5 +143,5 @@ public class AccountGroup extends Base {
     public void setAuthorizedMembers(Set<Person> authorizedMembers) {
         this.authorizedMembers = authorizedMembers;
     }
-    
+
 }

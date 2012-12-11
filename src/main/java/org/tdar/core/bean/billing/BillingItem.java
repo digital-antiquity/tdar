@@ -62,7 +62,7 @@ public class BillingItem extends Base implements Validatable {
     @JSONTransient
     @XmlTransient
     public boolean isValidForController() {
-        return (getQuantity() > 0);
+        return (getActivity() != null && getQuantity() > 0);
     }
 
     @Override

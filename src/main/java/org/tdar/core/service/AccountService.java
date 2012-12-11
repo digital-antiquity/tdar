@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,9 +39,9 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     /*
      * Find all accounts for user: return accounts that are active and have not met their quota
      */
-    public List<Account> listAvailableAccountsForUser(Person user) {
+    public Set<Account> listAvailableAccountsForUser(Person user) {
         if (Persistable.Base.isNullOrTransient(user)) {
-            return Collections.EMPTY_LIST;
+            return Collections.EMPTY_SET;
         }
         return getDao().findAccountsForUser(user);
     }
@@ -58,7 +59,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     }
 
     public void addResourceToAccount(Person user, Resource resource) {
-        List<Account> accounts = listAvailableAccountsForUser(user);
+        Set<Account> accounts = listAvailableAccountsForUser(user);
         // if it doesn't count
         AccountAdditionStatus canAddResource = null;
         for (Account account : accounts) {
@@ -91,17 +92,17 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
                 return true;
             }
         }
-//        logger.info("user {} has no accounts or balance", user.getProperName());
+        // logger.info("user {} has no accounts or balance", user.getProperName());
         return false;
     }
 
     public void markResourcesAsFlagged(Collection<Resource> resources) {
-        for (Resource resource: resources) {
+        for (Resource resource : resources) {
             resource.setStatus(Status.FLAGGED_ACCOUNT_BALANCE);
         }
         saveOrUpdateAll(resources);
     }
-    
+
     @Transactional
     public void updateQuota(ResourceEvaluator initialEvaluation, Account account, Resource... resources) {
         logger.info("updating quota(s)");
@@ -138,7 +139,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         }
         getDao().merge(account);
         try {
-        account.updateQuotas(endingEvaluator);
+            account.updateQuotas(endingEvaluator);
         } catch (TdarRecoverableRuntimeException e) {
             markResourcesAsFlagged(Arrays.asList(resources));
         }

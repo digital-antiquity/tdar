@@ -285,3 +285,4 @@ insert into pos_billing_activity (enabled, name, numberoffiles, min_allowed_file
 insert into pos_billing_activity (enabled, name, numberoffiles, min_allowed_files, numberofmb, price) values (true, '20- 49', 1, 20, 10, 40);
 insert into pos_billing_activity (enabled, name, numberoffiles, min_allowed_files, numberofmb, price) values (true, '50-500', 1, 50, 10, 33);
 update pos_billing_activity set enabled=false where name like 'level%';
+ALTER TABLE pos_account_group ADD COLUMN status varchar(25) default 'ACTIVE';

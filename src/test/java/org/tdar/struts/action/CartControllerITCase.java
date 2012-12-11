@@ -12,16 +12,25 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
     @Rollback
     public void testCart() throws TdarActionException {
         CartController controller = generateNewInitializedController(CartController.class);
+        controller.prepare();
         String result = controller.add();
         assertEquals(TdarActionSupport.SUCCESS, result);
-        
+        controller = generateNewInitializedController(CartController.class);
+        controller.prepare();
+        controller.setServletRequest(getServletPostRequest());
+        String save = null;
+        TdarActionException tae = null;
+        try {
+            save = controller.save();
+        } catch (TdarActionException tdara) {
+            tae = tdara;
+        }
+
+        assertTrue(controller.getActionErrors().contains(CartController.SPECIFY_SOMETHING));
+        assertEquals(CartController.INPUT,save);
+        setIgnoreActionErrors(true);
     }
-    
-    
-    
-    
-    
-    
+
     @Override
     protected TdarActionSupport getController() {
         return null;
