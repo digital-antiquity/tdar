@@ -92,6 +92,7 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
                     <span tiplabel="Scan Date" tooltipcontent="Date the object/monument was scanned">
                     <@s.textfield maxLength="255" theme='simple' name="sensoryDataScans[${_scan_index}].scanDate" value="${_scanDate}" placeholder="mm/dd/yyyy" cssClass="span2 date" />
                     </span>
+                    <@edit.clearDeleteButton id="sensoryDataScanRow" />
                 </div>
                 <div class='controls controls-row'>
                     <span tiplabel="Data Resolution" tooltipcontent="Fixed resolution or data resolution at specific range.">
@@ -135,7 +136,6 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
                 <@s.textarea name="sensoryDataScans[${_scan_index}].scanNotes" label="Scan Notes" labelposition="top" cssClass="resizable input-xxlarge" rows="5" />
                 </div>
             </div>
-            <@edit.clearDeleteButton id="sensoryDataScanRow" />
         </div>
         </#list>
     </div>
@@ -146,27 +146,20 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
     <#assign _images=blankSensoryDataImage />
     </#if>  
     <h2>Image Information</h2>
-    <table id="tblsensoryDataImages" class="repeatLastRow inline-controls" addAnother="add another image">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th colspan="2">Description</th>
-            </tr>
-        </thead>
-        <tbody>
-            <#list _images as _image>
-            <tr id="sensoryDataImagesRow_${_image_index}_" class="width99percent">
-                
-                <td class="">
-                    <@s.hidden name="sensoryDataImages[${_image_index}].id" />
-                    <@s.textfield maxLength="255" name="sensoryDataImages[${_image_index}].filename"  />
-                </td>
-                <td><@s.textfield maxLength="255" name="sensoryDataImages[${_image_index}].description" /></td>
-                <td><@edit.clearDeleteButton id="sensoryDataImagesRow" /></td>
-            </tr>
-            </#list>
-        </tbody>
-    </table>
+    <div id="sensoryDataImagesDiv" class="repeatLastRow" addAnother="add another image">
+        <#list _images as _image>
+        <div id="sensoryDataImagesRow_${_image_index}_" class='repeat-row'>
+            <@s.hidden name="sensoryDataImages[${_image_index}].id" />
+            <div class='control-group'>
+                <div class='controls controls-row'>
+                <@s.textfield theme='simple' placeholder='Filename' maxLength="255" name="sensoryDataImages[${_image_index}].filename"  />
+                <@s.textfield theme='simple' placeholder='Description' maxLength="255" name="sensoryDataImages[${_image_index}].description" /></td>
+                <@edit.clearDeleteButton id="sensoryDataImagesRow" />
+                </div>
+            </div>
+        </div>
+        </#list>
+    </div>
 </div>
 <div tooltipfor="divImageInfo" class="hidden">
     <div>
