@@ -1078,7 +1078,7 @@ jquery validation hooks?)
           <@edit.copyrightHolders />
       </#if>
     </#if>
-    <@resourceCreators 'Individual and Institutional Roles' creditProxies 'credit' false showInherited />
+    <@resourceCreators 'Individual and Institutional Roles' creditProxies 'credit'  />
 
     <@identifiers showInherited />
 
@@ -1515,6 +1515,10 @@ $(function() {
 
 </#macro>
 
+<#--render person control assumed to be directly inside of a grid-sized element and inside of a control group -->
+<#macro personControl person person_index isDisabled namePrefix >
+</#macro>
+
 
 <#macro userRow person=person _indexNumber=0 isDisabled=false prefix="authorizedMembers" required=false _personPrefix="" includeRole=false
     includeRepeatRow=false includeRights=false  hidden=false isUser=false>
@@ -1571,7 +1575,7 @@ $(function() {
     </div>
 </#macro>
 
-<#macro institutionRow institution _indexNumber=0 prefix="authorizedMembers" required=false includeRole=false _institutionPrefix=""  hidden=false includeRepeatRow=false>
+<#macro institutionRow institution _indexNumber=0 prefix="authorizedMembers" required=false includeRole=false _institutionPrefix=""  hidden=false>
 <#local _index=""/>
 <#if _indexNumber?string!=''><#local _index="[${_indexNumber}]" /></#if>
 <#local institutionPrefix="" />
@@ -1580,21 +1584,22 @@ $(function() {
 <#local rowIdElement="${prefix}Row_${_indexNumber}_i" />
 <#local idIdElement="${prefix}Id__id_${_indexNumber}_i" />
 
-    <div id='${rowIdElement}' class="creatorInstitution <#if hidden >hidden</#if> <#if includeRepeatRow>repeat-row</#if> ">
+    <div id='${rowIdElement}' class="creatorInstitution <#if hidden >hidden</#if>">
 
         <@s.hidden name='${strutsPrefix}${institutionPrefix}.id' value='${(institution.id!-1)?c}' id="${idIdElement}"  cssClass="validIdRequired" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"  />
-            <div class="control-group">
-                <div class="controls controls-row">
+                <div class="controls-row">
                     <@s.textfield theme="tdar" cssClass="institutionAutoComplete institution span4" placeholder="Institution Name" autocomplete="off"
                         autocompleteIdElement="#${idIdElement}" autocompleteName="name" 
                         autocompleteParentElement="#${rowIdElement}"
                         name="${strutsPrefix}${institutionPrefix}.name" maxlength="255" />
 
-                <#if includeRole>
-                    <@s.select theme="tdar" name="${strutsPrefix}.role" listValue='label' list=relevantInstitutionRoles cssClass="creator-role-select span3" />
-                 </#if>
-              </div>
-          </div>
+                    <#if includeRole>
+                    <@s.select theme="tdar" name="${strutsPrefix}.role" listValue='label' list=relevantInstitutionRoles cssClass="creator-role-select span2" />
+                    <#else>
+                    <#-- is includeRole ever false?  if not we should ditch the parm entirely, perhaps the entire macro. -->
+                    <div class="span2">&nbsp</div>
+                    </#if>
+                </div>
     </div>
 </#macro>
 

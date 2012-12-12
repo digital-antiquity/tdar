@@ -1215,9 +1215,9 @@ TDAR.common = function() {
         TDAR.repeatrow.registerRepeatable(".repeatLastRow");
         
         //init person/institution buttons
-        $("table.creatorProxyTable").delegate('.creator-toggle-button', "click",function(event){
+        $(".creatorProxyTable").on("click", '.creator-toggle-button', function(event){
             var $this = $(this);
-            var $top = $this.parents("tr").first();
+            var $top = $this.closest(".repeat-row");
             if ($(event.target).hasClass("personButton")) {
                 $(".creatorPerson", $top).removeClass("hidden");
                 $(".creatorInstitution",$top).removeClass("hidden").addClass("hidden");
