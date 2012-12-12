@@ -109,6 +109,7 @@ import org.tdar.core.bean.keyword.SuggestedKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.configuration.JSONTransient;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.exception.TdarValidationException;
 import org.tdar.search.index.DontIndexWhenNotReadyInterceptor;
 import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
 import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
@@ -1322,11 +1323,11 @@ public class Resource extends JsonModel.Base implements Persistable,
     public boolean isValid() {
         if (isValidForController() == true) {
             if (getSubmitter() == null) {
-                throw new TdarRecoverableRuntimeException(
+                throw new TdarValidationException(
                         "A submitter is required for this " + getResourceType());
             }
             if (getDateCreated() == null) {
-                throw new TdarRecoverableRuntimeException(
+                throw new TdarValidationException(
                         "The registered date is required for this "
                                 + getResourceType());
             }
@@ -1338,11 +1339,11 @@ public class Resource extends JsonModel.Base implements Persistable,
     @JSONTransient
     public boolean isValidForController() {
         if (StringUtils.isEmpty(getTitle())) {
-            throw new TdarRecoverableRuntimeException(
+            throw new TdarValidationException(
                     "A title is required for this " + getResourceType());
         }
         if (StringUtils.isEmpty(getDescription())) {
-            throw new TdarRecoverableRuntimeException(
+            throw new TdarValidationException(
                     "A description is required for this " + getResourceType());
         }
         return true;

@@ -5,27 +5,47 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlTransient;
 
+import org.apache.commons.lang.StringUtils;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Persistable.Base;
+import org.tdar.core.bean.Validatable;
+import org.tdar.core.configuration.JSONTransient;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.exception.TdarValidationException;
 
 @Entity
 @Table(name = "creator_address")
-public class Address extends Base implements Persistable {
+public class Address extends Base implements Persistable, Validatable {
+
+    private static final String ADDRESS_TYPE_IS_REQUIRED = "an address type is required";
+    private static final String POSTAL_CODE_IS_REQUIRED = "a postal code is required";
+    private static final String COUNTRY_IS_REQUIRED = "a country is required";
+    private static final String STATE_IS_REQUIRED = "a state is required";
+    private static final String CITY_IS_REQUIRED = "a city is required";
+    private static final String STREET_ADDRESS_IS_REQUIRED = "a street address is required";
 
     private static final long serialVersionUID = 3179122792715811371L;
 
+    @NotNull
     private String street1;
     private String street2;
+    @NotNull
     private String city;
+    @NotNull
     private String state;
+    @NotNull
     private String postal;
+    @NotNull
     private String country;
-    
+
     @Enumerated(EnumType.STRING)
     @Column(name = "type")
+    @NotNull
     private AddressType type;
- 
+
     public String getStreet1() {
         return street1;
     }
@@ -80,6 +100,38 @@ public class Address extends Base implements Persistable {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    @Override
+    @JSONTransient
+    @XmlTransient
+    public boolean isValidForController() {
+        return isValid();
+    }
+
+    @Override
+    @JSONTransient
+    @XmlTransient
+    public boolean isValid() {
+        if (StringUtils.isBlank(street1)) {
+            throw new TdarValidationException(STREET_ADDRESS_IS_REQUIRED);
+        }
+        if (StringUtils.isBlank(city)) {
+            throw new TdarValidationException(CITY_IS_REQUIRED);
+        }
+        if (StringUtils.isBlank(state)) {
+            throw new TdarValidationException(STATE_IS_REQUIRED);
+        }
+        if (StringUtils.isBlank(country)) {
+            throw new TdarValidationException(COUNTRY_IS_REQUIRED);
+        }
+        if (StringUtils.isBlank(postal)) {
+            throw new TdarValidationException(POSTAL_CODE_IS_REQUIRED);
+        }
+        if (type == null) {
+            throw new TdarValidationException(ADDRESS_TYPE_IS_REQUIRED);
+        }
+        return true;
     }
 
 }

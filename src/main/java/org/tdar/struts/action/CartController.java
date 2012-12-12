@@ -73,6 +73,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         // this may be 'different' from the owner
         getInvoice().setTransactedBy(getAuthenticatedUser());
         if (Persistable.Base.isNullOrTransient(getInvoice().getAddress())) {
+            logger.info("hi");
             setSaveSuccessPath(SUCCESS_ADD_ADDRESS);
         }
         return SUCCESS;
@@ -94,12 +95,15 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
     @SkipValidation
     @Action(value = "credit", results = { @Result(name = SUCCESS, location = "credit-info.ftl") })
-    public String editCredit() throws TdarActionException {
+    public String addPaymentMethod() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         if (!getInvoice().isModifiable()) {
             throw new TdarRecoverableRuntimeException("cannot modify");
         }
-
+        if (getInvoice().getTransactionStatus() != TransactionStatus.PENDING_TRANSACTION) {
+            return ERROR;
+        }
+ 
         return SUCCESS;
     }
 
@@ -107,7 +111,10 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     @Action(value = "polling-check", results = {
             @Result(name = "wait", type = "freemarker", location = "polling-check.ftl", params = { "contentType", "application/json" }) })
     public String pollingCheck() throws TdarActionException {
-        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+        if (getInvoice().getTransactionStatus() != TransactionStatus.PENDING_TRANSACTION) {
+            return ERROR;
+        }
+         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
 
         return "wait";
     }
@@ -134,12 +141,12 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
     /*
      * This method will take the response and prepare it for the CC processing transaction; admin(s) will have additional rights. Ultimately, the redirect URL
-     * will open in a "new frame" or window and the resulting window will poll for a response.
+     * will open in a "new  frame" or window and the resulting window will poll for a response.
      */
     @SkipValidation
     @WriteableSession
     @Action(value = "process-payment-request", results = {
-            @Result(name = SUCCESS, type = "redirect", location = "view?id=${invoice.id}&review=true"),
+            @Result(name = SUCCESS, type = "redirect", location = "view?id=${invoice.id}"),
             @Result(name = POLLING, location = "polling.ftl"),
             @Result(name = SUCCESS_ADD_ACCOUNT, type = "redirect", location = "${successPath}")
     })
@@ -148,7 +155,11 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         if (!getInvoice().isModifiable()) {
             return SUCCESS;
         }
-        getSuccessPath(); // initialize
+        
+        if (getInvoice().getTransactionStatus() != TransactionStatus.PENDING_TRANSACTION) {
+            return ERROR;
+        }
+        getSuccessPathForPayment(); // initialize
         PaymentMethod paymentMethod = getInvoice().getPaymentMethod();
         String invoiceNumber = getInvoice().getInvoiceNumber();
         String otherReason = getInvoice().getOtherReason();
@@ -322,7 +333,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         this.callback = callback;
     }
 
-    public String getSuccessPath() {
+    public String getSuccessPathForPayment() {
         successPath = String.format("/billing/choose?invoiceId=%d", getInvoice().getId());
         Account account = getGenericService().find(Account.class, accountId);
         if (account != null) {

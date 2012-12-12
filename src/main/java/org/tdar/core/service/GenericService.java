@@ -28,6 +28,7 @@ import org.tdar.core.bean.Validatable;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.exception.TdarValidationException;
 
 /**
  * $Id$
@@ -259,10 +260,10 @@ public class GenericService {
             Set<ConstraintViolation<Object>> violations = validator.validate(obj);
             if (violations.size() > 0) {
                 logger.debug(String.format("violations: %s", violations));
-                throw new TdarRecoverableRuntimeException(String.format("This object %s is not valid %s", obj, violations));
+                throw new TdarValidationException(String.format("This object %s is not valid %s", obj, violations));
             }
             if (obj instanceof Validatable && !((Validatable) obj).isValid()) {
-                throw new TdarRecoverableRuntimeException(String.format("This object %s is not valid", obj));
+                throw new TdarValidationException(String.format("This object %s is not valid", obj));
             }
         }
     }
