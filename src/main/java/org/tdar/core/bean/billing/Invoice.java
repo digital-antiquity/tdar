@@ -51,6 +51,15 @@ public class Invoice extends Base implements Updatable {
         PENDING_TRANSACTION,
         TRANSACTION_SUCCESSFUL,
         TRANSACTION_FAILED;
+
+        public boolean isComplete() {
+            switch (this) {
+                case PENDING_TRANSACTION:
+                case PREPARED:
+                    return false;
+            }
+            return true;
+        }
     }
 
     @NotNull

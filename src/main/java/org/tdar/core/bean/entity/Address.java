@@ -101,6 +101,18 @@ public class Address extends Base implements Persistable, Validatable {
         this.country = country;
     }
 
+    public Address() {
+    }
+
+    public Address(AddressType type, String street1, String city, String state, String postal, String country) {
+        this.type = type;
+        this.street1 = street1;
+        this.state = state;
+        this.city = city;
+        this.postal = postal;
+        this.country = country;
+    }
+
     @Override
     @JSONTransient
     @XmlTransient

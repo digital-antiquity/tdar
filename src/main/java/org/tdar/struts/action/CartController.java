@@ -45,8 +45,8 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     public static final String SUCCESS_ADD_ACCOUNT = "success-add-account";
     public static final String SUCCESS_ADD_ADDRESS = "add-address";
     public static final String SUCCESS_ADD_PAY = "add-payment";
-    private static final String INVOICE = "invoice";
-    private static final String POLLING = "polling";
+    public static final String INVOICE = "invoice";
+    public static final String POLLING = "polling";
     public static final String SPECIFY_SOMETHING = "please choose something";
     private String callback;
 
@@ -73,7 +73,6 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         // this may be 'different' from the owner
         getInvoice().setTransactedBy(getAuthenticatedUser());
         if (Persistable.Base.isNullOrTransient(getInvoice().getAddress())) {
-            logger.info("hi");
             setSaveSuccessPath(SUCCESS_ADD_ADDRESS);
         }
         return SUCCESS;
@@ -84,10 +83,10 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         // TODO Auto-generated method stub
 
     }
-    
+
     @Actions({
-        @Action(value = SUCCESS_ADD_ADDRESS),
-        @Action(value = SUCCESS_ADD_PAY)
+            @Action(value = SUCCESS_ADD_ADDRESS),
+            @Action(value = SUCCESS_ADD_PAY)
     })
     public String chooseAddress() throws TdarActionException {
         return super.view();
@@ -100,10 +99,10 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         if (!getInvoice().isModifiable()) {
             throw new TdarRecoverableRuntimeException("cannot modify");
         }
-        if (getInvoice().getTransactionStatus() != TransactionStatus.PENDING_TRANSACTION) {
+        if (getInvoice().getTransactionStatus() != TransactionStatus.PREPARED) {
             return ERROR;
         }
- 
+
         return SUCCESS;
     }
 
@@ -114,7 +113,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         if (getInvoice().getTransactionStatus() != TransactionStatus.PENDING_TRANSACTION) {
             return ERROR;
         }
-         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
 
         return "wait";
     }
@@ -124,7 +123,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     @Action(value = "save-billing-address", results = {
             @Result(name = SUCCESS_ADD_PAY, type = "redirect", location = "add-payment?id=${invoice.id}")
     })
-    public String saveBilling() throws TdarActionException {
+    public String saveAddress() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         if (!getInvoice().isModifiable()) {
             throw new TdarRecoverableRuntimeException("cannot modify");
@@ -155,8 +154,8 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         if (!getInvoice().isModifiable()) {
             return SUCCESS;
         }
-        
-        if (getInvoice().getTransactionStatus() != TransactionStatus.PENDING_TRANSACTION) {
+
+        if (getInvoice().getTransactionStatus().isComplete()) {
             return ERROR;
         }
         getSuccessPathForPayment(); // initialize

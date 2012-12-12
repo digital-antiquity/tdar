@@ -144,7 +144,7 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
         }
 
     }
-
+    
     public TdarGroup findGroupWithGreatestPermissions(Person person) {
         if (person == null) {
             return TdarGroup.UNAUTHORIZED;
