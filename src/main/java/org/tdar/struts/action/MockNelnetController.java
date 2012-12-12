@@ -108,13 +108,13 @@ public class MockNelnetController extends AuthenticationAware.Base implements Pa
         responseParams.put(NelnetTransactionItemResponse.TRANSACTION_TOTAL.getKey(), new String[] { total });
         responseParams.put(NelnetTransactionItemResponse.TRANSACTION_TYPE.getKey(), new String[] { "1" });
         String responseCode = "1";
-        if (total.endsWith(".11")) {
+        if (total.endsWith("11")) {
             responseCode = "2";
         }
-        if (total.endsWith(".21")) {
+        if (total.endsWith("21")) {
             responseCode = "3";
         }
-        if (total.endsWith(".31")) {
+        if (total.endsWith("31")) {
             responseCode = "4";
         }
         responseParams.put(NelnetTransactionItemResponse.TRANSACTION_STATUS.getKey(), new String[] { responseCode });

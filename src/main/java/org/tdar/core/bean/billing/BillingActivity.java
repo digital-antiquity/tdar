@@ -33,8 +33,16 @@ public class BillingActivity extends Persistable.Base {
     @Column(updatable = false)
     private Long numberOfFiles = 0L;
 
+    public BillingActivity() {
+    }
+
+    public BillingActivity(String name, Float price) {
+        this.name = name;
+        this.price = price;
+    }
+
     // if the rates are based on total # of files; you might have a different rate based on 50 or 500 files
-    @Column(updatable = false,name="min_allowed_files")
+    @Column(updatable = false, name = "min_allowed_files")
     private Long minAllowedNumberOfFiles = 0L;
 
     // display values may be lower than actual values to give some wiggle room

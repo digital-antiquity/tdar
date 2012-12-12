@@ -15,11 +15,12 @@ import org.apache.http.client.ClientProtocolException;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.core.bean.billing.BillingActivity;
+import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.AddressType;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.NelNetPaymentDao;
 import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplate.NelnetTransactionItem;
@@ -91,6 +92,49 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
+    public void testCartPaymentInvalid() throws TdarActionException, ClientProtocolException, IOException {
+        BillingItem billingItem = new BillingItem(new BillingActivity("error", .21F), 1);
+        Invoice invoice = processTransaction(billingItem);
+        assertEquals(TransactionStatus.TRANSACTION_FAILED, invoice.getTransactionStatus());
+    }
+
+    @Test
+    @Rollback
+    public void testCartPaymentInvalid2() throws TdarActionException, ClientProtocolException, IOException {
+        BillingItem billingItem = new BillingItem(new BillingActivity("invalid", .11F), 1);
+        Invoice invoice = processTransaction(billingItem);
+        assertEquals(TransactionStatus.TRANSACTION_FAILED, invoice.getTransactionStatus());
+    }
+
+    @Test
+    @Rollback
+    public void testCartPaymentInvalid3() throws TdarActionException, ClientProtocolException, IOException {
+        BillingItem billingItem = new BillingItem(new BillingActivity("unknown", .31F), 1);
+        Invoice invoice = processTransaction(billingItem);
+        assertEquals(TransactionStatus.TRANSACTION_FAILED, invoice.getTransactionStatus());
+        assertEquals(PaymentMethod.CREDIT_CARD, invoice.getPaymentMethod());
+    }
+
+    private Invoice processTransaction(BillingItem billingItem) throws TdarActionException {
+        CartController controller = setupPaymentTests();
+        Invoice invoice = controller.getInvoice();
+        Long invoiceId = invoice.getId();
+        if (billingItem != null) {
+            invoice.getItems().add(billingItem);
+        }
+        invoice.setBillingPhone("1234567890");
+
+        invoice.setPaymentMethod(PaymentMethod.CREDIT_CARD);
+        String response = controller.processPayment();
+        assertEquals(CartController.POLLING, response);
+        String redirectUrl = controller.getRedirectUrl();
+        String response2 = processMockResponse(invoice, redirectUrl, true);
+        assertEquals(CartController.INVOICE, response2);
+        return genericService.find(Invoice.class, invoiceId);
+    }
+
+    @Test
+    @Rollback
     public void testCartPaymentValid() throws TdarActionException, ClientProtocolException, IOException {
         String response;
         CartController controller = setupPaymentTests();
@@ -105,8 +149,9 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         assertEquals(CartController.INVOICE, response2);
         invoice = genericService.find(Invoice.class, invoiceId);
         assertEquals(TransactionStatus.TRANSACTION_SUCCESSFUL, invoice.getTransactionStatus());
-        
+
     }
+
     @Test
     @Rollback
     public void testCartPaymentInvalidParams() throws TdarActionException, ClientProtocolException, IOException {
@@ -124,10 +169,10 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         invoice = genericService.find(Invoice.class, invoiceId);
         // can't mark as failed b/c no way to validate package that has invoice ID
         assertEquals(TransactionStatus.PENDING_TRANSACTION, invoice.getTransactionStatus());
-        
+
     }
 
-    private String processMockResponse(Invoice invoice, String redirectUrl,boolean isValid) throws TdarActionException {
+    private String processMockResponse(Invoice invoice, String redirectUrl, boolean isValid) throws TdarActionException {
         CartController controller;
         assertNotNull(redirectUrl);
         Map<String, String[]> params = new HashMap<String, String[]>();

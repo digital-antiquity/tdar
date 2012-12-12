@@ -200,7 +200,7 @@ public class NelNetTransactionRequestTemplate implements Serializable {
                     break;
                 case DAYTIME_PHONE:
                 case EVENING_PHONE:
-                    logger.info("invoice: {} phone: {} ", invoice, invoice.getBillingPhone());
+                    logger.trace("invoice: {} phone: {} ", invoice, invoice.getBillingPhone());
                     if (invoice.getBillingPhone() != null) {
                         value = invoice.getBillingPhone().toString();
                     }

@@ -185,6 +185,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         getGenericService().saveOrUpdate(getInvoice());
         // finalize the cost and cache it
         getInvoice().setTotal(getInvoice().getCalculatedCost());
+        logger.info("USER: {} IS PROCESSING TRANSACTION FOR: {} ", getInvoice().getId(), getInvoice().getTotal());
         getInvoice().setTransactionStatus(TransactionStatus.PENDING_TRANSACTION);
 
         switch (paymentMethod) {
