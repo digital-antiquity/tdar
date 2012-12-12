@@ -19,6 +19,7 @@ import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.external.auth.TdarGroup;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
 @Component
 @Scope("prototype")
@@ -26,8 +27,10 @@ import org.tdar.core.dao.external.auth.TdarGroup;
 @Namespace("/billing")
 public class BillingAccountController extends AbstractPersistableController<Account> {
 
+    public static final String RIGHTS_TO_ASSIGN_THIS_INVOICE = "you do not have the rights to assign this invoice";
+    public static final String INVOICE_IS_REQURIED = "an invoice is requried";
     private static final long serialVersionUID = 2912533895769561917L;
-    private static final String NEW_ACCOUNT = "new_account";
+    public static final String NEW_ACCOUNT = "new_account";
     private Long invoiceId;
     private Set<Account> accounts;
 
@@ -41,7 +44,13 @@ public class BillingAccountController extends AbstractPersistableController<Acco
             @Result(name = NEW_ACCOUNT, location = "add?invoiceId=${invoiceId}", type = "redirect")
     })
     public String selectAccount() throws TdarActionException {
-        // getAccountService().checkThatInvoiceBeAssigned(getGenericService().find(Invoice.class, invoiceId), null);
+        Invoice invoice = getGenericService().find(Invoice.class, invoiceId);
+        if (invoice == null) {
+            throw new TdarRecoverableRuntimeException(INVOICE_IS_REQURIED);
+        }
+        if (!getAuthenticationAndAuthorizationService().canAssignInvoice(invoice, getAuthenticatedUser())) {
+            throw new TdarRecoverableRuntimeException(RIGHTS_TO_ASSIGN_THIS_INVOICE);
+        }
         setAccounts(getAccountService().listAvailableAccountsForUser(getAuthenticatedUser()));
         if (CollectionUtils.isNotEmpty(getAccounts())) {
             return SUCCESS;

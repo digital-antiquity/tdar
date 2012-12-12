@@ -22,6 +22,7 @@ import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Viewable;
+import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.bean.entity.Person;
@@ -144,7 +145,7 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
         }
 
     }
-    
+
     public TdarGroup findGroupWithGreatestPermissions(Person person) {
         if (person == null) {
             return TdarGroup.UNAUTHORIZED;
@@ -340,7 +341,7 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
             return true;
         }
 
-        //ab added:12/11/12 
+        // ab added:12/11/12
         if (Persistable.Base.isTransient(resource) && resource.getSubmitter() == null) {
             logger.debug("resource is transient");
             return true;
@@ -491,6 +492,16 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
         AuthenticationToken token = AuthenticationToken.create(person);
         personDao.save(token);
         session.setAuthenticationToken(token);
+    }
+
+    public boolean canAssignInvoice(Invoice invoice, Person authenticatedUser) {
+        if (authenticatedUser.equals(invoice.getTransactedBy()) || authenticatedUser.equals(invoice.getOwner())) {
+            return true;
+        }
+        if (isMember(authenticatedUser, TdarGroup.TDAR_BILLING_MANAGER)) {
+            return true;
+        }
+        return false;
     }
 
 }

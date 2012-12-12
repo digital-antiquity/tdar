@@ -25,7 +25,7 @@ public class InvoiceITCase extends AbstractIntegrationTestCase {
     public void testInvoicePricingBasic() {
         Invoice invoice = new Invoice();
         long numberOfFiles = 10L;
-        BillingItem item = setupBillingItme(invoice, numberOfFiles);
+        BillingItem item = setupBillingItem(invoice, numberOfFiles);
         Assert.assertTrue(item.getActivity().getMinAllowedNumberOfFiles() < numberOfFiles);
     }
 
@@ -35,7 +35,7 @@ public class InvoiceITCase extends AbstractIntegrationTestCase {
         /* expect that this is activity 2 -- not 1 */
         Invoice invoice = new Invoice();
         long numberOfFiles = 4L;
-        BillingItem item = setupBillingItme(invoice, numberOfFiles);
+        BillingItem item = setupBillingItem(invoice, numberOfFiles);
         Assert.assertFalse(item.getActivity().getMinAllowedNumberOfFiles() < numberOfFiles);
         Assert.assertEquals(5L, item.getActivity().getMinAllowedNumberOfFiles().longValue());
     }
@@ -53,7 +53,7 @@ public class InvoiceITCase extends AbstractIntegrationTestCase {
         assertTrue(item.isValidForController());
     }
     
-    private BillingItem setupBillingItme(Invoice invoice, long numberOfFiles) {
+    private BillingItem setupBillingItem(Invoice invoice, long numberOfFiles) {
         invoice.setNumberOfFiles(numberOfFiles);
         BillingItem billingItem = accountService.calculateCheapestActivities(invoice);
         logger.info("{} {}", billingItem, billingItem.getActivity().getMinAllowedNumberOfFiles());

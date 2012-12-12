@@ -18,6 +18,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.annotations.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,6 +63,17 @@ public class Invoice extends Base implements Updatable {
         }
     }
 
+    public Invoice() {
+    }
+
+    public Invoice(Person owner, PaymentMethod method, Long numberOfFiles, Long numberOfMb, List<BillingItem> items) {
+        markUpdated(owner);
+        setPaymentMethod(method);
+        setNumberOfFiles(numberOfFiles);
+        setNumberOfMb(numberOfMb);
+        CollectionUtils.addIgnoreNull(getItems(), items);
+    }
+
     @NotNull
     @Column(name = "date_created")
     private Date dateCreated;
@@ -88,7 +100,7 @@ public class Invoice extends Base implements Updatable {
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     @JoinColumn(nullable = false, name = "owner_id")
     @NotNull
-    private Person person;
+    private Person owner;
 
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     @JoinColumn(nullable = false, name = "executor_id")
@@ -102,11 +114,11 @@ public class Invoice extends Base implements Updatable {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = false, name = "invoice_id")
     private List<BillingItem> items = new ArrayList<BillingItem>();
-    
-    @Column(name="number_of_files")
+
+    @Column(name = "number_of_files")
     private Long numberOfFiles = 0L;
-    
-    @Column(name="number_of_mb")
+
+    @Column(name = "number_of_mb")
     private Long numberOfMb = 0L;
 
     private Float total;
@@ -155,12 +167,12 @@ public class Invoice extends Base implements Updatable {
         this.address = address;
     }
 
-    public Person getPerson() {
-        return person;
+    public Person getOwner() {
+        return owner;
     }
 
-    public void setPerson(Person person) {
-        this.person = person;
+    public void setOwner(Person person) {
+        this.owner = person;
     }
 
     public List<BillingItem> getItems() {
@@ -234,9 +246,13 @@ public class Invoice extends Base implements Updatable {
 
     @Override
     public void markUpdated(Person p) {
-        if (getPerson() == null) {
-            setPerson(p);
+        if (getOwner() == null) {
+            setOwner(p);
         }
+        if (getTransactedBy() == null) {
+            setTransactedBy(p);
+        }
+        
         if (dateCreated == null) {
             setDateCreated(new Date());
         }

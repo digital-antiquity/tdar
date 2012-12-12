@@ -1,7 +1,7 @@
 package org.tdar.struts.action;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -99,12 +99,12 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         Invoice invoice = processTransaction(billingItem);
         assertEquals(TransactionStatus.TRANSACTION_FAILED, invoice.getTransactionStatus());
         String msg = CartController.ERROR;
-        
+
         assertPolingResponseCorrect(invoice.getId(), msg);
     }
 
     private void assertPolingResponseCorrect(Long invoiceId, String msg) throws TdarActionException {
-        CartController controller =generateNewInitializedController(CartController.class);
+        CartController controller = generateNewInitializedController(CartController.class);
         controller.setId(invoiceId);
         controller.prepare();
         String pollingCheck = controller.pollingCheck();
@@ -187,7 +187,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         controller = null;
         invoice = genericService.find(Invoice.class, invoiceId);
         assertEquals(TransactionStatus.TRANSACTION_SUCCESSFUL, invoice.getTransactionStatus());
-        assertEquals(PaymentMethod.MANUAL , invoice.getPaymentMethod());
+        assertEquals(PaymentMethod.MANUAL, invoice.getPaymentMethod());
         assertEquals(otherReason, invoice.getOtherReason());
     }
 
@@ -217,7 +217,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         assertEquals(PaymentMethod.INVOICE, invoice.getPaymentMethod());
         assertEquals(invoiceNumber, invoice.getInvoiceNumber());
     }
-    
+
     @Test
     @Rollback
     public void testCartPaymentInvalidParams() throws TdarActionException, ClientProtocolException, IOException {
@@ -252,7 +252,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         assertInMapAndEquals(params, NelnetTransactionItem.AMOUNT.getKey(), new DecimalFormat("#.00").format(invoice.getTotal()).toString().replace(".", ""));
         assertInMapAndEquals(params, NelnetTransactionItem.ORDER_TYPE.getKey(), dao.getOrderType());
         assertInMapAndEquals(params, NelnetTransactionItem.ORDER_NUMBER.getKey(), invoice.getId().toString());
-        assertInMapAndEquals(params, NelnetTransactionItem.USER_CHOICE_2.getKey(), invoice.getPerson().getId().toString());
+        assertInMapAndEquals(params, NelnetTransactionItem.USER_CHOICE_2.getKey(), invoice.getOwner().getId().toString());
         assertInMapAndEquals(params, NelnetTransactionItem.USER_CHOICE_3.getKey(), invoice.getId().toString());
 
         MockNelnetController mock = generateNewController(MockNelnetController.class);

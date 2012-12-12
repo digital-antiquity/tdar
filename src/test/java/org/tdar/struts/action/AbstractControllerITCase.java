@@ -92,7 +92,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         for (BillingItem item : items) {
             invoice.getItems().add(item);
         }
-        invoice.setPerson(person);
+        invoice.setOwner(person);
         invoice.setTransactionStatus(status);
         genericService.saveOrUpdate(invoice);
         return invoice;

@@ -272,7 +272,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         if (getAuthenticationAndAuthorizationService().can(InternalTdarRights.VIEW_BILLING_INFO, getAuthenticatedUser())) {
             return true;
         }
-        if (getAuthenticatedUser().equals(getInvoice().getPerson())) {
+        if (getAuthenticatedUser().equals(getInvoice().getOwner())) {
             return true;
         }
         return false;
@@ -286,7 +286,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         if (getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_BILLING_INFO, getAuthenticatedUser())) {
             return true;
         }
-        if (getAuthenticatedUser().equals(getInvoice().getPerson())) {
+        if (getAuthenticatedUser().equals(getInvoice().getOwner())) {
             return true;
         }
         return false;
