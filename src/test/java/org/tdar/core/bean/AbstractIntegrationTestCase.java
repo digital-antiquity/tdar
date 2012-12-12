@@ -68,6 +68,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.exception.TdarValidationException;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.DataIntegrationService;
 import org.tdar.core.service.EntityService;
@@ -750,6 +751,20 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
      */
     public DataIntegrationService getDataIntegrationService() {
         return dataIntegrationService;
+    }
+
+
+    public static void assertInvalid(Validatable address, String reason) {
+        TdarValidationException tv = null;
+        try {
+            address.isValid();
+        } catch (TdarValidationException ex) {
+            tv = ex;
+        }
+        Assert.assertNotNull(tv);
+        if (reason != null) {
+            Assert.assertEquals(reason, tv.getMessage());
+        }
     }
 
 }

@@ -45,11 +45,9 @@ public class InvoiceITCase extends AbstractIntegrationTestCase {
     @Rollback
     public void testBillingItem() {
         BillingItem item = new BillingItem();
-        assertFalse(item.isValid());
-        assertFalse(item.isValidForController());
+        AbstractIntegrationTestCase.assertInvalid(item, null);
         item.setQuantity(1);
-        assertFalse(item.isValid());
-        assertFalse(item.isValidForController());
+        AbstractIntegrationTestCase.assertInvalid(item, null);
         item.setActivity(new BillingActivity());
         assertTrue(item.isValid());
         assertTrue(item.isValidForController());

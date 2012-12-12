@@ -38,6 +38,9 @@ import org.tdar.struts.interceptor.PostOnly;
 @Namespace("/cart")
 public class CartController extends AbstractPersistableController<Invoice> implements ParameterAware {
 
+    public static final String ENTER_A_BILLING_ADDERESS = "please enter a billing adderess";
+    public static final String CANNOT_MODIFY = "cannot modify existing invocie";
+    public static final String VALID_PAYMENT_METHOD_IS_REQUIRED = "a valid payment method is required";
     private static final long serialVersionUID = 1592977664145682926L;
     private List<BillingActivity> activities = new ArrayList<BillingActivity>();
     private Long accountId = -1L;
@@ -56,7 +59,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     @Override
     protected String save(Invoice persistable) {
         if (!getInvoice().isModifiable()) {
-            throw new TdarRecoverableRuntimeException("cannot modify");
+            throw new TdarRecoverableRuntimeException(CANNOT_MODIFY);
         }
 
         if ((persistable.getNumberOfFiles() == null || persistable.getNumberOfFiles() < 1) &&
@@ -97,10 +100,14 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     public String addPaymentMethod() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         if (!getInvoice().isModifiable()) {
-            throw new TdarRecoverableRuntimeException("cannot modify");
+            throw new TdarRecoverableRuntimeException(CANNOT_MODIFY);
         }
         if (getInvoice().getTransactionStatus() != TransactionStatus.PREPARED) {
             return ERROR;
+        }
+        
+        if (getInvoice().getAddress() == null) {
+            throw new TdarRecoverableRuntimeException(ENTER_A_BILLING_ADDERESS);
         }
 
         return SUCCESS;
@@ -126,7 +133,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     public String saveAddress() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         if (!getInvoice().isModifiable()) {
-            throw new TdarRecoverableRuntimeException("cannot modify");
+            throw new TdarRecoverableRuntimeException(CANNOT_MODIFY);
         }
         getInvoice().setAddress(getGenericService().loadFromSparseEntity(getInvoice().getAddress(), Address.class));
         getGenericService().saveOrUpdate(getInvoice());
@@ -160,6 +167,9 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         }
         getSuccessPathForPayment(); // initialize
         PaymentMethod paymentMethod = getInvoice().getPaymentMethod();
+        if (paymentMethod == null) {
+            throw new TdarRecoverableRuntimeException(VALID_PAYMENT_METHOD_IS_REQUIRED);
+        }
         String invoiceNumber = getInvoice().getInvoiceNumber();
         String otherReason = getInvoice().getOtherReason();
         Long billingPhone = getInvoice().getBillingPhone();

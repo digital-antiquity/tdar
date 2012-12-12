@@ -10,7 +10,6 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.AddressType;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
 
@@ -54,12 +53,24 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         controller = generateNewInitializedController(CartController.class);
         controller.setId(invoiceId);
         controller.prepare();
+        String msg = null;
+        try {
         assertEquals(CartController.ERROR, controller.processPayment());
-
+        } catch (Exception e) {
+            msg = e.getMessage();
+        }
+        assertEquals(CartController.VALID_PAYMENT_METHOD_IS_REQUIRED, msg);
+        
         controller = generateNewInitializedController(CartController.class);
         controller.setId(invoiceId);
         controller.prepare();
-        assertEquals(CartController.ERROR, controller.addPaymentMethod());
+        msg = null;
+        try {
+            assertEquals(CartController.ERROR, controller.addPaymentMethod());
+        } catch (Exception e) {
+            msg = e.getMessage();
+        }
+        assertEquals(CartController.ENTER_A_BILLING_ADDERESS, msg);
     }
 
     @Test
