@@ -1545,22 +1545,20 @@ $(function() {
                 autocompleteIdElement="#${idIdElement}" 
                 autocompleteParentElement="#${rowIdElement}"  />
 
-            <div class="span2">
             <#if includeRole || includeRights>
             
                 <#if includeRole>
                     <@s.select theme="tdar" name="${strutsPrefix}.role"  autocomplete="off" listValue='label' list=relevantPersonRoles  
-                        cssClass="creator-role-select input-block-level" />
+                        cssClass="creator-role-select span2" />
                 <#else>
-                    <@s.select theme="tdar" cssClass="creator-rights-select input-block-level" name="${strutsPrefix}.generalPermission" emptyOption='false' 
+                    <@s.select theme="tdar" cssClass="creator-rights-select span2" name="${strutsPrefix}.generalPermission" emptyOption='false' 
                         listValue='label' list='%{availablePermissions}' disabled=isDisabled />
                     <#--HACK: disabled fields do not get sent in request, so we copy generalPermission via hidden field and prevent it from being cloned -->
                     <@s.hidden name="${strutsPrefix}.generalPermission" cssClass="repeat-row-remove" />
                 </#if>
             <#else>
-                &nbsp; 
+                <span class="span2">&nbsp;</span> 
             </#if>
-            </div>
         </div>
         <div class="controls-row">
         <@s.textfield theme="tdar" cssClass="span3 ${lookupType}" placeholder="Email (optional)" readonly=isDisabled autocomplete="off"

@@ -1226,3 +1226,19 @@ p.copyright-notice {
     font-weight: bold;
 }
 
+
+/* ie8 hacks:begin */
+/* bootstrap-responsive rules we need */
+.lt-ie9 .hidden {
+    display:none; 
+    visibility: hidden;
+}
+.lt-ie9 .visible-phone, .lt-ie9 .visible-table, .lt-ie9 .hidden-desktop {
+    display: none !important;
+}
+.lt-ie9 .visible-desktop {
+    display: inherit !important;
+}
+
+
+/* ie8 hacks: end */
