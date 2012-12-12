@@ -116,14 +116,14 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
     @SkipValidation
     @Action(value = "polling-check", results = {
-            @Result(name = "wait", type = "freemarker", location = "polling-check.ftl", params = { "contentType", "application/json" }) })
+            @Result(name = WAIT, type = "freemarker", location = "polling-check.ftl", params = { "contentType", "application/json" }) })
     public String pollingCheck() throws TdarActionException {
         if (getInvoice().getTransactionStatus() != TransactionStatus.PENDING_TRANSACTION) {
             return ERROR;
         }
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
 
-        return "wait";
+        return WAIT;
     }
 
     @SkipValidation
@@ -201,8 +201,6 @@ public class CartController extends AbstractPersistableController<Invoice> imple
                 return POLLING;
             case INVOICE:
                 getInvoice().setInvoiceNumber(invoiceNumber);
-                getGenericService().saveOrUpdate(getInvoice());
-                break;
             case MANUAL:
                 getInvoice().setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
                 getGenericService().saveOrUpdate(getInvoice());
@@ -352,9 +350,13 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         successPath = String.format("/billing/choose?invoiceId=%d", getInvoice().getId());
         Account account = getGenericService().find(Account.class, accountId);
         if (account != null) {
-            successPath = String.format("/billing/choose?invoiceId=%d&id=%d", getInvoice().getId(), account.getId());
+            successPath = String.format("%s&id=%d", successPath, account.getId());
         }
         logger.info("successpath: {} ", successPath);
+        return successPath;
+    }
+    
+    public String getSuccessPath() {
         return successPath;
     }
 

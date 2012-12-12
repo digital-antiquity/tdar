@@ -1,5 +1,6 @@
 package org.tdar.struts.action;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -15,6 +16,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
@@ -96,6 +98,17 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         BillingItem billingItem = new BillingItem(new BillingActivity("error", .21F), 1);
         Invoice invoice = processTransaction(billingItem);
         assertEquals(TransactionStatus.TRANSACTION_FAILED, invoice.getTransactionStatus());
+        String msg = CartController.ERROR;
+        
+        assertPolingResponseCorrect(invoice.getId(), msg);
+    }
+
+    private void assertPolingResponseCorrect(Long invoiceId, String msg) throws TdarActionException {
+        CartController controller =generateNewInitializedController(CartController.class);
+        controller.setId(invoiceId);
+        controller.prepare();
+        String pollingCheck = controller.pollingCheck();
+        assertEquals(msg, pollingCheck);
     }
 
     @Test
@@ -124,9 +137,13 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         }
         invoice.setBillingPhone("1234567890");
 
+        assertPolingResponseCorrect(invoice.getId(), CartController.ERROR);
+
         invoice.setPaymentMethod(PaymentMethod.CREDIT_CARD);
         String response = controller.processPayment();
         assertEquals(CartController.POLLING, response);
+        assertPolingResponseCorrect(invoice.getId(), CartController.WAIT);
+
         String redirectUrl = controller.getRedirectUrl();
         String response2 = processMockResponse(invoice, redirectUrl, true);
         assertEquals(CartController.INVOICE, response2);
@@ -152,6 +169,55 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
 
     }
 
+    @Test
+    @Rollback
+    public void testCartPaymentManual() throws TdarActionException, ClientProtocolException, IOException {
+        String response;
+        CartController controller = setupPaymentTests();
+        Invoice invoice = controller.getInvoice();
+        invoice.setBillingPhone("1234567890");
+        invoice.setPaymentMethod(PaymentMethod.MANUAL);
+        String otherReason = "this is my reasoning";
+        invoice.setOtherReason(otherReason);
+        response = controller.processPayment();
+        assertEquals(CartController.SUCCESS_ADD_ACCOUNT, response);
+        Long invoiceId = invoice.getId();
+        assertFalse(controller.getSuccessPath().contains("&id="));
+        invoice = null;
+        controller = null;
+        invoice = genericService.find(Invoice.class, invoiceId);
+        assertEquals(TransactionStatus.TRANSACTION_SUCCESSFUL, invoice.getTransactionStatus());
+        assertEquals(PaymentMethod.MANUAL , invoice.getPaymentMethod());
+        assertEquals(otherReason, invoice.getOtherReason());
+    }
+
+    @Test
+    @Rollback
+    public void testCartPaymentInvoice() throws TdarActionException, ClientProtocolException, IOException {
+        String response;
+        CartController controller = setupPaymentTests();
+        Invoice invoice = controller.getInvoice();
+        invoice.setBillingPhone("1234567890");
+        String invoiceNumber = "1234567890";
+        invoice.setInvoiceNumber(invoiceNumber);
+        invoice.setPaymentMethod(PaymentMethod.INVOICE);
+        invoice.setOtherReason("this is my reasoning");
+        Account account = createAccount(getBasicUser());
+        controller.setAccountId(account.getId());
+        response = controller.processPayment();
+        assertEquals(CartController.SUCCESS_ADD_ACCOUNT, response);
+        assertTrue(controller.getSuccessPath().endsWith("&id=" + account.getId()));
+
+        Long invoiceId = invoice.getId();
+        invoice = null;
+        controller = null;
+
+        invoice = genericService.find(Invoice.class, invoiceId);
+        assertEquals(TransactionStatus.TRANSACTION_SUCCESSFUL, invoice.getTransactionStatus());
+        assertEquals(PaymentMethod.INVOICE, invoice.getPaymentMethod());
+        assertEquals(invoiceNumber, invoice.getInvoiceNumber());
+    }
+    
     @Test
     @Rollback
     public void testCartPaymentInvalidParams() throws TdarActionException, ClientProtocolException, IOException {
