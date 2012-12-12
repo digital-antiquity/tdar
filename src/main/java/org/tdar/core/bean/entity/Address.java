@@ -13,19 +13,18 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.configuration.JSONTransient;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarValidationException;
 
 @Entity
 @Table(name = "creator_address")
 public class Address extends Base implements Persistable, Validatable {
 
-    private static final String ADDRESS_TYPE_IS_REQUIRED = "an address type is required";
-    private static final String POSTAL_CODE_IS_REQUIRED = "a postal code is required";
-    private static final String COUNTRY_IS_REQUIRED = "a country is required";
-    private static final String STATE_IS_REQUIRED = "a state is required";
-    private static final String CITY_IS_REQUIRED = "a city is required";
-    private static final String STREET_ADDRESS_IS_REQUIRED = "a street address is required";
+    public static final String ADDRESS_TYPE_IS_REQUIRED = "an address type is required";
+    public static final String POSTAL_CODE_IS_REQUIRED = "a postal code is required";
+    public static final String COUNTRY_IS_REQUIRED = "a country is required";
+    public static final String STATE_IS_REQUIRED = "a state is required";
+    public static final String CITY_IS_REQUIRED = "a city is required";
+    public static final String STREET_ADDRESS_IS_REQUIRED = "a street address is required";
 
     private static final long serialVersionUID = 3179122792715811371L;
 
