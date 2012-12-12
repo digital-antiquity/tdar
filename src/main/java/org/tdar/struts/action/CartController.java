@@ -38,6 +38,7 @@ import org.tdar.struts.interceptor.PostOnly;
 @Namespace("/cart")
 public class CartController extends AbstractPersistableController<Invoice> implements ParameterAware {
 
+    public static final String VALID_PHONE_NUMBER_IS_REQUIRED = "a valid phone number is required (212) 555-1212";
     public static final String ENTER_A_BILLING_ADDERESS = "please enter a billing adderess";
     public static final String CANNOT_MODIFY = "cannot modify existing invocie";
     public static final String VALID_PAYMENT_METHOD_IS_REQUIRED = "a valid payment method is required";
@@ -105,7 +106,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         if (getInvoice().getTransactionStatus() != TransactionStatus.PREPARED) {
             return ERROR;
         }
-        
+
         if (getInvoice().getAddress() == null) {
             throw new TdarRecoverableRuntimeException(ENTER_A_BILLING_ADDERESS);
         }
@@ -170,9 +171,13 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         if (paymentMethod == null) {
             throw new TdarRecoverableRuntimeException(VALID_PAYMENT_METHOD_IS_REQUIRED);
         }
+
+        Long billingPhone = getInvoice().getBillingPhone();
+        if (billingPhone == null || billingPhone.toString().length() < 10) {
+            throw new TdarRecoverableRuntimeException(VALID_PHONE_NUMBER_IS_REQUIRED);
+        }
         String invoiceNumber = getInvoice().getInvoiceNumber();
         String otherReason = getInvoice().getOtherReason();
-        Long billingPhone = getInvoice().getBillingPhone();
         setInvoice(getGenericService().loadFromSparseEntity(getInvoice(), Invoice.class));
         getInvoice().setPaymentMethod(paymentMethod);
         getInvoice().setOtherReason(otherReason);

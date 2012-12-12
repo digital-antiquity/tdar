@@ -27,6 +27,7 @@ import org.tdar.core.dao.external.payment.nelnet.NelNetPaymentDao;
 import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplate.NelnetTransactionItem;
 import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionResponseTemplate;
 import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionResponseTemplate.NelnetTransactionItemResponse;
+import org.tdar.core.exception.StatusCode;
 
 @Component
 @Scope("prototype")
@@ -37,6 +38,7 @@ public class MockNelnetController extends AuthenticationAware.Base implements Pa
     private static final long serialVersionUID = -973297044126882831L;
 
     private Map<String, String[]> params;
+    private Map<String, String[]> responseParams = new HashMap<String, String[]>();
 
     @Autowired
     private NelNetPaymentDao nelnet;
@@ -65,44 +67,46 @@ public class MockNelnetController extends AuthenticationAware.Base implements Pa
     }
 
     @Action("process-payment")
-    public String execute() throws ClientProtocolException, IOException {
+    public String execute() throws ClientProtocolException, IOException, TdarActionException {
 
-        Map<String, String[]> toreturn = new HashMap<String, String[]>();
-        processFakeResponse(getCcType(getCcnum()), toreturn);
-        sendResponse(toreturn);
+        processFakeResponse(getCcType(getCcnum()));
+        sendResponse();
         return "success";
     }
 
-    private void sendResponse(Map<String, String[]> toreturn) throws IOException, ClientProtocolException {
+    private void sendResponse() throws TdarActionException {
         String url = String.format("http://%s:%s/cart/process-external-payment-response", getHostName(), getHostPort());
         HttpPost postReq = new HttpPost(url);
         logger.info(url);
         List<NameValuePair> pairs = new ArrayList<NameValuePair>();
         for (NelnetTransactionItemResponse item : NelnetTransactionItemResponse.values()) {
-            if (!toreturn.containsKey(item.getKey()) || item == NelnetTransactionItemResponse.KEY)
+            if (!getResponseParams().containsKey(item.getKey()) || item == NelnetTransactionItemResponse.KEY)
                 continue;
-            pairs.add(new BasicNameValuePair(item.getKey(), toreturn.get(item.getKey())[0]));
+            pairs.add(new BasicNameValuePair(item.getKey(), responseParams.get(item.getKey())[0]));
         }
         postReq.setEntity(new UrlEncodedFormEntity(pairs, Consts.UTF_8));
-
-        DefaultHttpClient httpclient = new DefaultHttpClient();
-        HttpResponse httpresponse = httpclient.execute(postReq);
-        logger.info("response: {} ", httpresponse);
+        try {
+            DefaultHttpClient httpclient = new DefaultHttpClient();
+            HttpResponse httpresponse = httpclient.execute(postReq);
+            logger.info("response: {} ", httpresponse);
+        } catch (Exception e) {
+            throw new TdarActionException(StatusCode.BAD_REQUEST, "cannot make http connection");
+        }
 
     }
 
-    private void processFakeResponse(String cctype, Map<String, String[]> toreturn) {
+    private void processFakeResponse(String cctype) {
         for (NelnetTransactionItemResponse item : NelnetTransactionItemResponse.values()) {
             String key = item.getKey();
             if (params.containsKey(key)) {
-                toreturn.put(key, params.get(key));
+                responseParams.put(key, params.get(key));
             }
         }
         String total = getParamValue(NelnetTransactionItem.AMOUNT);
-        toreturn.put(NelnetTransactionItemResponse.TIMESTAMP.getKey(), new String[] { Long.toString(System.currentTimeMillis()) });
-        toreturn.put(NelnetTransactionItemResponse.TRANSACTION_ACCOUNT_TYPE.getKey(), new String[] { cctype });
-        toreturn.put(NelnetTransactionItemResponse.TRANSACTION_TOTAL.getKey(), new String[] { total });
-        toreturn.put(NelnetTransactionItemResponse.TRANSACTION_TYPE.getKey(), new String[] { "1" });
+        responseParams.put(NelnetTransactionItemResponse.TIMESTAMP.getKey(), new String[] { Long.toString(System.currentTimeMillis()) });
+        responseParams.put(NelnetTransactionItemResponse.TRANSACTION_ACCOUNT_TYPE.getKey(), new String[] { cctype });
+        responseParams.put(NelnetTransactionItemResponse.TRANSACTION_TOTAL.getKey(), new String[] { total });
+        responseParams.put(NelnetTransactionItemResponse.TRANSACTION_TYPE.getKey(), new String[] { "1" });
         String responseCode = "1";
         if (total.endsWith(".11")) {
             responseCode = "2";
@@ -113,11 +117,11 @@ public class MockNelnetController extends AuthenticationAware.Base implements Pa
         if (total.endsWith(".31")) {
             responseCode = "4";
         }
-        toreturn.put(NelnetTransactionItemResponse.TRANSACTION_STATUS.getKey(), new String[] { responseCode });
+        responseParams.put(NelnetTransactionItemResponse.TRANSACTION_STATUS.getKey(), new String[] { responseCode });
         NelNetTransactionResponseTemplate resp = new NelNetTransactionResponseTemplate(nelnet.getSecretWord());
-        resp.setValues(toreturn);
+        resp.setValues(responseParams);
         logger.info(resp.generateHashKey());
-        toreturn.put(NelnetTransactionItemResponse.HASH.getKey(), new String[] { resp.generateHashKey() });
+        responseParams.put(NelnetTransactionItemResponse.HASH.getKey(), new String[] { resp.generateHashKey() });
 
     }
 
@@ -146,6 +150,14 @@ public class MockNelnetController extends AuthenticationAware.Base implements Pa
 
     public void setCcnum(String ccnum) {
         this.ccnum = ccnum;
+    }
+
+    public Map<String, String[]> getResponseParams() {
+        return responseParams;
+    }
+
+    public void setResponseParams(Map<String, String[]> responseParams) {
+        this.responseParams = responseParams;
     }
 
 }
