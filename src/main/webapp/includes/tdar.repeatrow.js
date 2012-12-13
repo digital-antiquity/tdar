@@ -53,7 +53,7 @@ TDAR.repeatrow = function() {
         $(parentElement).on("click", ".repeat-row-delete", function(e){
             var rowElem = $(this).parents(".repeat-row")[0];
             TDAR.repeatrow.deleteRow(rowElem);
-            $(rowElem).trigger('repeatrowdeleted');
+            $(parentElement).trigger('repeatrowdeleted');
         });
     }
 

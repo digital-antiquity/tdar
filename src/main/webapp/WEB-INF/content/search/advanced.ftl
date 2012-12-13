@@ -107,7 +107,7 @@ $(document).ready(function(){
 
     serializeFormState();
 
-    if ($("#autosave").val() != '') {
+    if ($("#autosave").val() !== '') {
         $("#searchGroups").html($("#autosave").val());
         $('.add-another-control').remove();
     }
@@ -261,11 +261,11 @@ $(document).ready(function(){
 
 
 <#macro option value="" label="" init="" disabled="" >
-    <option <#if disabled?has_content>disabled="${disabled}"</#if> value="${value}" <#if (value == init)>selected=selected</#if>>${label}</option>
+    <option value="${value}" <#if (value == init)>selected=selected</#if>>${label}</option>
 </#macro>
 
 <#macro searchTypeSelect id="0" init="" groupid="0" >
-    <select id="group${id}searchType" name="groups[${groupid}].fieldTypes[${id}]" class="control-label searchType" style="font-size:smaller" >
+    <select id="group${groupid}searchType_${id}_" name="groups[${groupid}].fieldTypes[${id}]" class="control-label searchType" style="font-size:smaller" >
         <#assign groupName = ""/>
         <#list allSearchFieldTypes as fieldType>
             <#if !fieldType.hidden>
@@ -286,17 +286,19 @@ $(document).ready(function(){
 
 
 <#macro searchGroup groupid group_ >
-        <div class="groupingSelectDiv" style="display:none">
-            <label>Grouping</label>
+        <div class="groupingSelectDiv control-group fade">
             <#assign defaultOperator = "AND"/>
             <#if (group_?is_hash && group_.or ) >
                 <#assign defaultOperator="OR" />
             </#if>
             
-            <select name="groups[${groupid}].operator" >
-                <option value="AND" <#if defaultOperator=="AND">selected</#if>>Show results that match ALL the terms below</option>
-                <option value="OR" <#if defaultOperator=="OR">selected</#if>>Show results that match ANY of the terms below</option>
-            </select>
+            <label class="control-label">Include in results</label>
+            <div class="controls controls-row">
+                <select name="groups[${groupid}].operator" class="span5">
+                    <option value="AND" <#if defaultOperator=="AND">selected</#if>>When resource matches ALL terms below</option>
+                    <option value="OR" <#if defaultOperator=="OR">selected</#if>>When resource matches ANY terms below</option>
+                </select>
+            </div>
         </div>
         <div id="groupTable0" class="grouptable repeatLastRow" style="width:100%" callback="setDefaultTerm" data-groupnum="0"  data-add-another="add another search term">
         

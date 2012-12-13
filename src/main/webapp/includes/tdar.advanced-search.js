@@ -136,6 +136,10 @@ function sectionLoaded(context) {
         minLength : 0
     }, {});
 
+    
+    $('#searchGroups').find('.searchgroup').each(function(){
+        showGroupingSelectorIfNecessary($(this));
+    });
 }
 
 function setDefaultTerm(obj) {
@@ -174,23 +178,16 @@ function updateAttributesForRow($root, groupnum, rownum) {
 
 function showGroupingSelectorIfNecessary($groupDiv) {
     // if more than one term, show the grouping selector
-    $visibleRows = $('.grouptable tr:visible', $groupDiv);
-    $('.groupingSelectDiv', $groupDiv).toggle($visibleRows.length > 1);
+    var $visibleRows = $('.grouptable .repeat-row:visible', $groupDiv);
+    var $groupingControl = $groupDiv.find(".groupingSelectDiv");
+    if($visibleRows.length > 1) {
+        $groupingControl.addClass("in");
+    } else {
+        $groupingControl.removeClass("in");
+    }
+//    $('.groupingSelectDiv', $groupDiv).toggle($visibleRows.length > 1);
 }
 
-function resetAdvancedSearchForm() {
-    $('#groupTable0 > tbody > tr').each(function() {
-        removeRow($(this));
-    });
-    $("input[type=checkbox]").prop("checked", false);
-    $("select,input[type=hidden],input[type=text]").val("");
-    try {
-        map.removeOverlay(GZoomControl.G.oZoomArea);
-    } catch (e) {
-    }
-    $('.searchType', '#searchGroups').val("ALL_FIELDS");
-    $('.searchType', '#searchGroups').change();
-}
 
 function serializeFormState() {
     $("#searchGroups").submit(function() {

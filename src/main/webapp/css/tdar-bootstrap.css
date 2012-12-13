@@ -1250,6 +1250,13 @@ p.copyright-notice {
     width: 500px; /* normally 530px */
 }
 
+/* .fade, fade.in transitions not supported in ie8 */
+.lt-ie9 .fade {
+    visibility: hidden;
+}
 
+.lt-ie9 .fade.in {
+    visibility: inherit !important;
+}
 
 /* ie8 hacks: end */
