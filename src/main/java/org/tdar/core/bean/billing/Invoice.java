@@ -71,7 +71,9 @@ public class Invoice extends Base implements Updatable {
         setPaymentMethod(method);
         setNumberOfFiles(numberOfFiles);
         setNumberOfMb(numberOfMb);
-        CollectionUtils.addIgnoreNull(getItems(), items);
+        if (CollectionUtils.isNotEmpty(items)) {
+            getItems().addAll(items);
+        }
     }
 
     @NotNull
@@ -187,7 +189,8 @@ public class Invoice extends Base implements Updatable {
         return total;
     }
 
-    public void setTotal(Float total) {
+    /* not sure if this can be 'private', but ideally only called by finalize method and hibernate internally */
+    private void setTotal(Float total) {
         this.total = total;
     }
 
@@ -200,41 +203,46 @@ public class Invoice extends Base implements Updatable {
     }
 
     public Long getTotalResources() {
-        if (!initialized) {
-            initTotals();
-        }
+        initTotals();
         return totalResources;
     }
 
     public Long getTotalSpace() {
-        if (!initialized) {
-            initTotals();
-        }
+        initTotals();
         return totalSpace;
     }
+    
+    public Long getTotalSpaceInBytes() {
+        return getNumberOfMb() * 1048576L;
+    }
+
+
 
     public Long getTotalNumberOfFiles() {
-        if (!initialized) {
-            initTotals();
-        }
+        initTotals();
         return totalFiles;
     }
 
     private void initTotals() {
-        for (BillingItem item : getItems()) {
-            Long numberOfFiles = item.getActivity().getNumberOfFiles();
-            Long space = item.getActivity().getNumberOfBytes();
-            Long numberOfResources = item.getActivity().getNumberOfResources();
-            if (numberOfFiles != null) {
-                totalFiles += numberOfFiles * item.getQuantity().longValue();
+        if (!initialized) {
+            for (BillingItem item : getItems()) {
+                Long numberOfFiles = item.getActivity().getNumberOfFiles();
+                Long space = item.getActivity().getNumberOfMb();
+                Long numberOfResources = item.getActivity().getNumberOfResources();
+                if (numberOfFiles != null) {
+                    totalFiles += numberOfFiles * item.getQuantity().longValue();
+                }
+                if (space != null) {
+                    totalSpace += space * item.getQuantity().longValue();
+                }
+                if (numberOfResources != null) {
+                    totalResources += numberOfResources * item.getQuantity().longValue();
+                }
+                calculatedCost += item.getSubtotal();
+                logger.debug(String.format("%s (%s) files, %s(%s) mb, %s(%s) resources [%s]", numberOfFiles, totalFiles, space, totalSpace, numberOfResources,
+                        totalResources, calculatedCost));
             }
-            if (space != null) {
-                totalSpace += space * item.getQuantity().longValue();
-            }
-            if (numberOfResources != null) {
-                totalResources += numberOfResources * item.getQuantity().longValue();
-            }
-            calculatedCost += item.getSubtotal();
+            initialized = true;
         }
     }
 
@@ -252,7 +260,7 @@ public class Invoice extends Base implements Updatable {
         if (getTransactedBy() == null) {
             setTransactedBy(p);
         }
-        
+
         if (dateCreated == null) {
             setDateCreated(new Date());
         }
@@ -313,9 +321,7 @@ public class Invoice extends Base implements Updatable {
     }
 
     public Float getCalculatedCost() {
-        if (!initialized) {
-            initTotals();
-        }
+        initTotals();
         return calculatedCost;
     }
 
@@ -366,5 +372,9 @@ public class Invoice extends Base implements Updatable {
 
     public void setNumberOfMb(Long numberOfMb) {
         this.numberOfMb = numberOfMb;
+    }
+
+    public void finalize() {
+        setTotal(getCalculatedCost());
     }
 }

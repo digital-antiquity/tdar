@@ -4,7 +4,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,12 +35,25 @@ public class BillingActivity extends Persistable.Base {
     @Column(updatable = false)
     private Long numberOfFiles = 0L;
 
+    @ManyToOne(optional = false)
+    @NotNull
+    private BillingActivityModel model;
+
     public BillingActivity() {
     }
 
     public BillingActivity(String name, Float price) {
+        this();
         this.name = name;
         this.price = price;
+    }
+
+    public BillingActivity(String name, Float price, Integer numHours, Long numberOfResources, Long numberOfFiles, Long numberOfMb) {
+        this(name, price);
+        setNumberOfHours(numHours);
+        setNumberOfFiles(numberOfFiles);
+        setNumberOfMb(numberOfMb);
+        setNumberOfResources(numberOfResources);
     }
 
     // if the rates are based on total # of files; you might have a different rate based on 50 or 500 files
@@ -170,5 +185,13 @@ public class BillingActivity extends Persistable.Base {
     @Override
     public String toString() {
         return getName();
+    }
+
+    public BillingActivityModel getModel() {
+        return model;
+    }
+
+    public void setModel(BillingActivityModel model) {
+        this.model = model;
     }
 }

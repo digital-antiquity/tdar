@@ -16,7 +16,9 @@ import org.tdar.core.bean.resource.Status;
 
 /*
  * This class is designed to help figure out what resources (files, resources, space) that a tDAR Resource is taking up.
- * Some resources, like Ontologies, CodingSheets, etc. you get for free
+ * Some resources, like Ontologies, CodingSheets, etc. you get for free.
+ * 
+ * A Resource Evaluator is initialized with a BillingModel which tells it some of how to evaluate things ... as we decide, wa may need to port more of the decisions into that boolean logic
  */
 public class ResourceEvaluator implements Serializable {
 
@@ -25,17 +27,19 @@ public class ResourceEvaluator implements Serializable {
     private boolean includeOlderVersionsInCounts = false;
     private List<ResourceType> uncountedResourceTypes = Arrays.asList(ResourceType.CODING_SHEET, ResourceType.ONTOLOGY, ResourceType.PROJECT);
     private List<Status> uncountedResourceStatuses = Arrays.asList();
-    private int resourcesUsed = 0;
-    private int filesUsed = 0;
+    private long resourcesUsed = 0;
+    private long filesUsed = 0;
     private long spaceUsed = 0;
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
     private Resource[] resources;
-    private boolean countResources = false;
+    private BillingActivityModel model;
 
-    public ResourceEvaluator() {
+    public ResourceEvaluator(BillingActivityModel model) {
+        this.model = model;
     }
 
-    public ResourceEvaluator(Resource... resources) {
+    public ResourceEvaluator(BillingActivityModel model, Resource... resources) {
+        this.model = model;
         evaluateResource(resources);
     }
 
@@ -43,7 +47,7 @@ public class ResourceEvaluator implements Serializable {
      * IOC putting all of the logic in one place
      */
     public boolean invoiceHasMinimumForNewResource(Account account) {
-        if (!countResources ) 
+        if (!evaluatedNumberOfResources())
             return true;
         return account.getAvailableResources() > 0;
     }
@@ -112,19 +116,19 @@ public class ResourceEvaluator implements Serializable {
         this.uncountedResourceTypes = uncountedResourceTypes;
     }
 
-    public int getResourcesUsed() {
+    public long getResourcesUsed() {
         return resourcesUsed;
     }
 
-    public void setResourcesUsed(int resourcesUsed) {
+    public void setResourcesUsed(long resourcesUsed) {
         this.resourcesUsed = resourcesUsed;
     }
 
-    public int getFilesUsed() {
+    public long getFilesUsed() {
         return filesUsed;
     }
 
-    public void setFilesUsed(int filesUsed) {
+    public void setFilesUsed(long filesUsed) {
         this.filesUsed = filesUsed;
     }
 
@@ -156,6 +160,18 @@ public class ResourceEvaluator implements Serializable {
 
     public void setResources(Resource[] resources) {
         this.resources = resources;
+    }
+
+    public boolean evaluatesSpace() {
+        return model.getCountingSpace();
+    }
+
+    public boolean evaluatedNumberOfResources() {
+        return model.getCountingResources();
+    }
+
+    public boolean evaluatesNumberOfFiles() {
+        return model.getCountingFiles();
     }
 
 }

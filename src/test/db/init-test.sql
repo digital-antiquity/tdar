@@ -2693,3 +2693,6 @@ insert into pos_billing_activity (enabled, name, numberoffiles, min_allowed_file
 insert into pos_billing_activity (enabled, name, numberoffiles, min_allowed_files, numberofmb, price) values (true, ' 5- 19', 1, 5, 10, 40);
 insert into pos_billing_activity (enabled, name, numberoffiles, min_allowed_files, numberofmb, price) values (true, '20- 49', 1, 20, 10, 35);
 insert into pos_billing_activity (enabled, name, numberoffiles, min_allowed_files, numberofmb, price) values (true, '50-500', 1, 50, 10, 31);
+
+insert into pos_billing_model (date_created, active, counting_files, counting_space, counting_resources) VALUES (now(), true, true, true, false);
+update pos_billing_activity set model_id=1 where model_id is null;
