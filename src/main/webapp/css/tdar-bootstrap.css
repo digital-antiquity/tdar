@@ -1228,7 +1228,7 @@ p.copyright-notice {
 
 
 /* ie8 hacks:begin */
-/* bootstrap-responsive rules we need */
+/* we disable responsive-layout in ie8, but we want to retain the following rules */
 .lt-ie9 .hidden {
     display:none; 
     visibility: hidden;
@@ -1239,6 +1239,17 @@ p.copyright-notice {
 .lt-ie9 .visible-desktop {
     display: inherit !important;
 }
+
+/*FIXME: temp hack for TDAR-2634, remove when resolved */ 
+.lt-ie9 .span9 .form-horizontal fieldset {
+    width: 750px;  /* normally 700px */
+}
+
+/*FIXME: temp hack for TDAR-2634, remove when resolved */ 
+.lt-ie9 .span9 .form-horizontal fieldset .input-xxlarge {
+    width: 500px; /* normally 530px */
+}
+
 
 
 /* ie8 hacks: end */
