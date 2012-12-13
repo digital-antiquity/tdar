@@ -93,8 +93,8 @@ Projects in ${siteAcronym} contain and help organize a variety of different info
                 <li>53 08 50N</li>
                 <li>-73.9864</li>
             </ul>
-            <p><aside><strong>Note:</strong> to protect site security, ${siteAcronym} obfuscates all bounding boxes, bounding boxes smaller than 1 mile.  This 'edit' view will 
-            always show the exact coordinates.</aside></p>
+            <aside><p><strong>Note:</strong> to protect site security, ${siteAcronym} obfuscates all bounding boxes, bounding boxes smaller than 1 mile.  This 'edit' view will 
+            always show the exact coordinates.</p></aside>
                            
          </div>
     </div>
@@ -184,9 +184,9 @@ The form will check for matches in the ${siteAcronym} database and populate the 
     <div id="divIdentifiersTip" class="hidden">
         <div>
             <dl>
-                <dt>Name</<dt>
+                <dt>Name<dt>
                 <dd>Description of the following agency or ${resource.resourceType.label} identifier (e.g. <code>ASU Accession Number</code> or <code>TNF Project Code</code>).</dd>
-                <dt>Value</<dt>
+                <dt>Value<dt>
                 <dd>Number, code, or other identifier (e.g. <code>2011.045.335</code> or <code>AZ-123-45-10</code>).</dd>
             </dl> 
         </div>

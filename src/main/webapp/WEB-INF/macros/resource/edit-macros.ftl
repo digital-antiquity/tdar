@@ -1493,8 +1493,6 @@ $(function() {
         </div>
       </div>
     </div>
-    <div>
-    <br/>
 </#macro>
 
 
