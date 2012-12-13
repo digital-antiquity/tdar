@@ -57,6 +57,11 @@ public class Address extends Base implements Persistable, Validatable {
         return street2;
     }
 
+    @Override
+    public String toString() {
+        return String.format("# %s : %s, %s [%s, %s, %s, %s] %s",getId(), street1, street2, city, state, postal, country, type);
+    }
+    
     public void setStreet2(String street2) {
         this.street2 = street2;
     }

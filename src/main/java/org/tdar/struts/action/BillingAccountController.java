@@ -60,7 +60,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
 
     @Override
     protected String save(Account persistable) {
-        logger.info("invocieId {}", getInvoiceId());
+        logger.info("invoiceId {}", getInvoiceId());
         if (Persistable.Base.isNotNullOrTransient(invoiceId)) {
             Invoice invoice = getGenericService().find(Invoice.class, invoiceId);
             logger.info("attaching invoice: {} ", invoice);

@@ -149,7 +149,7 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
     private String url;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    @JoinColumn(nullable = false, updatable = false, name = "creator_id")
+    @JoinColumn(nullable = false, updatable = true, name = "creator_id")
     @NotNull
     private Set<Address> addresses = new LinkedHashSet<Address>();
 

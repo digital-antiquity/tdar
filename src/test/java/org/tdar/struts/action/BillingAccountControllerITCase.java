@@ -1,7 +1,8 @@
 package org.tdar.struts.action;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
@@ -49,8 +50,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
     @Rollback
     public void testAccountControllerChoicesNoRightsToAssign() throws TdarActionException {
         BillingAccountController controller = generateNewController(BillingAccountController.class);
-        Invoice invoice = new Invoice(getUser(), PaymentMethod.INVOICE, 10L, 0L, null);
-        genericService.save(invoice);
+        Invoice invoice = createTrivialInvoice();
         String msg = null;
         init(controller, createAndSaveNewPerson());
         controller.setInvoiceId(invoice.getId());
@@ -66,8 +66,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
     @Test
     @Rollback
     public void testAccountControllerChoicesSelectAccounts() throws TdarActionException {
-        Invoice invoice = new Invoice(getUser(), PaymentMethod.INVOICE, 10L, 0L, null);
-        genericService.save(invoice);
+        Invoice invoice = createTrivialInvoice();
         Account account = createAccount(getAdminUser());
         BillingAccountController controller = generateNewController(BillingAccountController.class);
         init(controller, getAdminUser());
@@ -75,5 +74,62 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         controller.prepare();
         assertEquals(BillingAccountController.SUCCESS, controller.selectAccount());
         assertTrue(controller.getAccounts().contains(account));
+
     }
+
+    private Invoice createTrivialInvoice() {
+        Invoice invoice = new Invoice(getUser(), PaymentMethod.INVOICE, 10L, 0L, null);
+        genericService.save(invoice);
+        return invoice;
+    }
+
+    @Test
+    @Rollback
+    public void testAddingInvoiceToExistingAccount() throws TdarActionException {
+        Long accountId = createAccount(getUser()).getId();
+        Invoice invoice = createTrivialInvoice();
+        BillingAccountController controller = generateNewInitializedController(BillingAccountController.class);
+        controller.setInvoiceId(invoice.getId());
+        controller.setId(accountId);
+        controller.prepare();
+        controller.setServletRequest(getServletPostRequest());
+        String save = controller.save();
+        assertEquals(BillingAccountController.SUCCESS, save);
+        assertTrue(genericService.find(Account.class, accountId).getInvoices().contains(invoice));
+    }
+
+    @Test
+    @Rollback
+    public void testAddingInvoiceToNewAccount() throws TdarActionException {
+        Long accountId = createAccount(getUser()).getId();
+        Invoice invoice = createTrivialInvoice();
+        BillingAccountController controller = generateNewInitializedController(BillingAccountController.class);
+        controller.setInvoiceId(invoice.getId());
+        controller.prepare();
+        controller.setServletRequest(getServletPostRequest());
+        String save = controller.save();
+        Long id = controller.getAccount().getId();
+        assertEquals(BillingAccountController.SUCCESS, save);
+        assertFalse(genericService.find(Account.class, accountId).getInvoices().contains(invoice));
+        assertTrue(genericService.find(Account.class, id).getInvoices().contains(invoice));
+    }
+
+    @Test
+    @Rollback
+    public void testAddingUsersToAccount() throws TdarActionException {
+        Long accountId = createAccount(getUser()).getId();
+        BillingAccountController controller = generateNewInitializedController(BillingAccountController.class);
+        controller.prepare();
+        controller.getAuthorizedMembers().add(getAdminUser());
+        controller.setServletRequest(getServletPostRequest());
+        String save = controller.save();
+        Long id = controller.getAccount().getId();
+        assertEquals(BillingAccountController.SUCCESS, save);
+        
+        Account account = genericService.find(Account.class, id);
+        assertEquals(1, account.getAuthorizedMembers().size());
+        assertTrue( account.getAuthorizedMembers().contains(getAdminUser()));
+    }
+
+
 }

@@ -12,15 +12,19 @@ import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.AddressType;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.struts.WriteableSession;
 import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.interceptor.PostOnly;
 
 public abstract class AbstractCreatorController<T extends Creator> extends AbstractPersistableController<T> {
 
+    public static final String CANNOT_SAVE_NULL_ADDRESS = "cannot save null address";
+
     private static final long serialVersionUID = -2125910954088505227L;
 
-    private static final String RETURN_URL = "RETURN_URL";
+    public static final String RETURN_URL = "RETURN_URL";
 
     private Long addressId;
     private Address address;
@@ -28,22 +32,32 @@ public abstract class AbstractCreatorController<T extends Creator> extends Abstr
 
     @SkipValidation
     @WriteableSession
+    @PostOnly
     @Action(value = "save-address", results = {
             @Result(name = SUCCESS, type = "redirect", location = "../../browse/creators?id=${id}"),
             @Result(name = RETURN_URL, type = "redirect", location = "${returnUrl}")
     })
     public String saveAddress() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
-        getPersistable().getAddresses().add(getAddress());
-        getGenericService().saveOrUpdate(getPersistable());
-        if (StringUtils.isNotBlank(getReturnUrl())) {
-            return RETURN_URL;
+        Address address2 = getAddress();
+        if (address2 == null) {
+            throw new TdarRecoverableRuntimeException(CANNOT_SAVE_NULL_ADDRESS);
         }
-        return SUCCESS;
+        if (address2.isValidForController()) {
+            getPersistable().getAddresses().add(address2);
+            getGenericService().saveOrUpdate(getPersistable());
+            logger.info("{}", address2.getId());
+            if (StringUtils.isNotBlank(getReturnUrl())) {
+                return RETURN_URL;
+            }
+            return SUCCESS;
+        }
+        return ERROR;
     }
 
     @SkipValidation
     @WriteableSession
+    @PostOnly
     @Action(value = "delete-address", results = {
             @Result(name = SUCCESS, type = "redirect", location = "../../creator/browse?id=${id}")
     })
@@ -58,11 +72,9 @@ public abstract class AbstractCreatorController<T extends Creator> extends Abstr
 
     @SkipValidation
     @Action(value = "address", results = { @Result(name = SUCCESS, location = "../address-info.ftl") })
-    public String editBillingAddress() throws TdarActionException {
+    public String editAddress() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
-        if (Persistable.Base.isNotNullOrTransient(getAddressId())) {
-            setAddress(getGenericService().find(Address.class, getAddressId()));
-        }
+
         return SUCCESS;
     }
 
@@ -75,6 +87,12 @@ public abstract class AbstractCreatorController<T extends Creator> extends Abstr
     }
 
     public Address getAddress() {
+        if (Persistable.Base.isNotNullOrTransient(getAddressId())) {
+            setAddress(getGenericService().find(Address.class, getAddressId()));
+        } else if (address == null) {
+            setAddress(new Address());
+        }
+        logger.info("returning address {}" , address);
         return address;
     }
 
