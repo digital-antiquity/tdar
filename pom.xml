@@ -842,6 +842,18 @@
 			</testResource>
 		</testResources>
 		<plugins>
+            <plugin>
+                <groupId>org.glassfish</groupId>
+                <artifactId>maven-embedded-glassfish-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <goalPrefix>glassfish</goalPrefix>
+                    <app>target/ROOT</app>
+                    <name>tDAR</name>
+                    <port>8080</port>
+                    <contextRoot>/</contextRoot>
+                </configuration>
+            </plugin>
 			<plugin>
 				<!-- http://mojo.codehaus.org/keytool/keytool-maven-plugin/generateKeyPair-mojo.html -->
 				<groupId>org.codehaus.mojo</groupId>

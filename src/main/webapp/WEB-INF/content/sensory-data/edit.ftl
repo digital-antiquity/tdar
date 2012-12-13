@@ -44,7 +44,7 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
     <@s.textfield maxLength="255" name="sensoryData.companyName" cssClass="input-xxlarge" label="Company Name" labelposition="left" />
     </div>
     <div tiplabel="Estimated Data Resolution" tooltipcontent="The estimated average data resolution across the monument or object">
-    <@s.textfield maxLength="255" name="sensoryData.estimatedDataResolution" cssClass="shortfield number" label="Average Data Resolution" labelposition="left" />
+    <@s.textfield maxLength="255" name="sensoryData.estimatedDataResolution" label="Average Data Resolution" labelposition="left" />
     </div>
     <div tiplabel="Total Number of Scans in Project" tooltipcontent="Total number of scans">
     <@s.textfield maxLength="255" name="sensoryData.totalScansInProject" cssClass="right-shortfield number" label="# Scans" labelposition="left" />
@@ -93,7 +93,7 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
                 </div>
                 <div class='controls controls-row'>
                     <span tiplabel="Data Resolution" tooltipcontent="Fixed resolution or data resolution at specific range.">
-                    <@s.textfield maxLength="255" theme='simple' name="sensoryDataScans[${_scan_index}].resolution" placeholder="Resolution" cssClass="span3 number" />
+                    <@s.textfield maxLength="255" theme='simple' name="sensoryDataScans[${_scan_index}].resolution" placeholder="Resolution" cssClass="span3" />
                     </span>
                     <span tiplabel="Number of Points in Scan" tooltipcontent="Number of points generated in scan">
                     <@s.textfield theme='simple' maxLength="255" name="sensoryDataScans[${_scan_index}].pointsInScan" placeholder="# points" cssClass="span2 shortfield number" />
