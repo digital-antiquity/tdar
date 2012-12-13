@@ -2694,3 +2694,4 @@ insert into pos_billing_activity (enabled, name, numberoffiles, min_allowed_file
 insert into pos_billing_activity (enabled, name, numberoffiles, min_allowed_files, numberofmb, price, model_id) values (true, ' 5- 19', 1, 5, 10, 40,1);
 insert into pos_billing_activity (enabled, name, numberoffiles, min_allowed_files, numberofmb, price, model_id) values (true, '20- 49', 1, 20, 10, 35,1);
 insert into pos_billing_activity (enabled, name, numberoffiles, min_allowed_files, numberofmb, price, model_id) values (true, '50-500', 1, 50, 10, 31,1);
+SELECT setval('pos_billing_model_id_seq', (SELECT MAX(id) FROM pos_billing_model)+1);
