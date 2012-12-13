@@ -136,7 +136,6 @@ function sectionLoaded(context) {
         minLength : 0
     }, {});
 
-    
     $('#searchGroups').find('.searchgroup').each(function(){
         showGroupingSelectorIfNecessary($(this));
     });
@@ -181,9 +180,12 @@ function showGroupingSelectorIfNecessary($groupDiv) {
     var $visibleRows = $('.grouptable .repeat-row:visible', $groupDiv);
     var $groupingControl = $groupDiv.find(".groupingSelectDiv");
     if($visibleRows.length > 1) {
+        $groupingControl.find('select').show();
         $groupingControl.addClass("in");
     } else {
         $groupingControl.removeClass("in");
+        $groupingControl.find('select').hide();
+        
     }
 //    $('.groupingSelectDiv', $groupDiv).toggle($visibleRows.length > 1);
 }
