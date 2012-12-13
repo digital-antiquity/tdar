@@ -144,4 +144,12 @@ public class AccountGroup extends Base implements Updatable {
         this.authorizedMembers = authorizedMembers;
     }
 
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
 }
