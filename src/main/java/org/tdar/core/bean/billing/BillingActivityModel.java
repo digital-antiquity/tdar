@@ -46,7 +46,7 @@ public class BillingActivityModel extends org.tdar.core.bean.Persistable.Base {
     @Column(name = "date_created")
     private Date dateCreated;
 
-    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, }, mappedBy="model")
+    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, mappedBy="model")
     private List<BillingActivity> activities = new ArrayList<BillingActivity>();
 
     public Integer getVersion() {
