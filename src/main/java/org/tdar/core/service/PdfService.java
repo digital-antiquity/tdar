@@ -51,7 +51,7 @@ public class PdfService implements Serializable {
         // confirm correct encoding http://stackoverflow.com/questions/1713751/using-java-pdfbox-library-to-write-russian-pdf
         HELVETICA_EIGHT_POINT(PDType1Font.HELVETICA, PDType1Font.HELVETICA_BOLD, PDType1Font.HELVETICA_OBLIQUE, new PdfDocEncoding(), 8, 100),
         HELVETICA_TEN_POINT(PDType1Font.HELVETICA, PDType1Font.HELVETICA_BOLD, PDType1Font.HELVETICA_OBLIQUE, new PdfDocEncoding(), 10, 90),
-        HELVETICA_TWELVE_POINT(PDType1Font.HELVETICA, PDType1Font.HELVETICA_BOLD, PDType1Font.HELVETICA_OBLIQUE, new PdfDocEncoding(), 12, 80),
+        HELVETICA_TWELVE_POINT(PDType1Font.HELVETICA, PDType1Font.HELVETICA_BOLD, PDType1Font.HELVETICA_OBLIQUE, new PdfDocEncoding(), 12, 75),
         HELVETICA_SIXTEEN_POINT(PDType1Font.HELVETICA, PDType1Font.HELVETICA_BOLD, PDType1Font.HELVETICA_OBLIQUE, new PdfDocEncoding(), 16, 55);
 
         private int fontSize;
