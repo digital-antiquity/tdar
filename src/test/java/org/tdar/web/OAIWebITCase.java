@@ -8,7 +8,7 @@ import java.util.HashMap;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.tools.ant.filters.StringInputStream;
 import org.custommonkey.xmlunit.NamespaceContext;

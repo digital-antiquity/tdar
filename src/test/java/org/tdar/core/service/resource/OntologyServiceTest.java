@@ -1,6 +1,6 @@
 package org.tdar.core.service.resource;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
