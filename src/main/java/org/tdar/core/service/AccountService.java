@@ -17,6 +17,7 @@ import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.Account.AccountAdditionStatus;
 import org.tdar.core.bean.billing.AccountGroup;
 import org.tdar.core.bean.billing.BillingActivity;
+import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.ResourceEvaluator;
@@ -58,12 +59,33 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     }
 
+    public BillingActivityModel getLatestActivityModel() {
+        List<BillingActivityModel> findAll = getDao().findAll(BillingActivityModel.class);
+        BillingActivityModel latest = null;
+        for (BillingActivityModel model : findAll) {
+            if (!model.getActive())
+                continue;
+            if (latest == null || model.getVersion() > latest.getVersion()) {
+                latest = model;
+            }
+        }
+        return latest;
+    }
+
+    public ResourceEvaluator getResourceEvaluator() {
+        return getResourceEvaluator(new Resource[0]);
+    }
+
+    public ResourceEvaluator getResourceEvaluator(Resource... resources) {
+        return new ResourceEvaluator(getLatestActivityModel(), resources);
+    }
+
     public void addResourceToAccount(Person user, Resource resource) {
         Set<Account> accounts = listAvailableAccountsForUser(user);
         // if it doesn't count
         AccountAdditionStatus canAddResource = null;
         for (Account account : accounts) {
-            canAddResource = account.canAddResource(resource);
+            canAddResource = account.canAddResource(getResourceEvaluator(resource));
             if (canAddResource == AccountAdditionStatus.CAN_ADD_RESOURCE) {
                 account.getResources().add(resource);
                 break;
@@ -87,7 +109,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     public boolean hasSpaceInAnAccount(Person user) {
         for (Account account : listAvailableAccountsForUser(user)) {
-            if (account.isActive() && account.hasMinimumForNewRecord()) {
+            if (account.isActive() && account.hasMinimumForNewRecord(getResourceEvaluator())) {
                 logger.info("account {} has minimum balance for {}", account.getName(), user.getProperName());
                 return true;
             }
@@ -110,7 +132,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             markResourcesAsFlagged(Arrays.asList(resources));
             throw new TdarRecoverableRuntimeException("account is null");
         }
-        ResourceEvaluator endingEvaluator = new ResourceEvaluator(resources);
+        ResourceEvaluator endingEvaluator = getResourceEvaluator(resources);
         endingEvaluator.subtract(initialEvaluation);
         List<Resource> resourcesToEvaluate = Arrays.asList(resources);
         getDao().updateTransientAccountOnResources(resourcesToEvaluate);

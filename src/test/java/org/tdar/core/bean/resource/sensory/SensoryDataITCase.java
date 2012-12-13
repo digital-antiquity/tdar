@@ -6,7 +6,7 @@ package org.tdar.core.bean.resource.sensory;
 //import static org.junit.Assert.assertTrue;
 import java.util.LinkedHashSet;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;

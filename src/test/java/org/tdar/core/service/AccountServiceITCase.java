@@ -1,11 +1,12 @@
 package org.tdar.core.service;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -13,6 +14,7 @@ import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.AccountGroup;
 import org.tdar.core.bean.billing.BillingActivity;
+import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.struts.action.TdarActionException;
@@ -68,12 +70,11 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
         group.getAccounts().add(accountForPerson);
         group.getAccounts().add(accountForPerson2);
         genericService.saveOrUpdate(group);
-        assertEquals(accountService.getAccountGroup(accountForPerson),group);
+        assertEquals(accountService.getAccountGroup(accountForPerson), group);
     }
 
-    
     @Test
-//    @Ignore("not implemented yet")
+    // @Ignore("not implemented yet")
     @Rollback
     public void testAccountGroupPermissions() throws TdarActionException {
         AccountGroup group = new AccountGroup();
@@ -87,7 +88,7 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
         group.getAccounts().add(accountForPerson);
         group.getAccounts().add(accountForPerson2);
         genericService.saveOrUpdate(group);
-        assertEquals(accountService.getAccountGroup(accountForPerson),group);
+        assertEquals(accountService.getAccountGroup(accountForPerson), group);
         assertTrue(accountService.listAvailableAccountsForUser(person).contains(accountForPerson));
         assertTrue(accountService.listAvailableAccountsForUser(person).contains(accountForPerson2));
     }
@@ -95,9 +96,12 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testAvaliableActivities() throws TdarActionException {
+        BillingActivityModel model = new BillingActivityModel();
         BillingActivity disabledDctivity = new BillingActivity();
         disabledDctivity.setEnabled(false);
         disabledDctivity.setName("not active");
+        genericService.saveOrUpdate(model);
+        disabledDctivity.setModel(model);
         genericService.saveOrUpdate(disabledDctivity);
 
         BillingActivity ctivity = new BillingActivity();

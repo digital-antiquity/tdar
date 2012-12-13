@@ -286,3 +286,21 @@ insert into pos_billing_activity (enabled, name, numberoffiles, min_allowed_file
 insert into pos_billing_activity (enabled, name, numberoffiles, min_allowed_files, numberofmb, price) values (true, '50-500', 1, 50, 10, 33);
 update pos_billing_activity set enabled=false where name like 'level%';
 ALTER TABLE pos_account_group ADD COLUMN status varchar(25) default 'ACTIVE';
+
+-- 12-13-12
+create table pos_billing_model (
+    id  bigserial not null primary key,
+    date_created timestamp,
+    description varchar(255),
+    active boolean,
+    counting_files boolean,
+    counting_space boolean,
+    counting_resources boolean,
+    version int
+);
+
+alter table pos_billing_activity add column model_id int8 references pos_billing_model;
+
+insert into pos_billing_model (date_created, active, counting_files, counting_space, counting_resources) VALUES (now(), true, true, true, false);
+update pos_billing_activity set model_id=1 where model_id is null;
+alter table pos_billing_model add column version int;

@@ -62,7 +62,6 @@ import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.Account;
-import org.tdar.core.bean.billing.ResourceEvaluator;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
@@ -246,7 +245,7 @@ public class BulkUploadService {
         }
         if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
             Account account = genericDao.find(Account.class, accountId);
-            accountService.updateQuota(new ResourceEvaluator(), account, resourcesCreated.values().toArray(new Resource[0]));
+            accountService.updateQuota(accountService.getResourceEvaluator(), account, resourcesCreated.values().toArray(new Resource[0]));
         }
         receiver.setCompleted();
         logger.info("bulk upload complete");

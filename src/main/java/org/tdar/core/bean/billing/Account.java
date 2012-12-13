@@ -1,5 +1,6 @@
 package org.tdar.core.bean.billing;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -91,16 +92,15 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     @JoinColumn(nullable = true, updatable = true, name = "account_id")
     private Set<Resource> resources = new HashSet<Resource>();
 
-
     private transient Long totalResources = 0L;
     private transient Long totalFiles = 0L;
     private transient Long totalSpace = 0L;
-    private transient boolean initialized = false;
-    @Column(name="files_used")
+
+    @Column(name = "files_used")
     private Long filesUsed = 0L;
-    @Column(name="space_used")
+    @Column(name = "space_used")
     private Long spaceUsed = 0L;
-    @Column(name="resources_used")
+    @Column(name = "resources_used")
     private Long resourcesUsed = 0L;
 
     /**
@@ -194,6 +194,7 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     }
 
     public void initTotals() {
+        resetTransientTotals();
         for (Invoice invoice : getInvoices()) {
             if (invoice.getTransactionStatus() != TransactionStatus.TRANSACTION_SUCCESSFUL)
                 continue;
@@ -201,32 +202,33 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
             totalFiles += invoice.getTotalNumberOfFiles();
             totalSpace += invoice.getTotalSpace();
         }
+    }
 
-        ResourceEvaluator re = new ResourceEvaluator();
+    public void reEvaluateTotalSpaceUsed(ResourceEvaluator re) {
         re.evaluateResource(resources);
-        setFilesUsed(getFilesUsed() + re.getFilesUsed());
-        setSpaceUsed(getSpaceUsed() + re.getSpaceUsed());
-        setResourcesUsed(getResourcesUsed() + re.getResourcesUsed());
+        setFilesUsed(re.getFilesUsed());
+        setSpaceUsed(re.getSpaceUsed());
+        setResourcesUsed(re.getResourcesUsed());
+    }
+
+    public void resetTransientTotals() {
+        totalFiles = 0L;
+        totalResources = 0L;
+        totalSpace = 0L;
     }
 
     public Long getTotalNumberOfResources() {
-        if (!initialized) {
-            initTotals();
-        }
+        initTotals();
         return totalResources;
     }
 
     public Long getTotalNumberOfFiles() {
-        if (!initialized) {
-            initTotals();
-        }
+        initTotals();
         return totalFiles;
     }
 
     public Long getTotalNumberOfSpace() {
-        if (!initialized) {
-            initTotals();
-        }
+        initTotals();
         return totalSpace;
     }
 
@@ -252,21 +254,16 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
         NOT_ENOUGH_RESOURCES;
     }
 
-    public AccountAdditionStatus canAddResource(Resource resource) {
-        ResourceEvaluator re = new ResourceEvaluator(resource);
-        return canAddResource(re);
-    }
-
     public AccountAdditionStatus canAddResource(ResourceEvaluator re) {
-        if (getAvailableNumberOfFiles() - re.getFilesUsed() < 0) {
+        if (re.evaluatesNumberOfFiles() && getAvailableNumberOfFiles() - re.getFilesUsed() < 0) {
             return AccountAdditionStatus.NOT_ENOUGH_FILES;
         }
 
-        if (getAvailableResources() - re.getResourcesUsed() < 0) {
+        if (re.evaluatedNumberOfResources() && getAvailableResources() - re.getResourcesUsed() < 0) {
             return AccountAdditionStatus.NOT_ENOUGH_RESOURCES;
         }
 
-        if (getAvailableSpace() - re.getSpaceUsed() < 0) {
+        if (re.evaluatesSpace() && getAvailableSpace() - re.getSpaceUsed() < 0) {
             return AccountAdditionStatus.NOT_ENOUGH_SPACE;
         }
         return AccountAdditionStatus.CAN_ADD_RESOURCE;
@@ -331,14 +328,14 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
         this.authorizedMembers = authorizedMembers;
     }
 
-    public boolean hasMinimumForNewRecord() {
+    public boolean hasMinimumForNewRecord(ResourceEvaluator re) {
         initTotals();
-        ResourceEvaluator re = new ResourceEvaluator();
         return (re.invoiceHasMinimumForNewResource(this));
     }
 
     public void updateQuotas(ResourceEvaluator endingEvaluator) {
         if (canAddResource(endingEvaluator) == AccountAdditionStatus.CAN_ADD_RESOURCE) {
+            getResources().addAll(Arrays.asList(endingEvaluator.getResources()));
             setFilesUsed(getFilesUsed() + endingEvaluator.getFilesUsed());
             setResourcesUsed(getResourcesUsed() + endingEvaluator.getResourcesUsed());
             setSpaceUsed(getSpaceUsed() + endingEvaluator.getSpaceUsed());

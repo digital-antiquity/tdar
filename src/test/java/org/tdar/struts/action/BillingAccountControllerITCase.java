@@ -117,7 +117,6 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
     @Test
     @Rollback
     public void testAddingUsersToAccount() throws TdarActionException {
-        Long accountId = createAccount(getUser()).getId();
         BillingAccountController controller = generateNewInitializedController(BillingAccountController.class);
         controller.prepare();
         controller.getAuthorizedMembers().add(getAdminUser());
@@ -125,11 +124,10 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         String save = controller.save();
         Long id = controller.getAccount().getId();
         assertEquals(BillingAccountController.SUCCESS, save);
-        
+
         Account account = genericService.find(Account.class, id);
         assertEquals(1, account.getAuthorizedMembers().size());
-        assertTrue( account.getAuthorizedMembers().contains(getAdminUser()));
+        assertTrue(account.getAuthorizedMembers().contains(getAdminUser()));
     }
-
 
 }
