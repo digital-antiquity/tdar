@@ -7,7 +7,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -46,7 +46,7 @@ public class BillingActivityModel extends org.tdar.core.bean.Persistable.Base {
     @Column(name = "date_created")
     private Date dateCreated;
 
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, targetEntity = BillingActivity.class)
+    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, }, mappedBy="model")
     private List<BillingActivity> activities = new ArrayList<BillingActivity>();
 
     public Integer getVersion() {

@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.BillingActivity;
+import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
@@ -95,7 +96,9 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
     @Test
     @Rollback
     public void testCartPaymentInvalid() throws TdarActionException, ClientProtocolException, IOException {
-        BillingItem billingItem = new BillingItem(new BillingActivity("error", .21F), 1);
+        BillingActivityModel model = new BillingActivityModel();
+        genericService.save(model);
+        BillingItem billingItem = new BillingItem(new BillingActivity("error", .21F, model), 1);
         Invoice invoice = processTransaction(billingItem);
         assertEquals(TransactionStatus.TRANSACTION_FAILED, invoice.getTransactionStatus());
         String msg = CartController.ERROR;
@@ -114,7 +117,9 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
     @Test
     @Rollback
     public void testCartPaymentInvalid2() throws TdarActionException, ClientProtocolException, IOException {
-        BillingItem billingItem = new BillingItem(new BillingActivity("invalid", .11F), 1);
+        BillingActivityModel model = new BillingActivityModel();
+        genericService.save(model);
+        BillingItem billingItem = new BillingItem(new BillingActivity("invalid", .11F, model), 1);
         Invoice invoice = processTransaction(billingItem);
         assertEquals(TransactionStatus.TRANSACTION_FAILED, invoice.getTransactionStatus());
     }
@@ -122,7 +127,9 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
     @Test
     @Rollback
     public void testCartPaymentInvalid3() throws TdarActionException, ClientProtocolException, IOException {
-        BillingItem billingItem = new BillingItem(new BillingActivity("unknown", .31F), 1);
+        BillingActivityModel model = new BillingActivityModel();
+        genericService.save(model);
+        BillingItem billingItem = new BillingItem(new BillingActivity("unknown", .31F, model), 1);
         Invoice invoice = processTransaction(billingItem);
         assertEquals(TransactionStatus.TRANSACTION_FAILED, invoice.getTransactionStatus());
         assertEquals(PaymentMethod.CREDIT_CARD, invoice.getPaymentMethod());

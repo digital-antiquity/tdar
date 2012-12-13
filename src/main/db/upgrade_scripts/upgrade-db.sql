@@ -295,10 +295,12 @@ create table pos_billing_model (
     active boolean,
     counting_files boolean,
     counting_space boolean,
-    counting_resources boolean
+    counting_resources boolean,
+    version int
 );
 
 alter table pos_billing_activity add column model_id int8 references pos_billing_model;
 
 insert into pos_billing_model (date_created, active, counting_files, counting_space, counting_resources) VALUES (now(), true, true, true, false);
 update pos_billing_activity set model_id=1 where model_id is null;
+alter table pos_billing_model add column version int;

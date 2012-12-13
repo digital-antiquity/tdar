@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.BillingActivity;
+import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
@@ -19,12 +20,14 @@ public class AccountITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testInvoiceBillingItemIncrements() {
+        BillingActivityModel model = new BillingActivityModel();
         List<BillingItem> items = new ArrayList<BillingItem>();
-        items.add(new BillingItem(new BillingActivity("1 hour", 10f, 10, 0L, 0L, 0L), 2));
+        genericService.saveOrUpdate(model);
+        items.add(new BillingItem(new BillingActivity("1 hour", 10f, 10, 0L, 0L, 0L, model), 2));
         // public BillingActivity(String name, Float price, Integer numHours, Long numberOfResources, Long numberOfFiles, Long numberOfMb) {
-        items.add(new BillingItem(new BillingActivity("1 resource", 1f, 0, 1L, 0L, 0L), 2));
-        items.add(new BillingItem(new BillingActivity("1 file", 100f, 0, 0L, 2L, 0L), 2));
-        items.add(new BillingItem(new BillingActivity("1 mb", .1f, 0, 0L, 0L, 3L), 2));
+        items.add(new BillingItem(new BillingActivity("1 resource", 1f, 0, 1L, 0L, 0L, model), 2));
+        items.add(new BillingItem(new BillingActivity("1 file", 100f, 0, 0L, 2L, 0L, model), 2));
+        items.add(new BillingItem(new BillingActivity("1 mb", .1f, 0, 0L, 0L, 3L, model), 2));
         Invoice invoice = new Invoice(getUser(), PaymentMethod.INVOICE, 10L, 0L, items);
         Account account = new Account("my account");
         account.getInvoices().add(invoice);

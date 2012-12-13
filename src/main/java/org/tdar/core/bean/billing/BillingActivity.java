@@ -42,14 +42,15 @@ public class BillingActivity extends Persistable.Base {
     public BillingActivity() {
     }
 
-    public BillingActivity(String name, Float price) {
+    public BillingActivity(String name, Float price, BillingActivityModel model) {
         this();
         this.name = name;
         this.price = price;
+        this.model = model;
     }
 
-    public BillingActivity(String name, Float price, Integer numHours, Long numberOfResources, Long numberOfFiles, Long numberOfMb) {
-        this(name, price);
+    public BillingActivity(String name, Float price, Integer numHours, Long numberOfResources, Long numberOfFiles, Long numberOfMb, BillingActivityModel model) {
+        this(name, price, model);
         setNumberOfHours(numHours);
         setNumberOfFiles(numberOfFiles);
         setNumberOfMb(numberOfMb);
