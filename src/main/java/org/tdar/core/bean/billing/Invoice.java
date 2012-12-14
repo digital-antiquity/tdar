@@ -40,6 +40,7 @@ import org.tdar.core.dao.external.payment.PaymentMethod;
 @Table(name = "pos_invoice")
 public class Invoice extends Base implements Updatable {
 
+    public static final long ONE_MB = 1048576L;
     private static final long serialVersionUID = -3613460318580954253L;
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -213,7 +214,7 @@ public class Invoice extends Base implements Updatable {
     }
     
     public Long getTotalSpaceInBytes() {
-        return getNumberOfMb() * 1048576L;
+        return getNumberOfMb() * ONE_MB;
     }
 
 
@@ -244,6 +245,14 @@ public class Invoice extends Base implements Updatable {
             }
             initialized = true;
         }
+    }
+    
+    public void resetTransientValues() {
+        totalResources = 0L;
+        totalSpace =0L;
+        calculatedCost = 0F;
+        totalResources = 0L;
+        initialized = false;
     }
 
     private transient Long totalResources = 0L;

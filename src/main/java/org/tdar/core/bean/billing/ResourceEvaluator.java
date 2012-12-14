@@ -54,7 +54,7 @@ public class ResourceEvaluator implements Serializable {
         }
         if (evaluatesNumberOfFiles() && account.getAvailableNumberOfFiles() <= 0)
             return false;
-        if (evaluatesSpace() && account.getAvailableSpace() <= 0)
+        if (evaluatesSpace() && account.getAvailableSpaceInMb() <= 0)
             return false;
         return true;
     }
@@ -139,8 +139,12 @@ public class ResourceEvaluator implements Serializable {
         this.filesUsed = filesUsed;
     }
 
-    public long getSpaceUsed() {
+    public long getSpaceUsedInBytes() {
         return spaceUsed;
+    }
+
+    public long getSpaceUsedInMb() {
+        return spaceUsed / Invoice.ONE_MB;
     }
 
     public void setSpaceUsed(long spaceUsed) {
@@ -156,7 +160,7 @@ public class ResourceEvaluator implements Serializable {
     }
 
     public void subtract(ResourceEvaluator initialEvaluation) {
-        setSpaceUsed(getSpaceUsed() - initialEvaluation.getSpaceUsed());
+        setSpaceUsed(getSpaceUsedInBytes() - initialEvaluation.getSpaceUsedInBytes());
         setFilesUsed(getFilesUsed() - initialEvaluation.getFilesUsed());
         setResourcesUsed(getResourcesUsed() - initialEvaluation.getResourcesUsed());
     }

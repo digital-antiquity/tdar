@@ -27,6 +27,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.AccountDao;
 import org.tdar.core.dao.GenericDao;
+import org.tdar.core.exception.TdarQuotaException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
 
@@ -81,21 +82,23 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         return new ResourceEvaluator(getLatestActivityModel(), resources);
     }
 
+    /*
     public void addResourceToAccount(Person user, Resource resource) {
         Set<Account> accounts = listAvailableAccountsForUser(user);
         // if it doesn't count
         AccountAdditionStatus canAddResource = null;
         for (Account account : accounts) {
-            canAddResource = account.canAddResource(getResourceEvaluator(resource));
+            ResourceEvaluator resourceEvaluator = getResourceEvaluator(resource);
+            canAddResource = account.canAddResource(resourceEvaluator);
             if (canAddResource == AccountAdditionStatus.CAN_ADD_RESOURCE) {
-                account.getResources().add(resource);
+                account.updateQuotas(resourceEvaluator);
                 break;
             }
         }
         if (canAddResource != AccountAdditionStatus.CAN_ADD_RESOURCE) {
-            throw new TdarRecoverableRuntimeException(String.format("Cannot add resource because %s", canAddResource));
+            throw new TdarQuotaException(Account.ACCOUNT_IS_OVERDRAWN, canAddResource);
         }
-    }
+    }*/
 
     public AccountGroup getAccountGroup(Account account) {
         return getDao().getAccountGroup(account);
@@ -161,9 +164,12 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             }
         }
         getDao().merge(account);
+        /*
+         * FIXME: FLAGGING RESOURCES, ASSOCIATING THEM WITH AN ACCOUNT, but NOT decrimenting quota usage... contradictory
+         */
         try {
             account.updateQuotas(endingEvaluator);
-        } catch (TdarRecoverableRuntimeException e) {
+        } catch (TdarQuotaException e) {
             markResourcesAsFlagged(Arrays.asList(resources));
         }
         account.getResources().addAll(resourcesToEvaluate);

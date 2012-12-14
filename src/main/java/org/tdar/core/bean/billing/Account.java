@@ -28,7 +28,7 @@ import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.exception.TdarQuotaException;
 
 /**
  * $Id$
@@ -42,6 +42,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 @Table(name = "pos_account")
 public class Account extends Persistable.Base implements Updatable, HasStatus, Addressable {
 
+    public static final String ACCOUNT_IS_OVERDRAWN = "We're sorry, your account does not have enough to add this resource";
     private static final long serialVersionUID = -1728904030701477101L;
 
     public Account() {
@@ -100,7 +101,7 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     @Column(name = "files_used")
     private Long filesUsed = 0L;
     @Column(name = "space_used")
-    private Long spaceUsed = 0L;
+    private Long spaceUsedInBytes = 0L;
     @Column(name = "resources_used")
     private Long resourcesUsed = 0L;
 
@@ -208,7 +209,7 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     public void reEvaluateTotalSpaceUsed(ResourceEvaluator re) {
         re.evaluateResources(resources);
         setFilesUsed(re.getFilesUsed());
-        setSpaceUsed(re.getSpaceUsed());
+        setSpaceUsedInBytes(re.getSpaceUsedInBytes());
         setResourcesUsed(re.getResourcesUsed());
     }
 
@@ -238,9 +239,9 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
         return totalFiles - getFilesUsed();
     }
 
-    public Long getAvailableSpace() {
+    public Long getAvailableSpaceInMb() {
         Long totalSpace = getTotalNumberOfSpace();
-        return totalSpace - getSpaceUsed();
+        return totalSpace - getSpaceUsedInBytes();
     }
 
     public Long getAvailableResources() {
@@ -256,16 +257,25 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     }
 
     public AccountAdditionStatus canAddResource(ResourceEvaluator re) {
-        if (re.evaluatesNumberOfFiles() && getAvailableNumberOfFiles() - re.getFilesUsed() < 0) {
-            return AccountAdditionStatus.NOT_ENOUGH_FILES;
+        if (re.evaluatesNumberOfFiles()) {
+            logger.debug("available files {} trying to use {}", getAvailableNumberOfFiles(), re.getFilesUsed());
+            if (getAvailableNumberOfFiles() - re.getFilesUsed() < 0) {
+                return AccountAdditionStatus.NOT_ENOUGH_FILES;
+            }
         }
 
-        if (re.evaluatesNumberOfResources() && getAvailableResources() - re.getResourcesUsed() < 0) {
-            return AccountAdditionStatus.NOT_ENOUGH_RESOURCES;
+        if (re.evaluatesNumberOfResources()) {
+            logger.debug("available resources {} trying to use {}", getAvailableResources(), re.getResourcesUsed());
+            if (getAvailableResources() - re.getResourcesUsed() < 0) {
+                return AccountAdditionStatus.NOT_ENOUGH_RESOURCES;
+            }
         }
 
-        if (re.evaluatesSpace() && getAvailableSpace() - re.getSpaceUsed() < 0) {
-            return AccountAdditionStatus.NOT_ENOUGH_SPACE;
+        if (re.evaluatesSpace()) {
+            logger.debug("available space {} trying to use {}", getAvailableSpaceInMb(), re.getSpaceUsedInMb());
+            if (getAvailableSpaceInMb() - re.getSpaceUsedInMb() < 0) {
+                return AccountAdditionStatus.NOT_ENOUGH_SPACE;
+            }
         }
         return AccountAdditionStatus.CAN_ADD_RESOURCE;
     }
@@ -335,13 +345,14 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     }
 
     public void updateQuotas(ResourceEvaluator endingEvaluator) {
-        if (canAddResource(endingEvaluator) == AccountAdditionStatus.CAN_ADD_RESOURCE) {
+        AccountAdditionStatus status = canAddResource(endingEvaluator);
+        if (status == AccountAdditionStatus.CAN_ADD_RESOURCE) {
             getResources().addAll(Arrays.asList(endingEvaluator.getResources()));
             setFilesUsed(getFilesUsed() + endingEvaluator.getFilesUsed());
             setResourcesUsed(getResourcesUsed() + endingEvaluator.getResourcesUsed());
-            setSpaceUsed(getSpaceUsed() + endingEvaluator.getSpaceUsed());
+            setSpaceUsedInBytes(getSpaceUsedInBytes() + endingEvaluator.getSpaceUsedInBytes());
         } else {
-            throw new TdarRecoverableRuntimeException("account is overdrawn");
+            throw new TdarQuotaException(ACCOUNT_IS_OVERDRAWN, status);
         }
     }
 
@@ -353,12 +364,16 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
         this.filesUsed = filesUsed;
     }
 
-    public Long getSpaceUsed() {
-        return spaceUsed;
+    public Long getSpaceUsedInBytes() {
+        return spaceUsedInBytes;
     }
 
-    public void setSpaceUsed(Long spaceUsed) {
-        this.spaceUsed = spaceUsed;
+    public Long getSpaceUsedInMb() {
+        return spaceUsedInBytes / Invoice.ONE_MB;
+    }
+
+    public void setSpaceUsedInBytes(Long spaceUsed) {
+        this.spaceUsedInBytes = spaceUsed;
     }
 
     public Long getResourcesUsed() {
