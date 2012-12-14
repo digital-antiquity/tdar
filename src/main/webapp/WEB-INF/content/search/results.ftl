@@ -23,8 +23,10 @@
 		            <p>${exploreKeyword.definition?html}</p>
                 </#if>
             </div>
+        <#elseif query?has_content>
+        <h1>${lookupSource.proper} Search Results: <span>${query?html}</span></h1>
         <#else>
-        <h1> ${lookupSource.proper} Search Results: <span><#if query?has_content>${query}<#else>all results</#if></span></h1>
+        <h1>Search Results: ${(searchSubtitle!"all records")?html}</h1>
         </#if>
     </div>
 
