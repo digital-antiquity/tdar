@@ -105,7 +105,6 @@
 <@edit.sharedFormComponents />
 </@s.form>
 
-</div>
 
 <@edit.asyncUploadTemplates />
 <@edit.resourceJavascript includeAsync=true  includeInheritance=true/>

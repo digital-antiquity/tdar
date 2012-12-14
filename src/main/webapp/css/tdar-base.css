@@ -647,9 +647,14 @@ h2 {
 	margin-bottom: 20px !important;
 }
 
+
 .cols h1 {
-	font-size: 30px;
-	line-height: 34px;
+    font-size: 30px;
+    line-height: 34px;
+}
+
+/*retain title formatting on view-page formatting without screwing up the edit pages */ 
+.cols h1.view-page-title {
 	margin: -5px 0 0 0 !important;
 }
 

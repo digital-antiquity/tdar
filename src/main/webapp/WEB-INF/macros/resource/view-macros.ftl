@@ -495,7 +495,7 @@ No coding rules have been entered for this coding sheet yet.
 <@resourceDeletedCallout />
 <@resourceFlaggedCallout />
 
-<h1>${resource.title}</h1>
+<h1 class="view-page-title">${resource.title}</h1>
 <#if resource.project?? && resource.project.id?? && resource.project.id != -1>
 
 <div id="subtitle"> 

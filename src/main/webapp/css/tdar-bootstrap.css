@@ -672,6 +672,8 @@ label.help-inline[generated="true"] {
     visibility: hidden;
 }
 
+/*FIXME: we are doing this hack because the contents of the left-pane can't fit in a .span9  (view page and edit page)  */
+/* see TDAR-2634, remove this css rule when ticket closed */ 
 article+aside.span3>div {
     margin-left: 40px !important; 
 /*    float: right; */

@@ -470,16 +470,18 @@ ${resource.resourceType.label}
 
 
 <#macro categoryVariable>
-<div class="control-group row">
-    <div id='categoryDivId' class="span4">
-    <@s.select labelposition='left' label='Category' id='categoryId' name='categoryId' 
-        onchange='changeSubcategory("#categoryId","#subcategoryId")'
-                    autocompleteName="sortCategoryId"
-        listKey='id' listValue='name' emptyOption='true' list='%{allDomainCategories}' />
-    </div>
-    <div id='subcategoryDivId' class="span3">
-    <@s.select labelposition='left' label='Subcategory' id='subcategoryId' name='subcategoryId' 
-        autocompleteName="subCategoryId" headerKey="-1" listKey='id' headerValue="N/A" list='%{subcategories}'/>
+<div class="control-group">
+    <label class="control-label"><small>Category / Subcategory</small></label>
+    <div class="controls controls-row">
+        <div id='categoryDivId' class="span3">
+        <@s.select theme="tdar"  id='categoryId' name='categoryId' 
+            onchange='changeSubcategory("#categoryId","#subcategoryId")' autocompleteName="sortCategoryId"
+            listKey='id' listValue='name' emptyOption='true' list='%{allDomainCategories}' cssClass="input-block-level" />
+        </div>
+        <div id='subcategoryDivId' class="span3">
+            <@s.select theme="tdar" id='subcategoryId' name='subcategoryId' 
+                autocompleteName="subCategoryId" headerKey="-1" listKey='id' headerValue="N/A" list='%{subcategories}'  cssClass="input-block-level" />
+        </div>
     </div>
 </div>
 </#macro>
@@ -1127,10 +1129,10 @@ jquery validation hooks?)
 </#macro>
 
 <#macro sidebar>
-<div id="sidebar-right" parse="true" class="span3">
+<div id="sidebar-right" parse="true">
     <div id="notice">
-    <h3>Introduction</h3>
-    This is the page for editing metadata associated with ${resource.resourceType.plural}.
+        <h3>Introduction</h3>
+        This is the page for editing metadata associated with ${resource.resourceType.plural}.
     </div>
 </div>
 </#macro>

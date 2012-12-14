@@ -6,14 +6,16 @@
 
 </head>
 <body>
-
+<@edit.sidebar />
+<@edit.subNavMenu />
+<h1>Batch Resource Upload</h1>
 <@s.form name='BulkMetadataForm' id='BulkMetadataForm'  cssClass="span9 form-horizontal"  method='post' enctype='multipart/form-data' action='save'>
 
 <@edit.basicInformation "image" "batch" true>
-    <@s.select labelposition='left' label='Language'  name='resourceLanguage'  emptyOption='false' listValue='label' list='%{languages}'/>
+<@s.select labelposition='left' label='Language'  name='resourceLanguage'  emptyOption='false' listValue='label' list='%{languages}'/>
 </@edit.basicInformation>
-<@edit.citationInfo "image" false />
 
+<@edit.citationInfo "image" false />
 
 <div class="glide">
     <h3>Upload record specific metadata</h3>
@@ -47,12 +49,6 @@ For all of the fields below, you can select values that will apply to all of the
 <@edit.sharedFormComponents  fileReminder=false/>
 
 </@s.form>
-<div id="sidebar" parse="true">
-    <div id="notice">
-    <h3>Introduction</h3>
-    This is the bulk upload edit form.
-    </div>
-</div>
     <table style="display:none;visibility:hidden" id="queuedFileTemplate">
         <@edit.fileProxyRow />
     </table>

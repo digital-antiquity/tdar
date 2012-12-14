@@ -1232,6 +1232,8 @@ TDAR.common = function() {
         $("#copyright_holder_type_institution").change(toggleCopyrightHolder);
     
         //if page has a navbar,  wire it up and refresh it whenever something changes page size (e.g. repeatrow additions)
+        
+        //fixme: ths scrollspy is being registered twice (remove data-attributes from scrollspy div?)
         $('#subnavbar').each(function() {
             var $scrollspy = $(this).scrollspy();
             
