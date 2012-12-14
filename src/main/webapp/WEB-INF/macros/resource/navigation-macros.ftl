@@ -61,7 +61,7 @@ $(document).ready(function() {
         <#return>
     </#if>
   </#if>
-  <#if sessionData?? && sessionData.authenticated>
+  <#if (sessionData.authenticated)!false>
     <div class="span12 resource-nav no-print " id="toolbars" parse="true">
       <ul >
        <#if persistable??>
@@ -78,28 +78,7 @@ $(document).ready(function() {
           <@makeLink "resource" "add?projectId=${resource.id?c}" "add new resource to project" "add" "" false>
           </@makeLink>
         </#if>
-        <#if editable>
-            <#if resource.resourceType == 'DATASET'>
-                <#--
-                  <@makeLink "dataset" "citations" "manage citations" "citations" current>
-                    <@img "/images/book_edit.png" />
-                  </@makeLink>
-                 -->
-                    <#assign disabled = true />
-                    <#if ! resource.dataTables.isEmpty() >
-                        <#assign disabled = false />
-                    </#if>
-                    <@makeLink "dataset" "columns" "table metadata" "columns" current true disabled />
-
-                <#elseif resource.resourceType=='CODING_SHEET'>
-                    <#assign disabled = true />
-                    <#if resource.defaultOntology?has_content >
-                        <#assign disabled = false />
-                    </#if>
-                    <@makeLink "coding-sheet" "mapping" "map ontology" "mapping"   current true disabled />
-                </#if>
-    
-        </#if>
+        <#nested>
         </#if>
        <#elseif creator??>
         <@makeViewLink namespace current />

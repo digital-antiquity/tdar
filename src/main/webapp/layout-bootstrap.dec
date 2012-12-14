@@ -132,7 +132,9 @@
 </#if>
     <#if  page.properties["div.toolbars"]?? && page.properties["div.toolbars"] != "">
     	<!-- toolbar -->
+    	<div class="row">
         ${page.properties["div.toolbars"]}
+        </div>
     </#if>
     
 

@@ -4,7 +4,12 @@
 <meta name="lastModifiedDate" content="$Date$"/>
 <@view.googleScholar />
 </@view.htmlHeader>
-<@view.toolbar "${resource.urlNamespace}" "view" />
+<@view.toolbar resource.urlNamespace "view">
+    <#if editable>
+    <#assign disabled = resource.dataTables?size==0 />
+    <@view.makeLink "dataset" "columns" "table metadata" "columns" current true disabled />
+    </#if>
+</@view.toolbar>
 
 <@view.projectAssociation resourceType="dataset" />
 <@view.infoResourceBasicInformation />
