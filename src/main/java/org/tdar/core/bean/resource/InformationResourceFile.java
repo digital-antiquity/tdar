@@ -26,6 +26,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.WordUtils;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
@@ -139,6 +140,16 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     }
 
     private transient boolean viewable = false;
+
+    public InformationResourceFile() {
+    }
+
+    public InformationResourceFile(FileStatus status, Collection<InformationResourceFileVersion> versions) {
+        setStatus(status);
+        if (CollectionUtils.isNotEmpty(versions)) {
+            getInformationResourceFileVersions().addAll(versions);
+        }
+    }
 
     public void setInformationResource(InformationResource informationResource) {
         this.informationResource = informationResource;

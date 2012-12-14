@@ -1,8 +1,11 @@
 package org.tdar.core.bean;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
@@ -13,9 +16,59 @@ import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
+import org.tdar.core.bean.billing.ResourceEvaluator;
+import org.tdar.core.bean.resource.CodingSheet;
+import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.Image;
+import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.InformationResourceFile;
+import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
+import org.tdar.core.bean.resource.Ontology;
+import org.tdar.core.bean.resource.Project;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 
 public class AccountITCase extends AbstractIntegrationTestCase {
+
+    @Test
+    @Rollback
+    public void testResourceEvaluatorCanCreateResource() {
+        BillingActivityModel model = new BillingActivityModel();
+        ResourceEvaluator re = new ResourceEvaluator(model);
+        model.setCountingResources(true);
+        assertFalse(re.accountHasMinimumForNewResource(new Account()));
+        model.setCountingResources(false);
+        assertTrue(re.accountHasMinimumForNewResource(new Account()));
+    }
+
+    @Test
+    @Rollback
+    public void testResourceEvaluatorEvaluateResourcesByType() throws InstantiationException, IllegalAccessException {
+        BillingActivityModel model = new BillingActivityModel();
+        ResourceEvaluator re = new ResourceEvaluator(model);
+        model.setCountingResources(true);
+        assertFalse(re.accountHasMinimumForNewResource(new Account()));
+        Image img = new Image();
+        InformationResource irfile = generateInformationResourceWithFileAndUser();
+        InformationResource irfile2 = generateInformationResourceWithFileAndUser();
+        InformationResourceFile irfProcessed = new InformationResourceFile(FileStatus.PROCESSED, null);
+        img.getInformationResourceFiles().addAll(
+                Arrays.asList(new InformationResourceFile(FileStatus.DELETED, null), irfProcessed,
+                        irfProcessed, irfProcessed));
+        img.setStatus(null);
+        List<Resource> resources = Arrays.asList(irfile, irfile2, new Project(), new Ontology(), new CodingSheet(), img);
+        re.evaluateResources(resources);
+
+        logger.info("ru {}", re.getResourcesUsed());
+        logger.info("fu {}", re.getFilesUsed());
+        logger.info("su {}", re.getSpaceUsed());
+
+        assertEquals(3, re.getResourcesUsed());
+        assertEquals(3, re.getFilesUsed());
+        // WARN: brittle...
+        assertEquals(11687168, re.getSpaceUsed());
+
+    }
 
     @Test
     @Rollback
@@ -53,5 +106,4 @@ public class AccountITCase extends AbstractIntegrationTestCase {
 
     }
 
-    
 }

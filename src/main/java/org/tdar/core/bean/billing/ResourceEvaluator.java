@@ -40,26 +40,26 @@ public class ResourceEvaluator implements Serializable {
 
     public ResourceEvaluator(BillingActivityModel model, Resource... resources) {
         this.model = model;
-        evaluateResource(resources);
+        evaluateResources(resources);
     }
 
     /*
      * IOC putting all of the logic in one place
      */
-    public boolean invoiceHasMinimumForNewResource(Account account) {
+    public boolean accountHasMinimumForNewResource(Account account) {
         if (!evaluatedNumberOfResources())
             return true;
         return account.getAvailableResources() > 0;
     }
 
-    public void evaluateResource(Collection<Resource> resources) {
-        evaluateResource(resources.toArray(new Resource[0]));
+    public void evaluateResources(Collection<Resource> resources) {
+        evaluateResources(resources.toArray(new Resource[0]));
     }
 
     /*
      * Evaluate whether a resource can be added and how it counts when added to an account
      */
-    public void evaluateResource(Resource... resources) {
+    public void evaluateResources(Resource... resources) {
         this.setResources(resources);
 
         for (Resource resource : resources) {

@@ -205,7 +205,7 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     }
 
     public void reEvaluateTotalSpaceUsed(ResourceEvaluator re) {
-        re.evaluateResource(resources);
+        re.evaluateResources(resources);
         setFilesUsed(re.getFilesUsed());
         setSpaceUsed(re.getSpaceUsed());
         setResourcesUsed(re.getResourcesUsed());
@@ -330,7 +330,7 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
 
     public boolean hasMinimumForNewRecord(ResourceEvaluator re) {
         initTotals();
-        return (re.invoiceHasMinimumForNewResource(this));
+        return (re.accountHasMinimumForNewResource(this));
     }
 
     public void updateQuotas(ResourceEvaluator endingEvaluator) {
