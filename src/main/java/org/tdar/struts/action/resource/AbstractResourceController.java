@@ -264,7 +264,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         if (!getAuthenticatedUser().getContributor()) {
             return false;
         }
-        if (!getTdarConfiguration().isPayPerIngestEnabled() || getAccountService().hasSpaceInAnAccount(getAuthenticatedUser())) {
+        if (!getTdarConfiguration().isPayPerIngestEnabled() || getAccountService().hasSpaceInAnAccount(getAuthenticatedUser(), getResource().getResourceType())) {
             return true;
         }
         return false;

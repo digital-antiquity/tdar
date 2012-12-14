@@ -18,7 +18,6 @@ import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.billing.ResourceEvaluator;
 import org.tdar.core.bean.resource.CodingSheet;
-import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
@@ -26,6 +25,7 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 
 public class AccountITCase extends AbstractIntegrationTestCase {
@@ -35,10 +35,50 @@ public class AccountITCase extends AbstractIntegrationTestCase {
     public void testResourceEvaluatorCanCreateResource() {
         BillingActivityModel model = new BillingActivityModel();
         ResourceEvaluator re = new ResourceEvaluator(model);
-        model.setCountingResources(true);
-        assertFalse(re.accountHasMinimumForNewResource(new Account()));
-        model.setCountingResources(false);
-        assertTrue(re.accountHasMinimumForNewResource(new Account()));
+        updateModel(model, true, false, false);
+        Account account = new Account();
+        assertFalse(re.accountHasMinimumForNewResource(account, null));
+
+        updateModel(model, true, false, false);
+        assertTrue(re.accountHasMinimumForNewResource(account, ResourceType.PROJECT));
+
+        updateModel(model, false, true, false);
+        assertFalse(re.accountHasMinimumForNewResource(account, null));
+
+        updateModel(model, false, false, true);
+        assertFalse(re.accountHasMinimumForNewResource(account, null));
+
+        updateModel(model, false, false, false);
+        assertTrue(re.accountHasMinimumForNewResource(account, null));
+    }
+
+    public void updateModel(BillingActivityModel model, boolean resources, boolean files, boolean space) {
+        model.setCountingResources(resources);
+        model.setCountingFiles(files);
+        model.setCountingSpace(space);
+
+    }
+
+    @Test
+    @Rollback
+    public void testAccountCanAddResource() {
+        // BillingActivityModel model = new BillingActivityModel();
+        // ResourceEvaluator re = new ResourceEvaluator(model);
+        // model.setCountingResources(true);
+        // assertFalse(re.accountHasMinimumForNewResource(new Account()));
+        // model.setCountingResources(false);
+        // assertTrue(re.accountHasMinimumForNewResource(new Account()));
+    }
+
+    @Test
+    @Rollback
+    public void testAccountUpdateQuota() {
+        // BillingActivityModel model = new BillingActivityModel();
+        // ResourceEvaluator re = new ResourceEvaluator(model);
+        // model.setCountingResources(true);
+        // assertFalse(re.accountHasMinimumForNewResource(new Account()));
+        // model.setCountingResources(false);
+        // assertTrue(re.accountHasMinimumForNewResource(new Account()));
     }
 
     @Test
@@ -47,7 +87,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         BillingActivityModel model = new BillingActivityModel();
         ResourceEvaluator re = new ResourceEvaluator(model);
         model.setCountingResources(true);
-        assertFalse(re.accountHasMinimumForNewResource(new Account()));
+        assertFalse(re.accountHasMinimumForNewResource(new Account(), null));
         Image img = new Image();
         InformationResource irfile = generateInformationResourceWithFileAndUser();
         InformationResource irfile2 = generateInformationResourceWithFileAndUser();

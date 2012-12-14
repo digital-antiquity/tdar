@@ -23,6 +23,7 @@ import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.ResourceEvaluator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.AccountDao;
 import org.tdar.core.dao.GenericDao;
@@ -107,9 +108,9 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         throw new TdarRecoverableRuntimeException("cannot assign invoice to account");
     }
 
-    public boolean hasSpaceInAnAccount(Person user) {
+    public boolean hasSpaceInAnAccount(Person user, ResourceType type) {
         for (Account account : listAvailableAccountsForUser(user)) {
-            if (account.isActive() && account.hasMinimumForNewRecord(getResourceEvaluator())) {
+            if (account.isActive() && account.hasMinimumForNewRecord(getResourceEvaluator(), type)) {
                 logger.info("account {} has minimum balance for {}", account.getName(), user.getProperName());
                 return true;
             }

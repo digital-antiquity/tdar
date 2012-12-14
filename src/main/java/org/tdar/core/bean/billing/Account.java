@@ -26,6 +26,7 @@ import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
@@ -259,7 +260,7 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
             return AccountAdditionStatus.NOT_ENOUGH_FILES;
         }
 
-        if (re.evaluatedNumberOfResources() && getAvailableResources() - re.getResourcesUsed() < 0) {
+        if (re.evaluatesNumberOfResources() && getAvailableResources() - re.getResourcesUsed() < 0) {
             return AccountAdditionStatus.NOT_ENOUGH_RESOURCES;
         }
 
@@ -328,9 +329,9 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
         this.authorizedMembers = authorizedMembers;
     }
 
-    public boolean hasMinimumForNewRecord(ResourceEvaluator re) {
+    public boolean hasMinimumForNewRecord(ResourceEvaluator re, ResourceType type) {
         initTotals();
-        return (re.accountHasMinimumForNewResource(this));
+        return (re.accountHasMinimumForNewResource(this, type));
     }
 
     public void updateQuotas(ResourceEvaluator endingEvaluator) {

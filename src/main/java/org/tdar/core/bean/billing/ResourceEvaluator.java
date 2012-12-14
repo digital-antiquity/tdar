@@ -46,10 +46,17 @@ public class ResourceEvaluator implements Serializable {
     /*
      * IOC putting all of the logic in one place
      */
-    public boolean accountHasMinimumForNewResource(Account account) {
-        if (!evaluatedNumberOfResources())
-            return true;
-        return account.getAvailableResources() > 0;
+    public boolean accountHasMinimumForNewResource(Account account, ResourceType resourceType) {
+        if (evaluatesNumberOfResources()) {
+            if (!getUncountedResourceTypes().contains(resourceType) && account.getAvailableResources() <= 0) {
+                return false;
+            }
+        }
+        if (evaluatesNumberOfFiles() && account.getAvailableNumberOfFiles() <= 0)
+            return false;
+        if (evaluatesSpace() && account.getAvailableSpace() <= 0)
+            return false;
+        return true;
     }
 
     public void evaluateResources(Collection<Resource> resources) {
@@ -166,7 +173,7 @@ public class ResourceEvaluator implements Serializable {
         return model.getCountingSpace();
     }
 
-    public boolean evaluatedNumberOfResources() {
+    public boolean evaluatesNumberOfResources() {
         return model.getCountingResources();
     }
 

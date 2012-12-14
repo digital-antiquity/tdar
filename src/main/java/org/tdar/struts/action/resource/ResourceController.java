@@ -80,7 +80,7 @@ public class ResourceController extends AuthenticationAware.Base {
 
     public boolean isAllowedToCreateResource() {
 //        logger.info("ppi: {}", getTdarConfiguration().isPayPerIngestEnabled());
-        if (getTdarConfiguration().isPayPerIngestEnabled() == false || getAccountService().hasSpaceInAnAccount(getAuthenticatedUser())) {
+        if (getTdarConfiguration().isPayPerIngestEnabled() == false || getAccountService().hasSpaceInAnAccount(getAuthenticatedUser(), null)) {
             return true;
         }
         return false;
