@@ -82,23 +82,28 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         return new ResourceEvaluator(getLatestActivityModel(), resources);
     }
 
+    public ResourceEvaluator getResourceEvaluator(Collection<Resource> resources) {
+        return new ResourceEvaluator(getLatestActivityModel(), resources.toArray(new Resource[0]));
+    }
+
     /*
-    public void addResourceToAccount(Person user, Resource resource) {
-        Set<Account> accounts = listAvailableAccountsForUser(user);
-        // if it doesn't count
-        AccountAdditionStatus canAddResource = null;
-        for (Account account : accounts) {
-            ResourceEvaluator resourceEvaluator = getResourceEvaluator(resource);
-            canAddResource = account.canAddResource(resourceEvaluator);
-            if (canAddResource == AccountAdditionStatus.CAN_ADD_RESOURCE) {
-                account.updateQuotas(resourceEvaluator);
-                break;
-            }
-        }
-        if (canAddResource != AccountAdditionStatus.CAN_ADD_RESOURCE) {
-            throw new TdarQuotaException(Account.ACCOUNT_IS_OVERDRAWN, canAddResource);
-        }
-    }*/
+     * public void addResourceToAccount(Person user, Resource resource) {
+     * Set<Account> accounts = listAvailableAccountsForUser(user);
+     * // if it doesn't count
+     * AccountAdditionStatus canAddResource = null;
+     * for (Account account : accounts) {
+     * ResourceEvaluator resourceEvaluator = getResourceEvaluator(resource);
+     * canAddResource = account.canAddResource(resourceEvaluator);
+     * if (canAddResource == AccountAdditionStatus.CAN_ADD_RESOURCE) {
+     * account.updateQuotas(resourceEvaluator);
+     * break;
+     * }
+     * }
+     * if (canAddResource != AccountAdditionStatus.CAN_ADD_RESOURCE) {
+     * throw new TdarQuotaException(Account.ACCOUNT_IS_OVERDRAWN, canAddResource);
+     * }
+     * }
+     */
 
     public AccountGroup getAccountGroup(Account account) {
         return getDao().getAccountGroup(account);
@@ -130,20 +135,40 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     }
 
     @Transactional
-    public void updateQuota(ResourceEvaluator initialEvaluation, Account account, Resource... resources) {
+    public AccountAdditionStatus updateQuota(ResourceEvaluator initialEvaluation, Account account, Resource... resources) {
+        return updateQuota(initialEvaluation, account, Arrays.asList(resources));
+    }
+
+    @Transactional
+    public void updateQuotaAndResetResourcesToStatus(Account account, Status endingStatus) {
+        if (!account.isOverdrawn(getResourceEvaluator())) {
+            throw new TdarQuotaException("account not charged enough", null);
+        } else {
+            List<Resource> resources = new ArrayList<Resource>();
+            //FIXME: dao
+            for (Resource  resource : account.getResources()) {
+                if (resource.getStatus() == Status.FLAGGED_ACCOUNT_BALANCE) {
+                    resource.setStatus(endingStatus);
+                    resources.add(resource);
+                }
+            }
+            saveOrUpdateAll(resources);
+        }
+    }
+
+    @Transactional
+    public AccountAdditionStatus updateQuota(ResourceEvaluator initialEvaluation, Account account, List<Resource> resourcesToEvaluate) {
         logger.info("updating quota(s)");
         if (account == null) {
-            markResourcesAsFlagged(Arrays.asList(resources));
             throw new TdarRecoverableRuntimeException("account is null");
         }
-        ResourceEvaluator endingEvaluator = getResourceEvaluator(resources);
+        ResourceEvaluator endingEvaluator = getResourceEvaluator(resourcesToEvaluate);
         endingEvaluator.subtract(initialEvaluation);
-        List<Resource> resourcesToEvaluate = Arrays.asList(resources);
         getDao().updateTransientAccountOnResources(resourcesToEvaluate);
         // if the account is null ...
 
         // Account localAccount = account;
-        for (Resource resource : resources) {
+        for (Resource resource : resourcesToEvaluate) {
             // if the account is null -- die
             if (resource == null) {
                 continue;
@@ -164,16 +189,16 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             }
         }
         getDao().merge(account);
-        /*
-         * FIXME: FLAGGING RESOURCES, ASSOCIATING THEM WITH AN ACCOUNT, but NOT decrimenting quota usage... contradictory
-         */
+        AccountAdditionStatus status = AccountAdditionStatus.CAN_ADD_RESOURCE;
         try {
+            account.getResources().addAll(resourcesToEvaluate);
             account.updateQuotas(endingEvaluator);
         } catch (TdarQuotaException e) {
-            markResourcesAsFlagged(Arrays.asList(resources));
+            status = e.getCode();
+            markResourcesAsFlagged(resourcesToEvaluate);
         }
-        account.getResources().addAll(resourcesToEvaluate);
         saveOrUpdate(account);
+        return status;
     }
 
     @Transactional

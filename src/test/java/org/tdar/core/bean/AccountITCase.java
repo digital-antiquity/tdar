@@ -3,12 +3,14 @@ package org.tdar.core.bean;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.Account.AccountAdditionStatus;
@@ -28,11 +30,14 @@ import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.payment.PaymentMethod;
-import org.tdar.core.exception.TdarQuotaException;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.AccountService;
 
 public class AccountITCase extends AbstractIntegrationTestCase {
+
+    @Autowired
+    AccountService accountService;
 
     @Test
     @Rollback
@@ -172,28 +177,36 @@ public class AccountITCase extends AbstractIntegrationTestCase {
     public void testAccountUpdateQuotaOverdrawn() throws InstantiationException, IllegalAccessException {
         BillingActivityModel model = new BillingActivityModel();
         updateModel(model, true, true, true);
-        Account account = new Account();
+        Account account = setupAccountForPerson(getUser());
         ResourceEvaluator re = new ResourceEvaluator(model);
         Document resource = generateInformationResourceWithFileAndUser();
         re.evaluateResources(resource);
         Long spaceUsedInBytes = account.getSpaceUsedInBytes();
         Long resourcesUsed = account.getResourcesUsed();
         Long filesUsed = account.getFilesUsed();
+        resource.setAccount(account);
         assertFalse(account.getResources().contains(resource));
         String msg = null;
-        AccountAdditionStatus status = null;
-        try {
-            account.updateQuotas(re);
-        } catch (TdarQuotaException tdre) {
-            msg = tdre.getMessage();
-            status = tdre.getCode();
-        }
+        AccountAdditionStatus status = accountService.updateQuota(new ResourceEvaluator(model), account, resource);
+
         assertEquals(AccountAdditionStatus.NOT_ENOUGH_FILES, status);
-        assertEquals(Account.ACCOUNT_IS_OVERDRAWN, msg);
-        assertFalse(account.getResources().contains(resource));
-        assertEquals(spaceUsedInBytes.longValue(), account.getSpaceUsedInBytes().longValue());
-        assertEquals(resourcesUsed.longValue(), account.getResourcesUsed().longValue());
-        assertEquals(filesUsed.longValue(), account.getFilesUsed().longValue());
+
+        assertTrue(account.getResources().contains(resource));
+        assertEquals(Status.FLAGGED_ACCOUNT_BALANCE, resource.getStatus());
+
+        assertFalse(spaceUsedInBytes.longValue() == account.getSpaceUsedInBytes().longValue());
+        assertFalse(resourcesUsed.longValue() == account.getResourcesUsed().longValue());
+        assertFalse(filesUsed.longValue() == account.getFilesUsed().longValue());
+
+        assertEquals(spaceUsedInBytes.longValue() + re.getSpaceUsedInBytes(), account.getSpaceUsedInBytes().longValue());
+        assertEquals(resourcesUsed.longValue() + re.getResourcesUsed(), account.getResourcesUsed().longValue());
+        assertEquals(filesUsed.longValue() + re.getFilesUsed(), account.getFilesUsed().longValue());
+    }
+
+    @Test
+    @Rollback
+    public void testIncrementalChangeEvaluation() {
+        fail();
     }
 
     @Test

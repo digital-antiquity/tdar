@@ -48,6 +48,7 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthenticationToken;
@@ -673,12 +674,12 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         }
 
         if (schema != null) {
-//            try {
-//                // testValidXMLSchemaResponse(schema);
-//            } catch (Exception e) {
-//                logger.debug("schema setup exception ", e);
-//                assertTrue(false);
-//            }
+            // try {
+            // // testValidXMLSchemaResponse(schema);
+            // } catch (Exception e) {
+            // logger.debug("schema setup exception ", e);
+            // assertTrue(false);
+            // }
             v.addSchemaSource(new StreamSource(schema));
             for (Object err : v.getSchemaErrors()) {
                 logger.error(err.toString());
@@ -753,7 +754,6 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return dataIntegrationService;
     }
 
-
     public static void assertInvalid(Validatable address, String reason) {
         TdarValidationException tv = null;
         try {
@@ -765,6 +765,15 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         if (reason != null) {
             Assert.assertEquals(reason, tv.getMessage());
         }
+    }
+
+    public Account setupAccountForPerson(Person p) {
+        Account account = new Account("my account");
+        account.setOwner(p);
+        account.setStatus(Status.ACTIVE);
+        account.markUpdated(getUser());
+        genericService.saveOrUpdate(account);
+        return account;
     }
 
 }

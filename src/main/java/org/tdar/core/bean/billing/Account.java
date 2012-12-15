@@ -344,14 +344,17 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
         return (re.accountHasMinimumForNewResource(this, type));
     }
 
+    /*
+     * We always update quotas even if a resource overdraws because it's impossible later to reconcile how much something was overdrawn easily...
+     * eg. was it because it was a "new resource" or because it was a new file, or 2k over
+     */
     public void updateQuotas(ResourceEvaluator endingEvaluator) {
         AccountAdditionStatus status = canAddResource(endingEvaluator);
-        if (status == AccountAdditionStatus.CAN_ADD_RESOURCE) {
-            getResources().addAll(Arrays.asList(endingEvaluator.getResources()));
-            setFilesUsed(getFilesUsed() + endingEvaluator.getFilesUsed());
-            setResourcesUsed(getResourcesUsed() + endingEvaluator.getResourcesUsed());
-            setSpaceUsedInBytes(getSpaceUsedInBytes() + endingEvaluator.getSpaceUsedInBytes());
-        } else {
+        getResources().addAll(Arrays.asList(endingEvaluator.getResources()));
+        setFilesUsed(getFilesUsed() + endingEvaluator.getFilesUsed());
+        setResourcesUsed(getResourcesUsed() + endingEvaluator.getResourcesUsed());
+        setSpaceUsedInBytes(getSpaceUsedInBytes() + endingEvaluator.getSpaceUsedInBytes());
+        if (status != AccountAdditionStatus.CAN_ADD_RESOURCE) {
             throw new TdarQuotaException(ACCOUNT_IS_OVERDRAWN, status);
         }
     }
@@ -395,5 +398,9 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
 
     public void setExpires(Date expires) {
         this.expires = expires;
+    }
+
+    public boolean isOverdrawn(ResourceEvaluator re) {
+        return canAddResource(re) == AccountAdditionStatus.CAN_ADD_RESOURCE;
     }
 }

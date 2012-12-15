@@ -1,5 +1,6 @@
 package org.tdar.core.service;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -49,14 +50,6 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
         assertFalse(accountsForUser.contains(accountWithPermissions));
     }
 
-    public Account setupAccountForPerson(Person p) {
-        Account account = new Account("my account");
-        account.setOwner(p);
-        account.setStatus(Status.ACTIVE);
-        account.markUpdated(getUser());
-        genericService.saveOrUpdate(account);
-        return account;
-    }
 
     @Test
     @Rollback
@@ -74,7 +67,12 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
-    // @Ignore("not implemented yet")
+    @Rollback
+    public void updateOverdrawnAccountTest() {
+        fail();
+    }
+    
+    @Test
     @Rollback
     public void testAccountGroupPermissions() throws TdarActionException {
         AccountGroup group = new AccountGroup();
