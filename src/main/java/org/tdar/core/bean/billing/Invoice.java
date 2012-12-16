@@ -208,13 +208,13 @@ public class Invoice extends Base implements Updatable {
         return totalResources;
     }
 
-    public Long getTotalSpace() {
+    public Long getTotalSpaceInMb() {
         initTotals();
-        return totalSpace;
+        return totalSpaceInMb;
     }
     
     public Long getTotalSpaceInBytes() {
-        return getNumberOfMb() * ONE_MB;
+        return getTotalSpaceInMb() * ONE_MB;
     }
 
 
@@ -234,13 +234,13 @@ public class Invoice extends Base implements Updatable {
                     totalFiles += numberOfFiles * item.getQuantity().longValue();
                 }
                 if (space != null) {
-                    totalSpace += space * item.getQuantity().longValue();
+                    totalSpaceInMb += space * item.getQuantity().longValue();
                 }
                 if (numberOfResources != null) {
                     totalResources += numberOfResources * item.getQuantity().longValue();
                 }
                 calculatedCost += item.getSubtotal();
-                logger.debug(String.format("%s (%s) files, %s(%s) mb, %s(%s) resources [%s]", numberOfFiles, totalFiles, space, totalSpace, numberOfResources,
+                logger.debug(String.format("%s (%s) files, %s(%s) mb, %s(%s) resources [%s]", numberOfFiles, totalFiles, space, totalSpaceInMb, numberOfResources,
                         totalResources, calculatedCost));
             }
             initialized = true;
@@ -249,14 +249,14 @@ public class Invoice extends Base implements Updatable {
     
     public void resetTransientValues() {
         totalResources = 0L;
-        totalSpace =0L;
+        totalSpaceInMb =0L;
         calculatedCost = 0F;
         totalResources = 0L;
         initialized = false;
     }
 
     private transient Long totalResources = 0L;
-    private transient Long totalSpace = 0L;
+    private transient Long totalSpaceInMb = 0L;
     private transient Long totalFiles = 0L;
     private transient Float calculatedCost = 0F;
     private transient boolean initialized = false;

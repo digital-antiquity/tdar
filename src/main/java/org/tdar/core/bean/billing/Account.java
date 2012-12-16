@@ -96,7 +96,7 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
 
     private transient Long totalResources = 0L;
     private transient Long totalFiles = 0L;
-    private transient Long totalSpace = 0L;
+    private transient Long totalSpaceInBytes = 0L;
 
     @Column(name = "files_used")
     private Long filesUsed = 0L;
@@ -202,8 +202,9 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
                 continue;
             totalResources += invoice.getTotalResources();
             totalFiles += invoice.getTotalNumberOfFiles();
-            totalSpace += invoice.getTotalSpace();
+            totalSpaceInBytes += invoice.getTotalSpaceInBytes();
         }
+        logger.info(String.format("Totals: %s r %s f %s b", totalResources, totalFiles, totalSpaceInBytes));
     }
 
     public void reEvaluateTotalSpaceUsed(ResourceEvaluator re) {
@@ -216,7 +217,7 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     public void resetTransientTotals() {
         totalFiles = 0L;
         totalResources = 0L;
-        totalSpace = 0L;
+        totalSpaceInBytes = 0L;
     }
 
     public Long getTotalNumberOfResources() {
@@ -229,9 +230,13 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
         return totalFiles;
     }
 
-    public Long getTotalNumberOfSpace() {
+    public Long getTotalSpaceInMb() {
         initTotals();
-        return totalSpace;
+        return (long) Math.ceil((double)totalSpaceInBytes / (double)Invoice.ONE_MB);
+    }
+    public Long getTotalSpaceInBytes() {
+        initTotals();
+        return totalSpaceInBytes;
     }
 
     public Long getAvailableNumberOfFiles() {
@@ -239,9 +244,14 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
         return totalFiles - getFilesUsed();
     }
 
-    public Long getAvailableSpaceInMb() {
-        Long totalSpace = getTotalNumberOfSpace();
+    public Long getAvailableSpaceInBytes() {
+        Long totalSpace = getTotalSpaceInBytes();
+        logger.info("total space: {} , used {} " , totalSpace, getSpaceUsedInBytes());
         return totalSpace - getSpaceUsedInBytes();
+    }
+
+    public Long getAvailableSpaceInMb() {
+        return (long) Math.floor((double)getAvailableSpaceInBytes() / (double)Invoice.ONE_MB);
     }
 
     public Long getAvailableResources() {
@@ -272,8 +282,8 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
         }
 
         if (re.evaluatesSpace()) {
-            logger.debug("available space {} trying to use {}", getAvailableSpaceInMb(), re.getSpaceUsedInMb());
-            if (getAvailableSpaceInMb() - re.getSpaceUsedInMb() < 0) {
+            logger.debug("available space {} trying to use {}", getAvailableSpaceInBytes(), re.getSpaceUsedInBytes());
+            if (getAvailableSpaceInBytes() - re.getSpaceUsedInBytes() < 0) {
                 return AccountAdditionStatus.NOT_ENOUGH_SPACE;
             }
         }
@@ -372,7 +382,7 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     }
 
     public Long getSpaceUsedInMb() {
-        return spaceUsedInBytes / Invoice.ONE_MB;
+        return (long) Math.ceil((double)spaceUsedInBytes / (double)Invoice.ONE_MB);
     }
 
     public void setSpaceUsedInBytes(Long spaceUsed) {

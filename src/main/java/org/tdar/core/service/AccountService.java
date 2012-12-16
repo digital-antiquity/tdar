@@ -196,6 +196,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         } catch (TdarQuotaException e) {
             status = e.getCode();
             markResourcesAsFlagged(resourcesToEvaluate);
+            logger.info("marking {} resources {} FLAGGED", status, resourcesToEvaluate);
         }
         saveOrUpdate(account);
         return status;

@@ -3,8 +3,9 @@ package org.tdar.core.bean;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.TestConstants;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.Account.AccountAdditionStatus;
 import org.tdar.core.bean.billing.BillingActivity;
@@ -25,14 +27,17 @@ import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.service.AccountService;
+import org.tdar.struts.data.FileProxy;
 
 public class AccountITCase extends AbstractIntegrationTestCase {
 
@@ -110,20 +115,20 @@ public class AccountITCase extends AbstractIntegrationTestCase {
 
         /* add 5 MB */
         updateModel(model, false, false, true);
-        account = setupAccountWithInvoiceFor5Mb(model);
+        account = setupAccountWithInvoiceFor6Mb(model);
         assertEquals(AccountAdditionStatus.CAN_ADD_RESOURCE, account.canAddResource(re));
         updateModel(model, false, false, false);
         assertEquals(AccountAdditionStatus.CAN_ADD_RESOURCE, account.canAddResource(re));
     }
 
-    public Account setupAccountWithInvoiceFor5Mb(BillingActivityModel model) {
+    public Account setupAccountWithInvoiceFor6Mb(BillingActivityModel model) {
         Account account = new Account();
         Invoice invoice = new Invoice();
         account.getInvoices().add(invoice);
         invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
         invoice.getItems().clear();
         invoice.resetTransientValues();
-        invoice.getItems().add(new BillingItem(new BillingActivity("5 mb", 10f, 0, 0L, 0L, 5L, model), 1));
+        invoice.getItems().add(new BillingItem(new BillingActivity("6 mb", 10f, 0, 0L, 0L, 6L, model), 1));
         return account;
     }
 
@@ -157,7 +162,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
     public void testAccountUpdateQuotaValid() throws InstantiationException, IllegalAccessException {
         BillingActivityModel model = new BillingActivityModel();
         updateModel(model, false, false, true);
-        Account account = setupAccountWithInvoiceFor5Mb(model);
+        Account account = setupAccountWithInvoiceFor6Mb(model);
         ResourceEvaluator re = new ResourceEvaluator(model);
         Document resource = generateInformationResourceWithFileAndUser();
         re.evaluateResources(resource);
@@ -165,6 +170,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         Long resourcesUsed = account.getResourcesUsed();
         Long filesUsed = account.getFilesUsed();
         assertFalse(account.getResources().contains(resource));
+        logger.info("{}", re);
         account.updateQuotas(re);
         assertTrue(account.getResources().contains(resource));
         assertEquals(spaceUsedInBytes.longValue() + re.getSpaceUsedInBytes(), account.getSpaceUsedInBytes().longValue());
@@ -205,8 +211,37 @@ public class AccountITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testIncrementalChangeEvaluation() {
-        fail();
+    public void testIncrementalChangeEvaluation() throws InstantiationException, IllegalAccessException, IOException {
+        BillingActivityModel model = new BillingActivityModel();
+        updateModel(model, true, true, true);
+        ResourceEvaluator re = new ResourceEvaluator(model);
+        ResourceEvaluator re3 = new ResourceEvaluator(model);
+        Document doc = createAndSaveNewInformationResource(Document.class);
+        re.evaluateResources(doc);
+        ResourceEvaluator re2 = new ResourceEvaluator(model);
+        addFileToResource(doc, new File(TestConstants.TEST_DOCUMENT_DIR, "/t1/test.pdf"));
+        InformationResourceFile file = doc.getInformationResourceFiles().iterator().next();
+        re2.evaluateResources(doc);
+        re2.subtract(re);
+        logger.info(re2.toString());
+        assertEquals(0, re2.getResourcesUsed());
+        assertEquals(1, re2.getFilesUsed());
+        assertEquals(114875, re2.getSpaceUsedInBytes());
+        re3.evaluateResources(doc);
+        FileProxy proxy = new FileProxy("test.pdf", new File(TestConstants.TEST_DOCUMENT_DIR, "/t2/test.pdf"), VersionType.UPLOADED_ARCHIVAL);
+        proxy.setAction(FileAction.REPLACE);
+        proxy.setFileId(file.getId());
+        informationResourceService.processFileProxy(doc, proxy);
+        ResourceEvaluator re4 = new ResourceEvaluator(model);
+        logger.info("files {} ", doc.getInformationResourceFiles());
+        re4.evaluateResources(doc);
+        re4.subtract(re3);
+        logger.info("re {} ", re4);
+        assertEquals(0, re4.getResourcesUsed());
+        assertEquals(0, re4.getFilesUsed());
+        assertEquals(0, re4.getSpaceUsedInBytes());
+
+        logger.info(re3.toString());
     }
 
     @Test
@@ -256,12 +291,12 @@ public class AccountITCase extends AbstractIntegrationTestCase {
 
         assertEquals(4L, invoice.getTotalNumberOfFiles().longValue());
         assertEquals(2L, invoice.getTotalResources().longValue());
-        assertEquals(6L, invoice.getTotalSpace().longValue());
+        assertEquals(6L, invoice.getTotalSpaceInMb().longValue());
         assertEquals(222.2, invoice.getCalculatedCost().floatValue(), 1);
         assertEquals(null, invoice.getTotal());
 
         // account is empty because invoice is not finalized
-        assertEquals(0L, account.getTotalNumberOfSpace().longValue());
+        assertEquals(0L, account.getTotalSpaceInMb().longValue());
         assertEquals(0L, account.getTotalNumberOfResources().longValue());
         assertEquals(0L, account.getTotalNumberOfFiles().longValue());
 
@@ -270,7 +305,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         assertEquals(222.2, invoice.getTotal().floatValue(), 1);
         assertEquals(4L, account.getTotalNumberOfFiles().longValue());
         assertEquals(2L, account.getTotalNumberOfResources().longValue());
-        assertEquals(6L, account.getTotalNumberOfSpace().longValue());
+        assertEquals(6L, account.getTotalSpaceInMb().longValue());
 
     }
 

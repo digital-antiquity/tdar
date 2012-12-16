@@ -24,7 +24,7 @@ public class ResourceEvaluator implements Serializable {
 
     private static final long serialVersionUID = 3621509880429873050L;
     private boolean includeDeletedFilesInCounts = false;
-    private boolean includeOlderVersionsInCounts = false;
+    private boolean includeAllVersionsInCounts = false;
     private List<ResourceType> uncountedResourceTypes = Arrays.asList(ResourceType.CODING_SHEET, ResourceType.ONTOLOGY, ResourceType.PROJECT);
     private List<Status> uncountedResourceStatuses = Arrays.asList();
     private long resourcesUsed = 0;
@@ -88,7 +88,8 @@ public class ResourceEvaluator implements Serializable {
                         continue;
                     filesUsed++;
                     for (InformationResourceFileVersion version : file.getInformationResourceFileVersions()) {
-                        if (!includeOlderVersionsInCounts && !version.getVersion().equals(file.getLatestVersion()) || !version.isUploaded())
+                        // we use version 1 because it's the original uploaded version
+                        if (!includeAllVersionsInCounts && !version.getVersion().equals(1) || !version.isUploaded())
                             continue;
                         if (version.getFileLength() != null) {
                             spaceUsed += version.getFileLength();
@@ -99,6 +100,11 @@ public class ResourceEvaluator implements Serializable {
         }
     }
 
+    @Override
+    public String toString() {
+        return String.format("%s resources %s files %s mb", getResourcesUsed(), getFilesUsed(), getSpaceUsedInMb());
+    }
+    
     public boolean isIncludeDeletedFilesInCounts() {
         return includeDeletedFilesInCounts;
     }
@@ -108,11 +114,11 @@ public class ResourceEvaluator implements Serializable {
     }
 
     public boolean isIncludeOlderVersionsInCounts() {
-        return includeOlderVersionsInCounts;
+        return includeAllVersionsInCounts;
     }
 
     public void setIncludeOlderVersionsInCounts(boolean includeOlderVersionsInCounts) {
-        this.includeOlderVersionsInCounts = includeOlderVersionsInCounts;
+        this.includeAllVersionsInCounts = includeOlderVersionsInCounts;
     }
 
     public List<ResourceType> getUncountedResourceTypes() {
@@ -144,7 +150,7 @@ public class ResourceEvaluator implements Serializable {
     }
 
     public long getSpaceUsedInMb() {
-        return spaceUsed / Invoice.ONE_MB;
+        return (long) Math.ceil((double)spaceUsed / (double)Invoice.ONE_MB);
     }
 
     public void setSpaceUsed(long spaceUsed) {
