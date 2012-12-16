@@ -657,7 +657,7 @@ No coding rules have been entered for this coding sheet yet.
     <meta name="citation_date" content="${resource.date?c!''}">
     <#if resource.dateCreated??><meta name="citation_online_date" content="${resource.dateCreated?date?string('yyyy/MM/dd')}"></#if>
     <#list resource.informationResourceFiles as irfile>
-        <#if (irfile.viewable) && irfile.latestPDF??>
+        <#if (irfile.viewable) && irfile.latestPDF?has_content>
         <meta name="citation_pdf_url" content="<@s.url value='/filestore/${irfile.latestPDF.id?c}/get'/>">
         </#if>
     </#list>

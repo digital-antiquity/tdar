@@ -14,6 +14,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.cache.BrowseDecadeCountCache;
 import org.tdar.core.bean.cache.BrowseYearCountCache;
 import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
 import org.tdar.core.bean.cache.HomepageResourceCountCache;
@@ -65,7 +66,8 @@ public class BrowseController extends AbstractLookupController {
     private List<MaterialKeyword> materialTypes = new ArrayList<MaterialKeyword>();
     private List<String> alphabet = new ArrayList<String>(Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q",
             "R", "S", "T", "U", "V", "W", "X", "Y", "Z"));
-    private List<BrowseYearCountCache> timelineData;
+    private List<BrowseYearCountCache> scholarData;
+    private List<BrowseDecadeCountCache> timelineData;
     private ResourceSpaceUsageStatistic totalResourceAccessStatistic;
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
     private List<HomepageGeographicKeywordCache> geographicKeywordCache = new ArrayList<HomepageGeographicKeywordCache>();
@@ -81,7 +83,13 @@ public class BrowseController extends AbstractLookupController {
         setInvestigationTypes(getGenericKeywordService().findAllWithCache(InvestigationType.class));
         setCultureKeywords(getGenericKeywordService().findAllApprovedWithCache(CultureKeyword.class));
         setSiteTypeKeywords(getGenericKeywordService().findAllApprovedWithCache(SiteTypeKeyword.class));
-        setTimelineData(getGenericService().findAll(BrowseYearCountCache.class));
+        setTimelineData(getGenericService().findAll(BrowseDecadeCountCache.class));
+        return SUCCESS;
+    }
+
+    @Action("scholar")
+    public String year() {
+        setScholarData(getGenericService().findAll(BrowseYearCountCache.class));
         return SUCCESS;
     }
 
@@ -215,11 +223,11 @@ public class BrowseController extends AbstractLookupController {
         this.alphabet = alphabet;
     }
 
-    public List<BrowseYearCountCache> getTimelineData() {
+    public List<BrowseDecadeCountCache> getTimelineData() {
         return timelineData;
     }
 
-    public void setTimelineData(List<BrowseYearCountCache> list) {
+    public void setTimelineData(List<BrowseDecadeCountCache> list) {
         this.timelineData = list;
     }
 
@@ -264,6 +272,14 @@ public class BrowseController extends AbstractLookupController {
     @Override
     public List<FacetGroup<? extends Facetable>> getFacetFields() {
         return null;
+    }
+
+    public List<BrowseYearCountCache> getScholarData() {
+        return scholarData;
+    }
+
+    public void setScholarData(List<BrowseYearCountCache> scholarData) {
+        this.scholarData = scholarData;
     }
 
 }

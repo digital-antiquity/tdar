@@ -108,7 +108,6 @@ import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.SuggestedKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.configuration.JSONTransient;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarValidationException;
 import org.tdar.search.index.DontIndexWhenNotReadyInterceptor;
 import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
@@ -354,7 +353,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     private Set<ResourceCollection> resourceCollections = new LinkedHashSet<ResourceCollection>();
 
     private transient Account account;
-    
+
     // used by the import service to determine whether a record has been
     // "created" or updated
     // does not persist

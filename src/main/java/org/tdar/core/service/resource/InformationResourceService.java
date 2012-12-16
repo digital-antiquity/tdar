@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.cache.BrowseDecadeCountCache;
 import org.tdar.core.bean.cache.BrowseYearCountCache;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
@@ -37,7 +38,7 @@ public class InformationResourceService extends AbstractInformationResourceServi
     }
 
     @Transactional(readOnly = true)
-    public List<BrowseYearCountCache> findResourcesByDecade(Status... statuses) {
+    public List<BrowseDecadeCountCache> findResourcesByDecade(Status... statuses) {
         return getDao().findResourcesByDecade(statuses);
     }
 
@@ -61,6 +62,11 @@ public class InformationResourceService extends AbstractInformationResourceServi
             return getDao().findRandomFeaturedResourceInCollection(restrictToFiles, collections, maxResults);
         }
         return findRandomFeaturedResource(restrictToFiles, maxResults);
+    }
+
+    @Transactional(readOnly = true)
+    public List<BrowseYearCountCache> findResourcesByYear(Status... statuses) {
+        return getDao().findResourcesByYear(statuses);
     }
 
 }

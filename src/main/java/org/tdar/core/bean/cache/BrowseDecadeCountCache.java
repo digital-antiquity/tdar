@@ -5,8 +5,8 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "explore_cache_year")
-public class BrowseYearCountCache extends AbstractCountCache<BrowseYearCountCache, Integer> {
+@Table(name = "explore_cache_decade")
+public class BrowseDecadeCountCache extends AbstractCountCache<BrowseDecadeCountCache, Integer> {
 
     private static final long serialVersionUID = -1407077845657074783L;
 
@@ -17,11 +17,11 @@ public class BrowseYearCountCache extends AbstractCountCache<BrowseYearCountCach
     private Integer key;
 
     @SuppressWarnings("unused")
-    private BrowseYearCountCache() {
+    private BrowseDecadeCountCache() {
 
     }
 
-    public BrowseYearCountCache(Integer year, Long count) {
+    public BrowseDecadeCountCache(Integer year, Long count) {
         this.setKey(year);
         setCount(count);
     }

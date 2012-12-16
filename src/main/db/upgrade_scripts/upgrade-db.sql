@@ -304,3 +304,12 @@ alter table pos_billing_activity add column model_id int8 references pos_billing
 insert into pos_billing_model (date_created, active, counting_files, counting_space, counting_resources) VALUES (now(), true, true, true, false);
 update pos_billing_activity set model_id=1 where model_id is null;
 alter table pos_billing_model add column version int;
+
+-- 12-16-12
+create table explore_cache_year (
+    id bigserial primary key,
+    key int4,
+    item_count bigint
+  );
+
+insert into explore_cache_year (key, item_count) select date_part('year', date_registered), count(id) from resource where status='ACTIVE' and date_registered is not null group by date_part('year', date_registered)  order by date_part('year', date_registered)  asc;
