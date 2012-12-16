@@ -204,7 +204,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     }
 
     @Transient
-    @Deprecated
+    @XmlTransient
     public InformationResourceFileVersion getLatestPDF() {
         for (InformationResourceFileVersion version : getInformationResourceFileVersions()) {
             if (version.getVersion().equals(getLatestVersion()) && version.getExtension().equalsIgnoreCase("pdf"))

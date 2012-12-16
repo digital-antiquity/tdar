@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.cache.BrowseDecadeCountCache;
 import org.tdar.core.bean.cache.BrowseYearCountCache;
 import org.tdar.core.bean.cache.HomepageFeaturedItemCache;
 import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
@@ -64,9 +65,11 @@ public class RebuildHomepageCache extends ScheduledProcess.Base<HomepageGeograph
         resourceService.save(resourceService.getISOGeographicCounts());
         resourceService.deleteAll(HomepageResourceCountCache.class);
         resourceService.save(resourceService.getResourceCounts());
-        resourceService.deleteAll(BrowseYearCountCache.class);
+        resourceService.deleteAll(BrowseDecadeCountCache.class);
         resourceService.save(informationResourceService.findResourcesByDecade(Status.ACTIVE));
         resourceService.deleteAll(HomepageFeaturedItemCache.class);
+        resourceService.deleteAll(BrowseYearCountCache.class);
+        resourceService.save(informationResourceService.findResourcesByYear(Status.ACTIVE));
         // cache?
         List<HomepageFeaturedItemCache> hfic = new ArrayList<HomepageFeaturedItemCache>();
         for (Object res : informationResourceService.findRandomFeaturedResourceInCollection(true,

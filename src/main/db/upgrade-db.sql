@@ -243,3 +243,11 @@ ALTER TABLE resource_note alter column "note" type varchar(5000);
 
 ALTER TABLE collection ADD COLUMN orientation VARCHAR(50) DEFAULT 'LIST';
 
+-- 12-16-12
+create table explore_cache_year (
+    id bigserial primary key,
+    key int4,
+    item_count bigint
+  );
+
+insert into explore_cache_year (key, item_count) select date_part('year', date_registered), count(id) from resource where status='ACTIVE' and date_registered is not null group by date_part('year', date_registered)  order by date_part('year', date_registered)  asc;

@@ -14,15 +14,14 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.cache.BrowseDecadeCountCache;
 import org.tdar.core.bean.cache.BrowseYearCountCache;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Creator;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
-import org.tdar.core.bean.resource.VersionType;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.QueryBuilder;
@@ -30,7 +29,6 @@ import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.struts.data.ResourceCreatorProxy;
-import org.tdar.struts.data.ResourceUsageStatistic;
 
 /**
  * $Id$
@@ -59,9 +57,8 @@ public class BrowseController extends AbstractLookupController {
     private List<MaterialKeyword> materialTypes = new ArrayList<MaterialKeyword>();
     private List<String> alphabet = new ArrayList<String>(Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q",
             "R", "S", "T", "U", "V", "W", "X", "Y", "Z"));
-    private List<BrowseYearCountCache> timelineData;
-    private ResourceUsageStatistic totalResourceAccessStatistic;
-    private ResourceUsageStatistic uploadedResourceAccessStatistic;
+    private List<BrowseYearCountCache> scholarData;
+    private List<BrowseDecadeCountCache> timelineData;
 
     // private Keyword keyword;
 
@@ -71,7 +68,13 @@ public class BrowseController extends AbstractLookupController {
         setInvestigationTypes(getGenericKeywordService().findAllWithCache(InvestigationType.class));
         setCultureKeywords(getGenericKeywordService().findAllApprovedWithCache(CultureKeyword.class));
         setSiteTypeKeywords(getGenericKeywordService().findAllApprovedWithCache(SiteTypeKeyword.class));
-        setTimelineData(getGenericService().findAll(BrowseYearCountCache.class));
+        setTimelineData(getGenericService().findAll(BrowseDecadeCountCache.class));
+        return SUCCESS;
+    }
+
+    @Action("scholar")
+    public String year() {
+        setScholarData(getGenericService().findAll(BrowseYearCountCache.class));
         return SUCCESS;
     }
 
@@ -99,15 +102,6 @@ public class BrowseController extends AbstractLookupController {
         setSearchDescription(ALL_TDAR_COLLECTIONS);
         setSearchTitle(ALL_TDAR_COLLECTIONS);
 
-        if (isEditor()) {
-            setTotalResourceAccessStatistic(getResourceService().getResourceUsageStatistics(null, null,
-                    Persistable.Base.extractIds(getResourceCollectionService().findAllDirectChildCollections(getId(), null, CollectionType.SHARED)), null,
-                    null, null));
-            setUploadedResourceAccessStatistic(getResourceService().getResourceUsageStatistics(null, null,
-                    Persistable.Base.extractIds(getResourceCollectionService().findAllDirectChildCollections(getId(), null, CollectionType.SHARED)), null,
-                    null, Arrays.asList(VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED_TEXT)));
-        }
-
         return SUCCESS;
     }
 
@@ -125,12 +119,6 @@ public class BrowseController extends AbstractLookupController {
             ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
             getAuthenticationAndAuthorizationService().initializeReservedSearchParameters(reservedSearchParameters, getAuthenticatedUser());
             queryBuilder.append(reservedSearchParameters);
-
-            if (isEditor() && creator instanceof Person) {
-                setTotalResourceAccessStatistic(getResourceService().getResourceUsageStatistics(Arrays.asList(getId()), null, null, null, null, null));
-                setUploadedResourceAccessStatistic(getResourceService().getResourceUsageStatistics(Arrays.asList(getId()), null, null, null, null,
-                        Arrays.asList(VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED_TEXT)));
-            }
 
             setMode("browseCreators");
             setSortField(SortOption.RESOURCE_TYPE);
@@ -204,11 +192,11 @@ public class BrowseController extends AbstractLookupController {
         this.alphabet = alphabet;
     }
 
-    public List<BrowseYearCountCache> getTimelineData() {
+    public List<BrowseDecadeCountCache> getTimelineData() {
         return timelineData;
     }
 
-    public void setTimelineData(List<BrowseYearCountCache> list) {
+    public void setTimelineData(List<BrowseDecadeCountCache> list) {
         this.timelineData = list;
     }
 
@@ -217,19 +205,12 @@ public class BrowseController extends AbstractLookupController {
         return ListUtils.EMPTY_LIST;
     }
 
-    public ResourceUsageStatistic getUploadedResourceAccessStatistic() {
-        return uploadedResourceAccessStatistic;
+    public List<BrowseYearCountCache> getScholarData() {
+        return scholarData;
     }
 
-    public void setUploadedResourceAccessStatistic(ResourceUsageStatistic uploadedResourceAccessStatistic) {
-        this.uploadedResourceAccessStatistic = uploadedResourceAccessStatistic;
+    public void setScholarData(List<BrowseYearCountCache> scholarData) {
+        this.scholarData = scholarData;
     }
 
-    public ResourceUsageStatistic getTotalResourceAccessStatistic() {
-        return totalResourceAccessStatistic;
-    }
-
-    public void setTotalResourceAccessStatistic(ResourceUsageStatistic totalResourceAccessStatistic) {
-        this.totalResourceAccessStatistic = totalResourceAccessStatistic;
-    }
 }

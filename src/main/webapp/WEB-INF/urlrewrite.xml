@@ -30,6 +30,13 @@
 		<to>/dashboard/dashboard</to>
 	</rule>
 	
+	
+	<rule>
+	   <from>^/browse/scholar/20([0-9][0-9])$</from>
+        <to>/search/results.action?groups%5B0%5D.operator=AND&amp;groups%5B0%5D.fieldTypes%5B0%5D=DATE_REGISTERED&amp;groups%5B0%5D.registeredDates%5B0%5D.start=1%2F1%2F$1&amp;groups%5B0%5D.registeredDates%5B0%5D.end=12%2F31%2F$1&amp;sortField=DATE_UPDATED</to>
+	</rule>
+	   
+	
 	<rule>
 	   <from>^/browse/(.+)/(\d+)</from>
 	   <to>/browse/$1?id=$2</to>
@@ -100,6 +107,8 @@
     <to>/$1</to>
   </outbound-rule>
 
+
+
 <!-- <rule>
 		<from>^/document/add/([A-Z_]+)$</from>
 		<to>/document/add?documentType=$1</to>
@@ -169,7 +178,7 @@
         <from>^/entity/(person|institution)/(edit)\?id=([0-9]+)$</from>
         <to>/entity/$1/$3/$2</to>
     </outbound-rule>
-	   
+
 
   <!--  http://stackoverflow.com/questions/962729/is-it-possible-to-disable-jsessionid-in-tomcat-servlet -->
 	<outbound-rule encodefirst="true">

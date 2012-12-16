@@ -126,4 +126,5 @@ public interface TdarNamedQueries {
     public static final String QUERY_CLEAR_REFERENCED_ONTOLOGYNODE_RULES = "update.clearOntologyNodeReferences";
     public static final String UPDATE_DATATABLECOLUMN_ONTOLOGIES = "update.dataTableColumnOntologies";
 
+    public static final String QUERY_RESOURCES_BY_YEAR = "select date_part(year, date_registered), count(id) from resource where status='ACTIVE' and date_registered is not null group by date_part(year, date_registered)  order by date_part(year, date_registered)  asc";
 }
