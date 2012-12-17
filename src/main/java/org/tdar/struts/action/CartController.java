@@ -20,7 +20,6 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.BillingActivity;
-import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.entity.Address;
@@ -69,8 +68,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         }
 
         persistable.getItems().clear();
-        BillingItem lowest = getAccountService().calculateCheapestActivities(getInvoice());
-        getInvoice().getItems().add(lowest);
+        getInvoice().getItems().addAll(getAccountService().calculateCheapestActivities(getInvoice()));
         if (accountId != -1) {
             getGenericService().find(Account.class, accountId).getInvoices().add(getInvoice());
         }
@@ -355,7 +353,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         logger.info("successpath: {} ", successPath);
         return successPath;
     }
-    
+
     public String getSuccessPath() {
         return successPath;
     }

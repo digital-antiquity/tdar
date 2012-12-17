@@ -2,6 +2,8 @@ package org.tdar.core.bean;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +27,9 @@ public class InvoiceITCase extends AbstractIntegrationTestCase {
     public void testInvoicePricingBasic() {
         Invoice invoice = new Invoice();
         long numberOfFiles = 10L;
-        BillingItem item = setupBillingItem(invoice, numberOfFiles);
-        Assert.assertTrue(item.getActivity().getMinAllowedNumberOfFiles() < numberOfFiles);
+        List<BillingItem> items = setupBillingItem(invoice, numberOfFiles, 10L);
+        Assert.assertEquals(1, items.size());
+        Assert.assertTrue(items.get(0).getActivity().getMinAllowedNumberOfFiles() < numberOfFiles);
     }
 
     @Test
@@ -35,9 +38,10 @@ public class InvoiceITCase extends AbstractIntegrationTestCase {
         /* expect that this is activity 2 -- not 1 */
         Invoice invoice = new Invoice();
         long numberOfFiles = 4L;
-        BillingItem item = setupBillingItem(invoice, numberOfFiles);
-        Assert.assertFalse(item.getActivity().getMinAllowedNumberOfFiles() < numberOfFiles);
-        Assert.assertEquals(5L, item.getActivity().getMinAllowedNumberOfFiles().longValue());
+        List<BillingItem> items = setupBillingItem(invoice, numberOfFiles, 2L);
+        Assert.assertEquals(1, items.size());
+        Assert.assertFalse(items.get(0).getActivity().getMinAllowedNumberOfFiles() < numberOfFiles);
+        Assert.assertEquals(5L, items.get(0).getActivity().getMinAllowedNumberOfFiles().longValue());
     }
 
     
@@ -53,10 +57,11 @@ public class InvoiceITCase extends AbstractIntegrationTestCase {
         assertTrue(item.isValidForController());
     }
     
-    private BillingItem setupBillingItem(Invoice invoice, long numberOfFiles) {
+    private List<BillingItem> setupBillingItem(Invoice invoice, long numberOfFiles, long numberOfMb) {
         invoice.setNumberOfFiles(numberOfFiles);
-        BillingItem billingItem = accountService.calculateCheapestActivities(invoice);
-        logger.info("{} {}", billingItem, billingItem.getActivity().getMinAllowedNumberOfFiles());
-        return billingItem;
+        invoice.setNumberOfMb(numberOfMb);
+        List<BillingItem> billingItems = accountService.calculateCheapestActivities(invoice);
+        logger.info("{} ", billingItems);
+        return billingItems;
     }
 }
