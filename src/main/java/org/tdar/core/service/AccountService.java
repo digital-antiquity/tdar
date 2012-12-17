@@ -35,6 +35,7 @@ import org.tdar.core.exception.TdarRuntimeException;
 @Service
 public class AccountService extends ServiceInterface.TypedDaoBase<Account, AccountDao> {
 
+    public static final String ACCOUNT_IS_NULL = "account is null";
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
     @Autowired
     private GenericDao genericDao;
@@ -67,7 +68,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         for (BillingActivityModel model : findAll) {
             if (!model.getActive())
                 continue;
-            if (latest == null || model.getVersion() > latest.getVersion()) {
+            if (latest == null || latest.getVersion() == null || model.getVersion() > latest.getVersion()) {
                 latest = model;
             }
         }
@@ -160,7 +161,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     public AccountAdditionStatus updateQuota(ResourceEvaluator initialEvaluation, Account account, List<Resource> resourcesToEvaluate) {
         logger.info("updating quota(s)");
         if (account == null) {
-            throw new TdarRecoverableRuntimeException("account is null");
+            throw new TdarRecoverableRuntimeException(ACCOUNT_IS_NULL);
         }
         ResourceEvaluator endingEvaluator = getResourceEvaluator(resourcesToEvaluate);
         endingEvaluator.subtract(initialEvaluation);

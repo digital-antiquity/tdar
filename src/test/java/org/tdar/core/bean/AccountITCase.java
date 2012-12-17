@@ -183,6 +183,9 @@ public class AccountITCase extends AbstractIntegrationTestCase {
     public void testAccountUpdateQuotaOverdrawn() throws InstantiationException, IllegalAccessException {
         BillingActivityModel model = new BillingActivityModel();
         updateModel(model, true, true, true);
+        model.setActive(true);
+        model.setVersion(100); // forcing the model to be the "latest"
+        genericService.saveOrUpdate(model);
         Account account = setupAccountForPerson(getUser());
         ResourceEvaluator re = new ResourceEvaluator(model);
         Document resource = generateInformationResourceWithFileAndUser();

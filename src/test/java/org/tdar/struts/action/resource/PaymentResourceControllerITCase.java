@@ -8,9 +8,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.AccountService;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.TdarActionException;
@@ -80,7 +83,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
     @Rollback()
     public void testInitialSaveWithoutValidAccount() throws Exception {
         controller = generateNewInitializedController(DocumentController.class);
-        TdarActionException tdae = setupResource(setupDocument());
+        Exception tdae = setupResource(setupDocument());
         assertNotNull(tdae);
         Long newId = controller.getResource().getId();
 
@@ -96,39 +99,47 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
     public void testSecondarySaveWithoutValidAccount() throws Exception {
         controller = generateNewInitializedController(DocumentController.class);
         Document d = setupDocument();
+//        Account account = createAccount(getBasicUser());
+//        d.setAccount(account);
         genericService.saveOrUpdate(d);
-        TdarActionException tdae = setupResource(d);
-//        assertNotNull(tdae);
+
+        logger.info("account: {}", d.getAccount());
+        Exception tdae = setupResource(d);
+        assertTrue(CollectionUtils.isNotEmpty(getController().getActionErrors()));
+        logger.info("errors {}", getController().getActionErrors());
+        assertTrue(getController().getActionErrors().contains(AccountService.ACCOUNT_IS_NULL));
         Long newId = controller.getResource().getId();
 
         Assert.assertNotNull(entityService.findByEmail("new@email.com"));
         // now reload the document and see if the institution was saved.
-        // Assert.assertEquals("resource status should be flagged", Status.FLAGGED_ACCOUNT_BALANCE, d.getStatus());
+
         Assert.assertNotEquals("resource id should be -1 after unpaid resource addition", newId, Long.valueOf(-1L));
         Assert.assertNull("controller should not be successful", null);
-        Assert.assertEquals(Status.FLAGGED_ACCOUNT_BALANCE, d.getStatus());
+//        Assert.assertEquals(Status.FLAGGED_ACCOUNT_BALANCE, d.getStatus());
         Assert.assertFalse(CollectionUtils.isEmpty(controller.getActionErrors()));
         setIgnoreActionErrors(true);
     }
 
-    private TdarActionException setupResource(Document d) {
+    private Exception setupResource(Document d) {
         Assert.assertTrue(getTdarConfiguration().isPayPerIngestEnabled());
         if (d != null && d.getId() != null) {
             controller.setId(d.getId());
         }
         initControllerFields();
         controller.setDocument(d);
-
+        if (d.getAccount() != null) {
+            controller.setAccountId(d.getAccount().getId());
+        }
         getLogger().trace("controller:" + controller);
         getLogger().trace("controller.resource:" + controller.getResource());
         controller.getAuthorshipProxies().add(getNewResourceCreator("newLast", "newFirst", "new@email.com", null, ResourceCreatorRole.AUTHOR));
 
         controller.setServletRequest(getServletPostRequest());
         String result = null;
-        TdarActionException tdae = null;
+        Exception tdae = null;
         try {
             result = controller.save();
-        } catch (TdarActionException e) {
+        } catch (Exception e) {
             tdae = e;
         }
         return tdae;
