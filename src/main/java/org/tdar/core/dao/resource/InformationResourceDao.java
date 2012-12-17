@@ -58,7 +58,7 @@ public class InformationResourceDao extends ResourceDao<InformationResource> {
     }
 
     public List<BrowseYearCountCache> findResourcesByYear(Status[] statuses) {
-        Query query = getCurrentSession().createQuery(QUERY_RESOURCES_BY_YEAR);
+        Query query = getCurrentSession().createSQLQuery(QUERY_SQL_RESOURCES_BY_YEAR);
         List<BrowseYearCountCache> result = new ArrayList<BrowseYearCountCache>();
         for (Object obj : query.list()) {
             Object[] row = (Object[]) obj;
