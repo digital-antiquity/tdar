@@ -254,7 +254,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         logger.info("adtl. space needed: {} avail: {} ", spaceNeeded, spaceAvailable);
         logger.info("space act: {} ", getSpaceActivity());
         if (spaceNeeded > 0 && spaceActivity != null) {
-            int qty = (int) Math.ceil((double)Math.abs(spaceNeeded) / (double)spaceActivity.getNumberOfMb());
+            int qty = (int) Account.divideByRoundUp(spaceNeeded, spaceActivity.getNumberOfMb());
             extraSpace = new BillingItem(spaceActivity, qty);
             toReturn.add(extraSpace);
         }
@@ -265,7 +265,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         List<BillingItem> items = new ArrayList<BillingItem>();
         for (BillingActivity activity : getActiveBillingActivities()) {
             if (activity.supportsFileLimit()) {
-                Long total = (long) Math.ceil((double) spaceInMb / (double) activity.getNumberOfMb());
+                Long total = Account.divideByRoundUp(spaceInMb, activity.getNumberOfMb());
                 if (total * activity.getNumberOfFiles() < activity.getMinAllowedNumberOfFiles()) {
                     total = activity.getMinAllowedNumberOfFiles();
                 }

@@ -232,8 +232,9 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
 
     public Long getTotalSpaceInMb() {
         initTotals();
-        return (long) Math.ceil((double)totalSpaceInBytes / (double)Invoice.ONE_MB);
+        return divideByRoundUp(totalSpaceInBytes, Invoice.ONE_MB);
     }
+
     public Long getTotalSpaceInBytes() {
         initTotals();
         return totalSpaceInBytes;
@@ -246,12 +247,12 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
 
     public Long getAvailableSpaceInBytes() {
         Long totalSpace = getTotalSpaceInBytes();
-        logger.info("total space: {} , used {} " , totalSpace, getSpaceUsedInBytes());
+        logger.info("total space: {} , used {} ", totalSpace, getSpaceUsedInBytes());
         return totalSpace - getSpaceUsedInBytes();
     }
 
     public Long getAvailableSpaceInMb() {
-        return (long) Math.floor((double)getAvailableSpaceInBytes() / (double)Invoice.ONE_MB);
+        return divideByRoundDown(getAvailableSpaceInBytes(), (double) Invoice.ONE_MB);
     }
 
     public Long getAvailableResources() {
@@ -382,7 +383,7 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     }
 
     public Long getSpaceUsedInMb() {
-        return (long) Math.ceil((double)spaceUsedInBytes / (double)Invoice.ONE_MB);
+        return divideByRoundUp(spaceUsedInBytes , Invoice.ONE_MB);
     }
 
     public void setSpaceUsedInBytes(Long spaceUsed) {
@@ -413,4 +414,25 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     public boolean isOverdrawn(ResourceEvaluator re) {
         return canAddResource(re) == AccountAdditionStatus.CAN_ADD_RESOURCE;
     }
+
+    public static double divideBy(Number number1, Number number2) {
+        double n1 = 0;
+        double n2 = 0;
+        if (number1 != null) {
+            n1 = number1.doubleValue();
+        }
+        if (number2 != null) {
+            n2 = number2.doubleValue();
+        }
+        return n1 / n2;
+    }
+
+    public static long divideByRoundUp(Number number1, Number number2) {
+        return (long) Math.ceil(divideBy(number1, number2));
+    }
+
+    public static long divideByRoundDown(Number number1, Number number2) {
+        return (long) Math.floor(divideBy(number1, number2));
+    }
+
 }
