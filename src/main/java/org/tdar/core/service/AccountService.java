@@ -218,17 +218,25 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         return null;
     }
 
-    public BillingItem getCheapestActivityByFiles(List<BillingItem> items, Long numFiles) {
+    public List<BillingItem> getCheapestActivityByFiles(Long numFiles, Long numMb, boolean exact) {
+        List<BillingItem> items = new ArrayList<BillingItem>();
+        List<BillingItem> toReturn = new ArrayList<BillingItem>();
         for (BillingActivity activity : getActiveBillingActivities()) {
             // 2 cases (1) exact value; (2) where the next step up might actually be cheaper
             int files = numFiles.intValue();
-            if (activity.getMinAllowedNumberOfFiles() > numFiles) {
+            if (!exact && activity.supportsFileLimit() && activity.getMinAllowedNumberOfFiles() > numFiles) {
                 files = activity.getMinAllowedNumberOfFiles().intValue();
             }
+
+            if (exact && activity.supportsFileLimit() && files < activity.getMinAllowedNumberOfFiles())
+                continue;
+
             BillingItem e = new BillingItem(activity, files);
             logger.trace(" -- {}", e);
             items.add(e);
         }
+
+        // finding the cheapest
         BillingItem lowest = null;
         for (BillingItem item : items) {
             if (lowest == null) {
@@ -237,13 +245,32 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
                 lowest = item;
             }
         }
-        return lowest;
+        BillingItem extraSpace = null;
+        BillingActivity spaceActivity = getSpaceActivity();
+        if (spaceActivity != null) {
+            Long spaceUsed = lowest.getQuantity() * lowest.getActivity().getNumberOfMb();
+            spaceUsed -= numMb;
+            int qty = (int) Math.ceil(Math.abs(spaceUsed) / spaceActivity.getNumberOfMb());
+            extraSpace = new BillingItem(spaceActivity, qty);
+            toReturn.add(extraSpace);
+        }
+        toReturn.add(lowest);
+        return toReturn;
     }
 
-    public BillingItem getCheapestActivityBySpace(List<BillingItem> items, Long numFiles, Long spaceInMb) {
+    public BillingItem getCheapestActivityBySpace(Long numFiles, Long spaceInMb) {
+        List<BillingItem> items = new ArrayList<BillingItem>();
         for (BillingActivity activity : getActiveBillingActivities()) {
-            if (activity.getMinAllowedNumberOfFiles() <= numFiles && activity.getNumberOfMb() * numFiles > spaceInMb) {
-                items.add(new BillingItem(activity, numFiles.intValue()));
+            if (activity.supportsFileLimit()) {
+                Long total = (long) Math.ceil( (double) spaceInMb/ (double) activity.getNumberOfMb() );
+                if (total * activity.getNumberOfFiles() < activity.getMinAllowedNumberOfFiles()) {
+                    total = activity.getMinAllowedNumberOfFiles();
+                }
+                
+                if (total < numFiles / activity.getNumberOfFiles()) {
+                    total = numFiles;
+                }
+                items.add(new BillingItem(activity, total.intValue()));
             }
         }
         BillingItem lowest = null;
@@ -258,28 +285,18 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     }
 
     public List<BillingItem> calculateCheapestActivities(Invoice invoice) {
-        List<BillingItem> items = new ArrayList<BillingItem>();
-        BillingItem lowestByFiles = getCheapestActivityByFiles(items, invoice.getNumberOfFiles());
-        BillingItem lowestByMB = getCheapestActivityBySpace(items, invoice.getNumberOfFiles(), invoice.getNumberOfMb());
-        BillingItem extraSpace = null;
-        BillingActivity spaceActivity = getSpaceActivity();
-        if (spaceActivity != null) {
-            Long spaceUsed = lowestByFiles.getQuantity() * lowestByFiles.getActivity().getNumberOfMb();
-            spaceUsed -= invoice.getNumberOfMb();
-            int qty = (int) Math.ceil(Math.abs(spaceUsed) / spaceActivity.getNumberOfMb());
-            extraSpace = new BillingItem(spaceActivity, qty);
-        }
-        logger.info("lowest by files: {}", lowestByFiles);
-        logger.info("lowest by space: {}", lowestByMB);
-        logger.info("lowest combo: {}", extraSpace);
+        BillingItem lowestByMB = getCheapestActivityBySpace(invoice.getNumberOfFiles(), invoice.getNumberOfMb());
+        List<BillingItem> lowestByFiles = getCheapestActivityByFiles(invoice.getNumberOfFiles(), invoice.getNumberOfMb(), false);
 
         // If we are using the ok amount of space for that activity...
-        if (invoice.getNumberOfMb() <= lowestByFiles.getQuantity() * lowestByFiles.getActivity().getNumberOfMb()) {
-            return Arrays.asList(lowestByFiles);
+        Float spaceSubtotal = 0f;
+        for (BillingItem item : lowestByFiles) { 
+            spaceSubtotal += item.getSubtotal();
         }
-        Float spaceSubtotal = lowestByFiles.getSubtotal() + extraSpace.getSubtotal();
+        logger.info("lowest by files: {}", spaceSubtotal);
+        logger.info("lowest by space: {} # {}", lowestByMB.getSubtotal(), lowestByMB.getQuantity());
         if (spaceSubtotal < lowestByMB.getSubtotal()) {
-            return Arrays.asList(lowestByFiles, extraSpace);
+            return lowestByFiles;
         }
         return Arrays.asList(lowestByMB);
     }

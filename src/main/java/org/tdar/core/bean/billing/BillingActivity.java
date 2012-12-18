@@ -195,4 +195,11 @@ public class BillingActivity extends Persistable.Base {
     public void setModel(BillingActivityModel model) {
         this.model = model;
     }
+
+    public boolean supportsFileLimit() {
+        if (getNumberOfFiles() != null && getNumberOfFiles() > 0) {
+            return true;
+        }
+        return false;
+    }
 }

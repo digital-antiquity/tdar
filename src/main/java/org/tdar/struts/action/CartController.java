@@ -29,6 +29,7 @@ import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionResponseTempla
 import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.struts.WriteableSession;
+import org.tdar.struts.data.PricingOption;
 import org.tdar.struts.interceptor.PostOnly;
 
 @Component
@@ -84,6 +85,23 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     protected void delete(Invoice persistable) {
         // TODO Auto-generated method stub
 
+    }
+
+    private Long lookupMBCount = 0L;
+    private Long lookupFileCount = 0L;
+    private List<PricingOption> pricingOptions = new ArrayList<PricingOption>();
+
+    @SkipValidation
+    @Action(value = "api",
+            interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
+            results = {
+                    @Result(name = SUCCESS, type = "freemarker", location = "api.ftl", params = { "contentType", "application/json" }) })
+    public String api() {
+        pricingOptions.add(new PricingOption(getAccountService().getCheapestActivityByFiles(lookupFileCount, lookupMBCount, false)));
+        pricingOptions.add(new PricingOption(getAccountService().getCheapestActivityByFiles(lookupFileCount, lookupMBCount, true)));
+        pricingOptions.add(new PricingOption(getAccountService().getCheapestActivityBySpace(lookupFileCount, lookupMBCount)));
+
+        return SUCCESS;
     }
 
     @Actions({
@@ -360,6 +378,30 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
     public void setSuccessPath(String successPath) {
         this.successPath = successPath;
+    }
+
+    public Long getLookupMBCount() {
+        return lookupMBCount;
+    }
+
+    public void setLookupMBCount(Long lookupMBCount) {
+        this.lookupMBCount = lookupMBCount;
+    }
+
+    public Long getLookupFileCount() {
+        return lookupFileCount;
+    }
+
+    public void setLookupFileCount(Long lookupFileCount) {
+        this.lookupFileCount = lookupFileCount;
+    }
+
+    public List<PricingOption> getPricingOptions() {
+        return pricingOptions;
+    }
+
+    public void setPricingOptions(List<PricingOption> pricingOptions) {
+        this.pricingOptions = pricingOptions;
     }
 
 }

@@ -20,24 +20,23 @@
 
 <script>
 
-var fileData = [];
-<#list activities as act>
- <#if act.enabled && act.minAllowedNumberOfFiles?has_content >
- fileData[fileData.length] = {'name':'${act.name?js_string}', 'numFiles':${act.minAllowedNumberOfFiles?c},'cost':${act.price}};
- </#if>
-</#list>
 
-$("#MetadataForm_invoice_numberOfFiles").change(function() { 
-	var current=1;
-	var val = $(this).val();  
-	$('#estimated').html('');
-	for (index in fileData) {
-		if (val >= fileData[index].numFiles) {
-			$('#estimated').append('<p><strong>$' + fileData[index].cost * val + ' ' + (val * 10) + 'MB </strong> (' + fileData[index].name +')</p>');
-		}
-	}
-	
-	});
+$("#MetadataForm").change(function() { 
+var numFiles = $("#MetadataForm_invoice_numberOfFiles").val();
+var numMb = $("#MetadataForm_invoice_numberOfMb").val();
+    var url = "<@s.url value="/cart/api"/>?lookupMBCount=" + numMb + "&lookupFileCount=" + numFiles;
+    $.ajax({
+      url: url,
+      dataType: 'json',
+      type:'POST',
+      success: function(data) {
+		console.log(data);
+        },
+      error: function(xhr,txtStatus, errorThrown) {
+        console.error("error: %s, %s", txtStatus, errorThrown);
+      }
+    });
+});
 </script>
 <div id="estimated">
 
