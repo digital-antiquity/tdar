@@ -40,6 +40,10 @@ $(document).ready(function() {
     $($(".transactionType[type=radio]")[0]).click();
    }
    switchType($(".transactionType[type=radio]:checked",$('#MetadataForm')),"#MetadataForm");
+   
+   $("#MetadataForm").submit(function() {
+   	$("#MetadataForm_invoice_billingPhone").val($("#MetadataForm_invoice_billingPhone").val().replace(/([^\d]+)/ig,"") );
+   });
 
 });
 

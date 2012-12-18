@@ -19,12 +19,14 @@
 <div class="container row">
     <div class="span3">
         <h3>Billing Address</h3>
+	<#if invoice.address?has_content>
         <@common.printAddress invoice.address/>
+	</#if>
     </div>
 
     <div class="span3">
         <h3>Transaction Info</h3>
-        <b>Transaction Type: </b>${invoice.paymentMethod}<br/>
+        <b>Transaction Type: </b>${invoice.paymentMethod!"Unknown"}<br/>
         <b>Transaction Status: </b>${invoice.transactionStatus}<br/>
     </div>    
 </div>
