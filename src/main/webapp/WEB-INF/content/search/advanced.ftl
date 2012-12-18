@@ -52,7 +52,7 @@
             
                 <div>
                     <div id="error"></div>
-                    <@s.submit id="searchButton" value="Search" cssClass="btn btn-large btn-primary" /> 
+                    <@s.submit id="searchButton" value="Search" cssClass="btn btn-primary" /> 
                 </div>
                     
             

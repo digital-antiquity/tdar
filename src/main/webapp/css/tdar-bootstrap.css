@@ -1262,3 +1262,11 @@ p.copyright-notice {
 }
 
 /* ie8 hacks: end */
+
+
+
+.view-deleted-file {
+    background-color: #EDD87B;
+    text-decoration: line-through;
+    display: none;
+}

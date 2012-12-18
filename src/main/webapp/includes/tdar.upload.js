@@ -128,7 +128,7 @@ TDAR.fileupload = function() {
         // data.dataType: deletion response type, e.g. "json"
         
         var $row = data.context;
-        //if the resource id is "-1" this is a new resource, otherwise we are editing an existing resource
+        //how we handle delete depends on whether we are creating a resource or editing a resource.  If creating,  tell the server ignore what we just sent. 
         var newUpload = $row.closest("form").find("input[name=id]").length === 0;
         var $btnDelete = $("button.delete-button", data.context);
         var $hdnAction = $(".fileAction", data.context);

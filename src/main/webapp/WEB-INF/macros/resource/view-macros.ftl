@@ -147,7 +147,11 @@ View freemarker macros
         </#if>
 
         </ul>
-        <#if hasDeletedFiles><div><a href="#" id="showHiddenFiles" onClick="$('.view-deleted-file').toggle();$('#showHiddenFiles').toggle();return false;">show deleted files</a></div></#if>
+        <#if hasDeletedFiles>
+        <div>
+            <a href="#" id="showHiddenFiles" onClick="$('.view-deleted-file, #showHiddenFiles').toggle();return false;">show deleted files</a>
+        </div>
+        </#if>
     <#nested>
 </#if>
 </#macro>
