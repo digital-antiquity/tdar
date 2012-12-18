@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.httpclient.URIException;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.InterceptorRef;
@@ -134,9 +135,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     @Action(value = "polling-check", results = {
             @Result(name = WAIT, type = "freemarker", location = "polling-check.ftl", params = { "contentType", "application/json" }) })
     public String pollingCheck() throws TdarActionException {
-        if (getInvoice().getTransactionStatus() != TransactionStatus.PENDING_TRANSACTION) {
-            return ERROR;
-        }
+
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
 
         return WAIT;
@@ -152,9 +151,12 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         if (!getInvoice().isModifiable()) {
             throw new TdarRecoverableRuntimeException(CANNOT_MODIFY);
         }
-        getInvoice().setAddress(getGenericService().loadFromSparseEntity(getInvoice().getAddress(), Address.class));
-        getGenericService().saveOrUpdate(getInvoice());
-
+        try {
+            getInvoice().setAddress(getGenericService().loadFromSparseEntity(getInvoice().getAddress(), Address.class));
+            getGenericService().saveOrUpdate(getInvoice());
+        } catch (Exception e) {
+            logger.warn("error {}", ExceptionUtils.getRootCause(e));
+        }
         return SUCCESS_ADD_PAY;
     }
 

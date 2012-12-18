@@ -45,6 +45,7 @@ import com.opensymphony.xwork2.Preparable;
  */
 public abstract class AbstractPersistableController<P extends Persistable> extends AuthenticationAware.Base implements Preparable, CrudAction<P> {
 
+    public static final String BILLING = "BILLING";
     public static final String CONFIRM = "confirm";
     public static final String DELETE_CONSTANT = "delete";
     private static final long serialVersionUID = -559340771608580602L;
@@ -300,12 +301,20 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
 
     @SkipValidation
     @Action(value = "add", results = {
-            @Result(name = SUCCESS, location = "edit.ftl")
+            @Result(name = SUCCESS, location = "edit.ftl"),
+            @Result(name=BILLING, location = "../billing-note.ftl")
     })
     public String add() throws TdarActionException {
         checkValidRequest(RequestType.CREATE, this, InternalTdarRights.EDIT_ANY_RESOURCE);
+        if (!isAbleToCreateBillableItem()) {
+            return BILLING;
+        }
         logAction("CREATING");
         return loadAddMetadata();
+    }
+
+    protected boolean isAbleToCreateBillableItem() {
+        return true;
     }
 
     public String loadAddMetadata() {
