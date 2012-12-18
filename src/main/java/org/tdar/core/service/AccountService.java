@@ -210,7 +210,8 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     public BillingActivity getSpaceActivity() {
         for (BillingActivity activity : getActiveBillingActivities()) {
-            if (activity.getNumberOfFiles() == null && activity.getNumberOfResources() == null && activity.getNumberOfMb() != null
+            if ((activity.getNumberOfFiles() == null || activity.getNumberOfFiles() == 0)
+                    && (activity.getNumberOfResources() == null || activity.getNumberOfResources() == 0) && activity.getNumberOfMb() != null
                     && activity.getNumberOfMb() > 0) {
                 return activity;
             }
@@ -248,14 +249,14 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         toReturn.add(lowest);
         BillingItem extraSpace = null;
         BillingActivity spaceActivity = getSpaceActivity();
-        Long spaceUsed = lowest.getQuantity() * lowest.getActivity().getNumberOfMb();
-        spaceUsed -= numMb;
-        if (spaceUsed < 0) {
-            if (spaceActivity != null) {
-                int qty = (int) Math.ceil(Math.abs(spaceUsed) / spaceActivity.getNumberOfMb());
-                extraSpace = new BillingItem(spaceActivity, qty);
-                toReturn.add(extraSpace);
-            }
+        Long spaceAvailable = lowest.getQuantity() * lowest.getActivity().getNumberOfMb();
+        Long spaceNeeded = numMb - spaceAvailable;
+        logger.info("adtl. space needed: {} avail: {} ", spaceNeeded, spaceAvailable);
+        logger.info("space act: {} ", getSpaceActivity());
+        if (spaceNeeded > 0 && spaceActivity != null) {
+            int qty = (int) Math.ceil((double)Math.abs(spaceNeeded) / (double)spaceActivity.getNumberOfMb());
+            extraSpace = new BillingItem(spaceActivity, qty);
+            toReturn.add(extraSpace);
         }
         return toReturn;
     }

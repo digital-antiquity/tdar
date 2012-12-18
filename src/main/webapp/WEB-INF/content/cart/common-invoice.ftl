@@ -15,9 +15,9 @@
 	    <td>${item.activity.name}</td>
 	    <td>${item.quantity!0}</td>
 	    <td>$${item.activity.price}</td>
-        <td> ${item.quanity!0 * item.activity.numberOfFiles}</td>
-        <td> ${item.quanity!0 * item.activity.numberOfMb}</td>
-        <td> ${item.quanity!0 * item.activity.numberOfResources}</td>
+        <td> ${item.quanity!0 * item.activity.numberOfFiles!0}</td>
+        <td> ${item.quanity!0 * item.activity.numberOfMb!0}</td>
+        <td> ${item.quanity!0 * item.activity.numberOfResources!0}</td>
 	    <td>$${item.subtotal}</td>
 	    </tr>
 	</#list>

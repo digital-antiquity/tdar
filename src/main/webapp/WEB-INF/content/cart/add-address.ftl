@@ -24,7 +24,7 @@
  <#assign addressId =invoice.address.id />
 </#if>
 <div class="row">
-	<#list invoice.person.addresses  as address>
+	<#list invoice.owner.addresses  as address>
 	    <div class="span3">
 	    <#assign label = ""/>
 	    <#if address.type?has_content>
@@ -39,7 +39,7 @@
 	    </div>
 	</#list>
     <div class="span3">
-	    <a class="button btn btn-primary submitButton" href="<@s.url value="/entity/person/${invoice.person.id?c}/address?returnUrl=/cart/${id?c}" />">Add Address</a>
+	    <a class="button btn btn-primary submitButton" href="<@s.url value="/entity/person/${invoice.owner.id?c}/address?returnUrl=/cart/${id?c}" />">Add Address</a>
     </div>
 </div>
     
