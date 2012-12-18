@@ -45,9 +45,15 @@ public class ExcelUnit {
 
     public void assertCellEquals(int row, int column, Object obj) {
         Cell cell = getCell(row, column);
-        Assert.assertEquals(getCellAsString(cell), obj.toString());
+        Assert.assertEquals(obj.toString(),getCellAsString(cell) );
     }
 
+    public void assertCellCommentEquals(int row, int column, Object obj) {
+        Cell cell = getCell(row, column);
+        Assert.assertEquals(obj.toString(),cell.getCellComment().getString().toString() );
+    }
+
+    
     private String getCellAsString(Cell cell) {
         return formatter.formatCellValue(cell, formulaEvaluator);
     }

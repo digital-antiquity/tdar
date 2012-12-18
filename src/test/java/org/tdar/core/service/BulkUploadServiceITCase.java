@@ -9,13 +9,18 @@ package org.tdar.core.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.junit.Test;
@@ -24,6 +29,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.AsyncUpdateReceiver;
+import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.AsyncUpdateReceiver.DefaultReceiver;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.DocumentType;
@@ -32,7 +38,9 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.util.BulkManifestProxy;
 import org.tdar.core.bean.util.CellMetadata;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.utils.ExcelUnit;
 
 /**
  * @author Adam Brin
@@ -55,6 +63,23 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
         for (CellMetadata name : importFields) {
             logger.info("{}", name);
         }
+    }
+
+    @Test
+    public void testTemplate() throws FileNotFoundException, IOException {
+        HSSFWorkbook workbook = bulkUploadService.createExcelTemplate();
+        File file = File.createTempFile("templateTest", ".xls", TdarConfiguration.getInstance().getTempDirectory());
+        workbook.write(new FileOutputStream(file));
+        logger.info(file.getAbsolutePath());
+        ExcelUnit excelUnit = new ExcelUnit();
+        excelUnit.open(file);
+        assertEquals("there should be 2 sheets", 2, excelUnit.getWorkbook().getNumberOfSheets());
+        Sheet sheet = excelUnit.getWorkbook().getSheetAt(0);
+        excelUnit.assertCellEquals(0, 0, BulkUploadService.FILENAME + "*");
+        excelUnit.assertCellEquals(1, 0, BulkUploadService.EXAMPLE_PDF);
+        excelUnit.assertCellEquals(2, 0, BulkUploadService.EXAMPLE_TIFF);
+        excelUnit.assertCellCommentEquals(0, 0, BulkImportField.FILENAME_DESCRIPTION);
+        sheet.getRow(1).getCell(3).isPartOfArrayFormulaGroup();
     }
 
     public Map<String, Resource> setup() {
