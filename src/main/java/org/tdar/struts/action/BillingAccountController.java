@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.AccountGroup;
+import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
@@ -176,6 +177,10 @@ public class BillingAccountController extends AbstractPersistableController<Acco
 
     public boolean isBillingAdmin() {
         return getAuthenticationAndAuthorizationService().isMember(getAuthenticatedUser(), TdarGroup.TDAR_BILLING_MANAGER);
+    }
+    
+    public BillingActivityModel getBillingActivityModel() {
+        return getAccountService().getLatestActivityModel();
     }
 
 }

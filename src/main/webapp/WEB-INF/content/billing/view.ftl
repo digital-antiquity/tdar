@@ -17,15 +17,61 @@
 
 <p>${account.description!""}</p>
 
+<h3>Overall Usage</h3>
+<table class="tableFormat table">
+<tr>
+ <th></th>
+ <th>Used</th>
+ <th>Available</th>
+</tr>
+<tr>
+ <th>Files</th>
+ <td> ${account.filesUsed}</td><td>
+ <#if billingActivityModel.countingFiles>
+ 	${account.availableNumberOfFiles}
+ <#else>
+   <b>Unlimited</b>
+ </#if>
+ </td>
+</tr>
+<tr>
+ <th>Space</th>
+ <td> ${account.spaceUsedInMb} mb</td><td>
+ <#if billingActivityModel.countingSpace>
+ ${account.availableSpaceInMb} mb
+ <#else>
+   <b>Unlimited</b>
+ </#if>
+ </td>
+</tr>
+ <tr>
+ <th>Resources</th>
+ <td> ${account.resourcesUsed}</td><td>
+ <#if billingActivityModel.countingResources>
+ ${account.availableResources}
+ <#else>
+   <b>Unlimited</b>
+ </#if>
+ </td>
+</tr>
+</table>
+ 
 <h3>Invoices</h3>
 <table class="tableFormat table">
     <tr>
-        <th>name</th><th>total</th>
+        <th>name</th>
+		<th>files</th>
+		<th>space</th>
+		<th>resources</th>
+        <th>total</th>
     </tr>
 <#list account.invoices as invoice>
     <tr>
         <td><a href="<@s.url value="/cart/${invoice.id?c}" />"/>${invoice.dateCreated}</a></td>
-        <td> ${invoice.total!0}</td>
+        <td> ${invoice.totalNumberOfFiles}</td>
+        <td> ${invoice.totalSpaceInMb}</td>
+        <td> ${invoice.totalResources}</td>
+        <td> $${invoice.total!0}</td>
     </tr>
 </#list>
 </table>

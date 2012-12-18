@@ -14,8 +14,6 @@
 <body>
 <h1>Invoice <span class="small">{${invoice.transactionStatus}}</span></h1>
 
-<h3>Items <#if invoice.modifiable><a href="<@s.url value="/cart/${invoice.id?c}/edit" />" class="small">(modify)</a></#if></h3>
-
 <@invoicecommon.printInvoice />
 
 <div class="container row">
@@ -26,7 +24,7 @@
 
     <div class="span3">
         <h3>Transaction Info</h3>
-        <b>Transaction Type: </b>${invoice.transactionType}<br/>
+        <b>Transaction Type: </b>${invoice.paymentMethod}<br/>
         <b>Transaction Status: </b>${invoice.transactionStatus}<br/>
     </div>    
 </div>
