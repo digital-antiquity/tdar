@@ -245,16 +245,18 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
                 lowest = item;
             }
         }
+        toReturn.add(lowest);
         BillingItem extraSpace = null;
         BillingActivity spaceActivity = getSpaceActivity();
-        if (spaceActivity != null) {
-            Long spaceUsed = lowest.getQuantity() * lowest.getActivity().getNumberOfMb();
-            spaceUsed -= numMb;
-            int qty = (int) Math.ceil(Math.abs(spaceUsed) / spaceActivity.getNumberOfMb());
-            extraSpace = new BillingItem(spaceActivity, qty);
-            toReturn.add(extraSpace);
+        Long spaceUsed = lowest.getQuantity() * lowest.getActivity().getNumberOfMb();
+        spaceUsed -= numMb;
+        if (spaceUsed < 0) {
+            if (spaceActivity != null) {
+                int qty = (int) Math.ceil(Math.abs(spaceUsed) / spaceActivity.getNumberOfMb());
+                extraSpace = new BillingItem(spaceActivity, qty);
+                toReturn.add(extraSpace);
+            }
         }
-        toReturn.add(lowest);
         return toReturn;
     }
 
@@ -262,11 +264,11 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         List<BillingItem> items = new ArrayList<BillingItem>();
         for (BillingActivity activity : getActiveBillingActivities()) {
             if (activity.supportsFileLimit()) {
-                Long total = (long) Math.ceil( (double) spaceInMb/ (double) activity.getNumberOfMb() );
+                Long total = (long) Math.ceil((double) spaceInMb / (double) activity.getNumberOfMb());
                 if (total * activity.getNumberOfFiles() < activity.getMinAllowedNumberOfFiles()) {
                     total = activity.getMinAllowedNumberOfFiles();
                 }
-                
+
                 if (total < numFiles / activity.getNumberOfFiles()) {
                     total = numFiles;
                 }
@@ -290,7 +292,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
         // If we are using the ok amount of space for that activity...
         Float spaceSubtotal = 0f;
-        for (BillingItem item : lowestByFiles) { 
+        for (BillingItem item : lowestByFiles) {
             spaceSubtotal += item.getSubtotal();
         }
         logger.info("lowest by files: {}", spaceSubtotal);

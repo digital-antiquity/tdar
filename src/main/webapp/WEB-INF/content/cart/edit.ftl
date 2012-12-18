@@ -24,12 +24,25 @@
 $("#MetadataForm").change(function() { 
 var numFiles = $("#MetadataForm_invoice_numberOfFiles").val();
 var numMb = $("#MetadataForm_invoice_numberOfMb").val();
+var $est = $("#estimated");
     var url = "<@s.url value="/cart/api"/>?lookupMBCount=" + numMb + "&lookupFileCount=" + numFiles;
     $.ajax({
       url: url,
       dataType: 'json',
       type:'POST',
       success: function(data) {
+       
+      $est.html("<h5>Suggested Pricing Options</h5>");
+      for (var i=0; i < data.length; i++) {
+      var line = "<p><b>total</b>: " + data[i].subtotal + " [";
+      	for (var j=0; j < data[i].parts.length; j++) {
+      	var part = data[i].parts[j];
+      		line +=  part.quantity + " " + part.name + " @ $" + part.price  + ": $" + part.subtotal + " ; ";
+      	}
+      line += "]</p>";
+      console.log(line);
+	      $est.append(line);
+      };
 		console.log(data);
         },
       error: function(xhr,txtStatus, errorThrown) {
@@ -51,8 +64,8 @@ var numMb = $("#MetadataForm_invoice_numberOfMb").val();
     <#list activities as act>
     <tr>
         <td>${act.name}</td>
-        <td>${act.displayNumberOfFiles!act.numberOfFiles}</td>
-        <td>${act.displayNumberOfMb!act.numberOfMb}</td>
+        <td>${act.numberOfFiles!0}</td>
+        <td>${act.numberOfMb!0}</td>
         <td>${act.price} ${act.currency!"USD"}</td>
     </tr> 
     
