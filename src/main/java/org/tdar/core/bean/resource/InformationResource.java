@@ -65,6 +65,7 @@ import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
+import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.configuration.JSONTransient;
 import org.tdar.core.exception.TdarValidationException;
@@ -1008,4 +1009,14 @@ public abstract class InformationResource extends Resource {
         this.setResourceProviderInstitution(resource.getResourceProviderInstitution());
 
     };
+    
+    public List<InformationResourceFile> getFilesWithProcessingErrors() {
+        List<InformationResourceFile> files = new ArrayList<InformationResourceFile>();
+        for (InformationResourceFile file : getInformationResourceFiles()) {
+            if (file.getStatus() == FileStatus.PROCESSING_ERROR) {
+                files.add(file);
+            }
+        }
+        return files;
+    }
 }

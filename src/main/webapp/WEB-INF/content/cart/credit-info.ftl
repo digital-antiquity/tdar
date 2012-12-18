@@ -15,7 +15,7 @@
     <@s.hidden name="id" value="${invoice.id?c}"/>
 
     <@s.radio list="allPaymentMethods" name="invoice.paymentMethod" cssClass="transactionType" emptyOption='false' />
-
+	<hr/>
     <div class="typeToggle credit_card invoice manual">
         <@s.textfield name="invoice.billingPhone" cssClass="input-xlarge phoneUS  required-visible" label="Billing Phone #" />
     </div>

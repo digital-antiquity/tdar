@@ -41,6 +41,7 @@ $(document).ready(function() {
    }
    switchType($(".transactionType[type=radio]:checked",$('#MetadataForm')),"#MetadataForm");
 
+
 });
 
 </script>

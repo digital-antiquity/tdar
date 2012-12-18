@@ -39,7 +39,8 @@
 	    </div>
 	</#list>
     <div class="span3">
-	    <a class="button btn btn-primary submitButton" href="<@s.url value="/entity/person/${invoice.owner.id?c}/address?returnUrl=/cart/${id?c}" />">Add Address</a>
+    <#assign retUrl>/cart/add-address?id=${invoice.id?c}</#assign>
+	    <a class="button btn btn-primary submitButton" href="<@s.url value="/entity/person/${invoice.owner.id?c}/address?returnUrl=${retUrl?url}" />">Add Address</a>
     </div>
 </div>
     

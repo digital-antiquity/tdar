@@ -91,6 +91,7 @@ public abstract class AbstractCreatorController<T extends Creator> extends Abstr
             setAddress(getGenericService().find(Address.class, getAddressId()));
         } else if (address == null) {
             setAddress(new Address());
+            getAddress().setType(AddressType.BILLING);
         }
         logger.info("returning address {}" , address);
         return address;

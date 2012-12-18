@@ -13,8 +13,8 @@
 <div>
 <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='save'>
 
-<@s.textfield name="invoice.numberOfFiles" label="Number of Files" />
-<@s.textfield name="invoice.numberOfMb" label="Number of Mb" />
+<@s.textfield name="invoice.numberOfFiles" label="Number of Files" cssClass="integer"/>
+<@s.textfield name="invoice.numberOfMb" label="Number of Mb"  cssClass="integer"/>
 
 
 

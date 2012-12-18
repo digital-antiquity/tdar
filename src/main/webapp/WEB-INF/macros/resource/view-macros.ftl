@@ -631,6 +631,19 @@ No coding rules have been entered for this coding sheet yet.
 </#macro>
 
 <#macro infoResourceBasicInformation>
+<#local files = resource.filesWithProcessingErrors />
+
+<#if (files?size > 0 )>
+<div class="alert alert-error">
+<h3>The following Files have processing Errors</h3>
+<ul>	<#list files as file>
+	<li>${file.fileName} </li>
+	</#list>
+</ul>
+<br/>
+</div>
+</#if>
+
 <@basicInformation>
 <#nested>
 </@basicInformation>
