@@ -111,7 +111,7 @@ public class Invoice extends Base implements Updatable {
     private Person transactedBy;
 
     @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
-    @JoinColumn(nullable = true, name = "address_id")
+    @JoinColumn(nullable = true, name = "address_id", updatable = true)
     private Address address;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
@@ -212,12 +212,10 @@ public class Invoice extends Base implements Updatable {
         initTotals();
         return totalSpaceInMb;
     }
-    
+
     public Long getTotalSpaceInBytes() {
         return getTotalSpaceInMb() * ONE_MB;
     }
-
-
 
     public Long getTotalNumberOfFiles() {
         initTotals();
@@ -240,16 +238,17 @@ public class Invoice extends Base implements Updatable {
                     totalResources += numberOfResources * item.getQuantity().longValue();
                 }
                 calculatedCost += item.getSubtotal();
-                logger.debug(String.format("%s (%s) files, %s(%s) mb, %s(%s) resources [%s]", numberOfFiles, totalFiles, space, totalSpaceInMb, numberOfResources,
+                logger.debug(String.format("%s (%s) files, %s(%s) mb, %s(%s) resources [%s]", numberOfFiles, totalFiles, space, totalSpaceInMb,
+                        numberOfResources,
                         totalResources, calculatedCost));
             }
             initialized = true;
         }
     }
-    
+
     public void resetTransientValues() {
         totalResources = 0L;
-        totalSpaceInMb =0L;
+        totalSpaceInMb = 0L;
         calculatedCost = 0F;
         totalResources = 0L;
         initialized = false;

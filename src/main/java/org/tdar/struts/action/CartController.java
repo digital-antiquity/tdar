@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.httpclient.URIException;
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.InterceptorRef;
@@ -151,12 +150,9 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         if (!getInvoice().isModifiable()) {
             throw new TdarRecoverableRuntimeException(CANNOT_MODIFY);
         }
-        try {
-            getInvoice().setAddress(getGenericService().loadFromSparseEntity(getInvoice().getAddress(), Address.class));
-            getGenericService().saveOrUpdate(getInvoice());
-        } catch (Exception e) {
-            logger.warn("error {}", ExceptionUtils.getRootCause(e));
-        }
+        getInvoice().setAddress(getGenericService().loadFromSparseEntity(getInvoice().getAddress(), Address.class));
+        getGenericService().saveOrUpdate(getInvoice());
+
         return SUCCESS_ADD_PAY;
     }
 
