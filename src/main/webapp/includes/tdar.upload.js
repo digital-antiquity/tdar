@@ -128,7 +128,8 @@ TDAR.fileupload = function() {
         // data.dataType: deletion response type, e.g. "json"
         
         var $row = data.context;
-        var newUpload = TDAR.fileupload.informationResourceId === -1;
+        //if the resource id is "-1" this is a new resource, otherwise we are editing an existing resource
+        var newUpload = $row.closest("form").find("input[name=id]").length === 0;
         var $btnDelete = $("button.delete-button", data.context);
         var $hdnAction = $(".fileAction", data.context);
         if($btnDelete.data("type") === "DELETE") {
@@ -280,7 +281,6 @@ TDAR.fileupload = function() {
     return {
         "registerUpload": _registerUpload,
         //FIXME: we can remove the need for this if we include it as closure to instanced version of _destroy.
-        "informationResourceId": _informationResourceId,
         "updateFileAction": _updateFileAction,
         "getRowId": _getRowId
         
