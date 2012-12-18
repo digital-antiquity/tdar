@@ -24,6 +24,7 @@
         <@s.textfield name="institution.name" required=true label="Name" id="txtInstitutionName" cssClass="longfield" />
         <br /><@s.textfield name="institution.location" label="Location" id="txtLocation" cssClass="longfield" />
         <br /><@s.textfield name="institution.url" label="Website" id="txtUrl" cssClass="longfield url" />
+        <br /><@s.textarea name="institution.description" label="Description"  />
     </div>
     <@edit.submit "Save" false />    
 
