@@ -187,6 +187,9 @@ public class CartController extends AbstractPersistableController<Invoice> imple
             throw new TdarRecoverableRuntimeException(VALID_PAYMENT_METHOD_IS_REQUIRED);
         }
 
+        if (billingPhone == null) {
+            throw new TdarRecoverableRuntimeException(VALID_PHONE_NUMBER_IS_REQUIRED);
+        }
         Long phone = Long.parseLong(billingPhone.replaceAll("\\D", ""));
 
         if (phone == null || phone.toString().length() < 10) {

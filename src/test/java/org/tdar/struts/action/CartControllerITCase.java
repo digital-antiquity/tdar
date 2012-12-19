@@ -101,7 +101,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         BillingItem billingItem = new BillingItem(new BillingActivity("error", .21F, model), 1);
         Invoice invoice = processTransaction(billingItem);
         assertEquals(TransactionStatus.TRANSACTION_FAILED, invoice.getTransactionStatus());
-        String msg = CartController.ERROR;
+        String msg = CartController.WAIT;
 
         assertPolingResponseCorrect(invoice.getId(), msg);
     }
@@ -144,8 +144,8 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         }
         invoice.setBillingPhone(1234567890L);
 
-        assertPolingResponseCorrect(invoice.getId(), CartController.ERROR);
-
+        assertPolingResponseCorrect(invoice.getId(), CartController.WAIT);
+        controller.setBillingPhone("123-415-9999");
         invoice.setPaymentMethod(PaymentMethod.CREDIT_CARD);
         String response = controller.processPayment();
         assertEquals(CartController.POLLING, response);
@@ -164,7 +164,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         CartController controller = setupPaymentTests();
         Invoice invoice = controller.getInvoice();
         Long invoiceId = invoice.getId();
-        invoice.setBillingPhone(1234567890L);
+        controller.setBillingPhone("1234567890");
         invoice.setPaymentMethod(PaymentMethod.CREDIT_CARD);
         response = controller.processPayment();
         assertEquals(CartController.POLLING, response);
@@ -182,7 +182,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         String response;
         CartController controller = setupPaymentTests();
         Invoice invoice = controller.getInvoice();
-        invoice.setBillingPhone(1234567890L);
+        controller.setBillingPhone("(123) 456-7890");
         invoice.setPaymentMethod(PaymentMethod.MANUAL);
         String otherReason = "this is my reasoning";
         invoice.setOtherReason(otherReason);
@@ -204,7 +204,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         String response;
         CartController controller = setupPaymentTests();
         Invoice invoice = controller.getInvoice();
-        invoice.setBillingPhone(1234567890L);
+        controller.setBillingPhone("123-456-7890");
         String invoiceNumber = "1234567890";
         invoice.setInvoiceNumber(invoiceNumber);
         invoice.setPaymentMethod(PaymentMethod.INVOICE);
@@ -232,7 +232,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         CartController controller = setupPaymentTests();
         Invoice invoice = controller.getInvoice();
         Long invoiceId = invoice.getId();
-        invoice.setBillingPhone(1234567890L);
+        controller.setBillingPhone("1234567890");
         invoice.setPaymentMethod(PaymentMethod.CREDIT_CARD);
         response = controller.processPayment();
         assertEquals(CartController.POLLING, response);
