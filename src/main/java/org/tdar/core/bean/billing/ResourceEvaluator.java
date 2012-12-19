@@ -48,6 +48,7 @@ public class ResourceEvaluator implements Serializable {
      * IOC putting all of the logic in one place
      */
     public boolean accountHasMinimumForNewResource(Account account, ResourceType resourceType) {
+        logger.info("f: {} s: {} r: {}", new Object[] {account.getAvailableNumberOfFiles(), account.getAvailableSpaceInMb(), account.getAvailableResources()});
         if (evaluatesNumberOfResources()) {
             if (!getUncountedResourceTypes().contains(resourceType) && account.getAvailableResources() <= 0) {
                 return false;
@@ -105,7 +106,7 @@ public class ResourceEvaluator implements Serializable {
     public String toString() {
         return String.format("%s resources %s files %s mb", getResourcesUsed(), getFilesUsed(), getSpaceUsedInMb());
     }
-    
+
     public boolean isIncludeDeletedFilesInCounts() {
         return includeDeletedFilesInCounts;
     }
@@ -151,7 +152,7 @@ public class ResourceEvaluator implements Serializable {
     }
 
     public long getSpaceUsedInMb() {
-        return (long) Math.ceil((double)spaceUsed / (double)Invoice.ONE_MB);
+        return (long) Math.ceil((double) spaceUsed / (double) Invoice.ONE_MB);
     }
 
     public void setSpaceUsed(long spaceUsed) {
@@ -169,7 +170,7 @@ public class ResourceEvaluator implements Serializable {
     public BillingActivityModel getModel() {
         return model;
     }
-    
+
     public void subtract(ResourceEvaluator initialEvaluation) {
         if (!initialEvaluation.getModel().equals(getModel())) {
             throw new TdarValidationException("using two different models ");

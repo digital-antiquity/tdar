@@ -119,6 +119,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     public boolean hasSpaceInAnAccount(Person user, ResourceType type) {
         for (Account account : listAvailableAccountsForUser(user)) {
+            logger.info("evaluating account {}" , account.getName());
             if (account.isActive() && account.hasMinimumForNewRecord(getResourceEvaluator(), type)) {
                 logger.info("account {} has minimum balance for {}", account.getName(), user.getProperName());
                 return true;

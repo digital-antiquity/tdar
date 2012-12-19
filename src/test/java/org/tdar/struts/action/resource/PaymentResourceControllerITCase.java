@@ -94,7 +94,6 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         // now reload the document and see if the institution was saved.
         // Assert.assertEquals("resource status should be flagged", Status.FLAGGED_ACCOUNT_BALANCE, d.getStatus());
         Assert.assertFalse("resource id should be -1 after unpaid resource addition", newId == Long.valueOf(-1L));
-        Assert.assertNull("controller should not be successful", null);
         setIgnoreActionErrors(true);
         assertTrue(CollectionUtils.isNotEmpty(controller.getActionErrors()));
     }
