@@ -1,6 +1,8 @@
 package org.tdar.struts.action.resource;
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.junit.Assert;
@@ -8,16 +10,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
-import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.Document;
-import org.tdar.core.bean.resource.Status;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.AccountService;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.utils.Pair;
+
+import com.mchange.util.AssertException;
+import com.sun.research.ws.wadl.Doc;
 
 @RunWith(MultipleTdarConfigurationRunner.class)
 @RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.cc.properties" })
@@ -83,15 +86,17 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
     @Rollback()
     public void testInitialSaveWithoutValidAccount() throws Exception {
         controller = generateNewInitializedController(DocumentController.class);
-        Exception tdae = setupResource(setupDocument());
-        assertNotNull(tdae);
+        Pair<String, Exception> tdae = setupResource(setupDocument());
+        assertEquals(DocumentController.INPUT, tdae.getFirst());
         Long newId = controller.getResource().getId();
 
-        Assert.assertNull(entityService.findByEmail("new@email.com"));
+//        Assert.assertNull(entityService.findByEmail("new@email.com"));
         // now reload the document and see if the institution was saved.
         // Assert.assertEquals("resource status should be flagged", Status.FLAGGED_ACCOUNT_BALANCE, d.getStatus());
-        Assert.assertEquals("resource id should be -1 after unpaid resource addition", newId, Long.valueOf(-1L));
+        Assert.assertFalse("resource id should be -1 after unpaid resource addition", newId == Long.valueOf(-1L));
         Assert.assertNull("controller should not be successful", null);
+        setIgnoreActionErrors(true);
+        assertTrue(CollectionUtils.isNotEmpty(controller.getActionErrors()));
     }
 
     @Test
@@ -99,12 +104,12 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
     public void testSecondarySaveWithoutValidAccount() throws Exception {
         controller = generateNewInitializedController(DocumentController.class);
         Document d = setupDocument();
-//        Account account = createAccount(getBasicUser());
-//        d.setAccount(account);
+        // Account account = createAccount(getBasicUser());
+        // d.setAccount(account);
         genericService.saveOrUpdate(d);
 
         logger.info("account: {}", d.getAccount());
-        Exception tdae = setupResource(d);
+        Pair<String, Exception> tdae = setupResource(d);
         assertTrue(CollectionUtils.isNotEmpty(getController().getActionErrors()));
         logger.info("errors {}", getController().getActionErrors());
         assertTrue(getController().getActionErrors().contains(AccountService.ACCOUNT_IS_NULL));
@@ -115,12 +120,12 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
 
         Assert.assertNotEquals("resource id should be -1 after unpaid resource addition", newId, Long.valueOf(-1L));
         Assert.assertNull("controller should not be successful", null);
-//        Assert.assertEquals(Status.FLAGGED_ACCOUNT_BALANCE, d.getStatus());
+        // Assert.assertEquals(Status.FLAGGED_ACCOUNT_BALANCE, d.getStatus());
         Assert.assertFalse(CollectionUtils.isEmpty(controller.getActionErrors()));
         setIgnoreActionErrors(true);
     }
 
-    private Exception setupResource(Document d) {
+    private Pair<String, Exception> setupResource(Document d) {
         Assert.assertTrue(getTdarConfiguration().isPayPerIngestEnabled());
         if (d != null && d.getId() != null) {
             controller.setId(d.getId());
@@ -142,7 +147,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         } catch (Exception e) {
             tdae = e;
         }
-        return tdae;
+        return new Pair<String, Exception>(result, tdae);
     }
 
     private Document setupDocument() {
