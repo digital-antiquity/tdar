@@ -11,7 +11,7 @@
 <@edit.subNavMenu />
 <div>
 
-<@s.form id='resourceMetadataForm' method='post' action='save' enctype='multipart/form-data' cssClass="span9 form-horizontal">
+<@s.form id='resourceMetadataForm' method='post' action='save' enctype='multipart/form-data' cssClass="form-horizontal">
 <#assign newTitle>New <#noescape>${resource.resourceType.label}</#noescape></#assign>
 <h1><#if resource.id == -1>Creating<#else>Editing</#if>:<span> <#if resource.title?has_content>${resource.title}<#else>${newTitle}</#if> </span></h1>
 

@@ -59,17 +59,27 @@ div.barlabel {
     z-index: 10000;
 }
 
+/*
 #subnavbar .brand {
     padding: 2px 20px 0px 20px !important;
 }
+*/
 
 #messages  .lt-ie8 {
     display: block !important;
     visibility: visible !important;
 }
 
+/* affix elements become fixed, so we need to specify new location (otherwise location after becoming fixed is undefined/browser-specific) */
 #subnavbar.affix {
-    top: 4px;
+    top: 0;
+    left: 0;
+}
+
+/* TODO:// HACK: .affix navbar needs to be same width as ".container" for proper formatting, but to break out our navbar requires mucking w/ layout.dec */
+#subnavbar.affix-top.container {
+    /*shrink the navbar when it is not affixed (i.e. when it is .affix-top) */
+    width:auto
 }
 
 /* fix for file upload control to make it not make space for label */
@@ -646,9 +656,11 @@ ol.MAP .listItemPart {
     margin: -3px 5px 25px 5px !important;
 }
 
+/*
 #subnavbar .brand {
     padding: 5px 10px 0px 4px !important;
 }
+*/
 
 #fakeSubmitButton {
     margin-top: 5px;

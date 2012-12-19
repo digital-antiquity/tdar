@@ -4,10 +4,6 @@
 <#import "common.ftl" as common>
 <#assign DEFAULT_SORT = 'PROJECT' />
 <#assign DEFAULT_ORIENTATION = 'LIST' />
-<#-- 
-Convert long string to shorter string with ellipses. If you pass it anything fancy (like 
-html markup) you will probably not like the results
--->
     <#macro printTag tagName className closing>
         <#if tagName?has_content>
             <<#if closing>/</#if>${tagName} class="${className}" <#nested><#rt/>>

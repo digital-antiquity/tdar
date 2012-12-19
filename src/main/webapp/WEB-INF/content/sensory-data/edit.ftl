@@ -11,7 +11,7 @@
 
 <@edit.resourceTitle />
 
-<@s.form name='resourceMetadataForm' id='frmSensoryData'  cssClass="span9 form-horizontal" method='post' action='save' enctype='multipart/form-data'>
+<@s.form name='resourceMetadataForm' id='frmSensoryData'  cssClass="form-horizontal" method='post' action='save' enctype='multipart/form-data'>
 <@edit.basicInformation "sensory object" "sensoryData">
     <div tiplabel="Object / Monument Number" tooltipcontent="The ID number or code, if applicable, of the object or monument">
     <@s.textfield maxLength="255" name="sensoryData.monumentNumber" cssClass="input-xxlarge" label="Object / Monument #" labelposition="left" />

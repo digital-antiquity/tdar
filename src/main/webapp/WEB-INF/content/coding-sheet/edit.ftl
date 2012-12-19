@@ -12,7 +12,7 @@
 <@edit.subNavMenu />
 
 
-<@s.form name='resourceRegistrationForm' id='resourceRegistrationForm' method='post' enctype='multipart/form-data' action='save' cssClass="span9 form-horizontal">
+<@s.form name='resourceRegistrationForm' id='resourceRegistrationForm' method='post' enctype='multipart/form-data' action='save' cssClass="form-horizontal">
 
 <@edit.resourceTitle />
 

@@ -3,45 +3,45 @@
 <head>
 <title>Edit Table Metadata for ${dataset.title}</title>
 <meta name="lastModifiedDate" content="$Date$"/>
-
 </head>
 <body>
 
     <h1>Edit Table Metadata for ${dataset.title}</h1>
+    <h3>Table ${dataTable.displayName}, ${dataTable.dataTableColumns?size } columns</h3>
 
 <@edit.sidebar/>
 
 
+<#if (dataTable.dataTableColumns)??>
 
-<#if dataTable.dataTableColumns?? && false>
-<style>
-.legend {
-    width: auto;
-    clear: none;
-    display: inline-block;
-    margin: 2px;
-}
-</style>
-    <div id='subnavbar' class="resource-nav affix-top navbar span12 navbar-static"  data-offset-top="250" data-offset-bottom="250" data-spy="affix">
-      <div class="navbar-inner">
 
-            <h3>The ${dataTable.displayName} table has ${dataTable.dataTableColumns?size } columns</h3>
-            
-            <span class="pull-right">
-                <span class="button btn btn-primary submitButton" id="fakeSubmitButton">Submit</span>
-            </span>
-            <div class="control-group">
-                <label class="control-label">Jump to a column:</label>
-                <div class="controls">
-                    <select name="chooseColumn" onChange="goToColumn(this)">
-                    <#list dataTableColumns?sort_by("sequenceNumber") as column>
-                     <option value="columnDiv_${column_index}">${column.displayName}</option>
-                    </#list>
-                    </select>
-                </div> 
+<!--TODO: .container sets content width, it should be outside of grid layout  (or a grid-layout parent) --> 
+<!-- we break this rule so that navbar will be correct with when it is .affix'd, for all responsive profiles --> 
+<div id='subnavbar' class="container"  data-offset-top="250" data-spy="affix">
+    <div class="navbar">
+        <#-- <select name="chooseColumn" onChange="goToColumn(this)"> -->
+        <div class="navbar-inner">
+            <ul class="nav">
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        Jump to a column
+                        <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <#list dataTableColumns?sort_by("sequenceNumber") as column>
+                        <li><a href="#" data-targetdiv="columnDiv_${column_index}">${column.displayName}</a></li>
+                        </#list>
+                    </ul>
+                </li>
+            </ul>
+            <div id="fakeSubmitDiv" class="pull-right">
+                <button type=button class="button btn btn-primary submitButton" id="fakeSubmitButton">Save</button>
+                <img src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner"  style="display:none"/>
             </div>
         </div>
+    </div>
 </div>
+
 </#if> 
 
 
@@ -51,7 +51,7 @@
 <@s.hidden name='dataTableId' value='${dataTable.id?c}'/>
 <#if ( dataset.dataTables?size > 1 )>
 <h2>Column Description and Mapping: ${dataTable.displayName}</h2>
-<div class="row">
+<div class="">
     <p>
     There are multiple tables in your dataset.  You can switch between them by clicking
     on one of the links below.  Please remember to save any changes before you switch.
@@ -78,7 +78,7 @@
 <#list dataTableColumns?sort_by("sequenceNumber") as column>
     <#if column_index != 0><hr/></#if>
 
-<div class="row datatablecolumn" id="columnDiv_${column_index}" >
+<div class="datatablecolumn" id="columnDiv_${column_index}" >
   <h3> 
   <span id="columnDiv_${column_index}lgnd" tooltipcontent="#generalToolTip" tiplabel="Column Mapping Instructions" class="columnSquare">&nbsp;</span>
   <!-- Column: -->
@@ -154,7 +154,7 @@
         </div>
     </div>
     <span tooltipcontent="#descriptionToolTip" tiplabel="Column Description">
-    <@s.textarea label="Please describe the data collected in this column" name='dataTableColumns[${column_index}].description' rows='2' cols='12' cssClass="resizable input-xxlarge" />
+    <@s.textarea label="Column Description" name='dataTableColumns[${column_index}].description' rows='2' cols='12' cssClass="resizable input-xxlarge" />
 
     </span>
     <div id='divCodingSheet-${column_index}' class="codingInfo" tooltipcontent="#codingSheetToolTip" tiplabel="Coding Sheet">
@@ -358,6 +358,19 @@ $(document).ready(function() {
       });
 
     $("#fakeSubmitButton").click(function() {$("#submitButton").click();});      
+    
+    
+    var $window = $(window);
+    
+    
+    //scroll to the correct location when menu item clicked
+    //TODO: use scrollspy for this.
+    $('#subnavbar a').click(function(e) {
+        e.preventDefault();
+        gotoColumn($(this));
+    });
+    
+    
 });
 
 
@@ -463,10 +476,8 @@ function registerCheckboxInfo() {
     var formId = "#edit-metadata-form";
 
 
-function goToColumn(select) {
-    var idVal = $(select).val();
-    $(select).attr('selectedIndex', 0);
-    $("option",$(select))[0].selected=true;
+function gotoColumn($el) {
+    var idVal = $el.data('targetdiv');
     document.getElementById(idVal).scrollIntoView();
 }
 
@@ -485,3 +496,4 @@ function updateSummaryTable() {
 </script>
 </body>
 </#escape>
+

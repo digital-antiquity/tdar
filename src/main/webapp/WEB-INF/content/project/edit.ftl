@@ -31,7 +31,7 @@
 </#if>
 
 
-<@s.form name='projectMetadataForm' id='projectMetadataForm'  cssClass="span9 form-horizontal" method='post' action='save'>
+<@s.form name='projectMetadataForm' id='projectMetadataForm'  cssClass="form-horizontal" method='post' action='save'>
 
 <@edit.basicInformation "project" "project" />
 <@edit.citationInfo "project" />

@@ -12,7 +12,7 @@
 <#assign newTitle>New ${resource.resourceType.label}</#assign>
 <h1><#if resource.id == -1>Creating<#else>Editing</#if>:<span> <#if resource.title?has_content>${resource.title}<#else>${newTitle}</#if> </span></h1>
 
-<@s.form id='resourceMetadataForm' method='post' enctype='multipart/form-data' action='save'  cssClass="span9 form-horizontal">
+<@s.form id='resourceMetadataForm' method='post' enctype='multipart/form-data' action='save'  cssClass="form-horizontal">
 <@edit.basicInformation 'document' 'document' >
     <#if linkedInformationResource??>
     <div class='help-block'>

@@ -11,7 +11,7 @@
 <@edit.sidebar />
 <@edit.subNavMenu />
 
-<@s.form name='imageMetadataForm' id='ImageMetadataForm'  cssClass="span9 form-horizontal"  method='post' enctype='multipart/form-data' action='save'>
+<@s.form name='imageMetadataForm' id='ImageMetadataForm'  cssClass="form-horizontal"  method='post' enctype='multipart/form-data' action='save'>
 
 <@edit.resourceTitle />
 
