@@ -278,10 +278,6 @@ public class Invoice extends Base implements Updatable {
         this.billingPhone = billingPhone;
     }
 
-    public void setBillingPhone(String phone) {
-        this.billingPhone = Long.parseLong(phone.replaceAll("\\D", ""));
-    }
-
     public Long getBillingPhone() {
         return billingPhone;
     }
@@ -385,4 +381,5 @@ public class Invoice extends Base implements Updatable {
     public void finalize() {
         setTotal(getCalculatedCost());
     }
+
 }

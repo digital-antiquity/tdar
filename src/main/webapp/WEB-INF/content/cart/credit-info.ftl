@@ -17,7 +17,7 @@
     <@s.radio list="allPaymentMethods" name="invoice.paymentMethod" cssClass="transactionType" emptyOption='false' />
 	<hr/>
     <div class="typeToggle credit_card invoice manual">
-        <@s.textfield name="invoice.billingPhone" cssClass="input-xlarge phoneUS  required-visible" label="Billing Phone #" />
+        <@s.textfield name="billingPhone" cssClass="input-xlarge phoneUS  required-visible" label="Billing Phone #" />
     </div>
     <div class="typeToggle invoice">
         <@s.textfield name="invoice.invoiceNumber" cssClass="input-xlarge" label="Invoice #" />

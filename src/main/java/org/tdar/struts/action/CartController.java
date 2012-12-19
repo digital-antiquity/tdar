@@ -45,6 +45,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     private static final long serialVersionUID = 1592977664145682926L;
     private List<BillingActivity> activities = new ArrayList<BillingActivity>();
     private Long accountId = -1L;
+    private String billingPhone;
     public static final String SUCCESS_UPDATE_ACCOUNT = "success-update-account";
     public static final String SUCCESS_ADD_ACCOUNT = "success-add-account";
     public static final String SUCCESS_ADD_ADDRESS = "add-address";
@@ -186,8 +187,9 @@ public class CartController extends AbstractPersistableController<Invoice> imple
             throw new TdarRecoverableRuntimeException(VALID_PAYMENT_METHOD_IS_REQUIRED);
         }
 
-        Long billingPhone = getInvoice().getBillingPhone();
-        if (billingPhone == null || billingPhone.toString().length() < 10) {
+        Long phone = Long.parseLong(billingPhone.replaceAll("\\D", ""));
+
+        if (phone == null || phone.toString().length() < 10) {
             throw new TdarRecoverableRuntimeException(VALID_PHONE_NUMBER_IS_REQUIRED);
         }
         String invoiceNumber = getInvoice().getInvoiceNumber();
@@ -195,7 +197,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         setInvoice(getGenericService().loadFromSparseEntity(getInvoice(), Invoice.class));
         getInvoice().setPaymentMethod(paymentMethod);
         getInvoice().setOtherReason(otherReason);
-        getInvoice().setBillingPhone(billingPhone);
+        getInvoice().setBillingPhone(phone);
         getGenericService().saveOrUpdate(getInvoice());
         // finalize the cost and cache it
         getInvoice().finalize();
@@ -400,6 +402,14 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
     public void setPricingOptions(List<PricingOption> pricingOptions) {
         this.pricingOptions = pricingOptions;
+    }
+
+    public String getBillingPhone() {
+        return billingPhone;
+    }
+
+    public void setBillingPhone(String billingPhone) {
+        this.billingPhone = billingPhone;
     }
 
 }

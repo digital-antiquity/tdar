@@ -142,7 +142,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         if (billingItem != null) {
             invoice.getItems().add(billingItem);
         }
-        invoice.setBillingPhone("1234567890");
+        invoice.setBillingPhone(1234567890L);
 
         assertPolingResponseCorrect(invoice.getId(), CartController.ERROR);
 
@@ -164,7 +164,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         CartController controller = setupPaymentTests();
         Invoice invoice = controller.getInvoice();
         Long invoiceId = invoice.getId();
-        invoice.setBillingPhone("1234567890");
+        invoice.setBillingPhone(1234567890L);
         invoice.setPaymentMethod(PaymentMethod.CREDIT_CARD);
         response = controller.processPayment();
         assertEquals(CartController.POLLING, response);
@@ -182,7 +182,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         String response;
         CartController controller = setupPaymentTests();
         Invoice invoice = controller.getInvoice();
-        invoice.setBillingPhone("1234567890");
+        invoice.setBillingPhone(1234567890L);
         invoice.setPaymentMethod(PaymentMethod.MANUAL);
         String otherReason = "this is my reasoning";
         invoice.setOtherReason(otherReason);
@@ -204,7 +204,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         String response;
         CartController controller = setupPaymentTests();
         Invoice invoice = controller.getInvoice();
-        invoice.setBillingPhone("1234567890");
+        invoice.setBillingPhone(1234567890L);
         String invoiceNumber = "1234567890";
         invoice.setInvoiceNumber(invoiceNumber);
         invoice.setPaymentMethod(PaymentMethod.INVOICE);
@@ -232,7 +232,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         CartController controller = setupPaymentTests();
         Invoice invoice = controller.getInvoice();
         Long invoiceId = invoice.getId();
-        invoice.setBillingPhone("1234567890");
+        invoice.setBillingPhone(1234567890L);
         invoice.setPaymentMethod(PaymentMethod.CREDIT_CARD);
         response = controller.processPayment();
         assertEquals(CartController.POLLING, response);
