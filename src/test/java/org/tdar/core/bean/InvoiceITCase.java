@@ -60,7 +60,7 @@ public class InvoiceITCase extends AbstractIntegrationTestCase {
     private List<BillingItem> setupBillingItem(Invoice invoice, long numberOfFiles, long numberOfMb) {
         invoice.setNumberOfFiles(numberOfFiles);
         invoice.setNumberOfMb(numberOfMb);
-        List<BillingItem> billingItems = accountService.calculateCheapestActivities(invoice);
+        List<BillingItem> billingItems = accountService.calculateCheapestActivities(invoice).getItems();
         logger.info("{} ", billingItems);
         return billingItems;
     }

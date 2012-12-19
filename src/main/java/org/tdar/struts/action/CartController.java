@@ -70,7 +70,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         }
 
         persistable.getItems().clear();
-        getInvoice().getItems().addAll(getAccountService().calculateCheapestActivities(getInvoice()));
+        getInvoice().getItems().addAll(getAccountService().calculateCheapestActivities(getInvoice()).getItems());
         if (accountId != -1) {
             getGenericService().find(Account.class, accountId).getInvoices().add(getInvoice());
         }
@@ -98,9 +98,9 @@ public class CartController extends AbstractPersistableController<Invoice> imple
             results = {
                     @Result(name = SUCCESS, type = "freemarker", location = "api.ftl", params = { "contentType", "application/json" }) })
     public String api() {
-        pricingOptions.add(new PricingOption(getAccountService().getCheapestActivityByFiles(lookupFileCount, lookupMBCount, false)));
-        pricingOptions.add(new PricingOption(getAccountService().getCheapestActivityByFiles(lookupFileCount, lookupMBCount, true)));
-        pricingOptions.add(new PricingOption(getAccountService().getCheapestActivityBySpace(lookupFileCount, lookupMBCount)));
+        pricingOptions.add(getAccountService().getCheapestActivityByFiles(lookupFileCount, lookupMBCount, false));
+        pricingOptions.add(getAccountService().getCheapestActivityByFiles(lookupFileCount, lookupMBCount, true));
+        pricingOptions.add(getAccountService().getCheapestActivityBySpace(lookupFileCount, lookupMBCount));
 
         return SUCCESS;
     }

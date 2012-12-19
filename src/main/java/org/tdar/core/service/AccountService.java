@@ -30,6 +30,8 @@ import org.tdar.core.dao.GenericDao;
 import org.tdar.core.exception.TdarQuotaException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
+import org.tdar.struts.data.PricingOption;
+import org.tdar.struts.data.PricingOption.PricingType;
 
 @Transactional(readOnly = true)
 @Service
@@ -119,7 +121,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     public boolean hasSpaceInAnAccount(Person user, ResourceType type) {
         for (Account account : listAvailableAccountsForUser(user)) {
-            logger.info("evaluating account {}" , account.getName());
+            logger.info("evaluating account {}", account.getName());
             if (account.isActive() && account.hasMinimumForNewRecord(getResourceEvaluator(), type)) {
                 logger.info("account {} has minimum balance for {}", account.getName(), user.getProperName());
                 return true;
@@ -220,9 +222,12 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         return null;
     }
 
-    public List<BillingItem> getCheapestActivityByFiles(Long numFiles, Long numMb, boolean exact) {
+    public PricingOption getCheapestActivityByFiles(Long numFiles, Long numMb, boolean exact) {
+        PricingOption option = new PricingOption(PricingType.SIZED_BY_FILE_ONLY);
+        if (!exact) {
+            option.setType(PricingType.SIZED_BY_FILE_ABOVE_TIER);
+        }
         List<BillingItem> items = new ArrayList<BillingItem>();
-        List<BillingItem> toReturn = new ArrayList<BillingItem>();
         for (BillingActivity activity : getActiveBillingActivities()) {
             // 2 cases (1) exact value; (2) where the next step up might actually be cheaper
             int files = numFiles.intValue();
@@ -247,7 +252,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
                 lowest = item;
             }
         }
-        toReturn.add(lowest);
+        option.getItems().add(lowest);
         BillingItem extraSpace = null;
         BillingActivity spaceActivity = getSpaceActivity();
         Long spaceAvailable = lowest.getQuantity() * lowest.getActivity().getNumberOfMb();
@@ -257,12 +262,13 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         if (spaceNeeded > 0 && spaceActivity != null) {
             int qty = (int) Account.divideByRoundUp(spaceNeeded, spaceActivity.getNumberOfMb());
             extraSpace = new BillingItem(spaceActivity, qty);
-            toReturn.add(extraSpace);
+            option.getItems().add(extraSpace);
         }
-        return toReturn;
+        return option;
     }
 
-    public BillingItem getCheapestActivityBySpace(Long numFiles, Long spaceInMb) {
+    public PricingOption getCheapestActivityBySpace(Long numFiles, Long spaceInMb) {
+        PricingOption option = new PricingOption(PricingType.SIZED_BY_MB);
         List<BillingItem> items = new ArrayList<BillingItem>();
         for (BillingActivity activity : getActiveBillingActivities()) {
             if (activity.supportsFileLimit()) {
@@ -285,24 +291,21 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
                 lowest = item;
             }
         }
-        return lowest;
+        option.getItems().add(lowest);
+        return option;
     }
 
-    public List<BillingItem> calculateCheapestActivities(Invoice invoice) {
-        BillingItem lowestByMB = getCheapestActivityBySpace(invoice.getNumberOfFiles(), invoice.getNumberOfMb());
-        List<BillingItem> lowestByFiles = getCheapestActivityByFiles(invoice.getNumberOfFiles(), invoice.getNumberOfMb(), false);
+    public PricingOption calculateCheapestActivities(Invoice invoice) {
+        PricingOption lowestByMB = getCheapestActivityBySpace(invoice.getNumberOfFiles(), invoice.getNumberOfMb());
+        PricingOption lowestByFiles = getCheapestActivityByFiles(invoice.getNumberOfFiles(), invoice.getNumberOfMb(), false);
 
         // If we are using the ok amount of space for that activity...
-        Float spaceSubtotal = 0f;
-        for (BillingItem item : lowestByFiles) {
-            spaceSubtotal += item.getSubtotal();
-        }
-        logger.info("lowest by files: {}", spaceSubtotal);
-        logger.info("lowest by space: {} # {}", lowestByMB.getSubtotal(), lowestByMB.getQuantity());
-        if (spaceSubtotal < lowestByMB.getSubtotal()) {
+        logger.info("lowest by files: {}", lowestByFiles.getSubtotal());
+        logger.info("lowest by space: {} ", lowestByMB.getSubtotal());
+        if (lowestByFiles.getSubtotal() < lowestByMB.getSubtotal()) {
             return lowestByFiles;
         }
-        return Arrays.asList(lowestByMB);
+        return lowestByMB;
     }
 
 }
