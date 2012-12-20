@@ -320,6 +320,8 @@ function inheritSpatialInformation(formId, json) {
         
         var si = json.spatialInformation;
         TDAR.maps.updateResourceRect(mapdiv,  si.miny, si.minx, si.maxy, si.maxx);
+        
+        disableMap();
     };
 
     //need to wait until map api is ready *and* this page's map is ready.
