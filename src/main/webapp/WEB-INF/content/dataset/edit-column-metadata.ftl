@@ -210,7 +210,7 @@
     <@edit.boolfield name="dataTableColumns[${column_index}].mappingColumn"
         label="Use column values to map table rows to resources?"
         id="mapping_${column_index}" value=mapping cssClass="mappingValue" />
-    <fieldgroup class="mappingDetail">
+    <div class="mappingDetail well">
        <p>${siteAcronym} can associate groups of documents and images with this dataset as long as they're all part of the same project. 
        If this column has filenames in it, ${siteAcronym} will associate the filename with the filename of the image or document and load the row
        data as additional fields in the ${siteAcronym} record.
@@ -238,7 +238,7 @@
           id="dataTableColumns[${column_index}].visible"
           value=visible
           /> -->
-          </fieldgroup> 
+          </div> 
     <#else>
     <i>cannot map this dataset to a set of ${siteAcronym} resources because the dataset is not in a project</i>
     </#if>
@@ -439,7 +439,7 @@ function registerCheckboxInfo() {
     var codingSheetId = $('.codingsheetidfield', $target).val();
     var unit = $target.find("select.measurementUnit:visible").first();
     var map = $target.find(':input.mappingValue:visible:checked').first();
-    var mapDetail = $target.find('fieldgroup.mappingDetail').first();
+    var mapDetail = $target.find('.mappingDetail').first();
     mapDetail.hide();
 
     if (dataType == undefined || dataType.indexOf('INT') == -1 && dataType.indexOf('DOUBLE') == -1) {

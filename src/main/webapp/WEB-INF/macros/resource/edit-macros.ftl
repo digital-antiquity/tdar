@@ -1469,7 +1469,6 @@ $(function() {
 
 <#macro subNavMenu>
     <#local supporting = resource.resourceType.supporting >
-    ${resource.resourceType.supporting?string}
     <div id='subnavbar' class="subnavbar-scrollspy affix-top subnavbar resource-nav navbar-static"  data-offset-top="250" data-spy="affix" >
       <div class="">
         <div class="container" >

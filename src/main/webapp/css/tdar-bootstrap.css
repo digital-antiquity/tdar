@@ -960,9 +960,6 @@ aside.tdar-icon:before {
 }
 
 
-body.add h3 {
-    font-size: 30px !important;
-}
 
 h3.document-mid-red::before {
     background: url(/images/r4/tdar-sprites.gif) -471px -487px no-repeat;

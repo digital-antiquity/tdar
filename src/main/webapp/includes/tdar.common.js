@@ -941,7 +941,7 @@ TDAR.common = function() {
             submitHandler : function(f) {
                 //prevent double submit and dazzle user with animated gif
                 _submitButtonStartWait();
-                _clearInputs($form.find(".creatorPerson.hidden, .creatorInstitution.hidden")); 
+                _clearInputs($(f).find(".creatorPerson.hidden, .creatorInstitution.hidden")); 
                 $('#error').hide();
                 f.submit();
                 
