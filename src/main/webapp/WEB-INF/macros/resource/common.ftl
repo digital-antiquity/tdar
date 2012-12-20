@@ -383,7 +383,7 @@ TDAR.uri = function(path) {
         </#if>
         <#local resourceTypeCount = key.logCount + resourceTypeCount >
         <td>
-              <a href="<@s.url value="/search/results?${searchKey}=${calulatedValue}"/>">
+              <a target="_top" href="<@s.url value="/search/results?${searchKey}=${calulatedValue}"/>">
               <div class="barlabel">${key.count}</div><div class="bar" id="${key.cssId}"></div></a>
         </td>
       </#if>
@@ -782,7 +782,7 @@ this bit of freemarker is voodoo:
         <#assign color = settings.mapColors[8] />
     </#if>
 <!-- [${code} : ${percent} ] -->
-     <area coords="${coords}" shape="poly" title="${title} (${val})" alt="${title} (${val})" href='/search/results?geographicKeywords="${code} (ISO Country Code)"' iso="${code}"
+     <area coords="${coords}" shape="poly" title="${title} (${val})" alt="${title} (${val})" target="_top"  href='/search/results?geographicKeywords="${code} (ISO Country Code)"' iso="${code}"
      class="{alwaysOn:true,strokeColor:'666666',strokeWidth:'.5',fillColor:'${color}',fillOpacity:1}" ></area>
  </#if>
 </#macro>
