@@ -6,6 +6,7 @@
 TDAR.namespace("maps");
 TDAR.maps = function() {
     "use strict";
+    var self = {};
     
     var _isApiLoaded = false;
     var _pendingOps = [];
@@ -142,8 +143,8 @@ TDAR.maps = function() {
     //private: add rect to map, returns: google.maps.Rectangle
     var _addBound = function(mapDiv, rectStyleOptions, lat1, lng1, lat2, lng2) {
 //        console.debug("%s %s %s %s", lat1, lng1, lat2, lng2);
-        if (!(parseInt(lat1) && parseInt(lat2) && parseInt(lng1) && parseInt(lng2))) 
-            return;
+//        if (!(parseInt(lat1) && parseInt(lat2) && parseInt(lng1) && parseInt(lng2))) 
+//            return;
         
         var p1 = new google.maps.LatLng(lat1, lng1);
         var p2 = new google.maps.LatLng(lat2, lng2);
@@ -323,17 +324,22 @@ TDAR.maps = function() {
         if($(mapDiv).data("resourceRect")) {
             _populateLatLngDisplay($(mapDiv).data("resourceRect").getBounds(), $swLatDisplay, $swLngDisplay, $neLatDisplay, $neLngDisplay);
         }
-
-        //locate button clicked
-        $btnLocate.click(function() {
+        
+        //update the GRect based on current value of inputs.
+        var updateRectFromInputs = function() {
             //trim the input, and if all non-blank then update the region
-            var blankCount = 0;
+            var parseErrors = 0;
             $('.sw-lat-display, .sw-lng-display, .ne-lat-display, .ne-lng-display', inputContainer).each(function(){
                 this.value = $.trim(this.value);
-                if(!this.value) blankCount++;
+                if(("" + this.value) === "") {
+                    parseErrors++
+                } 
+                else if(isNaN(Geo.parseDMS(this.value))) {
+                    parseErrors++
+                }
             });
             
-            if(!blankCount)  {
+            if(!parseErrors)  {
                 //parse the values and update the form values
                 $swLatInput.val(Geo.parseDMS($swLatDisplay.val()));
                 $swLngInput.val(Geo.parseDMS($swLngDisplay.val()));
@@ -355,7 +361,14 @@ TDAR.maps = function() {
                     gmap.fitBounds(rect.getBounds());
                 }
             };
-        });
+        }
+        
+        //locate button clicked or manual-entry coords have changed.  Update the rectangle
+        $btnLocate.click(updateRectFromInputs);
+        $swLatDisplay.change(updateRectFromInputs);
+        $swLngDisplay.change(updateRectFromInputs);
+        $neLatDisplay.change(updateRectFromInputs);
+        $neLngDisplay.change(updateRectFromInputs);
     };
     
     

@@ -202,28 +202,28 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                 <td></td>
                 <td>
                 <@s.textfield  theme="simple" name='latitudeLongitudeBoxes[0].maximumLatitude' id='maxy' size="14" cssClass="float latLong ne-lat" title="Please enter a valid Maximum Latitude" />
-                <input type="text"  id='d_maxy'  placeholder="Latitude (max)" onChange='processLatLong(this)' class="ne-lat-display span2" />
+                <input type="text"  id='d_maxy'  placeholder="Latitude (max)"  class="ne-lat-display span2" />
                 </td>
                 <td></td>
                 </tr>
                 <tr>
                 <td style="width:33%;text-align:center">
                     <@s.textfield theme="simple"  name="latitudeLongitudeBoxes[0].minimumLongitude" id='minx' size="14" cssClass="float latLong sw-lng" title="Please enter a valid Minimum Longitude" />
-                    <input type="text"  id='d_minx'  placeholder="Longitude (min)"  onChange='processLatLong(this)' class="sw-lng-display span2" />
+                    <input type="text"  id='d_minx'  placeholder="Longitude (min)"   class="sw-lng-display span2" />
                 </td>
                 <td style="width:33%;text-align:center">
                     <input type="button" id="locate" value="Locate" class="btn locateCoordsButton" />
                 </td>
                 <td style="width:33%;text-align:center">
                     <@s.textfield theme="simple"  name="latitudeLongitudeBoxes[0].maximumLongitude" id='maxx' size="14" cssClass="float latLong ne-lng" title="Please enter a valid Maximum Longitude" />
-                    <input type="text"  id='d_maxx'   placeholder="Longitude (max)" onChange='processLatLong(this)' class="ne-lng-display span2" />
+                    <input type="text"  id='d_maxx'   placeholder="Longitude (max)"  class="ne-lng-display span2" />
                 </td>
                 </tr>
                 <tr>
                 <td></td>
                 <td>
                     <@s.textfield theme="simple"  name="latitudeLongitudeBoxes[0].minimumLatitude" id="miny" size="14" cssClass="float latLong sw-lat" title="Please enter a valid Minimum Latitude" /> 
-                    <input type="text" id="d_miny"  placeholder="Latitude (min)" onChange='processLatLong(this)' class="sw-lat-display span2" /> 
+                    <input type="text" id="d_miny"  placeholder="Latitude (min)"  class="sw-lat-display span2" /> 
                 </td>
                 <td></td>
                 </tr>           
