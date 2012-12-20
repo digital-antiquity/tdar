@@ -41,16 +41,13 @@ Projects in ${siteAcronym} contain and help organize a variety of different info
 <#macro status>
     <div id="spanStatusToolTip" class="hidden">
         <h2>Status</h2>
-        <div>
-            Indicates the stage of a resource's lifecycle and how ${siteAcronym} treats its content.
-            <dl>
-                <dt>Draft</dt><dd>The resource is under construction and/or incomplete</dd>
-                <dt>Active</dt><dd>The resource is considered to be complete.</dd>
-                <dt>Flagged</dt><dd>This resource has been flagged for deletion or requires attention</dd>
-                <dt>Deleted</dt><dd>The item has been 'deleted' from ${siteAcronym} workspaces and search results, and is considered deprecated.</dd>  
-            </dl>
-            
-        </div>
+        Indicates the stage of a resource's lifecycle and how ${siteAcronym} treats its content.
+        <dl>
+            <dt>Draft</dt><dd>The resource is under construction and/or incomplete</dd>
+            <dt>Active</dt><dd>The resource is considered to be complete.</dd>
+            <dt>Flagged</dt><dd>This resource has been flagged for deletion or requires attention</dd>
+            <dt>Deleted</dt><dd>The item has been 'deleted' from ${siteAcronym} workspaces and search results, and is considered deprecated.</dd>  
+        </dl>
     </div>
 </#macro>
 
@@ -108,20 +105,23 @@ Projects in ${siteAcronym} contain and help organize a variety of different info
 
 <#macro siteName>
         <div class="hidden" id="siteinfohelp">
-            Keyword list: Enter site name(s) and select feature types (<a href="${siteTypesHelpUrl}">view complete list</a>) 
-            discussed in the document. Use the Other field if needed.
+            <h2>Site Information</h2>
+            Keyword list: Enter site names and select (<a target="_blank" title="click to open view the complete list in a new window" href="${siteTypesHelpUrl}">feature types</a>) 
+            discussed in the document. Use the <em>Other</em> field if necessary.
         </div>
 
 </#macro>
 
 <#macro materialType>
     <div class="hidden" id="materialtypehelp">
+        <h2>Material Types</h2>
         Keyword list: Select the artifact types discussed in the document.<a href="${materialTypesHelpUrl}">view all material types</a>
     </div>
 </#macro>
 
 <#macro cultureTerms>
     <div id="culturehelp" class="hidden">
+        <h2>Cultural Terms</h2>
         Keyword list: Select the archaeological &quot;cultures&quot; discussed in the document. Use the Other field if needed. 
         <a href="${culturalTermsHelpUrl}">view all controlled terms</a>
     </div>
@@ -135,15 +135,16 @@ view all investigation types</a></div>
 
 <#macro accessRights>
 <div id="divAccessRightsTips" style="display:none">
-<p>Determines who can edit a document or related metadata. Enter the first few letters of the person's last name. 
+<p>Access rights determine the actions that a user may perform on a resource. Enter the first few letters of the person's name, email, or institution. 
 The form will check for matches in the ${siteAcronym} database and populate the related fields.</p>
-<br/>
-<em>Types of Permissions</em>
-<dl>
+<strong>Types of Permissions</strong>
+<dl >
     <dt>View All</dt>
     <dd>User can view/download all file attachments.</dd>
-    <dt>Modify Record<dt>
-    <dd>User can edit this resource.<dd>
+    <dt>Modify Metadata</dt>
+    <dd>User can edit this resource metadata but <em>cannot</em> add, remove, or modify file attachments. </dd>
+    <dt>Modify Files & Metadata</dt>
+    <dd>User has full edit rights to the resource, including file attachments.</dd>
 </dl>
 </div>
 </#macro>

@@ -166,7 +166,6 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     public Person getBlankPerson() {
         return new Person();
     }
-
     public List<Person> getAuthorizedMembers() {
         return authorizedMembers;
     }

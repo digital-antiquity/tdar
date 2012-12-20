@@ -337,7 +337,7 @@ $(document).ready(function() {
 
     $form.delegate(":input", "blur change", registerCheckboxInfo);
     
-    initializeTooltipContent();
+    TDAR.contexthelp.initializeTooltipContent();
     
     console.debug('binding autocompletes');
     

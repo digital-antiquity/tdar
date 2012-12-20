@@ -27,7 +27,7 @@ Note: you may have multiple accounts to simplify billing and allow different peo
     </#if>
     <h3>Who can charge to this account </h3>
     <@edit.listMemberUsers />
-    <br/>
+    
     <@edit.submit fileReminder=false />
 </@s.form>
 

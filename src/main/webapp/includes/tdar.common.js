@@ -139,49 +139,6 @@ function institutionAdded(id) {
     $(".creatorInstitution", "#" + id).show();
 }
 
-function setToolTipContents(targetElem) {
-    $targetElem = $(targetElem);
-    var fieldOff = $targetElem.offset();
-    
-    // tooltip content can either be in 'tooltipcontent' attribute or in a
-    // separate div
-    var label = "";
-    var content = "";
-    if ($targetElem.attr('tooltipcontent')) {
-        content = $targetElem.attr('tooltipcontent');
-        // tooltip label can either be in atttribute, otherwise will be set to
-        // the first h2
-        label = $targetElem.attr('tiplabel') || "";
-        if (label) {
-            label = "<h2>" + label + "</h2>";
-        }
-        if (content[0] == "#") {
-            content = $(content).html();
-        }
-    } else {
-        console.error("unable to bind tooltip - no tooltip element or tooltipcontent found");
-    }
-    var $notice = $("#notice:visible");
-    if ($notice.length > 0 ) {
-        var noteOff = $notice.offset();
-        $notice.offset({
-            left : noteOff.left,
-            top : fieldOff.top
-        });
-    
-        $notice.html(label + "<div id='noticecontent'>" + content + "</div>");
-        $targetElem.popover("destroy");
-    } else {
-        $targetElem.popover({
-            placement:'top',
-            trigger:'hover',
-            html:true,
-            'title': label,
-            'content': content
-        });
-    }
-}
-
 // expand those nodes where children are selected
 function switchLabel(field, type) {
     var label = "#" + $(field).attr('id') + '-label';
@@ -558,20 +515,6 @@ function initializeView() {
         TDAR.maps.initMapApi();
         maps.each(function() {
             TDAR.maps.setupMap(this, this);
-        });
-    }
-    
-//    initializeTooltipContent();
-}
-
-function initializeTooltipContent(form) {
-    if (typeof form != "undefined") {
-        //console.debug('delegating tooltips');
-        $(form).delegate("[tooltipcontent]", "mouseenter", function() {
-            setToolTipContents(this);
-        });
-        $(form).delegate("[tooltipcontent]", "focusin", function() {
-            setToolTipContents(this);
         });
     }
 }
@@ -1248,7 +1191,7 @@ TDAR.common = function() {
         });
         
         
-        initializeTooltipContent(form);
+        TDAR.contexthelp.initializeTooltipContent(form);
         applyWatermarks(form);
         
         //FIXME: other init stuff that is separate function for some reason 

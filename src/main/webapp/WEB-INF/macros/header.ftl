@@ -39,6 +39,7 @@
                      "/includes${fakeDirectory}/tdar.advanced-search.js",
                      "/includes${fakeDirectory}/tdar.inheritance.js",
                      "/includes${fakeDirectory}/tdar.heightevents.js",
+                     "/includes${fakeDirectory}/tdar.contexthelp.js",
                      "/includes/bindWithDelay.js",
                      "/includes/flot-0.7/jquery.flot.min.js",
                      "/includes/flot-0.7/jquery.flot.pie.min.js"

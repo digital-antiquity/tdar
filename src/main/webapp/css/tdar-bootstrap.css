@@ -1282,3 +1282,32 @@ p.copyright-notice {
     text-decoration: line-through;
     display: none;
 }
+
+/* contextual help styling - based off of 'downloads' box on view page */
+
+#notice {
+    font-family: 'ff-tisa-web-pro', serif;
+    background-color: #f0eeeb;
+}
+#notice h2 {
+    font-size: 15px;
+}
+
+#notice > h2 {
+    background-color: #7a1501;
+    color: white;
+    padding: 10px;
+    line-height: inherit;
+}
+
+#noticecontent {
+    color: #7d7a77;
+    padding: 0 10px 5px 10px;
+}
+
+/* undoing .cols p */
+#noticecontent p {
+    font-size: inherit;
+    font-weight: normal;
+}
+ 

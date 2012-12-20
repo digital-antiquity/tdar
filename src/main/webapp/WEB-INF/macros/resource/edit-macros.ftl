@@ -257,8 +257,9 @@ ${resource.resourceType.label}
     <h2>Temporal Coverage</h2>
     <@inheritsection checkboxId="cbInheritingTemporalInformation" name='resource.inheritingTemporalInformation' showInherited=showInherited  />
     <div  id="divTemporalInformation">
-        <div tiplabel="Temporal Term" tooltipcontent="Keyword list: Temporal terms relevant to the document, e.g. &quot;Pueblo IV&quot; or &quot;Late Archaic&quot;."></div>
-        <@keywordRows "Temporal Terms" temporalKeywords 'temporalKeywords' true "add another temporal keyword" />
+        <div tiplabel="Temporal Terms" tooltipcontent="Keyword list: Temporal terms relevant to the document, e.g. &quot;Pueblo IV&quot; or &quot;Late Archaic&quot;.">
+            <@keywordRows "Temporal Terms" temporalKeywords 'temporalKeywords' true "add another temporal keyword" />
+        </div>
         <@coverageDatesSection />
     </div>
 </div>
@@ -282,7 +283,7 @@ ${resource.resourceType.label}
 
 <#macro generalKeywords showInherited=true>
 
-<div class="well-alt" 
+<div  
     tiplabel="General Keywords"
     tooltipcontent="Keyword list: Select the artifact types discussed in the document.">   
     <h2>General Keywords</h2>
@@ -349,11 +350,11 @@ ${resource.resourceType.label}
 </#macro>
 
 <#macro siteKeywords showInherited=true divTitle="Site Information">
-<div class="well-alt" id="siteSection">
+<@helptext.siteName />
+<div id="siteSection" tooltipcontent="#siteinfohelp">
     <h2>${divTitle}</h2>
     <@inheritsection checkboxId='cbInheritingSiteInformation' name='resource.inheritingSiteInformation'  showInherited=showInherited />
-    <@helptext.siteName />
-    <div id="divSiteInformation" tooltipcontent="#siteinfohelp">
+    <div id="divSiteInformation" \>
         <@keywordRows "Site Name" siteNameKeywords 'siteNameKeywords' />
         
         <div class="control-group">
@@ -370,7 +371,7 @@ ${resource.resourceType.label}
 
 
 <#macro materialTypes showInherited=true>
-<div class="well-alt" tooltipcontent="#materialtypehelp">
+<div tooltipcontent="#materialtypehelp">
 <@helptext.materialType />
     <h2>Material Types</h2>
     <@inheritsection checkboxId='cbInheritingMaterialInformation' name='resource.inheritingMaterialInformation'  showInherited=showInherited />
@@ -383,11 +384,11 @@ ${resource.resourceType.label}
 </#macro>
 
 <#macro culturalTerms showInherited=true inline=false>
-<div  <#if !inline> class="well-alt" </#if>>
+<div tooltipcontent="#culturehelp">
 <@helptext.cultureTerms />
     <h2>Cultural Terms</h2>
     <@inheritsection checkboxId="cbInheritingCulturalInformation" name='resource.inheritingCulturalInformation'  showInherited=showInherited />
-    <div id="divCulturalInformation" tooltipcontent="#culturehelp">
+    <div id="divCulturalInformation" >
         <div class="control-group">
             <label class="control-label">Culture</label>
             <div class="controls">
@@ -412,7 +413,7 @@ ${resource.resourceType.label}
 </#macro>
 -->
 <#macro investigationTypes showInherited=true >
-<div class="well-alt" tiplabel="Investigation Types" tooltipcontent="#investigationtypehelp" id="investigationSection">
+<div tiplabel="Investigation Types" tooltipcontent="#investigationtypehelp" id="investigationSection">
     <h2>Investigation Types</h2>
     <@inheritsection checkboxId='cbInheritingInvestigationInformation' name='resource.inheritingInvestigationInformation'  showInherited=showInherited />
     <div id="divInvestigationInformation">
@@ -430,7 +431,7 @@ ${resource.resourceType.label}
 <#if _authorizedUsers.empty><#local _authorizedUsers=[blankAuthorizedUser]></#if>
 <@helptext.accessRights />
 
-<div id="divAccessRights" class="well-alt" tooltipcontent="${tipsSelector}">
+<div id="divAccessRights" tiplabel="Access Rights" tooltipcontent="${tipsSelector}">
 <h2><a name="accessRights"></a>Access Rights</h2>
 <h3>Users who can view or modify this resource</h3>
 
@@ -704,13 +705,12 @@ applyInheritance(project, formSelector);
 
 
 <#macro resourceNoteSection showInherited=true>
-<div class="well-alt" id="resourceNoteSectionGlide">
+<div id="resourceNoteSectionGlide" tiplabel="Notes" tooltipcontent="Use this section to append any notes that may help clarify certain aspects of the resource.  For example, 
+    a &quot;Redaction Note&quot; may be added to describe the rationale for certain redactions in a document.">
     <#local _resourceNotes = resourceNotes />
     <#if _resourceNotes.empty >
     <#local _resourceNotes = [blankResourceNote] />
     </#if>
-    <div class="hidden" tiplabel="Notes"  tooltipcontent="Use this section to append any notes that may help clarify certain aspects of the resource.  For example, 
-    a &quot;Redaction Note&quot; may be added to describe the rationale for certain redactions in a document."></div>
     <h2>Notes</h2>
     <@inheritsection checkboxId="cbInheritingNoteInformation" name='resource.inheritingNoteInformation' showInherited=showInherited />
     <div id="resourceNoteSection" class="control-group repeatLastRow">
@@ -762,7 +762,7 @@ applyInheritance(project, formSelector);
 <#local _coverageDates=coverageDates />
 <#if _coverageDates.empty><#local _coverageDates = [blankCoverageDate] /></#if>
 <@helptext.coverageDates />
-<div class="control-group repeatLastRow" id="coverageDateRepeatable" data-add-another="add another coverage date" tooltipcontent="#coverageDatesTip">
+<div class="control-group repeatLastRow" id="coverageDateRepeatable" data-add-another="add another coverage date" tiplabel="Coverage Dates" tooltipcontent="#coverageDatesTip">
     <label class="control-label">Coverage Dates</label>
     
     <#list _coverageDates as coverageDate>
@@ -851,7 +851,7 @@ applyInheritance(project, formSelector);
     <#if _resourceAnnotations.empty>
     <#local _resourceAnnotations = [blankResourceAnnotation] />
     </#if>
-    <div class="well-alt" id="divIdentifiersGlide" tiplabel="<@resourceTypeLabel /> Specific or Agency Identifiers" tooltipcontent="#divIdentifiersTip">
+    <div id="divIdentifiersGlide" tiplabel="<@resourceTypeLabel /> Specific or Agency Identifiers" tooltipcontent="#divIdentifiersTip">
         <@helptext.identifiers />
         <h2><@resourceTypeLabel /> Specific or Agency Identifiers</h2>
         <@inheritsection checkboxId="cbInheritingIdentifierInformation" name='resource.inheritingIdentifierInformation' showInherited=showInherited />
@@ -1505,11 +1505,13 @@ $(function() {
 <div id="accessRightsRecords" class="repeatLastRow" data-addAnother="add another user">
     <div class="control-group">
         <label class="control-label">Users</label>
+        <div class="controls">
         <#list _authorizedUsers as user>
             <#if user??>
                 <@userRow person=user _indexNumber=user_index isUser=true includeRepeatRow=true/>
             </#if>
         </#list>
+        </div>
     </div>
 </div>
 
