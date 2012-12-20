@@ -1054,7 +1054,7 @@ $(function() {
       <a href="${url}" target="_top"><@firstThumbnail resource /></a> 
 </#if>
         <p class="title">
-            <a href="${url}">${resource.title} </a><br>
+            <a target="_top" href="${url}">${resource.title} </a><br>
             <#if resource.formattedAuthorList?has_content>${resource.formattedAuthorList}
             <br/></#if>
         </p>
@@ -1062,7 +1062,7 @@ $(function() {
         <p><@truncate resource.description 150 /></p>
     
         <p>
-            <a href="${url}" class="button">View ${resource.resourceType.label}</a> or &nbsp; <a href="/search/results">Browse all Resources</a>
+            <a target="_top"  href="${url}" class="button">View ${resource.resourceType.label}</a> or &nbsp; <a target="_top"  href="/search/results">Browse all Resources</a>
         </p>    
 
   </div>
