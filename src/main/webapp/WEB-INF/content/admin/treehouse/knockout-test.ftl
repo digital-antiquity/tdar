@@ -11,7 +11,7 @@
 
 
 <@s.form name='ImageMetadataForm' id='ImageMetadataForm'  method='post' cssClass="form-horizontal" action='save'>
-    
+    <@s.radio label="" name="frob" list="#@java.util.LinkedHashMap@{true:'Frob it',false:'Leave unfrobbed'}" />
 
 </@s.form>
 
