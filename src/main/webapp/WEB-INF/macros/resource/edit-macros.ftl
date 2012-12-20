@@ -509,8 +509,8 @@ ${resource.resourceType.label}
 <#macro manualTextInput typeLabel type uploadOptionText manualEntryText>
 <#-- show manual option by default -->
 <#local usetext=(resource.getLatestVersions().isEmpty() || (fileTextInput!"") != "")>
-<div>
-    <h3>${(resource.id == -1)?string("Submit", "Replace")} ${typeLabel}</h3>
+<div id="enter-data">
+    <h2>${(resource.id == -1)?string("Submit", "Replace")} ${typeLabel}</h2>
     <div class="control-group">
         <label class='control-label' for='inputMethodId'>Submit as</label>
         <div class="controls">
@@ -1131,8 +1131,10 @@ jquery validation hooks?)
 <#macro sidebar>
 <div id="sidebar-right" parse="true">
     <div id="notice">
-        <h3>Introduction</h3>
+        <h2>Introduction</h2>
+        <div id="noticecontent">
         This is the page for editing metadata associated with ${resource.resourceType.plural}.
+	    </div>
     </div>
 </div>
 </#macro>
@@ -1466,7 +1468,8 @@ $(function() {
 
 
 <#macro subNavMenu>
-    <#local supporting = (resource.resourceType.supporting)!false >
+    <#local supporting = resource.resourceType.supporting >
+    ${resource.resourceType.supporting?string}
     <div id='subnavbar' class="subnavbar-scrollspy affix-top subnavbar resource-nav navbar-static"  data-offset-top="250" data-spy="affix" >
       <div class="">
         <div class="container" >

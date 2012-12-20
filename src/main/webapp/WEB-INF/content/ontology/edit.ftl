@@ -8,7 +8,9 @@
 </head>
 <body>
 <@edit.sidebar />
-<@edit.subNavMenu />
+<@edit.subNavMenu>
+            <li><a href="#enter-data">Ontology Values</a></li>
+</@edit.subNavMenu>
 <div>
 
 <@s.form id='resourceMetadataForm' method='post' action='save' enctype='multipart/form-data' cssClass="form-horizontal">
@@ -18,7 +20,6 @@
 <@edit.basicInformation "ontology" "ontology"/>
 <@edit.citationInfo "ontology" />
 <@edit.allCreators 'Ontology Creators' authorshipProxies 'authorship' />
-<@edit.organizeResourceSection />
 
 <#if (resource.latestVersions?has_content )>
 <div class="glide">
@@ -69,6 +70,8 @@ Core
         </pre>
     </#if>
 </@edit.manualTextInput>
+
+<@edit.organizeResourceSection />
 
 
 <@edit.resourceNoteSection />

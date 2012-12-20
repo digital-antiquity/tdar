@@ -9,7 +9,9 @@
 </head>
 <body>
 <@edit.sidebar />
-<@edit.subNavMenu />
+<@edit.subNavMenu>
+            <li><a href="#enter-data">Coding Rules</a></li>
+</@edit.subNavMenu>
 
 
 <@s.form name='resourceRegistrationForm' id='resourceRegistrationForm' method='post' enctype='multipart/form-data' action='save' cssClass="form-horizontal">
@@ -61,7 +63,6 @@
              </div>
     </div>
 
-<@edit.organizeResourceSection />
 
 
 
@@ -127,6 +128,7 @@
 
 </@edit.manualTextInput>
 
+<@edit.organizeResourceSection />
 
 <@edit.resourceNoteSection />
 
