@@ -938,7 +938,7 @@ this bit of freemarker is voodoo:
 </#macro>
 
 
-<#macro combobox name target autocompleteIdElement placeholder value cssClass autocompleteParentElement="" label="" bootstrapControl=true id="">
+<#macro combobox name target autocompleteIdElement placeholder value cssClass autocompleteParentElement="" label="" bootstrapControl=true id="" addNewLink="">
             <#if bootstrapControl>
             <div class="control-group">
                 <label class="control-label">${label}</label>
@@ -951,7 +951,10 @@ this bit of freemarker is voodoo:
                          autocompleteIdElement="${autocompleteIdElement}"
                          placeholder="${placeholder}"
                         value="${value}" cssClass="${cssClass}" />
-                        <button type="button" class="btn show-all"><i class="icon-chevron-down"></i></button>                    
+                        <button type="button" class="btn show-all"><i class="icon-chevron-down"></i></button>         
+                        <#if addNewLink?has_content>           
+                        <a href="${addNewLink}"  onClick="setAdhocTarget(this);" class="btn show-all" target="_blank">add new</a>
+                        </#if>                    
                     </div>
             <#if bootstrapControl>
                 </div>

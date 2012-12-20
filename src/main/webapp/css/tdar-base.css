@@ -573,6 +573,9 @@ header .welcome-drop ul {
 	border-right: 1px solid #fff;
 }
 
+.resource-nav li span.disabled {
+	color: #CCC !important;
+}
 .lt-ie10 .resource-nav li a {
 	padding: 15px 20px 14px 40px !important;
 }
@@ -1394,6 +1397,6 @@ i.tdar-icon-bookmark-disabled,a:hover i.tdar-icon-bookmark-disabled,.resource-na
 	margin-bottom: -2px;
 }
 
-.responsive-desktop .hidden-tablet, .hidden-desktop, responsive-desktop .hidden-phone {
+.responsive-desktop .hidden-desktop, .hidden-desktop, responsive-desktop .hidden-phone {
 	display:none;
 }

@@ -55,15 +55,10 @@ div.barlabel {
     height: 1.5em;
 }
 
-#subnavbar {
+.subnavbar {
     z-index: 10000;
 }
 
-/*
-#subnavbar .brand {
-    padding: 2px 20px 0px 20px !important;
-}
-*/
 
 #messages  .lt-ie8 {
     display: block !important;
@@ -71,13 +66,13 @@ div.barlabel {
 }
 
 /* affix elements become fixed, so we need to specify new location (otherwise location after becoming fixed is undefined/browser-specific) */
-#subnavbar.affix {
+.subnavbar.affix {
     top: 0;
     left: 0;
 }
 
 /* TODO:// HACK: .affix navbar needs to be same width as ".container" for proper formatting, but to break out our navbar requires mucking w/ layout.dec */
-#subnavbar.affix-top.container {
+.subnavbar.affix-top.container {
     /*shrink the navbar when it is not affixed (i.e. when it is .affix-top) */
     width:auto
 }
@@ -652,15 +647,10 @@ ol.MAP .listItemPart {
     left: 0px !important;
 }
 
-#subnavbar.resource-nav {
+.subnavbar.resource-nav {
     margin: -3px 5px 25px 5px !important;
 }
 
-/*
-#subnavbar .brand {
-    padding: 5px 10px 0px 4px !important;
-}
-*/
 
 #fakeSubmitButton {
     margin-top: 5px;
@@ -1294,10 +1284,10 @@ p.copyright-notice {
 }
 
 #notice > h2 {
-    background-color: #7a1501;
-    color: white;
-    padding: 10px;
-    line-height: inherit;
+	background-color: #DEDEDE;
+	padding: 10px;
+	line-height: inherit;
+	border-bottom: 1px solid #EEE;
 }
 
 #noticecontent {

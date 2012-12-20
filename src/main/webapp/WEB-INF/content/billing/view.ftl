@@ -94,13 +94,17 @@
 <h3>Resources associated with this account</h3>
 <table class="tableFormat table">
     <tr>
-        <th>Resource Type</th><th>Id</th><th>Name</th>
+        <th>Id</th>
+        <th>Status</th>
+        <th>Name</th>
+        <th>Resource Type</th>
     </tr>
 <#list account.resources as resource>
 <tr>
-    <td>${resource.resourceType.label}</td>
     <td>${resource.id?c}</td>
+	<td>${resource.status.label}</td>
     <td><a href="<@s.url value="/${resource.resourceType.urlNamespace}/${resource.id?c}"/>">${resource.title}</a></td>
+    <td>${resource.resourceType.label}</td>
 </tr>
 </#list>
 </table>

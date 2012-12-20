@@ -1467,7 +1467,7 @@ $(function() {
 
 <#macro subNavMenu>
     <#local supporting = (resource.resourceType.supporting)!false >
-    <div id='subnavbar' class="affix-top resource-nav navbar-static"  data-offset-top="250" data-spy="affix" >
+    <div id='subnavbar' class="subnavbar-scrollspy affix-top subnavbar resource-nav navbar-static"  data-offset-top="250" data-spy="affix" >
       <div class="">
         <div class="container" >
         <ul class="nav">
@@ -1478,7 +1478,9 @@ $(function() {
             <span class="hidden-tablet hidden-phone" >
             <#nested />
             </span>
+             <#if persistable.resourceType?has_content && persistable.resourceType != 'PROJECT' >
             <li><a href="#organizeSection"><span class="visible-phone visible-tablet" title="Project">Proj.</span><span class="hidden-phone hidden-tablet">Project</span></a></li>
+            </#if>
             <#if !supporting>
             <li><a href="#spatialSection">Where</a></li>
             <li class="hidden-phone"><a href="#temporalSection">When</a></li>

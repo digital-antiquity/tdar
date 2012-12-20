@@ -12,26 +12,36 @@
 <@edit.sidebar/>
 
 
-<#if (dataTable.dataTableColumns)??>
-
+<#if dataTable.dataTableColumns?has_content>
 
 <!--TODO: .container sets content width, it should be outside of grid layout  (or a grid-layout parent) --> 
 <!-- we break this rule so that navbar will be correct with when it is .affix'd, for all responsive profiles --> 
-<div id='subnavbar' class="container"  data-offset-top="250" data-spy="affix">
+<div id='subnavbar2' class="container subnavbar"  data-offset-top="250" data-spy="affix">
     <div class="navbar">
         <#-- <select name="chooseColumn" onChange="goToColumn(this)"> -->
         <div class="navbar-inner">
             <ul class="nav">
-                <li class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                        Jump to a column
-                        <b class="caret"></b>
-                    </a>
-                    <ul class="dropdown-menu">
+                <li>
+                	<a href="#top"><b>top</b></a>
+            	</li>
+                <li>
+<span style="display:inline-block">
+                        <b style="margin-top: 10px !important;display: inline-block;margin-left: 10px;">Jump to a column</b>
+<!--                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <b class="caret"></b> -->
+                    <form class="inline" style="display:inline">
+			         <select name="chooseColumn" id="chooseColumn" style="display: inline-block;margin-bottom: -1px;"> 
+                        <#list dataTableColumns?sort_by("sequenceNumber") as column>
+                        <option value="columnDiv_${column_index}">${column.displayName}</option>
+                        </#list>
+                    	</select>
+                    </form>
+                    </span>
+<#--                    <ul class="dropdown-menu">
                         <#list dataTableColumns?sort_by("sequenceNumber") as column>
                         <li><a href="#" data-targetdiv="columnDiv_${column_index}">${column.displayName}</a></li>
                         </#list>
-                    </ul>
+                    </ul> -->
                 </li>
             </ul>
             <div id="fakeSubmitDiv" class="pull-right">
@@ -42,8 +52,7 @@
     </div>
 </div>
 
-</#if> 
-
+</#if>
 
 
 <@s.form method='post' id="edit-metadata-form" cssClass="form-horizontal"  action='save-column-metadata'>
@@ -165,13 +174,13 @@
                 <#assign codingTxt="${column.defaultCodingSheet.title} (${column.defaultCodingSheet.id?c})"/>
             </#if>
             <@s.hidden id="${column_index}_cid" name="dataTableColumns[${column_index}].defaultCodingSheet.id" cssClass="codingsheetidfield" value="${codingId}" />
-            <small class="pull-right"><a target="_blank" onclick="setAdhocTarget(this);" href='<@s.url value="/coding-sheet/add?returnToResourceMappingId=${resource.id?c}"/>'>Create Coding Sheet</a> </small>
             <@edit.combobox name="dataTableColumns[${column_index}].defaultCodingSheet.title"  target="#columnDiv_${column_index}"
              label="Translate your data using a Coding Sheet:"
              autocompleteParentElement="#columnDiv_${column_index}"
              autocompleteIdElement="#${column_index}_cid"
              placeholder="Enter the name of a Coding Sheet"
-            value="${codingTxt}" cssClass="codingsheetfield" />
+             addNewLink="/coding-sheet/add?returnToResourceMappingId=${resource.id?c}"
+            value="${codingTxt}" cssClass="input-xxlarge codingsheetfield" />
     </div>
      <div id='divOntology-${column_index}' class="ontologyInfo " tooltipcontent="#ontologyToolTip" tiplabel="Ontology">
             <#assign ontologyId="" />
@@ -181,13 +190,14 @@
                 <#assign ontologyTxt="${column.defaultOntology.title} (${column.defaultOntology.id?c})"/>
             </#if>
             <@s.hidden name="dataTableColumns[${column_index}].defaultOntology.id" value="${ontologyId}" id="${column_index}_oid" />
-            <small class="pull-right"><a target="_blank" onclick="setAdhocTarget(this);" href='<@s.url value="/ontology/add?returnToResourceMappingId=${resource.id?c}"/>'>Create Ontology</a> </small>
             <@edit.combobox name="dataTableColumns[${column_index}].defaultOntology.title" target="#columnDiv_${column_index}"
              value="${ontologyTxt}"  
              label="Map it to an Ontology:"
              placeholder="Enter the name of an Ontology"
              autocompleteParentElement="#columnDiv_${column_index}"
              autocompleteIdElement="#${column_index}_oid"
+             addNewLink="/ontology/add?returnToResourceMappingId=${resource.id?c}"
+             
              cssClass="input-xxlarge ontologyfield" />
     </div>
     <br/>
@@ -201,11 +211,11 @@
         label="Use column values to map table rows to resources?"
         id="mapping_${column_index}" value=mapping cssClass="mappingValue" />
     <fieldgroup class="mappingDetail">
-       <legend>${siteAcronym} can associate groups of documents and images with this dataset as long as they're all part of the same project. 
+       <p>${siteAcronym} can associate groups of documents and images with this dataset as long as they're all part of the same project. 
        If this column has filenames in it, ${siteAcronym} will associate the filename with the filename of the image or document and load the row
        data as additional fields in the ${siteAcronym} record.
-       </legend>
-        <@s.textfield name="dataTableColumns[${column_index}].delimiterValue" value="${column.delimiterValue!''}" label="Delimiter" labelposition="left" maxLength="1"/>
+       </p>
+        <@s.textfield name="dataTableColumns[${column_index}].delimiterValue" value="${column.delimiterValue!''}" placeholder="eg. ; , |" label="Delimiter" labelposition="left" maxLength="1"/>
         <br/>
         <#assign ignoreExt = "false" />
         <#if column.ignoreFileExtension??>
@@ -277,8 +287,13 @@
     <tr><td><span class="columnSquare mapped">&nbsp;</span><span class="mapped_label"></span></td><td>mapping columns</td></tr>
 </table>
 
-<@edit.submit "Save" false><br/>
-    <@s.radio name="postSaveAction" listValue="label" emptyOption="false" list="%{allSaveActions}" numColumns=1 />
+<@edit.submit "Save" false>
+<p>
+    <@s.radio name="postSaveAction" listValue="label" emptyOption="false" list="%{allSaveActions}" numColumns=1 
+    cssClass="inline radio" theme="simple" />
+    <br/>
+    <br/>
+</p>
 </@edit.submit>
 
 </@s.form>
@@ -337,7 +352,7 @@ $(document).ready(function() {
 
     $form.delegate(":input", "blur change", registerCheckboxInfo);
     
-    TDAR.contexthelp.initializeTooltipContent();
+    TDAR.contexthelp.initializeTooltipContent("#edit-metadata-form");
     
     console.debug('binding autocompletes');
     
@@ -363,10 +378,8 @@ $(document).ready(function() {
     var $window = $(window);
     
     
-    //scroll to the correct location when menu item clicked
-    //TODO: use scrollspy for this.
-    $('#subnavbar a').click(function(e) {
-        e.preventDefault();
+    
+    $("#chooseColumn").change(function(e) {
         gotoColumn($(this));
     });
     
@@ -477,7 +490,7 @@ function registerCheckboxInfo() {
 
 
 function gotoColumn($el) {
-    var idVal = $el.data('targetdiv');
+    var idVal = $el.val();
     document.getElementById(idVal).scrollIntoView();
 }
 

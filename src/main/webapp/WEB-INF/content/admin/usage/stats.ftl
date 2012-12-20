@@ -22,7 +22,6 @@
 </table>
 
 <h2>Download Stats</h2>
-${downloadStats}
 <table class="tableFormat">
     <tr>
         <th>File</th>
