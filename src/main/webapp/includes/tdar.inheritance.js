@@ -305,8 +305,11 @@ function inheritNoteInformation(formId, json) {
 }
 
 function inheritSpatialInformation(formId, json) {
+    console.log("inherit spatial information(%s, %s)", formId, json);
     var mapdiv = $('#editmapv3')[0];
     var mapReadyCallback = function(){
+        
+        console.log("map ready callback");
         clearFormSection('#divSpatialInformation');
         TDAR.inheritance.resetRepeatable('#geographicKeywordsRepeatable', json.spatialInformation['geographicKeywords'].length);
         populateSection(formId, json.spatialInformation);

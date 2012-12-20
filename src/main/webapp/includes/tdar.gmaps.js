@@ -38,7 +38,7 @@ TDAR.maps = function() {
     
     
     //fire the mapapi-ready event, but only after onready
-    //FIXME: this may be over-kill. is it conceivable that we want multiple gmap-api event handlers to run?
+    //FIXME: ditch this 'map/api ready' model of using jQuery.deferred object.
     var _apiLoaded = function() {
         $(function(){
             //console.debug("v3 map api loaded");
@@ -110,6 +110,12 @@ TDAR.maps = function() {
             if(inputContainer) {
                 _setupLatLongBoxes(mapDiv, inputContainer);
             }
+            
+            //indicate the map is ready and dom elements loaded (we wrap this because the google.maps api may not be available to the listener at time of call)
+            google.maps.event.addListenerOnce(map, 'idle', function(){
+                $(mapDiv).trigger("mapready", [map, $mapDiv.data("resourceRect")]);
+            });
+            
             return map;
         });
     };
@@ -137,7 +143,6 @@ TDAR.maps = function() {
         //TODO: draw a rect for parent project (but don't pan/zoom to it)
 
         //TODO: add "snap back" control, for when the user pans/zooms away from resource bounds
-        $(mapDiv).trigger("mapready", [gmap, rect]);
     };
 
     //private: add rect to map, returns: google.maps.Rectangle
