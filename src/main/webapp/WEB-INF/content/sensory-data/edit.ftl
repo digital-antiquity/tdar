@@ -159,6 +159,7 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
     </div>
 </div>
 <div id="imageInfoTooltip" class="hide">
+    <h2>Image Information</h2>
     <div>
         Use this section to specify information about reference images included in with this resource.
         <dl>
