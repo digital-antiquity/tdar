@@ -1172,6 +1172,11 @@ contrib article h2,.contrib article p,.contrib article ul {
 	text-align: center;
 }
 
+.carousel-inner .item.prev, .carousel-inner  .item.next {
+	visibility: hidden  !important;
+	display:none !important;
+}
+
 .pagin td.prev, .pagin td.next { 
 /*	font-family: "soleil", sans-serif !important;*/
 	font-weight: 700;
