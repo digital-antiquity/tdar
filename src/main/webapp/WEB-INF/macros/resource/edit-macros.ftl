@@ -1043,11 +1043,11 @@ jquery validation hooks?)
 
     <#if resource.resourceType != 'PROJECT'>
     <div tiplabel="Department / Publisher Location" tooltipcontent="Department name, or City,State (and Country, if relevant)">
-        <span id="publisher-hints"  book="Publisher" book_section="Publisher" journal_article="Publisher"  conference="Conference" thesis="Institution" other="Publisher">
+        <span id="publisher-hints"  book="Publisher" book_section="Publisher" journal_article="Publisher"  conference_presentation="Conference" thesis="Institution" other="Publisher">
             <@s.textfield id='publisher' label="Publisher" name='publisherName' cssClass="institution input-xxlarge"  />
         </span>
 
-        <span id="publisherLocation-hints" book="Publisher Loc." book_section="Publisher Loc." journal_article="Publisher Loc." conference="Location"  thesis="Department" other="Publisher Loc.">
+        <span id="publisherLocation-hints" book="Publisher Loc." book_section="Publisher Loc." journal_article="Publisher Loc." conference_presentation="Location"  thesis="Department" other="Publisher Loc.">
             <@s.textfield id='publisherLocation' label="Publisher Loc." name='${prefix}.publisherLocation' cssClass='input-xxlarge' />
         </span>
     </div>

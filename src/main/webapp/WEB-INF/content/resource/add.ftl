@@ -12,11 +12,6 @@
 <body>
     <h1>Create Resources </h1>
     
-    <#if allowedToCreateResource>
-	<div class="row">
-	 <h3>Have lots of resources?</h3>
-       <a class="button btn submitButton" href="<@s.url value="/batch/add" />">Bulk Upload</a>
-	</div>
     <div class="row">
     
         <div class="span45">
@@ -27,6 +22,10 @@
                 <h3 class="image-mid-red"><@link "image" "Image" /></h3>
                 A visual representation of an object or location. Examples from archaeology include photographs (born digital or scanned) of artifacts or sites, drawings or figures, and some maps.
         </div>
+<div class="pull-right span3">
+	 <h3>Have lots of resources?</h3>
+       <a class="button btn submitButton" href="<@s.url value="/batch/add" />">Bulk Upload</a>
+</div>
     </div>
     <div class="row">
         <div class="span45">
@@ -62,9 +61,9 @@
     </div>
                             
 
-    <#if (projectId!-1) == -1>
         <h2>Organize Resources </h2>
         <div class="row">
+    <#if (projectId!-1) == -1>
             <div class="span45">
                     <h3 class="project-mid-red"><@link "project" "Project" /></h3>
                     
@@ -73,6 +72,7 @@
                     archaeological research project. It may contain related reports, photographs, maps, and databases, and those resources may inherit metadata 
                     from the parent project. 
             </div>
+	</#if>
             <div class="span45">
                     <h3 class="collection-mid-red"><@link "collection" "Collection"/></h3>
                     In ${siteAcronym}, a collection is an organizational tool with two purposes. The first is to allow contributors and users to create groups and 
@@ -81,11 +81,6 @@
             </div>
     
     </div>
-    </#if>
-    <#else>
-        You currently do not have space on your account to add resources. Please ... <a href="<@s.url value="/cart/add"/>">recharge or create an account</a><br/>    
-
-</#if>
 
 
 

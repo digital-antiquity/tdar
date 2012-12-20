@@ -16,33 +16,14 @@
 
 <@invoicecommon.printInvoice />
 
-<div class="container row">
 <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='save-billing-address'>
 <@s.hidden name="id" value="${invoice.id?c}" />
 <#assign addressId = -1 />
 <#if invoice.address?has_content && invoice.address.id?has_content>
  <#assign addressId =invoice.address.id />
 </#if>
-<div class="row">
-	<#list invoice.owner.addresses  as address>
-	    <div class="span3">
-	    <#assign label = ""/>
-	    <#if address.type?has_content>
-	    <#assign label = address.type.label>
-	    </#if>
-	    <@common.printAddress  address=address modifiable=true showLabel=false>
-	        <label class="radio inline">
-	        <input type="radio" name="invoice.address.id" label="${label}" value="${address.id}"  <#if address.id==addressId || (!addressId?has_content || addressId == -1) && address_index==0>checked=checked</#if>/>
-	        <b><#if address.type?has_content>${address.type.label!""}</#if></b>
-	        </label><br/>
-	    </@common.printAddress>
-	    </div>
-	</#list>
-    <div class="span3">
-    <#assign retUrl>/cart/add-address?id=${invoice.id?c}</#assign>
-	    <a class="button btn btn-primary submitButton" href="<@s.url value="/entity/person/${invoice.owner.id?c}/address?returnUrl=${retUrl?url}" />">Add Address</a>
-    </div>
-</div>
+<h3>Select a Billing Address</h3>
+<@common.listAddresses person=invoice.owner  choiceField="invoice.address.id" addressId=addressId />
     
     <@edit.submit fileReminder=false />
 

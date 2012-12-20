@@ -1393,3 +1393,7 @@ i.tdar-icon-bookmark-disabled,a:hover i.tdar-icon-bookmark-disabled,.resource-na
 	margin-top: -4px;
 	margin-bottom: -2px;
 }
+
+.responsive-desktop .hidden-tablet, .hidden-desktop, responsive-desktop .hidden-phone {
+	display:none;
+}

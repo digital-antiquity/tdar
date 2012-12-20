@@ -893,7 +893,12 @@ ${_date?string('MM/dd/yyyy')}<#t>
                     <li><strong>Edition</strong><br>${resource.edition}</li>
                     </#if>
                     <#if (resource.publisher?has_content ||  resource.publisherLocation?has_content)>
-                        <li><strong>Publisher</strong><br>
+                        <li><strong>
+                        <#if resource.documentType?has_content>
+                        	${resource.documentType.publisherName}
+                        <#else>
+                        Publisher
+                        </#if></strong><br>
                         	<#if resource.publisher?has_content>${resource.publisher.name}</#if> 
                             <#if resource.degree?has_content>${resource.degree.label}</#if>
                             <#if resource.publisherLocation?has_content> (${resource.publisherLocation}) </#if>
@@ -1042,7 +1047,7 @@ $(function() {
 <#macro tdarCitation resource=resource showLabel=true count=0>
   <div class="item <#if count==0>active</#if>">
       <#local url><@s.url value="/${resource.urlNamespace}/${resource.id?c}"/></#local>
-<#if resource.firstActiveLatitudeLongitudeBox?has_content>
+<#if resource. resource.firstActiveLatitudeLongitudeBox?has_content>
 	<#assign bb=resource.firstActiveLatitudeLongitudeBox />
 		<img src="//maps.googleapis.com/maps/api/staticmap?size=410x235&maptype=terrain&path=color:0x00000000|weight:5|fillcolor:0x888888|${bb.minObfuscatedLatitude?c},${bb.minObfuscatedLongitude?c}|${bb.minObfuscatedLatitude?c},${bb.maxObfuscatedLongitude?c}|${bb.maxObfuscatedLatitude?c},${bb.maxObfuscatedLongitude?c}|${bb.maxObfuscatedLatitude?c},${bb.minObfuscatedLongitude?c}&sensor=false&key=${googleMapsApiKey}" />
 <#else>

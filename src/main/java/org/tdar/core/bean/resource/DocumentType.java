@@ -16,13 +16,17 @@ public enum DocumentType implements HasLabel, Facetable<DocumentType> {
     BOOK("Book / Report", "Books / Reports", "book"),
     BOOK_SECTION("Book Chapter / Section", "Book Chapters / Sections", "bookitem"),
     JOURNAL_ARTICLE("Journal Article", "Journal Articles", "article"),
-    THESIS("Thesis / Dissertation", "Theses / Dissertations", "thesis"),
-    CONFERENCE_PRESENTATION("Conference Presentation", "Conference Presentations", "conference"),
+    THESIS("Thesis / Dissertation", "Theses / Dissertations", "thesis","Institution","Department"),
+    CONFERENCE_PRESENTATION("Conference Presentation", "Conference Presentations", "conference","Conference","Conference Location"),
     OTHER("Other", "Other", "unknown");
 
+    public static final String PUBLISHER = "Publisher";
+    public static final String PUBLISHER_LOCATION = "Publisher Location";
     private final String label;
     private final String plural;
     private final String openUrlGenre;
+    private String publisherName;
+    private String publisherLocationName;
     private transient Integer count;
 
     private DocumentType(String label, String plural, String genre) {
@@ -31,6 +35,15 @@ public enum DocumentType implements HasLabel, Facetable<DocumentType> {
         this.openUrlGenre = genre;
     }
 
+    private DocumentType(String label, String plural, String genre, String pubName, String pubLoc) {
+        this.label = label;
+        this.plural = plural;
+        this.openUrlGenre = genre;
+        this.publisherName = pubName;
+        this.publisherLocationName = pubLoc;
+    }
+
+    
     public String getLabel() {
         return label;
     }
@@ -86,5 +99,27 @@ public enum DocumentType implements HasLabel, Facetable<DocumentType> {
     @Override
     public DocumentType getValueOf(String val) {
         return valueOf(val);
+    }
+
+    public String getPublisherLocationName() {
+        if (publisherLocationName == null) {
+            return PUBLISHER_LOCATION;
+        }
+        return publisherLocationName;
+    }
+
+    public void setPublisherLocationName(String publisherLocationName) {
+        this.publisherLocationName = publisherLocationName;
+    }
+
+    public String getPublisherName() {
+        if (publisherName == null) {
+            return PUBLISHER;
+        }
+        return publisherName;
+    }
+
+    public void setPublisherName(String publisherName) {
+        this.publisherName = publisherName;
     }
 }

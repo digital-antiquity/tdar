@@ -22,16 +22,15 @@
 </#if>
 <@s.hidden name="address.id" value="${addrId}"/>
 
-<div class="controls-row">
     <@s.radio labelposition='top' label='Address Type' name='address.type' emptyOption="false"
          list='%{allAddressTypes}'  listValue='label'  title="Address Type" />
     <@s.hidden name="returnUrl" />
-        <@s.textfield name="address.street1" cssClass="input-xlarge" label="Street" />
-        <@s.textfield name="address.street2" cssClass="input-xlarge"  label="Street 2"/>
-        <@s.textfield name="address.city" cssClass="input-xlarge"  label="City" />
-        <@s.textfield name="address.state" cssClass="input-xlarge" label="State" />
-        <@s.textfield name="address.postal" cssClass="input-xlarge"  label="Postal"/>
-        <@s.textfield name="address.country" cssClass="input-xlarge"  label="Country" />
+    <@s.textfield name="address.street1" cssClass="input-xlarge" label="Street" />
+    <@s.textfield name="address.street2" cssClass="input-xlarge"  label="Street 2"/>
+    <@s.textfield name="address.city" cssClass="input-xlarge"  label="City" />
+    <@s.textfield name="address.state" cssClass="input-xlarge" label="State" />
+    <@s.textfield name="address.postal" cssClass="input-xlarge"  label="Postal"/>
+    <@s.textfield name="address.country" cssClass="input-xlarge"  label="Country" />
 
         
 </div>

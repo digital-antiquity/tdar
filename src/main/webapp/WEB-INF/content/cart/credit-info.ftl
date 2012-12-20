@@ -14,7 +14,8 @@
 <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='/cart/process-payment-request?id=${invoice.id?c}'>
     <@s.hidden name="id" value="${invoice.id?c}"/>
 
-    <@s.radio list="allPaymentMethods" name="invoice.paymentMethod" cssClass="transactionType" emptyOption='false' />
+    <@s.radio list="allPaymentMethods" name="invoice.paymentMethod" label="Payment Method" 
+    listValue="label"    cssClass="transactionType" emptyOption='false' />
 	<hr/>
     <div class="typeToggle credit_card invoice manual">
         <@s.textfield name="billingPhone" cssClass="input-xlarge phoneUS  required-visible" label="Billing Phone #" />

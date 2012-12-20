@@ -22,10 +22,10 @@
 	    <@common.printAddress invoice.address/>
 	</div>
 
+</div>
 	<#if invoice.transactionStatus == 'PENDING_TRANSACTION' || invoice.transactionStatus == 'PREPARED'>
        <a class="button btn btn-primary submitButton" href="<@s.url value="/cart/${id?c}/credit" />">Pay</a>
     </#if>
-</div>
 
 </body>
 </#escape>

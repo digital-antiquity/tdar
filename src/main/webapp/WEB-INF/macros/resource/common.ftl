@@ -845,8 +845,38 @@ this bit of freemarker is voodoo:
 </#if>
 </#macro>
 
+<#macro listAddresses person=person  choiceField="" addressId=-1>
+
+<div class="row">
+	<#list person.addresses  as address>
+	    <div class="span3">
+	    <#assign label = ""/>
+	    <#if address.type?has_content>
+	    <#assign label = address.type.label>
+	    </#if>
+	    	<#if choiceField?has_content>
+        <label class="radio inline">
+        <input type="radio" name="invoice.address.id" label="${label}" 
+        value="${address.id}"  <#if address.id==addressId || (!addressId?has_content || addressId == -1) && address_index==0>checked=checked</#if>/>
+	
+	</#if>
+	    
+	    <@printAddress  address=address creatorId=person.id modifiable=true showLabel=false >
+	        <b><#if address.type?has_content>${address.type.label!""}</#if></b>
+	        </label><br/>
+	    </@printAddress>
+	    </div>
+	</#list>
+    <div class="span3">
+    <#assign retUrl><@s.url includeParams="all"/></#assign>
+	    <a class="button btn btn-primary submitButton" href="/entity/person/${person.id?c}/address?returnUrl=${retUrl?url}">Add Address</a>
+    </div>
+</div>
+</#macro>
+
 <#macro printAddress address=address creatorId=-1 creatorType='person'  modifiable=false deletable=false showLabel=true>
-        <p><#nested><#if address.type?has_content && showLabel><b>${address.type.label!""}</b><br></#if>
+        <p>
+<#if address.type?has_content && showLabel><b>${address.type.label!""}</b><br></#if>
            ${address.street1}<br/>
            ${address.street2}<br/>
            ${address.city}, ${address.state}, ${address.postal}<br/>
@@ -854,7 +884,7 @@ this bit of freemarker is voodoo:
            <a href="<@s.url value="/entity/${creatorType}/${creatorId?c}/address?addressId=${address.id}"/>">edit</a>
            </#if><#if deletable && modifiable> |</#if> 
            <#if deletable>
-               <a href="<@s.url value="/entity/${creatorType}/${creatorId?c}/delete-address?addressId=${address.id}"/>">delete</a>
+               <a href="/entity/${creatorType}/${creatorId?c}/delete-address?addressId=${address.id}">delete</a>
            </#if>
         </p>
 </#macro>
