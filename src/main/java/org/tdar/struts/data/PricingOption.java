@@ -2,19 +2,20 @@ package org.tdar.struts.data;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.tdar.core.bean.billing.BillingItem;
 
 public class PricingOption implements Serializable {
 
-    
-    public enum PricingType  {
+    public enum PricingType {
         SIZED_BY_MB,
         SIZED_BY_FILE_ONLY,
         SIZED_BY_FILE_ABOVE_TIER
     }
-    
+
     private static final long serialVersionUID = -3297968564600082652L;
 
     private List<BillingItem> items = new ArrayList<BillingItem>();
@@ -37,6 +38,24 @@ public class PricingOption implements Serializable {
 
     public List<BillingItem> getItems() {
         return items;
+    }
+
+    public boolean sameAs(PricingOption other) {
+        if (this.getItems().size() != other.getItems().size()) {
+            return false;
+        }
+        Map<Long, Integer> compMap = new HashMap<Long, Integer>();
+        for (BillingItem item : getItems()) {
+            compMap.put(item.getActivity().getId(), item.getQuantity());
+        }
+        for (BillingItem item :other.getItems()) {
+            Integer key = compMap.get(item.getActivity().getId());
+            if (key == null || !key.equals(item.getQuantity())) {
+                return false;
+            }
+        }
+        return true;
+
     }
 
     public Float getSubtotal() {

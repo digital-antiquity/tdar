@@ -7,7 +7,7 @@
 <#import "common-invoice.ftl" as invoicecommon >
 
 <head>
-<title>Your cart</title>
+<title>Review Billing Information</title>
 <meta name="lastModifiedDate" content="$Date$"/>
 
 </head>
@@ -19,7 +19,9 @@
 <div class="container row">
 	<div class="span3">
 	    <h3>Billing Address <#if invoice.modifiable><a href="<@s.url value="/cart/${invoice.id?c}/address" />" class="small">(modify)</a></#if></h3>
+	    <#if invoice.address?has_content>
 	    <@common.printAddress invoice.address/>
+	    </#if>
 	</div>
 
 </div>

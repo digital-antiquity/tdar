@@ -11,6 +11,7 @@
     <#local srcs = [
                      "/includes/jquery.cookie.js",
                      "/includes/jquery.xcolor-1.5.js",
+                     "/includes/jquery.metadata.2.1/jquery.metadata.js",
                      "/includes/jquery.maphighlight.local.js",
                      "/includes/jquery.textarearesizer.js",
                      "/includes${fakeDirectory}/jquery.FormNavigate.js",

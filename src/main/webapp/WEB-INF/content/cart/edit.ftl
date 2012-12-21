@@ -7,31 +7,64 @@
 <meta name="lastModifiedDate" content="$Date$"/>
 <style>
 #convert {
-margin-left:10px;}
+	margin-left:10px;
+}
 </style>
 </head>
 <body>
 
-<h1>Your cart</h1>
-
-<div>
-<@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='save'>
-
-<@s.textfield name="invoice.numberOfFiles" label="Number of Files" cssClass="integer"/>
-
-<div class="control-group">
-    <label class="control-label">Number of Mb</label>
-	    <div class="controls">
-<@s.textfield name="invoice.numberOfMb" label="Number of Mb"  theme="simple" cssClass="integer "/>
-<span id="convert"></span>
-
+<h1>What would you like to put into tDAR?</h1>
+	<@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='save'>
+<div class="row">
+	<div class="span6">
+		<div class="well">
+		<@s.textfield name="invoice.numberOfFiles" label="Number of Files" cssClass="integer"/>
+		
+		<div class="control-group">
+		    <label class="control-label">Number of Mb</label>
+				    <div class="controls">
+			<@s.textfield name="invoice.numberOfMb" label="Number of Mb"  theme="simple" cssClass="integer "/>
+			<span id="convert"></span>
+		</div>
+		<br/>
+		<div id="estimated">
+		
+		</div>
+	    <@s.hidden name="id" value="${invoice.id?c!-1}" />
+    <@s.hidden name="invoice.id" />
+	</div>	
+	</div>
+	</div>
+	<div class="span6">
+		<table class="tableFormat">
+		    <tr>
+		        <th>Level</th>
+		        <th># of files</th>
+		        <th># of mb</th>
+		        <th>cost / file</th>
+		    </tr>
+		    <#list activities as act>
+		    <tr>
+		        <td>${act.name}</td>
+		        <td>${act.numberOfFiles!0}</td>
+		        <td>${act.numberOfMb!0}</td>
+		        <td>${act.price} ${act.currency!"USD"}</td>
+		    </tr> 
+		    
+		    </#list>
+	    </table>
+	</div>
 </div>
-
+<div class="row">
+    <@edit.submit fileReminder=false />
 </div>
-
+</@s.form>
 
 <script>
-
+$(document).ready(function(){
+    'use strict';
+    TDAR.common.initEditPage($('#MetadataForm')[0]);
+});
 
 $("#MetadataForm").change(function() { 
 var numFiles = $("#MetadataForm_invoice_numberOfFiles").val();
@@ -56,17 +89,20 @@ var $est = $("#estimated");
       type:'POST',
       success: function(data) {
        
-      $est.html("<h5>Suggested Pricing Options</h5>");
+      $est.html("<h4>Suggested Pricing Options</h4><ul>");
       for (var i=0; i < data.length; i++) {
-      var line = "<p><b>total</b>: $" + data[i].subtotal + " [";
+      <#noparse>
+      var line = sprintf("<li><div><h5>Option {0}:{1} -- <span class='red'>${2}</span></h5><p><ul>", (i +1), data[i].model, data[i].subtotal );
       	for (var j=0; j < data[i].parts.length; j++) {
-      	var part = data[i].parts[j];
-      		line +=  part.quantity + " " + part.name + " @ $" + part.price  + ": $" + part.subtotal + " ; ";
+	      	var part = data[i].parts[j];
+      		line += sprintf("<li> {0} <b>{1}</b> @ ${2} (${3})",  part.quantity , part.name , part.price  , part.subtotal );
       	}
-      line += "] <i>"+data[i].model+"</i></p>";
+      line += "</ul> </p></div></li>";
+      </#noparse>
 //      console.log(line);
 	      $est.append(line);
       };
+	$est.append("</ul>");
 	//	console.log(data);
         },
       error: function(xhr,txtStatus, errorThrown) {
@@ -75,40 +111,6 @@ var $est = $("#estimated");
     });
 });
 </script>
-<div id="estimated">
 
-</div>
-<table class="tableFormat">
-    <tr>
-        <th>Level</th>
-        <th># of files</th>
-        <th># of mb</th>
-        <th>cost / file</th>
-    </tr>
-    <#list activities as act>
-    <tr>
-        <td>${act.name}</td>
-        <td>${act.numberOfFiles!0}</td>
-        <td>${act.numberOfMb!0}</td>
-        <td>${act.price} ${act.currency!"USD"}</td>
-    </tr> 
-    
-    </#list>
-    </table>
-    <#if invoice.address?has_content>
-    <@s.hidden name="invoice.addresss.id" value="${invoice.address.id?c}" />
-    </#if>
-    <@s.hidden name="id" value="${invoice.id?c!-1}" />
-    <@s.hidden name="invoice.id" />
-    <@edit.submit fileReminder=false />
-</@s.form>
-
-</div>
-<script>
-$(document).ready(function(){
-    'use strict';
-    TDAR.common.initEditPage($('#MetadataForm')[0]);
-});
-</script>
 </body>
 </#escape>

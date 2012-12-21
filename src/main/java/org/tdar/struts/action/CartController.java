@@ -32,6 +32,8 @@ import org.tdar.struts.WriteableSession;
 import org.tdar.struts.data.PricingOption;
 import org.tdar.struts.interceptor.PostOnly;
 
+import com.sun.xml.bind.annotation.OverrideAnnotationOf;
+
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
@@ -66,6 +68,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
         if ((persistable.getNumberOfFiles() == null || persistable.getNumberOfFiles() < 1) &&
                 (persistable.getNumberOfMb() == null || persistable.getNumberOfMb() < 1)) {
+            loadEditMetadata();
             throw new TdarRecoverableRuntimeException(SPECIFY_SOMETHING);
         }
 
@@ -99,10 +102,22 @@ public class CartController extends AbstractPersistableController<Invoice> imple
                     @Result(name = SUCCESS, type = "freemarker", location = "api.ftl", params = { "contentType", "application/json" }) })
     public String api() {
         pricingOptions.add(getAccountService().getCheapestActivityByFiles(lookupFileCount, lookupMBCount, false));
-        pricingOptions.add(getAccountService().getCheapestActivityByFiles(lookupFileCount, lookupMBCount, true));
-        pricingOptions.add(getAccountService().getCheapestActivityBySpace(lookupFileCount, lookupMBCount));
+        addPricingOption(getAccountService().getCheapestActivityByFiles(lookupFileCount, lookupMBCount, true));
+        addPricingOption(getAccountService().getCheapestActivityBySpace(lookupFileCount, lookupMBCount));
 
         return SUCCESS;
+    }
+
+    private void addPricingOption(PricingOption cheapestActivityBySpace) {
+        boolean add = true;
+        for (PricingOption option : pricingOptions) {
+            if (option.sameAs(cheapestActivityBySpace)) {
+                add = false;
+            }
+        }
+        if (add) {
+            pricingOptions.add(cheapestActivityBySpace);
+        }
     }
 
     @Actions({
@@ -144,7 +159,8 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     @SkipValidation
     @WriteableSession
     @Action(value = "save-billing-address", results = {
-            @Result(name = SUCCESS_ADD_PAY, type = "redirect", location = "add-payment?id=${invoice.id}")
+            @Result(name = SUCCESS_ADD_PAY, type = "redirect", location = "add-payment?id=${invoice.id}"),
+            @Result(name=SUCCESS_ADD_ADDRESS, type="redirect", location = "add-address?id=${id}")
     })
     public String saveAddress() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
@@ -152,6 +168,10 @@ public class CartController extends AbstractPersistableController<Invoice> imple
             throw new TdarRecoverableRuntimeException(CANNOT_MODIFY);
         }
         getInvoice().setAddress(getGenericService().loadFromSparseEntity(getInvoice().getAddress(), Address.class));
+        if (Persistable.Base.isNullOrTransient(getInvoice().getAddress())) {
+            addActionError("Please choose an address");
+            return SUCCESS_ADD_ADDRESS;
+        }
         getGenericService().saveOrUpdate(getInvoice());
 
         return SUCCESS_ADD_PAY;
@@ -267,12 +287,17 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
     @Override
     public String loadAddMetadata() {
-        return loadViewMetadata();
+        setActivities(getAccountService().getActiveBillingActivities());
+        return SUCCESS;
     }
 
     @Override
+    public String loadEditMetadata() {
+        return loadAddMetadata();
+    }
+    
+    @Override
     public String loadViewMetadata() {
-        setActivities(getAccountService().getActiveBillingActivities());
         return SUCCESS;
     }
 

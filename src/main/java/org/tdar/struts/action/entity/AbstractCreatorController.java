@@ -12,13 +12,14 @@ import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.AddressType;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.struts.WriteableSession;
 import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.PostOnly;
 
 public abstract class AbstractCreatorController<T extends Creator> extends AbstractPersistableController<T> {
+
+    public static final String ADDRESS_IS_NOT_VALID = "address is not valid";
 
     public static final String CANNOT_SAVE_NULL_ADDRESS = "cannot save null address";
 
@@ -35,24 +36,29 @@ public abstract class AbstractCreatorController<T extends Creator> extends Abstr
     @PostOnly
     @Action(value = "save-address", results = {
             @Result(name = SUCCESS, type = "redirect", location = "../../browse/creators?id=${id}"),
-            @Result(name = RETURN_URL, type = "redirect", location = "${returnUrl}")
+            @Result(name = RETURN_URL, type = "redirect", location = "${returnUrl}"),
+            @Result(name = INPUT, location = "../address-info.ftl")
     })
     public String saveAddress() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         Address address2 = getAddress();
-        if (address2 == null) {
-            throw new TdarRecoverableRuntimeException(CANNOT_SAVE_NULL_ADDRESS);
-        }
-        if (address2.isValidForController()) {
-            getPersistable().getAddresses().add(address2);
-            getGenericService().saveOrUpdate(getPersistable());
-            logger.info("{}", address2.getId());
-            if (StringUtils.isNotBlank(getReturnUrl())) {
-                return RETURN_URL;
+        try {
+            if (address2 == null) {
+                addActionError(CANNOT_SAVE_NULL_ADDRESS);
+            } else {
+                address2.isValidForController();
             }
-            return SUCCESS;
+        } catch (Exception e) {
+            addActionErrorWithException(ADDRESS_IS_NOT_VALID, e);
+            return INPUT;
         }
-        return ERROR;
+        getPersistable().getAddresses().add(address2);
+        getGenericService().saveOrUpdate(getPersistable());
+        logger.info("{}", address2.getId());
+        if (StringUtils.isNotBlank(getReturnUrl())) {
+            return RETURN_URL;
+        }
+        return SUCCESS;
     }
 
     @SkipValidation
@@ -93,7 +99,7 @@ public abstract class AbstractCreatorController<T extends Creator> extends Abstr
             setAddress(new Address());
             getAddress().setType(AddressType.BILLING);
         }
-        logger.info("returning address {}" , address);
+        logger.info("returning address {}", address);
         return address;
     }
 

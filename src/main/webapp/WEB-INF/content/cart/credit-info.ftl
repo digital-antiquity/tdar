@@ -3,12 +3,12 @@
 <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
 <head>
-<title>Your cart</title>
+<title>Your cart -- choose payment method</title>
 <meta name="lastModifiedDate" content="$Date$"/>
 </head>
 <body>
 
-<h1>Your cart</h1>
+<h1>Choose Payment Method</h1>
 
 <div>
 <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='/cart/process-payment-request?id=${invoice.id?c}'>

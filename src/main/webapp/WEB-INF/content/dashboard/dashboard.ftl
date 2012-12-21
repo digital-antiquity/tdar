@@ -138,6 +138,7 @@
     <div>
         <h2>Your Account(s)</h2>
         <ul>
+        <li><a href="/cart/add">Create a new account or add more to an existing one	</a></li>
         <#list accounts as account>
             <li>
                 <a href="<@s.url value="/billing/${account.id?c}" />">${account.name!"unamed"}</a>
