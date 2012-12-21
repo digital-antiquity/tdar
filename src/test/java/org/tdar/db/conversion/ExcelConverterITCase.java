@@ -9,6 +9,7 @@ import java.sql.Types;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -73,6 +74,26 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
         } catch (TdarRecoverableRuntimeException e) {
             assertTrue(e.getMessage() ,e.getMessage().contains(expectedErrorMessage));
         }
+    }
+
+    @Test
+    @Ignore("waiting on permission for the dataset original version of http://core.tdar.org/dataset/379853")
+    @Rollback
+    public void testArtifactDatabase() throws IOException {
+        InformationResourceFileVersion weirdColumnsDataset = makeFileVersion("artifacts.xlsx", 505);
+        ExcelConverter converter = new ExcelConverter(weirdColumnsDataset, tdarDataImportDatabase);
+        converter.execute();
+        Set<DataTable> dataTables = converter.getDataTables();
+        assertEquals(1, dataTables.size());
+        DataTable dataTable = dataTables.iterator().next();
+//        assertNotNull(dataTable.getColumnByDisplayName("Period"));
+//        assertNotNull(dataTable.getColumnByDisplayName("SumOfNo"));
+//        assertNotNull(dataTable.getColumnByDisplayName("1.00"));
+//        assertNotNull(dataTable.getColumnByDisplayName("ABC"));
+//        assertNotNull(dataTable.getColumnByName("period"));
+//        assertNotNull(dataTable.getColumnByName("sumofno"));
+//        assertNotNull(dataTable.getColumnByName("c1_00"));
+//        assertNotNull(dataTable.getColumnByName("abc"));
     }
 
     @Test

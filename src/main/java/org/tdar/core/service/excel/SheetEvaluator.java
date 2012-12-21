@@ -120,7 +120,7 @@ public class SheetEvaluator {
         try {
             return formatter.formatCellValue(cell, evaluator);
         } catch (IndexOutOfBoundsException e) {
-            logger.info("row {} col: {}", cell.getRowIndex(), cell.getColumnIndex());
+            logger.trace("row {} col: {}", cell.getRowIndex(), cell.getColumnIndex());
             switch (cell.getCellType()) {
                 case Cell.CELL_TYPE_STRING:
                     return cell.getStringCellValue();
