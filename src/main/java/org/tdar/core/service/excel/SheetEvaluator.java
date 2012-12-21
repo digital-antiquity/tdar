@@ -93,7 +93,7 @@ public class SheetEvaluator {
         }
         // is the last cell after the last column with a heading?
         if (getMaxCellCount() < row.getLastCellNum()) {
-            int countAbove = evaluateForBlankCells(row, getMaxCellCount() , row.getLastCellNum());
+            int countAbove = evaluateForBlankCells(row, getMaxCellCount(), row.getLastCellNum());
             if (countAbove > getMaxCellCount()) {
                 throwTdarRecoverableRuntimeException(row.getRowNum(), row.getLastCellNum(), getMaxCellCount() + 1, row.getSheet().getSheetName());
             }
@@ -117,7 +117,22 @@ public class SheetEvaluator {
     }
 
     public String getCellValueAsString(Cell cell) {
-        return formatter.formatCellValue(cell, evaluator);
+        try {
+            return formatter.formatCellValue(cell, evaluator);
+        } catch (IndexOutOfBoundsException e) {
+            logger.info("row {} col: {}", cell.getRowIndex(), cell.getColumnIndex());
+            switch (cell.getCellType()) {
+                case Cell.CELL_TYPE_STRING:
+                    return cell.getStringCellValue();
+                case Cell.CELL_TYPE_NUMERIC:
+                    return Double.toString(cell.getNumericCellValue());
+                case Cell.CELL_TYPE_BOOLEAN:
+                    return Boolean.toString(cell.getBooleanCellValue());
+                default:
+                    throw new TdarRecoverableRuntimeException(String.format("there was a problem processing your dataset at row: %s column %s",
+                            cell.getRowIndex(), cell.getColumnIndex()));
+            }
+        }
     }
 
     public int getFirstNonHeaderRow() {
