@@ -115,8 +115,8 @@
             <li><a href="<@s.url value="/search"/>">Search</a></li>
             <li><a href="<@s.url value="/search/results"/>">Browse</a></li>
             <li><a href="<@s.url value="/browse/explore"/>">Explore</a></li>
-            <li><a href="<@s.url value="/dashboard"/>">Dashboard</a></li>
               <#if sessionData?? && sessionData.authenticated>
+	              <li><a href="<@s.url value="/dashboard"/>">Dashboard</a></li>
                   <li><a href="<@s.url value="/workspace/select-tables"/>">Integrate</a></li>
                 <#if editor>
                     <li><a href="<@s.url value="/admin"/>">Admin</a></li>

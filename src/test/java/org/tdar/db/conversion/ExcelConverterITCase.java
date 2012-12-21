@@ -77,10 +77,9 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
     }
 
     @Test
-    @Ignore("waiting on permission for the dataset original version of http://core.tdar.org/dataset/379853")
     @Rollback
-    public void testArtifactDatabase() throws IOException {
-        InformationResourceFileVersion weirdColumnsDataset = makeFileVersion("artifacts.xlsx", 505);
+    public void testArtifactDatasetFromFilemaker() throws IOException {
+        InformationResourceFileVersion weirdColumnsDataset = makeFileVersion("fmp_artifacts.xlsx", 505);
         ExcelConverter converter = new ExcelConverter(weirdColumnsDataset, tdarDataImportDatabase);
         converter.execute();
         Set<DataTable> dataTables = converter.getDataTables();
