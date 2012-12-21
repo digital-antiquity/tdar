@@ -1,7 +1,7 @@
 {
     "name":"${uploadFileFileName!"error"}",
     "type":"${uploadFileContentType!"error"}",
-    "size":"${(uploadFileSize!0)?c}",
+    "size":"${(totalUploadFileSize!0)?c}",
     "errors":  [
     <#if (actionErrors?has_content) >
     <#list actionErrors as _err>

@@ -46,7 +46,6 @@ public class UploadController extends AuthenticationAware.Base {
 
     private List<File> uploadFile = new ArrayList<File>();
     private List<String> uploadFileContentType = new ArrayList<String>();
-    private List<Long> uploadFileSizes = new ArrayList<Long>();
     private List<String> uploadFileFileName = new ArrayList<String>();
     private PersonalFilestoreTicket personalFilestoreTicket;
     private String callback;
@@ -139,11 +138,9 @@ public class UploadController extends AuthenticationAware.Base {
     }
 
     @Action
-    public long getUploadFileSize() {
+    public long getTotalUploadFileSize() {
         long totalBytes = 0;
-
         for (File file : uploadFile) {
-            uploadFileSizes.add(file.length());
             totalBytes += file.length();
         }
         return totalBytes;
@@ -233,19 +230,16 @@ public class UploadController extends AuthenticationAware.Base {
         this.callback = callback;
     }
 
-    /**
-     * @param uploadFileSizes
-     *            the uploadFileSizes to set
-     */
-    public void setUploadFileSizes(List<Long> uploadFileSizes) {
-        this.uploadFileSizes = uploadFileSizes;
-    }
 
     /**
-     * @return the uploadFileSizes
+     * @return list of file sizes.  Struts uses this naming convention for contentType and fileName lists, so we do the same here
      */
-    public List<Long> getUploadFileSizes() {
-        return uploadFileSizes;
+    public List<Long> getUploadFileSize() {
+        List<Long> sizes = new ArrayList<Long>();
+        for(File file : uploadFile) {
+            sizes.add(file.length());
+        }
+        return sizes;
     }
 
     public Long getInformationResourceId() {
