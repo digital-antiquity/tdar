@@ -2,6 +2,10 @@
     History: this file represents the original source code as provided by Fervor
 */
 
+.red {
+	color:#7A1501;	
+}
+
 .alwaysHidden {
 	display:none !important;
 	visibility:hidden !important;
@@ -645,7 +649,8 @@ h2 {
 .cols p { 
 	font-size: 16px;
 	line-height: 23px;
-	margin: 15px 0 -5px 0;
+	margin: 15px 0 0px 0;
+	/* changed  -5 to 0 */
 	/* FIXME: this is breaking too much stuff on edit pages in browser-specific ways - use class="pull-left" for specific paragraphs  */
 }
 
@@ -868,7 +873,7 @@ h1 span,h4 span {
 .why article.extend h2,.why article.extend p,.why article.extend ul {
 	margin-left: 100px;
 }
-
+/*
 .contrib h2,.contrib p,.contrib ul {
 	margin: 0; 
 }
@@ -976,7 +981,7 @@ contrib article h2,.contrib article p,.contrib article ul {
 	{
 	margin-left: 520px;
 }
-
+*/
 #titlebar h1,.search h1 {
 	margin: 0;
 	padding: 0;

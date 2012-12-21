@@ -290,6 +290,7 @@ drop table test;
 --DONT-PROCESS-- insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price, min_allowed_files, model_id) values (true, 'unknown', 5,1,50,5, 55.31,400,1);
 --DONT-PROCESS-- insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price, min_allowed_files, model_id) values (false, 'inactive', 5,1,50,5, 550,400,1);
 --DONT-PROCESS-- insert into pos_billing_activity (enabled, name, numberoffiles, min_allowed_files, numberofmb, price, model_id) values (true, ' 1-  4', 1, 1, 10, 55,1);
+--DONT-PROCESS-- insert into pos_billing_activity (enabled, name, numberoffiles, min_allowed_files, numberofmb, price, model_id) values (true, ' 10 mb', 0, 0, 10, 50,1);
 --DONT-PROCESS-- insert into pos_billing_activity (enabled, name, numberoffiles, min_allowed_files, numberofmb, price, model_id) values (true, ' 5- 19', 1, 5, 10, 40,1);
 --DONT-PROCESS-- insert into pos_billing_activity (enabled, name, numberoffiles, min_allowed_files, numberofmb, price, model_id) values (true, '20- 49', 1, 20, 10, 35,1);
 --DONT-PROCESS-- insert into pos_billing_activity (enabled, name, numberoffiles, min_allowed_files, numberofmb, price, model_id) values (true, '50-500', 1, 50, 10, 31,1);
