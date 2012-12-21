@@ -10,9 +10,12 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -142,14 +145,19 @@ public abstract class AbstractAuthenticatedWebTestCase extends AbstractWebTestCa
             WebRequest webRequest = new WebRequest(new URL(url), HttpMethod.POST);
             List<NameValuePair> parms = new ArrayList<NameValuePair>();
             parms.add(nameValuePair("ticketId", ticketId));
+            File file = null;
             if (path != null) {
-                parms.add(nameValuePair("uploadFile", new File(path)));
+                file = new File(path);
+                parms.add(nameValuePair("uploadFile", file));
             }
             webRequest.setRequestParameters(parms);
             webRequest.setEncodingType(FormEncodingType.MULTIPART);
             Page page = client.getPage(webRequest);
             code = page.getWebResponse().getStatusCode();
             Assert.assertTrue(assertNoErrors && code == HttpStatus.OK.value());
+            if(file != null) {
+                assertFileSizes(page, Arrays.asList(new File[]{file}));
+            }
         } catch (MalformedURLException e) {
             Assert.fail("mailformed URL: are you sure you specified the right page in your test?");
         } catch (IOException iox) {
@@ -161,6 +169,13 @@ public abstract class AbstractAuthenticatedWebTestCase extends AbstractWebTestCa
             code = httpEx.getStatusCode();
         }
         return code;
+    }
+
+    protected void assertFileSizes(Page page, List<File> files) {
+        JSONArray jsonArray = (JSONArray) JSONSerializer.toJSON(page.getWebResponse().getContentAsString());
+        for(int i = 0; i < files.size(); i++) {
+            Assert.assertEquals("file size reported from server should be same as original", files.get(i).length(), jsonArray.getJSONObject(i).getLong("size"));
+        }
     }
 
     public NameValuePair nameValuePair(String name, String value) {
