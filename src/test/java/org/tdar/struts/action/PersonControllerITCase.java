@@ -122,12 +122,11 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
         String msg = null;
         controller.setAddress(null);
         controller.setServletRequest(getServletPostRequest());
-        try {
-            controller.saveAddress();
-        } catch (Exception e) {
-            msg = e.getMessage();
-        }
-        assertEquals(Address.STREET_ADDRESS_IS_REQUIRED, msg);
+        
+        assertEquals(PersonController.INPUT, controller.saveAddress());
+        assertEquals(Address.STREET_ADDRESS_IS_REQUIRED, controller.getActionErrors().iterator().next());
+        setIgnoreActionErrors(true);
+
     }
 
     @Test
