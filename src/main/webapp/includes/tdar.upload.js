@@ -34,7 +34,7 @@ TDAR.fileupload = function() {
         var $filesContainer = $fileupload.fileupload('option', 'fileContainer');
         
         $fileupload.bind("fileuploadcompleted", _updateReplaceButtons);
-        
+        $fileupload.bind("fileuploadcompleted", _updateReminder);
         //make sure the sequenceNumber field is correct after files are added (or the operation fails)
         var _updateSequenceNumbers =  function(e, data){
             console.log("updating sequenceNumbers");
@@ -172,7 +172,18 @@ TDAR.fileupload = function() {
             $('button.replace-button', $filesTable).addClass("disabled").prop("disabled", true);
         }
     };
-    
+
+    var _updateReminder = function(e, data) {
+        console.log("_updateReminder")
+        var $filesTable = $(data.context).closest("tbody.files");
+        console.log($filesTable.length);
+        if ($filesTable.length > 0) {
+        	$("#reminder").hide();
+        } else {
+        	$("#reminder").show();
+        }
+    };
+
     //dynamically generate the replace-with dropdown list items with the the candidate replacement files
     var _buildReplaceDropdown = function(e) {
         var button = this;
