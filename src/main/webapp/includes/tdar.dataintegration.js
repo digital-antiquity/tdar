@@ -1,8 +1,14 @@
+TDAR.namespace("integration");
+
+TDAR.integration = function() {
+    'use strict';
+
+
 var drpOptions = {
         drop : dropVariable
 };
 
-function initDataIntegration() {
+var _initDataIntegration = function() {
     $("#selectDTColForm").submit(function() {
         var $this = $(this);
         // copy values into data attributes before doing this; then copy back
@@ -300,3 +306,9 @@ function integrationAutoselect() {
         $("#autoselect").attr('checked', false);
     }, 400);
 }
+
+//expose public elements
+return {
+    "initDataIntegration": _initDataIntegration,
+};
+}();

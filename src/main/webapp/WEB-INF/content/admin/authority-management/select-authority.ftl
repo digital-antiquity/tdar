@@ -9,7 +9,7 @@
 </#macro>
 
 <#macro renderPersonTable>
-    <table class="tableFormat zebracolors">
+    <table class="tableFormat table table-striped">
         <thead>
             <tr>
                 <th>ID</th>
@@ -32,7 +32,7 @@
 </#macro>
 
 <#macro renderInstitutionTable> 
-    <table class="tableFormat zebracolors">
+    <table class="tableFormat table table-striped">
         <thead>
             <tr>
                 <th>ID</th>
@@ -51,7 +51,7 @@
 </#macro>
 
 <#macro renderKeywordTable>
-    <table class="tableFormat zebracolors">
+    <table class="tableFormat table table-striped">
         <thead>
             <tr>
                 <th>ID</th>

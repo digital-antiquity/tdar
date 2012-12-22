@@ -40,7 +40,7 @@
 </#macro>
 
 <#macro listDataTableColumns tableColumnList>        
-    <table border="1" cellspacing="0" cellpadding="2" class="zebracolors">
+    <table border="1" cellspacing="0" cellpadding="2" class="table table-striped">
         <thead>
             <tr>
                 <th align="center"> Column name </th>

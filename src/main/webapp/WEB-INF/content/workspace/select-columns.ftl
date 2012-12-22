@@ -2,10 +2,18 @@
 <#import "/WEB-INF/macros/resource/list-macros.ftl" as rlist>
 <head>
  <style type="text/css">
+
+.drg {
+//z-index:50000 !important;
+}
  .showhide {
 	 display: inline;
 	 font-size: 80%;
 	 right: 0px;
+ }
+ 
+ .collapse {
+ 	overflow:visible !important;
  }
  
 .fixed {
@@ -186,7 +194,7 @@ Drag columns from your selected data tables onto the integration table .
 <script>
 
 jQuery(document).ready(function($){
-    initDataIntegration();
+    TDAR.integration.initDataIntegration();
 });
 </script>
 

@@ -325,7 +325,6 @@ function _rowSelected(obj) {
        $tbody.append(resourceTag);
        //$table.closest('div').show();
        $table.show();
-       applyZebraColors();
 }
 
 function _rowUnselected(obj) {

@@ -68,7 +68,6 @@ $(document).ready(function() {
 $(document).ready(function() {
     $("#mapontologyform").FormNavigate("Leaving the page will cause any unsaved data to be lost!");
     $("#selectColumn").unbind("change");
-    applyZebraColors();
 });
 
 function applyLocalAutoComplete(selector, db) {

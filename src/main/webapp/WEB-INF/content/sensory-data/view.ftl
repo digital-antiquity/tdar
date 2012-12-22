@@ -53,7 +53,7 @@
 
 <#if !resource.sensoryDataScans.isEmpty()>
 <h3>Scan Information</h3>
-<table class="zebracolors tableFormat">
+<table class="table table-striped tableFormat">
     <thead>
         <tr>
             <th>Filename</th>
@@ -97,7 +97,7 @@
 
 <#if !resource.sensoryDataImages.isEmpty()>
 <h3>Sensory Data Image Information</h3>
-<table class="zebracolors tableFormat">
+<table class="table table-striped tableFormat">
     <thead>
         <tr><th>Filename</th><th>Description</th></tr>
     </thead>

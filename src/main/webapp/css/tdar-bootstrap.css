@@ -1295,3 +1295,15 @@ p.copyright-notice {
     font-weight: normal;
 }
  
+ 
+ 
+ .link {
+    color: #4265A7;
+    font-weight: bold;
+}
+
+.link:hover {
+    cursor: pointer;
+    color: #993333;
+}
+ 

@@ -167,7 +167,7 @@ No coding rules have been entered for this coding sheet yet.
 </div>
 <#else>
 <div id='codingRulesDiv'>
-<table width="60%" class="zebracolors tableFormat">
+<table width="60%" class="table table-striped tableFormat">
     <thead class='highlight'>
         <tr><th>Code</th><th>Term</th><th>Description</th><th>Mapped Ontology Node</th></tr>
     </thead>

@@ -519,15 +519,6 @@ function initializeView() {
     }
 }
 
-function applyZebraColors(optionalRoot) {
-    var root = document;
-    if (optionalRoot)
-        root = optionalRoot;
-
-    $('table.zebracolors tbody tr:even', root).addClass("even");
-    $('table.zebracolors tbody tr:odd', root).addClass("odd");
-}
-
 function delegateCreator(id, user, showCreate) {
     if (user == undefined || user == false) {
         $(id).delegate(
