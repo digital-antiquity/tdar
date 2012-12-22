@@ -19,7 +19,7 @@ function initDataIntegration() {
     }
 
 
-    $("h4").click(toggleDiv);
+//    $("h4").click(toggleDiv);
 
     $(".drg").draggable({
         zIndex : 2700,
@@ -182,22 +182,23 @@ function dropVariable(event, ui) {
 
 /* this is the column adjustment UI, mouseenter is not always right */
 function expandColumn(col) {
-    $(col).animate({
-        width : "50%"
-    });
-    $(col).removeClass("short");
-    $(col).siblings().each(function() {
-        $(this).addClass("short");
-        var tds = $("#drplist td").length;
-        var small = 80 / tds;
-        if (tds > 8) {
-            small = 150 / tds;
-        }
-        ;
-        $(this).animate({
+    var $col = $(col);
+    var $tds = $("#drplist td");
+    var small = 80 / $tds.length;
+	$tds.stop(true,true);
+    if ($tds.length > 8) {
+        small = 150 / $tds.length;
+    }
+	$tds.removeClass("short");
+	$tds.addClass("short");
+	$tds.css({
             width : small + "%"
-        });
     });
+
+
+	$col.stop(true,true).animate({
+        width : "50%"
+    }).removeClass("short");
 };
 
 function addColumn(matches) {

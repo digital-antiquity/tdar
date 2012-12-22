@@ -182,7 +182,9 @@ public class DataIntegrationService {
         CodingSheet codingSheet = column.getDefaultCodingSheet();
         logger.info("col {}", column);
         logger.info("sheet {}", codingSheet);
-        logger.info("any rules {}", CollectionUtils.isEmpty(codingSheet.getCodingRules()));
+        if (codingSheet != null) {
+            logger.info("any rules {}", CollectionUtils.isEmpty(codingSheet.getCodingRules()));
+        }
         if (column == null || codingSheet == null || CollectionUtils.isEmpty(codingSheet.getCodingRules()))
             return;
         logger.info("select distinct values");

@@ -519,10 +519,7 @@ table.legend {
 }
 
 #drplist button {
-    bottom: 10px;
     font-size: 80%;
-    position: absolute;
-    right: 5px;
 }
 
 #drplist td div {
