@@ -16,8 +16,8 @@ public enum DocumentType implements HasLabel, Facetable<DocumentType> {
     BOOK("Book / Report", "Books / Reports", "book"),
     BOOK_SECTION("Book Chapter / Section", "Book Chapters / Sections", "bookitem"),
     JOURNAL_ARTICLE("Journal Article", "Journal Articles", "article"),
-    THESIS("Thesis / Dissertation", "Theses / Dissertations", "thesis","Institution","Department"),
-    CONFERENCE_PRESENTATION("Conference Presentation", "Conference Presentations", "conference","Conference","Conference Location"),
+    THESIS("Thesis / Dissertation", "Theses / Dissertations", "thesis", "Institution", "Department"),
+    CONFERENCE_PRESENTATION("Conference Presentation", "Conference Presentations", "conference", "Conference", "Conference Location"),
     OTHER("Other", "Other", "unknown");
 
     public static final String PUBLISHER = "Publisher";
@@ -28,6 +28,17 @@ public enum DocumentType implements HasLabel, Facetable<DocumentType> {
     private String publisherName;
     private String publisherLocationName;
     private transient Integer count;
+
+    public boolean isPartOfLargerDocument() {
+        switch (this) {
+            case BOOK:
+            case THESIS:
+            case CONFERENCE_PRESENTATION:
+                return false;
+            default:
+                return true;
+        }
+    }
 
     private DocumentType(String label, String plural, String genre) {
         this.label = label;
@@ -43,7 +54,6 @@ public enum DocumentType implements HasLabel, Facetable<DocumentType> {
         this.publisherLocationName = pubLoc;
     }
 
-    
     public String getLabel() {
         return label;
     }

@@ -919,12 +919,18 @@ ${_date?string('MM/dd/yyyy')}<#t>
                     <#if (resource.startPage?has_content) || (resource.endPage?has_content) || (resource.totalNumberOfPages?has_content)>
                     <li>
                         <strong>Pages</strong><br>
+						<#if resource.documentType.partOfLargerDocument>
                             ${resource.startPage!} <#if resource.startPage?has_content && resource.endPage?has_content>-</#if> ${resource.endPage!}
+						</#if>
                         </#if>
-                          <#if resource.totalNumberOfPages?? > 
-                          <#if (resource.startPage?has_content) || (resource.endPage?has_content) >(</#if>
+                          <#if resource.totalNumberOfPages?? >
+                          <#assign showParen = false/>
+                          <#if ((resource.startPage?has_content || resource.endPage?has_content) && !resource.documentType.partOfLargerDocument) >
+                          <#assign showParen = true/>
+                           </#if>
+                          <#if showParen >(</#if>
                             ${resource.totalNumberOfPages}
-                          <#if (resource.startPage?has_content) || (resource.endPage?has_content) >)</#if>
+                          <#if showParen >)</#if>
                        </li>
                     </#if>
                     <li>
