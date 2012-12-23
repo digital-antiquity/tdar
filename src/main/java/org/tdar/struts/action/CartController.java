@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.httpclient.URIException;
+import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.InterceptorRef;
@@ -32,14 +33,13 @@ import org.tdar.struts.WriteableSession;
 import org.tdar.struts.data.PricingOption;
 import org.tdar.struts.interceptor.PostOnly;
 
-import com.sun.xml.bind.annotation.OverrideAnnotationOf;
-
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/cart")
 public class CartController extends AbstractPersistableController<Invoice> implements ParameterAware {
 
+    public static final String A_BILING_ADDRESS_IS_REQUIRED = "a biling address is required";
     public static final String VALID_PHONE_NUMBER_IS_REQUIRED = "a valid phone number is required (212) 555-1212";
     public static final String ENTER_A_BILLING_ADDERESS = "please enter a billing adderess";
     public static final String CANNOT_MODIFY = "cannot modify existing invocie";
@@ -147,6 +147,20 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     }
 
     @SkipValidation
+    @Action(value = "simple", results = { @Result(name = SUCCESS, location = "simple.ftl") })
+    public String simplePaymentProcess() throws TdarActionException {
+        checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+        if (!getInvoice().isModifiable()) {
+            throw new TdarRecoverableRuntimeException(CANNOT_MODIFY);
+        }
+        if (getInvoice().getTransactionStatus() != TransactionStatus.PREPARED) {
+            return ERROR;
+        }
+
+        return SUCCESS;
+    }
+
+    @SkipValidation
     @Action(value = "polling-check", results = {
             @Result(name = WAIT, type = "freemarker", location = "polling-check.ftl", params = { "contentType", "application/json" }) })
     public String pollingCheck() throws TdarActionException {
@@ -160,13 +174,14 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     @WriteableSession
     @Action(value = "save-billing-address", results = {
             @Result(name = SUCCESS_ADD_PAY, type = "redirect", location = "add-payment?id=${invoice.id}"),
-            @Result(name=SUCCESS_ADD_ADDRESS, type="redirect", location = "add-address?id=${id}")
+            @Result(name = SUCCESS_ADD_ADDRESS, type = "redirect", location = "add-address?id=${id}")
     })
     public String saveAddress() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         if (!getInvoice().isModifiable()) {
             throw new TdarRecoverableRuntimeException(CANNOT_MODIFY);
         }
+
         getInvoice().setAddress(getGenericService().loadFromSparseEntity(getInvoice().getAddress(), Address.class));
         if (Persistable.Base.isNullOrTransient(getInvoice().getAddress())) {
             addActionError("Please choose an address");
@@ -180,6 +195,8 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     private String redirectUrl;
     private Map<String, String[]> parameters;
     private String successPath;
+    private boolean phoneRequired = false;
+    private boolean addressRequired = false;
 
     /*
      * This method will take the response and prepare it for the CC processing transaction; admin(s) will have additional rights. Ultimately, the redirect URL
@@ -207,14 +224,20 @@ public class CartController extends AbstractPersistableController<Invoice> imple
             throw new TdarRecoverableRuntimeException(VALID_PAYMENT_METHOD_IS_REQUIRED);
         }
 
-        if (billingPhone == null) {
-            throw new TdarRecoverableRuntimeException(VALID_PHONE_NUMBER_IS_REQUIRED);
+        Long phone = null;
+        if (StringUtils.isNotBlank(billingPhone)) {
+            phone = Long.parseLong(billingPhone.replaceAll("\\D", ""));
         }
-        Long phone = Long.parseLong(billingPhone.replaceAll("\\D", ""));
 
-        if (phone == null || phone.toString().length() < 10) {
+        if (phoneRequired && (phone == null || phone.toString().length() < 10)) {
             throw new TdarRecoverableRuntimeException(VALID_PHONE_NUMBER_IS_REQUIRED);
         }
+
+        getInvoice().setAddress(getGenericService().loadFromSparseEntity(getInvoice().getAddress(), Address.class));
+        if (addressRequired && Persistable.Base.isNullOrTransient(getInvoice().getAddress())) {
+            throw new TdarRecoverableRuntimeException(A_BILING_ADDRESS_IS_REQUIRED);
+        }
+
         String invoiceNumber = getInvoice().getInvoiceNumber();
         String otherReason = getInvoice().getOtherReason();
         setInvoice(getGenericService().loadFromSparseEntity(getInvoice(), Invoice.class));
@@ -295,7 +318,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     public String loadEditMetadata() {
         return loadAddMetadata();
     }
-    
+
     @Override
     public String loadViewMetadata() {
         return SUCCESS;

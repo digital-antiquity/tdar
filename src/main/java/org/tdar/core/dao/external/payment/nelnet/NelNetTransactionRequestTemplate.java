@@ -14,6 +14,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
@@ -205,30 +206,42 @@ public class NelNetTransactionRequestTemplate implements Serializable {
                         value = invoice.getBillingPhone().toString();
                     }
                     break;
-                case CITY:
-                    value = StringUtils.substring(invoice.getAddress().getCity(), 0, item.length);
-                    break;
-                case COUNTRY:
-                    value = StringUtils.substring(invoice.getAddress().getCountry(), 0, item.length);
-                    break;
                 case EMAIL:
                     value = invoice.getTransactedBy().getEmail();
                     break;
                 case ORDER_NUMBER:
                     value = invoice.getId().toString();
                     break;
+                case CITY:
+                case COUNTRY:
                 case STATE:
-                    value = StringUtils.substring(invoice.getAddress().getState(), 0, item.length);
-                    break;
                 case STREET_ONE:
-                    value = StringUtils.substring(invoice.getAddress().getStreet1(), 0, item.length);
-                    break;
                 case STREET_TWO:
-                    value = StringUtils.substring(invoice.getAddress().getStreet2(), 0, item.length);
-                    break;
                 case ZIP:
-                    value = StringUtils.substring(invoice.getAddress().getPostal(), 0, item.length);
-                    break;
+                    if (Persistable.Base.isNullOrTransient(invoice.getAddress()))
+                        break;
+                    switch (item) {
+                        case CITY:
+                            value = StringUtils.substring(invoice.getAddress().getCity(), 0, item.length);
+                            break;
+                        case COUNTRY:
+                            value = StringUtils.substring(invoice.getAddress().getCountry(), 0, item.length);
+                            break;
+                        case STATE:
+                            value = StringUtils.substring(invoice.getAddress().getState(), 0, item.length);
+                            break;
+                        case STREET_ONE:
+                            value = StringUtils.substring(invoice.getAddress().getStreet1(), 0, item.length);
+                            break;
+                        case STREET_TWO:
+                            value = StringUtils.substring(invoice.getAddress().getStreet2(), 0, item.length);
+                            break;
+                        case ZIP:
+                            value = StringUtils.substring(invoice.getAddress().getPostal(), 0, item.length);
+                            break;
+                        default:
+                            break;
+                    }
                 case TIMESTAMP:
                     value = Long.toString(System.currentTimeMillis());
                     break;

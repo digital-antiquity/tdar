@@ -2,6 +2,8 @@
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
+<#import "common-invoice.ftl" as invoicecommon >
+
 <head>
 <title>Your cart -- choose payment method</title>
 <meta name="lastModifiedDate" content="$Date$"/>
@@ -12,42 +14,13 @@
 
 <div>
 <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='/cart/process-payment-request?id=${invoice.id?c}'>
-    <@s.hidden name="id" value="${invoice.id?c}"/>
+	    <@s.hidden name="id" value="${invoice.id?c!-1}" />
+    <@s.hidden name="invoice.id" />
 
-    <@s.radio list="allPaymentMethods" name="invoice.paymentMethod" label="Payment Method" 
-    listValue="label"    cssClass="transactionType" emptyOption='false' />
-	<hr/>
-    <div class="typeToggle credit_card invoice manual">
-        <@s.textfield name="billingPhone" cssClass="input-xlarge phoneUS  required-visible" label="Billing Phone #" />
-    </div>
-    <div class="typeToggle invoice">
-        <@s.textfield name="invoice.invoiceNumber" cssClass="input-xlarge" label="Invoice #" />
-    </div>
-    <div class="typeToggle manual">
-        <@s.textarea name="invoice.otherReason" cssClass="input-xlarge" label="Other Reason" />
-    </div>
-    
-    <@edit.submit fileReminder=false />
+<@invoicecommon.paymentMethod />
 </@s.form>
 
 </div>
 
-<script>
-$(document).ready(function() {
-    'use strict';
-    TDAR.common.initEditPage($('#MetadataForm')[0]);
-    $(".transactionType[type=radio]").click(function() {switchType(this,'#MetadataForm');});
-   if (!$(".transactionType[type=radio]:checked").length) {
-    $($(".transactionType[type=radio]")[0]).click();
-   }
-   switchType($(".transactionType[type=radio]:checked",$('#MetadataForm')),"#MetadataForm");
-   
-   $("#MetadataForm").submit(function() {
-   	$("#MetadataForm_invoice_billingPhone").val($("#MetadataForm_invoice_billingPhone").val().replace(/([^\d]+)/ig,"") );
-   });
-
-});
-
-</script>
 </body>
 </#escape>

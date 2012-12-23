@@ -59,9 +59,9 @@ public class Address extends Base implements Persistable, Validatable {
 
     @Override
     public String toString() {
-        return String.format("# %s : %s, %s [%s, %s, %s, %s] %s",getId(), street1, street2, city, state, postal, country, type);
+        return String.format("# %s : %s, %s [%s, %s, %s, %s] %s", getId(), street1, street2, city, state, postal, country, type);
     }
-    
+
     public void setStreet2(String street2) {
         this.street2 = street2;
     }
@@ -150,4 +150,19 @@ public class Address extends Base implements Persistable, Validatable {
         return true;
     }
 
+    public String getAddressSingleLine() {
+        StringBuilder sb = new StringBuilder(getStreet1());
+        if (sb.length() > 0 && StringUtils.isNotBlank(getStreet2())) {
+            sb.append(" ").append(getStreet2());
+        }
+        if (sb.length() > 0) {
+            sb.append(". ");
+        }
+        sb.append(getCity()).append(", ").append(getState()).append(" ").append(getPostal());
+        if (StringUtils.isNotBlank(getCountry())) {
+            sb.append(". ").append(getCountry());
+        }
+        sb.append("(").append(getType().getLabel()).append(")");
+        return sb.toString();
+    }
 }
