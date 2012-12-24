@@ -9,6 +9,7 @@ import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.Validatable;
@@ -164,5 +165,15 @@ public class Address extends Base implements Persistable, Validatable {
         }
         sb.append("(").append(getType().getLabel()).append(")");
         return sb.toString();
+    }
+
+    public boolean isSameAs(Address address) {
+        return getHashCodeForComparison() == address.getHashCodeForComparison();
+    }
+
+    private int getHashCodeForComparison() {
+        HashCodeBuilder builder = new HashCodeBuilder(1, 7);
+        builder.append(getStreet1()).append(getStreet2()).append(getCity()).append(getState()).append(getPostal()).append(getCountry());
+        return builder.toHashCode();
     }
 }

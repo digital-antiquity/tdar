@@ -22,6 +22,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.NelnetTransactionStatus;
+import org.tdar.core.bean.entity.Address;
+import org.tdar.core.bean.entity.AddressType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
 public class NelNetTransactionResponseTemplate implements Serializable {
@@ -309,6 +311,20 @@ public class NelNetTransactionResponseTemplate implements Serializable {
             return null;
         }
         return StringUtils.join(values.get(key));
+    }
+
+
+    public Address getAddress() {
+        Address toReturn = new Address();
+        toReturn.setType(AddressType.BILLING);
+        toReturn.setStreet1(getValuesFor(NelnetTransactionItemResponse.STREET_ONE.getKey()));
+        toReturn.setStreet2(getValuesFor(NelnetTransactionItemResponse.STREET_TWO.getKey()));
+        toReturn.setCity(getValuesFor(NelnetTransactionItemResponse.CITY.getKey()));
+        toReturn.setState(getValuesFor(NelnetTransactionItemResponse.STATE.getKey()));
+        toReturn.setPostal(getValuesFor(NelnetTransactionItemResponse.ZIP.getKey()));
+        toReturn.setCountry(getValuesFor(NelnetTransactionItemResponse.COUNTRY.getKey()));
+
+        return toReturn;
     }
 
 }

@@ -24,6 +24,7 @@ import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.entity.Address;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionResponseTemplate;
@@ -293,6 +294,17 @@ public class CartController extends AbstractPersistableController<Invoice> imple
                 getGenericService().markWritable();
                 Invoice invoice = paymentTransactionProcessor.locateInvoice(response);
                 invoice = getGenericService().markWritable(invoice);
+                Person p = invoice.getOwner();
+                boolean found = false;
+                for (Address address : p.getAddresses()) {
+                    if (address.isSameAs(response.getAddress())) 
+                        found = true;
+                }
+                if (!found) {
+                    p.getAddresses().add(response.getAddress());
+                    getGenericService().saveOrUpdate(p);
+                    invoice.setAddress(response.getAddress());
+                }
                 paymentTransactionProcessor.updateInvoiceFromResponse(response, invoice);
                 logger.info("processing payment response: {}  -> {} ", invoice, invoice.getTransactionStatus());
                 getGenericService().saveOrUpdate(invoice);
