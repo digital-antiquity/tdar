@@ -19,7 +19,6 @@
 
 
 <@invoicecommon.printInvoice />
-
 <div class="container row">
 <#if invoice.owner.addresses?has_content>
 <h3>Choose an existing address</h3>

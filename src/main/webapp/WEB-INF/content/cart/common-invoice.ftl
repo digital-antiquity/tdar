@@ -19,11 +19,15 @@
         <td> ${(item.quantity!0) * (item.activity.numberOfFiles!0)} </td>
         <td> ${(item.quantity!0) * (item.activity.numberOfMb!0)} </td>
         <td> ${(item.quantity!0) * (item.activity.numberOfResources!0)}</td>
-	    <td>$${item.subtotal}</td>
+	    <td>$${item.subtotal}
+	    <!-- ${item.activity.name}:${item.quantity!0}:$${item.activity.price}:$${item.subtotal}-->
+	    </td>
 	    </tr>
 	</#list>
 	<tr>
-	    <th colspan=6><em>Total:</em></th><th>$${invoice.calculatedCost!0}</th>
+	    <th colspan=6><em>Total:</em></th><th>$${invoice.calculatedCost!0}
+	    <!-- total:$${invoice.calculatedCost!0} -->
+	    </th>
 	</tr>
 	</table>
 </#macro>

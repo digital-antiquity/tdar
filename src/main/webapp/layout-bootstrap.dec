@@ -7,10 +7,14 @@
 <#import "/WEB-INF/macros/header.ftl" as header>
 
     <head>
+        <title>${title!siteName}</title>
+        <#if authenticatedUser??>
+	        <!-- logged-in-as: ${sessionData.person.email} -->
+        </#if>
+		<!-- BEGIN-PAGE-HEADER -->        
         <meta http-equiv="content-type" content="text/html; charset=utf-8"> 
         <link rel="unapi-server" type="application/xml" title="unAPI" href="<@s.url value='/unapi'/>">
         <link rel="search" type="application/opensearchdescription+xml" href='<@s.url value="/includes/opensearch.xml"/>' title="Search ${siteAcronym}"> 
-        <title>${title!siteName}</title>
 
 		<#-- dev only 
         <script src="//ajax.aspnetcdn.com/ajax/modernizr/modernizr-2.0.6-development-only.js"></script>
@@ -95,7 +99,7 @@
                     </#if>
                 </nav>
             </header>
-    </div> <!-- end of header -->
+    </div> 
 <#if bodyid == 'home'>
         <div class="row">
             <div class="hero">
@@ -126,6 +130,7 @@
         <@common.loginMenu true />
     </div>
 </div>
+<!-- BEGIN-TDAR-CONTENT -->
 
 
 
@@ -193,7 +198,7 @@ ${_stacktrace?html}
             <#--Keep in mind.your body is inside a div.span element. now would be a good time to review bootstrap grid layout conventions (esp. 'Nesting Columns') -->
             <#--http://twitter.github.com/bootstrap/scaffolding.html#gridSystem -->
             ${body}
-        </article> <!-- 191 -->
+        </article> 
 
         <#if page.properties["div.sidebar-right"]?has_content>
             <aside class="span3 sidebar <#if actionName=='edit' || actionName='add'>hidden-tablet hidden-phone</#if> <#if actionName=='view' &&  resource?has_content>${resource.resourceType?lower_case}-bg-large tdar-icon</#if>">
@@ -204,6 +209,7 @@ ${_stacktrace?html}
 
 
 </div>
+    <!-- BEGIN-TDAR-FOOTER -->
     <footer>
         <div class="container">
             <#include "${themeDir}/footer.dec" />

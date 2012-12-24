@@ -1,7 +1,6 @@
 package org.tdar.struts.action.resource;
 
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -18,9 +17,6 @@ import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.utils.Pair;
-
-import com.mchange.util.AssertException;
-import com.sun.research.ws.wadl.Doc;
 
 @RunWith(MultipleTdarConfigurationRunner.class)
 @RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.cc.properties" })
@@ -90,7 +86,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         assertEquals(DocumentController.INPUT, tdae.getFirst());
         Long newId = controller.getResource().getId();
 
-//        Assert.assertNull(entityService.findByEmail("new@email.com"));
+        // Assert.assertNull(entityService.findByEmail("new@email.com"));
         // now reload the document and see if the institution was saved.
         // Assert.assertEquals("resource status should be flagged", Status.FLAGGED_ACCOUNT_BALANCE, d.getStatus());
         Assert.assertFalse("resource id should be -1 after unpaid resource addition", newId == Long.valueOf(-1L));

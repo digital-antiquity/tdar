@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.BillingActivity;
+import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.entity.Address;
@@ -40,6 +41,7 @@ import org.tdar.struts.interceptor.PostOnly;
 @Namespace("/cart")
 public class CartController extends AbstractPersistableController<Invoice> implements ParameterAware {
 
+    public static final String SIMPLE = "simple";
     public static final String A_BILING_ADDRESS_IS_REQUIRED = "a biling address is required";
     public static final String VALID_PHONE_NUMBER_IS_REQUIRED = "a valid phone number is required (212) 555-1212";
     public static final String ENTER_A_BILLING_ADDERESS = "please enter a billing adderess";
@@ -56,6 +58,8 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     public static final String INVOICE = "invoice";
     public static final String POLLING = "polling";
     public static final String SPECIFY_SOMETHING = "please choose something";
+    private Integer extraItemQuantity = 0;
+    private String extraItemName;
     private String callback;
 
     @Autowired
@@ -72,6 +76,14 @@ public class CartController extends AbstractPersistableController<Invoice> imple
             loadEditMetadata();
             throw new TdarRecoverableRuntimeException(SPECIFY_SOMETHING);
         }
+        if (getExtraItemQuantity() > 0 && StringUtils.isNotBlank(getExtraItemName())) {
+            for (BillingActivity act : getActivities()) {
+                if (act.getName().equals(getExtraItemName())) {
+                    getInvoice().getItems().add(new BillingItem(act,getExtraItemQuantity()));
+                }
+            }
+        }
+        
 
         persistable.getItems().clear();
         getInvoice().getItems().addAll(getAccountService().calculateCheapestActivities(getInvoice()).getItems());
@@ -80,9 +92,9 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         }
         // this may be 'different' from the owner
         getInvoice().setTransactedBy(getAuthenticatedUser());
-        if (Persistable.Base.isNullOrTransient(getInvoice().getAddress())) {
-            setSaveSuccessPath(SUCCESS_ADD_ADDRESS);
-        }
+//        if (Persistable.Base.isNullOrTransient(getInvoice().getAddress())) {
+            setSaveSuccessPath(SIMPLE);
+//        }
         return SUCCESS;
     }
 
@@ -148,7 +160,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     }
 
     @SkipValidation
-    @Action(value = "simple", results = { @Result(name = SUCCESS, location = "simple.ftl") })
+    @Action(value = SIMPLE, results = { @Result(name = SUCCESS, location = "simple.ftl") })
     public String simplePaymentProcess() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         if (!getInvoice().isModifiable()) {
@@ -489,6 +501,22 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
     public void setAddressRequired(boolean addressRequired) {
         this.addressRequired = addressRequired;
+    }
+
+    public String getExtraItemName() {
+        return extraItemName;
+    }
+
+    public void setExtraItemName(String extraItemName) {
+        this.extraItemName = extraItemName;
+    }
+
+    public Integer getExtraItemQuantity() {
+        return extraItemQuantity;
+    }
+
+    public void setExtraItemQuantity(Integer extraItemQuantity) {
+        this.extraItemQuantity = extraItemQuantity;
     }
 
 }

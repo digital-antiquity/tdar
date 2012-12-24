@@ -100,11 +100,11 @@ public class NelNetTransactionRequestTemplate implements Serializable {
             return type;
         }
 
-        public String getUserIdKey() {
+        public static String getUserIdKey() {
             return USER_CHOICE_2.getKey();
         }
 
-        public String getInvoiceIdKey() {
+        public static String getInvoiceIdKey() {
             return USER_CHOICE_3.getKey();
         }
 

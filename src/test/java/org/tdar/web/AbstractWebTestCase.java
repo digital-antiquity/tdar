@@ -51,7 +51,6 @@ import com.gargoylesoftware.htmlunit.html.HtmlSelect;
 import com.gargoylesoftware.htmlunit.html.HtmlTextArea;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 import com.google.common.collect.Lists;
-import com.opensymphony.module.sitemesh.HTMLPage;
 import com.threelevers.css.Selector;
 
 /**
@@ -60,6 +59,10 @@ import com.threelevers.css.Selector;
  */
 public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
+    private static final String ELIPSIS = "<!-- ... -->";
+    private static final String BEGIN_PAGE_HEADER = "<!-- BEGIN-PAGE-HEADER -->";
+    private static final String BEGIN_TDAR_CONTENT = "<!-- BEGIN-TDAR-CONTENT -->";
+    private static final String BEGIN_TDAR_FOOTER = "<!-- BEGIN-TDAR-FOOTER -->";
     public static final String TABLE_METADATA = "table metadata";
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     protected final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_3_6);
@@ -552,7 +555,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     }
 
     public String getPageText() {
-        if (internalPage instanceof HTMLPage) {
+        if (internalPage instanceof HtmlPage) {
             HtmlPage page = (HtmlPage) internalPage;
             return page.asText();
         }
@@ -564,7 +567,18 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     }
 
     public String getPageCode() {
-        return internalPage.getWebResponse().getContentAsString();
+        String content = internalPage.getWebResponse().getContentAsString();
+        String out = "";
+        try {
+        if (content.indexOf(BEGIN_PAGE_HEADER) != -1 && content.indexOf(BEGIN_TDAR_CONTENT) != -1 && content.indexOf(BEGIN_TDAR_FOOTER) != -1) {
+            out = content.substring(0,content.indexOf(BEGIN_PAGE_HEADER))+ ELIPSIS;
+            out += content.subSequence(content.indexOf(BEGIN_TDAR_CONTENT) + BEGIN_TDAR_CONTENT.length(),content.indexOf(BEGIN_TDAR_FOOTER)) + ELIPSIS;
+            return out;
+        }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return content;
     }
 
     public String getCurrentUrlPath() {
