@@ -230,12 +230,12 @@ public class CartController extends AbstractPersistableController<Invoice> imple
             phone = Long.parseLong(billingPhone.replaceAll("\\D", ""));
         }
 
-        if (phoneRequired && (phone == null || phone.toString().length() < 10)) {
+        if (isPhoneRequired() && (phone == null || phone.toString().length() < 10)) {
             throw new TdarRecoverableRuntimeException(VALID_PHONE_NUMBER_IS_REQUIRED);
         }
 
         getInvoice().setAddress(getGenericService().loadFromSparseEntity(getInvoice().getAddress(), Address.class));
-        if (addressRequired && Persistable.Base.isNullOrTransient(getInvoice().getAddress())) {
+        if (isAddressRequired() && Persistable.Base.isNullOrTransient(getInvoice().getAddress())) {
             throw new TdarRecoverableRuntimeException(A_BILING_ADDRESS_IS_REQUIRED);
         }
 
@@ -473,6 +473,22 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
     public void setBillingPhone(String billingPhone) {
         this.billingPhone = billingPhone;
+    }
+
+    public boolean isPhoneRequired() {
+        return phoneRequired;
+    }
+
+    public void setPhoneRequired(boolean phoneRequired) {
+        this.phoneRequired = phoneRequired;
+    }
+
+    public boolean isAddressRequired() {
+        return addressRequired;
+    }
+
+    public void setAddressRequired(boolean addressRequired) {
+        this.addressRequired = addressRequired;
     }
 
 }

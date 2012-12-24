@@ -105,6 +105,13 @@ public class MockNelnetController extends AuthenticationAware.Base implements Pa
         String total = getParamValue(NelnetTransactionItem.AMOUNT);
         responseParams.put(NelnetTransactionItemResponse.TIMESTAMP.getKey(), new String[] { Long.toString(System.currentTimeMillis()) });
         responseParams.put(NelnetTransactionItemResponse.TRANSACTION_ACCOUNT_TYPE.getKey(), new String[] { cctype });
+        responseParams.put(NelnetTransactionItemResponse.EVENING_PHONE.getKey(), new String[] { "4809651369"});
+        responseParams.put(NelnetTransactionItemResponse.STREET_ONE.getKey(), new String[] { "PO Box 872402" });
+        responseParams.put(NelnetTransactionItemResponse.STREET_TWO.getKey(), new String[] { "Arizona State University" });
+        responseParams.put(NelnetTransactionItemResponse.CITY.getKey(), new String[] { "Tempe"});
+        responseParams.put(NelnetTransactionItemResponse.STATE.getKey(), new String[] { "AZ"});
+        responseParams.put(NelnetTransactionItemResponse.ZIP.getKey(), new String[] { "85287" });
+        responseParams.put(NelnetTransactionItemResponse.COUNTRY.getKey(), new String[] { "USA" });
         responseParams.put(NelnetTransactionItemResponse.TRANSACTION_TOTAL.getKey(), new String[] { total });
         responseParams.put(NelnetTransactionItemResponse.TRANSACTION_TYPE.getKey(), new String[] { "1" });
         String responseCode = "1";
