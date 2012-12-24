@@ -291,7 +291,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
     public void testCartPaymentMissingPhone() throws TdarActionException {
         CartController controller = setupPaymentTests();
         controller.getInvoice().setPaymentMethod(PaymentMethod.CREDIT_CARD);
-        controller.setAddressRequired(true);
+        controller.setPhoneRequired(true);
         String msg = null;
         try {
             controller.processPayment();
