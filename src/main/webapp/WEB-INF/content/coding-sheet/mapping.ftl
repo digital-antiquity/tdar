@@ -37,6 +37,66 @@
     
 </style>
 
+</head>
+<body>
+
+<@nav.toolbar "coding-sheet" "mapping" />
+
+
+<h2>Map Codes to Ontology Values</h2>
+<div id='display' class="">
+    <@s.form method='post' id="mapontologyform" action='save-mapping'>
+    <@s.hidden name='id' value='${resource.id?c}'/>
+    <#assign isLast = false/>
+    <#assign count = 0/>
+
+
+    <div class="btn-group">
+        <button class="btn" type="button" id="autosuggest">Autosuggest Mappings</button>
+        <button class="btn" type="button" id="clearAll">Clear all</button>
+    </div>
+    
+    <div class="control-group">
+        <label class="control-label">Mappings</label>
+        <#list codingRules as rule>
+        <div class="controls controls-row">
+                <@s.hidden name='codingRules[${rule_index}].id' />
+                <@s.textfield theme="simple" name='codingRules[${rule_index}].term' size='50' readonly=true cssClass="span4"/>
+        
+            <div class="span1">
+                <img src="<@s.url value='/images/arrow_right.png'/>"/>
+            </div>
+        
+            <div>
+                <script type="text/javascript">
+                $(document).ready(function() {
+                    applyLocalAutoComplete($("#autocomp_${rule_index}"),autocomp_${rule_index}Suggestions);
+                });
+                <#noescape>
+                var autocomp_${rule_index}Suggestions = [
+                {id:"", name:""}<#t>
+                    <#list rule.suggestions as suggestion>
+                    <#if suggestion_index == 0>,{id:"", name:" -- Suggested Values --"}</#if>
+                    ,{id:"${suggestion.id?c}",  name:"${suggestion.displayName?js_string}"}
+                    </#list>
+                ];
+                </#noescape>
+                </script>
+                <@s.hidden name="codingRules[${rule_index}].ontologyNode.id" id="ontologyNodeId_${rule_index}" />
+                <div class="input-append">
+                    <@s.textfield theme="simple" name="codingRules[${rule_index}].ontologyNode.displayName" id="autocomp_${rule_index}"
+                         cssClass="manualAutocomplete span4" autocompleteIdElement="#ontologyNodeId_${rule_index}"/>
+                        <button type="button" class="btn show-all"><i class="icon-chevron-down"></i></button>                    
+                </div>
+            </div>
+        </div>    
+        </#list>
+    </div>
+
+    <@edit.submit "Save" false />
+</@s.form>
+</div>
+
 <script type="text/javascript">
 function autosuggest() {
     $(".manualAutocomplete").each(function() {
@@ -60,15 +120,6 @@ function clearall() {
     });
 }
 
-$(document).ready(function() {
-    $("#autosuggest").click(autosuggest);
-    $("#clearAll").click(clearall);
-});
-
-$(document).ready(function() {
-    $("#mapontologyform").FormNavigate("Leaving the page will cause any unsaved data to be lost!");
-    $("#selectColumn").unbind("change");
-});
 
 function applyLocalAutoComplete(selector, db) {
 
@@ -154,7 +205,11 @@ function applyLocalAutoComplete(selector, db) {
 
 }
 
-$(function() {
+$(document).ready(function() {
+    $("#autosuggest").click(autosuggest);
+    $("#clearAll").click(clearall);
+    $("#mapontologyform").FormNavigate("Leaving the page will cause any unsaved data to be lost!");
+    $("#selectColumn").unbind("change");
     $('button.ui-button').hover(function() {
         $(this).addClass("ui-state-hover");
     }, function() {
@@ -170,10 +225,6 @@ $(function() {
     });
 
 });
-</script>
-
-
-<script type="text/javascript">
 
 <#macro repeat num=0 value="  |"><#t/>
 <#if ((num?number) &gt; 0)>
@@ -191,70 +242,5 @@ var ontology = [
 ];
 
 </script>
-
-
-
-
-</head>
-<body>
-
-<@nav.toolbar "coding-sheet" "mapping" />
-
-
-<h2>Map Codes to Ontology Values</h2>
-<div id='display' class="">
-    <@s.form method='post' id="mapontologyform" action='save-mapping'>
-    <@s.hidden name='id' value='${resource.id?c}'/>
-    <#assign isLast = false/>
-    <#assign count = 0/>
-
-
-    <div class="btn-group">
-        <button class="btn" type="button" id="autosuggest">Autosuggest Mappings</button>
-        <button class="btn" type="button" id="clearAll">Clear all</button>
-    </div>
-    
-    <div class="control-group">
-        <label class="control-label">Mappings</label>
-        <#list codingRules as rule>
-        <div class="controls controls-row">
-                <@s.hidden name='codingRules[${rule_index}].id' />
-                <@s.textfield theme="simple" name='codingRules[${rule_index}].term' size='50' readonly=true cssClass="span4"/>
-        
-            <div class="span1">
-                <img src="<@s.url value='/images/arrow_right.png'/>"/>
-            </div>
-        
-            <div>
-                <script type="text/javascript">
-                $(document).ready(function() {
-                    applyLocalAutoComplete($("#autocomp_${rule_index}"),autocomp_${rule_index}Suggestions);
-                });
-                <#noescape>
-                var autocomp_${rule_index}Suggestions = [
-                {id:"", name:""}<#t>
-                    <#list rule.suggestions as suggestion>
-                    <#if suggestion_index == 0>,{id:"", name:" -- Suggested Values --"}</#if>
-                    ,{id:"${suggestion.id?c}",  name:"${suggestion.displayName?js_string}"}
-                    </#list>
-                ];
-                </#noescape>
-                </script>
-                <@s.hidden name="codingRules[${rule_index}].ontologyNode.id" id="ontologyNodeId_${rule_index}" />
-                <div class="input-append">
-                    <@s.textfield theme="simple" name="codingRules[${rule_index}].ontologyNode.displayName" id="autocomp_${rule_index}"
-                         cssClass="manualAutocomplete span4" autocompleteIdElement="#ontologyNodeId_${rule_index}"/>
-                        <button type="button" class="btn show-all"><i class="icon-chevron-down"></i></button>                    
-                </div>
-            </div>
-        </div>    
-        </#list>
-    </div>
-
-    <@edit.submit "Save" false />
-</@s.form>
-</div>
-
-
 </body>
 </#escape>
