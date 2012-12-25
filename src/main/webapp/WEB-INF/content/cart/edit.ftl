@@ -34,9 +34,9 @@
     <@s.hidden name="invoice.id" />
     <#if !production >
     <input type="text" name="extraItemQuantity" value="0" />
-    <label>Error <input type="radio" name="extraItemName"  value="error" /></label>
-    <label>Decline <input type="radio" name="extraItemName"  value="decline" /></label>
-    <label>Unknown <input type="radio" name="extraItemName"  value="unknown" /></label>
+    <label>Error <input type="radio" name="extraItemName"  value="error" id="extraItemName_error" /></label>
+    <label>Decline <input type="radio" name="extraItemName"  value="decline" id="extraItemName_decline" /></label>
+    <label>Unknown <input type="radio" name="extraItemName"  value="unknown" id="extraItemName_unknown"/></label>
 	</#if>
 	</div>	
 	</div>

@@ -364,7 +364,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         String save = controller.save();
 
         assertEquals(CartController.SUCCESS, save);
-        assertEquals(CartController.SUCCESS_ADD_ADDRESS, controller.getSaveSuccessPath());
+        assertEquals(CartController.SIMPLE, controller.getSaveSuccessPath());
         return controller.getInvoice().getId();
     }
 

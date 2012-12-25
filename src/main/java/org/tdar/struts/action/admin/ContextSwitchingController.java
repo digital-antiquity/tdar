@@ -24,10 +24,12 @@ public class ContextSwitchingController extends AuthenticationAware.Base {
 
     @Override
     @Actions({
-            @Action(value = "denied", results = { @Result(name = SUCCESS,  params = { "contentType", "text/plain" }, type="freemarker", location = "../../errors/access-denied.ftl") })
+            @Action(value = "denied", results = { @Result(name = SUCCESS, params = { "contentType", "text/plain" }, type = "freemarker",
+                    location = "../../errors/access-denied.ftl") })
     })
     public String execute() {
-        if (getConfigurationFile() != null && System.getProperty("enableContextSwitchingConfig","false").equalsIgnoreCase( "true")) {
+        logger.info(System.getProperty("enableContextSwitchingConfig"));
+        if (getConfigurationFile() != null && System.getProperty("enableContextSwitchingConfig", "false").equalsIgnoreCase("true")) {
             logger.info("switching tDarConfig to:" + getConfigurationFile());
             TdarConfiguration.getInstance().setConfigurationFile(configurationFile);
         } else {
@@ -39,8 +41,6 @@ public class ContextSwitchingController extends AuthenticationAware.Base {
         return SUCCESS;
     }
 
-    
-    
     public String getConfigurationFile() {
         return configurationFile;
     }
@@ -48,5 +48,5 @@ public class ContextSwitchingController extends AuthenticationAware.Base {
     public void setConfigurationFile(String configurationFile) {
         this.configurationFile = configurationFile;
     }
-    
+
 }

@@ -76,20 +76,24 @@ public class CartController extends AbstractPersistableController<Invoice> imple
             loadEditMetadata();
             throw new TdarRecoverableRuntimeException(SPECIFY_SOMETHING);
         }
+
+        persistable.getItems().clear();
         if (getExtraItemQuantity() > 0 && StringUtils.isNotBlank(getExtraItemName())) {
-            for (BillingActivity act : getActivities()) {
-                if (act.getName().equals(getExtraItemName())) {
+            logger.trace("{} {}" , getExtraItemName(), getExtraItemQuantity());
+            for (BillingActivity act : getAccountService().getActiveBillingActivities()) {
+                logger.trace("{}" , act.getName());
+                if (act.getName().trim().equalsIgnoreCase(getExtraItemName())) {
+                    logger.info("adding {}", act);
                     getInvoice().getItems().add(new BillingItem(act,getExtraItemQuantity()));
                 }
             }
         }
         
 
-        persistable.getItems().clear();
         getInvoice().getItems().addAll(getAccountService().calculateCheapestActivities(getInvoice()).getItems());
-        if (accountId != -1) {
-            getGenericService().find(Account.class, accountId).getInvoices().add(getInvoice());
-        }
+//        if (accountId != -1) {
+//            getGenericService().find(Account.class, accountId).getInvoices().add(getInvoice());
+//        }
         // this may be 'different' from the owner
         getInvoice().setTransactedBy(getAuthenticatedUser());
 //        if (Persistable.Base.isNullOrTransient(getInvoice().getAddress())) {
@@ -308,14 +312,16 @@ public class CartController extends AbstractPersistableController<Invoice> imple
                 invoice = getGenericService().markWritable(invoice);
                 Person p = invoice.getOwner();
                 boolean found = false;
+                Address addressToSave = response.getAddress();
                 for (Address address : p.getAddresses()) {
-                    if (address.isSameAs(response.getAddress())) 
+                    if (address.isSameAs(addressToSave)) 
                         found = true;
                 }
                 if (!found) {
-                    p.getAddresses().add(response.getAddress());
-                    getGenericService().saveOrUpdate(p);
-                    invoice.setAddress(response.getAddress());
+                    p.getAddresses().add(addressToSave);
+                    logger.info(addressToSave.getAddressSingleLine());
+                    getGenericService().saveOrUpdate(addressToSave);
+                    invoice.setAddress(addressToSave);
                 }
                 paymentTransactionProcessor.updateInvoiceFromResponse(response, invoice);
                 logger.info("processing payment response: {}  -> {} ", invoice, invoice.getTransactionStatus());
