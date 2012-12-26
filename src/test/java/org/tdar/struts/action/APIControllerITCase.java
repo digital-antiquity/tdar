@@ -235,7 +235,14 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     @Rollback(true)
     public void testInvalidFileType() throws Exception {
         APIController controller = generateNewInitializedController(APIController.class);
-        Dataset doc = genericService.findRandom(Dataset.class, 1).get(0);
+        Dataset doc = null;
+        for (Dataset dataset : genericService.findRandom(Dataset.class, 10)) {
+            if (dataset != null) {
+                doc = dataset;
+                continue;
+            }
+        }
+        
         String datasetXml = xmlService.convertToXML(doc);
         controller.setRecord(datasetXml);
         controller.setUploadFile(Arrays.asList(new File(TestConstants.TEST_IMAGE)));
@@ -264,7 +271,13 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     @Rollback(true)
     public void testInvalidInvestigationType() throws Exception {
         APIController controller = generateNewInitializedController(APIController.class);
-        Document doc = genericService.findRandom(Document.class, 1).get(0);
+        Document doc = null;
+        for (Document document : genericService.findRandom(Document.class, 10)) {
+            if (document != null) {
+                doc = document;
+                continue;
+            }
+        }
         Long docid = doc.getId();
         genericService.markReadOnly(doc);
         InvestigationType bad = new InvestigationType();
