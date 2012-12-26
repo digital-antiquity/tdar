@@ -182,6 +182,8 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         String text = "<?xml version=\"1.0\" encoding=\"utf-8\"?><tdar:image xmlns:tdar=\"http://www.tdar.org/namespace\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://localhost:8180/schema/current schema.xsd\"><tdar:description>This Bowl is an example of Style III from the Swarts site.  Swarts ruin (sometimes known as Swartz Ruin) is a Mimbres village in Grants County, southwestern New Mexico, excavated during the 1920s by H.S. and C.B. Cosgrove.  The site dates from about A.D. 950 to 1175 and contained the relatively undisturbed remains of numerous pit houses and several Classic Mimbres roomblocks, as well as a large assemblage of ceramics, lithics, and faunal material.  Sometime after the excavations, the site was leveled. Artifacts, photographs and field notes from the Cosgrove excavations are curated in the Peabody Museum of Archaeology and Ethnology at Harvard University. Swarts is described as an example Mimbres site in Brody's books on Mimbres pottery (1977, 2002 http://library.lib.asu.edu/record=b4770839~S3). A comprehensive report on the site (Cosgrove and Cosgrove 1932) has recently been reprinted (http://library.lib.asu.edu/record=b4816690~S3).</tdar:description><tdar:latitudeLongitudeBoxes><tdar:latitudeLongitudeBox><tdar:maximumLatitude>32.69975751</tdar:maximumLatitude><tdar:maximumLongitude>-107.8423258</tdar:maximumLongitude><tdar:minimumLatitude>32.69475751</tdar:minimumLatitude><tdar:minimumLongitude>-107.8473258</tdar:minimumLongitude></tdar:latitudeLongitudeBox></tdar:latitudeLongitudeBoxes><tdar:resourceType>IMAGE</tdar:resourceType><tdar:siteNameKeywords><tdar:siteNameKeyword><tdar:label>Swarts</tdar:label></tdar:siteNameKeyword></tdar:siteNameKeywords><tdar:title>Swarts Bowl (Style III)</tdar:title><tdar:date>2012</tdar:date><tdar:dateNormalized>2012</tdar:dateNormalized><tdar:externalReference>false</tdar:externalReference><tdar:inheritingCollectionInformation>true</tdar:inheritingCollectionInformation><tdar:inheritingCulturalInformation>true</tdar:inheritingCulturalInformation><tdar:inheritingIdentifierInformation>true</tdar:inheritingIdentifierInformation><tdar:inheritingInvestigationInformation>true</tdar:inheritingInvestigationInformation><tdar:inheritingMaterialInformation>true</tdar:inheritingMaterialInformation><tdar:inheritingNoteInformation>true</tdar:inheritingNoteInformation><tdar:inheritingOtherInformation>true</tdar:inheritingOtherInformation><tdar:inheritingSiteInformation>false</tdar:inheritingSiteInformation><tdar:inheritingSpatialInformation>false</tdar:inheritingSpatialInformation><tdar:inheritingTemporalInformation>true</tdar:inheritingTemporalInformation><tdar:relatedDatasetData/><tdar:resourceLanguage>ENGLISH</tdar:resourceLanguage><tdar:resourceProviderInstitution/></tdar:image>";
         controller.setRecord(text);
         String uploadStatus = controller.upload();
+        assertEquals(APIController.SUCCESS, uploadStatus);
+        assertEquals(StatusCode.CREATED.getResultName(), controller.getStatus());
     }
 
     @Test
@@ -240,7 +242,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         controller.setUploadFileFileName(Arrays.asList(TestConstants.TEST_IMAGE_NAME));
         String uploadStatus = controller.upload();
         assertEquals(APIController.ERROR, uploadStatus);
-        assertEquals(StatusCode.FORBIDDEN.getResultName(), controller.getStatus());
+        assertEquals(String.format("Expected Forbidden for %s, but was %s", doc.getId(), controller.getStatus()), StatusCode.FORBIDDEN.getResultName(), controller.getStatus());
     }
 
     @Test
@@ -255,7 +257,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
 
         String uploadStatus = controller.upload();
         assertEquals(APIController.ERROR, uploadStatus);
-        assertEquals(StatusCode.UNAUTHORIZED.getResultName(), controller.getStatus());
+        assertEquals(String.format("Expected UNAUTHORIZED for %s, but was %s", doc.getId(), controller.getStatus()), StatusCode.UNAUTHORIZED.getResultName(), controller.getStatus());
     }
 
     @Test
@@ -263,6 +265,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     public void testInvalidInvestigationType() throws Exception {
         APIController controller = generateNewInitializedController(APIController.class);
         Document doc = genericService.findRandom(Document.class, 1).get(0);
+        Long docid = doc.getId();
         genericService.markReadOnly(doc);
         InvestigationType bad = new InvestigationType();
         bad.setLabel("INVAID");
@@ -272,7 +275,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         controller.setRecord(docXml);
         String uploadStatus = controller.upload();
         assertEquals(APIController.ERROR, uploadStatus);
-        assertEquals(StatusCode.FORBIDDEN.getResultName(), controller.getStatus());
+        assertEquals(String.format("Expected Forbidden for %s, but was %s", docid, controller.getStatus()), StatusCode.FORBIDDEN.getResultName(), controller.getStatus());
     }
 
     @Test
