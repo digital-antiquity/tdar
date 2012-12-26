@@ -32,11 +32,25 @@
 		</div>
 	    <@s.hidden name="id" value="${invoice.id?c!-1}" />
     <@s.hidden name="invoice.id" />
-    <#if !production >
-    <input type="text" name="extraItemQuantity" value="0" />
-    <label>Error <input type="radio" name="extraItemName"  value="error" id="extraItemName_error" /></label>
-    <label>Decline <input type="radio" name="extraItemName"  value="decline" id="extraItemName_decline" /></label>
-    <label>Unknown <input type="radio" name="extraItemName"  value="unknown" id="extraItemName_unknown"/></label>
+    <#if !production || admin || editor >
+    <hr>
+    <p><b>For Testing Only:</b></p>
+		<div class="control-group">
+    <label class="control-label" for="extraItemQuantity">Quantity</label>
+				    <div class="controls">
+			    <input type="text" name="extraItemQuantity" id="extraItemQuantity" value="0" label="Quantity" />
+		</div>
+	</div>
+		<div class="control-group">
+    <label class="control-label" for="extraItemQuantity">Type</label>
+				    <div class="controls">
+    <label><input type="radio" name="extraItemName"  value="" id="extraItemName" /> None</label>
+    <label><input type="radio" name="extraItemName"  value="error" id="extraItemName_error" /> Error</label>
+    <label><input type="radio" name="extraItemName"  value="decline" id="extraItemName_decline" /> Decline</label>
+    <label><input type="radio" name="extraItemName"  value="unknown" id="extraItemName_unknown"/> Unknown</label>
+		</div>
+	</div>
+
 	</#if>
 	</div>	
 	</div>
