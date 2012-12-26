@@ -11,6 +11,7 @@ import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplate.NelnetTransactionItem;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
+import org.tdar.struts.action.CartController;
 
 import com.gargoylesoftware.htmlunit.WebWindow;
 
@@ -19,12 +20,48 @@ import com.gargoylesoftware.htmlunit.WebWindow;
 public class CreditCartWebITCase extends AbstractAuthenticatedWebTestCase {
 
     @Test
-    public void testCart() throws MalformedURLException {
+    public void testCartIncomplete() throws MalformedURLException {
+        gotoPage("/cart/add");
+        setInput("invoice.numberOfMb", "0");
+        setInput("invoice.numberOfFiles", "0");
+        submitForm();
+        assertCurrentUrlContains("save.action");
+        assertTextPresentInCode("505 USD");
+        assertTextPresentInCode(CartController.SPECIFY_SOMETHING);
+    }
+
+    @Test
+    public void testCartFilesNoMB() throws MalformedURLException {
+        gotoPage("/cart/add");
+        setInput("invoice.numberOfMb", "0");
+        setInput("invoice.numberOfFiles", "100");
+        submitForm();
+        assertTextPresent("50-500:100:$31:$3,100");
+        assertTextPresent("total:$3,100");
+        setInput("invoice.paymentMethod", "CREDIT_CARD");
+        testResponse("310000", TransactionStatus.TRANSACTION_SUCCESSFUL);
+
+    }
+
+    @Test
+    public void testCartMBNoFiles() throws MalformedURLException {
+        gotoPage("/cart/add");
+        setInput("invoice.numberOfMb", "100");
+        setInput("invoice.numberOfFiles", "0");
+        submitForm();
+        assertTextPresent("100 mb:1:$50:$50");
+        assertTextPresent("total:$50");
+        setInput("invoice.paymentMethod", "CREDIT_CARD");
+        testResponse("5000", TransactionStatus.TRANSACTION_SUCCESSFUL);
+    }
+
+    
+    @Test
+    public void testCartSuccess() throws MalformedURLException {
         gotoPage("/cart/add");
         setInput("invoice.numberOfMb", "2000");
         setInput("invoice.numberOfFiles", "10");
         submitForm();
-        logger.info(getPageCode());
 
         assertTextPresent("100 mb:19:$50:$950");
         assertTextPresent("5- 19:10:$40:$400");
@@ -42,13 +79,46 @@ public class CreditCartWebITCase extends AbstractAuthenticatedWebTestCase {
         setInput("extraItemQuantity", "1");
 
         submitForm();
-        logger.info(getPageCode());
 
         assertTextPresent("100 mb:19:$50:$950");
         assertTextPresent("5- 19:10:$40:$400");
         assertTextPresent("total:$1,405.21");
         setInput("invoice.paymentMethod", "CREDIT_CARD");
         testResponse("140521", TransactionStatus.TRANSACTION_FAILED);
+    }
+
+    @Test
+    public void testCartUnknown() throws MalformedURLException {
+        gotoPage("/cart/add");
+        setInput("invoice.numberOfMb", "2000");
+        setInput("invoice.numberOfFiles", "10");
+        setInput("extraItemName", "unknown");
+        setInput("extraItemQuantity", "1");
+
+        submitForm();
+
+        assertTextPresent("100 mb:19:$50:$950");
+        assertTextPresent("5- 19:10:$40:$400");
+        assertTextPresent("total:$1,405.31");
+        setInput("invoice.paymentMethod", "CREDIT_CARD");
+        testResponse("140531", TransactionStatus.TRANSACTION_FAILED);
+    }
+
+    @Test
+    public void testCartDecline() throws MalformedURLException {
+        gotoPage("/cart/add");
+        setInput("invoice.numberOfMb", "2000");
+        setInput("invoice.numberOfFiles", "10");
+        setInput("extraItemName", "decline");
+        setInput("extraItemQuantity", "1");
+
+        submitForm();
+
+        assertTextPresent("100 mb:19:$50:$950");
+        assertTextPresent("5- 19:10:$40:$400");
+        assertTextPresent("total:$1,405.11");
+        setInput("invoice.paymentMethod", "CREDIT_CARD");
+        testResponse("140511", TransactionStatus.TRANSACTION_FAILED);
     }
 
     private void testResponse(String total, TransactionStatus expectedResponse) throws MalformedURLException {
@@ -58,7 +128,6 @@ public class CreditCartWebITCase extends AbstractAuthenticatedWebTestCase {
         submitForm();
         assertCurrentUrlContains("process-payment-request");
         clickLinkWithText("click here");
-        logger.info(getPageCode());
         URL polingUrl = new URL(getBaseUrl() + "/cart/polling-check?id=" + invoiceid);
         String response = getPollingRequest(polingUrl);
         assertTrue(response.contains(TransactionStatus.PENDING_TRANSACTION.name()));
