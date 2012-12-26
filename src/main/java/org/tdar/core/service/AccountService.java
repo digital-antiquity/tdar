@@ -273,8 +273,13 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         for (BillingActivity activity : getActiveBillingActivities()) {
             if (activity.supportsFileLimit()) {
                 Long total = Account.divideByRoundUp(spaceInMb, activity.getNumberOfMb());
-                if (total * activity.getNumberOfFiles() < activity.getMinAllowedNumberOfFiles()) {
-                    total = activity.getMinAllowedNumberOfFiles();
+                Long minAllowedNumberOfFiles = activity.getMinAllowedNumberOfFiles();
+                if (minAllowedNumberOfFiles == null) {
+                    minAllowedNumberOfFiles = 0L;
+                }
+
+                if (total * activity.getNumberOfFiles() < minAllowedNumberOfFiles) {
+                    total = minAllowedNumberOfFiles;
                 }
 
                 if (total < numFiles / activity.getNumberOfFiles()) {

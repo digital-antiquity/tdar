@@ -44,7 +44,7 @@
 		<div class="control-group">
     <label class="control-label" for="extraItemQuantity">Type</label>
 				    <div class="controls">
-    <label><input type="radio" name="extraItemName"  value="" id="extraItemName" /> None</label>
+    <label><input type="radio" name="extraItemName" checked=checked  value="" id="extraItemName" /> None</label>
     <label><input type="radio" name="extraItemName"  value="error" id="extraItemName_error" /> Error</label>
     <label><input type="radio" name="extraItemName"  value="decline" id="extraItemName_decline" /> Decline</label>
     <label><input type="radio" name="extraItemName"  value="unknown" id="extraItemName_unknown"/> Unknown</label>
