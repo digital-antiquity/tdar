@@ -32,7 +32,7 @@
 		</div>
 	    <@s.hidden name="id" value="${invoice.id?c!-1}" />
     <@s.hidden name="invoice.id" />
-    <#if !production || admin || editor >
+    <#if !production || administrator || editor >
     <hr>
     <p><b>For Testing Only:</b></p>
 		<div class="control-group">
