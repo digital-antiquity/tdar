@@ -1,9 +1,9 @@
 application.name                        tdar
 application.password                    2.tdar.37
-application.login.url                   http://beta.tdar.org/login
+application.login.url                   https://core.tdar.org/login
 
-crowd.server.url                        http://auth.tdar.org/crowd/services/
-crowd.passwordreseturl					http\://auth.tdar.org/crowd/console/forgottenlogindetails\!default.action
+crowd.server.url                        https://auth.tdar.org/crowd/services/
+crowd.passwordreseturl					https\://auth.tdar.org/crowd/console/forgottenlogindetails\!default.action
 
 session.isauthenticated                 session.isauthenticated
 session.tokenkey                        session.tokenkey
