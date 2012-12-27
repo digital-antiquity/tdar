@@ -122,7 +122,7 @@ public class LoginController extends AuthenticationAware.Base {
     }
 
     // FIXME: messages should be localized
-    @RequiredStringValidator(type = ValidatorType.FIELD, message = "Please enter your login email.", shortCircuit = true)
+    @RequiredStringValidator(type = ValidatorType.FIELD, message = "Please enter your username.", shortCircuit = true)
     public void setLoginUsername(String username) {
         this.loginUsername = username;
     }

@@ -46,6 +46,7 @@ import org.tdar.web.SessionData;
 @Service
 public class AuthenticationAndAuthorizationService extends AbstractConfigurableService<AuthenticationProvider> implements Accessible {
 
+    public static final String YOU_ARE_NOT_ALLOWED_TO_SEARCH_FOR_RESOURCES_WITH_THE_SELECTED_STATUS = "You are not allowed to search for resources with the selected status";
     private final WeakHashMap<Person, TdarGroup> groupMembershipCache = new WeakHashMap<Person, TdarGroup>();
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -126,6 +127,10 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
 
         if (can(InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, person)) {
             allowed.add(Status.FLAGGED);
+            allowed.add(Status.FLAGGED_ACCOUNT_BALANCE);
+        }
+        if (can(InternalTdarRights.SEARCH_FOR_DUPLICATE_RECORDS, person)) {
+            allowed.add(Status.DUPLICATE);
         }
         return allowed;
     }
@@ -141,7 +146,7 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
 
         reservedSearchParameters.getStatuses().retainAll(allowedSearchStatuses);
         if (reservedSearchParameters.getStatuses().isEmpty()) {
-            throw (new TdarRecoverableRuntimeException("You are not allowed to search for resources with the selected status"));
+            throw (new TdarRecoverableRuntimeException(YOU_ARE_NOT_ALLOWED_TO_SEARCH_FOR_RESOURCES_WITH_THE_SELECTED_STATUS));
         }
 
     }

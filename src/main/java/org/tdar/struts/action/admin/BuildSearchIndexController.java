@@ -1,6 +1,7 @@
 package org.tdar.struts.action.admin;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -66,7 +67,9 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
     }
 
     private void buildIndex() {
+        Date date = new Date();
         searchIndexService.indexAll(this);
+        getEmailService().send(String.format("indexing of %s complete.\n Started: %s \n Completed: %s", getHostName(), date, new Date()), "indexing completed");
         percentDone = 100;
     }
 

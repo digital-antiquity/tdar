@@ -7,7 +7,6 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Test;
@@ -24,7 +23,6 @@ import org.w3c.dom.Element;
 
 import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.HtmlCheckBoxInput;
-import com.gargoylesoftware.htmlunit.html.HtmlElement;
 
 /**
  * testing searches that are more involved than the basic browsing use cases.
@@ -209,6 +207,13 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     private boolean isNotAddProject(final String path) {
         return !path.endsWith("project/add");
+    }
+
+    @Test
+    public void testRangeSearch() {
+        gotoPage(SEARCH_RESULTS_BASE_URL
+                + ".action?&groups%5B0%5D.fieldTypes%5B1%5D=DATE_CREATED&groups%5B0%5D.createdDates%5B1%5D.start=2007&groups%5B0%5D.createdDates%5B1%5D.end=2009&__multiselect_includedStatuses=");
+        assertTextPresent("Value is between 2007 and 2009");
     }
 
     @Test

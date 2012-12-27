@@ -36,6 +36,7 @@ import org.tdar.core.service.SearchService;
 import org.tdar.core.service.StatisticService;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.resource.CategoryVariableService;
 import org.tdar.core.service.resource.CodingSheetService;
 import org.tdar.core.service.resource.DataTableService;
@@ -80,6 +81,8 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     @Autowired
     private transient ProjectService projectService;
+    @Autowired
+    private transient EmailService emailService;
     @Autowired
     private transient AccountService accountService;
     @Autowired
@@ -342,6 +345,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     public InformationResourceFileService getInformationResourceFileService() {
         return informationResourceFileService;
+    }
+
+    public EmailService getEmailService() {
+        return emailService;
     }
 
     public DataIntegrationService getDataIntegrationService() {

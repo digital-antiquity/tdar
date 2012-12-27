@@ -11,15 +11,14 @@ section.row.cols {
 }
     
 
-.mapcontainer #map_legend {
-    position: relative;
-    /*     right: -262px;
-    top: -21px;
- */
+#map_legend {
+    position: absolute;
     background-color: #EEE;
     display: block;
-    width: 280px;
-    height: 1.8em
+    width: 300px;
+    height: 1.8em;
+    right: 0px;
+	bottom: 0px;
 }
 
 .mapcontainer .legendText {

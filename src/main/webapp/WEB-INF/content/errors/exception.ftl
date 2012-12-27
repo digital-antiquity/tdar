@@ -22,7 +22,7 @@ where you can ask questions pertaining to the development or usage of the tDAR
 software platform.
 </p>
 <br />
-<a href="#" id="pToggleStackTrace" onclick="$('#stackTrace').toggle();return false;">Show/Hide Detailed Error Information</a> (please copy and paste this when filing a bug report)
+<a href="#" id="pToggleStackTrace" onclick="$('#stackTrace').toggleClass('hidden');return false;">Show/Hide Detailed Error Information</a> (please copy and paste this when filing a bug report)
 <div id="stackTrace" class='error <#if production!true>hidden</#if>' style='text-align:left'>
     <h2>Exception stack trace </h2>
     <pre>

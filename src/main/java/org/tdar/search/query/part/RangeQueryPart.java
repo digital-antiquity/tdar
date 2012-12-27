@@ -34,7 +34,7 @@ public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
         this(field, "Value");
         if (CollectionUtils.isNotEmpty(values)) {
             for (Range<C> range : values) {
-                if (!range.isInitialized() || range.getStart() == null && range.getEnd() == null) {
+                if (range == null || !range.isInitialized() || range.getStart() == null && range.getEnd() == null) {
                     continue;
                 }
                 add(range);
