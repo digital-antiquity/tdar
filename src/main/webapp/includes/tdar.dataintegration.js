@@ -286,7 +286,7 @@ function integrationAutoselect() {
 
 
     var okay = false;
-    for (match in matches) {
+    for (var match in matches) {
         if (matches.hasOwnProperty(match)) {
             console.log(match);
             if (matches[match].length == totalTables) {
