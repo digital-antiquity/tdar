@@ -15,7 +15,7 @@
 <h1>Invoice <span class="small">{${invoice.transactionStatus}}</span></h1>
 <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='/cart/process-payment-request?id=${invoice.id?c}'>
     <@s.hidden name="id" value="${invoice.id?c!-1}" />
-    <@s.hidden name="invoice.id" />
+<#--    <@s.hidden name="invoice.id" /> -->
 
 
 <@invoicecommon.printInvoice />
