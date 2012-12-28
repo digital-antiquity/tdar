@@ -495,9 +495,6 @@ function getBlankProject() {
 }
 
 
-/**
- * Testing Support
- */
 // http://stackoverflow.com/questions/1038746/equivalent-of-string-format-in-jquery
 function sprintf() {
     var s = arguments[0];
@@ -507,6 +504,10 @@ function sprintf() {
     }
     return s;
 }
+
+/**
+ * Testing Support
+ */
 
 function initializeView() {
     console.debug('initialize view');
