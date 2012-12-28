@@ -619,7 +619,7 @@ this bit of freemarker is voodoo:
     <#list settings.mapColors as color>
       <span class="legendBox" style="background-color:#${color}"></span>    
     </#list>
-<span class='legendText'>${max}+</span></div>
+<span class='legendText'>many</span></div>
  </div>
 
 
