@@ -113,6 +113,7 @@ TDAR.maps = function() {
             
             //indicate the map is ready and dom elements loaded (we wrap this because the google.maps api may not be available to the listener at time of call)
             google.maps.event.addListenerOnce(map, 'idle', function(){
+            	console.log("map ready");
                 $(mapDiv).trigger("mapready", [map, $mapDiv.data("resourceRect")]);
             });
             
@@ -122,9 +123,11 @@ TDAR.maps = function() {
 
     //private: look for resource latlongboxes and draw rectangles if found.
     var _setupLatLongBoxes = function(mapDiv, inputContainer){
+    	'use strict'
         var style = _defaults.rectStyleOptions.RESOURCE;
         var gmap = $(mapDiv).data("gmap");
-        if($('.sw-lat').val() !=="") {
+        
+        if(parseInt($('.sw-lat').val())) {
             var lat1 = $('.sw-lat', inputContainer).val();
             var lng1 = $('.sw-lng', inputContainer).val();
             var lat2 = $('.ne-lat', inputContainer).val();
@@ -303,7 +306,6 @@ TDAR.maps = function() {
         var $neLatDisplay = $('.ne-lat-display', inputContainer);
         var $neLngDisplay = $('.ne-lng-display', inputContainer);
         var $btnLocate = $('.locateCoordsButton', inputContainer);
-        
         //update form inputs and 'display' inputs when the bounds have changed.
         $(mapDiv).bind("resourceboundschanged", function(e, latLngBounds){
             //if no bounds, user clicked 'clear' button -- clear all input textboxes
@@ -327,11 +329,13 @@ TDAR.maps = function() {
         
         //if editing existing rect, populate the values
         if($(mapDiv).data("resourceRect")) {
+        	
             _populateLatLngDisplay($(mapDiv).data("resourceRect").getBounds(), $swLatDisplay, $swLngDisplay, $neLatDisplay, $neLngDisplay);
         }
         
         //update the GRect based on current value of inputs.
         var updateRectFromInputs = function() {
+                    	
             //trim the input, and if all non-blank then update the region
             var parseErrors = 0;
             $('.sw-lat-display, .sw-lng-display, .ne-lat-display, .ne-lng-display', inputContainer).each(function(){
@@ -405,47 +409,46 @@ TDAR.maps = function() {
     };
     
     var _setupMapResult = function() {
-        $(function() {
-            
-            $(".google-map", '#articleBody').one("mapready", function(e, myMap) {
-              var bounds = new google.maps.LatLngBounds();
-              var markers = new Array();
-              var infowindows = new Array();
-              var i=0;
-              $("ol.MAP li").each(function() {
-                  i++;
-                  var $this = $(this);
-                  if ($this.attr("data-lat") && $this.attr('data-long')) {
-                      var infowindow = new google.maps.InfoWindow({
-                          content: $this.html()
-                      });
-                      var marker = new google.maps.Marker({
-                          position: new google.maps.LatLng($this.attr("data-lat"),$this.attr("data-long")),
-                          map: myMap,
-                          icon: 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld='+i+'|7a1501|FFFFFF',
-                          title:$("a.resourceLink", $this).text()
-                      });
-                  
-                      $(this).click(function() {
-                          myMap.panTo(marker.getPosition());
-                        $(infowindows).each(function() {this.close(myMap);});
-                        infowindow.open(myMap,marker);
-                        return false;
-                      });
+        $(".google-map", '#articleBody').one("mapready", function(e, myMap) {
+        	console.log("setup map results");
+          var bounds = new google.maps.LatLngBounds();
+          var markers = new Array();
+          var infowindows = new Array();
+          var i=0;
+          $("ol.MAP li").each(function() {
+              i++;
+              var $this = $(this);
+              if ($this.attr("data-lat") && $this.attr('data-long')) {
+            	  console.log($this.attr("data-lat") + " " +  $this.attr('data-long'));
+                  var infowindow = new google.maps.InfoWindow({
+                      content: $this.html()
+                  });
+                  var marker = new google.maps.Marker({
+                      position: new google.maps.LatLng($this.attr("data-lat"),$this.attr("data-long")),
+                      map: myMap,
+                      icon: 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld='+i+'|7a1501|FFFFFF',
+                      title:$("a.resourceLink", $this).text()
+                  });
               
-                      google.maps.event.addListener(marker, 'click', function() {
-                        $(infowindows).each(function() {this.close(myMap);});
-                        infowindow.open(myMap,marker);
-                      });
-                  
-                      markers[markers.length] = marker;
-                      infowindows[infowindows.length] = infowindow;
-                      bounds.extend(marker.position);
-                      myMap.fitBounds(bounds);
-                  };
-              }); 
-          });
-          });        
+                  $(this).click(function() {
+                      myMap.panTo(marker.getPosition());
+                      $(infowindows).each(function() {this.close(myMap);});
+                      infowindow.open(myMap,marker);
+                      return false;
+                  });
+          
+                  google.maps.event.addListener(marker, 'click', function() {
+                      $(infowindows).each(function() {this.close(myMap);});
+                      infowindow.open(myMap,marker);
+                  });
+              
+                  markers[markers.length] = marker;
+                  infowindows[infowindows.length] = infowindow;
+                  bounds.extend(marker.position);
+              };
+          }); 
+          myMap.fitBounds(bounds);
+      });        
     };
     
     return {

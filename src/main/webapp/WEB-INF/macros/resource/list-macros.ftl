@@ -109,11 +109,11 @@
     </div>
     </#if>    
     </div>    
-        <script>
+    <script>
         $(document).ready(function() {
-        TDAR.maps.setupMapResult();
+	        TDAR.maps.setupMapResult();
         });
-        </script>      
+    </script>      
   </#if>
 </#macro>
 
