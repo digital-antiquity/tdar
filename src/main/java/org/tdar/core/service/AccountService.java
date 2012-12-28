@@ -213,6 +213,9 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     public BillingActivity getSpaceActivity() {
         for (BillingActivity activity : getActiveBillingActivities()) {
+            if (activity.isSpecial()) {
+                continue;
+            }
             if ((activity.getNumberOfFiles() == null || activity.getNumberOfFiles() == 0)
                     && (activity.getNumberOfResources() == null || activity.getNumberOfResources() == 0) && activity.getNumberOfMb() != null
                     && activity.getNumberOfMb() > 0) {
@@ -229,6 +232,9 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         }
         List<BillingItem> items = new ArrayList<BillingItem>();
         for (BillingActivity activity : getActiveBillingActivities()) {
+            if (activity.isSpecial()) {
+                continue;
+            }
             // 2 cases (1) exact value; (2) where the next step up might actually be cheaper
             int files = numFiles.intValue();
             if (!exact && activity.supportsFileLimit() && activity.getMinAllowedNumberOfFiles() > numFiles) {

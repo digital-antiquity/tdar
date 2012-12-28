@@ -202,4 +202,14 @@ public class BillingActivity extends Persistable.Base {
         }
         return false;
     }
+
+    /*
+     * this is for testing to ensure that dev pricing doesn't show up in "real" pricing
+     */
+    public boolean isSpecial() {
+        if (getName().contains("error") || getName().contains("decline") || getName().contains("unknown")) {
+        		return true;
+        }
+        return false;
+    }
 }
