@@ -39,6 +39,7 @@
                      "/includes${fakeDirectory}/tdar.dataintegration.js", 
                      "/includes${fakeDirectory}/tdar.advanced-search.js",
                      "/includes${fakeDirectory}/tdar.inheritance.js",
+                     "/includes${fakeDirectory}/tdar.pricing.js",
                      "/includes${fakeDirectory}/tdar.heightevents.js",
                      "/includes${fakeDirectory}/tdar.contexthelp.js",
                      "/includes/bindWithDelay.js",
