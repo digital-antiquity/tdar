@@ -23,7 +23,8 @@ var _initPricing = function(form, ajaxUrl) {
     var url = ajaxUrl + "?lookupMBCount=" + numMb + "&lookupFileCount=" + numFiles;
     $.ajax({
       url: url,
-      dataType: 'json',
+      dataType: 'jsonp',
+      crossDomain: true,
       type:'POST',
       success: function(data) {
        
