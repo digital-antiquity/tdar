@@ -124,7 +124,7 @@ public class CreditCartWebITCase extends AbstractAuthenticatedWebTestCase {
     private void testResponse(String total, TransactionStatus expectedResponse) throws MalformedURLException {
         assertCurrentUrlContains("/simple");
 
-        String invoiceid = getInput("invoice.id").getAttribute("value");
+        String invoiceid = getInput("id").getAttribute("value");
         submitForm();
         assertCurrentUrlContains("process-payment-request");
         clickLinkWithText("click here");
