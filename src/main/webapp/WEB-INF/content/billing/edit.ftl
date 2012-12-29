@@ -19,7 +19,6 @@ Note: you may have multiple accounts to simplify billing and allow different peo
     <@s.textfield name="account.name" cssClass="input-xlarge" label="Account Name"/>
     <@s.textarea name="account.description" cssClass="input-xlarge" label="Account Description"/>
     <@s.hidden name="id" value="${account.id?c}" />    
-    <@s.hidden name="account.id" />    
     <@s.hidden name="invoiceId" />    
     
     <#if billingAdmin>
