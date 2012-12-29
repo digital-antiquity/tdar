@@ -131,9 +131,24 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         return false;
     }
 
+    @Transactional
     public void markResourcesAsFlagged(Collection<Resource> resources) {
         for (Resource resource : resources) {
+            resource.setPreviousStatus(resource.getStatus());
             resource.setStatus(Status.FLAGGED_ACCOUNT_BALANCE);
+        }
+        saveOrUpdateAll(resources);
+    }
+
+    @Transactional
+    public void unMarkResourcesAsFlagged(Collection<Resource> resources) {
+        for (Resource resource : resources) {
+            Status status = resource.getPreviousStatus();
+            if (status == null) {
+                status = Status.ACTIVE;
+            }
+            resource.setStatus(status);
+            resource.setPreviousStatus(null);
         }
         saveOrUpdateAll(resources);
     }
@@ -144,15 +159,16 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     }
 
     @Transactional
-    public void updateQuotaAndResetResourcesToStatus(Account account, Status endingStatus) {
+    public void updateQuotaAndResetResourceStatus(Account account) {
         if (!account.isOverdrawn(getResourceEvaluator())) {
             throw new TdarQuotaException("account not charged enough", null);
         } else {
             List<Resource> resources = new ArrayList<Resource>();
-            // FIXME: dao
+
             for (Resource resource : account.getResources()) {
                 if (resource.getStatus() == Status.FLAGGED_ACCOUNT_BALANCE) {
-                    resource.setStatus(endingStatus);
+                    resource.setStatus(resource.getPreviousStatus());
+                    resource.setPreviousStatus(null);
                     resources.add(resource);
                 }
             }
@@ -201,6 +217,9 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             status = e.getCode();
             markResourcesAsFlagged(resourcesToEvaluate);
             logger.info("marking {} resources {} FLAGGED", status, resourcesToEvaluate);
+        }
+        if (status == AccountAdditionStatus.CAN_ADD_RESOURCE) {
+            unMarkResourcesAsFlagged(resourcesToEvaluate);
         }
         saveOrUpdate(account);
         return status;

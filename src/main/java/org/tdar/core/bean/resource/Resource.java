@@ -224,6 +224,10 @@ public class Resource extends JsonModel.Base implements Persistable,
     @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     private Status status = Status.ACTIVE;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "previous_status")
+    private Status previousStatus = Status.ACTIVE;
+
     @Boost(.5f)
     @IndexedEmbedded
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
@@ -1626,6 +1630,14 @@ public class Resource extends JsonModel.Base implements Persistable,
 
     public void setAccount(Account account) {
         this.account = account;
+    }
+
+    public Status getPreviousStatus() {
+        return previousStatus;
+    }
+
+    public void setPreviousStatus(Status previousStatus) {
+        this.previousStatus = previousStatus;
     }
 
 }
