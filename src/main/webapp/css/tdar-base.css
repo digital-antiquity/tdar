@@ -1194,7 +1194,7 @@ nav ul {
 	padding-right: 10px !important;
 }
 
-.view .sidebar {
+.view .sidebar, .dashboard .sidebar {
 	background: url(/images/r4/bg-cols-right.png) top left repeat-y;
 	margin-left: 0px;
 	padding-left: 0px;

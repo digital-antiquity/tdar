@@ -30,6 +30,12 @@
     </div>
 </div>
 
+<div id="sidebar-right" parse="true">
+<div>
+ <@collectionsSection />
+</div>
+</div>
+
 <div class="row">
     <div class="span9">
     Welcome back, ${authenticatedUser.firstName}! 
@@ -40,114 +46,129 @@
     </div>
 </div>
 
+
 <#if contributor>
-<#if (activeResourceCount == 0)>
-<div class="row">
-    <div class="span9">
-        <h2>Getting Started</h2>
-        <ol style='list-style-position:inside'>
-            <li><a href="<@s.url value="/project/add"/>">Start a new Project</a></li>
-            <li><a href="<@s.url value="/resource/add"/>">Add a new Resource</a></li>
-        </ol>
-    </div>
-</div>
-<#else>
-<div class="row">
-    <div class="span9">
-        <h2>At a glance</h2>
-        <div class="row">
-            <div class="span4 piechart"><@common.pieChart statusCountForUser "statusForUser" "userSubmitterContext=true&includedStatuses" /></div>
-            <div class="span5 piechart"><@common.pieChart resourceCountForUser "resourceForUser" "useSubmitterContext=true&resourceTypes" /></div>
-        </div>
-    </div>
-</div>
+	<#if (activeResourceCount == 0)>
+		<@gettingStarted />
+	<hr /> 
+	<#else>
+		<@resourcePieChart />
+		<hr/>
+	
+		<@recentlyUpdatedSection />
+	</#if>
 
-<hr />    
-
-<div class="row">
-    <div class="span9">
-        <h2>Item(s) You've Recently Updated</h2>
-        <ol id='recentlyEditedResources'>
-          
-            <#list recentlyEditedResources as res>
-            <li id="li-recent-resource-${res.id?c}">
-               <span class="fixed">
-                        <@common.cartouche res true>
-                <span class="recent-nav">
-                    <a href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>">edit</a> |
-                    <a href="<@s.url value='/${res.urlNamespace}/delete'><@s.param name="id" value="${res.id?c}"/></@s.url>">delete</a>
-                </span>
-                        <a href="<@s.url value='/${res.urlNamespace}/view'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@common.truncate res.title 65 /></a>
-                        </@common.cartouche>
-                </span>
-            </li>
-            </#list>
-        </ol>
-    </div>
-</div>
+	<@emptyProjectsSection />	
+	<@browseResourceSection />
 </#if>
+<hr/>
+<@accountSection />
+<hr/>
+
+<@bookmarksSection />
 
 
-<#if (emptyProjects?? && !emptyProjects.empty )>
-<div class="row">
-    <div class="span9" id="divEmptyProjects">
-        <h2>Empty Projects</h2>
-        <ol style='list-style-position:inside' id="emptyProjects">
-        <#list emptyProjects as res>
-        <li id="li-recent-resource-${res.id?c}">
-                <a href="<@s.url value='/${res.urlNamespace}/view'><@s.param name="id" value="${res.id?c}"/></@s.url>">
-                    <@common.truncate res.title 70 />
-                </a> 
-            <div class="recent-nav pull-right">
-                <a href="<@s.url value='/resource/add?projectId=${res.id?c}'><@s.param name="id" value="${res.id?c}"/></@s.url>" title="add a resource to this project">add resource</a> |
-                <a href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>">edit</a> |
-                <a href="<@s.url value='/${res.urlNamespace}/delete'><@s.param name="id" value="${res.id?c}"/></@s.url>" >delete</a>
-            </div>
-        </li>
-        </#list>
-        </ol>
-    </div>
-</div>
-<hr />
-</#if>
 
-<div class="" id="project-list">
-    <h2>Browse Resources</h2>
-    <form action=''>
-    <@edit.resourceDataTable />
-    </form>
-</div>
 
-<div id="sidebar-right" parse="true">
+
+<#macro gettingStarted>
+	<div class="row">
+	    <div class="span9">
+	        <h2>Getting Started</h2>
+	        <ol style='list-style-position:inside'>
+	            <li><a href="<@s.url value="/project/add"/>">Start a new Project</a></li>
+	            <li><a href="<@s.url value="/resource/add"/>">Add a new Resource</a></li>
+	        </ol>
+	    </div>
+	</div>
+</#macro>
+
+<#macro resourcePieChart>
+	<div class="row">
+	    <div class="span9">
+	        <h2>At a glance</h2>
+	        <div class="row">
+	            <div class="span4 piechart"><@common.pieChart statusCountForUser "statusForUser" "userSubmitterContext=true&includedStatuses" /></div>
+	            <div class="span5 piechart"><@common.pieChart resourceCountForUser "resourceForUser" "useSubmitterContext=true&resourceTypes" /></div>
+	        </div>
+	    </div>
+	</div>
+
+</#macro>
+
+<#macro recentlyUpdatedSection>
+
+	<div class="row">
+	    <div class="span9">
+	        <h2>Item(s) You've Recently Updated</h2>
+	        <ol id='recentlyEditedResources'>
+	          
+	            <#list recentlyEditedResources as res>
+	            <li id="li-recent-resource-${res.id?c}">
+	               <span class="fixed">
+	                        <@common.cartouche res true>
+	                <span class="recent-nav">
+	                    <a href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>">edit</a> |
+	                    <a href="<@s.url value='/${res.urlNamespace}/delete'><@s.param name="id" value="${res.id?c}"/></@s.url>">delete</a>
+	                </span>
+	                        <a href="<@s.url value='/${res.urlNamespace}/view'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@common.truncate res.title 65 /></a>
+	                        </@common.cartouche>
+	                </span>
+	            </li>
+	            </#list>
+	        </ol>
+	    </div>
+	</div>
+
+
+</#macro>
+
+<#macro emptyProjectsSection>
+	<#if (emptyProjects?? && !emptyProjects.empty )>
+	<div class="row">
+	    <div class="span9" id="divEmptyProjects">
+	        <h2>Empty Projects</h2>
+	        <ol style='list-style-position:inside' id="emptyProjects">
+	        <#list emptyProjects as res>
+	        <li id="li-recent-resource-${res.id?c}">
+	                <a href="<@s.url value='/${res.urlNamespace}/view'><@s.param name="id" value="${res.id?c}"/></@s.url>">
+	                    <@common.truncate res.title 70 />
+	                </a> 
+	            <div class="recent-nav pull-right">
+	                <a href="<@s.url value='/resource/add?projectId=${res.id?c}'><@s.param name="id" value="${res.id?c}"/></@s.url>" title="add a resource to this project">add resource</a> |
+	                <a href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>">edit</a> |
+	                <a href="<@s.url value='/${res.urlNamespace}/delete'><@s.param name="id" value="${res.id?c}"/></@s.url>" >delete</a>
+	            </div>
+	        </li>
+	        </#list>
+	        </ol>
+	    </div>
+	</div>
+	<hr />
+	</#if>
+</#macro>
+
+
+
+<#macro browseResourceSection>
+	<div class="" id="project-list">
+	    <h2>Browse Resources</h2>
+	    <form action=''>
+	    <@edit.resourceDataTable />
+	    </form>
+	</div>
+</#macro>
+
 <#macro repeat num val>
  <#if (num > 0)>
   <@repeat (num-1) val /><#noescape>${val}</#noescape>
  </#if>
 </#macro>
 
-<div id="divAccountInfo">
-<h2>About You</h2>
-    <strong>Full Name: </strong>${authenticatedUser.properName}<#if authenticatedUser.institution??>, ${authenticatedUser.institution.name}</#if><br />
-    <#if authenticatedUser.penultimateLogin??>
-        <strong>Last Login: </strong>${authenticatedUser.penultimateLogin?datetime}<br/>
-    </#if>
-    <a href="<@s.url value='/entity/person/edit?id=${sessionData.person.id?c}'/>">edit your profile</a>
-</div>
-
-<#if payPerIngestEnabled>
-    <div>
-        <h2>Your Account(s)</h2>
-        <ul>
-        <li><a href="/cart/add">Create a new account or add more to an existing one	</a></li>
-        <#list accounts as account>
-            <li>
-                <a href="<@s.url value="/billing/${account.id?c}" />">${account.name!"unamed"}</a>
-            </li>
-        </#list>
-        </ul>        
-    </div>
-    </#if>
-   <div class=""><h2>Collections You Created </h2>
+<#macro collectionsSection>
+	
+   <div class="">
+   <h2>Collections You Created </h2>
       <@listCollections resourceCollections>
         <#if (!resourceCollections?has_content )>
           <li><a href="<@s.url value="/collection/add"/>">create one</a></li>
@@ -156,17 +177,50 @@
    </div>
    <br/>
    <#if sharedResourceCollections?? && !sharedResourceCollections.empty >
-     <div class=""><h2>Collections Shared With You</h2>
+     <div class="">
+     <h2>Collections Shared With You</h2>
        <@listCollections sharedResourceCollections />
     </div>
   </#if>
+
+</#macro>
+
+<#macro accountSection>
+<div id="accountSection" class="row">
+	<div id="divAccountInfo" class="<#if payPerIngestEnabled>span4<#else>span9</#if>">
+	<h2>About You</h2>
+	    <strong>Full Name: </strong>${authenticatedUser.properName}<#if authenticatedUser.institution??>, ${authenticatedUser.institution.name}</#if><br />
+	    <#if authenticatedUser.penultimateLogin??>
+	        <strong>Last Login: </strong>${authenticatedUser.penultimateLogin?datetime}<br/>
+	    </#if>
+	    <a href="<@s.url value='/entity/person/edit?id=${sessionData.person.id?c}'/>">edit your profile</a>
+	</div>
+
+	<#if payPerIngestEnabled>
+	    <div class="span5">
+	        <h2>Your Account(s)</h2>
+	        <ul>
+	        <#list accounts as account>
+	            <li>
+	                <a href="<@s.url value="/billing/${account.id?c}" />">${account.name!"unamed"}</a>
+	            </li>
+	        </#list>
+	        <li><a href="/cart/add">Create a new account or add more to an existing one	</a></li>
+	        </ul>        
+	    </div>
+	</#if>
 </div>
-</#if>
-<hr />
+</#macro>
 
-<h2 id="bookmarks">Your Bookmarks</h2>
-<@rlist.listResources resourcelist=bookmarkedResources sortfield='RESOURCE_TYPE' editable=false bookmarkable=true  expanded=true listTag='ol' headerTag="h3" />
 
+<#macro bookmarksSection>
+<div class="row">
+	<div class="span9">
+	<h2 id="bookmarks">Your Bookmarks</h2>
+	<@rlist.listResources resourcelist=bookmarkedResources sortfield='RESOURCE_TYPE' editable=false bookmarkable=true  expanded=true listTag='ol' headerTag="h3" />
+	</div>
+</div>
+</#macro>
 
 <#macro listCollections resourceCollections_ >
       <ul>

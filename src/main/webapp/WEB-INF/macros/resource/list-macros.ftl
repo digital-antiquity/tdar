@@ -130,10 +130,10 @@
                 </#if>
                 <#if resource.description?has_content && !resource.description?starts_with("The information in this record has been migrated into tDAR from the National Archaeological Database Reports Module") >
                     <p class="abstract">
-                        <@common.truncate resource.description!"No description specified." length />
+<span class="pull-right small">[tDAR id: ${resource.id?c}]</span>                        <@common.truncate resource.description!"No description specified." length />
                     </p>
                 </#if>
-	 <p><b>tDAR id:</b> ${resource.id?c}</p>
+	 
                 <br/>
                 </div>
             </#if>
