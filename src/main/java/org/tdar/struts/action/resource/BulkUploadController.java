@@ -115,14 +115,18 @@ public class BulkUploadController extends AbstractInformationResourceController<
             @Result(name = "wait", type = "freemarker", location = "checkstatus-wait.ftl", params = { "contentType", "application/json" }) })
     public String checkStatus() {
         AsyncUpdateReceiver reciever = bulkUploadService.checkAsyncStatus(getTicketId());
-        phase = reciever.getStatus();
-        percentDone = reciever.getPercentComplete();
-        setAsyncErrors(reciever.getHtmlAsyncErrors());
-        if (percentDone == 100f) {
-            List<Pair<Long, String>> details = reciever.getDetails();
-            setDetails(details);
+        if (reciever != null) {
+            phase = reciever.getStatus();
+            percentDone = reciever.getPercentComplete();
+            setAsyncErrors(reciever.getHtmlAsyncErrors());
+            if (percentDone == 100f) {
+                List<Pair<Long, String>> details = reciever.getDetails();
+                setDetails(details);
+            }
+            return "wait";
+        } else {
+            return ERROR;
         }
-        return "wait";
     }
 
     @SkipValidation
