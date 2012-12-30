@@ -9,13 +9,15 @@ section.row.cols {
     margin-top: 3em !important;
     
 }
-    
+
+.worldmap {
+	border: 1px solid #AAA;
+}
 
 #map_legend {
     position: absolute;
-    background-color: #EEE;
     display: block;
-    width: 300px;
+//    width: 300px;
     height: 1.8em;
     right: 0px;
 	bottom: 0px;

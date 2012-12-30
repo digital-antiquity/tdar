@@ -249,7 +249,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         controller.setUploadFileFileName(Arrays.asList(TestConstants.TEST_IMAGE_NAME));
         String uploadStatus = controller.upload();
         assertEquals(APIController.ERROR, uploadStatus);
-        assertEquals(String.format("Expected Forbidden for %s, but was %s", doc.getId(), controller.getStatus()), StatusCode.FORBIDDEN.getResultName(), controller.getStatus());
+        assertEquals(String.format("Expected Forbidden for %s, but was %s >> %s", doc.getId(), controller.getStatus(), datasetXml), StatusCode.FORBIDDEN.getResultName(), controller.getStatus());
     }
 
     @Test
@@ -264,7 +264,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
 
         String uploadStatus = controller.upload();
         assertEquals(APIController.ERROR, uploadStatus);
-        assertEquals(String.format("Expected UNAUTHORIZED for %s, but was %s", doc.getId(), controller.getStatus()), StatusCode.UNAUTHORIZED.getResultName(), controller.getStatus());
+        assertEquals(String.format("Expected UNAUTHORIZED for %s, but was %s >> %s", doc.getId(), controller.getStatus(), docXml), StatusCode.UNAUTHORIZED.getResultName(), controller.getStatus());
     }
 
     @Test
@@ -288,7 +288,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         controller.setRecord(docXml);
         String uploadStatus = controller.upload();
         assertEquals(APIController.ERROR, uploadStatus);
-        assertEquals(String.format("Expected Forbidden for %s, but was %s", docid, controller.getStatus()), StatusCode.FORBIDDEN.getResultName(), controller.getStatus());
+        assertEquals(String.format("Expected Forbidden for %s, but was %s >> $s", docid, controller.getStatus(), docXml), StatusCode.FORBIDDEN.getResultName(), controller.getStatus());
     }
 
     @Test
