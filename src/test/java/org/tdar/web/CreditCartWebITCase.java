@@ -109,7 +109,7 @@ public class CreditCartWebITCase extends AbstractAuthenticatedWebTestCase {
         String invoiceId2 = testResponse("543000", TransactionStatus.TRANSACTION_SUCCESSFUL);
         String account = addInvoiceToNewAccount(invoiceId2, accountId);
         assertEquals(account, accountId);
-        assertTextPresent("10,000");
+        assertTextPresent("10,020");
         assertTextPresent("2,000");
         assertTextPresent("10");
         assertTextPresent("12");

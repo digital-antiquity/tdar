@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.service.AccountService;
@@ -43,6 +44,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
     public void testCreateWithoutValidAccount() throws Exception {
         controller = generateNewInitializedController(DocumentController.class);
         Assert.assertTrue(getTdarConfiguration().isPayPerIngestEnabled());
+        Assert.assertTrue(CollectionUtils.isEmpty(controller.getActiveAccounts()));
         initControllerFields();
         Assert.assertTrue(controller.isPayPerIngestEnabled());
 
@@ -63,8 +65,11 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
     @Rollback()
     public void testResourceControllerWithoutValidAccount() throws Exception {
         Assert.assertTrue(getTdarConfiguration().isPayPerIngestEnabled());
-        ResourceController rc = generateNewInitializedController(ResourceController.class);
+        ResourceController rc = generateNewController(ResourceController.class);
+        Person user = createAndSaveNewPerson();
+        init(rc, user);
 
+        assertTrue(CollectionUtils.isEmpty(accountService.listAvailableAccountsForUser(user)));
         String result = null;
         TdarActionException tdae = null;
         try {

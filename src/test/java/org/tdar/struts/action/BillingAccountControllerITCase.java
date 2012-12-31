@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.Invoice;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
 
@@ -36,10 +37,12 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
     @Test
     @Rollback
     public void testAccountControllerChoicesOkNewAccount() throws TdarActionException {
-        Invoice invoice = new Invoice(getUser(), PaymentMethod.INVOICE, 10L, 0L, null);
+        Person user = createAndSaveNewPerson();
+        Invoice invoice = new Invoice(user, PaymentMethod.INVOICE, 10L, 0L, null);
         genericService.saveOrUpdate(invoice);
 
-        BillingAccountController controller = generateNewInitializedController(BillingAccountController.class);
+        BillingAccountController controller = generateNewController(BillingAccountController.class);
+        init(controller, user);
         controller.setInvoiceId(invoice.getId());
         controller.prepare();
         assertEquals(BillingAccountController.NEW_ACCOUNT, controller.selectAccount());
