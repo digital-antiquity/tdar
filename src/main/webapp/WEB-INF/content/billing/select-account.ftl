@@ -2,6 +2,8 @@
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
+<#import "common-account.ftl" as accountcommon>
+
 <head>
 <title>Your cart</title>
 <meta name="lastModifiedDate" content="$Date$"/>
@@ -16,14 +18,8 @@
          list='%{accounts}'  listValue='name' listKey="id" title="Address Type" />
 
     <h3>Or... create a new one</h3>
-    <@s.textfield name="account.name" cssClass="input-xlarge" label="Account Name"/>
-    <@s.textarea name="account.description" cssClass="input-xlarge" label="Account Description"/>
+	<@accountcommon.accountInfoForm />
 
-    <@s.hidden name="invoiceId" />    
-    <h3>Who can charge to this account</h3>
-    ...
-    <br/>
-    <@edit.submit fileReminder=false />
 </@s.form>
 
 </div>

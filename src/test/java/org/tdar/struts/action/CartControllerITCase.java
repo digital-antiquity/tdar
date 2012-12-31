@@ -160,8 +160,13 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
     @Test
     @Rollback
     public void testCartPaymentValid() throws TdarActionException, ClientProtocolException, IOException {
-        String response;
         CartController controller = setupPaymentTests();
+        Invoice invoice = runSuccessfullTransaction(controller);
+        assertEquals(TransactionStatus.TRANSACTION_SUCCESSFUL, invoice.getTransactionStatus());
+    }
+
+    private Invoice runSuccessfullTransaction(CartController controller) throws TdarActionException {
+        String response;
         Invoice invoice = controller.getInvoice();
         Long invoiceId = invoice.getId();
         controller.setBillingPhone("1234567890");
@@ -172,8 +177,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         String response2 = processMockResponse(invoice, redirectUrl, true);
         assertEquals(CartController.INVOICE, response2);
         invoice = genericService.find(Invoice.class, invoiceId);
-        assertEquals(TransactionStatus.TRANSACTION_SUCCESSFUL, invoice.getTransactionStatus());
-
+        return invoice;
     }
 
     @Test

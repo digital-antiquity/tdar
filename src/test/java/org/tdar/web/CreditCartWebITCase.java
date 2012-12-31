@@ -1,13 +1,18 @@
 package org.tdar.web;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.tdar.TestConstants;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplate.NelnetTransactionItem;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
@@ -18,6 +23,9 @@ import com.gargoylesoftware.htmlunit.WebWindow;
 @RunWith(MultipleTdarConfigurationRunner.class)
 @RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.cc.properties" })
 public class CreditCartWebITCase extends AbstractAuthenticatedWebTestCase {
+
+    private static final String MY_TEST_ACCOUNT = "my test account";
+    private static final String THIS_IS_A_TEST_DESCIPTION = "this is a test desciption";
 
     @Test
     public void testCartIncomplete() throws MalformedURLException {
@@ -55,7 +63,6 @@ public class CreditCartWebITCase extends AbstractAuthenticatedWebTestCase {
         testResponse("5000", TransactionStatus.TRANSACTION_SUCCESSFUL);
     }
 
-    
     @Test
     public void testCartSuccess() throws MalformedURLException {
         gotoPage("/cart/add");
@@ -68,6 +75,80 @@ public class CreditCartWebITCase extends AbstractAuthenticatedWebTestCase {
         assertTextPresent("total:$1,350");
         setInput("invoice.paymentMethod", "CREDIT_CARD");
         testResponse("135000", TransactionStatus.TRANSACTION_SUCCESSFUL);
+    }
+
+    @Test
+    public void testCartWithAccount() throws MalformedURLException {
+        gotoPage("/cart/add");
+        setInput("invoice.numberOfMb", "2000");
+        setInput("invoice.numberOfFiles", "10");
+        submitForm();
+
+        setInput("invoice.paymentMethod", "CREDIT_CARD");
+        String invoiceId = testResponse("135000", TransactionStatus.TRANSACTION_SUCCESSFUL);
+        String accountId = addInvoiceToNewAccount(invoiceId, null);
+        assertTrue(accountId != "-1");
+    }
+
+    @Test
+    public void testAddCartToAccount() throws MalformedURLException {
+        gotoPage("/cart/add");
+        setInput("invoice.numberOfMb", "2000");
+        setInput("invoice.numberOfFiles", "10");
+        submitForm();
+
+        setInput("invoice.paymentMethod", "CREDIT_CARD");
+        String invoiceId = testResponse("135000", TransactionStatus.TRANSACTION_SUCCESSFUL);
+        String accountId = addInvoiceToNewAccount(invoiceId, null);
+        assertTrue(accountId != "-1");
+        gotoPage("/cart/add");
+        setInput("invoice.numberOfMb", "10000");
+        setInput("invoice.numberOfFiles", "12");
+        submitForm();
+        setInput("invoice.paymentMethod", "CREDIT_CARD");
+        String invoiceId2 = testResponse("543000", TransactionStatus.TRANSACTION_SUCCESSFUL);
+        String account = addInvoiceToNewAccount(invoiceId2, accountId);
+        assertEquals(account, accountId);
+        assertTextPresent("10,000");
+        assertTextPresent("2,000");
+        assertTextPresent("10");
+        assertTextPresent("12");
+        assertTextPresent("$5,430");
+        assertTextPresent("$1,350");
+        logger.info(getPageText());
+        
+    }
+
+    private String addInvoiceToNewAccount(String invoiceId, String accountId) {
+        if (accountId != null) {
+            gotoPage("/billing/choose?invoiceId=" + invoiceId + "&accountId=" + accountId);
+            setInput("id", accountId);
+        } else {
+            gotoPage("/billing/add?invoiceId=" + invoiceId);
+        }
+        setInput("account.name", MY_TEST_ACCOUNT);
+        setInput("account.description", THIS_IS_A_TEST_DESCIPTION);
+        List<Person> users = entityService.findAllRegisteredUsers(3);
+        List<Long> userIds = Persistable.Base.extractIds(users);
+        for (int i = 0; i < userIds.size(); i++) {
+            setInput("authorizedMembers[" + i + "].id", Long.toString(userIds.get(i)));
+        }
+        submitForm();
+        assertAccountPageCorrect(users, userIds);
+        clickLinkOnPage("edit");
+        String id = getInput("id").getAttribute("value");
+        submitForm();
+        assertAccountPageCorrect(users, userIds);
+        return id;
+    }
+
+    private void assertAccountPageCorrect(List<Person> users, List<Long> userIds) {
+        assertTextPresent(MY_TEST_ACCOUNT);
+        assertTextPresent(THIS_IS_A_TEST_DESCIPTION);
+        for (int i = 0; i < userIds.size(); i++) {
+            assertTextPresent(users.get(i).getProperName());
+        }
+        assertTextPresent(getUser().getProperName());
     }
 
     @Test
@@ -121,7 +202,7 @@ public class CreditCartWebITCase extends AbstractAuthenticatedWebTestCase {
         testResponse("140511", TransactionStatus.TRANSACTION_FAILED);
     }
 
-    private void testResponse(String total, TransactionStatus expectedResponse) throws MalformedURLException {
+    private String testResponse(String total, TransactionStatus expectedResponse) throws MalformedURLException {
         assertCurrentUrlContains("/simple");
 
         String invoiceid = getInput("id").getAttribute("value");
@@ -137,6 +218,7 @@ public class CreditCartWebITCase extends AbstractAuthenticatedWebTestCase {
         clickElementWithId("process-payment_0");
         response = getPollingRequest(polingUrl);
         assertTrue(response.contains(expectedResponse.name()));
+        return invoiceid;
     }
 
     private String getPollingRequest(URL polingUrl) {

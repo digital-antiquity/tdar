@@ -296,6 +296,10 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         PricingOption option = new PricingOption(PricingType.SIZED_BY_MB);
         List<BillingItem> items = new ArrayList<BillingItem>();
         for (BillingActivity activity : getActiveBillingActivities()) {
+            if (activity.isSpecial()) {
+                continue;
+            }
+
             if (activity.supportsFileLimit()) {
                 Long total = Account.divideByRoundUp(spaceInMb, activity.getNumberOfMb());
                 Long minAllowedNumberOfFiles = activity.getMinAllowedNumberOfFiles();

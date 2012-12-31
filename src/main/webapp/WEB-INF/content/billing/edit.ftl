@@ -2,6 +2,8 @@
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
+<#import "common-account.ftl" as accountcommon>
+
 <head>
 <title>Your cart</title>
 <meta name="lastModifiedDate" content="$Date$"/>
@@ -16,18 +18,8 @@ Note: you may have multiple accounts to simplify billing and allow different peo
 </div>
 <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='save'>
 
-    <@s.textfield name="account.name" cssClass="input-xlarge" label="Account Name"/>
-    <@s.textarea name="account.description" cssClass="input-xlarge" label="Account Description"/>
     <@s.hidden name="id" value="${account.id?c}" />    
-    <@s.hidden name="invoiceId" />    
-    
-    <#if billingAdmin>
-    	<b>allow user to change owner of account</b>
-    </#if>
-    <h3>Who can charge to this account </h3>
-    <@edit.listMemberUsers />
-    
-    <@edit.submit fileReminder=false />
+	<@accountcommon.accountInfoForm />
 </@s.form>
 
 </div>
