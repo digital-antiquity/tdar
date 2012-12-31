@@ -202,6 +202,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         loadCustomMetadata();
         getResourceService().incrementAccessCounter(getPersistable());
         loadEffectiveResourceCollections();
+        getResourceService().updateTransientAccessCount(getResource());
 
         if (isEditor()) {
             if (getPersistableClass().equals(Project.class)) {
@@ -454,7 +455,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         setMaterialKeywordIds(toIdList(getResource().getMaterialKeywords()));
         setInvestigationTypeIds(toIdList(getResource().getInvestigationTypes()));
 
-        getResourceService().updateTransientAccessCount(getResource());
         setUncontrolledCultureKeywords(toSortedStringList(getResource().getUncontrolledCultureKeywords()));
         setApprovedCultureKeywordIds(toIdList(getResource().getApprovedCultureKeywords()));
 
