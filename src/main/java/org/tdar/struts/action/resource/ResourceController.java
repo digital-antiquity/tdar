@@ -51,7 +51,7 @@ public class ResourceController extends AuthenticationAware.Base {
             @Result(name=SUCCESS, location = "add.ftl")
     })
     public String execute() {
-        if (!getTdarConfiguration().isPayPerIngestEnabled() || getAccountService().hasSpaceInAnAccount(getAuthenticatedUser(), ResourceType.DOCUMENT)) {
+        if (!getTdarConfiguration().isPayPerIngestEnabled() || getAuthenticatedUser().getContributor() == true && getAccountService().hasSpaceInAnAccount(getAuthenticatedUser(), ResourceType.DOCUMENT)) {
             return SUCCESS;
         }
         return BILLING;

@@ -272,7 +272,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     @Override
     public boolean isAbleToCreateBillableItem() {
-        if (!getTdarConfiguration().isPayPerIngestEnabled() || getAccountService().hasSpaceInAnAccount(getAuthenticatedUser(), getResource().getResourceType())) {
+        if (!getTdarConfiguration().isPayPerIngestEnabled() || getAuthenticatedUser().getContributor() == true && getAccountService().hasSpaceInAnAccount(getAuthenticatedUser(), getResource().getResourceType())) {
             return true;
         }
         return false;

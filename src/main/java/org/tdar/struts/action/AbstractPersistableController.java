@@ -305,10 +305,10 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             @Result(name=BILLING, location = "../billing-note.ftl")
     })
     public String add() throws TdarActionException {
-        checkValidRequest(RequestType.CREATE, this, InternalTdarRights.EDIT_ANY_RESOURCE);
         if (!isAbleToCreateBillableItem()) {
             return BILLING;
         }
+        checkValidRequest(RequestType.CREATE, this, InternalTdarRights.EDIT_ANY_RESOURCE);
         logAction("CREATING");
         return loadAddMetadata();
     }
