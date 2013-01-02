@@ -457,6 +457,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
 
         BrowseController controller_ = generateNewInitializedController(BrowseController.class);
         Long fileId = testFile.getId();
+        searchIndexService.flushToIndexes();
         searchIndexService.indexAll(Resource.class);
         testFile = null;
         genericService.synchronize();
