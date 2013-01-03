@@ -155,6 +155,7 @@ public class BulkUploadService {
     public void save(final InformationResource image, final Person submitter,
             final Long ticketId, final File excelManifest,
             final Collection<FileProxy> fileProxies, Long accountId) {
+        Map<String, Resource> resourcesCreated = new HashMap<String, Resource>();
 
         logger.debug("BEGIN ASYNC: " + image + fileProxies);
 
@@ -184,10 +185,11 @@ public class BulkUploadService {
             receiver.addError(throwable);
             throw throwable;
         }
-        FileInputStream stream = null;
-        logger.debug("mapping metadata with excelManifest " + excelManifest);
+        logger.debug("mapping metadata with excelManifest:" + excelManifest);
         BulkManifestProxy manifestProxy = null;
+//        try {
 
+        FileInputStream stream = null;
         if (excelManifest != null && excelManifest.exists()) {
             logger.debug("processing manifest " + excelManifest.getName());
             try {
@@ -201,22 +203,27 @@ public class BulkUploadService {
             }
         }
 
-        Map<String, Resource> resourcesCreated = new HashMap<String, Resource>();
-        if (!manifestProxy.isCaseSensitive()) {
+        if (manifestProxy != null && !manifestProxy.isCaseSensitive()) {
             resourcesCreated = new TreeMap<String, Resource>(
                     String.CASE_INSENSITIVE_ORDER);
         }
 
+        logger.info("bulk: creating individual resources");
         count = processFileProxiesIntoResources(image, submitter,
                 excelManifest, manifestProxy, fileProxies, receiver,
                 resourcesCreated, count);
+//        } catch (Exception e) {
+//            logger.debug("exception happened", e);
+//        }
 
+        logger.info("bulk: applying manifest file data to resources");
         try {
             readExcelFile(manifestProxy, resourcesCreated, receiver);
         } catch (Exception e) {
             logger.warn("an exception occured while processing the manifest file", e);
         }
 
+        logger.info("bulk: setting final statuses and logging");
         for (Resource resource : resourcesCreated.values()) {
             receiver.update(receiver.getPercentComplete(),
                     String.format("saving %s", resource.getTitle()));
@@ -534,6 +541,9 @@ public class BulkUploadService {
             Map<String, Resource> filenameResourceMap,
             AsyncUpdateReceiver receiver) throws InvalidFormatException,
             IOException {
+        if (manifestProxy == null) {
+            return;
+        }
         FormulaEvaluator evaluator = manifestProxy.getSheet().getWorkbook().getCreationHelper().createFormulaEvaluator();
 
         int rowNum = 0;
