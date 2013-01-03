@@ -161,6 +161,7 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
+    /* Note: this test tests that a bad field does not break the import... it's ignored */
     public <R extends Resource> void parseExcelFileWithBadField() {
         try {
             BulkManifestProxy manifestProxy = generateManifest("bad_field_name.xlsx");
@@ -169,7 +170,8 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
             AsyncUpdateReceiver receiver = new DefaultReceiver();
             bulkUploadService.readExcelFile(manifestProxy, filenameResourceMap, receiver);
         } catch (Exception e) {
-            assertTrue(e.getMessage().contains("following column names are not"));
+            logger.info(e.getMessage());
+            assertTrue(e.getMessage().contains("the following columns are required: Date Created (Year)"));
         }
     }
 
@@ -205,6 +207,7 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
             AsyncUpdateReceiver receiver = new DefaultReceiver();
             bulkUploadService.readExcelFile(manifestProxy, filenameResourceMap, receiver);
         } catch (Exception e) {
+            logger.info(e.getMessage());
             assertTrue(e.getMessage().contains("the first column must be the filename"));
         }
     }

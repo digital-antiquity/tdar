@@ -279,7 +279,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         logger.info("{}", details);
         logger.debug(bulkUploadController.getAsyncErrors());
         assertFalse(StringUtils.isEmpty(bulkUploadController.getAsyncErrors()));
-        assertTrue(bulkUploadController.getAsyncErrors().contains("the fieldname  Book Title is not valid for the resource type"));
+        assertTrue(bulkUploadController.getAsyncErrors().contains("<li>5127663428_42ef7f4463_b.jpg : the fieldname Book Title is not valid for the resource type:IMAGE</li>"));
         // should be two results, one deleted b/c of errors
         assertEquals(2, bulkUploadController.getDetails().size());
         assertEquals(Status.DELETED, resourceService.find(details.get(0).getFirst()).getStatus());
@@ -296,7 +296,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         logger.info("{}", details);
         logger.debug(bulkUploadController.getAsyncErrors());
         assertFalse(StringUtils.isEmpty(bulkUploadController.getAsyncErrors()));
-        assertTrue(bulkUploadController.getAsyncErrors().contains("The following required fields have not been provided: Date Created"));
+        assertTrue(bulkUploadController.getAsyncErrors().contains("<li>the following columns are required: Date Created (Year)</li>"));
     }
 
     @Test
@@ -309,16 +309,19 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         logger.info("{}", details);
         logger.debug(bulkUploadController.getAsyncErrors());
         assertFalse(StringUtils.isEmpty(bulkUploadController.getAsyncErrors()));
-        assertTrue(bulkUploadController.getAsyncErrors().contains("The following required fields have not been provided: Description,  Date Created "));
+        assertTrue(bulkUploadController.getAsyncErrors().contains("<li>the following columns are required: Date Created (Year), Description</li>"));
     }
 
     @Test
     @Rollback
     public void testBadBulkUploadManifestColumnHasBlanks() throws Exception {
-        setIgnoreActionErrors(true);
         String manifestFilename = "document_manifest_required_col_has_blanks.xls";
         // this file should fail validation and shouldn't even get to the async saving part.
-        BulkUploadController bulkUploadController = setupBasicBulkUploadTest(manifestFilename, BulkUploadController.INPUT);
+        // the controller will always return success, however
+        BulkUploadController bulkUploadController = setupBasicBulkUploadTest(manifestFilename, BulkUploadController.SUCCESS_ASYNC);
+        logger.debug(bulkUploadController.getAsyncErrors());
+        assertFalse(StringUtils.isEmpty(bulkUploadController.getAsyncErrors()));
+        assertTrue(bulkUploadController.getAsyncErrors().contains("<li>the following columns are required: Date Created (Year), Title, Description</li>"));
     }
 
     private BulkUploadController setupBasicBulkUploadTest(String manifestName, String expectedResponse) throws Exception {

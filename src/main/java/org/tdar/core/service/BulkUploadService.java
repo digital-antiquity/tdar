@@ -98,6 +98,7 @@ import org.tdar.utils.activity.Activity;
 @Service
 public class BulkUploadService {
 
+    private static final String THE_MANIFEST_FILE_UPLOADED_APPEARS_TO_BE_EMPTY_NO_COLUMNS_FOUND = "the manifest file uploaded appears to be empty, no columns found";
     public static final String BULK_TEMPLATE_TITLE = "BULK_TEMPLATE_TITLE";
     public static final String EXAMPLE_TIFF = "TDAR_EXAMPLE.TIFF";
     public static final String EXAMPLE_PDF = "TDAR_EXAMPLE.PDF";
@@ -187,7 +188,7 @@ public class BulkUploadService {
         }
         logger.debug("mapping metadata with excelManifest:" + excelManifest);
         BulkManifestProxy manifestProxy = null;
-//        try {
+        // try {
 
         FileInputStream stream = null;
         if (excelManifest != null && excelManifest.exists()) {
@@ -196,16 +197,19 @@ public class BulkUploadService {
                 stream = new FileInputStream(excelManifest);
                 Workbook workbook = WorkbookFactory.create(stream);
                 manifestProxy = validateManifestFile(workbook.getSheetAt(0));
-                // NEVER catch a TdarRecoverableRuntimeException... it needs to bubble
-            } catch (IOException e) {
+            } catch (Exception e) {
                 logger.debug("exception happened when reading excel file", e);
-            } catch (InvalidFormatException e) {
-                logger.debug("exception happened when reading excel file", e);
+                receiver.addError(e);
             } finally {
                 IOUtils.closeQuietly(stream);
             }
         }
 
+        if (StringUtils.isNotBlank(receiver.getAsyncErrors())) {
+            completeBulkUpload(image, accountId, resourcesCreated, activity, receiver, stream, ticketId);
+            return;
+        }
+        
         if (manifestProxy != null && !manifestProxy.isCaseSensitive()) {
             resourcesCreated = new TreeMap<String, Resource>(
                     String.CASE_INSENSITIVE_ORDER);
@@ -215,9 +219,9 @@ public class BulkUploadService {
         count = processFileProxiesIntoResources(image, submitter,
                 excelManifest, manifestProxy, fileProxies, receiver,
                 resourcesCreated, count);
-//        } catch (Exception e) {
-//            logger.debug("exception happened", e);
-//        }
+        // } catch (Exception e) {
+        // logger.debug("exception happened", e);
+        // }
 
         logger.info("bulk: applying manifest file data to resources");
         try {
@@ -247,12 +251,20 @@ public class BulkUploadService {
             }
         }
 
+        completeBulkUpload(image, accountId, resourcesCreated, activity, receiver, stream, ticketId);
+    }
+
+    private void completeBulkUpload(final InformationResource image, Long accountId, Map<String, Resource> resourcesCreated, Activity activity,
+            AsyncUpdateReceiver receiver, FileInputStream stream, Long ticketId) {
+
         try {
             PersonalFilestoreTicket findPersonalFilestoreTicket = filestoreService.findPersonalFilestoreTicket(ticketId);
             filestoreService.getPersonalFilestore(findPersonalFilestoreTicket).purgeQuietly(findPersonalFilestoreTicket);
         } catch (Exception e) {
             receiver.addError(e);
         }
+
+        
         if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
             Account account = genericDao.find(Account.class, accountId);
             accountService.updateQuota(accountService.getResourceEvaluator(), account, resourcesCreated.values().toArray(new Resource[0]));
@@ -280,34 +292,32 @@ public class BulkUploadService {
 
         // capture all of the column names and make sure they're valid in general
 
-        Set<CellMetadata> required= new HashSet<CellMetadata>();
+        Set<CellMetadata> required = new HashSet<CellMetadata>();
         for (int i = columnNamesRow.getFirstCellNum(); i <= columnNamesRow.getLastCellNum(); i++) {
             String name = getCellValue(evaluator, columnNamesRow, i);
             name = StringUtils.replace(name, "*", ""); // remove required char
-            logger.info("keys:{}", cellLookupMap.keySet());
-            logger.info("cell:{}, {}",name, cellLookupMap.get(name));
-            
+            columnNames.add(name);
+            // logger.info("keys:{}", cellLookupMap.keySet());
+            // logger.info("cell:{}, {}",name, cellLookupMap.get(name));
+
             CellMetadata cellMetadata = cellLookupMap.get(name);
             if (cellMetadata != null) {
-                columnNames.add(name);
                 if (cellMetadata.isRequired()) {
                     required.add(cellMetadata);
                 }
-                
+
             } else if (!StringUtils.isBlank(name)) {
                 logger.debug("error name: {}", name);
                 errorColumns.add(name);
             }
         }
 
-        // FIXME: is this needed? or do we just ignore?
-        if (!errorColumns.isEmpty()) {
-            logger.info("error columns" + errorColumns);
-            throw new TdarRecoverableRuntimeException("the following column names are not 'valid' tDar field names:" + StringUtils.join(errorColumns, ", "));
-        }
-        
-        
-        List<String> requiredErrors= new ArrayList<String>();
+        // if (!errorColumns.isEmpty()) {
+        // logger.info("error columns" + errorColumns);
+        // throw new TdarRecoverableRuntimeException("the following column names are not 'valid' tDar field names:" + StringUtils.join(errorColumns, ", "));
+        // }
+
+        List<String> requiredErrors = new ArrayList<String>();
         for (CellMetadata field : allValidFields) {
             if (field.isRequired() && !required.contains(field)) {
                 if (!TdarConfiguration.getInstance().getCopyrightMandatory() && ObjectUtils.equals(field.getDisplayName(), BulkImportField.COPYRIGHT_HOLDER)) {
@@ -315,23 +325,24 @@ public class BulkUploadService {
                 }
 
                 if (TdarConfiguration.getInstance().getLicenseEnabled() == false
-                        && (ObjectUtils.equals(field.getName(), "licenseType") || ObjectUtils.equals(field.getName(), "licenseText"))) 
+                        && (ObjectUtils.equals(field.getName(), "licenseType") || ObjectUtils.equals(field.getName(), "licenseText")))
                     continue;
 
                 requiredErrors.add(field.getDisplayName());
             }
         }
-        if (CollectionUtils.isNotEmpty(requiredErrors)) {
-            throw new TdarRecoverableRuntimeException(String.format("the following columns are required: %s", StringUtils.join(requiredErrors.toArray(),", ")));
-        }
-        
+
         if (columnNames.isEmpty()) {
             logger.info("the manifest file uploaded appears to be empty");
-            throw new TdarRecoverableRuntimeException("the manifest file uploaded appears to be empty, no columns found");
+            throw new TdarRecoverableRuntimeException(THE_MANIFEST_FILE_UPLOADED_APPEARS_TO_BE_EMPTY_NO_COLUMNS_FOUND);
         }
 
         if (!columnNames.get(ExcelService.FIRST_COLUMN).equals(FILENAME)) {
             throw new TdarRecoverableRuntimeException("the first column must be the filename");
+        }
+
+        if (CollectionUtils.isNotEmpty(requiredErrors)) {
+            throw new TdarRecoverableRuntimeException(String.format("the following columns are required: %s", StringUtils.join(requiredErrors.toArray(), ", ")));
         }
 
         Iterator<Row> rowIterator = sheet.rowIterator();
@@ -846,7 +857,7 @@ public class BulkUploadService {
             CellMetadata field = fieldnames.get(i);
             if (field.getName().equals("ResourceCreator.role")) {
                 creatorInstitutionRole = field;
-            } 
+            }
             if (field.getName().equals(FILENAME)) {
                 filename = field;
             }
