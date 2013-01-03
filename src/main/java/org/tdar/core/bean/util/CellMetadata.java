@@ -42,7 +42,10 @@ public class CellMetadata implements Comparable<CellMetadata> {
         this.name = name;
         this.required = bulkAnnotation.required();
         this.mappedClass = mapped;
-        this.displayName = labelPrefix + " " + bulkAnnotation.label();
+        this.displayName = bulkAnnotation.label();
+        if (StringUtils.isNotBlank(labelPrefix)) {
+            this.displayName= labelPrefix + " " + bulkAnnotation.label(); 
+        }
         this.comment = bulkAnnotation.comment();
         this.order = bulkAnnotation.order();
     }

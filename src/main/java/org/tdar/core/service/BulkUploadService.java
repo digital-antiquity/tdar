@@ -191,12 +191,15 @@ public class BulkUploadService {
 
         FileInputStream stream = null;
         if (excelManifest != null && excelManifest.exists()) {
-            logger.debug("processing manifest " + excelManifest.getName());
+            logger.debug("processing manifest:" + excelManifest.getName());
             try {
                 stream = new FileInputStream(excelManifest);
                 Workbook workbook = WorkbookFactory.create(stream);
                 manifestProxy = validateManifestFile(workbook.getSheetAt(0));
-            } catch (Exception e) {
+                // NEVER catch a TdarRecoverableRuntimeException... it needs to bubble
+            } catch (IOException e) {
+                logger.debug("exception happened when reading excel file", e);
+            } catch (InvalidFormatException e) {
                 logger.debug("exception happened when reading excel file", e);
             } finally {
                 IOUtils.closeQuietly(stream);
@@ -277,14 +280,23 @@ public class BulkUploadService {
 
         // capture all of the column names and make sure they're valid in general
 
+        Set<CellMetadata> required= new HashSet<CellMetadata>();
         for (int i = columnNamesRow.getFirstCellNum(); i <= columnNamesRow.getLastCellNum(); i++) {
             String name = getCellValue(evaluator, columnNamesRow, i);
             name = StringUtils.replace(name, "*", ""); // remove required char
-            if (!cellLookupMap.containsKey(name) && !StringUtils.isBlank(name)) {
+            logger.info("keys:{}", cellLookupMap.keySet());
+            logger.info("cell:{}, {}",name, cellLookupMap.get(name));
+            
+            CellMetadata cellMetadata = cellLookupMap.get(name);
+            if (cellMetadata != null) {
+                columnNames.add(name);
+                if (cellMetadata.isRequired()) {
+                    required.add(cellMetadata);
+                }
+                
+            } else if (!StringUtils.isBlank(name)) {
                 logger.debug("error name: {}", name);
                 errorColumns.add(name);
-            } else {
-                columnNames.add(name);
             }
         }
 
@@ -293,7 +305,26 @@ public class BulkUploadService {
             logger.info("error columns" + errorColumns);
             throw new TdarRecoverableRuntimeException("the following column names are not 'valid' tDar field names:" + StringUtils.join(errorColumns, ", "));
         }
+        
+        
+        List<String> requiredErrors= new ArrayList<String>();
+        for (CellMetadata field : allValidFields) {
+            if (field.isRequired() && !required.contains(field)) {
+                if (!TdarConfiguration.getInstance().getCopyrightMandatory() && ObjectUtils.equals(field.getDisplayName(), BulkImportField.COPYRIGHT_HOLDER)) {
+                    continue;
+                }
 
+                if (TdarConfiguration.getInstance().getLicenseEnabled() == false
+                        && (ObjectUtils.equals(field.getName(), "licenseType") || ObjectUtils.equals(field.getName(), "licenseText"))) 
+                    continue;
+
+                requiredErrors.add(field.getDisplayName());
+            }
+        }
+        if (CollectionUtils.isNotEmpty(requiredErrors)) {
+            throw new TdarRecoverableRuntimeException(String.format("the following columns are required: %s", StringUtils.join(requiredErrors.toArray(),", ")));
+        }
+        
         if (columnNames.isEmpty()) {
             logger.info("the manifest file uploaded appears to be empty");
             throw new TdarRecoverableRuntimeException("the manifest file uploaded appears to be empty, no columns found");
@@ -314,6 +345,9 @@ public class BulkUploadService {
         while (rowIterator.hasNext()) {
             Row row = rowIterator.next();
             Cell cell = row.getCell(ExcelService.FIRST_COLUMN);
+            if (cell == null) {
+                continue;
+            }
             String filename = cell.getStringCellValue();
             // if not the label, then...
             if (filename.equalsIgnoreCase(FILENAME))
