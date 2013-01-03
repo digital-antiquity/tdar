@@ -673,6 +673,31 @@
 			<version>${tika.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>batik</groupId>
+			<artifactId>batik-bridge</artifactId>
+			<version>1.7</version>
+		</dependency>
+		<dependency>
+			<groupId>batik</groupId>
+			<artifactId>batik-gvt</artifactId>
+			<version>1.7</version>
+		</dependency>
+		<dependency>
+			<groupId>batik</groupId>
+			<artifactId>batik-ext</artifactId>
+			<version>1.7</version>
+		</dependency>
+		<dependency>
+			<groupId>batik</groupId>
+			<artifactId>batik-awt-util</artifactId>
+			<version>1.7</version>
+		</dependency>
+		<dependency>
+			<groupId>batik</groupId>
+			<artifactId>batik-script</artifactId>
+			<version>1.7</version>
+		</dependency>
+		<dependency>
 			<groupId>org.tuckey</groupId>
 			<artifactId>urlrewritefilter</artifactId>
 			<version>4.0.4</version>
@@ -842,18 +867,18 @@
 			</testResource>
 		</testResources>
 		<plugins>
-            <plugin>
-                <groupId>org.glassfish</groupId>
-                <artifactId>maven-embedded-glassfish-plugin</artifactId>
-                <version>3.1</version>
-                <configuration>
-                    <goalPrefix>glassfish</goalPrefix>
-                    <app>target/ROOT</app>
-                    <name>tDAR</name>
-                    <port>8080</port>
-                    <contextRoot>/</contextRoot>
-                </configuration>
-            </plugin>
+			<plugin>
+				<groupId>org.glassfish</groupId>
+				<artifactId>maven-embedded-glassfish-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<goalPrefix>glassfish</goalPrefix>
+					<app>target/ROOT</app>
+					<name>tDAR</name>
+					<port>8080</port>
+					<contextRoot>/</contextRoot>
+				</configuration>
+			</plugin>
 			<plugin>
 				<!-- http://mojo.codehaus.org/keytool/keytool-maven-plugin/generateKeyPair-mojo.html -->
 				<groupId>org.codehaus.mojo</groupId>
