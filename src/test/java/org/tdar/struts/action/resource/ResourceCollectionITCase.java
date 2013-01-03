@@ -466,6 +466,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         testFile = genericService.find(Document.class, fileId);
         logger.info("{} : {}", testFile, testFile.getResourceCollections());
 
+        controller_.setRecordsPerPage(1000);
         assertEquals(TdarActionSupport.SUCCESS, controller_.browseCollections());
         List<ResourceCollection> collections = controller_.getResults();
         assertFalse(collections.contains(collection1));
@@ -473,8 +474,13 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         // FIXME: @ManyToMany directional issue
         // assertEquals(1,parentCollection.getResources().size());
         assertEquals(1, testFile.getResourceCollections().size());
+        
+        assertTrue(parentCollection.isShared());
+        assertTrue(parentCollection.isVisible());
+        assertTrue(parentCollection.isTopLevel());
 
-        assertTrue(String.format("collections %s should contain %s" , collections, parentCollection), collections.contains(parentCollection));
+        
+        assertTrue(String.format("collections %s should contain %s", collections, parentCollection), collections.contains(parentCollection));
         assertFalse(collections.contains(childCollection));
         assertFalse(collections.contains(childCollectionHidden));
         controller = generateNewController(CollectionController.class);

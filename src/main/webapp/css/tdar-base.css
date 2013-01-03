@@ -258,6 +258,7 @@ header .welcome-drop ul {
 .hero {
 	height: 281px;
 	position: relative;
+	margin-left: 60px;
 }
 
 .hero p {
