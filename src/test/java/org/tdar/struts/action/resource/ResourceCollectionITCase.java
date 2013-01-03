@@ -474,7 +474,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         // assertEquals(1,parentCollection.getResources().size());
         assertEquals(1, testFile.getResourceCollections().size());
 
-        assertTrue(collections.contains(parentCollection));
+        assertTrue(String.format("collections %s should contain %s" , collections, parentCollection), collections.contains(parentCollection));
         assertFalse(collections.contains(childCollection));
         assertFalse(collections.contains(childCollectionHidden));
         controller = generateNewController(CollectionController.class);
