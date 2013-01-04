@@ -6,7 +6,15 @@
  */
 package org.tdar.core.bean.util;
 
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Stack;
+
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.enums.EnumUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
@@ -40,11 +48,11 @@ public class CellMetadata implements Comparable<CellMetadata> {
      */
     public CellMetadata(String name, BulkImportField bulkAnnotation, Class<?> mapped, String labelPrefix) {
         this.name = name;
-        this.required = bulkAnnotation.required();
         this.mappedClass = mapped;
+        this.required = bulkAnnotation.required();
         this.displayName = bulkAnnotation.label();
         if (StringUtils.isNotBlank(labelPrefix)) {
-            this.displayName= labelPrefix + " " + bulkAnnotation.label(); 
+            this.displayName = labelPrefix + " " + bulkAnnotation.label();
         }
         this.comment = bulkAnnotation.comment();
         this.order = bulkAnnotation.order();
@@ -52,6 +60,31 @@ public class CellMetadata implements Comparable<CellMetadata> {
 
     public CellMetadata(String name) {
         this.name = name;
+    }
+
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private List<?extends Enum<?>> enumList;
+
+    public CellMetadata(Field field, BulkImportField annotation, Class<?> class2, Stack<List<Class<?>>> stack, String prefix) {
+        this.mappedClass = class2;
+        if (field.getType().isEnum()) {
+            setEnumList((List<? extends Enum<?>>) Arrays.asList(field.getType().getEnumConstants()));
+        }
+        this.required = annotation.required();
+        String fieldPrefix = "";
+        if (stack.size() > 1) {
+            for (int i = 1; i < stack.size(); i++) {
+                List<Class<?>> list = stack.get(i);
+                String prefix_ = "";
+                for (Class<?> cls : list) {
+                    prefix_ += cls.getSimpleName();
+                }
+                fieldPrefix += prefix_ + ".";
+            }
+        }
+        this.name = fieldPrefix + field.getName();
+        this.displayName = StringUtils.trim(prefix + " " + annotation.label());
+
     }
 
     public String getName() {
@@ -188,5 +221,13 @@ public class CellMetadata implements Comparable<CellMetadata> {
             return name.substring(name.lastIndexOf(".") + 1);
         }
         return name;
+    }
+
+    public List<?extends Enum<?>> getEnumList() {
+        return enumList;
+    }
+
+    public void setEnumList(List<?extends Enum<?>> enumList) {
+        this.enumList = enumList;
     }
 }

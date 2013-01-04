@@ -309,7 +309,8 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         logger.info("{}", details);
         logger.debug(bulkUploadController.getAsyncErrors());
         assertFalse(StringUtils.isEmpty(bulkUploadController.getAsyncErrors()));
-        assertTrue(bulkUploadController.getAsyncErrors().contains("<li>the following columns are required: Date Created (Year), Description</li>"));
+        
+        assertTrue(bulkUploadController.getAsyncErrors().contains("<li>the following columns are required: Description, Date Created (Year)</li>"));
     }
 
     @Test
@@ -321,7 +322,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         BulkUploadController bulkUploadController = setupBasicBulkUploadTest(manifestFilename, BulkUploadController.SUCCESS_ASYNC);
         logger.debug(bulkUploadController.getAsyncErrors());
         assertFalse(StringUtils.isEmpty(bulkUploadController.getAsyncErrors()));
-        assertTrue(bulkUploadController.getAsyncErrors().contains("<li>the following columns are required: Date Created (Year), Title, Description</li>"));
+        assertTrue(bulkUploadController.getAsyncErrors().contains("<li>the following columns are required: Title, Description, Date Created (Year)</li>"));
     }
 
     private BulkUploadController setupBasicBulkUploadTest(String manifestName, String expectedResponse) throws Exception {

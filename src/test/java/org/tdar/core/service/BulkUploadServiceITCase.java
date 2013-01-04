@@ -54,7 +54,7 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testLookupMaps() {
-        LinkedHashSet<CellMetadata> importFields = bulkUploadService.getImportFieldNamesForType(ResourceType.DOCUMENT);
+        LinkedHashSet<CellMetadata> importFields = bulkUploadService.getAllValidFieldNames(ResourceType.DOCUMENT);
         Map<String, CellMetadata> cellLookupMap = bulkUploadService.getCellLookupMap(importFields);
         assertTrue("testing local field", cellLookupMap.containsKey("documentType"));
         assertTrue("testing parent class", cellLookupMap.containsKey("description"));

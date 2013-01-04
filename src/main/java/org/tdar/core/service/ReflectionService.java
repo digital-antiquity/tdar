@@ -17,9 +17,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
@@ -27,6 +29,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.ReflectionTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +43,10 @@ import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.core.type.filter.AssignableTypeFilter;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
+import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.util.CellMetadata;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.Pair;
 
@@ -156,8 +164,8 @@ public class ReflectionService {
      */
     @SuppressWarnings("unchecked")
     public <T> T callFieldGetter(Object obj, Field field) {
-//        logger.debug("calling getter on: {} {} ", obj, field.getName());
-        logger.trace("{}" , field.getDeclaringClass());
+        // logger.debug("calling getter on: {} {} ", obj, field.getName());
+        logger.trace("{}", field.getDeclaringClass());
         Method method = ReflectionUtils.findMethod(field.getDeclaringClass(), generateGetterName(field));
         if (method.getReturnType() != Void.TYPE)
             try {
@@ -174,7 +182,7 @@ public class ReflectionService {
     public <T> void callFieldSetter(Object obj, Field field, T fieldValue) {
         String setterName = generateSetterName(field);
         String valClass = "null";
-        if (fieldValue != null ) {
+        if (fieldValue != null) {
             valClass = fieldValue.getClass().getSimpleName();
         }
         logger.debug("Calling {}.{}({})", new Object[] { field.getDeclaringClass().getSimpleName(), setterName, valClass });
@@ -249,8 +257,8 @@ public class ReflectionService {
 
     }
 
-
-    public static boolean methodOrActionContainsAnnotation(ActionInvocation invocation, Class<? extends Annotation> annotationClass) throws SecurityException, NoSuchMethodException {
+    public static boolean methodOrActionContainsAnnotation(ActionInvocation invocation, Class<? extends Annotation> annotationClass) throws SecurityException,
+            NoSuchMethodException {
         Object action = invocation.getAction();
         ActionProxy proxy = invocation.getProxy();
         String methodName = proxy.getMethod();
@@ -275,7 +283,7 @@ public class ReflectionService {
         }
         return null;
     }
-    
+
     public static boolean classOrMethodContainsAnnotation(Method method, Class<? extends Annotation> annotationClass) {
         return getAnnotationFromMethodOrClass(method, annotationClass) != null;
     }
@@ -294,9 +302,6 @@ public class ReflectionService {
         }
         return toReturn.toArray(new Class<?>[0]);
     }
-
-
-
 
     @SuppressWarnings("unchecked")
     public List<Pair<Field, Class<? extends Persistable>>> findAllPersistableFields(Class<?> cls) {
@@ -330,10 +335,91 @@ public class ReflectionService {
 
             // things to add
             if (type != null) {
-                result.add(new Pair<Field,Class<? extends Persistable>>(field, type));
+                result.add(new Pair<Field, Class<? extends Persistable>>(field, type));
             }
         }
         return result;
     }
 
+    public LinkedHashSet<CellMetadata> findBulkAnnotationsOnClass(Class<?> class2) {
+        Stack<List<Class<?>>> classStack = new Stack<List<Class<?>>>();
+        return findAnnotationsOnClass(class2, classStack, "");
+    }
+
+    public LinkedHashSet<CellMetadata> findAnnotationsOnClass(Class<?> class2, Stack<List<Class<?>>> stack, String prefix) {
+        Class<BulkImportField> annotationToFind = BulkImportField.class;
+        LinkedHashSet<CellMetadata> set = new LinkedHashSet<CellMetadata>();
+        if (class2.getSuperclass() != Object.class) {
+            set.addAll(findAnnotationsOnClass(class2.getSuperclass(), stack, prefix));
+        }
+
+        Field runMultiple = null;
+        List<Class<?>> runWith = new ArrayList<Class<?>>();
+        for (Field field : class2.getDeclaredFields()) {
+            BulkImportField annotation = field.getAnnotation(annotationToFind);
+            if (annotation != null && ArrayUtils.isNotEmpty(annotation.implementedSubclasses())) {
+                runWith.addAll(Arrays.asList(annotation.implementedSubclasses()));
+                runMultiple = field;
+            }
+        }
+        List<Class<?>> classList = new ArrayList<Class<?>>();
+        stack.add(classList);
+        classList.add(class2);
+
+        if (runMultiple == null) {
+            set.addAll(handleClassAnnotations(class2, stack, annotationToFind, null, null, prefix));
+        } else {
+            for (Class<?> runAs : runWith) {
+                classList.add(runAs);
+                set.addAll(handleClassAnnotations(class2, stack, annotationToFind, runAs, runMultiple, prefix));
+                classList.remove(runAs);
+            }
+        }
+        stack.remove(classList);
+        return set;
+    }
+
+    private LinkedHashSet<CellMetadata> handleClassAnnotations(Class<?> class2, Stack<List<Class<?>>> stack, Class<BulkImportField> annotationToFind,
+            Class<?> runAs, Field runAsField, String prefix) {
+        LinkedHashSet<CellMetadata> set = new LinkedHashSet<CellMetadata>();
+        for (Field field : class2.getDeclaredFields()) {
+            BulkImportField annotation = field.getAnnotation(annotationToFind);
+            if (prefix == null) {
+                prefix = "";
+            }
+            if (annotation != null) {
+                String fieldPrefix = prefix;
+                if (StringUtils.isNotBlank(annotation.label())) {
+                    fieldPrefix += " " + annotation.label();
+                    fieldPrefix = fieldPrefix.trim();
+                }
+                Class<?> type = field.getType();
+                if (ObjectUtils.equals(field, runAsField)) {
+                    type = runAs;
+                    logger.trace(" ** overriding type with " + type.getSimpleName());
+                }
+                if (Collection.class.isAssignableFrom(type)) {
+                    ParameterizedType stringListType = (ParameterizedType) field.getGenericType();
+                    Class<?> cls = (Class<?>) stringListType.getActualTypeArguments()[0];
+                    set.addAll(findAnnotationsOnClass(cls, stack, fieldPrefix));
+                } else if (Persistable.class.isAssignableFrom(type)) {
+                    set.addAll(findAnnotationsOnClass(type, stack, fieldPrefix));
+                } else {
+                    logger.trace("adding {} ({})", field, stack);
+                    if (!TdarConfiguration.getInstance().getCopyrightMandatory() && ObjectUtils.equals(annotation.label(), BulkImportField.COPYRIGHT_HOLDER)) {
+                        continue;
+                    }
+
+                    if (TdarConfiguration.getInstance().getLicenseEnabled() == false
+                            && (ObjectUtils.equals(field.getName(), "licenseType") || ObjectUtils.equals(field.getName(), "licenseText")))
+                        continue;
+                    set.add(new CellMetadata(field, annotation, class2, stack, prefix));
+
+                    // set.add(field);
+                }
+
+            }
+        }
+        return set;
+    }
 }
