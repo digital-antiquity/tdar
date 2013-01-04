@@ -1308,3 +1308,7 @@ p.copyright-notice {
     color: #993333;
 }
  
+ 
+ .atlwdg-trigger.atlwdg-TOP {
+z-index: 99999999 !important;
+}
