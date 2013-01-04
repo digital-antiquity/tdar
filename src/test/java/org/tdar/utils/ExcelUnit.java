@@ -45,15 +45,20 @@ public class ExcelUnit {
 
     public void assertCellEquals(int row, int column, Object obj) {
         Cell cell = getCell(row, column);
-        Assert.assertEquals(obj.toString(),getCellAsString(cell) );
+        Assert.assertEquals(obj.toString(), getCellAsString(cell));
     }
 
     public void assertCellCommentEquals(int row, int column, Object obj) {
         Cell cell = getCell(row, column);
-        Assert.assertEquals(obj.toString(),cell.getCellComment().getString().toString() );
+        if (cell == null) {
+            Assert.fail("cell is null");
+        }
+        if (cell.getCellComment() == null) {
+            Assert.fail("cell does not have a comment");
+        }
+        Assert.assertEquals(obj.toString(), cell.getCellComment().getString().toString());
     }
 
-    
     private String getCellAsString(Cell cell) {
         return formatter.formatCellValue(cell, formulaEvaluator);
     }
@@ -113,7 +118,7 @@ public class ExcelUnit {
             return false;
         }
     }
-    
+
     public void assertCellIsBold(Cell cell) {
         Assert.assertTrue("cell should be bold", isCellBold(cell));
     }
@@ -250,26 +255,25 @@ public class ExcelUnit {
     public void setFormulaEvaluator(FormulaEvaluator formulaEvaluator) {
         this.formulaEvaluator = formulaEvaluator;
     }
-    
-    
+
     public void assertRowIsEmpty(int i) {
         Assert.assertTrue("row should be empty", isRowEmpty(i));
     }
-    
+
     public void assertRowNotEmpty(int i) {
         Assert.assertFalse("row should not be empty", isRowEmpty(i));
     }
 
     private boolean isRowEmpty(int i) {
         Row row = getSheet().getRow(i);
-        if(row == null) return true;
-        for(int j = row.getFirstCellNum(); j < row.getLastCellNum(); j++) {
-            if(!isCellEmpty(row.getCell(j)))
+        if (row == null)
+            return true;
+        for (int j = row.getFirstCellNum(); j < row.getLastCellNum(); j++) {
+            if (!isCellEmpty(row.getCell(j)))
                 return false;
         }
         return true;
     }
-    
 
     private boolean isCellEmpty(Cell cell) {
         return StringUtils.isBlank(getCellAsString(cell));

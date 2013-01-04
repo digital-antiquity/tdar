@@ -80,6 +80,21 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
         excelUnit.assertCellEquals(1, 0, BulkUploadTemplate.EXAMPLE_PDF);
         excelUnit.assertCellEquals(2, 0, BulkUploadTemplate.EXAMPLE_TIFF);
         excelUnit.assertCellCommentEquals(0, 0, BulkImportField.FILENAME_DESCRIPTION);
+        
+        excelUnit.assertCellEquals(0, 1, BulkImportField.TITLE_LABEL+ "*");
+        excelUnit.assertCellCommentEquals(0, 1, BulkImportField.TITLE_DESCRIPTION);
+
+        excelUnit.assertCellEquals(0, 2, BulkImportField.DESCRIPTION_LABEL+ "*");
+        excelUnit.assertCellCommentEquals(0, 2, BulkImportField.DESCRIPTION_DESCRIPTION);
+
+        excelUnit.assertCellEquals(0, 13, BulkImportField.YEAR_LABEL+ "*");
+        excelUnit.assertCellCommentEquals(0, 13, BulkImportField.YEAR_DESCRIPTION);
+
+        if (!TdarConfiguration.getInstance().getLicenseEnabled()) {
+        excelUnit.assertRowDoesNotContain(0, BulkImportField.LICENSE_TYPE);
+        } else {
+            excelUnit.assertRowContains(0, BulkImportField.LICENSE_TYPE);
+        }
         sheet.getRow(1).getCell(3).isPartOfArrayFormulaGroup();
     }
 

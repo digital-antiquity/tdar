@@ -6,6 +6,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.poi.hssf.usermodel.HSSFDataValidationHelper;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -16,6 +17,8 @@ import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.service.ExcelService;
@@ -33,6 +36,8 @@ public class BulkUploadTemplate {
         this.setExcelService(excelService);
     }
 
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
+
     public HSSFWorkbook getTemplate(LinkedHashSet<CellMetadata> fieldnameSet) {
 
         HSSFWorkbook workbook = new HSSFWorkbook();
@@ -43,10 +48,10 @@ public class BulkUploadTemplate {
         // When the comment box is visible, have it show in a 1x3 space
 
         CellStyle defaultStyle = getExcelService().createSummaryStyle(workbook);
+        // CellStyle resourceCreatorRoleStyle = CellFormat.NORMAL.setBorderRight((short) 2).createStyle(workbook);
         CellStyle headerStyle2 = CellFormat.BOLD.setColor(new HSSFColor.GREY_25_PERCENT()).setWrapping(true).setFontSize((short) 10).createStyle(workbook);
         CellStyle requiredStyle = CellFormat.BOLD.setWrapping(false).createStyle(workbook);
         requiredStyle.setFillForegroundColor(new HSSFColor.ROSE().getIndex());
-        CellStyle resourceCreatorRoleStyle = CellFormat.NORMAL.setBorderRight((short) 1).createStyle(workbook);
 
         HashMap<String, String> exampleDoc = new HashMap<String, String>();
         HashMap<String, String> exampleImage = new HashMap<String, String>();
@@ -103,8 +108,8 @@ public class BulkUploadTemplate {
                 style = headerStyle2;
             } else if (field.isRequired()) {
                 style = requiredStyle;
-            } else if (ResourceCreatorRole.class.isAssignableFrom(field.getClass())) {
-                style = resourceCreatorRoleStyle;
+            } else if (CollectionUtils.isNotEmpty(field.getEnumList()) && ArrayUtils.contains(ResourceCreatorRole.values(), field.getEnumList().get(0))) {
+                // style = resourceCreatorRoleStyle;
             } else {
                 style = defaultStyle;
             }

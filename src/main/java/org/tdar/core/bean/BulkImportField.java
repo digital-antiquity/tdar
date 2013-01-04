@@ -39,6 +39,9 @@ public @interface BulkImportField {
     public static final String LICENSE_TEXT = "License Text";
     public static final String LICENSE_TYPE = "License Type";
     public static final String COPYRIGHT_HOLDER = "Copyright Holder";
+    public static final String TITLE_LABEL = "Title";
+    public static final String DESCRIPTION_LABEL = "Description";
+    public static final String YEAR_LABEL = "Date Created (Year)";
 
     // a way to tell the parser about subclasses (Creator -> Person/Institution)
     public Class<?>[] implementedSubclasses() default {};

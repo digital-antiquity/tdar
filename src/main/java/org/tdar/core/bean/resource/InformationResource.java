@@ -184,7 +184,7 @@ public abstract class InformationResource extends Resource {
 
     // currently just a 4 digit year.
     @Column(name = "date_created")
-    @BulkImportField(label = "Date Created (Year)", required = true, order = -10, comment = BulkImportField.YEAR_DESCRIPTION)
+    @BulkImportField(label = BulkImportField.YEAR_LABEL, required = true, order = -10, comment = BulkImportField.YEAR_DESCRIPTION)
     @FieldBridge(impl = TdarPaddedNumberBridge.class)
     @Field(norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     private Integer date = -1;
@@ -1009,7 +1009,7 @@ public abstract class InformationResource extends Resource {
         this.setResourceProviderInstitution(resource.getResourceProviderInstitution());
 
     };
-    
+
     public List<InformationResourceFile> getFilesWithProcessingErrors() {
         List<InformationResourceFile> files = new ArrayList<InformationResourceFile>();
         for (InformationResourceFile file : getInformationResourceFiles()) {

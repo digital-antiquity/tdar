@@ -25,7 +25,25 @@ import org.tdar.core.bean.entity.Person;
  * @author Adam Brin
  * 
  */
-public class CellMetadata implements Comparable<CellMetadata> {
+public class CellMetadata  {
+
+    public static final CellMetadata FILENAME = new CellMetadata() {
+        public boolean isRequired() {
+            return true;
+        };
+
+        public String getName() {
+            return BulkUploadTemplate.FILENAME;
+        };
+
+        public String getComment() {
+            return BulkImportField.FILENAME_DESCRIPTION;
+        };
+
+        public int getOrder() {
+            return -1000;
+        };
+    };
 
     private String name;
     private String displayName;
@@ -34,31 +52,13 @@ public class CellMetadata implements Comparable<CellMetadata> {
     private boolean required = false;
     private int order = 0;
 
+    public CellMetadata() {
+    }
+
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(name).append(" display:").append(displayName).append(" rqrd:").append(required).append(" -- ").append(mappedClass);
         return sb.toString();
-    }
-
-    /**
-     * @param bulkAnnotation
-     * @param labelPrefix
-     * @param filename
-     */
-    public CellMetadata(String name, BulkImportField bulkAnnotation, Class<?> mapped, String labelPrefix) {
-        this.name = name;
-        this.mappedClass = mapped;
-        this.required = bulkAnnotation.required();
-        this.displayName = bulkAnnotation.label();
-        if (StringUtils.isNotBlank(labelPrefix)) {
-            this.displayName = labelPrefix + " " + bulkAnnotation.label();
-        }
-        this.comment = bulkAnnotation.comment();
-        this.order = bulkAnnotation.order();
-    }
-
-    public CellMetadata(String name) {
-        this.name = name;
     }
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
@@ -89,6 +89,8 @@ public class CellMetadata implements Comparable<CellMetadata> {
         }
         this.name = fieldPrefix + field.getName();
         this.displayName = StringUtils.trim(prefix + " " + annotation.label());
+        this.comment = annotation.comment();
+        this.order = annotation.order();
 
         if (Integer.class.isAssignableFrom(field.getType()) || Long.class.isAssignableFrom(field.getType())) {
             setNumeric(true);
@@ -185,35 +187,35 @@ public class CellMetadata implements Comparable<CellMetadata> {
         return sb.toString();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
-    @Override
-    public int compareTo(CellMetadata o) {
-        if (o.getMappedClass().equals(getMappedClass()) || o.getOrder() < 1) {
-            if (o.getOrder() > getOrder()) {
-                return -1;
-            } else if (o.getOrder() < getOrder()) {
-                return 1;
-            }
-        }
-        try {
-            if (o.getMappedClass() != getMappedClass()) {
-                if (o.getMappedClass().equals(Institution.class) && getMappedClass().equals(Person.class)) {
-                    return -1;
-                }
-                if (getMappedClass().equals(Institution.class) && o.getMappedClass().equals(Person.class)) {
-                    return 1;
-                }
-                return getMappedClass().getSimpleName().compareTo(o.getMappedClass().getSimpleName());
-            }
-        } catch (Exception e) {
-            // do nothing
-        }
-        return getName().compareTo(o.getName());
-    }
+//    /*
+//     * (non-Javadoc)
+//     * 
+//     * @see java.lang.Comparable#compareTo(java.lang.Object)
+//     */
+//    @Override
+//    public int compareTo(CellMetadata o) {
+//        if (o.getMappedClass().equals(getMappedClass()) || o.getOrder() < 1) {
+//            if (o.getOrder() > getOrder()) {
+//                return -1;
+//            } else if (o.getOrder() < getOrder()) {
+//                return 1;
+//            }
+//        }
+//        try {
+//            if (o.getMappedClass() != getMappedClass()) {
+//                if (o.getMappedClass().equals(Institution.class) && getMappedClass().equals(Person.class)) {
+//                    return -1;
+//                }
+//                if (getMappedClass().equals(Institution.class) && o.getMappedClass().equals(Person.class)) {
+//                    return 1;
+//                }
+//                return getMappedClass().getSimpleName().compareTo(o.getMappedClass().getSimpleName());
+//            }
+//        } catch (Exception e) {
+//            // do nothing
+//        }
+//        return getName().compareTo(o.getName());
+//    }
 
     /**
      * @return the order

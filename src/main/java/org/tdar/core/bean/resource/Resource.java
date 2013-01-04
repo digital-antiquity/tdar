@@ -193,13 +193,13 @@ public class Resource extends JsonModel.Base implements Persistable,
     @SequenceGenerator(name = "resource_sequence", allocationSize = 1, sequenceName = "resource_sequence")
     private Long id = -1L;
 
-    @BulkImportField(label = "Title", required = true, order = -100, comment = BulkImportField.TITLE_DESCRIPTION)
+    @BulkImportField(label = BulkImportField.TITLE_LABEL, required = true, order = -100, comment = BulkImportField.TITLE_DESCRIPTION)
     @NotNull
     @Column(length = 512)
     private String title;
 
     @Lob
-    @BulkImportField(label = "Description", required = true, order = -50, comment = BulkImportField.DESCRIPTION_DESCRIPTION)
+    @BulkImportField(label = BulkImportField.DESCRIPTION_LABEL, required = true, order = -50, comment = BulkImportField.DESCRIPTION_DESCRIPTION)
     // @NotNull
     @Type(type = "org.hibernate.type.StringClobType")
     private String description;

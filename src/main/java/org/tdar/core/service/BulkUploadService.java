@@ -415,10 +415,8 @@ public class BulkUploadService {
                     resourceClasses.add(type);
             }
         }
-        CellMetadata filename = new CellMetadata(BulkUploadTemplate.FILENAME);
-        filename.setRequired(true);
-        filename.setComment(BulkImportField.FILENAME_DESCRIPTION);
-        filename.setOrder(-1000);
+        
+        CellMetadata filename = CellMetadata.FILENAME;
 
         LinkedHashSet<CellMetadata> nameSet = new LinkedHashSet<CellMetadata>();
         nameSet.add(filename);
