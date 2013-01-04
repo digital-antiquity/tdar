@@ -15,8 +15,6 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.BulkImportField;
-import org.tdar.core.bean.entity.Institution;
-import org.tdar.core.bean.entity.Person;
 
 /**
  * This class is a proxy class that enables the BulkUpload process to map and manage the import process. The BulkUploadService
@@ -25,7 +23,7 @@ import org.tdar.core.bean.entity.Person;
  * @author Adam Brin
  * 
  */
-public class CellMetadata  {
+public class CellMetadata {
 
     public static final CellMetadata FILENAME = new CellMetadata() {
         public boolean isRequired() {
@@ -187,35 +185,35 @@ public class CellMetadata  {
         return sb.toString();
     }
 
-//    /*
-//     * (non-Javadoc)
-//     * 
-//     * @see java.lang.Comparable#compareTo(java.lang.Object)
-//     */
-//    @Override
-//    public int compareTo(CellMetadata o) {
-//        if (o.getMappedClass().equals(getMappedClass()) || o.getOrder() < 1) {
-//            if (o.getOrder() > getOrder()) {
-//                return -1;
-//            } else if (o.getOrder() < getOrder()) {
-//                return 1;
-//            }
-//        }
-//        try {
-//            if (o.getMappedClass() != getMappedClass()) {
-//                if (o.getMappedClass().equals(Institution.class) && getMappedClass().equals(Person.class)) {
-//                    return -1;
-//                }
-//                if (getMappedClass().equals(Institution.class) && o.getMappedClass().equals(Person.class)) {
-//                    return 1;
-//                }
-//                return getMappedClass().getSimpleName().compareTo(o.getMappedClass().getSimpleName());
-//            }
-//        } catch (Exception e) {
-//            // do nothing
-//        }
-//        return getName().compareTo(o.getName());
-//    }
+    // /*
+    // * (non-Javadoc)
+    // *
+    // * @see java.lang.Comparable#compareTo(java.lang.Object)
+    // */
+    // @Override
+    // public int compareTo(CellMetadata o) {
+    // if (o.getMappedClass().equals(getMappedClass()) || o.getOrder() < 1) {
+    // if (o.getOrder() > getOrder()) {
+    // return -1;
+    // } else if (o.getOrder() < getOrder()) {
+    // return 1;
+    // }
+    // }
+    // try {
+    // if (o.getMappedClass() != getMappedClass()) {
+    // if (o.getMappedClass().equals(Institution.class) && getMappedClass().equals(Person.class)) {
+    // return -1;
+    // }
+    // if (getMappedClass().equals(Institution.class) && o.getMappedClass().equals(Person.class)) {
+    // return 1;
+    // }
+    // return getMappedClass().getSimpleName().compareTo(o.getMappedClass().getSimpleName());
+    // }
+    // } catch (Exception e) {
+    // // do nothing
+    // }
+    // return getName().compareTo(o.getName());
+    // }
 
     /**
      * @return the order

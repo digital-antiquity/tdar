@@ -26,6 +26,8 @@ import org.tdar.core.service.excel.CellFormat;
 
 public class BulkUploadTemplate {
 
+    private static final String EXCEL_MAX_NUM = "99999999999999";
+    private static final String EXCEL_MIN_NUM = "-99999999999999";
     private ExcelService excelService;
     public static final String BULK_TEMPLATE_TITLE = "BULK_TEMPLATE_TITLE";
     public static final String EXAMPLE_TIFF = "TDAR_EXAMPLE.TIFF";
@@ -96,9 +98,9 @@ public class BulkUploadTemplate {
 
             if (field.isNumeric()) {
                 if (field.isFloatNumber()) {
-                    getExcelService().addNumericColumnValidation(sheet, i, validationHelper, "-99999999999999", "99999999999999");
+                    getExcelService().addNumericColumnValidation(sheet, i, validationHelper, EXCEL_MIN_NUM, EXCEL_MAX_NUM);
                 } else {
-                    getExcelService().addIntegerColumnValidation(sheet, i, validationHelper, "-99999999999999", "99999999999999");
+                    getExcelService().addIntegerColumnValidation(sheet, i, validationHelper, EXCEL_MIN_NUM, EXCEL_MAX_NUM);
                 }
             }
 

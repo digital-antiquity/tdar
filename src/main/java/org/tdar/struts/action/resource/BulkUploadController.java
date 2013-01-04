@@ -3,12 +3,17 @@ package org.tdar.struts.action.resource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
@@ -110,23 +115,53 @@ public class BulkUploadController extends AbstractInformationResourceController<
         return SUCCESS_ASYNC;
     }
 
+    @Action(value = "template-view")
+    @SkipValidation
+    public String templateView() {
+        return SUCCESS;
+    }
+
+    @Action(value = "validate-template", results = {
+            @Result(name = INPUT, location = "template-view"),
+            @Result(name = SUCCESS, location = "add") })
+    @SkipValidation
+    public String templateValidate() {
+
+        logger.info("{} and names {}", getUploadedFiles(), getUploadedFilesFileName());
+        String filename = getUploadedFilesFileName().get(0);
+        File excelManifest = getUploadedFiles().get(0);
+        if (excelManifest == null) {
+            addActionError("Please upload your template");
+            return INPUT;
+        }
+        try {
+            Workbook workbook = WorkbookFactory.create(excelManifest);
+            bulkUploadService.validateManifestFile(workbook.getSheetAt(0));
+        } catch (Exception e) {
+            addActionErrorWithException("Problem with BulkUploadTemplate", e);
+            return INPUT;
+        }
+        addActionMessage("Your Template appears to be valid, please try your upload");
+        return SUCCESS;
+    }
+
     @SkipValidation
     @Action(value = "checkstatus", results = {
             @Result(name = "wait", type = "freemarker", location = "checkstatus-wait.ftl", params = { "contentType", "application/json" }) })
     public String checkStatus() {
         AsyncUpdateReceiver reciever = bulkUploadService.checkAsyncStatus(getTicketId());
-//        if (reciever != null) {
-            phase = reciever.getStatus();
-            percentDone = reciever.getPercentComplete();
-            setAsyncErrors(reciever.getHtmlAsyncErrors());
-            if (percentDone == 100f) {
-                List<Pair<Long, String>> details = reciever.getDetails();
-                setDetails(details);
-            }
-            return "wait";
-//        } else {
-//            return ERROR;
-//        }
+        // if (reciever != null) {
+        phase = reciever.getStatus();
+        percentDone = reciever.getPercentComplete();
+        setAsyncErrors(reciever.getHtmlAsyncErrors());
+        if (percentDone == 100f) {
+            List<Pair<Long, String>> details = reciever.getDetails();
+            setDetails(details);
+        }
+        return "wait";
+        // } else {
+        // return ERROR;
+        // }
     }
 
     @SkipValidation

@@ -48,7 +48,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.AsyncUpdateReceiver.DefaultReceiver;
-import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.entity.Creator;
@@ -255,7 +254,7 @@ public class BulkUploadService {
         }
     }
 
-    protected BulkManifestProxy validateManifestFile(Sheet sheet) {
+    public BulkManifestProxy validateManifestFile(Sheet sheet) {
         List<String> columnNames = new ArrayList<String>();
         List<String> errorColumns = new ArrayList<String>();
 
@@ -415,7 +414,7 @@ public class BulkUploadService {
                     resourceClasses.add(type);
             }
         }
-        
+
         CellMetadata filename = CellMetadata.FILENAME;
 
         LinkedHashSet<CellMetadata> nameSet = new LinkedHashSet<CellMetadata>();
@@ -683,7 +682,7 @@ public class BulkUploadService {
                     try {
                         Float.parseFloat(value);
                     } catch (NumberFormatException nfe) {
-                        throw new TdarRecoverableRuntimeException("the field " + name + " is expecting a floating point value, but found: " + value);
+                        throw new TdarRecoverableRuntimeException("the field " + name + " is expecting a floating point value (1.001), but found: " + value);
                     }
                 }
                 BeanUtils.setProperty(beanToProcess, name, value);

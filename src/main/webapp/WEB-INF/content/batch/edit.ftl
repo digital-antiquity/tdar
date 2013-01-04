@@ -1,5 +1,7 @@
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
+<#import "batch-common.ftl" as batchCommon>
+
 <head>
 <title>Batch Upload Documents or Images</title>
 <meta name="lastModifiedDate" content="$Date$"/>
@@ -17,22 +19,7 @@
 
 <@edit.citationInfo "image" false />
 
-<div class="glide">
-    <h3>Upload record specific metadata</h3>
-        <div tiplabel="Upload your document(s)"  tooltipcontent="The metadata entered on this form is tied to that 
-            one file. Documents must be in the following types: xls,xlsx">
-             <h4>Instructions:</h4>
-            <ol>
-              <li><a href="template" onClick="navigateTempIgnore()">Download</a> the template file (<a href="template" onClick="navigateTempIgnore()">link</a>).</li>
-              <li>create a row for each file you're uploading</li>
-              <li>the first column should always be the filename the record references [eg. document1.pdf ]</li>
-              <li>enter in any other metadata by using the field names specified.</li>
-              <li>upload the mapping file in the mapping file in the input immediately below</li>
-            </ol>
-            </div>
-            <br/>
-                <@s.file label="Upload a Mapping File" cssClass="validateFileType" labelposition='top' name='uploadedFiles' size='40'/>
-</div>
+<@batchCommon.printTemplate />
 
 <@edit.asyncFileUpload "Files For Batch Upload" true "Upload" "divFileUpload">
 
@@ -53,21 +40,6 @@ For all of the fields below, you can select values that will apply to all of the
         <@edit.fileProxyRow />
     </table>
 <@edit.resourceJavascript formSelector='#BulkMetadataForm' includeAsync=true includeInheritance=true>
-<#if validFileExtensions??>
-
-$(function() {
-    var validate = $('.validateFileType');
-    if ($(validate).length > 0) {
-        $(validate).rules("add", {
-            accept : "xls|xlsx",
-            messages : {
-                accept : "Please enter a valid file (xls,xlsx)"
-            }
-        }); // end rules
-    }
-});
-
-</#if>
 
 $(function(){
     $('#fileAsyncUpload').rules('add', 'asyncFilesRequired');
