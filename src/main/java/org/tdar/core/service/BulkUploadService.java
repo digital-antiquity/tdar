@@ -28,20 +28,12 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFDataFormatter;
-import org.apache.poi.hssf.usermodel.HSSFDataValidationHelper;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.DataFormatter;
-import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -63,19 +55,18 @@ import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
-import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.bean.util.BulkManifestProxy;
-import org.tdar.core.bean.util.CellMetadata;
+import org.tdar.core.bean.util.bulkUpload.BulkManifestProxy;
+import org.tdar.core.bean.util.bulkUpload.BulkUploadTemplate;
+import org.tdar.core.bean.util.bulkUpload.CellMetadata;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.excel.CellFormat;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.FileAnalyzer;
@@ -92,11 +83,10 @@ import org.tdar.utils.activity.Activity;
 @Service
 public class BulkUploadService {
 
+    private static final String THE_SYSTEM_HAS_NOT_RECEIVED_ANY_FILES = "The system has not received any files.";
+    private static final String AN_EXCEPTION_OCCURED_WHILE_PROCESSING_THE_MANIFEST_FILE = "an exception occured while processing the manifest file";
     private static final String PLEASE_INCLUDE_THE_FILE_EXTENSION_IN_THE_FILENAME = "please include the file extension in the filename";
     private static final String THE_MANIFEST_FILE_UPLOADED_APPEARS_TO_BE_EMPTY_NO_COLUMNS_FOUND = "the manifest file uploaded appears to be empty, no columns found";
-    public static final String BULK_TEMPLATE_TITLE = "BULK_TEMPLATE_TITLE";
-    public static final String EXAMPLE_TIFF = "TDAR_EXAMPLE.TIFF";
-    public static final String EXAMPLE_PDF = "TDAR_EXAMPLE.PDF";
 
     @Autowired
     private EntityService entityService;
@@ -126,7 +116,6 @@ public class BulkUploadService {
     @Autowired
     private ReflectionService reflectionService;
 
-    public static final String FILENAME = "filename";
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
     private DataFormatter formatter = new HSSFDataFormatter();
 
@@ -168,7 +157,7 @@ public class BulkUploadService {
         image.setDescription("");
         image.setDate(-1);
         if (CollectionUtils.isEmpty(fileProxies)) {
-            TdarRecoverableRuntimeException throwable = new TdarRecoverableRuntimeException("The system has not received any files.");
+            TdarRecoverableRuntimeException throwable = new TdarRecoverableRuntimeException(THE_SYSTEM_HAS_NOT_RECEIVED_ANY_FILES);
             receiver.addError(throwable);
             throw throwable;
         }
@@ -213,7 +202,7 @@ public class BulkUploadService {
         try {
             readExcelFile(manifestProxy, resourcesCreated, receiver);
         } catch (Exception e) {
-            logger.warn("an exception occured while processing the manifest file", e);
+            logger.warn(AN_EXCEPTION_OCCURED_WHILE_PROCESSING_THE_MANIFEST_FILE, e);
         }
 
         logger.info("bulk: setting final statuses and logging");
@@ -305,14 +294,6 @@ public class BulkUploadService {
         List<String> requiredErrors = new ArrayList<String>();
         for (CellMetadata field : allValidFields) {
             if (field.isRequired() && !required.contains(field)) {
-                if (!TdarConfiguration.getInstance().getCopyrightMandatory() && ObjectUtils.equals(field.getDisplayName(), BulkImportField.COPYRIGHT_HOLDER)) {
-                    continue;
-                }
-
-                if (TdarConfiguration.getInstance().getLicenseEnabled() == false
-                        && (ObjectUtils.equals(field.getName(), "licenseType") || ObjectUtils.equals(field.getName(), "licenseText")))
-                    continue;
-
                 requiredErrors.add(field.getDisplayName());
             }
         }
@@ -322,7 +303,7 @@ public class BulkUploadService {
             throw new TdarRecoverableRuntimeException(THE_MANIFEST_FILE_UPLOADED_APPEARS_TO_BE_EMPTY_NO_COLUMNS_FOUND);
         }
 
-        if (!columnNames.get(ExcelService.FIRST_COLUMN).equals(FILENAME)) {
+        if (!columnNames.get(ExcelService.FIRST_COLUMN).equals(BulkUploadTemplate.FILENAME)) {
             throw new TdarRecoverableRuntimeException("the first column must be the filename");
         }
 
@@ -346,7 +327,7 @@ public class BulkUploadService {
             }
             String filename = cell.getStringCellValue();
             // if not the label, then...
-            if (filename.equalsIgnoreCase(FILENAME))
+            if (filename.equalsIgnoreCase(BulkUploadTemplate.FILENAME))
                 continue;
 
             proxy.addFilename(filename);
@@ -378,7 +359,7 @@ public class BulkUploadService {
             Map<String, Resource> resourcesCreated, float count) {
 
         if (StringUtils.isBlank(image.getTitle())) {
-            image.setTitle(BULK_TEMPLATE_TITLE);
+            image.setTitle(BulkUploadTemplate.BULK_TEMPLATE_TITLE);
         }
 
         for (FileProxy fileProxy : fileProxies) {
@@ -406,8 +387,7 @@ public class BulkUploadService {
                 ResourceType suggestTypeForFile = analyzer
                         .suggestTypeForFileExtension(FilenameUtils.getExtension((fileName.toLowerCase())), ResourceType.DOCUMENT, ResourceType.DATASET,
                                 ResourceType.IMAGE);
-                if (InformationResource.class
-                        .isAssignableFrom(suggestTypeForFile.getResourceClass())) {
+                if (InformationResource.class.isAssignableFrom(suggestTypeForFile.getResourceClass())) {
                     logger.info("saving " + fileName + "..." + suggestTypeForFile);
                     InformationResource informationResource = (InformationResource) resourceService.createResourceFrom(image,
                             suggestTypeForFile.getResourceClass());
@@ -430,10 +410,12 @@ public class BulkUploadService {
     public LinkedHashSet<CellMetadata> getAllValidFieldNames(ResourceType... resourceTypes) {
         List<ResourceType> resourceClasses = new ArrayList<ResourceType>(Arrays.asList(resourceTypes));
         if (ArrayUtils.isEmpty(resourceTypes)) {
-            resourceClasses.add(ResourceType.DOCUMENT);
-            resourceClasses.add(ResourceType.IMAGE);
+            for (ResourceType type : ResourceType.values()) {
+                if (type.supportBulkUpload())
+                    resourceClasses.add(type);
+            }
         }
-        CellMetadata filename = new CellMetadata(FILENAME);
+        CellMetadata filename = new CellMetadata(BulkUploadTemplate.FILENAME);
         filename.setRequired(true);
         filename.setComment(BulkImportField.FILENAME_DESCRIPTION);
         filename.setOrder(-1000);
@@ -542,15 +524,13 @@ public class BulkUploadService {
                 Resource resourceToProcess = findResource(filename, filenameResourceMap);
                 logger.debug("fn: {} resource to Process: {}", filename, resourceToProcess);
                 if (StringUtils.isBlank(filename)
-                        || filename.equalsIgnoreCase(EXAMPLE_PDF)
-                        || filename.equalsIgnoreCase(EXAMPLE_TIFF)) {
+                        || filename.equalsIgnoreCase(BulkUploadTemplate.EXAMPLE_PDF)
+                        || filename.equalsIgnoreCase(BulkUploadTemplate.EXAMPLE_TIFF)) {
                     continue;
                 }
                 if (resourceToProcess == null) {
-                    receiver.addError(new TdarRecoverableRuntimeException(
-                            "skipping line in excel file as resource with the filename \""
-                                    + filename
-                                    + "\" was not found in the import batch"));
+                    receiver.addError(new TdarRecoverableRuntimeException(String.format(
+                            "skipping line in excel file as resource with the filename \"%s\" was not found in the import batch", filename)));
                     continue;
                 }
                 logger.info("processing:" + filename);
@@ -558,28 +538,24 @@ public class BulkUploadService {
                 receiver.setPercentComplete(receiver.getPercentComplete() + 1f);
                 receiver.setStatus("processing metadata for:" + filename);
 
-                // Person person = new Person();
-                // Institution institution = new Institution();
-                // ResourceCreator creator = new ResourceCreator();
                 ResourceCreatorProxy creatorProxy = new ResourceCreatorProxy();
 
-                // there has to be a smarter way to do this generically...
-                // iterate through valid field names for class
+                // there has to be a smarter way to do this generically... iterate through valid field names for class
                 boolean seenCreatorFields = false;
 
                 Set<CellMetadata> requiredFields = getRequiredFields(manifestProxy.getAllValidFields());
-                requiredFields.remove(cellLookupMap.get(FILENAME));
+                requiredFields.remove(cellLookupMap.get(BulkUploadTemplate.FILENAME));
                 // iterate through the spreadsheet
                 try {
                     for (int columnIndex = (startColumnIndex + 1); columnIndex < endColumnIndex; ++columnIndex) {
                         String value = getCellValue(evaluator, row, columnIndex);
                         String name = manifestProxy.getColumnNames().get(columnIndex);
-
-                        if (StringUtils.isBlank(name) || StringUtils.isBlank(value))
-                            continue;
                         CellMetadata cellMetadata = cellLookupMap.get(name);
+                        logger.info("cell metadata: {}", cellMetadata);
 
-                        logger.trace("cell metadata: {}", cellMetadata);
+                        if (StringUtils.isBlank(name) || StringUtils.isBlank(value) || cellMetadata == null)
+                            continue;
+
                         Class<?> mappedClass = cellMetadata.getMappedClass();
                         if (cellMetadata == null
                                 || !(mappedClass != null &&
@@ -635,7 +611,7 @@ public class BulkUploadService {
                     if (requiredFields.size() > 0) {
                         String msg = filename + ": The following required fields have not been provided:";
                         for (CellMetadata meta : requiredFields) {
-                            logger.debug("{}", meta);
+                            logger.trace("{}", meta);
                             msg += meta.getDisplayName() + ", ";
                         }
                         msg = msg.substring(0, msg.length() - 2);
@@ -732,129 +708,7 @@ public class BulkUploadService {
     }
 
     public HSSFWorkbook createExcelTemplate() {
-        LinkedHashSet<CellMetadata> fieldnameSet = getAllValidFieldNames();
-
-        HSSFWorkbook workbook = new HSSFWorkbook();
-        HSSFSheet sheet = workbook.createSheet("template");
-        CreationHelper factory = workbook.getCreationHelper();
-
-        HSSFRow row = sheet.createRow(0);
-        // When the comment box is visible, have it show in a 1x3 space
-
-        CellStyle headerStyle = excelService.createSummaryStyle(workbook);
-        CellStyle headerStyle2 = CellFormat.BOLD.setColor(new HSSFColor.GREY_25_PERCENT()).setWrapping(true).createStyle(workbook);
-        CellStyle headerStyle3 = CellFormat.BOLD.setColor(new HSSFColor.LIGHT_GREEN()).setWrapping(true).createStyle(workbook);
-
-        HashMap<String, String> exampleDoc = new HashMap<String, String>();
-        HashMap<String, String> exampleImage = new HashMap<String, String>();
-
-        exampleDoc.put(FILENAME, EXAMPLE_PDF);
-        exampleImage.put(FILENAME, EXAMPLE_TIFF);
-        exampleDoc.put("title", "EXAMPLE TITLE");
-        exampleImage.put("title", "EXAMPLE TITLE");
-
-        exampleDoc.put("title", "EXAMPLE TITLE");
-        exampleDoc.put("bookTitle", "Book Title");
-        exampleDoc.put("startPage", "20");
-        exampleDoc.put("endPage", "40");
-        exampleDoc.put("issn", "1111-1111");
-        exampleDoc.put("documentType", "BOOK_SECTION");
-        exampleImage.put("title", "EXAMPLE TITLE");
-
-        exampleImage.put("ResourceCreatorPerson.role", "CREATOR");
-        exampleImage.put("ResourceCreatorPerson.Person.email", "test@test.com");
-        exampleImage.put("ResourceCreatorPerson.Person.firstName", "First Name");
-        exampleImage.put("ResourceCreatorPerson.Person.lastName", "Last Name");
-
-        exampleDoc.put("ResourceCreatorPerson.Person.email", "test@test.com");
-        exampleDoc.put("ResourceCreatorPerson.Person.firstName", "First Name");
-        exampleDoc.put("ResourceCreatorPerson.Person.lastName", "Last Name");
-        exampleDoc.put("ResourceCreatorPerson.role", "AUTHOR");
-
-        exampleDoc.put("ResourceCreatorInstitution.role", "AUTHOR");
-        exampleDoc.put("ResourceCreatorInstitution.Institution.name", "Institutional Author");
-
-        int pos = 4;
-        Drawing drawing = sheet.createDrawingPatriarch();
-
-        int i = 0;
-        HSSFDataValidationHelper validationHelper = new HSSFDataValidationHelper(
-                sheet);
-        Set<CellMetadata> enumFields = new HashSet<CellMetadata>();
-        for (CellMetadata field : fieldnameSet) {
-
-            // FIXME: CELL METADATA SHOULD MAINTAIN THE TYPE OF THE FIELD AND THEN CONSTRAIN VALUES BY
-            // THE FIELD TYPE -- ENUM, STRING, INTEGER, FLOAT
-            if (CollectionUtils.isNotEmpty(field.getEnumList())) {
-                excelService.addColumnValidation(sheet, i, validationHelper, field.getEnumList().toArray(new Enum[0]));
-                enumFields.add(field);
-            }
-
-            row.createCell(i).setCellValue(field.getOutputName());
-            if (field.getMappedClass() != null && field.getMappedClass().equals(Document.class)) {
-                row.getCell(i).setCellStyle(headerStyle2);
-            } else if (i == pos || i == pos + 1) {
-                row.getCell(i).setCellStyle(headerStyle3);
-            } else {
-                row.getCell(i).setCellStyle(headerStyle);
-            }
-
-            excelService.addComment(factory, drawing, row.getCell(i), field.getComment());
-
-            i++;
-        }
-
-        HSSFRow rowDoc = sheet.createRow(1);
-        HSSFRow rowImg = sheet.createRow(2);
-        i = 0;
-        for (CellMetadata field : fieldnameSet) {
-            String imgFld = exampleImage.remove(field.getName());
-            String docFld = exampleDoc.remove(field.getName());
-            if (imgFld == null) {
-                imgFld = "";
-            }
-            if (docFld == null) {
-                docFld = "";
-            }
-
-            rowImg.createCell(i).setCellValue(imgFld);
-            rowDoc.createCell(i).setCellValue(docFld);
-            i++;
-        }
-
-        HSSFSheet referenceSheet = workbook.createSheet("REFERENCE");
-
-        CellStyle summaryStyle = excelService.createSummaryStyle(workbook);
-
-        i = 0;
-        for (CellMetadata field : enumFields) {
-            if (field.getName().equals("ResourceCreatorInstitution.role"))
-                continue;
-            addReferenceColumn(referenceSheet, field.getEnumList().toArray(new Enum[0]), field.getDisplayName() + " Values:", summaryStyle, i);
-            i++;
-        }
-
-        // autosize
-        for (int c = 0; c < 4; c++) {
-            referenceSheet.autoSizeColumn(i);
-        }
-
-        for (int c = 0; c < fieldnameSet.size(); c++) {
-            sheet.autoSizeColumn(i);
-        }
-        return workbook;
+        BulkUploadTemplate template = new BulkUploadTemplate(excelService);
+        return template.getTemplate(getAllValidFieldNames());
     }
-
-    public <T extends Enum<T>> void addReferenceColumn(Sheet wb, T[] labels,
-            String header, CellStyle summaryStyle, int col) {
-        int rowNum = 0;
-        Row row = excelService.createRow(wb, rowNum);
-        row.createCell(col).setCellValue(header);
-        row.getCell(col).setCellStyle(summaryStyle);
-        for (T type : labels) {
-            rowNum++;
-            excelService.createRow(wb, rowNum).createCell(col).setCellValue(type.name());
-        }
-    }
-
 }

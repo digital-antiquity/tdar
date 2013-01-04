@@ -51,6 +51,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.util.bulkUpload.BulkUploadTemplate;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.service.BulkUploadService;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
@@ -121,7 +122,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         bulkUploadController.setApprovedSiteTypeKeywordIds(siteTypeKeywordIds);
         ResourceNote note = new ResourceNote(ResourceNoteType.GENERAL, "A harrowing tale of note");
         bulkUploadController.setResourceNotes(Arrays.asList(note));
-        bulkUploadController.getPersistable().setTitle(BulkUploadService.BULK_TEMPLATE_TITLE);
+        bulkUploadController.getPersistable().setTitle(BulkUploadTemplate.BULK_TEMPLATE_TITLE);
         // add some source/ comparative collections
         addComparitiveCollections(bulkUploadController);
 
@@ -279,7 +280,8 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         logger.info("{}", details);
         logger.debug(bulkUploadController.getAsyncErrors());
         assertFalse(StringUtils.isEmpty(bulkUploadController.getAsyncErrors()));
-        assertTrue(bulkUploadController.getAsyncErrors().contains("<li>5127663428_42ef7f4463_b.jpg : the fieldname Book Title is not valid for the resource type:IMAGE</li>"));
+        assertTrue(bulkUploadController.getAsyncErrors().contains(
+                "<li>5127663428_42ef7f4463_b.jpg : the fieldname Book Title is not valid for the resource type:IMAGE</li>"));
         // should be two results, one deleted b/c of errors
         assertEquals(2, bulkUploadController.getDetails().size());
         assertEquals(Status.DELETED, resourceService.find(details.get(0).getFirst()).getStatus());
@@ -309,7 +311,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         logger.info("{}", details);
         logger.debug(bulkUploadController.getAsyncErrors());
         assertFalse(StringUtils.isEmpty(bulkUploadController.getAsyncErrors()));
-        
+
         assertTrue(bulkUploadController.getAsyncErrors().contains("<li>the following columns are required: Description, Date Created (Year)</li>"));
     }
 

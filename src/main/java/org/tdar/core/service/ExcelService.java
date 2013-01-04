@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.hssf.usermodel.DVConstraint;
 import org.apache.poi.hssf.usermodel.HSSFDataValidation;
 import org.apache.poi.hssf.usermodel.HSSFDataValidationHelper;
 import org.apache.poi.hssf.usermodel.HSSFPalette;
@@ -59,15 +60,35 @@ public class ExcelService {
      * Add validation to a given column
      */
     public <T extends Enum<?>> void addColumnValidation(HSSFSheet sheet, int i, HSSFDataValidationHelper validationHelper, T[] enums) {
-        CellRangeAddressList addressList = new CellRangeAddressList();
-        addressList.addCellRangeAddress(1, i, 10000, i);
         DataValidationConstraint validationConstraint = validationHelper.createExplicitListConstraint(getEnumNames(enums).toArray(new String[] {}));
+        HSSFDataValidation dataValidation = setupSheetValidation(sheet, i, validationConstraint);
+        dataValidation.setSuppressDropDownArrow(false);
+    }
+
+    private HSSFDataValidation setupSheetValidation(HSSFSheet sheet, int i, DataValidationConstraint validationConstraint) {
+        CellRangeAddressList addressList = new CellRangeAddressList();
         HSSFDataValidation dataValidation = new HSSFDataValidation(addressList, validationConstraint);
+        addressList.addCellRangeAddress(1, i, 10000, i);
         dataValidation.setEmptyCellAllowed(true);
         dataValidation.setShowPromptBox(true);
-        dataValidation.setSuppressDropDownArrow(false);
         sheet.addValidationData(dataValidation);
+        return dataValidation;
     }
+    
+    public HSSFDataValidation addNumericColumnValidation(HSSFSheet sheet, int i, HSSFDataValidationHelper validationHelper, String formula1, String formula2) {
+        DataValidationConstraint validationConstraint = validationHelper.createDecimalConstraint(DVConstraint.OperatorType.IGNORED, formula1, formula2);
+        HSSFDataValidation dataValidation = setupSheetValidation(sheet, i, validationConstraint);
+        return dataValidation;
+    }
+
+    public HSSFDataValidation addIntegerColumnValidation(HSSFSheet sheet, int i, HSSFDataValidationHelper validationHelper, String formula1, String formula2) {
+        DataValidationConstraint validationConstraint = validationHelper.createDecimalConstraint(DVConstraint.OperatorType.IGNORED, formula1, formula2);
+        HSSFDataValidation dataValidation = setupSheetValidation(sheet, i, validationConstraint);
+        return dataValidation;
+    }
+
+    
+    
 
     /*
      * get all of the names of enums passed in a list
@@ -370,5 +391,6 @@ public class ExcelService {
     public void setColumnWidth(Sheet sheet, int i, int size) {
         sheet.setColumnWidth(i, size);
     }
+
 
 }

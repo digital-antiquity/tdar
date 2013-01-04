@@ -45,7 +45,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.util.CellMetadata;
+import org.tdar.core.bean.util.bulkUpload.CellMetadata;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.Pair;
@@ -343,14 +343,14 @@ public class ReflectionService {
 
     public LinkedHashSet<CellMetadata> findBulkAnnotationsOnClass(Class<?> class2) {
         Stack<List<Class<?>>> classStack = new Stack<List<Class<?>>>();
-        return findAnnotationsOnClass(class2, classStack, "");
+        return findBulkAnnotationsOnClass(class2, classStack, "");
     }
 
-    public LinkedHashSet<CellMetadata> findAnnotationsOnClass(Class<?> class2, Stack<List<Class<?>>> stack, String prefix) {
+    public LinkedHashSet<CellMetadata> findBulkAnnotationsOnClass(Class<?> class2, Stack<List<Class<?>>> stack, String prefix) {
         Class<BulkImportField> annotationToFind = BulkImportField.class;
         LinkedHashSet<CellMetadata> set = new LinkedHashSet<CellMetadata>();
         if (class2.getSuperclass() != Object.class) {
-            set.addAll(findAnnotationsOnClass(class2.getSuperclass(), stack, prefix));
+            set.addAll(findBulkAnnotationsOnClass(class2.getSuperclass(), stack, prefix));
         }
 
         Field runMultiple = null;
@@ -390,21 +390,30 @@ public class ReflectionService {
             if (annotation != null) {
                 String fieldPrefix = prefix;
                 if (StringUtils.isNotBlank(annotation.label())) {
-                    fieldPrefix += " " + annotation.label();
-                    fieldPrefix = fieldPrefix.trim();
+                    fieldPrefix = StringUtils.trim( annotation.label());
+//                    fieldPrefix = fieldPrefix.trim();
                 }
+                
+                
                 Class<?> type = field.getType();
                 if (ObjectUtils.equals(field, runAsField)) {
                     type = runAs;
                     logger.trace(" ** overriding type with " + type.getSimpleName());
                 }
-                if (Collection.class.isAssignableFrom(type)) {
+                
+                if (Collection.class.isAssignableFrom(type)) 
+                // handle Collection private List<ResourceCreator> ...
+                {
                     ParameterizedType stringListType = (ParameterizedType) field.getGenericType();
                     Class<?> cls = (Class<?>) stringListType.getActualTypeArguments()[0];
-                    set.addAll(findAnnotationsOnClass(cls, stack, fieldPrefix));
-                } else if (Persistable.class.isAssignableFrom(type)) {
-                    set.addAll(findAnnotationsOnClass(type, stack, fieldPrefix));
-                } else {
+                    set.addAll(findBulkAnnotationsOnClass(cls, stack, fieldPrefix));
+                } 
+                // handle Singleton private Person owner ...
+                else if (Persistable.class.isAssignableFrom(type)) {
+                    set.addAll(findBulkAnnotationsOnClass(type, stack, fieldPrefix));
+                } 
+                // handle more primative fields private String ...
+                else {
                     logger.trace("adding {} ({})", field, stack);
                     if (!TdarConfiguration.getInstance().getCopyrightMandatory() && ObjectUtils.equals(annotation.label(), BulkImportField.COPYRIGHT_HOLDER)) {
                         continue;

@@ -1,4 +1,4 @@
-package org.tdar.core.bean.util;
+package org.tdar.core.bean.util.bulkUpload;
 
 import java.io.Serializable;
 import java.util.ArrayList;

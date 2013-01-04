@@ -4,15 +4,14 @@
  * @author $Author$
  * @version $Revision$
  */
-package org.tdar.core.bean.util;
+package org.tdar.core.bean.util.bulkUpload;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.enums.EnumUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.BulkImportField;
@@ -63,14 +62,20 @@ public class CellMetadata implements Comparable<CellMetadata> {
     }
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
-    private List<?extends Enum<?>> enumList;
+    private List<Enum> enumList = new ArrayList<Enum>();
+    private boolean floatNumber = false;
+    private boolean numeric = false;
 
     public CellMetadata(Field field, BulkImportField annotation, Class<?> class2, Stack<List<Class<?>>> stack, String prefix) {
         this.mappedClass = class2;
         if (field.getType().isEnum()) {
-            setEnumList((List<? extends Enum<?>>) Arrays.asList(field.getType().getEnumConstants()));
+            for (Object enumConstant : field.getType().getEnumConstants()) {
+                getEnumList().add((Enum) enumConstant);
+            }
         }
+
         this.required = annotation.required();
+
         String fieldPrefix = "";
         if (stack.size() > 1) {
             for (int i = 1; i < stack.size(); i++) {
@@ -84,6 +89,15 @@ public class CellMetadata implements Comparable<CellMetadata> {
         }
         this.name = fieldPrefix + field.getName();
         this.displayName = StringUtils.trim(prefix + " " + annotation.label());
+
+        if (Integer.class.isAssignableFrom(field.getType()) || Long.class.isAssignableFrom(field.getType())) {
+            setNumeric(true);
+        }
+
+        if (Float.class.isAssignableFrom(field.getType())) {
+            setNumeric(true);
+            setFloatNumber(true);
+        }
 
     }
 
@@ -223,11 +237,27 @@ public class CellMetadata implements Comparable<CellMetadata> {
         return name;
     }
 
-    public List<?extends Enum<?>> getEnumList() {
+    public List<Enum> getEnumList() {
         return enumList;
     }
 
-    public void setEnumList(List<?extends Enum<?>> enumList) {
+    public void setEnumList(List<Enum> enumList) {
         this.enumList = enumList;
+    }
+
+    public boolean isFloatNumber() {
+        return floatNumber;
+    }
+
+    public void setFloatNumber(boolean floatNumber) {
+        this.floatNumber = floatNumber;
+    }
+
+    public boolean isNumeric() {
+        return numeric;
+    }
+
+    public void setNumeric(boolean numeric) {
+        this.numeric = numeric;
     }
 }
