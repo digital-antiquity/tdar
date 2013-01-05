@@ -155,8 +155,8 @@ public abstract class AbstractAuthenticatedWebTestCase extends AbstractWebTestCa
             Page page = client.getPage(webRequest);
             code = page.getWebResponse().getStatusCode();
             Assert.assertTrue(assertNoErrors && code == HttpStatus.OK.value());
-            if(file != null) {
-                assertFileSizes(page, Arrays.asList(new File[]{file}));
+            if (file != null) {
+                assertFileSizes(page, Arrays.asList(new File[] { file }));
             }
         } catch (MalformedURLException e) {
             Assert.fail("mailformed URL: are you sure you specified the right page in your test?");
@@ -173,7 +173,7 @@ public abstract class AbstractAuthenticatedWebTestCase extends AbstractWebTestCa
 
     protected void assertFileSizes(Page page, List<File> files) {
         JSONArray jsonArray = (JSONArray) JSONSerializer.toJSON(page.getWebResponse().getContentAsString());
-        for(int i = 0; i < files.size(); i++) {
+        for (int i = 0; i < files.size(); i++) {
             Assert.assertEquals("file size reported from server should be same as original", files.get(i).length(), jsonArray.getJSONObject(i).getLong("size"));
         }
     }

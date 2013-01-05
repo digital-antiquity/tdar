@@ -6,7 +6,7 @@
 <#import "/WEB-INF/macros/resource/common.ftl" as common>
 
 <head>
-<title>Your account ${account.name}</title>
+<title>Your account ${account.name!"Your Account"}</title>
 <meta name="lastModifiedDate" content="$Date$"/>
 
 </head>

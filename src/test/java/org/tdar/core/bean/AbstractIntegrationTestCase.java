@@ -25,6 +25,7 @@ import javax.xml.validation.SchemaFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.custommonkey.xmlunit.exceptions.ConfigurationException;
 import org.custommonkey.xmlunit.jaxp13.Validator;
@@ -776,4 +777,11 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return account;
     }
 
+    public static void assertNotEquals(Object obj1, Object obj2) {
+        assertNotEquals("", obj1, obj2);
+    }
+
+    public static void assertNotEquals(String msg, Object obj1, Object obj2) {
+        assertTrue(msg, ObjectUtils.notEqual(obj1, obj2));
+    }
 }

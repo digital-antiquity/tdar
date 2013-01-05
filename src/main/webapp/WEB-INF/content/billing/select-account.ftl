@@ -14,7 +14,7 @@
 
 <div>
 <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='save'>
-    <@s.select labelposition='top' label='Select Existing Account' name='id' 
+    <@s.select labelposition='top' label='Select Existing Account' name='id' emptyOption="true"
          list='%{accounts}'  listValue='name' listKey="id" title="Address Type" />
 
     <h3>Or... create a new one</h3>

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -65,7 +66,8 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     protected String save(Account persistable) {
         logger.info("invoiceId {}", getInvoiceId());
         
-        if (Persistable.Base.isTransient(getAccount())) {
+        // if we're coming from "choose" and we want a "new account"
+        if (Persistable.Base.isTransient(getAccount()) && StringUtils.isNotBlank(getName())) {
             getAccount().setName(getName());
             getAccount().setDescription(getDescription());
         }
