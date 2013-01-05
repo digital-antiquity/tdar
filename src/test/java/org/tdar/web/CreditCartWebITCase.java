@@ -124,9 +124,9 @@ public class CreditCartWebITCase extends AbstractAuthenticatedWebTestCase {
             setInput("id", accountId);
         } else {
             gotoPage("/billing/add?invoiceId=" + invoiceId);
+            setInput("account.name", MY_TEST_ACCOUNT);
+            setInput("account.description", THIS_IS_A_TEST_DESCIPTION);
         }
-        setInput("name", MY_TEST_ACCOUNT);
-        setInput("description", THIS_IS_A_TEST_DESCIPTION);
         List<Person> users = entityService.findAllRegisteredUsers(3);
         List<Long> userIds = Persistable.Base.extractIds(users);
         for (int i = 0; i < userIds.size(); i++) {
