@@ -14,7 +14,7 @@
 <div class="row">
 <div class="pull-right span3">
 	 <h3>Have lots of resources?</h3>
-       <a class="button btn submitButton" href="<@s.url value="/batch/add" />">Bulk Upload</a>
+       <a class="button btn submitButton" href="<@s.url value="/batch/template-prepare" />">Bulk Upload</a>
 </div>
 <h1>Create &amp; <span>Organize</span> Resources</h1>
 <div class="span8">

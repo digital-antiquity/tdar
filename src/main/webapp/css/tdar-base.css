@@ -62,7 +62,7 @@ a:hover {
 
 a.button {
 	font-family: helvetica, arial, sans-serif;
-	width: 130px;
+//	width: 130px;
 	height: 35px;
 	display: inline-block;
 	background: #7a1501;
@@ -81,6 +81,8 @@ a.button {
 	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src=hIEfix.png,
 		sizingMethod=crop );
 	zoom: 1;
+	padding-left: 8px;
+	padding-right: 8px;
 }
 
 a.button:hover {

@@ -2,7 +2,7 @@
 <div class="glide">
     <h3>Bulk Upload Status (this may take some time)</h3>
     <span id="asyncErrors" >
-        <div id="unspecifiedError" class="action-errors ui-corner-all" style="display:none">
+        <div id="unspecifiedError" class="alert alert-error" style="display:none">
             <h3>Unspecified Error</h3>
             <p>An error occured while asking the server for an upload status update.   This does not mean that your upload failed.  
             Please check the <a href='<@s.url value="/dashboard"/>'>dashboard</a> to determine
@@ -60,7 +60,7 @@ var updateProgress = function() {
                 $("#btnDashboard").button();
             }
             if (data.errors  != undefined && data.errors != "") {
-                $("#asyncErrors").html("<div class='action-errors ui-corner-all'>"+data.errors+"</div>");
+                $("#asyncErrors").html("<div class='alert alert-error'><ul>"+data.errors+"</ul></div>");
             }        
         },
       error: function(xhr,txtStatus, errorThrown) {

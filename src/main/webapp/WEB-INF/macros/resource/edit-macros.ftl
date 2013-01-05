@@ -542,9 +542,9 @@ ${resource.resourceType.label}
 
 </#macro>
 
-<#macro submit label="Save" fileReminder=true buttonid="submitButton">
+<#macro submit label="Save" fileReminder=true buttonid="submitButton" span="span9">
 <div class="errorsection row">
-    <div class="span9">
+    <div class="${span}">
         <#if fileReminder>
         <div id="reminder" class="">
             <p><span class="label label-info">Reminder</span> No files are attached to this record. </p>

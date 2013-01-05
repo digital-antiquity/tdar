@@ -53,7 +53,6 @@ import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.util.bulkUpload.BulkUploadTemplate;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
-import org.tdar.core.service.BulkUploadService;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.AbstractAdminControllerITCase;
@@ -324,7 +323,8 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         BulkUploadController bulkUploadController = setupBasicBulkUploadTest(manifestFilename, BulkUploadController.SUCCESS_ASYNC);
         logger.debug(bulkUploadController.getAsyncErrors());
         assertFalse(StringUtils.isEmpty(bulkUploadController.getAsyncErrors()));
-        assertTrue(bulkUploadController.getAsyncErrors().contains("<li>the following columns are required: Title, Description, Date Created (Year)</li>"));
+        assertFalse(bulkUploadController.getAsyncErrors().contains("<li>the following columns are required: Title, Description, Date Created (Year)</li>"));
+        assertTrue(bulkUploadController.getAsyncErrors().contains("<li>skipping line in excel file as resource with the filename \"Codes E1 txt\" was not found in the import batch</li><li>skipping line in excel file as resource with the filename \"Codes E2.txt\" was not found in the import batch</li><li>skipping line in excel file as resource with the filename \"Codes E3.txt\" was not found in the import batch</li><li>skipping line in excel file as resource with the filename \"Codes E4.txt\" was not found in the import batch</li><li>skipping line in excel file as resource with the filename \"Codes E5A.txt\" was not found in the import batch</li><li>skipping line in excel file as resource with the filename \"Codes E5B.txt\" was not found in the import batch</li><li>skipping line in excel file as resource with the filename \"Codes E6.txt\" was not found in the import batch</li><li>skipping line in excel file as resource with the filename \"Codes E7.txt\" was not found in the import batch</li><li>skipping line in excel file as resource with the filename \"Codes E8.txt\" was not found in the import batch</li><li>skipping line in excel file as resource with the filename \"Codes E9.txt\" was not found in the import batch</li><li>skipping line in excel file as resource with the filename \"Codes E10.txt\" was not found in the import batch</li><li>skipping line in excel file as resource with the filename \"Codes E11.txt\" was not found in the import batch</li><li>skipping line in excel file as resource with the filename \"Codes E12.txt\" was not found in the import batch</li>"));
     }
 
     private BulkUploadController setupBasicBulkUploadTest(String manifestName, String expectedResponse) throws Exception {

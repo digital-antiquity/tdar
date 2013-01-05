@@ -115,27 +115,25 @@ public class BulkUploadController extends AbstractInformationResourceController<
         return SUCCESS_ASYNC;
     }
 
-    @Action(value = "template-view")
+    @Action(value = "template-prepare")
     @SkipValidation
     public String templateView() {
         return SUCCESS;
     }
 
     @Action(value = "validate-template", results = {
-            @Result(name = INPUT, location = "template-view"),
-            @Result(name = SUCCESS, location = "add") })
+            @Result(name = INPUT, type = "redirect", location = "template-prepare"),
+            @Result(name = SUCCESS, type = "redirect", location = "add") })
     @SkipValidation
     public String templateValidate() {
 
         logger.info("{} and names {}", getUploadedFiles(), getUploadedFilesFileName());
-        String filename = getUploadedFilesFileName().get(0);
-        File excelManifest = getUploadedFiles().get(0);
-        if (excelManifest == null) {
+        if (CollectionUtils.isEmpty(getUploadedFiles())) {
             addActionError("Please upload your template");
             return INPUT;
         }
         try {
-            Workbook workbook = WorkbookFactory.create(excelManifest);
+            Workbook workbook = WorkbookFactory.create(getUploadedFiles().get(0));
             bulkUploadService.validateManifestFile(workbook.getSheetAt(0));
         } catch (Exception e) {
             addActionErrorWithException("Problem with BulkUploadTemplate", e);
@@ -150,18 +148,18 @@ public class BulkUploadController extends AbstractInformationResourceController<
             @Result(name = "wait", type = "freemarker", location = "checkstatus-wait.ftl", params = { "contentType", "application/json" }) })
     public String checkStatus() {
         AsyncUpdateReceiver reciever = bulkUploadService.checkAsyncStatus(getTicketId());
-        // if (reciever != null) {
-        phase = reciever.getStatus();
-        percentDone = reciever.getPercentComplete();
-        setAsyncErrors(reciever.getHtmlAsyncErrors());
-        if (percentDone == 100f) {
-            List<Pair<Long, String>> details = reciever.getDetails();
-            setDetails(details);
+        if (reciever != null) {
+            phase = reciever.getStatus();
+            percentDone = reciever.getPercentComplete();
+            setAsyncErrors(reciever.getHtmlAsyncErrors());
+            if (percentDone == 100f) {
+                List<Pair<Long, String>> details = reciever.getDetails();
+                setDetails(details);
+            }
+            return "wait";
+        } else {
+            return ERROR;
         }
-        return "wait";
-        // } else {
-        // return ERROR;
-        // }
     }
 
     @SkipValidation

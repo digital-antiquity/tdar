@@ -268,7 +268,7 @@ public class BulkUploadService {
         Set<CellMetadata> required = new HashSet<CellMetadata>();
         for (int i = columnNamesRow.getFirstCellNum(); i <= columnNamesRow.getLastCellNum(); i++) {
             String name = getCellValue(evaluator, columnNamesRow, i);
-            name = StringUtils.replace(name, "*", ""); // remove required char
+            name = StringUtils.replace(name, "*", "").trim(); // remove required char
             columnNames.add(name);
             // logger.info("keys:{}", cellLookupMap.keySet());
             // logger.info("cell:{}, {}",name, cellLookupMap.get(name));

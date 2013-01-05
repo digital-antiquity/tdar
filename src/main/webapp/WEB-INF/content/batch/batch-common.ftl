@@ -7,7 +7,7 @@
 	            one file. Documents must be in the following types: xls,xlsx">
 	             <h4>Instructions:</h4>
 	            <ol>
-	              <li><a href="template" onClick="navigateTempIgnore()">Download</a> the template file (<a href="template" onClick="navigateTempIgnore()">link</a>).</li>
+	              <li><a href="template" class="button" onClick="navigateTempIgnore()">Download</a> the template file (<a href="template" onClick="navigateTempIgnore()">link</a>).</li>
 	              <li>create a row for each file you're uploading</li>
 	              <li>the first column should always be the filename the record references [eg. document1.pdf ]</li>
 	              <li>enter in any other metadata by using the field names specified.</li>
