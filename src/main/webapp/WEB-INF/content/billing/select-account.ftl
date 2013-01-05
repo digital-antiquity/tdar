@@ -18,6 +18,10 @@
          list='%{accounts}'  listValue='name' listKey="id" title="Address Type" />
 
     <h3>Or... create a new one</h3>
+    <#-- NOTE: these should not be the account. variants as we want to not overwrite the values-->
+    <@s.textfield name="name" cssClass="input-xlarge" label="Account Name"/>
+    <@s.textarea name="description" cssClass="input-xlarge" label="Account Description"/>
+
 	<@accountcommon.accountInfoForm />
 
 </@s.form>

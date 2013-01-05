@@ -49,7 +49,7 @@
         <@s.textarea name="invoice.otherReason" cssClass="input-xlarge" label="Other Reason" />
     </div>
     
-    <@edit.submit fileReminder=false />
+    <@edit.submit fileReminder=false label="Next: Process Payment"/>
 
 <script>
 $(document).ready(function() {
@@ -82,7 +82,7 @@ $(document).ready(function() {
     <h3>Who can charge to this account </h3>
     <@edit.listMemberUsers />
     
-    <@edit.submit fileReminder=false />
+    <@edit.submit fileReminder=false label="Save" />
 
 </#macro>
 

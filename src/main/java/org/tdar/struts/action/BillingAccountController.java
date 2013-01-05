@@ -38,6 +38,8 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     private AccountGroup accountGroup;
     private List<Person> authorizedMembers = new ArrayList<Person>();
     private Long accountGroupId;
+    private String name;
+    private String description;
 
     @SkipValidation
     @Action(value = "choose", results = {
@@ -62,6 +64,12 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     @Override
     protected String save(Account persistable) {
         logger.info("invoiceId {}", getInvoiceId());
+        
+        if (Persistable.Base.isTransient(getAccount())) {
+            getAccount().setName(getName());
+            getAccount().setDescription(getDescription());
+        }
+        
         if (Persistable.Base.isNotNullOrTransient(invoiceId)) {
             Invoice invoice = getGenericService().find(Invoice.class, invoiceId);
             logger.info("attaching invoice: {} ", invoice);
@@ -180,6 +188,22 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     
     public BillingActivityModel getBillingActivityModel() {
         return getAccountService().getLatestActivityModel();
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
 }

@@ -76,7 +76,7 @@
 	</div>
 </div>
 <div class="row">
-    <@edit.submit fileReminder=false />
+    <@edit.submit fileReminder=false label="Next: Review & Choose Payment Method" />
 </div>
 </@s.form>
 

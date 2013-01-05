@@ -1,6 +1,6 @@
 package org.tdar.web;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.net.MalformedURLException;
@@ -9,7 +9,6 @@ import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.tdar.TestConstants;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.entity.Person;
@@ -116,7 +115,7 @@ public class CreditCartWebITCase extends AbstractAuthenticatedWebTestCase {
         assertTextPresent("$5,430");
         assertTextPresent("$1,350");
         logger.info(getPageText());
-        
+
     }
 
     private String addInvoiceToNewAccount(String invoiceId, String accountId) {
@@ -126,8 +125,8 @@ public class CreditCartWebITCase extends AbstractAuthenticatedWebTestCase {
         } else {
             gotoPage("/billing/add?invoiceId=" + invoiceId);
         }
-        setInput("account.name", MY_TEST_ACCOUNT);
-        setInput("account.description", THIS_IS_A_TEST_DESCIPTION);
+        setInput("name", MY_TEST_ACCOUNT);
+        setInput("description", THIS_IS_A_TEST_DESCIPTION);
         List<Person> users = entityService.findAllRegisteredUsers(3);
         List<Long> userIds = Persistable.Base.extractIds(users);
         for (int i = 0; i < userIds.size(); i++) {
