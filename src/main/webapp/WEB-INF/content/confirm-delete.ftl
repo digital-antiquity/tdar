@@ -14,6 +14,11 @@
   
   </#if>
 <#if persistable.resourceType??>
+<div class="alert alert-info">
+<label>Note:</label>Did you know you don't need to delete a  record if you just want to update a file?
+</div>
+</div>
+
 <#assign whatamideleting = persistable.resourceType.label?lower_case />
 <#elseif persistable.urlNamespace="collection">
 <#assign whatamideleting = "collection" />

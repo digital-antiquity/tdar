@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Result;
@@ -64,6 +65,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     private boolean asyncSave = true;
     private List<AuthorizedUser> authorizedUsers;
 
+    private String possibleJsError;
     private ResourceSpaceUsageStatistic totalResourceAccessStatistic;
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
 
@@ -736,5 +738,16 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
 
     public void setTotalResourceAccessStatistic(ResourceSpaceUsageStatistic totalResourceAccessStatistic) {
         this.totalResourceAccessStatistic = totalResourceAccessStatistic;
+    }
+
+    public String getPossibleJsError() {
+        return possibleJsError;
+    }
+
+    public void setPossibleJsError(String possibleJsError) {
+        if (StringUtils.isNotBlank(possibleJsError )) {
+            logger.warn(" there may have been a JS error ");
+        }
+        this.possibleJsError = possibleJsError;
     }
 }

@@ -1020,7 +1020,7 @@ TDAR.common = function() {
 
             //warn user about leaving before saving
             //FIXME: FormNavigate.js has bugs and is not being maintained. need to find/write replacement.
-
+            $("#jserror").val("");
             return true;
         });
 
@@ -1069,6 +1069,8 @@ TDAR.common = function() {
             var id = $(this).attr('id'); 
             $('#d_' + id).val($('#' + id).val());
         });
+        
+        $("#jserror").val("SAVE");
     };
     
     
@@ -1101,12 +1103,15 @@ TDAR.common = function() {
        $buttons.prop("disabled", false);
        
        //fade in the wait icon
+       $("#possibleJsError").val("");
        $submitDivs.find(".waitingSpinner").hide();
    } 
     
     
     //public: initialize the edit page form
     var _initEditPage = function(form) {
+        $("#possibleJsError").val("INIT");
+
        //Multi-submit prevention disables submit button, so it will be disabled if we get here via back button. So we explicitly enable it. 
         _submitButtonStopWait();
         
@@ -1208,6 +1213,7 @@ TDAR.common = function() {
         _registerAjaxEvents();
 
         // I must be "last"
+        $("#possibleJsError").val("SAVE");
         $(form).FormNavigate("Leaving the page will cause any unsaved data to be lost!");
 
     };
