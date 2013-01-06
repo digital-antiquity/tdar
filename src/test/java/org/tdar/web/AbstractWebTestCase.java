@@ -7,9 +7,12 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.tdar.TestConstants.DEFAULT_BASE_URL;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -20,23 +23,43 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
+
 import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
+import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.billing.Invoice.TransactionStatus;
+import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
+import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplate.NelnetTransactionItem;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.w3c.dom.Element;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.ElementNotFoundException;
+import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
+import com.gargoylesoftware.htmlunit.FormEncodingType;
+import com.gargoylesoftware.htmlunit.HttpMethod;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.TextPage;
 import com.gargoylesoftware.htmlunit.UnexpectedPage;
 import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.WebRequest;
+import com.gargoylesoftware.htmlunit.WebWindow;
 import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlCheckBoxInput;
@@ -51,6 +74,8 @@ import com.gargoylesoftware.htmlunit.html.HtmlRadioButtonInput;
 import com.gargoylesoftware.htmlunit.html.HtmlSelect;
 import com.gargoylesoftware.htmlunit.html.HtmlTextArea;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
+import com.gargoylesoftware.htmlunit.util.KeyDataPair;
+import com.gargoylesoftware.htmlunit.util.NameValuePair;
 import com.google.common.collect.Lists;
 import com.threelevers.css.Selector;
 
@@ -60,7 +85,7 @@ import com.threelevers.css.Selector;
  */
 public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
-    private static final String ELIPSIS = "<!-- ... -->";
+    private static final String ELIPSIS = "<!-- ==================== ... ======================= -->";
     private static final String BEGIN_PAGE_HEADER = "<!-- BEGIN-PAGE-HEADER -->";
     private static final String BEGIN_TDAR_CONTENT = "<!-- BEGIN-TDAR-CONTENT -->";
     private static final String BEGIN_TDAR_FOOTER = "<!-- BEGIN-TDAR-FOOTER -->";
@@ -72,6 +97,9 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     private HtmlForm _internalForm;
     private HtmlElement documentElement;
     public static String PROJECT_ID_FIELDNAME = "projectId";
+    protected static final String MY_TEST_ACCOUNT = "my test account";
+    protected static final String THIS_IS_A_TEST_DESCIPTION = "this is a test desciption";
+
     protected Set<String> encodingErrorExclusions = new HashSet<String>();
 
     @SuppressWarnings("serial")
@@ -754,5 +782,259 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     protected Element querySelector(String cssSelector) {
         return Selector.from(documentElement).select(cssSelector).iterator().next();
     }
+
+
+
+    public String getPersonalFilestoreTicketId() {
+        gotoPageWithoutErrorCheck("/upload/grab-ticket");
+        TextPage textPage = (TextPage) internalPage;
+        String json = textPage.getContent();
+        logger.debug("ticket json::" + json.trim());
+        JSONObject jsonObject = JSONObject.fromObject(json);
+        String ticketId = jsonObject.getString("id");
+        logger.debug("ticket id::" + ticketId);
+        return ticketId;
+    }
+
+    /**
+     * upload the specified file to the personal filestore. Note this will change the current page of the webclient
+     * 
+     * @param ticketId
+     * @param path
+     */
+    public void uploadFileToPersonalFilestore(String ticketId, String path) {
+        uploadFileToPersonalFilestore(ticketId, path, true);
+    }
+
+    public void addFileProxyFields(int rowNum, FileAccessRestriction restriction, String filename) {
+        createInput("hidden", "fileProxies[" + rowNum + "].restriction", restriction.name());
+        createInput("hidden", "fileProxies[" + rowNum + "].action", FileAction.ADD.name());
+        createInput("hidden", "fileProxies[" + rowNum + "].fileId", "-1");
+        createInput("hidden", "fileProxies[" + rowNum + "].filename", filename);
+        createInput("hidden", "fileProxies[" + rowNum + "].sequenceNumber", Integer.toString(rowNum));
+    }
+
+    public int uploadFileToPersonalFilestoreWithoutErrorCheck(String ticketId, String path) {
+        return uploadFileToPersonalFilestore(ticketId, path, false);
+    }
+
+    private int uploadFileToPersonalFilestore(String ticketId, String path, boolean assertNoErrors) {
+        int code = 0;
+        WebClient client = getWebClient();
+        String url = getBaseUrl() + "/upload/upload";
+        try {
+            WebRequest webRequest = new WebRequest(new URL(url), HttpMethod.POST);
+            List<NameValuePair> parms = new ArrayList<NameValuePair>();
+            parms.add(nameValuePair("ticketId", ticketId));
+            File file = null;
+            if (path != null) {
+                file = new File(path);
+                parms.add(nameValuePair("uploadFile", file));
+            }
+            webRequest.setRequestParameters(parms);
+            webRequest.setEncodingType(FormEncodingType.MULTIPART);
+            Page page = client.getPage(webRequest);
+            code = page.getWebResponse().getStatusCode();
+            Assert.assertTrue(assertNoErrors && code == HttpStatus.OK.value());
+            if (file != null) {
+                assertFileSizes(page, Arrays.asList(new File[] { file }));
+            }
+        } catch (MalformedURLException e) {
+            Assert.fail("mailformed URL: are you sure you specified the right page in your test?");
+        } catch (IOException iox) {
+            Assert.fail("IO exception occured during test");
+        } catch (FailingHttpStatusCodeException httpEx) {
+            if (assertNoErrors) {
+                Assert.fail("upload request returned code" + httpEx.getStatusCode());
+            }
+            code = httpEx.getStatusCode();
+        }
+        return code;
+    }
+
+    protected void assertFileSizes(Page page, List<File> files) {
+        JSONArray jsonArray = (JSONArray) JSONSerializer.toJSON(page.getWebResponse().getContentAsString());
+        for (int i = 0; i < files.size(); i++) {
+            Assert.assertEquals("file size reported from server should be same as original", files.get(i).length(), jsonArray.getJSONObject(i).getLong("size"));
+        }
+    }
+
+    public NameValuePair nameValuePair(String name, String value) {
+        return new NameValuePair(name, value);
+    }
+
+    private NameValuePair nameValuePair(String name, File file) {
+        // FIXME:is it safe to specify text/plain even when we know it isn't?? It happens to 'work' for these tests, not sure of potential side effects...
+        return nameValuePair(name, file, "text/plain");
+    }
+
+    private NameValuePair nameValuePair(String name, File file, String contentType) {
+        KeyDataPair keyDataPair = new KeyDataPair(name, file, contentType, "utf8");
+        return keyDataPair;
+    }
+    
+    public void createDocumentAndUploadFile(String title) {
+        clickLinkWithText("UPLOAD");
+        gotoPage("/resource/add");
+        String ticketId = getPersonalFilestoreTicketId();
+        uploadFileToPersonalFilestore(ticketId, TestConstants.TEST_DOCUMENT);
+        // gotoPage("/document/add");
+        // assume that you're at /project/list
+        // logger.info(getPageText());
+        gotoPage("/");
+
+        clickLinkWithText("UPLOAD");
+        // logger.info(getPageCode());
+        clickLinkWithText(ResourceType.DOCUMENT.getLabel());
+        assertTextPresentInPage("Create a new Document");
+        setInput("document.title", title);
+        setInput("document.description", title + " (ABSTRACT)");
+        setInput("document.date", "1934");
+        setInput("ticketId", ticketId);
+        setInput("projectId", Long.toString(TestConstants.ADMIN_PROJECT_ID));
+        if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
+            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+            setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
+        }
+
+        addFileProxyFields(0, FileAccessRestriction.PUBLIC, TestConstants.TEST_DOCUMENT_NAME);
+        // logger.info(getPageCode());
+        submitForm();
+        HtmlPage page = (HtmlPage) internalPage;
+        // make sure we're on the view page
+        assertPageTitleEquals(title);
+        assertTextPresentInPage(title + " (ABSTRACT)");
+        assertTextPresentInPage(TestConstants.TEST_DOCUMENT_NAME);
+    }
+
+    protected String testAccountPollingResponse(String total, TransactionStatus expectedResponse) throws MalformedURLException {
+        assertCurrentUrlContains("/simple");
+
+        String invoiceid = getInput("id").getAttribute("value");
+        submitForm();
+        assertCurrentUrlContains("process-payment-request");
+        clickLinkWithText("click here");
+        URL polingUrl = new URL(getBaseUrl() + "/cart/polling-check?id=" + invoiceid);
+        String response = getAccountPollingRequest(polingUrl);
+        assertTrue(response.contains(TransactionStatus.PENDING_TRANSACTION.name()));
+        checkInput(NelnetTransactionItem.getInvoiceIdKey(), invoiceid);
+        checkInput(NelnetTransactionItem.getUserIdKey(), Long.toString(getUserId()));
+        checkInput(NelnetTransactionItem.AMOUNT_DUE.name(), total);
+        clickElementWithId("process-payment_0");
+        response = getAccountPollingRequest(polingUrl);
+        assertTrue(response.contains(expectedResponse.name()));
+        return invoiceid;
+    }
+
+    protected String getAccountPollingRequest(URL polingUrl) {
+        WebWindow openWindow = webClient.openWindow(polingUrl, "polling" + System.currentTimeMillis());
+        return openWindow.getEnclosedPage().getWebResponse().getContentAsString();
+    }
+
+    /*
+     * add new account, add another, make sure account names are all ok
+     */
+    protected String addInvoiceToNewAccount(String invoiceId, String accountId, String accountName) {
+        if (accountName == null) {
+            accountName = MY_TEST_ACCOUNT;
+        }
+        if (accountId != null) {
+            gotoPage("/billing/choose?invoiceId=" + invoiceId + "&accountId=" + accountId);
+            setInput("id", accountId);
+        } else {
+            gotoPage("/billing/add?invoiceId=" + invoiceId);
+            setInput("account.name", accountName);
+            setInput("account.description", THIS_IS_A_TEST_DESCIPTION);
+        }
+        List<Person> users = entityService.findAllRegisteredUsers(3);
+        List<Long> userIds = Persistable.Base.extractIds(users);
+        for (int i = 0; i < userIds.size(); i++) {
+            setInput("authorizedMembers[" + i + "].id", Long.toString(userIds.get(i)));
+        }
+        submitForm();
+        assertAccountPageCorrect(users, userIds, accountName);
+        clickLinkOnPage("edit");
+        String id = getInput("id").getAttribute("value");
+        submitForm();
+        assertAccountPageCorrect(users, userIds, accountName);
+        return id;
+    }
+
+    protected void assertAccountPageCorrect(List<Person> users, List<Long> userIds, String title) {
+        assertTextPresent(title);
+        assertTextPresent(THIS_IS_A_TEST_DESCIPTION);
+        for (int i = 0; i < userIds.size(); i++) {
+            assertTextPresent(users.get(i).getProperName());
+        }
+        assertTextPresent(getSessionUser().getProperName());
+    }
+
+    public void login(String user, String pass) {
+        login(user, pass, false);
+    }
+
+    public int login(String user, String pass, boolean expectingErrors) {
+        gotoPage("/");
+        clickLinkOnPage("Log In");
+        setMainForm("loginForm");
+        user = System.getProperty("tdar.user", user);
+        pass = System.getProperty("tdar.pass", pass);
+        // logger.info(user + ":" + pass);
+        setInput("loginUsername", user);
+        setInput("loginPassword", pass);
+        if (expectingErrors) {
+            webClient.setThrowExceptionOnFailingStatusCode(false);
+            submitFormWithoutErrorCheck("Login");
+            webClient.setThrowExceptionOnFailingStatusCode(true);
+        } else {
+            clickElementWithId("btnLogin");
+        }
+        return internalPage.getWebResponse().getStatusCode();
+    }
+
+    public void logout() {
+        webClient.setJavaScriptEnabled(false);
+        gotoPage("/logout");
+    }
+
+
+    @Autowired
+    private AuthenticationAndAuthorizationService authService;
+
+    public void testLogin(Map<String, String> values, boolean deleteFirst) {
+
+        String username = values.get("person.username");
+        if (deleteFirst) {
+            Person p = new Person();
+            p.setUsername(username);
+            authService.getAuthenticationProvider().deleteUser(p);
+        }
+        gotoPage("/");
+        clickLinkOnPage("Sign Up");
+        for (String key : values.keySet()) {
+            setInput(key, values.get(key));
+        }
+        setInput("timeCheck", Long.toString(System.currentTimeMillis() - 10000));
+        submitForm("Save");
+        genericService.synchronize();
+        setSessionUser(entityService.findByUsername(username));
+    }
+
+
+    public void setupBasicUser(Map<String, String> personmap,String prefix) {
+        personmap.put("person.firstName", prefix + "firstName");
+        personmap.put("person.lastName", prefix + "lastName");
+        personmap.put("person.email", prefix + "aaaaa@bbbbb.com");
+        personmap.put("confirmEmail", prefix + "aaaaa@bbbbb.com");
+        personmap.put("person.username", prefix + "aaaaa@bbbbb.com");
+        personmap.put("password", "secret");
+        personmap.put("confirmPassword", "secret");
+        personmap.put("institutionName", "institution");
+        personmap.put("person.phone", "1234567890");
+        personmap.put("person.contributorReason", "there is a reason");
+//        personmap.put("person.rpaNumber", "1234567890");
+        personmap.put("requestingContributorAccess", "true");
+    }
+
 
 }

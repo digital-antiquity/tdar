@@ -285,17 +285,28 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         Long spaceNeeded = numMb - spaceAvailable;
         logger.info("adtl. space needed: {} avail: {} ", spaceNeeded, spaceAvailable);
         logger.info("space act: {} ", getSpaceActivity());
+        calculateSpaceActivity(option, spaceActivity, spaceNeeded);
+        return option;
+    }
+
+    public void calculateSpaceActivity(PricingOption option, BillingActivity spaceActivity, Long spaceNeeded) {
+        BillingItem extraSpace;
         if (spaceNeeded > 0 && spaceActivity != null) {
             int qty = (int) Account.divideByRoundUp(spaceNeeded, spaceActivity.getNumberOfMb());
             extraSpace = new BillingItem(spaceActivity, qty);
             option.getItems().add(extraSpace);
         }
-        return option;
     }
 
     public PricingOption getCheapestActivityBySpace(Long numFiles, Long spaceInMb) {
         PricingOption option = new PricingOption(PricingType.SIZED_BY_MB);
         List<BillingItem> items = new ArrayList<BillingItem>();
+        BillingActivity spaceActivity = getSpaceActivity();
+        if (spaceActivity != null && (numFiles == null || numFiles.intValue() ==  0)) {
+            calculateSpaceActivity(option, spaceActivity, spaceInMb);
+            return option;
+        }
+        
         for (BillingActivity activity : getActiveBillingActivities()) {
             if (activity.isSpecial()) {
                 continue;

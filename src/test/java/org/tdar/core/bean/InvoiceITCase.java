@@ -44,6 +44,18 @@ public class InvoiceITCase extends AbstractIntegrationTestCase {
         Assert.assertEquals(items.get(0).getActivity().getNumberOfFiles().intValue(), 1);
     }
 
+    
+    @Test
+    @Rollback
+    public void testInvoicePricingMBOnly() {
+        Invoice invoice = new Invoice();
+        long numberOfFiles = 0L;
+        List<BillingItem> items = setupBillingItem(invoice, numberOfFiles, 100L);
+        Assert.assertEquals(1, items.size());
+        Assert.assertEquals(items.get(0).getActivity().getMinAllowedNumberOfFiles().intValue(), 0);
+        Assert.assertEquals(items.get(0).getActivity().getNumberOfMb().intValue(), 100);
+    }
+
     @Test
     @Rollback
     public void testInvoicePricingInBetweenLevels() {

@@ -580,11 +580,20 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return ignoreActionErrors;
     }
 
+    
+    private Person sessionUser;
     /**
      * @return
      */
     public Person getSessionUser() {
+        if (sessionUser != null) {
+            return sessionUser;
+        }
         return getUser();
+    }
+    
+    public void setSessionUser(Person user) {
+        this.sessionUser = user;
     }
 
     public PlatformTransactionManager getTransactionManager() {
