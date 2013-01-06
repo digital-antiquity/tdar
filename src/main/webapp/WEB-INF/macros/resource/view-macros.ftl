@@ -351,7 +351,7 @@ No coding rules have been entered for this coding sheet yet.
     </#if>
     <#if (downloads > 0)>
     <#if (downloads != 1)>
-        [downloaded  ${downloads} times]
+        [downloaded ${downloads} times]
     <#else>
         [downloaded 1 time]
     </#if>
