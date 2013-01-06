@@ -34,6 +34,18 @@ public class InvoiceITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
+    public void testInvoicePricingTiny() {
+        Invoice invoice = new Invoice();
+        long numberOfFiles = 2L;
+        List<BillingItem> items = setupBillingItem(invoice, numberOfFiles, 0L);
+        Assert.assertEquals(1, items.size());
+        assertNotEquals(items.get(0).getActivity().getMinAllowedNumberOfFiles(), 0);
+        assertNotEquals(items.get(0).getActivity().getNumberOfFiles().intValue(), 0);
+        Assert.assertEquals(items.get(0).getActivity().getNumberOfFiles().intValue(), 1);
+    }
+
+    @Test
+    @Rollback
     public void testInvoicePricingInBetweenLevels() {
         /* expect that this is activity 2 -- not 1 */
         Invoice invoice = new Invoice();
@@ -44,7 +56,6 @@ public class InvoiceITCase extends AbstractIntegrationTestCase {
         Assert.assertEquals(5L, items.get(0).getActivity().getMinAllowedNumberOfFiles().longValue());
     }
 
-    
     @Test
     @Rollback
     public void testBillingItem() {
@@ -56,7 +67,7 @@ public class InvoiceITCase extends AbstractIntegrationTestCase {
         assertTrue(item.isValid());
         assertTrue(item.isValidForController());
     }
-    
+
     private List<BillingItem> setupBillingItem(Invoice invoice, long numberOfFiles, long numberOfMb) {
         invoice.setNumberOfFiles(numberOfFiles);
         invoice.setNumberOfMb(numberOfMb);

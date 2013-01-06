@@ -8,6 +8,7 @@ import static org.junit.Assert.fail;
 import static org.tdar.TestConstants.DEFAULT_BASE_URL;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -100,7 +101,14 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             if (localPath.startsWith("http")) {
                 return webClient.getPage(localPath);
             } else {
-                return webClient.getPage(getBaseUrl() + localPath);
+                String prefix = getBaseUrl();
+                try {
+                URL current = webClient.getCurrentWindow().getEnclosedPage().getUrl();
+                prefix = String.format("%s://%s:%s", current.getProtocol(), current.getHost(), current.getPort());
+                } catch (Exception e) {
+                    logger.trace("{}", e);
+                }
+                return webClient.getPage(prefix + localPath);
             }
         } catch (Exception e) {
             e.printStackTrace();

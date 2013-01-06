@@ -21,8 +21,11 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.springframework.http.HttpStatus;
+import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
+import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.configuration.TdarConfiguration;
 
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.FormEncodingType;
@@ -31,6 +34,7 @@ import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.TextPage;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebRequest;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.util.KeyDataPair;
 import com.gargoylesoftware.htmlunit.util.NameValuePair;
 
@@ -190,6 +194,40 @@ public abstract class AbstractAuthenticatedWebTestCase extends AbstractWebTestCa
     private NameValuePair nameValuePair(String name, File file, String contentType) {
         KeyDataPair keyDataPair = new KeyDataPair(name, file, contentType, "utf8");
         return keyDataPair;
+    }
+
+    public void createDocumentAndUploadFile(String title) {
+        clickLinkWithText("UPLOAD");
+        gotoPage("/resource/add");
+        String ticketId = getPersonalFilestoreTicketId();
+        uploadFileToPersonalFilestore(ticketId, TestConstants.TEST_DOCUMENT);
+//        gotoPage("/document/add");
+        // assume that you're at /project/list
+        // logger.info(getPageText());
+        gotoPage("/");
+        
+        clickLinkWithText("UPLOAD");
+//        logger.info(getPageCode());
+        clickLinkWithText(ResourceType.DOCUMENT.getLabel());
+        assertTextPresentInPage("Create a new Document");
+        setInput("document.title", title);
+        setInput("document.description", title + " (ABSTRACT)");
+        setInput("document.date", "1934");
+        setInput("ticketId", ticketId);
+        setInput("projectId", Long.toString(TestConstants.ADMIN_PROJECT_ID));
+        if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
+            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+            setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
+        }
+
+        addFileProxyFields(0, FileAccessRestriction.PUBLIC, TestConstants.TEST_DOCUMENT_NAME);
+        // logger.info(getPageCode());
+        submitForm();
+        HtmlPage page = (HtmlPage) internalPage;
+        // make sure we're on the view page
+        assertPageTitleEquals(title);
+        assertTextPresentInPage(title + " (ABSTRACT)");
+        assertTextPresentInPage(TestConstants.TEST_DOCUMENT_NAME);
     }
 
 }

@@ -284,7 +284,6 @@ drop table test;
 --DONT-PROCESS-- update temporal_keyword set status='ACTIVE';
 -- 12-06-12 -- adding some invalid billing values
 --DONT-PROCESS-- insert into pos_billing_model (id, date_created, active, counting_files, counting_space, counting_resources) VALUES (1, now(), true, true, true, false);
---DONT-PROCESS-- insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price, min_allowed_files, model_id) values (true, 'good', 15,21,50,5, 505,400,1);
 --DONT-PROCESS-- insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price, min_allowed_files, model_id) values (true, 'error', 5,1,50,5, 55.21,400,1);
 --DONT-PROCESS-- insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price, min_allowed_files, model_id) values (true, 'decline', 5,1,50,5, 55.11,400,1);
 --DONT-PROCESS-- insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price, min_allowed_files, model_id) values (true, 'unknown', 5,1,50,5, 55.31,400,1);

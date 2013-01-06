@@ -90,6 +90,27 @@ public class CreditCartWebITCase extends AbstractAuthenticatedWebTestCase {
         assertTrue(accountId != "-1");
     }
 
+    
+    @Test
+    public void testCartWithAccountFilling() throws MalformedURLException {
+        gotoPage("/cart/add");
+        setInput("invoice.numberOfMb", "20");
+        setInput("invoice.numberOfFiles", "2");
+        submitForm();
+        setInput("invoice.paymentMethod", "CREDIT_CARD");
+        String invoiceId = testResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL);
+        String accountId = addInvoiceToNewAccount(invoiceId, null, "my first account");
+        assertTrue(accountId != "-1");
+        
+        createDocumentAndUploadFile("my first document");
+        createDocumentAndUploadFile("my second document");
+        gotoPage("/document/add");
+        assertTextPresent("You must create an account");
+        gotoPage("/resource/add");
+        assertTextPresent("You must create an account");
+        logger.info(getPageText());
+    }
+
     @Test
     public void testAddCartToSameAccount() throws MalformedURLException {
         gotoPage("/cart/add");

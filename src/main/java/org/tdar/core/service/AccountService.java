@@ -121,7 +121,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     public boolean hasSpaceInAnAccount(Person user, ResourceType type) {
         for (Account account : listAvailableAccountsForUser(user)) {
-            logger.info("evaluating account {}", account.getName());
+            logger.trace("evaluating account {}", account.getName());
             if (account.isActive() && account.hasMinimumForNewRecord(getResourceEvaluator(), type)) {
                 logger.info("account '{}' has minimum balance for {}", account.getName(), user.getProperName());
                 return true;
@@ -250,6 +250,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             option.setType(PricingType.SIZED_BY_FILE_ABOVE_TIER);
         }
         List<BillingItem> items = new ArrayList<BillingItem>();
+        logger.info("files: {} mb: {}" , numFiles, numMb);
         for (BillingActivity activity : getActiveBillingActivities()) {
             if (activity.isSpecial()) {
                 continue;
@@ -260,11 +261,11 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
                 files = activity.getMinAllowedNumberOfFiles().intValue();
             }
 
-            if (exact && activity.supportsFileLimit() && files < activity.getMinAllowedNumberOfFiles())
+            if (!activity.supportsFileLimit() || exact && files < activity.getMinAllowedNumberOfFiles())
                 continue;
 
             BillingItem e = new BillingItem(activity, files);
-            logger.trace(" -- {}", e);
+            logger.info(" -- {} ({})", e.getActivity().getName(), e);
             items.add(e);
         }
 
