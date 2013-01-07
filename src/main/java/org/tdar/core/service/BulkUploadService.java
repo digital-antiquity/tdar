@@ -179,23 +179,18 @@ public class BulkUploadService {
             }
         }
 
+        // If there are errors, then stop...
         if (StringUtils.isNotBlank(receiver.getAsyncErrors())) {
             completeBulkUpload(image, accountId, resourcesCreated, activity, receiver, stream, ticketId);
             return;
         }
 
         if (manifestProxy != null && !manifestProxy.isCaseSensitive()) {
-            resourcesCreated = new TreeMap<String, Resource>(
-                    String.CASE_INSENSITIVE_ORDER);
+            resourcesCreated = new TreeMap<String, Resource>(String.CASE_INSENSITIVE_ORDER);
         }
 
         logger.info("bulk: creating individual resources");
-        count = processFileProxiesIntoResources(image, submitter,
-                excelManifest, manifestProxy, fileProxies, receiver,
-                resourcesCreated, count);
-        // } catch (Exception e) {
-        // logger.debug("exception happened", e);
-        // }
+        count = processFileProxiesIntoResources(image, submitter, manifestProxy, fileProxies, receiver, resourcesCreated, count);
 
         logger.info("bulk: applying manifest file data to resources");
         try {
@@ -351,8 +346,7 @@ public class BulkUploadService {
     }
 
     private float processFileProxiesIntoResources(
-            final InformationResource image, final Person submitter,
-            final File excelManifest, final BulkManifestProxy manifestProxy,
+            final InformationResource image, final Person submitter, final BulkManifestProxy manifestProxy,
             final Collection<FileProxy> fileProxies,
             AsyncUpdateReceiver receiver,
             Map<String, Resource> resourcesCreated, float count) {
@@ -364,32 +358,30 @@ public class BulkUploadService {
         for (FileProxy fileProxy : fileProxies) {
             logger.debug("processing:" + fileProxy + " |" + fileProxy.getAction());
             try {
-                if (fileProxy == null
-                        || fileProxy.getAction() != FileAction.ADD
-                        || (excelManifest != null && fileProxy.getFilename()
-                                .equals(excelManifest.getName()))) {
-
+                if (fileProxy == null || fileProxy.getAction() != FileAction.ADD) {
+                    // || (excelManifest != null && fileProxy.getFilename()
+                    // .equals(excelManifest.getName()))
                     continue;
                 }
                 String fileName = fileProxy.getFilename();
                 // if there is not an exact match in the manifest file then,
                 // skip it. If there is no manifest file, then go merrily along
-                if (manifestProxy != null
-                        && !manifestProxy.containsFilename(fileName)) {
+                if (manifestProxy != null && !manifestProxy.containsFilename(fileName)) {
                     logger.info("skipping {} filenames: {} ", fileName, manifestProxy.listFilenames());
                     continue;
                 }
+
                 logger.info("inspecting ..." + fileName);
                 count++;
                 float percent = (count / Float.valueOf(fileProxies.size())) * 50;
                 receiver.update(percent, " processing " + fileName);
-                ResourceType suggestTypeForFile = analyzer
-                        .suggestTypeForFileExtension(FilenameUtils.getExtension((fileName.toLowerCase())), ResourceType.DOCUMENT, ResourceType.DATASET,
-                                ResourceType.IMAGE);
-                if (InformationResource.class.isAssignableFrom(suggestTypeForFile.getResourceClass())) {
+                String extension = FilenameUtils.getExtension((fileName.toLowerCase()));
+                ResourceType suggestTypeForFile = analyzer.suggestTypeForFileExtension(extension, getResourceTypesSupportingBulkUpload());
+                Class<? extends Resource> resourceClass = suggestTypeForFile.getResourceClass();
+
+                if (InformationResource.class.isAssignableFrom(resourceClass)) {
                     logger.info("saving " + fileName + "..." + suggestTypeForFile);
-                    InformationResource informationResource = (InformationResource) resourceService.createResourceFrom(image,
-                            suggestTypeForFile.getResourceClass());
+                    InformationResource informationResource = (InformationResource) resourceService.createResourceFrom(image, resourceClass);
                     informationResource.setTitle(fileName);
                     informationResource.markUpdated(submitter);
                     informationResource.setDescription(" ");
@@ -406,15 +398,21 @@ public class BulkUploadService {
         return count;
     }
 
+    public ResourceType[] getResourceTypesSupportingBulkUpload() {
+        List<ResourceType> types = new ArrayList<ResourceType>();
+        for (ResourceType type : ResourceType.values()) {
+            if (type.supportBulkUpload())
+                types.add(type);
+        }
+        return types.toArray(new ResourceType[0]);
+
+    }
+
     public LinkedHashSet<CellMetadata> getAllValidFieldNames(ResourceType... resourceTypes) {
         List<ResourceType> resourceClasses = new ArrayList<ResourceType>(Arrays.asList(resourceTypes));
         if (ArrayUtils.isEmpty(resourceTypes)) {
-            for (ResourceType type : ResourceType.values()) {
-                if (type.supportBulkUpload())
-                    resourceClasses.add(type);
-            }
+            resourceClasses = Arrays.asList(getResourceTypesSupportingBulkUpload());
         }
-
         CellMetadata filename = CellMetadata.FILENAME;
 
         LinkedHashSet<CellMetadata> nameSet = new LinkedHashSet<CellMetadata>();
@@ -492,6 +490,7 @@ public class BulkUploadService {
             Map<String, Resource> filenameResourceMap,
             AsyncUpdateReceiver receiver) throws InvalidFormatException,
             IOException {
+
         if (manifestProxy == null) {
             return;
         }
@@ -520,8 +519,7 @@ public class BulkUploadService {
                 // look in the hashmap for the filename, skip the examples
                 Resource resourceToProcess = findResource(filename, filenameResourceMap);
                 logger.debug("fn: {} resource to Process: {}", filename, resourceToProcess);
-                if (StringUtils.isBlank(filename)
-                        || filename.equalsIgnoreCase(BulkUploadTemplate.EXAMPLE_PDF)
+                if (StringUtils.isBlank(filename) || filename.equalsIgnoreCase(BulkUploadTemplate.EXAMPLE_PDF)
                         || filename.equalsIgnoreCase(BulkUploadTemplate.EXAMPLE_TIFF)) {
                     continue;
                 }
@@ -554,50 +552,56 @@ public class BulkUploadService {
                             continue;
 
                         Class<?> mappedClass = cellMetadata.getMappedClass();
+                        boolean creatorAssignableFrom = Creator.class.isAssignableFrom(mappedClass);
+                        boolean resourceSubtypeAssignableFrom = false;
+                        if (mappedClass != null && resourceToProcess != null) {
+                            resourceSubtypeAssignableFrom = mappedClass.isAssignableFrom(resourceToProcess.getClass());
+                        }
+                        boolean resourceAssignableFrom = Resource.class.isAssignableFrom(mappedClass);
+                        boolean resourceCreatorAssignableFrom = ResourceCreator.class.isAssignableFrom(mappedClass);
                         if (cellMetadata == null
-                                || !(mappedClass != null &&
-                                (mappedClass.isAssignableFrom(resourceToProcess.getClass()) ||
-                                        mappedClass.isAssignableFrom(ResourceCreator.class) ||
-                                Creator.class.isAssignableFrom(mappedClass)))) {
+                                || !(mappedClass != null && (resourceSubtypeAssignableFrom || resourceCreatorAssignableFrom || creatorAssignableFrom))) {
                             if (mappedClass != null) {
                                 throw new TdarRecoverableRuntimeException(String.format("%s : the fieldname %s is not valid for the resource type:%s",
                                         filename, name, resourceToProcess.getResourceType()));
                             }
                         }
                         requiredFields.remove(cellMetadata);
-                        if (Resource.class.isAssignableFrom(mappedClass)) {
+                        if (resourceAssignableFrom) {
                             // only pay attention to classes from a Resource if we're blank default to the standard value
                             logger.trace(String.format("setting property %s on %s value %s", cellMetadata.getPropertyName(), resourceToProcess, value));
 
                             validateAndSetProperty(resourceToProcess, cellMetadata.getPropertyName(), value);
 
-                        } else if ((ResourceCreator.class.isAssignableFrom(mappedClass) || Creator.class.isAssignableFrom(mappedClass))) {
+                        } else {
+                            if ((resourceCreatorAssignableFrom || creatorAssignableFrom)) {
 
-                            logger.trace(String.format("%s - %s - %s", mappedClass, cellMetadata.getPropertyName(), value));
-                            if (ResourceCreator.class.isAssignableFrom(mappedClass)) {
-                                seenCreatorFields = true;
-                                validateAndSetProperty(creatorProxy, cellMetadata.getPropertyName(), value);
+                                logger.trace(String.format("%s - %s - %s", mappedClass, cellMetadata.getPropertyName(), value));
+                                if (resourceCreatorAssignableFrom) {
+                                    seenCreatorFields = true;
+                                    validateAndSetProperty(creatorProxy, cellMetadata.getPropertyName(), value);
 
-                                // FIXME: This is a big assumption that role is the last field and then we repeat
-                                reconcileResourceCreator(resourceToProcess, creatorProxy, filename);
+                                    // FIXME: This is a big assumption that role is the last field and then we repeat
+                                    reconcileResourceCreator(resourceToProcess, creatorProxy, filename);
 
-                                creatorProxy = new ResourceCreatorProxy();
+                                    creatorProxy = new ResourceCreatorProxy();
 
-                                seenCreatorFields = false;
-                            }
-                            if (Person.class.isAssignableFrom(mappedClass)) {
-                                validateAndSetProperty(creatorProxy.getPerson(), cellMetadata.getPropertyName(), value);
-                            }
-                            if (Institution.class.isAssignableFrom(mappedClass)) {
-                                logger.info("{} ", cellMetadata);
-                                Object bean = creatorProxy.getInstitution();
-                                if (cellMetadata.getName().contains("Person.Institution")) {
-                                    if (creatorProxy.getPerson().getInstitution() == null) {
-                                        creatorProxy.getPerson().setInstitution(new Institution());
-                                    }
-                                    bean = creatorProxy.getPerson().getInstitution();
+                                    seenCreatorFields = false;
                                 }
-                                validateAndSetProperty(bean, cellMetadata.getPropertyName(), value);
+                                if (Person.class.isAssignableFrom(mappedClass)) {
+                                    validateAndSetProperty(creatorProxy.getPerson(), cellMetadata.getPropertyName(), value);
+                                }
+                                if (Institution.class.isAssignableFrom(mappedClass)) {
+                                    logger.info("{} ", cellMetadata);
+                                    Object bean = creatorProxy.getInstitution();
+                                    if (cellMetadata.getName().contains("Person.Institution")) {
+                                        if (creatorProxy.getPerson().getInstitution() == null) {
+                                            creatorProxy.getPerson().setInstitution(new Institution());
+                                        }
+                                        bean = creatorProxy.getPerson().getInstitution();
+                                    }
+                                    validateAndSetProperty(bean, cellMetadata.getPropertyName(), value);
+                                }
                             }
                         }
                     }

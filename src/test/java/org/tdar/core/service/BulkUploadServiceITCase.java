@@ -199,6 +199,7 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
 
         AsyncUpdateReceiver receiver = new DefaultReceiver();
         bulkUploadService.readExcelFile(manifestProxy, filenameResourceMap, receiver);
+        logger.info(receiver.getAsyncErrors());
         assertTrue(receiver.getAsyncErrors().contains("is expecting an integer value, but found"));
     }
 
