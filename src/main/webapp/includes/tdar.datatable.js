@@ -204,8 +204,9 @@ function setupDashboardDataTable() {
         
       var aoColumns_ = [{ "mDataProp": "title",  sWidth: '65%', fnRender: fnRenderTitle, bUseRendered:false ,"bSortable":false},
           { "mDataProp": "resourceTypeLabel",  sWidth: '15%',"bSortable":false }];
+          //make id the first column when datatable is selectable
           if (datatable_isSelectable) {
-          aoColumns_[2] = { "mDataProp": "id", tdarSortOption: "ID", sWidth:'5em' ,"bSortable":false};
+              aoColumns_.unshift({ "mDataProp": "id", tdarSortOption: "ID", sWidth:'5em' ,"bSortable":false});
           };
     $dataTable = registerLookupDataTable({
         tableSelector: '#resource_datatable',
