@@ -13,6 +13,19 @@
 <h1>Batch Resource Upload</h1>
 <@s.form name='BulkMetadataForm' id='BulkMetadataForm'  cssClass="span9 form-horizontal"  method='post' enctype='multipart/form-data' action='save'>
 
+
+<@s.hidden name="expectedManifestName" id="hdnExpectedManifestName" />
+<#if expectedManifestName??>
+<div class="alert alert-block" id="divExpectedManifestAlert">
+    <h4>Template Validated</h4> ${siteAcronym} will expect "${expectedManifestName}" in your submission, and return an error if you do not include it.
+    <button class="btn" data-dismiss="alert" href="#">Nevermind: I plan to upload a different template</button>
+</div>
+<script>
+    $('#divExpectedManifestAlert').bind('close', function() {$('#hdnExpectedManifestName').remove()});
+</script>
+
+</#if>
+
 <@edit.basicInformation "image" "batch" true>
 <@s.select labelposition='left' label='Language'  name='resourceLanguage'  emptyOption='false' listValue='label' list='%{languages}'/>
 </@edit.basicInformation>
