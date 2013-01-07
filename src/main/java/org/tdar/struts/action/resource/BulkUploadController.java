@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -70,8 +69,6 @@ public class BulkUploadController extends AbstractInformationResourceController<
     int maxReferenceRow = 0;
     private File templateFile;
 
-    private String expectedManifestName = null;
-
     /**
      * Save basic metadata of the registering concept.
      * 
@@ -81,21 +78,10 @@ public class BulkUploadController extends AbstractInformationResourceController<
     protected String save(Image image) {
         logger.info("saving batches...");
 
-        //TODO:  break validation steps into seperate form validation method
         if (Persistable.Base.isNullOrTransient(getTicketId())) {
             addActionError("The system has not received any files.");
             return INPUT;
         }
-        
-        //TODO: store the manifest in the personal filestore so that user is not required to re-upload the manifest
-        if(!getUploadedFilesFileName().isEmpty() 
-                && expectedManifestName != null 
-                && !StringUtils.equals(expectedManifestName, getUploadedFilesFileName().get(0))) {
-            String err = String.format("The previously validated template file,  %s, was not present.  Did you forget to upload it?", getUploadedFilesFileName().get(0));
-            addActionError(err);
-            return INPUT;
-        }
-        
         logger.debug("ticketId: {} ", getTicketId());
         logger.debug("proxy:    {}", getFileProxies());
         saveBasicResourceMetadata();
@@ -137,7 +123,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
 
     @Action(value = "validate-template", results = {
             @Result(name = INPUT, type = "redirect", location = "template-prepare"),
-            @Result(name = SUCCESS, location = "edit.ftl") })
+            @Result(name = SUCCESS, type = "redirect", location = "add") })
     @SkipValidation
     public String templateValidate() {
 
@@ -153,9 +139,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
             addActionErrorWithException("Problem with BulkUploadTemplate", e);
             return INPUT;
         }
-        expectedManifestName = getUploadedFilesFileName().get(0);
-        addActionMessage("Your Template appears to be valid.");
-                
+        addActionMessage("Your Template appears to be valid, please try your upload");
         return SUCCESS;
     }
 
@@ -321,14 +305,6 @@ public class BulkUploadController extends AbstractInformationResourceController<
     @Override
     public boolean isBulkUpload() {
         return true;
-    }
-
-    public String getExpectedManifestName() {
-        return expectedManifestName;
-    }
-
-    public void setExpectedManifestName(String expectedManifestName) {
-        this.expectedManifestName = expectedManifestName;
     }
 
 }
