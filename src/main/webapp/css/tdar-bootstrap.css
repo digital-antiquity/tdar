@@ -1352,3 +1352,9 @@ p.copyright-notice {
 	line-height: 40px;
 	color: #999;
 }
+
+/*use in column-sized div to scale image if width exceeds parent width */
+img.responsive-image {
+    max-width: 100%;
+    height: auto;    
+}
