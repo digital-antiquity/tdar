@@ -7,5 +7,6 @@
 <script src="/includes/jquery.metadata.2.1/jquery.metadata.js"></script>
 <script src="/includes/jquery.maphighlight.local.js"></script>
 <link rel="stylesheet" href="/css/tdar-bootstrap.css"/>
+<h3>tDAR Worldwide</h3>
 </#if>
 <@common.worldMap />

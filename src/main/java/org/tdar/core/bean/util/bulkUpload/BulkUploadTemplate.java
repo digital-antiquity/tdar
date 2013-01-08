@@ -16,6 +16,7 @@ import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Drawing;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.slf4j.Logger;
@@ -51,7 +52,9 @@ public class BulkUploadTemplate {
         // When the comment box is visible, have it show in a 1x3 space
 
         CellStyle defaultStyle = getExcelService().createSummaryStyle(workbook);
-        CellStyle resourceCreatorRoleStyle = CellFormat.NORMAL.setBorderRight(HSSFCellStyle.BORDER_MEDIUM).createStyle(workbook);
+        CellStyle resourceCreatorRoleStyle = CellFormat.NORMAL.createStyle(workbook);
+        resourceCreatorRoleStyle.setBorderRight(CellStyle.BORDER_MEDIUM);
+        resourceCreatorRoleStyle.setRightBorderColor(IndexedColors.BLACK.getIndex());
         CellStyle headerStyle2 = CellFormat.BOLD.setColor(new HSSFColor.GREY_25_PERCENT()).setWrapping(true).setFontSize((short) 10).createStyle(workbook);
         CellStyle requiredStyle = CellFormat.BOLD.setWrapping(false).createStyle(workbook);
         requiredStyle.setFillForegroundColor(new HSSFColor.ROSE().getIndex());
