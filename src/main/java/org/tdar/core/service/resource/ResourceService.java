@@ -386,7 +386,7 @@ public class ResourceService extends GenericService {
                 informationResource.setDate(proxyInformationResource.getDate());
                 //force project into the session
                 Project project = find(Project.class, proxyInformationResource.getProject().getId());
-                informationResource.setProject(project);
+                informationResource.setProject(merge(project));
                 informationResource.setPublisher(proxyInformationResource.getPublisher());
                 informationResource.setCopyrightHolder(proxyInformationResource.getCopyrightHolder());
                 informationResource.setLicenseText(proxyInformationResource.getLicenseText());

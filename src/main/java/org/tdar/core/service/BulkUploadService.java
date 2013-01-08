@@ -201,14 +201,10 @@ public class BulkUploadService {
 
         logger.info("bulk: setting final statuses and logging");
         for (Resource resource : resourcesCreated.values()) {
-            receiver.update(receiver.getPercentComplete(),
-                    String.format("saving %s", resource.getTitle()));
+            receiver.update(receiver.getPercentComplete(), String.format("saving %s", resource.getTitle()));
             resourceService.saveRecordToFilestore(resource);
-            String logMessage = String.format(
-                    "%s edited and saved by %s:\ttdar id:%s\ttitle:[%s]",
-                    resource.getResourceType().getLabel(), submitter,
-                    resource.getId(),
-                    StringUtils.left(resource.getTitle(), 100));
+            String logMessage = String.format("%s edited and saved by %s:\ttdar id:%s\ttitle:[%s]", resource.getResourceType().getLabel(), submitter,
+                    resource.getId(), StringUtils.left(resource.getTitle(), 100));
             try {
                 resourceService.logResourceModification(resource, submitter, logMessage);
                 // FIXME: saveRecordToFilestore doesn't distinguish 'recoverable' from 'disastrous' exceptions. Until it does we just have to assume the worst.

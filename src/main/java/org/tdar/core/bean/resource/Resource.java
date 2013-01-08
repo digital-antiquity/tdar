@@ -1242,8 +1242,7 @@ public class Resource extends JsonModel.Base implements Persistable,
      * @param resourceCollections
      *            the resourceCollections to set
      */
-    public void setResourceCollections(
-            Set<ResourceCollection> resourceCollections) {
+    public void setResourceCollections(Set<ResourceCollection> resourceCollections) {
         this.resourceCollections = resourceCollections;
     }
 

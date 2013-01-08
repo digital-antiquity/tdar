@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.httpclient.URIException;
-import org.apache.commons.lang.NumberUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
@@ -75,7 +74,8 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         if ((persistable.getNumberOfFiles() == null || persistable.getNumberOfFiles() < 1) &&
                 (persistable.getNumberOfMb() == null || persistable.getNumberOfMb() < 1)) {
             loadEditMetadata();
-            throw new TdarRecoverableRuntimeException(SPECIFY_SOMETHING);
+            addActionError(SPECIFY_SOMETHING);
+            return INPUT;
         }
 
         persistable.getItems().clear();

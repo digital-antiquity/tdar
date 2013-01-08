@@ -15,7 +15,7 @@ Once your payment has been <em>successfully completed</em> you will be able to s
 </p>
 </div>
 <div class="span4">
-<@s.img src="/includes/nellnet_screenshot.png" title="Nellnet Screenshot" cssClass="img-polaroid responsive-image" />
+<img src="<@s.url value="/includes/nellnet_screenshot.png"/>" title="Nellnet Screenshot" cssClass="img-polaroid responsive-image" />
 </div>
 </div>
 
