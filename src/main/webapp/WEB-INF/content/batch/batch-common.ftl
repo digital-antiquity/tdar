@@ -2,6 +2,7 @@
 
 <#macro printTemplate>
 	<div class="glide">
+	<#if !ticketId?has_content>
 	    <h3>Upload record specific metadata</h3>
 	        <div tiplabel="Upload your document(s)"  tooltipcontent="The metadata entered on this form is tied to that 
 	            one file. Documents must be in the following types: xls,xlsx">
@@ -16,6 +17,10 @@
 	            </div>
 	            <br/>
 	                <@s.file label="Upload a Mapping File" cssClass="validateFileType" labelposition='top' name='uploadedFiles' size='40'/>
+	<#else>
+	<@s.hidden name="templateFilename" />
+	<strong>Template File</strong>:${templateFilename}
+	</#if>
 	</div>
 </#macro>
 

@@ -546,7 +546,7 @@ public class BulkUploadService {
                         String value = getCellValue(evaluator, row, columnIndex);
                         String name = manifestProxy.getColumnNames().get(columnIndex);
                         CellMetadata cellMetadata = cellLookupMap.get(name);
-                        logger.info("cell metadata: {}", cellMetadata);
+                        logger.trace("cell metadata: {}", cellMetadata);
 
                         if (StringUtils.isBlank(name) || StringUtils.isBlank(value) || cellMetadata == null)
                             continue;

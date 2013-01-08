@@ -3,17 +3,14 @@ package org.tdar.struts.action.resource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.struts2.convention.annotation.Action;
-import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
@@ -31,6 +28,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.BulkUploadService;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.personal.PersonalFilestore;
+import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.Pair;
 
@@ -68,6 +66,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
     private String asyncErrors;
     int maxReferenceRow = 0;
     private File templateFile;
+    private String templateFilename;
 
     /**
      * Save basic metadata of the registering concept.
@@ -88,9 +87,9 @@ public class BulkUploadController extends AbstractInformationResourceController<
         saveInformationResourceProperties();
         File excelManifest = null;
         logger.info("{} and names {}", getUploadedFiles(), getUploadedFilesFileName());
+        PersonalFilestoreTicket ticket = filestoreService.findPersonalFilestoreTicket(getTicketId());
+        PersonalFilestore personalFilestore = filestoreService.getPersonalFilestore(getTicketId());
         if (!CollectionUtils.isEmpty(getUploadedFilesFileName())) {
-            PersonalFilestoreTicket ticket = filestoreService.findPersonalFilestoreTicket(getTicketId());
-            PersonalFilestore personalFilestore = filestoreService.getPersonalFilestore(getTicketId());
             try {
                 String filename = getUploadedFilesFileName().get(0);
                 excelManifest = personalFilestore.store(ticket, getUploadedFiles().get(0), filename);
@@ -98,6 +97,14 @@ public class BulkUploadController extends AbstractInformationResourceController<
                 addActionErrorWithException("could not store manifest file", e);
             }
         }
+        
+        if (getTemplateFilename() != null) {
+            PersonalFilestoreFile filestoreFile = personalFilestore.retrieve(ticket, getTemplateFilename());
+            if (filestoreFile != null) {
+                excelManifest = filestoreFile.getFile();
+            }
+        }
+        
         logger.debug("excel manifest is: {}", excelManifest);
         handleAsyncUploads();
         Collection<FileProxy> fileProxiesToProcess = getFileProxiesToProcess();
@@ -123,7 +130,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
 
     @Action(value = "validate-template", results = {
             @Result(name = INPUT, type = "redirect", location = "template-prepare"),
-            @Result(name = SUCCESS, type = "redirect", location = "add") })
+            @Result(name = SUCCESS, type = "redirect", location = "add?ticketId=${ticketId}&templateFilename=${templateFilename}") })
     @SkipValidation
     public String templateValidate() {
 
@@ -135,6 +142,19 @@ public class BulkUploadController extends AbstractInformationResourceController<
         try {
             Workbook workbook = WorkbookFactory.create(getUploadedFiles().get(0));
             bulkUploadService.validateManifestFile(workbook.getSheetAt(0));
+            
+            PersonalFilestoreTicket ticket = filestoreService.createPersonalFilestoreTicket(getAuthenticatedUser());
+            setTicketId(ticket.getId());
+            PersonalFilestore personalFilestore = filestoreService.getPersonalFilestore(getTicketId());
+            try {
+                String filename = getUploadedFilesFileName().get(0);
+                setTemplateFilename(filename);
+                personalFilestore.store(ticket, getUploadedFiles().get(0), filename);
+            } catch (Exception e) {
+                addActionErrorWithException("could not store manifest file", e);
+            }
+
+            
         } catch (Exception e) {
             addActionErrorWithException("Problem with BulkUploadTemplate", e);
             return INPUT;
@@ -305,6 +325,14 @@ public class BulkUploadController extends AbstractInformationResourceController<
     @Override
     public boolean isBulkUpload() {
         return true;
+    }
+
+    public String getTemplateFilename() {
+        return templateFilename;
+    }
+
+    public void setTemplateFilename(String templateFilename) {
+        this.templateFilename = templateFilename;
     }
 
 }
