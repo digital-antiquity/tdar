@@ -90,7 +90,7 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
             nullable = false, name = "user_id") })
     private Set<Person> authorizedMembers = new HashSet<Person>();
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
     @JoinColumn(nullable = true, updatable = true, name = "account_id")
     private Set<Resource> resources = new HashSet<Resource>();
 
