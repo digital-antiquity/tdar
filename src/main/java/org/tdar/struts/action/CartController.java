@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.httpclient.URIException;
+import org.apache.commons.lang.NumberUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
@@ -79,26 +80,25 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
         persistable.getItems().clear();
         if (getExtraItemQuantity() > 0 && StringUtils.isNotBlank(getExtraItemName())) {
-            logger.trace("{} {}" , getExtraItemName(), getExtraItemQuantity());
+            logger.trace("{} {}", getExtraItemName(), getExtraItemQuantity());
             for (BillingActivity act : getAccountService().getActiveBillingActivities()) {
-                logger.trace("{}" , act.getName());
+                logger.trace("{}", act.getName());
                 if (act.getName().trim().equalsIgnoreCase(getExtraItemName())) {
                     logger.info("adding {}", act);
-                    getInvoice().getItems().add(new BillingItem(act,getExtraItemQuantity()));
+                    getInvoice().getItems().add(new BillingItem(act, getExtraItemQuantity()));
                 }
             }
         }
-        
 
         getInvoice().getItems().addAll(getAccountService().calculateCheapestActivities(getInvoice()).getItems());
-//        if (accountId != -1) {
-//            getGenericService().find(Account.class, accountId).getInvoices().add(getInvoice());
-//        }
+        // if (accountId != -1) {
+        // getGenericService().find(Account.class, accountId).getInvoices().add(getInvoice());
+        // }
         // this may be 'different' from the owner
         getInvoice().setTransactedBy(getAuthenticatedUser());
-//        if (Persistable.Base.isNullOrTransient(getInvoice().getAddress())) {
-            setSaveSuccessPath(SIMPLE);
-//        }
+        // if (Persistable.Base.isNullOrTransient(getInvoice().getAddress())) {
+        setSaveSuccessPath(SIMPLE);
+        // }
         return SUCCESS;
     }
 
@@ -118,11 +118,19 @@ public class CartController extends AbstractPersistableController<Invoice> imple
             results = {
                     @Result(name = SUCCESS, type = "freemarker", location = "api.ftl", params = { "contentType", "application/json" }) })
     public String api() {
-        pricingOptions.add(getAccountService().getCheapestActivityByFiles(lookupFileCount, lookupMBCount, false));
-        addPricingOption(getAccountService().getCheapestActivityByFiles(lookupFileCount, lookupMBCount, true));
-        addPricingOption(getAccountService().getCheapestActivityBySpace(lookupFileCount, lookupMBCount));
-
+        if (isNotNullOrZero(lookupFileCount) || isNotNullOrZero(lookupMBCount)) {
+            pricingOptions.add(getAccountService().getCheapestActivityByFiles(lookupFileCount, lookupMBCount, false));
+            addPricingOption(getAccountService().getCheapestActivityByFiles(lookupFileCount, lookupMBCount, true));
+            addPricingOption(getAccountService().getCheapestActivityBySpace(lookupFileCount, lookupMBCount));
+        }
         return SUCCESS;
+    }
+
+    public boolean isNotNullOrZero(Long num) {
+        if (num == null || num < 1) {
+            return false;
+        }
+        return true;
     }
 
     private void addPricingOption(PricingOption cheapestActivityBySpace) {
@@ -314,7 +322,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
                 boolean found = false;
                 Address addressToSave = response.getAddress();
                 for (Address address : p.getAddresses()) {
-                    if (address.isSameAs(addressToSave)) 
+                    if (address.isSameAs(addressToSave))
                         found = true;
                 }
                 if (!found) {

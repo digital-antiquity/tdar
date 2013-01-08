@@ -279,7 +279,6 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             }
         }
         option.getItems().add(lowest);
-        BillingItem extraSpace = null;
         BillingActivity spaceActivity = getSpaceActivity();
         Long spaceAvailable = lowest.getQuantity() * lowest.getActivity().getNumberOfMb();
         Long spaceNeeded = numMb - spaceAvailable;

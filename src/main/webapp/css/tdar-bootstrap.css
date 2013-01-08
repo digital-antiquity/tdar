@@ -1346,3 +1346,9 @@ p.copyright-notice {
 	z-index: 99999999 !important;
 }
 
+
+.pull-quote {
+	font-size: 20px;
+	line-height: 40px;
+	color: #999;
+}
