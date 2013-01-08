@@ -30,6 +30,7 @@ import org.tdar.core.dao.GenericDao;
 import org.tdar.core.exception.TdarQuotaException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
+import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.data.PricingOption;
 import org.tdar.struts.data.PricingOption.PricingType;
 
@@ -41,6 +42,9 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
     @Autowired
     private GenericDao genericDao;
+
+    @Autowired
+    ResourceService resourceService;
 
     /*
      * Find all accounts for user: return accounts that are active and have not met their quota
@@ -136,8 +140,12 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         for (Resource resource : resources) {
             resource.setPreviousStatus(resource.getStatus());
             resource.setStatus(Status.FLAGGED_ACCOUNT_BALANCE);
+            resourceService.logResourceModification(resource, resource.getUpdatedBy(),
+                    String.format("changed status from %s to Flagged_billing", resource.getStatus()));
+            resourceService.saveRecordToFilestore(resource);
         }
         saveOrUpdateAll(resources);
+
     }
 
     @Transactional
@@ -149,6 +157,9 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             }
             resource.setStatus(status);
             resource.setPreviousStatus(null);
+            resourceService.logResourceModification(resource, resource.getUpdatedBy(),
+                    String.format("resetting status to %s from Flagged_billing", resource.getStatus()));
+            resourceService.saveRecordToFilestore(resource);
         }
         saveOrUpdateAll(resources);
     }
@@ -250,7 +261,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             option.setType(PricingType.SIZED_BY_FILE_ABOVE_TIER);
         }
         List<BillingItem> items = new ArrayList<BillingItem>();
-        logger.info("files: {} mb: {}" , numFiles, numMb);
+        logger.info("files: {} mb: {}", numFiles, numMb);
         for (BillingActivity activity : getActiveBillingActivities()) {
             if (activity.isSpecial()) {
                 continue;
@@ -301,11 +312,11 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         PricingOption option = new PricingOption(PricingType.SIZED_BY_MB);
         List<BillingItem> items = new ArrayList<BillingItem>();
         BillingActivity spaceActivity = getSpaceActivity();
-        if (spaceActivity != null && (numFiles == null || numFiles.intValue() ==  0)) {
+        if (spaceActivity != null && (numFiles == null || numFiles.intValue() == 0)) {
             calculateSpaceActivity(option, spaceActivity, spaceInMb);
             return option;
         }
-        
+
         for (BillingActivity activity : getActiveBillingActivities()) {
             if (activity.isSpecial()) {
                 continue;

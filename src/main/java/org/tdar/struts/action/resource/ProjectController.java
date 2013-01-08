@@ -127,7 +127,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
             addActionErrorWithException("There was an error retreiving project-level information for this resource.  Please reload the page " +
                     " or report this problem to an administrator if the problem persists.", ex);
         }
-        getLogger().debug("returning json:" + json);
+        getLogger().trace("returning json:" + json);
         return json;
     }
 
