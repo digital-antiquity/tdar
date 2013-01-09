@@ -1018,8 +1018,7 @@ public class Resource extends JsonModel.Base implements Persistable,
      * @param resourceAnnotations
      *            the resourceAnnotations to set
      */
-    public void setResourceAnnotations(
-            Set<ResourceAnnotation> resourceAnnotations) {
+    public void setResourceAnnotations(Set<ResourceAnnotation> resourceAnnotations) {
         this.resourceAnnotations = resourceAnnotations;
     }
 
@@ -1064,8 +1063,7 @@ public class Resource extends JsonModel.Base implements Persistable,
      * @param managedGeographicKeywords
      *            the managedGeographicKeywords to set
      */
-    public void setManagedGeographicKeywords(
-            Set<GeographicKeyword> managedGeographicKeywords) {
+    public void setManagedGeographicKeywords(Set<GeographicKeyword> managedGeographicKeywords) {
         this.managedGeographicKeywords = managedGeographicKeywords;
     }
 
@@ -1567,6 +1565,9 @@ public class Resource extends JsonModel.Base implements Persistable,
 
     }
 
+    @XmlAttribute(name = "uploaderRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    @NotNull
     public Person getUploader() {
         return uploader;
     }

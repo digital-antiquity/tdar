@@ -1,7 +1,9 @@
 package org.tdar.struts.action;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +17,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
@@ -56,12 +59,28 @@ public class APIController extends AuthenticationAware.Base {
     private String message;
     private List<String> confidentialFiles = new ArrayList<String>();
     private Long id;
+    private InputStream inputStream;
 
     private Long accountId;
     public final static String msg_ = "%s is %s %s (%s): %s";
 
     private void logMessage(String action_, Class<?> cls, Long id_, String name_) {
         logger.info(String.format(msg_, getAuthenticatedUser().getEmail(), action_, cls.getSimpleName().toUpperCase(), id_, name_));
+    }
+
+    @Action(value = "view", results = {
+            @Result(name = SUCCESS, type = "stream", params = {
+                    "contentType", "text/xml", "inputName",
+                    "inputStream" })
+    })
+    public String view() throws Exception {
+        if (Persistable.Base.isNotNullOrTransient(getId())) {
+            Resource resource = getResourceService().find(getId());
+            String xml = xmlService.convertToXML(resource);
+            setInputStream(new ByteArrayInputStream(xml.getBytes()));
+            return SUCCESS;
+        }
+        return INPUT;
     }
 
     @Action(value = "upload", results = {
@@ -102,7 +121,7 @@ public class APIController extends AuthenticationAware.Base {
                 message = "created:" + loadedRecord.getId();
                 statuscode = StatusCode.CREATED.getHttpStatusCode();
             }
-            
+
             getServletResponse().setStatus(statuscode);
             getResourceService().logResourceModification(loadedRecord, getAuthenticatedUser(), message + " " + loadedRecord.getTitle());
             return SUCCESS;
@@ -234,6 +253,14 @@ public class APIController extends AuthenticationAware.Base {
 
     public void setAccountId(Long accountId) {
         this.accountId = accountId;
+    }
+
+    public InputStream getInputStream() {
+        return inputStream;
+    }
+
+    public void setInputStream(InputStream inputStream) {
+        this.inputStream = inputStream;
     }
 
 }

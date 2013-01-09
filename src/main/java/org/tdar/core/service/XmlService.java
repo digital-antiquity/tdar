@@ -99,6 +99,7 @@ public class XmlService implements Serializable {
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, urlService.getPairedSchemaUrl());
         // marshaller.setProperty(Marshaller.JAXB_, urlService.getSchemaUrl());
+        logger.info("converting: {}", object);
         marshaller.marshal(object, writer);
         return writer;
     }

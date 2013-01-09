@@ -20,9 +20,11 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.ClientAnchor;
 import org.apache.poi.ss.usermodel.Comment;
 import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.DataValidationConstraint;
 import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Hyperlink;
 import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Row;
@@ -189,6 +191,12 @@ public class ExcelService {
     public void setCellStyle(Sheet sheet, int rowNum, int colNum, CellStyle style) {
         sheet.getRow(rowNum).getCell(colNum).setCellStyle(style);
     }
+
+    
+    public String getCellValue(DataFormatter formatter, FormulaEvaluator evaluator, Row columnNamesRow, int columnIndex) {
+        return formatter.formatCellValue(columnNamesRow.getCell(columnIndex), evaluator);
+    }
+
 
     /*
      * Create a cell and be smart about it. If there's a link, make it a link, if numeric, set the type

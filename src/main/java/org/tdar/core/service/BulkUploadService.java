@@ -22,8 +22,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.WeakHashMap;
 
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -82,6 +80,12 @@ import org.tdar.utils.activity.Activity;
 @Service
 public class BulkUploadService {
 
+    private static final String THE_FIRST_COLUMN_MUST_BE_THE_FILENAME = "the first column must be the filename";
+    private static final String THE_FOLLOWING_COLUMNS_ARE_REQUIRED_S = "the following columns are required: %s";
+    private static final String DUPLICATE_FILENAME_S_WAS_FOUND_IN_MANIFEST_FILE = "Duplicate Filename %s was found in manifest file";
+    private static final String FIELDNAME_IS_NOT_VALID_FOR_TYPE = "%s : the fieldname %s is not valid for the resource type:%s";
+    private static final String RESOURCE_CREATOR_IS_NOT_VALID_FOR_TYPE = "resource creator is not valid %s, %s, %s (check appropriate role for type)";
+    private static final String SKIPPING_LINE_FILENAME_NOT_FOUND = "skipping line in excel file as resource with the filename \"%s\" was not found in the import batch";
     private static final String THE_SYSTEM_HAS_NOT_RECEIVED_ANY_FILES = "The system has not received any files.";
     private static final String AN_EXCEPTION_OCCURED_WHILE_PROCESSING_THE_MANIFEST_FILE = "an exception occured while processing the manifest file";
     private static final String PLEASE_INCLUDE_THE_FILE_EXTENSION_IN_THE_FILENAME = "please include the file extension in the filename";
@@ -109,6 +113,9 @@ public class BulkUploadService {
     @Autowired
     private FileAnalyzer analyzer;
 
+    @Autowired
+    private SearchIndexService searchIndexService;
+    
     @Autowired
     private ExcelService excelService;
 
@@ -209,10 +216,12 @@ public class BulkUploadService {
             receiver.update(receiver.getPercentComplete(), String.format("saving %s", resource.getTitle()));
             String logMessage = String.format("%s edited and saved by %s:\ttdar id:%s\ttitle:[%s]", resource.getResourceType().getLabel(), submitter,
                     resource.getId(), StringUtils.left(resource.getTitle(), 100));
+
             try {
                 resourceService.saveRecordToFilestore(resource);
                 resourceService.logResourceModification(resource, submitter, logMessage);
                 // FIXME: saveRecordToFilestore doesn't distinguish 'recoverable' from 'disastrous' exceptions. Until it does we just have to assume the worst.
+                resource.setReadyToIndex(true);
             } catch (TdarRecoverableRuntimeException trex) {
                 receiver.addError(trex);
                 receiver.setCompleted();
@@ -222,6 +231,8 @@ public class BulkUploadService {
         }
 
         completeBulkUpload(image, accountId, resourcesCreated, activity, receiver, stream, ticketId);
+        searchIndexService.index(resourcesCreated.values().toArray(new Resource[0]));
+
     }
 
     private void completeBulkUpload(InformationResource image, Long accountId, Map<String, Resource> resourcesCreated,
@@ -244,6 +255,7 @@ public class BulkUploadService {
         } catch (Exception e) {
             logger.debug("an exception occured when closing import stream", e);
         }
+        
     }
 
     public BulkManifestProxy validateManifestFile(Sheet sheet) {
@@ -259,11 +271,9 @@ public class BulkUploadService {
 
         Set<CellMetadata> required = new HashSet<CellMetadata>();
         for (int i = columnNamesRow.getFirstCellNum(); i <= columnNamesRow.getLastCellNum(); i++) {
-            String name = getCellValue(evaluator, columnNamesRow, i);
+            String name = excelService.getCellValue(formatter, evaluator, columnNamesRow, i);
             name = StringUtils.replace(name, "*", "").trim(); // remove required char
             columnNames.add(name);
-            // logger.info("keys:{}", cellLookupMap.keySet());
-            // logger.info("cell:{}, {}",name, cellLookupMap.get(name));
 
             CellMetadata cellMetadata = cellLookupMap.get(name);
             if (cellMetadata != null) {
@@ -295,11 +305,11 @@ public class BulkUploadService {
         }
 
         if (!columnNames.get(ExcelService.FIRST_COLUMN).equals(BulkUploadTemplate.FILENAME)) {
-            throw new TdarRecoverableRuntimeException("the first column must be the filename");
+            throw new TdarRecoverableRuntimeException(THE_FIRST_COLUMN_MUST_BE_THE_FILENAME);
         }
 
         if (CollectionUtils.isNotEmpty(requiredErrors)) {
-            throw new TdarRecoverableRuntimeException(String.format("the following columns are required: %s", StringUtils.join(requiredErrors.toArray(), ", ")));
+            throw new TdarRecoverableRuntimeException(String.format(THE_FOLLOWING_COLUMNS_ARE_REQUIRED_S, StringUtils.join(requiredErrors.toArray(), ", ")));
         }
 
         Iterator<Row> rowIterator = sheet.rowIterator();
@@ -330,7 +340,7 @@ public class BulkUploadService {
             if (caseTest.containsKey(filename)) {
                 String testFile = caseTest.get(filename);
                 if (testFile.equals(filename)) {
-                    throw new TdarRecoverableRuntimeException(String.format("Duplicate Filename %s was found in manifest file", filename));
+                    throw new TdarRecoverableRuntimeException(String.format(DUPLICATE_FILENAME_S_WAS_FOUND_IN_MANIFEST_FILE, filename));
                 }
                 if (testFile.equalsIgnoreCase(filename)) {
                     proxy.setCaseSensitive(true);
@@ -342,11 +352,8 @@ public class BulkUploadService {
         return proxy;
     }
 
-    private float processFileProxiesIntoResources(
-            final InformationResource image, final Person submitter, final BulkManifestProxy manifestProxy,
-            final Collection<FileProxy> fileProxies,
-            AsyncUpdateReceiver receiver,
-            Map<String, Resource> resourcesCreated, float count) {
+    private float processFileProxiesIntoResources(final InformationResource image, final Person submitter, final BulkManifestProxy manifestProxy,
+            final Collection<FileProxy> fileProxies, AsyncUpdateReceiver receiver, Map<String, Resource> resourcesCreated, float count) {
 
         if (StringUtils.isBlank(image.getTitle())) {
             image.setTitle(BulkUploadTemplate.BULK_TEMPLATE_TITLE);
@@ -379,6 +386,7 @@ public class BulkUploadService {
                 if (InformationResource.class.isAssignableFrom(resourceClass)) {
                     logger.info("saving " + fileName + "..." + suggestTypeForFile);
                     InformationResource informationResource = (InformationResource) resourceService.createResourceFrom(image, resourceClass);
+                    informationResource.setReadyToIndex(false);
                     informationResource.setTitle(fileName);
                     informationResource.markUpdated(submitter);
                     informationResource.setDescription(" ");
@@ -481,6 +489,7 @@ public class BulkUploadService {
         return map;
     }
 
+    @Transactional
     public <R extends Resource> void readExcelFile(BulkManifestProxy manifestProxy, Map<String, Resource> filenameResourceMap, AsyncUpdateReceiver receiver)
             throws InvalidFormatException, IOException {
 
@@ -505,7 +514,7 @@ public class BulkUploadService {
                 int startColumnIndex = manifestProxy.getFirstCellNum();
                 int endColumnIndex = manifestProxy.getLastCellNum();
 
-                String filename = getCellValue(evaluator, row, startColumnIndex);
+                String filename = excelService.getCellValue(formatter, evaluator, row, startColumnIndex);
                 // filename = StringUtils.replace(filename, "*", ""); // remove
                 // required char
 
@@ -517,8 +526,7 @@ public class BulkUploadService {
                     continue;
                 }
                 if (resourceToProcess == null) {
-                    receiver.addError(new TdarRecoverableRuntimeException(String.format(
-                            "skipping line in excel file as resource with the filename \"%s\" was not found in the import batch", filename)));
+                    receiver.addError(new TdarRecoverableRuntimeException(String.format(SKIPPING_LINE_FILENAME_NOT_FOUND, filename)));
                     continue;
                 }
                 logger.info("processing:" + filename);
@@ -536,7 +544,7 @@ public class BulkUploadService {
                 // iterate through the spreadsheet
                 try {
                     for (int columnIndex = (startColumnIndex + 1); columnIndex < endColumnIndex; ++columnIndex) {
-                        String value = getCellValue(evaluator, row, columnIndex);
+                        String value = excelService.getCellValue(formatter, evaluator, row, columnIndex);
                         String name = manifestProxy.getColumnNames().get(columnIndex);
                         CellMetadata cellMetadata = cellLookupMap.get(name);
                         logger.trace("cell metadata: {}", cellMetadata);
@@ -555,16 +563,13 @@ public class BulkUploadService {
                         if (cellMetadata == null
                                 || !(mappedClass != null && (resourceSubtypeAssignableFrom || resourceCreatorAssignableFrom || creatorAssignableFrom))) {
                             if (mappedClass != null) {
-                                throw new TdarRecoverableRuntimeException(String.format("%s : the fieldname %s is not valid for the resource type:%s",
-                                        filename, name, resourceToProcess.getResourceType()));
+                                throw new TdarRecoverableRuntimeException(String.format(FIELDNAME_IS_NOT_VALID_FOR_TYPE, filename, name,
+                                        resourceToProcess.getResourceType()));
                             }
                         }
                         requiredFields.remove(cellMetadata);
                         if (resourceAssignableFrom) {
-                            // only pay attention to classes from a Resource if we're blank default to the standard value
-                            logger.trace(String.format("setting property %s on %s value %s", cellMetadata.getPropertyName(), resourceToProcess, value));
-
-                            validateAndSetProperty(resourceToProcess, cellMetadata.getPropertyName(), value);
+                            reflectionService.validateAndSetProperty(resourceToProcess, cellMetadata.getPropertyName(), value);
 
                         } else {
                             if ((resourceCreatorAssignableFrom || creatorAssignableFrom)) {
@@ -572,20 +577,20 @@ public class BulkUploadService {
                                 logger.trace(String.format("%s - %s - %s", mappedClass, cellMetadata.getPropertyName(), value));
                                 if (resourceCreatorAssignableFrom) {
                                     seenCreatorFields = true;
-                                    validateAndSetProperty(creatorProxy, cellMetadata.getPropertyName(), value);
+                                    reflectionService.validateAndSetProperty(creatorProxy, cellMetadata.getPropertyName(), value);
 
                                     // FIXME: This is a big assumption that role is the last field and then we repeat
-                                    reconcileResourceCreator(resourceToProcess, creatorProxy, filename);
+                                    reconcileResourceCreator(resourceToProcess, creatorProxy);
 
                                     creatorProxy = new ResourceCreatorProxy();
 
                                     seenCreatorFields = false;
                                 }
                                 if (Person.class.isAssignableFrom(mappedClass)) {
-                                    validateAndSetProperty(creatorProxy.getPerson(), cellMetadata.getPropertyName(), value);
+                                    reflectionService.validateAndSetProperty(creatorProxy.getPerson(), cellMetadata.getPropertyName(), value);
                                 }
                                 if (Institution.class.isAssignableFrom(mappedClass)) {
-                                    logger.info("{} ", cellMetadata);
+                                    logger.trace("{} ", cellMetadata);
                                     Object bean = creatorProxy.getInstitution();
                                     if (cellMetadata.getName().contains("Person.Institution")) {
                                         if (creatorProxy.getPerson().getInstitution() == null) {
@@ -593,13 +598,13 @@ public class BulkUploadService {
                                         }
                                         bean = creatorProxy.getPerson().getInstitution();
                                     }
-                                    validateAndSetProperty(bean, cellMetadata.getPropertyName(), value);
+                                    reflectionService.validateAndSetProperty(bean, cellMetadata.getPropertyName(), value);
                                 }
                             }
                         }
                     }
                     if (seenCreatorFields) {
-                        reconcileResourceCreator(resourceToProcess, creatorProxy, filename);
+                        reconcileResourceCreator(resourceToProcess, creatorProxy);
                     }
                     logger.debug("resourceCreators:{}", resourceToProcess.getResourceCreators());
                     if (requiredFields.size() > 0) {
@@ -622,8 +627,7 @@ public class BulkUploadService {
         }
     }
 
-    private void reconcileResourceCreator(Resource resource, ResourceCreatorProxy proxy, String filename) {
-
+    private void reconcileResourceCreator(Resource resource, ResourceCreatorProxy proxy) {
         ResourceCreator creator = proxy.getResourceCreator();
         logger.info("reconciling creator... {}", creator);
         if (creator.isValidForResource(resource)) {
@@ -635,66 +639,8 @@ public class BulkUploadService {
             logger.debug("added " + creator + " successfully");
         } else {
             throw new TdarRecoverableRuntimeException(
-                    String.format("%s: resource creator is not valid %s, %s, %s (check appropriate role for type)",
-                            filename, creator.getCreator().getName(), creator.getRole(), resource.getResourceType()));
+                    String.format(RESOURCE_CREATOR_IS_NOT_VALID_FOR_TYPE, creator.getCreator().getName(), creator.getRole(), resource.getResourceType()));
         }
-    }
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    private void validateAndSetProperty(Object beanToProcess, String name, String value) {
-        try {
-            logger.trace("processing: " + beanToProcess + " - " + name + " --> " + value);
-            Class propertyType = PropertyUtils.getPropertyType(beanToProcess, name);
-
-            // handle types should we be testing column length?
-            if (propertyType.isEnum()) {
-                try {
-                    BeanUtils.setProperty(beanToProcess, name, Enum.valueOf(propertyType, value));
-                } catch (IllegalArgumentException e) {
-                    logger.debug("cannot set property:", e);
-                    throw new TdarRecoverableRuntimeException(value + " is not a valid value for the " + name + " field", e);
-                }
-            } else {
-                if (Integer.class.isAssignableFrom(propertyType)) {
-                    try {
-                        Double dbl = Double.valueOf(value);
-                        if (dbl == Math.floor(dbl)) {
-                            value = new Integer((int) Math.floor(dbl)).toString();
-                        }
-                    } catch (NumberFormatException nfe) {
-                        throw new TdarRecoverableRuntimeException("the field " + name + " is expecting an integer value, but found: " + value);
-                    }
-                }
-                if (Long.class.isAssignableFrom(propertyType)) {
-                    try {
-                        Double dbl = Double.valueOf(value);
-                        if (dbl == Math.floor(dbl)) {
-                            value = new Long((long) Math.floor(dbl)).toString();
-                        }
-                    } catch (NumberFormatException nfe) {
-                        throw new TdarRecoverableRuntimeException("the field " + name + " is expecting a big integer value, but found: " + value);
-                    }
-                }
-                if (Float.class.isAssignableFrom(propertyType)) {
-                    try {
-                        Float.parseFloat(value);
-                    } catch (NumberFormatException nfe) {
-                        throw new TdarRecoverableRuntimeException("the field " + name + " is expecting a floating point value (1.001), but found: " + value);
-                    }
-                }
-                BeanUtils.setProperty(beanToProcess, name, value);
-            }
-        } catch (Exception e1) {
-            if (e1 instanceof TdarRecoverableRuntimeException) {
-                throw (TdarRecoverableRuntimeException) e1;
-            }
-            logger.debug("error processing bulk upload: {}", e1);
-            throw new TdarRecoverableRuntimeException("an error occured when setting " + name + " to " + value, e1);
-        }
-    }
-
-    public String getCellValue(FormulaEvaluator evaluator, Row columnNamesRow, int columnIndex) {
-        return formatter.formatCellValue(columnNamesRow.getCell(columnIndex), evaluator);
     }
 
     public AsyncUpdateReceiver checkAsyncStatus(Long ticketId) {

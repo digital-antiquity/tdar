@@ -18,6 +18,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Persistable;
@@ -29,6 +33,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.exception.TdarQuotaException;
+import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
  * $Id$
@@ -183,6 +188,10 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     /**
      * @return the resources
      */
+
+    @XmlElementWrapper(name = "resources")
+    @XmlElement(name = "resource")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public Set<Resource> getResources() {
         return resources;
     }
@@ -383,7 +392,7 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     }
 
     public Long getSpaceUsedInMb() {
-        return divideByRoundUp(spaceUsedInBytes , Invoice.ONE_MB);
+        return divideByRoundUp(spaceUsedInBytes, Invoice.ONE_MB);
     }
 
     public void setSpaceUsedInBytes(Long spaceUsed) {

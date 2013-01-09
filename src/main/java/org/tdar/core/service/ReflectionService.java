@@ -28,6 +28,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -431,4 +433,60 @@ public class ReflectionService {
         }
         return set;
     }
+
+
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public void validateAndSetProperty(Object beanToProcess, String name, String value) {
+        try {
+            logger.trace("processing: " + beanToProcess + " - " + name + " --> " + value);
+            Class propertyType = PropertyUtils.getPropertyType(beanToProcess, name);
+
+            // handle types should we be testing column length?
+            if (propertyType.isEnum()) {
+                try {
+                    BeanUtils.setProperty(beanToProcess, name, Enum.valueOf(propertyType, value));
+                } catch (IllegalArgumentException e) {
+                    logger.debug("cannot set property:", e);
+                    throw new TdarRecoverableRuntimeException(value + " is not a valid value for the " + name + " field", e);
+                }
+            } else {
+                if (Integer.class.isAssignableFrom(propertyType)) {
+                    try {
+                        Double dbl = Double.valueOf(value);
+                        if (dbl == Math.floor(dbl)) {
+                            value = new Integer((int) Math.floor(dbl)).toString();
+                        }
+                    } catch (NumberFormatException nfe) {
+                        throw new TdarRecoverableRuntimeException("the field " + name + " is expecting an integer value, but found: " + value);
+                    }
+                }
+                if (Long.class.isAssignableFrom(propertyType)) {
+                    try {
+                        Double dbl = Double.valueOf(value);
+                        if (dbl == Math.floor(dbl)) {
+                            value = new Long((long) Math.floor(dbl)).toString();
+                        }
+                    } catch (NumberFormatException nfe) {
+                        throw new TdarRecoverableRuntimeException("the field " + name + " is expecting a big integer value, but found: " + value);
+                    }
+                }
+                if (Float.class.isAssignableFrom(propertyType)) {
+                    try {
+                        Float.parseFloat(value);
+                    } catch (NumberFormatException nfe) {
+                        throw new TdarRecoverableRuntimeException("the field " + name + " is expecting a floating point value (1.001), but found: " + value);
+                    }
+                }
+                BeanUtils.setProperty(beanToProcess, name, value);
+            }
+        } catch (Exception e1) {
+            if (e1 instanceof TdarRecoverableRuntimeException) {
+                throw (TdarRecoverableRuntimeException) e1;
+            }
+            logger.debug("error processing bulk upload: {}", e1);
+            throw new TdarRecoverableRuntimeException("an error occured when setting " + name + " to " + value, e1);
+        }
+    }
+
 }
