@@ -148,12 +148,12 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             @Result(name = INPUT, location = "advanced.ftl") })
     public String search() {
         setLookupSource(LookupSource.RESOURCE);
-        if (explore) {
-            return exploreSearch();
-        }
-        boolean resetSearch = processLegacySearch();
-
         try {
+            if (explore) {
+                return exploreSearch();
+            }
+            boolean resetSearch = processLegacySearch();
+
             if (StringUtils.isNotBlank(query) && !resetSearch) {
                 logger.trace("running basic search");
                 return basicSearch();
@@ -710,7 +710,10 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     }
 
     private SearchParameters getFirstGroup() {
-        return groups.get(0);
+        if (groups.size() > 0) {
+            return groups.get(0);
+        }
+        throw new TdarRecoverableRuntimeException("please try your search again");
     }
 
     private <K extends Keyword> void setExploreKeyword(Class<K> type,
