@@ -222,6 +222,7 @@ public class BulkUploadService {
                 resourceService.logResourceModification(resource, submitter, logMessage);
                 // FIXME: saveRecordToFilestore doesn't distinguish 'recoverable' from 'disastrous' exceptions. Until it does we just have to assume the worst.
                 resource.setReadyToIndex(true);
+                genericDao.saveOrUpdate(resource);
             } catch (TdarRecoverableRuntimeException trex) {
                 receiver.addError(trex);
                 receiver.setCompleted();
@@ -231,7 +232,6 @@ public class BulkUploadService {
         }
 
         completeBulkUpload(image, accountId, resourcesCreated, activity, receiver, stream, ticketId);
-        searchIndexService.index(resourcesCreated.values().toArray(new Resource[0]));
 
     }
 

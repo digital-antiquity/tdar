@@ -590,6 +590,8 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         this.dateUpdated = dateUpdated;
     }
 
+    @XmlAttribute(name = "updaterIdRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public Person getUpdater() {
         return updater;
     }
