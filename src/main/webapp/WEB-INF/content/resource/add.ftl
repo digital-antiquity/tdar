@@ -34,7 +34,7 @@
         <div class="span4">
 	 <h3>
 	 Have lots of resources?</br>
-       <a class="button btn submitButton" href="<@s.url value="/batch/template-prepare" />">Bulk Upload</a>
+       <a class="button btn submitButton" href="<@s.url value="/batch/template-prepare?projectId=${(projectId!-1)?c}" />">Bulk Upload</a>
 	 </h3>
         </div>
     </div>

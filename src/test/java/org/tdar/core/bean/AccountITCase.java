@@ -196,7 +196,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         resource.setAccount(account);
         assertFalse(account.getResources().contains(resource));
         String msg = null;
-        AccountAdditionStatus status = accountService.updateQuota(new ResourceEvaluator(model), account, resource);
+        AccountAdditionStatus status = accountService.updateQuota(new ResourceEvaluator(model), account, true, resource);
 
         assertEquals(AccountAdditionStatus.NOT_ENOUGH_FILES, status);
 

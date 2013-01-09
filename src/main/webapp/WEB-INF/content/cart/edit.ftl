@@ -18,12 +18,12 @@
 <div class="row">
 	<div class="span6">
 		<div class="well">
-		<@s.textfield name="invoice.numberOfFiles" label="Number of Files" cssClass="integer"/>
+		<@s.textfield name="invoice.numberOfFiles" label="Number of Files" cssClass="integer span2"/>
 		
 		<div class="control-group">
 		    <label class="control-label">Number of Mb</label>
 				    <div class="controls">
-			<@s.textfield name="invoice.numberOfMb" label="Number of Mb"  theme="simple" cssClass="integer "/>
+			<@s.textfield name="invoice.numberOfMb" label="Number of Mb"  theme="simple" cssClass="integer span2"/>
 			<span id="convert"></span>
 		</div>
 		<br/>
@@ -38,7 +38,7 @@
 		<div class="control-group">
     <label class="control-label" for="extraItemQuantity">Quantity</label>
 				    <div class="controls">
-			    <input type="text" name="extraItemQuantity" id="extraItemQuantity" value="0" label="Quantity" />
+			    <input type="text" name="extraItemQuantity" id="extraItemQuantity" value="0" label="Quantity"  class="integer span2"/>
 		</div>
 	</div>
 		<div class="control-group">

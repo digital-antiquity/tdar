@@ -130,7 +130,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
 
     @Action(value = "validate-template", results = {
             @Result(name = INPUT, type = "redirect", location = "template-prepare"),
-            @Result(name = SUCCESS, type = "redirect", location = "add?ticketId=${ticketId}&templateFilename=${templateFilename}") })
+            @Result(name = SUCCESS, type = "redirect", location = "add?ticketId=${ticketId}&templateFilename=${templateFilename}&projectId=${projectId}") })
     @SkipValidation
     public String templateValidate() {
 

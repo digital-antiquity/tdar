@@ -165,8 +165,8 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     }
 
     @Transactional
-    public AccountAdditionStatus updateQuota(ResourceEvaluator initialEvaluation, Account account, Resource... resources) {
-        return updateQuota(initialEvaluation, account, Arrays.asList(resources));
+    public AccountAdditionStatus updateQuota(ResourceEvaluator initialEvaluation, Account account, boolean logModification, Resource... resources) {
+        return updateQuota(initialEvaluation, account, Arrays.asList(resources), logModification);
     }
 
     @Transactional
@@ -188,7 +188,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     }
 
     @Transactional
-    public AccountAdditionStatus updateQuota(ResourceEvaluator initialEvaluation, Account account, List<Resource> resourcesToEvaluate) {
+    public AccountAdditionStatus updateQuota(ResourceEvaluator initialEvaluation, Account account, List<Resource> resourcesToEvaluate, boolean logModification) {
         logger.info("updating quota(s)");
         if (account == null) {
             throw new TdarRecoverableRuntimeException(ACCOUNT_IS_NULL);
@@ -226,10 +226,11 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             account.updateQuotas(endingEvaluator);
         } catch (TdarQuotaException e) {
             status = e.getCode();
+            if (logModification)
             markResourcesAsFlagged(resourcesToEvaluate);
             logger.info("marking {} resources {} FLAGGED", status, resourcesToEvaluate);
         }
-        if (status == AccountAdditionStatus.CAN_ADD_RESOURCE) {
+        if (status == AccountAdditionStatus.CAN_ADD_RESOURCE && logModification) {
             unMarkResourcesAsFlagged(resourcesToEvaluate);
         }
         saveOrUpdate(account);

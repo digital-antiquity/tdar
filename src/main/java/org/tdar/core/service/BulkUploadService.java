@@ -199,13 +199,18 @@ public class BulkUploadService {
             logger.warn(AN_EXCEPTION_OCCURED_WHILE_PROCESSING_THE_MANIFEST_FILE, e);
         }
 
+        if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
+            Account account = genericDao.find(Account.class, accountId);
+            accountService.updateQuota(accountService.getResourceEvaluator(), account, false, resourcesCreated.values().toArray(new Resource[0]));
+        }
+
         logger.info("bulk: setting final statuses and logging");
         for (Resource resource : resourcesCreated.values()) {
             receiver.update(receiver.getPercentComplete(), String.format("saving %s", resource.getTitle()));
-            resourceService.saveRecordToFilestore(resource);
             String logMessage = String.format("%s edited and saved by %s:\ttdar id:%s\ttitle:[%s]", resource.getResourceType().getLabel(), submitter,
                     resource.getId(), StringUtils.left(resource.getTitle(), 100));
             try {
+                resourceService.saveRecordToFilestore(resource);
                 resourceService.logResourceModification(resource, submitter, logMessage);
                 // FIXME: saveRecordToFilestore doesn't distinguish 'recoverable' from 'disastrous' exceptions. Until it does we just have to assume the worst.
             } catch (TdarRecoverableRuntimeException trex) {
@@ -219,8 +224,8 @@ public class BulkUploadService {
         completeBulkUpload(image, accountId, resourcesCreated, activity, receiver, stream, ticketId);
     }
 
-    private void completeBulkUpload(final InformationResource image, Long accountId, Map<String, Resource> resourcesCreated, Activity activity,
-            AsyncUpdateReceiver receiver, FileInputStream stream, Long ticketId) {
+    private void completeBulkUpload(InformationResource image, Long accountId, Map<String, Resource> resourcesCreated,
+            Activity activity, AsyncUpdateReceiver receiver, FileInputStream stream, Long ticketId) {
 
         try {
             PersonalFilestoreTicket findPersonalFilestoreTicket = filestoreService.findPersonalFilestoreTicket(ticketId);
@@ -229,10 +234,6 @@ public class BulkUploadService {
             receiver.addError(e);
         }
 
-        if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
-            Account account = genericDao.find(Account.class, accountId);
-            accountService.updateQuota(accountService.getResourceEvaluator(), account, resourcesCreated.values().toArray(new Resource[0]));
-        }
         receiver.setCompleted();
         logger.info("bulk upload complete");
         logger.info("remaining: " + image.getInternalResourceCollection());
@@ -433,8 +434,7 @@ public class BulkUploadService {
      * Special Case lookup: (a) look for exact match (b) look for case where
      * person forgot file extension
      */
-    public Resource findResource(String filename,
-            Map<String, Resource> filenameResourceMap) {
+    public Resource findResource(String filename, Map<String, Resource> filenameResourceMap) {
         /*
          * DEPENDING ON WHETHER THE MANIFEST IS CASE SENSITIVE OR NOT, the MAP
          * WILL EITHER BE (A) a TreeMap(case insensitive) or a HashMap
@@ -477,15 +477,12 @@ public class BulkUploadService {
                 map.add(meta);
             }
         }
-        logger.info("{}", map);
+        logger.trace("{}", map);
         return map;
     }
 
-    public <R extends Resource> void readExcelFile(
-            BulkManifestProxy manifestProxy,
-            Map<String, Resource> filenameResourceMap,
-            AsyncUpdateReceiver receiver) throws InvalidFormatException,
-            IOException {
+    public <R extends Resource> void readExcelFile(BulkManifestProxy manifestProxy, Map<String, Resource> filenameResourceMap, AsyncUpdateReceiver receiver)
+            throws InvalidFormatException, IOException {
 
         if (manifestProxy == null) {
             return;

@@ -149,7 +149,7 @@ public interface AuthenticationAware extends SessionDataAware {
 
         public void updateQuota(Account account, Resource resource) {
             if (getTdarConfiguration().isPayPerIngestEnabled()) {
-                getAccountService().updateQuota(initialEvaluator, account, resource);
+                getAccountService().updateQuota(initialEvaluator, account, true, resource);
             }
         }
 
