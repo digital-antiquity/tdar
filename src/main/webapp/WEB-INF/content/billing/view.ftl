@@ -100,7 +100,11 @@
         <th>Resource Type</th>
     </tr>
 <#list account.resources as resource>
-<tr>
+	<#assign stat = ""/>
+	<#if resource.status == 'FLAGGED_ACCOUNT_BALANCE'>
+	<#assign stat = "error"/>
+	</#if>
+<tr class="${stat}">
     <td>${resource.id?c}</td>
 	<td>${resource.status.label}</td>
     <td><a href="<@s.url value="/${resource.resourceType.urlNamespace}/${resource.id?c}"/>">${resource.title}</a></td>

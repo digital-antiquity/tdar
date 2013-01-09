@@ -23,6 +23,20 @@
 </div>
 
 
+
+<#if overdrawnAccounts?has_content>
+<div class="alert-error alert">
+<h3>The following accounts are overdrawn</h3>
+<ul> 
+<#list overdrawnAccounts as account>
+   <li>
+        <a href="<@s.url value="/billing/${account.id?c}" />">${account.name!"unamed"}</a>
+    </li>
+</#list>
+</ul>
+</div>
+</#if>
+
 <div id="messages" style="margin:2px" class="hidden lt-ie8">
     <div id="message-ie-obsolete" class="message-error">
     You appear to be using an older version of Internet Explorer.  Note that certain features in ${siteAcronym} may not work properly.  

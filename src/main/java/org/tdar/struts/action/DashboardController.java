@@ -54,6 +54,7 @@ public class DashboardController extends AuthenticationAware.Base {
     private Map<ResourceType, Long> resourceCountForUser = new HashMap<ResourceType, Long>();
     private Map<Status, Long> statusCountForUser = new HashMap<Status, Long>();
     private Set<Account> accounts = new HashSet<Account>();
+    private Set<Account> overdrawnAccounts = new HashSet<Account>();
 
     @Override
     @Action("dashboard")
@@ -68,6 +69,12 @@ public class DashboardController extends AuthenticationAware.Base {
         Collections.sort(resourceCollections);
         Collections.sort(sharedResourceCollections);
         getAccounts().addAll(getAccountService().listAvailableAccountsForUser(getAuthenticatedUser()));
+        for (Account account : getAccounts()) {
+            account.initTotals();
+            if (!account.isOverdrawn(getAccountService().getResourceEvaluator())) {
+                overdrawnAccounts.add(account);
+            }
+        }
         activeResourceCount += getStatusCountForUser().get(Status.ACTIVE);
         activeResourceCount += getStatusCountForUser().get(Status.DRAFT);
         logger.trace("{}", resourceCollections);
@@ -122,7 +129,6 @@ public class DashboardController extends AuthenticationAware.Base {
     public List<Project> getEmptyProjects() {
         return emptyProjects;
     }
-
 
     public List<Resource> getBookmarkedResources() {
         if (bookmarkedResources == null) {
@@ -271,6 +277,14 @@ public class DashboardController extends AuthenticationAware.Base {
 
     public void setAccounts(Set<Account> accounts) {
         this.accounts = accounts;
+    }
+
+    public Set<Account> getOverdrawnAccounts() {
+        return overdrawnAccounts;
+    }
+
+    public void setOverdrawnAccounts(Set<Account> overdrawnAccounts) {
+        this.overdrawnAccounts = overdrawnAccounts;
     }
 
 }
