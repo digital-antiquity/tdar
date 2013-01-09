@@ -314,3 +314,6 @@ create table explore_cache_year (
 
 insert into explore_cache_year (key, item_count) select date_part('year', date_registered), count(id) from resource where status='ACTIVE' and date_registered is not null group by date_part('year', date_registered)  order by date_part('year', date_registered)  asc;
 ALTER TABLE resource ADD previous_status varchar(50);
+
+-- 1-9-13
+ALTER TABLE information_resource_file ADD COLUMN error_message;

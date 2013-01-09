@@ -16,6 +16,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -30,6 +31,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.WordUtils;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
+import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.tdar.core.bean.HasLabel;
@@ -58,7 +60,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     private static final long serialVersionUID = -6957336216505367012L;
 
     private transient WorkflowContext workflowContext;
-
+    
     public enum FileAction {
         NONE, ADD, REPLACE, DELETE, MODIFY_METADATA, ADD_DERIVATIVE;
 
@@ -124,6 +126,11 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     @Enumerated(EnumType.STRING)
     private FileAccessRestriction restriction = FileAccessRestriction.PUBLIC;
 
+    @Lob
+    @Type(type = "org.hibernate.type.StringClobType")
+    @Column(name="error_message")
+    private String errorMessage;
+    
     // a date in standard form that a resource will become public if availableToPublic was set to false.
     // This date may be extended by the publisher but will not extend past the publisher's death unless
     // special arrangements are made.
@@ -483,6 +490,14 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
 
     public boolean isEmbargoed() {
         return this.restriction == FileAccessRestriction.EMBARGOED;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 
 }

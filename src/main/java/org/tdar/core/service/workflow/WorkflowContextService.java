@@ -2,6 +2,7 @@ package org.tdar.core.service.workflow;
 
 import java.io.File;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -81,6 +82,7 @@ public class WorkflowContextService {
             irFile.clearQueuedStatus();
         } else {
             irFile.setStatus(FileStatus.PROCESSING_ERROR);
+            irFile.setErrorMessage(StringUtils.join(ctx.getExceptions(), "\n"));
         }
         logger.debug(irFile);
 

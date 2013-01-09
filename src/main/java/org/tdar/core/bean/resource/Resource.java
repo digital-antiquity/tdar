@@ -197,9 +197,9 @@ public class Resource extends JsonModel.Base implements Persistable,
     @Column(length = 512)
     private String title;
 
-    @Lob
     @BulkImportField(label = BulkImportField.DESCRIPTION_LABEL, required = true, order = -50, comment = BulkImportField.DESCRIPTION_DESCRIPTION)
     // @NotNull
+    @Lob
     @Type(type = "org.hibernate.type.StringClobType")
     private String description;
 
