@@ -979,6 +979,13 @@ this bit of freemarker is voodoo:
     </div>
 </#macro>
 
+<#--//  TODO: actually implement this-->
+<#function fileSize sizeInBytes>
+    <#return "${sizeInByptes} bytes" />    
+</#function>
+
+
+
 </#escape>
 
 

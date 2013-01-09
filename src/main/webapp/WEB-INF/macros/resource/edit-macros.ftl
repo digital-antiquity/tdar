@@ -324,7 +324,7 @@ ${resource.resourceType.label}
         <h4>Current ${multipleFileUploadEnabled?string("and Pending Files", "File")}</h4>
         <table id="uploadFiles" class="files table tableFormat">
         </table>
-        <table id="files" class='files sortable tableFormat'>
+        <table id="files" class="files sortable tableFormat">
         <thead>
             <tr class="reorder <#if (fileProxies?size < 2 )>hidden</#if>">
                 <th colspan=2>Reorder: <span class="link alphasort">Alphabetic</span> | <span class="link" onclick="customSort(this)">Custom</span>  </th>
@@ -989,6 +989,17 @@ jquery validation hooks?)
 
 <#macro fileProxyRow rowId="{ID}" filename="{FILENAME}" filesize="{FILESIZE}" action="ADD" fileid=-1 versionId=-1>
 <tr id="fileProxy_${rowId}" class="${(fileid == -1)?string('newrow', '')} sortable template-download fade existing-file in">
+<#if ((resource.resourceType.dataset)!false) >
+    <td>
+    <a href="<@s.url value='/filestore/${versionId?c}/get'/>" title="${filename?html}" download="${filename?html}">${filename?html}</a>
+    (${filesize} bytes)
+        <input type="hidden" class="fileAction" name="fileProxies[${rowId}].action" value="${action}"/>
+        <input type="hidden" class="fileId" name="fileProxies[${rowId}].fileId" value="${fileid?c}"/>
+        <input type="hidden" class="fileReplaceName" name="fileProxies[${rowId}].filename" value="${filename}"/>
+        <input type="hidden" class="fileSequenceNumber" name="fileProxies[${rowId}].sequenceNumber" value=${rowId} />
+    </td>
+ 
+<#else>
             <td class="preview"></td>
             <td class="name">
                         
@@ -1034,6 +1045,7 @@ jquery validation hooks?)
         </td>
 	</#if>
     </tr>
+</#if>
 </#macro>
 
 <#macro citationInfo prefix="resource" includeAbstract=true >
