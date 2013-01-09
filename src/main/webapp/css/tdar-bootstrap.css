@@ -572,9 +572,15 @@ table.legend {
 	margin: 0px !important;
 }
 
+
+/* TODO: this is breaking the dataset.edit page.  My hunch is that this was meant to counteract a section that is indented too far to the right.  I'm guessing
+   the root problem is a grid-size div that is not inside of a .row element.   If so, remove this this rule entirely.  otherwise, identify the specific areas that
+   need this workaround and give them unique class name so we dont over-select which elements get move over */
+/*
 body.edit article.span9>div,body.edit article.span9>form {
 	margin-left: -40px;
 }
+*/
 
 table.repeatLastRow {
 	margin-bottom: -20px;
