@@ -33,8 +33,10 @@
 </#if>
 
 <div class="row">
+    <div class="span9">
+        <table id="dataTable" class="table tableFormat table-striped table-bordered" ></table>
+    </div>
 </div>
-<table id="dataTable" class="table tableFormat table-striped table-bordered" ></table>
 
 <script>
 $(document).ready(function() {
@@ -46,7 +48,7 @@ $(document).ready(function() {
 //        sDom:'<"datatabletop"ilrp>t<>', //omit the search box
     var options = { 
         "sAjaxDataProp":"results.results",
-          "sDom": "<'row'<'span6'l><'span6'>r>t<'row'<'span4'i><'span5'p>>",
+          "sDom": "<'row'<'span6'l><'span3'>r>t<'row'<'span4'i><'span5'p>>",
         "bProcessing": true,
         "bServerSide":true,
         "bScrollInfinite": false,
