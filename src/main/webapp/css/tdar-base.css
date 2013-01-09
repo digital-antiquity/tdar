@@ -1344,3 +1344,7 @@ i.tdar-icon-bookmark-disabled,a:hover i.tdar-icon-bookmark-disabled,.resource-na
 .responsive-desktop .hidden-desktop, .hidden-desktop, responsive-desktop .hidden-phone {
 	display:none;
 }
+
+.space-above {
+	margin-top:30px;
+}
