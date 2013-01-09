@@ -15,6 +15,15 @@
 	width: 420px;
 }
 
+.responsive-desktop .span45 {
+	width:340px !Important;
+}
+
+
+.responsive-tablet .span45 {
+	width:250px; !Important;
+}
+
 body {
 	color: #1b1a18;
 	font-family: helvetica, arial, sans-serif;
