@@ -503,14 +503,14 @@ No coding rules have been entered for this coding sheet yet.
 <#if resource.project?? && resource.project.id?? && resource.project.id != -1>
 
 <div id="subtitle"> 
-    Part of the  
+    <p>Part of the  
   <#if resource.project.active || editable>
     <a href="<@s.url value='/project/view'><@s.param name="id" value="${resource.project.id?c}"/></@s.url>">${resource.project.coreTitle}</a>
   <#else>
   ${resource.project.coreTitle}
   </#if>
         <#if resource.project.draft>(DRAFT)</#if> project
-</div>
+</p></div>
 </#if>
 
 <#if editor>
