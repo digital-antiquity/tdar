@@ -79,7 +79,7 @@ public class JAXBITCase extends AbstractSearchControllerITCase {
     @Test
     @Rollback(false)
     public void testJaxbRoundtrip() throws Exception {
-        Project project = genericService.find(Project.class, 5997l);
+        Project project = genericService.find(Project.class, 3805l);
 
         final String xml = xmlService.convertToXML(project);
         logger.info(xml);
