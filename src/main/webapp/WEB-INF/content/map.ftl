@@ -11,6 +11,7 @@
 	<script src="/includes/jquery.maphighlight.local.js"></script>
 	<link rel="stylesheet" href="/css/tdar-bootstrap.css"/>
 </head>
+<body id="home">
 <h3>tDAR Worldwide</h3>
 </#if>
 <@common.worldMap />
