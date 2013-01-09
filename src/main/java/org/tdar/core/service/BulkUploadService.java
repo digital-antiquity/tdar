@@ -115,7 +115,7 @@ public class BulkUploadService {
 
     @Autowired
     private SearchIndexService searchIndexService;
-    
+
     @Autowired
     private ExcelService excelService;
 
@@ -153,8 +153,7 @@ public class BulkUploadService {
         }
         logger.debug("ticketID:" + ticketId);
         Activity activity = new Activity();
-        activity.setName(String.format("bulk upload for %s of %s resources",
-                submitter.getName(), fileProxies.size()));
+        activity.setName(String.format("bulk upload for %s of %s resources", submitter.getName(), fileProxies.size()));
         activity.start();
         ActivityManager.getInstance().addActivityToQueue(activity);
         AsyncUpdateReceiver receiver = new DefaultReceiver();
@@ -255,7 +254,7 @@ public class BulkUploadService {
         } catch (Exception e) {
             logger.debug("an exception occured when closing import stream", e);
         }
-        
+
     }
 
     public BulkManifestProxy validateManifestFile(Sheet sheet) {
