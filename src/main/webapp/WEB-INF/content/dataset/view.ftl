@@ -53,8 +53,7 @@ $(document).ready(function() {
         "bScrollCollapse": true,
         tableSelector: '#dataTable',
         sPaginationType:"bootstrap",
-        //FIXME: scrollx must be css units. we want span9. currently 740px by observation, but it'd be nice if we can derive this programatically.
-        "sScrollX": "740px",  
+        sScrollX: "100%",  
         //turn off vertical scrolling since we're paging (feels weird to advance through records using two mechanisms)
         "sScrollY": "",
         "aoColumns":[

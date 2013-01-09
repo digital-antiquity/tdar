@@ -316,4 +316,4 @@ insert into explore_cache_year (key, item_count) select date_part('year', date_r
 ALTER TABLE resource ADD previous_status varchar(50);
 
 -- 1-9-13
-ALTER TABLE information_resource_file ADD COLUMN error_message;
+ALTER TABLE information_resource_file ADD COLUMN error_message text;
