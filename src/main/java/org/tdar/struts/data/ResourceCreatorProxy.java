@@ -164,10 +164,10 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
      * @return
      */
     public boolean isValid() {
-        if (person != null && !StringUtils.isBlank(person.getLastName())) {
+        if (person != null && !person.hasNoPersistableValues()) {
             return true;
         }
-        if (institution != null && !StringUtils.isBlank(institution.getName())) {
+        if (institution != null && !institution.hasNoPersistableValues()) {
             return true;
         }
         return false;

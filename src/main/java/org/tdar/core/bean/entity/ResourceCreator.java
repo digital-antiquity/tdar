@@ -94,7 +94,7 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
      */
     public boolean isValid() {
         if (role == null || creator == null) {
-            logger.trace(String.format("role:%s creator:%s resource:%s", role, creator));
+            logger.trace(String.format("role:%s creator:%s ", role, creator));
             return false;
         }
         return true;

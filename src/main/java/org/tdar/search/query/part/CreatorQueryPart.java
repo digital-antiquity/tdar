@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.hibernate.cfg.beanvalidation.GroupsPerOperation.Operation;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.ResourceCreator;
@@ -17,6 +21,8 @@ public class CreatorQueryPart<C extends Creator> extends AbstractHydrateableQuer
 
     @SuppressWarnings("unchecked")
     public CreatorQueryPart(String fieldName, Class<C> creatorClass, C creator, List<ResourceCreatorProxy> proxyList) {
+        // set default of "or"
+        setOperator(Operator.OR);
         setActualClass(creatorClass);
         setFieldName(fieldName);
         setDisplayName("Creator");
@@ -25,8 +31,8 @@ public class CreatorQueryPart<C extends Creator> extends AbstractHydrateableQuer
                 ResourceCreatorProxy proxy = proxyList.get(i);
                 ResourceCreator rc = proxy.getResourceCreator();
                 if (proxy.isValid()) {
-                    if(Persistable.Base.isTransient(rc.getCreator())) {
-                        //user entered a complete-ish creator record but autocomplete callback did fire successfully
+                    if (Persistable.Base.isTransient(rc.getCreator())) {
+                        // user entered a complete-ish creator record but autocomplete callback did fire successfully
                         throw new TdarRecoverableRuntimeException(String.format("Please use autocomplete when looking for creator %s", rc.getCreator()));
                     }
                     this.roles.add(rc.getRole());
@@ -108,4 +114,30 @@ public class CreatorQueryPart<C extends Creator> extends AbstractHydrateableQuer
     public void setRoles(List<ResourceCreatorRole> roles) {
         this.roles = roles;
     }
+
+    @Override
+    public String getDescription() {
+        StringBuilder names = new StringBuilder();
+        for (int i = 0; i < getFieldValues().size(); i++) {
+            Creator creator = getFieldValues().get(i);
+            ResourceCreatorRole role = getRoles().get(i);
+            if (creator != null && !creator.hasNoPersistableValues()) {
+                if (names.length() > 0) {
+                    names.append(" " + getOperator().name().toLowerCase()).append(" ");
+                }
+                names.append(creator.getProperName());
+                if (role != null) {
+                    names.append(" (").append(role.getLabel()).append(")");
+                }
+            }
+        }
+        logger.info("{}", names);
+        return String.format("With creator(s): %s", names);
+    }
+
+    @Override
+    public String getDescriptionHtml() {
+        return StringEscapeUtils.escapeHtml4(getDescription());
+    }
+
 }
