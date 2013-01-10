@@ -26,6 +26,7 @@ import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.exception.APIException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.ImportService;
+import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.XmlService;
 import org.tdar.struts.data.FileProxy;
@@ -55,6 +56,8 @@ public class APIController extends AuthenticationAware.Base {
     // on the receiving end
     private List<String> processedFileNames;
 
+    private ObfuscationService obfuscationService;
+
     private Resource importedRecord;
     private String message;
     private List<String> confidentialFiles = new ArrayList<String>();
@@ -76,6 +79,9 @@ public class APIController extends AuthenticationAware.Base {
     public String view() throws Exception {
         if (Persistable.Base.isNotNullOrTransient(getId())) {
             Resource resource = getResourceService().find(getId());
+            if (!isAdministrator() && !getAuthenticationAndAuthorizationService().canEdit(getAuthenticatedUser(), resource)) {
+                obfuscationService.obfuscate(resource);
+            }
             String xml = xmlService.convertToXML(resource);
             setInputStream(new ByteArrayInputStream(xml.getBytes()));
             return SUCCESS;
