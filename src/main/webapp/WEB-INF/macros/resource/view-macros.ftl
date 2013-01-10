@@ -91,7 +91,7 @@ View freemarker macros
         <#list resource.informationResourceFiles as irfile>
             <#if irfile.errored>
                 <#assign processingErrors>
-                ${processingErrors}<li>${irfile.latestUploadedVersion.filename}</li>
+                ${processingErrors}<li><strong>${irfile.latestUploadedVersion.filename}</strong> : ${irfile.latestUploadedVersion.errorMessage} </li>
                 </#assign>    
             </#if>
         </#list>        
