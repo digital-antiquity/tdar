@@ -92,6 +92,12 @@ import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
 @HttpOnlyIfUnauthenticated
 public class AdvancedSearchController extends AbstractLookupController<Resource> {
 
+    private static final String SHOWING_ALL_RESOURCES = "Showing all resources";
+    private static final String TITLE_BEGINNING_WITH_S = "Title Beginning with %s";
+    private static final String CREATED_IN_THE_DECADE_S = "Created in the Decade: %s";
+    private static final String SOMETHING_HAPPENED_WITH_EXCEL_EXPORT = "something happened with excel export";
+    private static final String COULD_NOT_PROCESS_CREATOR_SEARCH = "could not process creator search";
+    private static final int MAX_CREATOR_RECORDS_TO_RESOLVE = 10;
     @Autowired
     private RssService rssService;
     @Autowired
@@ -384,25 +390,26 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
                     if (creator instanceof Institution) {
                         q = new InstitutionQueryBuilder();
                         InstitutionQueryPart iqp = new InstitutionQueryPart();
-                        iqp.setPhraseFormatters(PhraseFormatter.WILDCARD,PhraseFormatter.QUOTED);
+                        iqp.setPhraseFormatters(PhraseFormatter.WILDCARD, PhraseFormatter.QUOTED);
                         iqp.add((Institution) creator);
                         q.append(iqp);
                     } else {
                         q = new PersonQueryBuilder();
                         PersonQueryPart pqp = new PersonQueryPart();
-                        pqp.setPhraseFormatters(PhraseFormatter.WILDCARD,PhraseFormatter.QUOTED);
+                        pqp.setPhraseFormatters(PhraseFormatter.WILDCARD, PhraseFormatter.QUOTED);
                         pqp.add((Person) creator);
                         q.append(pqp);
                     }
-                    
+
                     q.append(new FieldQueryPart<Status>("status", Status.ACTIVE));
                     List<Creator> list = null;
                     try {
                         FullTextQuery search = getSearchService().search(q, null);
+                        search.setMaxResults(MAX_CREATOR_RECORDS_TO_RESOLVE);
                         list = search.list();
                     } catch (Exception e) {
                         logger.error("{} ", e);
-                        addActionError("could not process creator search");
+                        addActionError(COULD_NOT_PROCESS_CREATOR_SEARCH);
                     }
                     if (CollectionUtils.isNotEmpty(list)) {
                         for (Creator c : (List<Creator>) list) {
@@ -421,7 +428,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
                 proxies.addAll(values);
             }
         }
-        logger.info("result: {} " , proxies);
+        logger.info("result: {} ", proxies);
     }
 
     private String basicSearch() {
@@ -569,7 +576,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     public String getSearchPhrase() {
         StringBuilder sb = new StringBuilder();
         if (groups.isEmpty()) {
-            sb.append("Showing all resources");
+            sb.append(SHOWING_ALL_RESOURCES);
         } else {
             String searchingFor = topLevelQueryPart.getDescription();
             sb.append(searchingFor);
@@ -686,12 +693,10 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             if (getExploreKeyword() != null) {
                 setSearchTitle(String.format("%s %s", TITLE_FILTERED_BY_KEYWORD, getExploreKeyword().getLabel()));
             } else if (StringUtils.isNotBlank(getFirstGroup().getStartingLetter())) {
-                setSearchTitle(String.format("Title Beginning with %s",
-                        getFirstGroup().getStartingLetter()));
+                setSearchTitle(String.format(TITLE_BEGINNING_WITH_S, getFirstGroup().getStartingLetter()));
                 // FIXME: only supports 1
             } else if (CollectionUtils.isNotEmpty(getFirstGroup().getCreationDecades())) {
-                setSearchTitle(String.format("Created in the Decade: %s",
-                        getFirstGroup().getCreationDecades().get(0)));
+                setSearchTitle(String.format(CREATED_IN_THE_DECADE_S, getFirstGroup().getCreationDecades().get(0)));
             }
         } else if (isKeywordSearch()) {
             setSearchTitle(TITLE_FILTERED_BY_KEYWORD);
@@ -833,30 +838,16 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
                 }
 
                 // ADD HEADER ROW THAT SHOWS URL and SEARCH PHRASE
-                sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum, 0,
-                        fieldNames.size()));
-                excelService.addDocumentHeaderRow(
-                        sheet,
-                        rowNum,
-                        0,
-                        Arrays.asList("tDAR Search Results: "
-                                + getSearchPhrase()));
+                sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum, 0, fieldNames.size()));
+                excelService.addDocumentHeaderRow(sheet, rowNum, 0,
+                        Arrays.asList("tDAR Search Results: " + getSearchPhrase()));
                 rowNum++;
-                excelService
-                        .addPairedHeaderRow(sheet, rowNum, 0, Arrays.asList(
-                                "Search Url: ",
-                                getUrlService().getBaseUrl()
-                                        + getServletRequest().getRequestURI()
-                                                .replace("/download",
-                                                        "/results") + "?"
-                                        + getServletRequest().getQueryString()));
+                List<String> headerValues = Arrays.asList("Search Url: ", getUrlService().getBaseUrl() + getServletRequest().getRequestURI()
+                        .replace("/download", "/results") + "?" + getServletRequest().getQueryString());
+                excelService.addPairedHeaderRow(sheet, rowNum, 0, headerValues);
                 rowNum++;
-                excelService.addPairedHeaderRow(
-                        sheet,
-                        rowNum,
-                        0,
-                        Arrays.asList("Downloaded by: ", getAuthenticatedUser()
-                                .getProperName() + " on " + new Date()));
+                excelService.addPairedHeaderRow(sheet, rowNum, 0,
+                        Arrays.asList("Downloaded by: ", getAuthenticatedUser().getProperName() + " on " + new Date()));
                 rowNum++;
                 rowNum++;
                 excelService.addHeaderRow(sheet, rowNum, 0, fieldNames);
@@ -874,10 +865,8 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
                         Integer dateCreated = null;
                         Integer numFiles = 0;
                         if (result instanceof InformationResource) {
-                            dateCreated = ((InformationResource) result)
-                                    .getDate();
-                            numFiles = ((InformationResource) result)
-                                    .getTotalNumberOfFiles();
+                            dateCreated = ((InformationResource) result).getDate();
+                            numFiles = ((InformationResource) result).getTotalNumberOfFiles();
                         }
                         List<Creator> authors = new ArrayList<Creator>();
 
@@ -893,12 +882,9 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
                         }
                         ArrayList<Object> data = new ArrayList<Object>(
-                                Arrays.asList(r.getId(), r.getResourceType(),
-                                        r.getTitle(), dateCreated, authors,
-                                        projectName,
-                                        r.getShortenedDescription(), numFiles,
-                                        getUrlService().absoluteUrl(r),
-                                        location));
+                                Arrays.asList(r.getId(), r.getResourceType(), r.getTitle(), dateCreated, authors,
+                                        projectName, r.getShortenedDescription(), numFiles,
+                                        getUrlService().absoluteUrl(r), location));
 
                         if (isEditor()) {
                             data.add(r.getStatus());
@@ -925,8 +911,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
                 contentLength = tempFile.length();
             }
         } catch (Exception e) {
-            addActionErrorWithException("something happened with excel export",
-                    e);
+            addActionErrorWithException(SOMETHING_HAPPENED_WITH_EXCEL_EXPORT, e);
             return INPUT;
         }
 

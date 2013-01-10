@@ -131,7 +131,6 @@ public class CreatorQueryPart<C extends Creator> extends AbstractHydrateableQuer
                 }
             }
         }
-        logger.info("{}", names);
         return String.format("With creator(s): %s", names);
     }
 
