@@ -7,7 +7,7 @@
       <!-- Carousel items -->
       <div class="carousel-inner">
             <#list featuredResources as featuredResource>
-                <@view.tdarCitation resource=featuredResource showLabel=false count=featuredResource_index />
+                <@view.tdarCitation resource=featuredResource showLabel=false count=featuredResource_index forceAddSchemeHostAndPort=true />
             </#list>
       </div>
       <!-- Carousel nav -->

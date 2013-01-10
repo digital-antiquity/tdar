@@ -1038,27 +1038,27 @@ $(function() {
 </script> 
 </#macro>
 
-<#macro firstThumbnail resource_>
+<#macro firstThumbnail resource_ forceAddSchemeHostAndPort=true>
     <#-- if you don't test if the resource hasThumbnails -- then you start showing the Image Unavailable on Projects, Ontologies... -->
 
     <#if resource_.supportsThumbnails >
             <#if resource_.primaryThumbnail??>
                 <span class="primary-thumbnail">
-                    <img src="<@s.url value="/filestore/${resource_.primaryThumbnail.id?c}/thumbnail" />" title="${resource_.primaryThumbnail.filename}" onError="this.src = '<@s.url value="/images/image_unavailable_t.gif"/>';" />
+                    <img src="<@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/filestore/${resource_.primaryThumbnail.id?c}/thumbnail" />" title="${resource_.primaryThumbnail.filename}" onError="this.src = '<@s.url value="/images/image_unavailable_t.gif"/>';" />
                 </span>
             </#if>
     </#if>
 </#macro>
 
 
-<#macro tdarCitation resource=resource showLabel=true count=0>
+<#macro tdarCitation resource=resource showLabel=true count=0 forceAddSchemeHostAndPort=false>
   <div class="item <#if count==0>active</#if>">
-      <#local url><@s.url value="/${resource.urlNamespace}/${resource.id?c}"/></#local>
+      <#local url><@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/${resource.urlNamespace}/${resource.id?c}"/></#local>
 <#if resource.firstActiveLatitudeLongitudeBox?has_content>
 	<#assign bb=resource.firstActiveLatitudeLongitudeBox />
 		<img src="//maps.googleapis.com/maps/api/staticmap?size=410x235&maptype=terrain&path=color:0x000000|weight:1|fillcolor:0x888888|${bb.minObfuscatedLatitude?c},${bb.minObfuscatedLongitude?c}|${bb.minObfuscatedLatitude?c},${bb.maxObfuscatedLongitude?c}|${bb.maxObfuscatedLatitude?c},${bb.maxObfuscatedLongitude?c}|${bb.maxObfuscatedLatitude?c},${bb.minObfuscatedLongitude?c}|${bb.minObfuscatedLatitude?c},${bb.minObfuscatedLongitude?c}&sensor=false&key=${googleMapsApiKey}" />
 <#else>
-      <a href="${url}" target="_top"><@firstThumbnail resource /></a> 
+      <a href="${url}" target="_top"><@firstThumbnail resource true /></a> 
 </#if>
         <p class="title">
             <a target="_top" href="${url}">${resource.title} </a><br>

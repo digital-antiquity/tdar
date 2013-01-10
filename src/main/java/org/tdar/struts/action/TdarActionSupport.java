@@ -491,4 +491,9 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public boolean isPayPerIngestEnabled() {
         return TdarConfiguration.getInstance().isPayPerIngestEnabled();
     }
+    
+    
+    public boolean isSecure() {
+        return servletRequest.isSecure();
+    }
 }
