@@ -227,7 +227,7 @@ ${_stacktrace?html}
         <script src="//ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"></script>        
         <#--TODO: decide whether it's wise to use a bootstrap CDN.  For now I'm using this for convenience -->
         <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
-        <script src="<@s.url value='/includes/plugins.js' />"></script>
+
         <script type="text/javascript">
         //functionality for "welcome back, so-and-so!" (pulled from main.js)
         //FIXME: needs refactoring

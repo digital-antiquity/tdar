@@ -445,14 +445,16 @@ ${resource.resourceType.label}
 	            	<#local disabled = true>
             	</#if>
            	    <div class="controls controls-row">
+           	    <div class="repeat-row"  id="authorizedUsersRow_${authorizedUser_index}_">
                	    <div class="span6">
                         <@userRow person=authorizedUser.user isDisabled=disabled _indexNumber=authorizedUser_index includeRole=false _personPrefix="user" 
-                           prefix="authorizedUsers" includeRights=true isUser=true includeRepeatRow=true/>
+                           prefix="authorizedUsers" includeRights=true isUser=true includeRepeatRow=false />
                     </div>
                     <div class="span1">
                         <@clearDeleteButton id="accessRightsRecordsDelete${authorizedUser_index}" disabled=disabled />
                     </div>
                 </div>
+            </div>
             </#if>
         </#list>
     </div>
