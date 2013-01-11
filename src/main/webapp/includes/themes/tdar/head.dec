@@ -11,11 +11,11 @@
  @media screen {
  /* typekit fonts don't seem to work well in print -- we can revisit, but turning off for now */
 
-	h1, h2, h3, header .welcome-drop p, #home .news span, .why article p, .why article ul, .contrib p, .contrib ul, .contrib .span3 li, .search p, .search aside li, .search .sort p, .search .sort form, .search .pagin td.prev, .search .pagin td.next, .search .pagin li, header .welcome-drop p {
+	h1, h2, h3, header .welcome-drop p, #home .news span, .why article p, .why article ul, .contrib p, .contrib ul, .contrib .span3 li, .search-results p, .search-results aside li, .search-results .sort p, .search-results .sort form, .search-results .pagin td.prev, .search-results .pagin td.next, .search-results .pagin li, header .welcome-drop p {
 		font-family: "soleil",  sans-serif !important;
 	}
 	
-	#home .news li, .cols p,  .tableFormat td,  header form input.searchbox,  header .welcome-drop a,  .hero input.searchbox,  #slider p ,  #slider span,  .bucket p,  #alt aside li,  .why article li,  .contrib li,  .contrib .span3 p,  .search aside li, .search aside label,  .search article p,  footer ul, footer li {
+	#home .news li, .cols p,  .tableFormat td,  header form input.searchbox,  header .welcome-drop a,  .hero input.searchbox,  #slider p ,  #slider span,  .bucket p,  #alt aside li,  .why article li,  .contrib li,  .contrib .span3 p,  .search-results aside li, .search-results aside label,  .search-results article p,  footer ul, footer li {
 		font-family: "ff-tisa-web-pro",  serif !important;
 	}
 

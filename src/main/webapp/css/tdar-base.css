@@ -995,24 +995,24 @@ contrib article h2,.contrib article p,.contrib article ul {
 	margin-left: 520px;
 }
 */
-#titlebar h1,.search h1 {
+#titlebar h1,.search-results h1 {
 	margin: 0;
 	padding: 0;
 }
 
-.search h2,.search h3,.search h4,.search p,.search aside li { 
+.search-results h2,.search-results h3,.search-results h4,.search-results p,.search-results aside li { 
 	margin: 0;
 	padding: 0;
 }
 
-.search h1 {
+.search-results h1 {
 	font-size: 30px;
 	line-height: 34px;
 	font-weight: 700;
 	margin: 45px 0 50px 40px;
 }
 
-.search h2.totalRecords {
+.search-results h2.totalRecords {
 	font-size: 20px;
 	line-height: 24px;
 	float: left;
@@ -1021,7 +1021,7 @@ contrib article h2,.contrib article p,.contrib article ul {
 	margin-bottom: 10px !important;
 }
 
-.search aside h4 {
+.search-results aside h4 {
 	font-size: 14px;
 	font-weight: 700;
 	border-top: 1px solid #e5e5e5;
@@ -1030,83 +1030,83 @@ contrib article h2,.contrib article p,.contrib article ul {
 	margin-top: 20px !important;
 }
 
-.search aside ul,.search aside li {
+.search-results aside ul,.search-results aside li {
 	margin: 0 !important;
 	padding: 0;
 	list-style: none;
 	clear: left;
 }
 
-.search aside ul {
+.search-results aside ul {
 	margin-bottom: 15px;
 }
 
-.search aside li,.search aside label { 
+.search-results aside li,.search-results aside label { 
 	font-size: 13px;
 	line-height: 23px;
 	color: #1b1a18;
 	margin: 0;
 }
 
-.lt-ie8 .search aside label {
+.lt-ie8 .search-results aside label {
 	float: left;
 	margin-top: 1px;
 }
 
-.search aside label.checked {
+.search-results aside label.checked {
 	color: #7a1501;
 }
 
-.search aside label span {
+.search-results aside label span {
 	color: #7d7a77 !important;
 }
 
-.search aside li input {
+.search-results aside li input {
 	float: left;
 	margin: 7px 7px 0 0;
 }
 
-.search ul.tools {
+.search-results ul.tools {
 	margin: 0 0 20px 0 !important;
 }
 
-.search ul.tools li {
+.search-results ul.tools li {
 	line-height: 14px;
 	margin-bottom: 5px !important;
 }
 
-.search ul.tools li:first-child {
+.search-results ul.tools li:first-child {
 	background-position: 0 1px;
 }
 
-.search .sort {
+.search-results .sort {
 	float: right;
 }
 
-.search .sort p,.search .sort form { 
+.search-results .sort p,.search-results .sort form { 
 	float: left;
 	margin: 0;
 	padding: 0;
 }
 
-.search .sort p {
+.search-results .sort p {
 	font-size: 13px;
 	font-weight: 700;
 	margin: 8px 12px 0 0;
 }
 
-.search article h3 {
+.search-results article h3 {
 	font-size: 20px;
 	line-height: 24px;
 	font-weight: 700;
 	clear: both;
 }
 
-.search article hr {
+.search-results article hr {
 	margin: 24px 0;
 }
 
-.search article p { 
+.search-results article p { 
 	font-size: 14px;
 	line-height: 20px;
 }

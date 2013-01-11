@@ -181,7 +181,7 @@ ${_stacktrace?html}
         <#assign spanSize = 6/>
     </#if> 
 
-    <#if lookupSource?has_content ><#assign part="search" /></#if>
+    <#if lookupSource?has_content ><#assign part="search-results" /></#if>
     <#if page.properties["div.titlebar"]?has_content>
         ${page.properties["div.titlebar"]}
     </#if>
