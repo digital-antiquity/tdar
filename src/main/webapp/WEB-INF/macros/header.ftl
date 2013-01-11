@@ -42,6 +42,7 @@
                      "/includes${fakeDirectory}/tdar.pricing.js",
                      "/includes${fakeDirectory}/tdar.heightevents.js",
                      "/includes${fakeDirectory}/tdar.contexthelp.js",
+	                 "/includes${fakeDirectory}/tdar.formValidateExtensions.js",
                      "/includes/bindWithDelay.js",
                      "/includes/flot-0.7/jquery.flot.min.js",
                      "/includes/flot-0.7/jquery.flot.pie.min.js"

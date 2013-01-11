@@ -27,7 +27,7 @@
 </div>
 -->
 
-<div class="row mannnnnn">
+<div class="row">
         <#include "featured.ftl" />
 </div>
 
