@@ -10,7 +10,7 @@
         </#if>
     </#macro>
 
-<#macro listResources resourcelist=resources_ sortfield=DEFAULT_SORT editable=false bookmarkable=authenticated itemsPerRow=4
+<#macro listResources resourcelist sortfield=DEFAULT_SORT editable=false bookmarkable=authenticated itemsPerRow=4
     expanded=false listTag='ul' itemTag='li' headerTag="h3" titleTag="h3" orientation=DEFAULT_ORIENTATION mapPosition="" mapHeight="">
   <#local showProject = false />
   <#local prev =""/>
