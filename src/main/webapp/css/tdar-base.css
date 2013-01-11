@@ -995,24 +995,24 @@ contrib article h2,.contrib article p,.contrib article ul {
 	margin-left: 520px;
 }
 */
-#titlebar h1,.search-results h1 {
+#titlebar h1,.searchresults h1 {
 	margin: 0;
 	padding: 0;
 }
 
-.search-results h2,.search-results h3,.search-results h4,.search-results p,.search-results aside li { 
+.searchresults h2,.searchresults h3,.searchresults h4,.searchresults p,.searchresults aside li { 
 	margin: 0;
 	padding: 0;
 }
 
-.search-results h1 {
+.searchresults h1 {
 	font-size: 30px;
 	line-height: 34px;
 	font-weight: 700;
 	margin: 45px 0 50px 40px;
 }
 
-.search-results h2.totalRecords {
+.searchresults h2.totalRecords {
 	font-size: 20px;
 	line-height: 24px;
 	float: left;
@@ -1021,7 +1021,7 @@ contrib article h2,.contrib article p,.contrib article ul {
 	margin-bottom: 10px !important;
 }
 
-.search-results aside h4 {
+.searchresults aside h4 {
 	font-size: 14px;
 	font-weight: 700;
 	border-top: 1px solid #e5e5e5;
@@ -1030,83 +1030,83 @@ contrib article h2,.contrib article p,.contrib article ul {
 	margin-top: 20px !important;
 }
 
-.search-results aside ul,.search-results aside li {
+.searchresults aside ul,.searchresults aside li {
 	margin: 0 !important;
 	padding: 0;
 	list-style: none;
 	clear: left;
 }
 
-.search-results aside ul {
+.searchresults aside ul {
 	margin-bottom: 15px;
 }
 
-.search-results aside li,.search-results aside label { 
+.searchresults aside li,.searchresults aside label { 
 	font-size: 13px;
 	line-height: 23px;
 	color: #1b1a18;
 	margin: 0;
 }
 
-.lt-ie8 .search-results aside label {
+.lt-ie8 .searchresults aside label {
 	float: left;
 	margin-top: 1px;
 }
 
-.search-results aside label.checked {
+.searchresults aside label.checked {
 	color: #7a1501;
 }
 
-.search-results aside label span {
+.searchresults aside label span {
 	color: #7d7a77 !important;
 }
 
-.search-results aside li input {
+.searchresults aside li input {
 	float: left;
 	margin: 7px 7px 0 0;
 }
 
-.search-results ul.tools {
+.searchresults ul.tools {
 	margin: 0 0 20px 0 !important;
 }
 
-.search-results ul.tools li {
+.searchresults ul.tools li {
 	line-height: 14px;
 	margin-bottom: 5px !important;
 }
 
-.search-results ul.tools li:first-child {
+.searchresults ul.tools li:first-child {
 	background-position: 0 1px;
 }
 
-.search-results .sort {
+.searchresults .sort {
 	float: right;
 }
 
-.search-results .sort p,.search-results .sort form { 
+.searchresults .sort p,.searchresults .sort form { 
 	float: left;
 	margin: 0;
 	padding: 0;
 }
 
-.search-results .sort p {
+.searchresults .sort p {
 	font-size: 13px;
 	font-weight: 700;
 	margin: 8px 12px 0 0;
 }
 
-.search-results article h3 {
+.searchresults article h3 {
 	font-size: 20px;
 	line-height: 24px;
 	font-weight: 700;
 	clear: both;
 }
 
-.search-results article hr {
+.searchresults article hr {
 	margin: 24px 0;
 }
 
-.search-results article p { 
+.searchresults article p { 
 	font-size: 14px;
 	line-height: 20px;
 }
