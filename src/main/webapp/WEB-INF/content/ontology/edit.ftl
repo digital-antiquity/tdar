@@ -1,6 +1,8 @@
 <#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit />
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view />
+<#import "/${themeDir}/local-helptext.ftl" as  helptext>
+
 <head>
 <@edit.title />
 
@@ -72,6 +74,7 @@ Core
 </@edit.manualTextInput>
 
 <@edit.organizeResourceSection />
+<@helptext.resourceCreator />
 
 
 <@edit.resourceNoteSection />

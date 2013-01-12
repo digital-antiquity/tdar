@@ -250,7 +250,7 @@ ${_stacktrace?html}
     TDAR.maps.defaults.center.lng = ${mapDefaultLng};
     </script>
     <div id="ajaxIndicator" class="alert alert-info" style="display:none">Loading...</div>
-    <#if !production || editor?has_content >
+    <#if !production || editor?has_content && editor>
 		<script type="text/javascript" src="https://dev.tdar.org/jira/s/en_USgh0sw9-418945332/844/18/1.2.9/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?collectorId=959f12a3"></script>
 	</#if>
     </body>
