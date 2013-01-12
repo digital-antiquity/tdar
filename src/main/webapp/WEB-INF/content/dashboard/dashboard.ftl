@@ -184,9 +184,7 @@
    <div class="">
    <h2>Collections You Created </h2>
       <@listCollections resourceCollections>
-        <#if (!resourceCollections?has_content )>
           <li><a href="<@s.url value="/collection/add"/>">create one</a></li>
-        </#if>
       </@listCollections>
    </div>
    <br/>

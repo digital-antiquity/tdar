@@ -11,6 +11,8 @@
         <@common.barGraph resourceCacheObjects=homepageResourceCountCache graphLabel="${siteAcronym} by the Numbers" graphHeight=304 />
     </div>
     <div class="span6 map">
+    <!-- fixme styling -->
+    <h3 style="margin-left:60px">${siteAcronym} Worldwide</h3>
         <@common.worldMap />
     </div>
 </div>
