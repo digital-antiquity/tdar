@@ -340,12 +340,7 @@ public class CollectionController extends AbstractPersistableController<Resource
     }
 
     public List<Status> getStatuses() {
-        List<Status> toReturn = new ArrayList<Status>(getResourceService().findAllStatuses());
-        getAuthenticationAndAuthorizationService().removeIfNotAllowed(toReturn, Status.DELETED, InternalTdarRights.SEARCH_FOR_DELETED_RECORDS,
-                getAuthenticatedUser());
-        getAuthenticationAndAuthorizationService().removeIfNotAllowed(toReturn, Status.FLAGGED, InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS,
-                getAuthenticatedUser());
-        return toReturn;
+        return new ArrayList<Status>(getAuthenticationAndAuthorizationService().getAllowedSearchStatuses(getAuthenticatedUser()));
     }
 
     public List<ResourceType> getResourceTypes() {

@@ -32,6 +32,7 @@ import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.dao.entity.PersonDao;
 import org.tdar.core.dao.external.auth.AuthenticationProvider;
@@ -127,7 +128,9 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
 
         if (can(InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, person)) {
             allowed.add(Status.FLAGGED);
-            allowed.add(Status.FLAGGED_ACCOUNT_BALANCE);
+            if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
+                allowed.add(Status.FLAGGED_ACCOUNT_BALANCE);
+            }
         }
         if (can(InternalTdarRights.SEARCH_FOR_DUPLICATE_RECORDS, person)) {
             allowed.add(Status.DUPLICATE);

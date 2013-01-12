@@ -23,6 +23,7 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.search.query.SortOption;
 
@@ -212,6 +213,12 @@ public class DashboardController extends AuthenticationAware.Base {
                         && status == Status.FLAGGED) {
                     continue;
                 }
+                if ((!TdarConfiguration.getInstance().isPayPerIngestEnabled() ||
+                        getAuthenticationAndAuthorizationService().cannot(InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, getAuthenticatedUser()))
+                        && status == Status.FLAGGED_ACCOUNT_BALANCE) {
+                    continue;
+                }
+
                 for (ResourceType type : getResourceCountAndStatusForUser().keySet()) {
                     if (getResourceCountAndStatusForUser().get(type).containsKey(status)) {
                         count += getResourceCountAndStatusForUser().get(type).get(status);
@@ -229,13 +236,7 @@ public class DashboardController extends AuthenticationAware.Base {
     }
 
     public List<Status> getStatuses() {
-        List<Status> toReturn = new ArrayList<Status>(getResourceService().findAllStatuses());
-        getAuthenticationAndAuthorizationService().removeIfNotAllowed(toReturn, Status.DELETED, InternalTdarRights.SEARCH_FOR_DELETED_RECORDS,
-                getAuthenticatedUser());
-        getAuthenticationAndAuthorizationService().removeIfNotAllowed(toReturn, Status.FLAGGED, InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS,
-                getAuthenticatedUser());
-
-        return toReturn;
+        return new ArrayList<Status>(getAuthenticationAndAuthorizationService().getAllowedSearchStatuses(getAuthenticatedUser()));
     }
 
     public List<ResourceType> getResourceTypes() {

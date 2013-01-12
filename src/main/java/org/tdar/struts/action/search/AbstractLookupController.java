@@ -73,7 +73,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         public String getCollectionName() {
             return this.collectionName;
         }
-        
+
         public String getProper() {
             return StringUtils.capitalize(name().toLowerCase());
         }
@@ -201,9 +201,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     // deal with the terms that correspond w/ the "narrow your search" section
     // and from facets
     protected QueryPartGroup processReservedTerms() {
-        getAuthenticationAndAuthorizationService()
-                .initializeReservedSearchParameters(getReservedSearchParameters(),
-                        getAuthenticatedUser());
+        getAuthenticationAndAuthorizationService().initializeReservedSearchParameters(getReservedSearchParameters(), getAuthenticatedUser());
         return getReservedSearchParameters().toQueryPartGroup();
     }
 

@@ -1,4 +1,3 @@
-$(function() {
 	$.validator
 			.addMethod(
 					"formatUS",
@@ -144,4 +143,5 @@ $(function() {
 			return true;
 		return $element.val() != '';
 	}, "this element is required");
-});
+//	$(function() {
+//});

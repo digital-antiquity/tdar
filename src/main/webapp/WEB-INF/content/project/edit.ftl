@@ -36,6 +36,8 @@
 <@edit.basicInformation "project" "project" />
 <@edit.citationInfo "project" />
 
+<h4>Organize the Resources Within your Project</h4>
+
 <@s.select labelposition='top' label='When Browsing Sort Resource By' name='project.sortBy' 
      listValue='label' list='%{sortOptions}' title="Sort resource by" />
 

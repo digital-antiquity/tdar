@@ -689,12 +689,15 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     public List<Status> getStatuses() {
-        List<Status> toReturn = new ArrayList<Status>(getResourceService().findAllStatuses());
-        getAuthenticationAndAuthorizationService().removeIfNotAllowed(toReturn, Status.DELETED, InternalTdarRights.SEARCH_FOR_DELETED_RECORDS,
-                getAuthenticatedUser());
-        getAuthenticationAndAuthorizationService().removeIfNotAllowed(toReturn, Status.FLAGGED, InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS,
-                getAuthenticatedUser());
-        return toReturn;
+//        List<Status> toReturn = new ArrayList<Status>(getResourceService().findAllStatuses());
+        return new ArrayList<Status>(getAuthenticationAndAuthorizationService().getAllowedSearchStatuses(getAuthenticatedUser()));
+//        removeIfNotAllowed(toReturn, Status.DELETED, InternalTdarRights.SEARCH_FOR_DELETED_RECORDS,
+//                getAuthenticatedUser());
+//        getAuthenticationAndAuthorizationService().removeIfNotAllowed(toReturn, Status.FLAGGED, InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS,
+//                getAuthenticatedUser());
+//        if 
+//        
+//        return toReturn;
     }
 
     public List<CreatorType> getCreatorTypes() {

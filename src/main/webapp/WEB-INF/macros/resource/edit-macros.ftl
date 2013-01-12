@@ -664,7 +664,7 @@ applyInheritance(project, formSelector);
         </div>
     
         <div id="divRelatedComparativeCitationControl" class="control-group repeatLastRow">
-            <label class="control-label"><small>Related or Comparative Collections</small></label>
+            <label class="control-label">Related or Comparative Collections</label>
             <#list _relatedComparativeCollections as relatedComparativeCollection>
                 <@sourceCollectionRow relatedComparativeCollection "relatedComparativeCollection" relatedComparativeCollection_index/>
             </#list>

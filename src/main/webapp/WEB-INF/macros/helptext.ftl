@@ -186,7 +186,7 @@ The form will check for matches in the ${siteAcronym} database and populate the 
         <div>
             <dl>
                 <dt>Name<dt>
-                <dd>Description of the following agency or ${resource.resourceType.label} identifier (e.g. <code>ASU Accession Number</code> or <code>TNF Project Code</code>).</dd>
+                <dd>Description of the following agency or ${resource.resourceType.label} identifier (e.g. <code>Accession Number</code> or <code>TNF Project Code</code>).</dd>
                 <dt>Value<dt>
                 <dd>Number, code, or other identifier (e.g. <code>2011.045.335</code> or <code>AZ-123-45-10</code>).</dd>
             </dl> 
