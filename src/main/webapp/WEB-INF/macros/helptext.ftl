@@ -194,5 +194,14 @@ The form will check for matches in the ${siteAcronym} database and populate the 
     </div>
 </#macro>
 
+<#macro resourceCreator>
+<div id="divResourceCreatorsTip" class="hidden">
+Use these fields to properly credit individuals and institutions for their contribution to the resource.<br/>
+<dl>
+<dt>Type</dt><dd>Use the toggle at the left to select whether you're adding a Person or Institution</dd>
+<dt>Add Another</dt><dd> Use the '+' sign to add fields for either persons or institutions, and use the drop-down menu to select roles</dd>
+</dl>
+</div>
+</#macro>
 
 </#escape>

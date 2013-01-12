@@ -121,8 +121,8 @@ View freemarker macros
                         'IMAGE':'page-white-picture','SENSORY_DATA':'page-white-picture','ONTOLOGY','page-white-text'
           } />
 
+        <#assign showAll = ""/>
         <#list resource.informationResourceFiles as irfile>
-         <#assign showAll = ""/>
          <#if (irfile_index > 4)><#assign showAll = "view-hidden-extra-files"/></#if>
               <#if irfile.latestUploadedVersion??>
                       <#local ext = extensionMap[irfile.latestUploadedVersion.extension?lower_case ]!'' />

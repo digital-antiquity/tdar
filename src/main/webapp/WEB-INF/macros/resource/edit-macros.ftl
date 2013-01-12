@@ -801,7 +801,7 @@ applyInheritance(project, formSelector);
 <#if proxies?size == 0><#local _proxies = [blankCreatorProxy]></#if>
 <div class="" tiplabel="${sectionTitle}" 
     id="${prefix}Section"
-    tooltipcontent="Use these fields to properly credit individuals and institutions for their contribution to the resource. Use the '+' sign to add fields for either persons or institutions, and use the drop-down menu to select roles">
+    tooltipcontent="#divResourceCreatorsTip">
     <h2>${sectionTitle}</h2>
        
     <div id="${prefix}Table" class="table repeatLastRow creatorProxyTable">
@@ -1095,7 +1095,7 @@ jquery validation hooks?)
       </#if>
     </#if>
     <@resourceCreators 'Individual and Institutional Roles' creditProxies 'credit'  />
-
+	<@helptext.resourceCreator />
     <@identifiers showInherited />
 
     <@spatialContext showInherited />
