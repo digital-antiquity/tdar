@@ -122,6 +122,11 @@
 		return i >= j;
 	}, "This value must be greater than the minimum value");
 
+	
+	$.validator.addMethod('empty', function(value, element, param) {
+		return value == undefined || value.length ==  0;
+	}, "This value must be greater than the minimum value");
+
 	$.validator.addMethod('asyncFilesRequired', function(value, elem) {
 		return $('tr', '#files').not('.noFiles').size() > 0;
 	}, "At least one file upload is required.");

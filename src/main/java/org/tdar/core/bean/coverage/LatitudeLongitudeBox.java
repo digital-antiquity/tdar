@@ -284,7 +284,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
             // when spanning IDL, pretend that flat map repeats as it extends past 180°E, e.g. 170°W is now 190°E
             max += 360;
         }
-        logger.debug("min:{}\tmax:{}", min, max);
+        logger.trace("min:{}\tmax:{}", min, max);
         return min < max;
     }
 

@@ -189,7 +189,13 @@ function prepareDateFields(selectElem) {
             }
         });
         break;
-    case "none":
+    case "NONE":
+        $(startElem).rules("add", {
+        	empty: startElem
+        });
+        $(endElem).rules("add", {
+        	empty: endElem
+        });
         break;
     }
 }
@@ -882,7 +888,7 @@ TDAR.common = function() {
         });
 
 
-        $('.coverageTypeSelect', "#coverageTable").each(function(i, elem) {
+        $('.coverageTypeSelect', "#coverageDateRepeatable").each(function(i, elem) {
             prepareDateFields(elem);
         });
 
@@ -903,8 +909,7 @@ TDAR.common = function() {
             $('textarea.resizable:not(.processed)').TextAreaResizer();
         }
 
-        $("#coverageTable").delegate(".coverageTypeSelect", "change", function() {
-            console.log('called delegate');
+        $("#coverageDateRepeatable").delegate(".coverageTypeSelect", "change", function() {
             prepareDateFields(this);
         });
         showAccessRightsLinkIfNeeded();
