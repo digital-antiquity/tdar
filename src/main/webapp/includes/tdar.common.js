@@ -57,23 +57,21 @@ function getQSParameterByName(name) {
 // http://stackoverflow.com/questions/1773069/using-jquery-to-compare-two-arrays
 jQuery.extend({
     compareArray : function(arrayA, arrayB, ignoreOrder) {
-//        console.log("comparArray: " + arrayA + " vs. " + arrayB);
-        if (arrayA.length != arrayB.length) {
+        if (arrayA.length !== arrayB.length) {
             return false;
         }
         // ignore order by default
-        if (typeof (ignoreOrder) == 'undefined')
+        if (typeof ignoreOrder === 'undefined') {
             ignoreOrder = true;
+        }
         var a = arrayA, b = arrayB;
         if (ignoreOrder) {
-//            console.log("comparArray: ignoring order");
             a = jQuery.extend(true, [], arrayA);
             b = jQuery.extend(true, [], arrayB);
             a.sort();
             b.sort();
         }
         for ( var i = 0, l = a.length; i < l; i++) {
-//            console.log("comparArray: comparing " + a[i] + " and " + b[i]);
             if (a[i] != b[i]) {
                 return false;
             }

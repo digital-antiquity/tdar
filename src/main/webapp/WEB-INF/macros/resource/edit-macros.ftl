@@ -444,7 +444,8 @@ ${resource.resourceType.label}
             	<#if authorizedUser.user.id == authenticatedUser.id || ableToUploadFiles?has_content && !ableToUploadFiles>
 	            	<#local disabled = true>
             	</#if>
-           	    <div class="controls controls-row repeat-row"  id="authorizedUsersRow_${authorizedUser_index}_">
+           	    <div class="controls controls-row">
+           	    <div class="repeat-row"  id="authorizedUsersRow_${authorizedUser_index}_">
                	    <div class="span6">
                         <@userRow person=authorizedUser.user isDisabled=disabled _indexNumber=authorizedUser_index includeRole=false _personPrefix="user" 
                            prefix="authorizedUsers" includeRights=true isUser=true includeRepeatRow=false />
@@ -452,7 +453,8 @@ ${resource.resourceType.label}
                     <div class="span1">
                         <@clearDeleteButton id="accessRightsRecordsDelete${authorizedUser_index}" disabled=disabled />
                     </div>
-	            </div>
+                </div>
+            </div>
             </#if>
         </#list>
     </div>
@@ -662,7 +664,7 @@ applyInheritance(project, formSelector);
         </div>
     
         <div id="divRelatedComparativeCitationControl" class="control-group repeatLastRow">
-            <label class="control-label">Related or Comparative Collections</label>
+            <label class="control-label"><small>Related or Comparative Collections</small></label>
             <#list _relatedComparativeCollections as relatedComparativeCollection>
                 <@sourceCollectionRow relatedComparativeCollection "relatedComparativeCollection" relatedComparativeCollection_index/>
             </#list>
@@ -675,7 +677,7 @@ applyInheritance(project, formSelector);
 <#macro sourceCollectionRow sourceCollection prefix index=0>
 <#local plural = "${prefix}s" />
     <div class="controls controls-row repeat-row" id="${prefix}Row_${index}_">
-        <@s.hidden name="${plural}[${index}].id" />
+        <@s.hidden name="${plural}[${index}].id" cssClass="dont-inherit" />
         <@s.textarea theme="tdar" name='${plural}[${index}].text' cssClass="span6 resizable resize-vertical" />
         <div class="span1">
             <@edit.clearDeleteButton id="${prefix}Row${index}" />
@@ -740,7 +742,7 @@ applyInheritance(project, formSelector);
     <div class="controls controls-row">
         <div class="span6">
             <div class="controls-row">
-                <@s.hidden name="resourceNotes[${note_index}].id" />
+                <@s.hidden name="resourceNotes[${note_index}].id" cssClass="dont-inherit" />
                 <@s.select theme="tdar" emptyOption='false' name='resourceNotes[${note_index}].type' list='%{noteTypes}' listValue="label" />
             </div>
             <div class="controls-row">
@@ -778,7 +780,7 @@ applyInheritance(project, formSelector);
 
 <#macro dateRow proxy=proxy proxy_index=0>
 <div class="controls controls-row" id="DateRow_${proxy_index}_">
-        <@s.hidden name="coverageDates[${proxy_index}].id" />
+        <@s.hidden name="coverageDates[${proxy_index}].id" cssClass="dont-inherit" />
         <@s.select theme="tdar"name="coverageDates[${proxy_index}].dateType" cssClass="coverageTypeSelect input-medium"
             listValue='label'  headerValue="Date Type" headerKey="NONE"
             list=allCoverageTypes />

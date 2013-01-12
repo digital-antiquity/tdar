@@ -292,9 +292,11 @@ function inheritIdentifierInformation(formId, json) {
 }
 
 function inheritCollectionInformation(formId, json) {
-    disableSection('#relatedCollectionsSection');
     clearFormSection('#relatedCollectionsSection');
+    TDAR.inheritance.resetRepeatable('#divSourceCollectionControl', json.collectionInformation.sourceCollections.length);
+    TDAR.inheritance.resetRepeatable('#divRelatedComparativeCitationControl', json.collectionInformation.sourceCollections.length);
     populateSection(formId, json.collectionInformation);
+    disableSection('#relatedCollectionsSection');
 }
 
 function inheritNoteInformation(formId, json) {
@@ -507,7 +509,37 @@ function processInheritance(formId) {
             divSelector : '#resourceNoteSection',
             mappedData : "noteInformation", // curently not used (fixme: implement tdar.common.getObjValue)
             isSafeCallback : function() {
-                return inheritingRepeatRowsIsSafe('#resourceNoteSection', json.noteInformation);
+                var $resourceNoteSection = $('#resourceNoteSection');
+                var projectNotes = json.noteInformation.resourceNotes;
+                
+                //it's always safe to overwrite an empty section
+                var $textareas = $resourceNoteSection.find('textarea');
+                if($textareas.length === 1 && $.trim($textareas.first().val()).length === 0) {
+                    return true;
+                }
+                
+                //distill the resourcenote objects to one array and the form section to another array, then compare the two arrays. 
+                var formVals = [], projectVals = [];
+                projectVals = projectVals.concat($.map(projectNotes, function(note){
+                    return note.type;
+                }));
+                projectVals = projectVals.concat($.map(projectNotes, function(note){
+                    return note.note;
+                }));
+                
+                
+                $resourceNoteSection.find('select').each(function(){
+                    formVals.push($(this).val());
+                });
+                
+                $resourceNoteSection.find('textarea').each(function(){
+                    formVals.push($.trim($(this).val()));
+                });
+                
+                //FIXME: ignoreOrder should be false, but I'm pretty sure server doesn't preserve order. turn this on once fixed. 
+                return $.compareArray(projectVals, formVals, true);
+                
+                
             },
             inheritSectionCallback : function() {
                 inheritNoteInformation('#resourceNoteSection', json);
@@ -519,19 +551,26 @@ function processInheritance(formId) {
             divSelector : '#relatedCollectionsSection',
             mappedData : "collectionInformation", // curently not used (fixme: implement tdar.common.getObjValue)
             isSafeCallback : function() {
+                var $textareas = $('#relatedCollectionsSection').find("textarea");
+                //overwriting empty section is always safe
+                if($textareas.length === 2 && $.trim($textareas[0].value).length === 0  && $.trim($textareas[1].value).length === 0)  {
+                    return true;
+                }
                 
-                var existingVals = [];
-                var sourceElem = document.getElementsByName("sourceCollections[0].text");
-                var relatedElem = document.getElementsByName("relatedComparativeCollections[0].text");
-                if($(sourceElem).val().length) existingVals.push($(sourceElem).val().length);
-                if($(relatedElem).val().length) existingVals.push($(relatedElem).val().length);
+                var formVals = [], projectVals = [];
+                $textareas.each(function() {
+                    formVals.push($.trim(this.value));
+                });
                 
-                var collectionInfo = json.collectionInformation;
-                var incomingVals = [];
-                if(collectionInfo.sourceCollections.length) incomingVals.push(collectionInfo.sourceCollections[0].text);
-                if(collectionInfo.relatedComparativeCollections.length) incomingVals.push(collectionInfo.relatedComparativeCollections[0].text);
+                projectVals = projectVals.concat($.map(json.collectionInformation.sourceCollections, function(obj) {
+                    return obj.text;
+                }));
+                projectVals = projectVals.concat($.map(json.collectionInformation.relatedComparativeCollections, function(obj) {
+                    return obj.text;
+                }));
                 
-                return existingVals.length === 0 || $.compareArray(existingVals, incomingVals);
+                //FIXME: array comparison shouldn't ignore order if server side maintains sequence order... does it?
+                return $.compareArray(formVals, projectVals, true);
             },
             inheritSectionCallback : function() {
                 inheritCollectionInformation('#relatedCollectionsSection', json);
@@ -824,6 +863,9 @@ TDAR.inheritance = function() {
     };
     
     var _registerInheritSection = function(options) {
+        if($(options.divSelector).length !== 1) {
+            console.error("_registerInheritSection - bad divSelector: %s", options.divSelector );
+        }
         var $checkbox = $(options.cbSelector);
         if($checkbox.length === 0 ) return;
         
@@ -844,11 +886,10 @@ TDAR.inheritance = function() {
         $(_options.cbSelector).change(function(e) {
             var cb = this;
             var $cb = $(cb);
-            var divid = _options.divSelector;
             if ($cb.prop("checked")) {
                 // determine if inheriting would overrwrite existing values
                 var isSafe = _options.isSafeCallback();
-                if(_options.isSafeCallback()) {
+                if(isSafe) {
                     _options.inheritSectionCallback();
                 } else {
                     //not safe!  ask the user for confirmation
@@ -858,15 +899,16 @@ TDAR.inheritance = function() {
                         },
                         function(){
                             $cb.prop("checked", false);
-                            _options.enableSectionCallback();
+                            _options.enableSectionCallback(_options.divSelector);
                             updateSelectAllCheckboxState();
                         }
                     );
                 };
             } else {
                 //user unchecked inheritance - enable the controls
-                    _options.enableSectionCallback();
+                    _options.enableSectionCallback(_options.divSelector);
                     updateSelectAllCheckboxState();
+                    $(_options.divSelector).find('input[type=hidden].dont-inherit').val("");
             }
         });
     };
