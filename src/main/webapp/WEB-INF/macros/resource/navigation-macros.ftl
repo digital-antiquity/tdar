@@ -74,9 +74,9 @@ $(document).ready(function() {
         </#if>
         <#if persistable.resourceType??>
         <@list.bookmark resource true true />
-        <#if resource.resourceType == "PROJECT">                
-          <@makeLink "resource" "add?projectId=${resource.id?c}" "add new resource to project" "add" "" false>
-          </@makeLink>
+        <#if resource.resourceType == "PROJECT">
+          <@makeLink "resource" "add?projectId=${resource.id?c}" "add new resource to project" "add" "" false false "hidden-tablet hidden-phone"/>
+          <@makeLink "resource" "add?projectId=${resource.id?c}" "add item" "add" "" false false "hidden-desktop"/>
         </#if>
         <#nested>
         </#if>
@@ -122,7 +122,7 @@ $(document).ready(function() {
 
 
 
-<#macro makeLink namespace=namespace action=action label=label name=name current=false includeResourceId=true disabled=false>
+<#macro makeLink namespace=namespace action=action label=label name=name  current=false includeResourceId=true disabled=false  extraClass="">
     <#assign state = "" />
     <#if disabled>
         <#assign state="disabled" />
@@ -133,7 +133,7 @@ $(document).ready(function() {
     <#if (action?last_index_of("?") > 0)>
     	<#local action_ = action?substring(0,action?last_index_of("?")) />
     </#if>
-    <li class="${state}">
+    <li class="${state} ${extraClass}">
     	<#if disabled>
     		<span class="disabled">
     	<#else>

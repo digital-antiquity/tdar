@@ -1489,7 +1489,9 @@ $(function() {
         <ul class="nav">
         	<li class="alwaysHidden"><a href="#top">top</a></li>
             <li class="active hidden-tablet hidden-phone"><a href="#basicInformationSection">Basic</a></li>
+             <#if persistable.resourceType?has_content && persistable.resourceType != 'PROJECT' >
             <li><a href="#authorshipSection">Authors</a></li>
+            </#if>
             <#if persistable.resourceType?has_content && persistable.resourceType != 'PROJECT'  && (!supporting)><li><a href="#divFileUpload">Files</a></li></#if>
             <span class="hidden-tablet hidden-phone" >
             <#nested />
