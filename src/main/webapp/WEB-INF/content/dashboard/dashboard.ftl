@@ -18,7 +18,7 @@
     
     <div class="news alert">
     <B>${siteAcronym} Update:</B>
-    We just upgraded tDAR with a bunch of additional features, a list of features are available <a href="http://www.tdar.org/news/2012/07/tdar-software-update-harris/">here</a> on the tDAR website. 
+    We just upgraded tDAR with a bunch of additional features, a list of features are available <a href="http://www.tdar.org/news/2013/01/tdar-software-update-in-situ/">here</a> on the tDAR website. 
     </div>
 </div>
 
