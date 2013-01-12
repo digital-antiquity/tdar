@@ -2,22 +2,23 @@
     <div class="span3">
         <h4>About</h4> 
          <ul> 
-                        <li><a href="">News</a></li>
-                        <li><a href="">Our Team</a></li>
-                        <li><a href="">Organization</a></li>
-                        <li><a href="">Contact Us</a></li>
-                        <li><a href="">History</a></li>
-                        <li><a href="">Current Version of tDAR</a></li>
+                        <li><a href="http://www.tdar.org/news/">News</a></li>
+                        <li><a href="http://www.tdar.org/about/staff/">Our Team</a></li>
+                        <li><a href="http://www.digitalantiquity.org/">Organization</a></li>
+                        <li><a href="http://www.tdar.org/about/contact-us">Contact Us</a></li>
+                        <li><a href="http://www.tdar.org/about/history/">History</a></li>
+                        <li><a href="http://www.tdar.org/news/tdar-software-update-in-situ/">Current Version of tDAR</a></li>
         </ul> 
     </div> 
     <div class="span3">
         <h4>Use</h4> 
         <ul> 
               <li><a href='http://www.guidestogoodpractice.org/'>Guides to Good Practice</a></li> 
-                <li><a href="">Help & Tutorials</a></li>
-                <li><a href="">Policies</a></li>
-                <li><a href="">Contributing Resources to tDAR</a></li>
-                <li><a href="">Pricing</a></li>
+                <li><a href="http://www.tdar.org/about/help/">Help & Tutorials</a></li>
+                <li><a href="http://www.tdar.org/about/policies/">Policies</a></li>
+                <li><a href="http://www.tdar.org/why-tdar/contribute/">Contributing Resources to tDAR</a></li>
+<!--                <li><a href="http://www.tdar.org/">Pricing</a></li> -->
+                <li><a href="http://www.tdar.org/why-tdar/compliance/">Compliance</a></li>
         </ul> 
     </div> 
     <div class="span3">
