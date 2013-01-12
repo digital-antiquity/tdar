@@ -79,7 +79,7 @@
                                 <li><a href="<@s.url value="/admin/searchindex/build"/>">reindex</a></li>
                             </#if>
                             <li><a href="<@s.url value='/entity/person/edit?id=${sessionData.person.id?c}'/>">Account Settings</a></li>
-                            <li><a href="<@s.url value="/contact"/>">Contact Us</a></li>
+                            <li><a href="${commentUrlEscaped}?subject=tDAR%20comments">Contact Us</a></li>
                             <li><a href="<@s.url value="/logout"/>">Sign Out</a></li>
                         </ul>
                     </div>
