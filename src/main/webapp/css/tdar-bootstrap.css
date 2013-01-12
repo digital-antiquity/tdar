@@ -1310,6 +1310,10 @@ p.copyright-notice {
 	display: none;
 }
 
+.view-hidden-extra-files {
+	display:none;
+}
+
 /* contextual help styling - based off of 'downloads' box on view page */
 #notice {
 	font-family: 'ff-tisa-web-pro', serif;

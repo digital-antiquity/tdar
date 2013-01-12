@@ -3,8 +3,8 @@
 <#macro fieldval _label _val _show=true>
 <#if _show>
 <tr>
-    <td nowrap><b>${_label}:</b></td>
-    <td>${_val}</td>
+    <td nowrap><p><strong>${_label}:</strong></p></td>
+    <td><p>${_val}</p></td>
 </tr>
 </#if>
 </#macro>
@@ -12,9 +12,9 @@
 <#macro fieldvalbool _label _val _show=true>
 <#if _show>
 <tr>
-    <td nowrap><b>${_label}:</b></td>
+    <td nowrap><p><strong>${_label}:</strong></p></td>
     <td>
-    <#if _val>Yes<#else>No</#if>
+<p>    <#if _val>Yes<#else>No</#if></p>
     </td>
 </tr>
 </#if>

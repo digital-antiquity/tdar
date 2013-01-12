@@ -122,12 +122,14 @@ View freemarker macros
           } />
 
         <#list resource.informationResourceFiles as irfile>
+         <#assign showAll = ""/>
+         <#if (irfile_index > 4)><#assign showAll = "view-hidden-extra-files"/></#if>
               <#if irfile.latestUploadedVersion??>
                       <#local ext = extensionMap[irfile.latestUploadedVersion.extension?lower_case ]!'' />
                       <#if !ext?has_content>
                       <#local ext = extensionMap[resource.resourceType ] />
                       </#if>
-                    <li class="<#if irfile.deleted>view-deleted-file</#if> media">
+                    <li class="<#if irfile.deleted>view-deleted-file</#if> ${showAll} media">
                         <i class="iconf ${ext} pull-left"></i>
                         <div class="media-body"><@createFileLink irfile true /></div>
               </#if>
@@ -147,6 +149,12 @@ View freemarker macros
         </#if>
 
         </ul>
+		<#if showAll != ''>
+         <div>
+            <a href="#" id="showAllFiles" onClick="$('.view-hidden-extra-files, #showAllFiles').toggle();return false;">show all files</a>
+        </div>
+		
+		</#if>
         <#if hasDeletedFiles>
         <div>
             <a href="#" id="showHiddenFiles" onClick="$('.view-deleted-file, #showHiddenFiles').toggle();return false;">show deleted files</a>
@@ -367,16 +375,16 @@ No coding rules have been entered for this coding sheet yet.
     <@resourceUsageInfo />
     <div class="row">
         <dl class="dl-horizontal">
-            <dt>Created by</dt>
-            <dd><a href="<@s.url value="/browse/creators/${resource.submitter.id?c}"/>">${resource.submitter.properName}</a> on ${resource.dateCreated}</dd>
+            <dt><p><strong>Created by</strong></p></dt>
+            <dd><p><a href="<@s.url value="/browse/creators/${resource.submitter.id?c}"/>">${resource.submitter.properName}</a> on ${resource.dateCreated}</p></dd>
             <#if administrator>
-            <dt>Status</dt>
-            <dd>${resource.status.label}</dd>
+            <dt><p><strong>Status</strong></p></dt>
+            <dd><p>${resource.status.label}</p></dd>
             </#if>
-            <dt>Last Updated by</dt>
-            <dd><a href="<@s.url value="/browse/creators/${resource.updatedBy.id?c}"/>">${resource.updatedBy.properName!""}</a> on ${resource.dateUpdated?date!""}</dd>
-            <dt>Viewed</dt>
-            <dd>${resource.transientAccessCount!"0"} time(s)</dd>
+            <dt><p><strong>Last Updated by</strong></p></dt>
+            <dd><p><a href="<@s.url value="/browse/creators/${resource.updatedBy.id?c}"/>">${resource.updatedBy.properName!""}</a> on ${resource.dateUpdated?date!""}</p></dd>
+            <dt><p><strong>Viewed</strong></p></dt>
+            <dd><p>${resource.transientAccessCount!"0"} time(s)</p></dd>
         </dl>
     </div>
 

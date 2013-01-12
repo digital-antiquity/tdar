@@ -31,7 +31,7 @@ body {
 
 #home hr,#alt hr {
 	border: 0;
-	border-top: 1px solid #222;
+	border-top: 1px solid #999;
 	border-bottom: none;
 	height: 1px;
 	float: left; /* weird ff issue w/o */
