@@ -2,7 +2,7 @@
             <div class="span3 bucket">
                 <img src="/images/r4/icn-data.png" />
                 <h3>Access &amp; Use</h3>
-                <p>Broadening the access to archaeological data through simple search and browse functionality.</p>
+                <p style="min-height:4em">Broadening the access to archaeological data through simple search and browse functionality.</p>
                 <p>
                     <a href="http://www.tdar.org/why-tdar/data-access/" class="button">Learn More</a>
                 </p>
@@ -10,7 +10,7 @@
                 <div class="span3 bucket">
                 <img src="/images/r4/icn-pres.png" />
                 <h3>Preservation</h3>
-                <p>Dedicated to ensuring long-term preservation of digital archaeological data.</p>
+                <p style="min-height:4em">Dedicated to ensuring long-term preservation of digital archaeological data.</p>
                 <p>
                     <a href="http://www.tdar.org/why-tdar/preservation/" class="button">Learn More</a>
                 </p>
@@ -18,7 +18,7 @@
                 <div class="span3 bucket">
                 <img src="/images/r4/icn-stew.png" />
                 <h3>Upload Resources</h3>
-                <p>Contribute documents, data set , images, and other critical archaeological materials.</p>
+                <p style="min-height:4em">Contribute documents, data set , images, and other critical archaeological materials.</p>
                 <p>
                     <a href="http://www.tdar.org/why-tdar/contribute/" class="button">Learn More</a>
                 </p>
@@ -26,7 +26,7 @@
                 <div class="span3 bucket">
                 <img src="/images/r4/icn-uses.png" />
                 <h3>Who Uses tDAR</h3>
-                <p>Researchers like you. Uncover knowledge of the past, and preserve &amp; protect archaeological resources.</p>
+                <p style="min-height:4em">Researchers like you. Uncover knowledge of the past, and preserve &amp; protect archaeological resources.</p>
                 <p>
                     <a href="http://www.tdar.org/using-tdar/" class="button">Learn More</a>
                 </p>

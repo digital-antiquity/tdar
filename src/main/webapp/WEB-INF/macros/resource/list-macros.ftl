@@ -82,13 +82,13 @@
                 </#if>
             </#if>
             <#if orientation == 'GRID'>
-                <a href="<@s.url value="/${resource.urlNamespace}/${resource.id?c}"/>" target="_top">
-                    <#if resource.supportsThumbnails>
-                        <@view.firstThumbnail resource />
-                    <#else>
+                <a href="<@s.url value="/${resource.urlNamespace}/${resource.id?c}"/>" target="_top"><#t>
+                    <#if resource.supportsThumbnails><#t>
+                        <@view.firstThumbnail resource /><#t>
+                    <#else><#t>
                         <i class="${resource.resourceType?lower_case}-125"></i>
-                    </#if>
-                    </a><br/>
+                    <#t></#if>
+                    <#t></a><br/>
             </#if>
             <@searchResultTitleSection resource titleTag />
             <@printLuceneExplanation  resource />

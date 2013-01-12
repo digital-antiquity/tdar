@@ -1043,9 +1043,9 @@ $(function() {
 
     <#if resource_.supportsThumbnails >
             <#if resource_.primaryThumbnail??>
-                <span class="primary-thumbnail">
-                    <img src="<@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/filestore/${resource_.primaryThumbnail.id?c}/thumbnail" />" title="${resource_.primaryThumbnail.filename}" onError="this.src = '<@s.url value="/images/image_unavailable_t.gif"/>';" />
-                </span>
+                <#t><span class="primary-thumbnail"><#t>
+                    <img src="<@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/filestore/${resource_.primaryThumbnail.id?c}/thumbnail" />" title="${resource_.primaryThumbnail.filename}" onError="this.src = '<@s.url value="/images/image_unavailable_t.gif"/>';" /><#t>
+                </span><#t>
             </#if>
     </#if>
 </#macro>
