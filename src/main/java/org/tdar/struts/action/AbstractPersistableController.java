@@ -29,6 +29,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.struts.WriteableSession;
 import org.tdar.struts.data.ResourceSpaceUsageStatistic;
 import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
+import org.tdar.struts.interceptor.HttpsOnly;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -195,6 +196,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             @Result(name = INPUT, location = "edit.ftl")
     })
     @WriteableSession
+    @HttpsOnly
     public String save() throws TdarActionException {
         // checkSession();
         String actionReturnStatus = SUCCESS;
@@ -306,6 +308,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             @Result(name = SUCCESS, location = "edit.ftl"),
             @Result(name=BILLING, location = "../billing-note.ftl")
     })
+    @HttpsOnly
     public String add() throws TdarActionException {
         if (!isAbleToCreateBillableItem()) {
             return BILLING;
@@ -327,6 +330,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     @Action(value = "edit", results = {
             @Result(name = SUCCESS, location = "edit.ftl")
     })
+    @HttpsOnly
     public String edit() throws TdarActionException {
         // ensureValidEditRequest();
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);

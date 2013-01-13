@@ -428,7 +428,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
                 proxies.addAll(values);
             }
         }
-        logger.info("result: {} ", proxies);
+        logger.trace("result: {} ", proxies);
     }
 
     private String basicSearch() {

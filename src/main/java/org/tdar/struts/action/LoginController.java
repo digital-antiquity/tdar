@@ -14,6 +14,7 @@ import org.tdar.URLConstants;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService.AuthenticationStatus;
 import org.tdar.struts.WriteableSession;
+import org.tdar.struts.interceptor.HttpsOnly;
 
 import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 import com.opensymphony.xwork2.validator.annotations.ValidatorType;
@@ -66,6 +67,7 @@ public class LoginController extends AuthenticationAware.Base {
                     @Result(name = NEW, type = "redirect", location = "/account/new"),
                     @Result(name = REDIRECT, type = "redirect", location = "${returnUrl}")
             })
+    @HttpsOnly
     @WriteableSession
     public String authenticate() {
         logger.debug("Trying to authenticate username:{}", getLoginUsername());

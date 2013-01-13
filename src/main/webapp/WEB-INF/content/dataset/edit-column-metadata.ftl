@@ -309,7 +309,7 @@ $(document).ready(function() {
         //when using this method on radio buttons, validate only calls this function once per radio group (using the first element of the group for value, element)
         //However, we still need to put put the error message in the title attr of the first element in group. Feels hokey but there you are.
         console.log('validating:' + element.id + "\t value:" + value);
-        var displayName = "'" + $(element).closest('div').find('h3 > .displayName').text() + "'";
+        var displayName = "'" + $($("#columnEncoding_5UNCODED_VALUE").parents(".datatablecolumn")[0]).find('h3 > .displayName').text() + "'";
         var $selectedElement = $(element).parent().find(':checked');
     
         //if we came here by way of a form 're-validate', we need to make sure that validation logic in registerCheckboxInfo happens first.

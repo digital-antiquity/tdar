@@ -31,6 +31,8 @@ label.error {display:block;}
 </style>
 </head>
 <body>
+<#assign newTitle="New Person" />
+<h1><#if person.id == -1>Creating<#else>Editing</#if>:<span> <#if person.properName?has_content>${person.properName}<#else>${newTitle}</#if> </span></h1>
 
 <@s.form name='personForm' id='frmPerson'  cssClass="form-horizontal"  method='post' enctype='multipart/form-data' action='save'>
 
@@ -65,14 +67,14 @@ label.error {display:block;}
         Please briefly describe the geographical areas, time periods, or other
         subjects for which you would like to contribute information:
         </label>
-        <@s.textarea rows=6 cols='50' cssClass="input-xlarge" name='person.contributorReason' id='contributorReasonId' />
+        <@s.textarea rows=6 cols='50' cssClass="input-xxlarge" name='person.contributorReason' id='contributorReasonId' />
         </div>            
 <br/>
         <div>
         <label for='description-id' style="line-height: 1.2em;">
         Please provide a brief description of yourself:
         </label>
-        <@s.textarea rows=6 cols='50' name='person.description' cssClass="input-xlarge" id='description-id' />
+        <@s.textarea rows=6 cols='50' name='person.description' cssClass="input-xxlarge" id='description-id' />
         </div>            
     </div>
 </div>

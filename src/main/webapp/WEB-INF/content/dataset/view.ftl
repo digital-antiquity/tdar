@@ -108,11 +108,11 @@ $(document).ready(function() {
             <#list dataTable.dataTableColumns?sort_by("sequenceNumber") as column>
             <tr>
                 <#assign typeLabel = ""/>
-                <#if column.measurementUnit??><#assign typeLabel = "measurement"/></#if>
-                <#if column.defaultCodingSheet??><#assign typeLabel = "coded"/></#if>
-                <#if column.defaultOntology??><#assign typeLabel = "integration"/></#if>
-                <#if column.columnEncodingType?? && column.columnEncodingType == 'COUNT'><#assign typeLabel = "count"/></#if>
-                <#if column.mappingColumn??><#assign typeLabel = "mapped"/></#if>
+                <#if column.measurementUnit?has_content><#assign typeLabel = "measurement"/></#if>
+                <#if column.defaultCodingSheet?has_content><#assign typeLabel = "coded"/></#if>
+                <#if column.defaultOntology?has_content><#assign typeLabel = "integration"/></#if>
+                <#if column.columnEncodingType?has_content && column.columnEncodingType == 'COUNT'><#assign typeLabel = "count"/></#if>
+                <#if column.mappingColumn?has_content && column.mappingColumn ><#assign typeLabel = "mapped"/></#if>
                 <td class="guide" nowrap><span class="columnSquare ${typeLabel}"></span><b>
                     ${column.displayName}
                 </b> </td>

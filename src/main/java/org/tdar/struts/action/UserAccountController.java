@@ -22,6 +22,7 @@ import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService.AuthenticationStatus;
+import org.tdar.struts.interceptor.HttpsOnly;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -108,6 +109,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
 
     @Action(value = "edit", results = { @Result(name = SUCCESS, type = "redirect", location = "/entity/person/${person.id}/edit") })
     @SkipValidation
+    @HttpsOnly
     public String edit() {
         if (isAuthenticated()) {
             return SUCCESS;
@@ -118,6 +120,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
 
     @Action("view")
     @SkipValidation
+    @HttpsOnly
     public String view() {
         if (!isAuthenticated())
             return "new";
@@ -147,6 +150,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
 
     @Action(value = "register", results = { @Result(name = "success", type = "redirect", location = "view?personId=${person.id}"),
             @Result(name = "input", location = "edit.ftl") })
+    @HttpsOnly
     public String create() {
         if (person == null || !isPostRequest()) {
             return INPUT;

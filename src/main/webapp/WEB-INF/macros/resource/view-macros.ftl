@@ -91,7 +91,7 @@ View freemarker macros
         <#list resource.informationResourceFiles as irfile>
             <#if irfile.errored>
                 <#assign processingErrors>
-                ${processingErrors}<li><strong>${irfile.latestUploadedVersion.filename}</strong> : ${irfile.latestUploadedVersion.errorMessage} </li>
+                ${processingErrors}<li><strong>${irfile.latestUploadedVersion.filename}</strong> : ${irfile.errorMessage!""} </li>
                 </#assign>    
             </#if>
         </#list>        
@@ -458,7 +458,7 @@ No coding rules have been entered for this coding sheet yet.
 
 <#macro statusCallout onStatus cssClass>
 <#if resource.status.toString().equalsIgnoreCase(onStatus) >
-<div class="${cssClass} ui-corner-all">
+<div class="${cssClass}-alert alert">
     <p><#nested></p>
 </div>
 </#if>
@@ -483,13 +483,13 @@ No coding rules have been entered for this coding sheet yet.
 
 
 <#macro resourceDeletedCallout>
-<@statusCallout onStatus='deleted' cssClass='resource-deleted'>
+<@statusCallout onStatus='deleted' cssClass='warning'>
     This resource has been marked as <strong>Deleted</strong>.  While ${siteAcronym} will retain this resource, it will not appear in search results.
 </@statusCallout>
 </#macro>
 
 <#macro resourceFlaggedCallout>
-<@statusCallout onStatus='flagged' cssClass='resource-flagged'>
+<@statusCallout onStatus='flagged' cssClass='warning'>
     This resource been <strong>flagged for deletion</strong> by a ${siteAcronym} adminstrator.
 </@statusCallout>
 </#macro>
@@ -507,7 +507,7 @@ No coding rules have been entered for this coding sheet yet.
 <@resourceDeletedCallout />
 <@resourceFlaggedCallout />
 
-<h1 class="view-page-title">${resource.title}</h1>
+<h1 class="view-page-title">${resource.title!"No Title"}</h1>
 <#if resource.project?? && resource.project.id?? && resource.project.id != -1>
 
 <div id="subtitle"> 
@@ -527,7 +527,7 @@ No coding rules have been entered for this coding sheet yet.
 
 <p class="meta">
     <@showCreatorProxy proxyList=authorshipProxies />
-    <#if resource.date?has_content>
+    <#if resource.date?has_content && resource.date != -1 >
 	    <@kvp key="Year" val=resource.date?c />
     </#if>
 
@@ -641,11 +641,11 @@ No coding rules have been entered for this coding sheet yet.
 <#macro infoResourceBasicInformation>
 <#local files = resource.filesWithProcessingErrors />
 
-<#if (files?size > 0 )>
+<#if (files?size > 0 ) && authenticatedUser?? >
 <div class="alert alert-error">
-<h3>The following Files have processing Errors</h3>
+<h3>The following Files have Processing Errors</h3>
 <ul>	<#list files as file>
-	<li>${file.fileName} </li>
+	<li>${file.fileName} - ${file.ErrorMessage!""}</li>
 	</#list>
 </ul>
 <br/>
