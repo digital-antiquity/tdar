@@ -70,6 +70,11 @@ div.barlabel {
 	left: 0;
 }
 
+#subnavbar2.affix {
+width: 100%!important;
+left: 0!important;
+}
+
 /* TODO:// HACK: .affix navbar needs to be same width as ".container" for proper formatting, but to break out our navbar requires mucking w/ layout.dec */
 .subnavbar.affix-top.container {
 	/*shrink the navbar when it is not affixed (i.e. when it is .affix-top) */

@@ -527,7 +527,7 @@ No coding rules have been entered for this coding sheet yet.
 
 <p class="meta">
     <@showCreatorProxy proxyList=authorshipProxies />
-    <#if resource.date?has_content>
+    <#if resource.date?has_content && resource.date != -1 >
 	    <@kvp key="Year" val=resource.date?c />
     </#if>
 
