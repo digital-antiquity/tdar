@@ -114,6 +114,13 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
         stats.add(generateStatistics(StatisticType.REPOSITORY_SIZE, Long.valueOf(repositorySize), FileUtils.byteCountToDisplaySize(repositorySize)));
         genericService.save(stats);
     }
+    
+    @Scheduled(fixedDelay = FIVE_MIN_MS)
+    public void checkAuthService() {
+        if (! authenticationService.getProvider().isConfigured()) {
+            logger.error("Unconfigured provider: {}", authenticationService.getProvider());
+        }
+    }
 
     @Scheduled(cron = "16 0 0 * * SUN")
     public void optimizeSearchIndexes() {
@@ -195,7 +202,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
             end = missing.toString();
         }
 
-        String message = String.format("This is an automated message from tDAR reporting on files with issues.\r\nRun on: %s %s\n %s", TdarConfiguration
+        String message = String.format("This is an automated message from %s reporting on files with issues.\r\nRun on: %s %s\n %s", TdarConfiguration.getInstance().getSiteAcronym(),TdarConfiguration
                 .getInstance().getBaseUrl(), new Date(), end);
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         String filename = "verify-" + df.format(new Date()) + ".txt";

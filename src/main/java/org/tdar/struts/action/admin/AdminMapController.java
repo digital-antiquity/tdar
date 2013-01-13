@@ -5,13 +5,12 @@ import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
-import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
-import org.tdar.core.service.external.auth.TdarGroup;
+import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.search.geosearch.GeoSearchDao.SpatialTables;
 import org.tdar.search.geosearch.GeoSearchService;
 import org.tdar.struts.RequiresTdarUserGroup;
@@ -20,7 +19,7 @@ import org.tdar.struts.data.SvgMapWrapper;
 
 @Component
 @Scope("prototype")
-//@ParentPackage("secured")
+// @ParentPackage("secured")
 @Namespace("/admin/map")
 @RequiresTdarUserGroup(TdarGroup.TDAR_ADMIN)
 public class AdminMapController extends AuthenticationAware.Base {
@@ -36,12 +35,12 @@ public class AdminMapController extends AuthenticationAware.Base {
 
     private SvgMapWrapper svgWrapper;
 
-    @Action(value="view")
+    @Action(value = "view")
     public String view() {
         return SUCCESS;
-   
+
     }
-    
+
     @Action(value = "map", results = {
             @Result(name = "success", location = "svg.ftl", type = "freemarker", params = { "contentType", "image/svg+xml" }) })
     public String execute() {
@@ -63,14 +62,14 @@ public class AdminMapController extends AuthenticationAware.Base {
 
         for (HomepageGeographicKeywordCache cache : caches) {
             // <#assign percent = ((codes[logCode]/countryLogTotal) * 100)?floor />
-            int percent = (int)(100 * cache.getLogCount() / max);
+            int percent = (int) (100 * cache.getLogCount() / max);
 
             String code = cache.getKey().toUpperCase();
             if (code.length() > 2) {
                 if (table == SpatialTables.COUNTRY) {
                     code = code.substring(0, 2);
                 }
-                int floor = (int) Math.floor(percent / 10) ;
+                int floor = (int) Math.floor(percent / 10);
                 getCssValues().get(floor).add(code);
             }
         }

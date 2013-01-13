@@ -85,10 +85,10 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
 
     private void testBrowseController(Creator creator) throws InstantiationException, IllegalAccessException, ParseException {
         Document doc = genericService.find(Document.class, setupDatedDocument());
-        ResourceCreator rc = new ResourceCreator(doc, creator, ResourceCreatorRole.CONTRIBUTOR);
-        assertTrue(rc.isValid());
-        genericService.saveOrUpdate(rc);
+        ResourceCreator rc = new ResourceCreator( creator, ResourceCreatorRole.CONTRIBUTOR);
+        assertTrue(rc.isValidForResource(doc));
         doc.getResourceCreators().add(rc);
+        genericService.saveOrUpdate(rc);
         genericService.saveOrUpdate(doc);
         searchIndexService.index(doc);
         controller.setId(creator.getId());

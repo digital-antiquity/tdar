@@ -1,5 +1,8 @@
 package org.tdar.core.bean;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -8,7 +11,9 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,6 +25,7 @@ import javax.xml.validation.SchemaFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.custommonkey.xmlunit.exceptions.ConfigurationException;
 import org.custommonkey.xmlunit.jaxp13.Validator;
@@ -40,10 +46,10 @@ import org.springframework.test.context.junit4.AbstractTransactionalJUnit4Spring
 import org.springframework.test.context.transaction.AfterTransaction;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthenticationToken;
@@ -63,6 +69,8 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.exception.TdarValidationException;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.DataIntegrationService;
 import org.tdar.core.service.EntityService;
@@ -88,19 +96,16 @@ import org.tdar.struts.data.FileProxy;
 import org.tdar.web.SessionData;
 import org.xml.sax.SAXException;
 
-import com.gargoylesoftware.htmlunit.HttpMethod;
 import com.opensymphony.xwork2.ActionSupport;
-
-import static org.junit.Assert.*;
 
 @ContextConfiguration(locations = { "classpath:/applicationContext.xml" })
 @SuppressWarnings("rawtypes")
 public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJUnit4SpringContextTests {
 
+    protected HttpServletRequest defaultHttpServletRequest = new MockHttpServletRequest();
 
-    // These uri's are not accurate, but are currently unused since we invoke action methods directly.
-    protected HttpServletRequest httpServletGetRequest = new MockHttpServletRequest("GET", "");
-    protected HttpServletRequest httpServletPostRequest = new MockHttpServletRequest("POST", "");
+    protected HttpServletRequest httpServletRequest = defaultHttpServletRequest;
+    protected HttpServletRequest httpServletPostRequest = new MockHttpServletRequest("POST", "/");
     protected HttpServletResponse httpServletResponse = new MockHttpServletResponse();
 
     protected PlatformTransactionManager transactionManager;
@@ -153,7 +158,6 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     @Rule
     public TestName testName = new TestName();
-
 
     @Before
     public final void announceTestStarting() {
@@ -246,7 +250,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return version;
     }
 
-    public InformationResource generateInformationResourceWithFileAndUser() throws InstantiationException, IllegalAccessException {
+    public Document generateInformationResourceWithFileAndUser() throws InstantiationException, IllegalAccessException {
         Document ir = createAndSaveNewInformationResource(Document.class, false);
         assertTrue(ir.getResourceType() == ResourceType.DOCUMENT);
         File file = new File(TestConstants.TEST_DOCUMENT_DIR + TestConstants.TEST_DOCUMENT_NAME);
@@ -255,7 +259,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return ir;
     }
 
-    public InformationResource generateInformationResourceWithUser() throws InstantiationException, IllegalAccessException {
+    public Document generateDocumentWithUser() throws InstantiationException, IllegalAccessException {
         Document ir = createAndSaveNewInformationResource(Document.class, false);
         assertTrue(ir.getResourceType() == ResourceType.DOCUMENT);
         return ir;
@@ -305,15 +309,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         project.setTitle("PROJECT " + resourceTitle);
         project.setDescription("test description");
         projectService.save(project);
-
-        R iResource = cls.newInstance();
-        iResource.setTitle(resourceTitle);
-        iResource.setDescription("test description");
-        iResource.markUpdated(persistentPerson);
-        iResource.setProject(project);
-        iResource.setDate(2012);
-        informationResourceService.save(iResource);
-        return iResource;
+        return createAndSaveNewInformationResource(cls, project, persistentPerson, resourceTitle);
     }
 
     public <R extends InformationResource> R createAndSaveNewInformationResource(Class<R> cls, Project project, Person persistentPerson, String resourceTitle)
@@ -325,6 +321,9 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         iResource.markUpdated(persistentPerson);
         iResource.setProject(project);
         iResource.setDate(2012);
+        if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
+            iResource.setCopyrightHolder(persistentPerson);
+        }
         informationResourceService.save(iResource);
         return iResource;
     }
@@ -336,7 +335,6 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         dataset.setDescription("Test dataset description");
         dataset.markUpdated(testPerson);
         // dataset.setConfidential(false);
-        dataset.setDateMadePublic(new Date());
         dataset.setDate(1999);
         datasetService.save(dataset);
         return dataset;
@@ -383,8 +381,8 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         String resourceTitle = "Sample " + cls.getSimpleName() + " record";
         return createAndSaveNewResource(cls, persistentPerson, resourceTitle);
     }
-    
-    //create new, public, collection with the getUser() as the owner and no resources
+
+    // create new, public, collection with the getUser() as the owner and no resources
     public ResourceCollection createAndSaveNewResourceCollection(String name) {
         ResourceCollection resourceCollection = new ResourceCollection();
         resourceCollection.setName(name);
@@ -417,7 +415,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     protected <T> T generateNewController(Class<T> controllerClass) {
         T controller = (T) applicationContext.getBean(controllerClass);
         if (controller instanceof AuthenticationAware.Base) {
-            ((TdarActionSupport) controller).setServletRequest(getServletGetRequest());
+            ((TdarActionSupport) controller).setServletRequest(getServletRequest());
             ((TdarActionSupport) controller).setServletResponse(getServletResponse());
         }
         return controller;
@@ -427,10 +425,14 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         if (controller != null) {
             controller.setSessionData(getSessionData());
 
-            if (user != null) {
-                AuthenticationToken token = AuthenticationToken.create(user);
+            if (user != null && Persistable.Base.isTransient(user)) {
+                throw new TdarRecoverableRuntimeException("can't test this way right now, must persist first");
+            } else if (user != null) {
+                Person user_ = genericService.find(Person.class, user.getId());
+                AuthenticationToken token = AuthenticationToken.create(user_);
                 controller.getSessionData().setAuthenticationToken(token);
                 genericService.save(token);
+                // genericService.detachFromSession(user_);
             } else {
                 controller.getSessionData().setAuthenticationToken(new AuthenticationToken());
             }
@@ -442,20 +444,15 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     }
 
     protected <T extends ActionSupport> T generateNewInitializedController(Class<T> controllerClass, Person user) {
-        return generateNewInitializedController(controllerClass, user, getServletGetRequest());
-    }
-
-    protected <T extends ActionSupport> T generateNewInitializedController(Class<T> controllerClass, Person user, HttpServletRequest request) {
         T controller = generateNewController(controllerClass);
         if (controller instanceof TdarActionSupport) {
-            ((TdarActionSupport) controller).setServletRequest(request);
             if (user != null) {
                 init((TdarActionSupport) controller, user);
             } else {
                 init((TdarActionSupport) controller);
             }
         }
-        getControllers().add(controller);
+        getControllers().add((ActionSupport) controller);
         return controller;
     }
 
@@ -512,12 +509,24 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return TestConstants.ADMIN_USER_ID;
     }
 
-    public HttpServletRequest getServletGetRequest() {
-        return httpServletGetRequest;
+    public void setHttpServletRequest(HttpServletRequest httpServletRequest) {
+        this.httpServletRequest = httpServletRequest;
+    }
+
+    public HttpServletRequest getServletRequest() {
+        return httpServletRequest;
     }
 
     public HttpServletRequest getServletPostRequest() {
         return httpServletPostRequest;
+    }
+
+    public HttpServletRequest getDefaultHttpServletRequest() {
+        return defaultHttpServletRequest;
+    }
+
+    public void setHttpServletResponse(HttpServletResponse httpServletResponse) {
+        this.httpServletResponse = httpServletResponse;
     }
 
     public HttpServletResponse getServletResponse() {
@@ -532,10 +541,8 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
             internalResourceCollection.setOwner(person);
             resource.getResourceCollections().add(internalResourceCollection);
         }
-        genericService.saveOrUpdate(internalResourceCollection);
-        authorizedUser.setResourceCollection(internalResourceCollection);
-        entityService.save(authorizedUser);
         internalResourceCollection.getAuthorizedUsers().add(authorizedUser);
+        genericService.saveOrUpdate(internalResourceCollection);
         entityService.saveOrUpdate(resource);
     }
 
@@ -562,6 +569,10 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         this.ignoreActionErrors = ignoreActionErrors;
     }
 
+    public void ignoreActionErrors(boolean ignoreActionErrors) {
+        this.ignoreActionErrors = ignoreActionErrors;
+    }
+
     /**
      * @return the ignoreActionErrors
      */
@@ -569,11 +580,20 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return ignoreActionErrors;
     }
 
+    
+    private Person sessionUser;
     /**
      * @return
      */
     public Person getSessionUser() {
+        if (sessionUser != null) {
+            return sessionUser;
+        }
         return getUser();
+    }
+    
+    public void setSessionUser(Person user) {
+        this.sessionUser = user;
     }
 
     public PlatformTransactionManager getTransactionManager() {
@@ -596,7 +616,8 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         runInNewTransaction(action);
     }
 
-    @AfterTransaction @SuppressWarnings("unchecked")
+    @AfterTransaction
+    @SuppressWarnings("unchecked")
     public void verifyTransactionCallback() {
         if (verifyTransactionCallback != null) {
             runInNewTransaction(verifyTransactionCallback);
@@ -636,30 +657,39 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         }
     }
 
+    private static Map<String, File> schemaMap = new HashMap<String, File>();
+
     private void addSchemaToValidatorWithLocalFallback(Validator v, String url, File schemaFile) {
-        logger.debug("attempting to add schema to validation list: " + url);
         File schema = null;
-        try {
-            File tmpFile = File.createTempFile(schemaFile.getName(), ".temp.xsd");
-            FileUtils.writeStringToFile(tmpFile, IOUtils.toString(new URI(url)));
-            schema = tmpFile;
-        } catch (Throwable e) {
-            logger.debug("could not validate against remote schema, attempting to use cached fallback:" + schemaFile);
-        }
-        if (schema == null) {
+        if (schemaMap.containsKey(url)) {
+            schema = schemaMap.get(url);
+        } else {
+            logger.debug("attempting to add schema to validation list: " + url);
             try {
-                schema = schemaFile;
-            } catch (Exception e) {
-                logger.debug("could not validate against local schema");
+                File tmpFile = File.createTempFile(schemaFile.getName(), ".temp.xsd");
+                FileUtils.writeStringToFile(tmpFile, IOUtils.toString(new URI(url)));
+                schema = tmpFile;
+            } catch (Throwable e) {
+                logger.debug("could not validate against remote schema, attempting to use cached fallback:" + schemaFile);
+            }
+            if (schema == null) {
+                try {
+                    schema = schemaFile;
+                } catch (Exception e) {
+                    logger.debug("could not validate against local schema");
+                }
+            } else {
+                schemaMap.put(url, schema);
             }
         }
+
         if (schema != null) {
-            try {
-                // testValidXMLSchemaResponse(schema);
-            } catch (Exception e) {
-                logger.debug("schema setup exception ", e);
-                assertTrue(false);
-            }
+            // try {
+            // // testValidXMLSchemaResponse(schema);
+            // } catch (Exception e) {
+            // logger.debug("schema setup exception ", e);
+            // assertTrue(false);
+            // }
             v.addSchemaSource(new StreamSource(schema));
             for (Object err : v.getSchemaErrors()) {
                 logger.error(err.toString());
@@ -734,4 +764,33 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return dataIntegrationService;
     }
 
+    public static void assertInvalid(Validatable address, String reason) {
+        TdarValidationException tv = null;
+        try {
+            address.isValid();
+        } catch (TdarValidationException ex) {
+            tv = ex;
+        }
+        Assert.assertNotNull(tv);
+        if (reason != null) {
+            Assert.assertEquals(reason, tv.getMessage());
+        }
+    }
+
+    public Account setupAccountForPerson(Person p) {
+        Account account = new Account("my account");
+        account.setOwner(p);
+        account.setStatus(Status.ACTIVE);
+        account.markUpdated(getUser());
+        genericService.saveOrUpdate(account);
+        return account;
+    }
+
+    public static void assertNotEquals(Object obj1, Object obj2) {
+        assertNotEquals("", obj1, obj2);
+    }
+
+    public static void assertNotEquals(String msg, Object obj1, Object obj2) {
+        assertTrue(msg, ObjectUtils.notEqual(obj1, obj2));
+    }
 }

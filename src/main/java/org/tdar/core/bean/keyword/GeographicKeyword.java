@@ -3,18 +3,16 @@ package org.tdar.core.bean.keyword;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.ElementCollection;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.JoinTable;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAttribute;
 
 import org.hibernate.search.annotations.Indexed;
-
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
 /**
  * $Id$
@@ -30,11 +28,14 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
  */
 @Entity
 @Table(name = "geographic_keyword")
-@XStreamAlias("geographicKeyword")
 @Indexed(index = "Keyword")
 public class GeographicKeyword extends UncontrolledKeyword.Base<GeographicKeyword> {
 
     private static final long serialVersionUID = 9120049059501138213L;
+
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+    @JoinColumn(name = "merge_keyword_id")
+    private Set<GeographicKeyword> synonyms = new HashSet<GeographicKeyword>();
 
     public enum Level {
         CONTINENT("Continent"),
@@ -61,13 +62,8 @@ public class GeographicKeyword extends UncontrolledKeyword.Base<GeographicKeywor
 
     }
 
-    @XStreamAsAttribute
     @Enumerated(EnumType.STRING)
     private Level level;
-
-    @ElementCollection()
-    @JoinTable(name = "geographic_keyword_synonym")
-    private Set<String> synonyms;
 
     /**
      * @param level
@@ -91,14 +87,16 @@ public class GeographicKeyword extends UncontrolledKeyword.Base<GeographicKeywor
         return toReturn.toString();
     }
 
-    public Set<String> getSynonyms() {
-        if(synonyms == null) {
-            synonyms = new HashSet<String>();
-        }
+    public Set<GeographicKeyword> getSynonyms() {
         return synonyms;
     }
 
-    public void setSynonyms(Set<String> synonyms) {
+    public void setSynonyms(Set<GeographicKeyword> synonyms) {
         this.synonyms = synonyms;
     }
+
+    public String getSynonymFormattedName() {
+        return getLabel();
+    }
+
 }

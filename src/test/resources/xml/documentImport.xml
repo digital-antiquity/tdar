@@ -5,13 +5,18 @@
 	<resourceType>DOCUMENT</resourceType>
 	<metadataLanguage>ENGLISH</metadataLanguage>
 	<description>
-		This citation has been migrated into tDAR from the National Park Service's
-		National Archaeology Data Base (NADB). Most NADB records consist of
-		citation and other metadata but do not have the documents themselves
-		uploaded.</description>
+		This citation has been migrated into tDAR from the
+		National Park Service's
+		National Archaeology Data Base (NADB). Most
+		NADB records consist of
+		citation and other metadata but do not have the
+		documents themselves
+		uploaded.
+	</description>
 	<documentType>BOOK</documentType>
 	<resourceLanguage>ENGLISH</resourceLanguage>
-	<copyLocation>AAS Citation Data Tranfer, Location Unknown [ 20370]</copyLocation>
+	<copyLocation>AAS Citation Data Tranfer, Location Unknown [ 20370]
+	</copyLocation>
 	<publisherLocation>Stroudsburg, Pa</publisherLocation>
 	<date>1981</date>
 	<inheritingInvestigationInformation>true</inheritingInvestigationInformation>
@@ -21,7 +26,9 @@
 	<inheritingCulturalInformation>true</inheritingCulturalInformation>
 	<inheritingSpatialInformation>true</inheritingSpatialInformation>
 	<inheritingTemporalInformation>false</inheritingTemporalInformation>
-	<publisher>distributed world wide by Academic Press</publisher>
+	<publisher>
+			<name>distributed world wide by Academic Press</name>
+	</publisher>
 	<seriesName>US / IBP synthesis series ; 16</seriesName>
 	<resourceAnnotations>
 		<resourceAnnotation>

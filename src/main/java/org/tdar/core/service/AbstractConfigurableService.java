@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
  * @param <S>
  */
 @Service
-public abstract class AbstractConfigurableService<S extends Configurable> {
+public abstract class AbstractConfigurableService<S extends Configurable> implements ConfigurableService<S> {
 
     private final Logger logger = Logger.getLogger(getClass());
     private List<S> allServices;
@@ -35,7 +35,7 @@ public abstract class AbstractConfigurableService<S extends Configurable> {
             Iterator<S> iterator = allServices.iterator();
             while (iterator.hasNext()) {
                 S provider = iterator.next();
-                if (provider.isConfigured()) {
+                if (provider.isEnabled()) {
                     logger.debug(String.format("enabling %s provider: %s will use first", getClass().getSimpleName(), provider.getClass().getSimpleName()));
                 } else {
                     logger.debug(String.format("disabling unconfigured %s provider: %s", getClass().getSimpleName(), provider.getClass().getSimpleName()));
@@ -52,6 +52,10 @@ public abstract class AbstractConfigurableService<S extends Configurable> {
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.tdar.core.service.ConfigurableService#getProvider()
+     */
+    @Override
     public S getProvider() {
         if (allServices.isEmpty()) {
             throw new IllegalStateException(String.format(
@@ -61,6 +65,10 @@ public abstract class AbstractConfigurableService<S extends Configurable> {
         return allServices.get(0);
     }
 
+    /* (non-Javadoc)
+     * @see org.tdar.core.service.ConfigurableService#isServiceRequired()
+     */
+    @Override
     public boolean isServiceRequired() {
         return false;
     }

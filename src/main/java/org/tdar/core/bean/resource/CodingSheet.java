@@ -31,8 +31,6 @@ import org.tdar.core.bean.SupportsResource;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.configuration.JSONTransient;
 
-import com.thoughtworks.xstream.annotations.XStreamOmitField;
-
 /**
  * $Id$
  * <p>
@@ -64,7 +62,6 @@ public class CodingSheet extends InformationResource implements SupportsResource
     private Set<CodingRule> codingRules = new LinkedHashSet<CodingRule>();
 
     @OneToMany(mappedBy = "defaultCodingSheet")
-    @XStreamOmitField
     private Set<DataTableColumn> associatedDataTableColumns = new HashSet<DataTableColumn>();
 
     @ManyToOne

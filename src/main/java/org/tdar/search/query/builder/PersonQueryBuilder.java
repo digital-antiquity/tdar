@@ -1,7 +1,6 @@
 package org.tdar.search.query.builder;
 
-import java.util.Collections;
-
+import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.tdar.core.bean.entity.Person;
 
 /**
@@ -14,9 +13,12 @@ import org.tdar.core.bean.entity.Person;
  */
 public class PersonQueryBuilder extends QueryBuilder {
 
-	public PersonQueryBuilder() {
-		this.setClasses(new Class[] { Person.class });
-//		setOmitContainedLabels(Collections.EMPTY_LIST);
-	}
+    public PersonQueryBuilder() {
+        this.setClasses(new Class[] { Person.class });
+    }
 
+    public PersonQueryBuilder(Operator op) {
+        this();
+        setOperator(op);
+    }
 }

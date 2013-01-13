@@ -1,7 +1,5 @@
 package org.tdar.struts.action;
 
-import static org.tdar.core.bean.Persistable.Base.isNullOrTransient;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,25 +9,26 @@ import java.util.List;
 import java.util.TimeZone;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Result;
-import org.apache.struts2.convention.annotation.Results;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.HasName;
+import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.external.auth.InternalTdarRights;
 import org.tdar.struts.WriteableSession;
-import org.tdar.struts.action.resource.AbstractResourceController;
-import org.tdar.struts.data.ResourceUsageStatistic;
+import org.tdar.struts.data.ResourceSpaceUsageStatistic;
+import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -45,10 +44,9 @@ import com.opensymphony.xwork2.Preparable;
  * @author Adam Brin, <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
  */
-@Results({ @Result(name = AbstractResourceController.REDIRECT_HOME, type = "redirect", location = URLConstants.HOME),
-        @Result(name = AbstractResourceController.REDIRECT_PROJECT_LIST, type = "redirect", location = URLConstants.DASHBOARD) })
 public abstract class AbstractPersistableController<P extends Persistable> extends AuthenticationAware.Base implements Preparable, CrudAction<P> {
 
+    public static final String BILLING = "BILLING";
     public static final String CONFIRM = "confirm";
     public static final String DELETE_CONSTANT = "delete";
     private static final long serialVersionUID = -559340771608580602L;
@@ -67,18 +65,18 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     private boolean asyncSave = true;
     private List<AuthorizedUser> authorizedUsers;
 
-    private ResourceUsageStatistic totalResourceAccessStatistic;
-    private ResourceUsageStatistic uploadedResourceAccessStatistic;
-
+    private String possibleJsError;
+    private ResourceSpaceUsageStatistic totalResourceAccessStatistic;
+    private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
 
     public static String formatTime(long millis) {
         Date dt = new Date(millis);
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
-        //SimpleDateFormat sdf = new SimpleDateFormat("H'h, 'm'm, 's's, 'S'ms'");
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC")); //no offset
+        // SimpleDateFormat sdf = new SimpleDateFormat("H'h, 'm'm, 's's, 'S'ms'");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC")); // no offset
         return sdf.format(dt);
     }
-    
+
     protected P loadFromId(final Long id) {
         return getGenericService().find(getPersistableClass(), id);
     }
@@ -129,6 +127,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     }
 
     @SkipValidation
+    @HttpOnlyIfUnauthenticated
     @Action(value = "view",
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
             results = {
@@ -141,7 +140,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         // ensureValidViewRequest();
         checkValidRequest(RequestType.VIEW, this, InternalTdarRights.VIEW_ANYTHING);
         // checkValidRequest(UserIs.ANYONE, UsersCanModify.NONE, isViewable(), InternalTdarRights.VIEW_ANYTHING);
-        resultName = loadMetadata();
+        resultName = loadViewMetadata();
         loadExtraViewMetadata();
         return resultName;
     }
@@ -208,24 +207,29 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
 
                 if (isNullOrNew()) {
                     isNew = true;
-                    if (persistable instanceof Updatable) {
-                        ((Updatable) persistable).markUpdated(getAuthenticatedUser());
-                    }
                 }
                 preSaveCallback();
+                if (persistable instanceof Updatable) {
+                    ((Updatable) persistable).markUpdated(getAuthenticatedUser());
+                }
+                if (persistable instanceof Indexable) {
+                    ((Indexable) persistable).setReadyToIndex(false);
+                }
                 actionReturnStatus = save(persistable);
+
+                // should there not be "one" save at all? I think this should be here
+                if (shouldSaveResource()) {
+                    getGenericService().saveOrUpdate(persistable);
+                }
+                if (persistable instanceof Indexable) {
+                    ((Indexable) persistable).setReadyToIndex(true);
+                    getSearchIndexService().index((Indexable) persistable);
+                }
                 // who cares what the save implementation says. if there's errors return INPUT
                 if (!getActionErrors().isEmpty()) {
                     logger.debug("Action errors found; Replacing return status of {} with {}", actionReturnStatus, INPUT);
+                    // FIXME: if INPUT -- should I just "return"?
                     actionReturnStatus = INPUT;
-                } else {
-                    //FIXME: There are some situations in which hibsearch may not have detected that an @Indexed or @IndexedEmbedded getter method has changed. 
-                    //       see  TDAR-2364 for mor info.  This is a kludge where we deliberately modify an indexed member variable to mark it 'dirty' and force an index
-                    if (persistable instanceof Updatable) {
-                        logger.debug("updating updateTime for {}", persistable );
-                        ((Updatable) persistable).markUpdated(getAuthenticatedUser());
-                        getGenericService().saveOrUpdate(persistable);
-                    }
                 }
             } else {
                 throw new TdarActionException(StatusCode.BAD_REQUEST, "bad request -- expecting post");
@@ -237,10 +241,10 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             return INPUT;
         } finally {
             // FIXME: make sure this doesn't cause issues with SessionSecurityInterceptor now handling TdarActionExceptions
-            postSaveCleanup();
+            postSaveCleanup(actionReturnStatus);
         }
         try {
-            postSaveCallback();
+            postSaveCallback(actionReturnStatus);
         } catch (TdarRecoverableRuntimeException tex) {
             addActionErrorWithException(tex.getMessage(), tex);
         }
@@ -252,15 +256,12 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         if (isNew && getPersistable() != null) {
             logger.debug("Created Id: {}", getPersistable().getId());
         }
-        logger.debug("EDIT TOOK: {} SAVE TOOK: {} (edit:{}  save:{})", new Object[] {editTime, saveTime, formatTime(editTime), formatTime(saveTime)});
+        logger.debug("EDIT TOOK: {} SAVE TOOK: {} (edit:{}  save:{})", new Object[] { editTime, saveTime, formatTime(editTime), formatTime(saveTime) });
 
         // don't allow SUCCESS response if there are actionErrors, but give the other callbacks leeway in setting their own error message.
         if (CollectionUtils.isNotEmpty(getActionErrors()) && SUCCESS.equals(actionReturnStatus)) {
             return INPUT;
         }
-
-        
-        
         return actionReturnStatus;
     }
 
@@ -290,22 +291,35 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     protected void preSaveCallback() {
     }
 
-    protected void postSaveCallback() {
+    protected void postSaveCallback(String actionReturnStatus) {
     }
 
     /**
      * override if needed
+     * @param actionReturnStatus 
      */
-    protected void postSaveCleanup() {
+    protected void postSaveCleanup(String actionReturnStatus) {
     }
 
     @SkipValidation
     @Action(value = "add", results = {
-            @Result(name = SUCCESS, location = "edit.ftl")
+            @Result(name = SUCCESS, location = "edit.ftl"),
+            @Result(name=BILLING, location = "../billing-note.ftl")
     })
     public String add() throws TdarActionException {
+        if (!isAbleToCreateBillableItem()) {
+            return BILLING;
+        }
         checkValidRequest(RequestType.CREATE, this, InternalTdarRights.EDIT_ANY_RESOURCE);
         logAction("CREATING");
+        return loadAddMetadata();
+    }
+
+    protected boolean isAbleToCreateBillableItem() {
+        return true;
+    }
+
+    public String loadAddMetadata() {
         return SUCCESS;
     }
 
@@ -318,7 +332,11 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
 
         logAction("EDITING");
-        return loadMetadata();
+        return loadEditMetadata();
+    }
+
+    public String loadEditMetadata() {
+        return loadViewMetadata();
     }
 
     // @SuppressWarnings("unused")
@@ -371,7 +389,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             throws TdarActionException {
         // first check the session
         Object[] msg = { action.getAuthenticatedUser(), userAction, action.getPersistableClass().getSimpleName() };
-        logger.trace("user {} is TRYING to {} a {}", msg);
+        logger.info("user {} is TRYING to {} a {}", msg);
 
         if (userAction.isAuthenticationRequired()) {
             try {
@@ -386,7 +404,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         }
 
         Persistable persistable = action.getPersistable();
-        if (isNullOrTransient(persistable)) {
+        if (Persistable.Base.isNullOrTransient(persistable)) {
             // deal with the case that we have a new or not found resource
             logger.debug("Dealing with transient persistable {}", persistable);
             switch (userAction) {
@@ -397,14 +415,13 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
                     }
                 case EDIT:
                 default:
-
                     if (persistable == null) {
                         // persistable is null, so the lookup failed (aka not found)
                         abort(StatusCode.NOT_FOUND, String.format("Sorry, the page you requested cannot be found"));
                     } else if (Persistable.Base.isNullOrTransient(persistable.getId())) {
                         // id not specified or not a number, so this is an invalid request
                         abort(StatusCode.BAD_REQUEST, String.format(
-                                "Sorry, tDAR does not recognize this type of request on a %s ", persistable.getClass().getSimpleName()));
+                                "Sorry, the system does not recognize this type of request on a %s ", persistable.getClass().getSimpleName()));
                     }
 
             }
@@ -441,6 +458,8 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
                 if (action.isDeleteable()) {
                     return;
                 }
+                break;
+            default:
                 break;
         }
         addActionError("user does not have permissions to perform the requested action");
@@ -555,14 +574,14 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             P p = loadFromId(getId());
             // from a permissions standpoint... being really strict, we should mark this as read-only
             // getGenericService().markReadOnly(p);
-            logger.trace("id:{}, persistable:{}", getId(), p);
+            logger.info("id:{}, persistable:{}", getId(), p);
             setPersistable(p);
         }
 
     }
 
     protected boolean isPersistableIdSet() {
-        return !Persistable.Base.isNullOrTransient(getPersistable());
+        return Persistable.Base.isNotNullOrTransient(getPersistable());
     }
 
     public abstract Class<P> getPersistableClass();
@@ -571,7 +590,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         this.persistableClass = persistableClass;
     }
 
-    public abstract String loadMetadata();
+    public abstract String loadViewMetadata();
 
     protected boolean isNullOrNew() {
         return !isPersistableIdSet();
@@ -705,20 +724,30 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         this.deletionReason = deletionReason;
     }
 
-
-    public ResourceUsageStatistic getUploadedResourceAccessStatistic() {
+    public ResourceSpaceUsageStatistic getUploadedResourceAccessStatistic() {
         return uploadedResourceAccessStatistic;
     }
 
-    public void setUploadedResourceAccessStatistic(ResourceUsageStatistic uploadedResourceAccessStatistic) {
+    public void setUploadedResourceAccessStatistic(ResourceSpaceUsageStatistic uploadedResourceAccessStatistic) {
         this.uploadedResourceAccessStatistic = uploadedResourceAccessStatistic;
     }
 
-    public ResourceUsageStatistic getTotalResourceAccessStatistic() {
+    public ResourceSpaceUsageStatistic getTotalResourceAccessStatistic() {
         return totalResourceAccessStatistic;
     }
 
-    public void setTotalResourceAccessStatistic(ResourceUsageStatistic totalResourceAccessStatistic) {
+    public void setTotalResourceAccessStatistic(ResourceSpaceUsageStatistic totalResourceAccessStatistic) {
         this.totalResourceAccessStatistic = totalResourceAccessStatistic;
+    }
+
+    public String getPossibleJsError() {
+        return possibleJsError;
+    }
+
+    public void setPossibleJsError(String possibleJsError) {
+        if (StringUtils.isNotBlank(possibleJsError )) {
+            logger.warn(" there may have been a JS error ");
+        }
+        this.possibleJsError = possibleJsError;
     }
 }

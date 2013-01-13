@@ -85,5 +85,6 @@ public interface QueryFieldNames {
     public static final String RESOURCE_OWNER = "resourceOwner";
     public static final String DATE_CREATED_DECADE = "decadeCreated";
     public static final String CREATOR_ROLE_IDENTIFIER = "crid";
+    public static final String FILENAME = "filename";
     
 }

@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotSame;
 
 import org.junit.Test;
 import org.tdar.TestConstants;
+import org.tdar.core.configuration.TdarConfiguration;
 
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 
@@ -18,6 +19,10 @@ public class CrossActionPostWebITCase extends AbstractAuthenticatedWebTestCase {
         setInput("document.title", "this is the title ");
         setInput("document.description", "this is the description");
         setInput("document.date", "1934");
+        if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
+            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+            setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
+        }
         submitForm();
         documentId = extractTdarIdFromCurrentURL();
         assertNotNull(documentId);

@@ -8,11 +8,6 @@
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 </head>
 
-<script type='text/javascript'>
-$(document).ready(function() {
-  applyZebraColors();
-  });
-</script>
 
 <div class="glide">
 <p>
@@ -25,13 +20,13 @@ The integrated data results are displayed below.<br/>
 
 <h2>Summary of Integration Results (counts of integration column values)</h2>
 
-<table  class="tableFormat width99percent zebracolors">
+<table  class="tableFormat table table-striped">
 <thead>
  <tr>
   <#list integrationColumns as column>
     <th>
-  	<#if column.integrationColumn>
-	    ${column.name}
+      <#if column.integrationColumn>
+        ${column.name}
     </#if>
     </th>
   </#list>
@@ -68,7 +63,7 @@ The integrated data results are displayed below.<br/>
 
 <h2>Integration results for ${integrationDataResult.dataTable.displayName} (from
 ${integrationDataResult.dataTable.dataset.title})</h2>
-<table class="tableFormat width99percent zebracolors">
+<table class="tableFormat table table-striped">
 <thead>
 <tr>
 <th>Table</th>
@@ -92,9 +87,9 @@ ${integrationDataResult.dataTable.dataset.title})</h2>
 
     <#list row as col>
     <td>
-    	<#if col?has_content>${col}<#else>
-	    	<#noescape>&nbsp;</#noescape>
-    	</#if>
+        <#if col?has_content>${col}<#else>
+            <#noescape>&nbsp;</#noescape>
+        </#if>
     </td>
     </#list>
 

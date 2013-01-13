@@ -66,7 +66,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         query.setParameterList("resourceTypes", Arrays.asList(ResourceType.values()));
         query.setParameterList("statuses", Status.values());
         query.setParameter("allStatuses", true);
-        query.setParameter("effectivePermission", GeneralPermissions.MODIFY_RECORD.getEffectivePermissions() - 1);
+        query.setParameter("effectivePermission", GeneralPermissions.MODIFY_METADATA.getEffectivePermissions() - 1);
         query.setParameter("allResourceTypes", true);
         query.setParameter("admin", false);
         return (Long) query.iterate().next();

@@ -1,12 +1,10 @@
 package org.tdar.struts.action;
 
-import static org.tdar.core.service.external.auth.InternalTdarRights.SEARCH_FOR_DELETED_RECORDS;
-import static org.tdar.core.service.external.auth.InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,12 +17,14 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.service.external.auth.InternalTdarRights;
+import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.search.query.SortOption;
 
 /**
@@ -44,8 +44,7 @@ public class DashboardController extends AuthenticationAware.Base {
     private static final long serialVersionUID = -2959809512424441740L;
     private List<Resource> recentlyEditedResources = new ArrayList<Resource>();
     private List<Project> emptyProjects = new ArrayList<Project>();
-    // private List<Resource> bookmarkedResources;
-    // private PartitionedResourceResult partitionedBookmarkedResources;
+    private List<Resource> bookmarkedResources;
     private Long activeResourceCount = 0l;
     private int maxRecentResources = 5;
     private List<Resource> filteredFullUserProjects;
@@ -55,6 +54,8 @@ public class DashboardController extends AuthenticationAware.Base {
     private List<ResourceCollection> sharedResourceCollections = new ArrayList<ResourceCollection>();
     private Map<ResourceType, Long> resourceCountForUser = new HashMap<ResourceType, Long>();
     private Map<Status, Long> statusCountForUser = new HashMap<Status, Long>();
+    private Set<Account> accounts = new HashSet<Account>();
+    private Set<Account> overdrawnAccounts = new HashSet<Account>();
 
     @Override
     @Action("dashboard")
@@ -62,12 +63,19 @@ public class DashboardController extends AuthenticationAware.Base {
         setRecentlyEditedResources(getProjectService().findRecentlyEditedResources(getAuthenticatedUser(), maxRecentResources));
         setEmptyProjects(getProjectService().findEmptyProjects(getAuthenticatedUser()));
         setResourceCountAndStatusForUser(getResourceService().getResourceCountAndStatusForUser(getAuthenticatedUser(), Arrays.asList(ResourceType.values())));
-        getResourceCollections().addAll(getResourceCollectionService().findExplicitlyAuthorizedCollections(getAuthenticatedUser()));
+        getResourceCollections().addAll(getResourceCollectionService().findParentOwnerCollections(getAuthenticatedUser()));
         getSharedResourceCollections().addAll(getEntityService().findAccessibleResourceCollections(getAuthenticatedUser()));
         // removing duplicates
         getSharedResourceCollections().removeAll(getResourceCollections());
         Collections.sort(resourceCollections);
         Collections.sort(sharedResourceCollections);
+        getAccounts().addAll(getAccountService().listAvailableAccountsForUser(getAuthenticatedUser()));
+        for (Account account : getAccounts()) {
+            account.initTotals();
+            if (!account.isOverdrawn(getAccountService().getResourceEvaluator())) {
+                overdrawnAccounts.add(account);
+            }
+        }
         activeResourceCount += getStatusCountForUser().get(Status.ACTIVE);
         activeResourceCount += getStatusCountForUser().get(Status.DRAFT);
         logger.trace("{}", resourceCollections);
@@ -123,25 +131,16 @@ public class DashboardController extends AuthenticationAware.Base {
         return emptyProjects;
     }
 
-    // /**
-    // * @return the bookmarkedResources
-    // */
-    // public List<Resource> getBookmarkedResources() {
-    // if (bookmarkedResources == null) {
-    // bookmarkedResources = getBookmarkedResourceService().findResourcesByPerson(getAuthenticatedUser());
-    // }
-    // return bookmarkedResources;
-    // }
-    //
-    // /**
-    // * @return the partitionedBookmarkedResources
-    // */
-    // public PartitionedResourceResult getPartitionedBookmarkedResources() {
-    // if (partitionedBookmarkedResources == null) {
-    // partitionedBookmarkedResources = new PartitionedResourceResult(getBookmarkedResources());
-    // }
-    // return partitionedBookmarkedResources;
-    // }
+    public List<Resource> getBookmarkedResources() {
+        if (bookmarkedResources == null) {
+            bookmarkedResources = getBookmarkedResourceService().findResourcesByPerson(getAuthenticatedUser(), Arrays.asList(Status.ACTIVE, Status.DRAFT));
+        }
+
+        for (Resource res : bookmarkedResources) {
+            getAuthenticationAndAuthorizationService().applyTransientViewableFlag(res, getAuthenticatedUser());
+        }
+        return bookmarkedResources;
+    }
 
     public List<Project> getAllSubmittedProjects() {
         List<Project> allSubmittedProjects = getProjectService().findBySubmitter(getAuthenticatedUser());
@@ -214,6 +213,12 @@ public class DashboardController extends AuthenticationAware.Base {
                         && status == Status.FLAGGED) {
                     continue;
                 }
+                if ((!TdarConfiguration.getInstance().isPayPerIngestEnabled() ||
+                        getAuthenticationAndAuthorizationService().cannot(InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, getAuthenticatedUser()))
+                        && status == Status.FLAGGED_ACCOUNT_BALANCE) {
+                    continue;
+                }
+
                 for (ResourceType type : getResourceCountAndStatusForUser().keySet()) {
                     if (getResourceCountAndStatusForUser().get(type).containsKey(status)) {
                         count += getResourceCountAndStatusForUser().get(type).get(status);
@@ -231,11 +236,7 @@ public class DashboardController extends AuthenticationAware.Base {
     }
 
     public List<Status> getStatuses() {
-        List<Status> toReturn = new ArrayList<Status>(getResourceService().findAllStatuses());
-        getAuthenticationAndAuthorizationService().removeIfNotAllowed(toReturn, Status.DELETED, SEARCH_FOR_DELETED_RECORDS, getAuthenticatedUser());
-        getAuthenticationAndAuthorizationService().removeIfNotAllowed(toReturn, Status.FLAGGED, SEARCH_FOR_FLAGGED_RECORDS, getAuthenticatedUser());
-
-        return toReturn;
+        return new ArrayList<Status>(getAuthenticationAndAuthorizationService().getAllowedSearchStatuses(getAuthenticatedUser()));
     }
 
     public List<ResourceType> getResourceTypes() {
@@ -269,6 +270,22 @@ public class DashboardController extends AuthenticationAware.Base {
      */
     public void setSharedResourceCollections(List<ResourceCollection> sharedResourceCollections) {
         this.sharedResourceCollections = sharedResourceCollections;
+    }
+
+    public Set<Account> getAccounts() {
+        return accounts;
+    }
+
+    public void setAccounts(Set<Account> accounts) {
+        this.accounts = accounts;
+    }
+
+    public Set<Account> getOverdrawnAccounts() {
+        return overdrawnAccounts;
+    }
+
+    public void setOverdrawnAccounts(Set<Account> overdrawnAccounts) {
+        this.overdrawnAccounts = overdrawnAccounts;
     }
 
 }

@@ -4,7 +4,7 @@
 <title>Administrator Dashboard: Recent Activity</title>
 <meta name="lastModifiedDate" content="$Date$"/>
 <style>
-pre, td, th {
+pre, td {
     white-space: pre-line;
 }
 
@@ -19,15 +19,15 @@ pre, td, th {
 <table class="tableFormat">
     <thead>
         <tr>
-        	<th>browser</th><th>count</th>
+            <th>browser</th><th>count</th>
         </tr>
     </thead>
     <tbody>
         <#list counters?keys as count>
         <#if count?has_content>
          <tr>
-         	<td>${count}</td>
-         	<td>${counters.get(count)}</td>
+             <td>${count}</td>
+             <td>${counters.get(count)}</td>
           </tr>
         </#if>
         </#list>
@@ -37,17 +37,17 @@ pre, td, th {
 <table class="tableFormat">
     <thead>
         <tr>
-        	<th>date</th><th>total time (ms)</th><th>request</th>
+            <th>date</th><th>total time (ms)</th><th>request</th>
         </tr>
     </thead>
     <tbody>
     <#list activityList as activity>
      <tr>
-     	<td>${activity.startDate?datetime}</td>
-     	<td>${(activity.totalTime?c)!default("-")}</td>
-     	<#noescape>
-     	<td width=550>${(activity.name!"")?html?replace("&", "<wbr>&")}</td>
-     	</#noescape>
+        <td>${activity.startDate?datetime}</td>
+        <td>${(activity.totalTime?c)!default("-")}</td>
+        <#noescape>
+        <td width=550>${(activity.name!"")?html?replace("&", "<wbr>&")}</td>
+        </#noescape>
       </tr>
     </#list>
     </tbody>

@@ -5,7 +5,7 @@
 }
 
 .treeview ul {
-	background-color: white;
+	/*background-color: white; */
 	margin-top: 4px;
 }
 
@@ -66,3 +66,4 @@
 .filetree span.folder { background: url(/includes/jquery-treeview/images/folder.gif) 0 0 no-repeat; }
 .filetree li.expandable span.folder { background: url(/includes/jquery-treeview/images/folder-closed.gif) 0 0 no-repeat; }
 .filetree span.file { background: url(/includes/jquery-treeview/images/file.gif) 0 0 no-repeat; }
+

@@ -1,9 +1,12 @@
 package org.tdar.core.bean.keyword;
 
 import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Lob;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
@@ -16,12 +19,15 @@ import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Store;
 import org.tdar.core.bean.HasLabel;
+import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Dedupable;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
 import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
+import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 
 /**
@@ -32,6 +38,7 @@ import org.tdar.search.query.QueryFieldNames;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Rev$
  */
+@SuppressWarnings("rawtypes")
 public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
 
     public String getLabel();
@@ -46,7 +53,7 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
 
     @MappedSuperclass
     @XmlType(name = "kwdbase")
-    public static abstract class Base<T extends Base<?>> extends Persistable.Base implements Keyword, Comparable<T> {
+    public static abstract class Base<T extends Base<?>> extends Persistable.Base implements Keyword, HasStatus, Comparable<T> {
 
         private static final long serialVersionUID = -7516574981065004043L;
 
@@ -57,12 +64,18 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
         @Fields({ @Field(name = "label", analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
                 @Field(name = "label_auto", norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)),
                 @Field(name = "labelKeyword", analyzer = @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)),
-                @Field(name = QueryFieldNames.LABEL_SORT, norms = Norms.NO, store = Store.YES, analyze=Analyze.NO) })
+                @Field(name = QueryFieldNames.LABEL_SORT, norms = Norms.NO, store = Store.YES, analyze = Analyze.NO) })
         private String label;
 
         @Lob
         @Type(type = "org.hibernate.type.StringClobType")
         private String definition;
+
+        @Enumerated(EnumType.STRING)
+        @Column(name = "status")
+        @Field(norms = Norms.NO, store = Store.YES)
+        @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
+        private Status status = Status.ACTIVE;
 
         @Field
         @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)
@@ -73,6 +86,17 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
 
         private transient Float score = -1f;
         private transient Explanation explanation;
+        private transient boolean readyToIndex = true;
+
+        @Transient
+        @XmlTransient
+        public boolean isReadyToIndex() {
+            return readyToIndex;
+        }
+
+        public void setReadyToIndex(boolean readyToIndex) {
+            this.readyToIndex = readyToIndex;
+        }
 
         @Override
         public int compareTo(T o) {
@@ -131,15 +155,21 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
             return true;
         }
 
-        public <D extends Dedupable> void addSynonym(D synonym) {
-            for (String name : synonym.getSynonyms()) {
-                getSynonyms().add(name);
-            }
-            getSynonyms().add(synonym.getSynonymFormattedName());
+        @XmlAttribute
+        public Status getStatus() {
+            return this.status;
         }
 
-        public String getSynonymFormattedName() {
-            return getLabel();
+        public void setStatus(Status status) {
+            this.status = status;
+        }
+
+        public boolean isActive() {
+            return this.status == Status.ACTIVE;
+        }
+
+        public boolean isDeleted() {
+            return this.status == Status.DELETED;
         }
 
     }

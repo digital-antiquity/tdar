@@ -11,5 +11,7 @@
 <@view.infoResourceBasicInformation>
 </@view.infoResourceBasicInformation>
 <@view.showcase />
+<br/>
+<hr/>
 
 <@view.sharedViewComponents image />

@@ -34,7 +34,6 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.Video;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.transform.DcTransformer.VideoTransformer;
 
 import edu.asu.lib.mods.ModsDocument;
 import edu.asu.lib.mods.ModsElementContainer;
@@ -228,7 +227,7 @@ public abstract class ModsTransformer<R extends Resource> implements
                     addVolume(mods, source.getVolume());
                     addExtent(mods, source.getNumberOfPages(), source.getStartPage(), source.getEndPage());
                     addEdition(mods, source.getEdition());
-                    addPublisher(mods, source.getPublisher(), source.getPublisherLocation());
+                    addPublisher(mods, source.getPublisherName(), source.getPublisherLocation());
                     addIsbn(mods, source.getIsbn());
                     addPhysicalLocation(mods, source.getCopyLocation());
                     // no other good place to put these if entered
@@ -242,7 +241,7 @@ public abstract class ModsTransformer<R extends Resource> implements
                     addVolume(bookHost, source.getVolume());
                     addExtent(bookHost, source.getNumberOfPages(), source.getStartPage(), source.getEndPage());
                     addEdition(bookHost, source.getEdition());
-                    addPublisher(bookHost, source.getPublisher(), source.getPublisherLocation());
+                    addPublisher(bookHost, source.getPublisherName(), source.getPublisherLocation());
                     addIsbn(bookHost, source.getIsbn());
                     addPhysicalLocation(bookHost, source.getCopyLocation());
                     // assume that the editors are editors of the host book???
@@ -259,7 +258,7 @@ public abstract class ModsTransformer<R extends Resource> implements
                         artHost.getPart().addDetail(source.getJournalNumber(),
                                 null, null, "issue", null);
 
-                    addPublisher(artHost, source.getPublisher(), source.getPublisherLocation());
+                    addPublisher(artHost, source.getPublisherName(), source.getPublisherLocation());
                     addExtent(artHost, source.getNumberOfPages(), source.getStartPage(), source.getEndPage());
 
                     if (source.getIssn() != null)
@@ -276,21 +275,21 @@ public abstract class ModsTransformer<R extends Resource> implements
                     // add the degree grantor
                     Name degreeGrantor = thesisHost.createName();
                     degreeGrantor.setNameType(NameTypeAttribute.CORPORATE);
-                    if (source.getPublisher() != null) {
-                        degreeGrantor.addNamePart(source.getPublisher(), null); // institution
+                    if (source.getPublisherName() != null) {
+                        degreeGrantor.addNamePart(source.getPublisherName(), null); // institution
                         if (source.getPublisherLocation() != null)
                             degreeGrantor.addNamePart(source.getPublisherLocation(), null); // department
                         degreeGrantor.addRole("Degree grantor", false, null);
                     }
                     break;
                 case CONFERENCE_PRESENTATION:
-                    if (source.getPublisher() != null) {
+                    if (source.getPublisherName() != null) {
                         Name conf = mods.createName();
                         conf.setNameType(NameTypeAttribute.CONFERENCE);
-                        conf.addNamePart(source.getPublisher(), null);
+                        conf.addNamePart(source.getPublisherName(), null);
                         conf.addRole("creator", false, null);
                     }
-                    if (source.getPublisher() != null)
+                    if (source.getPublisherName() != null)
                         mods.getOriginInfo().addPlace(source.getPublisherLocation(), false, null);
                     break;
                 case OTHER:
@@ -396,7 +395,7 @@ public abstract class ModsTransformer<R extends Resource> implements
 
     public static class VideoTransformer extends ModsTransformer<Video> {
     }
-    
+
     public static class DcmiModsTypeMapper {
 
         private static final Map<String, TypeOfResourceValue> typeMap = initTypeMap();
@@ -440,7 +439,7 @@ public abstract class ModsTransformer<R extends Resource> implements
             case SENSORY_DATA:
                 return new SensoryDataTransformer().transform((SensoryData) resource);
             case VIDEO:
-                return new VideoTransformer().transform((Video)resource);
+                return new VideoTransformer().transform((Video) resource);
             default:
                 break;
         }

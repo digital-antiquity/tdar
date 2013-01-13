@@ -8,6 +8,7 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -16,7 +17,6 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.ObjectUtils;
-import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
@@ -30,9 +30,6 @@ import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamOmitField;
-
 /**
  * $Id$
  * 
@@ -45,13 +42,12 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
 @Entity
 @Indexed
 @Table(name = "dataset")
-@XStreamAlias("dataset")
 @XmlRootElement(name = "dataset")
 public class Dataset extends InformationResource {
 
     private static final long serialVersionUID = -5796154884019127904L;
 
-    public enum IntegratableOptions implements HasLabel, Facetable {
+    public enum IntegratableOptions implements HasLabel, Facetable<IntegratableOptions> {
         YES("Ready for Data Integration"), NO("Needs Ontology Mappings");
 
         private String label;
@@ -74,14 +70,23 @@ public class Dataset extends InformationResource {
         public void setCount(Integer count) {
             this.count = count;
         }
+        
+        public String getLuceneFieldName() {
+            return QueryFieldNames.INTEGRATABLE;
+        }
+
+        @Override
+        public IntegratableOptions getValueOf(String val) {
+            return valueOf(val);
+        }
     }
 
-    @XStreamOmitField
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "dataset")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "dataset", orphanRemoval = true)
     @IndexedEmbedded
     private Set<DataTable> dataTables = new LinkedHashSet<DataTable>();
 
-    @OneToMany(mappedBy = "dataset")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "dataset_id")
     private Set<DataTableRelationship> relationships = new HashSet<DataTableRelationship>();
 
     public Dataset() {
@@ -104,7 +109,7 @@ public class Dataset extends InformationResource {
 
     @Field(norms = Norms.NO, store = Store.YES, name = QueryFieldNames.INTEGRATABLE, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     @Transient
-    public IntegratableOptions getIntegratable() {
+    public IntegratableOptions getIntegratableOptions() {
         for (DataTable dt : getDataTables()) {
             for (DataTableColumn dtc : dt.getDataTableColumns()) {
                 if (dtc.getDefaultOntology() != null)
@@ -125,6 +130,20 @@ public class Dataset extends InformationResource {
         }
         // NOTE: IF the HashCode is not implemented properly, on DataTableColumn, this may get out of sync
         return nameToTableMap.get(name);
+    }
+
+    /**
+     * @param string
+     * @return
+     */
+    @Transient
+    public DataTable getDataTableById(Long id) {
+        for (DataTable datatable : getDataTables()) {
+            if (datatable.getId() == id) {
+                return datatable;
+            }
+        }
+        return null;
     }
 
     private void initializeNameToTableMap() {

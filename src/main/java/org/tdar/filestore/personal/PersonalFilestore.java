@@ -29,4 +29,6 @@ public interface PersonalFilestore {
     public void purge(Person person, PersonalFileType personalFileType);
 
     public void purgeQuietly(PersonalFilestoreTicket ticket);
+
+    public PersonalFilestoreFile retrieve(PersonalFilestoreTicket ticket, String filename);
 }

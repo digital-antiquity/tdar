@@ -27,6 +27,7 @@ public class Pair<R, S> {
     private R first;
     private S second;
 
+    @SuppressWarnings("unused")
     private Pair() {
     }
 

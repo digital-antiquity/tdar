@@ -1,45 +1,42 @@
-<#macro queryField freeTextLabel="Search" showAdvancedLink=true showLimits=false>
+<#macro queryField freeTextLabel="Search" showAdvancedLink=true showLimits=false submitLabel="Search">
 
-<label for="queryField">${freeTextLabel}:</label>    <@s.textfield id='queryField' name='query' size='81' value="${query!}" cssClass="longfield"/> 
-<#if showAdvancedLink><a style="padding-left:10px" href="<@s.url value="/search/advanced"/>">advanced search</a></#if>
-
-<br/>
-		<@s.submit value="Search" />
-<#nested>
-<#if showLimits>
-<br/>
-<@narrowAndSort />
-</#if>
-<br/>
+ <@s.textfield placeholder="${freeTextLabel}" id='queryField' name='query' size='81' value="${query!}" cssClass="input-xxlarge"/>
+    <#if showAdvancedLink><span class="help-inline"><a style="display:inline" href="<@s.url value="/search/advanced"/>">advanced search</a></span></#if>
+    <@s.submit value="${submitLabel}" cssClass="btn btn-primary" />
+    <#nested>
+    <#if showLimits>
+        <br/>
+        <@narrowAndSort />
+    </#if>
+    <br/>
 </#macro>
 
 <#macro narrowAndSort>
-        <h3>Narrow Your Search</h3>
-        <div>
-            <label>Limit by<br/> resource type:</label> 
-            <@resourceTypeLimits />
-        </div>
+        <h2>Narrow Your Search</h2>
+
+        <@s.checkboxlist id="includedResourceTypes" numColumns=4 spanClass="span2" name='resourceTypes' list='allResourceTypes'  listValue='label' label="Resource Type"/>
 
         <#if editor!false>
-        <h4>Status</h4>
-        <span class="ie8-cbt-hack">
-        <@s.checkboxlist id="myincludedstatuses" name='includedStatuses' list='allStatuses'  listValue='label' numColumns=4 />
-        </span>
+        <#--FIXME: there seems to be a bug in numColumns when the value is 'too high' (not sure what that number is yet) -->
+        <#--FIXME: also,  we need a good,efficient way to emit bootstrap's version of an inline checkboxlist -->
+        <@s.checkboxlist id="myincludedstatuses" name='includedStatuses' list='allStatuses'  listValue='label' label="Status" />
         </#if>
         
         <h4>Limit by geographic region:</h4>
-        <div>
-            <div id='large-google-map' style="height:450px;"></div>     
-            <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].maximumLongitude" id="maxx" />
-            <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].minimumLatitude"  id="miny" />
-            <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].minimumLongitude" id="minx" />
-            <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].maximumLatitude"  id="maxy" />
+        <div id="latlongoptions">
+            <div id='large-google-map'></div>     
+            <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].maximumLongitude" id="maxx" cssClass="ne-lng" />
+            <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].minimumLatitude"  id="miny" cssClass="sw-lat" />
+            <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].minimumLongitude" id="minx" cssClass="sw-lng" />
+            <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].maximumLatitude"  id="maxy" cssClass="ne-lat" />
         </div>
         
-    <h3>Sorting Options and Submit</h3>
-    <label for="sortField">Sort By:</label>
-     <@search.sortFields />
-    <br/>
+    <h2>Sorting Options and Submit</h2>
+    <div class="control-group">
+        
+        <label class="control-label">Sort By</label>
+        <@sortFields />
+    </div>
 </#macro>
 
 <#macro typeSelected type>
@@ -99,52 +96,49 @@
   <link rel="alternate" type="application/atom+xml" title="Atom 1.0" href="${rssUrl}" />
   </#if>
   <#if (nextPageStartRecord < totalRecords) >
-	  <link rel="next" href="<@s.url value="" includeParams="all" ><@s.param name="startRecord" value="${nextPageStartRecord}"/></@s.url>"/>
+      <link rel="next" href="<@s.url value="" includeParams="all" ><@s.param name="startRecord" value="${nextPageStartRecord}"/></@s.url>"/>
   </#if>
   <#if (prevPageStartRecord > 0) >
-	  <link rel="previous" href="<@s.url value="" includeParams="all" ><@s.param name="startRecord" value="${prevPageStartRecord}" /></@s.url>"/>
+      <link rel="previous" href="<@s.url value="" includeParams="all" ><@s.param name="startRecord" value="${prevPageStartRecord}" /></@s.url>"/>
   </#if>
 </#macro>
 
 <#macro initResultPagination>
-<#global firstRec = (startRecord + 1) />
-<#global curPage = ((startRecord/recordsPerPage)?floor + 1) />
-<#global numPages = ((totalRecords/recordsPerPage)?ceiling) />
-<#global lastRec = nextPageStartRecord>
-
-<#if (firstRec > totalRecords)>
- <#assign numPages = 0 />
- <#assign firstRec = totalRecords/>
-</#if>
-
-<#if (nextPageStartRecord > totalRecords) >
-	<#assign lastRec = totalRecords>
-</#if>
-
-<#if (firstRec - recordsPerPage) < 1 >
-	<#assign prevPageStartRec = 0>
-<#else>
-	<#assign prevPageStartRec = firstRec - recordsPerPage - 1>
-</#if>
+    <#global firstRec = (startRecord + 1) />
+    <#global curPage = ((startRecord/recordsPerPage)?floor + 1) />
+    <#global numPages = ((totalRecords/recordsPerPage)?ceiling) />
+    <#global lastRec = nextPageStartRecord>
+    
+    <#if (firstRec > totalRecords)>
+     <#assign numPages = 0 />
+     <#assign firstRec = totalRecords/>
+    </#if>
+    
+    <#if (nextPageStartRecord > totalRecords) >
+        <#assign lastRec = totalRecords>
+    </#if>
+    
+    <#if (firstRec - recordsPerPage) < 1 >
+        <#assign prevPageStartRec = 0>
+    <#else>
+        <#assign prevPageStartRec = firstRec - recordsPerPage - 1>
+    </#if>
 </#macro>
+
+
 <#macro searchLink path linkText>
-	<a href="
-	<@s.url includeParams="all" value="${path}">
-	<#if path?? && path!="results">
-	<@s.param name="id" value=""/>
-	</#if>
-		<#nested>
-	</@s.url> 
-	">${linkText}</a>
+    <a href="<@searchUrl path><#nested></@searchUrl>">${linkText}</a>
 </#macro>
+
+<#macro searchUrl path><@s.url includeParams="all" value="${path}"><#if path?? && path!="results"><@s.param name="id" value=""/></#if><#nested></@s.url></#macro>
 
 <#macro paginationLink startRecord path linkText>
-	<span class="paginationLink">
-	<@searchLink path linkText>
-		<@s.param name="startRecord" value="${startRecord?c}" />
-		<@s.param name="recordsPerPage" value="${recordsPerPage?c}" />
-	</@searchLink>
-	</span>
+    <span class="paginationLink">
+    <@searchLink path linkText>
+        <@s.param name="startRecord" value="${startRecord?c}" />
+        <@s.param name="recordsPerPage" value="${recordsPerPage?c}" />
+    </@searchLink>
+    </span>
 </#macro>
 
 <#macro join sequence delimiter=",">
@@ -154,7 +148,10 @@
 </#macro>
 
 <#macro pagination path="results">
-	<div class="pagination">
+    <#if (numPages <= 1)>
+    <#return />
+    </#if>
+
   <#assign start =0>
   <#assign end =numPages -1>
   <#if numPages &gt; 40 && curPage &gt; 19 >
@@ -164,34 +161,52 @@
     <#assign end = curPage + 19>
   </#if> 
 
-  <#if start != 0>
-      <@paginationLink startRecord=(0 * recordsPerPage) path="${path}" linkText="first" />
-  </#if>
-		<#if (firstRec > 1)>
-			<@paginationLink startRecord=prevPageStartRec path="${path}" linkText="previous" />
-		</#if>
-		<#if (numPages > 1)>
-			<#list start..end as i>
-				<#if (i + 1) = curPage>
-                                        <#-- FIXME: there are 2 of these spans with
-                                        the same id being generated.  Turn this into
-                                        a CSS class instead or is this a bug?
-                                        -->
-					<span id="currentResultPage">${i + 1}</span>
-				<#else>
-					<@paginationLink startRecord=(i * recordsPerPage) path="${path}" linkText=(i + 1) />
-				</#if>
-			</#list>
-			<#else>
-			1<br/>
-		</#if>
-		<#if (nextPageStartRecord < totalRecords) >
-			<@paginationLink startRecord=nextPageStartRecord path="${path}" linkText="next" />
-		</#if>
-  <#if (end != numPages && nextPageStartRecord < totalRecords)>
-          <@paginationLink startRecord=(totalRecords - totalRecords % recordsPerPage) path="${path}" linkText="last" />
-  </#if>
-	</div>
+    <table class="pagin">
+                    <tr>
+                        <#if (firstRec > 1)>
+                        <td class="prev">
+                            <@paginationLink startRecord=prevPageStartRec path="${path}" linkText="Previous" />
+                        </td>
+                        </#if>
+                        <td class="page">
+                            <ul>
+                              <#if start != 0>
+                                <li>
+                                  <@paginationLink startRecord=(0 * recordsPerPage) path="${path}" linkText="first" />
+                                 </li>
+                                <li>...</li>
+                              </#if>
+                            <#if (numPages > 1)>
+                                <#list start..end as i>
+                                <li>
+                                    <#if (i + 1) = curPage>
+                                                            <#-- FIXME: there are 2 of these spans with
+                                                            the same id being generated.  Turn this into
+                                                            a CSS class instead or is this a bug?
+                                                            -->
+                                        <span id="currentResultPage">${i + 1}</span>
+                                    <#else>
+                                        <@paginationLink startRecord=(i * recordsPerPage) path="${path}" linkText=(i + 1) />
+                                    </#if>
+                                </li>
+                                </#list>
+                                <#else>
+                                <li>1</li>
+                            </#if>
+                            <#if (end != numPages && nextPageStartRecord < totalRecords)>
+                                <li>
+                                      <@paginationLink startRecord=(totalRecords - totalRecords % recordsPerPage) path="${path}" linkText="Last" />
+                                </li>
+                            </#if>
+                            </ul>
+                        </td>
+                            <#if (nextPageStartRecord < totalRecords) >
+                        <td class="next">
+                                <@paginationLink startRecord=nextPageStartRecord path="${path}" linkText="Next" />
+                        </td>
+                            </#if>
+                    </tr>
+                </table>
 </#macro>
 
 <#macro bcad _year>
@@ -199,14 +214,14 @@
 </#macro>
 
 
-<#macro basicPagination label="Records">
+<#macro basicPagination label="Records" showIfOnePage=false>
 <#if (totalRecords > 0 && numPages > 1)>
   <div class="glide">
-	<div id="recordTotal">${label} ${firstRec} - ${lastRec} of ${totalRecords}
-	</div> 
-	<@pagination ""/> 
+    <div id="recordTotal">${label} ${firstRec} - ${lastRec} of ${totalRecords}
+    </div> 
+    <@pagination ""/> 
   </div>
-<#elseif (totalRecords > 0)>
+<#elseif (totalRecords > 0 && showIfOnePage)>
   <div class="glide">
   Displaying ${label} ${firstRec} - ${totalRecords} of ${totalRecords}
   </div>

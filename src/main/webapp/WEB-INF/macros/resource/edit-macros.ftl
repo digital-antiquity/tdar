@@ -5,776 +5,636 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <#-- include navigation menu in edit and view macros -->
 <#escape _untrusted as _untrusted?html>
 <#include "common.ftl">
+<#import "/${themeDir}/local-helptext.ftl" as  helptext>
+<#import "/${themeDir}/settings.ftl" as settings>
 <#include "navigation-macros.ftl">
 
 <#macro basicInformation itemTypeLabel="file" itemPrefix="resource" isBulk=false>
-<div class="glide" >
-    <h3>Basic Information</h3>
+<div class="well-alt" id="basicInformationSection">
+    <h2>Basic Information</h2>
   <#if resource.id?? &&  resource.id != -1>
       <@s.hidden name="id"  value="${resource.id?c}" />
   </#if>
   
   <@s.hidden name="startTime" value="${currentTime?c}" />
 
-        <div id="spanStatus" tooltipcontent="#spanStatusToolTip"><@s.select labelposition='left' label='Status' value="resource.status" name='status'  emptyOption='false' listValue='label' list='%{statuses}'/>
-        <#if resource.resourceType.project><em>Note: project status does not affect status of child resources.</em></#if>
-        <br/>
-    </div>    
-    
-
-    <div id="spanStatusToolTip" class="hidden">
-        <h2>Status</h2>
-        <div>
-            <#-- TODO: verbiage -->
-            Indicates the stage of a resource's lifecycle and how tDAR treats its content.
-            <dl>
-                <dt>Draft</dt><dd>The resource is under construction and/or incomplete</dd>
-                <dt>Active</dt><dd>The resource is considered to be complete.</dd>
-                <dt>Flagged</dt><dd>This resource has been flagged for deletion or requires attention</dd>
-                <dt>Deleted</dt><dd>The item has been 'deleted' from tDAR workspaces and search results, and is considered deprecated.</dd>  
-            </dl>
-            
+        <div id="spanStatus" tooltipcontent="#spanStatusToolTip" class="control-group">
+            <label class="control-label">Status</label>
+            <div class="controls">
+                <@s.select theme="tdar" value="resource.status" name='status'  emptyOption='false' listValue='label' list='%{statuses}'/>
+                <#if resource.resourceType.project><span class="help-block">Note: project status does not affect status of child resources.</span></#if>
+            </div>  
         </div>
-    </div>
+    
+        <@helptext.status />
 <#if isBulk>
 
-	<@s.hidden labelposition='left' id='resourceTitle' label='Title' name='image.title' cssClass="" value="BULK_TEMPLATE_TITLE"/>
-	<@s.hidden labelposition='left' id='dateCreated' label='Year Created' name='image.date' cssClass="" value="-100"/>
-	<@s.hidden id='ImageDescription' name='image.description' value="placeholder description"/>
+    <@s.hidden labelposition='left' id='resourceTitle' label='Title' name='image.title' cssClass="" value="BULK_TEMPLATE_TITLE"/>
+    <@s.hidden labelposition='left' id='dateCreated' placeholder='YYYY' label='Year Created' name='image.date' cssClass="" value="-100"/>
+    <@s.hidden id='ImageDescription' name='image.description' value="placeholder description"/>
 
 <#else>
-    <span
-    tiplabel="Title"
-    tooltipcontent="Enter the entire title, including sub-title, if appropriate."
->
-   
-<@s.textfield labelposition='left' id="resourceRegistrationTitle" label='Title' 
-	title="A title is required for all ${itemTypeLabel}s" name='${itemPrefix}.title' cssClass="required descriptiveTitle longfield" required=true maxlength="512"/>
-</span>
-<br/>
-
-	<#if resource.resourceType != 'PROJECT'>
-	<span tiplabel="Year" tooltipcontent="Four digit year, e.g. 1966 or 2005.">
-	       <#assign dateVal = ""/>
-	       <#if resource.date?? && resource.date != -1>
-	         <#assign dateVal = resource.date?c />
-	      </#if>
-	        <@s.textfield labelposition='left' id='dateCreated' label='Year' name='${itemPrefix}.date' value="${dateVal}" cssClass="shortfield reasonableDate required" required=true
-	          title="Please enter the year this ${itemTypeLabel} was created" />
-	</span>
-	</#if>
+    <div tiplabel="Title"
+    tooltipcontent="Enter the entire title, including sub-title, if appropriate.">
+        <@s.textfield label="Title" id="resourceRegistrationTitle"  
+            title="A title is required for all ${itemTypeLabel}s" name='${itemPrefix}.title' cssClass="required descriptiveTitle input-xxlarge" required=true maxlength="512"/>
+    </div>
+    <#if resource.resourceType != 'PROJECT'>
+    <div tiplabel="Year" tooltipcontent="Four digit year, e.g. 1966 or 2005.">
+        <#local dateVal = ""/>
+        <#if resource.date?? && resource.date != -1>
+        <#local dateVal = resource.date?c />
+        </#if>
+        <@s.textfield label="Year" id='dateCreated' name='${itemPrefix}.date' value="${dateVal}" cssClass="reasonableDate required input-mini" required=true
+          title="Please enter the year this ${itemTypeLabel} was created" />
+    </div>
+    </#if>
 </#if>
-    
     <#nested>
-
 </div>
 
 </#macro>
 
 <#macro abstractSection itemPrefix="resource">
-<div class="glide">
-<h3>Abstract / Description *</h3>
-<span id="t-abstract" class="clear"
-    tiplabel="Abstract / Description"
-    tooltipcontent="Short description of the ${resource.resourceType.label}.">
-    <@s.textarea labelposition='top' id='resourceDescription'  name='${itemPrefix}.description' rows="5" cssClass='required resizable tdartext' required=true title="A description is required" />
-</span>
-
+<div class="well-alt">
+    <h2>Abstract / Description</h2>
+    <div id="t-abstract" class="clear"
+        tiplabel="Abstract / Description"
+        tooltipcontent="Short description of the <@resourceTypeLabel />.">
+            <@s.textarea id='resourceDescription'  label="Abstract / Description" name='${itemPrefix}.description' cssClass='required resizable resize-vertical input-xxlarge' required=true title="A description is required" />
+    </div>
 </div>
 </#macro>
 
 <#macro organizeResourceSection>
-    <div class="glide" id="organize">
-<h3>${siteAcronym} Collection(s) &amp; Project</h3>
-<h4>Add it to a Collection</h4>
- 	<@edit.resourceCollectionSection />
-    
-    <div id="projectTipText" style="display:none;">
-      Select a project with which your ${resource.resourceType.label} will be associated. This is an important choice because it 
-      will allow metadata to be inherited from the project further down this 
-      form
-    </div>
+<div class="" id="organizeSection">
+    <#if !resource.resourceType.project>
+    <h2>${siteAcronym} Collections &amp; Project</h2>
+    <h4>Add to a Collection</h4>
+    <@edit.resourceCollectionSection />
+    <@chooseProjectSection />
+    <#else>
+    <h2>${siteAcronym} Collections</h2>
+    <@edit.resourceCollectionSection />
+    </#if>   
+</div>
+</#macro>
 
-        <#if !resource.resourceType.project>
-<h4>Choose a Project</h4>
-          <div id="t-project" tooltipcontent="#projectTipText" tiplabel="Project">
-                  <#if resource.id != -1>
-                      <@s.select labelposition='left' label='Project' emptyOption='true' id='projectId' name='projectId' listKey='id' listValue='title' list='%{potentialParents}'
-                      truncate=70 value='project.id' required="true" title="Please select a project" cssClass="required" />
-                  <#else>
-                      <@s.select labelposition='left' label='Project' title="Please select a project" emptyOption='true' id='projectId' name='projectId' listKey='id' listValue='title' list='%{potentialParents}'
-                      truncate=70 value="${request.getParameter('projectId')!''}"required="true" cssClass="required" />
-                  </#if>
-              <br/>
-          </div>
-<div id="divSelectAllInheritanceTooltipContent" style="display:none"> 
-Projects in tDAR can contain a variety of different information resources and used to organize a set of related information resources such as documents, datasets, coding sheets, and images. A project's child resources can either inherit or override the metadata entered at this project level. For instance, if you enter the keywords "southwest" and "pueblo" on a project, resources associated with this project that choose to inherit those keywords will also be discovered by searches for the keywords "southwest" and "pueblo". Child resources that override those keywords would not be associated with those keywords (only as long as the overriden keywords are different of course). 
-</div>
-
-<div class="indentFull" tiplabel="Inherit Metadata from Selected Project" tooltipcontent="#divSelectAllInheritanceTooltipContent" id="divInheritFromProject">
-    <input type="checkbox" value="true" id="cbSelectAllInheritance" class="">
-    <label class="datatable-cell-unstyled" for="cbSelectAllInheritance" id="lblCurrentlySelectedProject">inherit from project</label>
-</div>
-        </#if>   
-    
-</div>
+<#macro chooseProjectSection>
+    <#local _projectId = 'project.id' />
+    <#if resource.id == -1 >
+    <#local _projectId = request.getParameter('projectId')!'' />
+    </#if>
+        <div id="projectTipText" style="display:none;">
+        Select a project with which your <@resourceTypeLabel /> will be associated. This is an important choice because it  will allow metadata to be inherited from the project further down this form
+        </div>
+        <h4>Choose a Project</h4>
+        <div id="t-project" tooltipcontent="#projectTipText" tiplabel="Project">
+        </div>
+        <div class="control-group">
+            <label class="control-label">Project</label>
+            <div class="controls controls-row">
+                <@s.select theme="simple" title="Please select a project" emptyOption='true' id='projectId' name='projectId' listKey='id' listValue='title' list='%{potentialParents}'
+                truncate="70" value='${_projectId}' required="true"  cssClass="required input-xxlarge" />
+                
+            </div>
+        </div>
+            
+        <div class="modal hide fade" id="inheritOverwriteAlert" tabindex="-1" role="dialog" aria-labelledby="validationErrorModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 id="validationErrorModalLabel">Overwrite Existing Values?</h3>
+            </div>
+            <div class="modal-body">
+                <p>Inheriting values from <span class="labeltext">the parent project</span> would overwrite existing information in the following sections</p>
+                <p class="list-container"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="btnInheritOverwriteOkay">Overwrite Existing Values</button>
+                <button type="button" class="btn"  id="btnInheritOverwriteCancel" data-dismiss="modal" aria-hidden="true">Cancel</button>
+            </div>
+        </div> 
+        
+        <@helptext.inheritance />
+        <div class="control-group" tiplabel="Inherit Metadata from Selected Project" tooltipcontent="#divSelectAllInheritanceTooltipContent" id="divInheritFromProject">
+            <div class="controls">
+                <label class="checkbox" for="cbSelectAllInheritance">
+                    <input type="checkbox" value="true" id="cbSelectAllInheritance" class="">
+                    <span id="spanCurrentlySelectedProjectText">Inherit from project.</span>
+                </label>
+            </div>
+        </div>
 </#macro>
 
 <#macro resourceCollectionSection>
-   <div style="display:none" id="divResourceCollectionListTips">
-        <p>
-            Specify the names of the collections that tDAR should add this resource to.  Alternately you can start a new, <em>public</em>  collection 
-            by typing the desired name and selecting the last option in the list of pop-up results.  The newly-created collection will contain only this 
-            resource, but can be modified at any time. 
-        </p>
+    <#local _resourceCollections = [blankResourceCollection] />
+    <#if (resourceCollections?? && !resourceCollections.empty)>
+    <#local _resourceCollections = resourceCollections />
+    </#if>
+    <@helptext.resourceCollection />
+    <div tiplabel="${siteAcronym} Collections" tooltipcontent="#divResourceCollectionListTips">
+        <div id="resourceCollectionTable" class="control-group repeatLastRow" addAnother="add another collection">
+            <label class="control-label">Collection Name(s)</label>
+            <#list _resourceCollections as resourceCollection>
+            <@resourceCollectionRow resourceCollection resourceCollection_index/>
+            </#list>
+        </div>
     </div>
-
-
-    <p tiplabel="tDAR Collections" tooltipcontent="#divResourceCollectionListTips">
-        <em>Collections enable you to organize and share resources within tDAR</em>
-        <table id="resourceCollectionTable" class="tableFormat width99percent repeatLastRow" addAnother="add another collection">
-            <thead>
-                <th colspan=2>Collection Name</th>
-            </thead>
-            <tbody>
-                <#if (resourceCollections?? && !resourceCollections.empty)>
-                  <#list resourceCollections as resourceCollection>
-                    <@resourceCollectionRow resourceCollection resourceCollection_index/>
-                  </#list>
-                <#else>
-                    <@resourceCollectionRow blankResourceCollection />
-                </#if>
-            </tbody>
-        </table>
-    </p>
-
 </#macro>
 
-<#macro keywordRows keywordList keywordField showDelete=true>
-    <#if keywordList.empty >
-      <@keywordRow keywordField />
-    <#else>
-    <#list keywordList as keyword>
-      <@keywordRow keywordField keyword_index />
-    </#list>
-    </#if>
+<#macro resourceCollectionRow resourceCollection collection_index = 0 type="internal">
+    <div id="resourceCollectionRow_${collection_index}_" class="controls controls-row repeat-row">
+            <@s.hidden name="resourceCollections[${collection_index}].id"  id="resourceCollectionRow_${collection_index}_id" />
+            <@s.textfield theme="simple" id="resourceCollectionRow_${collection_index}_id" name="resourceCollections[${collection_index}].name" cssClass="input-xxlarge collectionAutoComplete "  autocomplete="off"
+            autocompleteIdElement="#resourceCollectionRow_${collection_index}_id"
+            autocompleteParentElement="#resourceCollectionRow_${collection_index}_" />
+        <@clearDeleteButton id="resourceCollectionRow" />
+    </div>
+</#macro>
+
+<#macro keywordRows label keywordList keywordField showDelete=true addAnother="add another keyword">
+    <div class="control-group repeatLastRow" id="${keywordField}Repeatable" data-add-another="${addAnother}">
+        <label class="control-label">${label}</label>
+        <#if keywordList.empty >
+          <@keywordRow keywordField />
+        <#else>
+        <#list keywordList as keyword>
+          <@keywordRow keywordField keyword_index showDelete />
+        </#list>
+        </#if>
+    </div>
 </#macro>
 
 <#macro keywordRow keywordField keyword_index=0 showDelete=true>
-    <tr id='${keywordField}Row_${keyword_index}_'>
-    <td>
-        <@s.textfield name='${keywordField}[${keyword_index}]' cssClass='longfield keywordAutocomplete' autocomplete="off" />
-    </td>
-    <#if showDelete>
-    <td><@clearDeleteButton id="${keywordField}Row" /></td>
-    </#if>
-    </tr>
+    <div class="controls controls-row" id='${keywordField}Row_${keyword_index}_'>
+        <@s.textfield theme="tdar" name='${keywordField}[${keyword_index}]' cssClass='input-xlarge keywordAutocomplete' placeholder="enter keyword"/>
+        <#if showDelete>
+        <@clearDeleteButton id="${keywordField}Row" />
+        </#if>
+    </div>
 </#macro>
 
 
 <#macro spatialContext showInherited=true>
-<div class="glide">
-    <h3>Spatial Terms</h3>
+<div class="well-alt" id="spatialSection">
+    <h2>Spatial Terms</h2>
     <@inheritsection checkboxId="cbInheritingSpatialInformation" name='resource.inheritingSpatialInformation' showInherited=showInherited />
     <div id="divSpatialInformation">
-        <div tiplabel="Spatial Terms: Geographic"
-            tooltipcontent="Keyword list: Geographic terms relevant to the document, e.g. &quot;Death Valley&quot; or &quot;Kauai&quot;." >
-        <label>Geographic Term</label>
-        <table id="geographicKeywordTable" class="repeatLastRow field" addAnother="add another geographic term">
-            <tbody>
-            <@keywordRows geographicKeywords 'geographicKeywords' />
-            </tbody>
-        </table>
+ 
+        <div tiplabel="Spatial Terms: Geographic" tooltipcontent="Keyword list: Geographic terms relevant to the document, e.g. &quot;Death Valley&quot; or &quot;Kauai&quot;." >
+        <@keywordRows "Geographic Terms" geographicKeywords 'geographicKeywords' />
         </div>
-        <div id='large-google-map' style='height:450px;'
+        <@helptext.geo />
+        <h4>Geographic Region</h4>
+        <div id='editmapv3' class="tdar-map-large google-map"
             tiplabel="Geographic Coordinates"
-            tooltipcontent="Identify the approximate region of this resource by clicking on &quot;Select Region&quot; and drawing a bounding box on the map.
-                <br/>Note: to protect site security, tDAR obfuscates all bounding boxes, bounding boxes smaller than 1 mile, especially.  This 'edit' view 
-                will always show the exact coordinates."
+            tooltipcontent="#geoHelpDiv"
             ></div>
-        <br />
         <div id="divManualCoordinateEntry" tooltipcontent="#divManualCoordinateEntryTip">
+        <br />
             
             <@s.checkbox id="viewCoordinatesCheckbox" name="viewCoordinatesCheckbox" onclick="$('#explicitCoordinatesDiv').toggle(this.checked);" label='Enter / View Coordinates' labelposition='right'  />
             
-            <script type="text/javascript">
-                $(document).ready(function(){
-                    $('#explicitCoordinatesDiv').toggle($('#viewCoordinatesCheckbox')[0].checked);
-                    
-                    $(".latLong").each(function(index, value){
-                        $(this).hide();
-                        //copy value of hidden original to the visible text input
-                        var id = $(this).attr('id'); 
-                        $('#d_' + id).val($('#' + id).val());
-                    });
-                });
-                
-            </script>
             <div id='explicitCoordinatesDiv' style='text-align:center;'>
             
                 <table cellpadding="0" cellspacing="0" style="margin-left:auto;margin-right:auto;text-align:left;" >
                 <tr>                                    
                 <td></td>
                 <td>
-                <@s.textfield  name='latitudeLongitudeBoxes[0].maximumLatitude' id='maxy' size="14" cssClass="float latLong" title="Please enter a valid Maximum Latitude" />
-                <input type="text"  id='d_maxy'  watermark="Latitude (max)" onChange='processLatLong(this)' onBlur='processLatLong(this)' />
+                <@s.textfield  theme="simple" name='latitudeLongitudeBoxes[0].maximumLatitude' id='maxy' size="14" cssClass="float latLong ne-lat" title="Please enter a valid Maximum Latitude" />
+                <input type="text"  id='d_maxy'  placeholder="Latitude (max)"  class="ne-lat-display span2" />
                 </td>
                 <td></td>
                 </tr>
                 <tr>
                 <td style="width:33%;text-align:center">
-                    <@s.textfield  name="latitudeLongitudeBoxes[0].minimumLongitude" id='minx' size="14" cssClass="float latLong" title="Please enter a valid Minimum Longitude" />
-                    <input type="text"  id='d_minx'  watermark="Longitude (min)"  onChange='processLatLong(this)' onBlur='processLatLong(this)' />
+                    <@s.textfield theme="simple"  name="latitudeLongitudeBoxes[0].minimumLongitude" id='minx' size="14" cssClass="float latLong sw-lng" title="Please enter a valid Minimum Longitude" />
+                    <input type="text"  id='d_minx'  placeholder="Longitude (min)"   class="sw-lng-display span2" />
                 </td>
                 <td style="width:33%;text-align:center">
-                    <input type="button" id="locate" value="Locate" onclick="locateCoords();" style="padding:5px; margin:0;width:10em" />
+                    <input type="button" id="locate" value="Locate" class="btn locateCoordsButton" />
                 </td>
                 <td style="width:33%;text-align:center">
-                    <@s.textfield  name="latitudeLongitudeBoxes[0].maximumLongitude" id='maxx' size="14" cssClass="float latLong" title="Please enter a valid Maximum Longitude" />
-                    <input type="text"  id='d_maxx'   watermark="Longitude (max)" onChange='processLatLong(this)' onBlur='processLatLong(this)' />
+                    <@s.textfield theme="simple"  name="latitudeLongitudeBoxes[0].maximumLongitude" id='maxx' size="14" cssClass="float latLong ne-lng" title="Please enter a valid Maximum Longitude" />
+                    <input type="text"  id='d_maxx'   placeholder="Longitude (max)"  class="ne-lng-display span2" />
                 </td>
                 </tr>
                 <tr>
                 <td></td>
                 <td>
-                    <@s.textfield  name="latitudeLongitudeBoxes[0].minimumLatitude" id="miny" size="14" cssClass="float latLong " title="Please enter a valid Minimum Latitude" /> 
-                    <input type="text" id="d_miny"  watermark="Latitude (min)" onChange='processLatLong(this)' onBlur='processLatLong(this)' /> 
+                    <@s.textfield theme="simple"  name="latitudeLongitudeBoxes[0].minimumLatitude" id="miny" size="14" cssClass="float latLong sw-lat" title="Please enter a valid Minimum Latitude" /> 
+                    <input type="text" id="d_miny"  placeholder="Latitude (min)"  class="sw-lat-display span2" /> 
                 </td>
                 <td></td>
                 </tr>           
                 </table>
             </div>
-            <div id="divManualCoordinateEntryTip" class="hidden">
-                <h2>Manually Enter Coordinates</h2>
-                <div>
-                    Click the Locate button after entering the longitude-latitude pairs in the respective input fields to draw a box on the map and zoom to it.
-                    <br />Examples:
-                    <ul>
-                        <li>40&deg;44'55"N</li>
-                        <li>53 08 50N</li>
-                        <li>-73.9864</li>
-                    </ul>
-                    <p><aside><strong>Note:</strong> to protect site security, tDAR obfuscates all bounding boxes, bounding boxes smaller than 1 mile.  This 'edit' view will 
-                    always show the exact coordinates.</aside></p>
-                                   
-                 </div>
-            </div>
+            <@helptext.manualGeo />
         </div>
     </div>
 </div>
 </#macro>
 
+<#macro resourceTypeLabel>
+<#if bulkUpload>
+	Resource
+<#else>
+${resource.resourceType.label}
+</#if>
+</#macro>
 
 <#macro resourceProvider showInherited=true>
-<div class="glide" id="divResourceProvider" tiplabel="Resource Provider" tooltipcontent="The institution authorizing tDAR to ingest the resource for the purpose of preservation and access.">
-	<h3>Institution Authorizing Upload of this ${resource.resourceType.label}</h3>
-	<@s.textfield labelposition='left' label='Institution' name='resourceProviderInstitutionName' id='txtResourceProviderInstitution' cssClass="institution longfield" size='40'/>
-	<br/>
+<div class="well-alt" id="divResourceProvider" tiplabel="Resource Provider" tooltipcontent="The institution authorizing ${siteAcronym} to ingest the resource for the purpose of preservation and access.">
+    <h2>Institution Authorizing Upload of this <@resourceTypeLabel /></h2>
+    <@s.textfield label='Institution' name='resourceProviderInstitutionName' id='txtResourceProviderInstitution' cssClass="institution input-xxlarge" size='40'/>
+    <br/>
 </div>
 </#macro>
 
 
 <#macro temporalContext showInherited=true>
-<div class="glide">
-<h3>Temporal Coverage</h3>
-<@inheritsection checkboxId="cbInheritingTemporalInformation" name='resource.inheritingTemporalInformation' showInherited=showInherited  />
-<div  id="divTemporalInformation">
-    <div
-        tiplabel="Temporal Term"
-        tooltipcontent="Keyword list: Temporal terms relevant to the document, e.g. &quot;Pueblo IV&quot; or &quot;Late Archaic&quot;.">
-        <label>Temporal Terms</label>
-    <table id="temporalKeywordTable" class="repeatLastRow field" addAnother="add another temporal keyword">
-    <tbody>
-    <@keywordRows temporalKeywords 'temporalKeywords' />
-    </tbody>
-    </table>
+<div class="well-alt" id="temporalSection">
+    <h2>Temporal Coverage</h2>
+    <@inheritsection checkboxId="cbInheritingTemporalInformation" name='resource.inheritingTemporalInformation' showInherited=showInherited  />
+    <div  id="divTemporalInformation">
+        <div tiplabel="Temporal Terms" tooltipcontent="Keyword list: Temporal terms relevant to the document, e.g. &quot;Pueblo IV&quot; or &quot;Late Archaic&quot;.">
+            <@keywordRows "Temporal Terms" temporalKeywords 'temporalKeywords' true "add another temporal keyword" />
+        </div>
+        <@coverageDatesSection />
     </div>
-    <br/>
-    <@coverageDatesSection />
-    </div>
-
 </div>
 </#macro>
 
+<#macro combineValues list=[]>
+    <#compress>
+        <#list list as item>
+            <#if item_index !=0>,</#if>"${item?html}"
+        </#list>
+    </#compress>
+</#macro>
+<#macro combineValues2 list=[]>
+    <#compress>
+        <#list list as item>
+            <#if item_index !=0>,</#if>${item?html}
+        </#list>
+    </#compress>
+</#macro>
+
+
 <#macro generalKeywords showInherited=true>
 
-<div class="glide" 
-    tiplabel="General Keyword(s)"
+<div  
+    tiplabel="General Keywords"
     tooltipcontent="Keyword list: Select the artifact types discussed in the document.">   
-    <h3>General Keyword(s)</h3>
+    <h2>General Keywords</h2>
     <@inheritsection checkboxId="cbInheritingOtherInformation" name='resource.inheritingOtherInformation'  showInherited=showInherited />
     <div id="divOtherInformation">
-        <label>Keyword</label>
-        <table id="otherKeywordTable" class="repeatLastRow field" addAnother="add another keyword">
-        <tbody>
-            <@keywordRows otherKeywords 'otherKeywords' />
-        </tbody>
-        </table>
+        <@keywordRows "Keyword" otherKeywords 'otherKeywords' />
     </div>
+    
+    <#--fixme:  moving 'tagstrip' experiment out of divOtherInformation so existing inheritance code doesn't break
+    <div class="row">
+                <p><span class="label label-warning">FIXME:</span> replace lame keyword lists with fancy taglists (like the one below!)</p><br>
+        <div class="control-group">
+            <label class="control-label">Other Keywords</label>
+            <div class="controls">
+                <input type=text" name="test" id="otherKeywords" style="width:500px" value="<@combineValues2 otherKeywords/>"/>
+            </div>
+        </div>
+        <script>
+        $(document).ready(function() {
+            $("#otherKeywords").select2({
+                tags:[<@combineValues otherKeywords />],
+                tokenSeparators: [";"]});
+        });
+        </script>
+    </div>
+     -->
 </div>
 </#macro>
 
 
 <#macro sharedUploadFile divTitle="Upload">
-<div class="glide">
-    <h3>${divTitle}</h3>
-        <div class='fileupload-content'>
-            <#nested />
-            <#-- XXX: verify logic for rendering this -->
-            <#if multipleFileUploadEnabled || resource.hasFiles()>
-            <h4>Current ${multipleFileUploadEnabled?string("and Pending Files", "File")}</h4>
-            <table id="uploadFiles" class="files">
-            </table>
-            <table id="files" class='files sortable'>
-            <thead>
-	            <tr class="reorder <#if (fileProxies?size < 2 )>hidden</#if>">
-	            	<th colspan=2>Reorder: <span class="link alphasort">Alphabetic</span> | <span class="link" onclick="customSort(this)">Custom</span>  </th>
-	            </tr>
-            </thead>
-            <tbody>
-            <#list fileProxies as fileProxy>
-                <#if fileProxy??>
-                <@fileProxyRow rowId=fileProxy_index filename=fileProxy.filename filesize=fileProxy.size fileid=fileProxy.fileId action=fileProxy.action versionId=fileProxy.originalFileVersionId/>
-                </#if>
-            </#list>
-            <#if fileProxies.empty>
-            <tr class="noFiles width99percent newRow">
-            <td><em>no files uploaded</em></td>
+<div class="well-alt" id="uploadSection">
+    <h2>${divTitle}</h2>
+    <div class='fileupload-content'>
+        <#nested />
+        <#-- XXX: verify logic for rendering this -->
+        <#if multipleFileUploadEnabled || resource.hasFiles()>
+        <h4>Current ${multipleFileUploadEnabled?string("and Pending Files", "File")}</h4>
+        <table id="uploadFiles" class="files table tableFormat">
+        </table>
+        <table id="files" class="files sortable tableFormat">
+        <thead>
+            <tr class="reorder <#if (fileProxies?size < 2 )>hidden</#if>">
+                <th colspan=2>Reorder: <span class="link alphasort">Alphabetic</span> | <span class="link" onclick="customSort(this)">Custom</span>  </th>
             </tr>
+        </thead>
+        <tbody>
+        <#list fileProxies as fileProxy>
+            <#if fileProxy??>
+            <@fileProxyRow rowId=fileProxy_index filename=fileProxy.filename filesize=fileProxy.size fileid=fileProxy.fileId action=fileProxy.action versionId=fileProxy.originalFileVersionId/>
             </#if>
-            </tbody>
-            </table>
-            </#if>
-        </div>
-      <label for="resourceAvailability" id="lblResourceAvailability">Embargoed?</label><@s.select labelposition='left'  id='resourceAvailability' name='resourceAvailability' list=["Public", "Embargoed"] />
-      <div id="divConfidentialAccessReminder" class="hidden">
-          <em>Embargoed records will become public in ${embargoPeriodInYears} years. Confidential records will not be made public. Use the &quot;Access Rights&quot; section to assign access to this file for specific users.</em>
-      </div>
+        </#list>
+        <#if fileProxies.empty>
+        <tr class="noFiles newRow">
+        <td><em>no files uploaded</em></td>
+        </tr>
+        </#if>
+        </tbody>
+        </table>
+        </#if>
+    </div>
+    <@helptext.confidentialFile />
 </div>
-
 </#macro>
 
-<#macro siteKeywords showInherited=true divTitle="About Your Site(s)">
-<div class="glide" >
-<h3>${divTitle}</h3>
-<@inheritsection checkboxId='cbInheritingSiteInformation' name='resource.inheritingSiteInformation'  showInherited=showInherited />
-<div id="divSiteInformation">
-        <div class="hidden" id="siteinfohelp">
-        Keyword list: Enter site name(s) and select feature types (<a href="${siteTypesHelpUrl}">view complete list</a>) discussed in the document. Use the Other field if needed.</div>
-    <label for="siteNameKeywordTable">Site Name</label>
-    <table id="siteNameKeywordTable" class="repeatLastRow field" addAnother="add another site name" 
-        tiplabel="About Your Site(s)"
-        tooltipcontent="#siteinfohelp">
-    <tbody>
-    <@keywordRows siteNameKeywords 'siteNameKeywords' />
-    </tbody>
-    </table>
-    
-    <br/>
-    <label>Site Type</label>
-    
-    
-    <table id="siteTypeKeywordTable" class="field">
-    <tbody>
-    <tr><td><@s.checkboxlist theme="hier" name="approvedSiteTypeKeywordIds" keywordList="approvedSiteTypeKeywords" /></td></tr>
-    </tbody>
-    </table>
-    
-    <label>Other</label>
-    <table id="uncontrolledSiteTypeKeywordTable" class="repeatLastRow field" addAnother="add another uncontrolled site type keyword" >
-        <tbody>
-        <@keywordRows uncontrolledSiteTypeKeywords 'uncontrolledSiteTypeKeywords' />
-        </tbody>
-    </table>
-</div>
-
+<#macro siteKeywords showInherited=true divTitle="Site Information">
+<@helptext.siteName />
+<div id="siteSection" tooltipcontent="#siteinfohelp">
+    <h2>${divTitle}</h2>
+    <@inheritsection checkboxId='cbInheritingSiteInformation' name='resource.inheritingSiteInformation'  showInherited=showInherited />
+    <div id="divSiteInformation" \>
+        <@keywordRows "Site Name" siteNameKeywords 'siteNameKeywords' />
+        
+        <div class="control-group">
+            <label class="control-label">Site Type</label>
+            <div class="controls">
+                <@s.checkboxlist theme="hier" name="approvedSiteTypeKeywordIds" keywordList="approvedSiteTypeKeywords" />
+            </div>
+        </div>
+        
+        <@keywordRows "Other" uncontrolledSiteTypeKeywords 'uncontrolledSiteTypeKeywords' />
+    </div>
 </div>
 </#macro>
 
 
 <#macro materialTypes showInherited=true>
-<div class="glide" 
-    tiplabel="Material Type(s)"
-    tooltipcontent="#materialtypehelp">
-    <div class="hidden" id="materialtypehelp">
-    	Keyword list: Select the artifact types discussed in the document.<a href="${materialTypesHelpUrl}">view all material types</a>
-    </div>
-    <h3>Material Type(s)</h3>
+<div tooltipcontent="#materialtypehelp">
+<@helptext.materialType />
+    <h2>Material Types</h2>
     <@inheritsection checkboxId='cbInheritingMaterialInformation' name='resource.inheritingMaterialInformation'  showInherited=showInherited />
     <div id="divMaterialInformation">
-        <@s.checkboxlist name='materialKeywordIds' list='allMaterialKeywords' listKey='id' listValue='label' listTitle="definition"
-            theme="tdar" numColumns=3 cssClass="smallIndent" />
-    </div>
+        <@s.checkboxlist name='materialKeywordIds' list='allMaterialKeywords' listKey='id' listValue='label' listTitle="definition"  label="Select Type(s)"
+            spanClass="span2" numColumns="3" />
+    </div>      
 </div>
 
 </#macro>
 
 <#macro culturalTerms showInherited=true inline=false>
-<div  <#if !inline> class="glide" </#if> 
-    tiplabel="Cultural Terms"
-    tooltipcontent="#culturehelp">
-    <div id="culturehelp" class="hidden">
-    Keyword list: Select the archaeological &quot;cultures&quot; discussed in the document. Use the Other field if needed. <a href="${culturalTermsHelpUrl}">view all controlled terms</a>
-    </div>
-    <h3>Cultural Term(s)</h3>
+<div tooltipcontent="#culturehelp">
+<@helptext.cultureTerms />
+    <h2>Cultural Terms</h2>
     <@inheritsection checkboxId="cbInheritingCulturalInformation" name='resource.inheritingCulturalInformation'  showInherited=showInherited />
-    <div id="divCulturalInformation">
-        <label>Culture</label>
-        <table id="cultureKeywordTable" class="field">
-            <tbody>
-            <tr><td><@s.checkboxlist theme="hier" name="approvedCultureKeywordIds" keywordList="approvedCultureKeywords" /></td></tr>
-          </tbody>
-        </table>
+    <div id="divCulturalInformation" >
+        <div class="control-group">
+            <label class="control-label">Culture</label>
+            <div class="controls">
+                <@s.checkboxlist theme="hier" name="approvedCultureKeywordIds" keywordList="approvedCultureKeywords" />
+            </div>
+        </div>
         
-        <br />
-        <label>Other</label>
-        <table id="uncontrolledCultureKeywordTable" class="repeatLastRow field" addAnother="add another cultural term">
-            <tbody>
-            <@keywordRows uncontrolledCultureKeywords 'uncontrolledCultureKeywords' />
-            </tbody>
-        </table>
+        <!--"add another cultural term" -->
+        <@keywordRows "Other" uncontrolledCultureKeywords 'uncontrolledCultureKeywords' />
     </div>
 </div>
 </#macro>
 
+<#--
 <#macro uncontrolledCultureKeywordRow uncontrolledCultureKeyword_index=0>
             <tr id='uncontrolledCultureKeywordRow_${uncontrolledCultureKeyword_index}_'>
             <td>
-                <@s.textfield name='uncontrolledCultureKeywords[${uncontrolledCultureKeyword_index}]' cssClass='longfield cultureKeywordAutocomplete' autocomplete="off" />
+                <@s.textfield name='uncontrolledCultureKeywords[${uncontrolledCultureKeyword_index}]' cssClass=' input-xxlarge cultureKeywordAutocomplete' autocomplete="off" />
                 </td><td><@clearDeleteButton id="uncontrolledCultureKeywordRow" />
             </td>
             </tr>
 </#macro>
-
+-->
 <#macro investigationTypes showInherited=true >
-<div class="glide" tiplabel="Investigation Type(s)" tooltipcontent="#investigationtypehelp">
-<div class="hidden" id="investigationtypehelp">
-Keyword list: Select the investigation types relevant to the document.<a href="${investigationTypesHelpUrl}">view all investigation types</a></div>
-    <h3>Investigation Type(s)</h3>
-        <@inheritsection checkboxId='cbInheritingInvestigationInformation' name='resource.inheritingInvestigationInformation'  showInherited=showInherited />
-        <div id="divInvestigationInformation">
-            <@s.checkboxlist name='investigationTypeIds' list='allInvestigationTypes' listKey='id' listValue='label' numColumns=2 cssClass="smallIndent" 
-                listTitle="definition" />
-        </div>
+<div tiplabel="Investigation Types" tooltipcontent="#investigationtypehelp" id="investigationSection">
+    <h2>Investigation Types</h2>
+    <@inheritsection checkboxId='cbInheritingInvestigationInformation' name='resource.inheritingInvestigationInformation'  showInherited=showInherited />
+    <div id="divInvestigationInformation">
+        <@s.checkboxlist name='investigationTypeIds' list='allInvestigationTypes' listKey='id' listValue='label' numColumns="2" spanClass="span3" 
+            label="Select Type(s)" listTitle="definition" />
+    </div>
 </div>
+<@helptext.investigationType />
 </#macro>
 
 
 <#-- provides a fieldset just for full user access -->
 <#macro fullAccessRights tipsSelector="#divAccessRightsTips">
-<div id="divAccessRightsTips" style="display:none">
-<p>Determines who can edit a document or related metadata. Enter the first few letters of the person's last name. 
-The form will check for matches in the tDAR database and populate the related fields.</p>
-<em>Types of Permissions</em>
-<dl>
-    <dt>View All</dt>
-    <dd>User can view/download all file attachments.</dd>
-    <dt>Modify Record<dt>
-    <dd>User can edit this resource.<dd>
-</dl>
-</div>
+<#local _authorizedUsers=authorizedUsers />
+<#if _authorizedUsers.empty><#local _authorizedUsers=[blankAuthorizedUser]></#if>
+<@helptext.accessRights />
 
-<div
-    id="divAccessRights"
-    class="glide"
-    tiplabel="User Access Rights"
-    tooltipcontent="${tipsSelector}">
-<h3><a name="accessRights"></a>Access Rights</h3>
-<h4>Users who can view or modify this resource</h4>
-<table id="accessRightsTable" class="tableFormat width99percent repeatLastRow" addAnother="add another user">
-<tbody>
-<#if authorizedUsers.empty >
-  <@authorizedUserRow blankAuthorizedUser />
-<#else>
-  <#list authorizedUsers as authorizedUser>
-    <#if authorizedUser??>
-      <@authorizedUserRow authorizedUser authorizedUser_index />
-   </#if>
-  </#list>
-</#if>
-</tbody>
-</table>
+<div id="divAccessRights" tiplabel="Access Rights" tooltipcontent="${tipsSelector}">
+<h2><a name="accessRights"></a>Access Rights</h2>
+<h3>Users who can view or modify this resource</h3>
+
+<div id="accessRightsRecords" class="<#if !ableToUploadFiles?has_content || ableToUploadFiles>repeatLastRow</#if>" data-addAnother="add another user">
+    <div class="control-group">
+        <label class="control-label">Users</label>
+        <#list _authorizedUsers as authorizedUser>
+            <#if authorizedUser??>
+            	<#local disabled = false>
+            	<#if authorizedUser.user.id == authenticatedUser.id || ableToUploadFiles?has_content && !ableToUploadFiles>
+	            	<#local disabled = true>
+            	</#if>
+           	    <div class="controls controls-row">
+           	    <div class="repeat-row"  id="authorizedUsersRow_${authorizedUser_index}_">
+               	    <div class="span6">
+                        <@userRow person=authorizedUser.user isDisabled=disabled _indexNumber=authorizedUser_index includeRole=false _personPrefix="user" 
+                           prefix="authorizedUsers" includeRights=true isUser=true includeRepeatRow=false />
+                    </div>
+                    <div class="span1">
+                        <@clearDeleteButton id="accessRightsRecordsDelete${authorizedUser_index}" disabled=disabled />
+                    </div>
+                </div>
+            </div>
+            </#if>
+        </#list>
+    </div>
+</div>
 
 <#nested>
 
  <#if persistable.resourceType??>
   <@resourceCollectionsRights effectiveResourceCollections >
-  Note: this does not reflect changes to resource collection you have made until you save.
+  <#--Note: this does not reflect changes to resource collection you have made until you save.-->
   </@resourceCollectionsRights>
  </#if>
 
 </div>
 </#macro>
 
-<#macro authorizedUserRow authorizedUser authorizedUser_index=0>
- <#assign disabled = "false" />
- <#if authorizedUser.user.id == authenticatedUser.id>
-   <#assign disabled = "true" />
- </#if>
-  <tr id='authorizedUserRow_${authorizedUser_index}_'>
-  <td>
-    <div class="width30percent marginLeft10" >
-        <@s.hidden name='authorizedUsers[${authorizedUser_index}].user.id' value='${(authorizedUser.user.id!-1)?c}' id="authorizedUserId__id_${authorizedUser_index}_"  cssClass="validIdRequired" onchange="this.valid()"  autocompleteParentElement="#authorizedUserRow_${authorizedUser_index}_"  />
-        <@s.textfield cssClass="userAutoComplete" watermark="Last Name"  readonly="${disabled}" autocompleteParentElement="#authorizedUserRow_${authorizedUser_index}_"
-        autocompleteIdElement="#authorizedUserId__id_${authorizedUser_index}_" autocompleteName="lastName" autocomplete="off"
-            name="authorizedUsers[${authorizedUser_index}].user.lastName" maxlength="255" /> 
-          <@s.textfield cssClass="userAutoComplete" watermark="First Name"  readonly="${disabled}" autocomplete="off"
-              name="authorizedUsers[${authorizedUser_index}].user.firstName" maxlength="255" autocompleteName="firstName"
-              autocompleteIdElement="#authorizedUserId__id_${authorizedUser_index}_" 
-              autocompleteParentElement="#authorizedUserRow_${authorizedUser_index}_"  />
-        <@s.textfield cssClass="userAutoComplete" watermark="Email" readonly="${disabled}" autocomplete="off"
-        autocompleteIdElement="#authorizedUserId__id_${authorizedUser_index}_" autocompleteName="email" autocompleteParentElement="#authorizedUserRow_${authorizedUser_index}_"
-            name="authorizedUsers[${authorizedUser_index}].user.email" maxlength="255"/>
-        <br />
-    </div>
-    <div class="width60percent marginLeft10">
-        <@s.textfield cssClass="userAutoComplete" watermark="Institution Name" readonly="${disabled}" autocomplete="off"
-            autocompleteIdElement="#authorizedUserId__id_${authorizedUser_index}_" 
-            autocompleteName="institution" 
-            autocompleteParentElement="#authorizedUserRow_${authorizedUser_index}_"
-            name="authorizedUsers[${authorizedUser_index}].user.institution.name" maxlength="255" />
-           <#if disabled?index_of("t") != -1>
-            <@s.select name="authorizedUsers[${authorizedUser_index}].generalPermission" 
-               emptyOption='false' listValue='label' list='%{availablePermissions}' disabled=true
-            />
-            <!-- FIXME -- is this needed -->
-            <@s.hidden name="authorizedUsers[${authorizedUser_index}].generalPermission" 
-                value="${authorizedUser.generalPermission!'VIEW_ALL'}"/>
-        <#else>
-            <@s.select name="authorizedUsers[${authorizedUser_index}].generalPermission" 
-               emptyOption='false' listValue='label' list='%{availablePermissions}'
-            />
-        </#if>
-    </div>
-  </td>
-  <td><@clearDeleteButton id="authorizedUserRow" disabled="${disabled}" />
-  </td>
-  
-  </tr>
-
-</#macro>
 
 <#macro categoryVariable>
-<div id='categoryDivId'>
-<@s.select labelposition='left' label='Category' id='categoryId' name='categoryId' 
-    onchange='changeSubcategory("#categoryId","#subcategoryId")'
-	            autocompleteName="sortCategoryId"
-	listKey='id' listValue='name' emptyOption='true' list='%{allDomainCategories}' />
-</div>
-<div id='subcategoryDivId'>
-<@s.select labelposition='left' label='Subcategory' id='subcategoryId' name='subcategoryId' 
-    autocompleteName="subCategoryId" headerKey="-1" listKey='id' headerValue="N/A" list='%{subcategories}'/>
+<div class="control-group">
+    <label class="control-label"><small>Category / Subcategory</small></label>
+    <div class="controls controls-row">
+        <div id='categoryDivId' class="span3">
+        <@s.select theme="tdar"  id='categoryId' name='categoryId' 
+            onchange='changeSubcategory("#categoryId","#subcategoryId")' autocompleteName="sortCategoryId"
+            listKey='id' listValue='name' emptyOption='true' list='%{allDomainCategories}' cssClass="input-block-level" />
+        </div>
+        <div id='subcategoryDivId' class="span3">
+            <@s.select theme="tdar" id='subcategoryId' name='subcategoryId' 
+                autocompleteName="subCategoryId" headerKey="-1" listKey='id' headerValue="N/A" list='%{subcategories}'  cssClass="input-block-level" />
+        </div>
+    </div>
 </div>
 </#macro>
 
 
 <#macro singleFileUpload typeLabel="${resource.resourceType.label}">
-    <div tiplabel="Upload your ${typeLabel}<#if multipleFileUploadEnabled>(s)</#if>" 
-    tooltipcontent="The metadata entered on this form will be associated with this file. We accept ${typeLabel}s in the following formats: <@join sequence=validFileExtensions delimiter=", "/>"
-    >
-    <@s.file name='uploadedFiles' label='${typeLabel}' cssClass="validateFileType" id="fileUploadField" labelposition='left' size='40' />
-    <div class="field indentFull">
-    <i>Valid file types include: <@join sequence=validFileExtensions delimiter=", "/></i>
-    </div>
-    <#nested>
-    </div>
+<#if !ableToUploadFiles>
+	<b>note:</b> you have not been granted permission to upload or modify files<br/>
+<#else>
+	<div class="control-group"
+	        tiplabel="Upload your ${typeLabel}" 
+	        tooltipcontent="The metadata entered on this form will be associated with this file. We accept the following formats: 
+	                        <@join sequence=validFileExtensions delimiter=", "/>">
+	    <label for="fileUploadField" class="control-label">${typeLabel}</label>
+	    <div class="controls">
+	        <@s.file theme="simple" name='uploadedFiles'  cssClass="validateFileType input-xxlarge" id="fileUploadField" labelposition='left' size='40' />
+	        <span class="help-block">Valid file types include: <@join sequence=validFileExtensions delimiter=", "/></span>
+	    </div>
+	    <#nested>
+	</div>
+</#if>
 </#macro>
 
-<#macro manualTextInput typeLabel="" type="">
-<div class="glide">
-    <h3>${(resource.id == -1)?string("Submit", "Replace")} ${typeLabel}</h3>
-    <div>
-    <label class='label' for='inputMethodId'>Submit as:</label>
-    <select id='inputMethodId' name='fileInputMethod' onchange='refreshInputDisplay()' cssClass="field">
-        <#-- show manual option by default -->
-        <#assign usetext=(resource.getLatestVersions().isEmpty() || (fileTextInput!"") != "")>
-        <#if type=="coding">
-            <option value='file' <#if !usetext>selected="selected"</#if>>Upload an Excel or CSV coding sheet file</option>
-            <option value='text' <#if usetext>selected="selected"</#if>>Manually enter coding rules into a textarea</option>
-        <#else>
-            <option value='file' <#if !usetext>selected="selected"</#if>>Upload an OWL file</option>
-            <option value='text' <#if usetext>selected="selected"</#if>>Manually enter your ontology into a textarea</option>
-        </#if>
-    </select>
+<#macro manualTextInput typeLabel type uploadOptionText manualEntryText>
+<#-- show manual option by default -->
+<#local usetext=(resource.getLatestVersions().isEmpty() || (fileTextInput!"") != "")>
+<div id="enter-data">
+    <h2>${(resource.id == -1)?string("Submit", "Replace")} ${typeLabel}</h2>
+    <div class="control-group">
+        <label class='control-label' for='inputMethodId'>Submit as</label>
+        <div class="controls">
+            <select id='inputMethodId' name='fileInputMethod' onchange='refreshInputDisplay()' class="input-xxlarge">
+                <option value='file' <#if !usetext>selected="selected"</#if>>${uploadOptionText}</option>
+                <option value='text' <#if usetext>selected="selected"</#if>>${manualEntryText}</option>
+            </select>
+        </div>
     </div>
-    <br/>
 
     <div id='uploadFileDiv' style='display:none;'>
-    <div id='uploadFileExampleDiv' class='info'  >
-    <#if type=="coding">
-        <p>
-        To be parsed properly your coding sheet should have <b>Code, Term, Description (optional)</b> columns, in order.  For example,
-        </p>
-        <table class="zebracolors">
-        <thead>
-        <tr><th>Code</th><th>Term</th><th>Description (optional)</th></tr>
-        </thead>
-        <tbody>
-        <tr>
-        <td>18</td><td>Eutamias spp.</td><td>Tamias spp. is modern term</td>
-        </tr>
-        <tr>
-        <td>19</td><td>Ammospermophilus spp.</td><td></td>
-        </tr>
-        <tr>
-        <td>20</td><td>Spermophilus spp.</td><td></td>
-        </tr>
-        </tbody>
-        </table>
-        <br/>
-    <#else>
-        <p>
-        We currently support uploads of <a class='external' href='http://www.w3.org/TR/owl2-overview/'>OWL XML/RDF files</a>.  
-        You can create OWL files by hand (difficult) or with a tool like <a
-        class='external' href='http://protege.stanford.edu/'>the
-        Prot&eacute;g&eacute; ontology editor</a>.  Alternatively, choose the <b>Submit
-        as: Manually enter your ontology</b> option above and enter your ontology
-        into a text area.  
-        </p>
-    </#if>
-    </div>
-    <@singleFileUpload />
+        <div id="uploadFileExampleDiv" class="control-group">
+            <div class="controls">
+                <#nested 'upload'>
+            </div>
+        </div>
+        <@singleFileUpload />
     </div>
     
     <div id='textInputDiv'>
-    <div id='textInputExampleDiv' class='info'>
-    <#if type="coding">
-        <p>Enter your coding rules in the text area below.  Each line can have a maximum of three elements, separated by commas, 
-        and should be in the form <code>code, term, optional description</code>.  Codes can be numbers or arbitrary strings.  
-        For example, 
-        </p>
-        <p>
-        <code>1, Small Mammal, Small mammals are smaller than a breadbox</code><br/>
-        <code>2, Medium Mammal, Medium Mammals are coyote or dog-sized</code>
-        </p>
-        
-        <div class='note'>If a code, a term, or a description has an embedded comma, 
-            the whole value must be enclosed in double quotes, e.g. <br/>
-            <code>3, Large Mammal, &quot;Large mammals include deer, antelope, and bears&quot;</code>
+        <div id="textInputExampleDiv" class="control-group">
+            <div class="controls">
+                <#nested 'manualEntry'>
+            </div>
         </div>
-        <br/>
-    <#else>
-        <p>
-        You can enter your ontology in the text area below.  Separate each concept in
-        your ontology with newlines (hit enter), and indicate parent-child relationships
-        with tabs (make sure you use the tab key on your keyboard - spaces do not work).
-        To specify synonyms for a given term use comma-separated parentheses, e.g.,
-        <br/>
-        <code>Flake (Debris, Debitage)</code>. 
-        <br/> 
-        For lithic form, the following would be a simple ontology:
-        </p>
-        <pre>
-            Tool
-                Projectile Point
-                Scraper (Grattoir)
-                    End Scraper
-                    Side Scraper
-                Other Tool
-            Flake (Debris, Debitage)
-                Utilized
-                Unutilized
-            Core
-        </pre>
-    </#if>
-    </div>
-    <@s.textarea label='${typeLabel}' labelposition='top' id='fileInputTextArea' name='fileTextInput' rows="5" cssClass='resizable' />
+        <@s.textarea label='${typeLabel}' labelposition='top' id='fileInputTextArea' name='fileTextInput' rows="5" cssClass='resizable resize-vertical input-xxlarge' />
     </div>
 </div>
 
 </#macro>
 
-<#macro submit label="Save" fileReminder=true showWrapper=true buttonid="submitButton">
-<#if showWrapper>
-<div class="glide errorsection"> 
-    <div id="error">
+<#macro submit label="Save" fileReminder=true buttonid="submitButton" span="span9">
+<div class="errorsection row">
+    <div class="${span}">
+        <#if fileReminder>
+        <div id="reminder" class="">
+            <p><span class="label label-info">Reminder</span> No files are attached to this record. </p>
+        </div>
+        </#if>     
+        <#-- if you put an error class on this, then you get a pink box at the bottom of every page visible on submit, ugly -->
+        <div id="error" class="" style="display:none">
+            <ul></ul>
+        </div>
+        <div class="form-actions" id="editFormActions">
+            <#nested>
+            <input type="hidden" name="possibleJsError" id="jserror" value="PRE-INIT" />
+            <@submitButton label=label id=buttonid />
+            <img src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none" />
+        </div> 
     </div>
-    <#if fileReminder>
-    <div id="reminder">
-        <label class="error2">Did you mean to attach a file?</label>
+</div> 
+
+<div class="modal hide fade" id="validationErrorModal" tabindex="-1" role="dialog" aria-labelledby="validationErrorModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="validationErrorModalLabel">Validation Errors</h3>
     </div>
-    </#if>     
-</#if>
-    <#nested>
-    <@s.submit align='left' cssClass='submitButton' name="submitAction" value="${label}"  id="${buttonid}" />
-   	<img src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="visibility:hidden"/>
-<#if showWrapper>
-	</div> 
-	<div id="submitDiv">
-	</div>
-</#if>
+    <div class="modal-body">
+        <h4>Please correct the following errors</h4>
+        <p></p>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    </div>
+</div> 
+
 </#macro>
 
-<#macro resourceJavascript formId="#resourceMetadataForm" selPrefix="#resource" includeAsync=false includeInheritance=false>
+<#macro submitButton label="submit" id="">
+    <input type="submit" class='btn btn-primary submitButton' name="submitAction" value="${label}"  <#if id?has_content>id="${id}"</#if>>
+</#macro>
 
+<#macro resourceJavascript formSelector="#resourceMetadataForm" selPrefix="#resource" includeAsync=false includeInheritance=false>
+<#noescape>
 <script type='text/javascript'>
- var formId = '${formId}';
 
+var formSelector = "${formSelector}";
+var includeInheritance = ${includeInheritance?string("true", "false")};
+var acceptFileTypes  = <@edit.acceptedFileTypesRegex />;
+/*
 
-var dialogOpen = false;
-$(document).ready(function() {
-    //console.log("edit-macros:ready:" +formId);
-
-    <#if validFileExtensions??>
-      setupEditForm(formId,"<@join sequence=validFileExtensions delimiter="|"/>");
-    <#else>
-      setupEditForm(formId);
-    </#if>
-    <#nested>
+ * FIXME: move to common.js
+ */
+$(function(){
+    'use strict';
+    var form = $(formSelector)[0];
     
-	setupSortableTables();
+    <#if includeAsync>
+    //init fileupload
+    var id = $('input[name=id]').val();
+    <#if ableToUploadFiles>
+	    TDAR.fileupload.registerUpload({
+	       informationResourceId: id, 
+	       acceptFileTypes: acceptFileTypes, 
+	       formSelector:"${formSelector}",
+	       fileInput: $('#fileAsyncUpload')
+	       });
+    </#if>
+    </#if>
 
-    // gleaning lessons from http://forums.dropbox.com/topic.php?id=16926 [IE Script Issue]
-    //if ($.browser.msie && $.browser.version <= 8 ) {
-    //FIXME: i think this section is sporatically breaking inheritance UI, but I can't reliably reproduce it. 
-    if (false) {
-       setTimeout(loadTdarMap,500);
-       setTimeout(applyTreeviews,1000);
-       setTimeout(initializeEdit,1500);
-       <#if includeAsync> 
-         setTimeout(function(){applyAsync(formId);},2000);
-       </#if>
-       <#if includeInheritance>
-         setTimeout(function(){applyInheritance(project,resource);updateSelectAllCheckboxState();},2500);
-       </#if>
-    } else {
-      loadTdarMap();
-      applyTreeviews();
-      initializeEdit();
-       <#if includeAsync> 
-        applyAsync(formId);
-       </#if>
-       <#if includeInheritance>
-         applyInheritance(project,resource);
-         updateSelectAllCheckboxState(); 
-       </#if>
+    TDAR.common.initEditPage(form);
+    
+    //register maps, if any
+    if($('#divSpatialInformation').length) {
+        $(function() {
+            //fixme: implicitly init when necessary
+            TDAR.maps.initMapApi();
+            var mapdiv = $('#editmapv3')[0];
+            var inputCoordsContainer = $("#explicitCoordinatesDiv")[0];
+            TDAR.maps.setupEditMap(mapdiv, inputCoordsContainer);
+        });
     }
     
-});
-
-var json;
-var project = {};
-var resource = {};
-    <#noescape>
-    <#if includeInheritance>
-    	resource = ${resource.toJSON()!""};
-    <#if projectAsJson??>
-    	project = ${projectAsJson};
-    </#if>
-    </#if>
-    </#noescape>
-
-    <#if validFileExtensions??>
-        //FIXME:  use element data instead of global if it's not too slow
-        var g_asyncUploadCount = 0;
-        function fileAccepted(filename) {
-            var regexp = /\.(<@join sequence=validFileExtensions delimiter="|"/>)$/i;
-            var accept="<@join sequence=validFileExtensions delimiter="|"/>";
-            //console.log("regex:" + regexp + "  test:" + filename);
-            return regexp.test(filename);
-        }
-    </#if>
+<#if includeInheritance>
+var project = ${projectAsJson};
+applyInheritance(project, formSelector);
+</#if>    
     
+    
+});
+<#nested>
+</#noescape>
 </script>
   
 </#macro>
@@ -788,250 +648,171 @@ var resource = {};
 </#macro>
 
 <#macro relatedCollections showInherited=true>
-<div class="glide" id="relatedCollectionsSectionGlide">
-    <h3>Museum or Archive Collections</h3>
+<#local _sourceCollections = sourceCollections />
+<#local _relatedComparativeCollections = relatedComparativeCollections />
+<#if _sourceCollections.empty><#local _sourceCollections = [blankSourceCollection] /></#if>
+<#if _relatedComparativeCollections.empty><#local _relatedComparativeCollections = [blankRelatedComparativeCollection] /></#if>
+<div class="well-alt" id="relatedCollectionsSectionGlide">
+    <h2>Museum or Archive Collections</h2>
     <@inheritsection checkboxId="cbInheritingCollectionInformation" name='resource.inheritingCollectionInformation' showInherited=showInherited />
-    <div id="relatedCollectionsSection">
-	    <label>Source <br/>Collection</label>
-	    <table id="sourceCollectionTable" class="repeatLastRow field" tiplabel="Source Collection" tooltipcontent="#divSourceCollectionHelpText">
-	      <tbody>
-	        <#if sourceCollections.empty>
-	            <@sourceCollectionRow blankSourceCollection "sourceCollection"/>
-	        <#else>
-	          <#list sourceCollections as sourceCollection>
-	            <@sourceCollectionRow sourceCollection "sourceCollection" sourceCollection_index/>
-	          </#list>
-	        </#if>
-	      </tbody>
-	    </table>
-	<br/>    
-	    <label>Related or<br/>Comparative <br/> Collection</label>
-	    <table id="relatedComparativeCitationTable" class="repeatLastRow field" tiplabel="Related or Comparative Collection" tooltipcontent="#divComparativeCollectionHelpText" >
-	      <tbody>
-	        <#if relatedComparativeCollections.empty>
-	            <@sourceCollectionRow blankRelatedComparativeCollection "relatedComparativeCollection" />
-	        <#else>
-	          <#list relatedComparativeCollections as relatedComparativeCollection>
-	            <@sourceCollectionRow relatedComparativeCollection "relatedComparativeCollection" relatedComparativeCollection_index/>
-	          </#list>
-	        </#if>
-	
-	      </tbody>
-	    </table>
-	
-	    <div style="display:none" id="divSourceCollectionHelpText">
-	        <p>
-	          The museum or archival accession that contains the
-	          artifacts, original photographs, or original notes that are described
-	          in this tDAR record.
-	        </p>
-	    </div>
-	    <div style="display:none" id="divComparativeCollectionHelpText">
-	        <p>
-	        Museum or archival collections (e.g.,
-	        artifacts, photographs, notes, etc.) which are associated with (or
-	        complement) a source collection. For example, a researcher may have
-	        used a comparative collection in an analysis of the materials
-	        documented in this tDAR record.
-	        </p>
-	    </div>
-	</div>
-</div>
-</#macro>
-
-<#macro sourceCollectionRow sourceCollection prefix index=0>
-<#assign plural>${prefix}s</#assign>
-          <tr id='${prefix}_${index}_'>
-          <td>
-              <@s.hidden name="${plural}[${index}].id" />
-              <@s.textarea name='${plural}[${index}].text' rows="3" cols="60" /></td>
-          <td>
-            <@edit.clearDeleteButton id="${prefix}Row" />
-          </td>
-        </tr>
-</#macro>
-
-<#macro inheritsection checkboxId name showInherited=true  label="Inherit this section" >
-	<div class='inheritlabel'>
-	<#if showInherited>
-		<@s.checkbox labelposition='right' id='${checkboxId}' name='${name}'cssClass="alwaysEnabled" />
-		<label class="alwaysEnabled" for="${checkboxId}">${label}</label> </br>
-	<#elseif resource??>
-		 <@inheritTips id="${checkboxId}" />
-	</#if>
-	</div>    
-</#macro>
-
-<#macro resourceCollectionRow resourceCollection collection_index = 0 type="internal">
-      <tr id="resourceCollectionRow_${collection_index}_">
-          <td style="vertical-align:top"> 
-              <@s.hidden name="resourceCollections[${collection_index}].id"  id="resourceCollectionRow_${collection_index}_id" />
-              <@s.textfield id="resourceCollectionRow_${collection_index}_id" name="resourceCollections[${collection_index}].name" cssClass="collectionAutoComplete"  autocomplete="off"
-              autocompleteIdElement="#resourceCollectionRow_${collection_index}_id"
-              autocompleteParentElement="#resourceCollectionRow_${collection_index}_" />
-          </td>
-          <td><@clearDeleteButton id="resourceCollectionRow" /> </td>
-      </tr>
-</#macro>
-
-
-
-<#macro resourceNoteSection showInherited=true>
-<div class="glide" id="resourceNoteSectionGlide"
-    tiplabel="Notes"  tooltipcontent="Use this section to append any notes that may help clarify certain aspects of the resource.  For example, 
-    a &quot;Redaction Note&quot; may be added to describe the rationale for certain redactions in a document.">
-    <h3>Notes</h3>
-    <@inheritsection checkboxId="cbInheritingNoteInformation" name='resource.inheritingNoteInformation' showInherited=showInherited />
-    <div id="resourceNoteSection">
-    <table id="resourceNoteTable" class="tableFormat width99percent repeatLastRow" addAnother="add another note">
-        <thead>
-            <th>Type</th>
-            <th colspan="2">Contents</th>
-        </thead>
-        <tbody>
-            <#if (!resourceNotes.empty)>
-              <#list resourceNotes as resourceNote>
-              <!-- ${resourceNote} -->
-                <@noteRow resourceNote resourceNote_index/>
-              </#list>
-            <#else>
-                <@noteRow blankResourceNote />
-            </#if>
-        </tbody>
-    </table>
+    <div id="relatedCollectionsSection" >
+        <div id="divSourceCollectionControl" class="control-group repeatLastRow">
+            <label class="control-label">Source Collections</label>
+            <#list _sourceCollections as sourceCollection>
+                <@sourceCollectionRow sourceCollection "sourceCollection" sourceCollection_index/>
+            </#list>
+        </div>
+    
+        <div id="divRelatedComparativeCitationControl" class="control-group repeatLastRow">
+            <label class="control-label">Related or Comparative Collections</label>
+            <#list _relatedComparativeCollections as relatedComparativeCollection>
+                <@sourceCollectionRow relatedComparativeCollection "relatedComparativeCollection" relatedComparativeCollection_index/>
+            </#list>
+        </div> 
+        <@helptext.sourceRelatedCollection />    
     </div>
 </div>
 </#macro>
 
-<#macro noteRow proxy note_index=0>
-    <#if proxy??>
-      <tr id="resourceNoteRow_${note_index}_">
-          <td style="vertical-align:top"> 
-              <@s.hidden name="resourceNotes[${note_index}].id" />
-              <@s.select emptyOption='false' name='resourceNotes[${note_index}].type' list='%{noteTypes}' listValue="label" /> 
-          </td>
-          <td>
-              <@s.textarea labelposition='left' 
-                  cssClass='resizable tdartext'
-                  cols='60' rows='3' maxlength='5000'
-                  name='resourceNotes[${note_index}].note' 
-                  />
-          </td>
-          <td><@clearDeleteButton id="resourceNoteRow" /> </td>
-      </tr>
+<#macro sourceCollectionRow sourceCollection prefix index=0>
+<#local plural = "${prefix}s" />
+    <div class="controls controls-row repeat-row" id="${prefix}Row_${index}_">
+        <@s.hidden name="${plural}[${index}].id" cssClass="dont-inherit" />
+        <@s.textarea theme="tdar" name='${plural}[${index}].text' cssClass="span6 resizable resize-vertical" />
+        <div class="span1">
+            <@edit.clearDeleteButton id="${prefix}Row${index}" />
+        </div>
+    </div>
+</#macro>
+
+<#macro inheritsection checkboxId name showInherited=true  label="Inherit this section" >
+    <div class='divInheritSection'>
+    <#if showInherited>
+        <div class="control-group alwaysEnabled">
+            <div class="controls">
+                <label class="checkbox">
+                    <@s.checkbox theme="simple" name="${name}" id="${checkboxId}" />
+                    <span class="labeltext">${label}</span>
+                </label>
+            </div>
+        </div>
+            
+    <#elseif resource??>
+         <@inheritTips id="${checkboxId}" />
     </#if>
+    </div>    
 </#macro>
 
 
 
 
-<#macro coverageDatesSection multiRow=true tooltip=true>
-<#local repeatRowClass = "">
-<#if multiRow>
-<#local repeatRowClass = "repeatLastRow">
+<#macro resourceNoteSection showInherited=true>
+<div id="resourceNoteSectionGlide" tiplabel="Notes" tooltipcontent="Use this section to append any notes that may help clarify certain aspects of the resource.  For example, 
+    a &quot;Redaction Note&quot; may be added to describe the rationale for certain redactions in a document.">
+    <#local _resourceNotes = resourceNotes />
+    <#if _resourceNotes.empty >
+    <#local _resourceNotes = [blankResourceNote] />
+    </#if>
+    <h2>Notes</h2>
+    <@inheritsection checkboxId="cbInheritingNoteInformation" name='resource.inheritingNoteInformation' showInherited=showInherited />
+    <div id="resourceNoteSection" class="control-group repeatLastRow">
+        <label class="control-label">Type / Contents</label>
+        <#list _resourceNotes as resourceNote>
+        <#if resourceNote??><@noteRow resourceNote resourceNote_index/></#if>
+        </#list>
+    </div>
+</div>
+</#macro>
+
+<#macro accountSection>
+<#if payPerIngestEnabled>
+    <div class="well-alt" id="accountsection">
+        <#if resource.account?has_content>
+			<p><strong>Account:</strong> ${resource.account.name}</p>        	
+        <#else>
+	        <h2>Choose an account to bill from:</h2>
+	        <@s.select name="accountId" list="%{activeAccounts}" listValue="name" listKey="id" required=true cssClass="Required"/>
+        </#if>
+    </div>
 </#if>
-<#if tooltip>
-<div class="hidden" id="coverageDatesTip">
-<div>
-    Select the approriate type of date (Gregorian calendar date or radiocarbon date). To enter a date range, enter the <em>earliest date</em> in the <em>Start Year field<em> 
-    and the latest date in the End Year Field. <em>Dates containing "AD" or "BC" are not valid</em>. Use positive numbers for AD dates (500, 1200), and use negative numbers for BC dates (-500, -1200). Examples: 
-    <ul>
-        <li>Calendar dates: 300 start, 500 end (number only, smaller value first)</li>
-        <li>Radiocarbon dates: 500 start, 300 end (number only, larger value first)</li>     
-    </ul>
+</#macro>
+
+<#macro noteRow proxy note_index=0>
+<div id="resourceNoteRow_${note_index}_" class="repeat-row">
+    <div class="controls controls-row">
+        <div class="span6">
+            <div class="controls-row">
+                <@s.hidden name="resourceNotes[${note_index}].id" cssClass="dont-inherit" />
+                <@s.select theme="tdar" emptyOption='false' name='resourceNotes[${note_index}].type' list='%{noteTypes}' listValue="label" />
+            </div>
+            <div class="controls-row">
+                <@s.textarea theme="tdar" name='resourceNotes[${note_index}].note' placeholder="enter note contents" cssClass='span6 resizable resize-vertical' 
+                    maxlength='5000' />
+            </div>
+        </div>
+        <div class="span1">
+            <@clearDeleteButton id="resourceNoteRow" />
+        </div>
+    </div>
 </div>
+</#macro>
+
+
+
+
+<#macro coverageDatesSection>
+<#local _coverageDates=coverageDates />
+<#if _coverageDates.empty><#local _coverageDates = [blankCoverageDate] /></#if>
+<@helptext.coverageDates />
+<div class="control-group repeatLastRow" id="coverageDateRepeatable" data-add-another="add another coverage date" tiplabel="Coverage Dates" tooltipcontent="#coverageDatesTip">
+    <label class="control-label">Coverage Dates</label>
+    
+    <#list _coverageDates as coverageDate>
+    <#if coverageDate??>
+    <@dateRow coverageDate coverageDate_index/>
+    </#if>
+    </#list>
 </div>
-</#if>
-<div tiplabel="Coverage Dates" tooltipcontent="#coverageDatesTip">
-    <label>Coverage Dates</label>
-    <table 
-        id="coverageTable" style="width:80%!important"
-        class="field tableFormat ${repeatRowClass}" addAnother="add another coverage date">
-        <tbody>
-            <#if (!coverageDates.empty)>
-              <#list coverageDates as coverageDate>
-                <@dateRow coverageDate coverageDate_index/>
-              </#list>
-            <#else>
-              <@dateRow blankCoverageDate/>
-            </#if>
-        </tbody>
-    </table>
-</div>
+
 </#macro>
 
 
 
 <#macro dateRow proxy=proxy proxy_index=0>
-
-    <#if proxy??>
-    <tr id="DateRow_${proxy_index}_">
-        <td>
-            <div class="marginLeft10" >
-                <@s.hidden name="coverageDates[${proxy_index}].id" />
-                <@s.select name="coverageDates[${proxy_index}].dateType" cssClass="coverageTypeSelect"
-                    listValue='label'  headerValue="Date Type" headerKey="NONE"
-                    list=allCoverageTypes />
-                <@s.textfield  watermark="Start Year" cssClass="coverageStartYear"
-                    name="coverageDates[${proxy_index}].startDate" maxlength="10" /> 
-                <@s.textfield  watermark="End Year" cssClass="coverageEndYear"
-                    name="coverageDates[${proxy_index}].endDate" maxlength="10" />
-                <@s.textfield  watermark="Description"  cssClass="coverageDescription"
-                    name="coverageDates[${proxy_index}].description" />
-                    <#--                    
-                     <a href="#" onClick="$(this).parent().find('.circa').toggle();return false;">more</a>
-                    <div class="circa" style="display:none">
-                    <@s.checkbox name="coverageDates[${proxy_index}].startDateApproximate" label="Start Approx?"/>
-                    <@s.checkbox name="coverageDates[${proxy_index}].endDateApproximate" label="End Approx?" />circa</div> -->
-            </div>
-            </span>
-        </td>
-        <td>
-           <@edit.clearDeleteButton id="DateRow"/>
-        </td>
-    </tr>
-    </#if>
+<div class="controls controls-row" id="DateRow_${proxy_index}_">
+        <@s.hidden name="coverageDates[${proxy_index}].id" cssClass="dont-inherit" />
+        <@s.select theme="tdar"name="coverageDates[${proxy_index}].dateType" cssClass="coverageTypeSelect input-medium"
+            listValue='label'  headerValue="Date Type" headerKey="NONE"
+            list=allCoverageTypes />
+        <@s.textfield theme="tdar" placeholder="Start Year" cssClass="coverageStartYear input-small" name="coverageDates[${proxy_index}].startDate" maxlength="10" /> 
+        <@s.textfield theme="tdar" placeholder="End Year" cssClass="coverageEndYear input-small" name="coverageDates[${proxy_index}].endDate" maxlength="10" />
+        <@s.textfield theme="tdar" placeholder="Description"  cssClass="coverageDescription input-xlarge" name="coverageDates[${proxy_index}].description" />
+       <@edit.clearDeleteButton id="{proxy_index}DateRow"/>
+</div>
 </#macro>
 
 
 <#macro allCreators sectionTitle proxies prefix inline=false showInherited=false>
-    <@resourceCreators sectionTitle proxies prefix inline showInherited />
-    <style>
-    </style>
+    <@resourceCreators sectionTitle proxies prefix  />
 </#macro>
 
-<#macro resourceCreators sectionTitle proxies prefix inline=false showInherited=false>
-<#if !inline>
-<div class="glide" tiplabel="Individual or Institutional Credit" tooltipcontent="Use these fields to properly credit individuals and institutions for their contribution to the resource. Use the '+' sign to add fields for either persons or institutions, and use the drop-down menu to select roles">
-    <h3>${sectionTitle}</h3>
-<#else>
-<label class="toplabel">${sectionTitle}</label> <br />
-</#if>
-
-    <table 
-        id="${prefix}Table"
-        class="tableFormat countingtable">
-        <tbody>
-            <#if proxies?has_content >
-              <#list proxies as proxy>
-                <@creatorProxyRow proxy  prefix proxy_index/>
-              </#list>
-            <#else>
-              <@creatorProxyRow blankCreatorProxy prefix 0 />
-              <@creatorProxyRow blankCreatorProxy2 prefix 1 "INSTITUTION"/> 
-            </#if>
-        </tbody>
-    </table>
-    <button type="button" class="addAnother normalTop" onclick="repeatRow('${prefix}Table', personAdded)"><img src="/images/add.gif" />add another person</button>
-    <button type="button" class="addAnother normalTop" onclick="repeatRow('${prefix}Table', institutionAdded)"><img src="/images/add.gif "/>add another institution</button>
-<#if !inline>
-</div>
-</#if>
-
+<#macro resourceCreators sectionTitle proxies prefix>
+<#local _proxies = proxies >
+<#if proxies?size == 0><#local _proxies = [blankCreatorProxy]></#if>
+<div class="" tiplabel="${sectionTitle}" 
+    id="${prefix}Section"
+    tooltipcontent="#divResourceCreatorsTip">
+    <h2>${sectionTitle}</h2>
+       
+    <div id="${prefix}Table" class="table repeatLastRow creatorProxyTable">
+        <#list _proxies as proxy>
+        <@creatorProxyRow proxy  prefix proxy_index/>
+        </#list>
+    </div>
+</div> <!-- section -->
 </#macro>
 
-
-<#macro creatorProxyRow proxy=proxy prefix=prefix proxy_index=proxy_index type_override="NONE">
+<#macro creatorProxyRow proxy=proxy prefix=prefix proxy_index=proxy_index type_override="NONE" required=false includeRole=true>
     <#assign relevantPersonRoles=personAuthorshipRoles />
     <#assign relevantInstitutionRoles=institutionAuthorshipRoles />
     <#if prefix=='credit'>
@@ -1040,84 +821,47 @@ var resource = {};
     </#if>
 
     <#if proxy??>
-    <tr id="${prefix}Row_${proxy_index}_">
-      
-        <td>
-            <span class="creatorPerson <#if proxy.actualCreatorType=='INSTITUTION' || type_override == "INSTITUTION">hidden</#if>"  id="${prefix}Row_${proxy_index}_p">
-            <span class="smallLabel">Person</span>
-            <div class="width30percent marginLeft10" >
-                <@s.hidden name="${prefix}Proxies[${proxy_index}].person.id" id="${prefix}person_id${proxy_index}" onchange="this.valid()"  autocompleteParentElement="#${prefix}Row_${proxy_index}_p"  />
-                <@s.textfield cssClass="nameAutoComplete" watermark="Last Name" autocomplete="off"
-                	 autocompleteName="lastName" autocompleteIdElement="#${prefix}person_id${proxy_index}" autocompleteParentElement="#${prefix}Row_${proxy_index}_p"
-                    name="${prefix}Proxies[${proxy_index}].person.lastName" maxlength="255" /> 
-                <@s.textfield cssClass="nameAutoComplete" watermark="First Name" autocomplete="off"
-                	 autocompleteName="firstName" autocompleteIdElement="#${prefix}person_id${proxy_index}" autocompleteParentElement="#${prefix}Row_${proxy_index}_p"
-                    name="${prefix}Proxies[${proxy_index}].person.firstName" maxlength="255" />
-                <@s.textfield cssClass="nameAutoComplete" watermark="Email" autocomplete="off"
-                	 autocompleteName="email" autocompleteIdElement="#${prefix}person_id${proxy_index}" autocompleteParentElement="#${prefix}Row_${proxy_index}_p"
-                    name="${prefix}Proxies[${proxy_index}].person.email" maxlength="255"/>
-                <br />
+
+    <div id="${prefix}Row_${proxy_index}_" class="repeat-row control-group">
+          <#assign creatorType = proxy.actualCreatorType!"PERSON" />
+          <!-- fixme: careful with this styling -->
+        <div class="control-label">
+             <div class="btn-group creator-toggle-button" data-toggle="buttons-radio">
+               <button type="button" class="btn btn-small personButton <#if type_override == "PERSON" || (creatorType=='PERSON' && type_override=='NONE') >btn-active active</#if>" data-toggle="button">Person</button>
+               <button type="button" class="btn btn-small institutionButton <#if creatorType =='INSTITUTION' || type_override == "INSTITUTION">btn-active active</#if>" data-toggle="button">Institution</button>
             </div>
-            <div class="width60percent marginLeft10">
-                <@s.textfield cssClass="nameAutoComplete" watermark="Institution Name" autocomplete="off"
-                	 autocompleteName="institution" autocompleteIdElement="#${prefix}person_id${proxy_index}" autocompleteParentElement="#${prefix}Row_${proxy_index}_p"
-                    name="${prefix}Proxies[${proxy_index}].person.institution.name" maxlength="255" />
-                <@s.select name="${prefix}Proxies[${proxy_index}].personRole"  autocomplete="off"
-                    listValue='label' label="Role "
-                    list=relevantPersonRoles  
-                    cssClass="creator-role-select"
-                    />
+        </div>
+        <div class="controls controls-row">
+            <#--assuming we are in a span9 and that a controls-div is 2 cells narrower, our width should be span 7 -->
+            <div class="span6">
+                <@userRow person=proxy.person _indexNumber=proxy_index _personPrefix="person" prefix="${prefix}Proxies" 
+                    includeRole=includeRole hidden=(creatorType =='INSTITUTION' || type_override == "INSTITUTION") required=(creatorType=='PERSON' && required) />
+    
+                <@institutionRow institution=proxy.institution _indexNumber=proxy_index includeRole=includeRole _institutionPrefix="institution" prefix="${prefix}Proxies" 
+                    hidden=(type_override == "PERSON" || (creatorType=='PERSON' && type_override=='NONE')) required=(creatorType=='INSTITUTION' && required)/>
             </div>
-            </span>
-            <span class="creatorInstitution <#if type_override == "PERSON" || (proxy.actualCreatorType=='PERSON' && type_override=='NONE') >hidden</#if>" id="${prefix}Row_${proxy_index}_i">
-                <span class="smallLabel">Institution</span>
-                <@s.hidden name="${prefix}Proxies[${proxy_index}].institution.id" id="${prefix}institution_id${proxy_index}"/>
-            <div class="width60percent marginLeft10">
-                <@s.textfield cssClass="institutionAutoComplete institution" watermark="Institution Name" autocomplete="off"
-                	 autocompleteName="name" autocompleteIdElement="#${prefix}institution_id${proxy_index}" autocompleteParentElement="#${prefix}Row_${proxy_index}_i"
-                    name="${prefix}Proxies[${proxy_index}].institution.name" maxlength="255" />
-                <@s.select name="${prefix}Proxies[${proxy_index}].institutionRole" 
-                    listValue='label' label="Role "
-                    list=relevantInstitutionRoles
-                    cssClass="creator-role-select"
-                     />
+            <div class="span1">
+                <button class="btn  btn-mini repeat-row-delete " type="button" tabindex="-1" ><i class="icon-trash"></i></button>
             </div>
-            </span>
-        </td>
-        <td><button class="addAnother minus" type="button" tabindex="-1" onclick="deleteParentRow(this)"><img src="/images/minus.gif" class="minus" alt="delete row" /></button></td>
-    </tr>
+        </div>
+    </div>
     </#if>
 </#macro>
 
-
 <#macro identifiers showInherited=true>
-    <div class="glide" id="divIdentifiersGlide" tiplabel="${resource.resourceType.label} Specific or Agency Identifiers" tooltipcontent="#divIdentifiersTip">
-        <div id="divIdentifiersTip" class="hidden">
-            <div>
-                <dl>
-                    <dt>Name</<dt>
-                    <dd>Description of the following agency or ${resource.resourceType.label} identifier (e.g. <code>ASU Accession Number</code> or <code>TNF Project Code</code>).</dd>
-                    <dt>Value</<dt>
-                    <dd>Number, code, or other identifier (e.g. <code>2011.045.335</code> or <code>AZ-123-45-10</code>).</dd>
-                </dl> 
-            </div>
-        </div>
-        <h3>${resource.resourceType.label} Specific or Agency Identifiers</h3>
-	    <@inheritsection checkboxId="cbInheritingIdentifierInformation" name='resource.inheritingIdentifierInformation' showInherited=showInherited />
-	    <div id="divIdentifiers">
-        <table id="resourceAnnotationsTable" class="tableFormat width99percent repeatLastRow" addAnother="add another identifier" >
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th colspan=2>Value</th>
-                </tr>
-            </thead>
+    <#local _resourceAnnotations = resourceAnnotations />
+    <#if _resourceAnnotations.empty>
+    <#local _resourceAnnotations = [blankResourceAnnotation] />
+    </#if>
+    <div id="divIdentifiersGlide" tiplabel="<@resourceTypeLabel /> Specific or Agency Identifiers" tooltipcontent="#divIdentifiersTip">
+        <@helptext.identifiers />
+        <h2><@resourceTypeLabel /> Specific or Agency Identifiers</h2>
+        <@inheritsection checkboxId="cbInheritingIdentifierInformation" name='resource.inheritingIdentifierInformation' showInherited=showInherited />
+        <div id="divIdentifiers">
+        <table id="resourceAnnotationsTable" class="table repeatLastRow" addAnother="add another identifier" >
             <tbody>
-              <#if resourceAnnotations.empty>
-                <@displayAnnotation blankResourceAnnotation />              
-              </#if>
-                <#list resourceAnnotations as annotation>
-                  <@displayAnnotation annotation annotation_index/>
+                <#list _resourceAnnotations as annotation>
+                    <@displayAnnotation annotation annotation_index/>
                 </#list>
             </tbody>
         </table>
@@ -1127,21 +871,24 @@ var resource = {};
 </#macro>
 
 <#macro displayAnnotation annotation annotation_index=0>
-    <tr id="resourceAnnotationRow_${annotation_index}_">
-        <td style="width:50%">
-            <@s.textfield cssClass="annotationAutoComplete" name='resourceAnnotations[${annotation_index}].resourceAnnotationKey.key' value='${annotation.resourceAnnotationKey.key!""}'  autocomplete="off" />
-        </td>
-       <td style="width:50%">
-            <@s.textfield name='resourceAnnotations[${annotation_index}].value'  value='${annotation.value!""}' />
+    <tr id="resourceAnnotationRow_${annotation_index}_" class="repeat-row">
+        <td >
+            <div class="control-group">
+            <label class="control-label">Name / Value</label>
+                <div class="controls controls-row ">
+                    <@s.textfield theme="tdar" placeholder="Name" cssClass="annotationAutoComplete span3" name='resourceAnnotations[${annotation_index}].resourceAnnotationKey.key' value='${annotation.resourceAnnotationKey.key!""}'  autocomplete="off" />
+                    <@s.textfield theme="tdar" placeholder="Value" cssClass="span3" name='resourceAnnotations[${annotation_index}].value'  value='${annotation.value!""}' />
+                </div>
+            </div>            
         </td>
         <td><@clearDeleteButton id="resourceAnnotationRow" /></td>                        
     </tr>
 
 </#macro>
-<#macro join sequence delimiter=",">
-  <#if sequence??>
+<#macro join sequence=[] delimiter=",">
+  <#if sequence?has_content>
     <#list sequence as item>
-        ${item}<#if item_has_next>${delimiter}</#if><#t>
+        ${item}<#if item_has_next><#noescape>${delimiter}</#noescape></#if><#t>
     </#list>
   </#if>
 </#macro>
@@ -1155,8 +902,8 @@ jquery validation hooks?)
     <@sharedUploadFile>
       <@singleFileUpload>
           <div class="field indentFull">
-          <@s.checkbox name="fileProxies[0].confidential" id="cbConfidential" labelposition="right" label="This item contains confidential information" /> 
-          <div><b>NOTE:</b> by checking this box, only the metadata will be visible to users, they will not be able to view this item.  
+          <@s.select name="fileProxies[0].restriction" id="cbConfidential" labelposition="right" label="This item has access restrictions" listValue="label" list=fileAccessRestrictions  />
+          <div><b>NOTE:</b> by changing this from 'public', only the metadata will be visible to users, they will not be able to view this item.  
           You may explicity grant read access to users below.</div>
           <br />     
           </div>
@@ -1165,133 +912,200 @@ jquery validation hooks?)
 </#macro>
 
 
-<#macro asyncFileUpload uploadLabel="File" showMultiple=false divTitle="Upload" divId="divFileUpload" >
-	<#assign confidentialLabelText>
-        <#if showMultiple>These items contain<#else>This item contains</#if> confidential information
-        </#assign>
-
-        <@sharedUploadFile>
-        <div class="action-errors hidden" id='divAsyncFileUploadErrors'></div>
-        <#nested />
-
-        <input type="hidden" name="ticketId" id="ticketId" value="${ticketId!""}" />
-        <div class='file-upload ui-widget' id=${divId} tooltipcontent="#${divId}ToolTip">
-            <label class="fileinput-button ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-primary" role="button">
-                <span class='ui-button-icon-primary ui-icon ui-icon-plusthick'></span>
-                <span class="ui-button-text">
-                <span>
-                <#if showMultiple>
-                Select Files
-                <#else>
-                Select File
-                </#if>
-                </span>
-                </span>
-                <input type="file" name="uploadFile" <#if showMultiple>multiple</#if> id="fileAsyncUpload" />
-            </label>
+<#macro asyncFileUpload uploadLabel="Attach Files" showMultiple=false divTitle="Upload" divId="divFileUpload" >
+<div id="${divId}" class="well-alt">
+    <@s.hidden name="ticketId" id="ticketId" />
+    <h2>${uploadLabel}</h2>
+    <#if !ableToUploadFiles>
+    <b>note:</b> you have not been granted permission to upload or modify files<br/>
+    <#else>
+    <div class="row fileupload-buttonbar">
+        <div class="span2">
+            <!-- The fileinput-button span is used to style the file input field as button -->
+            <span class="btn btn-success fileinput-button">
+                <i class="icon-plus icon-white"></i>
+                <span>Add files...</span>
+            <input type="file" name="uploadFile" id="fileAsyncUpload" multiple="multiple" 
+                data-form-data='{"ticketId":$("#ticketId").val()}'>
+            </span>
+            <#-- we don't want the 'bulk operations' for now,  might be handy later -->
+            <#--
+            <button type="submit" class="btn btn-primary start">
+                <i class="icon-upload icon-white"></i>
+                <span>Start upload</span>
+            </button>
+            <button type="reset" class="btn btn-warning cancel">
+                <i class="icon-ban-circle icon-white"></i>
+                <span>Cancel upload</span>
+            </button>
+            <button type="button" class="btn btn-danger delete">
+                <i class="icon-trash icon-white"></i>
+                <span>Delete</span>
+            </button>
+            <input type="checkbox" class="toggle">
+           -->
         </div>
-        <div id="${divId}ToolTip" class="hidden">
-            <h2>Upload file(s)</h2>
-            <div>
-                Add files to this resource by clicking on the button labeled "Select Files".
-                <ul>
-                    <li>Files must be of the following types: <@join sequence=validFileExtensions delimiter=", "/></li>
-                    <li>You may repeat this process to upload several files.</li>
-                    <li class="supports-multifile">Some browsers support selecting multiple files in the "File Upload" dialog using the SHIFT, CTRL, or Command key.</li>
-                    <li class="supports-draganddrop">Some browsers support drag-and-drop uploads. Drag files from your desktop to the "Select Files" button.</li>                    
-                </ul>
+	    <#if validFileExtensions??>
+	    <span class="help-block">
+	        Accepted file types: .<@join validFileExtensions ", ." />
+	    </span>
+	    </#if>
+        <!-- The global progress information -->
+        <div class="span5 fileupload-progress fade">
+            <!-- The global progress bar -->
+            <div class="progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                <div class="bar" style="width:0%;"></div>
             </div>
+            <!-- The extended global progress information -->
+            <div class="progress-extended">&nbsp;</div>
         </div>
-        <div class="field">
-         <i>Valid file types include: <@join sequence=validFileExtensions delimiter=", "/></i>
-        </div>
-        </@sharedUploadFile>
+    </div>
+    <!-- The loading indicator is shown during file processing -->
+    <div class="fileupload-loading"></div>
+    <br />
+        <!-- The table listing the files available for upload/download -->
+
+                <div class="reorder <#if (fileProxies?size < 2 )>hidden</#if>">
+                    Reorder: <span class="link alphasort">Alphabetic</span> | <span class="link" onclick="customSort(this)">Custom</span>  
+                </div>
+	</#if>
+        <table id="files" role="presentation" class="tableFormat table table-striped sortable">
+            <thead>
+               <th><!--preview-->&nbsp;</th>
+               <th>Name</th>
+               <th>Size</th>
+               <th colspan="2">Access Restrictions</th>
+               <th colspan="2">Action</th>
+            </thead>
+            <tbody id="fileProxyUploadBody" class="files">
+            <#list fileProxies as fileProxy>
+                <#if fileProxy??>
+                <@fileProxyRow rowId=fileProxy_index filename=fileProxy.filename filesize=fileProxy.size fileid=fileProxy.fileId action=fileProxy.action versionId=fileProxy.originalFileVersionId/>
+                </#if>
+            </#list>
+            </tbody>
+        </table>
     
+</div>
 </#macro>
 
 <#macro fileProxyRow rowId="{ID}" filename="{FILENAME}" filesize="{FILESIZE}" action="ADD" fileid=-1 versionId=-1>
-<tr id="fileProxy_${rowId}" class="${(fileid == -1)?string('newrow', '')} sortable">
-<td class="fileinfo">
-    <div class="width99percent">
-            <#if fileid == -1>
-                <b class="filename replacefilename" title="{FILENAME}">{FILENAME}</b> 
-            <#else>
-                <b>Existing file:</b> <a class='filename' href="<@s.url value='/filestore/${versionId?c}/get'/>" title="${filename?html}"><@truncate filename 45 /></a>
-            </#if>
-    
-        <span style='font-size: 0.9em;'>(${filesize} bytes)</span>
+<tr id="fileProxy_${rowId}" class="${(fileid == -1)?string('newrow', '')} sortable template-download fade existing-file in">
+<#if ((resource.resourceType.dataset)!false) >
+    <td>
+    <a href="<@s.url value='/filestore/${versionId?c}/get'/>" title="${filename?html}" download="${filename?html}">${filename?html}</a>
+    (${filesize} bytes)
+        <input type="hidden" class="fileAction" name="fileProxies[${rowId}].action" value="${action}"/>
+        <input type="hidden" class="fileId" name="fileProxies[${rowId}].fileId" value="${fileid?c}"/>
+        <input type="hidden" class="fileReplaceName" name="fileProxies[${rowId}].filename" value="${filename}"/>
+        <input type="hidden" class="fileSequenceNumber" name="fileProxies[${rowId}].sequenceNumber" value=${rowId} />
+    </td>
+ 
+<#else>
+            <td class="preview"></td>
+            <td class="name">
+                        
+                <a href="<@s.url value='/filestore/${versionId?c}/get'/>" title="${filename?html}" download="${filename?html}">${filename?html}</a>
+                 
+                <span class="replacement-text"></span>
+            </td>
+            <td class="size"><span>${filesize} bytes</span></td>
+        <#if ableToUploadFiles>
+            <td colspan="2">
+            
+        <div class="control-group">
+        
+            <div class="controls">
+                <@s.select id="proxy${rowId}_conf"  name="fileProxies[${rowId}].restriction" labelposition="right" 
+                style="padding-left: 20px;" list=fileAccessRestrictions listValue="label"  class="fileProxyConfidential" onchange="TDAR.fileupload.updateFileAction(this)" style="padding-left: 20px;" />
+            </div> 
+        </div>
+        </td>
+        
+        <td class="delete">
+                <button class="btn btn-danger delete-button" data-type="DELETE" data-url="">
+                    <i class="icon-trash icon-white"></i><span>Delete</span>
+                </button>
+        </td>
+        <td>
+            
+          <div class="btn-group">
+            <button class="btn btn-warning disabled dropdown-toggle replace-button" disabled="" data-toggle="dropdown">Replace <span class="caret"></span></button>
+            <ul class="dropdown-menu" id="tempul">
+              <li><a href="#">file 1</a></li>
+              <li><a href="#">file 2</a></li>
+              <li class="divider"></li>
+              <li><a href="#">cancel replace operation</a></li>
+            </ul>
+          </div> 
 
         <input type="hidden" class="fileAction" name="fileProxies[${rowId}].action" value="${action}"/>
         <input type="hidden" class="fileId" name="fileProxies[${rowId}].fileId" value="${fileid?c}"/>
         <input type="hidden" class="fileReplaceName" name="fileProxies[${rowId}].filename" value="${filename}"/>
         <input type="hidden" class="fileSequenceNumber" name="fileProxies[${rowId}].sequenceNumber" value=${rowId} />
-
-    </div>
-    <#if multipleFileUploadEnabled>
-    <div class="width99percent field proxyConfidentialDiv">
-        <@s.checkbox id="proxy${rowId}_conf" name="fileProxies[${rowId}].confidential" style="padding-left: 20px;" 
-        onclick="updateFileAction('#fileProxy_${rowId}', 'MODIFY_METADATA');showAccessRightsLinkIfNeeded();" cssClass="fileProxyConfidential"/>
-        <label for="proxy${rowId}_conf">Confidential</label>
-    </div>
-    </#if>
-    <#nested />
-</td>
-<td>
-    <button id='deleteFile_${rowId}' onclick="deleteFile('#fileProxy_${rowId}', ${(fileid == -1)?string}, this);return false;"  type="button"
-    class="deleteButton file-button cancel ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-primary" role="button">
-    <span class="ui-button-icon-primary ui-icon ui-icon-cancel"></span><span class="ui-button-text">delete</span></button><br/>
-    <#if fileid != -1>
-    <button onclick="replaceDialog('#fileProxy_${rowId}','${filename}');return false;"  type="button"
-    class="replaceButton file-button cancel ui-button ui-widget ui-state-disabled ui-corner-all ui-button-text-icon-primary" role="button" disabled=disabled>
-    <#-- replace with ui-icon-transferthick-e-w ? -->
-    <span class="ui-button-icon-primary ui-icon"></span><span class="ui-button-text">replace</span></button>
-    </#if>
-</td>
-</tr>
+            
+        </td>
+	</#if>
+    </tr>
+</#if>
 </#macro>
 
 <#macro citationInfo prefix="resource" includeAbstract=true >
      <#if !resource.resourceType.codingSheet && !resource.resourceType.ontology>
-<div id="citationInformation" class="glide"> 
-	<h3>Additional Citation Information</h3>
+<div id="citationInformation" class="well-alt"> 
+    <h2>Additional Citation Information</h2>
 
-	<#nested />
+    <#if resource.resourceType != 'PROJECT'>
+    <div tiplabel="Department / Publisher Location" tooltipcontent="Department name, or City,State (and Country, if relevant)">
+        <span id="publisher-hints"  book="Publisher" book_section="Publisher" journal_article="Publisher"  conference_presentation="Conference" thesis="Institution" other="Publisher">
+            <@s.textfield id='publisher' label="Publisher" name='publisherName' cssClass="institution input-xxlarge"  />
+        </span>
+
+        <span id="publisherLocation-hints" book="Publisher Loc." book_section="Publisher Loc." journal_article="Publisher Loc." conference_presentation="Location"  thesis="Department" other="Publisher Loc.">
+            <@s.textfield id='publisherLocation' label="Publisher Loc." name='${prefix}.publisherLocation' cssClass='input-xxlarge' />
+        </span>
+    </div>
+    </#if>
+    <#nested />
 
     <div id="divUrl" tiplabel="URL" tooltipcontent="Website address for this resource, if applicable">
-        <@s.textfield name="${prefix}.url" id="txtUrl" label="URL" labelposition="left" cssClass="longfield url" />
+        <@s.textfield name="${prefix}.url" id="txtUrl" label="URL" labelposition="left" cssClass="url input-xxlarge" placeholder="http://" />
     </div>
+    
 </div>
     </#if>
     <#if includeAbstract>
-		<@abstractSection "${prefix}" />
+        <@abstractSection "${prefix}" />
     </#if>
 
     <#if resource.resourceType.label?lower_case != 'project'>
-		<@copyrightHolders 'Primary Copyright Holder' copyrightHolderProxy />
+        <@copyrightHolders 'Primary Copyright Holder *' copyrightHolderProxy />
     </#if>
 </#macro>
 
 <#macro sharedFormComponents showInherited=true fileReminder=true prefix="${resource.resourceType.label?lower_case}">
-
     <@organizeResourceSection />
-
-    <#if resource.resourceType.label?lower_case != 'project'>
+    <#if !resource.resourceType.project>
       <@resourceProvider showInherited />
+      <#if licensesEnabled?? && licensesEnabled >
+          <@edit.license />
+      </#if>
+      <#if copyrightEnabled??>
+          <@edit.copyrightHolders />
+      </#if>
     </#if>
-    
-    <@resourceCreators 'Individual and Institutional Roles' creditProxies 'credit' false showInherited />
-
+    <@resourceCreators 'Individual and Institutional Roles' creditProxies 'credit'  />
+	<@helptext.resourceCreator />
     <@identifiers showInherited />
 
     <@spatialContext showInherited />
-
     <@temporalContext showInherited />
 
-	<@investigationTypes showInherited />
-	
-	<@materialTypes showInherited />
+    <@investigationTypes showInherited />
+    
+    <@materialTypes showInherited />
 
-	<@culturalTerms showInherited />
+    <@culturalTerms showInherited />
 
     <@siteKeywords showInherited />
     
@@ -1299,34 +1113,42 @@ jquery validation hooks?)
 
     <@resourceNoteSection showInherited />
 
-    
-    
-    <#if resource.resourceType.label?lower_case  != 'document'>
+    <@accountSection />
+
+    <#if !resource.resourceType.document>
       <@relatedCollections showInherited />
     </#if>
     
     <@edit.fullAccessRights />
-    <#if resource.resourceType.label?lower_case != 'project'>
+    
+    <#if !resource.resourceType.project>
       <@edit.submit fileReminder=((resource.id == -1) && fileReminder) />
     <#else>
       <@edit.submit fileReminder=false />
     </#if>
+</#macro>
 
+<#macro resourceTitle>
+<#assign newTitle>New <#noescape>${resource.resourceType.label}</#noescape></#assign>
+<h1><#if resource.id == -1>Creating<#else>Editing</#if>:<span> <#if resource.title?has_content>${resource.title}<#else>${newTitle}</#if> </span></h1>
 </#macro>
 
 <#macro title>
-<#if resource.id == -1>
-<title>Create a new ${resource.resourceType.label}</title>
-<#else>
-<title>Editing ${resource.resourceType.label} Metadata for ${resource.title} (tDAR id: ${resource.id?c})</title>
+<#-- expose pageTitle so edit pages can use it elsewhere -->
+<#assign pageTitle>Create a new <@resourceTypeLabel /></#assign>
+<#if resource.id != -1>
+<#assign pageTitle>Editing <@resourceTypeLabel /> Metadata for ${resource.title} (${siteAcronym} id: ${resource.id?c})</#assign>
 </#if>
+<title>${pageTitle}</title>
 </#macro>
 
 <#macro sidebar>
-<div id="sidebar" parse="true">
+<div id="sidebar-right" parse="true">
     <div id="notice">
-    <h3>Introduction</h3>
-    This is the page for editing metadata associated with ${resource.resourceType.plural}.
+        <h2>Introduction</h2>
+        <div id="noticecontent">
+        This is the page for editing metadata associated with ${resource.resourceType.plural}.
+	    </div>
     </div>
 </div>
 </#macro>
@@ -1340,46 +1162,81 @@ jquery validation hooks?)
 
 
 <#macro resourceDataTable showDescription=true selectable=false>
-<div>
-<@s.textfield name="query" id="query" label="Title" cssClass='longfield' /><br/>
-<label for="project-selector">Project:</label>
-<select id="project-selector">
-    <option value="" selected='selected'>All Editable Projects</option>
-  <#if allSubmittedProjects?? && !allSubmittedProjects.empty>
-  <optgroup label="Your Projects">
-    <@s.iterator value='allSubmittedProjects' status='projectRowStatus' var='submittedProject'>
-        <option value="${submittedProject.id?c}" title="${submittedProject.title!""?html}"><@truncate submittedProject.title 70 /> </option>
-    </@s.iterator>
-  </optgroup>
-  </#if>
-  
-  <optgroup label="Projects you have been given access to">
-    <@s.iterator value='fullUserProjects' var='editableProject'>
-        <option value="${editableProject.id?c}" title="${editableProject.title!""?html}"><@truncate editableProject.title 70 /></option>
-    </@s.iterator>
-  </optgroup>
-</select><br/>
-<label for="collection-selector">Collection:</label>
-<select id="collection-selector">
-    <option value="" selected='selected'>All Collections</option>
-    <@s.iterator value='resourceCollections' var='rc'>
-        <option value="${rc.id?c}" title="${rc.name!""?html}"><@truncate rc.name!"(No Name)" 70 /></option>
-    </@s.iterator>
-</select>
-<br/>
-<div>
-    <@s.select labelposition='left' id="statuses" headerKey="" headerValue="Any" label='Status' name='status'  emptyOption='false' listValue='label' list='%{statuses}'/></span>
-    
-    <@s.select labelposition='left' id="resourceTypes" label='Resource Type' name='resourceType'  headerKey="" headerValue="All" emptyOption='false' listValue='label' list='%{resourceTypes}'/></span>
+<div class="well tdar-widget"> <#--you are in a span9, but assume span8 so we fit inside well -->
+    <div class="row">
+        <div class="span8">
+            <label for="query">Title</label>
+            <@s.textfield theme="tdar" name="query" id="query" cssClass='span8' 
+                    placeholder="Enter a full or partial title to filter results" />
+        </div>
+    </div>
 
-    <br/>
-    <@s.select labelposition='left' label='Sort By' emptyOption='false' name='sortBy' 
-     listValue='label' list='%{resourceDatatableSortOptions}' id="sortBy"
-     value="ID_REVERSE" title="Sort resource by" />
-</div>
+    <div class="row">
+        <div class="span4">
+            <label class="" for="project-selector">Project</label>
+            <select id="project-selector" class="input-block-level">
+              <option value="" selected='selected'>All Editable Projects</option>
+              <#if allSubmittedProjects?? && !allSubmittedProjects.empty>
+              <optgroup label="Your Projects">
+                  <#list allSubmittedProjects?sort_by("titleSort") as submittedProject>
+                  <option value="${submittedProject.id?c}" title="${submittedProject.title!""?html}"><@truncate submittedProject.title 70 /> </option>
+                  </#list>
+              </optgroup>
+              </#if>
+              
+              <optgroup label="Projects you have been given access to">
+                  <#list fullUserProjects?sort_by("titleSort") as editableProject>
+                      <option value="${editableProject.id?c}" title="${editableProject.title!""?html}"><@truncate editableProject.title 70 /></option>
+                  </#list>
+              </optgroup>
+            </select>
+        </div>
+        
+        <div class="span4">
+            <label class="" for="collection-selector">Collection</label>
+            <div class="">
+                <select id="collection-selector" class="input-block-level">
+                    <option value="" selected='selected'>All Collections</option>
+                    <@s.iterator value='resourceCollections' var='rc'>
+                        <option value="${rc.id?c}" title="${rc.name!""?html}"><@truncate rc.name!"(No Name)" 70 /></option>
+                    </@s.iterator>
+                </select>
+            </div>
+        </div>
+    </div>
+
+
+    
+    <div class="row">
+
+        <div class="span4">
+            <label class="">Status</label>
+            <@s.select theme="tdar" id="statuses" headerKey="" headerValue="Any" name='status'  emptyOption='false' listValue='label' 
+                        list='%{statuses}' cssClass="input-block-level"/>
+        </div>
+        
+        <div class="span4"> 
+        <label class="">Resource Type</label>
+        <@s.select theme="tdar" id="resourceTypes" name='resourceType'  headerKey="" headerValue="All" emptyOption='false' 
+                    listValue='label' list='%{resourceTypes}' cssClass="input-block-level"/>
+        </div>
+        
+    </div>
+
+    <div class="row">
+        <div class="span4">
+            <label class="">Sort  by</label>
+            <div class="">
+                <@s.select theme="tdar" emptyOption='false' name='sortBy' listValue='label' list='%{resourceDatatableSortOptions}' id="sortBy"
+                            value="ID_REVERSE" cssClass="input-block-level"/>
+             </div>
+        </div>
+        <p class="span4">&nbsp</p>
+    </div>
+
 <!-- <ul id="proj-toolbar" class="projectMenu"><li></li></ul> -->
 </div>
-<table cellpadding="0" cellspacing="0" border="0" class="display" id="resource_datatable" width="650px">
+<table cellpadding="0" cellspacing="0" border="0" class="display tableFormat table-striped table-bordered span8" id="resource_datatable" >
 <thead>
      <tr>
          <#if selectable><th><input type="checkbox" onclick="checkAllToggle()" id="cbCheckAllToggle">id</th></#if>
@@ -1410,198 +1267,22 @@ var checked = $('#resource_datatable td input[type=checkbox]:checked');
 <#macro resourceDataTableJavascript showDescription=true selectable=false >
 <script type="text/javascript">
 
- function projToolbarItem(link, image, text) {
-    return '<li><a href="' + link + '"><img alt="toolbar item" src="' + image + '"/>' + text + '</a></li>';
- }
- 
- 
- 
-$(function() {
-    // set the project selector to the last project viewed from this page
-    // if not found, then select the first item 
-    var prevSelected = $.cookie("tdar_datatable_selected_project");
-    if (prevSelected != null) {
-        var elem = $('#project-selector option[value=' + prevSelected + ']');
-        if(elem.length) {
-            elem.attr("selected", "selected");
-        } else {
-            $("#project-selector").find("option :first").attr("selected", "selected");
-        }
-
-    }
-    drawToolbar($("#project-selector").val());
-    var prevSelected = $.cookie("tdar_datatable_selected_collection");
-    if (prevSelected != null) {
-        var elem = $('#collection-selector option[value=' + prevSelected + ']');
-        if(elem.length) {
-            elem.attr("selected", "selected");
-        } else {
-            $("#collection-selector").find("option :first").attr("selected", "selected");
-        }
-
-    }
-
-});
- 
 var $dataTable = null; //define at page-level, set after onload
-
-$(function(){
-    var isAdministrator = ${administrator?string};
-    var isSelectable = ${selectable?string};
-    jQuery.fn.dataTableExt.oPagination.iFullNumbersShowPages =3;
-    
-    $dataTable = registerLookupDataTable({
-        tableSelector: '#resource_datatable',
-        sAjaxSource:'/lookup/resource',
-        "bLengthChange": true,
-        "bFilter": false,
-        aoColumns: [
-          <#if selectable>{ "mDataProp": "id", tdarSortOption: "ID", sWidth:'5em' ,"bSortable":false},</#if>
-          { "mDataProp": "title",  sWidth: '65%', fnRender: fnRenderTitle, bUseRendered:false ,"bSortable":false},
-          { "mDataProp": "resourceTypeLabel",  sWidth: '15%',"bSortable":false }
-        ],
-        sDom:'<"datatabletop"ilrp>t<>', //omit the search box
-        sPaginationType:"full_numbers",
-        sAjaxDataProp: 'resources',
-        requestCallback: function(searchBoxContents){
-                return {title: searchBoxContents,
-                    'resourceTypes': $("#resourceTypes").val() == undefined ? "" : $("#resourceTypes").val(),
-                    'includedStatuses': $("#statuses").val() == undefined ? "" : $("#statuses").val() ,
-                    'sortField':$("#sortBy").val(),
-                    'term':$("#query").val(),
-                    'projectId':$("#project-selector").val(),
-                    'collectionId':$("#collection-selector").val(),
-                     useSubmitterContext: !isAdministrator
-            }
-        },
-        selectableRows: isSelectable,
-        rowSelectionCallback: function(id, obj, isAdded){
-            if(isAdded) {
-                rowSelected(obj);
-            } else {
-                rowUnselected(obj);
-            }
-        }
-    });
-
-});
  
-$(document).ready(function() {
-    
-    $("#project-selector").change(function() {
-        var projId = $(this).val();
-        $.cookie("tdar_datatable_selected_project", projId);
-        drawToolbar(projId);
-        $("#resource_datatable").dataTable().fnDraw();
-    });
+var datatable_isAdministrator = ${administrator?string};
+var datatable_isSelectable = ${selectable?string};
+var datatable_showDescription = ${showDescription?string};
+ 
+ 
 
-    $("#collection-selector").change(function() {
-        var projId = $(this).val();
-        $.cookie("tdar_datatable_selected_collection", projId);
-        drawToolbar(projId);
-        $("#resource_datatable").dataTable().fnDraw();
-    });
-    
-    $("#resourceTypes").change(function() {
-      $("#resource_datatable").dataTable().fnDraw();
-      $.cookie($(this).attr("id"), $(this).val());
-    });
-
-
-    $("#statuses").change(function() {
-      $("#resource_datatable").dataTable().fnDraw();
-      $.cookie($(this).attr("id"), $(this).val());
-    });
-    
-    $("#sortBy").change(function() {
-      $("#resource_datatable").dataTable().fnDraw();
-      $.cookie($(this).attr("id"), $(this).val());
-    });
-    
-    $("#query").change(function() {
-      $("#resource_datatable").dataTable().fnDraw();
-      $.cookie($(this).attr("id"), $(this).val());
-    });
-    
-    $("#query").bindWithDelay("keyup", function() {$("#resource_datatable").dataTable().fnDraw();} ,500);
-
+$(function() {
+    setupDashboardDataTable();
 });
-
-function fnRenderTitle(oObj) {
-    //in spite of name, aData is an object containing the resource record for this row
-    var objResource = oObj.aData;
-    var html = '<a href="'  + getURI(objResource.urlNamespace + '/' + objResource.id) + '">' + htmlEncode(objResource.title) + '</a>';
-    html += ' (ID: ' + objResource.id 
-    if (objResource.status != 'ACTIVE') {
-    html += " " + objResource.status;
-    }
-    html += ')';
-    <#if showDescription>
-    html += '<br /> <p>' + htmlEncode(objResource.description) + '</p>';
-    </#if> 
-    return html;
-}
-
-function drawToolbar(projId) {
-    var toolbar = $("#proj-toolbar");
-    toolbar.empty();
-    if (projId != undefined && projId != '') {
-        toolbar.append(projToolbarItem('/project/' + projId + '/view', '/images/zoom.png', ' View selected project'));
-        toolbar.append(projToolbarItem('/project/' + projId + '/edit', '/images/pencil.png', ' Edit project'));
-        toolbar.append(projToolbarItem('/resource/add?projectId=' + projId, '/images/database_add.png', ' Add new resource to project'));
-    }
-}
 
 </script>
+
 </#macro>
 
-
-<#macro checkedif arg1 arg2><#t>
-<@valif "checked='checked'" arg1 arg2 />
-</#macro>
-
-<#macro selectedif arg1 arg2>
-<@valif "selected='selected'" arg1 arg2 />
-</#macro>
-
-<#macro valif val arg1 arg2><#t>
-<#if arg1=arg2>${val}</#if><#t>
-</#macro>
-
-<#macro boolfield name label id  value labelPosition="left" type="checkbox" labelTrue="Yes" labelFalse="No" cssClass="">
-    <@boolfieldCheckbox name label id  value labelPosition cssClass />
-</#macro>
-
-<#macro boolfieldCheckbox name label id value labelPosition cssClass>
-<#if value?? && value?string == 'true'>
-    <@s.checkbox name="${name}" label="${label}" labelPosition="${labelPosition}" id="${id}"  value=value cssClass="${cssClass}" 
-    	checked="checked"/>
-<#else>
-    <@s.checkbox name="${name}" label="${label}" labelPosition="${labelPosition}" id="${id}"  value=value cssClass="${cssClass}" />
-</#if>
-</#macro>
-
-<#macro boolfieldRadio name label id value labelPosition labelTrue labelFalse>
-    <label>${label}</label>
-    <input type="radio" name="${name}" id="${id}-true" value="true"  <@checkedif true value />  />
-    <label for="${id}-true" class="datatable-cell-unstyled"> ${labelTrue}</label>
-    <#if (labelPosition=="top")><br />
-    <input type="radio" name="${name}" id="${id}-false" value="false" <@checkedif false value />   />
-    <label for="${id}-false" class="datatable-cell-unstyled"> ${labelFalse}</label>
-    <#else>
-    <input type="radio" name="${name}" id="${id}-false" value="false"   />
-    <label for="${id}-false" class="datatable-cell-unstyled"> ${labelFalse}</label>
-    </#if>
-</#macro>
-
-<#macro boolfieldSelect name label id value labelPosition labelTrue labelFalse>
-    <label>${label}</label>
-    <select id="${id}" name="${name}">
-    <#if (labelPosition=="top")><br /></#if>
-        <option id="${id}-true" value="true" <@selectedif true value/> />${labelTrue}</option>
-        <option id="${id}-false" value="false" <@selectedif false value/> />${labelFalse}</option>
-    </select>
-</#macro>
 
 <#macro repeat count>
     <#list 1..count as idx> <#t>
@@ -1622,59 +1303,325 @@ function drawToolbar(projId) {
 </#macro>
 
 
-<#macro copyrightHolders sectionTitle copyrightHolderProxy inline=false showInherited=false>
+<#macro copyrightHolders sectionTitle copyrightHolderProxy >
 <#if copyrightMandatory>
-<#assign copyrightHolder = copyrightHolderProxy[0]>
-<#!-- fixme replace with shared macros wherever possible -->
-<#if !inline>
-<div class="glide" tiplabel="Primary Copyright Holder" tooltipcontent="Use this field to nominate a primary copyright holder. Other information about copyright can be added in the 'notes' section by creating a new 'Rights & Attribution note.">
-    <h3>${sectionTitle}</h3>
-<#else>
-<label class="toplabel">${sectionTitle}</label> <br />
-</#if>
-    <div>
-        <table id="copyrightHolderTable" class="tableFormat">
-        <tr><td>
-            <@s.radio name="copyrightHolderType" list=["Person", "Institution"] onchange="quickToggle('copyright' + value, 'copyrightPerson', 'copyrightInstitution');" />
-            <div class="creatorInstitution hidden" id="copyrightInstitution">
-                <span class="smallLabel">Institution</span>
-                        <@s.hidden name="copyrightHolder.institution.id" id="copyright_institution_id"/>
-                        <div class="width60percent marginLeft10">
-                            <@s.textfield cssClass="institutionAutoComplete institution" watermark="Institution Name" autocomplete="off"
-                                autocompleteName="name" autocompleteIdElement="#copyright_institution_id" autocompleteParentElement="#copyrightInstitution"
-                                name="copyrightHolder.institution.id" maxlength="255" />
-                        </div>
-            </div>
+    <div class="glide" tiplabel="Primary Copyright Holder" tooltipcontent="Use this field to nominate a primary copyright holder. Other information about copyright can be added in the 'notes' section by creating a new 'Rights & Attribution note.">
+        <h3>${sectionTitle}</h3>
 
-            <div class="creatorPerson hidden" id="copyrightPerson">
-                <span class="smallLabel">Person</span>
-                <div class="width30percent marginLeft10" >
-                    <@s.hidden name="copyrightHolder.person.id" id="copyright_person_id" onchange="this.valid()"  autocompleteParentElement="#copyrightPerson"  />
-                    <@s.textfield cssClass="nameAutoComplete" watermark="Last Name"autocomplete="off"
-                         autocompleteName="lastName" autocompleteIdElement="#copyright_person_id" autocompleteParentElement="#copyrightPerson"
-                        name="copyrightHolder.person.lastName" maxlength="255" />
-                    <@s.textfield cssClass="nameAutoComplete" watermark="First Name" autocomplete="off"
-                         autocompleteName="firstName" autocompleteIdElement="#copyright_person_id" autocompleteParentElement="#copyrightPerson"
-                        name="copyrightHolder.person.firstName" maxlength="255" />
-                    <@s.textfield cssClass="nameAutoComplete" watermark="Email" autocomplete="off"
-                         autocompleteName="email" autocompleteIdElement="#copyright_person_id" autocompleteParentElement="#copyrightPerson"
-                        name="copyrightHolder.person.email" maxlength="255"/>
-                    <br />
-                </div>
-                <div class="width60percent marginLeft10">
-                    <@s.textfield cssClass="nameAutoComplete" watermark="Institution Name" autocomplete="off"
-                     autocompleteName="institution" autocompleteIdElement="#copyright_person_id" autocompleteParentElement="#copyrightPerson"
-                    name="copyrightHolder.person.institution.name" maxlength="255" />
-                </div>
-        </div>
-    </td></tr>
+    <table id="copyrightHolderTable">
+      <@creatorProxyRow proxy=copyrightHolderProxy proxy_index="" prefix="copyrightHolder" required=true includeRole=false required=true/>
     </table>
-    </div>
-<#if !inline>
-</div>
-</#if>
 </#if>
 </#macro>
 
-</#escape>
+<#macro license>
+<#assign currentLicenseType = defaultLicenseType/>
+<#if resource.licenseType?has_content>
+    <#assign currentLicenseType = resource.licenseType/>
+</#if>
+<div class="glide" id="license_section">
+        <h3>License</h3>
+<@s.radio name='resource.licenseType' groupLabel='License Type' emptyOption='false' listValue="label" 
+    list='%{licenseTypesList}' numColumns="1" cssClass="licenseRadio" value="%{'${currentLicenseType}'}" />
 
+    <table id="license_details">
+    <#list licenseTypesList as licenseCursor>
+        <#if (licenseCursor != currentLicenseType)>
+            <#assign visible="hidden"/>
+        <#else>
+            <#assign visible="">
+        </#if>
+        <tr id="license_details_${licenseCursor}" class="${visible}">
+                <td>
+                    <#if (licenseCursor.imageURI != "")>
+                        <a href="${licenseCursor.URI}" target="_blank"><img src="${licenseCursor.imageURI}"/></a>
+                    </#if>
+                </td>
+                <td>
+                    <h4>${licenseCursor.licenseName}</h4>
+                    <p>${licenseCursor.descriptionText}</p>
+                    <#if (licenseCursor.URI != "")>
+                        <p><a href="${licenseCursor.URI}" target="_blank">view details</a></p>
+                    <#else>
+                        <p><label style="position: static"  for="licenseText">License text:</label></p>
+                        <p><@s.textarea id="licenseText" name='resource.licenseText' rows="3" cols="60" /></p>
+                    </#if>
+                </td>
+            </tr>
+    </#list>
+    </table>
+</div>
+</#macro>
+
+<#macro asyncUploadTemplates formId="resourceMetadataForm">
+
+<!-- The template to display files available for upload (uses tmpl.min.js) -->
+<script id="template-upload" type="text/x-tmpl">
+{% for (var i=0, file; file=o.files[i]; i++) { %}
+    <tr class="template-upload fade">
+        <td class="preview"><span class="fade"></span></td>
+        <td class="name"><span>{%=file.name%}</span></td>
+        <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
+        {% if (file.error) { %}
+            <td class="error" colspan="2"><span class="label label-important">{%=locale.fileupload.error%}</span> {%=locale.fileupload.errors[file.error] || file.error%}</td>
+        {% } else if (o.files.valid && !i) { %}
+            <td>
+                <div class="progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="bar" style="width:0%;"></div></div>
+            </td>
+            <td class="start">{% if (!o.options.autoUpload) { %}
+                <button class="btn btn-primary">
+                    <i class="icon-upload icon-white"></i>
+                    <span>{%=locale.fileupload.start%}</span>
+                </button>
+            {% } %}</td>
+        {% } else { %}
+            <td colspan="2"></td>
+        {% } %}
+        <td class="cancel">{% if (!i) { %}
+            <button class="btn btn-warning">
+                <i class="icon-ban-circle icon-white"></i>
+                <span>{%=locale.fileupload.cancel%}</span>
+            </button>
+        {% } %}</td>
+    </tr>
+{% } %}
+</script>
+
+<!-- The template to display files available for download (uses tmpl.min.js) -->
+
+<script id="template-download" type="text/x-tmpl">
+{% for (var i=0, file; file=o.files[i]; i++) { %}
+{% var idx = '' + TDAR.fileupload.getRowId();%}
+{% var rowclass = file.fileId ? "existing-file" : "new-file" ;%}
+    <tr class="template-download fade {%=rowclass%}" id="files-row-{%=idx%}">
+        {% if (file.error) { %}        
+            <td></td>
+            <td class="name"><span>{%=file.name%}</span></td>
+            <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
+            <td class="error" colspan="2"><span class="label label-important">{%=locale.fileupload.error%}</span> {%=locale.fileupload.errors[file.error] || file.error%}</td>
+        {% } else { %}
+            <td class="preview"></td>
+            <td class="name">
+                {% if (file.url) { %}        
+                <a href="{%=file.url%}" title="{%=file.name%}" rel="{%=file.thumbnail_url&&'gallery'%}" download="{%=file.name%}">{%=file.name%}</a>
+                {% } else { %}
+                {%=file.name%}
+                {% } %} 
+                <span class="replacement-text"></span>
+            </td>
+            <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
+            <td colspan="2">
+                <#-- FIXME:supposedly struts 2.1+ allows custom data attributes but I get a syntax error.  What gives? -->
+                <@s.select id="proxy{%=idx%}_conf" datarestriction="{%=file.restriction%}" name="fileProxies[{%=idx%}].restriction" 
+                style="padding-left: 20px;" list=fileAccessRestrictions listValue="label"  
+                onchange="TDAR.fileupload.updateFileAction(this)" 
+                cssClass="fileProxyConfidential"/>
+            </td>
+        {% } %}
+        <td class="delete">
+                <button class="btn btn-danger delete-button" data-type="{%=file.delete_type%}" data-url="{%=file.delete_url%}">
+                    <i class="icon-trash icon-white"></i>
+                    <span>{%=locale.fileupload.destroy%}</span>
+                </button>
+        </td>
+        <td>
+            {%if (file.fileId) { %}
+               <#--
+                <button class="btn btn-warning disabled replace-button" disabled="disabled">
+                    <i class="icon-retweet icon-white"></i>
+                    <span>Replace</span>
+                </button>
+                -->
+                  <div class="btn-group">
+                    <button class="btn btn-warning disabled dropdown-toggle replace-button" disabled="disabled" data-toggle="dropdown">Replace <span class="caret"></span></button>
+                    <ul class="dropdown-menu" id="tempul">
+                      <li><a href="#">file 1</a></li>
+                      <li><a href="#">file 2</a></li>
+                      <li class="divider"></li>
+                      <li><a href="#">cancel replace operation</a></li>
+                    </ul>
+                  </div> 
+            {% } %}
+            
+            
+            <#-- TODO: this widget has a "bulk actions" convention, but I don't want it.  is it safe to remove the html,  or do we also need to handle this in javascript --> 
+            <#-- <input type="checkbox" name="delete"  value="1"> -->
+
+
+            <input type="hidden" class="fileAction" name="fileProxies[{%=idx%}].action" value="{%=file.action||'ADD'%}"/>
+            <input type="hidden" class="fileId" name="fileProxies[{%=idx%}].fileId" value="{%=''+(file.fileId || '-1')%}"/>
+            <input type="hidden" class="fileReplaceName" name="fileProxies[{%=idx%}].filename" value="{%=file.name%}"/>
+            <input type="hidden" class="fileSequenceNumber" name="fileProxies[{%=idx%}].sequenceNumber" value="{%=idx%}"/>
+            
+        </td>
+    </tr>
+{% } %}
+</script>
+
+<script id="template-replace-menu" type="text/x-tmpl">
+{% for(var i = 0, row; row = o.jqnewfiles[i]; i++) { %}
+<#noparse>
+   <li><a href="#" 
+            class="replace-menu-item"
+            data-action="rename"
+            data-filename="{%=$('.fileReplaceName', row).val()%}" 
+            data-target="#{%=$(row).attr('id')%}" 
+            >{%=$('.fileReplaceName', row).val()%}</a></li>
+</#noparse>
+{% } %}
+{% if(o.bReplacePending) { %}
+   <li class="divider"></li> 
+   <li><a href="#" class="cancel" >Cancel previous operation</a></li>
+{% } %}
+</script>
+</#macro>
+
+<#macro acceptedFileTypesRegex>
+/\.(<@join sequence=validFileExtensions delimiter="|"/>)$/i<#t>
+</#macro>
+
+
+<#macro subNavMenu>
+    <#local supporting = resource.resourceType.supporting >
+    <div id='subnavbar' class="subnavbar-scrollspy affix-top subnavbar resource-nav navbar-static"  data-offset-top="250" data-spy="affix" >
+      <div class="">
+        <div class="container" >
+        <ul class="nav">
+        	<li class="alwaysHidden"><a href="#top">top</a></li>
+            <li class="active hidden-tablet hidden-phone"><a href="#basicInformationSection">Basic</a></li>
+             <#if persistable.resourceType?has_content && persistable.resourceType != 'PROJECT' >
+            <li><a href="#authorshipSection">Authors</a></li>
+            </#if>
+            <#if persistable.resourceType?has_content && persistable.resourceType != 'PROJECT'  && (!supporting)><li><a href="#divFileUpload">Files</a></li></#if>
+            <span class="hidden-tablet hidden-phone" >
+            <#nested />
+            </span>
+             <#if persistable.resourceType?has_content && persistable.resourceType != 'PROJECT' >
+            <li><a href="#organizeSection"><span class="visible-phone visible-tablet" title="Project">Proj.</span><span class="hidden-phone hidden-tablet">Project</span></a></li>
+            </#if>
+            <#if !supporting>
+            <li><a href="#spatialSection">Where</a></li>
+            <li class="hidden-phone"><a href="#temporalSection">When</a></li>
+            <li><a href="#investigationSection">What</a></li>
+            <li class="hidden-phone"><a href="#siteSection">Site</a></li>
+            </#if>
+            <li class="hidden-tablet hidden-phone"><a href="#resourceNoteSectionGlide">Notes</a></li>
+            <li><a href="#divAccessRights"><span class="visible-phone visible-tablet" title="Permissions">Permis.</span><span class="hidden-phone hidden-tablet">Permissions</span></a></li>
+        </ul>
+            <div id="fakeSubmitDiv" class="pull-right">
+                <button type=button class="button btn btn-primary submitButton" id="fakeSubmitButton">Save</button>
+                <img src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner"  style="display:none"/>
+            </div>
+        </div>
+      </div>
+    </div>
+</#macro>
+
+
+<#macro listMemberUsers >
+<#local _authorizedUsers=account.authorizedMembers />
+<#if !_authorizedUsers?has_content><#local _authorizedUsers=[blankPerson]></#if>
+
+<div id="accessRightsRecords" class="repeatLastRow" data-addAnother="add another user">
+    <div class="control-group">
+        <label class="control-label">Users</label>
+        <div class="controls">
+        <#list _authorizedUsers as user>
+            <#if user??>
+                <@userRow person=user _indexNumber=user_index isUser=true includeRepeatRow=true/>
+            </#if>
+        </#list>
+        </div>
+    </div>
+</div>
+
+</#macro>
+
+<#--render person control assumed to be directly inside of a grid-sized element and inside of a control group -->
+<#macro personControl person person_index isDisabled namePrefix >
+</#macro>
+
+
+<#macro userRow person=person _indexNumber=0 isDisabled=false prefix="authorizedMembers" required=false _personPrefix="" includeRole=false
+    includeRepeatRow=false includeRights=false  hidden=false isUser=false>
+<#local disabled =  isDisabled?string("disabled", "") />
+<#local readonly = isDisabled?string("readonly", "") />
+<#local lookupType="nameAutoComplete"/>
+<#if isUser><#local lookupType="userAutoComplete"/></#if>
+<#local _index=""/>
+<#if _indexNumber?string!=''><#local _index="[${_indexNumber?c}]" /></#if>
+<#local personPrefix="" />
+<#if _personPrefix!=""><#local personPrefix=".${_personPrefix}"></#if>
+<#local strutsPrefix="${prefix}${_index}" />
+<#local rowIdElement="${prefix}Row_${_indexNumber}_p" />
+<#local idIdElement="${prefix}Id__id_${_indexNumber}_p" />
+<#local requiredClass><#if required>required</#if></#local>
+    <div id='${rowIdElement}' class="creatorPerson <#if hidden>hidden</#if> <#if includeRepeatRow>repeat-row</#if>">
+        <@s.hidden name='${strutsPrefix}${personPrefix}.id' value='${(person.id!-1)?c}' id="${idIdElement}"  cssClass="validIdRequired" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"   />
+        <div class="controls-row">
+            <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass}" placeholder="Last Name"  readonly=isDisabled autocompleteParentElement="#${rowIdElement}"
+                autocompleteIdElement="#${idIdElement}" autocompleteName="lastName" autocomplete="off"
+                name="${strutsPrefix}${personPrefix}.lastName" maxlength="255" /> 
+            <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass}" placeholder="First Name"  readonly=isDisabled autocomplete="off"
+                name="${strutsPrefix}${personPrefix}.firstName" maxlength="255" autocompleteName="firstName"
+                autocompleteIdElement="#${idIdElement}" 
+                autocompleteParentElement="#${rowIdElement}"  />
+
+            <#if includeRole || includeRights>
+            
+                <#if includeRole>
+                    <@s.select theme="tdar" name="${strutsPrefix}.role"  autocomplete="off" listValue='label' list=relevantPersonRoles  
+                        cssClass="creator-role-select span2" />
+                <#else>
+                    <@s.select theme="tdar" cssClass="creator-rights-select span2" name="${strutsPrefix}.generalPermission" emptyOption='false' 
+                        listValue='label' list='%{availablePermissions}' disabled=isDisabled />
+                    <#--HACK: disabled fields do not get sent in request, so we copy generalPermission via hidden field and prevent it from being cloned -->
+                    <@s.hidden name="${strutsPrefix}.generalPermission" cssClass="repeat-row-remove" />
+                </#if>
+            <#else>
+                <span class="span2">&nbsp;</span> 
+            </#if>
+        </div>
+        <div class="controls-row">
+        <@s.textfield theme="tdar" cssClass="span3 ${lookupType}" placeholder="Email (optional)" readonly=isDisabled autocomplete="off"
+            autocompleteIdElement="#${idIdElement}" autocompleteName="email" autocompleteParentElement="#${rowIdElement}"
+            name="${strutsPrefix}${personPrefix}.email" maxlength="255"/>
+        <@s.textfield theme="tdar" cssClass="span3 ${lookupType}" placeholder="Institution Name (Optional)" readonly=isDisabled autocomplete="off"
+            autocompleteIdElement="#${idIdElement}" 
+            autocompleteName="institution" 
+            autocompleteParentElement="#${rowIdElement}"
+            name="${strutsPrefix}${personPrefix}.institution.name" maxlength="255" />
+        </div>
+    </div>
+</#macro>
+
+<#macro institutionRow institution _indexNumber=0 prefix="authorizedMembers" required=false includeRole=false _institutionPrefix=""  hidden=false>
+<#local _index=""/>
+<#if _indexNumber?string!=''><#local _index="[${_indexNumber}]" /></#if>
+<#local institutionPrefix="" />
+<#if _institutionPrefix!=""><#local institutionPrefix=".${_institutionPrefix}"></#if>
+<#local strutsPrefix="${prefix}${_index}" />
+<#local rowIdElement="${prefix}Row_${_indexNumber}_i" />
+<#local idIdElement="${prefix}Id__id_${_indexNumber}_i" />
+
+    <div id='${rowIdElement}' class="creatorInstitution <#if hidden >hidden</#if>">
+
+        <@s.hidden name='${strutsPrefix}${institutionPrefix}.id' value='${(institution.id!-1)?c}' id="${idIdElement}"  cssClass="validIdRequired" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"  />
+                <div class="controls-row">
+                    <@s.textfield theme="tdar" cssClass="institutionAutoComplete institution span4" placeholder="Institution Name" autocomplete="off"
+                        autocompleteIdElement="#${idIdElement}" autocompleteName="name" 
+                        autocompleteParentElement="#${rowIdElement}"
+                        name="${strutsPrefix}${institutionPrefix}.name" maxlength="255" />
+
+                    <#if includeRole>
+                    <@s.select theme="tdar" name="${strutsPrefix}.role" listValue='label' list=relevantInstitutionRoles cssClass="creator-role-select span2" />
+                    <#else>
+                    <#-- is includeRole ever false?  if not we should ditch the parm entirely, perhaps the entire macro. -->
+                    <div class="span2">&nbsp</div>
+                    </#if>
+                </div>
+    </div>
+</#macro>
+
+
+</#escape>

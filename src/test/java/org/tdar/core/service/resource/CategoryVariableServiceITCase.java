@@ -2,8 +2,8 @@ package org.tdar.core.service.resource;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,9 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.CategoryType;
 import org.tdar.core.bean.resource.CategoryVariable;
-import org.tdar.core.bean.resource.CodingSheet;
-import org.tdar.core.bean.resource.Ontology;
-import org.tdar.core.service.resource.CategoryVariableService;
 
 public class CategoryVariableServiceITCase extends AbstractIntegrationTestCase{
     @Autowired
@@ -82,25 +79,15 @@ public class CategoryVariableServiceITCase extends AbstractIntegrationTestCase{
         allCats.get(0).getSynonyms().add("other");
         allCats.get(0).getSynonyms().add("another");
         categoryVariableService.saveOrUpdate(allCats.get(0));
-        List<CodingSheet> codingSheets = new ArrayList<CodingSheet>();
-        List<Ontology> ontologies = new ArrayList<Ontology>();
         List<String> synonyms = new ArrayList<String>();
         allCats = categoryVariableService.findAll();
         logger.info("{}", allCats);
         for(CategoryVariable cat : allCats) {
-            assertNotNull(cat.getOntologies());
-            assertNotNull(cat.getCodingSheets());
             assertNotNull(cat.getSortedSynonyms());
             
-            ontologies.addAll(cat.getOntologies());
-            codingSheets.addAll(cat.getCodingSheets());
             synonyms.addAll(cat.getSortedSynonyms());
         }
-        logger.debug("related ontologies:" + ontologies);
-        logger.debug("related coding sheets:" + codingSheets);
         logger.debug("related synonyms:" + synonyms);
-        assertTrue("we should have at least one related ontology", ontologies.size()>0);
-        assertTrue("we should have at least one related coding sheet", codingSheets.size()>0);
         assertTrue("we should have at least one related synonym", synonyms.size()>0);
     }
 }

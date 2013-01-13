@@ -8,7 +8,7 @@
 <h2>Contributor requests</h2>
 <hr/>
 
-<table width="60%" class="zebracolors">
+<table width="60%" class="table table-striped">
 <thead><tr><th>Contributor</th><th>Reason</th><th>Date requested</th></tr></thead>
 <tbody>
 <@s.iterator value='pendingContributorRequests' status='rowStatus' var='contributorRequest'>
@@ -20,5 +20,4 @@
 </@s.iterator>
 </tbody>
 </table>
-<script>$(applyZebraColors);</script>
 </#escape>

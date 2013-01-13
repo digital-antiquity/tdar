@@ -55,7 +55,6 @@
 		using JDK dynamic proxies (requires interfaces) -->
 	<tx:annotation-driven proxy-target-class='true' />
 	<!-- TAG Service -->
-	<import resource='spring-tag.xml' />
 	<!-- Tasks <import resource='spring-tasks.xml' /> -->
 	<!-- session scoped session data bean -->
 	<bean id='sessionData' class='org.tdar.web.SessionData' scope='session'>

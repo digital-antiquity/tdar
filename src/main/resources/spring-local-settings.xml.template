@@ -19,4 +19,7 @@ vim:sts=2:sw=2:
     <!-- Spring ldap beans -->
 <!--    <import resource='spring-ldap.xml' /> -->
 
+	<import resource="spring-tag.xml" />
+<!-- 	<import resource="spring-tag-ahad.xml" /> -->
+
 </beans>

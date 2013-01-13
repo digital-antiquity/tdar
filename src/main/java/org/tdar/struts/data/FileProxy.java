@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.resource.InformationResourceFile;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
@@ -34,7 +35,7 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy> {
     private Long size;
     private String filename = "";
     private VersionType versionType = VersionType.UPLOADED;
-    private boolean confidential;
+    private FileAccessRestriction restriction = FileAccessRestriction.PUBLIC;
     private Integer sequenceNumber = 0;
 
     private List<FileProxy> additionalVersions = new ArrayList<FileProxy>();
@@ -46,7 +47,7 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy> {
 
     public FileProxy(InformationResourceFile file) {
         this.fileId = file.getId();
-        this.confidential = file.isConfidential();
+        this.restriction = file.getRestriction();
         this.sequenceNumber = file.getSequenceNumber();
         InformationResourceFileVersion latestVersion = file.getLatestUploadedVersion();
         if (latestVersion != null) {
@@ -70,11 +71,11 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy> {
 
     }
 
-    public FileProxy(String filename, VersionType versionType, boolean confidential) {
+    public FileProxy(String filename, VersionType versionType, FileAccessRestriction restriction) {
         this.filename = filename;
         this.versionType = versionType;
         this.action = FileAction.ADD;
-        this.confidential = confidential;
+        this.restriction = restriction;
     }
 
     /**
@@ -152,16 +153,16 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy> {
     }
 
     public String toString() {
-        return String.format("%s %s (confidential: %s, size: %d, fileId: %d, InputStream: %s, sequence number: %d)", action, filename, confidential, size,
+        return String.format("%s %s (confidential: %s, size: %d, fileId: %d, InputStream: %s, sequence number: %d)", action, filename, restriction, size,
                 fileId, file, sequenceNumber);
     }
 
-    public boolean isConfidential() {
-        return confidential;
+    public FileAccessRestriction getRestriction() {
+        return restriction;
     }
 
-    public void setConfidential(boolean confidential) {
-        this.confidential = confidential;
+    public void setRestriction(FileAccessRestriction restriction) {
+        this.restriction = restriction;
     }
 
     public boolean shouldProcess() {
@@ -189,7 +190,8 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy> {
     }
 
     /**
-     * @param file the file to set
+     * @param file
+     *            the file to set
      */
     public void setFile(File file) {
         this.file = file;

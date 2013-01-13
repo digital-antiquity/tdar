@@ -3,12 +3,13 @@ package org.tdar.struts.action.resource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -21,13 +22,13 @@ import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.resource.Image;
-import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.BulkUploadService;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.personal.PersonalFilestore;
+import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.Pair;
 
@@ -53,29 +54,19 @@ public class BulkUploadController extends AbstractInformationResourceController<
     @Autowired
     private BulkUploadService bulkUploadService;
 
-    @Override
-    protected void loadCustomMetadata() {
-        loadInformationResourceProperties();
-    }
-
-    // private Class validClasses = {}
-
     @Autowired
     private FileAnalyzer analyzer;
 
     private String bulkFileName;
-
     private long bulkContentLength;
-
     private FileInputStream templateInputStream;
-
     private Float percentDone = 0f;
-
     private String phase;
-
     private List<Pair<Long, String>> details;
-
     private String asyncErrors;
+    int maxReferenceRow = 0;
+    private File templateFile;
+    private String templateFilename;
 
     /**
      * Save basic metadata of the registering concept.
@@ -96,9 +87,9 @@ public class BulkUploadController extends AbstractInformationResourceController<
         saveInformationResourceProperties();
         File excelManifest = null;
         logger.info("{} and names {}", getUploadedFiles(), getUploadedFilesFileName());
+        PersonalFilestoreTicket ticket = filestoreService.findPersonalFilestoreTicket(getTicketId());
+        PersonalFilestore personalFilestore = filestoreService.getPersonalFilestore(getTicketId());
         if (!CollectionUtils.isEmpty(getUploadedFilesFileName())) {
-            PersonalFilestoreTicket ticket = filestoreService.findPersonalFilestoreTicket(getTicketId());
-            PersonalFilestore personalFilestore = filestoreService.getPersonalFilestore(getTicketId());
             try {
                 String filename = getUploadedFilesFileName().get(0);
                 excelManifest = personalFilestore.store(ticket, getUploadedFiles().get(0), filename);
@@ -106,21 +97,70 @@ public class BulkUploadController extends AbstractInformationResourceController<
                 addActionErrorWithException("could not store manifest file", e);
             }
         }
+        
+        if (getTemplateFilename() != null) {
+            PersonalFilestoreFile filestoreFile = personalFilestore.retrieve(ticket, getTemplateFilename());
+            if (filestoreFile != null) {
+                excelManifest = filestoreFile.getFile();
+            }
+        }
+        
         logger.debug("excel manifest is: {}", excelManifest);
         handleAsyncUploads();
         Collection<FileProxy> fileProxiesToProcess = getFileProxiesToProcess();
 
-        getGenericService().markReadOnly(getPersistable());
         if (isAsync()) {
             logger.info("running asyncronously");
-            bulkUploadService.saveAsync(image, getAuthenticatedUser(), getTicketId(), excelManifest, fileProxiesToProcess);
+            bulkUploadService.saveAsync(image, getAuthenticatedUser(), getTicketId(), excelManifest, fileProxiesToProcess, getAccountId());
         } else {
             logger.info("running inline");
-            bulkUploadService.save(image, getAuthenticatedUser(), getTicketId(), excelManifest, fileProxiesToProcess);
+            bulkUploadService.save(image, getAuthenticatedUser(), getTicketId(), excelManifest, fileProxiesToProcess, getAccountId());
         }
+        getGenericService().markReadOnly(getPersistable());
         getGenericService().detachFromSession(getPersistable());
         setPersistable(null);
         return SUCCESS_ASYNC;
+    }
+
+    @Action(value = "template-prepare")
+    @SkipValidation
+    public String templateView() {
+        return SUCCESS;
+    }
+
+    @Action(value = "validate-template", results = {
+            @Result(name = INPUT, type = "redirect", location = "template-prepare"),
+            @Result(name = SUCCESS, type = "redirect", location = "add?ticketId=${ticketId}&templateFilename=${templateFilename}&projectId=${projectId}") })
+    @SkipValidation
+    public String templateValidate() {
+
+        logger.info("{} and names {}", getUploadedFiles(), getUploadedFilesFileName());
+        if (CollectionUtils.isEmpty(getUploadedFiles())) {
+            addActionError("Please upload your template");
+            return INPUT;
+        }
+        try {
+            Workbook workbook = WorkbookFactory.create(getUploadedFiles().get(0));
+            bulkUploadService.validateManifestFile(workbook.getSheetAt(0));
+            
+            PersonalFilestoreTicket ticket = filestoreService.createPersonalFilestoreTicket(getAuthenticatedUser());
+            setTicketId(ticket.getId());
+            PersonalFilestore personalFilestore = filestoreService.getPersonalFilestore(getTicketId());
+            try {
+                String filename = getUploadedFilesFileName().get(0);
+                setTemplateFilename(filename);
+                personalFilestore.store(ticket, getUploadedFiles().get(0), filename);
+            } catch (Exception e) {
+                addActionErrorWithException("could not store manifest file", e);
+            }
+
+            
+        } catch (Exception e) {
+            addActionErrorWithException("Problem with BulkUploadTemplate", e);
+            return INPUT;
+        }
+        addActionMessage("Your Template appears to be valid, please try your upload");
+        return SUCCESS;
     }
 
     @SkipValidation
@@ -128,19 +168,19 @@ public class BulkUploadController extends AbstractInformationResourceController<
             @Result(name = "wait", type = "freemarker", location = "checkstatus-wait.ftl", params = { "contentType", "application/json" }) })
     public String checkStatus() {
         AsyncUpdateReceiver reciever = bulkUploadService.checkAsyncStatus(getTicketId());
-        phase = reciever.getStatus();
-        percentDone = reciever.getPercentComplete();
-        setAsyncErrors(reciever.getHtmlAsyncErrors());
-        if (percentDone == 100f) {
-            List<Pair<Long, String>> details = reciever.getDetails();
-            setDetails(details);
+        if (reciever != null) {
+            phase = reciever.getStatus();
+            percentDone = reciever.getPercentComplete();
+            setAsyncErrors(reciever.getHtmlAsyncErrors());
+            if (percentDone == 100f) {
+                List<Pair<Long, String>> details = reciever.getDetails();
+                setDetails(details);
+            }
+            return "wait";
+        } else {
+            return ERROR;
         }
-        return "wait";
     }
-
-    int maxReferenceRow = 0;
-
-    private File templateFile;
 
     @SkipValidation
     @Action(value = "template", results = {
@@ -171,11 +211,6 @@ public class BulkUploadController extends AbstractInformationResourceController<
         return SUCCESS;
     }
 
-    @Override
-    protected void processUploadedFiles(List<InformationResourceFile> uploadedFiles) throws IOException {
-        return;
-    }
-
     /**
      * Get the current concept.
      * 
@@ -191,7 +226,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
 
     @Override
     public Collection<String> getValidFileExtensions() {
-        return analyzer.getExtensionsForTypes(ResourceType.IMAGE, ResourceType.DOCUMENT,ResourceType.VIDEO);
+        return analyzer.getExtensionsForTypes(ResourceType.IMAGE, ResourceType.DOCUMENT, ResourceType.VIDEO);
     }
 
     @Override
@@ -267,6 +302,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
         return asyncErrors;
     }
 
+    @Override
     public Class<Image> getPersistableClass() {
         return Image.class;
     }
@@ -285,4 +321,18 @@ public class BulkUploadController extends AbstractInformationResourceController<
     public void setTemplateFile(File templateFile) {
         this.templateFile = templateFile;
     }
+
+    @Override
+    public boolean isBulkUpload() {
+        return true;
+    }
+
+    public String getTemplateFilename() {
+        return templateFilename;
+    }
+
+    public void setTemplateFilename(String templateFilename) {
+        this.templateFilename = templateFilename;
+    }
+
 }

@@ -8,8 +8,8 @@ import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.external.auth.TdarGroup;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.QueryPartGroup;
@@ -20,7 +20,7 @@ public class ReservedSearchParameters extends SearchParameters {
     private Person authenticatedUser;
     private TdarGroup tdarGroup;
     private boolean useSubmitterContext = false;
-
+    
     public ReservedSearchParameters() {
         setOperator(Operator.AND);
     }

@@ -4,12 +4,8 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.search.annotations.Indexed;
-import org.tdar.core.configuration.JSONTransient;
-
-import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * $Id$
@@ -23,7 +19,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @Entity
 @Indexed
 @Table(name = "image")
-@XStreamAlias("image")
 @XmlRootElement(name = "image")
 public class Image extends InformationResource {
 

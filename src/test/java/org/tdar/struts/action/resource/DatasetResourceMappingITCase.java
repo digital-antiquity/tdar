@@ -59,6 +59,7 @@ public class DatasetResourceMappingITCase extends AbstractDataIntegrationTestCas
         Long image1_id = uploadImage("5127663428_42ef7f4463_b.jpg", project).getId();
         Long image2_id = uploadImage("handbook_of_archaeology.jpg", project).getId();
         sharedDataset = dataset;
+        genericService.detachFromSession(dataset);
         // do search for something in another column
         sharedImageIds = Arrays.asList(image1_id, image2_id);
 

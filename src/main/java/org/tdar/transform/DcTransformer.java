@@ -163,6 +163,18 @@ public abstract class DcTransformer<R extends Resource> implements Transformer<R
             if (resourceProviderInstitution != null)
                 dc.getContributor().add(resourceProviderInstitution.getName());
 
+            String publisherLocation = source.getPublisherLocation();
+
+            String pub = "";
+            String publisher = source.getPublisherName();
+            if (publisher != null)
+                pub += publisher;
+            if (publisherLocation != null)
+                pub += ", " + publisherLocation;
+            if (!pub.isEmpty())
+                dc.getPublisher().add(pub);
+
+
             return dc;
         }
 
@@ -186,17 +198,6 @@ public abstract class DcTransformer<R extends Resource> implements Transformer<R
             String copyLocation = source.getCopyLocation();
             if (copyLocation != null)
                 dc.getRelation().add(copyLocation);
-
-            String publisher = source.getPublisher();
-            String publisherLocation = source.getPublisherLocation();
-
-            String pub = "";
-            if (publisher != null)
-                pub += publisher;
-            if (publisherLocation != null)
-                pub += ", " + publisherLocation;
-            if (!pub.isEmpty())
-                dc.getPublisher().add(pub);
 
             String isbn = source.getIsbn();
             if (isbn != null)

@@ -36,7 +36,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     static final String TESTING_AUTH_INSTIUTION = "testing auth instiution";
 
     @Autowired
-    AccountController controller;
+    UserAccountController controller;
 
     @Autowired
     AuthenticationAndAuthorizationService authService;
@@ -68,7 +68,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         String execute = controller.create();
         assertEquals("Expected controller to return an error, email exists", TdarActionSupport.ERROR, execute);
         logger.info(execute + " : " + controller.getActionMessages());
-        assertEquals("expecting valid message", AccountController.ERROR_USERNAME_ALREADY_REGISTERED, controller.getActionErrors().iterator().next());
+        assertEquals("expecting valid message", UserAccountController.ERROR_USERNAME_ALREADY_REGISTERED, controller.getActionErrors().iterator().next());
 
     }
 
@@ -83,7 +83,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         String execute = controller.create();
         assertEquals("Expected controller to return an error, email exists", TdarActionSupport.ERROR, execute);
         logger.info(execute + " : " + controller.getActionMessages());
-        assertEquals("expecting valid message", AccountController.ERROR_DUPLICATE_EMAIL, controller.getActionErrors().iterator().next());
+        assertEquals("expecting valid message", UserAccountController.ERROR_DUPLICATE_EMAIL, controller.getActionErrors().iterator().next());
 
     }
 
@@ -155,7 +155,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         setVerifyTransactionCallback(new TransactionCallback<Person>() {
             @Override
             public Person doInTransaction(TransactionStatus status) {
-                LoginAction loginAction = generateNewInitializedController(LoginAction.class);
+                LoginController loginAction = generateNewInitializedController(LoginController.class);
                 loginAction.setLoginUsername(p.getEmail());
                 loginAction.setLoginPassword("password");
                 loginAction.setServletRequest(getServletPostRequest());
@@ -178,7 +178,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         String execute = setupValidUserInController(controller);
         assertEquals("expecting result to be 'success'", "success", execute);
         String firstError = getFirstFieldError();
-        assertTrue(firstError.equals(AccountController.COULD_NOT_AUTHENTICATE_AT_THIS_TIME));
+        assertTrue(firstError.equals(UserAccountController.COULD_NOT_AUTHENTICATE_AT_THIS_TIME));
     }
 
     @Test
@@ -188,7 +188,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         String execute = setupValidUserInController(controller);
         assertEquals("expecting result to be 'success'", "success", execute);
         String firstError = getFirstFieldError();
-        assertTrue(firstError.equals(AccountController.COULD_NOT_AUTHENTICATE_AT_THIS_TIME));
+        assertTrue(firstError.equals(UserAccountController.COULD_NOT_AUTHENTICATE_AT_THIS_TIME));
     }
 
     @Test
@@ -199,7 +199,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         String execute = setupValidUserInController(controller);
         assertEquals("expecting result to be 'success'", "success", execute);
         String firstError = getFirstFieldError();
-        assertTrue(firstError.equals(AccountController.COULD_NOT_AUTHENTICATE_AT_THIS_TIME));
+        assertTrue(firstError.equals(UserAccountController.COULD_NOT_AUTHENTICATE_AT_THIS_TIME));
     }
 
     @Test
@@ -212,13 +212,14 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     @Test
     @Rollback
     public void testPrepareValidate() {
-        controller = generateNewController(AccountController.class);
+        controller = generateNewController(UserAccountController.class);
         controller.prepare();
         Person p = controller.getPerson();
+        
         p.setEmail("test@tdar.org");
         assertTrue(p.getId().equals(-1L));
         controller.validate();
-        assertTrue("expecting user existing", controller.getActionErrors().contains(AccountController.ERROR_ALREADY_REGISTERED));
+        assertTrue("expecting user existing", controller.getActionErrors().contains(UserAccountController.ERROR_USERNAME_ALREADY_REGISTERED));
     }
 
     private String getFirstFieldError() {
@@ -228,19 +229,19 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     @Test
     @Rollback
     public void testPrepareValidate2() {
-        controller = generateNewController(AccountController.class);
+        controller = generateNewController(UserAccountController.class);
         controller.prepare();
         Person p = controller.getPerson();
         p.setEmail(TESTING_EMAIL);
         controller.setPerson(p);
         controller.validate();
-        assertTrue("expecting password", controller.getActionErrors().contains(AccountController.ERROR_CHOOSE_PASSWORD));
+        assertTrue("expecting password", controller.getActionErrors().contains(UserAccountController.ERROR_CHOOSE_PASSWORD));
     }
 
     @Test
     @Rollback
     public void testPrepareValidate25() {
-        controller = generateNewController(AccountController.class);
+        controller = generateNewController(UserAccountController.class);
         controller.clearErrorsAndMessages();
         controller.prepare();
         Person p = controller.getPerson();
@@ -248,13 +249,13 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         p.setUsername(TESTING_EMAIL);
         controller.setPassword("password");
         controller.validate();
-        assertTrue("expecting confirm email", controller.getActionErrors().contains(AccountController.ERROR_CONFIRM_EMAIL));
+        assertTrue("expecting confirm email", controller.getActionErrors().contains(UserAccountController.ERROR_CONFIRM_EMAIL));
     }
 
     @Test
     @Rollback
     public void testPrepareValidate3() {
-        controller = generateNewController(AccountController.class);
+        controller = generateNewController(UserAccountController.class);
         controller.clearErrorsAndMessages();
         controller.prepare();
         Person p = controller.getPerson();
@@ -262,13 +263,13 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         controller.setConfirmEmail(TESTING_EMAIL);
         controller.setPassword("password");
         controller.validate();
-        assertTrue("expecting confirm password", controller.getActionErrors().contains(AccountController.ERROR_CONFIRM_PASSWORD));
+        assertTrue("expecting confirm password", controller.getActionErrors().contains(UserAccountController.ERROR_CONFIRM_PASSWORD));
     }
 
     @Test
     @Rollback
     public void testPrepareValidate4() {
-        controller = generateNewController(AccountController.class);
+        controller = generateNewController(UserAccountController.class);
         controller.clearErrorsAndMessages();
         controller.prepare();
         Person p = controller.getPerson();
@@ -277,13 +278,13 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         controller.setPassword("password");
         controller.setConfirmPassword("password_");
         controller.validate();
-        assertTrue("expecting matching passwords", controller.getActionErrors().contains(AccountController.ERROR_PASSWORDS_DONT_MATCH));
+        assertTrue("expecting matching passwords", controller.getActionErrors().contains(UserAccountController.ERROR_PASSWORDS_DONT_MATCH));
     }
 
     @Test
     @Rollback
     public void testPrepareValidateWithCaseDifferenceInEmail() {
-        controller = generateNewController(AccountController.class);
+        controller = generateNewController(UserAccountController.class);
         controller.clearErrorsAndMessages();
         controller.prepare();
         Person p = controller.getPerson();
@@ -296,7 +297,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         controller.setPassword("password");
         controller.setConfirmPassword("password_");
         controller.validate();
-        assertTrue("expecting matching passwords", controller.getActionErrors().contains(AccountController.ERROR_PASSWORDS_DONT_MATCH));
+        assertTrue("expecting matching passwords", controller.getActionErrors().contains(UserAccountController.ERROR_PASSWORDS_DONT_MATCH));
         assertEquals(1, controller.getActionErrors().size());
     }
 
@@ -327,22 +328,22 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         p.setPhone("212 000 0000");
         p.setContributor(true);
         p.setContributorReason(REASON);
-        p.setRpa(true);
+        p.setRpaNumber("234");
         
         //create account, making sure the controller knows we're legit.
         controller.setTimeCheck(System.currentTimeMillis() - 10000);
         String  accountResponse = setupValidUserInController(controller, p, "super.secret");
-        assertEquals("user should have been successfully created", AccountController.SUCCESS, accountResponse);
+        assertEquals("user should have been successfully created", UserAccountController.SUCCESS, accountResponse);
         
         //okay,  now try to "login": mock a  POST request with empty session
-        LoginAction loginAction = generateNewController(LoginAction.class);
+        LoginController loginAction = generateNewController(LoginController.class);
         loginAction.setLoginUsername(p.getUsername());
         loginAction.setLoginPassword(password);
         loginAction.setServletRequest(httpServletPostRequest);
         loginAction.setSessionData(new SessionData());
         
        String loginResponse = loginAction.authenticate();
-        assertEquals("login should have been successful",  LoginAction.AUTHENTICATED, loginResponse);
+        assertEquals("login should have been successful",  LoginController.AUTHENTICATED, loginResponse);
     }
     
     //return a new person reference. an @after method will try to delete this person from crowd

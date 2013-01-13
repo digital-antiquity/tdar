@@ -1,13 +1,15 @@
 package org.tdar.core.service.workflow;
 
+import java.io.StringReader;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.service.GenericService;
+import org.tdar.core.service.XmlService;
 import org.tdar.filestore.WorkflowContext;
-import org.tdar.utils.SimpleSerializer;
 
 /**
  * $Id$
@@ -25,6 +27,9 @@ public class MessageService {
     private WorkflowContextService workflowContextService;
     @Autowired
     private GenericService genericService;
+
+    @Autowired
+    private XmlService xmlService;
 
     private transient final Logger logger = Logger.getLogger(getClass());
 
@@ -50,11 +55,10 @@ public class MessageService {
      * ContextObjects are embedded in messages as objects and need to be casted back
      */
     @SuppressWarnings("unused")
-    private WorkflowContext extractWorkflowContext(Object msg) {
+    private WorkflowContext extractWorkflowContext(Object msg) throws Exception {
         if (msg instanceof String) {
             String strMessage = (String) msg;
-            SimpleSerializer ss = new SimpleSerializer();
-            Object ctx_ = ss.fromXML(strMessage);
+            Object ctx_ = xmlService.parseXml(new StringReader(strMessage));
             if (ctx_ instanceof WorkflowContext) {
                 return (WorkflowContext) ctx_;
             }
@@ -92,16 +96,16 @@ public class MessageService {
      * 
      * This is the beginning of the message process, it takes files that have just been uploaded and creates a workflow context for them, and sends them
      * on the MessageQueue
-
+     * 
      * @param version
      * @param w
      * @return
      */
-    public boolean sendFileProcessingRequest(InformationResourceFileVersion version, Workflow w) {
+    public <W extends Workflow> boolean sendFileProcessingRequest(InformationResourceFileVersion version, W w) {
         WorkflowContext ctx = workflowContextService.initializeWorkflowContext(version, w);
         version.getInformationResourceFile().setStatus(FileStatus.QUEUED);
         genericService.saveOrUpdate(version);
-        ctx.setWorkflow(w);
+        ctx.setWorkflowClass(w.getClass());
         genericService.detachFromSession(version);
         // w.setWorkflowContext(ctx);
         // if (TdarConfiguration.getInstance().useExternalMessageQueue()) {
@@ -111,12 +115,13 @@ public class MessageService {
         // } else {
         boolean success = false;
         try {
-            success = w.run(ctx);
+            Workflow workflow = ctx.getWorkflowClass().newInstance();
+            ctx.setXmlService(xmlService);
+            success = workflow.run(ctx);
             workflowContextService.processContext(ctx);
         } catch (Exception e) {
             // trying to get a more useful debug message...
             logger.warn("Unhandled exception while processing file: " + version, e);
-            e.printStackTrace();
         }
         // }
         return success;

@@ -10,6 +10,7 @@ import org.tdar.core.bean.resource.BookmarkedResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.resource.BookmarkedResourceDao;
+import org.tdar.core.configuration.TdarConfiguration;
 
 /**
  * $Id$
@@ -43,7 +44,7 @@ public class BookmarkedResourceService extends ServiceInterface.TypedDaoBase<Boo
         bookmark.setResource(resource);
         // FIXME: names should be editable by the user, and have a better default.
         // not sure why names are constructed this way, was in previous bookmarking code.
-        bookmark.setName("Bookmark for tDAR resource:" + resource.getId());
+        bookmark.setName("Bookmark for " + TdarConfiguration.getInstance().getSiteAcronym() + " resource:" + resource.getId());
         bookmark.setTimestamp(new Date());
         bookmark.setPerson(person);
         resource.getBookmarks().add(bookmark);

@@ -12,6 +12,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.resource.LicenseType;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.PairtreeFilestore;
 
@@ -47,6 +48,7 @@ public class TdarConfiguration {
     private Filestore filestore;
 
     private Set<String> stopWords = new HashSet<String>();
+    private String configurationFile;
 
     private final static TdarConfiguration INSTANCE = new TdarConfiguration();
     public static final String PRODUCTION = "production";
@@ -59,10 +61,15 @@ public class TdarConfiguration {
     public void setConfigurationFile(String configurationFile) {
         assistant = new ConfigurationAssistant();
         assistant.loadProperties(configurationFile);
+        this.configurationFile = configurationFile;
         filestore = loadFilestore();
         initPersonalFilestorePath();
         testQueue();
         initializeStopWords();
+    }
+    
+    public String getConfigurationFile() {
+        return configurationFile;
     }
     
     private TdarConfiguration(String configurationFile) {
@@ -199,17 +206,22 @@ public class TdarConfiguration {
         return assistant.getBooleanProperty("privacy.controls.enabled", false);
 
     }
+    
+    public boolean getLicenseEnabled() {
+    	return assistant.getBooleanProperty("licenses.enabled", false);    	
+    }
 
     public boolean getCopyrightMandatory() {
         return assistant.getBooleanProperty("copyright.fields.enabled", false);
     }
 
-    public double getGmapDefaultLat() {
+    //TODO: make mapping props vendor neutral where possible (e.g. lat/long)
+    public double getMapDefaultLat() {
         return assistant.getDoubleProperty("google.map.defaultLatitude", 40.00);
 
     }
 
-    public double getGmapDefaultLng() {
+    public double getMapDefaultLng() {
         return assistant.getDoubleProperty("google.map.defaultLongitude", -97.00);
 
     }
@@ -270,7 +282,7 @@ public class TdarConfiguration {
             InetAddress localMachine = InetAddress.getLocalHost();
             host = localMachine.getHostName();
         } catch (UnknownHostException e) {
-            e.printStackTrace();
+            logger.debug("unknownhost: ", e);
         }
         return host + ".";
     }
@@ -304,10 +316,14 @@ public class TdarConfiguration {
     }
 
     /**
-     * @return the theme
+     * @return the theme directory
      */
     public String getThemeDir() {
-        return assistant.getStringProperty("app.theme.dir", "/includes/themes/tdar/");
+        String dir = assistant.getStringProperty("app.theme.dir", "includes/themes/tdar/");
+        if (dir.startsWith("/")) {
+            dir = dir.substring(1);
+        }
+        return dir;
     }
 
     /**
@@ -431,12 +447,47 @@ public class TdarConfiguration {
         return assistant.getStringProperty("comment.url", "mailto:comments@tdar.org");
     }
 
-    public String getSiteAcroynm() {
-        return assistant.getStringProperty("site.acroynm", "tDAR");
+    public String getSiteAcronym() {
+        return assistant.getStringProperty("site.acronym", "tDAR");
     }
 
     public String getSiteName() {
         return assistant.getStringProperty("site.name", "the Digital Archaeological Record");
     }
 
+    public LicenseType getDefaultLicenseType() {
+        return LicenseType.valueOf(assistant.getStringProperty("default.license.type", LicenseType.CREATIVE_COMMONS_ATTRIBUTION.name()));
+    }
+
+    public Boolean isRPAEnabled() {
+    	return assistant.getBooleanProperty("rpa.enabled", true);
+    }
+
+    public String getContactEmail() {
+        return assistant.getStringProperty("app.contact.email", "info@digitalantiquity.org");
+    }
+
+    public String getNewsRssFeed() {
+        return assistant.getStringProperty("news.rssFeed", "http://www.tdar.org/feed/");
+    }
+
+    public int getEmbargoPeriod() {
+        return assistant.getIntProperty("embargo.period", 5);
+    }
+
+    public boolean isOdataEnabled() {
+        return assistant.getBooleanProperty("odata.enabled", false);
+    }
+
+    public boolean isPayPerIngestEnabled() {
+        return assistant.getBooleanProperty("pay.per.contribution.enabled", false);
+    }
+
+    public boolean isHttpsEnabled() {
+        return assistant.getBooleanProperty("https.enabled", false);
+    }
+
+    public Integer getHttpsPort() {
+        return assistant.getIntProperty("https.port", 443);
+    }
 }

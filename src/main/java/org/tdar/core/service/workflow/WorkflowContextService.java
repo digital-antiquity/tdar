@@ -2,6 +2,7 @@ package org.tdar.core.service.workflow;
 
 import java.io.File;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
+import org.tdar.core.service.XmlService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.InformationResourceFileVersionService;
 import org.tdar.db.model.abstracts.TargetDatabase;
@@ -32,6 +34,8 @@ public class WorkflowContextService {
     private InformationResourceFileVersionService informationResourceFileVersionService;
     @Autowired
     private GenericDao genericDao;
+    @Autowired
+    private XmlService xmlService;
     @Autowired
     private DatasetService datasetService;
 
@@ -61,6 +65,7 @@ public class WorkflowContextService {
                 if (ctx.getTransientResource() == null) {
                     break;
                 }
+                genericDao.detachFromSession(ctx.getTransientResource());
                 logger.info(ctx.getTransientResource());
                 logger.info(((Dataset) ctx.getTransientResource()).getDataTables());
                 datasetService.reconcileDataset(irFile, dataset, (Dataset) ctx.getTransientResource());
@@ -68,15 +73,16 @@ public class WorkflowContextService {
                 break;
             default:
                 break;
+
         }
         // setting transient context for evaluation
-        irFile.setWorkflowContext(ctx);
 
         orig.setInformationResourceFile(irFile);
         if (ctx.isProcessedSuccessfully()) {
             irFile.clearQueuedStatus();
         } else {
             irFile.setStatus(FileStatus.PROCESSING_ERROR);
+            irFile.setErrorMessage(StringUtils.join(ctx.getExceptions(), "\n"));
         }
         logger.debug(irFile);
 
@@ -84,27 +90,19 @@ public class WorkflowContextService {
         for (InformationResourceFileVersion version : ctx.getVersions()) {
             // if the derivative's ID is null, we know that it hasn't been persisted yet, so we save.
             version.setInformationResourceFile(irFile);
-            if (version.getId() == null) {
-                informationResourceFileVersionService.save(version);
-            }
-            // if the derivative's ID is not null it has previously been saved, so we pull it onto the current hibernate session and update it.
-            else {
-                version = informationResourceFileVersionService.merge(version);
-                informationResourceFileVersionService.saveOrUpdate(version);
-            }
             irFile.addFileVersion(version);
         }
 
-        logger.trace(ctx.toXML());
-        orig = informationResourceFileVersionService.merge(orig);
+        try {
+            logger.debug(ctx.toXML());
+        } catch (Exception e) {
+            logger.error(e);
+        }
         orig.setInformationResourceFile(irFile);
-        genericDao.saveOrUpdate(orig);
+        // genericDao.saveOrUpdate(orig);
         irFile.setInformationResource(genericDao.find(InformationResource.class, ctx.getInformationResourceId()));
-        genericDao.saveOrUpdate(irFile);
-
-        // force update of content so it gets indexed
-        // resource.markUpdated(resource.getUpdatedBy());
-        // informationResourceService.saveOrUpdate(resource);
+        genericDao.merge(irFile);
+        irFile.setWorkflowContext(ctx);
     }
 
     /*
@@ -119,8 +117,13 @@ public class WorkflowContextService {
         ctx.setInformationResourceId(version.getInformationResourceId());
         ctx.setInformationResourceFileId(version.getInformationResourceFileId());
         ctx.setWorkingDirectory(new File(System.getProperty("java.io.tmpdir")));
-        w.initialize(version, ctx); // handle any special bits here
-        logger.trace(ctx.toXML());
+        ctx.setXmlService(xmlService);
+        w.initializeWorkflowContext(version, ctx); // handle any special bits here
+        try {
+            logger.trace(ctx.toXML());
+        } catch (Exception e) {
+            logger.error(e);
+        }
         return ctx;
     }
 }

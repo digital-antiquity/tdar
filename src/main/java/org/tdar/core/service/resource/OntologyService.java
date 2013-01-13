@@ -237,10 +237,9 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
         Document ontologyXML = null;
         try {
             ontologyXML = DocumentHelper.parseText(FileUtils.readFileToString(file.getFile()));
-        } catch (DocumentException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.debug("cannot store import order:", e);
+
         }
 
         if (ontologyXML != null) {
@@ -257,12 +256,13 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
             try {
                 writer.write(ontologyXML);
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.debug("cannot write ontology xml:", e);
+
             } finally {
                 try {
                     writer.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.debug("cannot close xml writer:", e);
                 }
             }
             try {
@@ -270,7 +270,7 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
                 FileUtils.writeStringToFile(tempFile, stringWriter.toString());
                 getLogger().trace("{}", stringWriter);
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.debug("cannot write ontology xml to file:", e);
             }
         }
         return tempFile;
@@ -297,11 +297,9 @@ public class OntologyService extends AbstractInformationResourceService<Ontology
         try {
             return owlOntologyManager.loadOntologyFromOntologyDocument(iri);
         } catch (UnparsableOntologyException exception) {
-            exception.printStackTrace();
             getLogger().error("Couldn't parse ontology from iri " + iri, exception);
             throw new TdarRuntimeException(exception);
         } catch (OWLOntologyCreationException exception) {
-            exception.printStackTrace();
             getLogger().debug("Ontology already exists in manager, attempt to get it instead", exception);
             return owlOntologyManager.getOntology(iri);
         }

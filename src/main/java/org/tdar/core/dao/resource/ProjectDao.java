@@ -1,6 +1,8 @@
 package org.tdar.core.dao.resource;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.hibernate.Query;
@@ -88,14 +90,15 @@ public class ProjectDao extends ResourceDao<Project> {
         return query.list();
     }
 
-    public List<InformationResource> findAllResourcesInProject(Project project, Status ... statuses) {
+    public Set<InformationResource> findAllResourcesInProject(Project project, Status ... statuses) {
     	Query query = getCurrentSession().getNamedQuery(QUERY_RESOURCES_IN_PROJECT);
         if (ArrayUtils.isNotEmpty(statuses)) {
             query = getCurrentSession().getNamedQuery(QUERY_RESOURCES_IN_PROJECT_WITH_STATUS);
         	query.setParameterList("statuses", statuses);
         }
         query.setParameter("projectId", project.getId());
-        return query.list();
+        project.setCachedInformationResources(new HashSet<InformationResource>(query.list()));
+        return project.getCachedInformationResources();
     }
 
 }

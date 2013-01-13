@@ -31,7 +31,7 @@
     <@s.iterator value="parameters.list" var="key">
         <#assign itemCount = itemCount + 1/>
     <#if parameters.numColumns??>
-       <#if itemCount &gt; 1 && itemCount % parameters.numColumns == 1>
+       <#if itemCount &gt; 1 && itemCount % parameters.numColumns?number == 1>
          </tr><tr>
        </#if>
     </#if>

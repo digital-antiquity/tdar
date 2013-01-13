@@ -9,14 +9,18 @@ package org.tdar.core.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.junit.Test;
@@ -26,14 +30,18 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.AsyncUpdateReceiver.DefaultReceiver;
+import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.bean.util.BulkManifestProxy;
-import org.tdar.core.bean.util.CellMetadata;
+import org.tdar.core.bean.util.bulkUpload.BulkManifestProxy;
+import org.tdar.core.bean.util.bulkUpload.BulkUploadTemplate;
+import org.tdar.core.bean.util.bulkUpload.CellMetadata;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.utils.ExcelUnit;
 
 /**
  * @author Adam Brin
@@ -47,7 +55,7 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testLookupMaps() {
-        LinkedHashSet<CellMetadata> importFields = bulkUploadService.getImportFieldNamesForType(ResourceType.DOCUMENT);
+        LinkedHashSet<CellMetadata> importFields = bulkUploadService.getAllValidFieldNames(ResourceType.DOCUMENT);
         Map<String, CellMetadata> cellLookupMap = bulkUploadService.getCellLookupMap(importFields);
         assertTrue("testing local field", cellLookupMap.containsKey("documentType"));
         assertTrue("testing parent class", cellLookupMap.containsKey("description"));
@@ -58,7 +66,39 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
         }
     }
 
-    public Map<String, Resource> setup() throws FileNotFoundException {
+    @Test
+    public void testTemplate() throws FileNotFoundException, IOException {
+        HSSFWorkbook workbook = bulkUploadService.createExcelTemplate();
+        File file = File.createTempFile("templateTest", ".xls", TdarConfiguration.getInstance().getTempDirectory());
+        workbook.write(new FileOutputStream(file));
+        logger.info(file.getAbsolutePath());
+        ExcelUnit excelUnit = new ExcelUnit();
+        excelUnit.open(file);
+        assertEquals("there should be 2 sheets", 2, excelUnit.getWorkbook().getNumberOfSheets());
+        Sheet sheet = excelUnit.getWorkbook().getSheetAt(0);
+        excelUnit.assertCellEquals(0, 0, BulkUploadTemplate.FILENAME + "*");
+        excelUnit.assertCellEquals(1, 0, BulkUploadTemplate.EXAMPLE_PDF);
+        excelUnit.assertCellEquals(2, 0, BulkUploadTemplate.EXAMPLE_TIFF);
+        excelUnit.assertCellCommentEquals(0, 0, BulkImportField.FILENAME_DESCRIPTION);
+        
+        excelUnit.assertCellEquals(0, 1, BulkImportField.TITLE_LABEL+ "*");
+        excelUnit.assertCellCommentEquals(0, 1, BulkImportField.TITLE_DESCRIPTION);
+
+        excelUnit.assertCellEquals(0, 2, BulkImportField.DESCRIPTION_LABEL+ "*");
+        excelUnit.assertCellCommentEquals(0, 2, BulkImportField.DESCRIPTION_DESCRIPTION);
+
+        excelUnit.assertCellEquals(0, 13, BulkImportField.YEAR_LABEL+ "*");
+        excelUnit.assertCellCommentEquals(0, 13, BulkImportField.YEAR_DESCRIPTION);
+
+        if (!TdarConfiguration.getInstance().getLicenseEnabled()) {
+        excelUnit.assertRowDoesNotContain(0, BulkImportField.LICENSE_TYPE);
+        } else {
+            excelUnit.assertRowContains(0, BulkImportField.LICENSE_TYPE);
+        }
+        sheet.getRow(1).getCell(3).isPartOfArrayFormulaGroup();
+    }
+
+    public Map<String, Resource> setup() {
         Map<String, Resource> filenameResourceMap = new HashMap<String, Resource>();
         filenameResourceMap.put("test1.pdf", new Document());
         filenameResourceMap.put("test2.pdf", new Document());
@@ -137,7 +177,8 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
-    public <R extends Resource> void parseExcelFileWithBadField() throws InvalidFormatException, IOException {
+    /* Note: this test tests that a bad field does not break the import... it's ignored */
+    public <R extends Resource> void parseExcelFileWithBadField() {
         try {
             BulkManifestProxy manifestProxy = generateManifest("bad_field_name.xlsx");
             Map<String, Resource> filenameResourceMap = setup();
@@ -145,7 +186,8 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
             AsyncUpdateReceiver receiver = new DefaultReceiver();
             bulkUploadService.readExcelFile(manifestProxy, filenameResourceMap, receiver);
         } catch (Exception e) {
-            assertTrue(e.getMessage().contains("following column names are not"));
+            logger.info(e.getMessage());
+            assertTrue(e.getMessage().contains("the following columns are required: Date Created (Year)"));
         }
     }
 
@@ -157,6 +199,7 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
 
         AsyncUpdateReceiver receiver = new DefaultReceiver();
         bulkUploadService.readExcelFile(manifestProxy, filenameResourceMap, receiver);
+        logger.info(receiver.getAsyncErrors());
         assertTrue(receiver.getAsyncErrors().contains("is expecting an integer value, but found"));
     }
 
@@ -173,7 +216,7 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
-    public <R extends Resource> void parseExcelFileWithBadFirstColumn() throws InvalidFormatException, IOException {
+    public <R extends Resource> void parseExcelFileWithBadFirstColumn() {
         try {
             BulkManifestProxy manifestProxy = generateManifest("bad_first_column.xlsx");
             Map<String, Resource> filenameResourceMap = setup();
@@ -181,6 +224,7 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
             AsyncUpdateReceiver receiver = new DefaultReceiver();
             bulkUploadService.readExcelFile(manifestProxy, filenameResourceMap, receiver);
         } catch (Exception e) {
+            logger.info(e.getMessage());
             assertTrue(e.getMessage().contains("the first column must be the filename"));
         }
     }
@@ -214,12 +258,6 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
             noException = false;
         }
         assertTrue(noException);
-    }
-
-    @Test
-    @Rollback
-    public void testInheritanceSelections() {
-
     }
 
 }

@@ -45,19 +45,19 @@ public class SessionSecurityInterceptor implements Interceptor {
         ActionProxy proxy = invocation.getProxy();
         String methodName = proxy.getMethod();
         //create a tag for this action so that we can (when paired w/ thread name) track its lifecycle in the logs 
-        String actionTag =  "" + proxy.getNamespace() + "/" + proxy.getActionName();
+//        String actionTag =  "" + proxy.getNamespace() + "/" + proxy.getActionName();
         if (methodName == null) {
             methodName = "execute";
         }
 
         Activity activity = null;
-        if (!ReflectionService.classOrMethodContainsAnnotation(action.getClass().getMethod(methodName), IgnoreActivity.class)) {
+        if (!ReflectionService.methodOrActionContainsAnnotation(invocation, IgnoreActivity.class)) {
             activity = new Activity(ServletActionContext.getRequest());
             ActivityManager.getInstance().addActivityToQueue(activity);
         }
 
         String mark = "READ ONLY";
-        if (ReflectionService.classOrMethodContainsAnnotation(action.getClass().getMethod(methodName), WriteableSession.class)) {
+        if (ReflectionService.methodOrActionContainsAnnotation(invocation, WriteableSession.class)) {
             genericService.markWritable();
             mark = "WRITEABLE";
         } else {
@@ -65,7 +65,7 @@ public class SessionSecurityInterceptor implements Interceptor {
         }
         try {
             //ASSUMPTION: this interceptor and the invoked action run in the _same_ thread.  We tag the NDC  so we can follow this action in the logfile
-            NDC.push(actionTag);
+            NDC.push(Activity.formatRequest(ServletActionContext.getRequest()));
             logger.trace(String.format("marking %s/%s session %s", action.getClass().getSimpleName(), methodName, mark));
             return invocation.invoke();
         } catch (TdarActionException exception) {

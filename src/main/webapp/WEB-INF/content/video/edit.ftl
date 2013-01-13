@@ -9,10 +9,12 @@
 </head>
 <body>
 
+<@edit.sidebar />
+<@edit.subNavMenu />
 
-<@edit.toolbar "${resource.urlNamespace}" "edit" />
+<@s.form name='VideoMetadataForm' id='VideoMetadataForm'  cssClass="form-horizontal"  method='post' enctype='multipart/form-data' action='save'>
 
-<@s.form name='VideoMetadataForm' id='VideoMetadataForm'  method='post' enctype='multipart/form-data' action='save'>
+<@edit.resourceTitle />
 
 <@edit.basicInformation "video" "video">
 
@@ -33,8 +35,7 @@
 
 </@s.form>
 
-<@edit.sidebar />
 
-<@edit.resourceJavascript formId="#VideoMetadataForm" selPrefix="#video" includeAsync=true includeInheritance=true />
+<@edit.resourceJavascript formSelector="#VideoMetadataForm" selPrefix="#video" includeAsync=true includeInheritance=true />
 </body>
 </#escape>

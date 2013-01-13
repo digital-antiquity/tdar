@@ -10,6 +10,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.StringWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -29,6 +31,7 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.search.query.SearchResultHandler;
@@ -48,7 +51,9 @@ import com.sun.syndication.feed.synd.SyndFeedImpl;
 import com.sun.syndication.feed.synd.SyndPerson;
 import com.sun.syndication.feed.synd.SyndPersonImpl;
 import com.sun.syndication.io.FeedException;
+import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.SyndFeedOutput;
+import com.sun.syndication.io.XmlReader;
 
 /**
  * @author Adam Brin
@@ -73,12 +78,21 @@ public class RssService implements Serializable {
         return INVALID_XML_CHARS.matcher(input).replaceAll("");
     }
 
+    @SuppressWarnings("unchecked")
+    public List<SyndEntry> parseFeed(URL url) throws IllegalArgumentException, FeedException, IOException {
+        HttpURLConnection httpcon = (HttpURLConnection) url.openConnection();
+        // Reading the feed
+        SyndFeedInput input = new SyndFeedInput();
+        SyndFeed feed = input.build(new XmlReader(httpcon));
+        return feed.getEntries();
+    }
+
     @SuppressWarnings("unused")
     public <I extends Indexable> ByteArrayInputStream createRssFeedFromResourceList(Person user, SearchResultHandler<I> handler,
             Integer recordsPerPage, Integer startRecord, Integer totalRecords, String rssUrl) throws IOException, FeedException {
         SyndFeed feed = new SyndFeedImpl();
         feed.setFeedType("atom_1.0");
-        feed.setTitle("tDAR Search Results: " + cleanStringForXML(handler.getSearchTitle()));
+        feed.setTitle(TdarConfiguration.getInstance().getSiteAcronym() + " Search Results: " + cleanStringForXML(handler.getSearchTitle()));
         OpenSearchModule osm = new OpenSearchModuleImpl();
         osm.setItemsPerPage(recordsPerPage);
         osm.setStartIndex(startRecord);

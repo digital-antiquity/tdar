@@ -3,14 +3,15 @@ package org.tdar.struts.data;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
 /**
  * $Id$
@@ -23,7 +24,16 @@ import org.tdar.core.bean.entity.ResourceCreatorRole;
  * @version $Rev$
  */
 public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
-    private Logger logger = Logger.getLogger(ResourceCreatorProxy.class);
+    
+    //In the rare situation where javascript does not catch/correct an invalid creator proxy in client form, we need to 
+    //raise exceptions w/ human readable feedback so user has at least some idea what they need to fix.
+    private static final String ERR_DETERMINE_CREATOR_INSUFFICIENT_INFO = "This resource CreatorProxy was initialized improperly";
+    private static final String ERR_FMT2_DETERMINE_CREATOR_TOO_MUCH_INFO = "" +
+            "There was a problem with one of your author/creator/contributor entries. " +
+            "a single creator record may contain either person name, but the system encountered both. Please revise this record with " +
+            "either \"%s\" or \"%s\".";
+
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
     private boolean initialized = false;
 
     // either person or institution will be updated by the view and then
@@ -33,21 +43,22 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
     private ResourceCreator resourceCreator = new ResourceCreator();
 
     // Once we are able to resolve the resource creator type we will set that resourceCreator's role.
-    private ResourceCreatorRole personRole = ResourceCreatorRole.AUTHOR;
-    private ResourceCreatorRole institutionRole = ResourceCreatorRole.AUTHOR;
+    // private ResourceCreatorRole personRole = ResourceCreatorRole.AUTHOR;
+    // private ResourceCreatorRole institutionRole = ResourceCreatorRole.AUTHOR;
+    private ResourceCreatorRole role = ResourceCreatorRole.AUTHOR;
 
     public ResourceCreatorProxy() {
         // TODO: set any defaults here?
+
     }
 
-    public ResourceCreatorProxy(Creator creator,ResourceCreatorRole role) {
+    public ResourceCreatorProxy(Creator creator, ResourceCreatorRole role) {
         if (creator instanceof Person) {
             this.person = (Person) creator;
-            this.personRole = role;
         } else {
             this.institution = (Institution) creator;
-            this.institutionRole = role;
         }
+        this.role = role;
     }
 
     public ResourceCreatorProxy(ResourceCreator rc) {
@@ -55,29 +66,31 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
         initialized = true;
         if (rc.getCreator() instanceof Person) {
             this.person = (Person) rc.getCreator();
-            this.personRole = rc.getRole();
         } else {
             this.institution = (Institution) rc.getCreator();
-            this.institutionRole = rc.getRole();
         }
+        this.role = rc.getRole();
     }
 
-    //properly set the state of the resourceCreator field by determining if the proxy represents a person or an institution
+    // properly set the state of the resourceCreator field by determining if the proxy represents a person or an institution
     private void resolveResourceCreator() {
         if (!initialized) {
-            if (getActualCreatorType() == CreatorType.PERSON) {
-                resourceCreator.setCreator(person);
-                resourceCreator.setRole(personRole);
-                Institution institution = person.getInstitution();
-                // FIXME: what is the purpose of this check?
-                if (institution == null || StringUtils.isBlank(institution.getName())) {
-                    person.setInstitution(null);
+            try {
+                if (determineActualCreatorType() == CreatorType.PERSON) {
+                    resourceCreator.setCreator(person);
+                    Institution institution = person.getInstitution();
+                    // FIXME: what is the purpose of this check?
+                    if (institution == null || StringUtils.isBlank(institution.getName())) {
+                        person.setInstitution(null);
+                    }
+                    logger.trace("creator type implicitly set to person:" + person);
+                } else {
+                    resourceCreator.setCreator(institution);
+                    logger.trace("creator type implicitly set to person:" + institution);
                 }
-                logger.trace("creator type implicitly set to person:" + person);
-            } else {
-                resourceCreator.setCreator(institution);
-                resourceCreator.setRole(institutionRole);
-                logger.trace("creator type implicitly set to person:" + institution);
+                resourceCreator.setRole(role);
+            } catch (NullPointerException npe) {
+                logger.warn("no resource creator was initialized becase no creator was set");
             }
             initialized = true;
         }
@@ -100,35 +113,48 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
     }
 
     public ResourceCreator getResourceCreator() {
-        if(!initialized) resolveResourceCreator();
+        if (!initialized)
+            resolveResourceCreator();
         return resourceCreator;
     }
 
-    public CreatorType getActualCreatorType() {
-        // figure out from the form if this proxy is a person or an
-        // institution
-        if (StringUtils.isBlank(institution.getName())) {
+
+    /**
+     * figure out whether this proxy object represents a person or an institution.
+     * 
+     * @throws TdarRecoverableRuntimeException if system cannot reliably determine creatorType.  Use  {@link #getActualCreatorType() getActualCreatorType}
+     *              if you do not want to deal w/ exceptions (e.g. calling from freemarker).
+     * 
+     * @return creatorType, if system can figure out based on available info.  otherwise null.
+     */
+    private CreatorType determineActualCreatorType() {
+        if (institution == null && person == null) {
+            throw new TdarRecoverableRuntimeException(ERR_DETERMINE_CREATOR_INSUFFICIENT_INFO);
+        }
+        if (institution.hasNoPersistableValues() && person.hasNoPersistableValues()) {
+            return null;
+        }
+        if (!institution.hasNoPersistableValues() && !person.hasNoPersistableValues()) {
+            String err = String.format(ERR_FMT2_DETERMINE_CREATOR_TOO_MUCH_INFO, getPerson(), getInstitution());
+            throw new TdarRecoverableRuntimeException(err);
+        }
+
+        if (!person.hasNoPersistableValues()) {
             return CreatorType.PERSON;
         } else {
             return CreatorType.INSTITUTION;
         }
-
     }
-
-    public ResourceCreatorRole getPersonRole() {
-        return personRole;
-    }
-
-    public void setPersonRole(ResourceCreatorRole personRole) {
-        this.personRole = personRole;
-    }
-
-    public ResourceCreatorRole getInstitutionRole() {
-        return institutionRole;
-    }
-
-    public void setInstitutionRole(ResourceCreatorRole institutionRole) {
-        this.institutionRole = institutionRole;
+    
+    @Transient
+    public CreatorType getActualCreatorType() {
+        CreatorType creatorType = null;
+        try {
+            creatorType = determineActualCreatorType();
+        }  catch(TdarRecoverableRuntimeException trex) {
+            logger.warn("Cannot derive actual creator: the incoming proxy is either incomplete or ambiguous: {}", this);
+        }
+        return creatorType;
     }
 
     /**
@@ -138,23 +164,30 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
      * @return
      */
     public boolean isValid() {
-        if (person != null && !StringUtils.isBlank(person.getLastName())) {
+        if (person != null && !person.hasNoPersistableValues()) {
             return true;
         }
-        if (institution != null && !StringUtils.isBlank(institution.getName())) {
+        if (institution != null && !institution.hasNoPersistableValues()) {
             return true;
         }
         return false;
     }
 
     public String toString() {
-        return String.format("[ResourceCreatorProxy@%s  type:%s rc:%s  p:%s  i:%s]", this.hashCode(), getActualCreatorType(), resourceCreator, person,
-                institution);
+        return String.format("[ResourceCreatorProxy@%s  role:%s rc:%s  p:%s  i:%s]", this.hashCode(), role, resourceCreator, person, institution);
     }
 
     @Override
     public int compareTo(ResourceCreatorProxy that) {
         return this.getResourceCreator().compareTo(that.getResourceCreator());
+    }
+
+    public ResourceCreatorRole getRole() {
+        return role;
+    }
+
+    public void setRole(ResourceCreatorRole role) {
+        this.role = role;
     }
 
 }

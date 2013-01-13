@@ -15,12 +15,12 @@ import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Boost;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.Norms;
+import org.hibernate.search.annotations.Store;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.configuration.JSONTransient;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
-
-import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * $Id$
@@ -40,7 +40,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @Entity
 @Indexed
 @Table(name = "document")
-@XStreamAlias("document")
 @XmlRootElement(name = "document")
 public class Document extends InformationResource {
 
@@ -48,15 +47,13 @@ public class Document extends InformationResource {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "document_type")
-    @Field
-    @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
+    @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     @BulkImportField(label = "Document Type")
     private DocumentType documentType;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "degree")
-    @Field
-    @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
+    @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     @BulkImportField(label = "Degree")
     private DegreeType degree;
 
@@ -74,15 +71,6 @@ public class Document extends InformationResource {
 
     @BulkImportField(label = "Edition")
     private String edition;
-
-    @BulkImportField(label = "Publisher Location")
-    @Column(name = "publisher_location")
-    private String publisherLocation;
-
-    @BulkImportField(label = "Publisher Name")
-    @Field
-    @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
-    private String publisher;
 
     @BulkImportField(label = "ISBN")
     @Field
@@ -175,22 +163,6 @@ public class Document extends InformationResource {
 
     public void setEdition(String edition) {
         this.edition = edition;
-    }
-
-    public String getPublisherLocation() {
-        return publisherLocation;
-    }
-
-    public void setPublisherLocation(String publisherLocation) {
-        this.publisherLocation = publisherLocation;
-    }
-
-    public String getPublisher() {
-        return publisher;
-    }
-
-    public void setPublisher(String publisher) {
-        this.publisher = publisher;
     }
 
     public String getIsbn() {
@@ -306,16 +278,16 @@ public class Document extends InformationResource {
         switch (getDocumentType()) {
             case BOOK:
                 appendIfNotBlank(sb, getPublisherLocation(), "", "");
-                appendIfNotBlank(sb, getPublisher(), ":", "");
+                appendIfNotBlank(sb, getPublisherName(), ":", "");
                 break;
             case BOOK_SECTION:
                 appendIfNotBlank(sb, getBookTitle(), "", "In ");
                 appendIfNotBlank(sb, getPageRange(), ".", "Pp. ");
                 appendIfNotBlank(sb, getPublisherLocation(), ".", "");
-                appendIfNotBlank(sb, getPublisher(), ":", "");
+                appendIfNotBlank(sb, getPublisherName(), ":", "");
                 break;
             case CONFERENCE_PRESENTATION:
-                appendIfNotBlank(sb, getPublisher(), "", "Presented at ");
+                appendIfNotBlank(sb, getPublisherName(), "", "Presented at ");
                 appendIfNotBlank(sb, getPublisherLocation(), ",", "");
                 break;
             case JOURNAL_ARTICLE:
@@ -335,7 +307,7 @@ public class Document extends InformationResource {
                     degreetext = getDegree().getLabel();
                 }
                 appendIfNotBlank(sb, degreetext + ".", "", "");
-                appendIfNotBlank(sb, getPublisher(), "", "");
+                appendIfNotBlank(sb, getPublisherName(), "", "");
                 appendIfNotBlank(sb, getPublisherLocation(), ",", "");
                 break;
         }

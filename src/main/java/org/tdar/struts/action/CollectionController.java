@@ -1,13 +1,9 @@
 package org.tdar.struts.action;
 
-import static org.tdar.core.service.external.auth.InternalTdarRights.SEARCH_FOR_DELETED_RECORDS;
-import static org.tdar.core.service.external.auth.InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.collections.ListUtils;
 import org.apache.struts2.convention.annotation.Action;
@@ -15,34 +11,31 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
-import org.hibernate.search.FullTextQuery;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.DisplayOrientation;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
-import org.tdar.core.bean.entity.AuthorizedUser;
+import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.external.auth.InternalTdarRights;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
+import org.tdar.struts.data.FacetGroup;
 
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/collection")
 public class CollectionController extends AbstractPersistableController<ResourceCollection> implements SearchResultHandler<ResourceCollection> {
-
-    // FIXME: This notification message blows. Could somebody rephrase this to be more helpful to a user?
-    public static final String MSG_PERMISSION_REBASE_NOTIFICATION = "Note: the system has copied inherited permissions from the former parent to this collection";
 
     private static final long serialVersionUID = 5710621983240752457L;
     private List<Resource> resources = new ArrayList<Resource>();
@@ -72,10 +65,9 @@ public class CollectionController extends AbstractPersistableController<Resource
      * 
      * @return
      */
-    public Set<ResourceCollection> getCandidateParentResourceCollections() {
-        Set<ResourceCollection> publicResourceCollections =
-                getResourceCollectionService().findPotentialParentCollections(getAuthenticatedUser(),
-                        getPersistable());
+    public List<ResourceCollection> getCandidateParentResourceCollections() {
+        List<ResourceCollection> publicResourceCollections = getResourceCollectionService().findPotentialParentCollections(getAuthenticatedUser(),
+                getPersistable());
         return publicResourceCollections;
     }
 
@@ -89,10 +81,6 @@ public class CollectionController extends AbstractPersistableController<Resource
         if (persistable.getType() == null) {
             persistable.setType(CollectionType.SHARED);
         }
-
-        // handle corner case of user losing effective permissions by converting child collection to root collection (parentId == null);
-        handlePermissionsRebase();
-
         // FIXME: may need some potential check for recursive loops here to prevent self-referential
         // parent-child loops
         // FIXME: if persistable's parent is different from current parent; then need to reindex all of the children as well
@@ -146,28 +134,8 @@ public class CollectionController extends AbstractPersistableController<Resource
         return SUCCESS;
     }
 
-    /**
-     * handle a "permissions rebase", which we define as the situation where the user converts a child collection to a root collection and will lose the
-     * inherited permissions that enable the user to edit the collection in the first place.
-     * 
-     * @return true if any action was taken
-     */
-    private boolean handlePermissionsRebase() {
-        List<AuthorizedUser> users = getResourceCollectionService().getTransientInheritedAuthorizedUsers(getPersistable());
-        if (users.isEmpty() || !Persistable.Base.isNullOrTransient(getParentId()))
-            return false;
-
-        // collection is becoming a root node and has inherited authusers, copy them to the incoming list. Also notify the user so they don't freak out
-        // when these extra users show up on the view page
-        getAuthorizedUsers().addAll(users);
-
-        addActionMessage(MSG_PERMISSION_REBASE_NOTIFICATION);
-
-        return true;
-    }
-
     @Override
-    public void postSaveCleanup() {
+    public void postSaveCleanup(String returnString) {
         /*
          * if we want to be really "aggressive" we only need to do this if
          * (a) permissions change
@@ -224,19 +192,17 @@ public class CollectionController extends AbstractPersistableController<Resource
         return options;
     }
 
-
     public List<DisplayOrientation> getResultsOrientations() {
         List<DisplayOrientation> options = Arrays.asList(DisplayOrientation.values());
         return options;
     }
-
 
     public List<SortOption> getResourceDatatableSortOptions() {
         return SortOption.getOptionsForContext(Resource.class);
     }
 
     @Override
-    public String loadMetadata() {
+    public String loadViewMetadata() {
         getAuthorizedUsers().addAll(getPersistable().getAuthorizedUsers());
         resources.addAll(getPersistable().getResources());
         for (Resource resource : getPersistable().getResources()) {
@@ -297,8 +263,11 @@ public class CollectionController extends AbstractPersistableController<Resource
         if (isEditor()) {
             List<Long> collectionIds = Persistable.Base.extractIds(getResourceCollectionService().findAllChildCollectionsRecursive(getPersistable(), CollectionType.SHARED));
             collectionIds.add(getId());
-            setTotalResourceAccessStatistic(getResourceService().getResourceUsageStatistics(null, null, collectionIds, null, null, null));
-            setUploadedResourceAccessStatistic(getResourceService().getResourceUsageStatistics(null, null, collectionIds, null,
+            setTotalResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, null,
+                    collectionIds, null,
+                    null, null));
+            setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, null,
+                    collectionIds, null,
                     null, Arrays.asList(VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED_TEXT)));
         }
 
@@ -371,10 +340,7 @@ public class CollectionController extends AbstractPersistableController<Resource
     }
 
     public List<Status> getStatuses() {
-        List<Status> toReturn = new ArrayList<Status>(getResourceService().findAllStatuses());
-        getAuthenticationAndAuthorizationService().removeIfNotAllowed(toReturn, Status.DELETED, SEARCH_FOR_DELETED_RECORDS, getAuthenticatedUser());
-        getAuthenticationAndAuthorizationService().removeIfNotAllowed(toReturn, Status.FLAGGED, SEARCH_FOR_FLAGGED_RECORDS, getAuthenticatedUser());
-        return toReturn;
+        return new ArrayList<Status>(getAuthenticationAndAuthorizationService().getAllowedSearchStatuses(getAuthenticatedUser()));
     }
 
     public List<ResourceType> getResourceTypes() {
@@ -406,10 +372,6 @@ public class CollectionController extends AbstractPersistableController<Resource
     @Override
     public int getRecordsPerPage() {
         return this.recordsPerPage;
-    }
-
-    @Override
-    public void addFacets(FullTextQuery ftq) {
     }
 
     @Override
@@ -501,8 +463,14 @@ public class CollectionController extends AbstractPersistableController<Resource
         return getSearchTitle();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<String> getProjections() {
         return ListUtils.EMPTY_LIST;
+    }
+
+    @Override
+    public List<FacetGroup<? extends Facetable>> getFacetFields() {
+        return null;
     }
 }

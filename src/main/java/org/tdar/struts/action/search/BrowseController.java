@@ -16,19 +16,27 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.cache.BrowseDecadeCountCache;
 import org.tdar.core.bean.cache.BrowseYearCountCache;
+import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
+import org.tdar.core.bean.cache.HomepageResourceCountCache;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Creator;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
+import org.tdar.core.bean.resource.Facetable;
+import org.tdar.core.bean.resource.VersionType;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
+import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.data.ResourceCreatorProxy;
+import org.tdar.struts.data.ResourceSpaceUsageStatistic;
+import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
 
 /**
  * $Id$
@@ -45,6 +53,7 @@ import org.tdar.struts.data.ResourceCreatorProxy;
 @ParentPackage("default")
 @Component
 @Scope("prototype")
+@HttpOnlyIfUnauthenticated
 public class BrowseController extends AbstractLookupController {
 
     private static final String ALL_TDAR_COLLECTIONS = "All Collections";
@@ -59,11 +68,17 @@ public class BrowseController extends AbstractLookupController {
             "R", "S", "T", "U", "V", "W", "X", "Y", "Z"));
     private List<BrowseYearCountCache> scholarData;
     private List<BrowseDecadeCountCache> timelineData;
+    private ResourceSpaceUsageStatistic totalResourceAccessStatistic;
+    private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
+    private List<HomepageGeographicKeywordCache> geographicKeywordCache = new ArrayList<HomepageGeographicKeywordCache>();
+    private List<HomepageResourceCountCache> homepageResourceCountCache = new ArrayList<HomepageResourceCountCache>();
 
     // private Keyword keyword;
 
     @Action("explore")
     public String explore() {
+        setGeographicKeywordCache(getGenericService().findAll(HomepageGeographicKeywordCache.class));
+        setHomepageResourceCountCache(getGenericService().findAll(HomepageResourceCountCache.class));
         setMaterialTypes(getGenericKeywordService().findAllWithCache(MaterialKeyword.class));
         setInvestigationTypes(getGenericKeywordService().findAllWithCache(InvestigationType.class));
         setCultureKeywords(getGenericKeywordService().findAllApprovedWithCache(CultureKeyword.class));
@@ -94,20 +109,29 @@ public class BrowseController extends AbstractLookupController {
     @Action("collections")
     public String browseCollections() throws ParseException {
         QueryBuilder qb = new ResourceCollectionQueryBuilder();
-        qb.append(new FieldQueryPart(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED));
-        qb.append(new FieldQueryPart(QueryFieldNames.COLLECTION_VISIBLE, "true"));
-        qb.append(new FieldQueryPart(QueryFieldNames.TOP_LEVEL, "true"));
+        qb.append(new FieldQueryPart<CollectionType>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED));
+        qb.append(new FieldQueryPart<Boolean>(QueryFieldNames.COLLECTION_VISIBLE, Boolean.TRUE));
+        qb.append(new FieldQueryPart<Boolean>(QueryFieldNames.TOP_LEVEL, Boolean.TRUE));
         setMode("browseCollections");
         handleSearch(qb);
         setSearchDescription(ALL_TDAR_COLLECTIONS);
         setSearchTitle(ALL_TDAR_COLLECTIONS);
+
+        if (isEditor()) {
+            setTotalResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, null,
+                    Persistable.Base.extractIds(getResourceCollectionService().findAllDirectChildCollections(getId(), null, CollectionType.SHARED)), null,
+                    null, null));
+            setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, null,
+                    Persistable.Base.extractIds(getResourceCollectionService().findAllDirectChildCollections(getId(), null, CollectionType.SHARED)), null,
+                    null, Arrays.asList(VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED_TEXT)));
+        }
 
         return SUCCESS;
     }
 
     @Action(value = "creators", results = { @Result(location = "results.ftl") })
     public String browseCreators() throws ParseException {
-        if (!Persistable.Base.isNullOrTransient(getId())) {
+        if (Persistable.Base.isNotNullOrTransient(getId())) {
             creator = getGenericService().find(Creator.class, getId());
             QueryBuilder queryBuilder = new ResourceQueryBuilder();
             queryBuilder.setOperator(Operator.AND);
@@ -120,6 +144,12 @@ public class BrowseController extends AbstractLookupController {
             getAuthenticationAndAuthorizationService().initializeReservedSearchParameters(reservedSearchParameters, getAuthenticatedUser());
             queryBuilder.append(reservedSearchParameters);
 
+            if (isEditor() && creator instanceof Person) {
+                setTotalResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(Arrays.asList(getId()), null, null, null, null, null));
+                setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(Arrays.asList(getId()), null, null, null, null,
+                        Arrays.asList(VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED_TEXT)));
+            }
+
             setMode("browseCreators");
             setSortField(SortOption.RESOURCE_TYPE);
             String descr = String.format("All Resources from %s", creator.getProperName());
@@ -128,7 +158,8 @@ public class BrowseController extends AbstractLookupController {
             setRecordsPerPage(50);
             handleSearch(queryBuilder);
         }
-        // setResults(getResourceService().findResourceLinkedValues(Creator.class));
+        // reset fields which can be broken by the searching hydration obfuscating things
+        creator = getGenericService().find(Creator.class, getId());
         return SUCCESS;
     }
 
@@ -200,9 +231,47 @@ public class BrowseController extends AbstractLookupController {
         this.timelineData = list;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<String> getProjections() {
         return ListUtils.EMPTY_LIST;
+    }
+
+    public ResourceSpaceUsageStatistic getUploadedResourceAccessStatistic() {
+        return uploadedResourceAccessStatistic;
+    }
+
+    public void setUploadedResourceAccessStatistic(ResourceSpaceUsageStatistic uploadedResourceAccessStatistic) {
+        this.uploadedResourceAccessStatistic = uploadedResourceAccessStatistic;
+    }
+
+    public ResourceSpaceUsageStatistic getTotalResourceAccessStatistic() {
+        return totalResourceAccessStatistic;
+    }
+
+    public void setTotalResourceAccessStatistic(ResourceSpaceUsageStatistic totalResourceAccessStatistic) {
+        this.totalResourceAccessStatistic = totalResourceAccessStatistic;
+    }
+
+    public List<HomepageGeographicKeywordCache> getGeographicKeywordCache() {
+        return geographicKeywordCache;
+    }
+
+    public void setGeographicKeywordCache(List<HomepageGeographicKeywordCache> geographicKeywordCache) {
+        this.geographicKeywordCache = geographicKeywordCache;
+    }
+
+    public List<HomepageResourceCountCache> getHomepageResourceCountCache() {
+        return homepageResourceCountCache;
+    }
+
+    public void setHomepageResourceCountCache(List<HomepageResourceCountCache> homepageResourceCountCache) {
+        this.homepageResourceCountCache = homepageResourceCountCache;
+    }
+
+    @Override
+    public List<FacetGroup<? extends Facetable>> getFacetFields() {
+        return null;
     }
 
     public List<BrowseYearCountCache> getScholarData() {

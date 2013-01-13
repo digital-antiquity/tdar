@@ -5,7 +5,12 @@
     <@view.datatableChildJavascript />
 </@view.htmlHeader>
 
-<@view.toolbar "${resource.urlNamespace}" "view" />
+<@view.toolbar resource.urlNamespace "view">
+<#if editable>
+<#assign disabled = !resource.defaultOntology?? />
+<@view.makeLink "coding-sheet" "mapping" "map ontology" "mapping"   current true disabled />
+</#if>
+</@view.toolbar>
 
 <@view.datatableChild />
 

@@ -41,6 +41,9 @@ import org.tdar.core.service.workflow.GenericColumnarDataWorkflow;
 @Transactional
 public class CodingSheetService extends AbstractInformationResourceService<CodingSheet, CodingSheetDao> {
 
+    private static final String ERROR_PARSE_UNKNOWN = "The system was unable to parse your coding sheet. Please review your submission try again.";
+    public static final String ERROR_PARSE_DUPLICATE_CODES = "Codes in your coding sheet must be unique.  We detected the following duplicate codes: ";
+
     public List<CodingSheet> findSparseCodingSheetList() {
         return getDao().findSparseResourceBySubmitterType(null, ResourceType.CODING_SHEET);
     }
@@ -68,7 +71,7 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
         } catch (Exception e) {
             version.getInformationResourceFile().setStatus(FileStatus.PROCESSING_ERROR);
             getDao().saveOrUpdate(version.getInformationResourceFile());
-            throw new TdarRecoverableRuntimeException("something happened");
+            throw new TdarRecoverableRuntimeException(ERROR_PARSE_UNKNOWN);
         } finally {
             if (stream != null)
                 IOUtils.closeQuietly(stream);
@@ -77,8 +80,7 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
         if (CollectionUtils.isNotEmpty(duplicates)) {
             version.getInformationResourceFile().setStatus(FileStatus.PROCESSING_ERROR);
             getDao().saveOrUpdate(version.getInformationResourceFile());
-            throw new TdarRecoverableRuntimeException("Codes in your coding sheet must be unique.  We detected the following duplicate codes: "
-                    + duplicates);
+            throw new CodingSheetParserException(ERROR_PARSE_DUPLICATE_CODES, duplicates);
         }
 
         Map<String, CodingRule> codeToRuleMap = codingSheet.getCodeToRuleMap();
@@ -93,7 +95,7 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
         getDao().saveOrUpdate(codingSheet);
     }
 
-    private CodingSheetParser getCodingSheetParser(String filename) {
+    private CodingSheetParser getCodingSheetParser(String filename) throws CodingSheetParserException {
         CodingSheetParser parser = CodingSheetParserFactory.getInstance().getParser(filename);
         if (parser == null) {
             throw new CodingSheetParserException("Couldn't parse " + filename
@@ -159,7 +161,7 @@ public class CodingSheetService extends AbstractInformationResourceService<Codin
             codingSheet.setDefaultOntology(ontology);
             // If we've not hit "save" yet, there's no point in actually calling this, also this stops transient refernece
             // exceptions that were dying
-            if (!Persistable.Base.isTransient(codingSheet)) {
+            if (Persistable.Base.isNotTransient(codingSheet)) {
                 getDao().updateDataTableColumnOntologies(codingSheet, ontology);
             }
         }

@@ -23,6 +23,7 @@ import org.tdar.core.bean.keyword.Keyword;
  * @version $Rev: 1728 $
  * 
  */
+@Deprecated
 public class KeywordQueryPart implements QueryPart<Keyword> {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());

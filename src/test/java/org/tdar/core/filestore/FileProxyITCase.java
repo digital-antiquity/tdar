@@ -19,9 +19,13 @@ import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.PersonalFilestoreTicket;
+import org.tdar.core.bean.entity.Creator;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResourceFile;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
 import org.tdar.struts.action.resource.DocumentController;
@@ -40,10 +44,7 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         DocumentController controller = generateNewInitializedController(DocumentController.class,getBasicUser());
         controller.prepare();
         controller.add();
-        Document document = controller.getDocument();
-        document.setTitle("test title");
-        document.setDescription("descr");
-        document.setDate(1234);
+        Document document = getNewDocument(controller);
         List<File> fileList = new ArrayList<File>();
         fileList.add(new File(TestConstants.TEST_DOCUMENT_DIR + "a2-15.pdf"));
         fileList.add(new File(TestConstants.TEST_DOCUMENT_DIR + "a2-17.pdf"));
@@ -52,7 +53,7 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         controller.setTicketId(uploadFilesAsync.getFirst().getId());
         uploadFilesAsync.getSecond().remove(0);
         controller.setFileProxies(uploadFilesAsync.getSecond());
-        controller.getFileProxies().get(0).setConfidential(true);
+        controller.getFileProxies().get(0).setRestriction(FileAccessRestriction.CONFIDENTIAL);
         controller.setServletRequest(getServletPostRequest());
         String save = controller.save();
         assertEquals(TdarActionSupport.SUCCESS,save);
@@ -75,10 +76,7 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         DocumentController controller = generateNewInitializedController(DocumentController.class,getBasicUser());
         controller.prepare();
         controller.add();
-        Document document = controller.getDocument();
-        document.setTitle("test title");
-        document.setDescription("descr");
-        document.setDate(1234);
+        Document document = getNewDocument(controller);
         List<File> fileList = new ArrayList<File>();
         for (String subdir: Arrays.asList("t1", "t2", "t3")) {
             File file = new File(TestConstants.TEST_DOCUMENT_DIR + subdir, "test.pdf");
@@ -89,7 +87,7 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         controller.setTicketId(uploadFilesAsync.getFirst().getId());
         uploadFilesAsync.getSecond().remove(0);
         controller.setFileProxies(uploadFilesAsync.getSecond());
-        controller.getFileProxies().get(0).setConfidential(true);
+        controller.getFileProxies().get(0).setRestriction(FileAccessRestriction.CONFIDENTIAL);
         controller.setServletRequest(getServletPostRequest());
         String save = controller.save();
         assertEquals(TdarActionSupport.SUCCESS,save);
@@ -105,10 +103,7 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         DocumentController controller = generateNewInitializedController(DocumentController.class);
         controller.prepare();
         controller.add();
-        Document document = controller.getDocument();
-        document.setTitle("test title");
-        document.setDescription("descr");
-        document.setDate(1234);
+        Document document = getNewDocument(controller);
         List<File> fileList = new ArrayList<File>();
         fileList.add(new File(TestConstants.TEST_DOCUMENT_DIR + "a2-15.pdf"));
         fileList.add(new File(TestConstants.TEST_DOCUMENT_DIR + "a2-17.pdf"));
@@ -116,7 +111,7 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         Pair<PersonalFilestoreTicket, List<FileProxy>> uploadFilesAsync = uploadFilesAsync(fileList);
         controller.setTicketId(uploadFilesAsync.getFirst().getId());
         controller.setFileProxies(uploadFilesAsync.getSecond());
-        controller.getFileProxies().get(1).setConfidential(true);
+        controller.getFileProxies().get(1).setRestriction(FileAccessRestriction.CONFIDENTIAL);
         controller.setServletRequest(getServletPostRequest());
         controller.save();
 
@@ -140,12 +135,12 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         // replace the confidential file
         FileProxy replaceConfidentialFileProxy = null;
         for (FileProxy proxy : controller.getFileProxies()) {
-            if (proxy.isConfidential()) {
+            if (proxy.getRestriction() == FileAccessRestriction.CONFIDENTIAL) {
                 replaceConfidentialFileProxy = proxy;
             }
         }
         replaceConfidentialFileProxy.setAction(FileAction.REPLACE);
-        replaceConfidentialFileProxy.setConfidential(false);
+        replaceConfidentialFileProxy.setRestriction(FileAccessRestriction.PUBLIC);
         replaceConfidentialFileProxy.setFilename("pia-09-lame-1980.pdf");
         Pair<PersonalFilestoreTicket, List<FileProxy>> newProxyList = uploadFilesAsync(Arrays.asList(new File(TestConstants.TEST_DOCUMENT_DIR
                 + "pia-09-lame-1980.pdf")));
@@ -168,10 +163,7 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         DocumentController controller = generateNewInitializedController(DocumentController.class);
         controller.prepare();
         controller.add();
-        Document document = controller.getDocument();
-        document.setTitle("test title");
-        document.setDescription("descr");
-        document.setDate(1234);
+        Document document = getNewDocument(controller);
         List<File> fileList = new ArrayList<File>();
         String a2pdf = "a2-15.pdf";
         fileList.add(new File(TestConstants.TEST_DOCUMENT_DIR + a2pdf));
@@ -179,7 +171,7 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         Pair<PersonalFilestoreTicket, List<FileProxy>> uploadFilesAsync = uploadFilesAsync(fileList);
         controller.setTicketId(uploadFilesAsync.getFirst().getId());
         controller.setFileProxies(uploadFilesAsync.getSecond());
-        controller.getFileProxies().get(1).setConfidential(true);
+        controller.getFileProxies().get(1).setRestriction(FileAccessRestriction.CONFIDENTIAL);
         controller.setServletRequest(getServletPostRequest());
         controller.save();
 
@@ -206,7 +198,7 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
             }
         }
         replaceConfidentialFileProxy.setAction(FileAction.REPLACE);
-        replaceConfidentialFileProxy.setConfidential(false);
+        replaceConfidentialFileProxy.setRestriction(FileAccessRestriction.PUBLIC);
         Pair<PersonalFilestoreTicket, List<FileProxy>> newProxyList = uploadFilesAsync(Arrays.asList(new File(TestConstants.TEST_DOCUMENT_DIR
                 + a2pdf)));
         controller.setTicketId(newProxyList.getFirst().getId());
@@ -227,6 +219,18 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
             // logger.info("{}", irFile);
 
         }
+    }
+
+    private Document getNewDocument(DocumentController controller) {
+        Document document = controller.getDocument();
+        document.setTitle("test title");
+        document.setDescription("descr");
+        document.setDate(1234);
+        if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
+            Creator copyrightHolder = genericService.find(Person.class, 1L);
+            document.setCopyrightHolder(copyrightHolder );
+        }
+        return document;
     }
 
     /*

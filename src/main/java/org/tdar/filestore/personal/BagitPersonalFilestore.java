@@ -71,8 +71,8 @@ public class BagitPersonalFilestore implements PersonalFilestore {
         completer = defaultCompleter;
 
         completeVerifier = new CompleteVerifierImpl();
-//        completeVerifier.setMissingBagItTolerant(false);
-//        completeVerifier.setAdditionalDirectoriesInBagDirTolerant(false);
+        // completeVerifier.setMissingBagItTolerant(false);
+        // completeVerifier.setAdditionalDirectoriesInBagDirTolerant(false);
         verifier = new ValidVerifierImpl(completeVerifier, new ParallelManifestChecksumVerifier());
     }
 
@@ -205,5 +205,32 @@ public class BagitPersonalFilestore implements PersonalFilestore {
         } catch (IOException e) {
             logger.error("Couldn't delete directory at " + directory, e);
         }
+    }
+
+    @Override
+    public PersonalFilestoreFile retrieve(PersonalFilestoreTicket ticket, String filename) {
+        String pathToBag = getPath(ticket);
+        File bagFile = new File(pathToBag);
+        if (!bagFile.exists()) {
+            return null;
+        }
+        // retrieve the files, tack on the md5, and then return
+        // assert the bag is valid (baginfo.txt matches contents) then iterate over the bag contents.
+        Bag bagOut = getBag(bagFile, Version.V0_96, LoadOption.BY_MANIFESTS);
+
+        SimpleResult result = verifier.verify(bagOut);
+        logger.trace("{}", result.getMessages());
+        for (BagFile bf : bagOut.getPayload()) {
+            File file = new File(pathToBag, bf.getFilepath());
+            if (!file.getName().equals(filename))
+                continue;
+            PersonalFilestoreFile pff = new PersonalFilestoreFile();
+            pff.setFile(file);
+            Map<Algorithm, String> map = bagOut.getChecksums(bf.getFilepath());
+            pff.setMd5(map.get(Algorithm.MD5));
+            logger.debug("retrieving {} ({})", bf.getFilepath(), bf.getSize());
+            return pff;
+        }
+        return null;
     }
 }

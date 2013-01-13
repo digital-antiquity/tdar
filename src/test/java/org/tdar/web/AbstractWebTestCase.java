@@ -7,6 +7,12 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.tdar.TestConstants.DEFAULT_BASE_URL;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -17,24 +23,44 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletResponse;
 
-import junit.framework.Assert;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
+import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.billing.Invoice.TransactionStatus;
+import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
+import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplate.NelnetTransactionItem;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.w3c.dom.Element;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.ElementNotFoundException;
+import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
+import com.gargoylesoftware.htmlunit.FormEncodingType;
+import com.gargoylesoftware.htmlunit.HttpMethod;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.TextPage;
 import com.gargoylesoftware.htmlunit.UnexpectedPage;
 import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.WebRequest;
+import com.gargoylesoftware.htmlunit.WebWindow;
+import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlCheckBoxInput;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
@@ -48,8 +74,9 @@ import com.gargoylesoftware.htmlunit.html.HtmlRadioButtonInput;
 import com.gargoylesoftware.htmlunit.html.HtmlSelect;
 import com.gargoylesoftware.htmlunit.html.HtmlTextArea;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
+import com.gargoylesoftware.htmlunit.util.KeyDataPair;
+import com.gargoylesoftware.htmlunit.util.NameValuePair;
 import com.google.common.collect.Lists;
-import com.opensymphony.module.sitemesh.HTMLPage;
 import com.threelevers.css.Selector;
 
 /**
@@ -58,6 +85,10 @@ import com.threelevers.css.Selector;
  */
 public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
+    private static final String ELIPSIS = "<!-- ==================== ... ======================= -->";
+    private static final String BEGIN_PAGE_HEADER = "<!-- BEGIN-PAGE-HEADER -->";
+    private static final String BEGIN_TDAR_CONTENT = "<!-- BEGIN-TDAR-CONTENT -->";
+    private static final String BEGIN_TDAR_FOOTER = "<!-- BEGIN-TDAR-FOOTER -->";
     public static final String TABLE_METADATA = "table metadata";
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     protected final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_3_6);
@@ -65,10 +96,10 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     protected HtmlPage htmlPage;
     private HtmlForm _internalForm;
     private HtmlElement documentElement;
-
-    private String regex = "&lt;(.+?)&gt;";
-    private Pattern pattern = Pattern.compile(regex);
     public static String PROJECT_ID_FIELDNAME = "projectId";
+    protected static final String MY_TEST_ACCOUNT = "my test account";
+    protected static final String THIS_IS_A_TEST_DESCIPTION = "this is a test desciption";
+
     protected Set<String> encodingErrorExclusions = new HashSet<String>();
 
     @SuppressWarnings("serial")
@@ -89,7 +120,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
      * override to test with different URL can use this to point at another
      * instance of tDAR instead of running "integration" tests.
      */
-    public String getBaseUrl() {
+    public static String getBaseUrl() {
         return System.getProperty("tdar.baseurl", DEFAULT_BASE_URL);
     }
 
@@ -98,7 +129,14 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             if (localPath.startsWith("http")) {
                 return webClient.getPage(localPath);
             } else {
-                return webClient.getPage(getBaseUrl() + localPath);
+                String prefix = getBaseUrl();
+                try {
+                URL current = webClient.getCurrentWindow().getEnclosedPage().getUrl();
+                prefix = String.format("%s://%s:%s", current.getProtocol(), current.getHost(), current.getPort());
+                } catch (Exception e) {
+                    logger.trace("{}", e);
+                }
+                return webClient.getPage(prefix + localPath);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -216,7 +254,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         String indexedNamePattern = "(.+)\\[(\\d+)\\](\\..+)?";
         HtmlElement input = null;
         try {
-            page.getElementByName(name);
+            input = page.getElementByName(name);
         } catch (Exception e) {
             logger.trace("no element found: " + name);
         }
@@ -225,18 +263,15 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             // test for duplicating fields with the two cases we have (a) struts, or
             // (b) the non-standard file-upload
             if (name.matches(indexedNamePattern)) {
-                String zerothFieldName = name.replaceAll(indexedNamePattern, "$1[0]$3"); // $3
-                                                                                         // may
-                                                                                         // be
-                                                                                         // blank
+                // clone zeroth collection item (e.g. if we want to create element named 'person[3].firstName' we clone element named 'person[0].firstName')
+                String zerothFieldName = name.replaceAll(indexedNamePattern, "$1[0]$3");
                 if (!name.equals(zerothFieldName)) {
                     duplicateInputByName(zerothFieldName, name);
                 }
-            } else if (name.equalsIgnoreCase("uploadedFiles")) {
-                duplicateInputByName(name, name);
             }
+            input = page.getElementByName(name);
         }
-        input = page.getElementByName(name);
+        assertTrue("could not find input for name: " + name, input != null);
 
         if (input instanceof HtmlTextArea) {
             HtmlTextArea txt = (HtmlTextArea) input;
@@ -270,6 +305,9 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             HtmlCheckBoxInput chk = (HtmlCheckBoxInput) input;
             id = chk.getId();
             chk.setChecked(chk.getValueAttribute().equalsIgnoreCase(value));
+        } else if (input instanceof HtmlRadioButtonInput) {
+            // we have a collection of elements with the same name
+            id = checkRadioButton(value, page.getElementsByName(name));
         } else {
             HtmlInput inp = (HtmlInput) input;
             id = inp.getId();
@@ -279,8 +317,21 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         updateMainFormIfNull(id);
     }
 
+    private String checkRadioButton(String value, List<DomElement> radioButtons) {
+        List<HtmlInput> buttonsFound = new ArrayList<HtmlInput>();
+        for (DomElement radioButton : radioButtons) {
+            if (radioButton.getId().toLowerCase().endsWith(value.toLowerCase())) {
+                buttonsFound.add((HtmlInput) radioButton);
+            }
+        }
+        assertTrue("found more than one candidate radiobutton for value " + value, buttonsFound.size() == 1);
+        HtmlInput radioButton = buttonsFound.get(0);
+        radioButton.setChecked(true);
+        return radioButton.getId();
+    }
+
     public void createInput(String inputName, String name, String value) {
-        HtmlElement createdElement = ((HtmlPage) internalPage).createElement("input");
+        HtmlElement createdElement = (HtmlElement) ((HtmlPage) internalPage).createElement("input");
         createdElement.setAttribute("type", inputName);
         createdElement.setAttribute("name", name);
         createdElement.setAttribute("value", value);
@@ -315,9 +366,9 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     public boolean removeElementsByName(String elementName) {
         if (htmlPage == null)
             return false;
-        List<HtmlElement> elements = htmlPage.getElementsByName(elementName);
+        List<DomElement> elements = htmlPage.getElementsByName(elementName);
         int count = 0;
-        for (HtmlElement element : elements) {
+        for (DomElement element : elements) {
             element.remove();
             count++;
         }
@@ -325,8 +376,9 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     }
 
     public boolean checkInput(String name, String val) {
-        List<HtmlElement> els = getHtmlPage().getElementsByName(name);
-        for (HtmlElement el : els) {
+        List<DomElement> els = getHtmlPage().getElementsByName(name);
+        for (DomElement el : els) {
+            logger.trace(String.format("checkinput[%s --> %s] %s", name, val, el.asXml()));
             if (el instanceof HtmlTextArea && ((HtmlTextArea) el).getText().equals(val)) {
                 return true;
             } else if (el instanceof HtmlSelect) {
@@ -358,7 +410,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     public void setInput(String name, String... values) {
         HtmlPage page = (HtmlPage) internalPage;
         String id = null;
-        for (HtmlElement input : page.getElementsByName(name)) {
+        for (DomElement input : page.getElementsByName(name)) {
             if (input instanceof HtmlCheckBoxInput) {
                 HtmlCheckBoxInput chk = (HtmlCheckBoxInput) input;
                 for (String val : values) {
@@ -374,18 +426,18 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     }
 
     public void assertButtonPresentWithText(String buttonText) {
-        HtmlInput input = null;
-        try {
-            input = getForm().getInputByValue(buttonText);
-        } catch (Exception ex) {
-            logger.error("button element not found", ex);
-        }
-        assertNotNull("button with text [" + buttonText + "] not found", input);
-        assertTrue(input.getTypeAttribute().equalsIgnoreCase("submit"));
+        HtmlElement input = getButtonWithName(buttonText);
+        assertNotNull(String.format("button with text [%s] not found in form [%s]", buttonText, getForm()), input);
+        assertTrue(input.getAttribute("type").equalsIgnoreCase("submit"));
     }
 
     public int submitForm() {
-        return submitForm("Save");
+        String defaultEditButton = "submitAction";
+        HtmlElement buttonWithName = getButtonWithName(defaultEditButton);
+        if (buttonWithName == null) {
+            return submitForm("Save");
+        }
+        return submitForm(defaultEditButton);
     }
 
     public int submitForm(String buttonText) {
@@ -405,14 +457,33 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     public void submitFormWithoutErrorCheck(String buttonText) {
         assertButtonPresentWithText(buttonText);
         try {
-            changePage(getForm().getInputByValue(buttonText).click());
-        } catch (Exception e) {
-            e.printStackTrace();
+            HtmlElement buttonByName = getButtonWithName(buttonText);
+            changePage(buttonByName.click());
+        } catch (IOException iox) {
+            logger.error("exception while trying to submit from via button labeled " + buttonText, iox);
+        }
+    }
+
+    private HtmlElement getButtonWithName(String buttonText) {
+        // get all the likely suspects we consider to be a "button" and return the best match
+        logger.trace("get button by name, form {}", _internalForm);
+        List<HtmlElement> elements = new ArrayList<HtmlElement>();
+        elements.addAll(getForm().getButtonsByName(buttonText));
+        elements.addAll(getForm().getInputsByValue(buttonText));
+        for (DomElement el : getHtmlPage().getElementsByName(buttonText)) {
+            elements.add((HtmlElement) el);
+        }
+
+        if (elements.isEmpty()) {
+            logger.error("could not find button or element with name or value '{}'", buttonText);
+            return null;
+        } else {
+            return elements.iterator().next();
         }
     }
 
     public void assertErrorsPresent() {
-        assertTextPresent("The following errors were found with your submission");
+        assertTextPresent("the following problems with your submission");
     }
 
     public void assertTextNotPresent(String text) {
@@ -509,8 +580,18 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         }
     }
 
+    //click on element that ostensibly should trigger a request (links, submit inputs,  submit guttons)
+    public void clickElementWithId(String id) {
+        HtmlElement el = (HtmlElement)getHtmlPage().getElementById(id);
+        try {
+            changePage(el.click());
+        } catch (IOException e) {
+            Assert.fail("click failed:" + e);
+        }
+    }
+
     public String getPageText() {
-        if (internalPage instanceof HTMLPage) {
+        if (internalPage instanceof HtmlPage) {
             HtmlPage page = (HtmlPage) internalPage;
             return page.asText();
         }
@@ -522,7 +603,18 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     }
 
     public String getPageCode() {
-        return internalPage.getWebResponse().getContentAsString();
+        String content = internalPage.getWebResponse().getContentAsString();
+        String out = "";
+        try {
+        if (content.indexOf(BEGIN_PAGE_HEADER) != -1 && content.indexOf(BEGIN_TDAR_CONTENT) != -1 && content.indexOf(BEGIN_TDAR_FOOTER) != -1) {
+            out = content.substring(0,content.indexOf(BEGIN_PAGE_HEADER))+ ELIPSIS;
+            out += content.subSequence(content.indexOf(BEGIN_TDAR_CONTENT) + BEGIN_TDAR_CONTENT.length(),content.indexOf(BEGIN_TDAR_FOOTER)) + ELIPSIS;
+            return out;
+        }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return content;
     }
 
     public String getCurrentUrlPath() {
@@ -537,8 +629,10 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         // need to disable javascript
         // testing on the mac :(
         // if (System.getProperty("os.name").toLowerCase().contains("mac os x"))
-        webClient.setJavaScriptEnabled(false);
-        webClient.setTimeout(0);
+        webClient.getOptions().setUseInsecureSSL(true);
+        webClient.getOptions().setJavaScriptEnabled(false);
+        webClient.getOptions().setTimeout(0);
+//        webClient.getOptions().setSSLClientCertificate(certificateUrl, certificatePassword, certificateType)
         webClient.setJavaScriptTimeout(0);
 
         // reset encoding error exclusions for each test
@@ -611,7 +705,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
             part = part.replace("/", "");
             url = url.substring(0, url.lastIndexOf("/"));
             logger.trace("evaluating {} : {}", url, part);
-            if (StringUtils.isNumeric(part)) {
+            if (StringUtils.isNotBlank(part) && StringUtils.isNumeric(part)) {
                 return Long.parseLong(part);
             }
         }
@@ -631,14 +725,18 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
     // get the "main" form. it's pretty much a guess, so if you encounter a page w/ multiple forms you might wanna specify it outright
     public HtmlForm getForm() {
+        logger.trace("FORM{} OTHERS: {}", _internalForm, getHtmlPage().getForms());
         if (_internalForm == null) {
             HtmlForm htmlForm = null;
             if (getHtmlPage().getForms().size() == 1) {
                 htmlForm = getHtmlPage().getForms().get(0);
+                logger.trace("only one form: " + htmlForm.getNameAttribute());
             } else {
                 for (HtmlForm form : getHtmlPage().getForms()) {
-                    if (!form.getNameAttribute().equalsIgnoreCase("autosave")) {
+                    if (StringUtils.isNotBlank(form.getActionAttribute()) && !form.getNameAttribute().equalsIgnoreCase("autosave") &&
+                            !form.getNameAttribute().equalsIgnoreCase("searchheader")) {
                         htmlForm = form;
+                        logger.trace("using form: " + htmlForm.getNameAttribute());
                         break;
                     }
                 }
@@ -663,10 +761,11 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
     // set the main form to be first form that contains a child element with the specified id
     private void updateMainFormIfNull(String id) {
-        if (_internalForm != null)
+        if (_internalForm != null || StringUtils.isBlank(id))
             return;
         for (HtmlForm form : getHtmlPage().getForms()) {
-            if (form.hasHtmlElementWithId(id)) {
+            if (form.getFirstByXPath("descendant-or-self::*[contains(@id,'" + id + "')]") != null) {
+                logger.info("updating main for for id: " + id + " to form: " + form);
                 setMainForm(form);
                 return;
             }
@@ -683,5 +782,259 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     protected Element querySelector(String cssSelector) {
         return Selector.from(documentElement).select(cssSelector).iterator().next();
     }
+
+
+
+    public String getPersonalFilestoreTicketId() {
+        gotoPageWithoutErrorCheck("/upload/grab-ticket");
+        TextPage textPage = (TextPage) internalPage;
+        String json = textPage.getContent();
+        logger.debug("ticket json::" + json.trim());
+        JSONObject jsonObject = JSONObject.fromObject(json);
+        String ticketId = jsonObject.getString("id");
+        logger.debug("ticket id::" + ticketId);
+        return ticketId;
+    }
+
+    /**
+     * upload the specified file to the personal filestore. Note this will change the current page of the webclient
+     * 
+     * @param ticketId
+     * @param path
+     */
+    public void uploadFileToPersonalFilestore(String ticketId, String path) {
+        uploadFileToPersonalFilestore(ticketId, path, true);
+    }
+
+    public void addFileProxyFields(int rowNum, FileAccessRestriction restriction, String filename) {
+        createInput("hidden", "fileProxies[" + rowNum + "].restriction", restriction.name());
+        createInput("hidden", "fileProxies[" + rowNum + "].action", FileAction.ADD.name());
+        createInput("hidden", "fileProxies[" + rowNum + "].fileId", "-1");
+        createInput("hidden", "fileProxies[" + rowNum + "].filename", filename);
+        createInput("hidden", "fileProxies[" + rowNum + "].sequenceNumber", Integer.toString(rowNum));
+    }
+
+    public int uploadFileToPersonalFilestoreWithoutErrorCheck(String ticketId, String path) {
+        return uploadFileToPersonalFilestore(ticketId, path, false);
+    }
+
+    private int uploadFileToPersonalFilestore(String ticketId, String path, boolean assertNoErrors) {
+        int code = 0;
+        WebClient client = getWebClient();
+        String url = getBaseUrl() + "/upload/upload";
+        try {
+            WebRequest webRequest = new WebRequest(new URL(url), HttpMethod.POST);
+            List<NameValuePair> parms = new ArrayList<NameValuePair>();
+            parms.add(nameValuePair("ticketId", ticketId));
+            File file = null;
+            if (path != null) {
+                file = new File(path);
+                parms.add(nameValuePair("uploadFile", file));
+            }
+            webRequest.setRequestParameters(parms);
+            webRequest.setEncodingType(FormEncodingType.MULTIPART);
+            Page page = client.getPage(webRequest);
+            code = page.getWebResponse().getStatusCode();
+            Assert.assertTrue(assertNoErrors && code == HttpStatus.OK.value());
+            if (file != null) {
+                assertFileSizes(page, Arrays.asList(new File[] { file }));
+            }
+        } catch (MalformedURLException e) {
+            Assert.fail("mailformed URL: are you sure you specified the right page in your test?");
+        } catch (IOException iox) {
+            Assert.fail("IO exception occured during test");
+        } catch (FailingHttpStatusCodeException httpEx) {
+            if (assertNoErrors) {
+                Assert.fail("upload request returned code" + httpEx.getStatusCode());
+            }
+            code = httpEx.getStatusCode();
+        }
+        return code;
+    }
+
+    protected void assertFileSizes(Page page, List<File> files) {
+        JSONArray jsonArray = (JSONArray) JSONSerializer.toJSON(page.getWebResponse().getContentAsString());
+        for (int i = 0; i < files.size(); i++) {
+            Assert.assertEquals("file size reported from server should be same as original", files.get(i).length(), jsonArray.getJSONObject(i).getLong("size"));
+        }
+    }
+
+    public NameValuePair nameValuePair(String name, String value) {
+        return new NameValuePair(name, value);
+    }
+
+    private NameValuePair nameValuePair(String name, File file) {
+        // FIXME:is it safe to specify text/plain even when we know it isn't?? It happens to 'work' for these tests, not sure of potential side effects...
+        return nameValuePair(name, file, "text/plain");
+    }
+
+    private NameValuePair nameValuePair(String name, File file, String contentType) {
+        KeyDataPair keyDataPair = new KeyDataPair(name, file, contentType, "utf8");
+        return keyDataPair;
+    }
+    
+    public void createDocumentAndUploadFile(String title) {
+        clickLinkWithText("UPLOAD");
+        gotoPage("/resource/add");
+        String ticketId = getPersonalFilestoreTicketId();
+        uploadFileToPersonalFilestore(ticketId, TestConstants.TEST_DOCUMENT);
+        // gotoPage("/document/add");
+        // assume that you're at /project/list
+        // logger.info(getPageText());
+        gotoPage("/");
+
+        clickLinkWithText("UPLOAD");
+        // logger.info(getPageCode());
+        clickLinkWithText(ResourceType.DOCUMENT.getLabel());
+        assertTextPresentInPage("Create a new Document");
+        setInput("document.title", title);
+        setInput("document.description", title + " (ABSTRACT)");
+        setInput("document.date", "1934");
+        setInput("ticketId", ticketId);
+        setInput("projectId", Long.toString(TestConstants.ADMIN_PROJECT_ID));
+        if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
+            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+            setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
+        }
+
+        addFileProxyFields(0, FileAccessRestriction.PUBLIC, TestConstants.TEST_DOCUMENT_NAME);
+        // logger.info(getPageCode());
+        submitForm();
+        HtmlPage page = (HtmlPage) internalPage;
+        // make sure we're on the view page
+        assertPageTitleEquals(title);
+        assertTextPresentInPage(title + " (ABSTRACT)");
+        assertTextPresentInPage(TestConstants.TEST_DOCUMENT_NAME);
+    }
+
+    protected String testAccountPollingResponse(String total, TransactionStatus expectedResponse) throws MalformedURLException {
+        assertCurrentUrlContains("/simple");
+
+        String invoiceid = getInput("id").getAttribute("value");
+        submitForm();
+        assertCurrentUrlContains("process-payment-request");
+        clickLinkWithText("click here");
+        URL polingUrl = new URL(getBaseUrl() + "/cart/polling-check?id=" + invoiceid);
+        String response = getAccountPollingRequest(polingUrl);
+        assertTrue(response.contains(TransactionStatus.PENDING_TRANSACTION.name()));
+        checkInput(NelnetTransactionItem.getInvoiceIdKey(), invoiceid);
+        checkInput(NelnetTransactionItem.getUserIdKey(), Long.toString(getUserId()));
+        checkInput(NelnetTransactionItem.AMOUNT_DUE.name(), total);
+        clickElementWithId("process-payment_0");
+        response = getAccountPollingRequest(polingUrl);
+        assertTrue(response.contains(expectedResponse.name()));
+        return invoiceid;
+    }
+
+    protected String getAccountPollingRequest(URL polingUrl) {
+        WebWindow openWindow = webClient.openWindow(polingUrl, "polling" + System.currentTimeMillis());
+        return openWindow.getEnclosedPage().getWebResponse().getContentAsString();
+    }
+
+    /*
+     * add new account, add another, make sure account names are all ok
+     */
+    protected String addInvoiceToNewAccount(String invoiceId, String accountId, String accountName) {
+        if (accountName == null) {
+            accountName = MY_TEST_ACCOUNT;
+        }
+        if (accountId != null) {
+            gotoPage("/billing/choose?invoiceId=" + invoiceId + "&accountId=" + accountId);
+            setInput("id", accountId);
+        } else {
+            gotoPage("/billing/add?invoiceId=" + invoiceId);
+            setInput("account.name", accountName);
+            setInput("account.description", THIS_IS_A_TEST_DESCIPTION);
+        }
+        List<Person> users = entityService.findAllRegisteredUsers(3);
+        List<Long> userIds = Persistable.Base.extractIds(users);
+        for (int i = 0; i < userIds.size(); i++) {
+            setInput("authorizedMembers[" + i + "].id", Long.toString(userIds.get(i)));
+        }
+        submitForm();
+        assertAccountPageCorrect(users, userIds, accountName);
+        clickLinkOnPage("edit");
+        String id = getInput("id").getAttribute("value");
+        submitForm();
+        assertAccountPageCorrect(users, userIds, accountName);
+        return id;
+    }
+
+    protected void assertAccountPageCorrect(List<Person> users, List<Long> userIds, String title) {
+        assertTextPresent(title);
+        assertTextPresent(THIS_IS_A_TEST_DESCIPTION);
+        for (int i = 0; i < userIds.size(); i++) {
+            assertTextPresent(users.get(i).getProperName());
+        }
+        assertTextPresent(getSessionUser().getProperName());
+    }
+
+    public void login(String user, String pass) {
+        login(user, pass, false);
+    }
+
+    public int login(String user, String pass, boolean expectingErrors) {
+        gotoPage("/");
+        clickLinkOnPage("Log In");
+        setMainForm("loginForm");
+        user = System.getProperty("tdar.user", user);
+        pass = System.getProperty("tdar.pass", pass);
+        // logger.info(user + ":" + pass);
+        setInput("loginUsername", user);
+        setInput("loginPassword", pass);
+        if (expectingErrors) {
+            webClient.setThrowExceptionOnFailingStatusCode(false);
+            submitFormWithoutErrorCheck("Login");
+            webClient.setThrowExceptionOnFailingStatusCode(true);
+        } else {
+            clickElementWithId("btnLogin");
+        }
+        return internalPage.getWebResponse().getStatusCode();
+    }
+
+    public void logout() {
+        webClient.setJavaScriptEnabled(false);
+        gotoPage("/logout");
+    }
+
+
+    @Autowired
+    private AuthenticationAndAuthorizationService authService;
+
+    public void testLogin(Map<String, String> values, boolean deleteFirst) {
+
+        String username = values.get("person.username");
+        if (deleteFirst) {
+            Person p = new Person();
+            p.setUsername(username);
+            authService.getAuthenticationProvider().deleteUser(p);
+        }
+        gotoPage("/");
+        clickLinkOnPage("Sign Up");
+        for (String key : values.keySet()) {
+            setInput(key, values.get(key));
+        }
+        setInput("timeCheck", Long.toString(System.currentTimeMillis() - 10000));
+        submitForm("Save");
+        genericService.synchronize();
+        setSessionUser(entityService.findByUsername(username));
+    }
+
+
+    public void setupBasicUser(Map<String, String> personmap,String prefix) {
+        personmap.put("person.firstName", prefix + "firstName");
+        personmap.put("person.lastName", prefix + "lastName");
+        personmap.put("person.email", prefix + "aaaaa@bbbbb.com");
+        personmap.put("confirmEmail", prefix + "aaaaa@bbbbb.com");
+        personmap.put("person.username", prefix + "aaaaa@bbbbb.com");
+        personmap.put("password", "secret");
+        personmap.put("confirmPassword", "secret");
+        personmap.put("institutionName", "institution");
+        personmap.put("person.phone", "1234567890");
+        personmap.put("person.contributorReason", "there is a reason");
+//        personmap.put("person.rpaNumber", "1234567890");
+        personmap.put("requestingContributorAccess", "true");
+    }
+
 
 }

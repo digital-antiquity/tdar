@@ -4,11 +4,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.JoinTable;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -16,8 +16,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.hibernate.search.annotations.Indexed;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
-
-import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * $Id$
@@ -29,7 +27,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @Entity
 @Table(name = "site_type_keyword")
-@XStreamAlias("siteTypeKeyword")
 @Indexed(index = "Keyword")
 public class SiteTypeKeyword extends HierarchicalKeyword<SiteTypeKeyword> implements SuggestedKeyword {
 
@@ -38,10 +35,6 @@ public class SiteTypeKeyword extends HierarchicalKeyword<SiteTypeKeyword> implem
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.LAZY, optional = true)
     private SiteTypeKeyword parent;
-
-    @ElementCollection()
-    @JoinTable(name = "site_type_keyword_synonym")
-    private Set<String> synonyms;
 
     @XmlAttribute
     public boolean isApproved() {
@@ -62,14 +55,20 @@ public class SiteTypeKeyword extends HierarchicalKeyword<SiteTypeKeyword> implem
         this.parent = parent;
     }
 
-    public Set<String> getSynonyms() {
-        if (synonyms == null) {
-            synonyms = new HashSet<String>();
-        }
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+    @JoinColumn(name = "merge_keyword_id")
+    private Set<SiteTypeKeyword> synonyms = new HashSet<SiteTypeKeyword>();
+
+    public Set<SiteTypeKeyword> getSynonyms() {
         return synonyms;
     }
 
-    public void setSynonyms(Set<String> synonyms) {
+    public void setSynonyms(Set<SiteTypeKeyword> synonyms) {
         this.synonyms = synonyms;
     }
+
+    public String getSynonymFormattedName() {
+        return getLabel();
+    }
+
 }

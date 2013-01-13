@@ -1,5 +1,5 @@
 <#if callback??>${callback}(</#if>
-{"${lookupSource!"results"}":[
+{"${lookupSource.collectionName!"results"}":[
 <@s.iterator value="results" var="jsonResult" status="status">
 ${jsonResult.toJSON().toString()}<@s.if test="!#status.last">,</@s.if>
 </@s.iterator>

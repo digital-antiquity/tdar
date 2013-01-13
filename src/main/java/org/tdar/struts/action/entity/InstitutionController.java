@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Institution;
-import org.tdar.core.service.external.auth.InternalTdarRights;
+import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.struts.action.AbstractPersistableController;
 
 @Component
@@ -58,7 +58,7 @@ public class InstitutionController extends AbstractPersistableController<Institu
     }
 
     @Override
-    public String loadMetadata() {
+    public String loadViewMetadata() {
         return SUCCESS;
     }
 

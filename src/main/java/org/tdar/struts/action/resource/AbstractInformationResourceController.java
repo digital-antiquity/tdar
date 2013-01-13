@@ -3,7 +3,7 @@ package org.tdar.struts.action.resource;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -15,23 +15,26 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PersonalFilestoreTicket;
-import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Language;
+import org.tdar.core.bean.resource.LicenseType;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.PersonalFilestoreService;
-import org.tdar.core.service.external.auth.InternalTdarRights;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
@@ -74,6 +77,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     private String fileInputMethod;
     private String fileTextInput;
+    private boolean isAbleToUploadFiles = false;
 
     private List<PersonalFilestoreFile> pendingFiles;
 
@@ -81,21 +85,24 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     // resource provider institution and contacts
     private String resourceProviderInstitutionName;
+    private String publisherName;
 
     // resource availability
-    private String resourceAvailability;
+    // private String resourceAvailability;
     private boolean allowedToViewConfidentialFiles;
     protected FileAnalyzer analyzer;
     private boolean hasDeletedFiles = false;
     // protected PersonalFilestoreTicket filestoreTicket;
-    private Creator copyrightHolder;
+    private ResourceCreatorProxy copyrightHolderProxy = new ResourceCreatorProxy();
 
     @Autowired
     protected PersonalFilestoreService filestoreService;
 
     private boolean resourceFilesHaveChanged = false;
 
-    protected abstract void processUploadedFiles(List<InformationResourceFile> uploadedFiles) throws IOException;
+    protected void processUploadedFiles(List<InformationResourceFile> uploadedFiles) throws IOException {
+        return;
+    }
 
     /**
      * This should be overridden when InformationResource content is entered from a text area in the web form.
@@ -117,7 +124,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
         try {
             // process the String uploaded via the fileTextInput box verbatim as the UPLOADED_TEXT version
-            //FIXME: why are we validating title here?? 
             if (StringUtils.isBlank(getPersistable().getTitle())) {
                 logger.error("Resource title was empty, client side validation failed for {}", getPersistable());
                 addActionError("Please enter a title for your " + getPersistable().getResourceType().getLabel());
@@ -180,7 +186,8 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         // FIXME: trying to handle duplicate filenames more gracefully by using hashqueue instead of hashmap, but this assumes that the sequence of pending
         // files
         // is *similar* to sequence of incoming file proxies. probably a dodgy assumption, but arguably better than obliterating proxies w/ dupe filenames
-
+        logger.info("{}", pendingFiles);
+        logger.info("{}", fileProxies);
         // associates InputStreams with all FileProxy objects that need to create a new version.
         for (PersonalFilestoreFile pendingFile : pendingFiles) {
             File file = pendingFile.getFile();
@@ -190,7 +197,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             if (proxy == null) {
                 logger.warn("something bad happened in the JS side of things, there should always be a FileProxy resulting from the upload callback {}",
                         file.getName());
-                proxy = new FileProxy(file.getName(), VersionType.UPLOADED, false);
+                proxy = new FileProxy(file.getName(), VersionType.UPLOADED, FileAccessRestriction.PUBLIC);
                 finalProxyList.add(proxy);
             }
             proxy.setFile(file);
@@ -244,15 +251,19 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         ArrayList<InformationResourceFile> modifiedFiles = new ArrayList<InformationResourceFile>();
         for (FileProxy fileProxy : fileProxiesToProcess) {
             try {
-                InformationResourceFile file = getInformationResourceService().processFileProxy(getPersistable(), fileProxy);
+                InformationResourceFile file = getInformationResourceService()
+                        .processFileProxy(getPersistable(), fileProxy);
                 if (file != null) {
                     modifiedFiles.add(file);
                     if (file.getWorkflowContext() != null) {
-                        List<Throwable> exceptions = file.getWorkflowContext().getExceptions();
+                        List<String> exceptions = file.getWorkflowContext().getExceptions();
+                        logger.info("EXCEPTIONS: {}", exceptions);
+                        logger.info("STACK TRACES: {}", file.getWorkflowContext().getStackTraces());
                         if (CollectionUtils.isNotEmpty(exceptions)) {
-                            for (Throwable exception : exceptions) {
-                                addActionErrorWithException(exception.getMessage(), exception);
+                            for (String except : exceptions) {
+                                addActionError(except);
                             }
+                            getStackTraces().addAll(file.getWorkflowContext().getStackTraces());
                         }
                     }
                 }
@@ -299,7 +310,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             if (CollectionUtils.isEmpty(uploadedFiles)) {
                 // check for metadata change iff this resource has an existing file.
                 InformationResourceFile file = getPersistable().getFirstInformationResourceFile();
-                if (file != null && (file.isConfidential() != singleFileProxy.isConfidential())) {
+                if (file != null && (file.getRestriction() != singleFileProxy.getRestriction())) {
                     singleFileProxy.setAction(FileAction.MODIFY_METADATA);
                     singleFileProxy.setFileId(file.getId());
                     fileProxiesToProcess.add(singleFileProxy);
@@ -316,7 +327,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     }
 
     @Override
-    protected void postSaveCleanup() {
+    protected void postSaveCleanup(String returnString) {
         if (isAsync()) {
             return;
         }
@@ -328,15 +339,17 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             }
         } catch (Exception e) {
             logger.warn("an error occured when trying to cleanup the filestore: {} for {} ", ticketId, getAuthenticatedUser());
-            e.printStackTrace();
+            logger.debug("exception:", e);
         }
     }
 
     protected void loadResourceProviderInformation() {
         // load resource provider institution and publishers
         setResourceProviderInstitution(getResource().getResourceProviderInstitution());
-        setCopyrightHolder(getResource().getCopyrightHolder());
-
+        setPublisher(getResource().getPublisher());
+        if (isCopyrightMandatory() && Persistable.Base.isNotNullOrTransient(getResource().getCopyrightHolder())) {
+            copyrightHolderProxy = new ResourceCreatorProxy(getResource().getCopyrightHolder(), ResourceCreatorRole.COPYRIGHT_HOLDER);
+        }
     }
 
     protected void saveResourceProviderInformation() {
@@ -344,14 +357,38 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         // save resource provider institution and contact information
         // TODO: use findOrSaveInstitution()
         if (StringUtils.isNotBlank(resourceProviderInstitutionName)) {
-            Institution institution = getEntityService().findInstitutionByName(resourceProviderInstitutionName);
-            if (institution == null) {
-                institution = new Institution();
-                institution.setName(resourceProviderInstitutionName);
-                getEntityService().save(institution);
-            }
-            getResource().setResourceProviderInstitution(institution);
+            getResource().setResourceProviderInstitution(getEntityService().findOrSaveCreator(new Institution(resourceProviderInstitutionName)));
         }
+
+        if (StringUtils.isNotBlank(publisherName)) {
+            getResource().setPublisher(getEntityService().findOrSaveCreator(new Institution(publisherName)));
+        }
+
+        if (isCopyrightMandatory() && copyrightHolderProxy != null) {
+            ResourceCreator transientCreator = copyrightHolderProxy.getResourceCreator();
+            logger.debug("setting copyright holder to:  {} ", transientCreator);
+            getResource().setCopyrightHolder(getEntityService().findOrSaveCreator(transientCreator.getCreator()));
+        }
+    }
+
+    // FIXME: is this right?
+    private void setPublisher(Institution publisher) {
+        if (publisher != null) {
+            this.publisherName = publisher.getName();
+        }
+    }
+
+    public void setPublisher(String publisherName) {
+        this.publisherName = publisherName;
+    }
+
+    public ArrayList<LicenseType> getLicenseTypesList() {
+        return new ArrayList<LicenseType>(Arrays.asList(LicenseType.values()));
+    }
+
+    public LicenseType getDefaultLicenseType() {
+        return getTdarConfiguration().getDefaultLicenseType();
+
     }
 
     public List<File> getUploadedFiles() {
@@ -411,8 +448,11 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         }
     }
 
-    public String getResourceAvailability() {
-        return resourceAvailability;
+    @Override
+    public String loadAddMetadata() {
+        String toReturn = super.loadAddMetadata();
+        setAbleToUploadFiles(getAuthenticationAndAuthorizationService().canUploadFiles(getAuthenticatedUser(), getPersistable()));
+        return toReturn;
     }
 
     @Override
@@ -423,12 +463,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         setTransientViewableStatus(getResource(), getAuthenticatedUser());
     }
 
-    public void setResourceAvailability(String resourceAvailability) {
-        this.resourceAvailability = resourceAvailability;
-    }
-
     protected void loadInformationResourceProperties() {
-        setResourceAvailability(getResource().isAvailableToPublic() ? "Public" : "Embargoed");
         setResourceLanguage(getResource().getResourceLanguage());
         setMetadataLanguage(getResource().getMetadataLanguage());
         loadResourceProviderInformation();
@@ -448,14 +483,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     protected void saveInformationResourceProperties() {
         // handle dataset availability + date made public
-        boolean availableToPublic = isResourcePublic();
-        getResource().setAvailableToPublic(availableToPublic);
-        Calendar calendar = Calendar.getInstance();
-        if (!availableToPublic) {
-            // set date made public to 5 years now.
-            calendar.add(Calendar.YEAR, InformationResource.EMBARGO_PERIOD_YEARS);
-        }
-        getResource().setDateMadePublic(calendar.getTime());
         getResource().setResourceLanguage(resourceLanguage);
         getResource().setMetadataLanguage(metadataLanguage);
         // handle dataset availability + date made public
@@ -463,16 +490,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     }
 
     public Integer getEmbargoPeriodInYears() {
-        return InformationResource.EMBARGO_PERIOD_YEARS;
-    }
-
-    private boolean isResourcePublic() {
-        if (StringUtils.isBlank(resourceAvailability)) {
-            // FIXME: by default make things public?
-            logger.debug("resource availability null/empty.  check if page params are set properly, defaulting to public");
-            return true;
-        }
-        return "public".equalsIgnoreCase(resourceAvailability);
+        return getTdarConfiguration().getEmbargoPeriod();
     }
 
     public Project getProject() {
@@ -616,20 +634,14 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     protected String getLatestUploadedTextVersionText() {
         // in order for this to work we need to be generating text versions
         // of these files for both text input and file uploads
-        Collection<InformationResourceFileVersion> latestVersions = getPersistable().getLatestVersions(VersionType.UPLOADED_TEXT);
-        String versionText = "";
-        if(!latestVersions.isEmpty()) {
-            InformationResourceFileVersion version = latestVersions.iterator().next();
-            logger.debug("version's file status: {}", version.getInformationResourceFile().getStatus());
+        for (InformationResourceFileVersion version : getPersistable().getLatestVersions(VersionType.UPLOADED_TEXT)) {
             try {
-                versionText = FileUtils.readFileToString(version.getFile());
+                return FileUtils.readFileToString(version.getFile());
             } catch (Exception e) {
                 logger.debug("an error occurred when trying to load the text version of a file", e);
             }
-            
         }
-            
-        return versionText;
+        return "";
     }
 
     private void setFileProxyAction(FileProxy proxy) {
@@ -687,6 +699,11 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         setProject(getPersistable().getProject());
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.struts.action.AbstractPersistableController#validate()
+     */
     @Override
     public void validate() {
         super.validate();
@@ -695,7 +712,13 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             String resourceTypeLabel = getPersistable().getResourceType().getLabel();
             addActionError("Please enter a valid creation year for " + resourceTypeLabel);
         }
-
+        if (isCopyrightMandatory() && copyrightHolderProxy != null) {
+            ResourceCreator transientCreator = copyrightHolderProxy.getResourceCreator();
+            if (StringUtils.isEmpty(transientCreator.getCreator().getProperName().trim())) {
+                logger.debug("No copyright holder set for {}", getPersistable());
+                addActionError("Please enter a copyright holder!");
+            }
+        }
     }
 
     @Action(value = "reprocess", results = { @Result(name = SUCCESS, type = "redirect", location = "view?id=${resource.id}") })
@@ -703,6 +726,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         // FIXME: trying to avoid concurrent modification exceptions
         // NOTE: this processes deleted ones again too
+        // NOTE2: this is ignored in the quota on purpose -- it's on us
         getInformationResourceService().reprocessInformationResourceFiles(new ArrayList<InformationResourceFile>(getResource().getInformationResourceFiles()));
 
         return SUCCESS;
@@ -724,25 +748,36 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         this.hasDeletedFiles = hasDeletedFiles;
     }
 
-    public Creator getCopyrightHolder() {
-        return copyrightHolder;
-    }
-
-    public void setCopyrightHolder(Creator copyrightHolder) {
-        this.copyrightHolder = copyrightHolder;
+    public void setCopyrightHolderProxy(ResourceCreatorProxy copyrightHolderProxy) {
+        this.copyrightHolderProxy = copyrightHolderProxy;
     }
 
     public ResourceCreatorProxy getCopyrightHolderProxy() {
-        if (copyrightHolder != null) {
-            return new ResourceCreatorProxy(copyrightHolder, ResourceCreatorRole.COPYRIGHT_HOLDER);
-        }
-        else {
-            return new ResourceCreatorProxy();
-        }
+        return copyrightHolderProxy;
     }
 
     public boolean supportsMultipleFileUpload() {
         return true;
+    }
+
+    public List<FileAccessRestriction> getFileAccessRestrictions() {
+        return Arrays.asList(FileAccessRestriction.values());
+    }
+
+    public String getPublisherName() {
+        return publisherName;
+    }
+
+    public void setPublisherName(String publisherName) {
+        this.publisherName = publisherName;
+    }
+
+    public boolean isAbleToUploadFiles() {
+        return isAbleToUploadFiles;
+    }
+
+    public void setAbleToUploadFiles(boolean isAbleToUploadFiles) {
+        this.isAbleToUploadFiles = isAbleToUploadFiles;
     }
 
 }

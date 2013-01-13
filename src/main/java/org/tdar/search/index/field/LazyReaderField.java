@@ -1,13 +1,10 @@
 package org.tdar.search.index.field;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.SequenceInputStream;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -59,12 +56,8 @@ public class LazyReaderField extends AbstractField implements Fieldable {
         for (URI uri : paths) {
             try {
                 streams.add(uri.toURL().openStream());
-            } catch (MalformedURLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            } catch (Exception e) {
+                logger.debug("cannot read url:", e);
             }
         }
         SequenceInputStream stream = new SequenceInputStream(Collections.enumeration(streams));

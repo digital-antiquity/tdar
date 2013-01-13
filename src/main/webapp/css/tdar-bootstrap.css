@@ -1,0 +1,1370 @@
+.tdarCommentDescription { /* do not remove */
+	display: none !important;
+	visibility: hidden !important;
+}
+
+/* FIXME: jtd: I don't think the section.row.cols rule is necessary; need to check all pages to confirm I'm right,*/
+/* ab: undoing as this breaks the top of the view page! and the edit page! */
+section.row.cols {
+	margin-top: 3em !important;
+}
+
+.worldmap {
+	border: 1px solid #AAA;
+}
+
+#map_legend {
+	position: absolute;
+	display: block; //
+	width: 300px;
+	height: 1.8em;
+	right: 0px;
+	bottom: 0px;
+}
+
+.mapcontainer .legendText {
+	padding-top: 0px !important;
+	margin-left: 5px;
+	margin-right: 5px
+}
+
+.mapcontainer  .legendBox,.mapcontainer  .legendText {
+	clear: none;
+	float: left;
+}
+
+.mapcontainer  .legendBox {
+	border: 1px solid #666666;
+	width: 10px;
+	margin-top: 3px;
+	height: 10px;
+	padding: 2px;
+}
+
+div.barlabel {
+	top: 0;
+	z-index: 1000;
+	overflow: visible;
+	left: 0px;
+	position: relative;
+	display: block;
+	text-align: center;
+	font-size: smaller;
+	line-height: 1.2em;
+	vertical-align: top !important;
+	height: 1.5em;
+}
+
+.subnavbar {
+	z-index: 10000;
+}
+
+#messages  .lt-ie8 {
+	display: block !important;
+	visibility: visible !important;
+}
+
+/* affix elements become fixed, so we need to specify new location (otherwise location after becoming fixed is undefined/browser-specific) */
+.subnavbar.affix {
+	top: 0;
+	left: 0;
+}
+
+/* TODO:// HACK: .affix navbar needs to be same width as ".container" for proper formatting, but to break out our navbar requires mucking w/ layout.dec */
+.subnavbar.affix-top.container {
+	/*shrink the navbar when it is not affixed (i.e. when it is .affix-top) */
+	width: auto
+}
+
+/* fix for file upload control to make it not make space for label */
+.template-download .controls {
+	margin-left: 0px !important;
+}
+
+/* undo bootstrap's styling for certain elements when inside of a 'treeview' widget. */
+.treeview input[type=checkbox] {
+	margin: 0 0 0;
+}
+
+.treeview label {
+	display: inline;
+}
+
+/* javascript:javascript:$('.luceneScore').fadeIn('fast') */
+.luceneScore,.luceneExplanation {
+	display: none;
+}
+
+/* bootstrap css affects google maps v3 - http://stackoverflow.com/questions/9141249/twitter-bootstrap-css-affecting-google-maps */
+#large-google-map img,.google-map img {
+	border: inherit;
+	height: auto;
+	max-width: inherit;
+}
+
+.tdar-map-large,#large-google-map {
+	height: 450px;
+}
+
+#large-google-map label,.google-map label {
+	width: auto;
+	display: inline;
+}
+
+.fixed p.cartouche {
+	font-size: 16px;
+	line-height: 12px;
+}
+
+#recentlyEditedResources {
+	margin-right: 40px;
+}
+
+#recentlyEditedResources .recent-nav {
+	float: right;
+}
+
+.creatorPerson .controls.controls-row,.creatorInstitution .controls.controls-row
+	{
+	margin-left: 0px;
+}
+
+.controls-row .controls {
+	margin-left: 10px !important;
+}
+
+.searchfor .controls {
+	margin-left: 0px !important;
+}
+
+.term .control-group {
+	margin-bottom: 0px;
+}
+
+/*jtd: I'm moving this to datatables.css */
+/*ab: ok, then why is it still here :( */
+div.dataTables_length label {
+	width: 460px;
+	float: left;
+	text-align: left;
+}
+
+div.dataTables_length select {
+	width: 75px;
+}
+
+div.dataTables_filter label {
+	float: right;
+	width: 460px;
+}
+
+div.dataTables_info {
+	padding-top: 8px;
+}
+
+/* TODO: this is not necessary if you use bootstrap's pagination-right class, but i'm not sure how to get widget to inject this class into pagination section */
+div.dataTables_paginate {
+	float: right;
+	margin: 0;
+}
+
+table.display.tableFormat {
+	margin-top: 0px !important;
+}
+
+div.mapcontainer {
+	position: relative;
+	right: 0px;
+	float: right;
+	margin-right: 40px;
+}
+
+div.mapcontainer img {
+	height: 304px !Important;
+	right: 0px;
+	display: block;
+	position: relative;
+}
+
+#cbCheckAllToggle,.sorting_1 input[type='checkbox'] {
+	margin-right: 10px !Important;
+	margin-left: 10px !Important;
+}
+
+#drplist .ui-droppable {
+	min-height: 100px;
+	position: relative;
+}
+
+.legend {
+	line-height: 1.2em;
+}
+
+table.legend {
+	border-top: 1px solid #AAA;
+	border-bottom: 1px solid #AAA;
+}
+
+.buttontable div,.displayColumn,.columnSquare.coded {
+	background: #eeeeee; /* Old browsers */
+	background: -moz-linear-gradient(top, #eeeeee 0%, #cccccc 100%);
+	/* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #eeeeee),
+		color-stop(100%, #cccccc) ); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, #eeeeee 0%, #cccccc 100%);
+	/* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, #eeeeee 0%, #cccccc 100%);
+	/* Opera11.10+ */
+	background: -ms-linear-gradient(top, #eeeeee 0%, #cccccc 100%);
+	/* IE10+ */
+	filter: progid:  DXImageTransform.Microsoft.gradient(  startColorstr=  '#eeeeee',
+		endColorstr=  '#cccccc', GradientType=  0 );
+	/* IE6-9 */
+	background: linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* W3C */
+	/*    margin: 3px; 
+    padding: 3px;*/
+	border: 1px solid #999999;
+}
+
+.buttontable td,.integrationColumn,.displayColumn {
+	vertical-align: top;
+}
+
+.columnSquare {
+	display: inline-block;
+	border: 1px solid #999;
+	margin-right: 5px;
+	bottom: -.15em !important;
+	width: .8em;
+	height: .8em;
+	padding: 0px;
+}
+
+.countColumn,.buttontable div[hasCount],.columnSquare.count {
+	background: #e5e696; /* Old browsers */
+	background: -moz-linear-gradient(top, #e5e696 0%, #d1d360 100%);
+	/* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #e5e696),
+		color-stop(100%, #d1d360) ); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, #e5e696 0%, #d1d360 100%);
+	/* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, #e5e696 0%, #d1d360 100%);
+	/* Opera11.10+ */
+	background: -ms-linear-gradient(top, #e5e696 0%, #d1d360 100%);
+	/* IE10+ */
+	filter: progid:  DXImageTransform.Microsoft.gradient(  startColorstr=  '#e5e696',
+		endColorstr=  '#d1d360', GradientType=  0 );
+	/* IE6-9 */
+	background: linear-gradient(top, #e5e696 0%, #d1d360 100%); /* W3C */;
+	border: 1px solid #999999;
+}
+
+.measurementColumn,.buttontable div[hasMeasurement],.columnSquare.measurement
+	{
+	background: #deefff; /* Old browsers */
+	background: -moz-linear-gradient(top, #deefff 0%, #98bede 100%);
+	/* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #deefff),
+		color-stop(100%, #98bede) ); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, #deefff 0%, #98bede 100%);
+	/* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, #deefff 0%, #98bede 100%);
+	/* Opera11.10+ */
+	background: -ms-linear-gradient(top, #deefff 0%, #98bede 100%);
+	/* IE10+ */
+	filter: progid:  DXImageTransform.Microsoft.gradient(  startColorstr=  '#deefff',
+		endColorstr=  '#98bede', GradientType=  0 );
+	/* IE6-9 */
+	background: linear-gradient(top, #deefff 0%, #98bede 100%); /* W3C */
+	border: 1px solid #999999;
+}
+
+.integrationColumn,.buttontable div[hasOntology],.columnSquare.integration
+	{
+	background: #e4efc0; /* Old browsers */
+	background: -moz-linear-gradient(top, #e4efc0 0%, #abbd73 100%);
+	/* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #e4efc0),
+		color-stop(100%, #abbd73) ); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, #e4efc0 0%, #abbd73 100%);
+	/* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, #e4efc0 0%, #abbd73 100%);
+	/* Opera11.10+ */
+	background: -ms-linear-gradient(top, #e4efc0 0%, #abbd73 100%);
+	/* IE10+ */
+	filter: progid:  DXImageTransform.Microsoft.gradient(  startColorstr=  '#e4efc0',
+		endColorstr=  '#abbd73', GradientType=  0 );
+	/* IE6-9 */
+	background: linear-gradient(top, #e4efc0 0%, #abbd73 100%); /* W3C */;
+	border: 1px solid #999999;
+}
+
+.columnSquare.uncoded.complete {
+	background: url(/images/checked.gif) no-repeat scroll 50% 50%;
+}
+
+.columnSquare.coded.complete {
+	background: url(/images/checked.gif) no-repeat scroll 50% 50%;
+	/* Old browsers */
+	background: url(/images/checked.gif) no-repeat scroll 50% 50%,
+		-moz-linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* FF3.6+ */
+	background: url(/images/checked.gif) no-repeat scroll 50% 50%,
+		-webkit-gradient(linear, left top, left bottom, color-stop(0%, #eeeeee),
+		color-stop(100%, #cccccc) ); /* Chrome,Safari4+ */
+	background: url(/images/checked.gif) no-repeat scroll 50% 50%,
+		-webkit-linear-gradient(top, #eeeeee 0%, #cccccc 100%);
+	/* Chrome10+,Safari5.1+ */
+	background: url(/images/checked.gif) no-repeat scroll 50% 50%,
+		-o-linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* Opera11.10+ */
+	background: url(/images/checked.gif) no-repeat scroll 50% 50%,
+		-ms-linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* IE10+ */
+	filter: progid:  DXImageTransform.Microsoft.gradient(  startColorstr=  '#eeeeee',
+		endColorstr=  '#cccccc', GradientType=  0 );
+	/* IE6-9 */
+	background: linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* W3C */
+	border: 1px solid #999999;
+}
+
+.columnSquare.count.complete {
+	background: url(/images/checked.gif) no-repeat scroll 50% 50%;
+	/* Old browsers */
+	background: url(/images/checked.gif) no-repeat scroll 50% 50%,
+		-moz-linear-gradient(top, #e5e696 0%, #d1d360 100%); /* FF3.6+ */
+	background: url(/images/checked.gif) no-repeat scroll 50% 50%,
+		-webkit-gradient(linear, left top, left bottom, color-stop(0%, #e5e696),
+		color-stop(100%, #d1d360) ); /* Chrome,Safari4+ */
+	background: url(/images/checked.gif) no-repeat scroll 50% 50%,
+		-webkit-linear-gradient(top, #e5e696 0%, #d1d360 100%);
+	/* Chrome10+,Safari5.1+ */
+	background: url(/images/checked.gif) no-repeat scroll 50% 50%,
+		-o-linear-gradient(top, #e5e696 0%, #d1d360 100%); /* Opera11.10+ */
+	background: url(/images/checked.gif) no-repeat scroll 50% 50%,
+		-ms-linear-gradient(top, #e5e696 0%, #d1d360 100%); /* IE10+ */
+	filter: progid:  DXImageTransform.Microsoft.gradient(  startColorstr=  '#e5e696',
+		endColorstr=  '#d1d360', GradientType=  0 );
+	/* IE6-9 */
+	background: url(/images/checked.gif) no-repeat scroll 50% 50%,
+		linear-gradient(top, #e5e696 0%, #d1d360 100%); /* W3C */;
+	border: 1px solid #999999;
+}
+
+.columnSquare.measurement.complete {
+	background: url(/images/checked.gif) no-repeat scroll 50% 50%;
+	/* Old browsers */
+	background: url(/images/checked.gif) no-repeat scroll 50% 50%,
+		-moz-linear-gradient(top, #deefff 0%, #98bede 100%); /* FF3.6+ */
+	background: url(/images/checked.gif) no-repeat scroll 50% 50%,
+		-webkit-gradient(linear, left top, left bottom, color-stop(0%, #deefff),
+		color-stop(100%, #98bede) ); /* Chrome,Safari4+ */
+	background: url(/images/checked.gif) no-repeat scroll 50% 50%,
+		-webkit-linear-gradient(top, #deefff 0%, #98bede 100%);
+	/* Chrome10+,Safari5.1+ */
+	background: url(/images/checked.gif) no-repeat scroll 50% 50%,
+		-o-linear-gradient(top, #deefff 0%, #98bede 100%); /* Opera11.10+ */
+	background: url(/images/checked.gif) no-repeat scroll 50% 50%,
+		-ms-linear-gradient(top, #deefff 0%, #98bede 100%); /* IE10+ */
+	filter: progid:  DXImageTransform.Microsoft.gradient(  startColorstr=  '#deefff',
+		endColorstr=  '#98bede', GradientType=  0 );
+	/* IE6-9 */
+	background: url(/images/checked.gif) no-repeat scroll 50% 50%,
+		linear-gradient(top, #deefff 0%, #98bede 100%); /* W3C */
+	border: 1px solid #999999;
+}
+
+.columnSquare.integration.complete {
+	background: url(/images/checked.gif) no-repeat scroll 50% 50%;
+	/* Old browsers */
+	background: url(/images/checked.gif) no-repeat scroll 50% 50%,
+		-moz-linear-gradient(top, #e4efc0 0%, #abbd73 100%); /* FF3.6+ */
+	background: url(/images/checked.gif) no-repeat scroll 50% 50%,
+		-webkit-gradient(linear, left top, left bottom, color-stop(0%, #e4efc0),
+		color-stop(100%, #abbd73) ); /* Chrome,Safari4+ */
+	background: url(/images/checked.gif) no-repeat scroll 50% 50%,
+		-webkit-linear-gradient(top, #e4efc0 0%, #abbd73 100%);
+	/* Chrome10+,Safari5.1+ */
+	background: url(/images/checked.gif) no-repeat scroll 50% 50%,
+		-o-linear-gradient(top, #e4efc0 0%, #abbd73 100%); /* Opera11.10+ */
+	background: url(/images/checked.gif) no-repeat scroll 50% 50%,
+		-ms-linear-gradient(top, #e4efc0 0%, #abbd73 100%); /* IE10+ */
+	filter: progid:  DXImageTransform.Microsoft.gradient(  startColorstr=  '#e4efc0',
+		endColorstr=  '#abbd73', GradientType=  0 );
+	/* IE6-9 */
+	background: url(/images/checked.gif) no-repeat scroll 50% 50%,
+		linear-gradient(top, #e4efc0 0%, #abbd73 100%); /* W3C */;
+	border: 1px solid #999999;
+}
+
+.columnSquare .complete {
+	background: url(/images/checked.gif) no-repeat scroll 50% 50%;
+	/* Old browsers */
+	background: url(/images/checked.gif) no-repeat scroll 50% 50%, #888888;
+	background: linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* W3C */
+	border: 1px solid #999999;
+}
+
+.columnSquare.coded.invalid {
+	background: url(/images/unchecked.gif) no-repeat scroll 50% 50%;
+	/* Old browsers */
+	background: url(/images/unchecked.gif) no-repeat scroll 50% 50%,
+		-moz-linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* FF3.6+ */
+	background: url(/images/unchecked.gif) no-repeat scroll 50% 50%,
+		-webkit-gradient(linear, left top, left bottom, color-stop(0%, #eeeeee),
+		color-stop(100%, #cccccc) ); /* Chrome,Safari4+ */
+	background: url(/images/unchecked.gif) no-repeat scroll 50% 50%,
+		-webkit-linear-gradient(top, #eeeeee 0%, #cccccc 100%);
+	/* Chrome10+,Safari5.1+ */
+	background: url(/images/unchecked.gif) no-repeat scroll 50% 50%,
+		-o-linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* Opera11.10+ */
+	background: url(/images/unchecked.gif) no-repeat scroll 50% 50%,
+		-ms-linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* IE10+ */
+	filter: progid:  DXImageTransform.Microsoft.gradient(  startColorstr=  '#eeeeee',
+		endColorstr=  '#cccccc', GradientType=  0 );
+	/* IE6-9 */
+	background: linear-gradient(top, #eeeeee 0%, #cccccc 100%); /* W3C */
+	border: 1px solid #999999;
+}
+
+.columnSquare.mapped {
+	background: #8b755e;
+}
+
+.columnSquare.count.invalid {
+	background: url(/images/unchecked.gif) no-repeat scroll 50% 50%;
+	/* Old browsers */
+	background: url(/images/unchecked.gif) no-repeat scroll 50% 50%,
+		-moz-linear-gradient(top, #e5e696 0%, #d1d360 100%); /* FF3.6+ */
+	background: url(/images/unchecked.gif) no-repeat scroll 50% 50%,
+		-webkit-gradient(linear, left top, left bottom, color-stop(0%, #e5e696),
+		color-stop(100%, #d1d360) ); /* Chrome,Safari4+ */
+	background: url(/images/unchecked.gif) no-repeat scroll 50% 50%,
+		-webkit-linear-gradient(top, #e5e696 0%, #d1d360 100%);
+	/* Chrome10+,Safari5.1+ */
+	background: url(/images/unchecked.gif) no-repeat scroll 50% 50%,
+		-o-linear-gradient(top, #e5e696 0%, #d1d360 100%); /* Opera11.10+ */
+	background: url(/images/unchecked.gif) no-repeat scroll 50% 50%,
+		-ms-linear-gradient(top, #e5e696 0%, #d1d360 100%); /* IE10+ */
+	filter: progid:  DXImageTransform.Microsoft.gradient(  startColorstr=  '#e5e696',
+		endColorstr=  '#d1d360', GradientType=  0 );
+	/* IE6-9 */
+	background: url(/images/unchecked.gif) no-repeat scroll 50% 50%,
+		linear-gradient(top, #e5e696 0%, #d1d360 100%); /* W3C */;
+	border: 1px solid #999999;
+}
+
+.columnSquare.measurement.invalid {
+	background: url(/images/unchecked.gif) no-repeat scroll 50% 50%;
+	/* Old browsers */
+	background: url(/images/unchecked.gif) no-repeat scroll 50% 50%,
+		-moz-linear-gradient(top, #deefff 0%, #98bede 100%); /* FF3.6+ */
+	background: url(/images/unchecked.gif) no-repeat scroll 50% 50%,
+		-webkit-gradient(linear, left top, left bottom, color-stop(0%, #deefff),
+		color-stop(100%, #98bede) ); /* Chrome,Safari4+ */
+	background: url(/images/unchecked.gif) no-repeat scroll 50% 50%,
+		-webkit-linear-gradient(top, #deefff 0%, #98bede 100%);
+	/* Chrome10+,Safari5.1+ */
+	background: url(/images/unchecked.gif) no-repeat scroll 50% 50%,
+		-o-linear-gradient(top, #deefff 0%, #98bede 100%); /* Opera11.10+ */
+	background: url(/images/unchecked.gif) no-repeat scroll 50% 50%,
+		-ms-linear-gradient(top, #deefff 0%, #98bede 100%); /* IE10+ */
+	filter: progid:  DXImageTransform.Microsoft.gradient(  startColorstr=  '#deefff',
+		endColorstr=  '#98bede', GradientType=  0 );
+	/* IE6-9 */
+	background: url(/images/unchecked.gif) no-repeat scroll 50% 50%,
+		linear-gradient(top, #deefff 0%, #98bede 100%); /* W3C */
+	border: 1px solid #999999;
+}
+
+.columnSquare.integration.invalid {
+	background: url(/images/unchecked.gif) no-repeat scroll 50% 50%;
+	/* Old browsers */
+	background: url(/images/unchecked.gif) no-repeat scroll 50% 50%,
+		-moz-linear-gradient(top, #e4efc0 0%, #abbd73 100%); /* FF3.6+ */
+	background: url(/images/unchecked.gif) no-repeat scroll 50% 50%,
+		-webkit-gradient(linear, left top, left bottom, color-stop(0%, #e4efc0),
+		color-stop(100%, #abbd73) ); /* Chrome,Safari4+ */
+	background: url(/images/unchecked.gif) no-repeat scroll 50% 50%,
+		-webkit-linear-gradient(top, #e4efc0 0%, #abbd73 100%);
+	/* Chrome10+,Safari5.1+ */
+	background: url(/images/unchecked.gif) no-repeat scroll 50% 50%,
+		-o-linear-gradient(top, #e4efc0 0%, #abbd73 100%); /* Opera11.10+ */
+	background: url(/images/unchecked.gif) no-repeat scroll 50% 50%,
+		-ms-linear-gradient(top, #e4efc0 0%, #abbd73 100%); /* IE10+ */
+	filter: progid:  DXImageTransform.Microsoft.gradient(  startColorstr=  '#e4efc0',
+		endColorstr=  '#abbd73', GradientType=  0 );
+	/* IE6-9 */
+	background: url(/images/unchecked.gif) no-repeat scroll 50% 50%,
+		linear-gradient(top, #e4efc0 0%, #abbd73 100%); /* W3C */;
+	border: 1px solid #999999;
+}
+
+.columnSquare.invalid {
+	background: url(/images/unchecked.gif) no-repeat scroll 50% 50%;
+	/* Old browsers */
+	border: 1px solid #999999;
+}
+
+.mappingInfo label {
+	position: static;
+}
+
+.mappingInfo input {
+	margin-left: 1em;
+}
+
+.mappingInfo input[type="checkbox"] {
+	margin-left: 1em;
+}
+
+.buttontable {
+	border-spacing: 0px;
+	border: 1px solid #CCC;
+}
+
+.buttontable .columnName {
+	font-weight: bold !important;
+}
+
+.buttontable .ontology {
+	font-weight: normal !important;
+}
+
+#drplist button {
+	font-size: 80%;
+}
+
+#drplist td div {
+	position: relative !important;
+	border-bottom: 1px solid #AEAEAE;
+	/*    height: 3.2em; */
+}
+
+.short .columnName {
+	width: 100px;
+	overflow: hidden;
+}
+
+.short button {
+	visibility: hidden;
+}
+
+.short .ontology {
+	display: none;
+}
+
+.tableContainer {
+	background-color: #BEBEBE;
+}
+
+.bullet+.bullet::before {
+	content: "\002022  "
+}
+
+#project-list .dataTables_wrapper { /*    width: 700px */
+	
+}
+
+#home .form-actions {
+	border: none;
+	background-color: transparent
+}
+
+.inline-controls .controls {
+	margin: 0px !important;
+}
+
+
+/* TODO: this is breaking the dataset.edit page.  My hunch is that this was meant to counteract a section that is indented too far to the right.  I'm guessing
+   the root problem is a grid-size div that is not inside of a .row element.   If so, remove this this rule entirely.  otherwise, identify the specific areas that
+   need this workaround and give them unique class name so we dont over-select which elements get move over */
+/*
+body.edit article.span9>div,body.edit article.span9>form {
+	margin-left: -40px;
+}
+*/
+
+table.repeatLastRow {
+	margin-bottom: -20px;
+}
+
+body.edit h2 {
+	margin-top: 3em;
+}
+
+.tableFormat a.title {
+	font-weight: 600;
+	font-size: 16px;
+}
+
+.down-arrow {
+	border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+	border-top: 5px solid #555;
+	display: inline;
+	cursor: pointer;
+	cursor: hand;
+	position: relative;
+	left: 700px;
+	top: -32px;
+}
+
+.popover h2 {
+	font-size: 13pt;
+	font-weight: 500;
+	line-height: 1pt !important;
+	margin-top: 15px !important;
+	padding: 0px !important;
+}
+
+.popover {
+	width: 500px;
+}
+
+h3.popover-title {
+	margin-top: 0px;
+}
+
+.GRID .resourceLink {
+	font-size: 14px;
+}
+
+.control-label {
+	font-weight: bold;
+}
+
+ol.MAP {
+	margin-left: 1.2em !important;
+}
+
+ol.MAP .listItemPart {
+	visibility: hidden;
+	display: none;
+}
+
+.MAP h3 {
+	font-size: 14px !important;
+}
+
+.showcase-content-container { /*    margin-left: -2px !important; */
+	
+}
+
+.resource-nav.navbar-static li  a {
+	padding-left: 15px !important;
+	padding-right: 15px !important;
+	background-image: none !important;
+}
+
+.navbar-static.affix {
+	width: 100% !important;
+	left: 0px !important;
+}
+
+.subnavbar.resource-nav {
+	margin: -3px 5px 25px 5px !important;
+}
+
+#fakeSubmitButton {
+	margin-top: 5px;
+}
+
+.slider .carousel-inner .item {
+	height: 310px !important;
+	margin-left: 80px;
+	margin-right: 80px;
+	margin-top: auto;
+	margin-bottom: auto;
+}
+
+.no-indent {
+	margin-left: 0px !important;
+}
+
+/* this should not be necessary */
+label.help-inline[generated="true"] {
+	display: none;
+	visibility: hidden;
+}
+
+/*FIXME: we are doing this hack because the contents of the left-pane can't fit in a .span9  (view page and edit page)  */
+/* see TDAR-2634, remove this css rule when ticket closed */
+article+aside.span3>div {
+	margin-left: 40px !important;
+	/*    float: right; */
+}
+
+/* Normally I like the default bootstrap styles... but hot pink for CODE tags?  Really? */
+code {
+	color: navy;
+}
+
+.horizontal-rule {
+	border-bottom: solid black 1px;
+}
+
+aside.tdar-icon:before {
+	margin: 0 5px 0 0;
+}
+
+.responsive-large-desktop i.document-bg-large {
+	background: url(/images/r4/resource-types-large.gif) 0px 0px no-repeat;
+	width: 230px;
+	height: 230px;
+	display: inline-block;
+}
+
+.responsive-large-desktop i.dataset-bg-large {
+	background: url(/images/r4/resource-types-large.gif) 0px -245px
+		no-repeat;
+	width: 230px;
+	height: 230px;
+	display: inline-block;
+}
+
+.responsive-large-desktop i.coding_sheet-bg-large {
+	background: url(/images/r4/resource-types-large.gif) 0px -491px
+		no-repeat;
+	width: 230px;
+	height: 230px;
+	display: inline-block;
+}
+
+.responsive-large-desktop i.ontology-bg-large {
+	background: url(/images/r4/resource-types-large.gif) 0px -736px
+		no-repeat;
+	width: 230px;
+	height: 230px;
+	display: inline-block;
+}
+
+.responsive-large-desktop i.geospatial-bg-large {
+	background: url(/images/r4/resource-types-large.gif) 0px -982px
+		no-repeat;
+	width: 230px;
+	height: 230px;
+	display: inline-block;
+}
+
+.responsive-large-desktop i.sensory_data-bg-large {
+	background: url(/images/r4/resource-types-large.gif) 0px -1227px
+		no-repeat;
+	width: 230px;
+	height: 230px;
+	display: inline-block;
+}
+
+.responsive-large-desktop i.image-bg-large {
+	background: url(/images/r4/resource-types-large.gif) 0px -1964px
+		no-repeat;
+	width: 230px;
+	height: 230px;
+	display: inline-block;
+}
+
+.responsive-large-desktop i.video-bg-large {
+	background: url(/images/r4/resource-types-large.gif) 0px -1473px
+		no-repeat;
+	width: 230px;
+	height: 230px;
+	display: inline-block;
+}
+
+.responsive-large-desktop i.collection-bg-large {
+	background: url(/images/r4/resource-types-large.gif) 0px -1719px
+		no-repeat;
+	width: 230px;
+	height: 230px;
+	display: inline-block;
+}
+
+.responsive-large-desktop i.project-bg-large {
+	background: url(/images/r4/resource-types-large.gif) 0px -2200px
+		no-repeat;
+	width: 230px;
+	height: 230px;
+	display: inline-block;
+}
+
+.responsive-desktop i.document-bg-large {
+	background: url(/images/r4/resource-types-large.gif) -299px 0px
+		no-repeat;
+	width: 180px;
+	height: 180px;
+	display: inline-block;
+}
+
+.responsive-desktop i.dataset-bg-large {
+	background: url(/images/r4/resource-types-large.gif) -299px -245px
+		no-repeat;
+	width: 180px;
+	height: 180px;
+	display: inline-block;
+}
+
+.responsive-desktop i.coding_sheet-bg-large {
+	background: url(/images/r4/resource-types-large.gif) -299px -491px
+		no-repeat;
+	width: 180px;
+	height: 180px;
+	display: inline-block;
+}
+
+.responsive-desktop i.ontology-bg-large {
+	background: url(/images/r4/resource-types-large.gif) -299px -736px
+		no-repeat;
+	width: 180px;
+	height: 180px;
+	display: inline-block;
+}
+
+.responsive-desktop i.geospatial-bg-large {
+	background: url(/images/r4/resource-types-large.gif) -299px -982px
+		no-repeat;
+	width: 180px;
+	height: 180px;
+	display: inline-block;
+}
+
+.responsive-desktop i.sensory_data-bg-large {
+	background: url(/images/r4/resource-types-large.gif) -299px -1227px
+		no-repeat;
+	width: 180px;
+	height: 180px;
+	display: inline-block;
+}
+
+.responsive-desktop i.image-bg-large {
+	background: url(/images/r4/resource-types-large.gif) -299px -1964px
+		no-repeat;
+	width: 180px;
+	height: 180px;
+	display: inline-block;
+}
+
+.responsive-desktop i.video-bg-large {
+	background: url(/images/r4/resource-types-large.gif) -299px -1473px
+		no-repeat;
+	width: 180px;
+	height: 180px;
+	display: inline-block;
+}
+
+.responsive-desktop i.collection-bg-large {
+	background: url(/images/r4/resource-types-large.gif) -299px -1719px
+		no-repeat;
+	width: 180px;
+	height: 180px;
+	display: inline-block;
+}
+
+.responsive-desktop i.project-bg-large {
+	background: url(/images/r4/resource-types-large.gif) -299px -2210px
+		no-repeat;
+	width: 180px;
+	height: 180px;
+	display: inline-block;
+}
+
+.responsive-tablet i.document-bg-large,i.document-125 {
+	background: url(/images/r4/resource-types-large.gif) -548px 0px
+		no-repeat;
+	width: 125px;
+	height: 125px;
+	display: inline-block;
+}
+
+.responsive-tablet i.dataset-bg-large,i.dataset-125 {
+	background: url(/images/r4/resource-types-large.gif) -548px -245px
+		no-repeat;
+	width: 125px;
+	height: 125px;
+	display: inline-block;
+}
+
+.responsive-tablet i.coding_sheet-bg-large,i.coding_sheet-125 {
+	background: url(/images/r4/resource-types-large.gif) -548px -491px
+		no-repeat;
+	width: 125px;
+	height: 125px;
+	display: inline-block;
+}
+
+.responsive-tablet i.ontology-bg-large,i.ontology-125 {
+	background: url(/images/r4/resource-types-large.gif) -548px -736px
+		no-repeat;
+	width: 125px;
+	height: 125px;
+	display: inline-block;
+}
+
+.responsive-tablet i.geospatial-bg-large,i.geospatial-125 {
+	background: url(/images/r4/resource-types-large.gif) -548px -982px
+		no-repeat;
+	width: 125px;
+	height: 125px;
+	display: inline-block;
+}
+
+.responsive-tablet i.sensory_data-bg-large,i.sensory_data-125 {
+	background: url(/images/r4/resource-types-large.gif) -548px -1227px
+		no-repeat;
+	width: 125px;
+	height: 125px;
+	display: inline-block;
+}
+
+.responsive-tablet i.image-bg-large,i.image-125 {
+	background: url(/images/r4/resource-types-large.gif) -548px -1964px
+		no-repeat;
+	width: 125px;
+	height: 125px;
+	display: inline-block;
+}
+
+.responsive-tablet i.video-bg-large,i.video-125 {
+	background: url(/images/r4/resource-types-large.gif) -548px -1473px
+		no-repeat;
+	width: 125px;
+	height: 125px;
+	display: inline-block;
+}
+
+.responsive-tablet i.collection-bg-large,i.collection-125 {
+	background: url(/images/r4/resource-types-large.gif) -548px -1719px
+		no-repeat;
+	width: 125px;
+	height: 125px;
+	display: inline-block;
+}
+
+.responsive-tablet i.project-bg-large,i.project-125 {
+	background: url(/images/r4/resource-types-large.gif) -548px -2210px
+		no-repeat;
+	width: 125px;
+	height: 125px;
+	display: inline-block;
+}
+
+.search-map-icon-red {
+	background: url(/images/r4/resource-types-large.gif) -75px -2531px
+		no-repeat;
+	width: 14px;
+	height: 14px;
+	display: inline-block;
+}
+
+.search-grid-icon-red {
+	background: url(/images/r4/resource-types-large.gif) -91px -2531px
+		no-repeat;
+	width: 14px;
+	height: 14px;
+	display: inline-block;
+}
+
+.search-download-icon-red {
+	background: url(/images/r4/resource-types-large.gif) -58px -2531px
+		no-repeat;
+	width: 14px;
+	height: 14px;
+	display: inline-block;
+}
+
+.search-magnify-icon-red {
+	background: url(/images/r4/resource-types-large.gif) -40px -2531px
+		no-repeat;
+	width: 14px;
+	height: 14px;
+	display: inline-block;
+}
+
+.search-list-icon-red {
+	background: url(/images/r4/resource-types-large.gif) -124px -2531px
+		no-repeat;
+	width: 14px;
+	height: 14px;
+	display: inline-block;
+}
+
+.search-list-checkbox-grey {
+	background: url(/images/r4/resource-types-large.gif) -30px -2564px
+		no-repeat;
+	width: 14px;
+	height: 13.5px;
+	display: inline-block;
+}
+
+.search-list-checkedbox-grey {
+	background: url(/images/r4/resource-types-large.gif) -30px -2578px
+		no-repeat;
+	width: 14px;
+	margin-bottom: -2px;
+	height: 14px;
+	display: inline-block;
+}
+
+h3.document-mid-red::before {
+	background: url(/images/r4/tdar-sprites.gif) -471px -487px no-repeat;
+	display: inline-block;
+	width: 34px;
+	height: 37px;
+	content: "";
+	margin-bottom: -2px;
+}
+
+h3.dataset-mid-red::before {
+	background: url(/images/r4/tdar-sprites.gif) -508px -487px no-repeat;
+	display: inline-block;
+	width: 34px;
+	height: 37px;
+	content: "";
+	margin-bottom: -2px;
+}
+
+h3.coding_sheet-mid-red::before {
+	background: url(/images/r4/tdar-sprites.gif) -547px -487px no-repeat;
+	display: inline-block;
+	width: 34px;
+	height: 37px;
+	content: "";
+	margin-bottom: -2px;
+}
+
+h3.ontology-mid-red::before {
+	background: url(/images/r4/tdar-sprites.gif) -585px -487px no-repeat;
+	display: inline-block;
+	width: 34px;
+	height: 37px;
+	content: "";
+	margin-bottom: -2px;
+}
+
+h3.image-mid-red::before {
+	background: url(/images/r4/tdar-sprites.gif) -703px -487px no-repeat;
+	display: inline-block;
+	width: 34px;
+	height: 37px;
+	content: "";
+	margin-bottom: -2px;
+}
+
+h3.video-mid-red::before {
+	background: url(/images/r4/tdar-sprites.gif) -745px -487px no-repeat;
+	display: inline-block;
+	width: 34px;
+	height: 37px;
+	content: "";
+	margin-bottom: -2px;
+}
+
+h3.sensory_data-mid-red::before {
+	background: url(/images/r4/tdar-sprites.gif) -665px -487px no-repeat;
+	display: inline-block;
+	width: 34px;
+	height: 37px;
+	content: "";
+	margin-bottom: -2px;
+}
+
+h3.geospatial-mid-red::before {
+	background: url(/images/r4/tdar-sprites.gif) -623px -487px no-repeat;
+	display: inline-block;
+	width: 34px;
+	height: 37px;
+	content: "";
+	margin-bottom: -2px;
+}
+
+h3.project-mid-red::before {
+	background: url(/images/r4/tdar-sprites.gif) -825px -487px no-repeat;
+	display: inline-block;
+	width: 34px;
+	height: 37px;
+	content: "";
+	margin-bottom: -2px;
+}
+
+h3.collection-mid-red::before {
+	background: url(/images/r4/tdar-sprites.gif) -781px -487px no-repeat;
+	display: inline-block;
+	width: 40px;
+	height: 37px;
+	content: "";
+	margin-bottom: -2px;
+}
+
+.small {
+	font-size: 70%;
+}
+
+.rotate--90 {
+	-webkit-transform: rotate(-90deg);
+	transform: rotate(-90deg);
+	-moz-transform: rotate(-90deg);
+	-ms-transform: rotate(-90deg);
+	-o-transform: rotate(-90deg);
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2 );
+}
+
+.rotate-90 {
+	-webkit-transform: rotate(90deg);
+	transform: rotate(90deg);
+	-moz-transform: rotate(90deg);
+	-ms-transform: rotate(90deg);
+	-o-transform: rotate(90deg);
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=4 );
+}
+
+.adminbox {
+	left: -12px;
+	background: lightBlue;
+	margin: 0px;
+	padding: 10px;
+	font-weight: 700;
+}
+
+.resizable.resize-vertical {
+	resize: vertical;
+}
+
+.showcase-button-wrapper {
+	visibility: hidden;
+	display: none;
+}
+
+/* counter-acting ff's rendering of right-aligned elements in labels */
+select.searchType {
+	text-align: left !important;
+}
+
+.sort+.dbl {
+	margin-top: 2px !important;
+}
+
+.icon-document {
+	background: url(/images/r4/resource-types-large.gif) -296px -2477px
+		no-repeat;
+	width: 14px;
+	height: 15px;
+	display: inline-block;
+}
+
+.icon-dataset {
+	background: url(/images/r4/resource-types-large.gif) -344px -2477px
+		no-repeat;
+	width: 14px;
+	height: 14px;
+	display: inline-block;
+}
+
+.icon-image {
+	background: url(/images/r4/resource-types-large.gif) -326px -2477px
+		no-repeat;
+	width: 14px;
+	height: 14px;
+	display: inline-block;
+}
+
+.icon-codingsheet {
+	background: url(/images/r4/resource-types-large.gif) -361px -2475px
+		no-repeat;
+	width: 14px;
+	margin-top: -1px;
+	height: 14px;
+	display: inline-block;
+}
+
+.icon-project {
+	background: url(/images/r4/resource-types-large.gif) -398px -2474px
+		no-repeat;
+	width: 14px;
+	height: 16px;
+	margin-top: -1px;
+	display: inline-block;
+}
+
+.icon-collection {
+	background: url(/images/r4/resource-types-large.gif) -447px -2477px
+		no-repeat;
+	width: 14px;
+	height: 14px;
+	display: inline-block;
+}
+
+.icon-geospatial {
+	background: url(/images/r4/resource-types-large.gif) -431px -2477px
+		no-repeat;
+	width: 14px;
+	height: 14px;
+	display: inline-block;
+}
+
+.icon-sensorydata {
+	background: url(/images/r4/resource-types-large.gif) -462px -2473px
+		no-repeat;
+	width: 14px;
+	height: 14px;
+	margin-top: -2px;
+	display: inline-block;
+}
+
+.icon-ontology {
+	background: url(/images/r4/resource-types-large.gif) -378px -2477px
+		no-repeat;
+	width: 14px;
+	height: 14px;
+	display: inline-block;
+}
+
+.icon-video {
+	background: url(/images/r4/resource-types-large.gif) -415px -2472px
+		no-repeat;
+	width: 14px;
+	height: 14px;
+	display: inline-block;
+}
+
+.piechart {
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+.silhouette {
+	width: 40px;
+	padding-right: 6px;
+}
+
+p.copyright-notice {
+	margin-top: 1em;
+}
+
+.barGraph {
+	position: relative;
+}
+
+.nowrap {
+	white-space: nowrap;
+}
+
+.popover h3,.popover h2 {
+	margin-top: 0px !important;
+	paddding: 10px 0px 10px 0px !important;
+}
+
+/* ensure proper spacing in view page metadata name/value pairs, and don't wrap in the middle */
+.cols p.meta span.name-value {
+	margin-right: 0.5em;
+	diaplay: inline-block;
+}
+
+.tdar-gmap-control button:disabled {
+	display: none;
+}
+
+/* bootstrap removes the input margin-bottom for horizontal forms (because control-group has a margn).  This messes up our datatable widget, so we put the margin
+    back in */
+.tdar-widget  input,.tdar-widget select,.tdar-widget textarea {
+	margin-bottom: 10px;
+}
+
+.tdar-widget label {
+	font-weight: bold;
+}
+
+/* ie8 hacks:begin */
+/* we disable responsive-layout in ie8, but we want to retain the following rules */
+.lt-ie9 .hidden {
+	display: none;
+	visibility: hidden;
+}
+
+.lt-ie9 .visible-phone,.lt-ie9 .visible-table,.lt-ie9 .hidden-desktop {
+	display: none !important;
+}
+
+.lt-ie9 .visible-desktop {
+	display: inherit !important;
+}
+
+/*FIXME: temp hack for TDAR-2634, remove when resolved */
+.lt-ie9 .span9 .form-horizontal fieldset {
+	width: 750px; /* normally 700px */
+}
+
+/*FIXME: temp hack for TDAR-2634, remove when resolved */
+.lt-ie9 .span9 .form-horizontal fieldset .input-xxlarge {
+	width: 500px; /* normally 530px */
+}
+
+/* .fade, fade.in transitions not supported in ie8 */
+.lt-ie9 .fade {
+	visibility: hidden;
+}
+
+.lt-ie9 .fade.in {
+	visibility: inherit !important;
+}
+
+/* ie8 hacks: end */
+.view-deleted-file {
+	background-color: #EDD87B;
+	text-decoration: line-through;
+	display: none;
+}
+
+.view-hidden-extra-files {
+	display:none;
+}
+
+/* contextual help styling - based off of 'downloads' box on view page */
+#notice {
+	font-family: 'ff-tisa-web-pro', serif;
+	background-color: #f0eeeb;
+}
+
+#notice h2 {
+	font-size: 15px;
+}
+
+#notice>h2 {
+	background-color: #DEDEDE;
+	padding: 10px;
+	line-height: inherit;
+	border-bottom: 1px solid #EEE;
+}
+
+#noticecontent {
+	color: #7d7a77;
+	padding: 0 10px 5px 10px;
+}
+
+/* undoing .cols p */
+#noticecontent p {
+	font-size: inherit;
+	font-weight: normal;
+}
+
+.link {
+	color: #4265A7;
+	font-weight: bold;
+}
+
+.link:hover {
+	cursor: pointer;
+	color: #993333;
+}
+
+.atlwdg-trigger.atlwdg-TOP {
+	z-index: 99999999 !important;
+}
+
+
+.pull-quote {
+	font-size: 20px;
+	line-height: 40px;
+	color: #999;
+}
+
+/*use in column-sized div to scale image if width exceeds parent width */
+img.responsive-image {
+    max-width: 100%;
+    height: auto;    
+}

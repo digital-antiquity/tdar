@@ -1,6 +1,5 @@
 package org.tdar.struts.action.resource;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -12,7 +11,6 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.sensory.ScannerTechnologyType;
@@ -45,10 +43,10 @@ public class SensoryDataController extends AbstractInformationResourceController
     @Override
     protected void loadCustomMetadata() {
         super.loadCustomMetadata();
-        sensoryDataScans = new ArrayList<SensoryDataScan>(getPersistable().getSensoryDataScans());
-        sensoryDataImages = new ArrayList<SensoryDataImage>(getPersistable().getSensoryDataImages());
-        Collections.sort(sensoryDataImages);
-        Collections.sort(sensoryDataScans);
+         sensoryDataScans = new ArrayList<SensoryDataScan>(getPersistable().getSensoryDataScans());
+         sensoryDataImages = new ArrayList<SensoryDataImage>(getPersistable().getSensoryDataImages());
+         Collections.sort(sensoryDataImages);
+         Collections.sort(sensoryDataScans);
     }
 
     /**
@@ -61,8 +59,7 @@ public class SensoryDataController extends AbstractInformationResourceController
         saveBasicResourceMetadata();
         saveInformationResourceProperties();
 
-        saveSensoryImages();
-        saveSensoryScans();
+        saveCustomMetadata();
 
         getGenericService().saveOrUpdate(sensoryData);
         handleUploadedFiles();
@@ -70,24 +67,14 @@ public class SensoryDataController extends AbstractInformationResourceController
         return SUCCESS;
     }
 
-    @Override
-    protected void processUploadedFiles(List<InformationResourceFile> uploadedFiles) throws IOException {
-        return;
-    }
-
-    // FIXME:this does not handle dupe records. at all.
-    private void saveSensoryImages() {
+    private void saveCustomMetadata() {
         Persistable.Sequence.applySequence(getSensoryDataImages());
         getResourceService().saveHasResources(getPersistable(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, getSensoryDataImages(),
-                getResource().getSensoryDataImages(), SensoryDataImage.class);
-
-    }
-
-    // FIXME:this does not handle dupe records. at all.
-    private void saveSensoryScans() {
+                getPersistable().getSensoryDataImages(), SensoryDataImage.class);
         Persistable.Sequence.applySequence(getSensoryDataScans());
         getResourceService().saveHasResources(getPersistable(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, getSensoryDataScans(),
                 getPersistable().getSensoryDataScans(), SensoryDataScan.class);
+
     }
 
     /**

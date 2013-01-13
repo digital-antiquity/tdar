@@ -18,6 +18,7 @@ public enum SearchFieldType implements HasLabel {
     COVERAGE_DATE_RADIOCARBON("coverageDates", SearchFieldGroup.BASIC_FIELDS, "RadioCarbon Dates", false),
     PROJECT("projects", SearchFieldGroup.BASIC_FIELDS, "Project", false),
     COLLECTION("collections", SearchFieldGroup.BASIC_FIELDS, "Collection", false),
+    FILENAME("filenames", SearchFieldGroup.BASIC_FIELDS, "File Name"),
 
     // freeform keywords
     FFK_GEOGRAPHIC("geographicKeywords", SearchFieldGroup.FREEFORM_KEYWORDS, "Geographic Keywords"),

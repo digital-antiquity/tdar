@@ -9,7 +9,6 @@ package org.tdar.core.service;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -18,15 +17,23 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.ReflectionTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,8 +45,15 @@ import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.core.type.filter.AssignableTypeFilter;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
+import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.util.bulkUpload.CellMetadata;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.utils.Pair;
+
+import com.opensymphony.xwork2.ActionInvocation;
+import com.opensymphony.xwork2.ActionProxy;
 
 /**
  * @author Adam Brin
@@ -152,20 +166,14 @@ public class ReflectionService {
      */
     @SuppressWarnings("unchecked")
     public <T> T callFieldGetter(Object obj, Field field) {
-        logger.debug("calling getter on: {} {} ", obj, field.getName());
+        // logger.debug("calling getter on: {} {} ", obj, field.getName());
+        logger.trace("{}", field.getDeclaringClass());
         Method method = ReflectionUtils.findMethod(field.getDeclaringClass(), generateGetterName(field));
         if (method.getReturnType() != Void.TYPE)
             try {
                 return (T) method.invoke(obj);
-            } catch (IllegalArgumentException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            } catch (Exception e) {
+                logger.debug("cannot call field getter:", e);
             }
         return null;
     }
@@ -175,20 +183,17 @@ public class ReflectionService {
      */
     public <T> void callFieldSetter(Object obj, Field field, T fieldValue) {
         String setterName = generateSetterName(field);
-        logger.debug("Calling {}.{}({})", new Object[] { field.getDeclaringClass().getSimpleName(), setterName, fieldValue.getClass().getSimpleName() });
+        String valClass = "null";
+        if (fieldValue != null) {
+            valClass = fieldValue.getClass().getSimpleName();
+        }
+        logger.debug("Calling {}.{}({})", new Object[] { field.getDeclaringClass().getSimpleName(), setterName, valClass });
         // here we assume that field's type is assignable from the fieldValue
         Method setter = ReflectionUtils.findMethod(field.getDeclaringClass(), setterName, field.getType());
         try {
             setter.invoke(obj, fieldValue);
-        } catch (IllegalArgumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.debug("cannot call field setter:", e);
         }
 
     }
@@ -226,7 +231,9 @@ public class ReflectionService {
     }
 
     public Class<Persistable> getMatchingClassForSimpleName(String name) throws NoSuchBeanDefinitionException, ClassNotFoundException {
+        logger.trace("scanning for: {}", name);
         scanForPersistables();
+        logger.trace("scanning in: {}", persistableLookup);
         return persistableLookup.get(name);
     }
 
@@ -252,10 +259,35 @@ public class ReflectionService {
 
     }
 
-    public static boolean classOrMethodContainsAnnotation(Method method, Class<? extends Annotation> annotationClass) {
+    public static boolean methodOrActionContainsAnnotation(ActionInvocation invocation, Class<? extends Annotation> annotationClass) throws SecurityException,
+            NoSuchMethodException {
+        Object action = invocation.getAction();
+        ActionProxy proxy = invocation.getProxy();
+        String methodName = proxy.getMethod();
+        Method method = action.getClass().getMethod(methodName);
+
+        if (methodName == null) {
+            methodName = "execute";
+        }
         Object class_ = AnnotationUtils.findAnnotation(method.getDeclaringClass(), annotationClass);
         Object method_ = AnnotationUtils.findAnnotation(method, annotationClass);
         return (class_ != null || method_ != null);
+    }
+
+    public static <C extends Annotation> C getAnnotationFromMethodOrClass(Method method, Class<C> annotationClass) {
+        C method_ = AnnotationUtils.findAnnotation(method, annotationClass);
+        if (method_ != null) {
+            return method_;
+        }
+        C class_ = AnnotationUtils.findAnnotation(method.getDeclaringClass(), annotationClass);
+        if (class_ != null) {
+            return class_;
+        }
+        return null;
+    }
+
+    public static boolean classOrMethodContainsAnnotation(Method method, Class<? extends Annotation> annotationClass) {
+        return getAnnotationFromMethodOrClass(method, annotationClass) != null;
     }
 
     public static Class<?>[] scanForAnnotation(Class<? extends Annotation>... annots) throws NoSuchBeanDefinitionException, ClassNotFoundException {
@@ -272,4 +304,189 @@ public class ReflectionService {
         }
         return toReturn.toArray(new Class<?>[0]);
     }
+
+    @SuppressWarnings("unchecked")
+    public List<Pair<Field, Class<? extends Persistable>>> findAllPersistableFields(Class<?> cls) {
+        List<Field> declaredFields = new ArrayList<Field>();
+        List<Pair<Field, Class<? extends Persistable>>> result = new ArrayList<Pair<Field, Class<? extends Persistable>>>();
+        // iterate up the package hierarchy
+        while (cls.getPackage().getName().startsWith("org.tdar.")) {
+            CollectionUtils.addAll(declaredFields, cls.getDeclaredFields());
+            cls = cls.getSuperclass();
+        }
+
+        for (Field field : declaredFields) {
+            Class<? extends Persistable> type = null;
+            // generic collections
+            if (java.lang.reflect.Modifier.isStatic(field.getModifiers()) || java.lang.reflect.Modifier.isTransient(field.getModifiers())
+                    || java.lang.reflect.Modifier.isFinal(field.getModifiers()))
+                continue;
+
+            if (Collection.class.isAssignableFrom(field.getType())) {
+                ParameterizedType stringListType = (ParameterizedType) field.getGenericType();
+                if (Persistable.class.isAssignableFrom((Class<? extends Persistable>) stringListType.getActualTypeArguments()[0])) {
+                    type = (Class<? extends Persistable>) stringListType.getActualTypeArguments()[0];
+                    logger.trace("\t -> {}", type); // class java.lang.String.
+                }
+            }
+            // singletons
+            if (Persistable.class.isAssignableFrom(field.getType())) {
+                type = (Class<? extends Persistable>) field.getType();
+                logger.trace("\t -> {}", type); // class java.lang.String.
+            }
+
+            // things to add
+            if (type != null) {
+                result.add(new Pair<Field, Class<? extends Persistable>>(field, type));
+            }
+        }
+        return result;
+    }
+
+    public LinkedHashSet<CellMetadata> findBulkAnnotationsOnClass(Class<?> class2) {
+        Stack<List<Class<?>>> classStack = new Stack<List<Class<?>>>();
+        return findBulkAnnotationsOnClass(class2, classStack, "");
+    }
+
+    public LinkedHashSet<CellMetadata> findBulkAnnotationsOnClass(Class<?> class2, Stack<List<Class<?>>> stack, String prefix) {
+        Class<BulkImportField> annotationToFind = BulkImportField.class;
+        LinkedHashSet<CellMetadata> set = new LinkedHashSet<CellMetadata>();
+        if (class2.getSuperclass() != Object.class) {
+            set.addAll(findBulkAnnotationsOnClass(class2.getSuperclass(), stack, prefix));
+        }
+
+        Field runMultiple = null;
+        List<Class<?>> runWith = new ArrayList<Class<?>>();
+        for (Field field : class2.getDeclaredFields()) {
+            BulkImportField annotation = field.getAnnotation(annotationToFind);
+            if (annotation != null && ArrayUtils.isNotEmpty(annotation.implementedSubclasses())) {
+                runWith.addAll(Arrays.asList(annotation.implementedSubclasses()));
+                runMultiple = field;
+            }
+        }
+        List<Class<?>> classList = new ArrayList<Class<?>>();
+        stack.add(classList);
+        classList.add(class2);
+
+        if (runMultiple == null) {
+            set.addAll(handleClassAnnotations(class2, stack, annotationToFind, null, null, prefix));
+        } else {
+            for (Class<?> runAs : runWith) {
+                classList.add(runAs);
+                set.addAll(handleClassAnnotations(class2, stack, annotationToFind, runAs, runMultiple, prefix));
+                classList.remove(runAs);
+            }
+        }
+        stack.remove(classList);
+        return set;
+    }
+
+    private LinkedHashSet<CellMetadata> handleClassAnnotations(Class<?> class2, Stack<List<Class<?>>> stack, Class<BulkImportField> annotationToFind,
+            Class<?> runAs, Field runAsField, String prefix) {
+        LinkedHashSet<CellMetadata> set = new LinkedHashSet<CellMetadata>();
+        for (Field field : class2.getDeclaredFields()) {
+            BulkImportField annotation = field.getAnnotation(annotationToFind);
+            if (prefix == null) {
+                prefix = "";
+            }
+            if (annotation != null) {
+                String fieldPrefix = prefix;
+                if (StringUtils.isNotBlank(annotation.label())) {
+                    fieldPrefix = StringUtils.trim( annotation.label());
+//                    fieldPrefix = fieldPrefix.trim();
+                }
+                
+                
+                Class<?> type = field.getType();
+                if (ObjectUtils.equals(field, runAsField)) {
+                    type = runAs;
+                    logger.trace(" ** overriding type with " + type.getSimpleName());
+                }
+                
+                if (Collection.class.isAssignableFrom(type)) 
+                // handle Collection private List<ResourceCreator> ...
+                {
+                    ParameterizedType stringListType = (ParameterizedType) field.getGenericType();
+                    Class<?> cls = (Class<?>) stringListType.getActualTypeArguments()[0];
+                    set.addAll(findBulkAnnotationsOnClass(cls, stack, fieldPrefix));
+                } 
+                // handle Singleton private Person owner ...
+                else if (Persistable.class.isAssignableFrom(type)) {
+                    set.addAll(findBulkAnnotationsOnClass(type, stack, fieldPrefix));
+                } 
+                // handle more primative fields private String ...
+                else {
+                    logger.trace("adding {} ({})", field, stack);
+                    if (!TdarConfiguration.getInstance().getCopyrightMandatory() && ObjectUtils.equals(annotation.label(), BulkImportField.COPYRIGHT_HOLDER)) {
+                        continue;
+                    }
+
+                    if (TdarConfiguration.getInstance().getLicenseEnabled() == false
+                            && (ObjectUtils.equals(field.getName(), "licenseType") || ObjectUtils.equals(field.getName(), "licenseText")))
+                        continue;
+                    set.add(new CellMetadata(field, annotation, class2, stack, prefix));
+
+                    // set.add(field);
+                }
+
+            }
+        }
+        return set;
+    }
+
+
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public void validateAndSetProperty(Object beanToProcess, String name, String value) {
+        try {
+            logger.trace("processing: " + beanToProcess + " - " + name + " --> " + value);
+            Class propertyType = PropertyUtils.getPropertyType(beanToProcess, name);
+
+            // handle types should we be testing column length?
+            if (propertyType.isEnum()) {
+                try {
+                    BeanUtils.setProperty(beanToProcess, name, Enum.valueOf(propertyType, value));
+                } catch (IllegalArgumentException e) {
+                    logger.debug("cannot set property:", e);
+                    throw new TdarRecoverableRuntimeException(value + " is not a valid value for the " + name + " field", e);
+                }
+            } else {
+                if (Integer.class.isAssignableFrom(propertyType)) {
+                    try {
+                        Double dbl = Double.valueOf(value);
+                        if (dbl == Math.floor(dbl)) {
+                            value = new Integer((int) Math.floor(dbl)).toString();
+                        }
+                    } catch (NumberFormatException nfe) {
+                        throw new TdarRecoverableRuntimeException("the field " + name + " is expecting an integer value, but found: " + value);
+                    }
+                }
+                if (Long.class.isAssignableFrom(propertyType)) {
+                    try {
+                        Double dbl = Double.valueOf(value);
+                        if (dbl == Math.floor(dbl)) {
+                            value = new Long((long) Math.floor(dbl)).toString();
+                        }
+                    } catch (NumberFormatException nfe) {
+                        throw new TdarRecoverableRuntimeException("the field " + name + " is expecting a big integer value, but found: " + value);
+                    }
+                }
+                if (Float.class.isAssignableFrom(propertyType)) {
+                    try {
+                        Float.parseFloat(value);
+                    } catch (NumberFormatException nfe) {
+                        throw new TdarRecoverableRuntimeException("the field " + name + " is expecting a floating point value (1.001), but found: " + value);
+                    }
+                }
+                BeanUtils.setProperty(beanToProcess, name, value);
+            }
+        } catch (Exception e1) {
+            if (e1 instanceof TdarRecoverableRuntimeException) {
+                throw (TdarRecoverableRuntimeException) e1;
+            }
+            logger.debug("error processing bulk upload: {}", e1);
+            throw new TdarRecoverableRuntimeException("an error occured when setting " + name + " to " + value, e1);
+        }
+    }
+
 }

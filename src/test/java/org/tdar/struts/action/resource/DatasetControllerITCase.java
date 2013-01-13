@@ -1,5 +1,11 @@
 package org.tdar.struts.action.resource;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -18,6 +24,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.Ontology;
@@ -29,8 +36,6 @@ import org.tdar.core.service.resource.DataTableService;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
-
-import static org.junit.Assert.*;
 
 /**
  * $Id$
@@ -55,6 +60,17 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
     @Before
     public void setUp() {
         controller = generateNewInitializedController(DatasetController.class);
+    }
+
+    @Test
+    @Rollback
+    public void test() {
+        Person p = genericService.find(Person.class, getUser().getId());
+        Dataset dataset = genericService.findRandom(Dataset.class, 1).get(0);
+        dataset.setTitle("test");
+        dataset.setSubmitter(p);
+        dataset.markUpdated(controller.getAuthenticatedUser());
+        genericService.merge(dataset);
     }
 
     @Test
@@ -86,7 +102,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
         int Tibia = -1;
         List<String> suggestedTibias = new ArrayList<String>();
         int i = 0;
-        
+
         for (String key : codingSheetController.getSuggestions().keySet()) {
             if (key.equals("Tibia")) {
                 Tibia = i;

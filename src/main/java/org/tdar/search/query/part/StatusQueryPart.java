@@ -11,8 +11,8 @@ import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.service.external.auth.InternalTdarRights;
-import org.tdar.core.service.external.auth.TdarGroup;
+import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.search.query.QueryFieldNames;
 
 public class StatusQueryPart extends FieldQueryPart<Status> {
@@ -30,7 +30,7 @@ public class StatusQueryPart extends FieldQueryPart<Status> {
     public String generateQueryString() {
         List<Status> localStatuses = new ArrayList<Status>(getFieldValues());
         QueryPartGroup draftSubgroup = new QueryPartGroup(Operator.AND);
-        if (!Persistable.Base.isNullOrTransient(getPerson()) && localStatuses.contains(Status.DRAFT)) {
+        if (Persistable.Base.isNotNullOrTransient(getPerson()) && localStatuses.contains(Status.DRAFT)) {
             draftSubgroup.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Status.DRAFT));
             QueryPartGroup permissionsSubgroup = new QueryPartGroup(Operator.OR);
             draftSubgroup.setOperator(Operator.AND);

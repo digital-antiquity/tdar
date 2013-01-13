@@ -1,7 +1,10 @@
 package org.tdar.struts.action;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,17 +14,21 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
-import org.apache.tools.ant.filters.StringInputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.exception.APIException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.ImportService;
+import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.PersonalFilestoreService;
+import org.tdar.core.service.XmlService;
 import org.tdar.struts.data.FileProxy;
 
 @SuppressWarnings("serial")
@@ -43,18 +50,43 @@ public class APIController extends AuthenticationAware.Base {
 
     @Autowired
     public ImportService importService;
+    @Autowired
+    public XmlService xmlService;
 
     // on the receiving end
     private List<String> processedFileNames;
+
+    private ObfuscationService obfuscationService;
 
     private Resource importedRecord;
     private String message;
     private List<String> confidentialFiles = new ArrayList<String>();
     private Long id;
+    private InputStream inputStream;
+
+    private Long accountId;
     public final static String msg_ = "%s is %s %s (%s): %s";
 
     private void logMessage(String action_, Class<?> cls, Long id_, String name_) {
         logger.info(String.format(msg_, getAuthenticatedUser().getEmail(), action_, cls.getSimpleName().toUpperCase(), id_, name_));
+    }
+
+    @Action(value = "view", results = {
+            @Result(name = SUCCESS, type = "stream", params = {
+                    "contentType", "text/xml", "inputName",
+                    "inputStream" })
+    })
+    public String view() throws Exception {
+        if (Persistable.Base.isNotNullOrTransient(getId())) {
+            Resource resource = getResourceService().find(getId());
+            if (!isAdministrator() && !getAuthenticationAndAuthorizationService().canEdit(getAuthenticatedUser(), resource)) {
+                obfuscationService.obfuscate(resource);
+            }
+            String xml = xmlService.convertToXML(resource);
+            setInputStream(new ByteArrayInputStream(xml.getBytes()));
+            return SUCCESS;
+        }
+        return INPUT;
     }
 
     @Action(value = "upload", results = {
@@ -71,29 +103,36 @@ public class APIController extends AuthenticationAware.Base {
         for (int i = 0; i < uploadFileFileName.size(); i++) {
             FileProxy proxy = new FileProxy(uploadFileFileName.get(i), uploadFile.get(i), VersionType.UPLOADED, FileAction.ADD);
             if (confidentialFiles.contains(uploadFileFileName.get(i))) {
-                proxy.setConfidential(true);
+                proxy.setRestriction(FileAccessRestriction.CONFIDENTIAL);
             }
             proxies.add(proxy);
         }
 
         try {
-            Resource loadedRecord = importService.loadXMLFile(new StringInputStream(getRecord()), getAuthenticatedUser(), proxies, projectId);
+            Resource incoming = (Resource) xmlService.parseXml(new StringReader(getRecord()));
+            // I don't know that this is "right"
+            initializeQuota(incoming);
+            Resource loadedRecord = importService.bringObjectOntoSession(incoming, getAuthenticatedUser(), proxies, projectId);
+            updateQuota(getGenericService().find(Account.class, getAccountId()), loadedRecord);
+
             setImportedRecord(loadedRecord);
             setId(loadedRecord.getId());
 
             logMessage("SAVING", loadedRecord.getClass(), loadedRecord.getId(), loadedRecord.getTitle());
+            message = "updated:" + loadedRecord.getId();
+            status = StatusCode.UPDATED.getResultName();
+            int statuscode = StatusCode.UPDATED.getHttpStatusCode();
             if (loadedRecord.isCreated()) {
                 status = StatusCode.CREATED.getResultName();
                 message = "created:" + loadedRecord.getId();
-                getServletResponse().setStatus(StatusCode.CREATED.getHttpStatusCode());
-                return SUCCESS;
+                statuscode = StatusCode.CREATED.getHttpStatusCode();
             }
-            status = StatusCode.UPDATED.getResultName();
-            getServletResponse().setStatus(StatusCode.UPDATED.getHttpStatusCode());
+
+            getServletResponse().setStatus(statuscode);
+            getResourceService().logResourceModification(loadedRecord, getAuthenticatedUser(), message + " " + loadedRecord.getTitle());
             return SUCCESS;
         } catch (Exception e) {
             getLogger().debug("an exception occured when processing the xml import", e);
-            e.printStackTrace();
             StringBuilder error = new StringBuilder();
             error.append(e.getMessage());
             error.append("\r\n");
@@ -212,6 +251,22 @@ public class APIController extends AuthenticationAware.Base {
 
     public void setConfidentialFiles(List<String> confidentialFiles) {
         this.confidentialFiles = confidentialFiles;
+    }
+
+    public Long getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(Long accountId) {
+        this.accountId = accountId;
+    }
+
+    public InputStream getInputStream() {
+        return inputStream;
+    }
+
+    public void setInputStream(InputStream inputStream) {
+        this.inputStream = inputStream;
     }
 
 }

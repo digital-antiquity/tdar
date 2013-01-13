@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -27,18 +27,18 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.hibernate.search.FullTextQuery;
-import org.hibernate.search.query.facet.Facet;
-import org.hibernate.search.query.facet.FacetSortOrder;
-import org.hibernate.search.query.facet.FacetingRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Creator.CreatorType;
+import org.tdar.core.bean.entity.Institution;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.keyword.CultureKeyword;
@@ -53,20 +53,29 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAccessType;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ExcelService;
 import org.tdar.core.service.RssService;
-import org.tdar.core.service.external.auth.InternalTdarRights;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
+import org.tdar.search.query.builder.InstitutionQueryBuilder;
+import org.tdar.search.query.builder.PersonQueryBuilder;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.GeneralSearchQueryPart;
+import org.tdar.search.query.part.InstitutionQueryPart;
+import org.tdar.search.query.part.PersonQueryPart;
+import org.tdar.search.query.part.PhraseFormatter;
 import org.tdar.search.query.part.QueryPartGroup;
+import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.data.KeywordNode;
+import org.tdar.struts.data.ResourceCreatorProxy;
+import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
 
 /**
  * Eventual replacement for LuceneSearchController. extending
@@ -80,9 +89,15 @@ import org.tdar.struts.data.KeywordNode;
 @Component
 @Scope("prototype")
 @ParentPackage("default")
-public class AdvancedSearchController extends
-        AbstractLookupController<Resource> {
+@HttpOnlyIfUnauthenticated
+public class AdvancedSearchController extends AbstractLookupController<Resource> {
 
+    private static final String SHOWING_ALL_RESOURCES = "Showing all resources";
+    private static final String TITLE_BEGINNING_WITH_S = "Title Beginning with %s";
+    private static final String CREATED_IN_THE_DECADE_S = "Created in the Decade: %s";
+    private static final String SOMETHING_HAPPENED_WITH_EXCEL_EXPORT = "something happened with excel export";
+    private static final String COULD_NOT_PROCESS_CREATOR_SEARCH = "could not process creator search";
+    private static final int MAX_CREATOR_RECORDS_TO_RESOLVE = 10;
     @Autowired
     private RssService rssService;
     @Autowired
@@ -97,6 +112,7 @@ public class AdvancedSearchController extends
     public static final String TITLE_BY_TDAR_ID = "Search by TDAR ID";
     public static final String TITLE_TAG_KEYWORD_PHRASE = "Referred Query from the Transatlantic Archaeology Gateway";
 
+    private DisplayOrientation orientation = DisplayOrientation.LIST;
     // error message of last resort. User entered something we did not
     // anticipate, and we ultimately translated it into query that lucene can't
     // parse
@@ -117,10 +133,10 @@ public class AdvancedSearchController extends
             .getOptionsForContext(Resource.class);
 
     // facet statistics for results.ftl
-    private List<ResourceType> resourceTypeFacets = new ArrayList<ResourceType>();
-    private List<DocumentType> documentTypeFacets = new ArrayList<DocumentType>();
-    private List<ResourceAccessType> fileAccessFacets = new ArrayList<ResourceAccessType>();
-    private List<IntegratableOptions> integratableOptionFacets = new ArrayList<IntegratableOptions>();
+    private ArrayList<ResourceType> resourceTypeFacets = new ArrayList<ResourceType>();
+    private ArrayList<DocumentType> documentTypeFacets = new ArrayList<DocumentType>();
+    private ArrayList<ResourceAccessType> fileAccessFacets = new ArrayList<ResourceAccessType>();
+    private ArrayList<IntegratableOptions> integratableOptionFacets = new ArrayList<IntegratableOptions>();
 
     // we plan to support some types of legacy requests. For example, the old
     // querystring format for id searches, basic search, and search by keyword
@@ -147,11 +163,13 @@ public class AdvancedSearchController extends
             @Result(name = "success", location = "results.ftl"),
             @Result(name = INPUT, location = "advanced.ftl") })
     public String search() {
-        if (explore)
-            exploreSearch();
-        boolean resetSearch = processLegacySearch();
-
+        setLookupSource(LookupSource.RESOURCE);
         try {
+            if (explore) {
+                return exploreSearch();
+            }
+            boolean resetSearch = processLegacySearch();
+
             if (StringUtils.isNotBlank(query) && !resetSearch) {
                 logger.trace("running basic search");
                 return basicSearch();
@@ -179,6 +197,34 @@ public class AdvancedSearchController extends
         }
     }
 
+    @Action(value = "institutions", results = {
+            @Result(name = "success", location = "results.ftl"),
+            @Result(name = INPUT, location = "advanced.ftl") })
+    public String searchInstitutions() {
+        setSortOptions(SortOption.getOptionsForContext(Institution.class));
+        setMinLookupLength(0);
+        try {
+            return findInstitution(getQuery());
+        } catch (TdarRecoverableRuntimeException trex) {
+            addActionError(trex.getMessage());
+            return INPUT;
+        }
+    }
+
+    @Action(value = "people", results = {
+            @Result(name = "success", location = "results.ftl"),
+            @Result(name = INPUT, location = "advanced.ftl") })
+    public String searchPeople() {
+        setSortOptions(SortOption.getOptionsForContext(Person.class));
+        setMinLookupLength(0);
+        try {
+            return findPerson(null, getQuery(), null, null, null, null);
+        } catch (TdarRecoverableRuntimeException trex) {
+            addActionError(trex.getMessage());
+            return INPUT;
+        }
+    }
+
     // FIXME: "explore" results belong in a separate controller.
     public String exploreSearch() {
         processExploreRequest();
@@ -187,6 +233,7 @@ public class AdvancedSearchController extends
     }
 
     private String collectionSearch() {
+        setLookupSource(LookupSource.COLLECTION);
         determineCollectionSearchTitle();
         QueryBuilder queryBuilder = new ResourceCollectionQueryBuilder();
         queryBuilder.setOperator(Operator.AND);
@@ -198,7 +245,7 @@ public class AdvancedSearchController extends
 
         QueryPartGroup qpg = new QueryPartGroup(Operator.OR);
         qpg.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_VISIBLE, "true"));
-        if (!Persistable.Base.isNullOrTransient(getAuthenticatedUser())) {
+        if (Persistable.Base.isNotNullOrTransient(getAuthenticatedUser())) {
             // if we're a "real user" and not an administrator -- make sure the user has view rights to things in the collection
             if (!getAuthenticationAndAuthorizationService().can(InternalTdarRights.VIEW_ANYTHING, getAuthenticatedUser())) {
                 qpg.append(new FieldQueryPart<Long>(QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW, getAuthenticatedUser().getId()));
@@ -224,8 +271,6 @@ public class AdvancedSearchController extends
             return INPUT;
         }
     }
-    
-    
 
     @Action(value = "rss", results = { @Result(name = "success", type = "stream", params = {
             "documentName", "rssFeed", "formatOutput", "true", "inputName",
@@ -306,6 +351,7 @@ public class AdvancedSearchController extends
 
         for (SearchParameters group : groups) {
             group.setExplore(explore);
+            updateResourceCreators(group);
             topLevelQueryPart.append(group.toQueryPartGroup());
         }
         queryBuilder.append(topLevelQueryPart);
@@ -328,6 +374,61 @@ public class AdvancedSearchController extends
             return INPUT;
         }
 
+    }
+
+    private void updateResourceCreators(SearchParameters group) {
+        Map<ResourceCreatorProxy, List<ResourceCreatorProxy>> replacements = new HashMap<ResourceCreatorProxy, List<ResourceCreatorProxy>>();
+        List<ResourceCreatorProxy> proxies = group.getResourceCreatorProxies();
+        for (ResourceCreatorProxy proxy : proxies) {
+            ResourceCreator rc = proxy.getResourceCreator();
+            if (rc != null && proxy.isValid()) {
+                ArrayList<ResourceCreatorProxy> values = new ArrayList<ResourceCreatorProxy>();
+                QueryBuilder q = null;
+                Creator creator = rc.getCreator();
+                if (Persistable.Base.isTransient(creator)) {
+                    replacements.put(proxy, values);
+                    if (creator instanceof Institution) {
+                        q = new InstitutionQueryBuilder();
+                        InstitutionQueryPart iqp = new InstitutionQueryPart();
+                        iqp.setPhraseFormatters(PhraseFormatter.WILDCARD, PhraseFormatter.QUOTED);
+                        iqp.add((Institution) creator);
+                        q.append(iqp);
+                    } else {
+                        q = new PersonQueryBuilder();
+                        PersonQueryPart pqp = new PersonQueryPart();
+                        pqp.setPhraseFormatters(PhraseFormatter.WILDCARD, PhraseFormatter.QUOTED);
+                        pqp.add((Person) creator);
+                        q.append(pqp);
+                    }
+
+                    q.append(new FieldQueryPart<Status>("status", Status.ACTIVE));
+                    List<Creator> list = null;
+                    try {
+                        FullTextQuery search = getSearchService().search(q, null);
+                        search.setMaxResults(MAX_CREATOR_RECORDS_TO_RESOLVE);
+                        list = search.list();
+                    } catch (Exception e) {
+                        logger.error("{} ", e);
+                        addActionError(COULD_NOT_PROCESS_CREATOR_SEARCH);
+                    }
+                    if (CollectionUtils.isNotEmpty(list)) {
+                        for (Creator c : (List<Creator>) list) {
+                            values.add(new ResourceCreatorProxy(c, rc.getRole()));
+                        }
+                    }
+                }
+            } else {
+                replacements.put(proxy, null);
+            }
+        }
+        for (ResourceCreatorProxy toReplace : replacements.keySet()) {
+            proxies.remove(toReplace);
+            List<ResourceCreatorProxy> values = replacements.get(toReplace);
+            if (CollectionUtils.isNotEmpty(values)) {
+                proxies.addAll(values);
+            }
+        }
+        logger.info("result: {} ", proxies);
     }
 
     private String basicSearch() {
@@ -356,7 +457,11 @@ public class AdvancedSearchController extends
 
     @Actions({
             @Action(value = "basic", results = { @Result(name = SUCCESS, location = "advanced.ftl") }),
-            @Action(value = "advanced") })
+            @Action(value = "advanced"),
+            @Action(value = "collection", results = { @Result(name = SUCCESS, location = "advanced.ftl") }),
+            @Action(value = "person", results = { @Result(name = SUCCESS, location = "advanced.ftl") }),
+            @Action(value = "institution", results = { @Result(name = SUCCESS, location = "advanced.ftl") })
+    })
     public String execute() {
         return SUCCESS;
     }
@@ -471,9 +576,8 @@ public class AdvancedSearchController extends
     public String getSearchPhrase() {
         StringBuilder sb = new StringBuilder();
         if (groups.isEmpty()) {
-            sb.append("Showing all resources");
+            sb.append(SHOWING_ALL_RESOURCES);
         } else {
-            sb.append("Searching for: ");
             String searchingFor = topLevelQueryPart.getDescription();
             sb.append(searchingFor);
         }
@@ -511,33 +615,17 @@ public class AdvancedSearchController extends
         return fileAccessFacets;
     }
 
-    private <C extends Enum<C> & Facetable> FacetingRequest facetOn(
-            String name, String field, FullTextQuery ftq, List<C> facetList,
-            Class<C> enumClass) {
-        FacetingRequest facetRequest = getSearchService()
-                .getQueryBuilder(Resource.class).facet().name(name)
-                .onField(field).discrete().orderedBy(FacetSortOrder.COUNT_DESC)
-                .includeZeroCounts(false).createFacetingRequest();
-
-        ftq.getFacetManager().enableFaceting(facetRequest);
-        for (Facet facet : ftq.getFacetManager().getFacets(name)) {
-            C enumVersion = (C) Enum.valueOf(enumClass, facet.getValue());
-            enumVersion.setCount(facet.getCount());
-            facetList.add(enumVersion);
-        }
-
-        return facetRequest;
-    }
-
+    @SuppressWarnings("rawtypes")
     @Override
-    public void addFacets(FullTextQuery ftq) {
-        facetOn(QueryFieldNames.RESOURCE_TYPE, QueryFieldNames.RESOURCE_TYPE,
-                ftq, resourceTypeFacets, ResourceType.class);
-        facetOn(QueryFieldNames.DOCUMENT_TYPE, QueryFieldNames.DOCUMENT_TYPE,
-                ftq, documentTypeFacets, DocumentType.class);
-        facetOn(QueryFieldNames.RESOURCE_ACCESS_TYPE,
-                QueryFieldNames.RESOURCE_ACCESS_TYPE, ftq, fileAccessFacets,
-                ResourceAccessType.class);
+    public List<FacetGroup<? extends Facetable>> getFacetFields() {
+        List<FacetGroup<?>> group = new ArrayList<FacetGroup<?>>();
+        group.add(new FacetGroup<ResourceType>(ResourceType.class, QueryFieldNames.RESOURCE_TYPE, resourceTypeFacets, ResourceType.DOCUMENT));
+        group.add(new FacetGroup<IntegratableOptions>(IntegratableOptions.class, QueryFieldNames.INTEGRATABLE, integratableOptionFacets,
+                IntegratableOptions.YES));
+        group.add(new FacetGroup<ResourceAccessType>(ResourceAccessType.class, QueryFieldNames.RESOURCE_ACCESS_TYPE, fileAccessFacets,
+                ResourceAccessType.CITATION));
+        group.add(new FacetGroup<DocumentType>(DocumentType.class, QueryFieldNames.DOCUMENT_TYPE, documentTypeFacets, DocumentType.BOOK));
+        return group;
     }
 
     // alias for faceted search.
@@ -605,20 +693,18 @@ public class AdvancedSearchController extends
             if (getExploreKeyword() != null) {
                 setSearchTitle(String.format("%s %s", TITLE_FILTERED_BY_KEYWORD, getExploreKeyword().getLabel()));
             } else if (StringUtils.isNotBlank(getFirstGroup().getStartingLetter())) {
-                setSearchTitle(String.format("Title Beginning with %s",
-                        getFirstGroup().getStartingLetter()));
+                setSearchTitle(String.format(TITLE_BEGINNING_WITH_S, getFirstGroup().getStartingLetter()));
                 // FIXME: only supports 1
             } else if (CollectionUtils.isNotEmpty(getFirstGroup().getCreationDecades())) {
-                setSearchTitle(String.format("Created in the Decade: %s",
-                        getFirstGroup().getCreationDecades().get(0)));
+                setSearchTitle(String.format(CREATED_IN_THE_DECADE_S, getFirstGroup().getCreationDecades().get(0)));
             }
         } else if (isKeywordSearch()) {
             setSearchTitle(TITLE_FILTERED_BY_KEYWORD);
         }
     }
-    
+
     private void determineCollectionSearchTitle() {
-        if(StringUtils.isEmpty(query)) {
+        if (StringUtils.isEmpty(query)) {
             setSearchTitle(TITLE_ALL_COLLECTIONS);
         } else {
             setSearchTitle(query);
@@ -666,30 +752,15 @@ public class AdvancedSearchController extends
         this.letter = letter;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<String> getProjections() {
         return ListUtils.EMPTY_LIST;
     }
 
-    // convert skeleton list to sparse list
-    private <P extends Persistable> void replaceSkeletonsWithSparseObjects(
-            List<P> skeletons, Map<Long, P> sparseObjectMap) {
-        ListIterator<P> itor = skeletons.listIterator();
-        while (itor.hasNext()) {
-            P item = itor.next();
-            if (item != null) {
-                itor.set(sparseObjectMap.get(item.getId()));
-            }
-        }
-    }
-
-    // TODO: decide whether we suppport legacy projectIds field.
-
     // 'explore' is a more tailored/guided search experience. for example if
-    // searching by keyword then we want to look up the definition of a keyword
-    // and
-    // display it
-    // on the search results page.
+    // searching by keyword then we want to look up the definition of a keyword and
+    // display it on the search results page.
     private void processExploreRequest() {
         if (groups.isEmpty())
             return;
@@ -709,7 +780,10 @@ public class AdvancedSearchController extends
     }
 
     private SearchParameters getFirstGroup() {
-        return groups.get(0);
+        if (groups.size() > 0) {
+            return groups.get(0);
+        }
+        throw new TdarRecoverableRuntimeException("please try your search again");
     }
 
     private <K extends Keyword> void setExploreKeyword(Class<K> type,
@@ -764,30 +838,16 @@ public class AdvancedSearchController extends
                 }
 
                 // ADD HEADER ROW THAT SHOWS URL and SEARCH PHRASE
-                sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum, 0,
-                        fieldNames.size()));
-                excelService.addDocumentHeaderRow(
-                        sheet,
-                        rowNum,
-                        0,
-                        Arrays.asList("tDAR Search Results: "
-                                + getSearchPhrase()));
+                sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum, 0, fieldNames.size()));
+                excelService.addDocumentHeaderRow(sheet, rowNum, 0,
+                        Arrays.asList("tDAR Search Results: " + getSearchPhrase()));
                 rowNum++;
-                excelService
-                        .addPairedHeaderRow(sheet, rowNum, 0, Arrays.asList(
-                                "Search Url: ",
-                                getUrlService().getBaseUrl()
-                                        + getServletRequest().getRequestURI()
-                                                .replace("/download",
-                                                        "/results") + "?"
-                                        + getServletRequest().getQueryString()));
+                List<String> headerValues = Arrays.asList("Search Url: ", getUrlService().getBaseUrl() + getServletRequest().getRequestURI()
+                        .replace("/download", "/results") + "?" + getServletRequest().getQueryString());
+                excelService.addPairedHeaderRow(sheet, rowNum, 0, headerValues);
                 rowNum++;
-                excelService.addPairedHeaderRow(
-                        sheet,
-                        rowNum,
-                        0,
-                        Arrays.asList("Downloaded by: ", getAuthenticatedUser()
-                                .getProperName() + " on " + new Date()));
+                excelService.addPairedHeaderRow(sheet, rowNum, 0,
+                        Arrays.asList("Downloaded by: ", getAuthenticatedUser().getProperName() + " on " + new Date()));
                 rowNum++;
                 rowNum++;
                 excelService.addHeaderRow(sheet, rowNum, 0, fieldNames);
@@ -805,10 +865,8 @@ public class AdvancedSearchController extends
                         Integer dateCreated = null;
                         Integer numFiles = 0;
                         if (result instanceof InformationResource) {
-                            dateCreated = ((InformationResource) result)
-                                    .getDate();
-                            numFiles = ((InformationResource) result)
-                                    .getTotalNumberOfFiles();
+                            dateCreated = ((InformationResource) result).getDate();
+                            numFiles = ((InformationResource) result).getTotalNumberOfFiles();
                         }
                         List<Creator> authors = new ArrayList<Creator>();
 
@@ -824,12 +882,9 @@ public class AdvancedSearchController extends
 
                         }
                         ArrayList<Object> data = new ArrayList<Object>(
-                                Arrays.asList(r.getId(), r.getResourceType(),
-                                        r.getTitle(), dateCreated, authors,
-                                        projectName,
-                                        r.getShortenedDescription(), numFiles,
-                                        getUrlService().absoluteUrl(r),
-                                        location));
+                                Arrays.asList(r.getId(), r.getResourceType(), r.getTitle(), dateCreated, authors,
+                                        projectName, r.getShortenedDescription(), numFiles,
+                                        getUrlService().absoluteUrl(r), location));
 
                         if (isEditor()) {
                             data.add(r.getStatus());
@@ -856,8 +911,7 @@ public class AdvancedSearchController extends
                 contentLength = tempFile.length();
             }
         } catch (Exception e) {
-            addActionErrorWithException("something happened with excel export",
-                    e);
+            addActionErrorWithException(SOMETHING_HAPPENED_WITH_EXCEL_EXPORT, e);
             return INPUT;
         }
 
@@ -866,6 +920,14 @@ public class AdvancedSearchController extends
 
     public Long getContentLength() {
         return contentLength;
+    }
+
+    public DisplayOrientation getOrientation() {
+        return orientation;
+    }
+
+    public void setOrientation(DisplayOrientation orientation) {
+        this.orientation = orientation;
     }
 
 }

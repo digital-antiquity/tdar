@@ -2,31 +2,35 @@
 <!-- $Id$ -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<version>8-HARRIS-MATRIX</version>
+	<version>9-IN-SITU</version>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<!-- managed versions -->
-		<struts2.version>2.3.3</struts2.version>
-		<hibernate.version>4.1.2.Final</hibernate.version>
+		<struts2.version>2.3.8</struts2.version>
+		<hibernate.version>4.1.7.Final</hibernate.version>
 		<hibernate.search.version>4.1.1.Final</hibernate.search.version>
-		<spring.framework.version>3.1.1.RELEASE</spring.framework.version>
+		<spring.framework.version>3.1.3.RELEASE</spring.framework.version>
 		<spring.ldap.version>1.3.1.RELEASE</spring.ldap.version>
 		<spring.amqp.version>1.1.0.RELEASE</spring.amqp.version>
-		<!-- <postgresql.jdbc.version>8.4-701.jdbc4</postgresql.jdbc.version> -->
 		<postgresql.jdbc.version>9.1-901.jdbc4</postgresql.jdbc.version>
-		<apache.cxf.version>2.6.0</apache.cxf.version>
-		<clover.version>3.1.4</clover.version>
+		<!-- <postgresql.jdbc.version>9.2-1002.jdbc4</postgresql.jdbc.version> -->
+		<apache.cxf.version>2.7.1</apache.cxf.version>
+		<clover.version>3.1.7</clover.version>
 		<!-- /end managed versions -->
 		<jvm.args>-Xms256m -Xmx2048m -XX:PermSize=128m -XX:MaxPermSize=512m</jvm.args>
 		<generated.schema.dir>target/generated/db</generated.schema.dir>
 		<generated.schema.file>schema.sql</generated.schema.file>
 		<jetty.port>8080</jetty.port>
+		<jetty.ssl.port>8443</jetty.ssl.port>
 		<jetty.stop.port>12919</jetty.stop.port>
 		<use.test.classpath>false</use.test.classpath>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<geotools.version>8.0-M4</geotools.version>
-		<tika.version>1.1</tika.version>
+		<geotools.version>8.3</geotools.version>
+		<tika.version>1.2</tika.version>
+		<odata4j.version>0.7.0</odata4j.version>
+		<jersey.version>1.15</jersey.version>
+		<http-components.version>4.2.2</http-components.version>
 	</properties>
 	<prerequisites>
 		<maven>2.2.0</maven>
@@ -67,6 +71,17 @@
 			</releases>
 			<snapshots>
 				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>imageJ</id>
+			<name>ImageJ Repository</name>
+			<url>http://maven.imagej.net/content/repositories/releases</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
 			</snapshots>
 		</repository>
 		<repository>
@@ -135,6 +150,11 @@
 	<!-- 3rd party dependencies and libraries -->
 	<dependencies>
 		<dependency>
+			<groupId>com.jgeppert.struts2.bootstrap</groupId>
+			<artifactId>struts2-bootstrap-plugin</artifactId>
+			<version>1.5.2</version>
+		</dependency>
+		<dependency>
 			<groupId>com.googlecode.webutilities</groupId>
 			<artifactId>webutilities</artifactId>
 			<version>0.0.5</version>
@@ -173,12 +193,12 @@
 		<dependency>
 			<groupId>org.apache.ant</groupId>
 			<artifactId>ant</artifactId>
-			<version>1.8.3</version>
+			<version>1.8.4</version>
 		</dependency>
 		<dependency>
-			<groupId>imageJ</groupId>
-			<artifactId>imageJ-core</artifactId>
-			<version>1.46c</version>
+			<groupId>net.imagej</groupId>
+			<artifactId>ij</artifactId>
+			<version>1.47h</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.media</groupId>
@@ -195,7 +215,7 @@
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<version>1.2.16</version>
+			<version>1.2.17</version>
 			<exclusions>
 				<exclusion>
 					<groupId>com.sun.jdmk</groupId>
@@ -251,12 +271,12 @@
 		<dependency>
 			<groupId>com.google.code.findbugs</groupId>
 			<artifactId>annotations</artifactId>
-			<version>2.0.0</version>
+			<version>2.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>gov.loc</groupId>
 			<artifactId>bagit</artifactId>
-			<version>4.0</version>
+			<version>4.4</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>commons-codec</artifactId>
@@ -279,12 +299,8 @@
 			<artifactId>opensearch</artifactId>
 			<version>0.1</version>
 		</dependency>
-		<dependency>
-			<groupId>com.thoughtworks.xstream</groupId>
-			<artifactId>xstream</artifactId>
-			<version>1.4.2</version>
-		</dependency>
-		<!-- Spring LDAP -->
+		<!-- <dependency> <groupId>com.thoughtworks.xstream</groupId> <artifactId>xstream</artifactId> 
+			<version>1.4.3</version> </dependency> -->		<!-- Spring LDAP -->
 		<dependency>
 			<groupId>org.springframework.ldap</groupId>
 			<artifactId>spring-ldap-core</artifactId>
@@ -305,10 +321,20 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.10</version>
+			<version>4.11</version>
 		</dependency>
 		<!-- <dependency> <groupId>junit</groupId> <artifactId>junit</artifactId> 
 			<version>3.8.1</version> <scope>test</scope> </dependency> -->
+		<dependency>
+			<groupId>org.jmock</groupId>
+			<artifactId>jmock-junit4</artifactId>
+			<version>2.5.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jmock</groupId>
+			<artifactId>jmock-legacy</artifactId>
+			<version>2.5.1</version>
+		</dependency>
 		<dependency>
 			<groupId>org.geotools</groupId>
 			<artifactId>gt-shapefile</artifactId>
@@ -327,7 +353,7 @@
 		<dependency>
 			<groupId>org.codehaus.jettison</groupId>
 			<artifactId>jettison</artifactId>
-			<version>1.3.1</version>
+			<version>1.3.2</version>
 		</dependency>
 		<dependency>
 			<groupId>xmlunit</groupId>
@@ -337,16 +363,35 @@
 		<dependency>
 			<groupId>net.sourceforge.htmlunit</groupId>
 			<artifactId>htmlunit</artifactId>
-			<version>2.9</version>
+			<version>2.11</version>
 			<exclusions>
 			</exclusions>
 		</dependency>
+		<!-- these are required for htmlunit 2.10 -->
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>${http-components.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>${http-components.version}</version>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpmime</artifactId>
+			<version>${http-components.version}</version>
+		</dependency>
+		<!-- /these are required for htmlunit 2.10 -->
 		<dependency>
 			<groupId>com.3levers.cssselectors</groupId>
 			<artifactId>cssselectors</artifactId>
 			<version>1.0</version>
 		</dependency>
-            		
+
 		<!--<dependency> <groupId>org.seleniumhq.selenium</groupId> <artifactId>selenium-java</artifactId> 
 			<version>2.21.0</version> </dependency> <dependency> <groupId>org.seleniumhq.selenium</groupId> 
 			<artifactId>selenium-server</artifactId> <version>2.21.0</version> </dependency> -->
@@ -445,12 +490,12 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.6.4</version>
+			<version>1.7.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.6.4</version>
+			<version>1.7.2</version>
 		</dependency>
 		<!-- SPRING DEPENDENCIES (we're not listing them all individually, but 
 			includes orm, jdbc, aop, tx, -->
@@ -495,6 +540,16 @@
 			<version>${spring.framework.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
+			<version>${spring.framework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aop</artifactId>
+			<version>${spring.framework.version}</version>
+		</dependency>
+		<dependency>
 			<!-- needed by spring for @Transactional calls -->
 			<groupId>cglib</groupId>
 			<artifactId>cglib</artifactId>
@@ -534,7 +589,7 @@
 		<dependency>
 			<groupId>com.healthmarketscience.jackcess</groupId>
 			<artifactId>jackcess</artifactId>
-			<version>1.2.7</version>
+			<version>1.2.9</version>
 		</dependency>
 		<!-- OpenCSV -->
 		<dependency>
@@ -561,7 +616,7 @@
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.3</version>
+			<version>2.4</version>
 		</dependency>
 		<dependency>
 			<groupId>xalan</groupId>
@@ -618,9 +673,34 @@
 			<version>${tika.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>batik</groupId>
+			<artifactId>batik-bridge</artifactId>
+			<version>1.7</version>
+		</dependency>
+		<dependency>
+			<groupId>batik</groupId>
+			<artifactId>batik-gvt</artifactId>
+			<version>1.7</version>
+		</dependency>
+		<dependency>
+			<groupId>batik</groupId>
+			<artifactId>batik-ext</artifactId>
+			<version>1.7</version>
+		</dependency>
+		<dependency>
+			<groupId>batik</groupId>
+			<artifactId>batik-awt-util</artifactId>
+			<version>1.7</version>
+		</dependency>
+		<dependency>
+			<groupId>batik</groupId>
+			<artifactId>batik-script</artifactId>
+			<version>1.7</version>
+		</dependency>
+		<dependency>
 			<groupId>org.tuckey</groupId>
 			<artifactId>urlrewritefilter</artifactId>
-			<version>3.2.0</version>
+			<version>4.0.4</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>
@@ -641,27 +721,121 @@
 			<artifactId>joda-time</artifactId>
 			<version>2.1</version>
 		</dependency>
-<!-- 
+		<!-- <dependency> <groupId>org.codehaus.jackson</groupId> <artifactId>jackson-mapper-asl</artifactId> 
+			<version>1.9.7</version> </dependency> <dependency> <groupId>org.codehaus.jackson</groupId> 
+			<artifactId>jackson-core-asl</artifactId> <version>1.9.7</version> </dependency> 
+			<dependency> <groupId>org.codehaus.jackson</groupId> <artifactId>jackson-xc</artifactId> 
+			<version>1.9.7</version> </dependency> <dependency> <groupId>org.codehaus.jackson</groupId> 
+			<artifactId>jackson-xc</artifactId> <version>1.7.3</version> </dependency> -->
+		<!-- Jackson v2 (1.7.3 cannot be used because it doesnt handle @XmlJavaTypeConverter 
+			w/ collections correctly) -->
 		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-mapper-asl</artifactId>
-			<version>1.9.7</version>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>2.1.1</version>
 		</dependency>
 		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-core-asl</artifactId>
-			<version>1.9.7</version>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.1.1</version>
 		</dependency>
 		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-xc</artifactId>
-			<version>1.9.7</version>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+			<version>2.1.1</version>
 		</dependency>
- -->		<dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.module</groupId>
+			<artifactId>jackson-module-jaxb-annotations</artifactId>
+			<version>2.1.0</version>
+		</dependency>
+
+		<dependency>
 			<groupId>commons-dbutils</groupId>
 			<artifactId>commons-dbutils</artifactId>
-			<version>1.4</version>
+			<version>1.5</version>
 		</dependency>
+
+		<!-- OData (odata4j) Stuff: Begin -->
+
+		<dependency>
+			<groupId>org.odata4j</groupId>
+			<artifactId>odata4j-core</artifactId>
+			<version>${odata4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.odata4j</groupId>
+			<artifactId>odata4j-jersey</artifactId>
+			<version>${odata4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.odata4j</groupId>
+			<artifactId>odata4j-fit</artifactId>
+			<version>${odata4j.version}</version>
+		</dependency>
+
+		<!-- OData REST Infrastructure -->
+		<dependency>
+			<groupId>com.sun.net.httpserver</groupId>
+			<artifactId>http</artifactId>
+			<version>20070405</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-server</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-core</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-client</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey.contribs</groupId>
+			<artifactId>jersey-spring</artifactId>
+			<version>${jersey.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-web</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-beans</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-context</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-aop</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- OData Integration Testing Support -->
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-client</artifactId>
+			<version>8.1.4.v20120524</version>
+		</dependency>
+
+		<!-- OData (odata4j) Stuff: End -->
+
 	</dependencies>
 	<pluginRepositories>
 		<pluginRepository>
@@ -693,6 +867,48 @@
 			</testResource>
 		</testResources>
 		<plugins>
+			<plugin>
+				<groupId>org.glassfish</groupId>
+				<artifactId>maven-embedded-glassfish-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<goalPrefix>glassfish</goalPrefix>
+					<app>target/ROOT</app>
+					<name>tDAR</name>
+					<port>8080</port>
+					<contextRoot>/</contextRoot>
+				</configuration>
+			</plugin>
+			<plugin>
+				<!-- http://mojo.codehaus.org/keytool/keytool-maven-plugin/generateKeyPair-mojo.html -->
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>keytool-maven-plugin</artifactId>
+				<version>1.2</version>
+				<executions>
+					<execution>
+						<phase>generate-resources</phase>
+						<id>clean</id>
+						<goals>
+							<goal>clean</goal>
+						</goals>
+					</execution>
+					<execution>
+						<phase>generate-resources</phase>
+						<id>generateKeyPair</id>
+						<goals>
+							<goal>generateKeyPair</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<keystore>${project.build.directory}/jetty-ssl.keystore</keystore>
+					<dname>cn=localhost</dname>
+					<keypass>jetty6</keypass>
+					<storepass>jetty6</storepass>
+					<alias>jetty6</alias>
+					<keyalg>RSA</keyalg>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>com.atlassian.maven.plugins</groupId>
 				<artifactId>maven-clover2-plugin</artifactId>
@@ -926,7 +1142,14 @@
 					<connectors>
 						<connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
 							<port>${jetty.port}</port>
-							<maxIdleTime>600000</maxIdleTime>
+							<maxIdleTime>60000</maxIdleTime>
+						</connector>
+						<connector implementation="org.mortbay.jetty.security.SslSocketConnector">
+							<port>${jetty.ssl.port}</port>
+							<maxIdleTime>60000</maxIdleTime>
+							<keystore>${project.build.directory}/jetty-ssl.keystore</keystore>
+							<password>jetty6</password>
+							<keyPassword>jetty6</keyPassword>
 						</connector>
 					</connectors>
 					<contextPath>/</contextPath>
@@ -1005,7 +1228,8 @@
 					</systemProperties>
 					<!-- <includes> <include>**/*ITCase.java</include> <include>**/*TestCase.java</include> 
 						</includes> -->
-					<argLine>${jvm.args}</argLine>
+					<argLine>${jvm.args} -DenableContextSwitchingConfig=true</argLine>
+					<junitArtifactName>junit:junit-dep</junitArtifactName>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -1036,7 +1260,7 @@
 					</execution>
 				</executions>
 				<configuration>
-					<argLine>${jvm.args}</argLine>
+					<argLine>${jvm.args} -DenableContextSwitchingConfig=true</argLine>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -1158,6 +1382,7 @@
 			</build>
 			<properties>
 				<jetty.port>8180</jetty.port>
+				<jetty.ssl.port>8143</jetty.ssl.port>
 				<jetty.stop.port>12920</jetty.stop.port>
 				<use.test.classpath>true</use.test.classpath>
 				<webapp.deploy.dir>target/generated/webapp-test</webapp.deploy.dir>
@@ -1275,6 +1500,7 @@
 			<properties>
 				<webapp.deploy.dir>/tmp/tdar-clover</webapp.deploy.dir>
 				<jetty.port>8180</jetty.port>
+				<jetty.ssl.port>8143</jetty.ssl.port>
 				<use.test.classpath>true</use.test.classpath>
 			</properties>
 			<build>
@@ -1397,6 +1623,7 @@
 						</executions>
 					</plugin>
 					<plugin>
+						<!-- mvn -PsqlExtract clean compile exec:java -->
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>exec-maven-plugin</artifactId>
 						<version>1.2.1</version>
@@ -1450,7 +1677,6 @@
 											tofile="src/main/resources/log4j.properties" />
 										<copy file="src/main/resources/tdar.properties.template"
 											tofile="src/main/resources/tdar.properties" />
-										<copy file="src/main/webapp/robots.txt.template" tofile="src/main/webapp/robots.txt" />
 										<copy file="src/main/resources/struts-local-settings.xml.template"
 											tofile="src/main/resources/struts-local-settings.xml" />
 										<copy file="src/main/resources/spring-local-settings.xml.template"

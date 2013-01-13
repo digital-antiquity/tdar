@@ -1,23 +1,38 @@
 function initAdvancedSearch() {
-    setupFormValidate('#searchGroups');
-
+    TDAR.common.initFormValidation($('#searchGroups')[0]);
+    TDAR.repeatrow.registerRepeatable(".repeatLastRow");
+    
+    //HACK: clicking delete button when only one row present resets fieldType select  and may become out of sync w/ term control
+    $('#searchGroups').on('click', '.repeat-row-delete', function(){
+        if($('#searchGroups').find('.searchType').length === 1) {
+            $('#searchGroups').find('.searchType').trigger("change");
+        }
+    });
+    
+    
     // when user changes searchType: swap out the term ui snippet
     $('#searchGroups').on('change', '.searchType', function(evt) {
-        // console.log("change event on %s", this.id);
-        var searchType = $(this).val();
+        "use strict";
+        
+        console.log("change event on %s", this.id);
+        var $select = $(this);
+        var searchType = $select.val();
+        var $controlGroup = $select.parent();
+        
+        
 
-        // get a copy of the template term
+        // get a copy of the template term controls
         var row = $('div.' + searchType, '#template').clone();
         // figure out which group, rownum we are in, and then update attribute
         // values of the cloned row
         var groupnum = $(this).closest(".grouptable").data("groupnum");
-        var rownum = $(this).closest("tbody").children(":visible").index($(this).closest("tr"));
+        var rownum = $(this).closest(".grouptable").children(".termrow:visible").index($(this).closest(".termrow"));
         updateAttributesForRow($(row), groupnum, rownum);
 
-        // get parent row, remove term div
-        var $tr = $(this).closest('tr');
+        // remove whatever is currently inside of the term-container and replace with the new term
+        var $termContainer= $controlGroup.find('div.term-container');
 
-        var $term = $('.term', $tr);
+        var $term = $('.term', $termContainer);
         var oldval = "";
 
         // for changing between two term types that are simple text fields, we
@@ -30,8 +45,8 @@ function initAdvancedSearch() {
         }
         $term.remove();
 
-        $('.searchfor', $tr).html("");
-        $('.searchfor', $tr).append(row);
+        $termContainer.empty().append(row);
+        
         if ($(row).hasClass('retain')) {
             $(':text:first', row).val(oldval);
         }
@@ -40,20 +55,23 @@ function initAdvancedSearch() {
     });
 
     // after rows added, replace attribute values
-    $('.grouptable').on('row-added', function(evt, $row, idx) {
+    $('.grouptable').on('repeatrowadded', function(evt, parentElement,  row, idx) {
+        var $row = $(row);
         // console.log('added row:' + $row + ' p2:' + idx);
-        var $table = $(this);
-        updateAttributesForRow($row, $table.data('groupnum'), idx);
+        var $repeatable = $(this);
+        var $select = $row.find('.searchType');
+        $select.val($select.find("option:first").val()).trigger("change");
+        updateAttributesForRow($row, $repeatable.data('groupnum'), idx);
     });
 
     // more handling of added/removed rows
     // TODO: this needs to be refactored if we implement multiple groups (i
     // think)
-    $('#searchGroups').on('row-added', '.grouptable', function(evt) {
+    $('#searchGroups').on('repeatrowadded', '.grouptable', function(evt) {
         var $groupDiv = $(this).closest('.searchgroup');
         showGroupingSelectorIfNecessary($groupDiv);
     });
-    $('#searchGroups').on('row-removed', '.grouptable', function(evt) {
+    $('#searchGroups').on('repeatrowdeleted', '.grouptable', function(evt) {
         var $groupDiv = $(this).closest('.searchgroup');
         showGroupingSelectorIfNecessary($groupDiv);
     });
@@ -91,7 +109,7 @@ function sectionLoaded(context) {
     }
 
     // register any treeviews
-    $('.treeview', context).treeview({
+    $('.tdar-treeview', context).treeview({
         collapsed : true
     });
 
@@ -118,51 +136,15 @@ function sectionLoaded(context) {
         minLength : 0
     }, {});
 
-}
-
-// fixme: refactor deleterow
-// remove the closest tr from $elem, and then fire a row-removed event
-function removeRow($elem) {
-    var $tr = $elem.closest('tr');
-    var $tbody = $tr.parent(); // $tbody/$table will be same if table has not
-                                // tbody tag (only a scenario for IE i think)
-    var $table = $tbody.closest('table');
-    var visibleRows = $('tr:visible', $tbody).length;
-    if (visibleRows > 1) {
-        $tr.remove();
-    } else {
-        cleanRow($tr);
-    }
-    // TODO: i'm assuming we don't need/want reference to row we just
-    // removed...can we think of a reason otherwise?
-    $table.trigger('row-removed', [ $tbody.closest('table'), visibleRows ]);
-}
-
-// fixme: refactor clearRow
-function cleanRow($tr) {
-    // console.warn("incomplete!!");
-    $('input[type=text],textarea,hidden').val("");
+    $('#searchGroups').find('.searchgroup').each(function(){
+        showGroupingSelectorIfNecessary($(this));
+    });
 }
 
 function setDefaultTerm(obj) {
     // console.log("adding new term");
 }
 
-// copy a template row from a table, add it to the end of the table
-function addRowFromTemplate(tableSelector) {
-    var $table = $(tableSelector);
-    var $sourceRow = $('#template .basicTemplate');
-    var $clonedRow = $sourceRow.clone();
-    $clonedRow.removeClass('template');
-    // console.log($clonedRow);
-    var $tbody = $('> tbody:last', $table);
-    $tbody.append($clonedRow);
-    $("select", $clonedRow).trigger("change");
-    
-    var rownum = $("tr.termrow", $table).length - 1;
-    $table.trigger('row-added', [ $clonedRow, rownum ]);
-    return $clonedRow;
-}
 
 // replace *all* occurances of map key with map value in element's attribute
 // value
@@ -182,11 +164,10 @@ function replaceAttributeTemplate($elem, attr, map) {
 
 function updateAttributesForRow($root, groupnum, rownum) {
     // todo: *[id], *[name] instead
-    $.each($root.find('*'), function(ignored, elem) {
-        var map = {
+    var map = {
             "{groupid}" : groupnum,
-            "{termid}" : rownum
-        };
+            "{termid}" : rownum};
+    $.each($root.find('*'), function(ignored, elem) {
         // don't update all attributes, just id, name, for, etc.
         $.each([ "id", "name", "for", "autocompleteIdElement", "autocompleteParentElement" ], function(ignored, attrName) {
             replaceAttributeTemplate($(elem), attrName, map);
@@ -196,23 +177,19 @@ function updateAttributesForRow($root, groupnum, rownum) {
 
 function showGroupingSelectorIfNecessary($groupDiv) {
     // if more than one term, show the grouping selector
-    $visibleRows = $('.grouptable tr:visible', $groupDiv);
-    $('.groupingSelectDiv', $groupDiv).toggle($visibleRows.length > 1);
+    var $visibleRows = $('.grouptable .repeat-row:visible', $groupDiv);
+    var $groupingControl = $groupDiv.find(".groupingSelectDiv");
+    if($visibleRows.length > 1) {
+        $groupingControl.find('select').show();
+        $groupingControl.addClass("in");
+    } else {
+        $groupingControl.removeClass("in");
+        $groupingControl.find('select').hide();
+        
+    }
+//    $('.groupingSelectDiv', $groupDiv).toggle($visibleRows.length > 1);
 }
 
-function resetAdvancedSearchForm() {
-    $('#groupTable0 > tbody > tr').each(function() {
-        removeRow($(this));
-    });
-    $("input[type=checkbox]").prop("checked", false);
-    $("select,input[type=hidden],input[type=text]").val("");
-    try {
-        map.removeOverlay(GZoomControl.G.oZoomArea);
-    } catch (e) {
-    }
-    $('.searchType', '#searchGroups').val("ALL_FIELDS");
-    $('.searchType', '#searchGroups').change();
-}
 
 function serializeFormState() {
     $("#searchGroups").submit(function() {

@@ -96,7 +96,7 @@ public class CollectionWebITCase  extends AbstractAdminAuthenticatedWebTestCase{
         logger.trace("page contents: {}", getPageText());
         //assert all the added names are on the view page
         for(Person user : registeredUsers) {
-            assertTextPresent(user.toString()); //let's assume the view page uses tostring to format the user names.
+            assertTextPresent(user.getProperName()); //let's assume the view page uses tostring to format the user names.
         }
         
         //assert the removed resources are *not* present on the view page

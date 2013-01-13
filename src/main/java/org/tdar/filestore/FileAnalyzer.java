@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,11 +60,11 @@ public class FileAnalyzer {
         }
         return toReturn;
     }
-    
-    public Set<String> getExtensionsForTypes(ResourceType ... resourceTypes) {
+
+    public Set<String> getExtensionsForTypes(ResourceType... resourceTypes) {
         Set<String> extensions = new HashSet<String>();
         for (Workflow workflow : workflows) {
-            for (ResourceType resourceType: resourceTypes) {
+            for (ResourceType resourceType : resourceTypes) {
                 extensions.addAll(workflow.getValidExtensionsForResourceType(resourceType));
             }
         }
@@ -89,13 +88,13 @@ public class FileAnalyzer {
     public boolean processFile(InformationResourceFileVersion irFileVersion) throws Exception {
         Workflow workflow = getWorkflow(irFileVersion);
         if (workflow == null)
-            return false; //could argue that this is true
+            return false; // could argue that this is true
         if (irFileVersion == null) {
             throw new TdarRecoverableRuntimeException("File version was null, this should not happen");
         }
-        
-        File file = file = irFileVersion.getFile();
-        
+
+        File file = irFileVersion.getFile();
+
         if (file == null) {
             throw new FileNotFoundException(irFileVersion + " -- file does not exist");
         }
@@ -115,11 +114,11 @@ public class FileAnalyzer {
         if (CollectionUtils.isEmpty(workflows)) {
             return;
         }
-        for (Workflow workflow: workflows) {
-            for (String validExtension: workflow.getValidExtensions()) {
+        for (Workflow workflow : workflows) {
+            for (String validExtension : workflow.getValidExtensions()) {
                 Workflow previousWorkflow = fileExtensionToWorkflowMap.put(validExtension, workflow);
                 if (previousWorkflow != null) {
-                    logger.warn("associated {} with {}, replacing old workflow {}", new Object[] {workflow, validExtension, previousWorkflow});
+                    logger.warn("associated {} with {}, replacing old workflow {}", new Object[] { workflow, validExtension, previousWorkflow });
                 }
             }
         }

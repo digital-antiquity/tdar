@@ -12,7 +12,10 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.core.bean.entity.Creator;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.configuration.TdarConfiguration;
 
 /**
  * @author Adam Brin
@@ -22,7 +25,7 @@ public class BookmarkControllerITCase extends AbstractAdminControllerITCase {
 
     @Override
     protected TdarActionSupport getController() {
-        return new BookmarkResourceAction();
+        return new BookmarkResourceController();
     }
 
     @Test
@@ -74,6 +77,10 @@ public class BookmarkControllerITCase extends AbstractAdminControllerITCase {
         document.markUpdated(getUser());
         document.setTitle("test");
         document.setDescription("bacd");
+        if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
+            Creator copyrightHolder = genericService.find(Person.class, 1L);
+            document.setCopyrightHolder(copyrightHolder );
+        }
         genericService.save(document);
         return document;
     }

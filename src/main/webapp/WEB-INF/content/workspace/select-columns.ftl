@@ -3,19 +3,32 @@
 <head>
  <style type="text/css">
 
+.drg {
+//z-index:50000 !important;
+}
+ .showhide {
+	 display: inline;
+	 font-size: 80%;
+	 right: 0px;
+ }
+ 
+ .collapse {
+ 	overflow:visible !important;
+ }
+ 
 .fixed {
     position: fixed;
     top: 0;
     z-index:1000;
-    width: 922px !important;
     border: 1px solid #AAA;
     background-color: #DEDEDE;
     padding: 4px;
+    margin:0px;
     opacity:.95;
 }
 .buttontable .integrationTableNumber {
-	display:none;
-	visibility:hidden;
+    display:none;
+    visibility:hidden;
 }
 
 .integrationColumn div[table] .ontology {
@@ -30,15 +43,15 @@
 #drplist {border:1px solid #ccc;}
 
 #submitbutton {
-	right: -540px !important;
-	position: relative !important;
+    right: -540px !important;
+    position: relative !important;
 }
 
 .addAnother { margin-left:1em !important; font-weight:bold;}
 
 .addAnother img {
-	bottom: 2px !important;
-	position: relative !important;
+    bottom: 2px !important;
+    position: relative !important;
 } 
 </style>
 
@@ -69,19 +82,22 @@ Drag columns from your selected data tables onto the integration table .
 
 </#macro>
 
-<div id="fixedList">
+<div id='fixedList' class="affix-top no-indent span12 row navbar-static"  data-offset-top="250" data-offset-bottom="250" data-spy="affix">
 <h4>Each Column Below will be a Column In Excel</h4>
 <table width="100%">
-	<tr>
-		<td>
-			<input type="checkbox" id="autoselect" />
-			<label for="autoselect">Auto-select integratable columns</label>
-		</td>
-		<td>
-			<input type="checkbox" id="clear" /> 
-			<label for="clear">Clear all columns</label>
-		</td>
-	</tr>
+    <tr>
+        <td>
+            <label for="autoselect">
+            <input type="checkbox" id="autoselect" class="checkbox inline"/>
+            Auto-select integratable columns
+            </label>
+        </td>
+        <td>
+            <label for="clear">
+            <input type="checkbox" id="clear"  class="checkbox inline" /> 
+            Clear all columns</label>
+        </td>
+    </tr>
 </table>
 <table id="drplist" width="100%">
 <tr>
@@ -96,8 +112,8 @@ Drag columns from your selected data tables onto the integration table .
 </tr>
 </table>
   <div class="status"></div>
-<button class="addAnother" id="addColumn"><img src='/images/add.gif'> Add a new Column</button>
-<@s.submit value='Next: filter values' id="submitbutton" class="submitbutton" />
+<button class="addAnother btn" id="addColumn"><i class="icon-plus-sign"></i> Add a new Column</button>
+<@s.submit value='Next: filter values' id="submitbutton" cssClass="submitbutton submitButton btn button btn-primary" />
 
 </div>
 </div>
@@ -113,48 +129,60 @@ Drag columns from your selected data tables onto the integration table .
 </table>
 <br/>
 
-
+<div class="accordion" id="accordion">
       <#assign numCols = 6 />
+
+     <div class="accordion-group">
+
       <#list selectedDataTables as table>
       <!-- setting for error condition -->
        <input type="hidden" name="tableIds[${table_index}]" value="${table.id?c}"/>
-<div >
-          <h4 class='tablemenu'><span class="arrow ui-icon ui-icon-triangle-1-s"></span>${table_index  +1}: ${table.dataset.title}</h4>
-<div class="tableContainer">      
-  <table class="buttontable">
-      <tbody>
-       	<#if leftJoinDataIntegrationFeatureEnabled>
-      		<#assign columns = table.leftJoinColumns>
-      	<#else>
-      		<#assign columns = table.sortedDataTableColumns>
-      	</#if>
-        <#assign count = 0>
-            <#list columns as column>
-            <#assign description = ""/>
-            <#if column?? && column.description??>
-                <#assign description = column.description />
-            </#if>
-              <#if count % numCols == 0><tr></#if>
-              <td width="${(100 / numCols)?floor }%"><div class="drg ui-corner-all" <#if column.defaultOntology??>hasOntology="${column.defaultOntology.id?c}"</#if>
-              <#if column.measurementUnit??>hasMeasurement="${column.measurementUnit}"</#if> 
-              title="${description?html}"
-              <#if column.columnEncodingType?? && column.columnEncodingType=='COUNT'>hasCount="true"</#if> 
-              table="${table.id?c}"><span class="columnName"><span class="integrationTableNumber">T${table_index +1}. </span>${column.displayName} <#if column.defaultOntology??> <span class="ontology">- ${column.defaultOntology.title}</span></#if>
-            <input type="hidden" name="integrationColumns[{COLNUM}].columns[{CELLNUM}].id"  value="${column.id?c}"/></span>
-                <#assign count = count+1 />
-             </div> </td>
-              <#if count % numCols == 0></tr></#if>
-            </#list>
-              <#if count % numCols != 0></tr></#if>
 
-      </tbody>
-      </table>
-</div>
-</div>
+	       <div class="accordion-heading">
+			   <h4>${table_index  +1}: ${table.dataset.title}
+	         <a class="showhide accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapse${table_index}">(show/hide)</a> </h4>
+	       </div>
+	       <div id="collapse${table_index}" class="accordion-body collapse in">
+	         <div class="accordion-inner">
+			     <table class="buttontable">
+			         <tbody>
+			              <#if leftJoinDataIntegrationFeatureEnabled>
+			                 <#assign columns = table.leftJoinColumns>
+			             <#else>
+			                 <#assign columns = table.sortedDataTableColumns>
+			             </#if>
+			           <#assign count = 0>
+			               <#list columns as column>
+			               <#assign description = ""/>
+			               <#if column?? && column.description??>
+			                   <#assign description = column.description />
+			               </#if>
+			                 <#if count % numCols == 0><tr></#if>
+			                 <td width="${(100 / numCols)?floor }%"><div class="drg ui-corner-all" <#if column.defaultOntology??>hasOntology="${column.defaultOntology.id?c}"</#if>
+			                 <#if column.measurementUnit??>hasMeasurement="${column.measurementUnit}"</#if> 
+			                 title="${description?html}"
+			                 <#if column.columnEncodingType?? && column.columnEncodingType=='COUNT'>hasCount="true"</#if> 
+			                 table="${table.id?c}"><span class="columnName"><span class="integrationTableNumber">T${table_index +1}. </span>${column.displayName} <#if column.defaultOntology??> <span class="ontology">- ${column.defaultOntology.title}</span></#if>
+			               <input type="hidden" name="integrationColumns[{COLNUM}].columns[{CELLNUM}].id"  value="${column.id?c}"/></span>
+			                   <#assign count = count+1 />
+			                </div> </td>
+			                 <#if count % numCols == 0></tr></#if>
+			               </#list>
+			                 <#if count % numCols != 0></tr></#if>
+
+			         </tbody>
+			         </table>
+
+	         </div>
+	       </div>
+	     </div>
+
       </#list>
+  </div>
+	  <div >
 
 <br/><br/>
-<@s.submit value='Next: filter values' class="submitbutton" />
+<@s.submit value='Next: filter values' cssClass="submitbutton btn btn-primary submitButton" />
 
 
 </div>
@@ -166,7 +194,7 @@ Drag columns from your selected data tables onto the integration table .
 <script>
 
 jQuery(document).ready(function($){
-	initDataIntegration();
+    TDAR.integration.initDataIntegration();
 });
 </script>
 

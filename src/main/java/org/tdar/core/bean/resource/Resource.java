@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -44,6 +45,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.apache.lucene.search.Explanation;
@@ -66,9 +68,10 @@ import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Resolution;
 import org.hibernate.search.annotations.Store;
+import org.joda.time.DateTime;
+import org.joda.time.Days;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.CollectionUtils;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.DeHydratable;
 import org.tdar.core.bean.HasName;
@@ -82,6 +85,7 @@ import org.tdar.core.bean.SimpleSearch;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.Viewable;
+import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -104,17 +108,14 @@ import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.SuggestedKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.configuration.JSONTransient;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.exception.TdarValidationException;
+import org.tdar.search.index.DontIndexWhenNotReadyInterceptor;
 import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
 import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
-import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.index.boost.InformationResourceBoostStrategy;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
-
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 /**
  * $Id$
@@ -128,14 +129,12 @@ import com.thoughtworks.xstream.annotations.XStreamOmitField;
  */
 @Entity
 @Table(name = "resource")
-@Indexed(index = "Resource")
+@Indexed(index = "Resource", interceptor = DontIndexWhenNotReadyInterceptor.class)
 @DynamicBoost(impl = InformationResourceBoostStrategy.class)
-@XStreamAlias("resource")
 @Inheritance(strategy = InheritanceType.JOINED)
 @XmlRootElement
 @XmlSeeAlso({ Document.class, InformationResource.class, Project.class,
-        CodingSheet.class, Dataset.class, Ontology.class, Image.class,
-        SensoryData.class, Video.class })
+        CodingSheet.class, Dataset.class, Ontology.class, Image.class, SensoryData.class, Video.class })
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @XmlType(name = "resource")
 @FetchProfile(name = "resource-with-people", fetchOverrides = {
@@ -148,8 +147,11 @@ public class Resource extends JsonModel.Base implements Persistable,
 
     private static final long serialVersionUID = -230400285817185637L;
 
+    @Transient
     private transient boolean obfuscated;
+    @Transient
     private transient boolean viewable;
+    @Transient
     private transient Long transientAccessCount;
     // TODO: anything that gets returned in a tdar search should be included in
     // json results
@@ -160,8 +162,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     // properties in resourceType
     // properties in submitter (Person)
     // "firstName", "lastName", "institution", "email","label","submitter",
-    protected final static transient Logger logger = LoggerFactory
-            .getLogger(Resource.class);
+    protected final static transient Logger logger = LoggerFactory.getLogger(Resource.class);
 
     public Resource() {
     }
@@ -191,14 +192,14 @@ public class Resource extends JsonModel.Base implements Persistable,
     @SequenceGenerator(name = "resource_sequence", allocationSize = 1, sequenceName = "resource_sequence")
     private Long id = -1L;
 
-    @BulkImportField(label = "Title", required = true, order = -100, comment = BulkImportField.TITLE_DESCRIPTION)
+    @BulkImportField(label = BulkImportField.TITLE_LABEL, required = true, order = -100, comment = BulkImportField.TITLE_DESCRIPTION)
     @NotNull
     @Column(length = 512)
     private String title;
 
-    @Lob
-    @BulkImportField(label = "Description", required = true, order = -50, comment = BulkImportField.DESCRIPTION_DESCRIPTION)
+    @BulkImportField(label = BulkImportField.DESCRIPTION_LABEL, required = true, order = -50, comment = BulkImportField.DESCRIPTION_DESCRIPTION)
     // @NotNull
+    @Lob
     @Type(type = "org.hibernate.type.StringClobType")
     private String description;
 
@@ -218,9 +219,13 @@ public class Resource extends JsonModel.Base implements Persistable,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    @Field
-    @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
+    @Field(norms = Norms.NO, store = Store.YES)
+    @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     private Status status = Status.ACTIVE;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "previous_status")
+    private Status previousStatus = Status.ACTIVE;
 
     @Boost(.5f)
     @IndexedEmbedded
@@ -228,6 +233,11 @@ public class Resource extends JsonModel.Base implements Persistable,
     @JoinColumn(nullable = false, name = "submitter_id")
     @NotNull
     private Person submitter;
+
+    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
+    @JoinColumn(nullable = false, name = "uploader_id")
+    @NotNull
+    private Person uploader;
 
     @Boost(.5f)
     @IndexedEmbedded
@@ -243,91 +253,109 @@ public class Resource extends JsonModel.Base implements Persistable,
     private Date dateUpdated;
 
     @IndexedEmbedded
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "resource", fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @OrderBy("sequenceNumber ASC")
+    @JoinColumn(nullable = false, updatable = false, name = "resource_id")
     @BulkImportField
     private Set<ResourceCreator> resourceCreators = new LinkedHashSet<ResourceCreator>();
 
-    @XStreamOmitField
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "resource")
     private Set<BookmarkedResource> bookmarks = new LinkedHashSet<BookmarkedResource>();
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "resource", fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @OrderBy("sequenceNumber ASC")
+    @JoinColumn(nullable = false, updatable = false, name = "resource_id")
     @IndexColumn(name = "id")
     private Set<ResourceNote> resourceNotes = new LinkedHashSet<ResourceNote>();
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "resource", fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(nullable = false, updatable = false, name = "resource_id")
     private Set<ResourceAnnotation> resourceAnnotations = new LinkedHashSet<ResourceAnnotation>();
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "resource", fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(nullable = false, updatable = false, name = "resource_id")
     private Set<SourceCollection> sourceCollections = new LinkedHashSet<SourceCollection>();
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "resource", fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(nullable = false, updatable = false, name = "resource_id")
     private Set<RelatedComparativeCollection> relatedComparativeCollections = new LinkedHashSet<RelatedComparativeCollection>();
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "resource", fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(nullable = false, updatable = false, name = "resource_id")
     private Set<LatitudeLongitudeBox> latitudeLongitudeBoxes = new LinkedHashSet<LatitudeLongitudeBox>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
-    @JoinTable(name = "resource_geographic_keyword", joinColumns = { @JoinColumn(name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
+    @JoinTable(name = "resource_geographic_keyword", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
+            nullable = false,
             name = "geographic_keyword_id") })
     private Set<GeographicKeyword> geographicKeywords = new LinkedHashSet<GeographicKeyword>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
-    @JoinTable(name = "resource_managed_geographic_keyword", joinColumns = { @JoinColumn(name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
-            name = "geographic_keyword_id") })
+    @JoinTable(name = "resource_managed_geographic_keyword", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") },
+            inverseJoinColumns = { @JoinColumn(nullable = false,
+                    name = "geographic_keyword_id") })
     private Set<GeographicKeyword> managedGeographicKeywords = new LinkedHashSet<GeographicKeyword>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
-    @JoinTable(name = "resource_temporal_keyword", joinColumns = { @JoinColumn(name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
+    @JoinTable(name = "resource_temporal_keyword", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
+            nullable = false,
             name = "temporal_keyword_id") })
     private Set<TemporalKeyword> temporalKeywords = new LinkedHashSet<TemporalKeyword>();
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "resource", fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(nullable = false, updatable = false, name = "resource_id")
     private Set<CoverageDate> coverageDates = new LinkedHashSet<CoverageDate>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
-    @JoinTable(name = "resource_culture_keyword", joinColumns = { @JoinColumn(name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
+    @JoinTable(name = "resource_culture_keyword", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
+            nullable = false,
             name = "culture_keyword_id") })
     private Set<CultureKeyword> cultureKeywords = new LinkedHashSet<CultureKeyword>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
-    @JoinTable(name = "resource_other_keyword", joinColumns = { @JoinColumn(name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
+    @JoinTable(name = "resource_other_keyword", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
+            nullable = false,
             name = "other_keyword_id") })
     private Set<OtherKeyword> otherKeywords = new LinkedHashSet<OtherKeyword>();
 
     @ManyToMany(cascade = { CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST }, fetch = FetchType.LAZY)
-    @JoinTable(name = "resource_site_name_keyword", joinColumns = { @JoinColumn(name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
+    @JoinTable(name = "resource_site_name_keyword", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
+            nullable = false,
             name = "site_name_keyword_id") })
     private Set<SiteNameKeyword> siteNameKeywords = new LinkedHashSet<SiteNameKeyword>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
-    @JoinTable(name = "resource_material_keyword", joinColumns = { @JoinColumn(name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
+    @JoinTable(name = "resource_material_keyword", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
+            nullable = false,
             name = "material_keyword_id") })
     private Set<MaterialKeyword> materialKeywords = new LinkedHashSet<MaterialKeyword>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
-    @JoinTable(name = "resource_investigation_type", joinColumns = { @JoinColumn(name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
+    @JoinTable(name = "resource_investigation_type", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
+            nullable = false,
             name = "investigation_type_id") })
     private Set<InvestigationType> investigationTypes = new LinkedHashSet<InvestigationType>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
-    @JoinTable(name = "resource_site_type_keyword", joinColumns = { @JoinColumn(name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
+    @JoinTable(name = "resource_site_type_keyword", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
+            nullable = false,
             name = "site_type_keyword_id") })
     private Set<SiteTypeKeyword> siteTypeKeywords = new LinkedHashSet<SiteTypeKeyword>();
 
-    @OneToMany(mappedBy = "resource")
+    @OneToMany()
+    @JoinColumn(name = "resource_id")
     @ForeignKey(name = "none")
     @XmlTransient
     private Set<ResourceRevisionLog> resourceRevisionLog = new HashSet<ResourceRevisionLog>();
 
-    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH,
-            CascadeType.MERGE }, fetch = FetchType.LAZY)
-    @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(name = "resource_id") }, inverseJoinColumns = { @JoinColumn(name = "collection_id") })
+    @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
+    @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
+            nullable = false, name = "collection_id") })
     @XmlTransient
     @IndexedEmbedded(depth = 1)
     private Set<ResourceCollection> resourceCollections = new LinkedHashSet<ResourceCollection>();
+
+    private transient Account account;
 
     // used by the import service to determine whether a record has been
     // "created" or updated
@@ -338,6 +366,17 @@ public class Resource extends JsonModel.Base implements Persistable,
     private String externalId;
 
     private transient Float score = -1f;
+    private transient boolean readyToIndex = true;
+
+    @Transient
+    @XmlTransient
+    public boolean isReadyToIndex() {
+        return readyToIndex;
+    }
+
+    public void setReadyToIndex(boolean readyToIndex) {
+        this.readyToIndex = readyToIndex;
+    }
 
     private transient Explanation explanation;
 
@@ -365,7 +404,7 @@ public class Resource extends JsonModel.Base implements Persistable,
         writable.add(getUpdatedBy());
         for (ResourceCollection collection : getResourceCollections()) {
             writable.addAll(collection.getUsersWhoCan(
-                    GeneralPermissions.MODIFY_RECORD, true));
+                    GeneralPermissions.MODIFY_METADATA, true));
         }
         for (Person p : writable) {
             if (p == null || p.getId() == null)
@@ -392,7 +431,7 @@ public class Resource extends JsonModel.Base implements Persistable,
         HashSet<Person> writable = new HashSet<Person>();
         writable.add(getSubmitter());
         writable.add(getUpdatedBy());
-        for (ResourceCollection collection : getResourceCollections()) {
+        for (ResourceCollection collection : getRightsBasedResourceCollections()) {
             writable.addAll(collection.getUsersWhoCan(
                     GeneralPermissions.VIEW_ALL, true));
         }
@@ -408,24 +447,6 @@ public class Resource extends JsonModel.Base implements Persistable,
         return users;
     }
 
-    // @Field(name = QueryFieldNames.RESOURCE_COLLECTION_PUBLIC_IDS)
-    // @IndexedEmbedded
-    // @ElementCollection
-    // @XmlTransient
-    // @JSONTransient
-    // public List<Long> getPublicCollectionsContaining() {
-    // Set<Long> collectionIds = new HashSet<Long>();
-    //
-    // for (ResourceCollection collection : getResourceCollections()) {
-    // if (collection.isShared() && collection.isVisible()) {
-    // collectionIds.add(collection.getId());
-    // collectionIds.addAll(Persistable.Base.extractIds(collection.getVisibleParents()));
-    // }
-    // }
-    // logger.trace("partOfPublicResourceCollection:" + collectionIds);
-    // return new ArrayList<Long>(collectionIds);
-    // }
-
     @Field(name = QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS)
     @IndexedEmbedded
     @ElementCollection
@@ -434,7 +455,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     public List<Long> getSharedCollectionsContaining() {
         Set<Long> collectionIds = new HashSet<Long>();
         for (ResourceCollection collection : getResourceCollections()) {
-            if (collection.isShared()) {
+            if (!collection.isInternal()) {
                 collectionIds.add(collection.getId());
                 collectionIds.addAll(collection.getParentIdList());
             }
@@ -590,6 +611,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     @Field(store = Store.YES, analyzer = @Analyzer(impl = KeywordAnalyzer.class), name = QueryFieldNames.ID)
+    @XmlAttribute
     public Long getId() {
         return id;
     }
@@ -597,12 +619,6 @@ public class Resource extends JsonModel.Base implements Persistable,
     public void setId(Long id) {
         this.id = id;
     }
-
-    // @Field(store = Store.YES, analyzer = @Analyzer(impl =
-    // KeywordAnalyzer.class), name = QueryFieldNames.ID)
-    // public Long getIndexedId() {
-    // return getId();
-    // }
 
     @Fields({
             @Field(boost = @Boost(1.5f)),
@@ -688,7 +704,6 @@ public class Resource extends JsonModel.Base implements Persistable,
         }
         LatitudeLongitudeBox currentLatitudeLongitudeBox = getFirstLatitudeLongitudeBox();
         if (currentLatitudeLongitudeBox == null) {
-            latitudeLongitudeBox.setResource(this);
             getLatitudeLongitudeBoxes().add(latitudeLongitudeBox);
         } else {
             currentLatitudeLongitudeBox.copyValuesFrom(latitudeLongitudeBox);
@@ -707,6 +722,13 @@ public class Resource extends JsonModel.Base implements Persistable,
     @IndexedEmbedded
     public Set<LatitudeLongitudeBox> getActiveLatitudeLongitudeBoxes() {
         return getLatitudeLongitudeBoxes();
+    }
+
+    public LatitudeLongitudeBox getFirstActiveLatitudeLongitudeBox() {
+        if (CollectionUtils.isEmpty(getActiveLatitudeLongitudeBoxes())) {
+            return null;
+        }
+        return getActiveLatitudeLongitudeBoxes().iterator().next();
     }
 
     public LatitudeLongitudeBox getFirstLatitudeLongitudeBox() {
@@ -746,7 +768,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     @IndexedEmbedded(prefix = "activeGeographicKeywords.")
     public Set<GeographicKeyword> getIndexedGeographicKeywords() {
         Set<GeographicKeyword> indexed = new HashSet<GeographicKeyword>(
-                getGeographicKeywords());
+                getActiveGeographicKeywords());
         if (!CollectionUtils.isEmpty(managedGeographicKeywords)) {
             indexed.addAll(managedGeographicKeywords);
         }
@@ -954,6 +976,7 @@ public class Resource extends JsonModel.Base implements Persistable,
         this.dateUpdated = dateUpdated;
     }
 
+    @XmlAttribute
     public Status getStatus() {
         return status;
     }
@@ -1003,8 +1026,7 @@ public class Resource extends JsonModel.Base implements Persistable,
      * @param resourceAnnotations
      *            the resourceAnnotations to set
      */
-    public void setResourceAnnotations(
-            Set<ResourceAnnotation> resourceAnnotations) {
+    public void setResourceAnnotations(Set<ResourceAnnotation> resourceAnnotations) {
         this.resourceAnnotations = resourceAnnotations;
     }
 
@@ -1049,8 +1071,7 @@ public class Resource extends JsonModel.Base implements Persistable,
      * @param managedGeographicKeywords
      *            the managedGeographicKeywords to set
      */
-    public void setManagedGeographicKeywords(
-            Set<GeographicKeyword> managedGeographicKeywords) {
+    public void setManagedGeographicKeywords(Set<GeographicKeyword> managedGeographicKeywords) {
         this.managedGeographicKeywords = managedGeographicKeywords;
     }
 
@@ -1060,9 +1081,6 @@ public class Resource extends JsonModel.Base implements Persistable,
     @XmlElementWrapper(name = "managedGeographicKeywords")
     @XmlElement(name = "managedGeographicKeyword")
     public Set<GeographicKeyword> getManagedGeographicKeywords() {
-        if (managedGeographicKeywords == null) {
-            managedGeographicKeywords = new LinkedHashSet<GeographicKeyword>();
-        }
         return managedGeographicKeywords;
     }
 
@@ -1072,6 +1090,7 @@ public class Resource extends JsonModel.Base implements Persistable,
         if (dateCreated == null || submitter == null) {
             setDateCreated(new Date());
             setSubmitter(p);
+            setUploader(p);
         }
     }
 
@@ -1094,7 +1113,6 @@ public class Resource extends JsonModel.Base implements Persistable,
         } catch (ClassCastException e) {
             logger.debug("{} <==> {} ", candidate.getClass(), getClass());
             logger.debug("{}", e);
-            e.printStackTrace();
             return false;
         }
     }
@@ -1158,42 +1176,29 @@ public class Resource extends JsonModel.Base implements Persistable,
         // multiple items (once for each @Field annotation)
         logger.trace("get keyword contents: {}", getId());
         StringBuilder sb = new StringBuilder();
-        sb.append(getTitle()).append(" ").append(getDescription()).append(" ")
-                .append(getAdditonalKeywords()).append(" ");
+        sb.append(getTitle()).append(" ").append(getDescription()).append(" ").append(getAdditonalKeywords()).append(" ");
 
-        for (Keyword kwd : getIndexedGeographicKeywords()) {
-            sb.append(kwd.getLabel()).append(" ");
-        }
-        for (Keyword kwd : getActiveInvestigationTypes()) {
-            sb.append(kwd.getLabel()).append(" ");
-        }
-        for (Keyword kwd : getActiveMaterialKeywords()) {
-            sb.append(kwd.getLabel()).append(" ");
-        }
-        for (Keyword kwd : getActiveOtherKeywords()) {
-            sb.append(kwd.getLabel()).append(" ");
-        }
-        for (Keyword kwd : getActiveSiteNameKeywords()) {
-            sb.append(kwd.getLabel()).append(" ");
-        }
+        Collection<Keyword> kwds = new HashSet<Keyword>();
+        kwds.addAll(getActiveCultureKeywords());
+        kwds.addAll(getIndexedGeographicKeywords());
+        kwds.addAll(getActiveSiteNameKeywords());
+        kwds.addAll(getActiveSiteTypeKeywords());
+        kwds.addAll(getActiveMaterialKeywords());
+        kwds.addAll(getActiveOtherKeywords());
+        kwds.addAll(getActiveTemporalKeywords());
 
-        for (HierarchicalKeyword<CultureKeyword> kwd : getActiveCultureKeywords()) {
+        for (Keyword kwd : kwds) {
+            if (kwd instanceof HierarchicalKeyword) {
+                for (String label : ((HierarchicalKeyword<?>) kwd).getParentLabelList()) {
+                    sb.append(label).append(" ");
+                }
+            }
             sb.append(kwd.getLabel()).append(" ");
-            for (String label : kwd.getParentLabelList()) {
-                sb.append(label).append(" ");
+            for (Keyword syn : (Set<Keyword>) kwd.getSynonyms()) {
+                sb.append(syn.getLabel()).append(" ");
             }
         }
 
-        for (HierarchicalKeyword<SiteTypeKeyword> kwd : getActiveSiteTypeKeywords()) {
-            sb.append(kwd.getLabel()).append(" ");
-            for (String label : kwd.getParentLabelList()) {
-                sb.append(label).append(" ");
-            }
-        }
-
-        for (Keyword kwd : getActiveTemporalKeywords()) {
-            sb.append(kwd.getLabel()).append(" ");
-        }
         for (ResourceNote note : getActiveResourceNotes()) {
             sb.append(note.getNote()).append(" ");
         }
@@ -1206,7 +1211,9 @@ public class Resource extends JsonModel.Base implements Persistable,
         }
 
         for (ResourceCollection coll : getSharedResourceCollections()) {
-            sb.append(coll.getName()).append(" ");
+            if (coll.isVisible()) {
+                sb.append(coll.getName()).append(" ");
+            }
         }
 
         for (RelatedComparativeCollection rcc : getRelatedComparativeCollections()) {
@@ -1240,8 +1247,7 @@ public class Resource extends JsonModel.Base implements Persistable,
      * @param resourceCollections
      *            the resourceCollections to set
      */
-    public void setResourceCollections(
-            Set<ResourceCollection> resourceCollections) {
+    public void setResourceCollections(Set<ResourceCollection> resourceCollections) {
         this.resourceCollections = resourceCollections;
     }
 
@@ -1255,6 +1261,19 @@ public class Resource extends JsonModel.Base implements Persistable,
             resourceCollections = new LinkedHashSet<ResourceCollection>();
         }
         return resourceCollections;
+    }
+
+    @Transient
+    public Set<ResourceCollection> getRightsBasedResourceCollections() {
+        Set<ResourceCollection> collections = new HashSet<ResourceCollection>(getResourceCollections());
+        Iterator<ResourceCollection> iter = collections.iterator();
+        while (iter.hasNext()) {
+            ResourceCollection coll = iter.next();
+            if (coll.isPublic()) {
+                iter.remove();
+            }
+        }
+        return collections;
     }
 
     @Transient
@@ -1311,11 +1330,11 @@ public class Resource extends JsonModel.Base implements Persistable,
     public boolean isValid() {
         if (isValidForController() == true) {
             if (getSubmitter() == null) {
-                throw new TdarRecoverableRuntimeException(
+                throw new TdarValidationException(
                         "A submitter is required for this " + getResourceType());
             }
             if (getDateCreated() == null) {
-                throw new TdarRecoverableRuntimeException(
+                throw new TdarValidationException(
                         "The registered date is required for this "
                                 + getResourceType());
             }
@@ -1327,11 +1346,11 @@ public class Resource extends JsonModel.Base implements Persistable,
     @JSONTransient
     public boolean isValidForController() {
         if (StringUtils.isEmpty(getTitle())) {
-            throw new TdarRecoverableRuntimeException(
+            throw new TdarValidationException(
                     "A title is required for this " + getResourceType());
         }
         if (StringUtils.isEmpty(getDescription())) {
-            throw new TdarRecoverableRuntimeException(
+            throw new TdarValidationException(
                     "A description is required for this " + getResourceType());
         }
         return true;
@@ -1423,6 +1442,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     @Transient
+    @XmlTransient
     public boolean isViewable() {
         return viewable;
     }
@@ -1542,8 +1562,89 @@ public class Resource extends JsonModel.Base implements Persistable,
 
     @Transient
     public boolean isCitationRecord() {
-        // resources don't have files, but should still not be considered citation records because they *can't* have files.
+        return true;
+    }
+
+    public <R extends Resource> void copyImmutableFieldsFrom(R resource) {
+        this.setDateCreated(resource.getDateCreated());
+        this.setStatus(resource.getStatus());
+        this.setSubmitter(resource.getSubmitter());
+        this.getResourceCollections().addAll(resource.getResourceCollections());
+
+    }
+
+    @XmlAttribute(name = "uploaderRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    @NotNull
+    public Person getUploader() {
+        return uploader;
+    }
+
+    public void setUploader(Person uploader) {
+        this.uploader = uploader;
+    }
+
+    @Transient
+    @XmlTransient
+    public boolean isLessThanDayOld() {
+        return Days.daysBetween(new DateTime(new Date()), new DateTime(getDateCreated())).getDays() < 1;
+    }
+
+    public boolean isContainsActiveKeywords() {
+
+        if (CollectionUtils.isNotEmpty(getActiveSiteNameKeywords()) || CollectionUtils.isNotEmpty(getActiveCultureKeywords()) ||
+                CollectionUtils.isNotEmpty(getActiveSiteTypeKeywords()) || CollectionUtils.isNotEmpty(getActiveMaterialKeywords()) ||
+                CollectionUtils.isNotEmpty(getActiveInvestigationTypes()) || CollectionUtils.isNotEmpty(getActiveOtherKeywords())) {
+            return true;
+        }
         return false;
+    }
+
+    @Transient
+    public List<String> getKeywordProperties() {
+        List<String> toReturn = new ArrayList<String>();
+        if (CollectionUtils.isNotEmpty(getActiveCultureKeywords())) {
+            toReturn.add("activeCultureKeywords");
+        }
+        if (CollectionUtils.isNotEmpty(getActiveMaterialKeywords())) {
+            toReturn.add("activeMaterialKeywords");
+        }
+        if (CollectionUtils.isNotEmpty(getActiveSiteNameKeywords())) {
+            toReturn.add("activeSiteNameKeywords");
+        }
+        if (CollectionUtils.isNotEmpty(getActiveSiteTypeKeywords())) {
+            toReturn.add("activeSiteTypeKeywords");
+        }
+        if (CollectionUtils.isNotEmpty(getActiveInvestigationTypes())) {
+            toReturn.add("activeInvestigationTypes");
+        }
+        if (CollectionUtils.isNotEmpty(getActiveOtherKeywords())) {
+            toReturn.add("activeOtherKeywords");
+        }
+        if (CollectionUtils.isNotEmpty(getActiveGeographicKeywords())) {
+            toReturn.add("activeGeographicKeywords");
+        }
+        if (CollectionUtils.isNotEmpty(getActiveTemporalKeywords())) {
+            toReturn.add("activeTemporalKeywords");
+        }
+        return toReturn;
+    }
+
+    @XmlTransient
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
+    }
+
+    public Status getPreviousStatus() {
+        return previousStatus;
+    }
+
+    public void setPreviousStatus(Status previousStatus) {
+        this.previousStatus = previousStatus;
     }
 
 }

@@ -2,6 +2,7 @@ package org.tdar.core.bean.entity;
 
 import java.util.Set;
 
+import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Persistable;
 
 /**
@@ -10,12 +11,11 @@ import org.tdar.core.bean.Persistable;
  * @author jimdevos
  * 
  */
-public interface Dedupable extends Persistable {
+@SuppressWarnings("hiding")
+public interface Dedupable<Dedupable> extends Persistable, HasStatus {
+
     public boolean isDedupable();
 
-    public String getSynonymFormattedName();
+    public Set<Dedupable> getSynonyms();
 
-    public Set<String> getSynonyms();
-
-    public <D extends Dedupable> void addSynonym(D synonym);
 }

@@ -26,6 +26,7 @@ import java.util.concurrent.ConcurrentMap;
 import javax.sql.DataSource;
 
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -38,6 +39,7 @@ import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.support.DatabaseMetaDataCallback;
 import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.jdbc.support.MetaDataAccessException;
@@ -50,7 +52,9 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.RowOperations;
 import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.odata.server.AbstractDataRecord;
 import org.tdar.struts.data.IntegrationColumn;
 import org.tdar.struts.data.IntegrationContext;
 import org.tdar.struts.data.ModernIntegrationDataResult;
@@ -65,7 +69,7 @@ import org.tdar.utils.Pair;
  * 
  * @version $Revision$
  */
-public class PostgresDatabase implements TargetDatabase {
+public class PostgresDatabase implements TargetDatabase, RowOperations {
 
     public static final int MAX_VARCHAR_LENGTH = 500;
     private static final String SELECT_ALL_FROM_TABLE = "SELECT %s FROM %s";
@@ -175,7 +179,7 @@ public class PostgresDatabase implements TargetDatabase {
             logger.debug(numUpdates.length + " inserts/updates commited " + success + " successful");
             // cleanup
         } catch (SQLException e) {
-            e.getNextException().printStackTrace();
+            logger.warn("sql exception", e.getNextException());
             throw new TdarRecoverableRuntimeException("an error ocurred while processing a prepared statement ", e);
         } finally {
             try {
@@ -320,6 +324,10 @@ public class PostgresDatabase implements TargetDatabase {
         return jdbcTemplate;
     }
 
+    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
     public boolean hasColumn(final String tableName, final String columnName) {
         logger.debug("Checking if " + tableName + " has column " + columnName);
         try {
@@ -335,9 +343,7 @@ public class PostgresDatabase implements TargetDatabase {
                     });
             return columnExists;
         } catch (MetaDataAccessException e) {
-            e.printStackTrace();
-            logger.error("Couldn't access tdar data import database metadata",
-                    e);
+            logger.error("Couldn't access tdar data import database metadata", e);
         }
         return false;
     }
@@ -641,6 +647,8 @@ public class PostgresDatabase implements TargetDatabase {
                             preparedStatement.setString(2, code);
                             okToExecute = true;
                             break;
+                        default:
+                            break;
                     }
                     if (okToExecute) {
                         logger.trace("Prepared statement is: "
@@ -816,14 +824,14 @@ public class PostgresDatabase implements TargetDatabase {
             if (!integrationColumn.isDisplayColumn() && column != null) {
                 Set<String> whereVals = new HashSet<String>();
                 for (OntologyNode node : integrationColumn.getOntologyNodesForSelect()) {
-                    for (String val: column.getMappedDataValues(node)) {
-                        whereVals.add(quote(StringEscapeUtils.escapeSql(val), false));                        
+                    for (String val : column.getMappedDataValues(node)) {
+                        whereVals.add(quote(StringEscapeUtils.escapeSql(val), false));
                     }
 
-//                     FIXME: need to verify / replace this logic at some point
-//                    for (String val : node.getMappedDataValues(column)) {
-//
-//                    }
+                    // FIXME: need to verify / replace this logic at some point
+                    // for (String val : node.getMappedDataValues(column)) {
+                    //
+                    // }
                 }
                 if (whereVals.isEmpty()) {
                     continue;
@@ -886,6 +894,53 @@ public class PostgresDatabase implements TargetDatabase {
         }
         String sql = String.format(SELECT_ALL_FROM_COLUMN, column.getName(), column.getDataTable().getName());
         return jdbcTemplate.queryForList(sql, String.class);
+    }
+
+    public List<String[]> query(String selectSql, ParameterizedRowMapper<String[]> parameterizedRowMapper) {
+        return jdbcTemplate.query(selectSql, parameterizedRowMapper);
+    }
+
+    @Override
+    public void editRow(DataTable dataTable, Long rowId, Map<?, ?> data) {
+
+        String columnAssignments = "";
+        final List<Object> values = new ArrayList<Object>();
+        String separator = "";
+        for (Object columnName : data.keySet())
+        {
+            if (!"id".equals(columnName))
+            {
+                columnAssignments += separator + columnName + "=" + "?";
+                values.add(data.get(columnName));
+                separator = " ";
+            }
+        }
+        // Put id last so WHERE id = ? will work.
+        values.add(data.get("id"));
+
+        // TODO RR: should this fail with an exception?
+        // Probably should log it.
+        if (values.size() > 1)
+        {
+            String sqlTemplate = "UPDATE \"%s\" SET %s WHERE id = ?";
+            String sql = String.format(sqlTemplate, dataTable.getName(), columnAssignments);
+
+            jdbcTemplate.update(sql, values.toArray());
+        }
+    }
+
+    @Override
+    public Set<AbstractDataRecord> findAllRows(DataTable dataTable) {
+        return null;
+    }
+
+    @Override
+    public void deleteRow(DataTable dataTable, Long rowId) {
+        // Do nothing.
+        // Not allowed this time.
+        // The use case was to allow modification of existing records.
+        // I am interpreting this literally as update only.
+        throw new NotImplementedException("Not allowed. Deletion of records is out of scope");
     }
 
 }

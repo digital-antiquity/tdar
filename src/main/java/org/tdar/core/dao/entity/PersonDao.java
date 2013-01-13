@@ -1,5 +1,6 @@
 package org.tdar.core.dao.entity;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -61,10 +62,11 @@ public class PersonDao extends Dao.HibernateBase<Person> {
     }
 
     // find people with the same firstName, lastName, or institution (if specified)
+    @SuppressWarnings("unchecked")
     public Set<Person> findByPerson(Person person) {
         // if the email address is set then all other fields are moot
         if (StringUtils.isNotBlank(person.getEmail())) {
-            Set hs = new HashSet<Person>();
+            Set<Person> hs = new HashSet<Person>();
             hs.add(findByEmail(person.getEmail()));
             return hs;
         }
@@ -127,5 +129,12 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         Criteria criteria = getCriteria(Resource.class);
         criteria.setProjection(Projections.projectionList().add(Projections.countDistinct("submitter.id")));
         return (Long) ((criteria.list()).get(0));
+    }
+
+    public void registerLogin(Person authenticatedUser) {
+        authenticatedUser.setLastLogin(new Date());
+        authenticatedUser.incrementLoginCount();
+        logger.trace("login {} {}", authenticatedUser.getLastLogin(), authenticatedUser.getTotalLogins());
+        saveOrUpdate(authenticatedUser);
     }
 }

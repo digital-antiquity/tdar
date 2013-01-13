@@ -2,6 +2,7 @@ package org.tdar.core.bean.resource;
 
 import org.apache.commons.lang.StringUtils;
 import org.tdar.core.bean.HasLabel;
+import org.tdar.search.query.QueryFieldNames;
 
 /**
  * $Id$
@@ -11,8 +12,7 @@ import org.tdar.core.bean.HasLabel;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
  */
-public enum ResourceType implements HasLabel, Comparable<ResourceType>,
-        Facetable {
+public enum ResourceType implements HasLabel, Comparable<ResourceType>, Facetable {
     CODING_SHEET("Coding Sheet", 8, "Dataset", "unknown", CodingSheet.class),
     DATASET("Dataset", 3, "Dataset", "unknown", Dataset.class),
     DOCUMENT("Document", 1, "Text", "document", Document.class),
@@ -50,7 +50,17 @@ public enum ResourceType implements HasLabel, Comparable<ResourceType>,
             case SENSORY_DATA:
                 return SENSORY_DATA.label;
             default:
-                return this.label.concat("s");
+                return getLabel().concat("s");
+        }
+    }
+
+    public boolean supportBulkUpload() {
+        switch (this) {
+            case DOCUMENT:
+            case IMAGE:
+                return true;
+            default:
+                return false;
         }
     }
 
@@ -177,5 +187,14 @@ public enum ResourceType implements HasLabel, Comparable<ResourceType>,
     public String getUrlNamespace() {
         String urlToReturn = name();
         return urlToReturn.toLowerCase().replaceAll("_", "-");
+    }
+
+    public String getLuceneFieldName() {
+        return QueryFieldNames.RESOURCE_TYPE;
+    }
+
+    @Override
+    public ResourceType getValueOf(String val) {
+        return valueOf(val);
     }
 }

@@ -6,14 +6,17 @@
  */
 package org.tdar.struts.action.resource;
 
+import org.joda.time.DateTime;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.service.EntityService;
 import org.tdar.struts.action.DownloadController;
 import org.tdar.struts.action.TdarActionSupport;
@@ -33,7 +36,7 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
     @Rollback
     public void testConfidential() throws InstantiationException, IllegalAccessException {
         Document doc = (Document) generateInformationResourceWithFile();
-        doc.getInformationResourceFiles().iterator().next().setConfidential(true);
+        doc.getInformationResourceFiles().iterator().next().setRestriction(FileAccessRestriction.CONFIDENTIAL);
         entityService.save(doc);
         assertFalse(authenticationAndAuthorizationService.canViewConfidentialInformation(getUser(), doc));
     }
@@ -47,7 +50,9 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
 
     private Document setupEmbargoedDoc() throws InstantiationException, IllegalAccessException {
         Document doc = (Document) generateInformationResourceWithFile();
-        doc.setAvailableToPublic(false);
+        InformationResourceFile file = doc.getInformationResourceFiles().iterator().next();
+        file.setRestriction(FileAccessRestriction.EMBARGOED);
+        file.setDateMadePublic(new DateTime().plusYears(4).toDate());
         entityService.save(doc);
         return doc;
     }
@@ -56,7 +61,7 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
     @Rollback
     public void testCombination() throws InstantiationException, IllegalAccessException {
         Document doc = setupEmbargoedDoc();
-        doc.getInformationResourceFiles().iterator().next().setConfidential(true);
+        doc.getInformationResourceFiles().iterator().next().setRestriction(FileAccessRestriction.CONFIDENTIAL);
         entityService.save(doc);
         assertFalse(authenticationAndAuthorizationService.canViewConfidentialInformation(getUser(), doc));
     }
@@ -85,7 +90,7 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
 
     private Document setupReadUserDoc() throws InstantiationException, IllegalAccessException {
         Document doc = setupEmbargoedDoc();
-        doc.getInformationResourceFiles().iterator().next().setConfidential(true);
+        doc.getInformationResourceFiles().iterator().next().setRestriction(FileAccessRestriction.CONFIDENTIAL);
         addAuthorizedUser(doc, getUser(), GeneralPermissions.VIEW_ALL);
         entityService.save(doc);
         return doc;
@@ -93,7 +98,7 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
 
     private Document setupBadReadUserDoc() throws InstantiationException, IllegalAccessException {
         Document doc = setupEmbargoedDoc();
-        doc.getInformationResourceFiles().iterator().next().setConfidential(true);
+        doc.getInformationResourceFiles().iterator().next().setRestriction(FileAccessRestriction.CONFIDENTIAL);
         addAuthorizedUser(doc, getAdminUser(), GeneralPermissions.VIEW_ALL);
         entityService.save(doc);
         return doc;
@@ -108,14 +113,14 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
 
     private Document setupFullUserDoc() throws InstantiationException, IllegalAccessException {
         Document doc = setupEmbargoedDoc();
-        doc.getInformationResourceFiles().iterator().next().setConfidential(true);
+        doc.getInformationResourceFiles().iterator().next().setRestriction(FileAccessRestriction.CONFIDENTIAL);
         addAuthorizedUser(doc, getUser(), GeneralPermissions.MODIFY_RECORD);
         return doc;
     }
 
     private Document setupBadFullUserDoc() throws InstantiationException, IllegalAccessException {
         Document doc = setupEmbargoedDoc();
-        doc.getInformationResourceFiles().iterator().next().setConfidential(true);
+        doc.getInformationResourceFiles().iterator().next().setRestriction(FileAccessRestriction.CONFIDENTIAL);
         addAuthorizedUser(doc, getAdminUser(), GeneralPermissions.MODIFY_RECORD);
         return doc;
     }
@@ -130,7 +135,7 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
     public void testAbstractInformationResourceControllerConfidential() throws InstantiationException, IllegalAccessException {
         logger.info("test confidential");
         Document doc = (Document) generateInformationResourceWithFile();
-        doc.getInformationResourceFiles().iterator().next().setConfidential(true);
+        doc.getInformationResourceFiles().iterator().next().setRestriction(FileAccessRestriction.CONFIDENTIAL);
         entityService.save(doc);
         DocumentController controller = generateNewInitializedController(DocumentController.class);
         loadResourceFromId(controller, doc.getId());
@@ -152,7 +157,7 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
     public void testAbstractInformationResourceControllerEmbargoedAndConfidential() throws InstantiationException, IllegalAccessException {
         logger.info("test combined");
         Document doc = setupEmbargoedDoc();
-        doc.getInformationResourceFiles().iterator().next().setConfidential(true);
+        doc.getInformationResourceFiles().iterator().next().setRestriction(FileAccessRestriction.CONFIDENTIAL);
         entityService.save(doc);
         DocumentController controller = generateNewInitializedController(DocumentController.class);
         loadResourceFromId(controller, doc.getId());
@@ -190,7 +195,7 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
     @Rollback
     public void testDownloadControllerConfidential() throws InstantiationException, IllegalAccessException {
         Document doc = (Document) generateInformationResourceWithFile();
-        doc.getInformationResourceFiles().iterator().next().setConfidential(true);
+        doc.getInformationResourceFiles().iterator().next().setRestriction(FileAccessRestriction.CONFIDENTIAL);
         DownloadController controller = generateNewInitializedController(DownloadController.class);
         controller.setInformationResourceFileId(doc.getInformationResourceFiles().iterator().next().getUploadedVersion(1).getId());
         assertEquals(DownloadController.FORBIDDEN, controller.execute());

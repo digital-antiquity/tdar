@@ -5,6 +5,9 @@
 <p>The majority of AHAD resources represent years of research by numerous archaeologists, historians and other specialists, and some describe material culture of high significance to some communities.  Depositors are expected to make every effort to identify the creators and copyright holders of these works, and other parties with vested interest in the resources, prior to publication.</p>
 <p>Unless otherwise stated, all works published on this site are subject to the <i><a href="http://creativecommons.org/licenses/by-nc-sa/3.0/au/">Creative Commons Attribution License</a></i> (CC BY-NC-SA 3.0).
 This User Agreement is subject to change.</p>
+<a href="#" onclick="$('#fullLicenseText').toggle();">View full text of agreement</a>
+
+<div id="fullLicenseText" style="display: none;">
 <h3>Conditions of Use</h3>
 <p>Users may copy or distribute AHAD resources of parts thereof and/or use them in derivative works provided the following conditions are met:
 <ol>
@@ -55,3 +58,4 @@ The AHAD Site Administrator and AHAD Editor has/have the technical ability to ac
 <li>the user will be notified of the changes. </li>
 </ul>
 <p>If more complex changes are required, e.g. to Site Name keywords, the AHAD editor will liaise with the User prior to making changes.</p>
+</div>

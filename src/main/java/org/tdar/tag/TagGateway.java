@@ -1,6 +1,7 @@
 package org.tdar.tag;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -24,6 +25,7 @@ import org.tdar.core.bean.resource.Dataset.IntegratableOptions;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.SearchService;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.resource.ProjectService;
@@ -33,6 +35,7 @@ import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.FreetextQueryPart;
 import org.tdar.search.query.part.KeywordQueryPart;
 import org.tdar.search.query.part.SpatialQueryPart;
+import org.tdar.search.query.part.StatusQueryPart;
 import org.tdar.search.query.part.TemporalQueryPart;
 import org.tdar.tag.Query.What;
 import org.tdar.tag.Query.When;
@@ -97,8 +100,8 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
 
         // build the query from the supplied parameters
         ResourceQueryBuilder qb = new ResourceQueryBuilder();
-        qb.append(new FieldQueryPart(RESOURCE_TYPE, ResourceType.PROJECT.name()));
-        qb.append(new FieldQueryPart(STATUS, Status.ACTIVE.name().toLowerCase()));
+        qb.append(new FieldQueryPart<ResourceType>(RESOURCE_TYPE, ResourceType.PROJECT));
+        qb.append(new StatusQueryPart(Arrays.asList(Status.ACTIVE), null, null));
 
         if (what != null) {
             List<String> terms = new ArrayList<String>();
@@ -118,11 +121,12 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
         }
         if (where != null) {
             SpatialQueryPart sqp = new SpatialQueryPart();
-            sqp.add(new LatitudeLongitudeBox(
-                    where.getMinLongitude().doubleValue(),
-                    where.getMaxLongitude().doubleValue(),
-                    where.getMinLatitude().doubleValue(),
-                    where.getMaxLatitude().doubleValue()));
+            LatitudeLongitudeBox latLong = new LatitudeLongitudeBox();
+            latLong.setMinimumLatitude(where.getMinLatitude().doubleValue());
+            latLong.setMaximumLatitude(where.getMaxLatitude().doubleValue());
+            latLong.setMinimumLongitude(where.getMinLongitude().doubleValue());
+            latLong.setMaximumLongitude(where.getMaxLongitude().doubleValue());
+            sqp.add(latLong);
             logger.debug("Spatial query clause:" + sqp.generateQueryString());
             qb.append(sqp);
         }
@@ -177,7 +181,7 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
         Results tdarRes = new Results();
         searchRes.setResults(tdarRes);
 
-        resMeta.setProviderName("tDAR");
+        resMeta.setProviderName(TdarConfiguration.getInstance().getSiteAcronym());
         resMeta.setSessionID(sessionId);
         resMeta.setFirstRecord(firstRec);
         resMeta.setLastRecord(lastRec);

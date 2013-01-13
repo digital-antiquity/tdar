@@ -75,8 +75,7 @@ public class WorkspaceController extends AuthenticationAware.Base {
      * Pass through actions that will go to <action-name>.ftl or <action-name>.jsp
      */
     @Actions({
-            @Action(value = "select-tables"),
-            @Action("list")
+            @Action(value = "select-tables")
     })
     @Override
     public String execute() {
@@ -193,7 +192,6 @@ public class WorkspaceController extends AuthenticationAware.Base {
             filestoreService.store(ticket, file, "integration-context.xml");
             setTicketId(ticket.getId());
         } catch (Throwable e) {
-            e.printStackTrace();
             addActionErrorWithException(e.getMessage(), e);
             return INPUT;
         }

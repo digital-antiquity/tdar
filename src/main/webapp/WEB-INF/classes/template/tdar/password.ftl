@@ -51,7 +51,6 @@ title="${parameters.title?html}"<#rt/>
 <#include "/${parameters.templateDir}/simple/scripting-events.ftl" />
 <#include "/${parameters.templateDir}/simple/common-attributes.ftl" />
 <#include "/${parameters.templateDir}/simple/dynamic-attributes.ftl" />
-<#include "/${parameters.templateDir}/tdar/tdar-attributes.ftl" />
 />
 
 <#include "/${parameters.templateDir}/${parameters.theme}/controlfooter.ftl" />

@@ -17,13 +17,19 @@ import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.hibernate.search.FullTextQuery;
 import org.tdar.core.bean.Indexable;
+import org.tdar.core.bean.entity.Institution;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Dataset.IntegratableOptions;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
+import org.tdar.search.query.builder.InstitutionQueryBuilder;
+import org.tdar.search.query.builder.PersonQueryBuilder;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
+import org.tdar.search.query.part.InstitutionQueryPart;
+import org.tdar.search.query.part.PersonQueryPart;
 import org.tdar.search.query.part.PhraseFormatter;
 import org.tdar.search.query.part.QueryGroup;
 import org.tdar.search.query.part.QueryPartGroup;
@@ -54,6 +60,26 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     private String searchDescription;
     // execute a query even if query is empty
     private boolean showAll = false;
+
+    public enum LookupSource {
+        PERSON("people"), INSTITUTION("institutions"), KEYWORD("items"), RESOURCE("resources"), COLLECTION("collections");
+
+        private String collectionName;
+
+        private LookupSource(String name) {
+            this.collectionName = name;
+        }
+
+        public String getCollectionName() {
+            return this.collectionName;
+        }
+
+        public String getProper() {
+            return StringUtils.capitalize(name().toLowerCase());
+        }
+    }
+
+    private LookupSource lookupSource;
 
     protected void handleSearch(QueryBuilder q) throws ParseException {
         getSearchService().handleSearch(q, this);
@@ -143,7 +169,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     protected void addEscapedWildcardField(QueryGroup q, String field, String value) {
         if (checkMinString(value) && StringUtils.isNotBlank(value)) {
             getLogger().trace(field + ":" + value);
-            FieldQueryPart fqp = new FieldQueryPart(field, value);
+            FieldQueryPart<String> fqp = new FieldQueryPart<String>(field, value);
             fqp.setPhraseFormatters(PhraseFormatter.WILDCARD);
             q.append(fqp);
         }
@@ -152,7 +178,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     protected void addQuotedEscapedField(QueryGroup q, String field, String value) {
         if (checkMinString(value)) {
             getLogger().trace(field + ":" + value);
-            FieldQueryPart fqp = new FieldQueryPart(field, value);
+            FieldQueryPart<String> fqp = new FieldQueryPart<String>(field, value);
             fqp.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
             q.append(fqp);
         }
@@ -160,13 +186,13 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
 
     protected void appendIf(boolean test, QueryGroup q, String field, String value) {
         if (test) {
-            q.append(new FieldQueryPart(field, value));
+            q.append(new FieldQueryPart<String>(field, value));
         }
     }
 
     protected void addResourceTypeQueryPart(QueryGroup q, List<ResourceType> list) {
         if (!CollectionUtils.isEmpty(list)) {
-            FieldQueryPart fqp = new FieldQueryPart("resourceType", list.toArray(new ResourceType[0]));
+            FieldQueryPart<ResourceType> fqp = new FieldQueryPart<ResourceType>("resourceType", list.toArray(new ResourceType[0]));
             fqp.setOperator(Operator.OR);
             q.append(fqp);
         }
@@ -175,9 +201,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     // deal with the terms that correspond w/ the "narrow your search" section
     // and from facets
     protected QueryPartGroup processReservedTerms() {
-        getAuthenticationAndAuthorizationService()
-                .initializeReservedSearchParameters(getReservedSearchParameters(),
-                        getAuthenticatedUser());
+        getAuthenticationAndAuthorizationService().initializeReservedSearchParameters(getReservedSearchParameters(), getAuthenticatedUser());
         return getReservedSearchParameters().toQueryPartGroup();
     }
 
@@ -328,6 +352,12 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         return getReservedSearchParameters().getResourceTypes();
     }
 
+    public List<ResourceType> getAllResourceTypes() {
+        ArrayList<ResourceType> arrayList = new ArrayList<ResourceType>(Arrays.asList(ResourceType.values()));
+        arrayList.remove(ResourceType.VIDEO);
+        return arrayList;
+    }
+
     public List<IntegratableOptions> getIntegratableOptions() {
         return getReservedSearchParameters().getIntegratableOptions();
     }
@@ -341,4 +371,89 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         getReservedSearchParameters().setResourceTypes(resourceTypes);
     }
 
+    public String findPerson(String firstName, String term, String lastName, String institution, String email, String registered) {
+        this.setLookupSource(LookupSource.PERSON);
+        QueryBuilder q = new PersonQueryBuilder(Operator.AND);
+        boolean valid = false;
+        Person incomingPerson = new Person();
+        if (checkMinString(firstName)) {
+            incomingPerson.setFirstName(firstName);
+            valid = true;
+        }
+        if (checkMinString(term)) {
+            incomingPerson.setWildcardName(term);
+            valid = true;
+        }
+
+        if (checkMinString(lastName)) {
+            incomingPerson.setLastName(lastName);
+            valid = true;
+        }
+        if (checkMinString(institution)) {
+            valid = true;
+            Institution incomingInstitution = new Institution(institution);
+            incomingPerson.setInstitution(incomingInstitution);
+            getGenericService().detachFromSession(incomingInstitution);
+        }
+
+        // ignore email field for unauthenticated users.
+        if (isAuthenticated() && checkMinString(email)) {
+            incomingPerson.setEmail(email);
+            valid = true;
+        }
+        getGenericService().detachFromSession(incomingPerson);
+
+        PersonQueryPart pqp = new PersonQueryPart();
+        pqp.add(incomingPerson);
+        q.append(pqp);
+        q.append(new FieldQueryPart<Status>("status", Status.ACTIVE));
+        if (valid || getMinLookupLength() == 0) {
+            if (StringUtils.isNotBlank(registered)) {
+                try {
+                    pqp.setRegistered(Boolean.parseBoolean(registered));
+                } catch (Exception e) {
+                    addActionErrorWithException("Invalid query syntax, please try using simpler terms without special characters.", e);
+                    return ERROR;
+                }
+            }
+
+            try {
+                handleSearch(q);
+                // sanitize results if the user is not logged in
+            } catch (ParseException e) {
+                addActionErrorWithException("Invalid query syntax, please try using simpler terms without special characters.", e);
+                return ERROR;
+            }
+        }
+        return SUCCESS;
+    }
+
+    public String findInstitution(String institution) {
+        this.setLookupSource(LookupSource.INSTITUTION);
+        QueryBuilder q = new InstitutionQueryBuilder(Operator.AND);
+        if (checkMinString(institution)) {
+            InstitutionQueryPart iqp = new InstitutionQueryPart();
+            Institution testInstitution = new Institution(institution);
+            if (StringUtils.isNotBlank(institution)) {
+                iqp.add(testInstitution);
+                q.append(iqp);
+            }
+            q.append(new FieldQueryPart<Status>("status", Status.ACTIVE));
+            try {
+                handleSearch(q);
+            } catch (ParseException e) {
+                addActionErrorWithException("Invalid query syntax, please try using simpler terms without special characters.", e);
+                return ERROR;
+            }
+        }
+        return SUCCESS;
+    }
+
+    public LookupSource getLookupSource() {
+        return lookupSource;
+    }
+
+    public void setLookupSource(LookupSource lookupSource) {
+        this.lookupSource = lookupSource;
+    }
 }

@@ -32,6 +32,8 @@ public class ResourceController extends AuthenticationAware.Base {
 
     private static final long serialVersionUID = 7080916909862991142L;
 
+    public static final String BILLING = "billing";
+
     private final SortedMap<ResourceType, String> resourceTypes = new TreeMap<ResourceType, String>();
 
     // incoming data from /resource/add
@@ -43,9 +45,16 @@ public class ResourceController extends AuthenticationAware.Base {
     /**
      * Passthrough action, just loads add.ftl via conventions plugin.
      */
-    @Action(value = "add")
+    @Action(value = "add",
+            results={
+            @Result(name=BILLING, location = "../billing-note.ftl"),
+            @Result(name=SUCCESS, location = "add.ftl")
+    })
     public String execute() {
-        return SUCCESS;
+        if (!getTdarConfiguration().isPayPerIngestEnabled() || getAuthenticatedUser().getContributor() == true && getAccountService().hasSpaceInAnAccount(getAuthenticatedUser(), ResourceType.DOCUMENT)) {
+            return SUCCESS;
+        }
+        return BILLING;
     }
 
     /**
@@ -76,6 +85,14 @@ public class ResourceController extends AuthenticationAware.Base {
         }
 
         return resourceType.name();
+    }
+
+    public boolean isAllowedToCreateResource() {
+//        logger.info("ppi: {}", getTdarConfiguration().isPayPerIngestEnabled());
+        if (getTdarConfiguration().isPayPerIngestEnabled() == false || getAccountService().hasSpaceInAnAccount(getAuthenticatedUser(), null)) {
+            return true;
+        }
+        return false;
     }
 
     /**

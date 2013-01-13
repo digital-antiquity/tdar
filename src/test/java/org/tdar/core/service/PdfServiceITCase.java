@@ -38,8 +38,9 @@ public class PdfServiceITCase extends AbstractIntegrationTestCase {
             genericService.saveOrUpdate(c.getCreator());
             genericService.saveOrUpdate(c);
         }
+        genericService.saveOrUpdate(document.getPublisher());
         for (Person p : genericService.findRandom(Person.class, 30)) {
-            document.getResourceCreators().add(new ResourceCreator(document, p, ResourceCreatorRole.AUTHOR));
+            document.getResourceCreators().add(new ResourceCreator(p, ResourceCreatorRole.AUTHOR));
         }
         genericService.saveOrUpdate(document.getResourceCreators().toArray());
         document.setTitle("Remote Sensing Methodology and the Chaco Canyon Prehistoric Road System");

@@ -3,6 +3,7 @@
  */
 package org.tdar.filestore.tasks;
 
+import ij.IJ;
 import ij.ImagePlus;
 import ij.io.Opener;
 import ij.process.ColorProcessor;
@@ -81,10 +82,15 @@ public class ImageThumbnailTask extends AbstractTask {
     public void processImage(File sourceFile, String origFileName) {
         getLogger().debug("sourceFile: " + sourceFile);
 
-        ijSource = new Opener().openImage(sourceFile.getAbsolutePath());
+        Opener opener = new Opener();
+        opener.setSilentMode(true);
+        IJ.redirectErrorMessages(true);
+        ijSource = opener.openImage(sourceFile.getAbsolutePath());
+        
+//        getLogger().info(IJ.getLastLogMessage());
         if (ijSource == null) {
             getLogger().debug("Unable to load source image: " + sourceFile);
-            throw new TdarRecoverableRuntimeException("processing error");
+            throw new TdarRecoverableRuntimeException("Please check that the image you uploaded is not corrupt and was not saved with any compression");
         } else {
             try {
                 createJpegDerivative(ijSource, origFileName, MEDIUM, false);

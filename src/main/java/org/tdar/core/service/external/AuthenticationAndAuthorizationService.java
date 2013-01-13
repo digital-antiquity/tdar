@@ -3,11 +3,13 @@ package org.tdar.core.service.external;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.WeakHashMap;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -20,7 +22,9 @@ import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Viewable;
+import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.InformationResource;
@@ -28,18 +32,22 @@ import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.dao.entity.PersonDao;
+import org.tdar.core.dao.external.auth.AuthenticationProvider;
+import org.tdar.core.dao.external.auth.AuthenticationResult;
+import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.AbstractConfigurableService;
-import org.tdar.core.service.external.auth.AuthenticationProvider;
-import org.tdar.core.service.external.auth.InternalTdarRights;
-import org.tdar.core.service.external.auth.TdarGroup;
 import org.tdar.struts.action.search.ReservedSearchParameters;
+import org.tdar.web.SessionData;
 
 @Service
-public class AuthenticationAndAuthorizationService extends AbstractConfigurableService<AuthenticationProvider> {
+public class AuthenticationAndAuthorizationService extends AbstractConfigurableService<AuthenticationProvider> implements Accessible {
 
+    public static final String YOU_ARE_NOT_ALLOWED_TO_SEARCH_FOR_RESOURCES_WITH_THE_SELECTED_STATUS = "You are not allowed to search for resources with the selected status";
     private final WeakHashMap<Person, TdarGroup> groupMembershipCache = new WeakHashMap<Person, TdarGroup>();
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -62,6 +70,10 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
         return checkAndUpdateCache(person, TdarGroup.TDAR_ADMIN);
     }
 
+    public boolean isBillingManager(Person person) {
+        return checkAndUpdateCache(person, TdarGroup.TDAR_BILLING_MANAGER);
+    }
+
     public boolean isEditor(Person person) {
         return checkAndUpdateCache(person, TdarGroup.TDAR_EDITOR);
     }
@@ -80,7 +92,7 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
 
     public void updateUsername(Person person, String newUsername, String password) {
         if (personDao.findByUsername(newUsername.toLowerCase()) != null) {
-            throw new TdarRecoverableRuntimeException(String.format("Username %s already exists",newUsername));
+            throw new TdarRecoverableRuntimeException(String.format("Username %s already exists", newUsername));
         }
 
         String[] groupNames = getProvider().findGroupMemberships(person);
@@ -116,6 +128,12 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
 
         if (can(InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, person)) {
             allowed.add(Status.FLAGGED);
+            if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
+                allowed.add(Status.FLAGGED_ACCOUNT_BALANCE);
+            }
+        }
+        if (can(InternalTdarRights.SEARCH_FOR_DUPLICATE_RECORDS, person)) {
+            allowed.add(Status.DUPLICATE);
         }
         return allowed;
     }
@@ -131,7 +149,7 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
 
         reservedSearchParameters.getStatuses().retainAll(allowedSearchStatuses);
         if (reservedSearchParameters.getStatuses().isEmpty()) {
-            throw (new TdarRecoverableRuntimeException("You are not allowed to search for resources with the selected status"));
+            throw (new TdarRecoverableRuntimeException(YOU_ARE_NOT_ALLOWED_TO_SEARCH_FOR_RESOURCES_WITH_THE_SELECTED_STATUS));
         }
 
     }
@@ -223,7 +241,7 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
 
         // finally, check if user has been granted permission
         // FIXME: technically the dao layer is doing some stuff that we should be, but I don't want to mess w/ it right now.
-        return authorizedUserDao.isAllowedTo(person, resource, GeneralPermissions.MODIFY_RECORD);
+        return authorizedUserDao.isAllowedTo(person, resource, GeneralPermissions.MODIFY_METADATA);
     }
 
     /**
@@ -271,6 +289,7 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
         }
     }
 
+    @Override
     public boolean canEdit(Person authenticatedUser, Persistable item) {
         if (item instanceof Resource) {
             return canEditResource(authenticatedUser, (Resource) item);
@@ -281,12 +300,12 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
         }
     }
 
-    
+    @Override
     public boolean canView(Person authenticatedUser, Persistable item) {
         if (item instanceof Resource) {
             return canViewResource(authenticatedUser, (Resource) item);
         } else if (item instanceof ResourceCollection) {
-            return canViewCollection((ResourceCollection) item,authenticatedUser);
+            return canViewCollection((ResourceCollection) item, authenticatedUser);
         } else {
             return can(InternalTdarRights.VIEW_ANYTHING, authenticatedUser);
         }
@@ -299,6 +318,14 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
      * @return
      */
     public boolean canViewConfidentialInformation(Person person, Resource resource) {
+        return canDo(person, resource, InternalTdarRights.VIEW_AND_DOWNLOAD_CONFIDENTIAL_INFO, GeneralPermissions.VIEW_ALL);
+    }
+
+    public boolean canUploadFiles(Person person, Resource resource) {
+        return canDo(person, resource, InternalTdarRights.EDIT_ANY_RESOURCE, GeneralPermissions.MODIFY_RECORD);
+    }
+
+    public boolean canDo(Person person, Resource resource, InternalTdarRights equivalentAdminRight, GeneralPermissions permission) {
         // This function used to pre-test on the resource, but it doesn't have to and is now more granular
         if (resource == null)
             return false;
@@ -313,12 +340,18 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
             return true;
         }
 
-        if (can(InternalTdarRights.VIEW_AND_DOWNLOAD_CONFIDENTIAL_INFO, person)) {
+        if (can(equivalentAdminRight, person)) {
             return true;
         }
 
-        if (authorizedUserDao.isAllowedTo(person, resource, GeneralPermissions.VIEW_ALL)) {
+        if (authorizedUserDao.isAllowedTo(person, resource, permission)) {
             logger.debug("person is an authorized user");
+            return true;
+        }
+
+        // ab added:12/11/12
+        if (Persistable.Base.isTransient(resource) && resource.getSubmitter() == null) {
+            logger.debug("resource is transient");
             return true;
         }
 
@@ -359,8 +392,7 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
     public boolean canDownload(InformationResourceFile irFile, Person person) {
         if (irFile == null)
             return false;
-        boolean fileRestricted = (irFile.isConfidential() || !irFile.getInformationResource().isAvailableToPublic());
-        if (fileRestricted && !canViewConfidentialInformation(person, irFile.getInformationResource())) {
+        if (!irFile.isPublic() && !canViewConfidentialInformation(person, irFile.getInformationResource())) {
             return false;
         } else {
             return true;
@@ -397,22 +429,25 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
                 }
             }
 
+            if (item instanceof InformationResource) {
+                setTransientViewableStatus((InformationResource) item, authenticatedUser);
+            }
+
             if (!viewable && canEdit(authenticatedUser, p)) {
                 viewable = true;
             }
             item.setViewable(viewable);
         }
     }
-    
-    
-    //normalize username to abide by our business rules
-    //TODO: replace calls to username.toLowerCase() where appropriate
+
+    // normalize username to abide by our business rules
+    // TODO: replace calls to username.toLowerCase() where appropriate
     public String normalizeUsername(String userName) {
-        //for now, we just lowercase it.
-        String normalizedUsername =  userName.toLowerCase();
+        // for now, we just lowercase it.
+        String normalizedUsername = userName.toLowerCase();
         return normalizedUsername;
     }
-    
+
     public void setTransientViewableStatus(InformationResource ir, Person p) {
         for (InformationResourceFile irf : ir.getInformationResourceFiles()) {
             boolean viewable = canDownload(irf, p);
@@ -423,5 +458,58 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
             }
         }
     }
-    
+
+    public enum AuthenticationStatus {
+        AUTHENTICATED,
+        ERROR,
+        NEW;
+    }
+
+    @Transactional
+    public AuthenticationStatus authenticatePerson(String loginUsername, String loginPassword, HttpServletRequest request, HttpServletResponse response,
+            SessionData sessionData) {
+        AuthenticationResult result = getAuthenticationProvider().authenticate(request, response, loginUsername, loginPassword);
+        if (result.isValid()) {
+            Person person = personDao.findByUsername(loginUsername);
+            if (person == null) {
+                // FIXME: person exists in Crowd but not in tDAR..
+                logger.debug("Person successfully authenticated by authentication service but not present in site database: " + loginUsername);
+                person = new Person();
+                person.setUsername(loginUsername);
+                // how to pass along authentication information..?
+                // username was in Crowd but not in tDAR? Redirect them to the account creation page
+                return AuthenticationStatus.NEW;
+            }
+
+            // enable us to force group cache to be cleared
+            clearPermissionsCache(person);
+
+            logger.debug(loginUsername.toUpperCase() + " logged in from " + request.getRemoteAddr() + " using: "
+                    + request.getHeader("User-Agent"));
+            createAuthenticationToken(person, sessionData);
+            personDao.registerLogin(person);
+            return AuthenticationStatus.AUTHENTICATED;
+        } else {
+            logger.debug(String.format("Couldn't authenticate %s - (reason: %s)", loginUsername, result));
+            throw new TdarRecoverableRuntimeException(result.getMessage());
+        }
+        // return AuthenticationStatus.ERROR;
+    }
+
+    public void createAuthenticationToken(Person person, SessionData session) {
+        AuthenticationToken token = AuthenticationToken.create(person);
+        personDao.save(token);
+        session.setAuthenticationToken(token);
+    }
+
+    public boolean canAssignInvoice(Invoice invoice, Person authenticatedUser) {
+        if (authenticatedUser.equals(invoice.getTransactedBy()) || authenticatedUser.equals(invoice.getOwner())) {
+            return true;
+        }
+        if (isMember(authenticatedUser, TdarGroup.TDAR_BILLING_MANAGER)) {
+            return true;
+        }
+        return false;
+    }
+
 }

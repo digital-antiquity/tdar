@@ -22,6 +22,7 @@ public class JaxbPersistableMapConverter<K extends Persistable, V>
         @XmlElement
         protected List<PersistableMapEntry<K, V>> key = new LinkedList<PersistableMapEntry<K, V>>();
 
+        @SuppressWarnings("unused")
         private PersistableMapAdapter() {
         }
 
@@ -44,6 +45,7 @@ public class JaxbPersistableMapConverter<K extends Persistable, V>
         @XmlElement
         protected V value;
 
+        @SuppressWarnings("unused")
         private PersistableMapEntry() {
         }
 

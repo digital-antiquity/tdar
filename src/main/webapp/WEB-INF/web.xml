@@ -49,10 +49,6 @@ vim:sts=2:sw=2
     <param-name>contextConfigLocation</param-name>
     <param-value>classpath:applicationContext.xml</param-value>
   </context-param>
-  <filter>
-    <filter-name>springFilter</filter-name>
-    <filter-class>org.springframework.web.filter.RequestContextFilter</filter-class>
-  </filter>
   
   <!-- 	causing an error with missing dependency from xwork 2.1.3-snapshot
 		(xwork removed TextUtils) -->
@@ -70,13 +66,6 @@ vim:sts=2:sw=2
 
   <filter-mapping>
     <filter-name>UrlRewriteFilter</filter-name>
-    <url-pattern>/*</url-pattern>
-    <dispatcher>REQUEST</dispatcher>
-    <dispatcher>FORWARD</dispatcher>
-  </filter-mapping>
-  
-  <filter-mapping>
-    <filter-name>springFilter</filter-name>
     <url-pattern>/*</url-pattern>
     <dispatcher>REQUEST</dispatcher>
     <dispatcher>FORWARD</dispatcher>
@@ -120,6 +109,12 @@ vim:sts=2:sw=2
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
   
+  <!--  https://blogs.oracle.com/enterprisetechtips/entry/jersey_and_spring -->
+  <!-- Also used by tDAR in general. -->
+	<listener>
+		<listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+	</listener>  
+  
   <listener>
     <listener-class>org.apache.struts2.dispatcher.ng.listener.StrutsListener</listener-class>
   </listener>
@@ -149,6 +144,14 @@ vim:sts=2:sw=2
                 <param-name>useCache</param-name>
                 <param-value>true</param-value> 
         </init-param>
+	     <init-param>
+                <param-name>encoding</param-name>
+                <param-value>UTF-8</param-value>
+        </init-param>
+        <init-param>
+                <param-name>force</param-name>
+                <param-value>true</param-value> <!-- true if you wanted to force encoding  -->
+        </init-param>
         <init-param>
                 <param-name>autoCorrectUrlsInCSS</param-name>
                 <param-value>false</param-value> 
@@ -174,6 +177,23 @@ vim:sts=2:sw=2
     <servlet-name>sitemesh-freemarker</servlet-name>
     <url-pattern>*.dec</url-pattern>
   </servlet-mapping>
-
-
+  
+<!-- 
+ <servlet>
+    <servlet-name>OData_service</servlet-name>
+    <servlet-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</servlet-class>
+    <init-param>
+      <param-name>javax.ws.rs.Application</param-name>
+      <param-value>org.odata4j.jersey.producer.resources.ODataApplication</param-value>
+    </init-param>
+	<init-param>
+	  <param-name>odata4j.producerfactory</param-name>
+	  <param-value>org.tdar.odata.server.TDarProducerFactory</param-value>
+	</init-param>  
+ </servlet>
+	<servlet-mapping>
+		<servlet-name>OData_service</servlet-name>
+		<url-pattern>/odata.svc/*</url-pattern>
+	</servlet-mapping>
+-->
 </web-app>

@@ -67,7 +67,7 @@ public class GenericDao {
     }
 
     @SuppressWarnings("unchecked")
-    public <E> List<E> findAll(Class<E> persistentClass, List<Long> ids) {
+    public <E> List<E> findAll(Class<E> persistentClass, Collection<Long> ids) {
         if (CollectionUtils.isEmpty(ids)) {
             return Collections.emptyList();
         }
@@ -353,7 +353,7 @@ public class GenericDao {
         detachFromSession(incomingUnmanagedEntity);
         incomingUnmanagedEntity.setId(existingManagedEntity.getId());
         P entity = merge(incomingUnmanagedEntity);
-        // FIXME: this shouldn't be necessary to bring the entity onto the session, need to get the tests to simulate 
+        // FIXME: this shouldn't be necessary to bring the entity onto the session, need to get the tests to simulate
         // transaction boundary semantics similar to web requests.
         saveOrUpdate(entity);
         return entity;
@@ -464,7 +464,7 @@ public class GenericDao {
     public <O> O markWritable(O obj) {
         if (getCurrentSession().contains(obj)) {
             // theory -- if we're persistable and have not been 'saved' perhaps we don't need to worry about merging yet
-            if (obj instanceof Persistable && !Persistable.Base.isTransient((Persistable) obj)) {
+            if (obj instanceof Persistable && Persistable.Base.isNotTransient((Persistable) obj)) {
                 getCurrentSession().setCacheMode(CacheMode.NORMAL);
                 getCurrentSession().setReadOnly(obj, false);
                 getCurrentSession().evict(obj);

@@ -19,7 +19,6 @@ import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
 import org.apache.tika.sax.BodyContentHandler;
 import org.tdar.core.bean.resource.VersionType;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.tasks.Task.AbstractTask;
 
 /**
@@ -51,6 +50,7 @@ public class IndexableTextExtractionTask extends AbstractTask {
             ParseContext parseContext = new ParseContext();
 
             File indexFile = new File(getWorkflowContext().getWorkingDirectory(), file.getName() + ".index.txt");
+            metadataFile = new File(getWorkflowContext().getWorkingDirectory(), file.getName() + ".metadata");
             FileOutputStream indexOutputStream = new FileOutputStream(indexFile);
             BufferedOutputStream indexedFileOutputStream = new BufferedOutputStream(indexOutputStream);
             metadataOutputStream = new FileOutputStream(metadataFile);
@@ -58,7 +58,9 @@ public class IndexableTextExtractionTask extends AbstractTask {
             stream = new FileInputStream(file);
             parser.parse(stream, handler, metadata, parseContext);
             IOUtils.closeQuietly(indexedFileOutputStream);
-            addDerivativeFile(indexFile, VersionType.INDEXABLE_TEXT);
+            if (indexFile.length() > 0) {
+                addDerivativeFile(indexFile, VersionType.INDEXABLE_TEXT);
+            }
 
             for (String name : metadata.names()) {
                 StringWriter sw = new StringWriter();
@@ -80,8 +82,10 @@ public class IndexableTextExtractionTask extends AbstractTask {
             IOUtils.closeQuietly(stream);
             IOUtils.closeQuietly(metadataOutputStream);
         }
+
         if (metadataFile != null && metadataFile.exists() && metadataFile.length() > 0) {
             addDerivativeFile(metadataFile, VersionType.METADATA);
+
         }
     }
 

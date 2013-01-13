@@ -86,15 +86,24 @@ public class SheetEvaluator {
         logger.debug(String.format("excel file starts at: %s; maxCount:%s ", getStartAt(), getMaxCellCount()));
     }
 
-    public void evaluateForBlankCells(Row row) {
+    public void evaluateForBlankCells(Row row, int startColumnIndex) {
+        // is the first cell before the first column with a heading?
+        if (row.getFirstCellNum() < startColumnIndex) {
+            throwTdarRecoverableRuntimeException(row.getRowNum(), row.getFirstCellNum(), startColumnIndex, row.getSheet().getSheetName());
+        }
+        // is the last cell after the last column with a heading?
         if (getMaxCellCount() < row.getLastCellNum()) {
-            int countAbove = evaluateForBlankCells(row, getMaxCellCount() , row.getLastCellNum());
+            int countAbove = evaluateForBlankCells(row, getMaxCellCount(), row.getLastCellNum());
             if (countAbove > getMaxCellCount()) {
-                throw new TdarRecoverableRuntimeException("row #" + row.getRowNum() + " has more columns (" + row.getLastCellNum()
-                        + ") than this sheet has column names (" + (getMaxCellCount() + 1)
-                        + ") - " + row.getSheet().getSheetName());
+                throwTdarRecoverableRuntimeException(row.getRowNum(), row.getLastCellNum(), getMaxCellCount() + 1, row.getSheet().getSheetName());
             }
         }
+    }
+
+    private void throwTdarRecoverableRuntimeException(int rowNumber, short offendingColumnIndex, int columnNameBound, String sheetName) {
+        throw new TdarRecoverableRuntimeException("row #" + rowNumber + " has more columns (" + offendingColumnIndex
+                + ") than this sheet has column names (" + columnNameBound
+                + ") - " + sheetName);
     }
 
     private int evaluateForBlankCells(Row row, int endAt, int cellCount) {
@@ -108,7 +117,22 @@ public class SheetEvaluator {
     }
 
     public String getCellValueAsString(Cell cell) {
-        return formatter.formatCellValue(cell, evaluator);
+        try {
+            return formatter.formatCellValue(cell, evaluator);
+        } catch (IndexOutOfBoundsException e) {
+            logger.trace("row {} col: {}", cell.getRowIndex(), cell.getColumnIndex());
+            switch (cell.getCellType()) {
+                case Cell.CELL_TYPE_STRING:
+                    return cell.getStringCellValue();
+                case Cell.CELL_TYPE_NUMERIC:
+                    return Double.toString(cell.getNumericCellValue());
+                case Cell.CELL_TYPE_BOOLEAN:
+                    return Boolean.toString(cell.getBooleanCellValue());
+                default:
+                    throw new TdarRecoverableRuntimeException(String.format("there was a problem processing your dataset at row: %s column %s",
+                            cell.getRowIndex(), cell.getColumnIndex()));
+            }
+        }
     }
 
     public int getFirstNonHeaderRow() {

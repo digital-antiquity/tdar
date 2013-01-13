@@ -2,7 +2,7 @@
 <#import "/WEB-INF/macros/resource/list-macros.ftl" as rlist>
 
 <#macro listDatasets datasetList> 
-            <table class="tableFormat width99percent">
+            <table class="tableFormat ">
                 <thead>
                     <tr>
                         <th></th>
@@ -14,14 +14,14 @@
         <#if ! dataset.dataTables.isEmpty()>
             <tbody class="integrate_dataset" id="dataset_${dataset.id?c}">
                     <@listDataTables dataset />
-            </tbody>
+            </tbody> 
         </#if>
     </#list>
             </table>
 </#macro>
 
 <#macro listDataTables dataset>
-	<#if dataset?? && (!dataset.viewable?has_content || dataset.viewable)>
+    <#if dataset?? && (!dataset.viewable?has_content || dataset.viewable)>
         <#list dataset.getDataTables() as table>
         <tr>
             <td>
@@ -32,7 +32,7 @@
              &nbsp;(<a href="#" class="column_toggle" > show/hide columns</a>)            
                   <div class="datatable_columns" id="datatable_columns_${table.id?c}" style="display:none;">
                     <@listDataTableColumns table.getDataTableColumns() />
-                </div>    
+                  </div>
             </td>
         </tr>
         </#list>
@@ -40,7 +40,7 @@
 </#macro>
 
 <#macro listDataTableColumns tableColumnList>        
-    <table border="1" cellspacing="0" cellpadding="2" class="zebracolors">
+    <table border="1" cellspacing="0" cellpadding="2" class="table table-striped">
         <thead>
             <tr>
                 <th align="center"> Column name </th>
@@ -55,7 +55,7 @@
                 <td>${column.columnDataType}</td>
                 <td>
                 <#if column.defaultOntology??>
-                    ${column.defaultOntology.title}</td>
+                    ${column.defaultOntology.title}
                 <#else>
                   None
                 </#if>
@@ -70,20 +70,17 @@
 <title>Data Integration: Select Tables</title>
 <meta name="lastModifiedDate" content="$Date$"/>
 <script type='text/javascript'>
-$(document).ready(function() {
+$(function() {
   $('.column_toggle').click(function() {
       $(this).next().toggle();
       return false;
   });
-applyZebraColors();
 });
 </script>
 </head>
 
-<@rlist.toolbar "select-tables" />
-
-    <div class="glide">
-
+<body>
+<div class="glide">
 
 <#if bookmarkedDataTables.empty >
     <p>
@@ -95,12 +92,13 @@ applyZebraColors();
     <h3>Step 1: Select Datasets to Integrate or Display</h3>
     <@s.form name='selectDTForm' method='post' action='select-columns'>
         <@listDatasets bookmarkedDatasets />
-        <br/>
-</div>
-<div class="glide">
-                <@s.submit value='Next: select columns'/>
+
+<div class="form-actions">
+    <@s.submit value='Next: select columns' cssClass="btn btn-primary submitButton"/>
 </div>
     </@s.form>
 </#if>
-    </div>
+</div>
+</body>
+
 </#escape>

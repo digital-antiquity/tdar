@@ -1,8 +1,5 @@
 package org.tdar.struts.action.resource;
 
-import static org.tdar.core.bean.Persistable.Base.isNullOrTransient;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,7 +9,6 @@ import java.util.Set;
 import java.util.SortedMap;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -26,19 +22,15 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.CategoryType;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.CodingRule;
-import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
-import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
-import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.MeasurementUnit;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.external.auth.InternalTdarRights;
+import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.struts.WriteableSession;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FileProxy;
@@ -147,17 +139,10 @@ public class DatasetController extends AbstractInformationResourceController<Dat
     @WriteableSession
     public String reimport() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+        // note this ignores the quota changes -- it's on us
         getDatasetService().reprocess(getPersistable());
         return SUCCESS;
     }
-
-    // private void reshredOntologyIfNecessary(Ontology ontology) {
-    // if (CollectionUtils.isEmpty(ontologyNodes)) {
-    // getLogger().debug("ontology {} did not have any nodes, trying to shred again.", ontology);
-    // getOntologyService().shred(ontology);
-    // ontologyNodes = ontology.getSortedOntologyNodesByImportOrder();
-    // }
-    // }
 
     /**
      * Retranslates the given dataset.
@@ -166,6 +151,7 @@ public class DatasetController extends AbstractInformationResourceController<Dat
     @Action(value = "retranslate", results = { @Result(name = SUCCESS, type = "redirect", location = "view?id=${resource.id}") })
     @WriteableSession
     public String retranslate() throws TdarActionException {
+        // note this ignores the quota changes -- it's on us
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         for (DataTable table : getPersistable().getDataTables()) {
             getDatasetService().retranslate(table.getDataTableColumns());
@@ -230,149 +216,13 @@ public class DatasetController extends AbstractInformationResourceController<Dat
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         boolean hasOntologies = false;
         try {
-            List<DataTableColumn> columnsToTranslate = new ArrayList<DataTableColumn>();
-            List<DataTableColumn> columnsToMap = new ArrayList<DataTableColumn>();
-            for (DataTableColumn incomingColumn : dataTableColumns) {
-                boolean needToRemap = false;
-                logger.debug("incoming data table column: {}", incomingColumn);
-                DataTableColumn existingColumn = getDataTable().getColumnById(incomingColumn.getId());
-                if (existingColumn == null) {
-                    existingColumn = getDataTable().getColumnByName(incomingColumn.getName());
-                    if (existingColumn == null) {
-                        throw new TdarRecoverableRuntimeException(String.format("could not find column named %s with id %s", incomingColumn.getName(),
-                                incomingColumn.getId()));
-                    }
-                }
-                CodingSheet incomingCodingSheet = incomingColumn.getDefaultCodingSheet();
-                CodingSheet existingCodingSheet = existingColumn.getDefaultCodingSheet();
-                Ontology defaultOntology = null;
-                if (!isNullOrTransient(incomingCodingSheet)) {
-                    // load the full hibernate entity and set it back on the incoming column
-                    incomingCodingSheet = getGenericService().find(CodingSheet.class, incomingCodingSheet.getId());
-                    incomingColumn.setDefaultCodingSheet(incomingCodingSheet);
-                    if (incomingCodingSheet.getDefaultOntology() != null) {
-                        // ALWAYS defer to the CodingSheet's ontology if a coding sheet is set. Otherwise
-                        // we run into conflicts when you specify both a coding sheet AND an ontology for a given DTC
-                        defaultOntology = incomingCodingSheet.getDefaultOntology();
-                    }
-                }
-                if (defaultOntology == null) {
-                    // check if the incoming column had an ontology set
-                    defaultOntology = getGenericService().loadFromSparseEntity(incomingColumn.getDefaultOntology(), Ontology.class);
-                }
-                logger.debug("default ontology: {}", defaultOntology);
-                logger.debug("incoming coding sheet: {}", incomingCodingSheet);
-                incomingColumn.setDefaultOntology(defaultOntology);
-                if (defaultOntology != null && isNullOrTransient(incomingCodingSheet)) {
-                    incomingColumn.setColumnEncodingType(DataTableColumnEncodingType.CODED_VALUE);
-                    CodingSheet generatedCodingSheet = getDataIntegrationService().createGeneratedCodingSheet(existingColumn, getAuthenticatedUser(),
-                            defaultOntology);
-                    incomingColumn.setDefaultCodingSheet(generatedCodingSheet);
-                    getLogger().debug("generated coding sheet {} for {}", generatedCodingSheet, incomingColumn);
-                }
-                // FIXME: can we simplify this logic? Perhaps push into DataTableColumn?
-                // incoming ontology or coding sheet from the web was not null but the column encoding type was set to something that
-                // doesn't support either, we set it to null
-                // incoming ontology or coding sheet is explicitly set to null
-                if (!isNullOrTransient(defaultOntology)) {
-                    if (incomingColumn.getColumnEncodingType().isSupportsOntology()) {
-                        hasOntologies = true;
-                    }
-                    else {
-                        incomingColumn.setDefaultOntology(null);
-                        logger.debug("column {} doesn't support ontologies - setting default ontology to null", incomingColumn);
-                    }
-                }
-                if (incomingColumn.getDefaultCodingSheet() != null && !incomingColumn.getColumnEncodingType().isSupportsCodingSheet()
-                        && defaultOntology == null) {
-                    incomingColumn.setDefaultCodingSheet(null);
-                    logger.debug("column encoding type didn't support coding sheets - setting default coding sheet to null on column {} (encoding type: {})",
-                            incomingColumn,
-                            incomingColumn.getColumnEncodingType());
-                }
-
-                existingColumn.setDefaultOntology(incomingColumn.getDefaultOntology());
-                existingColumn.setDefaultCodingSheet(incomingColumn.getDefaultCodingSheet());
-
-                existingColumn.setCategoryVariable(getGenericService().loadFromSparseEntity(incomingColumn.getCategoryVariable(), CategoryVariable.class));
-                CategoryVariable subcategoryVariable = getGenericService().loadFromSparseEntity(incomingColumn.getTempSubCategoryVariable(),
-                        CategoryVariable.class);
-
-                if (subcategoryVariable != null) {
-                    existingColumn.setCategoryVariable(subcategoryVariable);
-                }
-                // check if values have changed
-                needToRemap = existingColumn.hasDifferentMappingMetadata(incomingColumn);
-                // copy off all of the values that can be directly copied from the bean
-                existingColumn.copyUserMetadataFrom(incomingColumn);
-                if (!existingColumn.isValid()) {
-                    throw new TdarRecoverableRuntimeException("invalid column: " + existingColumn);
-                }
-
-                if (needToRemap) {
-                    logger.debug("remapping {}", existingColumn);
-                    columnsToMap.add(existingColumn);
-                }
-                // if there is a change in coding sheet a column may need to be retranslated or untranslated.
-                if (isRetranslationNeeded(incomingCodingSheet, existingCodingSheet)) {
-                    logger.debug("retranslating {} for incoming coding sheet {}", existingColumn, incomingCodingSheet);
-                    columnsToTranslate.add(existingColumn);
-                }
-                logger.trace("{}", existingColumn);
-                getGenericService().update(existingColumn);
-            }
-            getPersistable().markUpdated(getAuthenticatedUser());
-            getDatasetService().save(getPersistable());
-            getDatasetService().updateMappings(getPersistable().getProject(), columnsToMap);
-            if (!columnsToTranslate.isEmpty()) {
-                // create the translation file for this dataset.
-                logger.debug("creating translated file");
-                getDatasetService().retranslate(columnsToTranslate);
-                getDatasetService().createTranslatedFile(getPersistable());
-            }
-            getDatasetService().logDataTableColumns(getDataTable(), "data column metadata registration", getAuthenticatedUser());
+            hasOntologies = getDatasetService().updateColumnMetadata(getPersistable(), getDataTable(), getDataTableColumns(), getAuthenticatedUser());
         } catch (Throwable tde) {
             logger.error(tde.getMessage(), tde);
             addActionErrorWithException(tde.getMessage(), tde);
             return INPUT_COLUMNS;
         }
         return getPostSaveAction().getResultName(!hasOntologies);
-        // switch (getPostSaveAction()) {
-        // case SAVE_MAP_THIS:
-        // return SAVE_MAP_THIS;
-        // case SAVE_MAP_NEXT:
-        // if (hasOntologies) {
-        // return SAVE_MAP_NEXT;
-        // }
-        // case SAVE_VIEW:
-        // return SAVE_VIEW;
-        // }
-        // return SUCCESS;
-    }
-
-    private boolean isRetranslationNeeded(CodingSheet incomingCodingSheet, CodingSheet existingCodingSheet) {
-        if (ObjectUtils.equals(incomingCodingSheet, existingCodingSheet)) {
-            return false;
-        }
-        else if (incomingCodingSheet.isGenerated()) {
-            return existingCodingSheet != null;
-        }
-        else {
-            return true;
-        }
-    }
-
-    protected void processUploadedFiles(List<InformationResourceFile> uploadedFiles) throws IOException {
-        // can we get rid of this template method now?
-        return;
-    }
-
-    @Override
-    protected void loadCustomMetadata() {
-        super.loadCustomMetadata();
-        if (!getPersistable().getInformationResourceFiles().isEmpty()) {
-            setConfidential(getPersistable().getInformationResourceFiles().iterator().next().isConfidential());
-        }
     }
 
     @Override

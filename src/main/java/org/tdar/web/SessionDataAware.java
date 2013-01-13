@@ -11,7 +11,7 @@ package org.tdar.web;
  * @version $Rev$
  */
 public interface SessionDataAware {
-    public final static String RETURN = "return";
+    public final static String REDIRECT = "return";
     public SessionData getSessionData();
     public void setSessionData(SessionData sessionData);
 }

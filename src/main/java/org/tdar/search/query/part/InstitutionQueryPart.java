@@ -17,7 +17,7 @@ public class InstitutionQueryPart extends FieldQueryPart<Institution> {
         StringBuilder sb = new StringBuilder();
         sb.append(" ( ");
         StringBuilder sbauto = new StringBuilder();
-        setPhraseFormatters(PhraseFormatter.ESCAPED);
+        setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
         for (int i = 0; i < getFieldValues().size(); i++) {
             appendPhrase(sbauto, i);
         }

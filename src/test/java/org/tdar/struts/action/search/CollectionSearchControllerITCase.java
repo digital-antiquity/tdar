@@ -69,9 +69,7 @@ public class CollectionSearchControllerITCase extends AbstractSearchControllerIT
         genericService.saveOrUpdate(collection);
         if (createAuthUser) {
             AuthorizedUser authuser = new AuthorizedUser(user, GeneralPermissions.ADMINISTER_GROUP);
-            authuser.setResourceCollection(collection);
             collection.getAuthorizedUsers().add(authuser);
-            genericService.saveOrUpdate(authuser);
             genericService.saveOrUpdate(collection);
         }
         searchIndexService.index(collection);

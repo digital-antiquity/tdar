@@ -9,7 +9,7 @@
 <hr/>
 <@s.actionerror />
 
-<table class="zebracolors">
+<table class="table table-striped">
 <thead><th >Resource ID</th><th>Modified by</th><th>Log message</th><th>Date</th></thead>
 <tbody>
 <@s.iterator value='resourceRevisionLogs' status='rowStatus' var='resourceRevisionLog'>
@@ -26,5 +26,4 @@
 </@s.iterator>
 </tbody>
 </table>
-<script>$(applyZebraColors);</script>
 </#escape>

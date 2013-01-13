@@ -23,10 +23,12 @@ $(function(){
 
 </head>
 <body>
+<@edit.sidebar />
+<@edit.subNavMenu />
 
-<@edit.toolbar "${resource.urlNamespace}" "edit" />
-<@s.form name='datasetMetadataForm' id='datasetMetadataForm'  method='post' enctype='multipart/form-data' action='save'>
+<@s.form name='datasetMetadataForm' id='datasetMetadataForm'   cssClass="form-horizontal" method='post' enctype='multipart/form-data' action='save'>
 
+<@edit.resourceTitle />
 
 <@edit.basicInformation 'dataset' 'dataset' >
 <br/>
@@ -43,8 +45,7 @@ $(function(){
 
 </@s.form>
 
-<@edit.sidebar />
 
-<@edit.resourceJavascript formId="#datasetMetadataForm" selPrefix="#dataset" includeInheritance=true />
+<@edit.resourceJavascript formSelector="#datasetMetadataForm" selPrefix="#dataset" includeInheritance=true />
 </body>
 </#escape>

@@ -8,11 +8,12 @@
 
 </head>
 <body>
+<@edit.sidebar />
+<@edit.subNavMenu />
 
+<@s.form name='imageMetadataForm' id='ImageMetadataForm'  cssClass="form-horizontal"  method='post' enctype='multipart/form-data' action='save'>
 
-<@edit.toolbar "${resource.urlNamespace}" "edit" />
-
-<@s.form name='ImageMetadataForm' id='ImageMetadataForm'  method='post' enctype='multipart/form-data' action='save'>
+<@edit.resourceTitle />
 
 <@edit.basicInformation "image" "image">
 
@@ -34,8 +35,10 @@
 
 </@s.form>
 
-<@edit.sidebar />
 
-<@edit.resourceJavascript formId="#ImageMetadataForm" selPrefix="#image" includeAsync=true includeInheritance=true />
+<@edit.asyncUploadTemplates />
+<@edit.resourceJavascript formSelector="#ImageMetadataForm" selPrefix="#image" includeAsync=true includeInheritance=true />
+
+
 </body>
 </#escape>

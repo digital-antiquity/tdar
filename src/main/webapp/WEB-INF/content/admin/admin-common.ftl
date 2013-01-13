@@ -12,10 +12,14 @@
     <h3>Statistics Menu</h3>
     <table cellpadding=4>
     <tr>
-        <td><a href="resource">Resource Statistics</a> </td>
-        <td><a href="user">User Statistics</a> </td>
-        <td><a href="keyword-stats">Keyword Statistics</a> </td>
-    </tr>
+        <td><a href="<@s.url value="/admin/resource"/>">Resource Statistics</a> </td>
+        <td><a href="<@s.url value="/admin/usage/stats"/>">Usage Statistics</a> </td>
+        <td><a href="<@s.url value="/admin/user"/>">User Statistics</a> </td>
+        <td><a href="<@s.url value="/admin/keyword-stats"/>">Keyword Statistics</a> </td>
+        <#if administrator >
+            <td><a href="<@s.url value="/admin/searchindex/build"/>">reindex</a></td>
+        </#if>
+</tr>
     </table>
 </div>    
 </#macro>
@@ -44,9 +48,9 @@
                          <th>
                     ${key_.label}
                          </th>
-	            <#if (numSets < key__index )>
-		            <#assign numSets = key__index />
-	            </#if>
+                <#if (numSets < key__index )>
+                    <#assign numSets = key__index />
+                </#if>
                 </#list>
               </tr>
              </thead>
@@ -57,18 +61,18 @@
              <tr>
                <td>
                 ${key?date}
-		      </td>
+              </td>
     
                 <#list valsKeys as key_>
                <td>
-               	<#if valueFormat == "number">
+                   <#if valueFormat == "number">
                    ${vals.get(key_)?default("0")}
                 <#elseif valueFormat == "filesize">
-	                <@common.convertFileSize filesize=vals.get(key_)?default("0") />
+                    <@common.convertFileSize filesize=vals.get(key_)?default("0") />
                 </#if>
-		      </td>
+              </td>
                 </#list>
-    		</tr>
+            </tr>
         </#list>
     </table>
 
@@ -85,29 +89,29 @@ var d${i} = [];
      <#list statsObjKeys as key>
         <#assign vals = statsObj.get(key) />
         <#assign valsKeys = vals?keys />
-	    <#list valsKeys as key_>
-	    	d${key__index}.push([${(key.time)?c}, ${vals.get(key_)?default("0")?c}]);
-	    	d${key__index}.label = "${key_.label}";
-	    	d${key__index}.color = "${settings.barColors[key__index % settings.barColors?size ]}";
-	        </#list>
+        <#list valsKeys as key_>
+            d${key__index}.push([${(key.time)?c}, ${vals.get(key_)?default("0")?c}]);
+            d${key__index}.label = "${key_.label}";
+            d${key__index}.color = "${settings.barColors[key__index % settings.barColors?size ]}";
+            </#list>
         </#list>
 
     $.plot($("#graph${cssid}"), [ <#list 0..numSets as i><#if i != 0>,</#if>{label: d${i}.label, data: d${i},color: d${i}.color }</#list> ],{
-    	xaxis: {
-    		mode:"date",
-		  tickFormatter: function (val, axis) {
-		    var d = new Date(val);
-		    return  d.getFullYear() + "-" + (d.getUTCMonth() + 1) + '-' + d.getUTCDate();
-		  }
-    	},
-    	yaxis: {
-	   //		transform: function (v) { return Math.log(v); },
-    		inverseTransform: function (v) { return Math.exp(v); }
-    	},
-    	legend : {
-	    	show:true,
-	    	position:"nw"
-    	}
+        xaxis: {
+            mode:"date",
+          tickFormatter: function (val, axis) {
+            var d = new Date(val);
+            return  d.getFullYear() + "-" + (d.getUTCMonth() + 1) + '-' + d.getUTCDate();
+          }
+        },
+        yaxis: {
+       //        transform: function (v) { return Math.log(v); },
+            inverseTransform: function (v) { return Math.exp(v); }
+        },
+        legend : {
+            show:true,
+            position:"nw"
+        }
     });
 });
 </script>

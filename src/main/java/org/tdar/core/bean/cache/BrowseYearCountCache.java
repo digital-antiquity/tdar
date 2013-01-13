@@ -16,6 +16,7 @@ public class BrowseYearCountCache extends AbstractCountCache<BrowseYearCountCach
     @Column(name = "key")
     private Integer key;
 
+    @SuppressWarnings("unused")
     private BrowseYearCountCache() {
 
     }

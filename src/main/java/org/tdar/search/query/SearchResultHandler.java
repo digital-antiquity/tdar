@@ -5,6 +5,9 @@ import java.util.List;
 import org.hibernate.search.FullTextQuery;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.resource.Facetable;
+import org.tdar.core.service.SearchService;
+import org.tdar.struts.data.FacetGroup;
 
 /* further abstracting some of the functions of the search result handler 
  * so it can be pushed into the service layer. HibernateSearch handles the request by pulling field info
@@ -56,8 +59,6 @@ public interface SearchResultHandler<I extends Indexable> {
 
     void setRecordsPerPage(int recordsPerPage);
 
-    void addFacets(FullTextQuery ftq);
-
     boolean isDebug();
 
     boolean isShowAll();
@@ -89,5 +90,7 @@ public interface SearchResultHandler<I extends Indexable> {
     public int getPrevPageStartRecord();
 
     List<String> getProjections();
+
+    List<FacetGroup<? extends Facetable>> getFacetFields();
 
 }

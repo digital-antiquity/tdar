@@ -6,15 +6,16 @@
 <title>Filter Ontology Values</title>
 <meta name="lastModifiedDate" content="$Date$"/>
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-</head>
 <style type='text/css'>
-input+label {position: relative; }
+//input+label {position: relative; }
 input[disabled] + label {
 font-weight: normal !important;
 }
+.inline-label {clear:none;display:inline-block; }
 </style>
-<@edit.toolbar "filter-values"/>
-
+</head>
+<body>
+<h1>Filter Ontology Values</h1>
 <div class='glide'>
 You can filter data values for the datasets listed below.  Only checked values mapped to an 
 ontology will be reported below.  Select checkboxes next to the
@@ -28,10 +29,9 @@ checks, absent values are indicated with red x's.
 
 <#assign integrationcolumn_index =0>
 
-<div class="glide">
 <!--
 <div class="parent-info">
-  tDAR has automatically selected values that occur accross all datasets below.  To clear this, please click "clear all" below.
+  ${siteAcronym} has automatically selected values that occur accross all datasets below.  To clear this, please click "clear all" below.
 </div>-->
 <#-- display links with taxonomy expanded -->
 <@s.form method='post' action='display-filtered-results' id="filterForm">
@@ -48,7 +48,7 @@ checks, absent values are indicated with red x's.
   </#list>
  <#else>
  <#if integrationColumn.sharedOntology??>
- <table class='tableFormat width99percent zebracolors integrationTable'>
+ <table class='tableFormat table table-striped integrationTable'>
     <thead>
         <tr>
         <th>Ontology labels from ${integrationColumn.sharedOntology.title} [${integrationColumn.name}]<br/>
@@ -61,7 +61,7 @@ checks, absent values are indicated with red x's.
         </tr>
     </thead>
     <tbody>
-  <input type="hidden" name="integrationColumns[${integrationcolumn_index}].columnType" value="${integrationColumn.columnType}" />
+  <input type="hidden" name="integrationColumns[${integrationcolumn_index}].columnType" value="${integrationColumn.columnType!"integration"}" />
   <#list integrationColumn.columns as col>
     <input type="hidden" name="integrationColumns[${integrationcolumn_index}].columns[${col_index}].id" value="${col.id?c}" />
   </#list>
@@ -80,22 +80,23 @@ checks, absent values are indicated with red x's.
     </#list>
     <tr class="<#if disabled>disabled</#if>">
     <td style="white-space: nowrap;">
+    <label class="inline-label" for='ontologyNodeCheckboxId_${integrationcolumn_index}_${ontologyNode.index}'>
     <#list 1..numberOfParents as indentationLevel>
         &nbsp;&nbsp;&nbsp;&nbsp;
     </#list>
      <input type='checkbox' id='ontologyNodeCheckboxId_${integrationcolumn_index}_${ontologyNode.index}'
     name='integrationColumns[${integrationcolumn_index}].filteredOntologyNodes[${ontologyNode_index}].id' value='${ontologyNode.id?c}'
     <#if checkForUser>canautocheck="true"</#if>     <#if disabled>disabled="disabled"</#if> />
-    <label for='ontologyNodeCheckboxId_${integrationcolumn_index}_${ontologyNode.index}'>
     <#assign totalCheckboxCount=totalCheckboxCount+1>
-	    <#if !disabled><b></#if>
-		    ${ontologyNode.displayName} <!--(${ontologyNode.index})-->
-	    <#if !disabled></b></#if>
+        <#if !disabled><b></#if>
+            ${ontologyNode.displayName} <!--(${ontologyNode.index})-->
+        <#if !disabled></b></#if>
     </label>
-    <#if ontologyNode.parent >
+    <#if ontologyNode.parent ><span class="right">
     &nbsp;(<span class="link" onclick='selectChildren("${integrationcolumn_index}_${ontologyNode.index}", true);'>all</span>
-    | <span class="link" onclick='selectChildren("${integrationcolumn_index}_${ontologyNode.index}", false);'>clear</span>)
+    | <span class="link" onclick='selectChildren("${integrationcolumn_index}_${ontologyNode.index}", false);'>clear</span>)</span>
     </#if>
+    
     </td>
     <#list ontologyNode.columnHasValueArray as hasValue>
     <td>
@@ -119,7 +120,6 @@ checks, absent values are indicated with red x's.
 <#assign integrationcolumn_index = integrationcolumn_index+1>
  
  </#list>
-</div>
 
 <@edit.submit "Next: Apply filter" false/>
 
@@ -143,17 +143,17 @@ function selectChildren(index, value) {
 }
 
 $("#filterForm").submit(function() {
-	var errors = "";
-	$(".integrationTable").each(function() {
-		if ($(":checked ",$(this)).length == 0) {
-			errors = "at least one table does not have any filter values checked";
-		}
-	});
-	
-	if (errors != '') {
-		alert(errors);
-		return false;
-	};
+    var errors = "";
+    $(".integrationTable").each(function() {
+        if ($(":checked ",$(this)).length == 0) {
+            errors = "at least one table does not have any filter values checked";
+        }
+    });
+    
+    if (errors != '') {
+        alert(errors);
+        return false;
+    };
   if ($("#filterForm :checked").length < 1) {
     alert("please select at least one variable");
     return false;
@@ -161,14 +161,14 @@ $("#filterForm").submit(function() {
 });
 $(document).ready(function() {
   $(".autocheck").click(function() {
-  	$("[canautocheck]",$(this).closest("table")).attr("checked","checked");
+      $("[canautocheck]",$(this).closest("table")).attr("checked","checked");
   });
 
   $(".hideElements").click(function() {
-  	$("tr.disabled",$(this).closest("table")).hide();
+      $("tr.disabled",$(this).closest("table")).hide();
   });
 
-  applyZebraColors();
   });
 </script>
+</body>
 </#escape>

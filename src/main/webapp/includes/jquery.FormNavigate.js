@@ -1,7 +1,6 @@
 /**
  * jQuery.FormNavigate.js
  * jQuery Form onChange Navigate Confirmation plugin
- * Browser Compatibility : IE 6.0, 7.0, 8.0; Firefox 2.0+;  Safari 3+; Opera 9+; Chrome 1+;
  *
  * Copyright (c) 2009 Law Ding Yong
  * 
@@ -25,21 +24,21 @@
 and off of window.onbeforeunload event.
   * Users are able to configure the custom onBeforeUnload message.
   */
-var global_formNavigate = true;		// Js Global Variable for onChange Flag
 (function($){
     $.fn.FormNavigate = function(message) {
+        var $this = this;
+        this.data("formNavigate", true);
     	$(window).bind("beforeunload", function (event) {
-                if (global_formNavigate == true) {  event.cancelBubble = true;  }  else  { return message;              }
+                if ($this.data("formNavigate")) {  event.cancelBubble = true;  }  else  { return message;}
     	});
-        $(this+ ":input[type='text'], :input[type='button'], :input[type='textarea'], :input[type='password'], :input[type='radio'], :input[type='checkbox'], :input[type='file'], select").change(function(){
-            global_formNavigate = false;
-        });
-		//to handle back button
-		$(this+ ":input[type='textarea']").keyup(function(){ 
-			global_formNavigate = false; 
-		}); 
-        $(this+ ":submit").click(function(){
-            global_formNavigate = true;
-        });
+    	
+    	this.one("keyup change", function(evt) {
+    	    console.log("Form #%s has become dirty. event:%s\t target:%s\t ", $this.attr("id"), evt.type, evt.target);
+    	    $this.data("formNavigate", false);
+    	});
+    	
+    	this.find("input:submit, .submitButton").click(function(){
+    	    $this.data("formNavigate", true);
+    	});
     }
 })(jQuery);

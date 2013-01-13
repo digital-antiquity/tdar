@@ -17,4 +17,5 @@ public interface URLConstants {
     public static final String WORKSPACE = "/workspace/list";
     public static final String ADMIN = "/admin/internal";
     public static final String PAGE_NOT_FOUND = "/page-not-found";
+    public static final String BOOKMARKS = DASHBOARD + "#bookmarks";
 }

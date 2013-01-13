@@ -24,10 +24,12 @@ public interface JsonModel extends Serializable {
 
         private static final long serialVersionUID = -6733445049593441229L;
 
+        @XmlTransient
         protected abstract String[] getIncludedJsonProperties();
 
         // FIXME: does JsonConfig need to be instantiated a-new each time or could
         // we just initialize it once with a WhitelistFilter and re-use it?
+        @Override
         public JSONObject toJSON() {
             return toJSON(getIncludedJsonProperties());
         }
@@ -37,7 +39,7 @@ public interface JsonModel extends Serializable {
             // filter out any properties not defined in the whitelist
             WhitelistFilter whitelist = new WhitelistFilter(properties);
             config.setJsonPropertyFilter(whitelist);
-            config.addIgnoreFieldAnnotation(JSONTransient.class);
+        config.addIgnoreFieldAnnotation(JSONTransient.class);
             // config.registerJsonValueProcessor(String.class, new JsonValueProcessor() {
             //
             // @Override

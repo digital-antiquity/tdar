@@ -1,7 +1,6 @@
 package org.tdar.core.service;
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -17,6 +16,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.request.ContributorRequest;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.dao.entity.InstitutionDao;
@@ -35,8 +35,6 @@ import org.tdar.core.dao.request.ContributorRequestDao;
 @Transactional(readOnly = true)
 @Service
 public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonDao> {
-
-    public final static String BEAN_ID = "personService";
 
     @Autowired
     private InstitutionDao institutionDao;
@@ -81,7 +79,6 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         return contributorRequestDao.findAllPending();
     }
 
-
     public Person findByEmail(String email) {
         if (email == null || email.isEmpty()) {
             return null;
@@ -95,7 +92,6 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         }
         return getDao().findByUsername(username);
     }
-
 
     public Set<Person> findByFullName(String fullName) {
         return getDao().findByFullName(fullName);
@@ -118,19 +114,28 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
     @SuppressWarnings("unchecked")
     @Transactional(readOnly = false)
     public <C extends Creator> C findOrSaveCreator(C transientCreator) {
+        C creatorToReturn = null;
         if (transientCreator instanceof Person) {
-            return (C) findOrSavePerson((Person) transientCreator);
+            creatorToReturn = (C) findOrSavePerson((Person) transientCreator);
         }
         if (transientCreator instanceof Institution) {
-            return (C) findOrSaveInstitution((Institution) transientCreator);
+            creatorToReturn = (C) findOrSaveInstitution((Institution) transientCreator);
         }
-        return null;
+        if (creatorToReturn != null && creatorToReturn.isDeleted()) {
+            creatorToReturn.setStatus(Status.ACTIVE);
+        }
+
+        return creatorToReturn;
     }
 
     @Transactional(readOnly = false)
     private Person findOrSavePerson(Person transientPerson) {
         // now find or save the person (if the person was found the institution field is ignored
         // entirely and replaced with the persisted person's institution
+        if (transientPerson == null || transientPerson.hasNoPersistableValues()) {
+            return null;
+        }
+
         Person blessedPerson = null;
         if (StringUtils.isNotBlank(transientPerson.getEmail())) {
             blessedPerson = findByEmail(transientPerson.getEmail());
@@ -159,9 +164,14 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
 
     @Transactional(readOnly = false)
     private Institution findOrSaveInstitution(Institution transientInstitution) {
+        if (transientInstitution == null || StringUtils.isBlank(transientInstitution.getName()))
+            return null;
         Institution blessedInstitution = getDao().findByExample(Institution.class, transientInstitution,
                 Arrays.asList(Institution.getIgnorePropertiesForUniqueness()),
                 FindOptions.FIND_FIRST_OR_CREATE).get(0);
+        if (!blessedInstitution.isDeleted()) {
+            blessedInstitution.setStatus(Status.ACTIVE);
+        }
         return blessedInstitution;
     }
 
@@ -172,7 +182,6 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
     public void findOrSaveResourceCreator(ResourceCreator resourceCreator) {
         resourceCreator.setCreator(findOrSaveCreator(resourceCreator.getCreator()));
     }
-
 
     @Transactional
     public List<ResourceCollection> findAccessibleResourceCollections(Person user) {
@@ -185,10 +194,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
 
     @Transactional(readOnly = false)
     public void registerLogin(Person authenticatedUser) {
-        authenticatedUser.setLastLogin(new Date());
-        authenticatedUser.incrementLoginCount();
-        logger.trace("login {} {}", authenticatedUser.getLastLogin(), authenticatedUser.getTotalLogins());
-        saveOrUpdate(authenticatedUser);
+        getDao().registerLogin(authenticatedUser);
     }
 
     @Transactional(readOnly = true)

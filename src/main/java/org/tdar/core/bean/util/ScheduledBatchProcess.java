@@ -51,7 +51,7 @@ public abstract class ScheduledBatchProcess<P extends Persistable> extends Sched
         if (sb.length() > 0) {
             try {
             emailService.send(sb.toString(),
-                    String.format("tDAR: %s messages", getDisplayName()));
+                    String.format("%s: %s messages", tdarConfiguration.getSiteAcronym(), getDisplayName()));
             } catch (Exception e) {
                 logger.error("could not send email:{}\n\n{}", sb.toString(), e);
             }

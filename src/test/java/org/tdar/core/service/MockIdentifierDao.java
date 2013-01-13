@@ -13,7 +13,7 @@ import java.util.Map;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.http.client.ClientProtocolException;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.dao.ExternalIDProvider;
+import org.tdar.core.dao.external.pid.ExternalIDProvider;
 import org.tdar.core.service.processes.DoiProcess;
 
 /**
@@ -59,6 +59,11 @@ public class MockIdentifierDao implements ExternalIDProvider {
     @Override
     public Map<String, String> delete(Resource r, String resourceUrl, String identifier) throws ClientProtocolException, IOException {
         return modify(r, resourceUrl, identifier);
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 
 }

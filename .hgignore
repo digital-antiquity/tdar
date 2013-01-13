@@ -15,6 +15,14 @@ logs
 tags
 *.orig
 *.rej
-*.log
+.idea/*
+nb-configuration.xml
+nbactions*
+glassfish-web.xml
+.DS_Store
+
 syntax: regexp
 ^src/main/webapp/robots\.txt$
+
+syntax: regexp
+^src/main/db/log\.txt$

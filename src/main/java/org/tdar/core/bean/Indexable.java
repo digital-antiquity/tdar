@@ -27,6 +27,7 @@ public interface Indexable extends Persistable {
     public Explanation getExplanation();
 
     
+    @Override
     public Long getId();
     
     /**
@@ -34,5 +35,9 @@ public interface Indexable extends Persistable {
      * @param explanation
      */
     public void setExplanation(Explanation ex);
+    
+    public boolean isReadyToIndex();
+    
+    public void setReadyToIndex(boolean ready);
 
 }

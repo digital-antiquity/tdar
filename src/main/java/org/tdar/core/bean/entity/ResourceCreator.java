@@ -4,11 +4,13 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.IndexedEmbedded;
@@ -18,8 +20,6 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-
-import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * $Id$
@@ -31,17 +31,15 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @version $Rev$
  */
 @Entity
-@XStreamAlias("resourceCreator")
 @Table(name = "resource_creator")
 public class ResourceCreator extends Persistable.Sequence<ResourceCreator> implements HasResource<Resource> {
 
     private static final long serialVersionUID = 7641781600023145104L;
 
-    @ManyToOne(optional = false)
-    private Resource resource;
-
-    @ManyToOne(optional = false, cascade={CascadeType.DETACH, CascadeType.MERGE})
+    @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     @IndexedEmbedded
+    @JoinColumn(nullable = false, name = "creator_id")
+    @NotNull
     @BulkImportField(implementedSubclasses = { Person.class, Institution.class }, label = "Resource Creator", order = 1)
     private Creator creator;
 
@@ -50,22 +48,12 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
     @BulkImportField(label = "Resource Creator Role", comment = BulkImportField.CREATOR_ROLE_DESCRIPTION, order = 200)
     private ResourceCreatorRole role;
 
-    public ResourceCreator(Resource resource, Creator creator, ResourceCreatorRole role) {
-        setResource(resource);
+    public ResourceCreator(Creator creator, ResourceCreatorRole role) {
         setCreator(creator);
         setRole(role);
     }
 
     public ResourceCreator() {
-    }
-
-    @XmlTransient
-    public Resource getResource() {
-        return resource;
-    }
-
-    public void setResource(Resource resource) {
-        this.resource = resource;
     }
 
     @XmlElementRef
@@ -77,6 +65,7 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
         this.creator = creator;
     }
 
+    @XmlAttribute
     public ResourceCreatorRole getRole() {
         return role;
     }
@@ -98,15 +87,24 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
         return String.format("%s (%s)", creator, role);
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.bean.Validatable#isValid()
+     */
     public boolean isValid() {
-        if (role == null || creator == null || resource == null) {
-            logger.trace(String.format("role:%s creator:%s resource:%s", role, creator, resource));
+        if (role == null || creator == null) {
+            logger.trace(String.format("role:%s creator:%s ", role, creator));
             return false;
         }
+        return true;
+    }
+
+    public boolean isValidForResource(Resource resource) {
         try {
-            boolean relevant = getRole().isRelevantFor(getCreatorType(), getResource().getResourceType());
+            boolean relevant = getRole().isRelevantFor(getCreatorType(), resource.getResourceType());
             if (!relevant) {
-                Object[] tmp = { getRole(), getResource(), getResource().getResourceType() };
+                Object[] tmp = { getRole(), resource, resource.getResourceType() };
                 logger.debug("role {} is not relevant for resourceType {} for {}", tmp);
             }
             return relevant;

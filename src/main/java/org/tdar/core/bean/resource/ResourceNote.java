@@ -4,19 +4,18 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Norms;
+import org.hibernate.search.annotations.Store;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
-
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
+import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 
 /**
  * $Id$
@@ -27,7 +26,6 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
  */
 
 @Entity
-@XStreamAlias("resourceNote")
 @Table(name = "resource_note")
 public class ResourceNote extends Persistable.Sequence<ResourceNote> implements HasResource<Resource> {
 
@@ -35,8 +33,8 @@ public class ResourceNote extends Persistable.Sequence<ResourceNote> implements 
     @Transient
     private final static String[] JSON_PROPERTIES = { "id", "note", "type" };
 
-    @ManyToOne(optional = false)
-    private Resource resource;
+    // @ManyToOne(optional = false)
+    // private Resource resource;
 
     @Column(length = 5000)
     @Field
@@ -44,8 +42,8 @@ public class ResourceNote extends Persistable.Sequence<ResourceNote> implements 
 
     @Enumerated(EnumType.STRING)
     @Column(name = "note_type")
-    @Field
-    @XStreamAsAttribute
+    @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
+    @Transient
     private ResourceNoteType type;
 
     public ResourceNote() {
@@ -54,15 +52,6 @@ public class ResourceNote extends Persistable.Sequence<ResourceNote> implements 
     public ResourceNote(ResourceNoteType type, String note) {
         this.type = type;
         this.note = note;
-    }
-
-    @XmlTransient
-    public Resource getResource() {
-        return resource;
-    }
-
-    public void setResource(Resource resource) {
-        this.resource = resource;
     }
 
     public String getNote() {

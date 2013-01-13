@@ -11,7 +11,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -48,10 +47,10 @@ import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.Store;
 import org.tdar.core.bean.DeHydratable;
+import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.SimpleSearch;
 import org.tdar.core.bean.Sortable;
 import org.tdar.core.bean.Updatable;
@@ -88,9 +87,12 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     private transient boolean viewable;
 
+//    private transient boolean readyToIndex = true;
+
     public enum CollectionType {
         INTERNAL("Internal"),
-        SHARED("Shared");
+        SHARED("Shared"),
+        PUBLIC("Public");
 
         private String label;
 
@@ -118,8 +120,9 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     private String description;
 
     @XmlTransient
-    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY,
+    @ManyToMany(fetch = FetchType.LAZY,
             mappedBy = "resourceCollections", targetEntity = Resource.class)
+    // cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE },
     // @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(name = "collection_id") })
     private Set<Resource> resources = new LinkedHashSet<Resource>();
 
@@ -137,7 +140,8 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @Column(name = "collection_type")
     private CollectionType type;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "resourceCollection", fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(nullable = false, updatable = false, name = "resource_collection_id")
     private Set<AuthorizedUser> authorizedUsers = new LinkedHashSet<AuthorizedUser>();
 
     @ManyToOne
@@ -145,8 +149,15 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @JoinColumn(name = "owner_id", nullable = false)
     private Person owner;
 
+    @ManyToOne
+    @JoinColumn(name = "updater_id", nullable = true)
+    private Person updater;
+
     @Column(nullable = false, name = "date_created")
     private Date dateCreated;
+
+    @Column(nullable = true, name = "date_updated")
+    private Date dateUpdated;
 
     @ManyToOne
     @JoinColumn(name = "parent_id")
@@ -177,11 +188,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         this.type = type;
         setDateCreated(new Date());
     }
-
-    // @Field(store = Store.YES, analyzer = @Analyzer(impl = KeywordAnalyzer.class), name = QueryFieldNames.ID)
-    // public Long getIndexedId() {
-    // return getId();
-    // }
 
     public ResourceCollection(Resource resource, Person owner) {
         this(CollectionType.SHARED);
@@ -256,21 +262,19 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         this.parent = parent;
     }
 
-    @Field()
+    @Field
+    @XmlAttribute
     public boolean isVisible() {
         return visible;
     }
 
-    @Field()
-    public boolean isTopLevel() {
-        return getParent() == null || !getParent().isVisible();
-    }
-
-    @Transient
+    @Field
     @XmlTransient
-    @JSONTransient
-    public boolean isRoot() {
-        return parent == null;
+    public boolean isTopLevel() {
+        if (getParent() == null || getParent().isVisible() == false) {
+            return true;
+        }
+        return false;
     }
 
     public void setVisible(boolean visible) {
@@ -303,7 +307,11 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         if (getDateCreated() == null || getOwner() == null) {
             setDateCreated(new Date());
             setOwner(p);
+            setUpdater(p);
         }
+        setUpdater(p);
+        setDateUpdated(new Date());
+
     }
 
     /**
@@ -350,11 +358,14 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     }
 
     @Override
+    @Transient
+    @XmlTransient
     public Float getScore() {
         return this.score;
     }
 
     @Override
+    @Transient
     @XmlTransient
     public Explanation getExplanation() {
         return explanation;
@@ -446,21 +457,24 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     }
 
     /*
-     * Return list of the resource collection "lineage", starting with topmost collection in the hierarchy and ending with current collection
+     * Get all of the resource collections via a tree (actually list of lists)
      */
     @Transient
+    @XmlTransient
+    // infinite loop because parentTree[0]==self
     public List<ResourceCollection> getHierarchicalResourceCollections() {
-        LinkedList<ResourceCollection> ancestorChain = new LinkedList<ResourceCollection>();
-        ancestorChain.add(this);
+        ArrayList<ResourceCollection> parentTree = new ArrayList<ResourceCollection>();
+        parentTree.add(this);
         ResourceCollection collection = this;
         while (collection.getParent() != null) {
             collection = collection.getParent();
-            ancestorChain.push(collection);
+            parentTree.add(0, collection);
         }
-        return ancestorChain;
+        return parentTree;
     }
 
     @Transient
+    @XmlTransient
     public List<ResourceCollection> getVisibleParents() {
         List<ResourceCollection> hierarchicalResourceCollections = getHierarchicalResourceCollections();
         Iterator<ResourceCollection> iterator = hierarchicalResourceCollections.iterator();
@@ -477,6 +491,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
      * Get ordered list of parents (titles) of this resources ... great grandfather, grandfather, father, you.
      */
     @Transient
+    @XmlTransient
     public List<String> getParentNameList() {
         ArrayList<String> parentNameTree = new ArrayList<String>();
         for (ResourceCollection collection : getHierarchicalResourceCollections()) {
@@ -529,12 +544,17 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         return "collection";
     }
 
+    @XmlTransient
     public boolean isViewable() {
         return viewable;
     }
 
     public void setViewable(boolean viewable) {
         this.viewable = viewable;
+    }
+
+    public boolean isPublic() {
+        return type == CollectionType.PUBLIC;
     }
 
     @Transient
@@ -548,6 +568,36 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     public void setOrientation(DisplayOrientation orientation) {
         this.orientation = orientation;
+    }
+
+    @Override
+    public boolean isReadyToIndex() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public void setReadyToIndex(boolean ready) {
+        // TODO Auto-generated method stub
+
+    }
+
+    public Date getDateUpdated() {
+        return dateUpdated;
+    }
+
+    public void setDateUpdated(Date dateUpdated) {
+        this.dateUpdated = dateUpdated;
+    }
+
+    @XmlAttribute(name = "updaterIdRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    public Person getUpdater() {
+        return updater;
+    }
+
+    public void setUpdater(Person updater) {
+        this.updater = updater;
     }
 
 }

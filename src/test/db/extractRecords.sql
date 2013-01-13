@@ -9,6 +9,9 @@
 --- 3. update with upgrade-db.sql 
 --- 4. run the maven profile sqlExtract < mvn -PsqlExtract clean initialize compile exec:java
 --- 5. test tDAR
+--- 6. run pg_dump -U tdar tdarmetadata > tdarmetadata.sql
+--- 7. zip back up database
+---
 ---
 --- PostgreSQL database dump
 ---
@@ -31,12 +34,12 @@
 --DONT-PROCESS-- INSERT INTO creator (id, date_created, last_updated, location, url) VALUES (8093, NULL, NULL, NULL, NULL);
 
 --DONT-PROCESS-- INSERT INTO institution(id,  "name") values (12088, 'University of TEST');
---DONT-PROCESS-- INSERT INTO person (id, contributor, email, first_name, last_name, privileged, registered, rpa, rpa_number, phone, password, contributor_reason, institution_id) VALUES (8092, true, 'test@tdar.org', 'test', 'user', false, true, false, NULL, '', 'b2932f560866bd7fe93bb640f967ec3c82f6d260', NULL, 12088);
---DONT-PROCESS-- INSERT INTO person (id, contributor, email, first_name, last_name, privileged, registered, rpa, rpa_number, phone, password, contributor_reason, institution_id) VALUES (8093, true, 'admin@tdar.org', 'admin', 'user', true, true, false, NULL, '', '44f8309043ad4ac22af60fc43dd4403116f28750', NULL, 12088);
+--DONT-PROCESS-- INSERT INTO person (id, contributor, email, first_name, last_name, registered, rpa_number, phone, contributor_reason, institution_id) VALUES (8092, true, 'test@tdar.org', 'test', 'user', true, NULL, '', NULL, 12088);
+--DONT-PROCESS-- INSERT INTO person (id, contributor, email, first_name, last_name, registered, rpa_number, phone, contributor_reason, institution_id) VALUES (8093, true, 'admin@tdar.org', 'admin', 'user', true, NULL, '', NULL, 12088);
 
 
---DONT-PROCESS-- INSERT INTO resource (status, id, date_registered, description, resource_type, title, submitter_id, url) VALUES ('ACTIVE',1,   '2008-04-15 13:33:21.962',  N'This project contains all of your independent data resources.  These are data resources that you have not explicitly associated with any project.',  N'PROJECT',  N'Admin''s Independent Resources', 8093, NULL);
---DONT-PROCESS-- INSERT INTO resource (status, id, date_registered, description, resource_type, title, submitter_id, url) VALUES ('ACTIVE',3,   '2008-04-15 13:33:21.962',  N'This project contains all of your independent data resources.  These are data resources that you have not explicitly associated with any project.',  N'PROJECT',  N'Test''s Independent Resources', 8092, NULL);
+--DONT-PROCESS-- INSERT INTO resource (status, id, date_registered, description, resource_type, title, submitter_id, uploader_id, url) VALUES ('ACTIVE',1,   '2008-04-15 13:33:21.962',  N'This project contains all of your independent data resources.  These are data resources that you have not explicitly associated with any project.',  N'PROJECT',  N'Admin''s Independent Resources', 8093, 8093, NULL);
+--DONT-PROCESS-- INSERT INTO resource (status, id, date_registered, description, resource_type, title, submitter_id, uploader_id, url) VALUES ('ACTIVE',3,   '2008-04-15 13:33:21.962',  N'This project contains all of your independent data resources.  These are data resources that you have not explicitly associated with any project.',  N'PROJECT',  N'Test''s Independent Resources', 8092, 8092, NULL);
 --DONT-PROCESS-- INSERT INTO project (id) VALUES (1);
 --DONT-PROCESS-- INSERT INTO project (id) VALUES (3);
 
@@ -58,6 +61,7 @@ select * from creator where id in (select submitter_id from resource where id in
     UNION select updater_id from resource where id in (select id from test)
     UNION select user_id from authorized_user, collection_resource where authorized_user.resource_collection_id=collection_resource.collection_id and resource_id in (select id from test) 
     UNION select person_id from bookmarked_resource where resource_id in (select id from test)
+	UNION select publisher_id from information_resource
     UNION select creator_id from resource_creator where resource_id in (select id from test)
     UNION select institution_id from person where id in (select submitter_id from resource where id in (select id from test)
       UNION select user_id from authorized_user, collection_resource where authorized_user.resource_collection_id=collection_resource.collection_id and resource_id in (select id from test) 
@@ -69,6 +73,7 @@ select * from institution where id in (select submitter_id from resource where i
     UNION select updater_id from resource where id in (select id from test)
     UNION select user_id from authorized_user, collection_resource where authorized_user.resource_collection_id=collection_resource.collection_id and resource_id in (select id from test) 
     UNION select person_id from bookmarked_resource where resource_id in (select id from test)
+	UNION select publisher_id from information_resource
     UNION select creator_id from resource_creator where resource_id in (select id from test)
     UNION select institution_id from person where id in (select submitter_id from resource where id in (select id from test)
       UNION select user_id from authorized_user, collection_resource where authorized_user.resource_collection_id=collection_resource.collection_id and resource_id in (select id from test) 
@@ -199,7 +204,6 @@ select * from coding_rule where coding_sheet_id in (select id from test);
 select * from bookmarked_resource where resource_id in (select id from test);
 select * from coverage_date where resource_id in (select id from test);
 select * from latitude_longitude where resource_id in (select id from test);
-select * from data_value_ontology_node_mapping where data_table_column_id in (select id from test) or ontology_node_id in (select id from test);
 
 select * from resource_creator where resource_id in (select id from test);
 
@@ -240,7 +244,6 @@ drop table test;
 --DONT-PROCESS-- SELECT setval('data_table_id_seq', (SELECT MAX(id) FROM data_table)+1);
 --DONT-PROCESS-- SELECT setval('data_table_column_id_seq', (SELECT MAX(id) FROM data_table_column)+1);
 --DONT-PROCESS-- SELECT setval('data_table_relationship_id_seq', (SELECT MAX(id) FROM data_table_relationship)+1);
---DONT-PROCESS-- SELECT setval('data_value_ontology_node_mapping_id_seq', (SELECT MAX(id) FROM data_value_ontology_node_mapping)+1);
 --DONT-PROCESS-- SELECT setval('latitude_longitude_id_seq', (SELECT MAX(id) FROM latitude_longitude)+1);
 --DONT-PROCESS-- SELECT setval('other_keyword_id_seq', (SELECT MAX(id) FROM other_keyword)+1);
 --DONT-PROCESS-- SELECT setval('personal_filestore_ticket_id_seq', (SELECT MAX(id) FROM personal_filestore_ticket)+1);
@@ -270,3 +273,24 @@ drop table test;
 --DONT-PROCESS-- update data_table_column set visible=true where visible is null;
 --DONT-PROCESS-- update data_table_column set ignorefileextension=true where ignorefileextension is null;
 --DONT-PROCESS-- update person set username=email where registered=true;
+--DONT-PROCESS-- update creator set status='ACTIVE';
+--DONT-PROCESS-- update culture_keyword set status='ACTIVE';
+--DONT-PROCESS-- update geographic_keyword set status='ACTIVE';
+--DONT-PROCESS-- update investigation_type set status='ACTIVE';
+--DONT-PROCESS-- update material_keyword set status='ACTIVE';
+--DONT-PROCESS-- update other_keyword set status='ACTIVE';
+--DONT-PROCESS-- update site_name_keyword set status='ACTIVE';
+--DONT-PROCESS-- update site_type_keyword set status='ACTIVE';
+--DONT-PROCESS-- update temporal_keyword set status='ACTIVE';
+-- 12-06-12 -- adding some invalid billing values
+--DONT-PROCESS-- insert into pos_billing_model (id, date_created, active, counting_files, counting_space, counting_resources) VALUES (1, now(), true, true, true, false);
+--DONT-PROCESS-- insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price, min_allowed_files, model_id) values (true, 'error', 5,1,50,5, 55.21,400,1);
+--DONT-PROCESS-- insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price, min_allowed_files, model_id) values (true, 'decline', 5,1,50,5, 55.11,400,1);
+--DONT-PROCESS-- insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price, min_allowed_files, model_id) values (true, 'unknown', 5,1,50,5, 55.31,400,1);
+--DONT-PROCESS-- insert into pos_billing_activity (enabled, name, numberoffiles, numberofhours, numberofmb, numberofresources, price, min_allowed_files, model_id) values (false, 'inactive', 5,1,50,5, 550,400,1);
+--DONT-PROCESS-- insert into pos_billing_activity (enabled, name, numberoffiles, min_allowed_files, numberofmb, price, model_id) values (true, ' 1-  4', 1, 1, 10, 55,1);
+--DONT-PROCESS-- insert into pos_billing_activity (enabled, name, numberoffiles, min_allowed_files, numberofmb, price, model_id) values (true, ' 100 mb', 0, 0, 100, 50,1);
+--DONT-PROCESS-- insert into pos_billing_activity (enabled, name, numberoffiles, min_allowed_files, numberofmb, price, model_id) values (true, ' 5- 19', 1, 5, 10, 40,1);
+--DONT-PROCESS-- insert into pos_billing_activity (enabled, name, numberoffiles, min_allowed_files, numberofmb, price, model_id) values (true, '20- 49', 1, 20, 10, 35,1);
+--DONT-PROCESS-- insert into pos_billing_activity (enabled, name, numberoffiles, min_allowed_files, numberofmb, price, model_id) values (true, '50-500', 1, 50, 10, 31,1);
+--DONT-PROCESS-- SELECT setval('pos_billing_model_id_seq', (SELECT MAX(id) FROM pos_billing_model)+1);

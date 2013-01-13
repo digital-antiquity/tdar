@@ -1,5 +1,7 @@
 package org.tdar.core.service;
 
+import static org.junit.Assert.assertEquals;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,14 +10,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import junit.framework.Assert;
-
 import org.hibernate.ScrollableResults;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator;
@@ -35,6 +36,7 @@ import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.AuthorityManagementService.AuthorityManagementLog;
 
 public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCase {
@@ -55,13 +57,12 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
 
     @Autowired
     private XmlService xmlService;
-    
 
     @Test
     public void testCreatorPersonReferrers() {
 
         // a better test would be to make some references with a new person, and makes sure that those references are found.
-        Map<Field, ScrollableResults> referrers = authorityManagementService.getReferrers(Creator.class, Arrays.asList(6L));
+        Map<Field, ScrollableResults> referrers = authorityManagementService.getReferrers(Creator.class, new HashSet<Long>(Arrays.asList(6L)));
         Assert.assertFalse(referrers.isEmpty());
     }
 
@@ -78,6 +79,15 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
         logger.debug("original count:{}\tnew count:{}", origCount, newCount);
         Assert.assertTrue("reference count should have increased by one and only one. ref1:" + origCount + " ref2:" + newCount,
                 newCount == origCount + 1);
+    }
+
+    @Test
+    @Rollback
+    public void testFindInstitutionByName() {
+        Institution inst = new Institution("University of TEST");
+        ResourceCreator creator = new ResourceCreator(inst, ResourceCreatorRole.AUTHOR);
+        entityService.findOrSaveResourceCreator(creator);
+        assertEquals(TestConstants.TEST_INSTITUTION_ID, creator.getCreator().getId());
     }
 
     @Test
@@ -130,29 +140,26 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
 
         Document d2 = createAndSaveNewInformationResource(Document.class);
         d2.setUpdatedBy(dupe2);
-
+        resourceService.save(d1);
+        resourceService.save(d2);
+        
         // ResourceCreator is trickier than the others because the creator field may refer to Institution or Person
-        ResourceCreator resourceCreator = new ResourceCreator();
-        resourceCreator.setCreator(dupe1);
-        resourceCreator.setResource(d1);
-        resourceCreator.setRole(ResourceCreatorRole.AUTHOR);
+        ResourceCreator resourceCreator = new ResourceCreator(dupe1, ResourceCreatorRole.AUTHOR);
         resourceCreator.setSequenceNumber(1);
         d1.getResourceCreators().add(resourceCreator);
 
         AuthorizedUser user1 = new AuthorizedUser(dupe1, GeneralPermissions.ADMINISTER_GROUP);
         ResourceCollection resourceCollection = genericService.findAll(ResourceCollection.class).iterator().next();
-        user1.setResourceCollection(resourceCollection);
+        resourceCollection.getAuthorizedUsers().add(user1);
         entityService.save(user1);
-        resourceService.save(d1);
-        resourceService.save(d2);
 
         // great, now lets do some deduping;
-        List<Long> dupeIds = Arrays.asList(dupe1Id, dupe2Id);
-        authorityManagementService.updateReferrers(Person.class, dupeIds, authorityId);
+        Set<Long> dupeIds = new HashSet<Long>(Arrays.asList(dupe1Id, dupe2Id));
+        authorityManagementService.updateReferrers(Person.class, dupeIds, authorityId, false);
 
         // makes sure that the dupes no longer exist
-        Assert.assertNull("dupe should be deleted:" + dupe1, entityService.find(dupe1Id));
-        Assert.assertNull("dupe should be deleted:" + dupe2, entityService.find(dupe2Id));
+        Assert.assertEquals("dupe should be deleted:" + dupe1, Status.DUPLICATE, entityService.find(dupe1Id).getStatus());
+        Assert.assertEquals("dupe should be deleted:" + dupe2, Status.DUPLICATE, entityService.find(dupe2Id).getStatus());
 
         // todo: make sure that the authority replaced all the dupes of the former referrers
         d1 = genericService.find(Document.class, d1.getId());
@@ -186,12 +193,12 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
         resourceService.save(doc2);
 
         // great, now lets do some deduping;
-        List<Long> dupeIds = Arrays.asList(dupe1Id, dupe2Id);
-        authorityManagementService.updateReferrers(OtherKeyword.class, dupeIds, authorityId);
+        Set<Long> dupeIds = new HashSet<Long>(Arrays.asList(dupe1Id, dupe2Id));
+        authorityManagementService.updateReferrers(OtherKeyword.class, dupeIds, authorityId, false);
 
         // makes sure that the dupes no longer exist
-        Assert.assertNull("dupe should be deleted:" + dupe1, genericKeywordService.find(OtherKeyword.class, dupe1Id));
-        Assert.assertNull("dupe should be deleted:" + dupe2, genericKeywordService.find(OtherKeyword.class, dupe2Id));
+        Assert.assertEquals("dupe should be deleted:" + dupe1, Status.DUPLICATE, genericKeywordService.find(OtherKeyword.class, dupe1Id).getStatus());
+        Assert.assertEquals("dupe should be deleted:" + dupe2, Status.DUPLICATE, genericKeywordService.find(OtherKeyword.class, dupe2Id).getStatus());
 
         // todo: make sure that the authority replaced all the dupes of the former referrers
         doc1 = genericService.find(Document.class, doc1.getId());
@@ -270,13 +277,12 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
         return keyword;
     }
 
-    private <D extends Dedupable & Persistable> void saveAndTestDedupeSynonym(Class<D> type, D authority, D dupe) {
+    private <D extends Dedupable<?>> void saveAndTestDedupeSynonym(Class<D> type, D authority, D dupe) {
         genericService.save(authority);
         genericService.save(dupe);
-        String dupeName = dupe.getSynonymFormattedName();
-        authorityManagementService.updateReferrers(type, Arrays.asList(dupe.getId()), authority.getId());
-        dupe = null;
-        Assert.assertTrue("authority should have synonym '" + dupeName + "' after deduping " + type.getSimpleName() + " record", authority.getSynonyms()
-                .contains(dupeName));
+        authorityManagementService.updateReferrers(type, new HashSet<Long>(Arrays.asList(dupe.getId())), authority.getId(), false);
+//        dupe = null;
+        String message = "authority should have synonym '" + dupe + "' after deduping " + type.getSimpleName() + " record";
+        Assert.assertTrue(message, authority.getSynonyms().contains(dupe));
     }
 }

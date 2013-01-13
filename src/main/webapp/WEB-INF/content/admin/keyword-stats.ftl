@@ -47,7 +47,7 @@
         <li><a href="keyword-stats?keywordType=uncontrolledSiteTypeKeywordStats">Site Types (uncontrolled)</a> </li>
         <li><a href="keyword-stats?keywordType=temporalKeywordStats">Temporal Keywords</a> </li>
     </ul>
-	</div>    
+    </div>    
     <#if selectedStat="all">
     <@keywordStats "t1" "Controlled Culture Keywords"       controlledCultureKeywordStats       />
     <@keywordStats "t2" "Uncontrolled Culture Keywords"     uncontrolledCultureKeywordStats     />

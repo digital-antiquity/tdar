@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.hssf.usermodel.DVConstraint;
 import org.apache.poi.hssf.usermodel.HSSFDataValidation;
 import org.apache.poi.hssf.usermodel.HSSFDataValidationHelper;
 import org.apache.poi.hssf.usermodel.HSSFPalette;
@@ -19,9 +20,11 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.ClientAnchor;
 import org.apache.poi.ss.usermodel.Comment;
 import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.DataValidationConstraint;
 import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Hyperlink;
 import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Row;
@@ -59,15 +62,35 @@ public class ExcelService {
      * Add validation to a given column
      */
     public <T extends Enum<?>> void addColumnValidation(HSSFSheet sheet, int i, HSSFDataValidationHelper validationHelper, T[] enums) {
-        CellRangeAddressList addressList = new CellRangeAddressList();
-        addressList.addCellRangeAddress(1, i, 10000, i);
         DataValidationConstraint validationConstraint = validationHelper.createExplicitListConstraint(getEnumNames(enums).toArray(new String[] {}));
+        HSSFDataValidation dataValidation = setupSheetValidation(sheet, i, validationConstraint);
+        dataValidation.setSuppressDropDownArrow(false);
+    }
+
+    private HSSFDataValidation setupSheetValidation(HSSFSheet sheet, int i, DataValidationConstraint validationConstraint) {
+        CellRangeAddressList addressList = new CellRangeAddressList();
         HSSFDataValidation dataValidation = new HSSFDataValidation(addressList, validationConstraint);
+        addressList.addCellRangeAddress(1, i, 10000, i);
         dataValidation.setEmptyCellAllowed(true);
         dataValidation.setShowPromptBox(true);
-        dataValidation.setSuppressDropDownArrow(false);
         sheet.addValidationData(dataValidation);
+        return dataValidation;
     }
+    
+    public HSSFDataValidation addNumericColumnValidation(HSSFSheet sheet, int i, HSSFDataValidationHelper validationHelper, String formula1, String formula2) {
+        DataValidationConstraint validationConstraint = validationHelper.createDecimalConstraint(DVConstraint.OperatorType.IGNORED, formula1, formula2);
+        HSSFDataValidation dataValidation = setupSheetValidation(sheet, i, validationConstraint);
+        return dataValidation;
+    }
+
+    public HSSFDataValidation addIntegerColumnValidation(HSSFSheet sheet, int i, HSSFDataValidationHelper validationHelper, String formula1, String formula2) {
+        DataValidationConstraint validationConstraint = validationHelper.createDecimalConstraint(DVConstraint.OperatorType.IGNORED, formula1, formula2);
+        HSSFDataValidation dataValidation = setupSheetValidation(sheet, i, validationConstraint);
+        return dataValidation;
+    }
+
+    
+    
 
     /*
      * get all of the names of enums passed in a list
@@ -169,6 +192,12 @@ public class ExcelService {
         sheet.getRow(rowNum).getCell(colNum).setCellStyle(style);
     }
 
+    
+    public String getCellValue(DataFormatter formatter, FormulaEvaluator evaluator, Row columnNamesRow, int columnIndex) {
+        return formatter.formatCellValue(columnNamesRow.getCell(columnIndex), evaluator);
+    }
+
+
     /*
      * Create a cell and be smart about it. If there's a link, make it a link, if numeric, set the type
      * to say, numeric.
@@ -222,7 +251,7 @@ public class ExcelService {
         comment.setString(str);
         comment.setRow(cell.getRowIndex());
         comment.setColumn(cell.getColumnIndex());
-        comment.setAuthor("tDAR");
+        comment.setAuthor(TdarConfiguration.getInstance().getSiteAcronym());
     }
 
     /**
@@ -320,9 +349,9 @@ public class ExcelService {
         // if the startRow is something other than 0, we assume that the caller was working on this sheet prior
         boolean newSheetNeeded = startRow == 0;
         if (newSheetNeeded) {
-            sheet = workbook.createSheet(proxy.getName());
+            sheet = workbook.createSheet(sheetName);
         } else {
-            sheet = workbook.getSheet(proxy.getName());
+            sheet = workbook.getSheet(sheetName);
         }
         addHeaderRow(sheet, rowNum, proxy.getStartCol(), proxy.getHeaderLabels());
         int maxRows = version.getMaxRows();
@@ -347,10 +376,10 @@ public class ExcelService {
         proxy.postProcess();
     }
 
-    private void prepareSheet(Sheet sheet) {
-        // FIXME: maybe this should be configurable?
-        sheet.createFreezePane(ExcelService.FIRST_COLUMN, 1, 0, 1);
-    }
+//    private void prepareSheet(Sheet sheet) {
+//        // FIXME: maybe this should be configurable?
+//        sheet.createFreezePane(ExcelService.FIRST_COLUMN, 1, 0, 1);
+//    }
 
     private void cleanupSheet(Sheet sheet) {
         // auto-sizing columns
@@ -370,5 +399,6 @@ public class ExcelService {
     public void setColumnWidth(Sheet sheet, int i, int size) {
         sheet.setColumnWidth(i, size);
     }
+
 
 }

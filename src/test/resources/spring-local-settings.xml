@@ -13,7 +13,21 @@ vim:sts=2:sw=2:
       <import resource="pooling/c3p0.xml" />
 	  <!--
 	<import resource="pooling/dbcp.xml" />  
-	-->
+	-->	
+	
+	<!-- All 3 Authentication services are loaded during the test. -->
+	<!-- Typically to activated them they must be injected with the external providers as defined below. -->
+	<!-- If we want the MockAuthentication Service activated set the property "enableMockAuth" via JVM command line for the test like so: -DenableMockAuth=true -->	
+	
+	<!-- If we want an actual Atlassian Crowd provider to be used during tests we uncomment this line -->
 	<import resource='spring-crowd.xml' />
+	
+	<!-- If we want an actual LDAP provider to be used during tests we uncomment this line -->
+    <!-- <import resource='spring-ldap.xml' /> -->
+
+	<!-- Site specific labels -->    
+    <import resource="spring-tag.xml" />	
+	<!-- 	<import resource="spring-tag-ahad.xml" /> -->
+    
 
 </beans>

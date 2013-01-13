@@ -5,7 +5,12 @@
  * Original location: http://www.keyframesandcode.com/resources/javascript/jQuery/demos/populate-demo.html
  */
 jQuery.fn.populate = function(obj, options) {
-	
+
+        //escape jquery selector string
+        function escapeJquerySelector(str) {
+            return str.replace(/([ #;&,.+*~\':"!^$[\]()=>|\/])/g,'\\$1'); 
+        }
+    
 	
 	// ------------------------------------------------------------------------------------------
 	// JSON conversion function
@@ -93,6 +98,7 @@ jQuery.fn.populate = function(obj, options) {
 			{
 				name = name.replace(/\[\]$/,'');
 			}
+			
 			return name;
 		}
 		
@@ -105,30 +111,35 @@ jQuery.fn.populate = function(obj, options) {
 			element.html(value);
 		}
 		
+		//jtd: modifications:  form can be a form element, or t can be html element that we will consider the 'scope' to limit which form elements to consider
 		function populateFormElement(form, name, value)
 		{
 
 			// check that the named element exists in the form
 				var name	= getElementName(name); // handle non-php naming
-				var element	= form[name];
+				//var element	= form[name];
+				
+				//escape for use in css selector
+				name = escapeJquerySelector(name);
+	
+				
+				var element = $('[name=' + name +']', form);
+				
+				//the rest of this routine expects a native array or single item
+				element = $.makeArray(element);
 				
 			// if the form element doesn't exist, check if there is a tag with that id
-				if(element == undefined)
+				if(element == undefined || element.length===0) 
 				{
 					// look for the element
-						element = jQuery('#' + name, form);
-						if(element)
-						{
-							element.html(value);
-							return true;
-						}
+					element = jQuery('#' + name, form);
+					if(element.length===0)
+					{
+					    return false;
+					} else {
+					    element = $.makeArray(element);
+					}
 					
-					// nope, so exit
-						if(options.debug)
-						{
-							debug('No such element as ' + name);
-						}
-						return false;
 				}
 					
 			// debug options				
@@ -268,7 +279,7 @@ jQuery.fn.populate = function(obj, options) {
 				
 				// variables
 					var tagName	= this.tagName.toLowerCase();
-					var method	= tagName == 'form' ? populateFormElement : populateElement;
+					//var method	= tagName == 'form' ? populateFormElement : populateElement;
 					
 				// reset form?
 					if(tagName == 'form' && options.resetForm)
@@ -279,7 +290,7 @@ jQuery.fn.populate = function(obj, options) {
 				// update elements
 					for(var i in arr)
 					{
-						method(this, i, arr[i]);
+					    populateFormElement(this, i, arr[i]);
 					}
 			}
 			

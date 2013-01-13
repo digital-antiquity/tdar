@@ -26,6 +26,15 @@
 	</rule>
 
 	<rule>
+		<from>^/opensearch.xml$</from>
+		<to>/opensearch</to>
+	</rule>
+	<rule>
+		<from>^/robots.txt$</from>
+		<to>/robots</to>
+	</rule>
+
+	<rule>
 		<from>^/projects/list</from>
 		<to>/dashboard/dashboard</to>
 	</rule>
@@ -56,16 +65,36 @@
 		<from>^/(.+)/$</from>
 		<to>/$1</to>
 	</rule>
-        <rule>
-            <from>^/search/search(.*)</from>
-            <to>/search/results$1</to>
-        </rule>
+     <rule>
+         <from>^/search/search(.*)</from>
+         <to>/search/results$1</to>
+     </rule>
+
+     <rule>
+         <from>^/search/$</from>
+         <to>/search/basic</to>
+     </rule>
+     <rule>
+         <from>^/search$</from>
+         <to>/search/basic</to>
+     </rule>
+
+
 	<rule>
-		<from>^/(project|dataset|ontology|image|video|document|sensory-data|coding-sheet|collection)/([0-9]+)/(view|edit|upload|delete|columns|mapping|citations|dc|mods|json|xml)$</from>
+		<from>^/(project|dataset|ontology|image|billing|video|document|sensory-data|cart|coding-sheet|collection)/([0-9]+)/(admin|view|edit|upload|delete|columns|mapping|citations|dc|mods|json|xml)$</from>
 		<to>/$1/$3?id=$2</to>
 	</rule>
 	<outbound-rule>
-		<from>^/(project|dataset|ontology|image|video|document|sensory-data|coding-sheet|collection)/(view|edit|xml|upload|delete|columns|citations|mapping|dc|mods)\?id=([0-9]+)$</from>
+		<from>^/(project|dataset|ontology|image|billing|video|document|sensory-data|cart|coding-sheet|collection)/(admin|view|edit|xml|upload|delete|columns|citations|mapping|dc|mods)\?id=([0-9]+)$</from>
+		<to>/$1/$3/$2</to>
+	</outbound-rule>
+
+	<rule>
+		<from>^/(cart|billing)/([0-9]+)/(address|credit|simple|choose|polling|polling-check)$</from>
+		<to>/$1/$3?id=$2</to>
+	</rule>
+	<outbound-rule>
+		<from>^/(cart|billing)/(address|credit|choose|simple|polling|polling-check)\?id=([0-9]+)$</from>
 		<to>/$1/$3/$2</to>
 	</outbound-rule>
 
@@ -78,11 +107,11 @@
 	<!-- all requests for a resource supplying just an id should go to it's 
 		view action -->
 	<rule>
-		<from>^/(project|dataset|ontology|image|video|document|sensory-data|coding-sheet|collection)/([0-9]+)$</from>
+		<from>^/(project|dataset|ontology|billing|image|video|document|cart|sensory-data|coding-sheet|collection)/([0-9]+)$</from>
 		<to>/$1/view?id=$2</to>
 	</rule>
   <outbound-rule>
-    <from>^/(project|dataset|ontology|image|video|document|sensory-data|coding-sheet|collection)/([0-9]+)/view$</from>
+    <from>^/(project|dataset|ontology|billing|image|video|document|sensory-data|cart|coding-sheet|collection)/([0-9]+)/view$</from>
     <to>/$1/$2</to>
   </outbound-rule>
 
@@ -164,18 +193,27 @@
 		<to>/account/new</to>
 	</rule>
 
+    <rule>
+        <name>remove version hash</name>
+        <from>^(/[a-z]+)/vc/[0-9\.a-f]+/(.*)$</from>
+        <to>/$1/$2</to>
+    </rule>
 	<rule>
 		<from>^/workspace$</from>
-		<to>/workspace/list</to>
+		<to>/workspace/select-tables</to>
+	</rule>
+	<rule>
+		<from>^/workspace/list$</from>
+		<to>/workspace/select-tables</to>
 	</rule>
 	
 	
 	<rule>
-	   <from>^/entity/(person|institution)/([0-9]+)/(edit)$</from>
+	   <from>^/entity/(person|institution)/([0-9]+)/(edit|address)$</from>
         <to>/entity/$1/$3?id=$2</to>
 	</rule>
     <outbound-rule>
-        <from>^/entity/(person|institution)/(edit)\?id=([0-9]+)$</from>
+        <from>^/entity/(person|institution)/(edit|address)\?id=([0-9]+)$</from>
         <to>/entity/$1/$3/$2</to>
     </outbound-rule>
 
@@ -186,4 +224,6 @@
 		<from>^(.*?)(?:\;jsessionid=[^\?#]*)?(\?[^#]*)?(#.*)?$</from>
 		<to>$1$2$3</to>
 	</outbound-rule>
+    
+    
 </urlrewrite>

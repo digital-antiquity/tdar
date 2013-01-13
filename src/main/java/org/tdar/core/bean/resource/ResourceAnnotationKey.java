@@ -24,8 +24,6 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
 
-import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
-
 /**
  * $Id$
  * 
@@ -46,7 +44,6 @@ public class ResourceAnnotationKey extends Persistable.Base implements Indexable
     private final static String[] JSON_PROPERTIES = { "id", "key", "label" };
 
     @Enumerated(EnumType.STRING)
-    @XStreamAsAttribute
     @Column(name = "resource_annotation_type")
     private ResourceAnnotationType resourceAnnotationType;
 
@@ -55,7 +52,6 @@ public class ResourceAnnotationKey extends Persistable.Base implements Indexable
     // or "xxx-xx" for arbitrary strings... maybe we can avoid this entirely.
     @Enumerated(EnumType.STRING)
     @Column(name = "annotation_data_type")
-    @XStreamAsAttribute
     private ResourceAnnotationDataType annotationDataType;
 
     @Column(length = 128, unique = true)
@@ -63,11 +59,21 @@ public class ResourceAnnotationKey extends Persistable.Base implements Indexable
     private String key;
 
     @Column(length = 128, name = "format_string")
-    @XStreamAsAttribute
     private String formatString;
 
     private transient Float score = -1f;
     private transient Explanation explanation;
+    private transient boolean readyToIndex = true;
+
+    @Transient
+    @XmlTransient
+    public boolean isReadyToIndex() {
+        return readyToIndex;
+    }
+
+    public void setReadyToIndex(boolean readyToIndex) {
+        this.readyToIndex = readyToIndex;
+    }
 
     @XmlAttribute
     public ResourceAnnotationType getResourceAnnotationType() {
@@ -124,6 +130,7 @@ public class ResourceAnnotationKey extends Persistable.Base implements Indexable
     }
 
     @Transient
+    @XmlTransient
     public Float getScore() {
         return score;
     }
@@ -144,6 +151,6 @@ public class ResourceAnnotationKey extends Persistable.Base implements Indexable
 
     @Transient
     public String getLabel() {
-        return key;
+        return this.key;
     }
 }

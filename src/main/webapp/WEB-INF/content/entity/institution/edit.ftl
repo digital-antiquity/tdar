@@ -11,20 +11,20 @@
     <script type="text/javascript">
         $(function() {
             initializeView();
-            setupEditForm('#frmInstitution');
+            TDAR.common.initEditPage($('#frmInstitution')[0]);
         });
     </script>
 </head>
 <body>
-    <@nav.creatorToolbar "edit" />
 
-    <@s.form  name="institutionForm" id="frmInstitution" method='post' enctype='multipart/form-data' action='save'>
+    <@s.form  name="institutionForm" id="frmInstitution"  cssClass="form-horizontal" method='post' enctype='multipart/form-data' action='save'>
     <div class="glide">
         <h3>Institution Information</h3>
         <@s.hidden name="id" />
         <@s.textfield name="institution.name" required=true label="Name" id="txtInstitutionName" cssClass="longfield" />
         <br /><@s.textfield name="institution.location" label="Location" id="txtLocation" cssClass="longfield" />
         <br /><@s.textfield name="institution.url" label="Website" id="txtUrl" cssClass="longfield url" />
+        <br /><@s.textarea name="institution.description" label="Description"  />
     </div>
     <@edit.submit "Save" false />    
 

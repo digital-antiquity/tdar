@@ -1,12 +1,20 @@
 package org.tdar.db.model.abstracts;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
+import org.tdar.struts.data.IntegrationColumn;
 
 /**
  * A base class for target Databases that can be written to via a
@@ -37,8 +45,11 @@ public interface TargetDatabase extends Database {
 
     public void createTable(DataTable dataTable) throws Exception;
 
-    public void addTableRow(DataTable dataTable,
-            Map<DataTableColumn, String> valueColumnMap) throws Exception;
+    public <T> T query(PreparedStatementCreator psc, PreparedStatementSetter pss, ResultSetExtractor<T> rse);
+
+    public void addTableRow(DataTable dataTable, Map<DataTableColumn, String> valueColumnMap) throws Exception;
+
+    public List<String> selectNonNullDistinctValues(DataTableColumn column);
 
     /**
      * @param dataType
@@ -52,5 +63,18 @@ public interface TargetDatabase extends Database {
     public <T> T selectAllFromTableInImportOrder(DataTable table, ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues);
 
     public <T> T selectAllFromTable(DataTableColumn column, String key, ResultSetExtractor<T> resultSetExtractor);
+
+    public Map<String, Long> selectDistinctValuesWithCounts(DataTableColumn dataTableColumn);
+
+    public String generateOntologyEnhancedSelect(DataTable table, List<IntegrationColumn> integrationColumns,
+            Map<List<OntologyNode>, Map<DataTable, Integer>> pivot);
+
+//    public List<String[]> query(String selectSql, ParameterizedRowMapper<String[]> parameterizedRowMapper);
+
+    public String getResultSetValueAsString(ResultSet resultSet, int resultSetPosition, DataTableColumn column) throws SQLException;
+
+    public List<String> selectDistinctValues(DataTableColumn column);
+
+    public List<String[]> query(String selectSql, ParameterizedRowMapper<String[]> parameterizedRowMapper);
 
 }

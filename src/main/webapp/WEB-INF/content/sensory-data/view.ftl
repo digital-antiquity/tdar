@@ -3,8 +3,8 @@
 <#macro fieldval _label _val _show=true>
 <#if _show>
 <tr>
-    <td nowrap><b>${_label}:</b></td>
-    <td>${_val}</td>
+    <td nowrap><p><strong>${_label}:</strong></p></td>
+    <td><p>${_val}</p></td>
 </tr>
 </#if>
 </#macro>
@@ -12,9 +12,9 @@
 <#macro fieldvalbool _label _val _show=true>
 <#if _show>
 <tr>
-    <td nowrap><b>${_label}:</b></td>
+    <td nowrap><p><strong>${_label}:</strong></p></td>
     <td>
-    <#if _val>Yes<#else>No</#if>
+<p>    <#if _val>Yes<#else>No</#if></p>
     </td>
 </tr>
 </#if>
@@ -32,6 +32,7 @@
 <#if resource.surveyDateBegin??><#assign _surveyDateBegin><@view.shortDate resource.surveyDateBegin /></#assign></#if>
 <#if resource.surveyDateEnd??><#assign _surveyDateEnd><@view.shortDate resource.surveyDateEnd /></#assign></#if>
 <@view.infoResourceBasicInformation>
+<table>
     <@fieldval _label="Object #" _val=resource.monumentNumber!0 _show=resource.monumentNumber??  />
     <@fieldval _val=resource.surveyLocation!""          _show=resource.surveyLocation??  _label="Survey Location" />
     <@fieldval _val=_surveyDateBegin              _show=resource.surveyDateBegin??  _label="Survey Date (start)" />
@@ -46,17 +47,18 @@
     <@fieldval _val=resource.controlDataFilename!""      _show=resource.controlDataFilename??  _label="Control Data Filename" />
     <@fieldval _val=resource.planimetricMapFilename!""      _show=resource.planimetricMapFilename??  _label="Planimetric Map Filename" />
     <@fieldval _val=resource.finalDatasetDescription!"" _show=resource.finalDatasetDescription??  _label="Description of Final Datasets for Archive" />
+</table>
+<hr/>
 </@view.infoResourceBasicInformation>
 
 <#if !resource.sensoryDataScans.isEmpty()>
 <h3>Scan Information</h3>
-<table class="zebracolors tableFormat">
+<table class="table table-striped tableFormat">
     <thead>
         <tr>
             <th>Filename</th>
             <th title="Transformation Matrix">Transformation Matrix</th>
             <th>Matrix Applied</th>
-            <th>Monument / Object</th>
             <th>Scan Date</th>
             <th>Scanner Technology</th>
             <th>Resolution</th>
@@ -72,9 +74,8 @@
         
         <tr>
             <td>${_scan.filename!""}</td>
-            <td>${_scan.transformationMatrix}</td>
+            <td>${_scan.transformationMatrix!""}</td>
             <td><#if _scan.matrixApplied?? && _scan.matrixApplied>Yes</#if></td>
-            <td>${_scan.monumentName!""}</td>
             <td>${_scanDate}</td>
             <td>
                 <#if (_scan.scannerTechnology?? && _scan.scannerTechnology.label.length()>0)>
@@ -96,7 +97,7 @@
 
 <#if !resource.sensoryDataImages.isEmpty()>
 <h3>Sensory Data Image Information</h3>
-<table class="zebracolors tableFormat">
+<table class="table table-striped tableFormat">
     <thead>
         <tr><th>Filename</th><th>Description</th></tr>
     </thead>
@@ -119,6 +120,8 @@
 <@fieldval _val=resource.registrationErrorUnits!0   _show=resource.registrationErrorUnits??      _label="Registration Error"   />
 <@fieldval _val=resource.finalRegistrationPoints!0  _show=resource.finalRegistrationPoints??     _label="# Points in File"   />
 </table>
+<hr/>
+
 <h3>Mesh Information</h3>
 
 <h4>Pre-mesh</h4>
@@ -131,6 +134,7 @@
 <@fieldvalbool      _val=resource.premeshSubsampling              _show=resource.premeshSubsampling??                   _label="Subsampling"  />
 <@fieldvalbool      _val=resource.premeshColorEditions            _show=resource.premeshColorEditions??                 _label="Color Editions"  />
 </table>
+
 <h4>Polygonal Mesh Metadata</h4>
 <table>
 <@fieldval          _val=resource.meshDatasetName!""                _show=resource.meshDatasetName??                        _label="Dataset Name"  />
@@ -152,6 +156,7 @@
 <@fieldval          _val=resource.decimatedMeshTriangleCount!0          _show=resource.decimatedMeshTriangleCount??          _label="Decimated Triangle Count"  />
 <@fieldvalbool      _val=resource.rgbPreservedFromOriginal            _show=resource.rgbPreservedFromOriginal??            _label="RGB Color" />
 </table>
+<hr/>
 
 <@view.sharedViewComponents resource />
 </#escape>

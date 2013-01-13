@@ -5,13 +5,19 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.tdar.core.bean.entity.AuthenticationToken;
+import org.tdar.URLConstants;
+import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.ResourceEvaluator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
-import org.tdar.core.service.external.auth.InternalTdarRights;
+import org.tdar.struts.action.resource.AbstractResourceController;
 import org.tdar.web.SessionDataAware;
 
 /**
@@ -24,9 +30,16 @@ import org.tdar.web.SessionDataAware;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Rev$
  */
+@Results({ @Result(name = AbstractResourceController.REDIRECT_HOME, type = "redirect", location = URLConstants.HOME),
+        @Result(name = AbstractResourceController.REDIRECT_PROJECT_LIST, type = "redirect", location = URLConstants.DASHBOARD)
+})
 public interface AuthenticationAware extends SessionDataAware {
 
     public AuthenticationAndAuthorizationService getAuthenticationAndAuthorizationService();
+
+    Person getAuthenticatedUser();
+
+    boolean isAuthenticated();
 
     public abstract static class Base extends TdarActionSupport implements AuthenticationAware {
 
@@ -36,8 +49,13 @@ public interface AuthenticationAware extends SessionDataAware {
         private transient AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
 
         public Person getAuthenticatedUser() {
-            if(getSessionData() == null) return null;
-            return getSessionData().getPerson();
+            if (getSessionData() == null)
+                return null;
+            if (Persistable.Base.isNotNullOrTransient(getSessionData().getPerson())) {
+                return getGenericService().find(Person.class, getSessionData().getPerson().getId());
+            } else {
+                return null;
+            }
         }
 
         public boolean isAdministrator() {
@@ -47,7 +65,7 @@ public interface AuthenticationAware extends SessionDataAware {
         public boolean isEditor() {
             return isAuthenticated() && authenticationAndAuthorizationService.isEditor(getAuthenticatedUser());
         }
-        
+
         public boolean isAbleToFindDraftResources() {
             return isAuthenticated() && authenticationAndAuthorizationService.can(InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS, getAuthenticatedUser());
         }
@@ -71,7 +89,7 @@ public interface AuthenticationAware extends SessionDataAware {
         public boolean userCan(InternalTdarRights right) {
             return isAuthenticated() && authenticationAndAuthorizationService.can(right, getAuthenticatedUser());
         }
-        
+
         public boolean userCannot(InternalTdarRights right) {
             return isAuthenticated() && authenticationAndAuthorizationService.cannot(right, getAuthenticatedUser());
         }
@@ -82,12 +100,6 @@ public interface AuthenticationAware extends SessionDataAware {
 
         public boolean isAuthenticated() {
             return getSessionData().isAuthenticated();
-        }
-
-        protected void createAuthenticationToken(Person person) {
-            AuthenticationToken token = AuthenticationToken.create(person);
-            getEntityService().save(token);
-            getSessionData().setAuthenticationToken(token);
         }
 
         /**
@@ -125,6 +137,20 @@ public interface AuthenticationAware extends SessionDataAware {
                 }
             }
             return validIds;
+        }
+
+        private ResourceEvaluator initialEvaluator;
+
+        public void initializeQuota(Resource resource) {
+            if (getTdarConfiguration().isPayPerIngestEnabled()) {
+                initialEvaluator = getAccountService().getResourceEvaluator(resource);
+            }
+        }
+
+        public void updateQuota(Account account, Resource resource) {
+            if (getTdarConfiguration().isPayPerIngestEnabled()) {
+                getAccountService().updateQuota(initialEvaluator, account, true, resource);
+            }
         }
 
         public int getSessionTimeout() {

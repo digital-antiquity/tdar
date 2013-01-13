@@ -19,6 +19,7 @@ public class JaxbMapConverter<K, V>
         @XmlElement
         protected List<SimpleMapEntry<K, V>> key = new LinkedList<SimpleMapEntry<K, V>>();
 
+        @SuppressWarnings("unused")
         private SimpleMapAdapter() {
         }
 
@@ -40,6 +41,7 @@ public class JaxbMapConverter<K, V>
         @XmlElement
         protected V value;
 
+        @SuppressWarnings("unused")
         private SimpleMapEntry() {
         }
 

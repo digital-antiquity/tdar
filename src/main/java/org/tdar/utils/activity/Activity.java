@@ -5,6 +5,7 @@ import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +36,10 @@ public class Activity implements Serializable {
 
     public Activity() {
         start();
+    }
+
+    public static String formatRequest(HttpServletRequest request) {
+        return String.format("%s:%s?%s", request.getMethod(), request.getServletPath(), request.getQueryString() == null ? "" : StringUtils.left(request.getQueryString(), 10));
     }
 
     public Activity(HttpServletRequest httpServletRequest) {

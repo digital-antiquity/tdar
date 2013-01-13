@@ -73,7 +73,7 @@ public class RebuildHomepageCache extends ScheduledProcess.Base<HomepageGeograph
         // cache?
         List<HomepageFeaturedItemCache> hfic = new ArrayList<HomepageFeaturedItemCache>();
         for (Object res : informationResourceService.findRandomFeaturedResourceInCollection(true,
-                getTdarConfiguration().getFeaturedCollectionId(), 1)) {
+                getTdarConfiguration().getFeaturedCollectionId(), 5)) {
             hfic.add(new HomepageFeaturedItemCache((InformationResource)res));
         }
         resourceService.save(hfic);

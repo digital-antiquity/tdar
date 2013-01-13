@@ -18,6 +18,7 @@ import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.Status;
 
 /**
@@ -105,14 +106,13 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
                 setInput(key, extra.get(key));
             }
         }
-        if ((extra != null && !extra.containsKey(PROJECT_ID_FIELDNAME)) || extra == null) {
-            setInput("projectId", "-1");
+        if (extra != null && !extra.containsKey(PROJECT_ID_FIELDNAME)) {
+            setInput("projectId", "");
         }
-        
 
         int i = 0;
         for (File uploadedFile : listFiles) {
-            addFileProxyFields(i, false, uploadedFile.getName());
+            addFileProxyFields(i, FileAccessRestriction.PUBLIC, uploadedFile.getName());
             i++;
         }
         if (filename.contains("2")) {

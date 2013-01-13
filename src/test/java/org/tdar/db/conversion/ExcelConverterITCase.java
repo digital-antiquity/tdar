@@ -9,6 +9,7 @@ import java.sql.Types;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -55,13 +56,43 @@ public class ExcelConverterITCase extends AbstractDataIntegrationTestCase {
     @Test
     @Rollback
     public void testBlankExceedingRowsAndExtraColumnAtEnd() throws IOException {
-        InformationResourceFileVersion weirdColumnsDataset = makeFileVersion("Pundo_degenerate.xls", 529);
+        importSpreadsheetAndConfirmExceptionIsThrown("Pundo_degenerate.xls", "row #49 has more columns (6) than this sheet has column names (5) - Appendix 8 (2)");
+    }
+
+    @Test
+    @Rollback
+    public void testExtraColumnAtStartThrowsException() throws IOException {
+        importSpreadsheetAndConfirmExceptionIsThrown("no_first_column_name.xlsx", "row #1 has more columns (0) than this sheet has column names (1) - Sheet1");
+    }
+
+    private void importSpreadsheetAndConfirmExceptionIsThrown(String spreadsheetName, String expectedErrorMessage) throws IOException {
+        InformationResourceFileVersion weirdColumnsDataset = makeFileVersion(spreadsheetName, 529);
         ExcelConverter converter = new ExcelConverter(weirdColumnsDataset, tdarDataImportDatabase);
         try {
             converter.execute();
-        } catch (Throwable e) {
-            assertTrue(e.getMessage().contains("row #49 has more columns (6) than this sheet has column names (5) - Appendix 8 (2)"));
+            assertTrue("Should never get to this point in the code.", false);
+        } catch (TdarRecoverableRuntimeException e) {
+            assertTrue(e.getMessage() ,e.getMessage().contains(expectedErrorMessage));
         }
+    }
+
+    @Test
+    @Rollback
+    public void testArtifactDatasetFromFilemaker() throws IOException {
+        InformationResourceFileVersion weirdColumnsDataset = makeFileVersion("fmp_artifacts.xlsx", 505);
+        ExcelConverter converter = new ExcelConverter(weirdColumnsDataset, tdarDataImportDatabase);
+        converter.execute();
+        Set<DataTable> dataTables = converter.getDataTables();
+        assertEquals(1, dataTables.size());
+        DataTable dataTable = dataTables.iterator().next();
+//        assertNotNull(dataTable.getColumnByDisplayName("Period"));
+//        assertNotNull(dataTable.getColumnByDisplayName("SumOfNo"));
+//        assertNotNull(dataTable.getColumnByDisplayName("1.00"));
+//        assertNotNull(dataTable.getColumnByDisplayName("ABC"));
+//        assertNotNull(dataTable.getColumnByName("period"));
+//        assertNotNull(dataTable.getColumnByName("sumofno"));
+//        assertNotNull(dataTable.getColumnByName("c1_00"));
+//        assertNotNull(dataTable.getColumnByName("abc"));
     }
 
     @Test

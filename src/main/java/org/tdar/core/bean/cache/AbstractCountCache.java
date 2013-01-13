@@ -4,6 +4,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.service.GenericService;
 
+@SuppressWarnings("rawtypes")
 public abstract class AbstractCountCache<C extends AbstractCountCache, D extends Comparable<D>> extends Persistable.Base implements Comparable<C>,
         ResourceCache {
 

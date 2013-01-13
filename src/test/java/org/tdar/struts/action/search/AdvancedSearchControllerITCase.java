@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.apache.lucene.queryParser.ParseException;
 import org.junit.Before;
@@ -45,11 +45,11 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.SearchIndexService;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
-import org.tdar.core.service.external.auth.InternalTdarRights;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.AbstractControllerITCase;
@@ -117,6 +117,22 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
     @Test
     @Rollback
+    public void testComplexGeographicKeywords() {
+        GeographicKeyword snk = genericKeywordService.findOrCreateByLabel(GeographicKeyword.class, "propylon, Athens, Greece, Mnesicles");
+        Document doc = createAndSaveNewResource(Document.class);
+        doc.getGeographicKeywords().add(snk);
+        genericService.saveOrUpdate(doc);
+        searchIndexService.index(doc);
+        firstGroup().getGeographicKeywords().add("Greece");
+        doSearch();
+        assertFalse("we should get back at least one hit", controller.getResults().isEmpty());
+        for (Resource resource : controller.getResults()) {
+            assertTrue("expecting site name for resource", resource.getGeographicKeywords().contains(snk));
+        }
+    }
+
+    @Test
+    @Rollback
     public void testSearchDecade() {
         Document doc = createAndSaveNewResource(Document.class);
         doc.setDate(4000);
@@ -168,7 +184,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
                 // put all of the keywords in a superset
                 Project project = (Project) resource;
                 Set<Keyword> keywords = new HashSet<Keyword>(project.getActiveSiteTypeKeywords());
-                List<InformationResource> projectInformationResources = projectService.findAllResourcesInProject(project, Status.ACTIVE);
+                Set<InformationResource> projectInformationResources = projectService.findAllResourcesInProject(project, Status.ACTIVE);
                 for (InformationResource informationResource : projectInformationResources) {
                     keywords.addAll(informationResource.getActiveSiteTypeKeywords());
                 }
@@ -222,7 +238,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
                 // put all of the keywords in a superset
                 Project project = (Project) resource;
                 Set<Keyword> keywords = new HashSet<Keyword>(project.getActiveCultureKeywords());
-                List<InformationResource> projectInformationResources = projectService.findAllResourcesInProject(project, Status.ACTIVE);
+                Set<InformationResource> projectInformationResources = projectService.findAllResourcesInProject(project, Status.ACTIVE);
                 for (InformationResource informationResource : projectInformationResources) {
                     keywords.addAll(informationResource.getActiveCultureKeywords());
                 }
@@ -253,7 +269,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
                 // put all of the keywords in a superset
                 Project project = (Project) resource;
                 Set<Keyword> keywords = new HashSet<Keyword>(project.getActiveCultureKeywords());
-                List<InformationResource> projectInformationResources = projectService.findAllResourcesInProject(project, Status.ACTIVE);
+                Set<InformationResource> projectInformationResources = projectService.findAllResourcesInProject(project, Status.ACTIVE);
                 for (InformationResource informationResource : projectInformationResources) {
                     keywords.addAll(informationResource.getActiveCultureKeywords());
                 }
@@ -277,7 +293,6 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         LatitudeLongitudeBox elsewhere = new LatitudeLongitudeBox(100d, 10d, 110d, 20d);
 
         doc.getLatitudeLongitudeBoxes().add(region);
-        region.setResource(doc);
 
         genericService.save(doc);
         reindex();
@@ -413,6 +428,9 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         for (ResourceType type : ResourceType.values()) {
             Resource resource = createAndSaveNewResource(type.getResourceClass());
             for (Status status : Status.values()) {
+                if (Status.DUPLICATE == status || Status.FLAGGED_ACCOUNT_BALANCE == status) {
+                    continue;
+                }
                 resource.setStatus(status);
                 genericService.saveOrUpdate(resource);
                 searchIndexService.index(resource);
@@ -619,9 +637,9 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         Person submitter = new Person("Evelyn", "deVos", "ecd@mailinator.com");
         genericService.save(submitter);
         Document doc = createAndSaveNewInformationResource(Document.class, submitter);
-        ResourceCreator rc = new ResourceCreator(doc, new Person("Kelly", "deVos", "kellyd@mailinator.com"), ResourceCreatorRole.AUTHOR);
+        ResourceCreator rc = new ResourceCreator(new Person("Kelly", "deVos", "kellyd@mailinator.com"), ResourceCreatorRole.AUTHOR);
         genericService.save(rc.getCreator());
-        genericService.save(rc);
+        // genericService.save(rc);
         doc.getResourceCreators().add(rc);
         genericService.saveOrUpdate(doc);
         searchIndexService.index(doc);
@@ -733,7 +751,6 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     private Document createDocumentWithDates(int i, int j) throws InstantiationException, IllegalAccessException {
         Document document = createAndSaveNewInformationResource(Document.class);
         CoverageDate date = new CoverageDate(CoverageType.CALENDAR_DATE, i, j);
-        date.setResource(document);
         document.getCoverageDates().add(date);
         genericService.saveOrUpdate(date);
         return document;
@@ -856,7 +873,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     private Resource constructActiveResourceWithCreator(Creator creator, ResourceCreatorRole role) {
         try {
             Document doc = createAndSaveNewInformationResource(Document.class);
-            ResourceCreator resourceCreator = new ResourceCreator(doc, creator, role);
+            ResourceCreator resourceCreator = new ResourceCreator(creator, role);
             doc.getResourceCreators().add(resourceCreator);
             return doc;
         } catch (Exception ignored) {

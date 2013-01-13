@@ -5,9 +5,10 @@
  */
 var indexExclusions = [ 'investigationTypeIds', 'approvedSiteTypeKeywordIds', 'materialKeywordIds', 'approvedCultureKeywordIds' ];
 
-function populateSection(elem, formdata) {
 
-    $(elem).populate(formdata, {
+function populateSection(elemSelector, formdata) {
+
+    $(elemSelector).populate(formdata, {
         resetForm : false,
         phpNaming : false,
         phpIndices : true,
@@ -75,7 +76,7 @@ function convertToFormJson(rawJson) {
         },
         collectionInformation : {
             sourceCollections : rawJson.sourceCollections,
-            relatedComparativeCollections : rawJson.relatedComparativeCollections,
+            relatedComparativeCollections : rawJson.relatedComparativeCollections
 
         },
         otherInformation : {
@@ -195,22 +196,14 @@ function inheritingMapIsSafe(rootElementSelector, spatialInformation) {
     // compare parent coords to this form's current coords. seems like overkill
     // but isn't.
     var jsonVals = [ si.minx, si.miny, si.maxx, si.maxy ]; // strip out nulls
-    var formVals = [];
-    formVals = formVals.concat($('#minx'));
-    formVals = formVals.concat($('#miny'));
-    formVals = formVals.concat($('#maxx'));
-    formVals = formVals.concat($('#maxy'));
+    var formVals = $.map([ 
+                     $('#minx').val(),
+                     $('#miny').val(), 
+                     $('#maxx').val(),
+                     $('#maxy').val()
+                    ], function(v){if(v!=="") return parseFloat(v);});
 
-    formVals = $.map(formVals, function(item) {
-        if ($(item).val())
-            return $(item).val();
-    });
-    return formVals.length === 0 || $.compareArray(jsonVals, formVals, false); // don't
-    // ignore
-    // array
-    // order
-    // in
-    // comparison
+    return  !formVals.length || $.compareArray(jsonVals, formVals, false);
 }
 
 // return whether it's "safe" to populate the temporal information section with
@@ -219,7 +212,7 @@ function inheritingMapIsSafe(rootElementSelector, spatialInformation) {
 // supplied temporalInformation is the same as what is already on the form.
 function inheritingDatesIsSafe(rootElementSelector, temporalInformation) {
     // are all the fields in this section blank?
-    var $coverageTextFields = $('input:text', '#coverageTable');
+    var $coverageTextFields = $('input:text', '#coverageDateRepeatable');
     var joinedFieldValues = $coverageTextFields.map(function() {
         return $(this).val();
     }).toArray().join("");
@@ -230,8 +223,8 @@ function inheritingDatesIsSafe(rootElementSelector, temporalInformation) {
 
     // not okay to populate if the incoming list is a different size as the
     // current list
-    $tableRows = $('tr', '#coverageTable');
-    if (temporalInformation.coverageDates.length != $tableRows.length)
+    $tableRows = $('.repeat-row', '#coverageDateRepeatable');
+    if (temporalInformation.coverageDates.length !== $tableRows.length)
         return false;
 
     // at this point it's we need to compare the contents of the form vs.
@@ -250,125 +243,130 @@ function inheritingDatesIsSafe(rootElementSelector, temporalInformation) {
 
 }
 
+
 function inheritInformation(formId, json, sectionId, tableId) {
-    disableSection(sectionId);
+    //console.debug("inheritInformation(formId:%s, json:%s, sectionId:%s, tableId:%s)", formId, json, sectionId, tableId);
     clearFormSection(sectionId);
-    if (tableId != undefined) {
-        if (document.getElementById("uncontrolled" + tableId + "Table") != undefined) {
-            resetRepeatRowTable('uncontrolled' + tableId + 'Table', json['uncontrolled' + tableId + 's'].length);
+    if (tableId !== undefined) {
+        if (document.getElementById("uncontrolled" + tableId + "Repeatable") !== null) {
+            TDAR.inheritance.resetRepeatable("#" + 'uncontrolled' + tableId + 'Repeatable', json['uncontrolled' + tableId].length);
         }
-        if (document.getElementById("approved" + tableId + "Table") != undefined) {
-            resetRepeatRowTable('approved' + tableId + 'Table', json['approved' + tableId + 's'].length);
+        if (document.getElementById("approved" + tableId + "Repeatable") !== null) {
+            TDAR.inheritance.resetRepeatable("#" + 'approved' + tableId + 'Repeatable', json['approved' + tableId].length);
         }
         var simpleId = tableId;
         simpleId[0] = simpleId[0].toLowerCase();
-        if (document.getElementById(simpleId + "Table") != undefined) {
-            resetRepeatRowTable(simpleId + 'Table', json[simpleId + 's'].length);
+        if (document.getElementById(simpleId + "Repeatable") !== null) {
+            TDAR.inheritance.resetRepeatable("#" + simpleId + 'Repeatable', json[simpleId].length);
         }
     }
     populateSection(formId, json);
+    disableSection(sectionId);
 }
+
+//
 
 function inheritSiteInformation(formId, json) {
-    disableSection('#divSiteInformation');
     clearFormSection('#divSiteInformation');
-    resetRepeatRowTable('siteNameKeywordTable', json.siteInformation['siteNameKeywords'].length);
-    resetRepeatRowTable('uncontrolledSiteTypeKeywordTable', json.siteInformation['uncontrolledSiteTypeKeywords'].length);
+    TDAR.inheritance.resetRepeatable('#siteNameKeywordsRepeatable', json.siteInformation['siteNameKeywords'].length);
+    TDAR.inheritance.resetRepeatable('#uncontrolledSiteTypeKeywordsRepeatable', json.siteInformation['uncontrolledSiteTypeKeywords'].length);
     populateSection(formId, json.siteInformation);
+    disableSection('#divSiteInformation');
 }
 
+function inheritCulturalInformation(formId, json) {
+    //                inheritInformation(formId, json.culturalInformation, "#divCulturalInformation", "CultureKeywords");
+
+    clearFormSection('#divCulturalInformation');
+    TDAR.inheritance.resetRepeatable('#uncontrolledCultureKeywordsRepeatable', json.culturalInformation['uncontrolledCultureKeywords'].length);
+    populateSection(formId, json.culturalInformation);
+    disableSection('#divCulturalInformation');
+}
+
+
 function inheritIdentifierInformation(formId, json) {
-    disableSection('#divIdentifiers');
     clearFormSection('#divIdentifiers');
-    resetRepeatRowTable('resourceAnnotationsTable', json.resourceAnnotations.length);
+    TDAR.inheritance.resetRepeatable('#resourceAnnotationsTable', json.resourceAnnotations.length);
     populateSection(formId, json);
+    disableSection('#divIdentifiers');
 }
 
 function inheritCollectionInformation(formId, json) {
-    disableSection('#relatedCollectionsSection');
     clearFormSection('#relatedCollectionsSection');
-    resetRepeatRowTable('sourceCollectionTable', json.collectionInformation['relatedComparativeCollections'].length);
-    resetRepeatRowTable('relatedComparativeCitationTable', json.collectionInformation['sourceCollections'].length);
+    TDAR.inheritance.resetRepeatable('#divSourceCollectionControl', json.collectionInformation.sourceCollections.length);
+    TDAR.inheritance.resetRepeatable('#divRelatedComparativeCitationControl', json.collectionInformation.sourceCollections.length);
     populateSection(formId, json.collectionInformation);
+    disableSection('#relatedCollectionsSection');
 }
 
 function inheritNoteInformation(formId, json) {
-    disableSection('#resourceNoteSection');
     clearFormSection('#resourceNoteSection');
-    resetRepeatRowTable('resourceNoteTable', json.noteInformation['resourceNotes'].length);
+    TDAR.inheritance.resetRepeatable('#resourceNoteSection', json.noteInformation['resourceNotes'].length);
     populateSection(formId, json.noteInformation);
+    disableSection('#resourceNoteSection');
 }
 
 function inheritSpatialInformation(formId, json) {
-    disableSection('#divSpatialInformation');
-    disableMap();
+    console.log("inherit spatial information(%s, %s)", formId, json);
+    var mapdiv = $('#editmapv3')[0];
+    var mapReadyCallback = function(){
+        
+        console.log("map ready callback");
+        clearFormSection('#divSpatialInformation');
+        TDAR.inheritance.resetRepeatable('#geographicKeywordsRepeatable', json.spatialInformation['geographicKeywords'].length);
+        populateSection(formId, json.spatialInformation);
+        disableSection('#divSpatialInformation');
+        
+        // clear the existing redbox and draw new one;
+        populateLatLongTextFields();
+        
+        var si = json.spatialInformation;
+        TDAR.maps.updateResourceRect(mapdiv,  si.miny, si.minx, si.maxy, si.maxx);
+        
+        disableMap();
+    };
 
-    clearFormSection('#divSpatialInformation');
-    resetRepeatRowTable('geographicKeywordTable', json.spatialInformation['geographicKeywords'].length);
-    populateSection(formId, json.spatialInformation);
-
-    // clear the existing redbox and draw new one;
-    if (GZoomControl.G.oZoomArea) {
-        // TODO: reset the map to default zoom and default location
-        GZoomControl.G.oMap.removeOverlay(GZoomControl.G.oZoomArea);
-    }
-    drawMBR();
-    populateLatLongTextFields();
+    //need to wait until map api is ready *and* this page's map is ready.
+    if(!$(mapdiv).data("gmap")) {
+        $(mapdiv).one("mapready", mapReadyCallback)
+    } else {
+        mapReadyCallback();
+    } 
+        
+    
 }
 
 function inheritTemporalInformation(formId, json) {
     var sectionId = '#divTemporalInformation';
-    disableSection(sectionId);
     clearFormSection(sectionId);
-    resetRepeatRowTable('temporalKeywordTable', json.temporalInformation.temporalKeywords.length);
-    resetRepeatRowTable('coverageTable', json.temporalInformation.coverageDates.length);
+    TDAR.inheritance.resetRepeatable('#temporalKeywordsRepeatable', json.temporalInformation.temporalKeywords.length);
+    TDAR.inheritance.resetRepeatable('#coverageDateRepeatable', json.temporalInformation.coverageDates.length);
     populateSection(formId, json.temporalInformation);
+    disableSection(sectionId);
 }
 
-function bindCheckboxToInheritSection(cbSelector, divSelector, isSafeCallback, inheritSectionCallback, enableSectionCallback) {
-    $(cbSelector).change(function(e) {
-        var cb = this;
-        var divid = divSelector;
-        var proceed = true;
-        if ($(cb).is(":checked")) {
-            // check if inheriting would overrwrite existing
-            // values
-            var isSafe = isSafeCallback();
-            if (!isSafe) {
-                proceed = confirm("Inheriting from '" + htmlEncode(project.title) + "' will overwrite existing values. Continue?");
-                if (!proceed) {
-                    $(cb).removeAttr("checked");
-                }
-            }
-            if (proceed) {
-                inheritSectionCallback();
-            }
-        } else {
-//            console.log(divid + " cleared");
-            if (enableSectionCallback) {
-                enableSectionCallback();
-            } else {
-                enableSection(divid);
-            }
-        }
-
-        updateSelectAllCheckboxState();
-    });
-}
-
-function applyInheritance(project, resource) {
+function applyInheritance(project, formSelector) {
+    var $form = $(formSelector);
+    //collection of 'options' objects for each inheritance section. options contain info about 
+    //the a section (checkbox selector, div selector,  callbacks for isSafe, inheritSection, enableSection);
+    $form.data("inheritOptionsList", []);
+    
+    //hack:  formId is no longer global, and updateInheritableSections() needs it...
+    var formId = $(formSelector).attr("id");
+    
+    
+    
     // if we are editing, set up the initial form values
-    if (project) {
-        json = convertToFormJson(project);
-        updateInheritableSections(json);
-    }
+//    if (project) {
+//        json = convertToFormJson(project);
+//        updateInheritableSections(json, formId);
+//    }
 
     // update the inherited form values when project selection changes.
     $('#projectId').change(function(e) {
         var sel = this;
-//        console.log('project changed. new value:' + $(sel).val());
-        if ($(sel).val() != '' && $(sel).val() > 0) {
-//            console.log('about to make ajax call for project info');
+        
+        if ($(sel).val() !== '' && $(sel).val() > 0) {
             $.ajax({
                 url : getBaseURI() + "project/json",
                 dataType : "jsonp",
@@ -378,19 +376,22 @@ function applyInheritance(project, resource) {
                 success : projectChangedCallback,
                 error : function(msg) {
                     console.error("error");
-                }
+                },
+                waitMessage: "Loading project information"
             });
         } else {
             project = getBlankProject();
             json = convertToFormJson(project);
-            updateInheritableSections(json);
+            updateInheritableSections(json, formId);
         }
         enableOrDisableInheritAllSection();
         updateInheritanceCheckboxes();
     });
+    
+    
     updateInheritanceCheckboxes();
     enableOrDisableInheritAllSection();
-    processInheritance(formId);
+    processInheritance(formSelector);
     var $cbSelectAllInheritance = $("#cbSelectAllInheritance");
 
     // prime the "im-busy-dont-bother-me" flag on select-all checkbox.
@@ -399,108 +400,245 @@ function applyInheritance(project, resource) {
     // FIXME: forward-references to function statements are not advised. replace
     // with forward-reference to function expression/variable?
     $cbSelectAllInheritance.click(selectAllInheritanceClicked);
+    
+    projectChangedCallback(project);
 }
 
+
+//update the project json variable and update the inherited sections
+function projectChangedCallback(data) {
+    project = data;
+    
+    // if user picked blank option, then clear the sections
+    if (!project.id) {
+        project = getBlankProject();
+    } else  if (project.resourceType === 'INDEPENDENT_RESOURCES_PROJECT') {
+        project = getBlankProject();
+    } 
+
+    json = convertToFormJson(project);
+    var formId = $('#projectId').closest('form').attr("id");
+    updateInheritableSections(json, formId);
+}
+
+
 function processInheritance(formId) {
-    // ---- bind inheritance tracking checkboxes
-
-    bindCheckboxToInheritSection('#cbInheritingSiteInformation', '#divSiteInformation', function() {
-        var allKeywords = json.siteInformation.siteNameKeywords.concat(json.siteInformation.uncontrolledSiteTypeKeywords);
-        return inheritingCheckboxesIsSafe('#divSiteInformation', json.siteInformation.approvedSiteTypeKeywordIds)
-                && inheritingRepeatRowsIsSafe('#divSiteInformation', allKeywords);
-    }, function() {
-        inheritSiteInformation(formId, json);
+    //declare options for each inheritSection; including the top-level div, criteria for overwrite "safety", how populate controls, etc.
+    var optionsList = [ 
+        {
+            //todo:  derive section name from section header
+            sectionName: "Site Information",  
+            cbSelector : '#cbInheritingSiteInformation',
+            divSelector : '#siteSection',
+            mappedData : "siteInformation", // curently not used (fixme: implement tdar.common.getObjValue)
+            isSafeCallback : function() {
+                var allKeywords = json.siteInformation.siteNameKeywords.concat(json.siteInformation.uncontrolledSiteTypeKeywords);
+                return inheritingCheckboxesIsSafe('#divSiteInformation', json.siteInformation.approvedSiteTypeKeywordIds) &&
+                        inheritingRepeatRowsIsSafe('#divSiteInformation', allKeywords);
+    
+            },
+            inheritSectionCallback : function() {
+                inheritSiteInformation("#siteSection", json);
+            }
+        },
+        {
+            sectionName: "Temporal Coverage",
+            cbSelector : '#cbInheritingTemporalInformation',
+            divSelector : '#temporalSection',
+            mappedData : "temporalInformation", // curently not used (fixme: implement tdar.common.getObjValue)
+            isSafeCallback : function() {
+                return inheritingRepeatRowsIsSafe('#temporalKeywordsRepeatable', json.temporalInformation.temporalKeywords)
+                        && inheritingDatesIsSafe('#divTemporalInformation', json.temporalInformation);
+            },
+            inheritSectionCallback : function() {
+                inheritTemporalInformation("#temporalSection", json);
+            }
+        },
+        {
+            sectionName: "Cultural Information",
+            cbSelector : '#cbInheritingCulturalInformation',
+            divSelector : '#divCulturalInformation',
+            mappedData : "culturalInformation", // curently not used (fixme: implement tdar.common.getObjValue)
+            isSafeCallback : function() {
+                return inheritingCheckboxesIsSafe('#divCulturalInformation', json.culturalInformation.approvedCultureKeywordIds)
+                        && inheritingRepeatRowsIsSafe('#divCulturalInformation', json.culturalInformation.uncontrolledCultureKeywords);
+            },
+            inheritSectionCallback : function() {
+                inheritCulturalInformation('#divCulturalInformation', json);
+            }
+        },
+        {
+            sectionName: "General Keywords",
+            cbSelector : '#cbInheritingOtherInformation',
+            divSelector : '#divOtherInformation',
+            mappedData : "otherInformation", // curently not used (fixme: implement tdar.common.getObjValue)
+            isSafeCallback : function() {
+                return inheritingRepeatRowsIsSafe('#divOtherInformation', json.otherInformation.otherKeywords);
+            },
+            inheritSectionCallback : function() {
+                inheritInformation('#divOtherInformation', json.otherInformation, "#divOtherInformation", "otherKeywords");
+            }
+        },
+        {
+            sectionName: "Investigation Information",
+            cbSelector : '#cbInheritingInvestigationInformation',
+            divSelector : '#divInvestigationInformation',
+            mappedData : "investigationInformation", // curently not used (fixme: implement tdar.common.getObjValue)
+            isSafeCallback : function() {
+                return inheritingCheckboxesIsSafe('#divInvestigationInformation', json.investigationInformation.investigationTypeIds);
+            },
+            inheritSectionCallback : function() {
+                inheritInformation('#divInvestigationInformation', json.investigationInformation, '#divInvestigationInformation');
+            }
+        },
+        {
+            sectionName: "Material Types",
+            cbSelector : '#cbInheritingMaterialInformation',
+            divSelector : '#divMaterialInformation',
+            mappedData : "materialInformation", // curently not used (fixme: implement tdar.common.getObjValue)
+            isSafeCallback : function() {
+                return inheritingCheckboxesIsSafe('#divMaterialInformation', json.materialInformation.materialKeywordIds);
+            },
+            inheritSectionCallback : function() {
+                inheritInformation('#divMaterialInformation', json.materialInformation, '#divMaterialInformation');
+            }
+        },
+        {
+            sectionName: "Notes",
+            cbSelector : '#cbInheritingNoteInformation',
+            divSelector : '#resourceNoteSection',
+            mappedData : "noteInformation", // curently not used (fixme: implement tdar.common.getObjValue)
+            isSafeCallback : function() {
+                var $resourceNoteSection = $('#resourceNoteSection');
+                var projectNotes = json.noteInformation.resourceNotes;
+                
+                //it's always safe to overwrite an empty section
+                var $textareas = $resourceNoteSection.find('textarea');
+                if($textareas.length === 1 && $.trim($textareas.first().val()).length === 0) {
+                    return true;
+                }
+                
+                //distill the resourcenote objects to one array and the form section to another array, then compare the two arrays. 
+                var formVals = [], projectVals = [];
+                projectVals = projectVals.concat($.map(projectNotes, function(note){
+                    return note.type;
+                }));
+                projectVals = projectVals.concat($.map(projectNotes, function(note){
+                    return note.note;
+                }));
+                
+                
+                $resourceNoteSection.find('select').each(function(){
+                    formVals.push($(this).val());
+                });
+                
+                $resourceNoteSection.find('textarea').each(function(){
+                    formVals.push($.trim($(this).val()));
+                });
+                
+                //FIXME: ignoreOrder should be false, but I'm pretty sure server doesn't preserve order. turn this on once fixed. 
+                return $.compareArray(projectVals, formVals, true);
+                
+                
+            },
+            inheritSectionCallback : function() {
+                inheritNoteInformation('#resourceNoteSection', json);
+            }
+        },
+        {
+            sectionName: "Museum or Archive Collections",
+            cbSelector : '#cbInheritingCollectionInformation',
+            divSelector : '#relatedCollectionsSection',
+            mappedData : "collectionInformation", // curently not used (fixme: implement tdar.common.getObjValue)
+            isSafeCallback : function() {
+                var $textareas = $('#relatedCollectionsSection').find("textarea");
+                //overwriting empty section is always safe
+                if($textareas.length === 2 && $.trim($textareas[0].value).length === 0  && $.trim($textareas[1].value).length === 0)  {
+                    return true;
+                }
+                
+                var formVals = [], projectVals = [];
+                $textareas.each(function() {
+                    formVals.push($.trim(this.value));
+                });
+                
+                projectVals = projectVals.concat($.map(json.collectionInformation.sourceCollections, function(obj) {
+                    return obj.text;
+                }));
+                projectVals = projectVals.concat($.map(json.collectionInformation.relatedComparativeCollections, function(obj) {
+                    return obj.text;
+                }));
+                
+                //FIXME: array comparison shouldn't ignore order if server side maintains sequence order... does it?
+                return $.compareArray(formVals, projectVals, true);
+            },
+            inheritSectionCallback : function() {
+                inheritCollectionInformation('#relatedCollectionsSection', json);
+            }
+        },
+        {
+            sectionName: "Agency Identifiers",
+            cbSelector : '#cbInheritingIdentifierInformation',
+            divSelector : '#divIdentifiers',
+            mappedData : "resourceAnnotations", // curently not used (fixme: implement tdar.common.getObjValue)
+            isSafeCallback : function() {
+                // flatten json to array of values [key, val, key, val, ...], and
+                // compare to field values.
+                var vals = [];
+                $.each(json.resourceAnnotations, function(i, annotation) {
+                    vals.push(annotation.resourceAnnotationKey.key); // identifier
+                                                                        // key
+                    vals.push(annotation.value); // identifier value;
+                });
+                return inheritingRepeatRowsIsSafe('#divIdentifiers', vals);
+            },
+            inheritSectionCallback : function() {
+                inheritIdentifierInformation('#divIdentifiers', json);
+            }
+        },
+        {
+            sectionName: "Spatial Terms / Agencey Information",
+            cbSelector : '#cbInheritingSpatialInformation',
+            divSelector : '#divSpatialInformation',
+            mappedData : "collectionInformation", // curently not used (fixme: implement tdar.common.getObjValue)
+            isSafeCallback : function() {
+                return inheritingMapIsSafe('#divSpatialInformation', json.spatialInformation)
+                && inheritingRepeatRowsIsSafe('#geographicKeywordsRepeatable', json.spatialInformation.geographicKeywords);
+            },
+            inheritSectionCallback : function() {
+                inheritSpatialInformation("#divSpatialInformation", json);
+            },
+            enableSectionCallback: function() {
+                enableSection('#divSpatialInformation');
+                enableMap();
+            }
+        }
+        
+    ];
+    
+    $.each(optionsList, function(idx, options){
+        TDAR.inheritance.registerInheritSection(options);
     });
-
-    bindCheckboxToInheritSection('#cbInheritingTemporalInformation', '#divTemporalInformation', function() {
-        return inheritingRepeatRowsIsSafe('#temporalKeywordTable', json.temporalInformation.temporalKeywords)
-                && inheritingDatesIsSafe('#divTemporalInformation', json.temporalInformation);
-    }, function() {
-        inheritTemporalInformation(formId, json);
-    });
-
-    bindCheckboxToInheritSection('#cbInheritingCulturalInformation', '#divCulturalInformation', function() {
-        return inheritingCheckboxesIsSafe('#divCulturalInformation', json.culturalInformation.approvedCultureKeywordIds)
-                && inheritingRepeatRowsIsSafe('#divCulturalInformation', json.culturalInformation.uncontrolledCultureKeywords);
-    }, function() {
-        inheritInformation(formId, json.culturalInformation, "#divCulturalInformation", "CultureKeyword");
-    });
-
-    bindCheckboxToInheritSection('#cbInheritingOtherInformation', '#divOtherInformation', function() {
-        return inheritingRepeatRowsIsSafe('#divOtherInformation', json.otherInformation.otherKeywords);
-    }, function() {
-        inheritInformation(formId, json.otherInformation, "#divOtherInformation", "otherKeyword");
-    });
-
-    bindCheckboxToInheritSection('#cbInheritingInvestigationInformation', '#divInvestigationInformation', function() {
-        return inheritingCheckboxesIsSafe('#divInvestigationInformation', json.investigationInformation.investigationTypeIds);
-    }, function() {
-        inheritInformation(formId, json.investigationInformation, '#divInvestigationInformation');
-    });
-
-    bindCheckboxToInheritSection('#cbInheritingMaterialInformation', '#divMaterialInformation', function() {
-        return inheritingCheckboxesIsSafe('#divMaterialInformation', json.materialInformation.materialKeywordIds);
-    }, function() {
-        inheritInformation(formId, json.materialInformation, '#divMaterialInformation');
-    });
-
-    bindCheckboxToInheritSection('#cbInheritingNoteInformation', '#resourceNoteSection', function() {
-        return inheritingRepeatRowsIsSafe('#resourceNoteSection', json.noteInformation);
-    }, function() {
-        inheritNoteInformation(formId, json);
-    });
-
-    bindCheckboxToInheritSection('#cbInheritingCollectionInformation', '#relatedCollectionsSection', function() {
-        return inheritingRepeatRowsIsSafe('#relatedCollectionsSection', json.collectionInformation.sourceCollections)
-                && inheritingRepeatRowsIsSafe('#relatedCollectionsSection', json.collectionInformation.relatedComparativeCollections);
-    }, function() {
-        inheritCollectionInformation(formId, json);
-    });
-
-    bindCheckboxToInheritSection('#cbInheritingIdentifierInformation', '#divIdentifiers', function() {
-        // flatten json to array of values [key, val, key, val, ...], and
-        // compare to field values.
-        var vals = [];
-        $.each(json.resourceAnnotations, function(i, annotation) {
-            vals.push(annotation.resourceAnnotationKey.key); // identifier
-                                                                // key
-            vals.push(annotation.value); // identifier value;
-        });
-        return inheritingRepeatRowsIsSafe('#divIdentifiers', vals);
-    }, function() {
-        inheritIdentifierInformation(formId, json);
-    });
-
-    bindCheckboxToInheritSection('#cbInheritingSpatialInformation', '#divSpatialInformation', function() {
-        return inheritingMapIsSafe('#divSpatialInformation', json.spatialInformation)
-                && inheritingRepeatRowsIsSafe('#geographicKeywordTable', json.spatialInformation.geographicKeywords);
-    }, function() {
-        inheritSpatialInformation(formId, json);
-    }, function() {
-        enableSection('#divSpatialInformation');
-        enableMap();
-    });
-
-    // gzoom-control doesn't exist when this code fires on pageload. so we
-    // wait a moment before trying checking to see if the google map controls
-    // should be hidden
-    setTimeout(function(e) {
-        if ($('#cbInheritingSpatialInformation').is(':checked')) {
+    
+    //We don't want to have an editable map when resource inherits spatialInformation, however, the map won't be available immediately after pageload. So
+    //we wait till the map is loaded and ready
+    $('#editmapv3').one('mapready', function(e) {
+        if ($('#cbInheritingSpatialInformation').prop('checked')) {
             disableMap();
         }
-    }, 100);
+    });
 }
 
 function updateInheritanceCheckboxes() {
     var projectId = $('#projectId').val();
     if (projectId <= 0) {
-        $('.inheritlabel').find('label').addClass('disabled');
-        $('.inheritlabel').find(':checkbox').prop('disabled', true);
-        $('.inheritlabel').find(':checkbox').prop('checked', false);
+        $('.divInheritSection').find('label').addClass('disabled');
+        $('.divInheritSection').find(':checkbox').prop('disabled', true);
+        $('.divInheritSection').find(':checkbox').prop('checked', false);
         enableAll();
     } else {
-        $('.inheritlabel').find('label').removeClass('disabled');
-        $('.inheritlabel').find(':checkbox').prop('disabled', false);
+        $('.divInheritSection').find('label').removeClass('disabled');
+        $('.divInheritSection').find(':checkbox').prop('disabled', false);
     }
 }
 
@@ -517,9 +655,11 @@ function enableAll() {
     enableSection('#resourceNoteSection');
 }
 
-function updateInheritableSections(json) {
+//todo: this duplicates code (see all the calls to bindCheckbox); use  inheritOptionsList instead
+function updateInheritableSections(json, formId) {
     //HACK: temporary fix for TDAR-2268 - our form populate js is overwriting the ID field with data.id
     var jsonid = json.id;
+//    console.log(json);
     json.id = null;
     delete(json.id);
 
@@ -530,48 +670,21 @@ function updateInheritableSections(json) {
         labelText = 'Inherit values from parent project "' + TDAR.ellipsify(json.title, 60) + '"';
         selectedProjectName = "Inherit metadata from " + json.title;
     }
-    $('.inheritlabel label').text(labelText);
-    $('#lblCurrentlySelectedProject').text(selectedProjectName);
+    
+    //update inheritance checkbox labels with new project name (don't clobber checkbox in the process)
+    $('.divInheritSection').find('label.checkbox .labeltext').text(labelText);
+    
+    $('#spanCurrentlySelectedProjectText').text(selectedProjectName);
 
-    // show or hide the text of each inheritable section based on checkbox
-    // state.
-    if ($('#cbInheritingInvestigationInformation').is(':checked')) {
-        inheritInformation(formId, json.investigationInformation, '#divInvestigationInformation');
-    }
-
-    if ($('#cbInheritingSiteInformation').is(':checked')) {
-        inheritSiteInformation(formId, json);
-    }
-
-    if ($('#cbInheritingMaterialInformation').is(':checked')) {
-        inheritInformation(formId, json.materialInformation, '#divMaterialInformation');
-    }
-
-    if ($('#cbInheritingCulturalInformation').is(':checked')) {
-        inheritInformation(formId, json.culturalInformation, "#divCulturalInformation", "CultureKeyword");
-    }
-
-    if ($('#cbInheritingSpatialInformation').is(':checked')) {
-        inheritSpatialInformation(formId, json);
-    }
-
-    if ($('#cbInheritingTemporalInformation').is(':checked')) {
-        inheritTemporalInformation(formId, json);
-    }
-
-    if ($('#cbInheritingIdentifierInformation').is(':checked')) {
-        inheritIdentifierInformation(formId, json);
-    }
-    if ($('#cbInheritingCollectionInformation').is(':checked')) {
-        inheritCollectionInformation(formId, json);
-    }
-    if ($('#cbInheritingNoteInformation').is(':checked')) {
-        inheritNoteInformation(formId, json);
-    }
-
-    if ($('#cbInheritingOtherInformation').is(':checked')) {
-        inheritInformation(formId, json.otherInformation, "#divOtherInformation", "otherKeyword");
-    }
+    //update the checked inheritable sections with the updated project data
+    $form = $("#" + formId);
+    $.each($form.data("inheritOptionsList"), function(idx, options) {
+        if($(options.cbSelector).prop('checked')) {
+            options.inheritSectionCallback();
+        }
+    });
+    
+    
 }
 
 function selectAllInheritanceClicked() {
@@ -580,14 +693,16 @@ function selectAllInheritanceClicked() {
         $elem.data('isUpdatingSections', true);
 
         var checked = $elem.prop('checked');
-        var $sectionCheckboxes = $('.inheritlabel input[type=checkbox]');
+        var $sectionCheckboxes = $('.divInheritSection input[type=checkbox]');
 
         // make all of the section checkboxes just like this checkbox.
         if (checked) {
             // check all of the unchecked sections
-            $sectionCheckboxes.not(':checked').each(function() {
-                $(this).click();
-            });
+            
+//            $sectionCheckboxes.not(':checked').each(function() {
+//                $(this).click();
+//            });
+            attemptMultipleInheritance($sectionCheckboxes.not(':checked'));
         } else {
             // uncheck all of the checked sections
             $sectionCheckboxes.filter(':checked').each(function() {
@@ -600,6 +715,69 @@ function selectAllInheritanceClicked() {
         $elem.data('isUpdatingSections', false);
     }
 }
+
+//display modal dialog w/ list of affected sections.
+//TODO: Alert box might be better because user could inspect sections prior to decision, but managing state would be way harder 
+//(e.g. user changes additional values before they finally click 'okay' or 'cancel').
+function displayOverwritePrompt(optionsList, okaySelected, cancelSelected) {
+    $modalDiv = $('#inheritOverwriteAlert');
+    
+    //populate list of conflicting sections
+    $ul = $("<ul></ul>");
+    $.each(optionsList, function(idx, options){
+        $ul.append("<li>" + options.sectionName + "</li>");
+    });
+    $modalDiv.find('.list-container').empty().append($ul);
+
+    //modal is animated,  so we shouldn't do this dom-intensive stuff until animation is complete
+
+    //by default, treat 'hidden' event as a 'cancel'
+    $modalDiv.one("hidden", cancelSelected);
+    
+    //if 'okay' clicked,  swap out the 'cancel'  and perform multi-inheritance once the modal is completely gone
+    $('#btnInheritOverwriteOkay').one("click", function(){
+        $modalDiv.unbind("hidden", cancelSelected);
+        $modalDiv.one("hidden", okaySelected);
+        $modalDiv.modal('hide');
+    });
+    
+    $modalDiv.modal();
+}
+
+
+//get all unchecked boxes
+//get options for each
+//if any unsafe,   fire prompt
+//for prompt,  wire yes and no buttons
+function attemptMultipleInheritance($checkboxes) {
+    var unsafeSections = [];
+    var optionsList = $.map($checkboxes, function(checkbox, idx){
+        var options = $(checkbox).data("inheritOptions");
+        if(!options.isSafeCallback()) {
+            unsafeSections.push(options);
+        }
+        return options;
+    });
+    
+    //action we'll take if all sections safe OR user expressly permits overwrite
+    var _inheritMultiple = function() {
+        $checkboxes.prop("checked", true);
+        $.each(optionsList, function(idx, options){
+            options.inheritSectionCallback();
+        });
+    };
+    
+    //if any sections unsafe (i.e. inheritance would overwrite previous values),  throw a prompt to the user
+    if(unsafeSections.length) {
+        displayOverwritePrompt(unsafeSections, _inheritMultiple, function(){
+                $('#cbSelectAllInheritance').prop("checked", false);
+        });
+    //no conflicts; it's okay to go down the line and inherit the given sections
+    } else {
+        _inheritMultiple();
+    }
+}
+ 
 
 // determine whether to enable or disable the 'inherit all' checkbox based upon
 // the currently selected parent project.
@@ -619,7 +797,125 @@ function enableOrDisableInheritAllSection() {
 function updateSelectAllCheckboxState() {
     var $cbSelectAllInheritance = $('#cbSelectAllInheritance');
     if (!$cbSelectAllInheritance.data('isUpdatingSections')) {
-        var $uncheckedBoxes = $('.inheritlabel input[type=checkbox]').not(":checked");
+        var $uncheckedBoxes = $('.divInheritSection input[type=checkbox]').not(":checked");
         $cbSelectAllInheritance.prop('checked', $uncheckedBoxes.length === 0);
     }
 }
+
+//FIXME: kill this function.
+function populateLatLongTextFields() {
+ $("#d_minx").val(Geo.toLon($("#minx").val()));
+ $("#d_miny").val(Geo.toLat($("#miny").val()));
+ $("#d_maxx").val(Geo.toLon($("#maxx").val()));
+ $("#d_maxy").val(Geo.toLat($("#maxy").val()));
+}
+
+//FIXME: kill this function.
+function disableMap() {
+    var $mapdiv = $('#editmapv3');
+    $mapdiv.addClass('opaque');
+    if($mapdiv.data("resourceRect")) {
+        $mapdiv.data("resourceRect").setEditable(false);
+    }
+}
+
+//FIXME: kill this function.
+function enableMap() {
+    var $mapdiv = $('#editmapv3');
+    $mapdiv.removeClass('opaque');
+    if($mapdiv.data("resourceRect")) {
+        $mapdiv.data("resourceRect").setEditable(true);
+    }
+}
+
+TDAR.namespace("inheritance");
+TDAR.inheritance = function() {
+    "use strict";
+    var _resetRepeatable = function(repeatableSelector, newSize) {
+        $(repeatableSelector).find(".repeat-row:not(:first)").remove();
+        var $firstRow = $('.repeat-row', repeatableSelector);
+        resetIndexedAttributes($firstRow); 
+        for(var i = 0; i < newSize - 1; i++) {
+            TDAR.repeatrow.cloneSection($('.repeat-row:last', repeatableSelector)[0]);
+        }
+    };
+    
+    var _resetKeywords = function(keywords, repeatableSelector) {
+        var $repeatable = $(repeatableSelector);
+        _resetRepeatable(repeatableSelector, keywords.length);
+    };
+    
+    //default function for enabling an inheritance section
+    var _enableSection = function (idSelector) {
+        $(':input', idSelector).prop('disabled', false);
+        $('label', idSelector).removeClass('disabled');
+        $('.addAnother, .minus', idSelector).show();
+    };
+
+    //wrapper for modal inheritance confirm
+    var _confirm = function(msg, okaySelected, cancelSelected) {
+        var confirmed = confirm(msg);
+        if(confirmed) {
+            okaySelected();
+        } else {
+            cancelSelected();
+        }
+    };
+    
+    var _registerInheritSection = function(options) {
+        if($(options.divSelector).length !== 1) {
+            console.error("_registerInheritSection - bad divSelector: %s", options.divSelector );
+        }
+        var $checkbox = $(options.cbSelector);
+        if($checkbox.length === 0 ) return;
+        
+        var $form = $checkbox.closest("form");
+        var formId = $form.attr("id");
+        var _options = {
+                sectionName: "",
+                isSafeCallback: function(){return true;},
+                //fixme: getObjValue(json, options.mappedData) instead?
+                inheritSectionCallback: function() {inheritInformation(formId, json[_options.mappedData]);}, 
+                enableSectionCallback: enableSection //fixme: move to namespace
+        };
+        $.extend(_options, options);
+        $form.data("inheritOptionsList").push(_options);
+        $checkbox.data("inheritOptions", _options);
+        
+        //update contents/state of section when checkbox for that section is toggled
+        $(_options.cbSelector).change(function(e) {
+            var cb = this;
+            var $cb = $(cb);
+            if ($cb.prop("checked")) {
+                // determine if inheriting would overrwrite existing values
+                var isSafe = _options.isSafeCallback();
+                if(isSafe) {
+                    _options.inheritSectionCallback();
+                } else {
+                    //not safe!  ask the user for confirmation
+                    _confirm("Inheriting from '" + htmlEncode(project.title) + "' will overwrite existing values. Continue?",
+                        function(){
+                            _options.inheritSectionCallback();
+                        },
+                        function(){
+                            $cb.prop("checked", false);
+                            _options.enableSectionCallback(_options.divSelector);
+                            updateSelectAllCheckboxState();
+                        }
+                    );
+                };
+            } else {
+                //user unchecked inheritance - enable the controls
+                    _options.enableSectionCallback(_options.divSelector);
+                    updateSelectAllCheckboxState();
+                    $(_options.divSelector).find('input[type=hidden].dont-inherit').val("");
+            }
+        });
+    };
+
+    return{
+        resetRepeatable: _resetRepeatable,
+        resetKeywords: _resetKeywords,
+        registerInheritSection: _registerInheritSection
+    };
+}();

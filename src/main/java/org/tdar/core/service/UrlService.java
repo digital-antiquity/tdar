@@ -39,7 +39,7 @@ public class UrlService {
         return String.format("%s/filestore/%d/get", StringUtils.stripEnd(getBaseUrl(), "/"), version.getId());
     }
 
-    public String getSchemaUrl() {
-        return String.format("%s/schema/current", getBaseUrl());
+    public String getPairedSchemaUrl() {
+        return String.format("%s/schema/current schema.xsd", getBaseUrl());
     }
 }

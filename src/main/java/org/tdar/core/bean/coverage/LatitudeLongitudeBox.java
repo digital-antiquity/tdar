@@ -6,7 +6,6 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -14,10 +13,8 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.ClassBridge;
-import org.hibernate.search.annotations.ContainedIn;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.FieldBridge;
-import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.Norms;
 import org.hibernate.search.annotations.NumericField;
 import org.hibernate.search.annotations.Store;
@@ -31,8 +28,6 @@ import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.search.index.bridge.LatLongClassBridge;
 import org.tdar.search.index.bridge.TdarPaddedNumberBridge;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-
 /**
  * $Id$
  * 
@@ -45,7 +40,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @Entity
 @Table(name = "latitude_longitude")
-@XStreamAlias("latitudeLongitude")
 @ClassBridge(impl = LatLongClassBridge.class)
 @XmlRootElement
 // (name="latitudeLongitudeBox")
@@ -73,10 +67,6 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     public static final int LONGITUDE = 2;
 
     public static final double ONE_MILE_IN_DEGREE_MINUTES = 0.01472d;
-
-    @ManyToOne(optional = false)
-    @ContainedIn
-    private Resource resource;
 
     // ranges from -90 (South) to +90 (North)
     @Field
@@ -119,6 +109,15 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
      */
     public Double getMinimumLatitude() {
         return minimumLatitude;
+    }
+
+    /* fixme ** test */
+    public Double getCenterLatitude() {
+        return (getMaxObfuscatedLatitude() + getMinObfuscatedLatitude()) / 2.0;
+    }
+
+    public Double getCenterLongitude() {
+        return (getMaxObfuscatedLongitude() + getMinObfuscatedLongitude()) / 2.0;
     }
 
     /*
@@ -266,45 +265,32 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         return longitude != null && longitude >= MIN_LONGITUDE && longitude <= MAX_LONGITUDE;
     }
 
-    @XmlTransient
-    public Resource getResource() {
-        return resource;
-    }
-
-    public void setResource(Resource resource) {
-        this.resource = resource;
-    }
-
     public boolean isValid() {
-        if (
-                isValidLatitude(maximumLatitude) 
-                && isValidLatitude(minimumLatitude) 
-                && isValidLongitude(minimumLongitude) 
-                && isValidLongitude(maximumLongitude) 
-                && maximumLatitude >= minimumLatitude 
-                && isValidLongitudeSpan(minimumLongitude, maximumLongitude) 
-                && Math.abs(maximumLatitude - minimumLatitude) < 180
-                ) {
+        if (isValidLatitude(maximumLatitude)
+                && isValidLatitude(minimumLatitude)
+                && isValidLongitude(minimumLongitude)
+                && isValidLongitude(maximumLongitude)
+                && maximumLatitude >= minimumLatitude
+                && isValidLongitudeSpan(minimumLongitude, maximumLongitude)
+                && Math.abs(maximumLatitude - minimumLatitude) < 180) {
             return true;
         }
         return false;
     }
-    
-    //this logic assumes no span greater than 180°, and that zero-length span is invalid.
+
+    // this logic assumes no span greater than 180°, and that zero-length span is invalid.
     private boolean isValidLongitudeSpan(double min, double max) {
-        if(max < 0 && min > 0) {
-            //when spanning IDL, pretend that flat map repeats as it extends past 180°E, e.g. 170°W is now 190°E
+        if (max < 0 && min > 0) {
+            // when spanning IDL, pretend that flat map repeats as it extends past 180°E, e.g. 170°W is now 190°E
             max += 360;
         }
-        logger.debug("min:{}\tmax:{}", min, max);
-        return min < max;  
+        logger.trace("min:{}\tmax:{}", min, max);
+        return min < max;
     }
 
     public String toString() {
-        if (isValid()) {
-            return String.format("Latitude [%s to %s], Longitude [%s to %s]", minimumLatitude, maximumLatitude, minimumLongitude, maximumLongitude);
-        }
-        return super.toString();
+        return String.format("Latitude [%s to %s], Longitude [%s to %s], valid:%s", minimumLatitude, maximumLatitude, minimumLongitude, maximumLongitude,
+                isValid());
     }
 
     public void copyValuesFrom(LatitudeLongitudeBox otherBox) {
@@ -429,6 +415,16 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         this.geographicKeywords = geographicKeywords;
     }
 
+    /*
+     * scale is a ratio based on the relative size of the latLong box and the overall map
+     * it works like zoom level in google, but, it allows us to ignore regions that are a lot
+     * bigger or a lot smaller than the bounding box we've created
+     * if I draw a box around the city of Chandler, ignore items that have a box around the US.
+     * 
+     * The goal of this is not to control the bounding region, but to keep the results matching
+     * the relative scale of the bounding box. The smaller the scale the smaller the bounding region
+     * the more regional the search.
+     */
     @FieldBridge(impl = TdarPaddedNumberBridge.class)
     @Field(norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     @Transient
@@ -462,7 +458,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
             toReturn++;
         }
 
-        logger.trace("scale: {} ({})" , scale, toReturn);
+        logger.trace("scale: {} ({})", scale, toReturn);
         return toReturn;
     }
 

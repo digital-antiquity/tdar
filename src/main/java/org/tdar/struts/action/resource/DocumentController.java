@@ -1,6 +1,5 @@
 package org.tdar.struts.action.resource;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -15,7 +14,6 @@ import org.tdar.core.bean.resource.DegreeType;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.ResourceType;
 
 /**
@@ -63,17 +61,6 @@ public class DocumentController extends AbstractInformationResourceController<Do
     @Override
     public boolean isMultipleFileUploadEnabled() {
         return true;
-    }
-
-    protected void processUploadedFiles(List<InformationResourceFile> uploadedFiles) throws IOException {
-        // XXX: currently nothing needs to be done to process uploaded documents
-        // so this is a no-op.
-        return;
-    }
-
-    @Override
-    protected void loadCustomMetadata() {
-        super.loadCustomMetadata();
     }
 
     @Override
@@ -161,9 +148,5 @@ public class DocumentController extends AbstractInformationResourceController<Do
     public void setDegree(DegreeType degree) {
         this.degree = degree;
     }
-    
-    @Action("file-upload-test")
-    public String fileUploadTest() {
-        return SUCCESS;
-    }
+
 }

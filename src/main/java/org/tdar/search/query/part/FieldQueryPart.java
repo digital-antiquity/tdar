@@ -15,6 +15,7 @@ import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.SimpleSearch;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.exception.TdarValidationException;
 
 /**
  * @author abrin
@@ -72,6 +73,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         return this;
     }
 
+    @Override
     public boolean isEmpty() {
         return CollectionUtils.isEmpty(fieldValues);
     }
@@ -81,6 +83,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         return generateQueryString();
     };
 
+    @Override
     public String generateQueryString() {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < fieldValues.size(); i++) {
@@ -321,7 +324,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         if (value == null)
             return false;
         if (value instanceof Validatable && !isAllowInvalid() && !((Validatable) value).isValidForController()) {
-            throw new TdarRecoverableRuntimeException(String.format("%s is not valid", value));
+            throw new TdarValidationException(String.format("%s is not valid", value));
         }
         return true;
     }

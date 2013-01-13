@@ -11,7 +11,7 @@
 		the simple theme. it may only work if you're using basic JSP struts tags 
 		though, needs testing. -->
   <!-- <constant name="struts.ui.templateSuffix" value="java" /> -->
-  <constant name="struts.ui.theme" value="tdar"/>
+  <constant name="struts.ui.theme" value="bootstrap"/>
   <constant name="struts.url.includeParams" value="none"/>
   <constant name="struts.action.excludePattern" value="/services/.*"/>
   <!-- set it to 50 MB to start with, using the ISI standard for megabyte, 
@@ -26,14 +26,18 @@
     </result-types>
     <interceptors>
       <interceptor name="sessionSecurity" class="org.tdar.struts.interceptor.SessionSecurityInterceptor"/>
+      <interceptor name="httpsMethod" class="org.tdar.struts.interceptor.HttpsInterceptor"/>
+      <interceptor name="httpMethod" class="org.tdar.struts.interceptor.HttpMethodInterceptor"/>
       <interceptor name="execAndWait" class="org.apache.struts2.interceptor.ExecuteAndWaitInterceptor"/>
       <interceptor-stack name="tdarDefaultStack">
         <interceptor-ref name="exception">
           <param name="logEnabled">true</param>
           <param name="logLevel">ERROR</param>
-          <param name="logCategory">org.tdar.struts</param>
+<!--           <param name="exception.logCategory">org.tdar.struts</param> -->
         </interceptor-ref>
         <interceptor-ref name="sessionSecurity"/>
+        <interceptor-ref name="httpsMethod"/>
+        <interceptor-ref name="httpMethod"/>
         <interceptor-ref name="store">
           <param name="operationMode">AUTOMATIC</param>
         </interceptor-ref>
@@ -76,10 +80,10 @@
       <result name="not_found" type="freemarker">/WEB-INF/content/errors/page-not-found.ftl</result>
       <result name="invalid.token" type="freemarker">/WEB-INF/content/errors/double-submit.ftl</result>
     </global-results>
-    <global-exception-mappings>
       <!-- XXX: swallows all unhandled RuntimeExceptions and sends them to the
            exception result configured above -->
-      <exception-mapping exception="java.lang.RuntimeException" result="exception"/>
+    <global-exception-mappings>
+      <exception-mapping exception="java.lang.RuntimeException" result="exception"/>   
     </global-exception-mappings>
   </package>
   <package name="secured" extends="default" abstract="true">

@@ -1,7 +1,6 @@
 package org.tdar.core.service.resource;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,11 +45,6 @@ public class OntologyNodeService extends ServiceInterface.TypedDaoBase<OntologyN
 
     // FIXME: may want to aggregate / batch for efficiency
     public Set<OntologyNode> getAllChildren(List<OntologyNode> selectedOntologyNodes) {
-        HashSet<OntologyNode> allChildren = new HashSet<OntologyNode>();
-        for (OntologyNode node : selectedOntologyNodes) {
-            allChildren.addAll(getAllChildren(node));
-        }
-        allChildren.addAll(selectedOntologyNodes);
-        return allChildren;
+        return getDao().getAllChildren(selectedOntologyNodes);
     }
 }

@@ -14,6 +14,11 @@
   
   </#if>
 <#if persistable.resourceType??>
+<br/>
+<div class="alert alert-info">
+Note: Did you know you don't need to delete a  record if you just want to update a file?
+</div>
+
 <#assign whatamideleting = persistable.resourceType.label?lower_case />
 <#elseif persistable.urlNamespace="collection">
 <#assign whatamideleting = "collection" />
@@ -40,11 +45,11 @@
   <#else>
     <@s.form name='deleteForm' id='deleteForm'  method='post' action='delete'>
     <h4>Please explain why you are deleting this record</h4>
-      <textarea name="deletionReason" cols='60' rows='3' maxlength='255'></textarea>
+      <textarea name="deletionReason" cols='60' rows='3' class="input-xxlarge" maxlength='255'></textarea>
     
       <h4>Are you sure you want to delete this <#if persistable.resourceType??>${persistable.resourceType.label?lower_case}</#if>?</h4>
 
-      <@s.submit type="submit" name="delete" value="delete" />
+      <@s.submit type="submit" name="delete" value="delete" cssClass="btn button btn-warning"/>
       <@s.hidden name="id" />
     </@s.form>
   </#if>

@@ -6,6 +6,7 @@
  */
 package org.tdar.core.service.resource;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -21,7 +22,7 @@ import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.parser.CodingSheetParserException;
 import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.TdarActionSupport;
 
@@ -64,8 +65,9 @@ public class CodingSheetServiceITCase extends AbstractControllerITCase {
             ex.printStackTrace();
             e = ex;
         }
-        assertTrue(e instanceof TdarRecoverableRuntimeException);
-        assertTrue(e.getMessage().contains("unique"));
+        assertEquals(CodingSheetParserException.class, e.getClass());
+        logger.debug("dupes:{}", ((CodingSheetParserException)e).getContributingFactors() );
+        assertTrue(((CodingSheetParserException)e).getContributingFactors().contains("CODE2"));
     }
 
     /*

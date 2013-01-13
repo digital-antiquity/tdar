@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.resource.InformationResourceFileDao;
 import org.tdar.core.service.ServiceInterface;
 
@@ -79,7 +78,7 @@ public class InformationResourceFileService extends ServiceInterface.TypedDaoBas
     public Map<String, Float> getAdminFileExtensionStats() {
         return getDao().getAdminFileExtensionStats();
     }
-    
+
     @Transactional(readOnly = true)
     public void updateTransientDownloadCount(InformationResourceFile irFile) {
         irFile.setTransientDownloadCount(getDao().getDownloadCount(irFile).longValue());

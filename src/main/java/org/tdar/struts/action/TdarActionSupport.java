@@ -1,7 +1,5 @@
 package org.tdar.struts.action;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.struts2.interceptor.ServletRequestAware;
 import org.apache.struts2.interceptor.ServletResponseAware;
 import org.slf4j.Logger;
@@ -25,6 +24,7 @@ import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.AccountService;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.DataIntegrationService;
 import org.tdar.core.service.EntityService;
@@ -36,11 +36,11 @@ import org.tdar.core.service.SearchService;
 import org.tdar.core.service.StatisticService;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.resource.CategoryVariableService;
 import org.tdar.core.service.resource.CodingSheetService;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.core.service.resource.DatasetService;
-import org.tdar.core.service.resource.ImageService;
 import org.tdar.core.service.resource.InformationResourceFileService;
 import org.tdar.core.service.resource.InformationResourceFileVersionService;
 import org.tdar.core.service.resource.InformationResourceService;
@@ -82,6 +82,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     @Autowired
     private transient ProjectService projectService;
     @Autowired
+    private transient EmailService emailService;
+    @Autowired
+    private transient AccountService accountService;
+    @Autowired
     private transient DatasetService datasetService;
     @Autowired
     private transient DataTableService dataTableService;
@@ -119,8 +123,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     private transient InformationResourceFileVersionService informationResourceFileVersionService;
     @Autowired
     private transient UrlService urlService;
-    @Autowired
-    private transient ImageService imageService;
     @Autowired
     private transient SearchIndexService searchIndexService;
     @Autowired
@@ -226,12 +228,28 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return getTdarConfiguration().getCopyrightMandatory();
     }
 
+    public boolean isLicensesEnabled() {
+        return getTdarConfiguration().getLicenseEnabled();
+    }
+
     public String getServerEnvironmentStatus() {
         return getTdarConfiguration().getServerEnvironmentStatus();
     }
 
+    public String getHostName() {
+        return getTdarConfiguration().getHostName();
+    }
+
+    public int getHostPort() {
+        return getTdarConfiguration().getPort();
+    }
+
+    public String getContactEmail() {
+        return getTdarConfiguration().getContactEmail();
+    }
+
     public String getSiteAcronym() {
-        return getTdarConfiguration().getSiteAcroynm();
+        return getTdarConfiguration().getSiteAcronym();
     }
 
     public String getSiteName() {
@@ -240,6 +258,18 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     public String getCommentUrl() {
         return getTdarConfiguration().getCommentUrl();
+    }
+
+    public String getCommentUrlEscaped() {
+        String input = getTdarConfiguration().getCommentUrl();
+        int length = input.length();
+        StringBuffer output = new StringBuffer(length * 6);
+        for (int i = 0; i < input.length(); i++) {
+            output.append("&#");
+            output.append((int) input.charAt(i));
+            output.append(";");
+        }
+        return output.toString();
     }
 
     public String getBugReportUrl() {
@@ -266,16 +296,20 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return getTdarConfiguration().getAboutUrl();
     }
 
-    public String getGMapDefaultLat() {
-        DecimalFormat latlong = new DecimalFormat("0.00");
-        latlong.setGroupingUsed(false);
-        return latlong.format(getTdarConfiguration().getGmapDefaultLat());
+    public Boolean isRPAEnabled() {
+        return getTdarConfiguration().isRPAEnabled();
     }
 
-    public String getGMapDefaultLng() {
+    public String getMapDefaultLat() {
         DecimalFormat latlong = new DecimalFormat("0.00");
         latlong.setGroupingUsed(false);
-        return latlong.format(getTdarConfiguration().getGmapDefaultLng());
+        return latlong.format(getTdarConfiguration().getMapDefaultLat());
+    }
+
+    public String getMapDefaultLng() {
+        DecimalFormat latlong = new DecimalFormat("0.00");
+        latlong.setGroupingUsed(false);
+        return latlong.format(getTdarConfiguration().getMapDefaultLng());
     }
 
     protected void clearAuthenticationToken() {
@@ -313,6 +347,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return informationResourceFileService;
     }
 
+    public EmailService getEmailService() {
+        return emailService;
+    }
+
     public DataIntegrationService getDataIntegrationService() {
         return dataIntegrationService;
     }
@@ -331,10 +369,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     public UrlService getUrlService() {
         return urlService;
-    }
-
-    public ImageService getImageService() {
-        return imageService;
     }
 
     public SearchIndexService getSearchIndexService() {
@@ -369,7 +403,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     }
 
     protected void addActionErrorWithException(String message, Throwable exception) {
-        String trace = getStackTrace(exception);
+        String trace = ExceptionUtils.getFullStackTrace(exception);
 
         getLogger().error("{}: {} -- {}", new Object[] { message, exception, trace });
         if (exception instanceof TdarRecoverableRuntimeException) {
@@ -398,13 +432,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         super.addActionError(message);
     }
 
-    protected String getStackTrace(Throwable exception) {
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        exception.printStackTrace(pw);
-        return sw.toString();
-
-    }
 
     public List<String> getStackTraces() {
         return stackTraces;
@@ -412,6 +439,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     public ResourceCollectionService getResourceCollectionService() {
         return resourceCollectionService;
+    }
+
+    public AccountService getAccountService() {
+        return accountService;
     }
 
     public StatisticService getStatisticService() {
@@ -449,4 +480,20 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return coverageTypes;
     }
 
+    public boolean isHttpsEnabled() {
+        return TdarConfiguration.getInstance().isHttpsEnabled();
+    }
+
+    public Integer getHttpsPort() {
+        return TdarConfiguration.getInstance().getHttpsPort();
+    }
+    
+    public boolean isPayPerIngestEnabled() {
+        return TdarConfiguration.getInstance().isPayPerIngestEnabled();
+    }
+    
+    
+    public boolean isSecure() {
+        return servletRequest.isSecure();
+    }
 }

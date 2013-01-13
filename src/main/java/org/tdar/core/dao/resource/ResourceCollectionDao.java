@@ -52,7 +52,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
     }
 
     @SuppressWarnings("unchecked")
-    public List<ResourceCollection> findExplicitlyAuthorizedCollections(Person person, CollectionType ... types) {
+    public List<ResourceCollection> findParentOwnerCollections(Person person, List<CollectionType> types) {
         Query namedQuery = getCurrentSession().getNamedQuery(QUERY_COLLECTION_BY_AUTH_OWNER);
         namedQuery.setParameter("authOwnerId", person.getId());
         namedQuery.setParameterList("collectionTypes", types);
@@ -62,7 +62,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
             logger.trace("{}", list);
             return list;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.debug("cannot find parent owner collection:", e);
         }
         return null;
     }

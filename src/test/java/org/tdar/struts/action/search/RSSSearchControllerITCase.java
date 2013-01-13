@@ -81,7 +81,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
     @Test
     @Rollback(true)
     public void testRssDefaultSortOrder() throws InstantiationException, IllegalAccessException {
-        InformationResource document = generateInformationResourceWithUser();
+        InformationResource document = generateDocumentWithUser();
         searchIndexService.index(document);
         controller.setSessionData(new SessionData()); // create unauthenticated session
         doSearch("");
@@ -93,7 +93,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
     @Test
     @Rollback(true)
     public void testRssInvalidCharacters() throws InstantiationException, IllegalAccessException {
-        InformationResource document = generateInformationResourceWithUser();
+        InformationResource document = generateDocumentWithUser();
         document.setDescription("\u0001");
         genericService.saveOrUpdate(document);
         searchIndexService.index(document);

@@ -1,28 +1,25 @@
 package org.tdar.struts.action.entity;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
-import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ObfuscationService;
-import org.tdar.core.service.external.auth.InternalTdarRights;
-import org.tdar.struts.action.AbstractPersistableController;
-import org.tdar.struts.action.AccountController;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.UserAccountController;
 
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/entity/person")
-public class PersonController extends AbstractPersistableController<Person> {
+public class PersonController extends AbstractCreatorController<Person> {
 
     private static final long serialVersionUID = 1L;
 
@@ -79,7 +76,7 @@ public class PersonController extends AbstractPersistableController<Person> {
             return;
         if (!StringUtils.equals(password, confirmPassword)) {
             // change requested, passwords don't match
-            addActionError(AccountController.ERROR_PASSWORDS_DONT_MATCH);
+            addActionError(UserAccountController.ERROR_PASSWORDS_DONT_MATCH);
         } else {
             // passwords match, change the password
             getAuthenticationAndAuthorizationService().getAuthenticationProvider().updateUserPassword(getPerson(), password);
@@ -88,20 +85,19 @@ public class PersonController extends AbstractPersistableController<Person> {
         }
     }
 
-    
     // check whether password change was requested and whether it was valid
     private boolean validateAndProcessUsernameChange() {
         // no change requested
         if (StringUtils.isBlank(newUsername))
             return false;
-        
+
         if (StringUtils.isBlank(password)) {
             throw new TdarRecoverableRuntimeException("you must re-enter your password to change your username");
         }
-            
+
         if (!StringUtils.equals(password, confirmPassword)) {
             // change requested, passwords don't match
-            addActionError(AccountController.ERROR_PASSWORDS_DONT_MATCH);
+            addActionError(UserAccountController.ERROR_PASSWORDS_DONT_MATCH);
         } else {
             // passwords match, change the password
             getAuthenticationAndAuthorizationService().updateUsername(getPerson(), newUsername, password);
@@ -114,7 +110,7 @@ public class PersonController extends AbstractPersistableController<Person> {
 
     @Override
     public boolean isEditable() {
-        return getAuthenticatedUser().equals(getPersistable()) 
+        return getAuthenticatedUser().equals(getPersistable())
                 || getAuthenticationAndAuthorizationService().can(InternalTdarRights.EDIT_PERSONAL_ENTITES, getAuthenticatedUser());
     }
 
@@ -129,7 +125,7 @@ public class PersonController extends AbstractPersistableController<Person> {
     }
 
     @Override
-    public String loadMetadata() {
+    public String loadViewMetadata() {
         // nothing to do here, the person record was already loaded by prepare()
         return SUCCESS;
     }

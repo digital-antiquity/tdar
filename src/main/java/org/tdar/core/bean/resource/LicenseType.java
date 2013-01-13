@@ -1,6 +1,8 @@
 package org.tdar.core.bean.resource;
 
-public enum LicenseType {
+import org.tdar.core.bean.HasLabel;
+
+public enum LicenseType implements HasLabel {
 	PUBLIC_DOMAIN("Public Domain", "Public Domain", "This option dictates that the work in question has no applicable attribution and can be reused freely.", "http://en.wikipedia.org/wiki/Public_domain", ""),
 	CREATIVE_COMMONS_ATTRIBUTION("Creative Commons Attribution", "CC BY", "This license lets others distribute, remix, tweak, and build upon your work, even commercially, as long as they credit you for the original creation. This is the most accommodating of licenses offered. Recommended for maximum dissemination and use of licensed materials.", "http://creativecommons.org/licenses/by/3.0/", "http://i.creativecommons.org/l/by/3.0/88x31.png"),
 	CREATIVE_COMMONS_SHARE_ALIKE("Creative Commons Attribution ShareAlike", "CC BY-SA", "This license lets others remix, tweak, and build upon your work even for commercial purposes, as long as they credit you and license their new creations under the identical terms. This license is often compared to “copyleft” free and open source software licenses. All new works based on yours will carry the same license, so any derivatives will also allow commercial use. This is the license used by Wikipedia, and is recommended for materials that would benefit from incorporating content from Wikipedia and similarly licensed projects.", "http://creativecommons.org/licenses/by-sa/3.0/", "http://i.creativecommons.org/l/by-sa/3.0/88x31.png"),
@@ -29,6 +31,10 @@ public enum LicenseType {
 	
 	public String getLicenseTag(){
 		return licenseTag;
+	}
+	
+	public String getLabel() {
+	    return licenseName;
 	}
 	
 	public String getDescriptionText(){
