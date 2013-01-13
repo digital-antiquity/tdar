@@ -91,7 +91,7 @@ View freemarker macros
         <#list resource.informationResourceFiles as irfile>
             <#if irfile.errored>
                 <#assign processingErrors>
-                ${processingErrors}<li><strong>${irfile.latestUploadedVersion.filename}</strong> : ${irfile.latestUploadedVersion.errorMessage} </li>
+                ${processingErrors}<li><strong>${irfile.latestUploadedVersion.filename}</strong> : ${irfile.errorMessage!""} </li>
                 </#assign>    
             </#if>
         </#list>        
@@ -645,7 +645,7 @@ No coding rules have been entered for this coding sheet yet.
 <div class="alert alert-error">
 <h3>The following Files have Processing Errors</h3>
 <ul>	<#list files as file>
-	<li>${file.fileName} - ${file.ErrorMessage}</li>
+	<li>${file.fileName} - ${file.ErrorMessage!""}</li>
 	</#list>
 </ul>
 <br/>
