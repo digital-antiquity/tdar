@@ -31,6 +31,8 @@ label.error {display:block;}
 </style>
 </head>
 <body>
+<#assign newTitle="New Person" />
+<h1><#if person.id == -1>Creating<#else>Editing</#if>:<span> <#if person.properName?has_content>${person.properName}<#else>${newTitle}</#if> </span></h1>
 
 <@s.form name='personForm' id='frmPerson'  cssClass="form-horizontal"  method='post' enctype='multipart/form-data' action='save'>
 
