@@ -126,7 +126,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
     public Page getPage(String localPath) {
         try {
-            if (localPath.startsWith("http:")) {
+            if (localPath.startsWith("http")) {
                 return webClient.getPage(localPath);
             } else {
                 String prefix = getBaseUrl();
@@ -135,7 +135,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
                     prefix = String.format("%s://%s:%s", current.getProtocol(), current.getHost(), current.getPort());
                     logger.info("SETTING URL TO {}{}" , prefix , localPath);
                 } catch (Exception e) {
-                    logger.error("{}", e);
+                    logger.trace("{}", e);
                 }
                 return webClient.getPage(prefix + localPath);
             }
