@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -156,6 +157,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     }
 
     @Scheduled(cron = "5 0 0 * * SUN")
+    @Async
     public void verifyTdarFiles() {
         if (!getTdarConfiguration().shouldRunPeriodicEvents()) {
             return;

@@ -26,6 +26,7 @@ import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 import org.tdar.core.dao.external.auth.TdarGroup;
+import org.tdar.core.service.ScheduledProcessService;
 import org.tdar.struts.RequiresTdarUserGroup;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.utils.Pair;
@@ -48,6 +49,7 @@ public class AdminController extends AuthenticationAware.Base {
     private static final long serialVersionUID = 4385039298623767568L;
 
     private List<ContributorRequest> pendingContributorRequests;
+    private ScheduledProcessService scheduledProcessService;
 
     private List<ResourceRevisionLog> resourceRevisionLogs;
 
@@ -93,6 +95,12 @@ public class AdminController extends AuthenticationAware.Base {
         setExtensionStats(getInformationResourceFileService().getAdminFileExtensionStats());
         setHistoricalResourceStats(getStatisticService().getResourceStatistics());
         setHistoricalCollectionStats(getStatisticService().getCollectionStatistics());
+        return SUCCESS;
+    }
+
+    @Action("verifyFilestore")
+    public String verifyFilestore() {
+        scheduledProcessService.verifyTdarFiles();
         return SUCCESS;
     }
 

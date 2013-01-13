@@ -126,15 +126,16 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
     public Page getPage(String localPath) {
         try {
-            if (localPath.startsWith("http")) {
+            if (localPath.startsWith("http:")) {
                 return webClient.getPage(localPath);
             } else {
                 String prefix = getBaseUrl();
                 try {
-                URL current = webClient.getCurrentWindow().getEnclosedPage().getUrl();
-                prefix = String.format("%s://%s:%s", current.getProtocol(), current.getHost(), current.getPort());
+                    URL current = internalPage.getUrl();
+                    prefix = String.format("%s://%s:%s", current.getProtocol(), current.getHost(), current.getPort());
+                    logger.info("SETTING URL TO {}{}" , prefix , localPath);
                 } catch (Exception e) {
-                    logger.trace("{}", e);
+                    logger.error("{}", e);
                 }
                 return webClient.getPage(prefix + localPath);
             }
@@ -580,9 +581,9 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         }
     }
 
-    //click on element that ostensibly should trigger a request (links, submit inputs,  submit guttons)
+    // click on element that ostensibly should trigger a request (links, submit inputs, submit guttons)
     public void clickElementWithId(String id) {
-        HtmlElement el = (HtmlElement)getHtmlPage().getElementById(id);
+        HtmlElement el = (HtmlElement) getHtmlPage().getElementById(id);
         try {
             changePage(el.click());
         } catch (IOException e) {
@@ -606,11 +607,11 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         String content = internalPage.getWebResponse().getContentAsString();
         String out = "";
         try {
-        if (content.indexOf(BEGIN_PAGE_HEADER) != -1 && content.indexOf(BEGIN_TDAR_CONTENT) != -1 && content.indexOf(BEGIN_TDAR_FOOTER) != -1) {
-            out = content.substring(0,content.indexOf(BEGIN_PAGE_HEADER))+ ELIPSIS;
-            out += content.subSequence(content.indexOf(BEGIN_TDAR_CONTENT) + BEGIN_TDAR_CONTENT.length(),content.indexOf(BEGIN_TDAR_FOOTER)) + ELIPSIS;
-            return out;
-        }
+            if (content.indexOf(BEGIN_PAGE_HEADER) != -1 && content.indexOf(BEGIN_TDAR_CONTENT) != -1 && content.indexOf(BEGIN_TDAR_FOOTER) != -1) {
+                out = content.substring(0, content.indexOf(BEGIN_PAGE_HEADER)) + ELIPSIS;
+                out += content.subSequence(content.indexOf(BEGIN_TDAR_CONTENT) + BEGIN_TDAR_CONTENT.length(), content.indexOf(BEGIN_TDAR_FOOTER)) + ELIPSIS;
+                return out;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -632,7 +633,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         webClient.getOptions().setUseInsecureSSL(true);
         webClient.getOptions().setJavaScriptEnabled(false);
         webClient.getOptions().setTimeout(0);
-//        webClient.getOptions().setSSLClientCertificate(certificateUrl, certificatePassword, certificateType)
+        // webClient.getOptions().setSSLClientCertificate(certificateUrl, certificatePassword, certificateType)
         webClient.setJavaScriptTimeout(0);
 
         // reset encoding error exclusions for each test
@@ -783,8 +784,6 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         return Selector.from(documentElement).select(cssSelector).iterator().next();
     }
 
-
-
     public String getPersonalFilestoreTicketId() {
         gotoPageWithoutErrorCheck("/upload/grab-ticket");
         TextPage textPage = (TextPage) internalPage;
@@ -872,7 +871,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         KeyDataPair keyDataPair = new KeyDataPair(name, file, contentType, "utf8");
         return keyDataPair;
     }
-    
+
     public void createDocumentAndUploadFile(String title) {
         clickLinkWithText("UPLOAD");
         gotoPage("/resource/add");
@@ -997,7 +996,6 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         gotoPage("/logout");
     }
 
-
     @Autowired
     private AuthenticationAndAuthorizationService authService;
 
@@ -1020,8 +1018,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         setSessionUser(entityService.findByUsername(username));
     }
 
-
-    public void setupBasicUser(Map<String, String> personmap,String prefix) {
+    public void setupBasicUser(Map<String, String> personmap, String prefix) {
         personmap.put("person.firstName", prefix + "firstName");
         personmap.put("person.lastName", prefix + "lastName");
         personmap.put("person.email", prefix + "aaaaa@bbbbb.com");
@@ -1032,9 +1029,8 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         personmap.put("institutionName", "institution");
         personmap.put("person.phone", "1234567890");
         personmap.put("person.contributorReason", "there is a reason");
-//        personmap.put("person.rpaNumber", "1234567890");
+        // personmap.put("person.rpaNumber", "1234567890");
         personmap.put("requestingContributorAccess", "true");
     }
-
 
 }
