@@ -1,0 +1,9 @@
+                <h2>What can you dig up?</h2>
+
+                <p><strong>The Digital Archaeological Record (tDAR)</strong> is your online archive <br/>for archaeological information.</p>
+
+                        <form name="searchheader" action="<@s.url value="/search/results"/>" class="searchheader">
+                            <input type="text" name="query" placeholder="Find archaeological data..." class="searchbox">
+							<a href="/search">advanced</a>
+                        </form>
+
