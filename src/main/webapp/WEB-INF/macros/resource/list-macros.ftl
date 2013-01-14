@@ -220,9 +220,10 @@
         </#if>
 
         <#if _resource.deleted?? && _resource.deleted>
-                	<i title="disabled boomkark" class="bookmark-icon tdar-icon-bookmark-disabled"></i>
             <#if showLabel>
-                <span class="disabled" title='Deleted items cannot be bookmarked.'>bookmark</span><#t>
+                <span class="disabled" title='Deleted items cannot be bookmarked.'>
+            	<i title="disabled boomkark" class="bookmark-icon tdar-icon-bookmark-disabled"></i>
+                bookmark</span><#t>
             </#if>
         <#elseif bookmarkedResourceService.isAlreadyBookmarked(_resource, authenticatedUser)>
             <a href="<@s.url value='/resource/removeBookmark' resourceId='${_resource.id?c}'/>" class="bookmark-link" resource-id="${_resource.id?c}" bookmark-state="bookmarked" href="#">

@@ -551,6 +551,14 @@ header .welcome-drop ul {
 	display: inline;
 }
 
+.resource-nav li a {
+	float: left;
+}
+
+.resource-nav li span.disabled {
+	display:inline-block;
+}
+
 .resource-nav li a,.resource-nav li span.disabled {
 	font-weight: 700;
 	font-size: 12px;
@@ -558,7 +566,6 @@ header .welcome-drop ul {
 	color: #7d7a77;
 	text-transform: uppercase;
 	letter-spacing: 1px;
-	float: left;
 	padding: 16px 20px 9px 40px;
 	border-right: 1px solid #fff;
 }
@@ -598,7 +605,7 @@ header .welcome-drop ul {
 	background-position-y: -300px;
 }
 
-.resource-nav li.disabled-bookmark a {
+.resource-nav li.disabled.bookmark a {
 	background-position-y: -300px;
 }
 
@@ -1327,13 +1334,13 @@ i.tdar-icon-bookmarked-active,a:hover i.tdar-icon-bookmarked,.resource-nav li:ho
 	background-position: -179px -2490px !important;
 }
 
-i.tdar-icon-bookmark-disabled {
+/* i.tdar-icon-bookmark-disabled {
 	background-position: -210px -2437px !important;
 }
-
+ */
 i.tdar-icon-bookmark-disabled,a:hover i.tdar-icon-bookmark-disabled,.resource-nav li:hover i.tdar-icon-bookmark-disabled
 	{
-	background-position: -210px -2490px !important;
+	background-position: -208px -2437px !important;
 }
 
 #toolbars i {
