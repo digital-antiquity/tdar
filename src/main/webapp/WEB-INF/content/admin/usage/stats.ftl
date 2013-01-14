@@ -30,7 +30,7 @@
     </tr>
 <#list downloadStats as stats>
     <tr>
-        <td><a href="<@s.url value="/filestore/${stats.informationResourceFileId?c}" />"><img src="<@s.url value="/filestore/${stats.informationResourceFileId?c}/thumbnail" />"/>${stats.filename}</a> (${stats.informationResourceId?c})</td>
+        <td><a href="<@s.url value="/filestore/${stats.informationResourceFileId?c}" />">${stats.filename}</a> (${stats.informationResourceId?c})</td>
         <td>${stats.count}</td>
         <td>${stats.aggregateDate}</td>
     </tr>
