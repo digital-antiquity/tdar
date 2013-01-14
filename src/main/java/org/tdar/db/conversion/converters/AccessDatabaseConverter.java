@@ -102,6 +102,7 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                     case DOUBLE:
                     case NUMERIC:
                     case FLOAT:
+                    case MONEY:
                         dataType = DataTableColumnType.DOUBLE;
                         break;
                     case BYTE:
@@ -110,18 +111,19 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                         dataType = DataTableColumnType.BIGINT;
                         break;
                     case TEXT:
-                    case BINARY:
                     case MEMO:
+                    case GUID:
                         dataType = DataTableColumnType.TEXT;
                         break;
-                    case MONEY:
-                    case GUID:
-                    case OLE:
                     case SHORT_DATE_TIME:
                         dataType = DataTableColumnType.DATETIME;
                         break;
-                    case UNKNOWN_0D:
+                    case BINARY:
                     case UNKNOWN_11:
+                    case UNKNOWN_0D:
+                    case OLE:
+                        dataType = DataTableColumnType.BLOB;
+                        break;
                     default:
                         dataType = DataTableColumnType.VARCHAR;
                 }

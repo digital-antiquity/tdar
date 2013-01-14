@@ -1,5 +1,6 @@
 package org.tdar.db.model;
 
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -24,11 +25,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import javax.sql.DataSource;
+import javax.sql.rowset.serial.SerialBlob;
 
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.tools.ant.filters.StringInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
@@ -507,6 +510,9 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
                 case BIGINT:
                     preparedStatement.setLong(i, Long.parseLong(colValue));
                     break;
+                case BLOB:
+                    preparedStatement.setBinaryStream(i, new StringInputStream(colValue), colValue.length());
+                    break;
                 case DATE:
                 case DATETIME:
                     Date date = null;
@@ -525,7 +531,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
                         java.sql.Timestamp sqlDate = new java.sql.Timestamp(date.getTime());
                         preparedStatement.setTimestamp(i, sqlDate);
                     } else {
-                        throw new TdarRecoverableRuntimeException("don't know how to parse date: " + colValue);
+                        throw new TdarRecoverableRuntimeException(String.format("don't know how to parse date: %s in column '%s' of table '%s'",  colValue.toString(), column.getName(), column.getDataTable().getName()));
                     }
                     break;
                 default:

@@ -49,6 +49,16 @@ public class AccessConverterITCase extends AbstractDataIntegrationTestCase {
         tdarDataImportDatabase.setDataSource(dataSource);
     }
 
+    @Test
+    @Rollback(true)
+    public void testSpatialDatabase() throws FileNotFoundException, IOException {
+        DatasetConverter converter = convertDatabase("az-paleoindian-point-survey.mdb", 1129L);
+        for (DataTable table : converter.getDataTables()) {
+            logger.info("{}", table);
+        }
+
+    }
+    
     // only necessary when database hasn't been wiped out since last integration test
     @Test
     @Rollback(true)

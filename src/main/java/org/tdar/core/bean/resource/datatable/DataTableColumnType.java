@@ -14,11 +14,11 @@ import org.tdar.core.bean.HasLabel;
  * @author Adam Brin
  * 
  */
-public enum DataTableColumnType implements HasLabel  {
+public enum DataTableColumnType implements HasLabel {
 
     BOOLEAN(Types.BOOLEAN), VARCHAR(Types.VARCHAR), BIGINT(Types.BIGINT), DOUBLE(
             Types.DOUBLE), TEXT(Types.CLOB), DATE(Types.DATE), DATETIME(
-            Types.TIMESTAMP);
+            Types.TIMESTAMP), BLOB(Types.BLOB);
 
     private final int sqlType;
 
@@ -38,6 +38,8 @@ public enum DataTableColumnType implements HasLabel  {
             return VARCHAR;
         if (typeToCheck.toLowerCase().contains("text"))
             return TEXT;
+        if (typeToCheck.toLowerCase().contains("blob"))
+            return BLOB;
         if (typeToCheck.toLowerCase().contains("double")
                 || typeToCheck.contains("float"))
             return DOUBLE;
@@ -62,6 +64,8 @@ public enum DataTableColumnType implements HasLabel  {
                 return DOUBLE;
             case Types.CLOB:
                 return TEXT;
+            case Types.BLOB:
+                return BLOB;
             case Types.BOOLEAN:
                 return BOOLEAN;
             case Types.DATE:
@@ -77,25 +81,25 @@ public enum DataTableColumnType implements HasLabel  {
     /**
      * @return
      */
-//    public DataTableColumnEncodingType getDefaultEncodingType() {
-//        switch (this) {
-//            case VARCHAR:
-//                return DataTableColumnEncodingType.TEXT;
-//            case BIGINT:
-//                return DataTableColumnEncodingType.NUMERIC;
-//            case DOUBLE:
-//                return DataTableColumnEncodingType.NUMERIC;
-//            case TEXT:
-//                return DataTableColumnEncodingType.TEXT;
-//            case BOOLEAN:
-//                return DataTableColumnEncodingType.TEXT;
-//            case DATE:
-//                return DataTableColumnEncodingType.TEXT;
-//            case DATETIME:
-//                return DataTableColumnEncodingType.TEXT;
-//        }
-//        return DataTableColumnEncodingType.TEXT;
-//    }
+    // public DataTableColumnEncodingType getDefaultEncodingType() {
+    // switch (this) {
+    // case VARCHAR:
+    // return DataTableColumnEncodingType.TEXT;
+    // case BIGINT:
+    // return DataTableColumnEncodingType.NUMERIC;
+    // case DOUBLE:
+    // return DataTableColumnEncodingType.NUMERIC;
+    // case TEXT:
+    // return DataTableColumnEncodingType.TEXT;
+    // case BOOLEAN:
+    // return DataTableColumnEncodingType.TEXT;
+    // case DATE:
+    // return DataTableColumnEncodingType.TEXT;
+    // case DATETIME:
+    // return DataTableColumnEncodingType.TEXT;
+    // }
+    // return DataTableColumnEncodingType.TEXT;
+    // }
 
     public static int[] getAllSQLTypes() {
         int types[] = { Types.ARRAY, Types.BIGINT, Types.BINARY, Types.BIT, Types.BLOB, Types.BOOLEAN, Types.CHAR, Types.CLOB, Types.DATALINK, Types.DATE,
