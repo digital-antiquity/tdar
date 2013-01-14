@@ -40,6 +40,9 @@ public class DataTableColumnTest {
                 case Types.TIMESTAMP:
                     assertEquals(DataTableColumnType.DATETIME, columnType);
                     break;
+                case Types.BLOB:
+                    assertEquals(DataTableColumnType.BLOB, columnType);
+                    break;
                 default:
                     assertEquals(DataTableColumnType.TEXT, columnType);
             }
