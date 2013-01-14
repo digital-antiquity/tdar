@@ -156,7 +156,7 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
                 Object[] objs = (Object[]) o;
                 if (objs == null || objs[0] == null)
                     continue;
-                cache.add(new HomepageGeographicKeywordCache((String) objs[0], (Level) objs[1], (Long) objs[2]));
+                cache.add(new HomepageGeographicKeywordCache((String) objs[0], (Level) objs[1], (Long) objs[2],(Long) objs[3]));
             } catch (Exception e) {
                 logger.debug("cannot get iso counts:", e);
             }

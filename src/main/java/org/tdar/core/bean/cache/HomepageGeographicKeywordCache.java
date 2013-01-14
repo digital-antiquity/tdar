@@ -18,6 +18,9 @@ public class HomepageGeographicKeywordCache extends Base implements ResourceCach
     @Column(name = "resource_count")
     private Long count;
 
+    @Column(name = "keyword_id")
+    private Long keywordId;
+    
     private String label;
 
     @Enumerated(EnumType.STRING)
@@ -27,10 +30,11 @@ public class HomepageGeographicKeywordCache extends Base implements ResourceCach
 
     }
 
-    public HomepageGeographicKeywordCache(String label, Level level, Long count) {
+    public HomepageGeographicKeywordCache(String label, Level level, Long count, Long id) {
         this.label = label;
         this.level = level;
         this.count = count;
+        this.keywordId = id;
     }
 
     public Long getCount() {
@@ -72,6 +76,14 @@ public class HomepageGeographicKeywordCache extends Base implements ResourceCach
 
     public String getCssId() {
         return this.getKey().toString();
+    }
+
+    public Long getKeywordId() {
+        return keywordId;
+    }
+
+    public void setKeywordId(Long keywordId) {
+        this.keywordId = keywordId;
     }
 
 }

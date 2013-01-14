@@ -140,7 +140,6 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
         queue(scheduledProcessMap.get(DoiProcess.class));
     }
 
-    // what's the logic here, run it every 00:15:01?
     @Scheduled(cron = "1 15 0 * * *")
     public void updateHomepage() {
         queue(scheduledProcessMap.get(RebuildHomepageCache.class));

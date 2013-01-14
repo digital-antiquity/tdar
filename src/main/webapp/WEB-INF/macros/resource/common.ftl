@@ -604,6 +604,7 @@ this bit of freemarker is voodoo:
 <#assign templateSource>{<#list geographicKeywordCache as key>
  <#assign code=key.label?substring(0,2) />
  "${code}" : ${key.count?c},<#assign countryTotal = key.count />
+ "${code}_id" : ${(key.keywordId!-1)?c},
  "${code}_" : ${key.logCount?c}<#if key_has_next>,</#if>
     <#if (countryLogTotal < key.logCount)><#assign countryLogTotal = key.logCount /></#if>
     <#if (max < key.count)><#assign max = key.count /></#if>
@@ -753,36 +754,39 @@ this bit of freemarker is voodoo:
 </#macro>
 
 <#macro renderMap code coords title forceAddSchemeHostAndPort=false>
- <#assign val=codes[code]?default(0)/>
- <#assign logCode= code+'_'/>
+ <#local val=codes[code]?default(0)/>
+ <#local logCode= code+'_'/>
+ 
+ <#local keywordId_>${code+'_id'}</#local>
+ <#local keywordId=(codes[keywordId_]?default(-1))?c />
  <#if (val > 0)>
 
     <#if countryLogTotal == 0>
-        <#assign countryLogTotal = 0 />
+        <#local countryLogTotal = 0 />
     </#if>
 
-    <#assign percent = ((codes[logCode]/countryLogTotal) * 100)?floor />
-    <#assign color = "#ffffff" />
+    <#local percent = ((codes[logCode]/countryLogTotal) * 100)?floor />
+    <#local color = "#ffffff" />
     
      <#if (percent < 9) >
-        <#assign color = settings.mapColors[1] />
+        <#local color = settings.mapColors[1] />
      <#elseif (percent > 8 && percent < 17)>
-        <#assign color = settings.mapColors[2] />
+        <#local color = settings.mapColors[2] />
      <#elseif (percent > 16 && percent < 32)>
-        <#assign color = settings.mapColors[3]/>
+        <#local color = settings.mapColors[3]/>
      <#elseif (percent > 31 && percent < 46)>
-        <#assign color = settings.mapColors[4] />
+        <#local color = settings.mapColors[4] />
      <#elseif (percent > 45 && percent < 61)>
-        <#assign color = settings.mapColors[5] />
+        <#local color = settings.mapColors[5] />
      <#elseif (percent > 60 && percent < 76)>
-        <#assign color = settings.mapColors[6] />
+        <#local color = settings.mapColors[6] />
      <#elseif (percent > 76 && percent < 85)>
-        <#assign color = settings.mapColors[7] />
+        <#local color = settings.mapColors[7] />
     <#else>
-        <#assign color = settings.mapColors[8] />
+        <#local color = settings.mapColors[8] />
     </#if>
 <!-- [${code} : ${percent} ] -->
-<#assign term>geographicKeywords="${code} (ISO Country Code)"</#assign>
+<#local term>geographicKeywords=${keywordId}</#local>
      <area coords="${coords}" shape="poly" title="${title} (${val})" alt="${title} (${val})" target="_top"  href='<@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/search/results?${term}"/>' iso="${code}"
      class="{alwaysOn:true,strokeColor:'666666',strokeWidth:'.5',fillColor:'${color}',fillOpacity:1}" ></area>
  </#if>
@@ -851,9 +855,9 @@ this bit of freemarker is voodoo:
 <div class="row">
 	<#list person.addresses  as address>
 	    <div class="span3">
-	    <#assign label = ""/>
+	    <#local label = ""/>
 	    <#if address.type?has_content>
-	    <#assign label = address.type.label>
+	    <#local label = address.type.label>
 	    </#if>
 	    	<#if choiceField?has_content>
         <label class="radio inline">
@@ -869,7 +873,7 @@ this bit of freemarker is voodoo:
 	    </div>
 	</#list>
     <div class="span3">
-    <#assign retUrl><@s.url includeParams="all"/></#assign>
+    <#local retUrl><@s.url includeParams="all"/></#local>
 	    <a class="button btn btn-primary submitButton" href="/entity/person/${person.id?c}/address?returnUrl=${retUrl?url}">Add Address</a>
     </div>
 </div>

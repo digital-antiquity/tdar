@@ -317,3 +317,4 @@ ALTER TABLE resource ADD previous_status varchar(50);
 
 -- 1-9-13
 ALTER TABLE information_resource_file ADD COLUMN error_message text;
+ALTER TABLE homepage_cache_geographic_keyword ADD keyword_id bigint;

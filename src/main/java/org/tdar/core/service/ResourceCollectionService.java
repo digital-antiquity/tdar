@@ -75,6 +75,10 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         }
         // note: we assume here that the authorizedUser validation will happen in saveAuthorizedUsersForResourceCollection
         saveAuthorizedUsersForResourceCollection(internalCollection, authorizedUsers, shouldSave);
+//        if (CollectionUtils.isNotEmpty(internalCollection.getAuthorizedUsers())) {
+//            resource.getResourceCollections().remove(internalCollection);
+//            getDao().delete(internalCollection);
+//        }
     }
 
     public List<AuthorizedUser> getAuthorizedUsersForResource(Resource resource) {
@@ -142,34 +146,36 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                 if (incomingUser == null) {
                     continue;
                 }
-
 //                incomingUser.setResourceCollection(resourceCollection);
-
-                if (Persistable.Base.isNotNullOrTransient(incomingUser.getUser())) {
-                    Person user = getDao().find(Person.class, incomingUser.getUser().getId());
-                    if (user != null) {
-                        // it's important to ensure that we replace the proxy user w/ the persistent user prior to calling isValid(), because isValid()
-                        // may evaluate fields that aren't set in the proxy object.
-                        incomingUser.setUser(user);
-                        if (!incomingUser.isValid()) {
-                            continue;
-                        }
-                        // FIXME: not sure this is needed, but because hashCode doesn't include generalPermissions
-                        // best to be safe
-                        if (currentUsers.contains(incomingUser)) {
-                            currentUsers.remove(incomingUser);
-                        }
-                        currentUsers.add(incomingUser);
-                        if (shouldSaveResource)
-                            getDao().saveOrUpdate(incomingUser);
-                    }
-                }
+                addUserToCollection(shouldSaveResource, currentUsers, incomingUser);
             }
         }
         // CollectionUtils.removeAll(currentUsers, Collections.);
         logger.debug("users after save: {}", currentUsers);
         if (shouldSaveResource)
             getDao().saveOrUpdate(resourceCollection);
+    }
+
+    private void addUserToCollection(boolean shouldSaveResource, Set<AuthorizedUser> currentUsers, AuthorizedUser incomingUser) {
+        if (Persistable.Base.isNotNullOrTransient(incomingUser.getUser())) {
+            Person user = getDao().find(Person.class, incomingUser.getUser().getId());
+            if (user != null) {
+                // it's important to ensure that we replace the proxy user w/ the persistent user prior to calling isValid(), because isValid()
+                // may evaluate fields that aren't set in the proxy object.
+                incomingUser.setUser(user);
+                if (!incomingUser.isValid()) {
+                    return;
+                }
+                // FIXME: not sure this is needed, but because hashCode doesn't include generalPermissions
+                // best to be safe
+                if (currentUsers.contains(incomingUser)) {
+                    currentUsers.remove(incomingUser);
+                }
+                currentUsers.add(incomingUser);
+                if (shouldSaveResource)
+                    getDao().saveOrUpdate(incomingUser);
+            }
+        }
     }
 
     @Transactional(readOnly = true)

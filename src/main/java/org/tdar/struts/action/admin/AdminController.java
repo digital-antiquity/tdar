@@ -9,6 +9,7 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -101,9 +102,21 @@ public class AdminController extends AuthenticationAware.Base {
         return SUCCESS;
     }
 
-    @Action("verifyFilestore")
+    @Action(value="verifyFilestore",results={
+            @Result(name = SUCCESS, type = "redirect", location = "/admin")
+    })
     public String verifyFilestore() {
         scheduledProcessService.verifyTdarFiles();
+        getActionMessages().add("Running ... this may take a while");
+        return SUCCESS;
+    }
+
+    @Action(value="rebuildHomepageCaches",results={
+            @Result(name = SUCCESS, type = "redirect", location = "/admin")
+    })
+    public String rebuildHomepageCaches() {
+        scheduledProcessService.updateHomepage();
+        getActionMessages().add("Scheduled... check admin activity controller to test");
         return SUCCESS;
     }
 

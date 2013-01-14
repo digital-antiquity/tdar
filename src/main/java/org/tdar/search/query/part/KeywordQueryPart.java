@@ -33,7 +33,6 @@ public class KeywordQueryPart implements QueryPart<Keyword> {
     //for use when generating description
     private String descriptionLabel = "Keyword";
     
-    //fixme:  this is a misnomer.  it's really a lucene field prefix and we should try to guess it rather than have caller supply it
     private String keywordType;
     
     public KeywordQueryPart() {
