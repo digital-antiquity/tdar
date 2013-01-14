@@ -3,6 +3,8 @@ package org.tdar.struts.interceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.cxf.common.util.UrlUtils;
 import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,26 +39,39 @@ public class HttpsInterceptor implements Interceptor {
         HttpServletRequest request = ServletActionContext.getRequest();
         HttpServletResponse response = ServletActionContext.getResponse();
         /*
-         * If we're not secured or user is authenticated, just go on as usual, otherwise, force unauthenticated users to HTTP 
+         * If we're not secured or user is authenticated, just go on as usual, otherwise, force unauthenticated users to HTTP
          * this means you google.
          */
         if (request.isSecure() && invocation.getAction() instanceof AuthenticationAware && !((AuthenticationAware) invocation.getAction()).isAuthenticated()) {
-            TdarConfiguration config = TdarConfiguration.getInstance();
-            String baseUrl = String.format("http://%s%s%s%s", config.getHostName(), config.getPort() == 80 ? "" : ":" + config.getPort(),
-                    request.getServletPath(), request.getQueryString() == null ? "" : "?" + request.getQueryString());
+            String baseUrl = changeUrlProtocol("http", request);
             response.sendRedirect(baseUrl);
         }
         return invocation.invoke();
     }
 
+    private String changeUrlProtocol(String protocol, HttpServletRequest request) {
+        TdarConfiguration config = TdarConfiguration.getInstance();
+        int newPort = config.getPort();
+        if (protocol == "https") {
+            newPort = config.getHttpsPort();
+        }
+        
+        String baseUrl = String.format("%s://%s%s%s%s", protocol, config.getHostName(), config.getPort() == 80 ? "" : ":" + newPort,
+                request.getServletPath(), request.getQueryString() == null ? "" : "?" + request.getQueryString());
+        return baseUrl;
+    }
+
     private String doHttpsIntercept(ActionInvocation invocation) throws Exception {
         HttpServletRequest request = ServletActionContext.getRequest();
+        HttpServletResponse response = ServletActionContext.getResponse();
         if (request.isSecure() || !TdarConfiguration.getInstance().isHttpsEnabled()) {
             return invocation.invoke();
         }
 
-        logger.warn("ERROR_HTTPS_ONLY");
-        if (invocation.getAction() instanceof TdarActionSupport) {
+        if (request.getMethod().equalsIgnoreCase("get")) {
+            response.sendRedirect(changeUrlProtocol("https", request));
+        } else if ( invocation.getAction() instanceof TdarActionSupport) {
+            logger.warn("ERROR_HTTPS_ONLY");
             ((TdarActionSupport) invocation.getAction()).addActionError(ERROR_HTTPS_ONLY);
         }
 

@@ -355,7 +355,7 @@ header .welcome-drop ul {
 }
 
 /* should I be more specific? */
-#slider img {
+#slider .primary-thumbnail {
 	float: right;
 }
 
