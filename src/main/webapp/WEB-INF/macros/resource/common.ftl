@@ -5,7 +5,7 @@ $Id:Exp$
 Common macros used in multiple contexts
 -->
 <#assign mb = 1048576 />
-<#macro convertFileSize filesize=0>
+<#macro convertFileSize filesize=0><#compress>
 <#assign kb = 1024 />
 <#if (filesize > mb)>
 ${(filesize / mb)?string(",##0.00")}mb
@@ -14,7 +14,7 @@ ${(filesize / kb)?string(",##0.00")}kb
 <#else>
 ${filesize?string(",##0.00")}b
 </#if>
-</#macro>
+</#compress></#macro>
 <#assign tdarBuildId><#include  "/version.txt" parse=false/></#assign>
 <#assign tdarBuildId = tdarBuildId?trim?replace("+", ".001") />
 

@@ -149,16 +149,15 @@ View freemarker macros
         </#if>
 
         </ul>
-		<#if showAll != ''>
-         <div>
-            <a href="#" id="showAllFiles" onClick="$('.view-hidden-extra-files, #showAllFiles').toggle();return false;">show all files</a>
-        </div>
-		
-		</#if>
-        <#if hasDeletedFiles>
-        <div>
-            <a href="#" id="showHiddenFiles" onClick="$('.view-deleted-file, #showHiddenFiles').toggle();return false;">show deleted files</a>
-        </div>
+		<#if showAll != '' || hasDeletedFiles>
+         <div id="downloadsMoreArea">
+	        <#if showAll != ''>
+	            <a href="#" id="showAllFiles" onClick="$('.view-hidden-extra-files, #showAllFiles').toggle();return false;">show all files</a>
+			</#if>
+	        <#if hasDeletedFiles>
+	            <a href="#" id="showHiddenFiles" onClick="$('.view-deleted-file, #showHiddenFiles').toggle();return false;">show deleted files</a>
+	        </#if>
+         </div>
         </#if>
     <#nested>
 </#if>

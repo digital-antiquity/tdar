@@ -1373,3 +1373,8 @@ img.responsive-image {
     max-width: 100%;
     height: auto;    
 }
+
+#downloadsMoreArea {
+	background-color: #ddd;
+	padding-left: 35px;
+}
