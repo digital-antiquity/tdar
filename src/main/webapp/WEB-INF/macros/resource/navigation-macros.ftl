@@ -137,7 +137,7 @@ $(document).ready(function() {
     	<#if disabled>
     		<span class="disabled">
     	<#else>
-	        <a href='<@s.url value="/${namespace}/${action}">
+	        <a href="<#compress><@s.url value="/${namespace}/${action}">
 	        <#if includeResourceId>
 	            <#if persistable??>
 	                <#local _id = persistable.id />
@@ -146,7 +146,7 @@ $(document).ready(function() {
 	            </#if>
 	            <@s.param name="id" value="${_id?c}" />
 	        </#if>
-	        </@s.url>'>
+	        </@s.url></#compress>">
 	     </#if>
         <i class="tdar-icon-${action_}<#if state?has_content>-${state}</#if>"></i>
         <#nested> ${label}<#if disabled></span><#else></a></#if>
