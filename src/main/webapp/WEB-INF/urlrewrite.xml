@@ -21,7 +21,6 @@
 		<to>/services/</to>
 	</rule>
 
-
 <!-- 
 	<rule>
 		<note>removing trailing bad request info from get request</note>
