@@ -1,15 +1,17 @@
 package org.tdar.core.service;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.lang.reflect.Field;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.Stack;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.keyword.CultureKeyword;
@@ -21,6 +23,22 @@ public class ReflectionServiceTest {
 
     ReflectionService reflectionService = new ReflectionService();
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
+
+    @Test
+    public void testHasLabel() throws ClassNotFoundException {
+        Set<BeanDefinition> findClassesThatImplement = ReflectionService.findClassesThatImplement(HasLabel.class);
+        for (BeanDefinition bean : findClassesThatImplement) {
+            Class<?> cls = Class.forName(bean.getBeanClassName());
+            if (cls.isEnum()) {
+                for (Object obj : cls.getEnumConstants()) {
+                    String label = ((HasLabel) obj).getLabel();
+                    assertNotNull(label);
+                    logger.trace("cls: {} label: {}", cls, label);
+                }
+            }
+
+        }
+    }
 
     @Test
     public void testBulkUpload() {
