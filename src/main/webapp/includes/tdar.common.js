@@ -1125,6 +1125,76 @@ TDAR.common = function() {
             return $('<div></div>').text(str).html();
     }
     
+    var _determineResponsiveClass = function(width) {
+        return width > 1200 ? 'responsive-large-desktop' :
+            width > 979 ? 'responsive-desktop' :
+            width > 767 ? 'responsive-tablet' :
+            width > 1 ? 'responsive-phone' : '';
+    }
+    
+    //initialize image gallery using w/ width/height appropriate for responsive format
+    var _initImageGallery = function($container, numImagesToDisplay, authenticatedUser) {
+        var options = {
+            fit_to_parent:      false,
+            auto:         false,
+            interval:       3000,
+            continuous:       false,
+            loading:        true,
+            tooltip_width:      100,
+            tooltip_icon_width:   32,
+            tooltip_icon_height:  32,
+            tooltip_offsetx:    18,
+            tooltip_offsety:    0,
+            buttons:        true,
+            btn_numbers:      true,
+            keybord_keys:     true,
+            mousetrace:       false, /* Trace x and y coordinates for the mouse */
+            pauseonover:      true,
+            stoponclick:      true,
+            transition:       'hslide', /* hslide/vslide/fade */
+            transition_delay:   300,
+            transition_speed:   500,
+            show_caption:     'onhover', /* onload/onhover/show */
+            thumbnails:       true,
+            thumbnails_position:  'outside-last', /* outside-last/outside-first/inside-last/inside-first */
+            thumbnails_direction: 'horizontal', /* vertical/horizontal */
+            thumbnails_slidex:    1, /* 0 = auto / 1 = slide one thumbnail / 2 = slide two thumbnails / etc. */
+            dynamic_height:     false, /* For dynamic height to work in webkit you need to set the width and height of images in the source. Usually works to only set the dimension of the first slide in the showcase. */
+            speed_change:     false, /* Set to true to prevent users from swithing more then one slide at once. */
+            viewline:       false  /* If set to true content_width, thumbnails, transition and dynamic_height will be disabled. As for dynamic height you need to set the width and height of images in the source. */
+        };
+        
+        //TODO: determine appropriate height for each responsive profile
+        var responsiveOptions = {
+                'responsive-large-desktop': {
+                    content_height: 600,
+                    content_width: 600
+                },
+                'responsive-desktop':{
+                    content_height: 600,
+                    content_width: 600
+                },
+                'responsive-tablet':{
+                    content_height: 500,
+                    content_width: 500
+                },
+                'responsive-phone':{
+                    content_height: 300,
+                    content_width: 300
+                }
+        };
+        
+        $.extend(options, responsiveOptions[_determineResponsiveClass($(window).width())]);
+        
+        if(!authenticatedUser) {
+            options.contentHeight = 0;
+        }
+        
+        //fixme: make content_width smaller if not enough thumbnails (need thumbnail width to determind... which option is that?)
+        $container.toggle().awShowcase(options);
+    }
+    
+    
     return {
         "initEditPage": _initEditPage,
         "initFormValidation": _setupFormValidate,
@@ -1132,29 +1202,15 @@ TDAR.common = function() {
         "initializeView": _initializeView,
         "getObjValue": _getObjValue,
         "htmlEncode": _htmlEncode,
-        "initRegformValidation": _initRegformValidation
+        "initRegformValidation": _initRegformValidation,
+        "determineResponsiveClass": _determineResponsiveClass,
+        "initImageGallery": _initImageGallery
     };
 }();
 
-function getSymbolSets() {
-    var specialChars = "!\"#$%&'()*+-./:;<=>?@[\]^`{|}~ ";
-    var allowedChars = [];
-    allowedChars.push("-");
-    for (var charCode = "a".charCodeAt(); charCode <= "z".charCodeAt(); charCode++) {
-        allowedChars.push(String.fromCharCode(charCode));
-    }
-    for (var charCode = "A".charCodeAt(); charCode <= "Z".charCodeAt(); charCode++) {
-        allowedChars.push(String.fromCharCode(charCode));
-    }
-    return {specialChars: specialChars, allowedChars: allowedChars.join("")};
-}
 function checkWindowSize() {
-    var width = $(window).width(),
-    new_class = width > 1200 ? 'responsive-large-desktop' :
-                width > 979 ? 'responsive-desktop' :
-                width > 767 ? 'responsive-tablet' :
-                width > 1 ? 'responsive-phone' : '';
-//                console.log(new_class);
+    var width = $(window).width()
+    var new_class = TDAR.common.determineResponsiveClass(width);
     $(document.body).removeClass('responsive-large-desktop responsive-desktop responsive-tablet responsive-phone').addClass(new_class);
 }
 
