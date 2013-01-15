@@ -372,7 +372,7 @@ No coding rules have been entered for this coding sheet yet.
 <h2>Administrative Information</h2>
 
     <@resourceUsageInfo />
-    <div class="row">
+    <div>
         <dl class="dl-horizontal">
             <dt><p><strong>Created by</strong></p></dt>
             <dd><p><a href="<@s.url value="/browse/creators/${resource.submitter.id?c}"/>">${resource.submitter.properName}</a> on ${resource.dateCreated}</p></dd>
@@ -537,14 +537,14 @@ No coding rules have been entered for this coding sheet yet.
 </p>
 
 <p class="visible-phone"><a href="#sidebar-right">&raquo; Downloads &amp; Basic Metadata</a></p>
-<hr class="span9 dbl">
+<hr class="dbl">
 
 <h2>Summary</h2>
 <p>
   ${resource.description!"No description specified."}
 </p>
 
-<hr class="span9" />
+<hr />
 
     <#nested>
     <#if resource.url! != ''>
@@ -557,7 +557,7 @@ No coding rules have been entered for this coding sheet yet.
     <#local numImagesToDisplay= resource.visibleFilesWithThumbnails?size />
   <#assign numImagesToDisplay=0/>
   <div class="span9">
-  <div id="showcase" class="showcase controls-row" style="display:none;<#if !authenticatedUser??>margin:0px !important</#if>">
+  <div id="showcase" class="showcase" style="display:none;<#if !authenticatedUser??>margin:0px !important</#if>">
  
     <#list resource.visibleFilesWithThumbnails as irfile>
           <div class="showcase-slide"> 
