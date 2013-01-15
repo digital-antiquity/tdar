@@ -1067,7 +1067,7 @@ $(function() {
       <#local url><@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/${resource.urlNamespace}/${resource.id?c}"/></#local>
 <#if resource.firstActiveLatitudeLongitudeBox?has_content>
 	<#assign bb=resource.firstActiveLatitudeLongitudeBox />
-		<img src="//maps.googleapis.com/maps/api/staticmap?size=410x235&maptype=terrain&path=color:0x000000|weight:1|fillcolor:0x888888|${bb.minObfuscatedLatitude?c},${bb.minObfuscatedLongitude?c}|${bb.minObfuscatedLatitude?c},${bb.maxObfuscatedLongitude?c}|${bb.maxObfuscatedLatitude?c},${bb.maxObfuscatedLongitude?c}|${bb.maxObfuscatedLatitude?c},${bb.minObfuscatedLongitude?c}|${bb.minObfuscatedLatitude?c},${bb.minObfuscatedLongitude?c}&sensor=false&key=${googleMapsApiKey}" />
+		<img class="pull-right" src="//maps.googleapis.com/maps/api/staticmap?size=410x235&maptype=terrain&path=color:0x000000|weight:1|fillcolor:0x888888|${bb.minObfuscatedLatitude?c},${bb.minObfuscatedLongitude?c}|${bb.minObfuscatedLatitude?c},${bb.maxObfuscatedLongitude?c}|${bb.maxObfuscatedLatitude?c},${bb.maxObfuscatedLongitude?c}|${bb.maxObfuscatedLatitude?c},${bb.minObfuscatedLongitude?c}|${bb.minObfuscatedLatitude?c},${bb.minObfuscatedLongitude?c}&sensor=false&key=${googleMapsApiKey}" />
 <#else>
       <a href="${url}" target="_top"><@firstThumbnail resource true /></a> 
 </#if>
