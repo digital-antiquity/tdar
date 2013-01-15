@@ -222,26 +222,27 @@ public class NelNetTransactionRequestTemplate implements Serializable {
                         break;
                     switch (item) {
                         case CITY:
-                            value = StringUtils.substring(invoice.getAddress().getCity(), 0, item.length);
+                            value = StringUtils.substring(invoice.getAddress().getCity(), 0, item.getLength());
                             break;
                         case COUNTRY:
-                            value = StringUtils.substring(invoice.getAddress().getCountry(), 0, item.length);
+                            value = StringUtils.substring(invoice.getAddress().getCountry(), 0, item.getLength());
                             break;
                         case STATE:
-                            value = StringUtils.substring(invoice.getAddress().getState(), 0, item.length);
+                            value = StringUtils.substring(invoice.getAddress().getState(), 0, item.getLength());
                             break;
                         case STREET_ONE:
-                            value = StringUtils.substring(invoice.getAddress().getStreet1(), 0, item.length);
+                            value = StringUtils.substring(invoice.getAddress().getStreet1(), 0, item.getLength());
                             break;
                         case STREET_TWO:
-                            value = StringUtils.substring(invoice.getAddress().getStreet2(), 0, item.length);
+                            value = StringUtils.substring(invoice.getAddress().getStreet2(), 0, item.getLength());
                             break;
                         case ZIP:
-                            value = StringUtils.substring(invoice.getAddress().getPostal(), 0, item.length);
+                            value = StringUtils.substring(invoice.getAddress().getPostal(), 0, item.getLength());
                             break;
                         default:
                             break;
                     }
+                    break;
                 case TIMESTAMP:
                     value = Long.toString(System.currentTimeMillis());
                     break;
