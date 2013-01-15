@@ -1,10 +1,12 @@
 package org.tdar.core.service.workflow;
 
+import org.tdar.core.bean.HasLabel;
+
 /**
  * @author Adam Brin
  *
  */
-public enum WorkflowPhase {
+public enum WorkflowPhase implements HasLabel {
 
 	SETUP("Setup"),
 	PRE_PROCESS("Pre-Process"),
@@ -21,10 +23,6 @@ public enum WorkflowPhase {
 
 	public String getLabel() {
 		return label;
-	}
-
-	public void setLabel(String label) {
-		this.label = label;
 	}
 
 }

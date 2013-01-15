@@ -242,11 +242,9 @@ public class ReflectionService {
         if (persistableLookup != null)
             return;
 
-        ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
-        scanner.addIncludeFilter(new AssignableTypeFilter(Persistable.class));
-        String basePackage = "org/tdar/";
+        Set<BeanDefinition> findCandidateComponents = findClassesThatImplement(Persistable.class);
         persistableLookup = new HashMap<String, Class<Persistable>>();
-        for (BeanDefinition bd : scanner.findCandidateComponents(basePackage)) {
+        for (BeanDefinition bd : findCandidateComponents) {
             String beanClassName = bd.getBeanClassName();
             Class cls = Class.forName(beanClassName);
             logger.trace("{} - {} ", cls.getSimpleName(), cls);
@@ -257,6 +255,14 @@ public class ReflectionService {
             persistableLookup.put(cls.getSimpleName(), cls);
         }
 
+    }
+
+    public static Set<BeanDefinition> findClassesThatImplement(Class<?> cls) {
+        ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
+        scanner.addIncludeFilter(new AssignableTypeFilter(cls));
+        String basePackage = "org/tdar/";
+        Set<BeanDefinition> findCandidateComponents = scanner.findCandidateComponents(basePackage);
+        return findCandidateComponents;
     }
 
     public static boolean methodOrActionContainsAnnotation(ActionInvocation invocation, Class<? extends Annotation> annotationClass) throws SecurityException,
