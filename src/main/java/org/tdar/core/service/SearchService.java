@@ -357,14 +357,20 @@ public class SearchService {
                 ftq.getResultSize(),
                 resultHandler.getStartRecord() };
         logger.debug("{}: {} (SORT:{},{})\t LUCENE: {} | HYDRATION: {} | # RESULTS: {} | START #: {}", searchMetadata);
+
+        if (resultHandler.getStartRecord() > ftq.getResultSize()) {
+            throw new TdarRecoverableRuntimeException(String.format("Start record %s is greater than total number of results %s",
+                    resultHandler.getStartRecord(), ftq.getResultSize()));
+        }
+
         logger.trace("returning: {}", toReturn);
         resultHandler.setResults(toReturn);
     }
 
     private <F extends Facetable> void processFacets(FullTextQuery ftq, SearchResultHandler<?> resultHandler) {
-        if (resultHandler.getFacetFields() == null) 
+        if (resultHandler.getFacetFields() == null)
             return;
-        
+
         for (FacetGroup<? extends Facetable> facet : resultHandler.getFacetFields()) {
             FacetingRequest facetRequest = getQueryBuilder(Resource.class).facet().name(facet.getFacetField())
                     .onField(facet.getFacetField()).discrete().orderedBy(FacetSortOrder.COUNT_DESC)
