@@ -4,7 +4,7 @@ vim:sts=2:sw=2:filetype=jsp
 <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
 
 <head>
-    <title>Login/Register</title>
+    <title>Log in / Register</title>
     <meta name="lastModifiedDate" content="$Date$" />
 </head>
 <body>
@@ -26,7 +26,7 @@ vim:sts=2:sw=2:filetype=jsp
     <strong>Note:</strong>You must be logged-in to download materials.  Please login below, or signup for a free user account.
 </div>
 </#if>
-<h1>Login to ${siteAcronym}</h1>
+<h1>Log in to ${siteAcronym}</h1>
 <div class="well">
 <@nav.loginForm cssClass="form-horizontal" />
 </div>

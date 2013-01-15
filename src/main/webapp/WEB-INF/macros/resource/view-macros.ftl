@@ -556,20 +556,20 @@ No coding rules have been entered for this coding sheet yet.
 <#macro showcase>
     <#local numImagesToDisplay= resource.visibleFilesWithThumbnails?size />
   <#assign numImagesToDisplay=0/>
-  <div class="span9">
-  <div id="showcase" class="showcase" style="display:none;<#if !authenticatedUser??>margin:0px !important</#if>">
+  <div id="showcase" class="showcase" >
  
     <#list resource.visibleFilesWithThumbnails as irfile>
           <div class="showcase-slide"> 
             <#if authenticatedUser??>
             <!-- Put the slide content in a div with the class .showcase-content. --> 
-            <div class="showcase-content" style="position:relative; top:50%;margin-top:-${irfile.zoomableVersion.height /2}px;"> 
-              <img alt="#${irfile_index}" src="<@s.url value="/filestore/${irfile.zoomableVersion.id?c}/get"/>" />
+            <div class="showcase-content" style="height:100%">
+              <span style="display: inline-block; height: 100%; vertical-align: middle;"></span>
+              <img alt="#${irfile_index}" src="<@s.url value="/filestore/${irfile.zoomableVersion.id?c}/get"/>"/>
             </div> 
             <!-- Put the thumbnail content in a div with the class .showcase-thumbnail --> 
             </#if>
             <div class="showcase-thumbnail"> 
-              <img alt="${irfile.latestUploadedVersion.filename}" src="<@s.url value="/filestore/${irfile.latestThumbnail.id?c}/thumbnail"/>"  />
+              <img  alt="${irfile.latestUploadedVersion.filename}" src="<@s.url value="/filestore/${irfile.latestThumbnail.id?c}/thumbnail"/>"  />
               <!-- The div below with the class .showcase-thumbnail-caption contains the thumbnail caption. --> 
               <!-- The div below with the class .showcase-thumbnail-cover is used for the thumbnails active state. --> 
               <div class="showcase-thumbnail-cover"></div> 
@@ -580,7 +580,6 @@ No coding rules have been entered for this coding sheet yet.
             <!-- Put the caption content in a div with the class .showcase-caption --> 
           </div>   
    </#list>
-  </div>
   </div>
 
    <#if (authenticatedUser?? && numImagesToDisplay > 0 ) || ( numImagesToDisplay > 1) >

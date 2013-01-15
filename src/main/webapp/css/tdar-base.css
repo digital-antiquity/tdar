@@ -29,14 +29,15 @@ body {
 	font-family: helvetica, arial, sans-serif;
 }
 
+/*todo: remove comments when confirmed not needed */
 #home hr,#alt hr {
 	border: 0;
 	border-top: 1px solid #999;
-	border-bottom: none;
+	/* border-bottom: none; /* unnecessary, i think*/
 	height: 1px;
-	float: left; /* weird ff issue w/o */
-	display: block;
-	width: 100%;
+	/* float: left;  /* originally an ff workaround, but this causes issues w/ neighbor elements. in all other browsers */
+	/* display: block; /* unnecessary */
+	/* width: 100%; /* unnecessary */
 	margin: 30px 0 30px 40px;
 }
 

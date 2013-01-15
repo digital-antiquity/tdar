@@ -649,9 +649,6 @@ ol.MAP .listItemPart {
 	font-size: 14px !important;
 }
 
-.showcase-content-container { /*    margin-left: -2px !important; */
-	
-}
 
 .resource-nav.navbar-static li  a {
 	padding-left: 15px !important;
@@ -1130,10 +1127,6 @@ h3.collection-mid-red::before {
 	resize: vertical;
 }
 
-.showcase-button-wrapper {
-	visibility: hidden;
-	display: none;
-}
 
 /* counter-acting ff's rendering of right-aligned elements in labels */
 select.searchType {

@@ -1140,7 +1140,7 @@ TDAR.common = function() {
             interval:       3000,
             continuous:       false,
             loading:        true,
-            tooltip_width:      100,
+            tooltip_width:      200,
             tooltip_icon_width:   32,
             tooltip_icon_height:  32,
             tooltip_offsetx:    18,
@@ -1192,11 +1192,12 @@ TDAR.common = function() {
         $.extend(options, responsiveOptions[_determineResponsiveClass($(window).width())]);
         
         if(!authenticatedUser) {
-            options.contentHeight = 0;
+            options.content_height = 0;
+            options.arrows = false;
         }
         
         //fixme: make content_width smaller if not enough thumbnails (need thumbnail width to determind... which option is that?)
-        $container.toggle().awShowcase(options);
+        $container.awShowcase(options);
     }
     
     
