@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- <!DOCTYPE urlrewrite PUBLIC "-//tuckey.org//DTD UrlRewrite 3.1//EN" 
+	"http://tuckey.org/res/dtds/urlrewrite3.1.dtd"> -->
+<urlrewrite>
+	<rule>
+		<name>XML Namespace Document</name>
+		<note>
+			The XML namespace URI for tDAR is
+			"http://www.tdar.org/namespace". This namespace URI should never
+			change. The following rule redirects from the namespace URI to a page
+			where the namespace is currently documented. If the location of the
+			documentation changes, the &lt;to&gt; element below should be updated
+			to follow it.
+		</note>
+		<from>/namespace</from>
+		<to type="temporary-redirect">http://dev.tdar.org/confluence/display/TDAR/tDAR+XML+namespace
+		</to>
+	</rule>
+	<rule>
+		<from>^/services$</from>
+		<to>/services/</to>
+	</rule>
+
+
+<!-- 
+	<rule>
+		<note>removing trailing bad request info from get request</note>
+		<from>^/(document|dataset|project|image|coding-sheet|ontology|sensory-data)/(\d+)([^1234567890\?#/])(.*)</from>
+		<to>/$1/$2</to>
+	</rule> -->
+
+<rule>
+	<from>/register</from>
+	<to>/account/new</to>
+</rule>
+<rule>
+	<from>/account/add</from>
+	<to>/account/new</to>
+</rule>
+
+
+	<rule>
+		<from>^/admin/?$</from>
+		<to>/admin/internal</to>
+	</rule>
+
+	<rule>
+		<from>^/opensearch.xml$</from>
+		<to>/opensearch</to>
+	</rule>
+	<rule>
+		<from>^/robots.txt$</from>
+		<to>/robots</to>
+	</rule>
+
+	<rule>
+		<from>^/projects/list</from>
+		<to>/dashboard/dashboard</to>
+	</rule>
+
+	<rule>
+		<from>^/browse/scholar/20([0-9][0-9])$</from>
+		<to>/search/results.action?groups%5B0%5D.operator=AND&amp;groups%5B0%5D.fieldTypes%5B0%5D=DATE_REGISTERED&amp;groups%5B0%5D.registeredDates%5B0%5D.start=1%2F1%2F$1&amp;groups%5B0%5D.registeredDates%5B0%5D.end=12%2F31%2F$1&amp;sortField=DATE_UPDATED
+		</to>
+	</rule>
+
+
+	<rule>
+		<from>^/browse/(.+)/(\d+)</from>
+		<to>/browse/$1?id=$2</to>
+	</rule>
+	<outbound-rule>
+		<from>^/browse/(.+)\?id=(\d+)$</from>
+		<to>/browse/$1/$2</to>
+	</outbound-rule>
+
+	<rule>
+		<from>^/services//(.*)</from>
+		<to>/services/$1</to>
+	</rule>
+
+	<rule>
+		<condition type="request-uri" operator="equal">^/[^(services)].*$
+		</condition>
+		<from>^/(.+)/$</from>
+		<to>/$1</to>
+	</rule>
+	<rule>
+		<from>^/search/search(.*)</from>
+		<to>/search/results$1</to>
+	</rule>
+
+	<rule>
+		<from>^/search/$</from>
+		<to>/search/basic</to>
+	</rule>
+	<rule>
+		<from>^/search$</from>
+		<to>/search/basic</to>
+	</rule>
+
+
+	<rule>
+		<from>^/(project|dataset|ontology|image|billing|video|document|sensory-data|cart|coding-sheet|collection)/([0-9]+)/(admin|view|edit|upload|delete|columns|mapping|citations|dc|mods|json|xml)$
+		</from>
+		<to>/$1/$3?id=$2</to>
+	</rule>
+	<outbound-rule>
+		<from>^/(project|dataset|ontology|image|billing|video|document|sensory-data|cart|coding-sheet|collection)/(admin|view|edit|xml|upload|delete|columns|citations|mapping|dc|mods)\?id=([0-9]+)$
+		</from>
+		<to>/$1/$3/$2</to>
+	</outbound-rule>
+
+	<rule>
+		<from>^/(cart|billing)/([0-9]+)/(address|credit|simple|choose|polling|polling-check)$
+		</from>
+		<to>/$1/$3?id=$2</to>
+	</rule>
+	<outbound-rule>
+		<from>^/(cart|billing)/(address|credit|choose|simple|polling|polling-check)\?id=([0-9]+)$
+		</from>
+		<to>/$1/$3/$2</to>
+	</outbound-rule>
+
+	<!-- XXX: could use this instead to deal with relative links (maybe) -->
+	<!-- <outbound-rule> -->
+	<!-- <from>(view|edit|upload|delete|columns|citations)\?id=([0-9]+)$</from> -->
+	<!-- <to>$2/$1</to> -->
+	<!-- </outbound-rule> -->
+
+	<!-- all requests for a resource supplying just an id should go to it's 
+		view action -->
+	<rule>
+		<from>^/(project|dataset|ontology|billing|image|video|document|cart|sensory-data|coding-sheet|collection)/([0-9]+)$
+		</from>
+		<to>/$1/view?id=$2</to>
+	</rule>
+	<outbound-rule>
+		<from>^/(project|dataset|ontology|billing|image|video|document|sensory-data|cart|coding-sheet|collection)/([0-9]+)/view$
+		</from>
+		<to>/$1/$2</to>
+	</outbound-rule>
+
+
+	<rule>
+		<from>^/(collection)$</from>
+		<to>/$1/list</to>
+	</rule>
+	<outbound-rule>
+		<from>^/(collection)/list$</from>
+		<to>/$1</to>
+	</outbound-rule>
+
+
+	<rule>
+		<from>^/(dashboard)/?$</from>
+		<to>/$1/$1</to>
+	</rule>
+
+	<outbound-rule>
+		<from>^/(dashboard)/dashboard/?$</from>
+		<to>/$1</to>
+	</outbound-rule>
+
+
+
+	<!-- <rule> <from>^/document/add/([A-Z_]+)$</from> <to>/document/add?documentType=$1</to> 
+		</rule> <outbound-rule> <from>^/document/add\?documentType=([A-Z_]+)$</from> 
+		<to>/document/add/$1</to> </outbound-rule> -->
+	<rule>
+		<from>^/document/(source|related)/([0-9]+)$</from>
+		<to>/document/$1?linkedResourceId=$2</to>
+	</rule>
+
+	<outbound-rule>
+		<from>^/document/(source|related)\?linkedResourceId=([0-9]+)$</from>
+		<to>/document/$1/$2</to>
+	</outbound-rule>
+
+	<rule>
+		<from>^/resource/add/([0-9]+)$</from>
+		<to>/resource/add?projectId=$1</to>
+	</rule>
+
+	<rule>
+		<from>^/resource/([0-9]+)$</from>
+		<to>/resource/view?resourceId=$1</to>
+	</rule>
+
+	<outbound-rule>
+		<from>^/resource/add\?projectId=([0-9]+)$</from>
+		<to>/resource/add/$1</to>
+	</outbound-rule>
+
+	<rule>
+		<from>^/filestore/([0-9]+)$</from>
+		<to>/filestore/$1/get</to>
+	</rule>
+
+	<outbound-rule>
+		<from>^/filestore/([0-9]+)/get$</from>
+		<to>/filestore/$1</to>
+	</outbound-rule>
+
+	<rule>
+		<from>^/search$</from>
+		<to>/search/basic</to>
+	</rule>
+
+	<rule>
+		<from>^/account$</from>
+		<to>/account/new</to>
+	</rule>
+
+	<rule>
+		<name>remove version hash</name>
+		<from>^(/[a-z]+)/vc/[0-9\.a-f]+/(.*)$</from>
+		<to>/$1/$2</to>
+	</rule>
+	<rule>
+		<from>^/workspace$</from>
+		<to>/workspace/select-tables</to>
+	</rule>
+	<rule>
+		<from>^/workspace/list$</from>
+		<to>/workspace/select-tables</to>
+	</rule>
+
+
+	<rule>
+		<from>^/entity/(person|institution)/([0-9]+)/(edit|address)$</from>
+		<to>/entity/$1/$3?id=$2</to>
+	</rule>
+	<outbound-rule>
+		<from>^/entity/(person|institution)/(edit|address)\?id=([0-9]+)$
+		</from>
+		<to>/entity/$1/$3/$2</to>
+	</outbound-rule>
+
+
+	<!-- http://stackoverflow.com/questions/962729/is-it-possible-to-disable-jsessionid-in-tomcat-servlet -->
+	<outbound-rule encodefirst="true">
+		<name>Strip URL Session ID's</name>
+		<from>^(.*?)(?:\;jsessionid=[^\?#]*)?(\?[^#]*)?(#.*)?$</from>
+		<to>$1$2$3</to>
+	</outbound-rule>
+
+
+</urlrewrite>
