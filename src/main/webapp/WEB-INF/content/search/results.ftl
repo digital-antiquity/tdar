@@ -109,8 +109,9 @@
      </div>
 
     <hr class="dbl" />
+    <div class="tdarresults">
 <#if lookupSource == 'COLLECTION' || lookupSource='RESOURCE'>
-    <@rlist.listResources resourcelist=results sortfield=sortField expanded=true listTag="" itemTag="" titleTag="h3" orientation=orientation mapPosition="top" mapHeight="450"/>
+    <@rlist.listResources resourcelist=results sortfield=sortField expanded=true listTag="span" itemTag="span" titleTag="h3" orientation=orientation mapPosition="top" mapHeight="450"/>
 <#else>
 	<#list results as result>
 	<#if result_index != 0> <hr/></#if>
@@ -124,6 +125,7 @@
 </div>
 	</#list>
 </#if>
+</div>
     <hr class="dbl" />
     <@search.pagination ""/>
 <#else>
