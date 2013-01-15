@@ -30,11 +30,11 @@
 	</rule> -->
 
 <rule>
-	<from>/register</from>
+	<from>^/register</from>
 	<to>/account/new</to>
 </rule>
 <rule>
-	<from>/account/add</from>
+	<from>^/account/add</from>
 	<to>/account/new</to>
 </rule>
 
