@@ -26,6 +26,7 @@ import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
+import org.hibernate.cfg.beanvalidation.GroupsPerOperation.Operation;
 import org.hibernate.search.FullTextQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -187,8 +188,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             @Result(name = "success", location = "results.ftl"),
             @Result(name = INPUT, location = "advanced.ftl") })
     public String searchCollections() {
-        setSortOptions(SortOption
-                .getOptionsForContext(ResourceCollection.class));
+        setSortOptions(SortOption.getOptionsForContext(ResourceCollection.class));
         try {
             return collectionSearch();
         } catch (TdarRecoverableRuntimeException trex) {
@@ -240,8 +240,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         if (StringUtils.isNotBlank(query)) {
             queryBuilder.append(new GeneralSearchQueryPart(query));
         }
-        queryBuilder.append(new FieldQueryPart<String>(
-                QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED.name()));
+        queryBuilder.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED.name()));
 
         QueryPartGroup qpg = new QueryPartGroup(Operator.OR);
         qpg.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_VISIBLE, "true"));

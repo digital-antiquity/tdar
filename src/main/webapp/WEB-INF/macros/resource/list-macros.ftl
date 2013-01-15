@@ -35,13 +35,14 @@
       <div class="<#if mapPosition=='left' || mapPosition=="right">span3<#else>span9</#if>">
   </#if>
   
-  
+  <#local rowCount = -1 />
   <#if resourcelist??>
   <#list resourcelist as resource>
     <#local key = "" />
     <#local defaultKeyLabel="No Project"/>
     <#-- if we're a resource && are viewable -->
     <#if resource?? && (!resource.viewable?has_content || resource.viewable) >
+       <#local rowCount= rowCount+1 />
         <#-- handle grouping/sorting with indentation -->
         <#if sortfield?contains('RESOURCE_TYPE') || sortfield?contains('PROJECT')>
             <#if sortfield?contains('RESOURCE_TYPE')>
@@ -57,12 +58,12 @@
             </#if>
             <#-- print header and group/list tag -->
             <#if first || (prev != key) && key?has_content>
-                <#if prev != '' || sortField?has_content && (sortField?contains("RESOURCE_TYPE") || sortField?contains("PROJECT"))></${listTag_}></#if>
+                <#if prev != '' || sortField?has_content && !first && (sortField?contains("RESOURCE_TYPE") || sortField?contains("PROJECT"))></${listTag_}></#if>
                 <${headerTag}><#if key?has_content>${key}<#else>${defaultKeyLabel}</#if></${headerTag}>
                 <${listTag_} class='resource-list  controls-row ${orientation}'>
             </#if>
             <#local prev=key />
-        <#elseif resource_index == 0>
+        <#elseif first>
             <#-- default case for group tag -->
             <@printTag listTag_ "resource-list  controls-row ${orientation}" false />
         </#if>  
@@ -72,13 +73,14 @@
             data-long="${resource.firstActiveLatitudeLongitudeBox.centerLongitude?c}" </#if>
             </@printTag>
 
+<!-- ${itemTag_} -- ${rowCount} -- ${itemsPerRow} -- ${rowCount % itemsPerRow } -->
             <#if itemTag_?lower_case != 'li'>
-                <#if resource_index != 0>
-                <#if orientation != 'GRID'>
-                    <hr/>
-                <#elseif resource_index   % itemsPerRow = 0>
-                    </div>    </div><hr /><div class=" ${orientation} resource-list controls-row"><div class="span2">
-                </#if>
+                <#if !first>
+	                <#if orientation != 'GRID'>
+	                    <hr/>
+	                <#elseif rowCount % itemsPerRow == 0>
+	                    </div>    </div><hr /><div class=" ${orientation} resource-list controls-row"><div class="span2">
+	                </#if>
                 </#if>
             </#if>
             <#if orientation == 'GRID'>
