@@ -77,10 +77,13 @@
     <#if javascriptOn>
       <script type='text/javascript'>
       $("#sortField").change(function() {
-        var url = window.location.href.replace(/(&+)sortField=([^&]+)/,"");
+        var url = window.location.search.replace(/([?&]+)sortField=([^&]+)/g,"");
         //are we adding a querystring or merely appending a name/value pair, i.e. do we need a '?' or '&'? 
-        var delim = (url.indexOf('?')>=0) ? '&' : '?';
-        url += delim + "sortField="+$('#sortField').val();
+        var prefix = "";
+        if (url.indexOf("?") != 0) {
+          prefix = "?";
+        }
+        url = prefix + url +  "&sortField="+$('#sortField').val();
         window.location = url;
         });
       </script>
