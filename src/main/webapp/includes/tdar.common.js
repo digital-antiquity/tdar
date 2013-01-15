@@ -1164,7 +1164,12 @@ TDAR.common = function() {
             viewline:       false  /* If set to true content_width, thumbnails, transition and dynamic_height will be disabled. As for dynamic height you need to set the width and height of images in the source. */
         };
         
-        //TODO: determine appropriate height for each responsive profile
+        /*
+         * Heights and widths of gallery should be roughly square as our derivative sizes are at maximum sqaures
+         *     public static final int LARGE = 600;
+    		   public static final int MEDIUM = 300;
+    		   public static final int SMALL = 96;
+         */
         var responsiveOptions = {
                 'responsive-large-desktop': {
                     content_height: 600,
@@ -1214,7 +1219,9 @@ function checkWindowSize() {
     $(document.body).removeClass('responsive-large-desktop responsive-desktop responsive-tablet responsive-phone').addClass(new_class);
 }
 
-//TODO: what am I? Why am I here?
+/*
+ * assigns a class to the body tag based on the current width.  These sizes match the bootstrap responsive grid sizes
+ */
 $(document).ready(function() {
     checkWindowSize();
     $(window).resize(checkWindowSize);
