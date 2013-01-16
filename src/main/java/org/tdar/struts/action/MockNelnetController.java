@@ -1,12 +1,15 @@
 package org.tdar.struts.action;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.Consts;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -28,6 +31,7 @@ import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplat
 import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionResponseTemplate;
 import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionResponseTemplate.NelnetTransactionItemResponse;
 import org.tdar.core.exception.StatusCode;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
 @Component
 @Scope("prototype")
@@ -88,6 +92,17 @@ public class MockNelnetController extends AuthenticationAware.Base implements Pa
         try {
             DefaultHttpClient httpclient = new DefaultHttpClient();
             HttpResponse httpresponse = httpclient.execute(postReq);
+            BufferedReader rd = new BufferedReader(new InputStreamReader(httpresponse.getEntity().getContent()));
+            boolean seen = false;
+            for (String line : IOUtils.readLines(rd)) {
+                if (line.contains("success")) {
+                    seen = true;
+                }
+            }
+            if (seen == false) {
+                logger.warn("WE SHOULD SEE 'SUCCESS' IN THE RESPONSE");
+                throw new TdarRecoverableRuntimeException("did not see 'success' in response");
+            }
             logger.info("response: {} ", httpresponse);
         } catch (Exception e) {
             throw new TdarActionException(StatusCode.BAD_REQUEST, "cannot make http connection");
@@ -105,11 +120,11 @@ public class MockNelnetController extends AuthenticationAware.Base implements Pa
         String total = getParamValue(NelnetTransactionItem.AMOUNT);
         responseParams.put(NelnetTransactionItemResponse.TIMESTAMP.getKey(), new String[] { Long.toString(System.currentTimeMillis()) });
         responseParams.put(NelnetTransactionItemResponse.TRANSACTION_ACCOUNT_TYPE.getKey(), new String[] { cctype });
-        responseParams.put(NelnetTransactionItemResponse.EVENING_PHONE.getKey(), new String[] { "4809651369"});
+        responseParams.put(NelnetTransactionItemResponse.EVENING_PHONE.getKey(), new String[] { "4809651369" });
         responseParams.put(NelnetTransactionItemResponse.STREET_ONE.getKey(), new String[] { "PO Box 872402" });
         responseParams.put(NelnetTransactionItemResponse.STREET_TWO.getKey(), new String[] { "Arizona State University" });
-        responseParams.put(NelnetTransactionItemResponse.CITY.getKey(), new String[] { "Tempe"});
-        responseParams.put(NelnetTransactionItemResponse.STATE.getKey(), new String[] { "AZ"});
+        responseParams.put(NelnetTransactionItemResponse.CITY.getKey(), new String[] { "Tempe" });
+        responseParams.put(NelnetTransactionItemResponse.STATE.getKey(), new String[] { "AZ" });
         responseParams.put(NelnetTransactionItemResponse.ZIP.getKey(), new String[] { "85287" });
         responseParams.put(NelnetTransactionItemResponse.COUNTRY.getKey(), new String[] { "USA" });
         responseParams.put(NelnetTransactionItemResponse.TRANSACTION_TOTAL.getKey(), new String[] { total });

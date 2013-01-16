@@ -24,6 +24,11 @@ public class AdminLoginWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         gotoPage("/admin/activity");
         assertTextPresentInPage("Recent Activity");
     }
+    @Test
+    public void testPageStats() {
+        gotoPage("/project/" + EditWebITCase.PROJECT_ID);
+        clickLinkOnPage("ADMIN");
+    }
 
     @Test
     public void testStatistics() {
@@ -41,6 +46,21 @@ public class AdminLoginWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         gotoPage("/admin/keyword-stats?keywordType=all");
         assertTextPresentInPage("Controlled Culture Keywords");
+    }
+
+    @Test
+    public void testAdminActivity() {
+        gotoPage("/admin/internal");
+        clickLinkOnPage("System Activity");
+        assertTextPresentInPage("Recent System Activity");
+    }
+
+    @Test
+    public void testAdminUsageStats() {
+        gotoPage("/admin/internal");
+        clickLinkOnPage("Usage Statistics");
+        assertTextPresentInPage("stats for");
+        assertTextPresentInPage("Download Stats");
     }
 
     @Test
