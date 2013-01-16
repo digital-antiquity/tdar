@@ -1048,15 +1048,15 @@ $(function() {
 <#macro firstThumbnail resource_ forceAddSchemeHostAndPort=true>
     <#-- if you don't test if the resource hasThumbnails -- then you start showing the Image Unavailable on Projects, Ontologies... -->
 	<#local seenThumbnail = false/>
-    <#t><span class="primary-thumbnail"><#t>
-    <#if resource_.supportsThumbnails ><#t>
-            <#if resource_.primaryThumbnail??><#t>
-            <#t><span class="thumbnail-center-spacing"></span><#t>
-				<#t><img src="<@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/filestore/${resource_.primaryThumbnail.id?c}/thumbnail" />" title="${resource_.primaryThumbnail.filename}" onError="this.src = '<@s.url value="/images/image_unavailable_t.gif"/>';" /><#t>
+	<#if resource_.supportsThumbnails && resource_.primaryThumbnail?has_content>
+		<#local seenThumbnail = true/>
+	</#if>
+    <#t><span class="primary-thumbnail <#if seenThumbnail>thumbnail-border</#if>"><#t>
+    <#if seenThumbnail ><#t>
+        <#t><span class="thumbnail-center-spacing"></span><#t>
+			<#t><img src="<@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/filestore/${resource_.primaryThumbnail.id?c}/thumbnail" />" title="${resource_.primaryThumbnail.filename}" onError="this.src = '<@s.url value="/images/image_unavailable_t.gif"/>';" /><#t>
 <#t><#local seenThumbnail = true/><#t>
-            </#if>
-    </#if>
-    <#if !seenThumbnail>
+    <#else>
     <#t><i class="${resource_.resourceType?lower_case}-125"></i><#t>
     </#if>
 <#t>                </span><#t>
