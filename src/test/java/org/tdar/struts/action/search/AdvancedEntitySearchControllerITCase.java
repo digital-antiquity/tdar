@@ -11,7 +11,7 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 
 @Transactional
-public class AdvancedEntitySearchControllerITCase extends AdvancedSearchControllerITCase {
+public class AdvancedEntitySearchControllerITCase extends AbstractSearchControllerITCase {
 
     @Test
     @Rollback
