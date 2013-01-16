@@ -17,6 +17,7 @@ import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.hibernate.search.FullTextQuery;
 import org.tdar.core.bean.Indexable;
+import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Dataset.IntegratableOptions;
@@ -228,6 +229,13 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         return results;
     }
 
+    
+    /*
+     * 
+     */
+    protected List<Creator> getCreatorResults() {
+        return (List<Creator>) results;
+    }
     /**
      * @return the debug
      */

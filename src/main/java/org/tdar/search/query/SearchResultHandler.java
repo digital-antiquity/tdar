@@ -2,11 +2,9 @@ package org.tdar.search.query;
 
 import java.util.List;
 
-import org.hibernate.search.FullTextQuery;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Facetable;
-import org.tdar.core.service.SearchService;
 import org.tdar.struts.data.FacetGroup;
 
 /* further abstracting some of the functions of the search result handler 

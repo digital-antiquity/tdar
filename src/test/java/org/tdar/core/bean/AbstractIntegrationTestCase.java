@@ -795,7 +795,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         assertTrue(msg, ObjectUtils.notEqual(obj1, obj2));
     }
     
-    public static void assertNotEmpty(List<Resource> results) {
+    public static void assertNotEmpty(List<?> results) {
         assertTrue(CollectionUtils.isNotEmpty(results));
     }
 
