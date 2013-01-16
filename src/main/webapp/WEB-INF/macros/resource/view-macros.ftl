@@ -1008,6 +1008,7 @@ $(function() {
     <#t><span class="primary-thumbnail"><#t>
     <#if resource_.supportsThumbnails ><#t>
             <#if resource_.primaryThumbnail??><#t>
+            <#t><span class="thumbnail-center-spacing"></span><#t>
 				<#t><img src="<@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/filestore/${resource_.primaryThumbnail.id?c}/thumbnail" />" title="${resource_.primaryThumbnail.filename}" onError="this.src = '<@s.url value="/images/image_unavailable_t.gif"/>';" /><#t>
 <#t><#local seenThumbnail = true/><#t>
             </#if>
