@@ -3,6 +3,7 @@ package org.tdar.struts.action.search;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import org.tdar.core.bean.entity.Person;
 @Transactional
 public class AdvancedEntitySearchControllerITCase extends AbstractSearchControllerITCase {
 
+    
     @Test
     @Rollback
     public void testInstitutionSearch() {
@@ -56,7 +58,7 @@ public class AdvancedEntitySearchControllerITCase extends AbstractSearchControll
     public void testInstitutionMultiWordSearch() {
         AdvancedSearchController controller = generateNewController(AdvancedSearchController.class);
         init(controller);
-        String term = "arizona state";
+        String term = "Arizona State";
         controller.setQuery(term);
         String searchInstitutions = controller.searchInstitutions();
         assertResultsOkay(term, controller);
@@ -64,7 +66,6 @@ public class AdvancedEntitySearchControllerITCase extends AbstractSearchControll
     }
 
     private void assertResultsOkay(String term, AdvancedSearchController controller) {
-        reindex();
         assertNotEmpty(controller.getCreatorResults());
         for (Indexable obj : controller.getCreatorResults()) {
             Creator inst = (Creator) obj;
@@ -73,6 +74,11 @@ public class AdvancedEntitySearchControllerITCase extends AbstractSearchControll
         logger.info("{}", controller.getResults());
     }
 
+    @Before
+    public void before() {
+        reindex();
+    }
+    
     @Override
     protected void reindex() {
         searchIndexService.purgeAll();

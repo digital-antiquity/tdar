@@ -205,14 +205,15 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         getResourceService().updateTransientAccessCount(getResource());
 
         if (isEditor()) {
+            List<VersionType> versionTypes = Arrays.asList(VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED_TEXT);
             if (getPersistableClass().equals(Project.class)) {
                 setTotalResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, null, null, Arrays.asList(getId()), null, null));
                 setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, null, null, Arrays.asList(getId()), null,
-                        Arrays.asList(VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED_TEXT)));
+                        versionTypes));
             } else {
                 setTotalResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, Arrays.asList(getId()), null, null, null, null));
                 setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, Arrays.asList(getId()), null, null, null,
-                        Arrays.asList(VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED_TEXT)));
+                        versionTypes));
             }
         }
 

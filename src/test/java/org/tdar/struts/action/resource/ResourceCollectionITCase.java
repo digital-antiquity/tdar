@@ -837,11 +837,12 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         controller.prepare();
         ResourceCollection rc = controller.getPersistable();
         Project project = createAndSaveNewResource(Project.class, getUser(), "test project");
-        Project proxy = new Project(project.getId(), project.getTitle());
+        //not 100% sure why we're using a proxy here, but technically, I think this i closer to what we do in real life
+//        Project proxy = new Project(project.getId(), project.getTitle());
         Long pid = project.getId();
 
         controller.setAuthorizedUsers(Collections.<AuthorizedUser> emptyList());
-        controller.getResources().add(proxy);
+        controller.getResources().add(project);
         controller.getPersistable().setName("testControllerWithActiveResourceThatBecomesDeleted");
         controller.getPersistable().setDescription("description");
         controller.setServletRequest(getServletPostRequest());
@@ -857,6 +858,9 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         controller.view();
         assertEquals("okay, we should have one resource in this collection now", 1, controller.getResults().size());
 
+        project.getResourceCollections().add(rc);
+        genericService.saveOrUpdate(project);
+        genericService.synchronize();
         // okay now lets delete the resource
         ProjectController projectController = generateNewInitializedController(ProjectController.class);
         projectController.setServletRequest(getServletPostRequest());
@@ -877,23 +881,48 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         rc = genericService.find(ResourceCollection.class, rcid);
         assertTrue(rc.getResources().contains(project));
         logger.info("{}", projectController.getProject().getResourceCollections());
+    }
 
-        // undelete the proeject, then make sure that the collection shows up on the collection view page
-        projectController = generateNewInitializedController(ProjectController.class, getAdminUser());
+    
+    
+    @Test
+    @Rollback(true)
+    public void testControllerWithDeletedResourceThatBecomesActive() throws Exception {
+        Project project = createAndSaveNewResource(Project.class, getUser(), "test project");
+        ResourceCollection collection = generateResourceCollection("test collection with deleted", "test", CollectionType.SHARED, true, null, getUser(), Arrays.asList(project), null);
+        project.setStatus(Status.DELETED);
+        project.getResourceCollections().add(collection);
+        genericService.saveOrUpdate(project);
+        Long rcid = collection.getId();
+        Long pid = project.getId();
+        
+        searchIndexService.flushToIndexes();
+        searchIndexService.index(collection);
+        searchIndexService.index(project);
+        collection = null;
+        project = null;
+        // so, wait, is this resource actually in the collection?
+
+        // undelete the project, then make sure that the collection shows up on the collection view page
+        ProjectController projectController = generateNewInitializedController(ProjectController.class, getAdminUser());
         projectController.setId(pid);
         projectController.prepare();
+        projectController.edit();
         Project project2 = projectController.getPersistable();
         project2.setStatus(Status.ACTIVE);
         projectController.setServletRequest(getServletPostRequest());
         projectController.setAsync(false);
         projectController.save();
         searchIndexService.flushToIndexes();
-        searchIndexService.index(rc.getResources().toArray(new Resource[0]));
+        searchIndexService.index(project2);
+        
+        
         logger.info("{}", project2.getResourceCollections());
         controller = generateNewInitializedController(CollectionController.class);
         controller.setId(rcid);
         controller.prepare();
         controller.view();
+        logger.info("{}" , controller.getResourceCollection().getResources().iterator().next().getStatus());
         assertTrue("collection should show the newly undeleted project", CollectionUtils.isNotEmpty(controller.getResults()));
 
         // we should also see the newly-undeleted resource on the edit page
@@ -902,9 +931,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         controller.prepare();
         controller.edit();
         assertTrue("collection should show the newly undeleted project", CollectionUtils.isNotEmpty(controller.getResources()));
-
     }
-
     @Test
     @Rollback(true)
     public void testDraftResourceVisibleByAuthuser() throws Exception {

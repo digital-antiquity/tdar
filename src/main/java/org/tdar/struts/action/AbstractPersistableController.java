@@ -750,7 +750,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
 
     public void setPossibleJsError(String possibleJsError) {
         if (StringUtils.isNotBlank(possibleJsError )) {
-            logger.warn(" there may have been a JS error ");
+            logger.warn("there may have been a JavaScript error");
         }
         this.possibleJsError = possibleJsError;
     }
