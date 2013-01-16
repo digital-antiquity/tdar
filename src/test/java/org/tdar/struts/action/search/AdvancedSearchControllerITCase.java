@@ -27,6 +27,7 @@ import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator;
+import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
@@ -128,6 +129,48 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         assertFalse("we should get back at least one hit", controller.getResults().isEmpty());
         for (Resource resource : controller.getResults()) {
             assertTrue("expecting site name for resource", resource.getGeographicKeywords().contains(snk));
+        }
+    }
+
+    
+    @Test
+    @Rollback
+    public void testPersonSearchWithoutAutocomplete() {
+        String lastName = "Watts";
+        Person person = new Person(null, lastName, null);
+        lookForCreatorNameInResult(lastName, person);
+    }
+
+    @Test
+    @Rollback
+    public void testInstitutionSearchWithoutAutocomplete() {
+        String name = "Digital Antiquity";
+        Institution institution = new Institution(name);
+        lookForCreatorNameInResult(name, institution);
+    }
+
+    private void lookForCreatorNameInResult(String namePart, Creator creator_) {
+        firstGroup().getResourceCreatorProxies().add(new ResourceCreatorProxy(new ResourceCreator(creator_, null)));
+        doSearch();
+        assertFalse("we should get back at least one hit", controller.getResults().isEmpty());
+        for (Resource resource : controller.getResults()) {
+            logger.info("{}", resource);
+            boolean seen = false;
+            if (resource.getSubmitter().getProperName().contains(namePart) || resource.getUpdatedBy().getProperName().contains(namePart)) {
+                seen = true;
+            }
+            if (resource instanceof InformationResource) {
+                Institution institution = ((InformationResource) resource).getResourceProviderInstitution();
+                if (institution != null && institution.getName().contains(namePart)) {
+                    seen = true;
+                }
+            }
+            for (ResourceCreator creator : resource.getResourceCreators()) {
+                if (creator.getCreator().getProperName().contains(namePart)) {
+                    seen = true;
+                }
+            }
+            assertTrue("should have seen term somwehere", seen);
         }
     }
 
@@ -882,7 +925,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
     protected void reindex() {
         searchIndexService.purgeAll();
-        searchIndexService.indexAll(Resource.class);
+        searchIndexService.indexAll(Resource.class, Person.class,Institution.class, ResourceCollection.class);
     }
 
     protected void doSearch() {
