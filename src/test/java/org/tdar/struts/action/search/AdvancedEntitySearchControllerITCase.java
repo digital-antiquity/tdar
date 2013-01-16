@@ -32,7 +32,7 @@ public class AdvancedEntitySearchControllerITCase extends AbstractSearchControll
     public void testPersonSearch() {
         AdvancedSearchController controller = generateNewController(AdvancedSearchController.class);
         init(controller);
-        String term = "Ellison";
+        String term = "Manney";
         controller.setQuery(term);
         String searchInstitutions = controller.searchPeople();
         assertResultsOkay(term, controller);
