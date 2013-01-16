@@ -1,0 +1,1 @@
+<h1 id="top"><a href="/" tabindex="-1"><img src="<@s.url value="/images/r4/bg-logo.png"/>" title="<#if siteAcronym?has_content>${siteAcronym} - </#if>${siteName}"/></a></h1>
