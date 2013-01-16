@@ -43,7 +43,7 @@
 
          
     <@list.listResources resourcelist=results sortfield=resourceCollection.sortBy  titleTag="h5" listTag="ul" itemTag="li" itemsPerRow=5
-        orientation=resourceCollection.orientation    mapPosition="left" />
+        orientation=resourceCollection.orientation    mapPosition="left" mapHeight="450" />
     </#if>
 
 <#if editable>

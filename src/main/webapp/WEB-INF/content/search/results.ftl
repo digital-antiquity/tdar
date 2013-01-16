@@ -112,6 +112,7 @@
     <br/>
     <hr class="dbl" />
 <#if lookupSource == 'COLLECTION' || lookupSource='RESOURCE'>
+    <#--fixme: replace explicit map sizes with css names -->
     <@rlist.listResources resourcelist=results sortfield=sortField expanded=true listTag="span" itemTag="span" titleTag="h3" orientation=orientation mapPosition="top" mapHeight="450"/>
 <#else>
 	<#list results as result>

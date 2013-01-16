@@ -10,6 +10,8 @@
         </#if>
     </#macro>
 
+<#--fixme:  with at least three presentation style (list/grid/map/custom), this macro has become *extremely* hard to modify, 
+    let alone comprehend. Consider replacing w/ @listResources, @listResourcesMap, and @listResourcesGrid -->
 <#macro listResources resourcelist sortfield=DEFAULT_SORT editable=false bookmarkable=authenticated itemsPerRow=4
     expanded=false listTag='ul' itemTag='li' headerTag="h3" titleTag="h3" orientation=DEFAULT_ORIENTATION mapPosition="" mapHeight="">
   <#local showProject = false />
@@ -27,21 +29,21 @@
   <#elseif orientation == "MAP" >
     <#assign listTag_="ol"/>  
     <#assign itemTag_="li"/> 
-    <div class="resource-list controls-row">
+    <div class="resource-list row">
       <#if mapPosition=="top" || mapPosition == "right">
         <div class="span9 google-map" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if> > </div>
       </#if>    
     
       <div class="<#if mapPosition=='left' || mapPosition=="right">span3<#else>span9</#if>">
   </#if>
-  
+  <#local isGridLayout = (orientation=="GRID") />
   <#local rowCount = -1 />
   <#if resourcelist??>
   <#list resourcelist as resource>
     <#local key = "" />
     <#local defaultKeyLabel="No Project"/>
     <#-- if we're a resource && are viewable -->
-    <#if resource?? && (!resource.viewable?has_content || resource.viewable) >
+    <#if ((resource.viewable)!false) >
        <#local rowCount= rowCount+1 />
         <#-- handle grouping/sorting with indentation -->
         <#if sortfield?contains('RESOURCE_TYPE') || sortfield?contains('PROJECT')>
@@ -60,12 +62,20 @@
             <#if first || (prev != key) && key?has_content>
                 <#if prev != '' || sortField?has_content && !first && (sortField?contains("RESOURCE_TYPE") || sortField?contains("PROJECT"))></${listTag_}></#if>
                 <${headerTag}><#if key?has_content>${key}<#else>${defaultKeyLabel}</#if></${headerTag}>
-                <${listTag_} class='resource-list  controls-row ${orientation}'>
+                <#if isGridLayout>
+                <div class='resource-list row ${orientation}'>
+                <#else>
+                <${listTag_} class='resource-list ${orientation}'>
+                </#if>
             </#if>
             <#local prev=key />
         <#elseif first>
             <#-- default case for group tag -->
-            <@printTag listTag_ "resource-list  controls-row ${orientation}" false />
+                <#if isGridLayout>
+                <div class='resource-list row ${orientation}'>
+                <#else>
+                <@printTag listTag_ "resource-list ${orientation}" false />
+                </#if>
         </#if>  
 	        <#-- printing item tag -->
             <@printTag itemTag_ "listItem ${itemClass!''}" false>
@@ -76,14 +86,14 @@
 <!-- ${itemTag_} -- ${rowCount} -- ${itemsPerRow} -- ${rowCount % itemsPerRow } -->
             <#if itemTag_?lower_case != 'li'>
                 <#if !first>
-	                <#if orientation != 'GRID'>
+	                <#if (!isGridLayout)>
 	                    <hr/>
 	                <#elseif rowCount % itemsPerRow == 0>
-	                    </div>    </div><hr /><div class=" ${orientation} resource-list controls-row"><div class="span2">
+	                    </div>    </div><hr /><div class=" ${orientation} resource-list row"><div class="span2">
 	                </#if>
                 </#if>
             </#if>
-            <#if orientation == 'GRID'>
+            <#if isGridLayout>
                 <a href="<@s.url value="/${resource.urlNamespace}/${resource.id?c}"/>" target="_top"><#t>
                         <@view.firstThumbnail resource /><#t>
                     <#t></a><br/>
@@ -101,8 +111,7 @@
   <#if orientation == "MAP">
   </div>
       <#if mapPosition=="left" || mapPosition == "bottom">
-      <#-- fixme: should be a span 9, but this seems to flow down instead of fit in 1 column -->
-    <div class="span8 google-map" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if> >
+    <div class="span9 google-map" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if> >
     
     </div>
     </#if>    
