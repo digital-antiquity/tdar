@@ -375,6 +375,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     }
 
     private void updateResourceCreators(SearchParameters group) {
+        logger.info("updating proxies");
         Map<ResourceCreatorProxy, List<ResourceCreatorProxy>> replacements = new HashMap<ResourceCreatorProxy, List<ResourceCreatorProxy>>();
         List<ResourceCreatorProxy> proxies = group.getResourceCreatorProxies();
         for (ResourceCreatorProxy proxy : proxies) {
@@ -401,6 +402,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
                     q.append(new FieldQueryPart<Status>("status", Status.ACTIVE));
                     List<Creator> list = null;
+                    logger.trace(q.generateQueryString());
                     try {
                         FullTextQuery search = getSearchService().search(q, null);
                         search.setMaxResults(MAX_CREATOR_RECORDS_TO_RESOLVE);

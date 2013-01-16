@@ -22,6 +22,7 @@ import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.SchemaFactory;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -793,4 +794,9 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     public static void assertNotEquals(String msg, Object obj1, Object obj2) {
         assertTrue(msg, ObjectUtils.notEqual(obj1, obj2));
     }
+    
+    public static void assertNotEmpty(List<Resource> results) {
+        assertTrue(CollectionUtils.isNotEmpty(results));
+    }
+
 }
