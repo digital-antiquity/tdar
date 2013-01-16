@@ -49,25 +49,39 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         getFieldValues().add(obj);
     }
 
+    public FieldQueryPart(String fieldName, String displayName, Collection<C> fieldValues_) {
+        this.fieldName = fieldName;
+        setFieldValues(fieldValues_);
+        setDisplayName(displayName);
+    }
+
+    public FieldQueryPart(String fieldName, String displayName,  Operator oper, Collection<C> fieldValues_) {
+        this(fieldName, displayName, fieldValues_);
+        this.operator = oper;
+    }
+
+    public FieldQueryPart(String fieldName, String displayName,  Operator oper, C... fieldValues_) {
+        this(fieldName, displayName, Arrays.asList(fieldValues_));
+        this.operator = oper;
+    }
+
     public FieldQueryPart(String fieldName, C... fieldValues_) {
-        this(fieldName, Arrays.asList(fieldValues_));
+        this(fieldName, "", Arrays.asList(fieldValues_));
     }
 
     public FieldQueryPart(String fieldName, Collection<C> fieldValues_) {
-        this.fieldName = fieldName;
-        setFieldValues(fieldValues_);
+        this(fieldName, "", fieldValues_);
     }
 
-    public FieldQueryPart(String fieldName, Operator oper, Collection<C> fieldValues_) {
-        this(fieldName, fieldValues_);
-        this.operator = oper;
+    public FieldQueryPart(String fieldName,  Operator oper, Collection<C> fieldValues_) {
+        this(fieldName, "", oper, fieldValues_);
     }
 
     public FieldQueryPart(String fieldName, Operator oper, C... fieldValues_) {
-        this(fieldName, fieldValues_);
-        this.operator = oper;
+        this(fieldName, "", oper, fieldValues_);
     }
 
+    
     public FieldQueryPart<C> setPhraseFormatters(PhraseFormatter... phraseFormatters) {
         this.phraseFormatters = Arrays.asList(phraseFormatters);
         return this;

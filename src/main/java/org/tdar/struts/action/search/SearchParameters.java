@@ -305,8 +305,8 @@ public class SearchParameters {
 
         queryPartGroup.append(new GeneralSearchResourceQueryPart(this.getAllFields()));
         queryPartGroup.append(new TitleQueryPart(this.getTitles()));
-        queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.CONTENT, contents));
-        queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.FILENAME, filenames));
+        queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.CONTENT, "File Contents", contents));
+        queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.FILENAME, "Filename", filenames));
 
         // freeform keywords
         appendKeywordQueryParts(queryPartGroup, OtherKeyword.class, QueryFieldNames.ACTIVE_OTHER_KEYWORDS, Arrays.asList(this.getOtherKeywords()));
@@ -326,13 +326,13 @@ public class SearchParameters {
         appendKeywordQueryParts(queryPartGroup, CultureKeyword.class, QueryFieldNames.ACTIVE_CULTURE_KEYWORDS, this.getApprovedCultureKeywordIdLists());
 
         queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.PROJECT_ID, "Project ", "project.", Resource.class, getProjects()));
-        queryPartGroup.append(new FieldQueryPart<Long>(QueryFieldNames.ID, Operator.OR, getResourceIds()));
+        queryPartGroup.append(new FieldQueryPart<Long>(QueryFieldNames.ID, "ID", Operator.OR, getResourceIds()));
 
-        appendFieldQueryPart(queryPartGroup, QueryFieldNames.RESOURCE_TYPE, getResourceTypes(), Operator.OR, Arrays.asList(ResourceType.values()));
-        appendFieldQueryPart(queryPartGroup, QueryFieldNames.INTEGRATABLE, getIntegratableOptions(), Operator.OR, Arrays.asList(IntegratableOptions.values()));
+        appendFieldQueryPart(queryPartGroup, QueryFieldNames.RESOURCE_TYPE, "Resource Type", getResourceTypes(), Operator.OR, Arrays.asList(ResourceType.values()));
+        appendFieldQueryPart(queryPartGroup, QueryFieldNames.INTEGRATABLE, "Integratable", getIntegratableOptions(), Operator.OR, Arrays.asList(IntegratableOptions.values()));
 
-        queryPartGroup.append(new FieldQueryPart<DocumentType>(QueryFieldNames.DOCUMENT_TYPE, Operator.OR, getDocumentTypes()));
-        queryPartGroup.append(new FieldQueryPart<ResourceAccessType>(QueryFieldNames.RESOURCE_ACCESS_TYPE, Operator.OR, getResourceAccessTypes()));
+        queryPartGroup.append(new FieldQueryPart<DocumentType>(QueryFieldNames.DOCUMENT_TYPE, "Document Type", Operator.OR, getDocumentTypes()));
+        queryPartGroup.append(new FieldQueryPart<ResourceAccessType>(QueryFieldNames.RESOURCE_ACCESS_TYPE, "Resource Access Type", Operator.OR, getResourceAccessTypes()));
 
         queryPartGroup.append(new RangeQueryPart(QueryFieldNames.DATE_CREATED, operator, getRegisteredDates()));
         queryPartGroup.append(new RangeQueryPart(QueryFieldNames.DATE_UPDATED, operator, getUpdatedDates()));
@@ -379,7 +379,7 @@ public class SearchParameters {
         return q;
     }
 
-    protected <C> void appendFieldQueryPart(QueryPartGroup queryPartGroup, String fieldName, List<C> incomingList, Operator operator, List<C> fullList) {
+    protected <C> void appendFieldQueryPart(QueryPartGroup queryPartGroup, String fieldName, String fieldDisplayName, List<C> incomingList, Operator operator, List<C> fullList) {
         Set<C> emptyCheck = new HashSet<C>(fullList);
         for (C item : incomingList) {
             emptyCheck.remove(item);
@@ -387,7 +387,7 @@ public class SearchParameters {
         if (emptyCheck.isEmpty()) {
             return;
         }
-        queryPartGroup.append(new FieldQueryPart<C>(fieldName, operator, incomingList));
+        queryPartGroup.append(new FieldQueryPart<C>(fieldName, fieldDisplayName, operator, incomingList));
     }
 
     protected <K extends Keyword> void appendKeywordQueryParts(QueryPartGroup group, Class<K> type, String fieldName, List<List<String>> idListList) {
