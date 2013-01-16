@@ -1369,3 +1369,7 @@ height: 100%;
 display: inline-block;
 vertical-align: middle;
 }
+
+.thumbnail-border {
+	border:1px solid #eee;
+}

@@ -108,8 +108,9 @@
          </form>
      </div>
 
-    <hr class="dbl" />
     <div class="tdarresults">
+    <br/>
+    <hr class="dbl" />
 <#if lookupSource == 'COLLECTION' || lookupSource='RESOURCE'>
     <@rlist.listResources resourcelist=results sortfield=sortField expanded=true listTag="span" itemTag="span" titleTag="h3" orientation=orientation mapPosition="top" mapHeight="450"/>
 <#else>
