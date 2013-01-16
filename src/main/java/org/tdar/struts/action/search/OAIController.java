@@ -39,6 +39,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.OAIException;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.XmlService;
 import org.tdar.search.query.QueryFieldNames;
@@ -343,24 +344,30 @@ public class OAIController extends AbstractLookupController<Indexable> implement
             JAXBException, OAIException {
         setStartRecord(cursor);
         queryBuilder.append(new RangeQueryPart(QueryFieldNames.DATE_UPDATED, new DateRange(effectiveFrom, effectiveUntil)));
-
-        super.handleSearch(queryBuilder);
-        int total = getTotalRecords();
-        for (Indexable i : getResults()) {
-            if (i instanceof Viewable && !((Viewable) i).isViewable())
-                continue;
-            OaiDcProvider resource = (OaiDcProvider) i;
-            // create OAI metadata for the record
-            OAIRecordProxy proxy = new OAIRecordProxy(
-                    repositoryNamespaceIdentifier,
-                    recordType,
-                    resource.getId(),
-                    resource.getDateUpdated()
-                    );
-            if (includeRecords) {
-                proxy.setMetadata(createNodeModel(resource, metadataFormat));
+        int total = 0;
+        try {
+            super.handleSearch(queryBuilder);
+            total = getTotalRecords();
+            for (Indexable i : getResults()) {
+                if (i instanceof Viewable && !((Viewable) i).isViewable())
+                    continue;
+                OaiDcProvider resource = (OaiDcProvider) i;
+                // create OAI metadata for the record
+                OAIRecordProxy proxy = new OAIRecordProxy(
+                        repositoryNamespaceIdentifier,
+                        recordType,
+                        resource.getId(),
+                        resource.getDateUpdated()
+                        );
+                if (includeRecords) {
+                    proxy.setMetadata(createNodeModel(resource, metadataFormat));
+                }
+                records.add(proxy);
             }
-            records.add(proxy);
+        } catch (TdarRecoverableRuntimeException e) {
+            // this is expected as the cursor follows the "max" results for person/inst/resource so, whatever the max is
+            // means that the others will throw this error.
+            logger.debug("an exception happened .. {} ", e);
         }
         return total;
     }
