@@ -99,10 +99,10 @@
   <link rel="alternate" type="application/atom+xml" title="Atom 1.0" href="${rssUrl}" />
   </#if>
   <#if (nextPageStartRecord < totalRecords) >
-      <link rel="next" href="<@s.url value="" includeParams="all" ><@s.param name="startRecord" value="${nextPageStartRecord}"/></@s.url>"/>
+      <link rel="next" href="<@s.url value="" includeParams="all" ><@s.param name="startRecord" value="${nextPageStartRecord?c}"/></@s.url>"/>
   </#if>
   <#if (prevPageStartRecord > 0) >
-      <link rel="previous" href="<@s.url value="" includeParams="all" ><@s.param name="startRecord" value="${prevPageStartRecord}" /></@s.url>"/>
+      <link rel="previous" href="<@s.url value="" includeParams="all" ><@s.param name="startRecord" value="${prevPageStartRecord?c}" /></@s.url>"/>
   </#if>
 </#macro>
 

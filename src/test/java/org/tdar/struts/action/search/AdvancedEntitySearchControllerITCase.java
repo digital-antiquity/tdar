@@ -64,10 +64,11 @@ public class AdvancedEntitySearchControllerITCase extends AbstractSearchControll
     }
 
     private void assertResultsOkay(String term, AdvancedSearchController controller) {
+        reindex();
         assertNotEmpty(controller.getCreatorResults());
         for (Indexable obj : controller.getCreatorResults()) {
             Creator inst = (Creator) obj;
-            assertTrue(inst.getProperName().toLowerCase().contains(term));
+            assertTrue(inst.getProperName().toLowerCase().contains(term.toLowerCase()));
         }
         logger.info("{}", controller.getResults());
     }
@@ -75,7 +76,6 @@ public class AdvancedEntitySearchControllerITCase extends AbstractSearchControll
     @Override
     protected void reindex() {
         searchIndexService.purgeAll();
-        searchIndexService.indexAll(Institution.class);
-        searchIndexService.indexAll(Person.class);
+        searchIndexService.indexAll(Institution.class, Person.class);
     }
 }
