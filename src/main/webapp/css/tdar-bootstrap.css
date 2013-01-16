@@ -1371,3 +1371,12 @@ img.responsive-image {
 	background-color: #ddd;
 	padding-left: 35px;
 }
+
+.hidden-phone-portrait {
+	display:inherit;
+	visibility:inherit;	
+}
+.responsive-phone-portrait .hidden-phone-portrait {
+	display:none !important;
+	visibility:hidden !Important;	
+}

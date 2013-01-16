@@ -1129,7 +1129,8 @@ TDAR.common = function() {
         return width > 1200 ? 'responsive-large-desktop' :
             width > 979 ? 'responsive-desktop' :
             width > 767 ? 'responsive-tablet' :
-            width > 1 ? 'responsive-phone' : '';
+        	width > 500 ? 'responsive-phone' :
+            width > 1 ? 'responsive-phone-portrait' : '';
     }
     
     //initialize image gallery using w/ width/height appropriate for responsive format
@@ -1186,7 +1187,12 @@ TDAR.common = function() {
                 'responsive-phone':{
                     content_height: 300,
                     content_width: 300
+                },
+                'responsive-phone-portrait':{
+                    content_height: 300,
+                    content_width: 300
                 }
+
         };
         
         $.extend(options, responsiveOptions[_determineResponsiveClass($(window).width())]);
@@ -1217,7 +1223,7 @@ TDAR.common = function() {
 function checkWindowSize() {
     var width = $(window).width()
     var new_class = TDAR.common.determineResponsiveClass(width);
-    $(document.body).removeClass('responsive-large-desktop responsive-desktop responsive-tablet responsive-phone').addClass(new_class);
+    $(document.body).removeClass('responsive-large-desktop responsive-desktop responsive-tablet responsive-phone responsive-phone-portrait').addClass(new_class);
 }
 
 /*
