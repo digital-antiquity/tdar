@@ -8,7 +8,7 @@ vim:sts=2:sw=2:filetype=jsp
     <meta name="lastModifiedDate" content="$Date$" />
 </head>
 <body>
- 
+<#-- 
 <#if (actionErrors?size > 0)>
 <div class="alert alert-error">
     <p>There were the following problems with your submission</p>
@@ -19,7 +19,7 @@ vim:sts=2:sw=2:filetype=jsp
     </ul>
 </div>
 </#if>
-
+-->
 <#if sessionData.returnUrl?? && sessionData.returnUrl.contains("/filestore/") >
 <div class="alert alert-warning">
     <button type="button" class="close" data-dismiss="alert">×</button>
