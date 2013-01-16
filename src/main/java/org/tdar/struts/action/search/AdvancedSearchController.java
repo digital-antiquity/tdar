@@ -119,7 +119,6 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     private static final String ERROR_PARSING_FAILED = "your search is no good.  please try again";
 
     private static final long serialVersionUID = 1L;
-    private static final String tdre.getMessage() = "search failed";
 
     private List<SearchFieldType> allSearchFieldTypes = SearchFieldType
             .getSearchFieldTypesByGroup();
