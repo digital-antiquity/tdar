@@ -29,6 +29,10 @@ body {
 	font-family: helvetica, arial, sans-serif;
 }
 
+#alt.not-production {
+    background-color: #efe;
+}
+
 /*todo: remove comments when confirmed not needed */
 #home hr,#alt hr {
 	border: 0;
