@@ -118,7 +118,7 @@
     </#if>
     
     <#if (nextPageStartRecord > totalRecords) >
-        <#assign lastRec = totalRecords>
+        <#global lastRec = totalRecords>
     </#if>
     
     <#if (firstRec - recordsPerPage) < 1 >

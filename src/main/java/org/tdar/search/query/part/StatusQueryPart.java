@@ -52,9 +52,18 @@ public class StatusQueryPart extends FieldQueryPart<Status> {
     public String getDescription() {
         String fmt = "Resource is %s";
         List<String> labels = new ArrayList<String>();
+        boolean seenActive = false;
         for (Status status : getFieldValues()) {
+            if (Status.ACTIVE == status) {
+                seenActive = true;
+            }
             labels.add(status.getLabel());
         }
+        
+        if (labels.size() == 1 && seenActive) {
+            return "";
+        }
+        
         return String.format(fmt, StringUtils.join(labels, " or "));
     }
 

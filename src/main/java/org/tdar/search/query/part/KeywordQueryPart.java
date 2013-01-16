@@ -8,6 +8,8 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.hibernate.cfg.beanvalidation.GroupsPerOperation.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.keyword.Keyword;
@@ -168,4 +170,7 @@ public class KeywordQueryPart implements QueryPart<Keyword> {
         this.includeChildren = includeChildren;
     }
 
+    public Operator getOperator() {
+        return Operator.OR;
+    }
 }

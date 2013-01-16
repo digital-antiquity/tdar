@@ -77,8 +77,8 @@ public class HydrateableKeywordQueryPart<K extends Keyword> extends AbstractHydr
 
     @Override
     public String getDescription() {
-        String strValues = StringUtils.join(getFieldValues(), ", ");
-        return String.format("%s: %s", descriptionLabel, strValues);
+        String strValues = StringUtils.join(getFieldValues(), getDescriptionOperator());
+        return String.format("%s: \"%s\"", descriptionLabel, strValues);
     }
 
     @Override

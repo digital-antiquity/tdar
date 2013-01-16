@@ -14,7 +14,7 @@
 
     <div id="titlebar" parse="true">
         <#if searchPhrase?? && !explore>
-            <h1>Search Results: <span>"${searchPhrase}"</span></h1>
+            <h1>Search Results: <span>${searchPhrase}</span></h1>
             
         <#elseif explore && exploreKeyword?? && exploreKeyword.definition?has_content >
             <h1>${exploreKeyword.label?html}</h1>
@@ -100,7 +100,7 @@
 
 
 
-     <h2 class="totalRecords">${totalRecords} Results</h2>
+     <h2 class="totalRecords">${startRecord+1}-${lastRec} (${totalRecords} Results)</h2>
      <div class="sort">
          <p>Sort By:</p>
          <form action=''>

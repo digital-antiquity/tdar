@@ -1,5 +1,7 @@
 package org.tdar.search.query.part;
 
+import org.apache.lucene.queryParser.QueryParser.Operator;
+
 /**
  * 
  * $Id$
@@ -21,4 +23,7 @@ public interface QueryPart<T> {
     public abstract String getDescriptionHtml();
 
     public abstract boolean isEmpty();
+    
+    public abstract Operator getOperator();
+    
 }

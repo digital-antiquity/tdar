@@ -93,7 +93,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
             return "";
         }
 
-        constructQueryPhrase(sb,getFieldName());
+        constructQueryPhrase(sb, getFieldName());
 
         return sb.toString();
     }
@@ -255,7 +255,8 @@ public class FieldQueryPart<C> implements QueryPart<C> {
             }
             vals.add(val);
         }
-        return String.format("%s: \"%s\"", getDisplayName(), StringUtils.join(vals, ", "));
+
+        return String.format("%s: \"%s\"", getDisplayName(), StringUtils.join(vals, getDescriptionOperator()));
     }
 
     @Override
@@ -358,4 +359,13 @@ public class FieldQueryPart<C> implements QueryPart<C> {
 
     public void update() {
     }
+
+    public String getDescriptionOperator() {
+        String delim = " and ";
+        if (getOperator() == Operator.OR) {
+            delim = " or ";
+        }
+        return delim;
+    }
+
 }

@@ -81,7 +81,9 @@ public class AutocompleteTitleQueryPart implements QueryPart<String> {
     @Override
     public void setDescriptionVisible(boolean visible) {
         // TODO Auto-generated method stub
-
     }
 
+    public Operator getOperator() {
+        return Operator.AND;
+    }
 }

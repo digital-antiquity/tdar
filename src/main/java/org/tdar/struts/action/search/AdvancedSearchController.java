@@ -92,7 +92,8 @@ import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
 @HttpOnlyIfUnauthenticated
 public class AdvancedSearchController extends AbstractLookupController<Resource> {
 
-    private static final String SHOWING_ALL_RESOURCES = "Showing all resources";
+    private static final String NARROWED_BY = " Narrowed by: ";
+    private static final String SHOWING_ALL_RESOURCES = "Showing All Resources";
     private static final String TITLE_BEGINNING_WITH_S = "Title Beginning with %s";
     private static final String CREATED_IN_THE_DECADE_S = "Created in the Decade: %s";
     private static final String SOMETHING_HAPPENED_WITH_EXCEL_EXPORT = "something happened with excel export";
@@ -589,7 +590,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         // THIS SHOULD BE LESS BRITTLE THAN CALLING isEmpty()
         String narrowedBy = reservedQueryPart.getDescription();
         if (narrowedBy != null && StringUtils.isNotBlank(narrowedBy.trim())) {
-            sb.append("  Narrowed by: ");
+            sb.append(NARROWED_BY);
             sb.append(narrowedBy);
         }
         return sb.toString();
