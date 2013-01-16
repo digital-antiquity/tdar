@@ -845,16 +845,17 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         controller.getPersistable().setName("testControllerWithActiveResourceThatBecomesDeleted");
         controller.getPersistable().setDescription("description");
         controller.setServletRequest(getServletPostRequest());
+        controller.setAsync(false);
         String result = controller.save();
         Assert.assertEquals(CollectionController.SUCCESS, result);
         Long rcid = rc.getId();
-
+        searchIndexService.flushToIndexes();
         // so, wait, is this resource actually in the collection?
         controller = generateNewInitializedController(CollectionController.class);
         controller.setId(rcid);
         controller.prepare();
         controller.view();
-        assertEquals("okay, we should have one resource in this collection now", 1, controller.getResources().size());
+        assertEquals("okay, we should have one resource in this collection now", 1, controller.getResults().size());
 
         // okay now lets delete the resource
         ProjectController projectController = generateNewInitializedController(ProjectController.class);
@@ -863,6 +864,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         projectController.prepare();
         projectController.setDelete(AbstractPersistableController.DELETE_CONSTANT);
         projectController.delete();
+        searchIndexService.flushToIndexes();
 
         // go back to the collection's 'edit' page and make sure that we are not displaying the deleted resource
         controller = generateNewInitializedController(CollectionController.class, getUser());
@@ -873,21 +875,26 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
 
         // so far so good. but lets make sure that the resource *is* actually in the collection
         rc = genericService.find(ResourceCollection.class, rcid);
-        rc.getResources().contains(project);
+        assertTrue(rc.getResources().contains(project));
+        logger.info("{}", projectController.getProject().getResourceCollections());
 
         // undelete the proeject, then make sure that the collection shows up on the collection view page
         projectController = generateNewInitializedController(ProjectController.class, getAdminUser());
         projectController.setId(pid);
         projectController.prepare();
-        projectController.getPersistable().setStatus(Status.ACTIVE);
+        Project project2 = projectController.getPersistable();
+        project2.setStatus(Status.ACTIVE);
         projectController.setServletRequest(getServletPostRequest());
+        projectController.setAsync(false);
         projectController.save();
-
+        searchIndexService.flushToIndexes();
+        searchIndexService.index(rc.getResources().toArray(new Resource[0]));
+        logger.info("{}", project2.getResourceCollections());
         controller = generateNewInitializedController(CollectionController.class);
         controller.setId(rcid);
         controller.prepare();
         controller.view();
-        assertTrue("collection should show the newly undeleted project", CollectionUtils.isNotEmpty(controller.getResources()));
+        assertTrue("collection should show the newly undeleted project", CollectionUtils.isNotEmpty(controller.getResults()));
 
         // we should also see the newly-undeleted resource on the edit page
         controller = generateNewInitializedController(CollectionController.class);
@@ -937,7 +944,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         controller.view();
         assertEquals(controller.getAuthenticatedUser(), registeredUser);
         assertTrue("resource should not be viewable", controller.getResults().isEmpty());
-        assertFalse("resource should not be viewable", controller.getResources().get(0).isViewable());
+//        assertFalse("resource should not be viewable", controller.getResults().get(0).isViewable());
 
         // now make the user an authorizedUser
         controller = generateNewInitializedController(CollectionController.class);
@@ -957,7 +964,6 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         controller.setId(rcid);
         controller.prepare();
         controller.view();
-        assertTrue("resource should be viewable", controller.getResources().get(0).isViewable());
         assertTrue("resource should be viewable", ((Viewable) (controller.getResults().get(0))).isViewable());
 
         // now make the registeredUser a non-contributor. make sure they can see the resource (TDAR-2028)
@@ -968,7 +974,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         controller.setId(rcid);
         controller.prepare();
         controller.view();
-        assertTrue("resource should be viewable", controller.getResources().get(0).isViewable());
+        assertTrue("resource should be viewable", ((Viewable)controller.getResults().get(0)).isViewable());
     }
 
 }

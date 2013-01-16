@@ -341,6 +341,7 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
         }
 
         if (can(equivalentAdminRight, person)) {
+            logger.debug("person is admin");
             return true;
         }
 

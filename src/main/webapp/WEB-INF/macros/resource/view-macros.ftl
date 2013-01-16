@@ -154,7 +154,7 @@ View freemarker macros
 	        <#if showAll != ''>
 	            <a href="#" id="showAllFiles" onClick="$('.view-hidden-extra-files, #showAllFiles').toggle();return false;">show all files</a>
 			</#if>
-	        <#if hasDeletedFiles>
+	        <#if hasDeletedFiles && sessionData?? && sessionData.authenticated>
 	            <a href="#" id="showHiddenFiles" onClick="$('.view-deleted-file, #showHiddenFiles').toggle();return false;">show deleted files</a>
 	        </#if>
          </div>
