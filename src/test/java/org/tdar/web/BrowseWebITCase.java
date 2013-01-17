@@ -43,6 +43,38 @@ public class BrowseWebITCase extends AbstractAnonymousWebTestCase {
         assertTextNotPresent("edit metadata");
     }
 
+    
+    @Test
+    public void testExploreView() {
+        gotoPage("/browse/explore");
+    }
+
+    @Test
+    public void testExploreGoogleScholar() {
+        gotoPage("/browse/scholar");
+    }
+
+    @Test
+    public void testMapView() {
+        gotoPage("/map");
+    }
+
+    @Test
+    public void testFeaturedItemView() {
+        gotoPage("/featured");
+    }
+    
+    @Test
+    public void testBrowseCreators() {
+        gotoPage("/browse/creators/1");
+    }
+
+    @Test
+    public void testBrowseCollections() {
+        gotoPage("/browse/collections");
+    }
+
+
     @Test
     public void testViewErrorNotFound() {
         // if you make more than 9999999 test records this test won't work anymore. so don't.
