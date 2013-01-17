@@ -61,6 +61,12 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         super(resourceClass);
     }
 
+    public Set<Resource> findResourcesSubmittedByUser(Person person) {
+        Query query = getCurrentSession().getNamedQuery(QUERY_RESOURCES_SUBMITTER);
+        query.setLong("submitterId", person.getId());
+        return new HashSet<Resource>(query.list());
+    }
+
     public List<E> findByTitle(final String title) {
         DetachedCriteria criteria = getOrderedDetachedCriteria();
         criteria.add(Restrictions.eq("title", title));

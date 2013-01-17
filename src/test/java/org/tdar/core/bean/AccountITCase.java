@@ -22,6 +22,7 @@ import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.billing.ResourceEvaluator;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Image;
@@ -37,6 +38,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.service.AccountService;
+import org.tdar.core.service.processes.SetupBillingAccountsProcess;
 import org.tdar.struts.data.FileProxy;
 
 public class AccountITCase extends AbstractIntegrationTestCase {
@@ -44,6 +46,18 @@ public class AccountITCase extends AbstractIntegrationTestCase {
     @Autowired
     AccountService accountService;
 
+    @Autowired
+    SetupBillingAccountsProcess accountProcess;
+    
+    @Test
+    @Rollback
+    public void testBillingAccountSetup() {
+        for (Long personId : accountProcess.findAllIds()) {
+            Person person =  entityService.find(personId);
+            accountProcess.process(person);
+        }
+    }
+    
     @Test
     @Rollback
     public void testResourceEvaluatorCanCreateResource() {

@@ -80,6 +80,11 @@ public class ResourceService extends GenericService {
     }
 
     @Transactional(readOnly = true)
+    public Set<Resource> findResourcesSubmittedByUser(Person person) {
+        return datasetDao.findResourcesSubmittedByUser(person);
+    }
+
+    @Transactional(readOnly = true)
     public boolean isDataset(Long id) {
         return getGenericDao().find(Dataset.class, id) != null;
     }
@@ -387,7 +392,7 @@ public class ResourceService extends GenericService {
                 // force project into the session
                 if (Persistable.Base.isNotNullOrTransient(proxyInformationResource.getProject())) {
                     Project project = proxyInformationResource.getProject();
-//                    refresh(project);
+                    // refresh(project);
                     informationResource.setProject(project);
                 }
                 informationResource.setPublisher(proxyInformationResource.getPublisher());

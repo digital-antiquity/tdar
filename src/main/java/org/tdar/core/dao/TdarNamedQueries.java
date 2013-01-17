@@ -29,7 +29,8 @@ public interface TdarNamedQueries {
     public static final String QUERY_RESOURCE_RESOURCETYPE = "resource.resourceType";
     public static final String QUERY_RESOURCE_MODIFIED_SINCE = "resource.modifiedSince";
     public static final String QUERY_SPARSE_RESOURCES = "all.resources";
-    public static final String QUERY_SPARSE_RESOURCES_SUBMITTER = "submitter.resources";
+    public static final String QUERY_SPARSE_RESOURCES_SUBMITTER = "submitter.resources.sparse";
+    public static final String QUERY_RESOURCES_SUBMITTER = "submitter.resources";
     public static final String QUERY_PROJECT_COUNT_INTEGRATABLE_DATASETS = "project.countIntegratableDatasets";
     public static final String QUERY_PROJECTS_COUNT_INTEGRATABLE_DATASETS = "projects.countIntegratableDatasets";
     public static final String QUERY_READ_ONLY_EDITABLE_PROJECTS = "sparse.editableProject";

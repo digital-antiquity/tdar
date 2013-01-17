@@ -15,7 +15,7 @@
                         " Resource res inner join res.resourceCollections as rescol inner join rescol.authorizedUsers " +
                         " as authUser where authUser.user.id=:userId and authUser.effectiveGeneralPermission > :effectivePermission and " +
                         " res.id in (:resourceIds)"),
-                        // NOTE QUERY below was modified, will need to confirm performance impact
+        // NOTE QUERY below was modified, will need to confirm performance impact
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_IS_ALLOWED_TO_NEW, // NOTE: THIS MAY REQUIRE ADDITIONAL WORK
                 query = "SELECT distinct 1 from ResourceCollection as rescol inner join rescol.authorizedUsers as authuser where authuser.user.id=:userId and authuser.effectiveGeneralPermission > :effectivePermission and "
@@ -55,8 +55,10 @@
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_SPARSE_RESOURCES_SUBMITTER,
                 query = "select new Resource(resource.id,resource.title,resource.resourceType) from Resource resource where (submitter.id=:submitter) "
-                        +
-                        "and status like :status and resourceType=:resourceType"),
+                        + "and status like :status and resourceType=:resourceType"),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_RESOURCES_SUBMITTER,
+                query = "from Resource where submitter.id = :submitterId "),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_SPARSE_RESOURCES,
                 query = "select new Resource(resource.id,resource.title,resource.resourceType) from Resource resource where status like :status and resourceType=:resourceType"),
@@ -266,23 +268,27 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.SPACE_BY_SUBMITTER,
-                query = "select sum( irfv.fileLength ) as len, count(irfv), count(res) from InformationResource res left join res.informationResourceFiles as irf left join irf.informationResourceFileVersions as irfv" +
-                " where res.submitter.id in (:submitterIds) and res.status in (:statuses) and irfv.fileVersionType in (:types)"
+                query = "select sum( irfv.fileLength ) as len, count(irfv), count(res) from InformationResource res left join res.informationResourceFiles as irf left join irf.informationResourceFileVersions as irfv"
+                        +
+                        " where res.submitter.id in (:submitterIds) and res.status in (:statuses) and irfv.fileVersionType in (:types)"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.SPACE_BY_RESOURCE,
-                query = "select sum( irfv.fileLength ) as len, count(irfv), count(res) from InformationResource res left join res.informationResourceFiles as irf left join irf.informationResourceFileVersions as irfv" +
-                " where res.id in (:resourceIds) and res.status in (:statuses) and irfv.fileVersionType in (:types)"
+                query = "select sum( irfv.fileLength ) as len, count(irfv), count(res) from InformationResource res left join res.informationResourceFiles as irf left join irf.informationResourceFileVersions as irfv"
+                        +
+                        " where res.id in (:resourceIds) and res.status in (:statuses) and irfv.fileVersionType in (:types)"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.SPACE_BY_PROJECT,
-                query = "select sum( irfv.fileLength ) as len, count(irfv), count(res) from InformationResource res left join res.informationResourceFiles as irf left join irf.informationResourceFileVersions as irfv" +
-                " where res.project.id in (:projectIds) and res.status in (:statuses) and irfv.fileVersionType in (:types)"
+                query = "select sum( irfv.fileLength ) as len, count(irfv), count(res) from InformationResource res left join res.informationResourceFiles as irf left join irf.informationResourceFileVersions as irfv"
+                        +
+                        " where res.project.id in (:projectIds) and res.status in (:statuses) and irfv.fileVersionType in (:types)"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.SPACE_BY_COLLECTION,
-                query = "select sum( irfv.fileLength ) as len, count(irfv), count(res) from ResourceCollection coll left join coll.resources as res left join res.informationResourceFiles as irf left join irf.informationResourceFileVersions as irfv" +
-                " where coll.id in (:collectionIds) and res.status in (:statuses) and irfv.fileVersionType in (:types)"
+                query = "select sum( irfv.fileLength ) as len, count(irfv), count(res) from ResourceCollection coll left join coll.resources as res left join res.informationResourceFiles as irf left join irf.informationResourceFileVersions as irfv"
+                        +
+                        " where coll.id in (:collectionIds) and res.status in (:statuses) and irfv.fileVersionType in (:types)"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.ACCESS_BY,
