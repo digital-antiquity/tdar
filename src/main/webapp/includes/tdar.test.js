@@ -144,7 +144,5 @@
          
          return $this;
      };
-     //fixme: add function to hide jira button and store choice in cookie
-     //id="atlwdg-trigger" class="atlwdg-trigger atlwdg-TOP"
      
 })( jQuery );

@@ -722,6 +722,8 @@ TDAR.namespace("common");
 TDAR.common = function() {
     "use strict";
     
+    var self = {};
+    
     var _defaultValidateOptions = {
         errorLabelContainer : $("#error ul"),
         wrapper: "li",
@@ -1206,8 +1208,16 @@ TDAR.common = function() {
         $container.awShowcase(options);
     }
     
+    //hide the jira button for a week
+    function _delayJiraButton() {
+        //fixme: add function to hide jira button and store choice in cookie
+        //id="" class="atlwdg-trigger atlwdg-TOP"
+        $.cookie("hide_jira_button", true, { expires: 7});
+        console.log("see you next week");
     
-    return {
+    }
+    
+    $.extend(self, {
         "initEditPage": _initEditPage,
         "initFormValidation": _setupFormValidate,
         "applyTreeviews": _applyTreeviews,
@@ -1216,8 +1226,11 @@ TDAR.common = function() {
         "htmlEncode": _htmlEncode,
         "initRegformValidation": _initRegformValidation,
         "determineResponsiveClass": _determineResponsiveClass,
-        "initImageGallery": _initImageGallery
-    };
+        "initImageGallery": _initImageGallery, 
+        "delayJiraButton": _delayJiraButton
+    });
+    
+    return self;
 }();
 
 function checkWindowSize() {
@@ -1232,6 +1245,9 @@ function checkWindowSize() {
 $(document).ready(function() {
     checkWindowSize();
     $(window).resize(checkWindowSize);
+    if($.cookie("hide_jira_button")) {
+        setTimeout(function(){$('#atlwdg-trigger').hide()}, 700);
+    }
 });
 
 
