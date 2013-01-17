@@ -118,106 +118,6 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
     @Test
     @Rollback
-    public void testSearchDecade() {
-        Document doc = createAndSaveNewResource(Document.class);
-        doc.setDate(4000);
-        genericService.saveOrUpdate(doc);
-        searchIndexService.index(doc);
-        firstGroup().getCreationDecades().add(4000);
-        doSearch();
-        assertFalse("we should get back at least one hit", controller.getResults().isEmpty());
-        for (Resource resource : controller.getResults()) {
-            assertEquals("expecting resource", 4000, ((InformationResource) resource).getDateNormalized().intValue());
-        }
-
-    }
-
-    
-    @Test
-    @Rollback
-    public void testPersonSearchWithoutAutocomplete() {
-        String lastName = "Watts";
-        Person person = new Person(null, lastName, null);
-        lookForCreatorNameInResult(lastName, person);
-    }
-
-    @Test
-    @Rollback
-    public void testInstitutionSearchWithoutAutocomplete() {
-        String name = "Digital Antiquity";
-        Institution institution = new Institution(name);
-        lookForCreatorNameInResult(name, institution);
-    }
-
-    private void lookForCreatorNameInResult(String namePart, Creator creator_) {
-        firstGroup().getResourceCreatorProxies().add(new ResourceCreatorProxy(new ResourceCreator(creator_, null)));
-        doSearch();
-        assertFalse("we should get back at least one hit", controller.getResults().isEmpty());
-        for (Resource resource : controller.getResults()) {
-            logger.info("{}", resource);
-            boolean seen = false;
-            if (resource.getSubmitter().getProperName().contains(namePart) || resource.getUpdatedBy().getProperName().contains(namePart)) {
-                seen = true;
-            }
-            if (resource instanceof InformationResource) {
-                Institution institution = ((InformationResource) resource).getResourceProviderInstitution();
-                if (institution != null && institution.getName().contains(namePart)) {
-                    seen = true;
-                }
-            }
-            for (ResourceCreator creator : resource.getResourceCreators()) {
-                if (creator.getCreator().getProperName().contains(namePart)) {
-                    seen = true;
-                }
-            }
-            assertTrue("should have seen term somwehere", seen);
-        }
-    }
-
-    
-    @Test
-    @Rollback
-    public void testPersonSearchWithoutAutocomplete() {
-        String lastName = "Watts";
-        Person person = new Person(null, lastName, null);
-        lookForCreatorNameInResult(lastName, person);
-    }
-
-    @Test
-    @Rollback
-    public void testInstitutionSearchWithoutAutocomplete() {
-        String name = "Digital Antiquity";
-        Institution institution = new Institution(name);
-        lookForCreatorNameInResult(name, institution);
-    }
-
-    private void lookForCreatorNameInResult(String namePart, Creator creator_) {
-        firstGroup().getResourceCreatorProxies().add(new ResourceCreatorProxy(new ResourceCreator(creator_, null)));
-        doSearch();
-        assertFalse("we should get back at least one hit", controller.getResults().isEmpty());
-        for (Resource resource : controller.getResults()) {
-            logger.info("{}", resource);
-            boolean seen = false;
-            if (resource.getSubmitter().getProperName().contains(namePart) || resource.getUpdatedBy().getProperName().contains(namePart)) {
-                seen = true;
-            }
-            if (resource instanceof InformationResource) {
-                Institution institution = ((InformationResource) resource).getResourceProviderInstitution();
-                if (institution != null && institution.getName().contains(namePart)) {
-                    seen = true;
-                }
-            }
-            for (ResourceCreator creator : resource.getResourceCreators()) {
-                if (creator.getCreator().getProperName().contains(namePart)) {
-                    seen = true;
-                }
-            }
-            assertTrue("should have seen term somwehere", seen);
-        }
-    }
-
-    @Test
-    @Rollback
     public void testComplexGeographicKeywords() {
         GeographicKeyword snk = genericKeywordService.findOrCreateByLabel(GeographicKeyword.class, "propylon, Athens, Greece, Mnesicles");
         Document doc = createAndSaveNewResource(Document.class);
@@ -231,7 +131,64 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
             assertTrue("expecting site name for resource", resource.getGeographicKeywords().contains(snk));
         }
     }
+
     
+    @Test
+    @Rollback
+    public void testPersonSearchWithoutAutocomplete() {
+        String lastName = "Watts";
+        Person person = new Person(null, lastName, null);
+        lookForCreatorNameInResult(lastName, person);
+    }
+
+    @Test
+    @Rollback
+    public void testInstitutionSearchWithoutAutocomplete() {
+        String name = "Digital Antiquity";
+        Institution institution = new Institution(name);
+        lookForCreatorNameInResult(name, institution);
+    }
+
+    private void lookForCreatorNameInResult(String namePart, Creator creator_) {
+        firstGroup().getResourceCreatorProxies().add(new ResourceCreatorProxy(new ResourceCreator(creator_, null)));
+        doSearch();
+        assertFalse("we should get back at least one hit", controller.getResults().isEmpty());
+        for (Resource resource : controller.getResults()) {
+            logger.info("{}", resource);
+            boolean seen = false;
+            if (resource.getSubmitter().getProperName().contains(namePart) || resource.getUpdatedBy().getProperName().contains(namePart)) {
+                seen = true;
+            }
+            if (resource instanceof InformationResource) {
+                Institution institution = ((InformationResource) resource).getResourceProviderInstitution();
+                if (institution != null && institution.getName().contains(namePart)) {
+                    seen = true;
+                }
+            }
+            for (ResourceCreator creator : resource.getResourceCreators()) {
+                if (creator.getCreator().getProperName().contains(namePart)) {
+                    seen = true;
+                }
+            }
+            assertTrue("should have seen term somwehere", seen);
+        }
+    }
+
+    @Test
+    @Rollback
+    public void testSearchDecade() {
+        Document doc = createAndSaveNewResource(Document.class);
+        doc.setDate(4000);
+        genericService.saveOrUpdate(doc);
+        searchIndexService.index(doc);
+        firstGroup().getCreationDecades().add(4000);
+        doSearch();
+        assertFalse("we should get back at least one hit", controller.getResults().isEmpty());
+        for (Resource resource : controller.getResults()) {
+            assertEquals("expecting resource", 4000, ((InformationResource) resource).getDateNormalized().intValue());
+        }
+
+    }
 
     @Test
     @Rollback
