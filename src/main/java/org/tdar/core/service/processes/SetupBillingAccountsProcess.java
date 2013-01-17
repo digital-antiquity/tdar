@@ -113,16 +113,24 @@
 package org.tdar.core.service.processes;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.Invoice;
+import org.tdar.core.bean.billing.Invoice.TransactionStatus;
+import org.tdar.core.bean.billing.ResourceEvaluator;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.resource.Dataset;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.util.ScheduledBatchProcess;
+import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.service.AccountService;
 import org.tdar.core.service.EntityService;
-import org.tdar.core.service.resource.DatasetService;
+import org.tdar.core.service.resource.ResourceService;
+import org.tdar.struts.data.PricingOption;
 
 /**
  * $Id$
@@ -137,6 +145,8 @@ import org.tdar.core.service.resource.DatasetService;
 @Component
 public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
 
+    private static final String INVOICE_NOTE = "auto-generated invoice created on %s to cover % resources, %s (MB) , and %s files created by %s prior to tDAR charging for usage.  Thank you for your support of tDAR.";
+
     private static final long serialVersionUID = -2313655718394118279L;
 
     @Autowired
@@ -144,6 +154,9 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
 
     @Autowired
     private EntityService entityService;
+
+    @Autowired
+    private ResourceService resourceService;
 
     @Override
     public String getDisplayName() {
@@ -157,7 +170,7 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
 
     @Override
     public List<Long> findAllIds() {
-        return new ArrayList(entityService.findAllContributorIds());
+        return new ArrayList<Long>(entityService.findAllContributorIds());
     }
 
     @Override
@@ -167,6 +180,28 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
 
     @Override
     public void process(Person person) {
+        Set<Resource> resources = resourceService.findResourcesSubmittedByUser(person);
+        ResourceEvaluator re = accountService.getResourceEvaluator();
+        re.evaluateResources(resources);
+        long spaceUsedInMb = re.getSpaceUsedInMb();
+        long filesUsed = re.getFilesUsed();
+        PricingOption option = accountService.getCheapestActivityByFiles(filesUsed, spaceUsedInMb, false);
+        long extraMb = 20l;
+        long extraFiles = 5l;
+        Invoice invoice = new Invoice(person, PaymentMethod.MANUAL, filesUsed + extraFiles, spaceUsedInMb + extraMb, option.getItems());
+        invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
+        invoice.setOwner(person);
+        invoice.markUpdated(person);
+        invoice.setOtherReason(String.format(INVOICE_NOTE, new Date(), re.getResourcesUsed(), re.getSpaceUsedInMb(), re.getFilesUsed()));
+        genericDao.saveOrUpdate(invoice);
+        Account account = new Account(String.format("%s's Account", person.getProperName()));
+        account.setDescription("auto-generated account created by tDAR to cover past contributions");
+        account.setOwner(person);
+        account.markUpdated(person);
+        genericDao.saveOrUpdate(account);
+        account.getInvoices().add(invoice);
+        genericDao.saveOrUpdate(account);
+        accountService.updateQuota(accountService.getResourceEvaluator(), account, false, resources.toArray(new Resource[0]));
         // Find all resources this person created
         // calculate the needed values for that person
         // setup an invoice for that size
@@ -177,7 +212,7 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
     public int getBatchSize() {
         return 5;
     }
-    
+
     @Override
     public boolean isEnabled() {
         return false;

@@ -137,7 +137,7 @@ public class BagitPersonalFilestore implements PersonalFilestore {
     }
 
     @Override
-    public void store(PersonalFilestoreTicket ticket, List<File> files, List<String> newFileNames) throws IOException {
+    public synchronized void store(PersonalFilestoreTicket ticket, List<File> files, List<String> newFileNames) throws IOException {
         // TODO: we could make this more efficient by using Bag.addFilesToPayload
         for (int i = 0; i < files.size(); i++) {
             store(ticket, files.get(i), newFileNames.get(i));

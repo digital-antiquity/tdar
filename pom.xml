@@ -28,6 +28,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<geotools.version>8.3</geotools.version>
 		<tika.version>1.2</tika.version>
+		<batik.version>1.7</batik.version>
 		<odata4j.version>0.7.0</odata4j.version>
 		<jersey.version>1.15</jersey.version>
 		<http-components.version>4.2.2</http-components.version>
@@ -675,27 +676,27 @@
 		<dependency>
 			<groupId>batik</groupId>
 			<artifactId>batik-bridge</artifactId>
-			<version>1.7</version>
+			<version>${batik.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>batik</groupId>
 			<artifactId>batik-gvt</artifactId>
-			<version>1.7</version>
+			<version>${batik.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>batik</groupId>
 			<artifactId>batik-ext</artifactId>
-			<version>1.7</version>
+			<version>${batik.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>batik</groupId>
 			<artifactId>batik-awt-util</artifactId>
-			<version>1.7</version>
+			<version>${batik.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>batik</groupId>
 			<artifactId>batik-script</artifactId>
-			<version>1.7</version>
+			<version>${batik.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.tuckey</groupId>

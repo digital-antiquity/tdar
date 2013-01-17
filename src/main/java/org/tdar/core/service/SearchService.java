@@ -183,8 +183,7 @@ public class SearchService {
     /*
      * iterate through each of the Methods and look for annotations to process
      */
-    private static HashSet<DynamicQueryComponent> createFields(
-            java.lang.reflect.Method mthd, String parent_) {
+    private static HashSet<DynamicQueryComponent> createFields(java.lang.reflect.Method mthd, String parent_) {
         HashSet<DynamicQueryComponent> cmpts = new HashSet<DynamicQueryComponent>();
         logger.trace(String.format("\tProcessing annotations on:  %s.%s()", parent_, mthd.getName()));
         for (Annotation ann : mthd.getAnnotations()) {
