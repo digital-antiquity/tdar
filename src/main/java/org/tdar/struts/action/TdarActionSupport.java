@@ -481,17 +481,21 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     }
 
     public boolean isHttpsEnabled() {
-        return TdarConfiguration.getInstance().isHttpsEnabled();
+        return getTdarConfiguration().isHttpsEnabled();
     }
 
     public Integer getHttpsPort() {
-        return TdarConfiguration.getInstance().getHttpsPort();
+        return getTdarConfiguration().getHttpsPort();
     }
     
     public boolean isPayPerIngestEnabled() {
-        return TdarConfiguration.getInstance().isPayPerIngestEnabled();
+        return getTdarConfiguration().isPayPerIngestEnabled();
     }
     
+
+    public Integer getMaxUploadFilesPerRecord() {
+        return getTdarConfiguration().getMaxUploadFilesPerRecord();
+    }
     
     public boolean isSecure() {
         return servletRequest.isSecure();

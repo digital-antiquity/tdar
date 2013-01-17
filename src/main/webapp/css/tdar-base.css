@@ -1217,6 +1217,15 @@ nav ul {
 	padding-right: 10px !important;
 }
 
+
+.responsive-phone #sidebar-right {
+	margin-left: 0px !important;
+}
+
+.responsive-phone .sidebar {
+	background: none !important;
+}
+
 .view .sidebar, .dashboard .sidebar {
 	background: url(/images/r4/bg-cols-right.png) top left repeat-y;
 	margin-left: 0px;

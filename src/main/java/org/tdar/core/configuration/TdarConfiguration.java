@@ -490,4 +490,8 @@ public class TdarConfiguration {
     public Integer getHttpsPort() {
         return assistant.getIntProperty("https.port", 443);
     }
+
+    public Integer getMaxUploadFilesPerRecord() {
+        return assistant.getIntProperty("upload.maxFilesPerResource", 50);
+    }
 }

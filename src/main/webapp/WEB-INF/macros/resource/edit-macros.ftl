@@ -321,7 +321,13 @@ ${resource.resourceType.label}
         <#nested />
         <#-- XXX: verify logic for rendering this -->
         <#if multipleFileUploadEnabled || resource.hasFiles()>
+        <!-- not sure this is ever used -->
         <h4>Current ${multipleFileUploadEnabled?string("and Pending Files", "File")}</h4>
+        
+        <div class="">
+        <p><span class="label">Note:</span> You can only have <strong>${maxUploadFilesPerRecord}</strong> per record</p> 
+        </div>
+        
         <table id="uploadFiles" class="files table tableFormat">
         </table>
         <table id="files" class="files sortable tableFormat">
@@ -916,6 +922,11 @@ jquery validation hooks?)
 <div id="${divId}" class="well-alt">
     <@s.hidden name="ticketId" id="ticketId" />
     <h2>${uploadLabel}</h2>
+  
+    <div class="info alert-info">
+    <p><span class="label">Note:</span> you can only have ${maxUploadFilesPerRecord} per record.<br/></p> 
+    </div>
+<br/>
     <#if !ableToUploadFiles>
     <b>note:</b> you have not been granted permission to upload or modify files<br/>
     <#else>

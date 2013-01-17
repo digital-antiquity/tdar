@@ -1380,3 +1380,8 @@ img.responsive-image {
 	display:none !important;
 	visibility:hidden !Important;	
 }
+
+.showcase-button-wrapper {
+	display:none;
+	visibility:hidden;
+}

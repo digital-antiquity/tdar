@@ -28,7 +28,7 @@
 
 <@edit.citationInfo "image" />
 
-<@edit.asyncFileUpload "Image" true />
+<@edit.asyncFileUpload  uploadLabel="Attach Image Files" showMultiple=true />
 
 
 <@edit.sharedFormComponents />

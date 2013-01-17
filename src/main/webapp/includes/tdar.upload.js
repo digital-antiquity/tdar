@@ -26,7 +26,7 @@ TDAR.fileupload = function() {
             },
             url: TDAR.uri('upload/upload'),
             autoUpload: true,
-            maxNumberOfFiles: 50,
+            maxNumberOfFiles: TDAR.maxUploadFiles,
             destroy: _destroy
         }, _options));
         
