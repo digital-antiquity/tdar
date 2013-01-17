@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.Dao;
+import org.tdar.core.dao.TdarNamedQueries;
 
 /**
  * $Id$
@@ -131,6 +132,16 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         return (Long) ((criteria.list()).get(0));
     }
 
+    public Set<Long> findAllContributorIds() {
+        Set<Long> ids = new HashSet<Long>();
+        for (Object obj_ : getCurrentSession().createSQLQuery(TdarNamedQueries.DISTINCT_SUBMITTERS).list()) {
+            Object[] obj = (Object[])obj_;
+            ids.add((Long)obj[0]);
+        }
+        return ids;
+    }
+
+    
     public void registerLogin(Person authenticatedUser) {
         authenticatedUser.setLastLogin(new Date());
         authenticatedUser.incrementLoginCount();

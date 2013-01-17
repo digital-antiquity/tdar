@@ -7,8 +7,8 @@
     	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 	<import resource="classpath:META-INF/cxf/cxf.xml" />
 	<import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />
+	<!--  <import resource="classpath:META-INF/cxf/cxf-extension-xml.xml"/> -->
 	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
-
 	<!-- This map maps terms to site type label. Primary key IDs are not used 
 		because they can vary across databases, should be safe as labels are 
 		marked as unique. 
