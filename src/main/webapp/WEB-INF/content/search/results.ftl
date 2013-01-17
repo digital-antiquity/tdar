@@ -112,12 +112,8 @@
     <br/>
     <hr class="dbl" />
 <#if lookupSource == 'COLLECTION' || lookupSource='RESOURCE'>
-<<<<<<< mine
-    <@rlist.listResources resourcelist=results sortfield=sortField expanded=true listTag="span" itemTag="span" titleTag="h3" orientation=orientation mapPosition="top" mapHeight="450"/>
-=======
     <#--fixme: replace explicit map sizes with css names -->
     <@rlist.listResources resourcelist=results sortfield=sortField expanded=true listTag="span" itemTag="span" titleTag="h3" orientation=orientation mapPosition="top" mapHeight="450"/>
->>>>>>> theirs
 <#else>
 	<#list results as result>
 	<#if result_index != 0> <hr/></#if>
