@@ -201,4 +201,9 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
     public Long findNumberOfActualContributors() {
         return getDao().findNumberOfActualContributors();
     }
+    
+    @Transactional(readOnly=true)
+    public Set<Long> findAllContributorIds() {
+        return getDao().findAllContributorIds();
+    }
 }
