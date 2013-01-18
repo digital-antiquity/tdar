@@ -33,7 +33,7 @@ import org.tdar.struts.data.PricingOption;
 @Component
 public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
 
-    private static final String INVOICE_NOTE = "auto-generated invoice created on %s to cover % resources, %s (MB) , and %s files created by %s prior to tDAR charging for usage.  Thank you for your support of tDAR.";
+    private static final String INVOICE_NOTE = "auto-generated invoice created on %s to cover %s resources, %s (MB) , and %s files created by %s prior to tDAR charging for usage.  Thank you for your support of tDAR.";
 
     private static final long serialVersionUID = -2313655718394118279L;
 

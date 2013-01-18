@@ -137,5 +137,5 @@ public interface TdarNamedQueries {
     public static final String UPDATE_DATATABLECOLUMN_ONTOLOGIES = "update.dataTableColumnOntologies";
     public static final String QUERY_ACCOUNTS_FOR_RESOURCES = "select id, account_id from resource res where res.id in (%s) ";
     public static final String QUERY_SQL_RESOURCES_BY_YEAR = "select date_part('year', date_registered), count(id) from resource where status='ACTIVE' and date_registered is not null group by date_part('year', date_registered)  order by date_part('year', date_registered)  asc";
-    public static final String DISTINCT_SUBMITTERS = "SELECT DISTINCT submitter.id from resource";
+    public static final String DISTINCT_SUBMITTERS = "SELECT DISTINCT submitter_id from resource";
 }
