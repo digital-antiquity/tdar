@@ -9,9 +9,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.json.JSONObject;
-import net.sf.json.JsonConfig;
-
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -24,15 +21,17 @@ import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.NelnetTransactionStatus;
 import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.AddressType;
+import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplate.NelnetTransactionItem;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
-public class NelNetTransactionResponseTemplate implements Serializable {
+public class NelNetTransactionResponseTemplate implements Serializable, TransactionResponse {
 
     private static final long serialVersionUID = -5575891484534148580L;
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private Map<String, String[]> values = new HashMap<String, String[]>();
     private String secret = "";
+
     public NelNetTransactionResponseTemplate(String secret) {
         this.secret = secret;
     }
@@ -128,9 +127,13 @@ public class NelNetTransactionResponseTemplate implements Serializable {
         }
     }
 
-    public boolean validateHashKey() {
+    public String getTransactionId() {
+        return this.getValuesFor(NelnetTransactionItemResponse.TRANSACTION_ID);
+    }
+
+    public boolean validate() {
         String hashkey = generateHashKey();
-        String actual = getValuesFor(NelnetTransactionItemResponse.HASH.getKey());
+        String actual = getValuesFor(NelnetTransactionItemResponse.HASH);
         if (!actual.equals(hashkey)) {
             throw new TdarRecoverableRuntimeException(String.format("hash keys do not match actual: %s computed: %s ", actual, hashkey));
         }
@@ -138,22 +141,22 @@ public class NelNetTransactionResponseTemplate implements Serializable {
     }
 
     public String generateHashKey() {
-        Collections.sort(new ArrayList<NelnetTransactionItemResponse>(Arrays.asList(NelnetTransactionItemResponse.values())), new Comparator<NelnetTransactionItemResponse>() {
-            @Override
-            public int compare(NelnetTransactionItemResponse o1, NelnetTransactionItemResponse o2) {
-                return NumberUtils.compare(o1.getOrder(), o2.getOrder());
-            }
-        });
+        Collections.sort(new ArrayList<NelnetTransactionItemResponse>(Arrays.asList(NelnetTransactionItemResponse.values())),
+                new Comparator<NelnetTransactionItemResponse>() {
+                    @Override
+                    public int compare(NelnetTransactionItemResponse o1, NelnetTransactionItemResponse o2) {
+                        return NumberUtils.compare(o1.getOrder(), o2.getOrder());
+                    }
+                });
 
         StringBuilder toHash = new StringBuilder();
         for (NelnetTransactionItemResponse item : NelnetTransactionItemResponse.values()) {
             if (item == NelnetTransactionItemResponse.HASH || item == NelnetTransactionItemResponse.KEY)
                 continue;
-            String key = item.getKey();
-            String value = getValuesFor(key);
-            if (getValues().containsKey(key) && StringUtils.isNotBlank(value)) {
+            String value = getValuesFor(item);
+            if (getValues().containsKey(item.getKey()) && StringUtils.isNotBlank(value)) {
                 toHash.append(value);
-                logger.trace("{}[{}]", key, value);
+                logger.trace("{}[{}]", item, value);
             }
         }
         toHash.append(secret);
@@ -162,10 +165,10 @@ public class NelNetTransactionResponseTemplate implements Serializable {
     }
 
     public void updateInvoiceFromResponse(Invoice invoice) {
-        JsonConfig config = new JsonConfig();
-        JSONObject jsonObject = JSONObject.fromObject(getValues(), config);
-        invoice.setResponseInJson(jsonObject.toString());
+        populateInvoiceFromResponse(invoice);
+    }
 
+    private void populateInvoiceFromResponse(Invoice invoice) {
         for (NelnetTransactionItemResponse item : NelnetTransactionItemResponse.values()) {
             String value = getValuesFor(item.key);
             Number numericValue = null;
@@ -298,10 +301,12 @@ public class NelNetTransactionResponseTemplate implements Serializable {
         }
     }
 
+    @Override
     public Map<String, String[]> getValues() {
         return values;
     }
 
+    @Override
     public void setValues(Map<String, String[]> values) {
         this.values = values;
     }
@@ -313,18 +318,29 @@ public class NelNetTransactionResponseTemplate implements Serializable {
         return StringUtils.join(values.get(key));
     }
 
+    public String getValuesFor(NelnetTransactionItemResponse key) {
+        if (!values.containsKey(key.getKey())) {
+            return null;
+        }
+        return StringUtils.join(values.get(key.getKey()));
+    }
 
     public Address getAddress() {
         Address toReturn = new Address();
         toReturn.setType(AddressType.BILLING);
-        toReturn.setStreet1(getValuesFor(NelnetTransactionItemResponse.STREET_ONE.getKey()));
-        toReturn.setStreet2(getValuesFor(NelnetTransactionItemResponse.STREET_TWO.getKey()));
-        toReturn.setCity(getValuesFor(NelnetTransactionItemResponse.CITY.getKey()));
-        toReturn.setState(getValuesFor(NelnetTransactionItemResponse.STATE.getKey()));
-        toReturn.setPostal(getValuesFor(NelnetTransactionItemResponse.ZIP.getKey()));
-        toReturn.setCountry(getValuesFor(NelnetTransactionItemResponse.COUNTRY.getKey()));
+        toReturn.setStreet1(getValuesFor(NelnetTransactionItemResponse.STREET_ONE));
+        toReturn.setStreet2(getValuesFor(NelnetTransactionItemResponse.STREET_TWO));
+        toReturn.setCity(getValuesFor(NelnetTransactionItemResponse.CITY));
+        toReturn.setState(getValuesFor(NelnetTransactionItemResponse.STATE));
+        toReturn.setPostal(getValuesFor(NelnetTransactionItemResponse.ZIP));
+        toReturn.setCountry(getValuesFor(NelnetTransactionItemResponse.COUNTRY));
 
         return toReturn;
+    }
+
+    @Override
+    public Long getInvoiceId() {
+        return Long.valueOf(getValuesFor(NelnetTransactionItem.getInvoiceIdKey()));
     }
 
 }

@@ -331,3 +331,15 @@ alter table pos_invoice drop column transactionId;
 
 -- 1-21-13
 ALTER TABLE information_resource_file_version add COLUMN effective_size bigint;
+=======
+
+create table pos_transaction_log (
+	id bigserial primary key,
+    date_created timestamp,
+    transactionId varchar(255),
+    response text,
+    invoice_id int8 references pos_invoice);
+
+alter table pos_invoice drop column response;
+alter table pos_invoice drop column transactionId;
+	>>>>>>> theirs

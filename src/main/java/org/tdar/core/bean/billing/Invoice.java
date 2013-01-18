@@ -11,15 +11,14 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.hibernate.annotations.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Persistable.Base;
@@ -95,16 +94,15 @@ public class Invoice extends Base implements Updatable {
     @Column(name = "transaction_date")
     private Date transactionDate;
 
-    @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
-    @Column(name = "response")
-    private String responseInJson;
-
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     @JoinColumn(nullable = false, name = "owner_id")
     @NotNull
     private Person owner;
 
+    @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
+    @JoinColumn(nullable = true, name = "invoice_id")
+    private BillingTransactionLog response;
+    
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     @JoinColumn(nullable = false, name = "executor_id")
     @NotNull
@@ -332,14 +330,6 @@ public class Invoice extends Base implements Updatable {
         this.calculatedCost = calculatedCost;
     }
 
-    public String getResponseInJson() {
-        return responseInJson;
-    }
-
-    public void setResponseInJson(String responseInJson) {
-        this.responseInJson = responseInJson;
-    }
-
     public String getAccountType() {
         return accountType;
     }
@@ -379,6 +369,14 @@ public class Invoice extends Base implements Updatable {
 
     public void markFinal() {
         setTotal(getCalculatedCost());
+    }
+
+    public BillingTransactionLog getResponse() {
+        return response;
+    }
+
+    public void setResponse(BillingTransactionLog response) {
+        this.response = response;
     }
 
 }

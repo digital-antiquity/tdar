@@ -14,7 +14,6 @@ import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.configuration.ConfigurationAssistant;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.external.payment.PaymentMethod;
-import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplate.NelnetTransactionItem;
 
 import freemarker.core.Configurable;
 
@@ -115,8 +114,8 @@ public class NelNetPaymentDao extends Configurable implements PaymentTransaction
      * )
      */
     @Override
-    public boolean validateResponse(NelNetTransactionResponseTemplate response) {
-        return response.validateHashKey(); // I throw an exception if not working
+    public boolean validateResponse(TransactionResponse response) {
+        return response.validate(); // I throw an exception if not working
     }
 
     /*
@@ -126,9 +125,9 @@ public class NelNetPaymentDao extends Configurable implements PaymentTransaction
      * org.tdar.core.dao.external.payment.nelnet.TransactionProcessor#locateInvoice(org.tdar.core.dao.external.payment.nelnet.NelNetTransactionResponseTemplate)
      */
     @Override
-    public Invoice locateInvoice(NelNetTransactionResponseTemplate response) {
+    public Invoice locateInvoice(TransactionResponse response) {
         // Long personId = Long.valueOf(response.getValuesFor(NelnetTransactionItem.USER_CHOICE_2.getUserIdKey()));
-        Long invoiceId = Long.valueOf(response.getValuesFor(NelnetTransactionItem.USER_CHOICE_3.getInvoiceIdKey()));
+        Long invoiceId = response.getInvoiceId();
         Invoice invoice = genericDao.find(Invoice.class, invoiceId);
         return invoice;
     }
@@ -140,8 +139,14 @@ public class NelNetPaymentDao extends Configurable implements PaymentTransaction
      * NelNetTransactionResponseTemplate, org.tdar.core.bean.billing.Invoice)
      */
     @Override
-    public void updateInvoiceFromResponse(NelNetTransactionResponseTemplate response, Invoice invoice) {
+    public void updateInvoiceFromResponse(TransactionResponse response, Invoice invoice) {
         response.updateInvoiceFromResponse(invoice);
         genericDao.saveOrUpdate(invoice);
+    }
+
+    public TransactionResponse setupTransactionResponse(Map<String, String[]> values) {
+        NelNetTransactionResponseTemplate response = new NelNetTransactionResponseTemplate(getSecretWord());
+        response.setValues(values);
+        return response;
     }
 }

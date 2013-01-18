@@ -187,8 +187,11 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
         re.evaluateResources(resources);
         long spaceUsedInMb = EXTRA_MB + re.getSpaceUsedInMb();
         long filesUsed = EXTRA_FILES + re.getFilesUsed();
-        PricingOption option = accountService.getCheapestActivityByFiles(filesUsed, spaceUsedInMb, false);
+        PricingOption option = accountService.getCheapestActivityByFiles(filesUsed, spaceUsedInMb, true);
+        PricingOption option2 = accountService.getCheapestActivityByFiles(filesUsed, spaceUsedInMb, false);
+        PricingOption option3 = accountService.getCheapestActivityBySpace(filesUsed, spaceUsedInMb);
         logger.info("****** RE : " + re.toString());
+        logger.info(String.format("%s|%s|%s", option, option2, option3));
         Invoice invoice = new Invoice(person, PaymentMethod.MANUAL, filesUsed, spaceUsedInMb, option.getItems());
         invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
         invoice.setOwner(person);

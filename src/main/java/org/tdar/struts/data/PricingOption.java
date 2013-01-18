@@ -6,14 +6,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.billing.BillingItem;
 
 public class PricingOption implements Serializable {
 
-    public enum PricingType {
-        SIZED_BY_MB,
-        SIZED_BY_FILE_ONLY,
-        SIZED_BY_FILE_ABOVE_TIER
+    public enum PricingType implements HasLabel {
+        SIZED_BY_MB("Priced by MB"),
+        SIZED_BY_FILE_ONLY("Priced by File"),
+        SIZED_BY_FILE_ABOVE_TIER("Priced by File rounded up");
+
+        private String label;
+
+        private PricingType(String label) {
+            this.label = label;
+        }
+
+        public String getLabel() {
+            return label;
+        }
     }
 
     private static final long serialVersionUID = -3297968564600082652L;
@@ -48,7 +59,7 @@ public class PricingOption implements Serializable {
         for (BillingItem item : getItems()) {
             compMap.put(item.getActivity().getId(), item.getQuantity());
         }
-        for (BillingItem item :other.getItems()) {
+        for (BillingItem item : other.getItems()) {
             Integer key = compMap.get(item.getActivity().getId());
             if (key == null || !key.equals(item.getQuantity())) {
                 return false;
@@ -66,6 +77,11 @@ public class PricingOption implements Serializable {
             }
         }
         return subtotal;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s: $%s", getType(), getSubtotal());
     }
 
     public PricingType getType() {
