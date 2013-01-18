@@ -15,10 +15,12 @@ public interface PaymentTransactionProcessor {
 
     public abstract NelNetTransactionResponseTemplate processResponse(Map<String, String[]> parameters);
 
-    public abstract boolean validateResponse(NelNetTransactionResponseTemplate response);
+    public abstract boolean validateResponse(TransactionResponse response);
 
-    public abstract Invoice locateInvoice(NelNetTransactionResponseTemplate response);
+    public abstract Invoice locateInvoice(TransactionResponse response);
 
-    public abstract void updateInvoiceFromResponse(NelNetTransactionResponseTemplate response, Invoice invoice);
+    public abstract void updateInvoiceFromResponse(TransactionResponse response, Invoice invoice);
+
+    public abstract TransactionResponse setupTransactionResponse(Map<String, String[]> map);
 
 }

@@ -318,3 +318,14 @@ ALTER TABLE resource ADD previous_status varchar(50);
 -- 1-9-13
 ALTER TABLE information_resource_file ADD COLUMN error_message text;
 ALTER TABLE homepage_cache_geographic_keyword ADD keyword_id bigint;
+
+create table pos_transaction_log (
+	id bigserial primary key,
+    date_created timestamp,
+    transactionId varchar(255),
+    response text,
+    invoice_id int8 references pos_invoice);
+
+alter table pos_invoice drop column response;
+alter table pos_invoice drop column transactionId;
+	

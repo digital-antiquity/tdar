@@ -22,14 +22,15 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.BillingItem;
+import org.tdar.core.bean.billing.BillingTransactionLog;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.external.payment.PaymentMethod;
-import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionResponseTemplate;
 import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
+import org.tdar.core.dao.external.payment.nelnet.TransactionResponse;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.struts.WriteableSession;
 import org.tdar.struts.data.PricingOption;
@@ -312,28 +313,34 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     public String processPaymentResponse() throws TdarActionException {
         try {
             logger.trace("PROCESS RESPONSE {}", getParameters());
-            NelNetTransactionResponseTemplate response = paymentTransactionProcessor.processResponse(getParameters());
+            TransactionResponse response = paymentTransactionProcessor.setupTransactionResponse(getParameters());
             // if transaction is valid (hashKey matches) then mark the session as writeable and go on
             if (paymentTransactionProcessor.validateResponse(response)) {
                 getGenericService().markWritable();
                 Invoice invoice = paymentTransactionProcessor.locateInvoice(response);
-                invoice = getGenericService().markWritable(invoice);
-                Person p = invoice.getOwner();
-                boolean found = false;
-                Address addressToSave = response.getAddress();
-                for (Address address : p.getAddresses()) {
-                    if (address.isSameAs(addressToSave))
-                        found = true;
+                BillingTransactionLog billingResponse = new BillingTransactionLog(response);
+                billingResponse = getGenericService().markWritable(billingResponse);
+                getGenericService().saveOrUpdate(billingResponse);
+                if (invoice != null) {
+                    invoice = getGenericService().markWritable(invoice);
+                    Person p = invoice.getOwner();
+                    boolean found = false;
+                    Address addressToSave = response.getAddress();
+                    for (Address address : p.getAddresses()) {
+                        if (address.isSameAs(addressToSave))
+                            found = true;
+                    }
+                    if (!found) {
+                        p.getAddresses().add(addressToSave);
+                        logger.info(addressToSave.getAddressSingleLine());
+                        getGenericService().saveOrUpdate(addressToSave);
+                        invoice.setAddress(addressToSave);
+                    }
+                    paymentTransactionProcessor.updateInvoiceFromResponse(response, invoice);
+                    invoice.setResponse(billingResponse);
+                    logger.info("processing payment response: {}  -> {} ", invoice, invoice.getTransactionStatus());
+                    getGenericService().saveOrUpdate(invoice);
                 }
-                if (!found) {
-                    p.getAddresses().add(addressToSave);
-                    logger.info(addressToSave.getAddressSingleLine());
-                    getGenericService().saveOrUpdate(addressToSave);
-                    invoice.setAddress(addressToSave);
-                }
-                paymentTransactionProcessor.updateInvoiceFromResponse(response, invoice);
-                logger.info("processing payment response: {}  -> {} ", invoice, invoice.getTransactionStatus());
-                getGenericService().saveOrUpdate(invoice);
             }
         } catch (Exception e) {
             logger.error("{}", e);
