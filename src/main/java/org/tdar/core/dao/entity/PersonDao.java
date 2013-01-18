@@ -134,9 +134,8 @@ public class PersonDao extends Dao.HibernateBase<Person> {
 
     public Set<Long> findAllContributorIds() {
         Set<Long> ids = new HashSet<Long>();
-        for (Object obj_ : getCurrentSession().createSQLQuery(TdarNamedQueries.DISTINCT_SUBMITTERS).list()) {
-            Object[] obj = (Object[])obj_;
-            ids.add((Long)obj[0]);
+        for (Number obj_ : (List<Number>)getCurrentSession().createSQLQuery(TdarNamedQueries.DISTINCT_SUBMITTERS).list()) {
+            ids.add(obj_.longValue());
         }
         return ids;
     }
