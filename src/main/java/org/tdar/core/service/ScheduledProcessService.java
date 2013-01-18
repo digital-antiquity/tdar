@@ -35,6 +35,7 @@ import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Project;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.Video;
 import org.tdar.core.bean.statistics.AggregateStatistic;
@@ -100,14 +101,24 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     public void generateWeeklyStats() {
         logger.info("generating weekly stats");
         List<AggregateStatistic> stats = new ArrayList<AggregateStatistic>();
-        stats.add(generateStatistics(StatisticType.NUM_PROJECT, resourceService.countActiveResources(Project.class), ""));
-        stats.add(generateStatistics(StatisticType.NUM_DOCUMENT, resourceService.countActiveResources(Document.class), ""));
-        stats.add(generateStatistics(StatisticType.NUM_DATASET, resourceService.countActiveResources(Dataset.class), ""));
-        stats.add(generateStatistics(StatisticType.NUM_VIDEO, resourceService.countActiveResources(Video.class), ""));
-        stats.add(generateStatistics(StatisticType.NUM_CODING_SHEET, resourceService.countActiveResources(CodingSheet.class), ""));
-        stats.add(generateStatistics(StatisticType.NUM_SENSORY_DATA, resourceService.countActiveResources(SensoryData.class), ""));
-        stats.add(generateStatistics(StatisticType.NUM_ONTOLOGY, resourceService.countActiveResources(Ontology.class), ""));
-        stats.add(generateStatistics(StatisticType.NUM_IMAGE, resourceService.countActiveResources(Image.class), ""));
+        stats.add(generateStatistics(StatisticType.NUM_PROJECT, resourceService.countActiveResources(ResourceType.PROJECT), ""));
+        stats.add(generateStatistics(StatisticType.NUM_DOCUMENT, resourceService.countActiveResources(ResourceType.DOCUMENT), ""));
+        stats.add(generateStatistics(StatisticType.NUM_DATASET, resourceService.countActiveResources(ResourceType.DATASET), ""));
+        stats.add(generateStatistics(StatisticType.NUM_VIDEO, resourceService.countActiveResources(ResourceType.VIDEO), ""));
+        stats.add(generateStatistics(StatisticType.NUM_CODING_SHEET, resourceService.countActiveResources(ResourceType.CODING_SHEET), ""));
+        stats.add(generateStatistics(StatisticType.NUM_SENSORY_DATA, resourceService.countActiveResources(ResourceType.SENSORY_DATA), ""));
+        stats.add(generateStatistics(StatisticType.NUM_ONTOLOGY, resourceService.countActiveResources(ResourceType.ONTOLOGY), ""));
+        stats.add(generateStatistics(StatisticType.NUM_IMAGE, resourceService.countActiveResources(ResourceType.IMAGE), ""));
+
+        stats.add(generateStatistics(StatisticType.NUM_DOCUMENT_WITH_FILES, resourceService.countActiveResourcesWithFiles(ResourceType.DOCUMENT), ""));
+        stats.add(generateStatistics(StatisticType.NUM_DATASET_WITH_FILES, resourceService.countActiveResourcesWithFiles(ResourceType.DATASET), ""));
+        stats.add(generateStatistics(StatisticType.NUM_VIDEO_WITH_FILES, resourceService.countActiveResourcesWithFiles(ResourceType.VIDEO), ""));
+        stats.add(generateStatistics(StatisticType.NUM_CODING_SHEET_WITH_FILES, resourceService.countActiveResourcesWithFiles(ResourceType.CODING_SHEET), ""));
+        stats.add(generateStatistics(StatisticType.NUM_SENSORY_DATA_WITH_FILES, resourceService.countActiveResourcesWithFiles(ResourceType.SENSORY_DATA), ""));
+        stats.add(generateStatistics(StatisticType.NUM_ONTOLOGY_WITH_FILES, resourceService.countActiveResourcesWithFiles(ResourceType.ONTOLOGY), ""));
+        stats.add(generateStatistics(StatisticType.NUM_IMAGE_WITH_FILES, resourceService.countActiveResourcesWithFiles(ResourceType.IMAGE), ""));
+
+        
         stats.add(generateStatistics(StatisticType.NUM_USERS, entityService.findAllRegisteredUsers(null).size(), ""));
         stats.add(generateStatistics(StatisticType.NUM_ACTUAL_CONTRIBUTORS, entityService.findNumberOfActualContributors(), ""));
         stats.add(generateStatistics(StatisticType.NUM_COLLECTIONS, resourceCollectionService.findAllResourceCollections().size(), ""));
