@@ -63,7 +63,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
                 toReturn.add(activity);
             }
         }
-        logger.info("{}", toReturn);
+        logger.trace("{}", toReturn);
         return toReturn;
 
     }
@@ -277,7 +277,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
                 continue;
 
             BillingItem e = new BillingItem(activity, files);
-            logger.info(" -- {} ({})", e.getActivity().getName(), e);
+            logger.trace(" -- {} ({})", e.getActivity().getName(), e);
             items.add(e);
         }
 

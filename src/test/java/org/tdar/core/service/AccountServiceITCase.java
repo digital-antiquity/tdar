@@ -94,7 +94,7 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
         BillingActivity activity = invoice.getItems().get(0).getActivity();
         invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
         invoice.resetTransientValues();
-        invoice.finalize();
+        invoice.markFinal();
         activity.setModel(model);
         account.getInvoices().add(invoice);
         genericService.saveOrUpdate(model);
