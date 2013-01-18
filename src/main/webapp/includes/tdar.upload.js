@@ -36,9 +36,9 @@ TDAR.fileupload = function() {
         $fileupload.bind("fileuploadcompleted", _updateReminder);
         //make sure the sequenceNumber field is correct after files are added (or the operation fails)
         var _updateSequenceNumbers =  function(e, data){
-            console.log("updating sequenceNumbers");
+            //console.log("updating sequenceNumbers");
             $('tbody.files').find("tr").not(".replace-target,.deleted-file").each(function(idx, trElem){
-                console.log("updating sequencenumber::   row.id:%s   sequenceNumber:%s", trElem.id, idx+1);
+                //console.log("updating sequencenumber::   row.id:%s   sequenceNumber:%s", trElem.id, idx+1);
                 $('.fileSequenceNumber', trElem).val(idx + 1);
             });
         }

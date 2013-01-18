@@ -46,6 +46,8 @@ import com.google.common.io.Files;
 @Component
 public class BagitPersonalFilestore implements PersonalFilestore {
 
+    private static final Version BAGIT_VERSION = Version.V0_96;
+
     // FIXME: tight coupling. inject instead
     private final static TdarConfiguration cfg = TdarConfiguration.getInstance();
 
@@ -84,25 +86,41 @@ public class BagitPersonalFilestore implements PersonalFilestore {
         return String.format("%s/%s", getStoreLocation(person), type.getPathname());
     }
 
-    private Bag getBag(File sourceFile, Version version, LoadOption loadOption) {
-        if (version != null) {
-            if (sourceFile != null) {
-                return bagFactory.createBag(sourceFile, version, loadOption);
-            } else {
-                return bagFactory.createBag(version);
-            }
-        } else {
-            if (sourceFile != null) {
-                return bagFactory.createBag(sourceFile, loadOption);
-            } else {
-                return bagFactory.createBag();
-            }
-        }
-    }
 
-    // return a bag appropriate for writing
-    private Bag getBag(File sourceFile) {
-        return getBag(sourceFile, Version.V0_96, null);
+    /**
+     * Attempt to instantiate a bag, retrying if first attempt unsuccessful.  This can apparently happen when manifest.txt.biltemp is present
+     * at beginning of {@link BagFactory#createBag()} but is deleted before the method completes (likely from a previous call 
+     * to {@link Completer#complete(Bag)}).
+     */
+    
+    private Bag attemptCreateBag(File sourceFile) {
+        //give the OS 1 second to delete the tempfile.  Then give up.
+        int attempt = 0;
+        final int maxAttempts = 20;
+        final int waitPerAttempt = 50;  
+        Bag bag = null;
+        RuntimeException lastException = null;
+        while (attempt < maxAttempts && bag == null) {
+            try {
+                bag = bagFactory.createBag(sourceFile, BAGIT_VERSION, LoadOption.BY_MANIFESTS);
+            } catch(RuntimeException rex) {
+                try {
+                    lastException = rex;
+                    Thread.sleep(waitPerAttempt);
+                } catch (InterruptedException e) {
+                    logger.warn("attempt to wait for createBag failed", e);
+                }
+            }
+            attempt++;
+        }
+        if(bag == null)  {
+            throw new RuntimeException("could not successfully call createBag after repeated attempts.", lastException);
+        }
+        if(attempt > 1) {
+            //FIXME: lower to WARN once we are satisfied we've worked around this bug.
+            logger.error("successfully called createBag() after {} failed attempts spanning {}ms", attempt-1, (attempt-1) * waitPerAttempt);
+        }
+        return bag;
     }
 
     @Override
@@ -122,7 +140,7 @@ public class BagitPersonalFilestore implements PersonalFilestore {
         File tempFileToStore = new File(tempFileDirectory, incomingFileName);
         FileUtils.copyFile(file, tempFileToStore);
         FileUtils.forceMkdir(pathToBagFile);
-        Bag bag = getBag(pathToBagFile);
+        Bag bag = attemptCreateBag(pathToBagFile);
         bag.addFileToPayload(tempFileDirectory);
         Writer writer = new FileSystemWriter(bagFactory);
         Bag newBag = completer.complete(bag);
@@ -155,7 +173,7 @@ public class BagitPersonalFilestore implements PersonalFilestore {
 
         // retrieve the files, tack on the md5, and then return
         // assert the bag is valid (baginfo.txt matches contents) then iterate over the bag contents.
-        Bag bagOut = getBag(bagFile, Version.V0_96, LoadOption.BY_MANIFESTS);
+        Bag bagOut = bagFactory.createBag(bagFile, BAGIT_VERSION, LoadOption.BY_MANIFESTS);
 
         SimpleResult result = verifier.verify(bagOut);
         logger.trace("{}", result.getMessages());
@@ -216,7 +234,7 @@ public class BagitPersonalFilestore implements PersonalFilestore {
         }
         // retrieve the files, tack on the md5, and then return
         // assert the bag is valid (baginfo.txt matches contents) then iterate over the bag contents.
-        Bag bagOut = getBag(bagFile, Version.V0_96, LoadOption.BY_MANIFESTS);
+        Bag bagOut = bagFactory.createBag(bagFile, BAGIT_VERSION, LoadOption.BY_MANIFESTS);
 
         SimpleResult result = verifier.verify(bagOut);
         logger.trace("{}", result.getMessages());
