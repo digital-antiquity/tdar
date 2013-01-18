@@ -20,6 +20,7 @@ import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Ontology;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.statistics.AggregateStatistic;
 import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
@@ -108,12 +109,12 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testStats() throws InstantiationException, IllegalAccessException {
-        Number docs = resourceService.countActiveResources(Document.class);
-        Number datasets = resourceService.countActiveResources(Dataset.class);
-        Number images = resourceService.countActiveResources(Image.class);
-        Number sheets = resourceService.countActiveResources(CodingSheet.class);
-        Number ontologies = resourceService.countActiveResources(Ontology.class);
-        Number sensory = resourceService.countActiveResources(SensoryData.class);
+        Number docs = resourceService.countActiveResources(ResourceType.DOCUMENT);
+        Number datasets = resourceService.countActiveResources(ResourceType.DATASET);
+        Number images = resourceService.countActiveResources(ResourceType.IMAGE);
+        Number sheets = resourceService.countActiveResources(ResourceType.CODING_SHEET);
+        Number ontologies = resourceService.countActiveResources(ResourceType.ONTOLOGY);
+        Number sensory = resourceService.countActiveResources(ResourceType.SENSORY_DATA);
         Number people = entityService.findAllRegisteredUsers(null).size();
         createAndSaveNewInformationResource(Document.class, false);
         createAndSaveNewInformationResource(Dataset.class, false);
