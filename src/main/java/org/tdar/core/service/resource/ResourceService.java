@@ -179,8 +179,13 @@ public class ResourceService extends GenericService {
     }
 
     @Transactional(readOnly = true)
-    public Number countActiveResources(Class<? extends Resource> resourceClass) {
-        return datasetDao.countActiveResources(resourceClass);
+    public Number countActiveResources(ResourceType type) {
+        return datasetDao.countActiveResources(type);
+    }
+
+    @Transactional(readOnly = true)
+    public Number countActiveResourcesWithFiles(ResourceType type) {
+        return datasetDao.countActiveResourcesWithFiles(type);
     }
 
     @Transactional(readOnly = true)
