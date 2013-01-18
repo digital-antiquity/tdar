@@ -16,6 +16,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.dao.GenericDao.FindOptions;
 
 import static org.junit.Assert.*;
@@ -70,7 +71,7 @@ public class GenericServiceITCase extends AbstractIntegrationTestCase {
     @Rollback
     public void testFindActiveRandomResources() {
         List<Document> documents = genericService.findRandom(Document.class, 10);
-        int activeDocuments = resourceService.countActiveResources(Document.class).intValue();
+        int activeDocuments = resourceService.countActiveResources(ResourceType.DOCUMENT).intValue();
         for (Document doc : documents) {
             assertTrue(doc.isActive());
         }

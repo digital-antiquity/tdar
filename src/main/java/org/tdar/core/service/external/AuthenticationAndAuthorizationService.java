@@ -485,8 +485,8 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
             // enable us to force group cache to be cleared
             clearPermissionsCache(person);
 
-            logger.debug(loginUsername.toUpperCase() + " logged in from " + request.getRemoteAddr() + " using: "
-                    + request.getHeader("User-Agent"));
+            logger.debug(String.format("%s (%s) logged in from %s using: %s", loginUsername, person.getEmail(), request.getRemoteAddr(),
+                    request.getHeader("User-Agent")));
             createAuthenticationToken(person, sessionData);
             personDao.registerLogin(person);
             return AuthenticationStatus.AUTHENTICATED;
