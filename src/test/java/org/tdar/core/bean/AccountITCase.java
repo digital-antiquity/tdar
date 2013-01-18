@@ -22,7 +22,6 @@ import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.billing.ResourceEvaluator;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Image;
@@ -48,16 +47,14 @@ public class AccountITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     SetupBillingAccountsProcess accountProcess;
-    
+
     @Test
     @Rollback
-    public void testBillingAccountSetup() {
-        for (Long personId : accountProcess.findAllIds()) {
-            Person person =  entityService.find(personId);
-            accountProcess.process(person);
-        }
+    public void testBillingAccountSetup() throws InstantiationException, IllegalAccessException {
+        Document document = generateInformationResourceWithFileAndUser();
+        accountProcess.process(document.getSubmitter());
     }
-    
+
     @Test
     @Rollback
     public void testResourceEvaluatorCanCreateResource() {
@@ -318,7 +315,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         assertEquals(0L, account.getTotalNumberOfFiles().longValue());
 
         invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
-        invoice.finalize();
+        invoice.markFinal();
         assertEquals(222.2, invoice.getTotal().floatValue(), 1);
         assertEquals(4L, account.getTotalNumberOfFiles().longValue());
         assertEquals(2L, account.getTotalNumberOfResources().longValue());

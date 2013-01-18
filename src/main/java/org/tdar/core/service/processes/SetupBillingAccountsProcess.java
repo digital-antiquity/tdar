@@ -147,6 +147,8 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
 
     private static final String INVOICE_NOTE = "auto-generated invoice created on %s to cover %s resources, %s (MB) , and %s files created by %s prior to tDAR charging for usage.  Thank you for your support of tDAR.";
 
+    final static long EXTRA_MB = 0l;
+    final static long EXTRA_FILES = 5l;
     private static final long serialVersionUID = -2313655718394118279L;
 
     @Autowired
@@ -183,16 +185,16 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
         Set<Resource> resources = resourceService.findResourcesSubmittedByUser(person);
         ResourceEvaluator re = accountService.getResourceEvaluator();
         re.evaluateResources(resources);
-        long spaceUsedInMb = re.getSpaceUsedInMb();
-        long filesUsed = re.getFilesUsed();
+        long spaceUsedInMb = EXTRA_MB + re.getSpaceUsedInMb();
+        long filesUsed = EXTRA_FILES + re.getFilesUsed();
         PricingOption option = accountService.getCheapestActivityByFiles(filesUsed, spaceUsedInMb, false);
-        long extraMb = 20l;
-        long extraFiles = 5l;
-        Invoice invoice = new Invoice(person, PaymentMethod.MANUAL, filesUsed + extraFiles, spaceUsedInMb + extraMb, option.getItems());
+        logger.info("****** RE : " + re.toString());
+        Invoice invoice = new Invoice(person, PaymentMethod.MANUAL, filesUsed, spaceUsedInMb, option.getItems());
         invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
         invoice.setOwner(person);
         invoice.markUpdated(person);
-        invoice.setOtherReason(String.format(INVOICE_NOTE, new Date(), re.getResourcesUsed(), re.getSpaceUsedInMb(), re.getFilesUsed()));
+        invoice.setOtherReason(String.format(INVOICE_NOTE, new Date(), re.getResourcesUsed(), re.getSpaceUsedInMb(), re.getFilesUsed(), person.getProperName()));
+        logger.info(invoice.getOtherReason());
         genericDao.saveOrUpdate(invoice);
         Account account = new Account(String.format("%s's Account", person.getProperName()));
         account.setDescription("auto-generated account created by tDAR to cover past contributions");
@@ -200,12 +202,8 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
         account.markUpdated(person);
         genericDao.saveOrUpdate(account);
         account.getInvoices().add(invoice);
-        genericDao.saveOrUpdate(account);
         accountService.updateQuota(accountService.getResourceEvaluator(), account, false, resources.toArray(new Resource[0]));
-        // Find all resources this person created
-        // calculate the needed values for that person
-        // setup an invoice for that size
-        // create invoice and account for that person
+        genericDao.saveOrUpdate(account);
     }
 
     @Override

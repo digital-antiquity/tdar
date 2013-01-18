@@ -238,9 +238,8 @@ public class Invoice extends Base implements Updatable {
                     totalResources += numberOfResources * item.getQuantity().longValue();
                 }
                 calculatedCost += item.getSubtotal();
-                logger.debug(String.format("%s (%s) files, %s(%s) mb, %s(%s) resources [%s]", numberOfFiles, totalFiles, space, totalSpaceInMb,
-                        numberOfResources,
-                        totalResources, calculatedCost));
+                logger.debug(String.format("%s (%s) files, %s(%s) mb, %s(%s) resources [$%s]", numberOfFiles, totalFiles, space, totalSpaceInMb,
+                        numberOfResources, totalResources, calculatedCost));
             }
             initialized = true;
         }
@@ -378,7 +377,7 @@ public class Invoice extends Base implements Updatable {
         this.numberOfMb = numberOfMb;
     }
 
-    public void finalize() {
+    public void markFinal() {
         setTotal(getCalculatedCost());
     }
 
