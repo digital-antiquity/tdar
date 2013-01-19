@@ -99,8 +99,7 @@ public class Invoice extends Base implements Updatable {
     @NotNull
     private Person owner;
 
-    @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
-    @JoinColumn(nullable = true, name = "invoice_id")
+    @OneToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     private BillingTransactionLog response;
     
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
