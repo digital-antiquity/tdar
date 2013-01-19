@@ -1,7 +1,5 @@
 package org.tdar.core.bean.billing;
 
-import net.sf.json.JSONObject;
-import net.sf.json.JsonConfig;
 import java.util.Date;
 
 import javax.persistence.CascadeType;
@@ -12,12 +10,15 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import net.sf.json.JSONObject;
+import net.sf.json.JsonConfig;
+
 import org.hibernate.annotations.Type;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.dao.external.payment.nelnet.TransactionResponse;
 
 @Entity
-@Table(name="pos_transaction_log")
+@Table(name = "pos_transaction_log")
 public class BillingTransactionLog extends Base {
 
     private static final long serialVersionUID = 2104177203134056911L;
@@ -34,6 +35,7 @@ public class BillingTransactionLog extends Base {
 
     private String transactionId;
 
+    public BillingTransactionLog() {}
     
     public BillingTransactionLog(TransactionResponse response) {
         JsonConfig config = new JsonConfig();
@@ -41,7 +43,7 @@ public class BillingTransactionLog extends Base {
         setResponseInJson(jsonObject.toString());
         setDateCreated(new Date());
         setTransactionId(response.getTransactionId());
-        
+
     }
 
     public String getResponseInJson() {
@@ -68,5 +70,12 @@ public class BillingTransactionLog extends Base {
         this.transactionId = transactionId;
     }
 
-    
+//    public Invoice getInvoice() {
+//        return invoice;
+//    }
+//
+//    public void setInvoice(Invoice invoice) {
+//        this.invoice = invoice;
+//    }
+
 }
