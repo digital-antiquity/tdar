@@ -43,7 +43,6 @@ public class ResourceNote extends Persistable.Sequence<ResourceNote> implements 
     @Enumerated(EnumType.STRING)
     @Column(name = "note_type")
     @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
-    @Transient
     private ResourceNoteType type;
 
     public ResourceNote() {

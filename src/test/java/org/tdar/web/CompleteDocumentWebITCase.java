@@ -10,12 +10,12 @@ import static org.junit.Assert.assertTrue;
 import static org.tdar.TestConstants.TEST_DOCUMENT;
 import static org.tdar.TestConstants.TEST_DOCUMENT_NAME;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.coverage.CoverageType;
@@ -26,7 +26,6 @@ import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.LicenseType;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 
 //@RunWith(MultipleTdarConfigurationRunner.class)
@@ -34,12 +33,15 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
     public static HashMap<String, String> docValMap;
     public static HashMap<String, List<String>> docMultiValMap = new HashMap<String, List<String>>();
     public static HashMap<String, List<String>> docMultiValMapLab = new HashMap<String, List<String>>();
-
+    public static List<String> alternateTextLookup = new ArrayList<String>();
+    public static List<String> alternateCodeLookup = new ArrayList<String>();
     public static String REGEX_DOCUMENT_VIEW = "\\/document\\/\\d+$";
 
     public CompleteDocumentWebITCase() {
         docValMap = new HashMap<String, String>();
         // removing inline implementation of HashMap to remove serialization warning
+        alternateTextLookup.add("Note: this resource is restricted from general view");
+
         docValMap.put("projectId", "1");
         docValMap.put("document.title", "My Sample Document");
         docValMap.put("document.documentType", "OTHER");
@@ -49,6 +51,7 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         docValMap.put("authorshipProxies[0].person.institution.name", "A wholly new institution name");
         docValMap.put("authorshipProxies[0].person.id", "");
         docValMap.put("authorshipProxies[0].role", ResourceCreatorRole.AUTHOR.name());
+        alternateTextLookup.add(ResourceCreatorRole.AUTHOR.getLabel());
         // docValMap.put("authorshipProxies[1].person.institution.name", "SOME INSTITUTION");
         // docValMap.put("authorshipProxies[1].person.firstName", "test");
         // docValMap.put("authorshipProxies[1].person.lastName", "test");
@@ -61,12 +64,15 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         docValMap.put("authorizedUsers[1].user.id", "5349");
         docValMap.put("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
         docValMap.put("authorizedUsers[1].generalPermission", GeneralPermissions.VIEW_ALL.name());
+        alternateCodeLookup.add(GeneralPermissions.MODIFY_RECORD.name());
+        alternateCodeLookup.add(GeneralPermissions.VIEW_ALL.name());
         docValMap.put("authorizedUsers[0].user.firstName", "Michelle");
         docValMap.put("authorizedUsers[0].user.lastName", "Elliott");
         docValMap.put("authorizedUsers[1].user.firstName", "Joshua");
         docValMap.put("authorizedUsers[1].user.lastName", "Watts");
         docValMap.put("document.doi", "doi:10.1016/j.iheduc.2003.11.004");
         docValMap.put("document.isbn", "9780385483995");
+        alternateTextLookup.add(Language.SPANISH.getLabel());
         docValMap.put("resourceLanguage", Language.SPANISH.name());
         docValMap.put("document.url", "http://www.tdar.org");
         docValMap.put("publisherName", "test");
@@ -84,6 +90,7 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         docValMap.put("document.volume", "25");
         if (TdarConfiguration.getInstance().getLicenseEnabled()) {
             docValMap.put("resource.licenseType", LicenseType.OTHER.name());
+            alternateTextLookup.add(LicenseType.OTHER.getLabel());
             docValMap.put("resource.licenseText", "my custom license");
         }
 
@@ -104,14 +111,18 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         docValMap.put("coverageDates[0].startDate", "1200");
         docValMap.put("coverageDates[0].endDate", "1500");
         docValMap.put("coverageDates[0].dateType", CoverageType.CALENDAR_DATE.name());
+        alternateTextLookup.add(CoverageType.CALENDAR_DATE.getLabel());
         docValMap.put("coverageDates[1].startDate", "1200");
         docValMap.put("coverageDates[1].endDate", "1000");
         docValMap.put("coverageDates[1].dateType", CoverageType.RADIOCARBON_DATE.name());
+        alternateTextLookup.add(CoverageType.RADIOCARBON_DATE.getLabel());
         docValMap.put("resourceProviderInstitutionName", "Digital Antiquity");
         // FIXME: notes not maintaining order
         docValMap.put("resourceNotes[0].type", ResourceNoteType.GENERAL.name());
+        alternateTextLookup.add(ResourceNoteType.GENERAL.getLabel());
         docValMap.put("resourceNotes[0].note", "A Moose once bit my sister...");
         docValMap.put("resourceNotes[1].type", ResourceNoteType.REDACTION.name());
+        alternateTextLookup.add(ResourceNoteType.REDACTION.getLabel());
         docValMap.put("resourceNotes[1].note", "We apologise for the fault in the subtitles. Those responsible have been sacked.");
 
         docMultiValMap.put("investigationTypeIds", Arrays.asList(new String[] { "1", "2", "3", "5" }));
@@ -153,11 +164,7 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         assertTrue("expecting to be on view page. Actual path:" + path + "\n" + getPageText(), path.matches(REGEX_DOCUMENT_VIEW));
 
         logger.trace(getPageText());
-        nextKey: for (String key : docValMap.keySet()) {
-            if ("resource.licenseType".equals(key)) {
-                // We are not showing the radio button selection.
-                continue nextKey;
-            }
+        for (String key : docValMap.keySet()) {
             // avoid the issue of the fuzzy distances or truncation... use just
             // the top of the lat/long
             if (key.startsWith("latitudeLongitudeBox")) {
@@ -168,12 +175,18 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
             } else if (!key.equals("document.journalName") && !key.equals("document.bookTitle") && !key.startsWith("authorInstitutions")
                     && !key.equals(PROJECT_ID_FIELDNAME) && !key.contains("Ids") && !key.contains("Email") && !key.equals("ticketId")
                     && !key.contains("generalPermission")
-                    && !key.contains(".id") && !key.contains(".email") && !key.contains(".type") && !key.contains(".dateType") && !key.contains("role")
+                    && !key.contains(".id") && !key.contains(".email") && !key.contains(".type") && !key.contains(".dateType") && !key.contains(".licenseType") && !key.contains("role")
                     && !key.contains("person.institution.name")) {
                 assertTextPresentInPage(docValMap.get(key));
             }
         }
-        assertTextPresent("Note: this resource is restricted from general view");
+        for (String alt : alternateTextLookup) {
+            assertTextPresent(alt);
+        }
+        for (String alt : alternateCodeLookup) {
+            assertTextPresentInCode(alt);
+        }
+        
         assertTextNotPresent("embargo");
         for (String key : docMultiValMapLab.keySet()) {
             for (String val : docMultiValMapLab.get(key)) {
