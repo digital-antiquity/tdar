@@ -150,7 +150,7 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
     public Number countActiveResourcesWithFiles(ResourceType type) {
         if (type == ResourceType.PROJECT) 
             return 0;
-        Query query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_SQL_COUNT_ACTIVE_RESOURCE, type.getResourceClass().getSimpleName()));
+        Query query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_SQL_COUNT_ACTIVE_RESOURCE, type.name()));
         return (Number) query.uniqueResult();
     }
 
