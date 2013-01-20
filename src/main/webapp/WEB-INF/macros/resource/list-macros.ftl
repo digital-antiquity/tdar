@@ -34,7 +34,7 @@
         <div class="span9 google-map" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if> > </div>
       </#if>    
     
-      <div class="<#if mapPosition=='left' || mapPosition=="right">span4<#else>span9</#if>">
+      <div class="<#if mapPosition=='left' || mapPosition=="right">span3<#else>span9</#if>">
   </#if>
   <#local isGridLayout = (orientation=="GRID") />
   <#local rowCount = -1 />
