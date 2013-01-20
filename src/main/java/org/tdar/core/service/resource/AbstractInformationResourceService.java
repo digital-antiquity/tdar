@@ -23,6 +23,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.resource.ResourceDao;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ServiceInterface;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.Filestore;
@@ -207,6 +208,9 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
 
     private void createVersion(InformationResourceFile irFile, FileProxy fileProxy) throws IOException {
         String filename = sanitizeFilename(fileProxy.getFilename());
+        if (!fileProxy.getFile().exists()) {
+            throw new TdarRecoverableRuntimeException("something went wrong, file "+ fileProxy.getFilename() +" does not exist");
+        }
         InformationResourceFileVersion version = new InformationResourceFileVersion(fileProxy.getVersionType(), filename, irFile);
         setInformationResourceFileMetadata(irFile, fileProxy);
         irFile.addFileVersion(version);
