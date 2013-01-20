@@ -41,9 +41,16 @@
 
 <hr/>
 
+<#assign mapSize="450" />
+<#if (totalRecords > 10)>
+	<#assign mapSize="700" />
+</#if>
+<#if (totalRecords > 18)>
+	<#assign mapSize="1000" />
+</#if>
          
     <@list.listResources resourcelist=results sortfield=resourceCollection.sortBy  titleTag="h5" listTag="ul" itemTag="li" itemsPerRow=5
-        orientation=resourceCollection.orientation    mapPosition="left" mapHeight="450" />
+        orientation=resourceCollection.orientation    mapPosition="left" mapHeight=mapSize />
     </#if>
 
 <#if editable>
