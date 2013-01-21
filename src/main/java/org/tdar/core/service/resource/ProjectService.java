@@ -41,14 +41,6 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
         return project;
     }
 
-    @Transactional(readOnly = false)
-    public void deleteAllKeywords(Resource resource) {
-        delete(resource.getSiteNameKeywords());
-        delete(resource.getCultureKeywords());
-        delete(resource.getOtherKeywords());
-        // delete(resource.getMaterialKeywords());
-    }
-
     @Transactional(readOnly = true)
     public List<Project> findBySubmitter(Person submitter) {
         if (submitter == null) {
@@ -67,10 +59,10 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
         return getDao().findByTitle(title);
     }
 
-    @Transactional(readOnly = true)
-    public List<Project> findAllSorted() {
-        return getDao().findAllSorted();
-    }
+//    @Transactional(readOnly = true)
+//    public List<Project> findAllSorted() {
+//        return getDao().findAllSorted();
+//    }
 
     @Transactional(readOnly = true)
     public List<Project> findAllSparseEditableProjects(Person person) {

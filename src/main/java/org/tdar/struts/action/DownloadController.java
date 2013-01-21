@@ -20,7 +20,6 @@ import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.statistics.FileDownloadStatistic;
-import org.tdar.utils.DeleteOnCloseFileInputStream;
 import org.tdar.core.service.PdfService;
 import org.tdar.utils.DeleteOnCloseFileInputStream;
 

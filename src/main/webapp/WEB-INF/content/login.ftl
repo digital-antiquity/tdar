@@ -4,7 +4,7 @@ vim:sts=2:sw=2:filetype=jsp
 <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
 
 <head>
-    <title>Log in/Register</title>
+    <title>Log in / Register</title>
     <meta name="lastModifiedDate" content="$Date$" />
 </head>
 <body>
