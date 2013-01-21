@@ -323,11 +323,11 @@ create table pos_transaction_log (
 	id bigserial primary key,
     date_created timestamp,
     transactionId varchar(255),
-    response text,
-    invoice_id int8 references pos_invoice);
+    response text);
 
 alter table pos_invoice drop column response;
 alter table pos_invoice drop column transactionId;
-
+alter table pos_invoice add column response_id bigint references pos_transaction_log;
 -- 1-21-13
 ALTER TABLE information_resource_file_version add COLUMN effective_size bigint;
+alter table pos_invoice add column transaction_id varchar(255);
