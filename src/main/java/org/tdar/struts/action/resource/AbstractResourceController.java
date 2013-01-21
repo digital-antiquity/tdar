@@ -490,7 +490,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             if (collection != null && CollectionUtils.isNotEmpty(collection.getAuthorizedUsers())) {
                 tempSet.addAll(collection.getHierarchicalResourceCollections());
             }
-            logger.info("{}", collection);
         }
         ResourceCollection internal = getResource().getInternalResourceCollection();
         if (internal != null &&
@@ -498,7 +497,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             tempSet.add(internal);
         }
         getEffectiveResourceCollections().addAll(tempSet);
-        logger.info("{}", tempSet);
     }
 
     public List<String> getSiteNameKeywords() {
