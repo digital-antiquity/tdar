@@ -104,7 +104,7 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 
 }
