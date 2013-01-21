@@ -328,3 +328,6 @@ create table pos_transaction_log (
 
 alter table pos_invoice drop column response;
 alter table pos_invoice drop column transactionId;
+
+-- 1-21-13
+ALTER TABLE information_resource_file_version add COLUMN effective_size bigint;

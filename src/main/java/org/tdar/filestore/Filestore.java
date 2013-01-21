@@ -152,6 +152,8 @@ public interface Filestore {
                 version.setPath(parent.getPath());
             if (version.getFileLength() == null)
                 version.setFileLength(file.length());
+            if (version.getUncompressedSizeOnDisk() == null)
+                version.setUncompressedSizeOnDisk(file.length());
             if (StringUtils.isEmpty(version.getChecksum())) {
                 MessageDigest digest = createDigest(file);
                 version.setChecksumType(digest.getAlgorithm());
