@@ -20,6 +20,7 @@ import java.net.URLEncoder;
 import javax.imageio.ImageIO;
 
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.WorkflowContext;
@@ -86,12 +87,16 @@ public class ImageThumbnailTask extends AbstractTask {
         opener.setSilentMode(true);
         IJ.redirectErrorMessages(true);
         ijSource = opener.openImage(sourceFile.getAbsolutePath());
-        
-//        getLogger().info(IJ.getLastLogMessage());
+
+        // getLogger().info(IJ.getLastLogMessage());
         if (ijSource == null) {
             getLogger().debug("Unable to load source image: " + sourceFile);
             throw new TdarRecoverableRuntimeException("Please check that the image you uploaded is not corrupt and was not saved with any compression");
         } else {
+            if (getWorkflowContext().getResourceType().hasDemensions()) {
+                getWorkflowContext().getOriginalFile().setHeight(ijSource.getHeight());
+                getWorkflowContext().getOriginalFile().setWidth(ijSource.getWidth());
+            }
             try {
                 createJpegDerivative(ijSource, origFileName, MEDIUM, false);
                 createJpegDerivative(ijSource, origFileName, LARGE, false);

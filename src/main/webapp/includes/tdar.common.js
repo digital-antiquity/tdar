@@ -627,7 +627,7 @@ function showTooltip(x, y, contents) {
     $('<div id="flottooltip">' + contents + '</div>').css({
         position : 'absolute',
         display : 'none',
-        top : y + 5,
+        top : y + 30,
         left : x + 5
     }).appendTo("body").fadeIn(200);
 }

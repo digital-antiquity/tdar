@@ -60,7 +60,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     private static final long serialVersionUID = -6957336216505367012L;
 
     private transient WorkflowContext workflowContext;
-    
+
     public enum FileAction {
         NONE, ADD, REPLACE, DELETE, MODIFY_METADATA, ADD_DERIVATIVE;
 
@@ -128,9 +128,9 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
 
     @Lob
     @Type(type = "org.hibernate.type.StringClobType")
-    @Column(name="error_message")
+    @Column(name = "error_message")
     private String errorMessage;
-    
+
     // a date in standard form that a resource will become public if availableToPublic was set to false.
     // This date may be extended by the publisher but will not extend past the publisher's death unless
     // special arrangements are made.

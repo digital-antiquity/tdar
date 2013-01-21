@@ -197,4 +197,14 @@ public enum ResourceType implements HasLabel, Comparable<ResourceType>, Facetabl
     public ResourceType getValueOf(String val) {
         return valueOf(val);
     }
+
+    public boolean hasDemensions() {
+        switch (this) {
+            case IMAGE:
+            case SENSORY_DATA:
+                return true;
+            default:
+                return false;
+        }
+    }
 }
