@@ -81,6 +81,7 @@ public class Invoice extends Base implements Updatable {
     private Date dateCreated;
     // the confirmation id for this invoice
 
+    @Column(name="transaction_id")
     private String transactionId;
 
     @Enumerated(EnumType.STRING)
