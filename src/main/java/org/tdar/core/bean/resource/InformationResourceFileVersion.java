@@ -84,6 +84,9 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
     @Column(name = "size")
     private Long fileLength;
 
+    @Column(name = "effective_size")
+    private Long uncompressedSizeOnDisk;
+
     private String path;
 
     @Transient
@@ -459,6 +462,14 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
 
     public void setTotalTime(Long totalTime) {
         this.totalTime = totalTime;
+    }
+
+    public Long getUncompressedSizeOnDisk() {
+        return uncompressedSizeOnDisk;
+    }
+
+    public void setUncompressedSizeOnDisk(Long actualSizeOnDisk) {
+        this.uncompressedSizeOnDisk = actualSizeOnDisk;
     }
 
 }

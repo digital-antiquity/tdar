@@ -20,7 +20,6 @@ import java.net.URLEncoder;
 import javax.imageio.ImageIO;
 
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.WorkflowContext;
@@ -94,8 +93,10 @@ public class ImageThumbnailTask extends AbstractTask {
             throw new TdarRecoverableRuntimeException("Please check that the image you uploaded is not corrupt and was not saved with any compression");
         } else {
             if (getWorkflowContext().getResourceType().hasDemensions()) {
-                getWorkflowContext().getOriginalFile().setHeight(ijSource.getHeight());
-                getWorkflowContext().getOriginalFile().setWidth(ijSource.getWidth());
+                InformationResourceFileVersion origVersion = getWorkflowContext().getOriginalFile();
+                origVersion.setHeight(ijSource.getHeight());
+                origVersion.setWidth(ijSource.getWidth());
+                origVersion.setUncompressedSizeOnDisk(ImageThumbnailTask.calculateUncompressedSize(origVersion));
             }
             try {
                 createJpegDerivative(ijSource, origFileName, MEDIUM, false);
@@ -214,6 +215,7 @@ public class ImageThumbnailTask extends AbstractTask {
             InformationResourceFileVersion version = generateInformationResourceFileVersion(outputFile, type);
             version.setHeight(destHeight);
             version.setWidth(destWidth);
+            version.setUncompressedSizeOnDisk(ImageThumbnailTask.calculateUncompressedSize(version));
             getWorkflowContext().addVersion(version);
         } finally {
             if (outputStream != null) {
@@ -224,6 +226,15 @@ public class ImageThumbnailTask extends AbstractTask {
                 }
             }
         }
+    }
+
+    private static Long calculateUncompressedSize(InformationResourceFileVersion version) {
+        try {
+            return version.getHeight() * version.getWidth() * 3L;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private ImageProcessor averageReductionScale(ImageProcessor ip, ImagePlus source, int res) {
