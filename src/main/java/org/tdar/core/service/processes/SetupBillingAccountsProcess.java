@@ -85,7 +85,7 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
         invoice.setOwner(person);
         invoice.markUpdated(person);
         invoice.setOtherReason(String.format(INVOICE_NOTE, new Date(), re.getResourcesUsed(), re.getSpaceUsedInMb(), re.getFilesUsed(), person.getProperName()));
-        logger.info(invoice.getOtherReason());
+//        logger.info(invoice.getOtherReason());
         genericDao.saveOrUpdate(invoice);
         Account account = new Account(String.format("%s's Account", person.getProperName()));
         account.setDescription("auto-generated account created by tDAR to cover past contributions");
