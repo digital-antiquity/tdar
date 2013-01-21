@@ -328,4 +328,3 @@ create table pos_transaction_log (
 
 alter table pos_invoice drop column response;
 alter table pos_invoice drop column transactionId;
-	
