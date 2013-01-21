@@ -385,6 +385,8 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         Map<ResourceCreatorProxy, List<ResourceCreatorProxy>> replacements = new HashMap<ResourceCreatorProxy, List<ResourceCreatorProxy>>();
         List<ResourceCreatorProxy> proxies = group.getResourceCreatorProxies();
         for (ResourceCreatorProxy proxy : proxies) {
+            if (proxy == null)
+                continue;
             ResourceCreator rc = proxy.getResourceCreator();
             if (rc != null && proxy.isValid()) {
                 ArrayList<ResourceCreatorProxy> values = new ArrayList<ResourceCreatorProxy>();
