@@ -478,24 +478,27 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         getSourceCollections().addAll(getResource().getSourceCollections());
         getRelatedComparativeCollections().addAll(getResource().getRelatedComparativeCollections());
         getAuthorizedUsers().addAll(getResourceCollectionService().getAuthorizedUsersForResource(getResource()));
-        getResourceCollections().addAll(getResource().getSharedResourceCollections());
         initializeResourceCreatorProxyLists();
         getResourceAnnotations().addAll(getResource().getResourceAnnotations());
         loadEffectiveResourceCollections();
     }
 
     private void loadEffectiveResourceCollections() {
+        getResourceCollections().addAll(getResource().getSharedResourceCollections());
         Set<ResourceCollection> tempSet = new HashSet<ResourceCollection>();
         for (ResourceCollection collection : getResourceCollections()) {
             if (collection != null && CollectionUtils.isNotEmpty(collection.getAuthorizedUsers())) {
                 tempSet.addAll(collection.getHierarchicalResourceCollections());
             }
+            logger.info("{}", collection);
         }
-        if (getResource().getInternalResourceCollection() != null &&
-                CollectionUtils.isNotEmpty(getResource().getInternalResourceCollection().getAuthorizedUsers())) {
-            tempSet.add(getResource().getInternalResourceCollection());
+        ResourceCollection internal = getResource().getInternalResourceCollection();
+        if (internal != null &&
+                CollectionUtils.isNotEmpty(internal.getAuthorizedUsers())) {
+            tempSet.add(internal);
         }
         getEffectiveResourceCollections().addAll(tempSet);
+        logger.info("{}", tempSet);
     }
 
     public List<String> getSiteNameKeywords() {

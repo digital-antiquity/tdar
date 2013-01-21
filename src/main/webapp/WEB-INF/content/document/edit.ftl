@@ -9,8 +9,8 @@
 <body class="resource">
 <@edit.sidebar />
 <@edit.subNavMenu />
-<#assign newTitle>New ${resource.resourceType.label}</#assign>
-<h1><#if resource.id == -1>Creating<#else>Editing</#if>:<span> <#if resource.title?has_content>${resource.title}<#else>${newTitle}</#if> </span></h1>
+
+<@edit.resourceTitle />
 
 <@s.form id='resourceMetadataForm' method='post' enctype='multipart/form-data' action='save'  cssClass="form-horizontal">
 <@edit.basicInformation 'document' 'document' >

@@ -26,9 +26,9 @@ $(function(){
 <@edit.sidebar />
 <@edit.subNavMenu />
 
+<@edit.resourceTitle />
 <@s.form name='datasetMetadataForm' id='datasetMetadataForm'   cssClass="form-horizontal" method='post' enctype='multipart/form-data' action='save'>
 
-<@edit.resourceTitle />
 
 <@edit.basicInformation 'dataset' 'dataset' >
 <br/>
