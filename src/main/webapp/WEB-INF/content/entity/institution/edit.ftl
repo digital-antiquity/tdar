@@ -2,7 +2,7 @@
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
 <head>
-    <#if (id > 0 )>
+    <#if (id!-1 > 0 )>
         <title>Editing ${institution.name}</title>
     <#else>
         <title>Add a new Institution</title>
@@ -21,10 +21,10 @@
     <div class="glide">
         <h3>Institution Information</h3>
         <@s.hidden name="id" />
-        <@s.textfield name="institution.name" required=true label="Name" id="txtInstitutionName" cssClass="longfield" />
-        <br /><@s.textfield name="institution.location" label="Location" id="txtLocation" cssClass="longfield" />
-        <br /><@s.textfield name="institution.url" label="Website" id="txtUrl" cssClass="longfield url" />
-        <br /><@s.textarea name="institution.description" label="Description"  />
+        <@s.textfield name="institution.name" required=true label="Name" id="txtInstitutionName" cssClass="input-xlarge" />
+        <br /><@s.textfield name="institution.location" label="Location" id="txtLocation" cssClass="input-xlarge" />
+        <br /><@s.textfield name="institution.url" label="Website" id="txtUrl" cssClass="input-xlarge url" />
+        <br /><@s.textarea name="institution.description" label="Description" cssClass="input-xxlarge" />
     </div>
     <@edit.submit "Save" false />    
 

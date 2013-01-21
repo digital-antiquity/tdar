@@ -32,7 +32,7 @@ label.error {display:block;}
 </head>
 <body>
 <#assign newTitle="New Person" />
-<h1><#if person.id == -1>Creating<#else>Editing</#if>:<span> <#if person.properName?has_content>${person.properName}<#else>${newTitle}</#if> </span></h1>
+<h1><#if person.id == -1>Creating<#else>Editing</#if>:<span> <#if person.firstName?has_content || person.lastName?has_content>${person.properName}<#else>${newTitle}</#if> </span></h1>
 
 <@s.form name='personForm' id='frmPerson'  cssClass="form-horizontal"  method='post' enctype='multipart/form-data' action='save'>
 
@@ -90,9 +90,7 @@ label.error {display:block;}
 <#else>
 <div class="glide" id="divResetPassword">
     <h3>Reset User Password</h3>
-    <div class="width30percent marginLeft10">
-        <br /><@s.checkbox labelposition='left' label='Reset Password?' name="passwordResetRequested" id="contributor-id" cssStyle='margin-left: 16em;' />
-    </div>
+        <@s.checkbox labelposition='left' label='Reset Password?' name="passwordResetRequested" id="contributor-id"  />
 </div>
 </#if>
 

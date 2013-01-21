@@ -751,9 +751,10 @@ ${_date?string('MM/dd/yyyy')}<#t>
 <#macro resourceCollections>
     <#if !viewableResourceCollections.empty>
         <h3>This Resource is Part of the Following Collections</h3>
+        <p>
         <#list viewableResourceCollections as collection>
                 <a href="<@s.url value="/collection/${collection.id?c}"/>">${collection.name}</a> <br/>
-        </#list>
+        </#list></p>
         <hr />
     </#if>
 </#macro>

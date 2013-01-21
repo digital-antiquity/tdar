@@ -923,8 +923,8 @@ jquery validation hooks?)
     <@s.hidden name="ticketId" id="ticketId" />
     <h2>${uploadLabel}</h2>
   
-    <div class="info alert-info">
-    <p><span class="label">Note:</span> you can only have ${maxUploadFilesPerRecord} per record.<br/></p> 
+    <div class="">
+    <p><span class="label">Note:</span> You can only have ${maxUploadFilesPerRecord} per record.<br/></p> 
     </div>
 <br/>
     <#if !ableToUploadFiles>

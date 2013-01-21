@@ -15,10 +15,10 @@
             <li><a href="#enter-data">Coding Rules</a></li>
 </@edit.subNavMenu>
 
+<@edit.resourceTitle />
 
 <@s.form name='resourceRegistrationForm' id='resourceRegistrationForm' method='post' enctype='multipart/form-data' action='save' cssClass="form-horizontal">
 
-<@edit.resourceTitle />
 
 <@edit.basicInformation "coding sheet" "codingSheet"/>
 <@edit.allCreators 'Coding Sheet Creators' authorshipProxies 'authorship' />
