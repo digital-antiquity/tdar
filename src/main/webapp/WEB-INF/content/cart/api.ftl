@@ -3,6 +3,7 @@
 	<#if option_index != 0>,</#if>{
 		"subtotal":${option.subtotal?c},
 		"model":"${option.type}",
+		"model":"${option.label!option.type}",
 		"parts":[
 		<#assign count = 0 />
 			<#list option.items as item>

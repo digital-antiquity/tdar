@@ -3,7 +3,9 @@ package org.tdar.core.bean.billing;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +34,7 @@ public class ResourceEvaluator implements Serializable {
     private long filesUsed = 0;
     private long spaceUsed = 0;
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
-    private Resource[] resources;
+    private Set<Long> resourceIds = new HashSet<Long>();
     private BillingActivityModel model;
 
     public ResourceEvaluator(BillingActivityModel model) {
@@ -69,12 +71,15 @@ public class ResourceEvaluator implements Serializable {
      * Evaluate whether a resource can be added and how it counts when added to an account
      */
     public void evaluateResources(Resource... resources) {
-        this.setResources(resources);
 
         for (Resource resource : resources) {
             if (resource == null)
                 continue;
             Status status = Status.ACTIVE;
+            if (resource.isTransient()) {
+                logger.warn("Resource {} is transient, it may not be updated properly", resource);
+            }
+            getResourceIds().add(resource.getId());
             if (resource.getStatus() != null) {
                 status = resource.getStatus();
             }
@@ -180,13 +185,6 @@ public class ResourceEvaluator implements Serializable {
         setResourcesUsed(getResourcesUsed() - initialEvaluation.getResourcesUsed());
     }
 
-    public Resource[] getResources() {
-        return resources;
-    }
-
-    public void setResources(Resource[] resources) {
-        this.resources = resources;
-    }
 
     public boolean evaluatesSpace() {
         return model.getCountingSpace();
@@ -198,6 +196,10 @@ public class ResourceEvaluator implements Serializable {
 
     public boolean evaluatesNumberOfFiles() {
         return model.getCountingFiles();
+    }
+
+    public Set<Long> getResourceIds() {
+        return resourceIds;
     }
 
 }

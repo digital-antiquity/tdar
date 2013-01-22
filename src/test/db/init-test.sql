@@ -2695,3 +2695,4 @@ insert into pos_billing_activity (enabled, name, numberoffiles, min_allowed_file
 insert into pos_billing_activity (enabled, name, numberoffiles, min_allowed_files, numberofmb, price, model_id) values (true, '50-500', 1, 50, 10, 31,1);
 insert into pos_billing_activity (enabled, name, numberoffiles, min_allowed_files, numberofmb, price, model_id) values (true, ' 100 mb', 0, 0, 100, 50,1);
 SELECT setval('pos_billing_model_id_seq', (SELECT MAX(id) FROM pos_billing_model)+1);
+update pos_billing_activity set activity_type = 'TEST' where name in ('good','error', 'decline', 'unknown');

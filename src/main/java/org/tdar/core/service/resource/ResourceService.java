@@ -80,7 +80,7 @@ public class ResourceService extends GenericService {
     }
 
     @Transactional(readOnly = true)
-    public Set<Resource> findResourcesSubmittedByUser(Person person) {
+    public Set<Long> findResourcesSubmittedByUser(Person person) {
         return datasetDao.findResourcesSubmittedByUser(person);
     }
 

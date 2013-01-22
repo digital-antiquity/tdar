@@ -27,8 +27,14 @@
 			<span id="convert"></span>
 		</div>
 		<br/>
-		<div id="estimated">
-		
+		<div >
+			<h4>Suggested Pricing Options</h4>
+			<table class="table tableFormat">
+				<tr><th>Option</th><th>Files</th><th>Space</th><th>extra space</th><th>Cost</th></tr>
+				<tbody id="estimated">
+				<tr><td colspan=5>enter number of files and mb above</td>	
+				</tbody>
+				</table>
 		</div>
 	    <@s.hidden name="id" value="${invoice.id?c!-1}" />
     <@s.hidden name="invoice.id" />
@@ -42,12 +48,14 @@
 		</div>
 	</div>
 		<div class="control-group">
-    <label class="control-label" for="extraItemQuantity">Type</label>
-				    <div class="controls">
-    <label><input type="radio" name="extraItemName" checked=checked  value="" id="extraItemName" /> None</label>
-    <label><input type="radio" name="extraItemName"  value="error" id="extraItemName_error" /> Error</label>
-    <label><input type="radio" name="extraItemName"  value="decline" id="extraItemName_decline" /> Decline</label>
-    <label><input type="radio" name="extraItemName"  value="unknown" id="extraItemName_unknown"/> Unknown</label>
+	    <label class="control-label" for="extraItemQuantity">Type</label>
+	    <div class="controls">
+	    <label><input type="radio" name="extraItemName" checked=checked  value="" id="extraItemName" /> None</label>
+	    <#list activities as act>
+		    <#if !act.production >
+			    <label><input type="radio" name="extraItemName"  value="${act.name}" id="extraItemName_${act.name}" /> ${act.name}</label>
+	    	</#if>
+		</#list>
 		</div>
 	</div>
 
@@ -64,13 +72,14 @@
 		        <th>cost / file</th>
 		    </tr>
 		    <#list activities as act>
+		    <#if act.production >
 		    <tr>
 		        <td>${act.name}</td>
 		        <td>${act.numberOfFiles!0}</td>
 		        <td>${act.numberOfMb!0}</td>
 		        <td>${act.price} ${act.currency!"USD"}</td>
 		    </tr> 
-		    
+			</#if>		    
 		    </#list>
 	    </table>
 	</div>

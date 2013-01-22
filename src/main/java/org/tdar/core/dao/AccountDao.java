@@ -64,6 +64,7 @@ public class AccountDao extends Dao.HibernateBase<Account> {
         return (AccountGroup) query.uniqueResult();
     }
 
+    @SuppressWarnings("unchecked")
     public List<Long> findResourcesWithDifferentAccount(List<Resource> resourcesToEvaluate, Account account) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.RESOURCES_WITH_NON_MATCHING_ACCOUNT_ID);
         query.setParameter("accountId", account.getId());
@@ -71,6 +72,7 @@ public class AccountDao extends Dao.HibernateBase<Account> {
         return (List<Long>) query.list();
     }
 
+    @SuppressWarnings("unchecked")
     public List<Long> findResourcesWithNullAccount(List<Resource> resourcesToEvaluate) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.RESOURCES_WITH_NULL_ACCOUNT_ID);
         query.setParameterList("ids", Persistable.Base.extractIds(resourcesToEvaluate));

@@ -58,7 +58,7 @@
                         + "and status like :status and resourceType=:resourceType"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_RESOURCES_SUBMITTER,
-                query = "from Resource where submitter.id = :submitterId "),
+                query = "select id from Resource where submitter.id = :submitterId "),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_SPARSE_RESOURCES,
                 query = "select new Resource(resource.id,resource.title,resource.resourceType) from Resource resource where status like :status and resourceType=:resourceType"),

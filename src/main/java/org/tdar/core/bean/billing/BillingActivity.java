@@ -25,6 +25,10 @@ public class BillingActivity extends Persistable.Base {
     private static final long serialVersionUID = 6891881586235180640L;
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
+    public enum BillingActivityType {
+        PRODUCTION, TEST;
+    }
+    
     private String name;
     @Column(updatable = false)
     private Integer numberOfHours = 0;
@@ -35,6 +39,10 @@ public class BillingActivity extends Persistable.Base {
     @Column(updatable = false)
     private Long numberOfFiles = 0L;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "activity_type")
+    private BillingActivityType activityType = BillingActivityType.PRODUCTION;
+    
     @ManyToOne(optional = false)
     @NotNull
     private BillingActivityModel model;
@@ -203,13 +211,15 @@ public class BillingActivity extends Persistable.Base {
         return false;
     }
 
-    /*
-     * this is for testing to ensure that dev pricing doesn't show up in "real" pricing
-     */
-    public boolean isSpecial() {
-        if (getName().contains("error") || getName().contains("decline") || getName().contains("unknown")) {
-        		return true;
-        }
-        return false;
+    public boolean isProduction() {
+        return getActivityType() == BillingActivityType.PRODUCTION;
+    }
+
+    public BillingActivityType getActivityType() {
+        return activityType;
+    }
+
+    public void setActivityType(BillingActivityType activityType) {
+        this.activityType = activityType;
     }
 }

@@ -53,6 +53,7 @@ public class ListArchiveTask extends AbstractTask {
     public void listFiles(StringBuilder archiveContents, File archiveFile, File originalFile) {
         for (File file : archiveFile.listFiles()) {
             getLogger().trace(file.getPath());
+            
             archiveContents.append(
                     originalFile.toURI().relativize(file.toURI()).toString()
                     ).append(System.getProperty("line.separator"));

@@ -331,3 +331,5 @@ alter table pos_invoice drop column transactionId;
 ALTER TABLE information_resource_file_version add COLUMN effective_size bigint;
 alter table pos_invoice add column transaction_id varchar(255);
 alter table pos_invoice add column response_id bigint references pos_transaction_log;
+alter table pos_billing_activity add column activity_type varchar(25) default 'PRODUCTION';
+update pos_billing_activity set activity_type = 'TEST' where name in ('good','error', 'decline', 'unknown');

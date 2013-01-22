@@ -61,10 +61,10 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         super(resourceClass);
     }
 
-    public Set<Resource> findResourcesSubmittedByUser(Person person) {
+    public Set<Long> findResourcesSubmittedByUser(Person person) {
         Query query = getCurrentSession().getNamedQuery(QUERY_RESOURCES_SUBMITTER);
         query.setLong("submitterId", person.getId());
-        return new HashSet<Resource>(query.list());
+        return new HashSet<Long>(query.list());
     }
 
     public List<E> findByTitle(final String title) {
