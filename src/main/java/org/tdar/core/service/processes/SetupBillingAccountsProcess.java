@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.collections.SetUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.Account;
@@ -73,6 +72,7 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
     @Override
     public void process(Person person) {
         try {
+            logger.info("starting process for " + person.getProperName());
             Set<Long> resourceIds = resourceService.findResourcesSubmittedByUser(person);
             Iterator<Long> iter = resourceIds.iterator();
             ResourceEvaluator re = accountService.getResourceEvaluator();
@@ -81,14 +81,15 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
                 Resource res = resourceService.find(next);
                 re.evaluateResources(res);
             }
-            
+
             long spaceUsedInMb = EXTRA_MB + re.getSpaceUsedInMb();
             long filesUsed = EXTRA_FILES + re.getFilesUsed();
             PricingOption option = accountService.getCheapestActivityByFiles(filesUsed, spaceUsedInMb, true);
             PricingOption option2 = accountService.getCheapestActivityByFiles(filesUsed, spaceUsedInMb, false);
             PricingOption option3 = accountService.getCheapestActivityBySpace(filesUsed, spaceUsedInMb);
             logger.info("****** RE : " + re.toString());
-            logger.info(String.format("%s|%s|%s|%s|%s|%s|%s", person.getProperName(), option, option2, option3, re.getFilesUsed(), re.getResourcesUsed(),
+            logger.info(String.format("%s|%s|%s|%s|%s|%s|%s|%s", person.getId(), person.getProperName(), option, option2, option3, re.getFilesUsed(),
+                    re.getResourcesUsed(),
                     re.getSpaceUsedInMb()));
             Invoice invoice = new Invoice(person, PaymentMethod.MANUAL, filesUsed, spaceUsedInMb, option.getItems());
             invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);

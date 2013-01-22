@@ -99,7 +99,7 @@ public abstract class ScheduledBatchProcess<P extends Persistable> extends Sched
         for (P entity : genericDao.findAll(getPersistentClass(), batch)) {
             try {
                 process(entity);
-            } catch (Exception exception) {
+            } catch (Throwable exception) {
                 logger.warn("Unable to process entity " + entity, exception);
                 errors.add(new Pair<P, Throwable>(entity, exception));
             }
