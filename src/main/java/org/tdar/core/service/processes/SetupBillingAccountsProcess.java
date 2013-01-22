@@ -70,31 +70,37 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
 
     @Override
     public void process(Person person) {
-        Set<Resource> resources = resourceService.findResourcesSubmittedByUser(person);
-        ResourceEvaluator re = accountService.getResourceEvaluator();
-        re.evaluateResources(resources);
-        long spaceUsedInMb = EXTRA_MB + re.getSpaceUsedInMb();
-        long filesUsed = EXTRA_FILES + re.getFilesUsed();
-        PricingOption option = accountService.getCheapestActivityByFiles(filesUsed, spaceUsedInMb, true);
-        PricingOption option2 = accountService.getCheapestActivityByFiles(filesUsed, spaceUsedInMb, false);
-        PricingOption option3 = accountService.getCheapestActivityBySpace(filesUsed, spaceUsedInMb);
-        logger.info("****** RE : " + re.toString());
-        logger.info(String.format("%s|%s|%s|%s|%s|%s|%s",person.getProperName(), option, option2, option3, re.getFilesUsed(), re.getResourcesUsed(), re.getSpaceUsedInMb()));
-        Invoice invoice = new Invoice(person, PaymentMethod.MANUAL, filesUsed, spaceUsedInMb, option.getItems());
-        invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
-        invoice.setOwner(person);
-        invoice.markUpdated(person);
-        invoice.setOtherReason(String.format(INVOICE_NOTE, new Date(), re.getResourcesUsed(), re.getSpaceUsedInMb(), re.getFilesUsed(), person.getProperName()));
-//        logger.info(invoice.getOtherReason());
-        genericDao.saveOrUpdate(invoice);
-        Account account = new Account(String.format("%s's Account", person.getProperName()));
-        account.setDescription("auto-generated account created by tDAR to cover past contributions");
-        account.setOwner(person);
-        account.markUpdated(person);
-        genericDao.saveOrUpdate(account);
-        account.getInvoices().add(invoice);
-        accountService.updateQuota(accountService.getResourceEvaluator(), account, false, resources.toArray(new Resource[0]));
-        genericDao.saveOrUpdate(account);
+        try {
+            Set<Resource> resources = resourceService.findResourcesSubmittedByUser(person);
+            ResourceEvaluator re = accountService.getResourceEvaluator();
+            re.evaluateResources(resources);
+            long spaceUsedInMb = EXTRA_MB + re.getSpaceUsedInMb();
+            long filesUsed = EXTRA_FILES + re.getFilesUsed();
+            PricingOption option = accountService.getCheapestActivityByFiles(filesUsed, spaceUsedInMb, true);
+            PricingOption option2 = accountService.getCheapestActivityByFiles(filesUsed, spaceUsedInMb, false);
+            PricingOption option3 = accountService.getCheapestActivityBySpace(filesUsed, spaceUsedInMb);
+            logger.info("****** RE : " + re.toString());
+            logger.info(String.format("%s|%s|%s|%s|%s|%s|%s", person.getProperName(), option, option2, option3, re.getFilesUsed(), re.getResourcesUsed(),
+                    re.getSpaceUsedInMb()));
+            Invoice invoice = new Invoice(person, PaymentMethod.MANUAL, filesUsed, spaceUsedInMb, option.getItems());
+            invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
+            invoice.setOwner(person);
+            invoice.markUpdated(person);
+            invoice.setOtherReason(String.format(INVOICE_NOTE, new Date(), re.getResourcesUsed(), re.getSpaceUsedInMb(), re.getFilesUsed(),
+                    person.getProperName()));
+            // logger.info(invoice.getOtherReason());
+            genericDao.saveOrUpdate(invoice);
+            Account account = new Account(String.format("%s's Account", person.getProperName()));
+            account.setDescription("auto-generated account created by tDAR to cover past contributions");
+            account.setOwner(person);
+            account.markUpdated(person);
+            genericDao.saveOrUpdate(account);
+            account.getInvoices().add(invoice);
+            accountService.updateQuota(accountService.getResourceEvaluator(), account, false, resources.toArray(new Resource[0]));
+            genericDao.saveOrUpdate(account);
+        } catch (Exception e) {
+            logger.error("{}", e);
+        }
     }
 
     @Override
