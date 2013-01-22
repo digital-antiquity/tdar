@@ -564,12 +564,13 @@ No coding rules have been entered for this coding sheet yet.
             <!-- Put the slide content in a div with the class .showcase-content. --> 
             <div class="showcase-content" style="height:100%">
               <span style="display: inline-block; height: 100%; vertical-align: middle;"></span>
-              <img alt="#${irfile_index}" src="<@s.url value="/filestore/${irfile.zoomableVersion.id?c}/get"/>"/>
+              <#-- //FIXME: image hidden by css -->
+              <img style="max-width: 95%" alt="#${irfile_index}" src="<@s.url value="/filestore/${irfile.zoomableVersion.id?c}/get"/>"/>
             </div> 
             <!-- Put the thumbnail content in a div with the class .showcase-thumbnail --> 
             </#if>
             <div class="showcase-thumbnail"> 
-              <img  alt="${irfile.latestUploadedVersion.filename}" src="<@s.url value="/filestore/${irfile.latestThumbnail.id?c}/thumbnail"/>"  />
+              <img alt="${irfile.latestUploadedVersion.filename}" src="<@s.url value="/filestore/${irfile.latestThumbnail.id?c}/thumbnail"/>"  />
               <!-- The div below with the class .showcase-thumbnail-caption contains the thumbnail caption. --> 
               <!-- The div below with the class .showcase-thumbnail-cover is used for the thumbnails active state. --> 
               <div class="showcase-thumbnail-cover"></div> 
