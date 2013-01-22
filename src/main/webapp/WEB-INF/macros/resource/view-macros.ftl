@@ -564,7 +564,7 @@ No coding rules have been entered for this coding sheet yet.
             <!-- Put the slide content in a div with the class .showcase-content. --> 
             <div class="showcase-content" style="height:100%">
               <span style="display: inline-block; height: 100%; vertical-align: middle;"></span>
-              <#-- //FIXME: image hidden by css -->
+              <#-- //FIXME: image hidden by overflow-hiden directive when width is 100%.  This shouldn't happen, but no time for analysis.  Quick fix time!-->
               <img style="max-width: 95%" alt="#${irfile_index}" src="<@s.url value="/filestore/${irfile.zoomableVersion.id?c}/get"/>"/>
             </div> 
             <!-- Put the thumbnail content in a div with the class .showcase-thumbnail --> 
