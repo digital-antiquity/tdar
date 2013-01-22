@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.Account.AccountAdditionStatus;
+import org.tdar.core.bean.billing.BillingActivity.BillingActivityType;
 import org.tdar.core.bean.billing.AccountGroup;
 import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.BillingActivityModel;
@@ -51,7 +52,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
      */
     public Set<Account> listAvailableAccountsForUser(Person user) {
         if (Persistable.Base.isNullOrTransient(user)) {
-            return Collections.EMPTY_SET;
+            return Collections.emptySet();
         }
         return getDao().findAccountsForUser(user);
     }
@@ -244,7 +245,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     public BillingActivity getSpaceActivity() {
         for (BillingActivity activity : getActiveBillingActivities()) {
-            if (activity.isSpecial()) {
+            if (activity.getActivityType() == BillingActivityType.TEST) {
                 continue;
             }
             if ((activity.getNumberOfFiles() == null || activity.getNumberOfFiles() == 0)
@@ -264,7 +265,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         List<BillingItem> items = new ArrayList<BillingItem>();
         logger.info("files: {} mb: {}", numFiles, numMb);
         for (BillingActivity activity : getActiveBillingActivities()) {
-            if (activity.isSpecial()) {
+            if (activity.getActivityType() == BillingActivityType.TEST) {
                 continue;
             }
             // 2 cases (1) exact value; (2) where the next step up might actually be cheaper
@@ -319,7 +320,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         }
 
         for (BillingActivity activity : getActiveBillingActivities()) {
-            if (activity.isSpecial()) {
+            if (activity.getActivityType() == BillingActivityType.TEST) {
                 continue;
             }
 

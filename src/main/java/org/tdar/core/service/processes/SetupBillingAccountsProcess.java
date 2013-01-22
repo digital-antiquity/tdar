@@ -2,9 +2,11 @@ package org.tdar.core.service.processes;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections.SetUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.Account;
@@ -71,9 +73,15 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
     @Override
     public void process(Person person) {
         try {
-            Set<Resource> resources = resourceService.findResourcesSubmittedByUser(person);
+            Set<Long> resourceIds = resourceService.findResourcesSubmittedByUser(person);
+            Iterator<Long> iter = resourceIds.iterator();
             ResourceEvaluator re = accountService.getResourceEvaluator();
-            re.evaluateResources(resources);
+            while (iter.hasNext()) {
+                Long next = iter.next();
+                Resource res = resourceService.find(next);
+                re.evaluateResources(res);
+            }
+            
             long spaceUsedInMb = EXTRA_MB + re.getSpaceUsedInMb();
             long filesUsed = EXTRA_FILES + re.getFilesUsed();
             PricingOption option = accountService.getCheapestActivityByFiles(filesUsed, spaceUsedInMb, true);
@@ -96,7 +104,11 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
             account.markUpdated(person);
             genericDao.saveOrUpdate(account);
             account.getInvoices().add(invoice);
-            accountService.updateQuota(accountService.getResourceEvaluator(), account, false, resources.toArray(new Resource[0]));
+            while (iter.hasNext()) {
+                Long next = iter.next();
+                Resource res = resourceService.find(next);
+                accountService.updateQuota(accountService.getResourceEvaluator(), account, false, res);
+            }
             genericDao.saveOrUpdate(account);
         } catch (Exception e) {
             logger.error("{}", e);

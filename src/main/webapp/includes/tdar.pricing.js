@@ -27,19 +27,26 @@ var _initPricing = function(form, ajaxUrl) {
       crossDomain: true,
       type:'POST',
       success: function(data) {
-       
-      $est.html("<h4>Suggested Pricing Options</h4><ul>");
+    	  var checked = "checked";
+    	  $est.html("");
+//      $est.html("<h4>Suggested Pricing Options</h4><ul>");
       for (var i=0; i < data.length; i++) {
-      var line = sprintf("<li><div><h5>Option {0}:{1} -- <span class='red'>${2}</span></h5><p><ul>", (i +1), data[i].model, data[i].subtotal );
+    	  var internal_name, label, num_files, num_space, extra_space, total_cost = "";
+    	  internal_name = data[i].model;
+    	  label = data[i].model;
+    	  total_cost = data[i].subtotal;
+      var line = sprintf("<tr><td><input type=radio name='pricingOption' value='{0}' {1} /> {2}</td><td>{3}</td><td>{4}</td><td>{5}</td><td>${6}</td><tr>", internal_name, checked, label, num_files, num_space, extra_space, total_cost);
+      checked = "";
+      //(i +1), data[i].model, data[i].subtotal );
       	for (var j=0; j < data[i].parts.length; j++) {
 	      	var part = data[i].parts[j];
-      		line += sprintf("<li> {0} <b>{1}</b> @ ${2} (${3})",  part.quantity , part.name , part.price  , part.subtotal );
+    //  		line += sprintf("<li> {0} <b>{1}</b> @ ${2} (${3})",  part.quantity , part.name , part.price  , part.subtotal );
       	}
-      line += "</ul> </p></div></li>";
+  //    line += "</ul> </p></div></li>";
 //      console.log(line);
 	      $est.append(line);
       };
-	$est.append("</ul>");
+//	$est.append("</ul>");
 	//	console.log(data);
         },
       error: function(xhr,txtStatus, errorThrown) {

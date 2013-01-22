@@ -370,7 +370,7 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
      */
     public void updateQuotas(ResourceEvaluator endingEvaluator) {
         AccountAdditionStatus status = canAddResource(endingEvaluator);
-        getResources().addAll(Arrays.asList(endingEvaluator.getResources()));
+//        getResources().addAll(Arrays.asList(endingEvaluator.getResources()));
         setFilesUsed(getFilesUsed() + endingEvaluator.getFilesUsed());
         setResourcesUsed(getResourcesUsed() + endingEvaluator.getResourcesUsed());
         setSpaceUsedInBytes(getSpaceUsedInBytes() + endingEvaluator.getSpaceUsedInBytes());
