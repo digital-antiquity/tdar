@@ -41,7 +41,7 @@
 
     </div>
 </div> 
-<div class="row" id="copyright"> 
+<div class="row no-print" id="copyright"> 
         <p class="copyright-notice span12"> 
             
 tDAR is the digital repository of <a
