@@ -1,6 +1,6 @@
 package org.tdar.core.bean.billing;
 
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -18,7 +18,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -368,9 +367,9 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
      * We always update quotas even if a resource overdraws because it's impossible later to reconcile how much something was overdrawn easily...
      * eg. was it because it was a "new resource" or because it was a new file, or 2k over
      */
-    public void updateQuotas(ResourceEvaluator endingEvaluator) {
+    public void updateQuotas(ResourceEvaluator endingEvaluator, Collection<Resource> list) {
         AccountAdditionStatus status = canAddResource(endingEvaluator);
-//        getResources().addAll(Arrays.asList(endingEvaluator.getResources()));
+        getResources().addAll(list);
         setFilesUsed(getFilesUsed() + endingEvaluator.getFilesUsed());
         setResourcesUsed(getResourcesUsed() + endingEvaluator.getResourcesUsed());
         setSpaceUsedInBytes(getSpaceUsedInBytes() + endingEvaluator.getSpaceUsedInBytes());

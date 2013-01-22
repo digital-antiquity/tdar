@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
@@ -34,6 +35,7 @@ import org.tdar.core.dao.external.payment.nelnet.TransactionResponse;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.struts.WriteableSession;
 import org.tdar.struts.data.PricingOption;
+import org.tdar.struts.data.PricingOption.PricingType;
 import org.tdar.struts.interceptor.PostOnly;
 
 @Component
@@ -62,6 +64,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     private Integer extraItemQuantity = 0;
     private String extraItemName;
     private String callback;
+    private PricingType pricingType = null;
 
     @Autowired
     PaymentTransactionProcessor paymentTransactionProcessor;
@@ -91,7 +94,18 @@ public class CartController extends AbstractPersistableController<Invoice> imple
             }
         }
 
-        getInvoice().getItems().addAll(getAccountService().calculateCheapestActivities(getInvoice()).getItems());
+        List<BillingItem> items = new ArrayList<BillingItem>();
+        if (getPricingType() != null) {
+            items = getAccountService().calculateActivities(getInvoice(), getPricingType()).getItems();
+        } else {
+            items = getAccountService().calculateCheapestActivities(getInvoice()).getItems();
+        }
+        if (CollectionUtils.isNotEmpty(items)) {
+            getInvoice().getItems().addAll(items);
+        } else {
+            throw new TdarRecoverableRuntimeException("no items were found");
+        }
+
         // if (accountId != -1) {
         // getGenericService().find(Account.class, accountId).getInvoices().add(getInvoice());
         // }
@@ -538,6 +552,14 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
     public void setExtraItemQuantity(Integer extraItemQuantity) {
         this.extraItemQuantity = extraItemQuantity;
+    }
+
+    public PricingType getPricingType() {
+        return pricingType;
+    }
+
+    public void setPricingType(PricingType pricingType) {
+        this.pricingType = pricingType;
     }
 
 }

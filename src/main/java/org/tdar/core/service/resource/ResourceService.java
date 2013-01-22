@@ -115,7 +115,7 @@ public class ResourceService extends GenericService {
         if (id == null)
             return null;
         ResourceType rt = datasetDao.findResourceType(id);
-        logger.info("finding resource " + id + " type:" + rt);
+        logger.trace("finding resource " + id + " type:" + rt);
         if (rt == null) {
             return null;
         }
