@@ -29,7 +29,6 @@ var _initPricing = function(form, ajaxUrl) {
       success: function(data) {
     	  var checked = "checked";
     	  $est.html("");
-//      $est.html("<h4>Suggested Pricing Options</h4><ul>");
       for (var i=0; i < data.length; i++) {
     	  var internal_name, label, num_files, num_space, extra_space, total_cost = "";
     	  internal_name = data[i].model;

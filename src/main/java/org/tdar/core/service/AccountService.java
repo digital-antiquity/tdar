@@ -223,8 +223,8 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         getDao().merge(account);
         AccountAdditionStatus status = AccountAdditionStatus.CAN_ADD_RESOURCE;
         try {
-            account.getResources().addAll(resourcesToEvaluate);
-            account.updateQuotas(endingEvaluator);
+//            account.getResources().addAll(resourcesToEvaluate);
+            account.updateQuotas(endingEvaluator,resourcesToEvaluate);
         } catch (TdarQuotaException e) {
             status = e.getCode();
             if (logModification)
@@ -364,6 +364,18 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             return lowestByFiles;
         }
         return lowestByMB;
+    }
+
+    public PricingOption calculateActivities(Invoice invoice, PricingType pricingType) {
+        switch (pricingType) {
+            case SIZED_BY_FILE_ABOVE_TIER:
+                return getCheapestActivityBySpace(invoice.getNumberOfFiles(), invoice.getNumberOfMb());
+            case SIZED_BY_FILE_ONLY:
+                return getCheapestActivityByFiles(invoice.getNumberOfFiles(), invoice.getNumberOfMb(), false);
+            case SIZED_BY_MB:
+                return getCheapestActivityBySpace(invoice.getNumberOfFiles(), invoice.getNumberOfMb());
+        }
+        return null;
     }
 
 }

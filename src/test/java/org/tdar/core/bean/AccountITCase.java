@@ -182,7 +182,10 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         Long filesUsed = account.getFilesUsed();
         assertFalse(account.getResources().contains(resource));
         logger.info("{}", re);
-        account.updateQuotas(re);
+        List<Resource> resources = new ArrayList<Resource>();
+        resources.add(resource);
+        account.updateQuotas(re, resources);
+        account.getResources().add(resource);
         assertTrue(account.getResources().contains(resource));
         assertEquals(spaceUsedInBytes.longValue() + re.getSpaceUsedInBytes(), account.getSpaceUsedInBytes().longValue());
         assertEquals(resourcesUsed.longValue() + re.getResourcesUsed(), account.getResourcesUsed().longValue());

@@ -73,6 +73,10 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
     public void process(Person person) {
         try {
             logger.info("starting process for " + person.getProperName());
+            if (person.getId() == 135028){
+                logger.debug("skipping user: {}", person.getProperName());
+                return;
+            }
             Set<Long> resourceIds = resourceService.findResourcesSubmittedByUser(person);
             Iterator<Long> iter = resourceIds.iterator();
             ResourceEvaluator re = accountService.getResourceEvaluator();
