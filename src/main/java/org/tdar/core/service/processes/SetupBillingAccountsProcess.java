@@ -1,11 +1,12 @@
 package org.tdar.core.service.processes;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.Account;
@@ -69,21 +70,35 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
         return true;
     }
 
+    public List<Resource> getNextResourceBatch(List<Long> queue) {
+        if (queue.isEmpty()) {
+            logger.trace("No more ids to process");
+            return Collections.emptyList();
+        }
+        int endIndex = Math.min(queue.size(), 100);
+        List<Long> sublist = queue.subList(0, endIndex);
+        ArrayList<Long> batch = new ArrayList<Long>(sublist);
+        sublist.clear();
+        logger.trace("batch {}", batch);
+        return resourceService.findAll(Resource.class, batch);
+    }
+
     @Override
     public void process(Person person) {
         try {
             logger.info("starting process for " + person.getProperName());
-            if (person.getId() == 135028){
+            if (person.getId() == 135028) {
                 logger.debug("skipping user: {}", person.getProperName());
                 return;
             }
             Set<Long> resourceIds = resourceService.findResourcesSubmittedByUser(person);
-            Iterator<Long> iter = resourceIds.iterator();
             ResourceEvaluator re = accountService.getResourceEvaluator();
-            while (iter.hasNext()) {
-                Long next = iter.next();
-                Resource res = resourceService.find(next);
-                re.evaluateResources(res);
+
+            List<Resource> nextResourceBatch = getNextResourceBatch(new ArrayList<Long>(resourceIds));
+
+            while (CollectionUtils.isNotEmpty(nextResourceBatch)) {
+                re.evaluateResources(nextResourceBatch);
+                getNextResourceBatch(new ArrayList<Long>(resourceIds));
             }
 
             long spaceUsedInMb = EXTRA_MB + re.getSpaceUsedInMb();
@@ -109,10 +124,9 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
             account.markUpdated(person);
             genericDao.saveOrUpdate(account);
             account.getInvoices().add(invoice);
-            while (iter.hasNext()) {
-                Long next = iter.next();
-                Resource res = resourceService.find(next);
-                accountService.updateQuota(accountService.getResourceEvaluator(), account, false, res);
+            nextResourceBatch = getNextResourceBatch(new ArrayList<Long>(resourceIds));
+            while (CollectionUtils.isNotEmpty(nextResourceBatch)) {
+                accountService.updateQuota(accountService.getResourceEvaluator(), account, false, nextResourceBatch.toArray(new Resource[0]));
             }
             genericDao.saveOrUpdate(account);
         } catch (Exception e) {
