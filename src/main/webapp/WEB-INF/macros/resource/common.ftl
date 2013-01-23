@@ -398,15 +398,6 @@ TDAR.uri = function(path) {
    </tr>
 </table>
 
-<!--[if IE]>
-<style>
-.barGraph table {
-    position:absolute;
-    bottom:5px;
-}
-</style>
-<![endif]-->
-
 <style>
 table td  {vertical-align:bottom;}
 
