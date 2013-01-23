@@ -33,7 +33,7 @@
 <div class="row">
 	<div class="span3">
 <h3>Rates</h3>
-		<table class="tableFormat">
+		<table class="tableFormat table">
 		    <tr>
 		        <th>Item</th>
 		        <th>Cost</th>
@@ -41,7 +41,7 @@
 		    <#list activities as act>
 		    <#if act.production >
 		    <tr>
-		        <td>${act.name} <#if (act.numberOfFiles > 0)>Files</#if></td>
+		        <td>${act.name}</td>
 		        <td>${act.price} ${act.currency!"USD"}</td>
 		    </tr> 
 			</#if>		    
@@ -60,32 +60,32 @@
 		<div id="suggested" class="tab-pane active">
 		<div class="row">
 			<div class="span2 well">
-			<h3>Small: <span class="red">$50</span></h3>
+			<h3><span class="red">$50</span>: Small</h3>
 			<ul>
 				<li>1 File</li>
 				<li>10 MB</li>
 			</ul>
 
-			<span class="tdar-button">Choose</span>
+			<span class="tdar-button" id="small-option">SELECT</span>
 			</div>
 			<div class="span2 well">
-			<h3>Medium:<span class="red">$500</span></h3>
+			<h3><span class="red">$500</span>: Medium</h3>
 			<ul>
 				<li>10 File</li>
 				<li>1200 MB</li>
 			</ul>
 
-			<span class="tdar-button">Choose</span>
+			<span class="tdar-button" id="medium-option">SELECT</span>
 			
 			</div>
 			<div class="span2 well">
-			<h3>Large <span class="red">$2,500</span></h3>
+			<h3><span class="red">$2,500</span>: Large </h3>
 			<ul>
 				<li>100 File</li>
 				<li>10500 MB</li>
 			</ul>
 
-			<span class="tdar-button">Choose</span>
+			<span class="tdar-button" id="large-option">SELECT</span>
 			</div>
 		</div>
 		
