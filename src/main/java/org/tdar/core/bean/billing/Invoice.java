@@ -378,5 +378,12 @@ public class Invoice extends Base implements Updatable {
     public void setResponse(BillingTransactionLog response) {
         this.response = response;
     }
+    
+    @Transient
+    //was this invoice created on someone elses behalf?
+    public boolean isProxy() {
+        if(owner == null || transactedBy == null) return false;
+        return !owner.equals(transactedBy);
+    }
 
 }
