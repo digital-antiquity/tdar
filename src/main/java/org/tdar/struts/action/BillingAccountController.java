@@ -207,5 +207,4 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     public void setName(String name) {
         this.name = name;
     }
-
 }
