@@ -415,13 +415,18 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
          * If the Persistable supports the "Viewable" interface, then inject the
          * permissions into the transient property
          */
+        logger.trace("applying transient viewable flag to : " + p.toString());
         if (p instanceof Viewable) {
+            logger.trace("item is a 'viewable': " + p.toString());
             boolean viewable = false; // by default -- not allowed to view
             Viewable item = (Viewable) p;
             if (item instanceof HasStatus) { // if we have status, then work off that
+                logger.trace("item 'has status': " + p.toString());
                 HasStatus status = ((HasStatus) item);
                 if (!status.isActive()) { // if not active, check other permissions
+                    logger.trace("item 'is not active': " + p.toString());
                     if (can(InternalTdarRights.VIEW_ANYTHING, authenticatedUser)) {
+                        logger.debug("\tuser is special': " + p.toString());
                         viewable = true;
                     }
                 } else {
@@ -429,16 +434,19 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
                 }
             }
             if (item instanceof ResourceCollection) {
+                logger.trace("item is resource collection: " + p.toString());
                 if (((ResourceCollection) item).isShared() && !((ResourceCollection) item).isInternal()) {
                     viewable = true;
                 }
             }
 
             if (item instanceof InformationResource) {
+                logger.trace("item is information resource (download): " + p.toString());
                 setTransientViewableStatus((InformationResource) item, authenticatedUser);
             }
 
-            if (!viewable && canEdit(authenticatedUser, p)) {
+            if (!viewable && canView(authenticatedUser, p)) {
+                logger.trace("user can edit: " + p.toString());
                 viewable = true;
             }
             item.setViewable(viewable);

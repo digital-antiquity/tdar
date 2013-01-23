@@ -12,8 +12,10 @@
 			{
 			"quantity":${item.quantity?c},
 			"price":${item.activity.price?c},
+			"numFiles":${(item.quantity * item.activity.numberOfFiles)?c},
+			"numMb":${(item.quantity * item.activity.numberOfMb)?c},
 			"subtotal":${item.subtotal?c},
-			"name": "${item.activity.name?js_string}"
+			"name": "<#if item.activity.numberOfFiles == 0>Extra Space<#else>Files</#if>"
 			}
 		<#assign count = count+1 />
 		</#if>
