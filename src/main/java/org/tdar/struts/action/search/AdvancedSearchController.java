@@ -381,7 +381,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     }
 
     private void updateResourceCreators(SearchParameters group) {
-        logger.info("updating proxies");
+        logger.trace("updating proxies");
         Map<ResourceCreatorProxy, List<ResourceCreatorProxy>> replacements = new HashMap<ResourceCreatorProxy, List<ResourceCreatorProxy>>();
         List<ResourceCreatorProxy> proxies = group.getResourceCreatorProxies();
         for (ResourceCreatorProxy proxy : proxies) {
