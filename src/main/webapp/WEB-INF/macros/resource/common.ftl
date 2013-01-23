@@ -981,6 +981,23 @@ this bit of freemarker is voodoo:
 </#function>
 
 
+<#--Collapse action messages them when in dev mode; they are typically annoying struts exceptions -->
+<#macro actionmessage>
+    <#if production!false>
+    <@s.actionmessage theme="bootstrap" />
+    <#else>
+        <#if (actionMessages?size>0) >
+        <div class="alert alert-info">
+            <span class="badge badge-info">${actionMessages?size}</span> 
+            <a href="#" data-toggle="collapse" data-target="#actionmessageContainer">System Notifications</a>
+        </div>
+        <div id="actionmessageContainer" class="collapse">
+        <@s.actionmessage theme="bootstrap" />
+        </div>   
+        </#if>
+    </#if>
+</div>
+</#macro>
 
 </#escape>
 

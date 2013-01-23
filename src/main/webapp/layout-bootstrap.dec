@@ -149,7 +149,7 @@
             <#if  page.properties["div.messages"]?? && page.properties["div.messages"] != "">
                 ${page.properties["div.messages"]}
             </#if>
-            <@s.actionmessage theme="bootstrap" />
+            <@common.actionmessage />
             <#if ((actionErrors![])?size > 0)>
             <h3>${siteAcronym} encountered the following problems with your submission</h3>
 				<#-- fixme -- @s.actionerrors need to be here, but in some cases, it duplicates errors -->
