@@ -46,11 +46,17 @@ var _initPricing = function(form, ajaxUrl) {
       
       checked = "";
       //(i +1), data[i].model, data[i].subtotal );
+      var total_files =0;
+      var total_mb = 0;
       	for (var j=0; j < item.parts.length; j++) {
       		var part = item.parts[j];
-      		var line = sprintf("<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td></tr>", part.name, part.numFiles, part.numMb, part.subtotal);
+      		var line = sprintf("<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>${3}</td></tr>", part.name, part.numFiles, part.numMb, part.subtotal);
+      		total_files += part.numFiles;
+      		total_mb += part.numMb;
       		$est.append(line);
       	}
+  		var line = sprintf("<tr><td></td><td class='subtotal'>{0}</td><td class='subtotal'>{1}</td><td class='red'>${2}</td></tr>", total_files, total_mb, subtotal);
+  		$est.append(line);
       //};
 //	$est.append("</ul>");
 	//	console.log(data);
