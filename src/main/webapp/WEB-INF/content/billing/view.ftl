@@ -60,6 +60,7 @@
 <table class="tableFormat table">
     <tr>
         <th>name</th>
+        <th>owner</th>
 		<th>files</th>
 		<th>space</th>
 		<th>resources</th>
@@ -68,6 +69,12 @@
 <#list account.invoices as invoice>
     <tr>
         <td><a href="<@s.url value="/cart/${invoice.id?c}" />"/>${invoice.dateCreated}</a></td>
+        <td>
+            ${invoice.owner.properName}
+            <#if invoice.proxy>
+                c/o ${invoice.transactedBy.properName}
+            </#if>
+        </td>
         <td> ${invoice.totalNumberOfFiles}</td>
         <td> ${invoice.totalSpaceInMb}</td>
         <td> ${invoice.totalResources}</td>

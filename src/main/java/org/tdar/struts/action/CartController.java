@@ -106,15 +106,27 @@ public class CartController extends AbstractPersistableController<Invoice> imple
             throw new TdarRecoverableRuntimeException("no items were found");
         }
 
-        // if (accountId != -1) {
-        // getGenericService().find(Account.class, accountId).getInvoices().add(getInvoice());
-        // }
-        // this may be 'different' from the owner
         getInvoice().setTransactedBy(getAuthenticatedUser());
-        // if (Persistable.Base.isNullOrTransient(getInvoice().getAddress())) {
+        processOwner();
         setSaveSuccessPath(SIMPLE);
-        // }
-        return SUCCESS;
+        
+        return getActionErrors().isEmpty() ? SUCCESS : INPUT;
+    }
+    
+    /**
+     * if user is billing manager, validate the invoiceOwner.  If not billing manager, set owner to authUser().
+     */
+    private void processOwner() {
+        if(isBillingManager()) {
+            if(Persistable.Base.isNotNullOrTransient(getInvoice().getOwner())) {
+                Person owner = getEntityService().findPerson(getInvoice().getOwner().getId());
+                getInvoice().setOwner(owner);
+            } else {
+                addActionError("Choose a valid invoice owner");
+            }
+        }else {
+           getInvoice().setOwner(getAuthenticatedUser()); 
+        }
     }
 
     @Override

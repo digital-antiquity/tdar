@@ -4,7 +4,7 @@
 <#import "/WEB-INF/macros/resource/common.ftl" as common>
 <#import "/WEB-INF/macros/resource/list-macros.ftl" as list>
 <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
-<#import "common-invoice.ftl" as invoicecommon >
+<#import "/WEB-INF/content/cart/common-invoice.ftl" as invoicecommon >
 
 <head>
 <title>Review Billing Information</title>
@@ -17,6 +17,7 @@
     <@s.hidden name="id" value="${invoice.id?c!-1}" />
 <#--    <@s.hidden name="invoice.id" /> -->
 
+<@invoicecommon.proxyNotice />
 
 <@invoicecommon.printInvoice />
 <#if invoice.owner.addresses?has_content>
