@@ -29,22 +29,29 @@ var _initPricing = function(form, ajaxUrl) {
       success: function(data) {
     	  var checked = "checked";
     	  $est.html("");
+    	  var subtotal = 100000000000000000;
+    	  var item = {};
       for (var i=0; i < data.length; i++) {
     	  var internal_name, label, num_files, num_space, extra_space, total_cost = "";
     	  internal_name = data[i].model;
     	  label = data[i].model;
     	  total_cost = data[i].subtotal;
-      var line = sprintf("<tr><td><input type=radio name='pricingOption' value='{0}' {1} /> {2}</td><td>{3}</td><td>{4}</td><td>{5}</td><td>${6}</td><tr>", internal_name, checked, label, num_files, num_space, extra_space, total_cost);
+    	  if (subtotal > total_cost) {
+    		  item = data[i];
+    		  subtotal = data[i].subtotal;
+    	  }
+      }
+      
+      $("#price").html(item.subtotal);
+      
       checked = "";
       //(i +1), data[i].model, data[i].subtotal );
-      	for (var j=0; j < data[i].parts.length; j++) {
-	      	var part = data[i].parts[j];
-    //  		line += sprintf("<li> {0} <b>{1}</b> @ ${2} (${3})",  part.quantity , part.name , part.price  , part.subtotal );
+      	for (var j=0; j < item.parts.length; j++) {
+      		var part = item.parts[j];
+      		var line = sprintf("<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td></tr>", part.name, part.numFiles, part.numMb, part.subtotal);
+      		$est.append(line);
       	}
-  //    line += "</ul> </p></div></li>";
-//      console.log(line);
-	      $est.append(line);
-      };
+      //};
 //	$est.append("</ul>");
 	//	console.log(data);
         },

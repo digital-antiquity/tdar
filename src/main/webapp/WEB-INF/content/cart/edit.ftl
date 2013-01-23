@@ -13,7 +13,7 @@
 </head>
 <body>
 <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='save'>
-<#if billingManager>
+<#if billingManager && false>
 <div class="admin-only">
     <h1>Choose the Invoice Owner</h1>
     <div class="control-group">
@@ -37,15 +37,15 @@
 		
 		<div class="control-group">
 		    <label class="control-label">Number of Mb</label>
-				    <div class="controls">
+		    <div class="controls">
 			<@s.textfield name="invoice.numberOfMb" label="Number of Mb"  theme="simple" cssClass="integer span2"/>
 			<span id="convert"></span>
 		</div>
 		<br/>
 		<div >
-			<h4>Suggested Pricing Options</h4>
+			<h4>Cost: $<span class="red" id="price">0.00</span></h4>
 			<table class="table tableFormat">
-				<tr><th>Option</th><th>Files</th><th>Space</th><th>extra space</th><th>Cost</th></tr>
+				<tr><th>Item</th><th> # Files</th><th>Space in MB</th><th>Subtotal</th></tr>
 				<tbody id="estimated">
 				<tr><td colspan=5>enter number of files and mb above</td>	
 				</tbody>
@@ -81,17 +81,17 @@
 	<div class="span6">
 		<table class="tableFormat">
 		    <tr>
-		        <th>Level</th>
-		        <th># of files</th>
+		        <th>Item</th>
+<#--		        <th># of files</th>
 		        <th># of mb</th>
-		        <th>cost / file</th>
+-->		        <th>Cost</th>
 		    </tr>
 		    <#list activities as act>
 		    <#if act.production >
 		    <tr>
-		        <td>${act.name}</td>
-		        <td>${act.numberOfFiles!0}</td>
-		        <td>${act.numberOfMb!0}</td>
+		        <td>${act.name} <#if (act.numberOfFiles > 0)>Files</#if></td>
+<#--		        <td>${act.numberOfFiles!0}</td>
+		        <td>${act.numberOfMb!0}</td> -->
 		        <td>${act.price} ${act.currency!"USD"}</td>
 		    </tr> 
 			</#if>		    
