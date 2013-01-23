@@ -12,9 +12,24 @@
 </style>
 </head>
 <body>
+<@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='save'>
+<#if billingManager>
+<div class="admin-only">
+    <h1>Choose the Invoice Owner</h1>
+    <div class="control-group">
+        <label class="control-label">Invoice Owner</label>
+        <div class="controls">
+            <@edit.userRow person=blankAuthorizedUser.user _indexNumber="" isDisabled=false includeRole=false _personPrefix="" prefix="assignedOwner" 
+                    includeRights=false isUser=true includeRepeatRow=true/>
+            <div class="span1">
+                <@edit.clearDeleteButton id="clearAssignedOwner" />
+            </div>
+        </div>
+    </div>
+</div>
+</#if>
 
 <h1>What would you like to put into tDAR?</h1>
-	<@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='save'>
 <div class="row">
 	<div class="span6">
 		<div class="well">
@@ -93,6 +108,7 @@
 $(document).ready(function(){
     TDAR.common.initEditPage($('#MetadataForm')[0]);
     TDAR.pricing.initPricing($('#MetadataForm')[0], "<@s.url value="/cart/api"/>");
+    applyPersonAutoComplete($(".userAutoComplete"), true, false);
 });
 </script>
 

@@ -19,7 +19,6 @@
 
 
 <@invoicecommon.printInvoice />
-<div class="container row">
 <#if invoice.owner.addresses?has_content>
 <h3>Choose an existing address</h3>
 <#assign addressId = ""/>
@@ -30,7 +29,6 @@
 </#if>
 <h3>Choose Payment Method</h3>
 <@invoicecommon.paymentMethod includePhone=false />
-</div>
 </@s.form>
 </body>
 </#escape>

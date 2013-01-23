@@ -41,6 +41,8 @@ public interface AuthenticationAware extends SessionDataAware {
 
     boolean isAuthenticated();
 
+    public abstract boolean isBillingManager();
+
     public abstract static class Base extends TdarActionSupport implements AuthenticationAware {
 
         private static final long serialVersionUID = -7792905441259237588L;
@@ -156,6 +158,15 @@ public interface AuthenticationAware extends SessionDataAware {
         public int getSessionTimeout() {
             return getServletRequest().getSession().getMaxInactiveInterval();
         }
+
+        /**
+         * return true if authenticated user has permission to assign other users as the owner of an invoice
+         * @return
+         */
+        public boolean isBillingManager() {
+            return getAuthenticationAndAuthorizationService().isBillingManager(getAuthenticatedUser());
+        }
+        
     }
 
 }
