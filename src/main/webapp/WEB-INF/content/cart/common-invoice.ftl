@@ -86,4 +86,13 @@ $(document).ready(function() {
 
 </#macro>
 
+<#macro proxyNotice>
+<#if invoice.proxy>
+<div class="alert">
+    <strong>Proxy Invoice:</strong>
+    You are creating this invoice on behalf of ${invoice.owner.properName}.
+</div>
+</#if>
+</#macro>
+
 </#escape>
