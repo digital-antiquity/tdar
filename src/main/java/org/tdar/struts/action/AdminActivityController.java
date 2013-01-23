@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.util.ScheduledProcess;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.TdarGroup;
@@ -47,6 +48,7 @@ public class AdminActivityController extends AuthenticationAware.Base {
     private List<Activity> activityList = new ArrayList<Activity>();
 
     private HashMap<String, Integer> counters;
+    private List<Person> activePeople;
 
     @Action(value = "activity")
     public String execute() {
@@ -82,6 +84,9 @@ public class AdminActivityController extends AuthenticationAware.Base {
             }
             getCounters().put(activity.getBrowser(), num);
         }
+        
+        setActivePeople(getAuthenticationAndAuthorizationService().getCurrentlyActiveUsers());
+        
         return SUCCESS;
     }
 
@@ -131,6 +136,14 @@ public class AdminActivityController extends AuthenticationAware.Base {
 
     public void setCounters(HashMap<String, Integer> counters) {
         this.counters = counters;
+    }
+
+    public List<Person> getActivePeople() {
+        return activePeople;
+    }
+
+    public void setActivePeople(List<Person> activePeople) {
+        this.activePeople = activePeople;
     }
 
 }

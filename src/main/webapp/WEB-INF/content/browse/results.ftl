@@ -20,7 +20,7 @@
     <br/>
         <#if creator.creatorType == 'PERSON'>
            <#if authenticated && (editor ||  id == authenticatedUser.id ) >
-                <table class='tableFormat'>
+                <table class='tableFormat table'>
                 <tr>
                     <td>
                             <B>Registered Public Archaeologist</B>:${creator.rpaNumber!"no"}

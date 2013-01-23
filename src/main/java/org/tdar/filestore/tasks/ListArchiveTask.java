@@ -23,6 +23,8 @@ public class ListArchiveTask extends AbstractTask {
 
     private static final long serialVersionUID = 5392550508417818439L;
 
+    private long effectiveSize = 0l;
+    
     /*
      * (non-Javadoc)
      * 
@@ -47,16 +49,16 @@ public class ListArchiveTask extends AbstractTask {
         // write that to a file with a known format (one file per line)
         FileUtils.writeStringToFile(f, archiveContents.toString());
         InformationResourceFileVersion version = generateInformationResourceFileVersion(f, VersionType.TRANSLATED);
+        getWorkflowContext().getOriginalFile().setUncompressedSizeOnDisk(getEffectiveSize());
         getWorkflowContext().addVersion(version);
     }
 
     public void listFiles(StringBuilder archiveContents, File archiveFile, File originalFile) {
         for (File file : archiveFile.listFiles()) {
             getLogger().trace(file.getPath());
-            
-            archiveContents.append(
-                    originalFile.toURI().relativize(file.toURI()).toString()
-                    ).append(System.getProperty("line.separator"));
+            setEffectiveSize(getEffectiveSize() + file.length());
+            String uri = originalFile.toURI().relativize(file.toURI()).toString();
+            archiveContents.append(uri).append(System.getProperty("line.separator"));
             if (file.isDirectory()) {
                 listFiles(archiveContents, file, originalFile);
             }
@@ -71,6 +73,14 @@ public class ListArchiveTask extends AbstractTask {
     @Override
     public String getName() {
         return "list archive task";
+    }
+
+    public long getEffectiveSize() {
+        return effectiveSize;
+    }
+
+    public void setEffectiveSize(long effectiveSize) {
+        this.effectiveSize = effectiveSize;
     }
 
 }

@@ -114,6 +114,10 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
         return greatestPermissionGroup.hasGreaterPermissions(requestedPermissionsGroup);
     }
 
+    public synchronized List<Person> getCurrentlyActiveUsers() {
+        return new ArrayList<Person>(groupMembershipCache.keySet());
+    }
+    
     // return all of the resource statuses that a user is allowed to view in a search.
     public Set<Status> getAllowedSearchStatuses(Person person) {
         // assumption: ACTIVE always allowed.
