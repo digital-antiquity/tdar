@@ -74,7 +74,8 @@ a:hover {
 	color: #1b1a18;
 }
 
-a.button {
+
+a.button, .tdar-button {
 	font-family: helvetica, arial, sans-serif;
 //	width: 130px;
 	height: 35px;
@@ -98,7 +99,7 @@ a.button {
 	padding-right: 8px;
 }
 
-a.button:hover {
+a.button:hover , .tdar-button:hover {
 	background: #c74534;
 	text-decoration: none;
 }
