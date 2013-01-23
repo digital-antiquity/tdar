@@ -15,6 +15,14 @@ pre, td {
 <hr/>
 <@s.actionerror />
 
+<h3>Active Users</h3>
+<ul>
+	<#list activePeople as user>
+	<li>${user.properName}</li>
+	</#list>
+</ul>
+
+
 <h3>Recent Actions</h3>
 <table class="tableFormat">
     <thead>
