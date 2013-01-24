@@ -71,17 +71,18 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
     }
 
     public List<Resource> getNextResourceBatch(List<Long> queue) {
-        if (queue.isEmpty()) {
+//        if (queue.isEmpty()) {
             logger.trace("No more ids to process");
             return Collections.emptyList();
-        }
-        int endIndex = Math.min(queue.size(), 100);
-        List<Long> sublist = queue.subList(0, endIndex);
-        ArrayList<Long> batch = new ArrayList<Long>(sublist);
-        sublist.clear();
-        logger.trace("batch {}", batch);
-        return resourceService.findAll(Resource.class, batch);
-    }
+//        }
+//        int endIndex = Math.min(queue.size(), 100);
+//        List<Long> sublist = queue.subList(0, endIndex);
+//        ArrayList<Long> batch = new ArrayList<Long>(sublist);
+//        sublist.clear();
+//        logger.trace("batch {}", batch);
+//        return resourceService.findAll(Resource.class, batch);
+// 
+            }
 
     @Override
     public void process(Person person) {
