@@ -12,10 +12,10 @@
 			{
 			"quantity":${item.quantity?c},
 			"price":${item.activity.price?c},
-			"numFiles":${(item.quantity!0 * item.activity.numberOfFiles!0)?c},
-			"numMb":${(item.quantity!0 * item.activity.numberOfMb!0)?c},
+			"numFiles":${(item.activity.numberOfFiles!0)?c},
+			"numMb":${(item.activity.numberOfMb!0)?c},
 			"subtotal":${item.subtotal?c},
-			"name": "<#if (item.activity.numberOfFiles?has_content &&  item.activity.numberOfFiles == 0)>Extra Space<#else>Files</#if>"
+			"name": "<#if (!item.activity.numberOfFiles?has_content || item.activity.numberOfFiles == 0)>Extra Space<#else>Files</#if>"
 			}
 		<#assign count = count+1 />
 		</#if>
