@@ -333,3 +333,6 @@ alter table pos_invoice add column transaction_id varchar(255);
 alter table pos_invoice add column response_id bigint references pos_transaction_log;
 alter table pos_billing_activity add column activity_type varchar(25) default 'PRODUCTION';
 update pos_billing_activity set activity_type = 'TEST' where name in ('good','error', 'decline', 'unknown');
+
+-- 1-24-13
+ALTER table pos_billing_activity add column sort_order int;

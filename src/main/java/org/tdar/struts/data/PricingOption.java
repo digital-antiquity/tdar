@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.billing.BillingItem;
 
@@ -52,7 +53,11 @@ public class PricingOption implements Serializable {
     }
 
     public boolean sameAs(PricingOption other) {
-        if (this.getItems().size() != other.getItems().size()) {
+        if (other == null) {
+            return false;
+        }
+        
+        if (ObjectUtils.notEqual(getItems().size() , other.getItems().size())) {
             return false;
         }
         Map<Long, Integer> compMap = new HashMap<Long, Integer>();

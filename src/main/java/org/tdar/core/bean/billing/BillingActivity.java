@@ -8,6 +8,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Persistable;
@@ -20,7 +21,7 @@ import org.tdar.core.dao.external.auth.TdarGroup;
  */
 @Entity
 @Table(name = "pos_billing_activity")
-public class BillingActivity extends Persistable.Base {
+public class BillingActivity extends Persistable.Base implements Comparable<BillingActivity> {
 
     private static final long serialVersionUID = 6891881586235180640L;
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
@@ -42,6 +43,10 @@ public class BillingActivity extends Persistable.Base {
     @Enumerated(EnumType.STRING)
     @Column(name = "activity_type")
     private BillingActivityType activityType = BillingActivityType.PRODUCTION;
+    
+    
+    @Column(name = "sort_order")
+    private Integer order;
     
     @ManyToOne(optional = false)
     @NotNull
@@ -221,5 +226,22 @@ public class BillingActivity extends Persistable.Base {
 
     public void setActivityType(BillingActivityType activityType) {
         this.activityType = activityType;
+    }
+
+    public Integer getOrder() {
+        return order;
+    }
+
+    public void setOrder(Integer order) {
+        this.order = order;
+    }
+
+    @Override
+    public int compareTo(BillingActivity o) {
+        if (!ObjectUtils.equals(getOrder(), o.getOrder())) {
+            return ObjectUtils.compare(getOrder(), o.getOrder());
+        } else {
+            return ObjectUtils.compare(getName(), o.getName());
+        }
     }
 }
