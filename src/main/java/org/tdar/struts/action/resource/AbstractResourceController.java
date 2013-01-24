@@ -80,6 +80,8 @@ import edu.asu.lib.mods.ModsDocument;
  */
 public abstract class AbstractResourceController<R extends Resource> extends AbstractPersistableController<R> {
 
+    public static final String THIS_RECORD_IS_IN_DRAFT_AND_IS_ONLY_AVAILABLE_TO_AUTHORIZED_USERS = "this record is in draft and is only available to authorized users";
+
     private static final long serialVersionUID = 8620875853247755760L;
 
     private List<MaterialKeyword> allMaterialKeywords;
@@ -313,7 +315,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         // don't judge me I hate this code too.
         if (getResource().isDraft()) {
             logger.trace("resource not viewable because it is draft: {}", getPersistable());
-            throw new TdarActionException(StatusCode.OK.withResultName("draft"), "this record is in draft and is only available to authorized users");
+            throw new TdarActionException(StatusCode.OK.withResultName("draft"), THIS_RECORD_IS_IN_DRAFT_AND_IS_ONLY_AVAILABLE_TO_AUTHORIZED_USERS);
         }
 
         return false;

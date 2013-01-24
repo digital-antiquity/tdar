@@ -57,6 +57,8 @@ import org.tdar.utils.HashQueue;
  */
 public abstract class AbstractInformationResourceController<R extends InformationResource> extends AbstractResourceController<R> {
 
+    public static final String WE_WERE_UNABLE_TO_PROCESS_THE_UPLOADED_CONTENT = "We were unable to process the uploaded content.";
+
     public static final String FILE_INPUT_METHOD = "text";
 
     private static final long serialVersionUID = -200666002871956655L;
@@ -276,7 +278,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             setResourceFilesHaveChanged(true);
             processUploadedFiles(modifiedFiles);
         } catch (IOException e) {
-            addActionErrorWithException("We were unable to process the uploaded content.", e);
+            addActionErrorWithException(WE_WERE_UNABLE_TO_PROCESS_THE_UPLOADED_CONTENT, e);
         }
         getInformationResourceService().saveOrUpdate(getPersistable());
         getLogger().trace("done processing upload files");
