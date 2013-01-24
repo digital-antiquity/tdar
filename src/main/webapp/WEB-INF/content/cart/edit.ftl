@@ -13,20 +13,6 @@
 </head>
 <body>
 <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='save'>
-<#if billingManager>
-<div class="admin-only">
-    <h1>Choose the Invoice Owner</h1>
-    <div class="control-group">
-        <label class="control-label">Invoice Owner</label>
-        <div class="controls">
-        <@edit.userRow person=blankAuthorizedUser.user _indexNumber="" isDisabled=false includeRole=false _personPrefix="owner" prefix="invoice" 
-                includeRights=false isUser=true includeRepeatRow=true/>
-
-            <@edit.clearDeleteButton id="clearAssignedOwner" />
-        </div>
-    </div>
-</div>
-</#if>
 
 <h1>What would you like to put into tDAR?</h1>
 <div class="row">
@@ -144,6 +130,24 @@
 	</div>
 	</div>
 </div>
+
+
+<#if billingManager>
+<div class="admin-only">
+    <h1>Choose the Invoice Owner</h1>
+    <div class="control-group">
+        <label class="control-label">Invoice Owner</label>
+        <div class="controls">
+        <@edit.userRow person=blankAuthorizedUser.user _indexNumber="" isDisabled=false includeRole=false _personPrefix="owner" prefix="invoice" 
+                includeRights=false isUser=true includeRepeatRow=true/>
+
+            <@edit.clearDeleteButton id="clearAssignedOwner" />
+        </div>
+    </div>
+</div>
+</#if>
+
+
 <div class="row">
     <@edit.submit fileReminder=false label="Next: Review & Choose Payment Method" />
 </div>

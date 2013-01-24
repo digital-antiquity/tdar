@@ -64,6 +64,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
                 toReturn.add(activity);
             }
         }
+        Collections.sort(toReturn);
         logger.trace("{}", toReturn);
         return toReturn;
 
@@ -223,12 +224,12 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         getDao().merge(account);
         AccountAdditionStatus status = AccountAdditionStatus.CAN_ADD_RESOURCE;
         try {
-//            account.getResources().addAll(resourcesToEvaluate);
-            account.updateQuotas(endingEvaluator,resourcesToEvaluate);
+            // account.getResources().addAll(resourcesToEvaluate);
+            account.updateQuotas(endingEvaluator, resourcesToEvaluate);
         } catch (TdarQuotaException e) {
             status = e.getCode();
             if (logModification)
-            markResourcesAsFlagged(resourcesToEvaluate);
+                markResourcesAsFlagged(resourcesToEvaluate);
             logger.info("marking {} resources {} FLAGGED", status, resourcesToEvaluate);
         }
         if (status == AccountAdditionStatus.CAN_ADD_RESOURCE && logModification) {
@@ -264,24 +265,27 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         }
         List<BillingItem> items = new ArrayList<BillingItem>();
         logger.info("files: {} mb: {}", numFiles, numMb);
+
         for (BillingActivity activity : getActiveBillingActivities()) {
-            if (activity.getActivityType() == BillingActivityType.TEST) {
+            int calculatedNumberOfFiles = numFiles.intValue();             //Don't use test activities or activities that are Just about MB
+            if (activity.getActivityType() == BillingActivityType.TEST || !activity.supportsFileLimit()) {
                 continue;
             }
+            logger.trace("n:{} min:{}", numFiles, activity.getMinAllowedNumberOfFiles());
+            if (exact && numFiles < activity.getMinAllowedNumberOfFiles())
+                continue;
+
             // 2 cases (1) exact value; (2) where the next step up might actually be cheaper
-            int files = numFiles.intValue();
-            if (!exact && activity.supportsFileLimit() && activity.getMinAllowedNumberOfFiles() > numFiles) {
-                files = activity.getMinAllowedNumberOfFiles().intValue();
+            if (!exact && activity.getMinAllowedNumberOfFiles() >= numFiles) {
+                calculatedNumberOfFiles = activity.getMinAllowedNumberOfFiles().intValue();
             }
 
-            if (!activity.supportsFileLimit() || exact && files < activity.getMinAllowedNumberOfFiles())
-                continue;
 
-            BillingItem e = new BillingItem(activity, files);
+            BillingItem e = new BillingItem(activity, calculatedNumberOfFiles);
             logger.trace(" -- {} ({})", e.getActivity().getName(), e);
             items.add(e);
         }
-
+        logger.trace("{} {}", option , items);
         // finding the cheapest
         BillingItem lowest = null;
         for (BillingItem item : items) {
@@ -295,6 +299,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         BillingActivity spaceActivity = getSpaceActivity();
         if (lowest == null) {
             logger.error("no options found for f:{} m:{} ", numFiles, numMb);
+            return null;
         }
         Long spaceAvailable = lowest.getQuantity() * lowest.getActivity().getNumberOfMb();
         Long spaceNeeded = numMb - spaceAvailable;

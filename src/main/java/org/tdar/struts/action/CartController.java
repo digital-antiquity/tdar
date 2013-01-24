@@ -146,7 +146,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
                     @Result(name = SUCCESS, type = "freemarker", location = "api.ftl", params = { "contentType", "application/json" }) })
     public String api() {
         if (isNotNullOrZero(lookupFileCount) || isNotNullOrZero(lookupMBCount)) {
-            pricingOptions.add(getAccountService().getCheapestActivityByFiles(lookupFileCount, lookupMBCount, false));
+            addPricingOption(getAccountService().getCheapestActivityByFiles(lookupFileCount, lookupMBCount, false));
             addPricingOption(getAccountService().getCheapestActivityByFiles(lookupFileCount, lookupMBCount, true));
             addPricingOption(getAccountService().getCheapestActivityBySpace(lookupFileCount, lookupMBCount));
         }
@@ -160,15 +160,19 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         return true;
     }
 
-    private void addPricingOption(PricingOption cheapestActivityBySpace) {
+    private void addPricingOption(PricingOption incoming) {
+        if (incoming == null) {
+            return;
+        }
         boolean add = true;
+        
         for (PricingOption option : pricingOptions) {
-            if (option.sameAs(cheapestActivityBySpace)) {
+            if (option == null || option.sameAs(incoming)) {
                 add = false;
             }
         }
         if (add) {
-            pricingOptions.add(cheapestActivityBySpace);
+            pricingOptions.add(incoming);
         }
     }
 

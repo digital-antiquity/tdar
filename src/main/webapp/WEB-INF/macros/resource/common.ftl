@@ -987,6 +987,7 @@ this bit of freemarker is voodoo:
     <@s.actionmessage theme="bootstrap" />
     <#else>
         <#if (actionMessages?size>0) >
+        <!-- FIXME: make this smarter to show messages that don't match "struts.devMode to false" -->
         <div class="alert alert-info">
             <span class="badge badge-info">${actionMessages?size}</span> 
             <a href="#" data-toggle="collapse" data-target="#actionmessageContainer">System Notifications</a>
