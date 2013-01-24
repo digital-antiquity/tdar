@@ -570,7 +570,7 @@ No coding rules have been entered for this coding sheet yet.
             <!-- Put the thumbnail content in a div with the class .showcase-thumbnail --> 
             </#if>
             <div class="showcase-thumbnail"> 
-              <img  alt="${irfile.latestUploadedVersion.filename}" src="<@s.url value="/filestore/${irfile.latestThumbnail.id?c}/thumbnail"/>"  />
+              <img alt="${irfile.latestUploadedVersion.filename}" src="<@s.url value="/filestore/${irfile.latestThumbnail.id?c}/thumbnail"/>"  />
               <!-- The div below with the class .showcase-thumbnail-caption contains the thumbnail caption. --> 
               <!-- The div below with the class .showcase-thumbnail-cover is used for the thumbnails active state. --> 
               <div class="showcase-thumbnail-cover"></div> 
