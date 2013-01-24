@@ -235,6 +235,8 @@ public class SearchIndexService {
             for (C toIndex : indexable) {
                 log.debug("indexing: " + toIndex);
                 try {
+                    //if we were called via async, the objects will belong to managed by the current hib session.   
+                    //purge them from the session and merge w/ transient object to get it back on the session before indexing.
                     fullTextSession.purge(toIndex.getClass(), toIndex.getId());
                     index(fullTextSession, genericService.merge(toIndex));
                 } catch (Exception e) {
