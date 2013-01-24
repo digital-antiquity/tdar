@@ -129,8 +129,8 @@ TDAR.fileupload = function() {
         // data.dataType: deletion response type, e.g. "json"
         
         var $row = data.context;
-        //how we handle delete depends on whether we are creating a resource or editing a resource.  If creating,  tell the server ignore what we just sent. 
-        var newUpload = $row.closest("form").find("input[name=id]").length === 0;
+        //If pre-existing, tell server to delete the file.  If we just sent it, tell server to ignore it. 
+        var newUpload = parseInt($row.find(".fileId").val()) <= 0;
         var $btnDelete = $("button.delete-button", data.context);
         var $hdnAction = $(".fileAction", data.context);
         if($btnDelete.data("type") === "DELETE") {
