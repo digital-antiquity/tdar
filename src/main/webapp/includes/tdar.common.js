@@ -955,10 +955,6 @@ TDAR.common = function() {
        
        //fade in the wait icon
        $submitDivs.find(".waitingSpinner").show();
-       
-       //reenable after reasonable time, e.g. so user can resubmit if user stopped the request (can't trust window.onstop)
-       window.setTimeout(_submitButtonStopWait, 20 * 1000);
-       
    };
    
    var _submitButtonStopWait = function() {
