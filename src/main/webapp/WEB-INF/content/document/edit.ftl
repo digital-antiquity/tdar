@@ -71,8 +71,8 @@
         <div class="control-group">
             <label class="control-label">Start/End Page</label>
             <div class="controls controls-row">
-                <@s.textfield theme="tdar" id='startPage' placeholder="Start#" name='document.startPage' cssClass="span1" />
-                <@s.textfield theme="tdar" id='endPage'  placeholder="End#" name='document.endPage' cssClass="span1" />
+                <@s.textfield theme="tdar" id='startPage' placeholder="Start#" name='document.startPage' cssClass="span1" maxlength=9/>
+                <@s.textfield theme="tdar" id='endPage'  placeholder="End#" name='document.endPage' cssClass="span1" maxlength=9 />
             </div>
         </div>    
     </div>
