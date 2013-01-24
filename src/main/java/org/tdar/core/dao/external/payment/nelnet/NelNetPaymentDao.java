@@ -47,15 +47,19 @@ public class NelNetPaymentDao extends Configurable implements PaymentTransaction
     }
 
     public boolean isConfigured() {
-        if (StringUtils.isNotBlank(getSecretWord()) && StringUtils.isNotBlank(getTransactionPostUrl())) {
+        if (StringUtils.isNotBlank(getSecretRequestWord()) && StringUtils.isNotBlank(getSecretResponseWord()) && StringUtils.isNotBlank(getTransactionPostUrl())) {
             return true;
         }
         logger.debug("a required parameter for the EzidDao was not provided. " + configIssue);
         return false;
     }
 
-    public String getSecretWord() {
-        return assistant.getStringProperty("secret.word");
+    public String getSecretRequestWord() {
+        return assistant.getStringProperty("secret.word.passthrough");
+    }
+
+    public String getSecretResponseWord() {
+        return assistant.getStringProperty("secret.word.real.time.notification");
     }
 
     /*
@@ -85,7 +89,7 @@ public class NelNetPaymentDao extends Configurable implements PaymentTransaction
     public String prepareRequest(Invoice invoice) throws URIException {
         genericDao.saveOrUpdate(invoice);
         genericDao.markReadOnly(invoice);
-        NelNetTransactionRequestTemplate template = new NelNetTransactionRequestTemplate(getOrderType(), getSecretWord());
+        NelNetTransactionRequestTemplate template = new NelNetTransactionRequestTemplate(getOrderType(), getSecretRequestWord());
         template.populateHashMapFromInvoice(invoice);
         template.constructHashKey();
         String urlSuffix = template.constructUrlSuffix();
@@ -100,7 +104,7 @@ public class NelNetPaymentDao extends Configurable implements PaymentTransaction
     @Override
     public NelNetTransactionResponseTemplate processResponse(Map<String, String[]> parameters) {
         logger.info("parameters: {}  ", parameters);
-        NelNetTransactionResponseTemplate response = new NelNetTransactionResponseTemplate(getSecretWord());
+        NelNetTransactionResponseTemplate response = new NelNetTransactionResponseTemplate(getSecretResponseWord());
         response.setValues(parameters);
 
         return response;
@@ -145,7 +149,7 @@ public class NelNetPaymentDao extends Configurable implements PaymentTransaction
     }
 
     public TransactionResponse setupTransactionResponse(Map<String, String[]> values) {
-        NelNetTransactionResponseTemplate response = new NelNetTransactionResponseTemplate(getSecretWord());
+        NelNetTransactionResponseTemplate response = new NelNetTransactionResponseTemplate(getSecretResponseWord());
         response.setValues(values);
         return response;
     }
