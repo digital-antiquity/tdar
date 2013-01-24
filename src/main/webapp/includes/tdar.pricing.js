@@ -20,6 +20,7 @@ var _initPricing = function(form, ajaxUrl) {
 	$("#convert").html(mb);
 	
 	var $est = $("#estimated");
+	$est.val("");
     var url = ajaxUrl + "?lookupMBCount=" + numMb + "&lookupFileCount=" + numFiles;
     $.ajax({
       url: url,
@@ -50,9 +51,9 @@ var _initPricing = function(form, ajaxUrl) {
       var total_mb = 0;
       	for (var j=0; j < item.parts.length; j++) {
       		var part = item.parts[j];
-      		var line = sprintf("<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>${3}</td></tr>", part.name, part.numFiles, part.numMb, part.subtotal);
-      		total_files += part.numFiles;
-      		total_mb += part.numMb;
+      		var line = sprintf("<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>${3}</td></tr>", part.name, part.numFiles * part.quantity, part.numMb  * part.quantity, part.subtotal);
+      		total_files += part.numFiles * part.quantity;
+      		total_mb += part.numMb * part.quantity;
       		$est.append(line);
       	}
   		var line = sprintf("<tr><td></td><td class='subtotal'>{0}</td><td class='subtotal'>{1}</td><td class='red'>${2}</td></tr>", total_files, total_mb, subtotal);
