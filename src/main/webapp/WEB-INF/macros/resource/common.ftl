@@ -996,7 +996,6 @@ this bit of freemarker is voodoo:
         </div>   
         </#if>
     </#if>
-</div>
 </#macro>
 
 </#escape>
