@@ -284,11 +284,11 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         Long availableSpaceInMb = account.getAvailableSpaceInMb();
         Long availableNumberOfFiles = account.getAvailableNumberOfFiles();
         accountService.updateQuota(re, account, false, doc);
-
+        ResourceEvaluator re2 = new ResourceEvaluator(model);
+        re2.evaluateResources(doc);
         doc.setStatus(Status.DELETED);
         logger.info("m:{} f:{}", account.getAvailableSpaceInMb(), account.getAvailableNumberOfFiles());
         genericService.saveOrUpdate(doc);
-        ResourceEvaluator re2 = new ResourceEvaluator(model);
         accountService.updateQuota(re2, account, false, doc);
         assertEquals(availableNumberOfFiles, account.getAvailableNumberOfFiles());
         assertEquals(availableSpaceInMb, account.getAvailableSpaceInMb());
