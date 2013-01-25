@@ -14,7 +14,6 @@ import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.billing.ResourceEvaluator;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.util.ScheduledBatchProcess;
 import org.tdar.core.dao.external.payment.PaymentMethod;
@@ -39,7 +38,7 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
     private static final String INVOICE_NOTE = "auto-generated invoice created on %s to cover %s resources, %s (MB) , and %s files created by %s prior to tDAR charging for usage.  Thank you for your support of tDAR.";
 
     final static long EXTRA_MB = 0l;
-    final static long EXTRA_FILES = 5l;
+    final static long EXTRA_FILES = 1l;
     private static final long serialVersionUID = -2313655718394118279L;
 
     @Autowired
@@ -82,7 +81,7 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
         sublist.clear();
         logger.trace("batch {}", batch);
         return resourceService.findAll(Resource.class, batch);
-        }
+    }
 
     @Override
     public void process(Person person) {

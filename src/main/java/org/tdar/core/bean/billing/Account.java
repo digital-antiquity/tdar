@@ -191,7 +191,7 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     @XmlElementWrapper(name = "resources")
     @XmlElement(name = "resource")
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
-    //FIXME: THIS IS A POTENTIAL ISSUE FOR PERFORMANCE WHEREBY IT COULD BE LINKED TO THOUSANDS OF THINGS
+    // FIXME: THIS IS A POTENTIAL ISSUE FOR PERFORMANCE WHEREBY IT COULD BE LINKED TO THOUSANDS OF THINGS
     public Set<Resource> getResources() {
         return resources;
     }
