@@ -21,9 +21,9 @@
     <div class="glide">
         <h3>Institution Information</h3>
         <@s.hidden name="id" />
-        <@s.textfield name="institution.name" required=true label="Name" id="txtInstitutionName" cssClass="input-xlarge" />
-        <br /><@s.textfield name="institution.location" label="Location" id="txtLocation" cssClass="input-xlarge" />
-        <br /><@s.textfield name="institution.url" label="Website" id="txtUrl" cssClass="input-xlarge url" />
+        <@s.textfield name="institution.name" required=true label="Name" id="txtInstitutionName" cssClass="input-xlarge"  maxlength=255 />
+        <br /><@s.textfield name="institution.location" label="Location" id="txtLocation" cssClass="input-xlarge"  maxlength=255 />
+        <br /><@s.textfield name="institution.url" label="Website" id="txtUrl" cssClass="input-xlarge url"  maxlength=255 />
         <br /><@s.textarea name="institution.description" label="Description" cssClass="input-xxlarge" />
     </div>
     <@edit.submit "Save" false />    
