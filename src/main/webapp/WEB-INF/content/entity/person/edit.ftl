@@ -51,8 +51,8 @@ label.error {display:block;}
             <p class="field"><em><b>NOTE:</b> Making your email address public will display it to anyone who visits ${siteAcronym}, this includes search engines, spammers, and visitors who are not logged in.</em></p>
         </#if>
             
-        <#if RPAEnabled><br /><@s.textfield labelPosition="left" cssClass="input-xlarge" label="RPA Number" name="person.rpaNumber" /></#if>
-        <br /><@s.textfield labelPosition="left" label="Phone" cssClass="phoneUS input-xlarge" name="person.phone" />
+        <#if RPAEnabled><br /><@s.textfield labelPosition="left" cssClass="input-xlarge" label="RPA Number" name="person.rpaNumber"  maxlength=255 /></#if>
+        <br /><@s.textfield labelPosition="left" label="Phone" cssClass="phoneUS input-xlarge" name="person.phone"  maxlength=255 />
         
         <#if privacyControlsEnabled>
             <br /><@edit.boolfield label='Make phone public?' name="person.phonePublic" id="phone-public" value=person.phonePublic!false labelPosition="top"/>
@@ -67,7 +67,7 @@ label.error {display:block;}
         Please briefly describe the geographical areas, time periods, or other
         subjects for which you would like to contribute information:
         </label>
-        <@s.textarea rows=6 cols='50' cssClass="input-xxlarge" name='person.contributorReason' id='contributorReasonId' />
+        <@s.textarea rows=6 cols='50' cssClass="input-xxlarge" name='person.contributorReason' id='contributorReasonId'  maxlength=512 />
         </div>            
 <br/>
         <div>

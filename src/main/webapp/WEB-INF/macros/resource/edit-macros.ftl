@@ -46,7 +46,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <#local dateVal = resource.date?c />
         </#if>
         <@s.textfield label="Year" id='dateCreated' name='${itemPrefix}.date' value="${dateVal}" cssClass="reasonableDate required input-mini" required=true
-          title="Please enter the year this ${itemTypeLabel} was created" />
+          maxlength=7 title="Please enter the year this ${itemTypeLabel} was created" />
     </div>
     </#if>
 </#if>
@@ -146,7 +146,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <div id="resourceCollectionRow_${collection_index}_" class="controls controls-row repeat-row">
             <@s.hidden name="resourceCollections[${collection_index}].id"  id="resourceCollectionRow_${collection_index}_id" />
             <@s.textfield theme="simple" id="resourceCollectionRow_${collection_index}_id" name="resourceCollections[${collection_index}].name" cssClass="input-xxlarge collectionAutoComplete "  autocomplete="off"
-            autocompleteIdElement="#resourceCollectionRow_${collection_index}_id"
+            autocompleteIdElement="#resourceCollectionRow_${collection_index}_id" maxlength=255
             autocompleteParentElement="#resourceCollectionRow_${collection_index}_" />
         <@clearDeleteButton id="resourceCollectionRow" />
     </div>
@@ -167,7 +167,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 <#macro keywordRow keywordField keyword_index=0 showDelete=true>
     <div class="controls controls-row" id='${keywordField}Row_${keyword_index}_'>
-        <@s.textfield theme="tdar" name='${keywordField}[${keyword_index}]' cssClass='input-xlarge keywordAutocomplete' placeholder="enter keyword"/>
+        <@s.textfield theme="tdar" name='${keywordField}[${keyword_index}]'  maxlength=255 cssClass='input-xlarge keywordAutocomplete' placeholder="enter keyword"/>
         <#if showDelete>
         <@clearDeleteButton id="${keywordField}Row" />
         </#if>
@@ -246,7 +246,7 @@ ${resource.resourceType.label}
 <#macro resourceProvider showInherited=true>
 <div class="well-alt" id="divResourceProvider" tiplabel="Resource Provider" tooltipcontent="The institution authorizing ${siteAcronym} to ingest the resource for the purpose of preservation and access.">
     <h2>Institution Authorizing Upload of this <@resourceTypeLabel /></h2>
-    <@s.textfield label='Institution' name='resourceProviderInstitutionName' id='txtResourceProviderInstitution' cssClass="institution input-xxlarge" size='40'/>
+    <@s.textfield label='Institution' name='resourceProviderInstitutionName' id='txtResourceProviderInstitution' cssClass="institution input-xxlarge"  maxlength='40'/>
     <br/>
 </div>
 </#macro>
@@ -792,7 +792,7 @@ applyInheritance(project, formSelector);
             list=allCoverageTypes />
         <@s.textfield theme="tdar" placeholder="Start Year" cssClass="coverageStartYear input-small" name="coverageDates[${proxy_index}].startDate" maxlength="10" /> 
         <@s.textfield theme="tdar" placeholder="End Year" cssClass="coverageEndYear input-small" name="coverageDates[${proxy_index}].endDate" maxlength="10" />
-        <@s.textfield theme="tdar" placeholder="Description"  cssClass="coverageDescription input-xlarge" name="coverageDates[${proxy_index}].description" />
+        <@s.textfield theme="tdar" placeholder="Description"  cssClass="coverageDescription input-xlarge" name="coverageDates[${proxy_index}].description"  maxlength=255 />
        <@edit.clearDeleteButton id="{proxy_index}DateRow"/>
 </div>
 </#macro>
@@ -882,7 +882,7 @@ applyInheritance(project, formSelector);
             <div class="control-group">
             <label class="control-label">Name / Value</label>
                 <div class="controls controls-row ">
-                    <@s.textfield theme="tdar" placeholder="Name" cssClass="annotationAutoComplete span3" name='resourceAnnotations[${annotation_index}].resourceAnnotationKey.key' value='${annotation.resourceAnnotationKey.key!""}'  autocomplete="off" />
+                    <@s.textfield theme="tdar" placeholder="Name"  maxlength=128 cssClass="annotationAutoComplete span3" name='resourceAnnotations[${annotation_index}].resourceAnnotationKey.key' value='${annotation.resourceAnnotationKey.key!""}'  autocomplete="off" />
                     <@s.textfield theme="tdar" placeholder="Value" cssClass="span3" name='resourceAnnotations[${annotation_index}].value'  value='${annotation.value!""}' />
                 </div>
             </div>            
@@ -926,7 +926,7 @@ jquery validation hooks?)
     <div class="">
     <p><span class="label">Note:</span> You can only have ${maxUploadFilesPerRecord} per record.<br/></p> 
     </div>
-<br/>
+	<br/>
     <#if !ableToUploadFiles>
     <b>note:</b> you have not been granted permission to upload or modify files<br/>
     <#else>
@@ -1069,18 +1069,18 @@ jquery validation hooks?)
     <#if resource.resourceType != 'PROJECT'>
     <div tiplabel="Department / Publisher Location" tooltipcontent="Department name, or City,State (and Country, if relevant)">
         <span id="publisher-hints"  book="Publisher" book_section="Publisher" journal_article="Publisher"  conference_presentation="Conference" thesis="Institution" other="Publisher">
-            <@s.textfield id='publisher' label="Publisher" name='publisherName' cssClass="institution input-xxlarge"  />
+            <@s.textfield id='publisher'  maxlength=255 label="Publisher" name='publisherName' cssClass="institution input-xxlarge"  />
         </span>
 
         <span id="publisherLocation-hints" book="Publisher Loc." book_section="Publisher Loc." journal_article="Publisher Loc." conference_presentation="Location"  thesis="Department" other="Publisher Loc.">
-            <@s.textfield id='publisherLocation' label="Publisher Loc." name='${prefix}.publisherLocation' cssClass='input-xxlarge' />
+            <@s.textfield id='publisherLocation'  maxlength=255 label="Publisher Loc." name='${prefix}.publisherLocation' cssClass='input-xxlarge' />
         </span>
     </div>
     </#if>
     <#nested />
 
     <div id="divUrl" tiplabel="URL" tooltipcontent="Website address for this resource, if applicable">
-        <@s.textfield name="${prefix}.url" id="txtUrl" label="URL" labelposition="left" cssClass="url input-xxlarge" placeholder="http://" />
+        <@s.textfield name="${prefix}.url"  maxlength=255 id="txtUrl" label="URL" labelposition="left" cssClass="url input-xxlarge" placeholder="http://" />
     </div>
     
 </div>
