@@ -2,6 +2,7 @@ package org.tdar.struts.action;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -63,6 +64,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     public static final String SPECIFY_SOMETHING = "please choose something";
     private Integer extraItemQuantity = 0;
     private String extraItemName;
+    private Person owner;
     private String callback;
     private PricingType pricingType = null;
 
@@ -76,7 +78,8 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         }
 
         if ((persistable.getNumberOfFiles() == null || persistable.getNumberOfFiles() < 1) &&
-                (persistable.getNumberOfMb() == null || persistable.getNumberOfMb() < 1)) {
+                (persistable.getNumberOfMb() == null || persistable.getNumberOfMb() < 1) && 
+                !getAuthenticationAndAuthorizationService().isBillingManager(getAuthenticatedUser())) {
             loadEditMetadata();
             addActionError(SPECIFY_SOMETHING);
             return INPUT;
@@ -117,11 +120,8 @@ public class CartController extends AbstractPersistableController<Invoice> imple
      * if user is billing manager, validate the invoiceOwner. If not billing manager, set owner to authUser().
      */
     private void processOwner() {
-        if (isBillingManager() && Persistable.Base.isNotNullOrTransient(getInvoice().getOwner())) {
-            Person owner = getEntityService().findPerson(getInvoice().getOwner().getId());
-            getInvoice().setOwner(owner);
-        } else {
-            getInvoice().setOwner(getAuthenticatedUser());
+        if (isBillingManager() && Persistable.Base.isNotNullOrTransient(getOwner())) {
+            getInvoice().setOwner(getEntityService().findPerson(getOwner().getId()));
         }
     }
 
@@ -365,11 +365,15 @@ public class CartController extends AbstractPersistableController<Invoice> imple
                     paymentTransactionProcessor.updateInvoiceFromResponse(response, invoice);
                     invoice.setResponse(billingResponse);
                     logger.info("processing payment response: {}  -> {} ", invoice, invoice.getTransactionStatus());
+                    try {
                     String emailMessage = String.format(
                             "An invoice was created and processed for %s by %s for a total of $%s \n ( %s files and %s mb) on %s.\n  Transaction Status %s",
-                            invoice.getOwner(), invoice.getTransactedBy(), invoice.getTotal(), invoice.getNumberOfFiles(), invoice.getNumberOfMb(),
+                            invoice.getOwner(), invoice.getTransactedBy(), invoice.getTotal(), invoice.getNumberOfFiles(), invoice.getNumberOfMb(), new Date(),
                             invoice.getTransactionStatus());
                     getEmailService().send(emailMessage, "tDAR Billing Transaction");
+                    } catch (Exception e) {
+                        logger.error("could not send email: {} ", e);
+                    }
                     getGenericService().saveOrUpdate(invoice);
                 }
             }
@@ -577,6 +581,14 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
     public void setPricingType(PricingType pricingType) {
         this.pricingType = pricingType;
+    }
+
+    public Person getOwner() {
+        return owner;
+    }
+
+    public void setOwner(Person owner) {
+        this.owner = owner;
     }
 
 }
