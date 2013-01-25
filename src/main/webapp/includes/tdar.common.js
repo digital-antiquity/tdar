@@ -741,6 +741,9 @@ TDAR.common = function() {
     
     //TODO: remove redundant code -- this is very similar to repeatrow._clearInputs.
     var _clearInputs = function($parents) {
+    	
+    	//FIXME: can we just set all of these to disabled instead?
+    	
         //clear any non-showing creator proxy fields so server knows the actualCreatorType for each
         console.log("clearing unused proxy fields");
         // most input elements should have value attribute cleared (but not radiobuttons, checkboxes, or buttons)
@@ -750,7 +753,7 @@ TDAR.common = function() {
         // remove "selected" from options that were already selected
         $parents.find("option[selected=selected]").removeAttr("selected");
         // revert all select inputs to first option. 
-        $parents.find("select").find('option:first').attr("selected", "selected");
+        $parents.find("select").attr("disabled", "disabled");
     }
 
     
