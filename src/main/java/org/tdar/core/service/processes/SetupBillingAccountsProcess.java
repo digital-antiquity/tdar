@@ -71,17 +71,16 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
     }
 
     public List<Resource> getNextResourceBatch(List<Long> queue) {
-//        if (queue.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(queue)) {
             logger.trace("No more ids to process");
             return Collections.emptyList();
-//        }
-//        int endIndex = Math.min(queue.size(), 100);
-//        List<Long> sublist = queue.subList(0, endIndex);
-//        ArrayList<Long> batch = new ArrayList<Long>(sublist);
-//        sublist.clear();
-//        logger.trace("batch {}", batch);
-//        return resourceService.findAll(Resource.class, batch);
-// 
+        }
+        int endIndex = Math.min(queue.size(), 100);
+        List<Long> sublist = queue.subList(0, endIndex);
+        ArrayList<Long> batch = new ArrayList<Long>(sublist);
+        sublist.clear();
+        logger.trace("batch {}", batch);
+        return resourceService.findAll(Resource.class, batch);
             }
 
     @Override
@@ -95,12 +94,14 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
             Set<Long> resourceIds = resourceService.findResourcesSubmittedByUser(person);
             ResourceEvaluator re = accountService.getResourceEvaluator();
 
-            List<Resource> nextResourceBatch = getNextResourceBatch(new ArrayList<Long>(resourceIds));
+            ArrayList<Long> queue = new ArrayList<Long>(resourceIds);
+            List<Resource> nextResourceBatch = getNextResourceBatch(queue);
 
             while (CollectionUtils.isNotEmpty(nextResourceBatch)) {
                 re.evaluateResources(nextResourceBatch);
-                getNextResourceBatch(new ArrayList<Long>(resourceIds));
+                nextResourceBatch = getNextResourceBatch(queue);
             }
+            queue = new ArrayList<Long>(resourceIds);
 
             long spaceUsedInMb = EXTRA_MB + re.getSpaceUsedInMb();
             long filesUsed = EXTRA_FILES + re.getFilesUsed();
@@ -125,9 +126,10 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
             account.markUpdated(person);
             genericDao.saveOrUpdate(account);
             account.getInvoices().add(invoice);
-            nextResourceBatch = getNextResourceBatch(new ArrayList<Long>(resourceIds));
+            nextResourceBatch = getNextResourceBatch(queue);
             while (CollectionUtils.isNotEmpty(nextResourceBatch)) {
                 accountService.updateQuota(accountService.getResourceEvaluator(), account, false, nextResourceBatch.toArray(new Resource[0]));
+                nextResourceBatch = getNextResourceBatch(queue);
             }
             genericDao.saveOrUpdate(account);
         } catch (Exception e) {
