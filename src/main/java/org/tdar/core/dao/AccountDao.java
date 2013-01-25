@@ -99,7 +99,12 @@ public class AccountDao extends Dao.HibernateBase<Account> {
             if (account == null) {
                 accountIdMap.put(accountId, find(accountId));
             }
-            resourceIdMap.get(resourceId).setAccount(account);
+            Resource resource = resourceIdMap.get(resourceId);
+            if (resource != null) {
+                resource.setAccount(account);
+            } else {
+                logger.error("resource is null somehow for id: {}, account {}", resourceId, account);
+            }
         }
     }
 }
