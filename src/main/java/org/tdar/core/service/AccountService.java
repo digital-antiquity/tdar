@@ -28,9 +28,11 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.AccountDao;
 import org.tdar.core.dao.GenericDao;
+import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.exception.TdarQuotaException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
+import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.data.PricingOption;
 import org.tdar.struts.data.PricingOption.PricingType;
@@ -46,6 +48,9 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     @Autowired
     ResourceService resourceService;
+
+    @Autowired
+    AuthenticationAndAuthorizationService authService;
 
     /*
      * Find all accounts for user: return accounts that are active and have not met their quota
@@ -119,6 +124,11 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     }
 
     public boolean checkThatInvoiceBeAssigned(Invoice find, Account account) {
+        
+        if (authService.isMember(find.getTransactedBy(), TdarGroup.TDAR_BILLING_MANAGER)) {
+                return true;
+        }
+        
         if (account.getOwner().equals(find.getTransactedBy()) || account.getAuthorizedMembers().contains(find.getTransactedBy())) {
             return true;
         }
@@ -153,7 +163,8 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     @Transactional
     public void unMarkResourcesAsFlagged(Collection<Resource> resources) {
         for (Resource resource : resources) {
-            if(resource.getStatus() != Status.FLAGGED_ACCOUNT_BALANCE) continue;
+            if (resource.getStatus() != Status.FLAGGED_ACCOUNT_BALANCE)
+                continue;
             Status status = resource.getPreviousStatus();
             if (status == null) {
                 status = Status.ACTIVE;
@@ -268,7 +279,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         logger.info("files: {} mb: {}", numFiles, numMb);
 
         for (BillingActivity activity : getActiveBillingActivities()) {
-            int calculatedNumberOfFiles = numFiles.intValue();             //Don't use test activities or activities that are Just about MB
+            int calculatedNumberOfFiles = numFiles.intValue(); // Don't use test activities or activities that are Just about MB
             if (activity.getActivityType() == BillingActivityType.TEST || !activity.supportsFileLimit()) {
                 continue;
             }
@@ -281,12 +292,11 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
                 calculatedNumberOfFiles = activity.getMinAllowedNumberOfFiles().intValue();
             }
 
-
             BillingItem e = new BillingItem(activity, calculatedNumberOfFiles);
             logger.trace(" -- {} ({})", e.getActivity().getName(), e);
             items.add(e);
         }
-        logger.trace("{} {}", option , items);
+        logger.trace("{} {}", option, items);
         // finding the cheapest
         BillingItem lowest = null;
         for (BillingItem item : items) {

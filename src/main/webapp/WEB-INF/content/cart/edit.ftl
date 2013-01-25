@@ -138,7 +138,7 @@
     <div class="control-group">
         <label class="control-label">Invoice Owner</label>
         <div class="controls">
-        <@edit.userRow person=blankAuthorizedUser.user _indexNumber="" isDisabled=false includeRole=false _personPrefix="owner" prefix="invoice" 
+        <@edit.userRow person=blankAuthorizedUser.user _indexNumber="" isDisabled=false includeRole=false prefix="owner" 
                 includeRights=false isUser=true includeRepeatRow=true/>
 
             <@edit.clearDeleteButton id="clearAssignedOwner" />

@@ -48,34 +48,40 @@ public class BillingAccountController extends AbstractPersistableController<Acco
             @Result(name = NEW_ACCOUNT, location = "add?invoiceId=${invoiceId}", type = "redirect")
     })
     public String selectAccount() throws TdarActionException {
-        Invoice invoice = getGenericService().find(Invoice.class, invoiceId);
+        Invoice invoice = getInvoice();
         if (invoice == null) {
             throw new TdarRecoverableRuntimeException(INVOICE_IS_REQURIED);
         }
         if (!getAuthenticationAndAuthorizationService().canAssignInvoice(invoice, getAuthenticatedUser())) {
             throw new TdarRecoverableRuntimeException(RIGHTS_TO_ASSIGN_THIS_INVOICE);
         }
-        setAccounts(getAccountService().listAvailableAccountsForUser(getAuthenticatedUser()));
+        setAccounts(getAccountService().listAvailableAccountsForUser(invoice.getOwner()));
         if (CollectionUtils.isNotEmpty(getAccounts())) {
             return SUCCESS;
         }
         return NEW_ACCOUNT;
     }
 
+    public Invoice getInvoice() {
+        return getGenericService().find(Invoice.class, invoiceId);
+    }
+
     @Override
     protected String save(Account persistable) {
         logger.info("invoiceId {}", getInvoiceId());
-        
+
         // if we're coming from "choose" and we want a "new account"
         if (Persistable.Base.isTransient(getAccount()) && StringUtils.isNotBlank(getName())) {
             getAccount().setName(getName());
             getAccount().setDescription(getDescription());
         }
-        
         if (Persistable.Base.isNotNullOrTransient(invoiceId)) {
-            Invoice invoice = getGenericService().find(Invoice.class, invoiceId);
+            Invoice invoice = getInvoice();
             logger.info("attaching invoice: {} ", invoice);
             // if we have rights
+            if (Persistable.Base.isTransient(getAccount())) {
+                getAccount().setOwner(invoice.getOwner());
+            }
             getAccountService().checkThatInvoiceBeAssigned(invoice, getAccount()); // throw exception if you cannot
             getAccount().getInvoices().add(invoice);
             getGenericService().saveOrUpdate(invoice);
@@ -176,6 +182,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     public Person getBlankPerson() {
         return new Person();
     }
+
     public List<Person> getAuthorizedMembers() {
         return authorizedMembers;
     }
@@ -187,7 +194,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     public boolean isBillingAdmin() {
         return getAuthenticationAndAuthorizationService().isMember(getAuthenticatedUser(), TdarGroup.TDAR_BILLING_MANAGER);
     }
-    
+
     public BillingActivityModel getBillingActivityModel() {
         return getAccountService().getLatestActivityModel();
     }
