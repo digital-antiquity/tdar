@@ -109,23 +109,19 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         getInvoice().setTransactedBy(getAuthenticatedUser());
         processOwner();
         setSaveSuccessPath(SIMPLE);
-        
+
         return getActionErrors().isEmpty() ? SUCCESS : INPUT;
     }
-    
+
     /**
-     * if user is billing manager, validate the invoiceOwner.  If not billing manager, set owner to authUser().
+     * if user is billing manager, validate the invoiceOwner. If not billing manager, set owner to authUser().
      */
     private void processOwner() {
-        if(isBillingManager()) {
-            if(Persistable.Base.isNotNullOrTransient(getInvoice().getOwner())) {
-                Person owner = getEntityService().findPerson(getInvoice().getOwner().getId());
-                getInvoice().setOwner(owner);
-            } else {
-                addActionError("Choose a valid invoice owner");
-            }
-        }else {
-           getInvoice().setOwner(getAuthenticatedUser()); 
+        if (isBillingManager() && Persistable.Base.isNotNullOrTransient(getInvoice().getOwner())) {
+            Person owner = getEntityService().findPerson(getInvoice().getOwner().getId());
+            getInvoice().setOwner(owner);
+        } else {
+            getInvoice().setOwner(getAuthenticatedUser());
         }
     }
 
@@ -165,7 +161,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
             return;
         }
         boolean add = true;
-        
+
         for (PricingOption option : pricingOptions) {
             if (option == null || option.sameAs(incoming)) {
                 add = false;
