@@ -22,6 +22,9 @@ import org.tdar.core.exception.TdarValidationException;
  * Some resources, like Ontologies, CodingSheets, etc. you get for free.
  * 
  * A Resource Evaluator is initialized with a BillingModel which tells it some of how to evaluate things ... as we decide, wa may need to port more of the decisions into that boolean logic
+ * 
+ * 
+ * This class is not designed to be reused
  */
 public class ResourceEvaluator implements Serializable {
 
