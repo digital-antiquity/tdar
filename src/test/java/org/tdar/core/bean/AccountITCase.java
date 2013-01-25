@@ -170,6 +170,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         Invoice invoice = new Invoice();
         invoice.markUpdated(getUser());
         account.getInvoices().add(invoice);
+        genericService.saveOrUpdate(activity.getModel());
         genericService.saveOrUpdate(activity);
         invoice.getItems().add(new BillingItem(activity, 1));
         invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
