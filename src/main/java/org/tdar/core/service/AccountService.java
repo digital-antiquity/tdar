@@ -153,6 +153,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     @Transactional
     public void unMarkResourcesAsFlagged(Collection<Resource> resources) {
         for (Resource resource : resources) {
+            if(resource.getStatus() != Status.FLAGGED_ACCOUNT_BALANCE) continue;
             Status status = resource.getPreviousStatus();
             if (status == null) {
                 status = Status.ACTIVE;
