@@ -14,6 +14,7 @@ import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.billing.ResourceEvaluator;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.util.ScheduledBatchProcess;
 import org.tdar.core.dao.external.payment.PaymentMethod;
@@ -71,7 +72,7 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
     }
 
     public List<Resource> getNextResourceBatch(List<Long> queue) {
-        if (CollectionUtils.isNotEmpty(queue)) {
+        if (CollectionUtils.isEmpty(queue)) {
             logger.trace("No more ids to process");
             return Collections.emptyList();
         }
@@ -81,7 +82,7 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
         sublist.clear();
         logger.trace("batch {}", batch);
         return resourceService.findAll(Resource.class, batch);
-            }
+        }
 
     @Override
     public void process(Person person) {
@@ -96,8 +97,9 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
 
             ArrayList<Long> queue = new ArrayList<Long>(resourceIds);
             List<Resource> nextResourceBatch = getNextResourceBatch(queue);
-
+            logger.info("{} has {} resources", person.getProperName(), resourceIds.size());
             while (CollectionUtils.isNotEmpty(nextResourceBatch)) {
+                logger.info("processing batch {}", nextResourceBatch);
                 re.evaluateResources(nextResourceBatch);
                 nextResourceBatch = getNextResourceBatch(queue);
             }
