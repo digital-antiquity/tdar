@@ -365,6 +365,11 @@ public class CartController extends AbstractPersistableController<Invoice> imple
                     paymentTransactionProcessor.updateInvoiceFromResponse(response, invoice);
                     invoice.setResponse(billingResponse);
                     logger.info("processing payment response: {}  -> {} ", invoice, invoice.getTransactionStatus());
+                    String emailMessage = String.format(
+                            "An invoice was created and processed for %s by %s for a total of $%s \n ( %s files and %s mb) on %s.\n  Transaction Status %s",
+                            invoice.getOwner(), invoice.getTransactedBy(), invoice.getTotal(), invoice.getNumberOfFiles(), invoice.getNumberOfMb(),
+                            invoice.getTransactionStatus());
+                    getEmailService().send(emailMessage, "tDAR Billing Transaction");
                     getGenericService().saveOrUpdate(invoice);
                 }
             }
