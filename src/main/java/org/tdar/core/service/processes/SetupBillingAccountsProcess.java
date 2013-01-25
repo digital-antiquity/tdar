@@ -99,7 +99,6 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
             List<Resource> nextResourceBatch = getNextResourceBatch(queue);
             logger.info("{} has {} resources", person.getProperName(), resourceIds.size());
             while (CollectionUtils.isNotEmpty(nextResourceBatch)) {
-                logger.info("processing batch {}", nextResourceBatch);
                 re.evaluateResources(nextResourceBatch);
                 nextResourceBatch = getNextResourceBatch(queue);
             }
