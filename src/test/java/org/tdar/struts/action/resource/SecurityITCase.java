@@ -262,10 +262,11 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
     // FIXME: not sure where this belongs, it was in DatasetControllerITCase originally
     @Test
     @Rollback
-    public void testAuthorizedUserEquality() {
+    public void testAuthorizedUserInEquality() {
+        //with the equals and hashCode of AuthorizedUser, this is now never going to be true
         AuthorizedUser authorizedUser = new AuthorizedUser(getAdminUser(), GeneralPermissions.VIEW_ALL);
         AuthorizedUser authorizedUser2 = new AuthorizedUser(getAdminUser(), GeneralPermissions.VIEW_ALL);
-        assertEquals(authorizedUser, authorizedUser2);
+        assertNotEquals(authorizedUser, authorizedUser2);
     }
 
     /*
