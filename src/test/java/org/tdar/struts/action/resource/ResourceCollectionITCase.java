@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.DisplayOrientation;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
@@ -396,7 +395,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         resourceCollection.markUpdated(owner);
         AuthorizedUser authorizedUser = new AuthorizedUser(owner, GeneralPermissions.VIEW_ALL);
         resourceCollection.getAuthorizedUsers().addAll(Arrays.asList(authorizedUser));
-        
+
         genericService.saveOrUpdate(resourceCollection);
         genericService.synchronize();
 
@@ -437,7 +436,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         assertTrue("user should be able to delete collection", resourceCollection == null);
         genericService.synchronize();
     }
-    
+
     @Test
     @Rollback
     public void testSaveAndDeleteWithRedundantAccessRights() throws TdarActionException {
@@ -450,8 +449,8 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         rc.setVisible(true);
         rc.setSortBy(SortOption.ID);
         rc.setOrientation(DisplayOrientation.LIST);
-        
-        //add two redundant access rights records (if you have administer_group,  you already have view_all implicitly)
+
+        // add two redundant access rights records (if you have administer_group, you already have view_all implicitly)
         Person persistedUser = new Person("bob", "loblaw", "bobloblaw@mailinator.com");
         persistedUser.setRegistered(true);
         genericService.saveOrUpdate(persistedUser);
@@ -466,21 +465,21 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
 
         controller.setServletRequest(getServletPostRequest());
         controller.save();
-        
+
         Long id = rc.getId();
-        
+
         controller = generateNewController(CollectionController.class);
         controller.setSessionData(getSessionData());
         controller.setId(id);
         controller.prepare();
         controller.view();
-        
+
         ResourceCollection rc2 = controller.getResourceCollection();
         assertEquals(rc.getName(), rc2.getName());
         assertEquals("2 redundant authusers should have been normalized to one", 1, rc2.getAuthorizedUsers().size());
-        assertEquals("the one remaining authuser should have highest permissions", GeneralPermissions.ADMINISTER_GROUP, rc2.getAuthorizedUsers().iterator().next().getGeneralPermission());
+        assertEquals("the one remaining authuser should have highest permissions", GeneralPermissions.ADMINISTER_GROUP, rc2.getAuthorizedUsers().iterator()
+                .next().getGeneralPermission());
     }
-        
 
     @Test
     @Rollback
@@ -520,12 +519,11 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         // FIXME: @ManyToMany directional issue
         // assertEquals(1,parentCollection.getResources().size());
         assertEquals(1, testFile.getResourceCollections().size());
-        
+
         assertTrue(parentCollection.isShared());
         assertTrue(parentCollection.isVisible());
         assertTrue(parentCollection.isTopLevel());
 
-        
         assertTrue(String.format("collections %s should contain %s", collections, parentCollection), collections.contains(parentCollection));
         assertFalse(collections.contains(childCollection));
         assertFalse(collections.contains(childCollectionHidden));
@@ -883,8 +881,8 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         controller.prepare();
         ResourceCollection rc = controller.getPersistable();
         Project project = createAndSaveNewResource(Project.class, getUser(), "test project");
-        //not 100% sure why we're using a proxy here, but technically, I think this i closer to what we do in real life
-//        Project proxy = new Project(project.getId(), project.getTitle());
+        // not 100% sure why we're using a proxy here, but technically, I think this i closer to what we do in real life
+        // Project proxy = new Project(project.getId(), project.getTitle());
         Long pid = project.getId();
 
         controller.setAuthorizedUsers(Collections.<AuthorizedUser> emptyList());
@@ -929,19 +927,18 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         logger.info("{}", projectController.getProject().getResourceCollections());
     }
 
-    
-    
     @Test
     @Rollback(true)
     public void testControllerWithDeletedResourceThatBecomesActive() throws Exception {
         Project project = createAndSaveNewResource(Project.class, getUser(), "test project");
-        ResourceCollection collection = generateResourceCollection("test collection with deleted", "test", CollectionType.SHARED, true, null, getUser(), Arrays.asList(project), null);
+        ResourceCollection collection = generateResourceCollection("test collection with deleted", "test", CollectionType.SHARED, true, null, getUser(),
+                Arrays.asList(project), null);
         project.setStatus(Status.DELETED);
         project.getResourceCollections().add(collection);
         genericService.saveOrUpdate(project);
         Long rcid = collection.getId();
         Long pid = project.getId();
-        
+
         searchIndexService.flushToIndexes();
         searchIndexService.index(collection);
         searchIndexService.index(project);
@@ -961,14 +958,13 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         projectController.save();
         searchIndexService.flushToIndexes();
         searchIndexService.index(project2);
-        
-        
+
         logger.info("{}", project2.getResourceCollections());
         controller = generateNewInitializedController(CollectionController.class);
         controller.setId(rcid);
         controller.prepare();
         controller.view();
-        logger.info("{}" , controller.getResourceCollection().getResources().iterator().next().getStatus());
+        logger.info("{}", controller.getResourceCollection().getResources().iterator().next().getStatus());
         assertTrue("collection should show the newly undeleted project", CollectionUtils.isNotEmpty(controller.getResults()));
 
         // we should also see the newly-undeleted resource on the edit page
@@ -978,6 +974,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         controller.edit();
         assertTrue("collection should show the newly undeleted project", CollectionUtils.isNotEmpty(controller.getResources()));
     }
+
     @Test
     @Rollback(true)
     public void testDraftResourceVisibleByAuthuser() throws Exception {
@@ -1017,7 +1014,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         controller.view();
         assertEquals(controller.getAuthenticatedUser(), registeredUser);
         assertTrue("resource should not be viewable", controller.getResults().isEmpty());
-//        assertFalse("resource should not be viewable", controller.getResults().get(0).isViewable());
+        // assertFalse("resource should not be viewable", controller.getResults().get(0).isViewable());
 
         // now make the user an authorizedUser
         controller = generateNewInitializedController(CollectionController.class);
@@ -1047,7 +1044,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         controller.setId(rcid);
         controller.prepare();
         controller.view();
-        assertTrue("resource should be viewable", ((Viewable)controller.getResults().get(0)).isViewable());
+        assertTrue("resource should be viewable", ((Viewable) controller.getResults().get(0)).isViewable());
     }
 
 }

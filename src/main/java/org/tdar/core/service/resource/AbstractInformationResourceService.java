@@ -208,8 +208,8 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
 
     private void createVersion(InformationResourceFile irFile, FileProxy fileProxy) throws IOException {
         String filename = sanitizeFilename(fileProxy.getFilename());
-        if (!fileProxy.getFile().exists()) {
-            throw new TdarRecoverableRuntimeException("something went wrong, file "+ fileProxy.getFilename() +" does not exist");
+        if (fileProxy.getFile() == null || !fileProxy.getFile().exists()) {
+            throw new TdarRecoverableRuntimeException("something went wrong, file " + fileProxy.getFilename() + " does not exist");
         }
         InformationResourceFileVersion version = new InformationResourceFileVersion(fileProxy.getVersionType(), filename, irFile);
         setInformationResourceFileMetadata(irFile, fileProxy);
