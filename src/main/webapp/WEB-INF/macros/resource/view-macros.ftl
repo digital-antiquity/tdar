@@ -109,7 +109,7 @@ View freemarker macros
   <#if (resource.totalNumberOfFiles?has_content)>
                 <h3 class="downloads">
                     Downloads
-                    <span class="downloadNumber hidden-tablet">${resource.totalNumberOfFiles?c}</span>
+                    <span class="downloadNumber hidden-tablet">${resource.totalNumberOfActiveFiles?c}</span>
                 </h3>
     <#if resource.totalNumberOfFiles != 0>
       <@embargoCheck/>

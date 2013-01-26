@@ -1,9 +1,5 @@
 package org.tdar.search.index;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Indexable;
@@ -52,7 +48,7 @@ public enum LookupSource implements HasLabel {
     public String getCollectionName() {
         return this.collectionName;
     }
-    
+
     public String getProper() {
         return StringUtils.capitalize(name().toLowerCase());
     }
