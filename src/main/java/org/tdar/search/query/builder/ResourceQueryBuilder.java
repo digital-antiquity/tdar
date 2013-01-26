@@ -5,14 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.tdar.core.bean.resource.CodingSheet;
-import org.tdar.core.bean.resource.Dataset;
-import org.tdar.core.bean.resource.Document;
-import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.Ontology;
-import org.tdar.core.bean.resource.Project;
-import org.tdar.core.bean.resource.SensoryData;
-import org.tdar.core.bean.resource.Video;
+import org.tdar.search.index.LookupSource;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
@@ -28,8 +21,7 @@ import org.tdar.search.query.QueryFieldNames;
 public class ResourceQueryBuilder extends QueryBuilder {
 
     public ResourceQueryBuilder() {
-        this.setClasses(new Class[] { InformationResource.class, Document.class, Dataset.class, Ontology.class, CodingSheet.class, Project.class,
-                SensoryData.class, Video.class });
+        this.setClasses(LookupSource.RESOURCE.getClasses());
         List<DynamicQueryComponent> dqc = new ArrayList<DynamicQueryComponent>();
         dqc.add(new DynamicQueryComponent(QueryFieldNames.ACTIVE_CULTURE_KEYWORDS_LABEL, NonTokenizingLowercaseKeywordAnalyzer.class, ""));
         dqc.add(new DynamicQueryComponent(QueryFieldNames.IR_ACTIVE_CULTURE_KEYWORDS_LABEL, NonTokenizingLowercaseKeywordAnalyzer.class, ""));

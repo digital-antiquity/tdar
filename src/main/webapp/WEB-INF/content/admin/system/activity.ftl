@@ -18,7 +18,7 @@ pre, td {
 <h3>Active Users</h3>
 <ul>
 	<#list activePeople as user>
-	<li>${user.properName}</li>
+	<li><a href="<@s.url value="/browse/creators/${user.id?c}"/>">${user.properName}</a></li>
 	</#list>
 </ul>
 

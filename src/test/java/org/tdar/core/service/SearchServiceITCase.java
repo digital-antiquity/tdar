@@ -16,6 +16,7 @@ import org.hibernate.search.FullTextQuery;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -29,30 +30,32 @@ public class SearchServiceITCase extends AbstractSearchControllerITCase {
     private ResourceQueryBuilder resourceQueryBuilder = new ResourceQueryBuilder();
 
     public static class SortTestStruct {
-        public SortTestStruct(Class<?> type, QueryBuilder queryBuilder) {
+        public SortTestStruct(Class<? extends Indexable> type, QueryBuilder queryBuilder) {
             this.type = type;
             this.qb = queryBuilder;
         }
 
-        public Class<?> type;
+        public Class<? extends Indexable> type;
         public QueryBuilder qb;
         public Map<SortOption, Comparator<?>> comparators = new HashMap<SortOption, Comparator<?>>();
 
     }
 
-    public static abstract class  DesignatedComparable<T> implements Comparator<T>{
+    public static abstract class DesignatedComparable<T> implements Comparator<T> {
         public final int compare(T obj1, T obj2) {
             Comparable item1 = null;
             Comparable item2 = null;
-            if(obj1 != null) item1 = getComparableFor(obj1);
-            if(obj2 != null) item2 = getComparableFor(obj2);
-            
+            if (obj1 != null)
+                item1 = getComparableFor(obj1);
+            if (obj2 != null)
+                item2 = getComparableFor(obj2);
+
             return ObjectUtils.compare(item1, item2);
         }
+
         public abstract Comparable getComparableFor(T t);
     }
-    
-    
+
     private static List<SortTestStruct> sortTests = new ArrayList<SortTestStruct>();
 
     @SuppressWarnings("unchecked")
@@ -110,16 +113,16 @@ public class SearchServiceITCase extends AbstractSearchControllerITCase {
 
     }
 
-    
     @Test
     public void testYearSorting() throws ParseException {
         resourceQueryBuilder = new ResourceQueryBuilder();
-        //get information resources only
-        resourceQueryBuilder.setRawQuery("+(resourceType:DOCUMENT resourceType:CODING_SHEET resourceType:IMAGE resourceType:SENSORY_DATA resourceType:DATASET resourceType:ONTOLOGY)");
+        // get information resources only
+        resourceQueryBuilder
+                .setRawQuery("+(resourceType:DOCUMENT resourceType:CODING_SHEET resourceType:IMAGE resourceType:SENSORY_DATA resourceType:DATASET resourceType:ONTOLOGY)");
         Comparator<Resource> yearComparator = new Comparator<Resource>() {
             public int compare(Resource arg0, Resource arg1) {
-                InformationResource ir1 = (InformationResource)arg0;
-                InformationResource ir2 =(InformationResource)arg1;
+                InformationResource ir1 = (InformationResource) arg0;
+                InformationResource ir2 = (InformationResource) arg1;
                 logger.debug("comparing {} vs. {}", ir1.getDate(), ir2.getDate());
                 return ObjectUtils.compare(ir1.getDate(), ir2.getDate());
             }
@@ -127,9 +130,9 @@ public class SearchServiceITCase extends AbstractSearchControllerITCase {
         assertSortOrder(SortOption.DATE, yearComparator);
         assertSortOrder(SortOption.DATE_REVERSE, yearComparator);
     }
-    
-    @Test 
-    public void  testDateSorting() throws ParseException {
+
+    @Test
+    public void testDateSorting() throws ParseException {
         DesignatedComparable<Resource> dateCreatedComparator = new DesignatedComparable<Resource>() {
             public Comparable getComparableFor(Resource t) {
                 return t.getDateCreated();
@@ -140,12 +143,12 @@ public class SearchServiceITCase extends AbstractSearchControllerITCase {
                 return t.getDateUpdated();
             }
         };
-        
+
         assertSortOrder(SortOption.DATE_UPDATED, dateUpdatedComparator);
         assertSortOrder(SortOption.DATE_UPDATED_REVERSE, dateUpdatedComparator);
     }
-    
-    @Test 
+
+    @Test
     public void testResourceTypeSorting() throws ParseException {
         DesignatedComparable<Resource> resourceTypeComparator = new DesignatedComparable<Resource>() {
             public Comparable getComparableFor(Resource t) {
@@ -154,11 +157,9 @@ public class SearchServiceITCase extends AbstractSearchControllerITCase {
         };
         assertSortOrder(SortOption.RESOURCE_TYPE, resourceTypeComparator);
         assertSortOrder(SortOption.RESOURCE_TYPE_REVERSE, resourceTypeComparator);
-        
+
     }
-    
-    
-    
+
     @Test
     // the sortInfo data structure has all the info on all the fields we sort by, which querybuilders to use, and what comparators to use
     // to assert that the searchService successfully sorted the results.
@@ -201,7 +202,7 @@ public class SearchServiceITCase extends AbstractSearchControllerITCase {
         assertSortOrder(SortOption.ID_REVERSE, idComparator);
     }
 
-    //    @Test
+    // @Test
     public void testProjectSort() throws ParseException {
         assertSortOrder(SortOption.PROJECT, projectComparator);
     }
@@ -210,9 +211,9 @@ public class SearchServiceITCase extends AbstractSearchControllerITCase {
         FullTextQuery ftq = searchService.search(resourceQueryBuilder, sortOption);
         List<Resource> resources = ftq.list();
         assertFalse("results should not be empty", resources.isEmpty());
-//        ArrayList<Resource> toCompare = new ArrayList<Resource>(resources);
-//        Collections.sort(toCompare, comparator);
-//        ListUtils.isEqualList(resources, toCompare);
+        // ArrayList<Resource> toCompare = new ArrayList<Resource>(resources);
+        // Collections.sort(toCompare, comparator);
+        // ListUtils.isEqualList(resources, toCompare);
         for (int i = 0; i < resources.size() - 2; i++) {
             Resource item1 = resources.get(i);
             Resource item2 = resources.get(i + 1);
