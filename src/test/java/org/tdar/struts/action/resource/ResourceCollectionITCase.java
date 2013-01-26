@@ -20,6 +20,8 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.DisplayOrientation;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
@@ -394,6 +396,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         resourceCollection.markUpdated(owner);
         AuthorizedUser authorizedUser = new AuthorizedUser(owner, GeneralPermissions.VIEW_ALL);
         resourceCollection.getAuthorizedUsers().addAll(Arrays.asList(authorizedUser));
+        
         genericService.saveOrUpdate(resourceCollection);
         genericService.synchronize();
 
@@ -433,8 +436,51 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         logger.info("{}", genericService.find(ResourceCollection.class, rcid));
         assertTrue("user should be able to delete collection", resourceCollection == null);
         genericService.synchronize();
-
     }
+    
+    @Test
+    @Rollback
+    public void testSaveAndDeleteWithRedundantAccessRights() throws TdarActionException {
+        controller.prepare();
+        controller.add();
+
+        ResourceCollection rc = controller.getResourceCollection();
+        rc.setName("test delete w/ redundant rights");
+        rc.setDescription("a tragedy in three acts");
+        rc.setVisible(true);
+        rc.setSortBy(SortOption.ID);
+        rc.setOrientation(DisplayOrientation.LIST);
+        
+        //add two redundant access rights records (if you have administer_group,  you already have view_all implicitly)
+        Person persistedUser = new Person("bob", "loblaw", "bobloblaw@mailinator.com");
+        persistedUser.setRegistered(true);
+        genericService.saveOrUpdate(persistedUser);
+        Person strutsUser1 = new Person();
+        Person strutsUser2 = new Person();
+        strutsUser1.setId(persistedUser.getId());
+        strutsUser2.setId(persistedUser.getId());
+        AuthorizedUser bobCopy1 = new AuthorizedUser(strutsUser1, GeneralPermissions.ADMINISTER_GROUP);
+        AuthorizedUser bobCopy2 = new AuthorizedUser(strutsUser2, GeneralPermissions.VIEW_ALL);
+        controller.getAuthorizedUsers().add(bobCopy1);
+        controller.getAuthorizedUsers().add(bobCopy2);
+
+        controller.setServletRequest(getServletPostRequest());
+        controller.save();
+        
+        Long id = rc.getId();
+        
+        controller = generateNewController(CollectionController.class);
+        controller.setSessionData(getSessionData());
+        controller.setId(id);
+        controller.prepare();
+        controller.view();
+        
+        ResourceCollection rc2 = controller.getResourceCollection();
+        assertEquals(rc.getName(), rc2.getName());
+        assertEquals("2 redundant authusers should have been normalized to one", 1, rc2.getAuthorizedUsers().size());
+        assertEquals("the one remaining authuser should have highest permissions", GeneralPermissions.ADMINISTER_GROUP, rc2.getAuthorizedUsers().iterator().next().getGeneralPermission());
+    }
+        
 
     @Test
     @Rollback
