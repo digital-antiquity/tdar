@@ -19,6 +19,7 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Persistable.Base;
@@ -380,10 +381,9 @@ public class Invoice extends Base implements Updatable {
     }
     
     @Transient
-    //was this invoice created on someone elses behalf?
     public boolean isProxy() {
-        if(owner == null || transactedBy == null) return false;
-        return !owner.equals(transactedBy);
+        return ObjectUtils.notEqual(owner, transactedBy);
     }
 
+    
 }

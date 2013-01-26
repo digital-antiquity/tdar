@@ -15,18 +15,20 @@
 	    <tr>
 	    <td>${item.activity.name}</td>
 	    <td>${item.quantity!0}</td>
-	    <td>$${item.activity.price}</td>
+	    <td><#if invoice.proxy>N/A<#else>$${item.activity.price}</#if></td>
         <td> ${(item.quantity!0) * (item.activity.numberOfFiles!0)} </td>
         <td> ${(item.quantity!0) * (item.activity.numberOfMb!0)} </td>
         <td> ${(item.quantity!0) * (item.activity.numberOfResources!0)}</td>
-	    <td>$${item.subtotal}
-	    <!-- ${item.activity.name}:${item.quantity!0}:$${item.activity.price}:$${item.subtotal}-->
+	    <td><#if invoice.proxy>N/A<#else>$${item.subtotal}
+	    <!-- for testing: ${item.activity.name}:${item.quantity!0}:$${item.activity.price}:$${item.subtotal}-->
+		</#if>
 	    </td>
 	    </tr>
 	</#list>
 	<tr>
-	    <th colspan=6><em>Total:</em></th><th>$${invoice.calculatedCost!0}
-	    <!-- total:$${invoice.calculatedCost!0} -->
+	    <th colspan=6><em>Total:</em></th><th><#if invoice.proxy>N/A<#else>$${invoice.calculatedCost!0}
+	    <!-- FOR testing total:$${invoice.calculatedCost!0} -->
+	    </#if>
 	    </th>
 	</tr>
 	</table>
