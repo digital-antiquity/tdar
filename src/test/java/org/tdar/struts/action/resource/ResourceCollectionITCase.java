@@ -1024,7 +1024,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         controller.setId(rcid);
         controller.prepare();
         AuthorizedUser authUser = new AuthorizedUser(registeredUser, GeneralPermissions.MODIFY_RECORD);
-        controller.setAuthorizedUsers(Arrays.asList(authUser));
+        controller.getAuthorizedUsers().addAll(Arrays.asList(authUser));
         controller.getResources().add(proxy);
         controller.setServletRequest(getServletPostRequest());
         controller.setAsync(false);

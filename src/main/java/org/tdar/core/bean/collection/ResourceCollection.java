@@ -7,11 +7,14 @@
 package org.tdar.core.bean.collection;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -599,5 +602,31 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     public void setUpdater(Person updater) {
         this.updater = updater;
     }
-
+    
+    public void normalizeAuthorizedUsers() {
+        normalizeAuthorizedUsers(authorizedUsers);
+    }
+    
+    public static final void normalizeAuthorizedUsers(Collection<AuthorizedUser>authorizedUsers) {
+        Map<Person, AuthorizedUser> bestMap = new HashMap<Person, AuthorizedUser>();
+        Iterator<AuthorizedUser> iterator = authorizedUsers.iterator();
+        while(iterator.hasNext()) {
+            AuthorizedUser authUser = iterator.next();
+            if(bestMap.containsKey(authUser.getUser())) {
+                if(bestMap.get(authUser.getUser()).getGeneralPermission().getEffectivePermissions() < authUser.getGeneralPermission().getEffectivePermissions()) {
+                    bestMap.put(authUser.getUser(), authUser);
+                } else {
+                    iterator.remove();
+                }
+            }  else {
+                bestMap.put(authUser.getUser(), authUser);
+            }
+        }
+        
+        authorizedUsers.clear();
+        authorizedUsers.addAll(bestMap.values());
+        
+        
+        
+    }
 }
