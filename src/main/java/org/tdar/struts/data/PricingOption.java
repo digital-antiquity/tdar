@@ -56,8 +56,8 @@ public class PricingOption implements Serializable {
         if (other == null) {
             return false;
         }
-        
-        if (ObjectUtils.notEqual(getItems().size() , other.getItems().size())) {
+
+        if (ObjectUtils.notEqual(getItems().size(), other.getItems().size())) {
             return false;
         }
         Map<Long, Integer> compMap = new HashMap<Long, Integer>();
@@ -95,5 +95,25 @@ public class PricingOption implements Serializable {
 
     public void setType(PricingType type) {
         this.type = type;
+    }
+
+    public Long getTotalMb() {
+        Long mb = 0L;
+        for (BillingItem item : items) {
+            if (item.getActivity().getNumberOfMb() != null && item.getQuantity() != null) {
+                mb += item.getQuantity().longValue() * item.getActivity().getNumberOfMb();
+            }
+        }
+        return mb;
+    }
+
+    public Long getTotalFiles() {
+        Long files = 0L;
+        for (BillingItem item : items) {
+            if (item.getActivity().getNumberOfFiles() != null && item.getQuantity() != null) {
+                files += item.getQuantity().longValue() * item.getActivity().getNumberOfFiles();
+            }
+        }
+        return files;
     }
 }

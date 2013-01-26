@@ -118,7 +118,9 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         project.setDescription("test");
         project.markUpdated(getAdminUser());
         genericService.save(project);
-        resourceCollectionService.saveAuthorizedUsersForResource(project, Arrays.asList(user), true);
+        List<AuthorizedUser> users = new ArrayList<AuthorizedUser>();
+        users.add(user);
+        resourceCollectionService.saveAuthorizedUsersForResource(project, users, true);
 
         // ensure that basicUser can edit the project
         Long id = project.getId();
@@ -153,9 +155,10 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         project_.getResourceCollections().add(testCollection);
         genericService.saveOrUpdate(testCollection);
         genericService.saveOrUpdate(project_);
-        List<AuthorizedUser> users = Arrays.asList(new AuthorizedUser(testModify, GeneralPermissions.MODIFY_RECORD), new AuthorizedUser(testView,
+        List<AuthorizedUser> users2 = new ArrayList<AuthorizedUser>();
+        users2.addAll(Arrays.asList(new AuthorizedUser(testModify, GeneralPermissions.MODIFY_RECORD), new AuthorizedUser(testView,
                 GeneralPermissions.VIEW_ALL),
-                new AuthorizedUser(testAdmin, GeneralPermissions.ADMINISTER_GROUP));
+                new AuthorizedUser(testAdmin, GeneralPermissions.ADMINISTER_GROUP)));
         resourceCollectionService.saveAuthorizedUsersForResourceCollection(testCollection, users, true);
         genericService.saveOrUpdate(testCollection);
 
