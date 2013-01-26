@@ -630,7 +630,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
         authorizedUsers.clear();
         authorizedUsers.addAll(bestMap.values());
-        Logger.getLogger(ResourceCollection.class).trace("outgoing" + authorizedUsers);
+        staticLogger.trace("outgoing" + authorizedUsers);
 
     }
 }

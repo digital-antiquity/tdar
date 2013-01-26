@@ -142,13 +142,11 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         
         ResourceCollection.normalizeAuthorizedUsers(authorizedUsers);
 
-        // internalCollection.getResources().add(resource);
         if (CollectionUtils.isNotEmpty(authorizedUsers)) {
             for (AuthorizedUser incomingUser : authorizedUsers) {
                 if (incomingUser == null) {
                     continue;
                 }
-//                incomingUser.setResourceCollection(resourceCollection);
                 addUserToCollection(shouldSaveResource, currentUsers, incomingUser);
             }
         }
@@ -168,11 +166,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                 if (!incomingUser.isValid()) {
                     return;
                 }
-                // FIXME: not sure this is needed, but because hashCode doesn't include generalPermissions
-                // best to be safe
-                if (currentUsers.contains(incomingUser)) {
-                    currentUsers.remove(incomingUser);
-                }
+
                 currentUsers.add(incomingUser);
                 if (shouldSaveResource)
                     getDao().saveOrUpdate(incomingUser);
