@@ -3,6 +3,7 @@ User-agent: *
 Disallow: /search/rss
 Disallow: /search/download
 Disallow: /filestore/
+Disallow: /search/advanced
 <#else>
 Disallow: *
 </#if>

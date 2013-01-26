@@ -413,6 +413,16 @@ public abstract class InformationResource extends Resource {
     public int getTotalNumberOfFiles() {
         return informationResourceFiles.size();
     }
+    
+    public int getTotalNumberOfActiveFiles() {
+        int count = 0;
+        for (InformationResourceFile file : informationResourceFiles) {
+            if (file.isDeleted())
+                continue;
+            count++;
+        }
+        return count;
+    }
 
     @Override
     @JSONTransient
