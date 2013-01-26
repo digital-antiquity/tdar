@@ -381,7 +381,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         if (shouldSaveResource()) {
             getResourceService().saveOrUpdate(getPersistable());
         }
-        logger.info("AUTHORIZED USERS: {} ", getAuthorizedUsers());
 
         if (Persistable.Base.isNotNullOrTransient(getSubmitterId())) {
             Person uploader = getEntityService().find(getSubmitterId());

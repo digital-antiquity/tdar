@@ -117,44 +117,44 @@ public class AuthorizedUser extends Base implements Persistable {
         return generalPermission;
     }
 
-    @Override
-    public boolean equals(Object candidate) {
-        if (this == candidate) {
-            return true;
-        }
-        if (candidate instanceof AuthorizedUser && getClass().isInstance(candidate)) {
-            AuthorizedUser that = (AuthorizedUser)candidate;
-            return this.getUser().equals(that.getUser()) 
-                    && this.getGeneralPermission().equals(that.getGeneralPermission());
-        }
-        return false;
-    }
+//    @Override
+//    public boolean equals(Object candidate) {
+//        if (this == candidate) {
+//            return true;
+//        }
+//        if (candidate instanceof AuthorizedUser && getClass().isInstance(candidate)) {
+//            AuthorizedUser that = (AuthorizedUser)candidate;
+//            return this.getUser().equals(that.getUser()) 
+//                    && this.getGeneralPermission().equals(that.getGeneralPermission());
+//        }
+//        return false;
+//    }
 
     @Transient
     // is the authorizedUser valid not taking into account whether a collection is present
     public boolean isValid() {
-        logger.info("calling validate collection for user/permission/registered: [{} / {} / {}]",
+        logger.trace("calling validate collection for user/permission/registered: [{} / {} / {}]",
                 new Object[] { user != null, generalPermission != null, user.isRegistered() });
         return user != null && generalPermission != null && user.isRegistered();
     }
 
     public List<?> getEqualityFields() {
-        logger.info("{}", getUser().getId());
+        logger.trace("{}", getUser().getId());
         return Arrays.asList(getUser().getId());
     }
 
     @Override
     public String toString() {
-        return String.format("%s (%s)", getUser(), generalPermission);
+        return String.format("%s[%s] ( %s)", getUser().getProperName(), getUser().getId(), generalPermission);
     }
 
-    @Override
-    public int hashCode() {
-            return new HashCodeBuilder(3, 7)
-                .append(getUser())
-                .append(getGeneralPermission())
-                .toHashCode();
-    }
+//    @Override
+//    public int hashCode() {
+//            return new HashCodeBuilder(3, 7)
+//                .append(getUser())
+//                .append(getGeneralPermission())
+//                .toHashCode();
+//    }
 
     /**
      * @param effectiveGeneralPermission

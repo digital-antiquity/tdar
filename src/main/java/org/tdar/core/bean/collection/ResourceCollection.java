@@ -38,6 +38,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.apache.lucene.search.Explanation;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyze;
@@ -65,6 +66,7 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.JSONTransient;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
@@ -90,7 +92,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     private transient boolean viewable;
 
-//    private transient boolean readyToIndex = true;
+    // private transient boolean readyToIndex = true;
 
     public enum CollectionType {
         INTERNAL("Internal"),
@@ -602,31 +604,33 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     public void setUpdater(Person updater) {
         this.updater = updater;
     }
-    
+
     public void normalizeAuthorizedUsers() {
         normalizeAuthorizedUsers(authorizedUsers);
     }
-    
-    public static final void normalizeAuthorizedUsers(Collection<AuthorizedUser>authorizedUsers) {
-        Map<Person, AuthorizedUser> bestMap = new HashMap<Person, AuthorizedUser>();
+
+    public static final void normalizeAuthorizedUsers(Collection<AuthorizedUser> authorizedUsers) {
+        Logger staticLogger = Logger.getLogger(ResourceCollection.class);
+        staticLogger.trace("incoming " + authorizedUsers);
+        Map<Long, AuthorizedUser> bestMap = new HashMap<Long, AuthorizedUser>();
         Iterator<AuthorizedUser> iterator = authorizedUsers.iterator();
-        while(iterator.hasNext()) {
-            AuthorizedUser authUser = iterator.next();
-            if(bestMap.containsKey(authUser.getUser())) {
-                if(bestMap.get(authUser.getUser()).getGeneralPermission().getEffectivePermissions() < authUser.getGeneralPermission().getEffectivePermissions()) {
-                    bestMap.put(authUser.getUser(), authUser);
-                } else {
-                    iterator.remove();
+        while (iterator.hasNext()) {
+            AuthorizedUser incoming = iterator.next();
+            Long user = incoming.getUser().getId();
+
+            AuthorizedUser existing = bestMap.get(user);
+            staticLogger.trace(incoming + " <==>" + existing);
+            if (existing != null) {
+                if (existing.getGeneralPermission().getEffectivePermissions() > incoming.getGeneralPermission().getEffectivePermissions()) {
+                    continue;
                 }
-            }  else {
-                bestMap.put(authUser.getUser(), authUser);
             }
+            bestMap.put(user, incoming);
         }
-        
+
         authorizedUsers.clear();
         authorizedUsers.addAll(bestMap.values());
-        
-        
-        
+        Logger.getLogger(ResourceCollection.class).trace("outgoing" + authorizedUsers);
+
     }
 }
