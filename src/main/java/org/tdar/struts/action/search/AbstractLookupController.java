@@ -23,6 +23,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Dataset.IntegratableOptions;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.InstitutionQueryBuilder;
@@ -61,24 +62,6 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     private String searchDescription;
     // execute a query even if query is empty
     private boolean showAll = false;
-
-    public enum LookupSource {
-        PERSON("people"), INSTITUTION("institutions"), KEYWORD("items"), RESOURCE("resources"), COLLECTION("collections");
-
-        private String collectionName;
-
-        private LookupSource(String name) {
-            this.collectionName = name;
-        }
-
-        public String getCollectionName() {
-            return this.collectionName;
-        }
-
-        public String getProper() {
-            return StringUtils.capitalize(name().toLowerCase());
-        }
-    }
 
     private LookupSource lookupSource;
 
@@ -229,13 +212,13 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         return results;
     }
 
-    
     /*
      * 
      */
     protected List<Creator> getCreatorResults() {
         return (List<Creator>) results;
     }
+
     /**
      * @return the debug
      */

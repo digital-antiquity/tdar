@@ -59,6 +59,7 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ExcelService;
 import org.tdar.core.service.RssService;
+import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.InstitutionQueryBuilder;
@@ -130,8 +131,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
     private Operator topLevelOperator = Operator.AND;
 
-    private List<SortOption> sortOptions = SortOption
-            .getOptionsForContext(Resource.class);
+    private List<SortOption> sortOptions = SortOption.getOptionsForContext(Resource.class);
 
     // facet statistics for results.ftl
     private ArrayList<ResourceType> resourceTypeFacets = new ArrayList<ResourceType>();

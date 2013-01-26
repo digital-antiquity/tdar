@@ -18,7 +18,15 @@ $(document).ready(function(){
 });
   
 function updateProgress() {
-    $.getJSON("<@s.url value="checkstatus"/>", function(data) {
+
+
+var url = "<@s.url value="checkstatus"/>?";
+var indx =0;
+$('input[type=checkbox]:checked').each(function() {
+ url += "indexesToRebuild[" + indx+ "]=" + $(this).val() + "&";
+ indx++;
+});
+    $.getJSON(url, function(data) {
         if (data.percentDone != 100) {
             var timeString = (new Date()).toLocaleTimeString();
             $progressbar.progressbar("option", "value", data.percentDone);
@@ -44,6 +52,8 @@ function updateProgress() {
 </script>
 </head>
 <body>
+<h1>Rebuild Search Indexes</h1>
+    <@s.checkboxlist id="sources" name='indexesToRebuild' list='allSources'  label="what to reindex"/>
 <div>
 <div id="progressbar"></div>
 <br/>

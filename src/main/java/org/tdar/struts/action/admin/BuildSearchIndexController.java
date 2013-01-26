@@ -1,10 +1,13 @@
 package org.tdar.struts.action.admin;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -14,9 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.AsyncUpdateReceiver;
+import org.tdar.core.bean.Indexable;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.SearchIndexService;
+import org.tdar.search.index.LookupSource;
 import org.tdar.struts.RequiresTdarUserGroup;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.utils.Pair;
@@ -36,6 +41,8 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
     private String callback;
 
     LinkedList<Throwable> errors = new LinkedList<Throwable>();
+
+    private List<LookupSource> indexesToRebuild = new ArrayList<LookupSource>();
 
     @Autowired
     private transient SearchIndexService searchIndexService;
@@ -68,7 +75,19 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
 
     private void buildIndex() {
         Date date = new Date();
-        searchIndexService.indexAll(this);
+        List<Class<? extends Indexable>> toReindex = new ArrayList<Class<? extends Indexable>>();
+        logger.info("{}" , getIndexesToRebuild());
+        for (LookupSource source : getIndexesToRebuild()) {
+            toReindex.addAll(Arrays.asList(source.getClasses()));
+        }
+
+        logger.info("to reindex: {}" , toReindex);
+
+        if (CollectionUtils.isEmpty(toReindex)) {
+            searchIndexService.indexAll(this);
+        } else {
+            searchIndexService.indexAll(this, toReindex);
+        }
         if (isProduction()) {
             getEmailService().send(String.format("indexing of %s complete.\n Started: %s \n Completed: %s", getHostName(), date, new Date()),
                     "indexing completed");
@@ -158,8 +177,20 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
         setPercentComplete(percent);
     }
 
+    public List<LookupSource> getAllSources() {
+        return Arrays.asList(LookupSource.values());
+    }
+
     public boolean isAlreadyRunning() {
         return ActivityManager.getInstance().findActivity(SearchIndexService.BUILD_LUCENE_INDEX_ACTIVITY_NAME) == null;
+    }
+
+    public List<LookupSource> getIndexesToRebuild() {
+        return indexesToRebuild;
+    }
+
+    public void setIndexesToRebuild(List<LookupSource> indexesToRebuild) {
+        this.indexesToRebuild = indexesToRebuild;
     }
 
 }
