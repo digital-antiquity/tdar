@@ -70,6 +70,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
     @Rollback
     public void testAccountControllerChoicesSelectAccounts() throws TdarActionException {
         Invoice invoice = createTrivialInvoice();
+        invoice.setOwner(getAdminUser());
         Account account = createAccount(getAdminUser());
         BillingAccountController controller = generateNewController(BillingAccountController.class);
         init(controller, getAdminUser());
