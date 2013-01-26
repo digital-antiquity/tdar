@@ -616,22 +616,21 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         Iterator<AuthorizedUser> iterator = authorizedUsers.iterator();
         while (iterator.hasNext()) {
             AuthorizedUser incoming = iterator.next();
-            Long incomingUserId = incoming.getUser().getId();
+            Long user = incoming.getUser().getId();
 
-            AuthorizedUser best = bestMap.get(incomingUserId);
-            staticLogger.trace(incoming + " <==>" + best);
-            if (bestMap.containsKey(incomingUserId)) {
-                if (best.getGeneralPermission().getEffectivePermissions() < incoming.getGeneralPermission().getEffectivePermissions()) {
-                    bestMap.put(incomingUserId, incoming);
+            AuthorizedUser existing = bestMap.get(user);
+            staticLogger.trace(incoming + " <==>" + existing);
+            if (existing != null) {
+                if (existing.getGeneralPermission().getEffectivePermissions() > incoming.getGeneralPermission().getEffectivePermissions()) {
+                    continue;
                 }
-            } else {
-                bestMap.put(incomingUserId, incoming);
             }
+            bestMap.put(user, incoming);
         }
 
         authorizedUsers.clear();
         authorizedUsers.addAll(bestMap.values());
-        Logger.getLogger(ResourceCollection.class).trace("outgoing" + authorizedUsers);
+        staticLogger.trace("outgoing" + authorizedUsers);
 
     }
 }
