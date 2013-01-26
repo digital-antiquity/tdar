@@ -317,6 +317,11 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         logger.info("adtl. space needed: {} avail: {} ", spaceNeeded, spaceAvailable);
         logger.info("space act: {} ", getSpaceActivity());
         calculateSpaceActivity(option, spaceActivity, spaceNeeded);
+        
+        if (option.getTotalMb() < numMb || option.getTotalFiles() < numFiles) {
+            return null;
+        }
+        
         return option;
     }
 
@@ -369,6 +374,11 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             }
         }
         option.getItems().add(lowest);
+        
+        if (option.getTotalMb() < spaceInMb || option.getTotalFiles() < numFiles) {
+            return null;
+        }
+
         return option;
     }
 

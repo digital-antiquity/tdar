@@ -37,7 +37,7 @@ var _initPricing = function(form, ajaxUrl) {
     	  internal_name = data[i].model;
     	  label = data[i].model;
     	  total_cost = data[i].subtotal;
-    	  if (subtotal > total_cost) {
+    	  if (subtotal > total_cost && item.numFiles >= numFiles && item.numMb >= numMb) {
     		  item = data[i];
     		  subtotal = data[i].subtotal;
     	  }
@@ -58,10 +58,8 @@ var _initPricing = function(form, ajaxUrl) {
       	}
   		var line = sprintf("<tr class='table-row-separator-above'><td></td><td class='subtotal'>{0}</td><td class='subtotal'>{1} MB</td><td class='red'>${2}</td></tr>", total_files, total_mb, subtotal);
   		$est.append(line);
-      //};
-//	$est.append("</ul>");
-	//	console.log(data);
-        },
+
+      },
       error: function(xhr,txtStatus, errorThrown) {
         console.error("error: %s, %s", txtStatus, errorThrown);
       }
