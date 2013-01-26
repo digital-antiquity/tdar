@@ -115,8 +115,11 @@
     <#--fixme: replace explicit map sizes with css names -->
     <@rlist.listResources resourcelist=results sortfield=sortField expanded=true listTag="span" itemTag="span" titleTag="h3" orientation=orientation mapPosition="top" mapHeight="450"/>
 <#else>
+	<#assign indx = 0/>
 	<#list results as result>
-	<#if result_index != 0> <hr/></#if>
+	<#if result?has_content>
+	<#assign indx = indx + 1/>
+	<#if indx != 0> <hr/></#if>
 <div class="listItemPart">
     <h3 class="search-result-title-${result.status}">
         <a class="resourceLink" href="/${result.urlNamespace}/${result.id?c}">${result.properName}</a>
@@ -125,6 +128,7 @@
     <blockquote class="luceneExplanation">${result.explanation!""}</blockquote>
     <blockquote class="luceneScore"<b>score:</b>${result.score!""}<br> </blockquote>
 </div>
+	</#if> 
 	</#list>
 </#if>
 </div>
