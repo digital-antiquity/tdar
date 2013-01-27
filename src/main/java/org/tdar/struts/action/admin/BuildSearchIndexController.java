@@ -34,6 +34,8 @@ import org.tdar.utils.activity.IgnoreActivity;
 @RequiresTdarUserGroup(TdarGroup.TDAR_ADMIN)
 public class BuildSearchIndexController extends AuthenticationAware.Base implements AsyncUpdateReceiver {
 
+    public static final String INDEXING_STARTED = "indexing of %s on %s complete.\n Started: %s \n Completed: %s";
+
     private static final long serialVersionUID = -8927970945627420725L;
 
     private int percentDone;
@@ -66,7 +68,7 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
     @Action(value = "build", results = { @Result(name = "success", location = "build.ftl") })
     public String build() {
         try {
-            logger.info("{} IS REBUILDING SEARCH INDEX", getAuthenticatedUser().getEmail().toUpperCase());
+            logger.info("{} IS REBUILDING SEARCH INDEXES", getAuthenticatedUser().getEmail().toUpperCase());
         } catch (Exception e) {
             logger.error("weird exception {} ", e);
         }
@@ -76,12 +78,12 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
     private void buildIndex() {
         Date date = new Date();
         List<Class<? extends Indexable>> toReindex = new ArrayList<Class<? extends Indexable>>();
-        logger.info("{}" , getIndexesToRebuild());
+        logger.info("{}", getIndexesToRebuild());
         for (LookupSource source : getIndexesToRebuild()) {
             toReindex.addAll(Arrays.asList(source.getClasses()));
         }
 
-        logger.info("to reindex: {}" , toReindex);
+        logger.info("to reindex: {}", toReindex);
 
         if (CollectionUtils.isEmpty(toReindex)) {
             searchIndexService.indexAll(this);
@@ -89,8 +91,7 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
             searchIndexService.indexAll(this, toReindex);
         }
         if (isProduction()) {
-            getEmailService().send(String.format("indexing of %s complete.\n Started: %s \n Completed: %s", getHostName(), date, new Date()),
-                    "indexing completed");
+            getEmailService().send(String.format(INDEXING_STARTED, toReindex, getHostName(), date, new Date()), "indexing completed");
         }
         percentDone = 100;
     }

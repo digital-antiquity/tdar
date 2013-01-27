@@ -19,6 +19,7 @@ import java.net.URLEncoder;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -87,10 +88,13 @@ public class ImageThumbnailTask extends AbstractTask {
         IJ.redirectErrorMessages(true);
         ijSource = opener.openImage(sourceFile.getAbsolutePath());
 
-        // getLogger().info(IJ.getLastLogMessage());
+        String msg = IJ.getErrorMessage();
+        if (StringUtils.isNotBlank(msg)) {
+            getLogger().error(msg);
+        }
         if (ijSource == null) {
             getLogger().debug("Unable to load source image: " + sourceFile);
-            throw new TdarRecoverableRuntimeException("Please check that the image you uploaded is not corrupt and was not saved with any compression");
+            throw new TdarRecoverableRuntimeException("Please check that the image you uploaded is ok: " + msg);
         } else {
             if (getWorkflowContext().getResourceType().hasDemensions()) {
                 InformationResourceFileVersion origVersion = getWorkflowContext().getOriginalFile();
