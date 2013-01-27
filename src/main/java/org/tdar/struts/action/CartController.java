@@ -76,11 +76,11 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         if (!getInvoice().isModifiable()) {
             throw new TdarRecoverableRuntimeException(CANNOT_MODIFY);
         }
+        loadEditMetadata();
 
         if ((persistable.getNumberOfFiles() == null || persistable.getNumberOfFiles() < 1) &&
                 (persistable.getNumberOfMb() == null || persistable.getNumberOfMb() < 1) && 
                 !getAuthenticationAndAuthorizationService().isBillingManager(getAuthenticatedUser())) {
-            loadEditMetadata();
             addActionError(SPECIFY_SOMETHING);
             return INPUT;
         }

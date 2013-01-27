@@ -16,93 +16,86 @@
 
 <h1>What would you like to put into tDAR?</h1>
 <div class="row">
-	<div class="span3">
-<h3>Rates</h3>
-		<table class="tableFormat table">
-		    <tr>
-		        <th>Item</th>
-		        <th>Cost</th>
-		    </tr>
-		    <#list activities as act>
-		    <#if act.production >
-		    <tr>
-		        <td>${act.name}</td>
-		        <td>${act.price} ${act.currency!"USD"}</td>
-		    </tr> 
-			</#if>		    
-		    </#list>
-	    </table>
-	</div>
-
-	<div class="span9">
+	<div class="span12">
 	<ul class="nav nav-tabs" >
 	  <li class="active">
 	    <a href="#suggested" data-toggle="tab">Suggested</a>
 	  </li>
-	  <li><a href="#custom" data-toggle="tab">Custom</a></li>
+	  <li><a href="#custom" data-toggle="tab">Custom &amp; Calculator</a></li>
 	</ul>
-	<div class="tab-content" >
-		<div id="suggested" class="tab-pane active">
+	<div class="tab-content row" >
+		<div id="suggested" class="tab-pane active span12">
 		<div class="row">
-			<div class="span2 well">
-			<h3><span class="red">$50</span>: Small</h3>
-			<ul>
-				<li>1 File</li>
-				<li>10 MB</li>
-			</ul>
-
-			<span class="tdar-button" id="small-option">SELECT</span>
-			</div>
-			<div class="span2 well">
-			<h3><span class="red">$500</span>: Medium</h3>
-			<ul>
-				<li>10 File</li>
-				<li>1200 MB</li>
-			</ul>
-
-			<span class="tdar-button" id="medium-option">SELECT</span>
-			
-			</div>
-			<div class="span2 well">
-			<h3><span class="red">$2,500</span>: Large </h3>
-			<ul>
-				<li>100 File</li>
-				<li>10500 MB</li>
-			</ul>
-
-			<span class="tdar-button" id="large-option">SELECT</span>
-			</div>
-		</div>
+			<@rates />			
+			<div class="span8">
+				<div class="row">
+				<h2 style="margin-left:30px">Suggested Levels</h2>
+					<br/>
+					<br/>
+					<div class="span2 well">
+					<h3><span class="red">$50</span>: Small</h3>
+					<ul>
+						<li>1 File</li>
+						<li>10 MB</li>
+					</ul>
 		
-		</div>
-		<div id="custom" class="tab-pane">
-			<div class="well">
-			<@s.textfield name="invoice.numberOfFiles" label="Number of Files" cssClass="integer span2"/>
-			
-			<div class="control-group">
-			    <label class="control-label">Number of Mb</label>
-			    <div class="controls">
-				<@s.textfield name="invoice.numberOfMb" label="Number of Mb"  theme="simple" cssClass="integer span2"/>
-				<span id="convert"></span>
+					<span class="tdar-button" id="small-option">SELECT</span>
+					</div>
+					<div class="span2 well">
+					<h3><span class="red">$500</span>: Medium</h3>
+					<ul>
+						<li>10 Files</li>
+						<li>100 MB</li>
+					</ul>
+		
+					<span class="tdar-button" id="medium-option">SELECT</span>
+					
+					</div>
+					<div class="span2 well">
+					<h3><span class="red">$2,500</span>: Large </h3>
+					<ul>
+						<li>100 Files</li>
+						<li>1 GB</li>
+					</ul>
+		
+					<span class="tdar-button" id="large-option">SELECT</span>
+					</div>
+				</div>
 			</div>
-			<br/>
-			<div >
-				<h4>Cost: $<span class="red" id="price">0.00</span></h4>
-				<table class="table tableFormat">
-					<tr><th>Item</th><th> # Files</th><th>Space in MB</th><th>Subtotal</th></tr>
-					<tbody id="estimated">
-					<tr><td colspan=5>enter number of files and mb above</td>	
-					</tbody>
-					</table>
+		</div>
+		</div>
+		<div id="custom" class="tab-pane span12">
+			<div class="row">
+				<@rates />	
+				<div class="span8">
+				<h2>Cost Calculator</h2>
+				<div class="well">
+				<@s.textfield name="invoice.numberOfFiles" label="Number of Files" cssClass="integer span2"/>
+				
+				<div class="control-group">
+				    <label class="control-label">Number of Mb</label>
+				    <div class="controls">
+					<@s.textfield name="invoice.numberOfMb" label="Number of Mb"  theme="simple" cssClass="integer span2"/>
+					<span id="convert"></span>
+				</div>
+				<br/>
+				<div >
+					<h4>Cost: $<span class="red" id="price">0.00</span></h4>
+					<table class="table tableFormat">
+						<tr><th>Item</th><th> # Files</th><th>Space in MB</th><th>Subtotal</th></tr>
+						<tbody id="estimated">
+						<tr><td colspan=5>enter number of files and mb above</td>	
+						</tbody>
+						</table>
+				</div>
 			</div>
 		</div>
-	</div>
 </div>
 </div>
 
 <div class="row">
 	<div class="span6">
-	    <@s.hidden name="id" value="${invoice.id?c!-1}" />
+    <@s.hidden name="id" value="${invoice.id?c!-1}" />
     <@s.hidden name="invoice.id" />
     <#if !production || administrator || editor >
     <hr>
@@ -162,4 +155,28 @@ $(document).ready(function(){
 </script>
 
 </body>
+
+<#macro rates>
+<div class="span3" style="border-right: 1px dashed #bbb;padding-right: 40px;">
+	<h2>Rates</h2>
+	<table class="tableFormat table">
+	    <tr>
+	        <th>Item</th>
+	        <th>Cost</th>
+	    </tr>
+	    <#list activities as act>
+	    <#if act.production >
+	    <tr>
+	        <td>${act.name}</td>
+	        <td>${act.price} ${act.currency!"USD"}</td>
+	    </tr> 
+		</#if>		    
+	    </#list>
+    </table>
+    <p><em>* All files come with 10 MB of space</em></p>
+</div>
+
+
+</#macro>
+
 </#escape>

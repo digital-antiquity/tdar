@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.NumberUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -270,7 +272,16 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         return null;
     }
 
-    public PricingOption getCheapestActivityByFiles(Long numFiles, Long numMb, boolean exact) {
+    public PricingOption getCheapestActivityByFiles(Long numFiles_, Long numMb_, boolean exact) {
+        Long numFiles = 0L;
+        Long numMb = 0L;
+        if (numFiles_ != null) {
+            numFiles = numFiles_;
+        }
+        if (numMb_ != null) {
+            numMb = numMb_;
+        }
+
         PricingOption option = new PricingOption(PricingType.SIZED_BY_FILE_ONLY);
         if (!exact) {
             option.setType(PricingType.SIZED_BY_FILE_ABOVE_TIER);
@@ -334,7 +345,16 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         }
     }
 
-    public PricingOption getCheapestActivityBySpace(Long numFiles, Long spaceInMb) {
+    public PricingOption getCheapestActivityBySpace(Long numFiles_, Long spaceInMb_) {
+        Long numFiles = 0L;
+        Long spaceInMb = 0L;
+        if (numFiles_ != null) {
+            numFiles = numFiles_;
+        }
+        if (spaceInMb_ != null) {
+            spaceInMb = spaceInMb_;
+        }
+
         PricingOption option = new PricingOption(PricingType.SIZED_BY_MB);
         List<BillingItem> items = new ArrayList<BillingItem>();
         BillingActivity spaceActivity = getSpaceActivity();
@@ -374,8 +394,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             }
         }
         option.getItems().add(lowest);
-        
-        if (option.getTotalMb() < spaceInMb || option.getTotalFiles() < numFiles) {
+        if (option == null || option.getTotalMb() < spaceInMb || option.getTotalFiles() < numFiles) {
             return null;
         }
 
