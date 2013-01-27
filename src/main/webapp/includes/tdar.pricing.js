@@ -4,11 +4,12 @@ TDAR.pricing = function() {
     'use strict';
 
 var _initPricing = function(form, ajaxUrl) {
-	$("#small-option").click(function() {  $("#MetadataForm_invoice_numberOfFiles").val(1); $("#MetadataForm_invoice_numberOfMb").val(""); $("#MetadataForm").submit(); });
-	$("#medium-option").click(function() {  $("#MetadataForm_invoice_numberOfFiles").val(10); $("#MetadataForm_invoice_numberOfMb").val(""); $("#MetadataForm").submit(); });
-	$("#large-option").click(function() {  $("#MetadataForm_invoice_numberOfFiles").val(100); $("#MetadataForm_invoice_numberOfMb").val(""); $("#MetadataForm").submit(); });
+	var $form = $(form);
+	$("#small-option").click(function() {  $("#MetadataForm_invoice_numberOfFiles").val(1); $("#MetadataForm_invoice_numberOfMb").val("");   $form.data("formNavigate", true); $form.submit(); });
+	$("#medium-option").click(function() {  $("#MetadataForm_invoice_numberOfFiles").val(10); $("#MetadataForm_invoice_numberOfMb").val(""); $form.data("formNavigate", true); $form.submit(); });
+	$("#large-option").click(function() {  $("#MetadataForm_invoice_numberOfFiles").val(100); $("#MetadataForm_invoice_numberOfMb").val(""); $form.data("formNavigate", true); $form.submit(); });
 	
-	$(form).change(function() { 
+	$form.change(function() { 
 	var numFiles = $("#MetadataForm_invoice_numberOfFiles").val();
 	var numMb = $("#MetadataForm_invoice_numberOfMb").val();
 	
