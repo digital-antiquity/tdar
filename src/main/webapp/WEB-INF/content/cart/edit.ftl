@@ -88,6 +88,8 @@
 						</tbody>
 						</table>
 				</div>
+			    <@edit.submit fileReminder=false label="Next: Review & Choose Payment Method" span="span4" />
+				
 			</div>
 		</div>
 </div>
@@ -141,9 +143,6 @@
 </#if>
 
 
-<div class="row">
-    <@edit.submit fileReminder=false label="Next: Review & Choose Payment Method" />
-</div>
 </@s.form>
 
 <script>
