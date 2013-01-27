@@ -64,12 +64,6 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         controller = generateNewInitializedController(CollectionController.class);
     }
     
-    //I dislike typing
-    private static final  GeneralPermissions GP_VA = GeneralPermissions.VIEW_ALL;
-    private static final  GeneralPermissions GP_MM = GeneralPermissions.MODIFY_METADATA;
-    private static final  GeneralPermissions GP_MR = GeneralPermissions.MODIFY_RECORD;
-    private static final  GeneralPermissions GP_AG = GeneralPermissions.ADMINISTER_GROUP;
-
     @Test
     @Rollback
     public void testResourceCollectionController() throws Exception
@@ -459,9 +453,9 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
 
         //Add three authusers. two of the authusers are redundant and should be normalized to the user with 
         //the best permissions.
-        AuthorizedUser user1Viewer = detach(createAuthUser(GP_VA));
-        AuthorizedUser user1Modifier = new AuthorizedUser(user1Viewer.getUser(), GP_MM);
-        AuthorizedUser user2 = detach(createAuthUser(GP_AG));
+        AuthorizedUser user1Viewer = detach(createAuthUser(GeneralPermissions.VIEW_ALL));
+        AuthorizedUser user1Modifier = new AuthorizedUser(user1Viewer.getUser(), GeneralPermissions.MODIFY_METADATA);
+        AuthorizedUser user2 = detach(createAuthUser(GeneralPermissions.ADMINISTER_GROUP));
         controller.getAuthorizedUsers().addAll(Arrays.asList(user1Viewer, user1Modifier, user2));
 
         controller.setServletRequest(getServletPostRequest());
