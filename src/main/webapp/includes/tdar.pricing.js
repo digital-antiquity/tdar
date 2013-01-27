@@ -4,6 +4,10 @@ TDAR.pricing = function() {
     'use strict';
 
 var _initPricing = function(form, ajaxUrl) {
+	$("#small-option").click(function() {  $("#MetadataForm_invoice_numberOfFiles").val(1); $("#MetadataForm_invoice_numberOfMb").val(""); $("#MetadataForm").submit(); });
+	$("#medium-option").click(function() {  $("#MetadataForm_invoice_numberOfFiles").val(10); $("#MetadataForm_invoice_numberOfMb").val(""); $("#MetadataForm").submit(); });
+	$("#large-option").click(function() {  $("#MetadataForm_invoice_numberOfFiles").val(100); $("#MetadataForm_invoice_numberOfMb").val(""); $("#MetadataForm").submit(); });
+	
 	$(form).change(function() { 
 	var numFiles = $("#MetadataForm_invoice_numberOfFiles").val();
 	var numMb = $("#MetadataForm_invoice_numberOfMb").val();
@@ -37,7 +41,7 @@ var _initPricing = function(form, ajaxUrl) {
     	  internal_name = data[i].model;
     	  label = data[i].model;
     	  total_cost = data[i].subtotal;
-    	  if (subtotal > total_cost && item.numFiles >= numFiles && item.numMb >= numMb) {
+    	  if (subtotal > total_cost) {
     		  item = data[i];
     		  subtotal = data[i].subtotal;
     	  }
@@ -65,6 +69,7 @@ var _initPricing = function(form, ajaxUrl) {
       }
     });
 	});
+	$(form).change();
  };
 
  return {
