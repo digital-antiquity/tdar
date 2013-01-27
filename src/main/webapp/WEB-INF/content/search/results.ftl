@@ -118,8 +118,8 @@
 	<#assign indx = 0/>
 	<#list results as result>
 	<#if result?has_content>
-	<#assign indx = indx + 1/>
 	<#if indx != 0> <hr/></#if>
+	<#assign indx = indx + 1/>
 <div class="listItemPart">
     <h3 class="search-result-title-${result.status}">
         <a class="resourceLink" href="/${result.urlNamespace}/${result.id?c}">${result.properName}</a>
