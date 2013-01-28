@@ -98,7 +98,7 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
                     oneFileActivity = activity;
                 }
                 if (activity.getNumberOfFiles() == 0L && activity.getNumberOfMb() == 1L) {
-                    
+                    oneMbActivity = activity;
                 }
             }
         }
@@ -108,18 +108,20 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
             oneFileActivity.setMinAllowedNumberOfFiles(0L);
             oneFileActivity.setNumberOfMb(0L);
             oneFileActivity.setActivityType(BillingActivityType.TEST);
+            oneFileActivity.setEnabled(true);
             accountService.saveOrUpdate(oneFileActivity);
         }
 
         if (oneMbActivity == null) {
             oneMbActivity = new BillingActivity("one mb", 0f, accountService.getLatestActivityModel());
+            oneMbActivity.setEnabled(true);
             oneMbActivity.setNumberOfFiles(0L);
             oneMbActivity.setActivityType(BillingActivityType.TEST);
             oneMbActivity.setMinAllowedNumberOfFiles(0L);
             oneMbActivity.setNumberOfMb(1L);
             accountService.saveOrUpdate(oneMbActivity);
         }
-try {
+        try {
             logger.info("starting process for " + person.getProperName());
             if (person.getId() == 135028) {
                 logger.debug("skipping user: {}", person.getProperName());
@@ -147,8 +149,8 @@ try {
                     re.getResourcesUsed(),
                     re.getSpaceUsedInMb()));
             List<BillingItem> items = new ArrayList<BillingItem>();
-            items.add(new BillingItem(oneMbActivity, (int)spaceUsedInMb));
-            items.add(new BillingItem(oneFileActivity, (int)filesUsed));
+            items.add(new BillingItem(oneMbActivity, (int) spaceUsedInMb));
+            items.add(new BillingItem(oneFileActivity, (int) filesUsed));
             Invoice invoice = new Invoice(person, PaymentMethod.MANUAL, filesUsed, spaceUsedInMb, items);
             invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
             invoice.setOwner(person);
