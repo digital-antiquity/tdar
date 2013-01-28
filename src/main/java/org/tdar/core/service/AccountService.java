@@ -406,7 +406,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         // If we are using the ok amount of space for that activity...
         logger.info("lowest by files: {}", lowestByFiles.getSubtotal());
         logger.info("lowest by space: {} ", lowestByMB.getSubtotal());
-        if (lowestByFiles.getSubtotal() < lowestByMB.getSubtotal()) {
+        if (lowestByMB == null || lowestByFiles.getSubtotal() < lowestByMB.getSubtotal()) {
             return lowestByFiles;
         }
         return lowestByMB;
