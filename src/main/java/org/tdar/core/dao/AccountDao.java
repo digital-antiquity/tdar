@@ -93,14 +93,16 @@ public class AccountDao extends Dao.HibernateBase<Account> {
             Long resourceId = ((BigInteger) obj[0]).longValue();
             Long accountId = null;
             if (obj[1] != null) {
-                ((BigInteger) obj[1]).longValue();
+                accountId = ((BigInteger) obj[1]).longValue();
             }
             Account account = accountIdMap.get(accountId);
             if (account == null) {
-                accountIdMap.put(accountId, find(accountId));
+                account = find(accountId);
+                accountIdMap.put(accountId, account);
             }
             Resource resource = resourceIdMap.get(resourceId);
             if (resource != null) {
+                logger.trace("setting account {} for resource {}", accountId, resourceId);
                 resource.setAccount(account);
             } else {
                 logger.error("resource is null somehow for id: {}, account {}", resourceId, account);

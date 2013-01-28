@@ -18,13 +18,13 @@
 <div class="row">
 	<div class="span12">
 	<ul class="nav nav-tabs" >
-	  <li class="active">
+	  <li class="<#if !administrator>active</#if>">
 	    <a href="#suggested" data-toggle="tab">Suggested</a>
 	  </li>
-	  <li><a href="#custom" data-toggle="tab">Custom &amp; Calculator</a></li>
+	  <li class="<#if administrator>active</#if>"><a href="#custom" data-toggle="tab">Custom &amp; Calculator</a></li>
 	</ul>
 	<div class="tab-content row" >
-		<div id="suggested" class="tab-pane active span12">
+		<div id="suggested" class="tab-pane <#if !administrator>active</#if> span12">
 		<div class="row">
 			<@rates />			
 			<div class="span8">
@@ -64,7 +64,7 @@
 			</div>
 		</div>
 		</div>
-		<div id="custom" class="tab-pane span12">
+		<div id="custom" class="tab-pane <#if administrator>active</#if> span12">
 			<div class="row">
 				<@rates />	
 				<div class="span8">
