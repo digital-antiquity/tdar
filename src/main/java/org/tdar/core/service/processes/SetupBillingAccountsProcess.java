@@ -150,15 +150,22 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
                     re.getResourcesUsed(),
                     re.getSpaceUsedInMb()));
             List<BillingItem> items = new ArrayList<BillingItem>();
-            items.add(new BillingItem(oneMbActivity, (int) spaceUsedInMb));
-            items.add(new BillingItem(oneFileActivity, (int) filesUsed));
-            Invoice invoice = new Invoice(person, PaymentMethod.MANUAL, filesUsed, spaceUsedInMb, items);
+            logger.info(" {}  {} ", Long.valueOf(spaceUsedInMb).intValue(), Long.valueOf(filesUsed).intValue());
+            items.add(new BillingItem(oneMbActivity, Long.valueOf(spaceUsedInMb).intValue()));
+            items.add(new BillingItem(oneFileActivity,  Long.valueOf(filesUsed).intValue()));
+            Invoice invoice = new Invoice();
+            invoice.setPaymentMethod(PaymentMethod.MANUAL);
+            invoice.setNumberOfFiles(filesUsed);
+            invoice.getItems().addAll(items);
+            invoice.setNumberOfMb(spaceUsedInMb);
             invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
             invoice.setOwner(person);
             invoice.markUpdated(person);
+            invoice.markFinal();
             invoice.setOtherReason(String.format(INVOICE_NOTE, new Date(), re.getResourcesUsed(), re.getSpaceUsedInMb(), re.getFilesUsed(), properName));
             genericDao.saveOrUpdate(invoice);
             genericDao.saveOrUpdate(invoice.getItems());
+            logger.info("final: {}f {}mb {}", invoice.getTotalNumberOfFiles(), invoice.getTotalSpaceInMb(), person.getId());
             Account account = new Account(String.format("%s's Account", properName));
             account.setDescription("auto-generated account created by tDAR to cover past contributions");
             account.setOwner(person);
