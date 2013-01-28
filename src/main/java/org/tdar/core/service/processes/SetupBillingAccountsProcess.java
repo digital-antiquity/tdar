@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.hibernate.cfg.annotations.ListBinder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.Account;
@@ -152,7 +151,7 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
             List<BillingItem> items = new ArrayList<BillingItem>();
             logger.info(" {}  {} ", Long.valueOf(spaceUsedInMb).intValue(), Long.valueOf(filesUsed).intValue());
             items.add(new BillingItem(oneMbActivity, Long.valueOf(spaceUsedInMb).intValue()));
-            items.add(new BillingItem(oneFileActivity,  Long.valueOf(filesUsed).intValue()));
+            items.add(new BillingItem(oneFileActivity, Long.valueOf(filesUsed).intValue()));
             Invoice invoice = new Invoice();
             invoice.setPaymentMethod(PaymentMethod.MANUAL);
             invoice.setNumberOfFiles(filesUsed);
