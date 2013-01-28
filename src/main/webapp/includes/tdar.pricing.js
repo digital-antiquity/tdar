@@ -37,23 +37,23 @@ var _initPricing = function(form, ajaxUrl) {
           $est.html("");
           var subtotal = 100000000000000000;
           var item = {};
-      for (var i=0; i < data.length; i++) {
-          var internal_name, label, num_files, num_space, extra_space, total_cost = "";
-          internal_name = data[i].model;
-          label = data[i].model;
-          total_cost = data[i].subtotal;
-          if (subtotal > total_cost) {
-              item = data[i];
-              subtotal = data[i].subtotal;
+          for (var i=0; i < data.length; i++) {
+              var internal_name, label, num_files, num_space, extra_space, total_cost = "";
+              internal_name = data[i].model;
+              label = data[i].model;
+              total_cost = data[i].subtotal;
+              if (subtotal > total_cost) {
+                  item = data[i];
+                  subtotal = data[i].subtotal;
+              }
           }
-      }
       
-      $("#price").html(item.subtotal);
-      
-      checked = "";
-      //(i +1), data[i].model, data[i].subtotal );
-      var total_files =0;
-      var total_mb = 0;
+          $("#price").html(item.subtotal);
+          
+          checked = "";
+          //(i +1), data[i].model, data[i].subtotal );
+          var total_files =0;
+          var total_mb = 0;
           for (var j=0; j < item.parts.length; j++) {
               var part = item.parts[j];
               var line = sprintf("<tr><td>{0}</td><td>{1}</td><td>{2} MB</td><td>${3}</td></tr>", part.name, part.numFiles * part.quantity, part.numMb  * part.quantity, part.subtotal);
