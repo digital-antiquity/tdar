@@ -12,7 +12,7 @@
 </style>
 </head>
 <body>
-<@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='save'>
+<@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal disableFormNavigate" enctype='multipart/form-data' action='save'>
 
 <h1>What would you like to put into tDAR?</h1>
 <div class="row">
