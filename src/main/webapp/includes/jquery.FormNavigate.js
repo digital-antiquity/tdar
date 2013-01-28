@@ -26,19 +26,21 @@ and off of window.onbeforeunload event.
   */
 (function($){
     $.fn.FormNavigate = function(message) {
-        var $this = this;
-        this.data("formNavigate", true);
-    	$(window).bind("beforeunload", function (event) {
-                if ($this.data("formNavigate")) {  event.cancelBubble = true;  }  else  { return message;}
-    	});
-    	
-    	this.one("keyup change", function(evt) {
-    	    console.log("Form #%s has become dirty. event:%s\t target:%s\t ", $this.attr("id"), evt.type, evt.target);
-    	    $this.data("formNavigate", false);
-    	});
-    	
-    	this.find("input:submit, .submitButton").click(function(){
-    	    $this.data("formNavigate", true);
-    	});
+        this.each(function() {
+            var $this = $(this);
+            $this.data("formNavigate", true);
+        	$(window).bind("beforeunload", function (event) {
+                    if ($this.data("formNavigate")) {  event.cancelBubble = true;  }  else  { return message;}
+        	});
+        	
+        	$this.one("keyup change", function(evt) {
+        	    console.log("Form #%s has become dirty. event:%s\t target:%s\t ", $this.attr("id"), evt.type, evt.target);
+        	    $this.data("formNavigate", false);
+        	});
+        	
+        	$this.find("input:submit, .submitButton").click(function(){
+        	    $this.data("formNavigate", true);
+        	});
+        });
     }
 })(jQuery);

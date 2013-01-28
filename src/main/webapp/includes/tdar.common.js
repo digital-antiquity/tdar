@@ -1077,7 +1077,7 @@ TDAR.common = function() {
 
         // I must be "last"
         $("#possibleJsError").val("SAVE");
-        $(form).FormNavigate("Leaving the page will cause any unsaved data to be lost!");
+        $(form).not('.disableFormNavigate').FormNavigate("Leaving the page will cause any unsaved data to be lost!");
 
     };
     
