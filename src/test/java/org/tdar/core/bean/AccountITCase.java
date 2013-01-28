@@ -53,6 +53,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
     public void testBillingAccountSetup() throws InstantiationException, IllegalAccessException {
         Document document = generateInformationResourceWithFileAndUser();
         accountProcess.process(document.getSubmitter());
+        genericService.synchronize();
     }
 
     @Test
