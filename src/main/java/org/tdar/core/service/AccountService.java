@@ -7,8 +7,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.NumberUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.Account.AccountAdditionStatus;
-import org.tdar.core.bean.billing.BillingActivity.BillingActivityType;
 import org.tdar.core.bean.billing.AccountGroup;
 import org.tdar.core.bean.billing.BillingActivity;
+import org.tdar.core.bean.billing.BillingActivity.BillingActivityType;
 import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
@@ -126,11 +124,11 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     }
 
     public boolean checkThatInvoiceBeAssigned(Invoice find, Account account) {
-        
+
         if (authService.isMember(find.getTransactedBy(), TdarGroup.TDAR_BILLING_MANAGER)) {
-                return true;
+            return true;
         }
-        
+
         if (account.getOwner().equals(find.getTransactedBy()) || account.getAuthorizedMembers().contains(find.getTransactedBy())) {
             return true;
         }
@@ -328,11 +326,11 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         logger.info("adtl. space needed: {} avail: {} ", spaceNeeded, spaceAvailable);
         logger.info("space act: {} ", getSpaceActivity());
         calculateSpaceActivity(option, spaceActivity, spaceNeeded);
-        
+
         if (option.getTotalMb() < numMb || option.getTotalFiles() < numFiles) {
             return null;
         }
-        
+
         return option;
     }
 

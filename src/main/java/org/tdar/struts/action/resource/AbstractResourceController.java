@@ -182,6 +182,9 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         if (getTdarConfiguration().isPayPerIngestEnabled()) {
             setActiveAccounts(getAccountService().listAvailableAccountsForUser(getAuthenticatedUser()));
             getAccountService().updateTransientAccountInfo((List<Resource>) Arrays.asList(getResource()));
+            if (Persistable.Base.isNotNullOrTransient(getResource().getAccount())) {
+                setAccountId(getResource().getAccount().getId());
+            }
             logger.info("setting active accounts to {} ", getActiveAccounts());
         }
         return SUCCESS;
@@ -275,7 +278,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     @Override
     public boolean isAbleToCreateBillableItem() {
-        if (!getTdarConfiguration().isPayPerIngestEnabled() || getAuthenticatedUser().getContributor() == true && getAccountService().hasSpaceInAnAccount(getAuthenticatedUser(), getResource().getResourceType())) {
+        if (!getTdarConfiguration().isPayPerIngestEnabled() || getAuthenticatedUser().getContributor() == true
+                && getAccountService().hasSpaceInAnAccount(getAuthenticatedUser(), getResource().getResourceType())) {
             return true;
         }
         return false;
@@ -692,15 +696,15 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     public List<Status> getStatuses() {
-//        List<Status> toReturn = new ArrayList<Status>(getResourceService().findAllStatuses());
+        // List<Status> toReturn = new ArrayList<Status>(getResourceService().findAllStatuses());
         return new ArrayList<Status>(getAuthenticationAndAuthorizationService().getAllowedSearchStatuses(getAuthenticatedUser()));
-//        removeIfNotAllowed(toReturn, Status.DELETED, InternalTdarRights.SEARCH_FOR_DELETED_RECORDS,
-//                getAuthenticatedUser());
-//        getAuthenticationAndAuthorizationService().removeIfNotAllowed(toReturn, Status.FLAGGED, InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS,
-//                getAuthenticatedUser());
-//        if 
-//        
-//        return toReturn;
+        // removeIfNotAllowed(toReturn, Status.DELETED, InternalTdarRights.SEARCH_FOR_DELETED_RECORDS,
+        // getAuthenticatedUser());
+        // getAuthenticationAndAuthorizationService().removeIfNotAllowed(toReturn, Status.FLAGGED, InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS,
+        // getAuthenticatedUser());
+        // if
+        //
+        // return toReturn;
     }
 
     public List<CreatorType> getCreatorTypes() {
