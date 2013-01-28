@@ -879,6 +879,8 @@ ${_date?string('MM/dd/yyyy')}<#t>
                     </#if>
                     <#if resource.doi?has_content>
                         <li><strong>DOI</strong><br>${resource.doi}</li>
+                    <#elseif resource.externalId?has_content>
+                        <li><strong>DOI</strong><br>${resource.externalId}</li>
                     </#if>
 
 
