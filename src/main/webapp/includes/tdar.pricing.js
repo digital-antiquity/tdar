@@ -35,7 +35,8 @@ var _initPricing = function(form, ajaxUrl) {
       success: function(data) {
           var checked = "checked";
           $est.html("");
-          var subtotal = 100000000000000000;
+          var defaultsubtotal = 100000000000000000;
+          var subtotal = defaultsubtotal;
           var item = {};
           for (var i=0; i < data.length; i++) {
               var internal_name, label, num_files, num_space, extra_space, total_cost = "";
@@ -47,14 +48,20 @@ var _initPricing = function(form, ajaxUrl) {
                   subtotal = data[i].subtotal;
               }
           }
-      
+          if (subtotal == defaultsubtotal) {
+              $("#price").html("0.00");
+              var line = sprintf("<tr><td colspan=4>{0}</td></tr>", "Please enter a number of files and MB above.");
+              $est.append(line);
+
+        	  
+          } else {
           $("#price").html(item.subtotal);
           
           checked = "";
           //(i +1), data[i].model, data[i].subtotal );
           var total_files =0;
           var total_mb = 0;
-          if(item.parts && item.parts.length) {
+          if(item.parts && item.parts.length > 0) {
               for (var j=0; j < item.parts.length; j++) {
                   var part = item.parts[j];
                   var line = sprintf("<tr><td>{0}</td><td>{1}</td><td>{2} MB</td><td>${3}</td></tr>", part.name, part.numFiles * part.quantity, part.numMb  * part.quantity, part.subtotal);
@@ -65,7 +72,7 @@ var _initPricing = function(form, ajaxUrl) {
           }
           var line = sprintf("<tr class='table-row-separator-above'><td></td><td class='subtotal'>{0}</td><td class='subtotal'>{1} MB</td><td class='red'>${2}</td></tr>", total_files, total_mb, subtotal);
           $est.append(line);
-
+          }
       },
       error: function(xhr,txtStatus, errorThrown) {
         console.error("error: %s, %s", txtStatus, errorThrown);
