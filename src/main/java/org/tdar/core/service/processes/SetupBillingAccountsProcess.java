@@ -122,9 +122,10 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
             accountService.saveOrUpdate(oneMbActivity);
         }
         try {
-            logger.info("starting process for " + person.getProperName());
+            String properName = person.getProperName();
+            logger.info("starting process for " + properName);
             if (person.getId() == 135028) {
-                logger.debug("skipping user: {}", person.getProperName());
+                logger.debug("skipping user: {}", properName);
                 return;
             }
             Set<Long> resourceIds = resourceService.findResourcesSubmittedByUser(person);
@@ -132,7 +133,7 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
 
             ArrayList<Long> queue = new ArrayList<Long>(resourceIds);
             List<Resource> nextResourceBatch = getNextResourceBatch(queue);
-            logger.info("{} has {} resources", person.getProperName(), resourceIds.size());
+            logger.info("{} has {} resources", properName, resourceIds.size());
             while (CollectionUtils.isNotEmpty(nextResourceBatch)) {
                 re.evaluateResources(nextResourceBatch);
                 nextResourceBatch = getNextResourceBatch(queue);
@@ -145,7 +146,7 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
             PricingOption option2 = accountService.getCheapestActivityByFiles(filesUsed, spaceUsedInMb, false);
             PricingOption option3 = accountService.getCheapestActivityBySpace(filesUsed, spaceUsedInMb);
             logger.info("****** RE : " + re.toString());
-            logger.info(String.format("%s|%s|%s|%s|%s|%s|%s|%s", person.getId(), person.getProperName(), option, option2, option3, re.getFilesUsed(),
+            logger.info(String.format("%s|%s|%s|%s|%s|%s|%s|%s", person.getId(), properName, option, option2, option3, re.getFilesUsed(),
                     re.getResourcesUsed(),
                     re.getSpaceUsedInMb()));
             List<BillingItem> items = new ArrayList<BillingItem>();
@@ -155,11 +156,10 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
             invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
             invoice.setOwner(person);
             invoice.markUpdated(person);
-            invoice.setOtherReason(String.format(INVOICE_NOTE, new Date(), re.getResourcesUsed(), re.getSpaceUsedInMb(), re.getFilesUsed(),
-                    person.getProperName()));
-            // logger.info(invoice.getOtherReason());
+            invoice.setOtherReason(String.format(INVOICE_NOTE, new Date(), re.getResourcesUsed(), re.getSpaceUsedInMb(), re.getFilesUsed(), properName));
             genericDao.saveOrUpdate(invoice);
-            Account account = new Account(String.format("%s's Account", person.getProperName()));
+            genericDao.saveOrUpdate(invoice.getItems());
+            Account account = new Account(String.format("%s's Account", properName));
             account.setDescription("auto-generated account created by tDAR to cover past contributions");
             account.setOwner(person);
             account.markUpdated(person);
