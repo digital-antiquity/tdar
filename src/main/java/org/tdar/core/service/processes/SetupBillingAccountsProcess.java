@@ -7,9 +7,13 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.hibernate.cfg.annotations.ListBinder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingActivity;
+import org.tdar.core.bean.billing.BillingActivity.BillingActivityType;
+import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.billing.ResourceEvaluator;
@@ -37,7 +41,7 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
 
     private static final String INVOICE_NOTE = "This invoice was generated on %s to cover %s resources, %s (MB) , and %s files created by %s prior to tDAR charging for usage.  Thank you for your support of tDAR.";
 
-    final static long EXTRA_MB = 0l;
+    final static long EXTRA_MB = 10l;
     final static long EXTRA_FILES = 1l;
     private static final long serialVersionUID = -2313655718394118279L;
 
@@ -85,7 +89,37 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
 
     @Override
     public void process(Person person) {
-        try {
+        List<BillingActivity> activeBillingActivities = accountService.getActiveBillingActivities();
+        BillingActivity oneFileActivity = null;
+        BillingActivity oneMbActivity = null;
+        for (BillingActivity activity : activeBillingActivities) {
+            if (activity.getEnabled() == true && !activity.isProduction()) {
+                if (activity.getNumberOfFiles() == 1L && activity.getNumberOfMb() == 0L) {
+                    oneFileActivity = activity;
+                }
+                if (activity.getNumberOfFiles() == 0L && activity.getNumberOfMb() == 1L) {
+                    
+                }
+            }
+        }
+        if (oneFileActivity == null) {
+            oneFileActivity = new BillingActivity("one file", 0f, accountService.getLatestActivityModel());
+            oneFileActivity.setNumberOfFiles(1L);
+            oneFileActivity.setMinAllowedNumberOfFiles(0L);
+            oneFileActivity.setNumberOfMb(0L);
+            oneFileActivity.setActivityType(BillingActivityType.TEST);
+            accountService.saveOrUpdate(oneFileActivity);
+        }
+
+        if (oneMbActivity == null) {
+            oneMbActivity = new BillingActivity("one mb", 0f, accountService.getLatestActivityModel());
+            oneMbActivity.setNumberOfFiles(0L);
+            oneMbActivity.setActivityType(BillingActivityType.TEST);
+            oneMbActivity.setMinAllowedNumberOfFiles(0L);
+            oneMbActivity.setNumberOfMb(1L);
+            accountService.saveOrUpdate(oneMbActivity);
+        }
+try {
             logger.info("starting process for " + person.getProperName());
             if (person.getId() == 135028) {
                 logger.debug("skipping user: {}", person.getProperName());
@@ -112,7 +146,10 @@ public class SetupBillingAccountsProcess extends ScheduledBatchProcess<Person> {
             logger.info(String.format("%s|%s|%s|%s|%s|%s|%s|%s", person.getId(), person.getProperName(), option, option2, option3, re.getFilesUsed(),
                     re.getResourcesUsed(),
                     re.getSpaceUsedInMb()));
-            Invoice invoice = new Invoice(person, PaymentMethod.MANUAL, filesUsed, spaceUsedInMb, option.getItems());
+            List<BillingItem> items = new ArrayList<BillingItem>();
+            items.add(new BillingItem(oneMbActivity, (int)spaceUsedInMb));
+            items.add(new BillingItem(oneFileActivity, (int)filesUsed));
+            Invoice invoice = new Invoice(person, PaymentMethod.MANUAL, filesUsed, spaceUsedInMb, items);
             invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
             invoice.setOwner(person);
             invoice.markUpdated(person);
