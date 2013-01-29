@@ -7,11 +7,14 @@
 package org.tdar.core.bean.collection;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -35,6 +38,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.apache.lucene.search.Explanation;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyze;
@@ -598,6 +602,35 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     public void setUpdater(Person updater) {
         this.updater = updater;
+    }
+
+    public void normalizeAuthorizedUsers() {
+        normalizeAuthorizedUsers(authorizedUsers);
+    }
+
+    public static final void normalizeAuthorizedUsers(Collection<AuthorizedUser> authorizedUsers) {
+        Logger staticLogger = Logger.getLogger(ResourceCollection.class);
+        staticLogger.trace("incoming " + authorizedUsers);
+        Map<Long, AuthorizedUser> bestMap = new HashMap<Long, AuthorizedUser>();
+        Iterator<AuthorizedUser> iterator = authorizedUsers.iterator();
+        while (iterator.hasNext()) {
+            AuthorizedUser incoming = iterator.next();
+            Long user = incoming.getUser().getId();
+
+            AuthorizedUser existing = bestMap.get(user);
+            staticLogger.trace(incoming + " <==>" + existing);
+            if (existing != null) {
+                if (existing.getGeneralPermission().getEffectivePermissions() > incoming.getGeneralPermission().getEffectivePermissions()) {
+                    continue;
+                }
+            }
+            bestMap.put(user, incoming);
+        }
+
+        authorizedUsers.clear();
+        authorizedUsers.addAll(bestMap.values());
+        staticLogger.trace("outgoing" + authorizedUsers);
+
     }
 
 }

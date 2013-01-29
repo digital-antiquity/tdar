@@ -139,14 +139,14 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
         // the request may have edited the an existing authUser's permissions, so clear out the old set and go w/ most recent set.
         currentUsers.clear();
+        
+        ResourceCollection.normalizeAuthorizedUsers(authorizedUsers);
 
-        // internalCollection.getResources().add(resource);
         if (CollectionUtils.isNotEmpty(authorizedUsers)) {
             for (AuthorizedUser incomingUser : authorizedUsers) {
                 if (incomingUser == null) {
                     continue;
                 }
-//                incomingUser.setResourceCollection(resourceCollection);
                 addUserToCollection(shouldSaveResource, currentUsers, incomingUser);
             }
         }

@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.junit.Assert;
@@ -450,24 +451,17 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         rc.setSortBy(SortOption.ID);
         rc.setOrientation(DisplayOrientation.LIST);
 
-        // add two redundant access rights records (if you have administer_group, you already have view_all implicitly)
-        Person persistedUser = new Person("bob", "loblaw", "bobloblaw@mailinator.com");
-        persistedUser.setRegistered(true);
-        genericService.saveOrUpdate(persistedUser);
-        Person strutsUser1 = new Person();
-        Person strutsUser2 = new Person();
-        strutsUser1.setId(persistedUser.getId());
-        strutsUser2.setId(persistedUser.getId());
-        AuthorizedUser bobCopy1 = new AuthorizedUser(strutsUser1, GeneralPermissions.ADMINISTER_GROUP);
-        AuthorizedUser bobCopy2 = new AuthorizedUser(strutsUser2, GeneralPermissions.VIEW_ALL);
-        controller.getAuthorizedUsers().add(bobCopy1);
-        controller.getAuthorizedUsers().add(bobCopy2);
+        //Add three authusers. two of the authusers are redundant and should be normalized to the user with 
+        //the best permissions.
+        AuthorizedUser user1Viewer = detach(createAuthUser(GeneralPermissions.VIEW_ALL));
+        AuthorizedUser user1Modifier = new AuthorizedUser(user1Viewer.getUser(), GeneralPermissions.MODIFY_METADATA);
+        AuthorizedUser user2 = detach(createAuthUser(GeneralPermissions.ADMINISTER_GROUP));
+        controller.getAuthorizedUsers().addAll(Arrays.asList(user1Viewer, user1Modifier, user2));
 
         controller.setServletRequest(getServletPostRequest());
         controller.save();
 
         Long id = rc.getId();
-
         controller = generateNewController(CollectionController.class);
         controller.setSessionData(getSessionData());
         controller.setId(id);
@@ -476,9 +470,25 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
 
         ResourceCollection rc2 = controller.getResourceCollection();
         assertEquals(rc.getName(), rc2.getName());
-        assertEquals("2 redundant authusers should have been normalized to one", 1, rc2.getAuthorizedUsers().size());
-        assertEquals("the one remaining authuser should have highest permissions", GeneralPermissions.ADMINISTER_GROUP, rc2.getAuthorizedUsers().iterator()
-                .next().getGeneralPermission());
+        assertEquals("2 redundant authusers should have been normalized", 2, rc2.getAuthorizedUsers().size());
+        assertTrue("only the modifier & admin authusers should remain", rc2.getAuthorizedUsers().contains(user1Modifier));
+        assertTrue("only the modifier & admin authusers should remain", rc2.getAuthorizedUsers().contains(user2));
+    }
+    
+    private AuthorizedUser createAuthUser(GeneralPermissions permissions)  {
+        Person person = new Person();
+        person.setFirstName(UUID.randomUUID().toString());
+        person.setLastName(UUID.randomUUID().toString());
+        person.setEmail(UUID.randomUUID().toString() + "@mailinator.com");
+        person.setRegistered(true);
+        genericService.saveOrUpdate(person);
+        AuthorizedUser authuser = new AuthorizedUser(person, permissions);
+        return authuser;
+    }
+    
+    private <T> T detach(T obj) {
+        genericService.detachFromSession(obj);
+        return obj;
     }
 
     @Test
