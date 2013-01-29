@@ -24,6 +24,15 @@
 
 	<@accountcommon.accountInfoForm />
 
+
+<script>
+$(document).ready(function(){
+    'use strict';
+    TDAR.common.initEditPage($('#MetadataForm')[0]);
+    delegateCreator('#accessRightsRecords', true, false);
+});
+</script>
+
 </@s.form>
 
 </div>
