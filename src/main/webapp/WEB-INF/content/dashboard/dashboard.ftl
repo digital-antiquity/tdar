@@ -17,8 +17,12 @@
     <h1>${authenticatedUser.properName}'s Dashboard</h1>
     
     <div class="news alert">
-    <B>${siteAcronym} Update:</B>
-    We just upgraded tDAR with a bunch of additional features, a list of features is available <a href="http://www.tdar.org/news/2013/01/tdar-software-update-in-situ/">here</a> on the tDAR website. 
+        <#if payPerIngestEnabled>
+        <B>${siteAcronym} Update:</B>
+        Please note we are now charging to upload materials to ${siteAcronym}, please see <a href="http://www.tdar.org/about/pricing"> our website</a> for more information. 
+        <br/>
+        <br/>
+        </#if>
     </div>
 </div>
 
