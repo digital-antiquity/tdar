@@ -22,6 +22,9 @@
         Please note we are now charging to upload materials to ${siteAcronym}, please see <a href="http://www.tdar.org/about/pricing"> our website</a> for more information. 
         <br/>
         <br/>
+        <#if (authenticatedUser.id < 145165 )> 
+        If you are a contributor who uploaded files to tDAR during the free period, we've generated an account for those files.  As a thank you for your support, we have credited your account with one additional file (up to 10 MB, a $50 value) to get your next project started.  </#if>
+        <br/>
         </#if>
     </div>
 </div>
@@ -31,6 +34,7 @@
 <#if overdrawnAccounts?has_content>
 <div class="alert-error alert">
 <h3>The following accounts are overdrawn</h3>
+<p>An overdrawn account means that some resources will not be visible or usable within tDAR, and may ultimately be deleted or removed from tDAR.  To address this, please <a href="<@s.url value="/cart/add"/>">purchase more space or files</a> to cover the additional usage.</p>
 <ul> 
 <#list overdrawnAccounts as account>
    <li>
