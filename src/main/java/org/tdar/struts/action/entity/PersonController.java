@@ -1,8 +1,10 @@
 package org.tdar.struts.action.entity;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -31,6 +33,14 @@ public class PersonController extends AbstractCreatorController<Person> {
     @Autowired
     ObfuscationService obfuscationService;
 
+    @Action(value="myProfile", results={
+            @Result(name = SUCCESS, type = "redirect", location = "view?id=${id}")
+    })
+    public String myProfile() {
+        setId(getAuthenticatedUser().getId());
+        return SUCCESS;
+    }
+    
     @Override
     protected String save(Person person) {
         validateAndProcessPasswordChange();
