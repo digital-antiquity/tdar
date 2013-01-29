@@ -246,7 +246,7 @@ ${resource.resourceType.label}
 <#macro resourceProvider showInherited=true>
 <div class="well-alt" id="divResourceProvider" tiplabel="Resource Provider" tooltipcontent="The institution authorizing ${siteAcronym} to ingest the resource for the purpose of preservation and access.">
     <h2>Institution Authorizing Upload of this <@resourceTypeLabel /></h2>
-    <@s.textfield label='Institution' name='resourceProviderInstitutionName' id='txtResourceProviderInstitution' cssClass="institution input-xxlarge"  maxlength='40'/>
+    <@s.textfield label='Institution' name='resourceProviderInstitutionName' id='txtResourceProviderInstitution' cssClass="institution input-xxlarge"  maxlength='255'/>
     <br/>
 </div>
 </#macro>
