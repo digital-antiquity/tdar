@@ -487,16 +487,19 @@ No coding rules have been entered for this coding sheet yet.
 </#macro>
 
 
-<#macro resourceDeletedCallout>
-<@statusCallout onStatus='deleted' cssClass='warning'>
-    This resource has been marked as <strong>Deleted</strong>.  While ${siteAcronym} will retain this resource, it will not appear in search results.
-</@statusCallout>
-</#macro>
+<#macro resourceStatusCallout>
+<#local status="warning">
+<#if (persistable.status)?has_content && !persistable.active >
+<#if persistable.status == 'DRAFT'>
+  <#local status="info"/>
+</#if>
 
-<#macro resourceFlaggedCallout>
-<@statusCallout onStatus='flagged' cssClass='warning'>
-    This resource been <strong>flagged for deletion</strong> by a ${siteAcronym} adminstrator.
+<@statusCallout onStatus='${persistable.status?lower_case}' cssClass='${status}'>
+    This resource has been marked as <strong>${persistable.status.label}</strong>. 
+    <#if !persistable.draft> While ${siteAcronym} will retain this resource, it will not appear in search results.</#if>
 </@statusCallout>
+
+</#if> 
 </#macro>
 
 <#macro basicInformation>
@@ -509,8 +512,7 @@ No coding rules have been entered for this coding sheet yet.
 </head>
 
 
-<@resourceDeletedCallout />
-<@resourceFlaggedCallout />
+<@resourceStatusCallout />
 
 <h1 class="view-page-title">${resource.title!"No Title"}</h1>
 <#if resource.project?? && resource.project.id?? && resource.project.id != -1>
