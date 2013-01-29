@@ -24,7 +24,9 @@ TDAR.fileupload = function() {
             formData: function(){
                 return [{name:"ticketId", value:$('#ticketId').val()}]
             },
+            //send files in a single http request (singleFileUploads==false). See TDAR-2763 for more info      
             singleFileUploads: false,
+            
             url: TDAR.uri('upload/upload'),
             autoUpload: true,
             maxNumberOfFiles: TDAR.maxUploadFiles,
