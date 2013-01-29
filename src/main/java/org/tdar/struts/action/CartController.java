@@ -29,6 +29,7 @@ import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
@@ -370,7 +371,9 @@ public class CartController extends AbstractPersistableController<Invoice> imple
                             "An invoice was created and processed for %s by %s for a total of $%s \n ( %s files and %s mb) on %s.\n  Transaction Status %s",
                             invoice.getOwner(), invoice.getTransactedBy(), invoice.getTotal(), invoice.getNumberOfFiles(), invoice.getNumberOfMb(), new Date(),
                             invoice.getTransactionStatus());
-                    getEmailService().send(emailMessage, "tDAR Billing Transaction");
+                    Person person = new Person("Billing","Info", getTdarConfiguration().getBillingAdminEmail());
+                    getGenericService().markReadOnly(person);
+                    getEmailService().send(emailMessage, "tDAR Billing Transaction", person);
                     } catch (Exception e) {
                         logger.error("could not send email: {} ", e);
                     }

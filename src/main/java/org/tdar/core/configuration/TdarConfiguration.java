@@ -197,6 +197,10 @@ public class TdarConfiguration {
         return assistant.getStringProperty("sysadmin.email", SYSTEM_ADMIN_EMAIL);
     }
 
+    public String getBillingAdminEmail() {
+        return assistant.getStringProperty("billing.admin.email", SYSTEM_ADMIN_EMAIL);
+    }
+
     public String getServerEnvironmentStatus() {
         return assistant.getStringProperty("server.environment", "test");
 
