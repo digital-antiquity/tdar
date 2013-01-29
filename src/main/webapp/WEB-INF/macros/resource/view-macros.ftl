@@ -376,6 +376,12 @@ No coding rules have been entered for this coding sheet yet.
         <dl class="dl-horizontal">
             <dt><p><strong>Created by</strong></p></dt>
             <dd><p><a href="<@s.url value="/browse/creators/${resource.submitter.id?c}"/>">${resource.submitter.properName}</a> on ${resource.dateCreated}</p></dd>
+
+			<#if resource.account?has_content && (administrator || editable) >
+            	<dt><p><strong>Account</strong></p></dt>
+            	<dd><p><a href="<@s.url value="/billing/${resource.account.id?c}"/>">${resource.account.name}</a></p></dd>
+			</#if>
+
             <#if administrator>
             <dt><p><strong>Status</strong></p></dt>
             <dd><p>${resource.status.label}</p></dd>

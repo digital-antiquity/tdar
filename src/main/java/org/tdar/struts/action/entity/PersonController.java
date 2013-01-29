@@ -34,8 +34,8 @@ public class PersonController extends AbstractCreatorController<Person> {
     @Autowired
     ObfuscationService obfuscationService;
 
-    @Action(value="myProfile", results={
-            @Result(name = SUCCESS, type = "redirect", location = "view?id=${id}")
+    @Action(value="myprofile", results={
+            @Result(name = SUCCESS, type = "redirect", location = "edit?id=${id}")
     })
     @SkipValidation
     public String myProfile() {

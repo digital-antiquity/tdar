@@ -279,6 +279,10 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         if (numMb_ != null) {
             numMb = numMb_;
         }
+        
+        if (numFiles == 0 && numMb == 0) {
+            return null;
+        }
 
         PricingOption option = new PricingOption(PricingType.SIZED_BY_FILE_ONLY);
         if (!exact) {
@@ -353,6 +357,10 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             spaceInMb = spaceInMb_;
         }
 
+        if (numFiles == 0 && spaceInMb == 0) {
+            return null;
+        }
+        
         PricingOption option = new PricingOption(PricingType.SIZED_BY_MB);
         List<BillingItem> items = new ArrayList<BillingItem>();
         BillingActivity spaceActivity = getSpaceActivity();
