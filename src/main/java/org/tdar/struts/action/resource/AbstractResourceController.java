@@ -208,6 +208,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         getResourceService().incrementAccessCounter(getPersistable());
         loadEffectiveResourceCollections();
         getResourceService().updateTransientAccessCount(getResource());
+        getAccountService().updateTransientAccountInfo((List<Resource>) Arrays.asList(getResource()));
 
         if (isEditor()) {
             List<VersionType> versionTypes = Arrays.asList(VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED_TEXT);
@@ -297,10 +298,15 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         }
     }
 
+    private Boolean editable = null;
+
     public boolean isEditable() {
         if (isNullOrNew())
             return false;
-        return getAuthenticationAndAuthorizationService().canEditResource(getAuthenticatedUser(), getPersistable());
+        if (editable == null) {
+            editable = getAuthenticationAndAuthorizationService().canEditResource(getAuthenticatedUser(), getPersistable());
+        }
+        return editable;
     }
 
     @Override

@@ -24,7 +24,7 @@ pre, td {
 
 
 <h3>Recent Actions</h3>
-<table class="tableFormat">
+<table class="tableFormat table">
     <thead>
         <tr>
             <th>browser</th><th>count</th>
@@ -42,7 +42,7 @@ pre, td {
     </tbody>
 </table>
 <br/>
-<table class="tableFormat">
+<table class="tableFormat table">
     <thead>
         <tr>
             <th>date</th><th>total time (ms)</th><th>request</th>

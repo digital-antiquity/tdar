@@ -481,7 +481,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     @Override
     public void setParameters(Map<String, String[]> arg0) {
         this.parameters = arg0;
-        logger.info("parameters: {} ", getParameters());
+        logger.trace("parameters: {} ", getParameters());
     }
 
     public Map<String, String[]> getParameters() {
@@ -502,7 +502,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         if (account != null) {
             successPath = String.format("%s&id=%d", successPath, account.getId());
         }
-        logger.info("successpath: {} ", successPath);
+        logger.trace("successpath: {} ", successPath);
         return successPath;
     }
 
