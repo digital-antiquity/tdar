@@ -4,7 +4,7 @@
     <@s.hidden name="invoiceId" />    
     
 	 <#if billingManager>
-   	<#if invoice.proxy>
+   	<#if invoice?? && invoice.proxy>
    		<div class="alert-info info">
    		creating proxy account for ${invoice.owner.properName}
    		</div>

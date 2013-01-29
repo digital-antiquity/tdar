@@ -734,7 +734,8 @@ applyInheritance(project, formSelector);
 <#if payPerIngestEnabled>
     <div class="well-alt" id="accountsection">
         <#if accountId?has_content>
-			<p><strong>Account:</strong> ${resource.account.name}</p>
+        <#-- this can happen when there is an error thrown and an accountId is set, but resource.account is not properly initialized -->
+			<p><strong>Account:</strong> <#if resource.account?has_content>${resource.account.name}<#else>currently not available</#if></p>
 			<@s.hidden name="accountId" />        	
         <#else>
 	        <h2>Choose an account to bill from:</h2>
