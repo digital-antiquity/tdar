@@ -5,6 +5,7 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -36,6 +37,7 @@ public class PersonController extends AbstractCreatorController<Person> {
     @Action(value="myProfile", results={
             @Result(name = SUCCESS, type = "redirect", location = "view?id=${id}")
     })
+    @SkipValidation
     public String myProfile() {
         setId(getAuthenticatedUser().getId());
         return SUCCESS;
