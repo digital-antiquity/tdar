@@ -7,18 +7,22 @@
 <title><#if collection??>${collection.name}<#else>All Collections</#if></title>
 </head>
 <body>
+
+
+<h1><#if collection??>${collection.name!"No Title"}<#else>Browsing All Collections</#if></h1>
+
 <#if collection??>
 <p>${collection.description!""}</p>
 </#if>
 
 
-<@search.basicPagination "Collections"/>
 <div class="glide">
 <ul>
   <#list results as collection_>
    <li><a href="<@s.url value="/collection/${collection_.id?c}"/>">${collection_.name?default("no name")}</a></li>
   </#list>
 </ul>
+<@search.basicPagination "Collections"/>
 </div>
 </body>
 </#escape>

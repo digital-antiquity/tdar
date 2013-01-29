@@ -37,7 +37,7 @@
                 <h2 class="totalRecords">Search Options</h2>
 
     <ul class="tools media-list">
-        <li class="media"><a href="<@search.searchUrl "advanced"/>"><i class="pull-left search-magnify-icon-red" ></i>Refine your search &raquo;</a></li>
+        <li class="media"><a href="<@search.searchUrl "advanced"/>" rel="nofollow"><i class="pull-left search-magnify-icon-red" ></i>Refine your search &raquo;</a></li>
 <#if lookupSource == 'RESOURCE'>
         <li class="media"><i class="pull-left search-download-icon-red" ></i><div class="media-body">Download these results &raquo;
         <#if sessionData?? && sessionData.authenticated && (totalRecords > 0) && (actionName=="results")>
@@ -164,7 +164,7 @@
         <li class="media">
             <#if (facetlist?size > 1)>
 				<i class="pull-left search-list-check<#if currentValues?size == 1>ed</#if>box-grey"></i>
-                <div class="media-body"><a href="<@s.url includeParams="all">
+                <div class="media-body"><a rel="nofollow" href="<@s.url includeParams="all">
                     <@s.param name="${facetParam}">${facet}</@s.param>
                     <@s.param name="startRecord" value="0"/>
                     <#if facetParam != "documentType">
@@ -202,7 +202,7 @@
         <#if facet.plural?has_content><#assign facetText=facet.plural/>
         <#elseif facet.label?has_content><#assign facetText=facet.label/>
         </#if>
-        <a href="<@s.url includeParams="all">
+        <a rel="nofollow" href="<@s.url includeParams="all">
             <@s.param name="${facetParam}"value="" />
             <@s.param name="startRecord" value="0"/>
             <#if facetParam != "documentType">
