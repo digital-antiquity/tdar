@@ -78,7 +78,7 @@
         <td> ${invoice.totalNumberOfFiles}</td>
         <td> ${invoice.totalSpaceInMb}</td>
         <td> ${invoice.totalResources}</td>
-        <td> $${invoice.total!0}</td>
+        <td> <#if invoice.proxy>n/a<#else>$${invoice.total!0}</#if></td>
     </tr>
 </#list>
 </table>
