@@ -42,7 +42,7 @@
 					<span class="tdar-button" id="small-option">SELECT</span>
 					</div>
 					<div class="span2 well">
-					<h3><span class="red">$500</span>: Medium</h3>
+					<h3><span class="red">$400</span>: Medium</h3>
 					<ul>
 						<li>10 Files</li>
 						<li>100 MB</li>
