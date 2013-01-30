@@ -39,6 +39,16 @@ label.error {display:block;}
 <div class="row">
     <h3>Personal Details</h3>
     <div class="" >
+
+		<#if editor>    
+        <div id="spanStatus" tooltipcontent="#spanStatusToolTip" class="control-group">
+            <label class="control-label">Status</label>
+            <div class="controls">
+                <@s.select theme="tdar" value="person.status" name='status'  emptyOption='false' listValue='label' list='%{statuses}'/>
+            </div>  
+        </div>
+		</#if>    
+    
         <#escape x as x?html><@s.hidden name="id" /></#escape>
         <@s.textfield cssClass="required input-xlarge"       labelPosition='left'
         	 label="Last Name"   name="person.lastName"  maxlength="255" 

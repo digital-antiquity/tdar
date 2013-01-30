@@ -113,7 +113,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private List<String> geographicKeywords;
     private List<LatitudeLongitudeBox> latitudeLongitudeBoxes;
     private List<CoverageDate> coverageDates;
-    private Status status;
     private List<ResourceRevisionLog> logEntries;
     // citation data.
     // private List<String> sourceCitations;
@@ -244,10 +243,10 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     @Override
     protected void preSaveCallback() {
-        if (status == null) {
-            status = Status.ACTIVE;
+        if (getStatus() == null) {
+            setStatus(Status.ACTIVE);
         }
-        getPersistable().setStatus(status);
+        getPersistable().setStatus(getStatus());
     }
 
     @Override
@@ -693,25 +692,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return SUCCESS;
     }
 
-    public Status getStatus() {
-        return getPersistable().getStatus();
-    }
-
-    public void setStatus(String status) {
-        this.status = Status.valueOf(status);
-    }
-
-    public List<Status> getStatuses() {
-        // List<Status> toReturn = new ArrayList<Status>(getResourceService().findAllStatuses());
-        return new ArrayList<Status>(getAuthenticationAndAuthorizationService().getAllowedSearchStatuses(getAuthenticatedUser()));
-        // removeIfNotAllowed(toReturn, Status.DELETED, InternalTdarRights.SEARCH_FOR_DELETED_RECORDS,
-        // getAuthenticatedUser());
-        // getAuthenticationAndAuthorizationService().removeIfNotAllowed(toReturn, Status.FLAGGED, InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS,
-        // getAuthenticatedUser());
-        // if
-        //
-        // return toReturn;
-    }
 
     public List<CreatorType> getCreatorTypes() {
         // FIXME: move impl to service layer
