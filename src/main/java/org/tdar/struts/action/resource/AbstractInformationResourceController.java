@@ -330,9 +330,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     @Override
     protected void postSaveCleanup(String returnString) {
-        if (isAsync()) {
-            return;
-        }
         try {
             if (ticketId != null) {
                 PersonalFilestore filestore = filestoreService.getPersonalFilestore(getAuthenticatedUser());
