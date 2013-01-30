@@ -279,7 +279,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         if (numMb_ != null) {
             numMb = numMb_;
         }
-        
+
         if (numFiles == 0 && numMb == 0) {
             return null;
         }
@@ -360,7 +360,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         if (numFiles == 0 && spaceInMb == 0) {
             return null;
         }
-        
+
         PricingOption option = new PricingOption(PricingType.SIZED_BY_MB);
         List<BillingItem> items = new ArrayList<BillingItem>();
         BillingActivity spaceActivity = getSpaceActivity();
@@ -412,8 +412,12 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         PricingOption lowestByFiles = getCheapestActivityByFiles(invoice.getNumberOfFiles(), invoice.getNumberOfMb(), false);
 
         // If we are using the ok amount of space for that activity...
-        logger.info("lowest by files: {}", lowestByFiles.getSubtotal());
-        logger.info("lowest by space: {} ", lowestByMB.getSubtotal());
+        if (lowestByFiles != null) {
+            logger.info("lowest by files: {}", lowestByFiles.getSubtotal());
+        }
+        if (lowestByMB != null) {
+            logger.info("lowest by space: {} ", lowestByMB.getSubtotal());
+        }
         if (lowestByMB == null || lowestByFiles.getSubtotal() < lowestByMB.getSubtotal()) {
             return lowestByFiles;
         }
