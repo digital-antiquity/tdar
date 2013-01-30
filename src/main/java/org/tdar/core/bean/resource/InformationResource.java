@@ -356,8 +356,9 @@ public abstract class InformationResource extends Resource {
     }
 
     @Transient
+//    @Boost(1.5f)
     @Fields({
-            @Field(boost = @Boost(1.5f), name = QueryFieldNames.PROJECT_TITLE),
+            @Field(name = QueryFieldNames.PROJECT_TITLE),
             @Field(name = QueryFieldNames.PROJECT_TITLE_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)),
             @Field(name = QueryFieldNames.PROJECT_TITLE_SORT, norms = Norms.NO, store = Store.YES) })
     public String getProjectTitle() {
@@ -514,7 +515,7 @@ public abstract class InformationResource extends Resource {
     @FieldBridge(impl = PersistentReaderBridge.class)
     @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)
     @Transient
-    @Boost(0.5f)
+//    @Boost(0.5f)
     @XmlTransient
     @JSONTransient
     public List<URI> getContent() {

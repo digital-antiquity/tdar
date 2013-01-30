@@ -117,7 +117,8 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @Column
     @Fields({
             @Field(name = QueryFieldNames.COLLECTION_NAME_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class))
-            , @Field(name = QueryFieldNames.COLLECTION_NAME, boost = @Boost(1.5f)) })
+            , @Field(name = QueryFieldNames.COLLECTION_NAME) })
+//    @Boost(1.5f)
     private String name;
 
     @Lob
@@ -208,7 +209,8 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         this.name = name;
     }
 
-    @Field(boost = @Boost(1.2f))
+//    @Boost(1.2f)
+    @Field
     public String getDescription() {
         return description;
     }
@@ -540,7 +542,8 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         return getTitle().replaceAll(SimpleSearch.TITLE_SORT_REGEX, "");
     }
 
-    @Field(boost = @Boost(1.5f))
+    @Field
+//    @Boost(1.5f)
     public String getTitle() {
         return getName();
     }

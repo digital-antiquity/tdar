@@ -79,7 +79,8 @@ public class Document extends InformationResource {
 
     @BulkImportField(label = "Book Title")
     @Column(name = "book_title")
-    @Field(boost = @Boost(1.5f))
+    @Field
+//    @Boost(1.5f)
     private String bookTitle;
 
     @BulkImportField(label = "ISSN")

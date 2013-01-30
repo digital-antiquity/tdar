@@ -203,7 +203,8 @@ public class Resource extends JsonModel.Base implements Persistable,
     @Type(type = "org.hibernate.type.StringClobType")
     private String description;
 
-    @Field(boost = @Boost(.5f), norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
+//    @Boost(.5f)
+    @Field(norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     @NotNull
     @Column(name = "date_registered")
     @DateBridge(resolution = Resolution.DAY)
@@ -227,7 +228,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     @Column(name = "previous_status")
     private Status previousStatus = Status.ACTIVE;
 
-    @Boost(.5f)
+//    @Boost(.5f)
     @IndexedEmbedded
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     @JoinColumn(nullable = false, name = "submitter_id")
@@ -239,7 +240,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     @NotNull
     private Person uploader;
 
-    @Boost(.5f)
+//    @Boost(.5f)
     @IndexedEmbedded
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     @JoinColumn(name = "updater_id")
@@ -620,8 +621,9 @@ public class Resource extends JsonModel.Base implements Persistable,
         this.id = id;
     }
 
+//    @Boost(1.5f)
     @Fields({
-            @Field(boost = @Boost(1.5f)),
+            @Field,
             @Field(name = QueryFieldNames.TITLE_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)) })
     public String getTitle() {
         return title;
@@ -661,7 +663,8 @@ public class Resource extends JsonModel.Base implements Persistable,
         this.submitter = submitter;
     }
 
-    @Field(boost = @Boost(1.2f))
+    @Field
+//    @Boost(1.2f)
     public String getDescription() {
         return description;
     }
