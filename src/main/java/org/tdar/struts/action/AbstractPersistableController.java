@@ -760,12 +760,18 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     }
 
     public Status getStatus() {
+        if (status != null) {
+            return status;
+        }
         if (getPersistable() instanceof HasStatus) {
             return ((HasStatus) getPersistable()).getStatus();
-        } else {
+        } 
             return null;
-        }
     }
+
+//    public void setStatus(String status) {
+//        this.status = Status.valueOf(status);
+//    }
 
     public void setStatus(Status status) {
         this.status = status;
