@@ -783,9 +783,10 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
     public void testSharedResourceCollectionQuery() throws Exception
     {
         Person testPerson = createAndSaveNewPerson("a@basda.com", "1234");
+        List<AuthorizedUser> authList = new ArrayList<AuthorizedUser>(Arrays.asList(new AuthorizedUser(testPerson, GeneralPermissions.VIEW_ALL)));
 
         ResourceCollection collection = generateResourceCollection("test collection w/Draft", "testing draft...", CollectionType.SHARED, true,
-                Arrays.asList(new AuthorizedUser(testPerson, GeneralPermissions.VIEW_ALL)), null, null);
+                authList, null, null);
         collection.setOwner(getAdminUser());
         List<ResourceCollection> findAccessibleResourceCollections = entityService.findAccessibleResourceCollections(testPerson);
         assertTrue(findAccessibleResourceCollections.contains(collection));
@@ -1031,7 +1032,8 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         controller.setId(rcid);
         controller.prepare();
         AuthorizedUser authUser = new AuthorizedUser(registeredUser, GeneralPermissions.MODIFY_RECORD);
-        controller.setAuthorizedUsers(Arrays.asList(authUser));
+        List<AuthorizedUser> authList = new ArrayList<AuthorizedUser>(Arrays.asList(authUser));
+        controller.setAuthorizedUsers(authList);
         controller.getResources().add(proxy);
         controller.setServletRequest(getServletPostRequest());
         controller.setAsync(false);

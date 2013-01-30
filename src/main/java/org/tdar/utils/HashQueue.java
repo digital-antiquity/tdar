@@ -1,5 +1,7 @@
 package org.tdar.utils;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -34,4 +36,13 @@ public class HashQueue<K,V> {
         }
         return value;
     }
+    
+    //sort the elements within their respective queue
+    public void sort(Comparator<V> c) {
+        for(Map.Entry<K, LinkedList<V>> entry :queueMap.entrySet() ) {
+            Collections.sort(entry.getValue(), c);
+        }
+    }
+    
+    
 }

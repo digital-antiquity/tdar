@@ -632,5 +632,4 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         staticLogger.trace("outgoing" + authorizedUsers);
 
     }
-
 }

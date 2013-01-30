@@ -166,11 +166,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                 if (!incomingUser.isValid()) {
                     return;
                 }
-                // FIXME: not sure this is needed, but because hashCode doesn't include generalPermissions
-                // best to be safe
-                if (currentUsers.contains(incomingUser)) {
-                    currentUsers.remove(incomingUser);
-                }
+
                 currentUsers.add(incomingUser);
                 if (shouldSaveResource)
                     getDao().saveOrUpdate(incomingUser);
