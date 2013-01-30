@@ -615,6 +615,9 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         Iterator<AuthorizedUser> iterator = authorizedUsers.iterator();
         while (iterator.hasNext()) {
             AuthorizedUser incoming = iterator.next();
+            if (incoming == null || incoming.getUser() == null) {
+                continue;
+            }
             Long user = incoming.getUser().getId();
 
             AuthorizedUser existing = bestMap.get(user);
