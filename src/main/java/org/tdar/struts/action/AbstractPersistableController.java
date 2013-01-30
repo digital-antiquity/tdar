@@ -16,6 +16,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.HasName;
+import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Updatable;
@@ -23,6 +24,7 @@ import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -57,6 +59,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     private String submitAction;
     private P persistable;
     private Long id;
+    private Status status;
     private String saveSuccessPath = "view";
     @SuppressWarnings("unused")
     private Class<P> persistableClass;
@@ -298,7 +301,8 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
 
     /**
      * override if needed
-     * @param actionReturnStatus 
+     * 
+     * @param actionReturnStatus
      */
     protected void postSaveCleanup(String actionReturnStatus) {
     }
@@ -306,7 +310,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     @SkipValidation
     @Action(value = "add", results = {
             @Result(name = SUCCESS, location = "edit.ftl"),
-            @Result(name=BILLING, location = "../billing-note.ftl")
+            @Result(name = BILLING, location = "../billing-note.ftl")
     })
     @HttpsOnly
     public String add() throws TdarActionException {
@@ -749,9 +753,34 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     }
 
     public void setPossibleJsError(String possibleJsError) {
-        if (StringUtils.isNotBlank(possibleJsError )) {
+        if (StringUtils.isNotBlank(possibleJsError)) {
             logger.warn("there may have been a JavaScript error");
         }
         this.possibleJsError = possibleJsError;
     }
+
+    public Status getStatus() {
+        if (getPersistable() instanceof HasStatus) {
+            return ((HasStatus) getPersistable()).getStatus();
+        } else {
+            return null;
+        }
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public List<Status> getStatuses() {
+        // List<Status> toReturn = new ArrayList<Status>(getResourceService().findAllStatuses());
+        return new ArrayList<Status>(getAuthenticationAndAuthorizationService().getAllowedSearchStatuses(getAuthenticatedUser()));
+        // removeIfNotAllowed(toReturn, Status.DELETED, InternalTdarRights.SEARCH_FOR_DELETED_RECORDS,
+        // getAuthenticatedUser());
+        // getAuthenticationAndAuthorizationService().removeIfNotAllowed(toReturn, Status.FLAGGED, InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS,
+        // getAuthenticatedUser());
+        // if
+        //
+        // return toReturn;
+    }
+
 }
