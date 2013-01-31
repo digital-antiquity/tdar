@@ -55,7 +55,11 @@ label.error {display:block;}
         <br /><@s.textfield cssClass="required input-xlarge"       labelPosition='left'  label="First Name"  name="person.firstName" maxlength="255"  title="A first name is required" />
         <br /><@s.textfield cssClass="institutionAutocomplete" cssClass="input-xlarge" labelPosition='left' label="Institution"       name="institutionName"     maxlength="255" value="${person.institution!}"/>
 		<br/>
-        <@s.textfield cssClass="<#if person.registered?>required</#if> input-xlarge"       labelPosition='left' label="Email"   name="person.email"  maxlength="255"  title="An email is required" /> 
+		<#assign registered = "" />
+		<#if person.registered>
+			<#assign registered = "registered"/>
+		</#if>
+        <@s.textfield cssClass="input-xlarge ${registered}"       labelPosition='left' label="Email"   name="person.email"  maxlength="255"  title="An email is required" /> 
         
         <#if privacyControlsEnabled>
             <br /><@edit.boolfield label='Make email public?' name="person.emailPublic" id="email-public" value=person.emailPublic!false labelPosition='top' />
