@@ -493,6 +493,10 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
                 // username was in Crowd but not in tDAR? Redirect them to the account creation page
                 return AuthenticationStatus.NEW;
             }
+            
+            if (!person.isActive()) {
+                throw new TdarRecoverableRuntimeException("Cannot authenticate deleted user");
+            }
 
             // enable us to force group cache to be cleared
             clearPermissionsCache(person);
