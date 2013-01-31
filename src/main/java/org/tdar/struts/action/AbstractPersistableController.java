@@ -214,6 +214,14 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
                     isNew = true;
                 }
                 preSaveCallback();
+                if (persistable instanceof HasStatus) {
+                    if (getStatus() == null) {
+                        setStatus(Status.ACTIVE);
+                    }
+
+                    ((HasStatus) getPersistable()).setStatus(getStatus());
+                }
+
                 if (persistable instanceof Updatable) {
                     ((Updatable) persistable).markUpdated(getAuthenticatedUser());
                 }
@@ -765,13 +773,13 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         }
         if (getPersistable() instanceof HasStatus) {
             return ((HasStatus) getPersistable()).getStatus();
-        } 
-            return null;
+        }
+        return null;
     }
 
-//    public void setStatus(String status) {
-//        this.status = Status.valueOf(status);
-//    }
+    // public void setStatus(String status) {
+    // this.status = Status.valueOf(status);
+    // }
 
     public void setStatus(Status status) {
         this.status = status;

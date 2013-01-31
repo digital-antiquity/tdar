@@ -462,7 +462,7 @@ No coding rules have been entered for this coding sheet yet.
 
 
 <#macro statusCallout onStatus cssClass>
-<#if resource.status.toString().equalsIgnoreCase(onStatus) >
+<#if persistable.status.toString().equalsIgnoreCase(onStatus) >
 <div class="${cssClass}-alert alert">
     <p><#nested></p>
 </div>
@@ -487,7 +487,7 @@ No coding rules have been entered for this coding sheet yet.
 </#macro>
 
 
-<#macro resourceStatusCallout>
+<#macro pageStatusCallout>
 <#local status="warning">
 <#if (persistable.status)?has_content && !persistable.active >
 <#if persistable.status == 'DRAFT'>
@@ -512,7 +512,7 @@ No coding rules have been entered for this coding sheet yet.
 </head>
 
 
-<@resourceStatusCallout />
+<@pageStatusCallout />
 
 <h1 class="view-page-title">${resource.title!"No Title"}</h1>
 <#if resource.project?? && resource.project.id?? && resource.project.id != -1>

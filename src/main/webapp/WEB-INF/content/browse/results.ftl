@@ -11,6 +11,10 @@
 <@nav.creatorToolbar "view" />
 
 <title><#if creator?? && creator.properName??>${creator.properName}<#else>No title</#if></title>
+
+<@view.pageStatusCallout />
+
+
 <h1><#if creator?? && creator.properName??>${creator.properName}</#if></h1>
 <#if creator??>
     <#if creator.institution??>

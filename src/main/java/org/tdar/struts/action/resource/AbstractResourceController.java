@@ -46,7 +46,6 @@ import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
-import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
@@ -239,14 +238,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
                 getAuthenticatedUser(), reason);
 
         getResourceService().logResourceModification(resource, getAuthenticatedUser(), logMessage);
-    }
-
-    @Override
-    protected void preSaveCallback() {
-        if (getStatus() == null) {
-            setStatus(Status.ACTIVE);
-        }
-        getPersistable().setStatus(getStatus());
     }
 
     @Override
@@ -691,7 +682,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         // checkValidRequest(UserIs.ANONYMOUS, UsersCanModify.NONE, isEditable(), InternalTdarRights.VIEW_ANYTHING);
         return SUCCESS;
     }
-
 
     public List<CreatorType> getCreatorTypes() {
         // FIXME: move impl to service layer

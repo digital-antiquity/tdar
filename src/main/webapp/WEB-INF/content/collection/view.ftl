@@ -15,6 +15,9 @@
 </head>
 <body>
 <@view.toolbar "collection" "view" />
+
+<@view.pageStatusCallout />
+
 <h1>${resourceCollection.name!"untitled collection"}</h1>
 <#if resourceCollection.visible || viewable>
 <!-- Don't show header if header doesn't exist -->
