@@ -39,7 +39,7 @@ label.error {display:block;}
 <div class="row">
     <h3>Personal Details</h3>
     <div class="" >
-
+		<#if person.registered><p><strong>Username:</strong>: ${person.username}</p></#if>
 		<#if editor>    
         <div id="spanStatus" tooltipcontent="#spanStatusToolTip" class="control-group">
             <label class="control-label">Status</label>
@@ -50,11 +50,12 @@ label.error {display:block;}
 		</#if>    
     
         <#escape x as x?html><@s.hidden name="id" /></#escape>
-        <@s.textfield cssClass="required input-xlarge"       labelPosition='left'
-        	 label="Last Name"   name="person.lastName"  maxlength="255" 
-        	 title="A last name is required" /> 
+        <@s.textfield cssClass="required input-xlarge"       labelPosition='left' label="Last Name"   name="person.lastName"  maxlength="255"  title="A last name is required" /> 
+
         <br /><@s.textfield cssClass="required input-xlarge"       labelPosition='left'  label="First Name"  name="person.firstName" maxlength="255"  title="A first name is required" />
         <br /><@s.textfield cssClass="institutionAutocomplete" cssClass="input-xlarge" labelPosition='left' label="Institution"       name="institutionName"     maxlength="255" value="${person.institution!}"/>
+		<br/>
+        <@s.textfield cssClass="<#if person.registered?>required</#if> input-xlarge"       labelPosition='left' label="Email"   name="person.email"  maxlength="255"  title="An email is required" /> 
         
         <#if privacyControlsEnabled>
             <br /><@edit.boolfield label='Make email public?' name="person.emailPublic" id="email-public" value=person.emailPublic!false labelPosition='top' />
