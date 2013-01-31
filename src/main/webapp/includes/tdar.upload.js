@@ -14,7 +14,7 @@ TDAR.fileupload = function() {
         
         //combine options w/ defaults
         var _options = $.extend({formSelector: "#resourceMetadataForm"}, options);
-        
+        $(_options.formSelector).data("uploadNames", {});
         
         //pass off our options to fileupload options (to allow easy passthrough of page-specific (options e.g. acceptFileTypes)
         var $fileupload = $(_options.formSelector).fileupload($.extend({
@@ -30,7 +30,24 @@ TDAR.fileupload = function() {
             url: TDAR.uri('upload/upload'),
             autoUpload: true,
             maxNumberOfFiles: TDAR.maxUploadFiles,
-            destroy: _destroy
+            destroy: _destroy,
+            //FIXME: don't allow dupe filenames in same upload session until TDAR-2801 fixed.
+            submit: function(e, data) {
+                var i;
+                var errorCount = 0;
+                var uploadNames = $(_options.formSelector).data("uploadNames");
+                for(i = 0; i < data.files.length; i++) {
+                    var file = data.files[i];
+                    if(uploadNames[file.name]) {
+                        errorCount++;
+                        file.error = "Duplicate file name";
+                        $(data.context[i]).find('.name').append("<br><span class='label label-important'>" + file.error  + "</span>");                            
+                    } else {
+                        uploadNames[file.name]=true;
+                    }
+                }
+                return errorCount === 0;
+            }
         }, _options));
         
         var $filesContainer = $fileupload.fileupload('option', 'fileContainer');
