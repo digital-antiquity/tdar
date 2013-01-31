@@ -16,7 +16,6 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
@@ -41,6 +40,7 @@ import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.data.ResourceCreatorProxy;
+import org.tdar.utils.ExceptionWrapper;
 import org.tdar.utils.HashQueue;
 
 /**
@@ -251,29 +251,15 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         }
         logger.debug("Final proxy set: {}", fileProxiesToProcess);
         ArrayList<InformationResourceFile> modifiedFiles = new ArrayList<InformationResourceFile>();
-        for (FileProxy fileProxy : fileProxiesToProcess) {
-            try {
-                InformationResourceFile file = getInformationResourceService()
-                        .processFileProxy(getPersistable(), fileProxy);
-                if (file != null) {
-                    modifiedFiles.add(file);
-                    if (file.getWorkflowContext() != null) {
-                        List<String> exceptions = file.getWorkflowContext().getExceptions();
-                        logger.info("EXCEPTIONS: {}", exceptions);
-                        logger.info("STACK TRACES: {}", file.getWorkflowContext().getStackTraces());
-                        if (CollectionUtils.isNotEmpty(exceptions)) {
-                            for (String except : exceptions) {
-                                addActionError(except);
-                            }
-                            getStackTraces().addAll(file.getWorkflowContext().getStackTraces());
-                        }
-                    }
-                }
-            } catch (IOException exception) {
-                addActionErrorWithException("Unable to process file " + fileProxy.getFilename(), exception);
-            }
+        PersonalFilestore filestore = filestoreService.getPersonalFilestore(getAuthenticatedUser());
+
+        List<ExceptionWrapper> exceptions = getInformationResourceService().processFileProxies(filestore, getPersistable(), fileProxiesToProcess,
+                modifiedFiles, ticketId);
+        for (ExceptionWrapper exception : exceptions) {
+            addActionError(exception.getMessage());
+            getStackTraces().add(exception.getStackTrace());
         }
-        // FIXME: should be refactored to take in a Set<FileProxy> files to be processed?
+
         try {
             setResourceFilesHaveChanged(true);
             processUploadedFiles(modifiedFiles);
@@ -327,20 +313,20 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         }
         return fileProxiesToProcess;
     }
-
-    @Override
-    protected void postSaveCleanup(String returnString) {
-        try {
-            if (ticketId != null) {
-                PersonalFilestore filestore = filestoreService.getPersonalFilestore(getAuthenticatedUser());
-                filestore.purge(getGenericService().find(PersonalFilestoreTicket.class, ticketId));
-
-            }
-        } catch (Exception e) {
-            logger.warn("an error occured when trying to cleanup the filestore: {} for {} ", ticketId, getAuthenticatedUser());
-            logger.debug("exception:", e);
-        }
-    }
+//
+//    @Override
+//    protected void postSaveCleanup(String returnString) {
+//        // try {
+//        // if (ticketId != null) {
+//        // PersonalFilestore filestore = filestoreService.getPersonalFilestore(getAuthenticatedUser());
+//        // filestore.purge(getGenericService().find(PersonalFilestoreTicket.class, ticketId));
+//        //
+//        // }
+//        // } catch (Exception e) {
+//        // logger.warn("an error occured when trying to cleanup the filestore: {} for {} ", ticketId, getAuthenticatedUser());
+//        // logger.debug("exception:", e);
+//        // }
+//    }
 
     protected void loadResourceProviderInformation() {
         // load resource provider institution and publishers

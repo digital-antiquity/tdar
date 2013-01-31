@@ -1,6 +1,7 @@
 package org.tdar.core.service.resource;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
@@ -10,9 +11,11 @@ import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
@@ -27,7 +30,9 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ServiceInterface;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.Filestore;
+import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.struts.data.FileProxy;
+import org.tdar.utils.ExceptionWrapper;
 
 /**
  * $Id: AbstractInformationResourceService.java 1466 2011-01-18 20:32:38Z abrin$
@@ -90,6 +95,33 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
             // FIXME: throw an exception?
         }
         return irFile;
+    }
+
+    @Transactional
+    public List<ExceptionWrapper> processFileProxies(PersonalFilestore filestore, T resource, List<FileProxy> fileProxiesToProcess,
+            List<InformationResourceFile> modifiedFiles, Long ticketId) {
+        List<ExceptionWrapper> exceptionsAndMessages = new ArrayList<ExceptionWrapper>();
+        for (FileProxy fileProxy : fileProxiesToProcess) {
+            try {
+                InformationResourceFile file = processFileProxy(resource, fileProxy);
+                if (file != null) {
+                    modifiedFiles.add(file);
+                    if (file.getWorkflowContext() != null) {
+                        List<ExceptionWrapper> exceptions = file.getWorkflowContext().getExceptions();
+                        logger.info("EXCEPTIONS: {}", exceptions);
+                        exceptionsAndMessages.addAll(exceptions);
+                    }
+                }
+            } catch (IOException exception) {
+                exceptionsAndMessages
+                        .add(new ExceptionWrapper("Unable to process file " + fileProxy.getFilename(), ExceptionUtils.getFullStackTrace(exception)));
+            }
+        }
+        if (ticketId != null) {
+            filestore.purge(getDao().find(PersonalFilestoreTicket.class, ticketId));
+
+        }
+        return exceptionsAndMessages;
     }
 
     @Transactional

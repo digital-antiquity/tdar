@@ -22,6 +22,7 @@ import org.tdar.core.service.XmlService;
 import org.tdar.core.service.workflow.Workflow;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.filestore.tasks.Task;
+import org.tdar.utils.ExceptionWrapper;
 
 /**
  * @author Adam Brin
@@ -49,9 +50,7 @@ public class WorkflowContext implements Serializable {
 	private transient XmlService xmlService;
 	private transient TargetDatabase targetDatabase;
 
-	private List<String> exceptions = new ArrayList<String>();
-	private List<String> stackTraces = new ArrayList<String>();
-
+	private List<ExceptionWrapper> exceptions;
 	public void logTask(Task t, StringBuilder message) {
 
 	}
@@ -192,28 +191,17 @@ public class WorkflowContext implements Serializable {
             maxDepth--;
         }
 
-		this.getExceptions().add(sb.toString());
-		this.getStackTraces().add(ExceptionUtils.getFullStackTrace(e));
+		this.getExceptions().add(new ExceptionWrapper(sb.toString(), ExceptionUtils.getFullStackTrace(e)));
 	}
 
     @XmlElementWrapper(name="exceptions")
     @XmlElement(name="exception")
-	public List<String> getExceptions() {
+	public List<ExceptionWrapper> getExceptions() {
 		return exceptions;
 	}
 
-	public void setExceptions(List<String> exceptions) {
+	public void setExceptions(List<ExceptionWrapper> exceptions) {
 		this.exceptions = exceptions;
-	}
-
-    @XmlElementWrapper(name="stackTraces")
-    @XmlElement(name="stackTrace")
-	public List<String> getStackTraces() {
-		return stackTraces;
-	}
-
-	public void setStackTraces(List<String> stackTraces) {
-		this.stackTraces = stackTraces;
 	}
 
 	@XmlTransient
