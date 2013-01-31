@@ -50,7 +50,7 @@ public class WorkflowContext implements Serializable {
 	private transient XmlService xmlService;
 	private transient TargetDatabase targetDatabase;
 
-	private List<ExceptionWrapper> exceptions;
+	private List<ExceptionWrapper> exceptions = new ArrayList<ExceptionWrapper>();
 	public void logTask(Task t, StringBuilder message) {
 
 	}
