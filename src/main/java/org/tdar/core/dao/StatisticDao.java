@@ -10,6 +10,7 @@ import java.util.Map;
 import org.hibernate.Query;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.statistics.AggregateStatistic;
 import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 
@@ -57,8 +58,9 @@ public class StatisticDao extends Dao.HibernateBase<AggregateStatistic> {
     }
 
     @SuppressWarnings("unchecked")
-    public Map<String, List<Number>> getFileAverageStats() {
+    public Map<String, List<Number>> getFileAverageStats(List<VersionType> types) {
         Query query = getCurrentSession().getNamedQuery(QUERY_FILE_STATS);
+        query.setParameterList("types", types);
         Map<String, List<Number>> toReturn = new HashMap<String, List<Number>>();
         for (Object[] result_ : (List<Object[]>) query.list()) {
             List<Number> stat = new ArrayList<Number>();

@@ -9,6 +9,7 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.statistics.AggregateStatistic;
 import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 import org.tdar.core.dao.StatisticDao;
@@ -48,8 +49,8 @@ public class StatisticService extends ServiceInterface.TypedDaoBase<AggregateSta
     }
 
     @Transactional(readOnly=true)
-    public Map<String, List<Number>> getFileAverageStats() {
-        return getDao().getFileAverageStats();
+    public Map<String, List<Number>> getFileAverageStats(List<VersionType> types) {
+        return getDao().getFileAverageStats(types);
     }
 
     @Transactional(readOnly=true)

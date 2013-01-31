@@ -1,6 +1,7 @@
 package org.tdar.struts.action.admin;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,7 @@ import org.tdar.core.bean.request.ContributorRequest;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.service.ScheduledProcessService;
@@ -80,6 +82,8 @@ public class AdminController extends AuthenticationAware.Base {
 
     private Map<String, List<Number>> fileAverageStats;
 
+    private Map<String, List<Number>> fileUploadedAverageStats;
+
     @Actions({
             @Action("contributors"),
             @Action("internal"),
@@ -95,7 +99,8 @@ public class AdminController extends AuthenticationAware.Base {
 
     @Action("resource")
     public String resourceInfo() {
-        setFileAverageStats(getStatisticService().getFileAverageStats());
+        setFileAverageStats(getStatisticService().getFileAverageStats(Arrays.asList(VersionType.values())));
+        setFileUploadedAverageStats(getStatisticService().getFileAverageStats(Arrays.asList(VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED_TEXT, VersionType.ARCHIVAL)));
         setExtensionStats(getInformationResourceFileService().getAdminFileExtensionStats());
         setHistoricalResourceStats(getStatisticService().getResourceStatistics());
         setHistoricalCollectionStats(getStatisticService().getCollectionStatistics());
@@ -294,6 +299,14 @@ public class AdminController extends AuthenticationAware.Base {
 
     public void setHistoricalRepositorySizes(Map<Date, Map<StatisticType, Long>> historicalRepositorySizes) {
         this.historicalRepositorySizes = historicalRepositorySizes;
+    }
+
+    public Map<String, List<Number>> getFileUploadedAverageStats() {
+        return fileUploadedAverageStats;
+    }
+
+    public void setFileUploadedAverageStats(Map<String, List<Number>> fileUploadedAverageStats) {
+        this.fileUploadedAverageStats = fileUploadedAverageStats;
     }
 
 }
