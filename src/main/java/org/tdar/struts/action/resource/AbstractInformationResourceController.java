@@ -329,15 +329,15 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     }
 
     @Override
+    /**
+     * safely remove/destroy resources created during the course of a save action (including files in the personal filestore).  If you need
+     * access to resources outside of request scope you should override this method and assume responsibility for file management).
+     */
     protected void postSaveCleanup(String returnString) {
-        if (isAsync()) {
-            return;
-        }
         try {
             if (ticketId != null) {
                 PersonalFilestore filestore = filestoreService.getPersonalFilestore(getAuthenticatedUser());
                 filestore.purge(getGenericService().find(PersonalFilestoreTicket.class, ticketId));
-
             }
         } catch (Exception e) {
             logger.warn("an error occured when trying to cleanup the filestore: {} for {} ", ticketId, getAuthenticatedUser());
