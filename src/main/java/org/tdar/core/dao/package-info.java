@@ -240,7 +240,7 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_FILE_STATS,
-                query = "select extension, avg(fileLength) , min(fileLength) , max(fileLength) from InformationResourceFileVersion group by extension order by extension desc"
+                query = "select extension, avg(fileLength) , min(fileLength) , max(fileLength) from InformationResourceFileVersion group by extension where fileVersionType in (:types) order by extension desc"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_RESOURCES_IN_PROJECT,
