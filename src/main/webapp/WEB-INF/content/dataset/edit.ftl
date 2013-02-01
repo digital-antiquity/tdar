@@ -1,5 +1,6 @@
 <#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
+<#import "/WEB-INF/macros/resource/common.ftl" as common>
 <head>
 <@edit.title />
 
@@ -17,6 +18,17 @@ $(function(){
                 $("#reminder").hide();
             }        
     });
+    <#if validFileExtensions??>
+/*    var validate = $('.validateFileType');
+    if ($(validate).length > 0) {
+        $(validate).rules("add", {
+            extension: "<@edit.join sequence=validFileExtensions delimiter="|"/>",
+            messages: {
+                extension: "Please enter a valid file (<@edit.join sequence=validFileExtensions delimiter=", "/>)"
+            }
+        });
+    }*/
+    </#if>
 });
 </script>
 
