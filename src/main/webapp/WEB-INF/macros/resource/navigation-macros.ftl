@@ -133,6 +133,10 @@ $(document).ready(function() {
     <#if (action?last_index_of("?") > 0)>
     	<#local action_ = action?substring(0,action?last_index_of("?")) />
     </#if>
+    <#if action_ == 'creators'>
+		<#local action_ = "view" />    
+    </#if>
+    
     <li class="${state} ${extraClass}">
     	<#if disabled>
     		<span class="disabled">
