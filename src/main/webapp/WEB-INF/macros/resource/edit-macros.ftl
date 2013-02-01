@@ -444,14 +444,14 @@ ${resource.resourceType.label}
 <div id="accessRightsRecords" class="<#if !ableToUploadFiles?has_content || ableToUploadFiles>repeatLastRow</#if>" data-addAnother="add another user">
     <div class="control-group">
         <label class="control-label">Users</label>
+        <div class="controls">
         <#list _authorizedUsers as authorizedUser>
             <#if authorizedUser??>
             	<#local disabled = false>
             	<#if authorizedUser.user.id == authenticatedUser.id || ableToUploadFiles?has_content && !ableToUploadFiles>
 	            	<#local disabled = true>
             	</#if>
-           	    <div class="controls controls-row">
-           	    <div class="repeat-row"  id="authorizedUsersRow_${authorizedUser_index}_">
+           	    <div class="controls-row repeat-row" id="authorizedUsersRow_${authorizedUser_index}_">
                	    <div class="span6">
                         <@userRow person=authorizedUser.user isDisabled=disabled _indexNumber=authorizedUser_index includeRole=false _personPrefix="user" 
                            prefix="authorizedUsers" includeRights=true isUser=true includeRepeatRow=false />
@@ -460,9 +460,9 @@ ${resource.resourceType.label}
                         <@clearDeleteButton id="accessRightsRecordsDelete${authorizedUser_index}" disabled=disabled />
                     </div>
                 </div>
-            </div>
             </#if>
         </#list>
+        </div>
     </div>
 </div>
 
