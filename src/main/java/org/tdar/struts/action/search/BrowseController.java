@@ -59,7 +59,7 @@ public class BrowseController extends AbstractLookupController {
     private static final String ALL_TDAR_COLLECTIONS = "All Collections";
     private static final long serialVersionUID = -128651515783098910L;
     private Creator creator;
-
+    private Persistable persistable;
     private List<InvestigationType> investigationTypes = new ArrayList<InvestigationType>();
     private List<CultureKeyword> cultureKeywords = new ArrayList<CultureKeyword>();
     private List<SiteTypeKeyword> siteTypeKeywords = new ArrayList<SiteTypeKeyword>();
@@ -150,6 +150,7 @@ public class BrowseController extends AbstractLookupController {
                         Arrays.asList(VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED_TEXT)));
             }
 
+            setPersistable(creator);
             setMode("browseCreators");
             setSortField(SortOption.RESOURCE_TYPE);
             String descr = String.format("All Resources from %s", creator.getProperName());
@@ -280,6 +281,14 @@ public class BrowseController extends AbstractLookupController {
 
     public void setScholarData(List<BrowseYearCountCache> scholarData) {
         this.scholarData = scholarData;
+    }
+
+    public Persistable getPersistable() {
+        return persistable;
+    }
+
+    public void setPersistable(Persistable persistable) {
+        this.persistable = persistable;
     }
 
 }
