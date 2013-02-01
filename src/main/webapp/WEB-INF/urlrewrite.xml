@@ -43,6 +43,17 @@
 </rule>
 
 <rule>
+	<from>^/(collection)s?/?$</from>
+	<to type="redirect">/browse/collections</to>
+</rule>
+
+
+<rule>
+	<from>^/filestore/?$</from>
+	<to type="redirect">/</to>
+</rule>
+
+<rule>
 	<from>^/(dataset)s?/?$</from>
 	<to type="redirect">/search/results?resourceTypes=DATASET&amp;startRecord=0</to>
 </rule>
@@ -163,17 +174,6 @@
 		</from>
 		<to>/$1/$2</to>
 	</outbound-rule>
-
-
-	<rule>
-		<from>^/(collection)$</from>
-		<to>/$1/list</to>
-	</rule>
-	<outbound-rule>
-		<from>^/(collection)/list$</from>
-		<to>/$1</to>
-	</outbound-rule>
-
 
 	<rule>
 		<from>^/(dashboard)/?$</from>
