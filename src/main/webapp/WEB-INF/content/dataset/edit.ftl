@@ -18,17 +18,6 @@ $(function(){
                 $("#reminder").hide();
             }        
     });
-    <#if validFileExtensions??>
-/*    var validate = $('.validateFileType');
-    if ($(validate).length > 0) {
-        $(validate).rules("add", {
-            extension: "<@edit.join sequence=validFileExtensions delimiter="|"/>",
-            messages: {
-                extension: "Please enter a valid file (<@edit.join sequence=validFileExtensions delimiter=", "/>)"
-            }
-        });
-    }*/
-    </#if>
 });
 </script>
 
@@ -58,6 +47,22 @@ $(function(){
 </@s.form>
 
 
-<@edit.resourceJavascript formSelector="#datasetMetadataForm" selPrefix="#dataset" includeInheritance=true />
+<@edit.resourceJavascript formSelector="#datasetMetadataForm" selPrefix="#dataset" includeInheritance=true>
+    $(function() {
+
+    <#if validFileExtensions??>
+    var validate = $('.validateFileType');
+    if ($(validate).length > 0) {
+        $(validate).rules("add", {
+            accept: "<@edit.join sequence=validFileExtensions delimiter="|"/>",
+            messages: {
+                accept: "Please enter a valid file (<@edit.join sequence=validFileExtensions delimiter=", "/>)"
+            }
+        });
+    }
+    </#if>
+    });
+    
+</@edit.resourceJavascript>
 </body>
 </#escape>

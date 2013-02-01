@@ -88,10 +88,23 @@ Core
 </div>
 
 <@edit.resourceJavascript includeInheritance=true>
-    $(function() {
-        setupSupportingResourceForm(${resource.getTotalNumberOfFiles()?c}, "ontology");
-        $('#fileInputTextArea').tabby();
+$(function() {
+    setupSupportingResourceForm(${resource.getTotalNumberOfFiles()?c}, "ontology");
+    $('#fileInputTextArea').tabby();
+
+    <#if validFileExtensions??>
+    var validate = $('.validateFileType');
+    if ($(validate).length > 0) {
+        $(validate).rules("add", {
+            accept: "<@edit.join sequence=validFileExtensions delimiter="|"/>",
+            messages: {
+                accept: "Please enter a valid file (<@edit.join sequence=validFileExtensions delimiter=", "/>)"
+            }
+        });
+    }
+    </#if>
     });
+
 </@edit.resourceJavascript>
 </body>
 </#escape>
