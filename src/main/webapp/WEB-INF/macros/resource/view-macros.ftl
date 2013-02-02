@@ -12,33 +12,47 @@ View freemarker macros
 	<link rel="canonical" href="http://${hostName}/${object.urlNamespace}/${object.id?c}" /> 
 </#macro>
 
-<#macro ontology sectionTitle="Parsed Ontology Nodes" previewSize=10 triggerSize=15>
-<#if resource.getTotalNumberOfFiles() &gt; 0  && resource.ontologyNodes??>
-    <h2>${sectionTitle}</h2>
-    <table class="table">
-    <tbody id="ontology-nodes-part1">
-    <@s.iterator status='rowStatus' value='resource.sortedOntologyNodesByImportOrder' var='ontologyNode'>
-    <tr>
-        <td style="padding-left:${ontologyNode.numberOfParents * 2}em">${ontologyNode.displayName} 
-        <#if ontologyNode.synonyms?has_content>
-          <@s.iterator value="ontologyNode.synonyms" var="synonym" status="stat">
-            <#if synonym.first>(</#if>  
-            <#if !synonym.last>,</#if>  
-            <#if synonym.last>)</#if>  
-          </@s.iterator>
-        </#if>
-        </td>
-    </tr>
-    <#if (rowStatus.index == previewSize && resource.ontologyNodes?size > triggerSize ) >
-    </tbody>
-    <tbody id="ontology-nodes-part2" style="display:none">
+<#macro displayNode ontologyNode>
+    <span style="padding-left:${ontologyNode.numberOfParents * 2}em">${ontologyNode.displayName} 
+    <#if ontologyNode.synonyms?has_content>
+        (<#t>
+      <#list ontologyNode.synonyms as synonym><#t>
+        ${synonym}<#t>
+        <#if synonym_has_next>, </#if><#t>
+      </#list><#t>
+      )<#t>
     </#if>
-    </@s.iterator>
-    </tbody>
-    </table>
-    <#if (resource.ontologyNodes?size > triggerSize )>
-    <div id='divOntologyShowMore'>
-        <p><em>Showing first ${previewSize?c} ontology nodes. </em><button id="btnOntologyShowMore">Show all ${resource.ontologyNodes?size?c} nodes...</button></p>
+    </span><br>
+</#macro>
+
+<#macro ontology sectionTitle="Parsed Ontology Nodes" previewSize=10 triggerSize=15>
+<#local allNodes = resource.sortedOntologyNodesByImportOrder />
+<#local previewNodes = allNodes />
+<#local collapsedNodes = [] />
+<#local shouldCollapse = (allNodes?size > triggerSize) />
+<#if shouldCollapse >
+    <#local previewNodes = allNodes[0..(previewSize-1)] />
+    <#local collapsedNodes = allNodes[previewSize..] />
+</#if>
+
+<#if (allNodes?size>0)>
+    <h2>${sectionTitle}</h2>
+    <div class="ontology-nodes-container">
+    <div id="ontology-nodes-part1">
+    <#list previewNodes as ontologyNode>
+        <@displayNode ontologyNode />
+    </#list>
+    </div>
+    <#if shouldCollapse>
+    <div id="ontology-nodes-part2" style="display:none">
+    <#list collapsedNodes as ontologyNode>
+        <@displayNode ontologyNode />
+    </#list>
+    </div>
+    
+    <div id='divOntologyShowMore' class="alert">
+        <span>Showing first ${previewSize?c} ontology nodes.</span>
+        <button type="button" class="btn btn-small" id="btnOntologyShowMore">Show all ${resource.ontologyNodes?size?c} nodes...</button>
     </div>
     <script type="text/javascript">
     $(function(){

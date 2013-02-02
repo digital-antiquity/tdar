@@ -865,34 +865,30 @@ applyInheritance(project, formSelector);
         <@helptext.identifiers />
         <h2><@resourceTypeLabel /> Specific or Agency Identifiers</h2>
         <@inheritsection checkboxId="cbInheritingIdentifierInformation" name='resource.inheritingIdentifierInformation' showInherited=showInherited />
-        <div id="divIdentifiers">
-        <table id="resourceAnnotationsTable" class="table repeatLastRow" addAnother="add another identifier" >
-            <tbody>
-                <#list _resourceAnnotations as annotation>
-                    <@displayAnnotation annotation annotation_index/>
-                </#list>
-            </tbody>
-        </table>
+        <div id="divIdentifiers" class="repeatLastRow">
+            <div class="control-group">
+                <label class="control-label">Name / Value</label>
+                <div class="controls">
+                    <div id="resourceAnnotationsTable"  addAnother="add another identifier" >
+                        <#list _resourceAnnotations as annotation>
+                        <@displayAnnotation annotation annotation_index/>
+                        </#list>
+                    </div>
+                </div>
+            </div>        
         </div>
     </div>
 
 </#macro>
 
 <#macro displayAnnotation annotation annotation_index=0>
-    <tr id="resourceAnnotationRow_${annotation_index}_" class="repeat-row">
-        <td >
-            <div class="control-group">
-            <label class="control-label">Name / Value</label>
-                <div class="controls controls-row ">
-                    <@s.textfield theme="tdar" placeholder="Name"  maxlength=128 cssClass="annotationAutoComplete span3" name='resourceAnnotations[${annotation_index}].resourceAnnotationKey.key' value='${annotation.resourceAnnotationKey.key!""}'  autocomplete="off" />
-                    <@s.textfield theme="tdar" placeholder="Value" cssClass="span3" name='resourceAnnotations[${annotation_index}].value'  value='${annotation.value!""}' />
-                </div>
-            </div>            
-        </td>
-        <td><@clearDeleteButton id="resourceAnnotationRow" /></td>                        
-    </tr>
-
+    <div id="resourceAnnotationRow_${annotation_index}_" class="controls-row repeat-row">
+        <@s.textfield theme="tdar" placeholder="Name"  maxlength=128 cssClass="annotationAutoComplete span3" name='resourceAnnotations[${annotation_index}].resourceAnnotationKey.key' value='${annotation.resourceAnnotationKey.key!""}'  autocomplete="off" />
+        <@s.textfield theme="tdar" placeholder="Value" cssClass="span3" name='resourceAnnotations[${annotation_index}].value'  value='${annotation.value!""}' />
+        <div class="span1"><@clearDeleteButton id="resourceAnnotationRow" /></div>                        
+    </div>
 </#macro>
+
 <#macro join sequence=[] delimiter=",">
   <#if sequence?has_content>
     <#list sequence as item>
@@ -1541,7 +1537,14 @@ $(function() {
         <div class="controls">
         <#list _authorizedUsers as user>
             <#if user??>
-                <@userRow person=user _indexNumber=user_index isUser=true includeRepeatRow=true/>
+                <div class="controls-row repeat-row" id="userrow_${user_index}_">
+                    <div class="span6">
+                        <@userRow person=user _indexNumber=user_index isUser=true includeRepeatRow=false/>
+                    </div>
+                    <div class="span1">
+                        <@clearDeleteButton id="user${user_index}"  />
+                    </div>
+                </div>
             </#if>
         </#list>
         </div>
