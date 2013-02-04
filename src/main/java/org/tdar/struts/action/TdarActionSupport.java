@@ -500,4 +500,12 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public boolean isSecure() {
         return servletRequest.isSecure();
     }
+    
+    public boolean getShowJiraLink() {
+        return getTdarConfiguration().getShowJiraLink();
+    }
+    
+    public String getJiraScriptLink() {
+        return getTdarConfiguration().getJiraScriptLink();
+    }
 }

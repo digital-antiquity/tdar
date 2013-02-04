@@ -67,11 +67,11 @@ public class TdarConfiguration {
         testQueue();
         initializeStopWords();
     }
-    
+
     public String getConfigurationFile() {
         return configurationFile;
     }
-    
+
     private TdarConfiguration(String configurationFile) {
         System.setProperty("java.awt.headless", "true");
         setConfigurationFile(configurationFile);
@@ -210,16 +210,16 @@ public class TdarConfiguration {
         return assistant.getBooleanProperty("privacy.controls.enabled", false);
 
     }
-    
+
     public boolean getLicenseEnabled() {
-    	return assistant.getBooleanProperty("licenses.enabled", false);    	
+        return assistant.getBooleanProperty("licenses.enabled", false);
     }
 
     public boolean getCopyrightMandatory() {
         return assistant.getBooleanProperty("copyright.fields.enabled", false);
     }
 
-    //TODO: make mapping props vendor neutral where possible (e.g. lat/long)
+    // TODO: make mapping props vendor neutral where possible (e.g. lat/long)
     public double getMapDefaultLat() {
         return assistant.getDoubleProperty("google.map.defaultLatitude", 40.00);
 
@@ -438,7 +438,6 @@ public class TdarConfiguration {
         return assistant.getLongProperty("featured.collection.id", -1);
     }
 
-    
     public String getDocumentationUrl() {
         return assistant.getStringProperty("help.baseurl", "http://dev.tdar.org/confluence/display/TDAR/User+Documentation");
     }
@@ -464,7 +463,7 @@ public class TdarConfiguration {
     }
 
     public Boolean isRPAEnabled() {
-    	return assistant.getBooleanProperty("rpa.enabled", true);
+        return assistant.getBooleanProperty("rpa.enabled", true);
     }
 
     public String getContactEmail() {
@@ -497,5 +496,13 @@ public class TdarConfiguration {
 
     public Integer getMaxUploadFilesPerRecord() {
         return assistant.getIntProperty("upload.maxFilesPerResource", 50);
+    }
+
+    public Boolean getShowJiraLink() {
+        return assistant.getBooleanProperty("jira.link.show", true);
+    }
+    
+    public String getJiraScriptLink() {
+        return assistant.getStringProperty("jira.link", "https://dev.tdar.org/jira/s/en_USgh0sw9-418945332/844/18/1.2.9/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?collectorId=959f12a3");
     }
 }
