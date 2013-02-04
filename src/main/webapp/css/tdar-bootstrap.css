@@ -1385,3 +1385,9 @@ img.responsive-image {
 	display:none;
 	visibility:hidden;
 }
+
+/* overwritten in tdar-print */
+.show-print {
+	visibility:hidden;
+	display:none;
+}
