@@ -18,6 +18,7 @@ import java.util.regex.Pattern;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.configuration.TdarConfiguration;
 
 /**
@@ -71,8 +72,11 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     @Test
     @Rollback(true)
     public void testCreateDatasetRecord() {
+        final String CONFIDENTIAL_TEXT = "this resource is restricted from general view";
+        
         // upload a file ahead of submitting the form
-
+        
+        docValMap.put("fileProxies[0].restriction",  FileAccessRestriction.CONFIDENTIAL.name());
         uploadDataset();
 
         assertTextPresentInPage(TEST_DATASET_NAME);
@@ -81,6 +85,8 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         Long codingSheetId = testCodingSheetCreation(ontologyId);
 
         gotoPage("/dataset/" + datasetId);
+        assertTextPresentIgnoreCase(CONFIDENTIAL_TEXT);
+        
         clickLinkWithText(TABLE_METADATA);
 
         assertTextPresentInCode(datasetId.toString());
@@ -102,7 +108,9 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         assertTrue(internalPage.getUrl().toString().endsWith("/dataset/" + datasetId));
         assertTextPresentIgnoreCase("translated");
-
+        
+        //ensure that changing column metadata didn't implicitly change file access rights
+        assertTextPresentIgnoreCase(CONFIDENTIAL_TEXT);
     }
 
     private void uploadDataset() {
