@@ -31,7 +31,6 @@ public class DatasetConfidentialityITCase extends AbstractIntegrationTestCase {
     private static final String TEST_DATA_SET_FILE_PATH = TestConstants.TEST_DATA_INTEGRATION_DIR + "total-number-of-bones-per-period.xlsx";
     private static final File TEST_DATASET_FILE = new File(TEST_DATA_SET_FILE_PATH);
     private static final String EXCEL_FILE_NAME = "periods-modified-sm-01182011.xlsx";
-    private static final String EXCEL_FILE_PATH = TestConstants.TEST_DATA_INTEGRATION_DIR + EXCEL_FILE_NAME;
 
     Long datasetId = null;
 
@@ -92,14 +91,11 @@ public class DatasetConfidentialityITCase extends AbstractIntegrationTestCase {
         dataset = genericService.find(Dataset.class, datasetId);
 
         DataTable dataTable = dataset.getDataTables().iterator().next();
-//        List<DataTableColumn> dataTableColumns = dataTable.getDataTableColumns();
         DataTableColumn period_ = dataTable.getColumnByDisplayName("Period");
         datasetController = generateNewInitializedController(DatasetController.class);
         datasetController.setId(datasetId);
         datasetController.prepare();
         datasetController.editColumnMetadata();
-//        genericService.detachFromSession(dataTable);
-//        genericService.detachFromSession(dataTableColumns);
         DataTableColumn cloneBean = (DataTableColumn) BeanUtils.cloneBean(period_);
         cloneBean.setColumnEncodingType(DataTableColumnEncodingType.CODED_VALUE);
         cloneBean.setDefaultCodingSheet(codingSheet);
@@ -108,19 +104,9 @@ public class DatasetConfidentialityITCase extends AbstractIntegrationTestCase {
         list.add(cloneBean);
         datasetController.setDataTableColumns(list);
         datasetController.saveColumnMetadata();
-
-        // simulate view, compare the file access
-        genericService.detachFromSession(dataset);
-        dataset = null;
-        genericService.synchronize();
-    }
-
-    @AfterTransaction
-    public void verifyPostTranslatedData() {
-        runInNewTransaction(new TransactionCallback<Dataset>() {
-
+        setVerifyTransactionCallback(new TransactionCallback<Dataset>() {
             @Override
-            public Dataset doInTransaction(TransactionStatus arg0) {
+            public Dataset doInTransaction(TransactionStatus status) {
                 Dataset mydataset = genericService.find(Dataset.class, datasetId);
                 logger.info("{} {}", datasetId, mydataset);
                 Set<InformationResourceFile> informationResourceFiles = mydataset.getInformationResourceFiles();
