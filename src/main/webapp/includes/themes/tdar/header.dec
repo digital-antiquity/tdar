@@ -1,1 +1,5 @@
-<h1 id="top"><a href="/" tabindex="-1"><img src="<@s.url value="/images/r4/bg-logo.png"/>" title="<#if siteAcronym?has_content>${siteAcronym} - </#if>${siteName}"/></a></h1>
+<h1 id="top"><h1 id="top"><img src="http://core.tdar.org/images/r4/bg-logo.png" title="tDAR - the Digital Archaeological Record" usemap="tdarmap">
+<map name="tdarmap">
+  <area shape="rect" coords="0,0,187,65" href="/" alt="tDAR" tabindex="-1">  
+  <area shape="rect" coords="0,65,187,77" href="http://www.digitalantiquity.org/" alt="digital antiquity" tabindex="-1">
+</map></h1></h1>
