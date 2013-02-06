@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.pid.EZIDDao;
 import org.tdar.core.service.UrlService;
@@ -108,6 +109,36 @@ public class EZIDITCase extends AbstractSearchControllerITCase {
         try {
             Resource r = resourceService.findRandom(Image.class, 1).get(0);
             r.setStatus(Status.ACTIVE);
+            ezidDao.connect();
+            String absoluteUrl = urlService.absoluteUrl(r);
+            Map<String, String> createdIDs = ezidDao.create(r, absoluteUrl);
+            assertEquals(2, createdIDs.size());
+            String doi = createdIDs.get("DOI").trim();
+            String ark = createdIDs.get("ARK").trim();
+            assertTrue(StringUtils.isNotBlank(doi));
+            assertTrue(StringUtils.isNotBlank(ark));
+
+            Map<String, String> metadata = ezidDao.getMetadata(doi);
+            assertEquals(ark, metadata.get(EZIDDao._SHADOWED_BY));
+            assertEquals(r.getTitle(), metadata.get(EZIDDao.DATACITE_TITLE));
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    @Test
+    public void testCreateSensoryData() {
+        try {
+            SensoryData r = new SensoryData();
+            r.setTitle("test sensory object");
+            r.setDescription("test sensory object");
+            r.setDate(1234);
+            r.markUpdated(getAdminUser());
+            r.setStatus(Status.ACTIVE);
+            genericService.saveOrUpdate(r);
             ezidDao.connect();
             String absoluteUrl = urlService.absoluteUrl(r);
             Map<String, String> createdIDs = ezidDao.create(r, absoluteUrl);
