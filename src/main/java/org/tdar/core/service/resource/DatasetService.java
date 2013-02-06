@@ -162,6 +162,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             SheetProxy sheetProxy = toExcel(dataset, translatedFileOutputStream);
             String filename = FilenameUtils.getBaseName(file.getLatestUploadedVersion().getFilename()) + "_translated." + sheetProxy.getExtension();
             FileProxy fileProxy = new FileProxy(filename, tempFile, VersionType.TRANSLATED, FileAction.ADD_DERIVATIVE);
+            fileProxy.setRestriction(file.getRestriction());
             fileProxy.setFileId(file.getId());
             processedFileProxy = processFileProxy(dataset, fileProxy);
         } catch (IOException exception) {
