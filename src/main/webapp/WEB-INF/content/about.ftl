@@ -26,11 +26,11 @@
     </#if>
 </div>
 -->
-
+<hr>
 <div class="row">
         <#include "featured.ftl" />
 </div>
-
+<hr>
 <div class="row">
     <div class="span6 map">
         <h3>${siteAcronym} Worldwide</h3>
