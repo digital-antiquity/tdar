@@ -150,7 +150,6 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                 // always set the download/version info and persist the relationships between the InformationResource and its IRFile.
                 incrementVersionNumber(irFile);
                 addInformationResourceFile(informationResource, irFile);
-                setInformationResourceFileMetadata(irFile, proxy);
                 createVersion(irFile, proxy);
                 setInformationResourceFileMetadata(irFile, proxy);
                 for (FileProxy additionalVersion : proxy.getAdditionalVersions()) {
