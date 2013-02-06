@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -795,7 +796,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         assertTrue(msg, ObjectUtils.notEqual(obj1, obj2));
     }
     
-    public static void assertNotEmpty(List<?> results) {
+    public static void assertNotEmpty(Collection<?> results) {
         assertTrue(CollectionUtils.isNotEmpty(results));
     }
 
