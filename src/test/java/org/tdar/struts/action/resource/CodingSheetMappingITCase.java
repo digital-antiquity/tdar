@@ -12,10 +12,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import static org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction.CONFIDENTIAL;
-import static org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction.EMBARGOED;
-import static org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction.PUBLIC;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,7 +32,6 @@ import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResourceFile;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Ontology;
@@ -48,7 +43,6 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.data.ResultMetadataWrapper;
 import org.tdar.utils.ExcelUnit;
 
@@ -540,58 +534,6 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
             }
         }
     }
-    
-    
-    @Test
-    @Rollback
-    public void  testConfidentialityAfterEdit() throws Exception{
-        CodingSheet codingSheet = setupCodingSheet();
-
-        DatasetController datasetController = generateNewInitializedController(DatasetController.class);
-        datasetController.prepare();
-        Dataset dataset = datasetController.getDataset();
-        dataset.setTitle("test dataset");
-        dataset.setDescription("test description");
-        List<File> uploadedFiles = new ArrayList<File>();
-        List<String> uploadedFileNames = new ArrayList<String>();
-        uploadedFileNames.add(TEST_DATASET_FILE.getName());
-        uploadedFiles.add(TEST_DATASET_FILE);
-        datasetController.setUploadedFiles(uploadedFiles);
-        datasetController.setUploadedFilesFileName(uploadedFileNames);
-        datasetController.setServletRequest(getServletPostRequest());
-        
-        //make the file confidential
-        FileProxy fileProxy = new FileProxy();
-        fileProxy.setFilename(TEST_DATASET_FILE.getName());
-        fileProxy.setAction(FileAction.ADD);
-        fileProxy.setRestriction(CONFIDENTIAL);
-        datasetController.getFileProxies().add(fileProxy);
-        
-        //create the dataset
-        datasetController.save();
-        Long datasetId = dataset.getId();
-        assertNotNull(datasetId);
-        
-        //edit column metadata
-        genericService.detachFromSession(dataset);
-        dataset = null;
-        dataset = genericService.find(Dataset.class, datasetId);
-        
-        DataTableColumn period_ = dataset.getDataTables().iterator().next().getColumnByDisplayName("Period");
-        datasetController = generateNewInitializedController(DatasetController.class);
-        datasetController.setId(datasetId);
-        datasetController.prepare();
-        datasetController.editColumnMetadata();
-        period_.setDefaultCodingSheet(codingSheet);
-        datasetController.saveColumnMetadata();
-        
-        //simulate view,  compare the file access
-        genericService.detachFromSession(dataset);
-        dataset = null;
-        dataset = genericService.find(Dataset.class, datasetId);
-        assertEquals(dataset.getInformationResourceFiles().iterator().next().getRestriction(), CONFIDENTIAL);
-    }
-    
 
     public Dataset setupIntegrationDataset(File file, String datasetTitle) throws TdarActionException {
         return setupIntegrationDataset(file, datasetTitle, null);

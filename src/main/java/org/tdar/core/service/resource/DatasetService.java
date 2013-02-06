@@ -637,6 +637,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
 
     public boolean updateColumnMetadata(Dataset dataset, DataTable dataTable, List<DataTableColumn> dataTableColumns, Person authenticatedUser) {
         boolean hasOntologies = false;
+        logger.info("updating column metadata");
         List<DataTableColumn> columnsToTranslate = new ArrayList<DataTableColumn>();
         List<DataTableColumn> columnsToMap = new ArrayList<DataTableColumn>();
         for (DataTableColumn incomingColumn : dataTableColumns) {
@@ -742,6 +743,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
     }
 
     private boolean isRetranslationNeeded(CodingSheet incomingCodingSheet, CodingSheet existingCodingSheet) {
+        logger.info("{} {} {}",incomingCodingSheet,existingCodingSheet, ObjectUtils.equals(incomingCodingSheet, existingCodingSheet));
         if (ObjectUtils.equals(incomingCodingSheet, existingCodingSheet)) {
             return false;
         }
