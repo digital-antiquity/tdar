@@ -166,11 +166,10 @@ public class Resource extends JsonModel.Base implements Persistable,
     public Resource() {
     }
 
-    
-    @Column(name="total_space_in_bytes")
+    @Column(name = "total_space_in_bytes")
     private Long spaceInBytesUsed = 0L;
 
-    @Column(name="total_files")
+    @Column(name = "total_files")
     private Long filesUsed = 0L;
 
     private transient Long previousSpaceInBytesUsed = 0L;
@@ -1667,6 +1666,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     public void setFilesUsed(Long filesUsed) {
+        setPreviousFilesUsed(this.filesUsed);
         this.filesUsed = filesUsed;
     }
 
@@ -1678,6 +1678,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     public void setPreviousSpaceInBytesUsed(Long previousSpaceInBytesUsed) {
+        setPreviousSpaceInBytesUsed(this.spaceInBytesUsed);
         this.previousSpaceInBytesUsed = previousSpaceInBytesUsed;
     }
 

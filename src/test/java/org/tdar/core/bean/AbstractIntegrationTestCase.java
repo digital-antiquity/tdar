@@ -793,7 +793,11 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     }
 
     public static void assertNotEquals(String msg, Object obj1, Object obj2) {
+        if (StringUtils.isNotBlank(msg)) {
         assertTrue(msg, ObjectUtils.notEqual(obj1, obj2));
+        } else {
+            assertTrue(String.format("'%s' == '%s'",obj1,obj2), ObjectUtils.notEqual(obj1, obj2));
+        }
     }
     
     public static void assertNotEmpty(Collection<?> results) {
