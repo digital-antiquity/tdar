@@ -243,8 +243,10 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     @Override
     protected void postSaveCallback(String actionMessage) {
         if (actionMessage == SUCCESS) {
-            getAccountService().getResourceEvaluator().evaluateResources(getResource());
-            updateQuota(getGenericService().find(Account.class, getAccountId()), getResource());
+            // getAccountService().getResourceEvaluator().evaluateResources(getResource());
+            if (shouldSaveResource()) {
+                updateQuota(getGenericService().find(Account.class, getAccountId()), getResource());
+            }
         } else {
             loadAddMetadata();
         }

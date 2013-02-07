@@ -214,27 +214,27 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         model.setVersion(100); // forcing the model to be the "latest"
         genericService.saveOrUpdate(model);
         Account account = setupAccountForPerson(getUser());
-//        ResourceEvaluator re = new ResourceEvaluator(model);
         Document resource = generateInformationResourceWithFileAndUser();
+        logger.info("f{} s{}", resource.getFilesUsed(), resource.getSpaceInBytesUsed());
         Long spaceUsedInBytes = account.getSpaceUsedInBytes();
         Long resourcesUsed = account.getResourcesUsed();
         Long filesUsed = account.getFilesUsed();
-//        resource.setAccount(account);
+
         assertFalse(account.getResources().contains(resource));
-        String msg = null;
+
         AccountAdditionStatus status = accountService.updateQuota(account, resource);
-
-        assertEquals(AccountAdditionStatus.NOT_ENOUGH_FILES, status);
-
+        genericService.refresh(account);
+        assertEquals(AccountAdditionStatus.NOT_ENOUGH_SPACE, status);
+        logger.info("{} space used in bytes ({})", account.getSpaceUsedInBytes(), spaceUsedInBytes);
         assertTrue(account.getResources().contains(resource));
         assertEquals(Status.FLAGGED_ACCOUNT_BALANCE, resource.getStatus());
 
-        assertFalse(spaceUsedInBytes.longValue() == account.getSpaceUsedInBytes().longValue());
-        assertFalse(resourcesUsed.longValue() == account.getResourcesUsed().longValue());
-        assertFalse(filesUsed.longValue() == account.getFilesUsed().longValue());
+        assertNotEquals(spaceUsedInBytes.longValue(), account.getSpaceUsedInBytes().longValue());
+        assertEquals(resourcesUsed.longValue(), account.getResourcesUsed().longValue());
+        assertNotEquals(filesUsed.longValue(), account.getFilesUsed().longValue());
 
         assertEquals(spaceUsedInBytes.longValue() + resource.getSpaceInBytesUsed(), account.getSpaceUsedInBytes().longValue());
-//        assertEquals(resourcesUsed.longValue() + resource.getResourcesUsed(), account.getResourcesUsed().longValue());
+        // assertEquals(resourcesUsed.longValue() + resource.getResourcesUsed(), account.getResourcesUsed().longValue());
         assertEquals(filesUsed.longValue() + resource.getFilesUsed(), account.getFilesUsed().longValue());
     }
 
@@ -280,6 +280,8 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         Account account = setupAccountWithInvoiceSomeResourcesAndSpace(model);
         Document doc = createAndSaveNewInformationResource(Document.class);
         addFileToResource(doc, new File(TestConstants.TEST_DOCUMENT_DIR, "/t1/test.pdf"));
+        accountService.getResourceEvaluator(doc);
+        genericService.saveOrUpdate(doc);
         Long availableSpaceInMb = account.getAvailableSpaceInMb();
         Long availableNumberOfFiles = account.getAvailableNumberOfFiles();
         accountService.updateQuota(account, doc);

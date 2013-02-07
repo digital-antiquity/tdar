@@ -35,7 +35,7 @@ public class ResourceEvaluator implements Serializable {
     private List<Status> uncountedResourceStatuses = Arrays.asList();
     private long resourcesUsed = 0;
     private long filesUsed = 0;
-    private long spaceUsed = 0;
+    private long spaceUsedInBytes = 0;
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
     private Set<Long> resourceIds = new HashSet<Long>();
     private BillingActivityModel model;
@@ -94,22 +94,21 @@ public class ResourceEvaluator implements Serializable {
             if (resource instanceof InformationResource) {
                 InformationResource informationResource = (InformationResource) resource;
                 for (InformationResourceFile file : informationResource.getInformationResourceFiles()) {
-                    if (file.isDeleted() && !includeDeletedFilesInCounts)
+                    if (file.isDeleted() && !includeDeletedFilesInCounts) {
                         continue;
+                    }
                     filesUsed++;
                     for (InformationResourceFileVersion version : file.getInformationResourceFileVersions()) {
                         // we use version 1 because it's the original uploaded version
                         if (!includeAllVersionsInCounts && !version.getVersion().equals(1) || !version.isUploaded())
                             continue;
                         if (version.getFileLength() != null) {
-                            spaceUsed += version.getFileLength();
+                            spaceUsedInBytes += version.getFileLength();
                         }
                     }
                 }
             }
-            resource.setPreviousFilesUsed(resource.getFilesUsed());
-            resource.setSpaceInBytesUsed(resource.getSpaceInBytesUsed());
-            resource.setSpaceInBytesUsed(spaceUsed);
+            resource.setSpaceInBytesUsed(spaceUsedInBytes);
             resource.setFilesUsed(filesUsed);
         }
     }
@@ -160,15 +159,15 @@ public class ResourceEvaluator implements Serializable {
     }
 
     public long getSpaceUsedInBytes() {
-        return spaceUsed;
+        return spaceUsedInBytes;
     }
 
     public long getSpaceUsedInMb() {
-        return (long) Math.ceil((double) spaceUsed / (double) Invoice.ONE_MB);
+        return (long) Math.ceil((double) spaceUsedInBytes / (double) Invoice.ONE_MB);
     }
 
     public void setSpaceUsed(long spaceUsed) {
-        this.spaceUsed = spaceUsed;
+        this.spaceUsedInBytes = spaceUsed;
     }
 
     public List<Status> getUncountedResourceStatuses() {

@@ -30,7 +30,6 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.AccountDao;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.external.auth.TdarGroup;
-import org.tdar.core.exception.TdarQuotaException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
@@ -178,22 +177,27 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         return updateQuota(account, Arrays.asList(resources));
     }
 
-    @Transactional
-    public void updateQuotaAndResetResourceStatus(Account account) {
-        if (!account.isOverdrawn(getResourceEvaluator())) {
-            throw new TdarQuotaException("account not charged enough", null);
-        } else {
-            List<Resource> resources = new ArrayList<Resource>();
+    // @Transactional
+    // public void updateQuotaAndResetResourceStatus(Account account) {
+    // if (!account.isOverdrawn(getResourceEvaluator())) {
+    // throw new TdarQuotaException("account not charged enough", null);
+    // } else {
+    // List<Resource> resources = new ArrayList<Resource>();
+    //
+    // for (Resource resource : account.getResources()) {
+    // if (resource.getStatus() == Status.FLAGGED_ACCOUNT_BALANCE) {
+    // resource.setStatus(resource.getPreviousStatus());
+    // resource.setPreviousStatus(null);
+    // resources.add(resource);
+    // }
+    // }
+    // // saveOrUpdateAll(resources);
+    // }
+    // }
 
-            for (Resource resource : account.getResources()) {
-                if (resource.getStatus() == Status.FLAGGED_ACCOUNT_BALANCE) {
-                    resource.setStatus(resource.getPreviousStatus());
-                    resource.setPreviousStatus(null);
-                    resources.add(resource);
-                }
-            }
-            // saveOrUpdateAll(resources);
-        }
+    @Transactional
+    public void updateAccountInfo(Account account) {
+        getDao().updateAccountInfo(account);
     }
 
     @Transactional
@@ -202,11 +206,14 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         if (account == null) {
             throw new TdarRecoverableRuntimeException(ACCOUNT_IS_NULL);
         }
-        ResourceEvaluator endingEvaluator = getResourceEvaluator(resourcesToEvaluate);
+        // evaluate resources
+        getResourceEvaluator(resourcesToEvaluate);
+        saveOrUpdateAll(resourcesToEvaluate);
         getDao().updateTransientAccountOnResources(resourcesToEvaluate);
         getDao().updateAccountInfo(account);
-        Long spaceAvailable = account.getAvailableSpaceInBytes();
-        Long filesAvailable = account.getAvailableNumberOfFiles();
+        AccountAdditionStatus status = AccountAdditionStatus.CAN_ADD_RESOURCE;
+        account.getAvailableSpaceInBytes();
+        account.getAvailableNumberOfFiles();
         // if the account is null ...
         List<Resource> newItems = new ArrayList<Resource>();
         List<Resource> existingItems = new ArrayList<Resource>();
@@ -234,50 +241,53 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             existingItems.add(resource);
         }
         getDao().merge(account);
-        AccountAdditionStatus status = AccountAdditionStatus.CAN_ADD_RESOURCE;
-        
+
         logger.info("existing:{} new:{}", existingItems, newItems);
         Set<Resource> flagged = new HashSet<Resource>();
         Set<Resource> unflagged = new HashSet<Resource>();
-        for (Resource resource : existingItems) {
-            if (hasSpaceFor(resource, spaceAvailable, filesAvailable)) {
-                updateMarkers(resource, spaceAvailable, filesAvailable);
-                unflagged.add(resource);
-            } else {
-                flagged.add(resource);
-            }
-        }
-        for (Resource resource : newItems) {
-            account.getResources().add(resource);
-            if (hasSpaceFor(resource, spaceAvailable, filesAvailable)) {
-                updateMarkers(resource, spaceAvailable, filesAvailable);
-                unflagged.add(resource);
-            } else {
-                flagged.add(resource);
-            }
-        }
+        // not technically necessary to process these separately, but prefer incremental changes to wholesale adds
+        processResourceGroup(account, existingItems, flagged, unflagged);
+        processResourceGroup(account, newItems, flagged, unflagged);
+        account.getResources().addAll(newItems);
         markResourcesAsFlagged(flagged);
         unMarkResourcesAsFlagged(unflagged);
-        logger.info("s{} f{} r:{} ",spaceAvailable, filesAvailable, unflagged);
+        logger.info("s{} f{} r:{} ", account.getAvailableSpaceInBytes(), account.getAvailableNumberOfFiles(), unflagged);
         if (flagged.size() > 0) {
-            if (spaceAvailable < 0) {
+            if (account.getAvailableSpaceInBytes() < 0) {
                 status = AccountAdditionStatus.NOT_ENOUGH_SPACE;
-            } else  {
+            } else {
                 status = AccountAdditionStatus.NOT_ENOUGH_FILES;
             }
         }
         logger.info("marking {} resources {} FLAGGED", status, flagged);
+        saveOrUpdateAll(resourcesToEvaluate);
+        // FIXME: may not work exactly because resource evaluations may not have been "saved" yet.
+        updateAccountInfo(account);
         saveOrUpdate(account);
         return status;
     }
 
-    private void updateMarkers(Resource resource, Long spaceAvailable, Long filesAvailable) {
-        spaceAvailable -= resource.getEffectiveSpaceUsed();
-        filesAvailable -= resource.getEffectiveFilesUsed();
+    private void processResourceGroup(Account account, List<Resource> existingItems, Set<Resource> flagged, Set<Resource> unflagged) {
+        for (Resource resource : existingItems) {
+            if (hasSpaceFor(resource, account)) {
+                unflagged.add(resource);
+            } else {
+                flagged.add(resource);
+            }
+            updateMarkers(resource, account);
+        }
     }
 
-    private boolean hasSpaceFor(Resource resource, Long spaceAvailable, Long filesAvailable) {
-        if (spaceAvailable - resource.getEffectiveSpaceUsed() > 0 && filesAvailable - resource.getEffectiveFilesUsed() > 0) {
+    private void updateMarkers(Resource resource, Account account) {
+        account.setSpaceUsedInBytes(account.getSpaceUsedInBytes() + resource.getEffectiveSpaceUsed());
+        account.setFilesUsed(account.getFilesUsed() + resource.getEffectiveFilesUsed());
+        logger.info(String.format("%s %s %s %s", account.getSpaceUsedInBytes(), resource.getEffectiveSpaceUsed(), account.getFilesUsed(),
+                resource.getEffectiveFilesUsed()));
+    }
+
+    private boolean hasSpaceFor(Resource resource, Account account) {
+        if (account.getAvailableSpaceInBytes() - resource.getEffectiveSpaceUsed() >= 0
+                && account.getAvailableNumberOfFiles() - resource.getEffectiveFilesUsed() >= 0) {
             return true;
         }
         return false;

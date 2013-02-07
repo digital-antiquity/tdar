@@ -166,11 +166,10 @@ public class Resource extends JsonModel.Base implements Persistable,
     public Resource() {
     }
 
-    
-    @Column(name="total_space_in_bytes")
+    @Column(name = "total_space_in_bytes")
     private Long spaceInBytesUsed = 0L;
 
-    @Column(name="total_files")
+    @Column(name = "total_files")
     private Long filesUsed = 0L;
 
     private transient Long previousSpaceInBytesUsed = 0L;
@@ -212,7 +211,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     @Type(type = "org.hibernate.type.StringClobType")
     private String description;
 
-//    @Boost(.5f)
+    // @Boost(.5f)
     @Field(norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     @NotNull
     @Column(name = "date_registered")
@@ -237,7 +236,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     @Column(name = "previous_status")
     private Status previousStatus = Status.ACTIVE;
 
-//    @Boost(.5f)
+    // @Boost(.5f)
     @IndexedEmbedded
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     @JoinColumn(nullable = false, name = "submitter_id")
@@ -249,7 +248,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     @NotNull
     private Person uploader;
 
-//    @Boost(.5f)
+    // @Boost(.5f)
     @IndexedEmbedded
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     @JoinColumn(name = "updater_id")
@@ -630,7 +629,7 @@ public class Resource extends JsonModel.Base implements Persistable,
         this.id = id;
     }
 
-//    @Boost(1.5f)
+    // @Boost(1.5f)
     @Fields({
             @Field,
             @Field(name = QueryFieldNames.TITLE_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)) })
@@ -673,7 +672,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     @Field
-//    @Boost(1.2f)
+    // @Boost(1.2f)
     public String getDescription() {
         return description;
     }
@@ -1670,6 +1669,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     public void setFilesUsed(Long filesUsed) {
+        setPreviousFilesUsed(this.filesUsed);
         this.filesUsed = filesUsed;
     }
 
@@ -1681,6 +1681,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     public void setPreviousSpaceInBytesUsed(Long previousSpaceInBytesUsed) {
+        setPreviousSpaceInBytesUsed(this.spaceInBytesUsed);
         this.previousSpaceInBytesUsed = previousSpaceInBytesUsed;
     }
 
