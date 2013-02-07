@@ -134,8 +134,9 @@ public interface Persistable extends Serializable {
             if (hashCode == -1) {
                 if (isNullOrTransient(this)) {
                     hashCode = super.hashCode();
+                } else {
+                    hashCode = toHashCode(this);
                 }
-                hashCode = toHashCode(this);
 
                 logger.trace("setting hashCode to {} ({}) {}", obj);
             } else {
