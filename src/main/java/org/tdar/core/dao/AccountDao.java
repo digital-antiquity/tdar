@@ -109,4 +109,22 @@ public class AccountDao extends Dao.HibernateBase<Account> {
             }
         }
     }
+
+    public void updateAccountInfo(Account account) {
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.ACCOUNT_QUOTA_INIT);
+        query.setParameter("accountId", account.getId());
+        Long totalFiles = 0L;
+        Long totalSpaceInBytes = 0L;
+        for (Object objs : query.list()) {
+            Object[] obj = (Object[]) objs;
+            if (obj[0] != null) {
+                totalFiles = ((Long) obj[0]).longValue();
+            }
+            if (obj[1] != null) {
+                totalSpaceInBytes = ((Long) obj[1]).longValue();
+            }
+        }
+        account.setFilesUsed(totalFiles);
+        account.setSpaceUsedInBytes(totalSpaceInBytes);
+    }
 }

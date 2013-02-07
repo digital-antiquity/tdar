@@ -107,6 +107,10 @@ public class ResourceEvaluator implements Serializable {
                     }
                 }
             }
+            resource.setPreviousFilesUsed(resource.getFilesUsed());
+            resource.setSpaceInBytesUsed(resource.getSpaceInBytesUsed());
+            resource.setSpaceInBytesUsed(spaceUsed);
+            resource.setFilesUsed(filesUsed);
         }
     }
 

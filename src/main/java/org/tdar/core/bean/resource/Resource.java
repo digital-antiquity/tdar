@@ -57,7 +57,6 @@ import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.Boost;
 import org.hibernate.search.annotations.DateBridge;
 import org.hibernate.search.annotations.DocumentId;
 import org.hibernate.search.annotations.DynamicBoost;
@@ -166,6 +165,16 @@ public class Resource extends JsonModel.Base implements Persistable,
 
     public Resource() {
     }
+
+    
+    @Column(name="total_space_in_bytes")
+    private Long spaceInBytesUsed = 0L;
+
+    @Column(name="total_files")
+    private Long filesUsed = 0L;
+
+    private transient Long previousSpaceInBytesUsed = 0L;
+    private transient Long previousFilesUsed = 0L;
 
     @Deprecated
     public Resource(Long id, String title) {
@@ -1642,4 +1651,57 @@ public class Resource extends JsonModel.Base implements Persistable,
         this.previousStatus = previousStatus;
     }
 
+    public Long getSpaceInBytesUsed() {
+        if (spaceInBytesUsed == null) {
+            return 0L;
+        }
+        return spaceInBytesUsed;
+    }
+
+    public void setSpaceInBytesUsed(Long spaceInBytesUsed) {
+        this.spaceInBytesUsed = spaceInBytesUsed;
+    }
+
+    public Long getFilesUsed() {
+        if (filesUsed == null) {
+            return 0L;
+        }
+        return filesUsed;
+    }
+
+    public void setFilesUsed(Long filesUsed) {
+        this.filesUsed = filesUsed;
+    }
+
+    public Long getPreviousSpaceInBytesUsed() {
+        if (previousSpaceInBytesUsed == null) {
+            return 0L;
+        }
+        return previousSpaceInBytesUsed;
+    }
+
+    public void setPreviousSpaceInBytesUsed(Long previousSpaceInBytesUsed) {
+        this.previousSpaceInBytesUsed = previousSpaceInBytesUsed;
+    }
+
+    public Long getPreviousFilesUsed() {
+        if (previousFilesUsed == null) {
+            return 0L;
+        }
+        return previousFilesUsed;
+    }
+
+    public void setPreviousFilesUsed(Long previousFilesUsed) {
+        this.previousFilesUsed = previousFilesUsed;
+    }
+
+    @XmlTransient
+    public Long getEffectiveSpaceUsed() {
+        return getSpaceInBytesUsed() - getPreviousSpaceInBytesUsed();
+    }
+
+    @XmlTransient
+    public Long getEffectiveFilesUsed() {
+        return getFilesUsed() - getPreviousFilesUsed();
+    }
 }

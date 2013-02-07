@@ -85,7 +85,7 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
         Document resource = generateInformationResourceWithFileAndUser();
         resource.setAccount(account);
         genericService.saveOrUpdate(resource);
-        AccountAdditionStatus updateQuota = accountService.updateQuota(re, account, true, resource);
+        AccountAdditionStatus updateQuota = accountService.updateQuota(account, resource);
         assertEquals(AccountAdditionStatus.NOT_ENOUGH_FILES, updateQuota);
 
         Invoice invoice = new Invoice();
