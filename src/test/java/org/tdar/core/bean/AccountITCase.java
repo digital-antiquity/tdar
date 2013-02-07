@@ -214,16 +214,15 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         model.setVersion(100); // forcing the model to be the "latest"
         genericService.saveOrUpdate(model);
         Account account = setupAccountForPerson(getUser());
-        ResourceEvaluator re = new ResourceEvaluator(model);
+//        ResourceEvaluator re = new ResourceEvaluator(model);
         Document resource = generateInformationResourceWithFileAndUser();
-        re.evaluateResources(resource);
         Long spaceUsedInBytes = account.getSpaceUsedInBytes();
         Long resourcesUsed = account.getResourcesUsed();
         Long filesUsed = account.getFilesUsed();
-        resource.setAccount(account);
+//        resource.setAccount(account);
         assertFalse(account.getResources().contains(resource));
         String msg = null;
-        AccountAdditionStatus status = accountService.updateQuota(new ResourceEvaluator(model), account, true, resource);
+        AccountAdditionStatus status = accountService.updateQuota(account, resource);
 
         assertEquals(AccountAdditionStatus.NOT_ENOUGH_FILES, status);
 
@@ -234,9 +233,9 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         assertFalse(resourcesUsed.longValue() == account.getResourcesUsed().longValue());
         assertFalse(filesUsed.longValue() == account.getFilesUsed().longValue());
 
-        assertEquals(spaceUsedInBytes.longValue() + re.getSpaceUsedInBytes(), account.getSpaceUsedInBytes().longValue());
-        assertEquals(resourcesUsed.longValue() + re.getResourcesUsed(), account.getResourcesUsed().longValue());
-        assertEquals(filesUsed.longValue() + re.getFilesUsed(), account.getFilesUsed().longValue());
+        assertEquals(spaceUsedInBytes.longValue() + resource.getSpaceInBytesUsed(), account.getSpaceUsedInBytes().longValue());
+//        assertEquals(resourcesUsed.longValue() + resource.getResourcesUsed(), account.getResourcesUsed().longValue());
+        assertEquals(filesUsed.longValue() + resource.getFilesUsed(), account.getFilesUsed().longValue());
     }
 
     @Test
@@ -279,18 +278,15 @@ public class AccountITCase extends AbstractIntegrationTestCase {
     public void testDeletedRemovesFromAccount() throws InstantiationException, IllegalAccessException, IOException {
         BillingActivityModel model = accountService.getLatestActivityModel();
         Account account = setupAccountWithInvoiceSomeResourcesAndSpace(model);
-        ResourceEvaluator re = new ResourceEvaluator(model);
         Document doc = createAndSaveNewInformationResource(Document.class);
         addFileToResource(doc, new File(TestConstants.TEST_DOCUMENT_DIR, "/t1/test.pdf"));
         Long availableSpaceInMb = account.getAvailableSpaceInMb();
         Long availableNumberOfFiles = account.getAvailableNumberOfFiles();
-        accountService.updateQuota(re, account, false, doc);
-        ResourceEvaluator re2 = new ResourceEvaluator(model);
-        re2.evaluateResources(doc);
+        accountService.updateQuota(account, doc);
         doc.setStatus(Status.DELETED);
         logger.info("m:{} f:{}", account.getAvailableSpaceInMb(), account.getAvailableNumberOfFiles());
         genericService.saveOrUpdate(doc);
-        accountService.updateQuota(re2, account, false, doc);
+        accountService.updateQuota(account, doc);
         assertEquals(availableNumberOfFiles, account.getAvailableNumberOfFiles());
         assertEquals(availableSpaceInMb, account.getAvailableSpaceInMb());
         logger.info("m:{} f:{}", account.getAvailableSpaceInMb(), account.getAvailableNumberOfFiles());

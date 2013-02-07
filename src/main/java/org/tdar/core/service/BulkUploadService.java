@@ -207,7 +207,7 @@ public class BulkUploadService {
 
         if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
             Account account = genericDao.find(Account.class, accountId);
-            accountService.updateQuota(accountService.getResourceEvaluator(), account, false, resourcesCreated.values().toArray(new Resource[0]));
+            accountService.updateQuota(account, resourcesCreated.values().toArray(new Resource[0]));
         }
 
         logger.info("bulk: setting final statuses and logging");

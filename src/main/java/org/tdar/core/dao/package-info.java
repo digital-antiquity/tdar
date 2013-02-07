@@ -325,6 +325,10 @@
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.RESOURCES_WITH_NON_MATCHING_ACCOUNT_ID,
                 query = "select id from Resource res where res.id in (:ids) and account_id is not null and account_id !=:accountId"
+        ),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.ACCOUNT_QUOTA_INIT,
+                query = "select sum(res.filesUsed), sum(res.spaceInBytesUsed) from Resource res where account_id =:accountId and status in ('ACTIVE','DRAFT')"
         )
 
 })

@@ -85,6 +85,7 @@ public interface TdarNamedQueries {
     public static final String RESOURCE_ACCESS_HISTORY = "admin.accessHistory";
 
     public static final String RESOURCES_WITH_NULL_ACCOUNT_ID = "account.resourceNull";
+    public static final String ACCOUNT_QUOTA_INIT = "account.quota.init";
     public static final String RESOURCES_WITH_NON_MATCHING_ACCOUNT_ID = "account.resourceDifferent";
     public static final String ACCOUNT_GROUP_FOR_ACCOUNT = "account.group";
     public static final String ACCOUNTS_FOR_PERSON = "accounts.forPerson";

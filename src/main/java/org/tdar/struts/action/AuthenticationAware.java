@@ -141,17 +141,9 @@ public interface AuthenticationAware extends SessionDataAware {
             return validIds;
         }
 
-        private ResourceEvaluator initialEvaluator;
-
-        public void initializeQuota(Resource resource) {
-            if (getTdarConfiguration().isPayPerIngestEnabled()) {
-                initialEvaluator = getAccountService().getResourceEvaluator(resource);
-            }
-        }
-
         public void updateQuota(Account account, Resource resource) {
             if (getTdarConfiguration().isPayPerIngestEnabled()) {
-                getAccountService().updateQuota(initialEvaluator, account, true, resource);
+                getAccountService().updateQuota(account, resource);
             }
         }
 

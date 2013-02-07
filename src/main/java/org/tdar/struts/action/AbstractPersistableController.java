@@ -230,6 +230,13 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
                 }
                 actionReturnStatus = save(persistable);
 
+                
+                try {
+                    postSaveCallback(actionReturnStatus);
+                } catch (TdarRecoverableRuntimeException tex) {
+                    addActionErrorWithException(tex.getMessage(), tex);
+                }
+
                 // should there not be "one" save at all? I think this should be here
                 if (shouldSaveResource()) {
                     getGenericService().saveOrUpdate(persistable);
@@ -255,11 +262,6 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         } finally {
             // FIXME: make sure this doesn't cause issues with SessionSecurityInterceptor now handling TdarActionExceptions
             postSaveCleanup(actionReturnStatus);
-        }
-        try {
-            postSaveCallback(actionReturnStatus);
-        } catch (TdarRecoverableRuntimeException tex) {
-            addActionErrorWithException(tex.getMessage(), tex);
         }
         long saveTime = System.currentTimeMillis() - currentTimeMillis;
         long editTime = System.currentTimeMillis() - getStartTime();

@@ -243,6 +243,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     @Override
     protected void postSaveCallback(String actionMessage) {
         if (actionMessage == SUCCESS) {
+            getAccountService().getResourceEvaluator().evaluateResources(getResource());
             updateQuota(getGenericService().find(Account.class, getAccountId()), getResource());
         } else {
             loadAddMetadata();
@@ -376,7 +377,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
      * Saves keywords, full / read user access, and confidentiality.
      */
     protected void saveBasicResourceMetadata() {
-        initializeQuota(getResource());
 
         if (shouldSaveResource()) {
             getResourceService().saveOrUpdate(getPersistable());

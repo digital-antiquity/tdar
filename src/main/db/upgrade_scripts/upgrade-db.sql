@@ -336,3 +336,6 @@ update pos_billing_activity set activity_type = 'TEST' where name in ('good','er
 
 -- 1-24-13
 ALTER table pos_billing_activity add column sort_order int;
+
+ALTER table resource add column total_files bigint;
+ALTER table resource add column total_space_in_bytes bigint;
