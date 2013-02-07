@@ -1655,6 +1655,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     public void setSpaceInBytesUsed(Long spaceInBytesUsed) {
+        setPreviousSpaceInBytesUsed(this.spaceInBytesUsed);
         this.spaceInBytesUsed = spaceInBytesUsed;
     }
 
@@ -1678,7 +1679,6 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     public void setPreviousSpaceInBytesUsed(Long previousSpaceInBytesUsed) {
-        setPreviousSpaceInBytesUsed(this.spaceInBytesUsed);
         this.previousSpaceInBytesUsed = previousSpaceInBytesUsed;
     }
 
