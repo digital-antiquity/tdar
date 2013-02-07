@@ -101,7 +101,7 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
         genericService.saveOrUpdate(activity);
         genericService.saveOrUpdate(invoice);
         genericService.saveOrUpdate(account);
-        accountService.updateQuotaAndResetResourceStatus(account);
+//        accountService.updateQuotaAndResetResourceStatus(account);
 
         assertEquals(Status.ACTIVE, resource.getStatus());
     }
