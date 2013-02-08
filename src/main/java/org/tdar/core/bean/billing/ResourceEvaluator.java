@@ -90,26 +90,29 @@ public class ResourceEvaluator implements Serializable {
                 continue;
 
             resourcesUsed++;
-
+            long filesUsed_ = 0;
+            long spaceUsed_ = 0;
             if (resource instanceof InformationResource) {
                 InformationResource informationResource = (InformationResource) resource;
                 for (InformationResourceFile file : informationResource.getInformationResourceFiles()) {
                     if (file.isDeleted() && !includeDeletedFilesInCounts) {
                         continue;
                     }
-                    filesUsed++;
+                    filesUsed_++;
                     for (InformationResourceFileVersion version : file.getInformationResourceFileVersions()) {
                         // we use version 1 because it's the original uploaded version
                         if (!includeAllVersionsInCounts && !version.getVersion().equals(1) || !version.isUploaded())
                             continue;
                         if (version.getFileLength() != null) {
-                            spaceUsedInBytes += version.getFileLength();
+                            spaceUsed_ += version.getFileLength();
                         }
                     }
                 }
             }
-            resource.setSpaceInBytesUsed(spaceUsedInBytes);
-            resource.setFilesUsed(filesUsed);
+            resource.setSpaceInBytesUsed(spaceUsed_);
+            resource.setFilesUsed(filesUsed_);
+            spaceUsedInBytes += spaceUsed_;
+            filesUsed += filesUsed_;
         }
     }
 

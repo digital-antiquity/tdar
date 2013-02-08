@@ -54,6 +54,7 @@ public class ProjectControllerResourceAnnotationITCase extends AbstractResourceC
         controller.getResourceAnnotations().add(annotation);
         Long originalId = p.getId();
         controller.setServletRequest(getServletPostRequest());
+        controller.setAsync(false);
         controller.save();
         Long newId = controller.getResource().getId();
         Assert.assertNotSame("resource id should be assigned after insert", originalId, newId);
@@ -88,6 +89,7 @@ public class ProjectControllerResourceAnnotationITCase extends AbstractResourceC
         loadResourceFromId(controller, id);
         controller.setResourceAnnotations(Collections.<ResourceAnnotation> emptyList());
         controller.setServletRequest(getServletPostRequest());
+        controller.setAsync(false);
         controller.save();
         Project project = genericService.find(Project.class, id);
         Assert.assertEquals("annotations list should be empty", 0, project.getResourceAnnotations().size());
@@ -141,6 +143,7 @@ public class ProjectControllerResourceAnnotationITCase extends AbstractResourceC
         list2.add(createAnnotation("key3", "val3"));
 
         controller.getResourceAnnotations().addAll(list1);
+        controller.setAsync(false);
         controller.setServletRequest(getServletPostRequest());
         controller.save();
         Long id = controller.getResource().getId();
