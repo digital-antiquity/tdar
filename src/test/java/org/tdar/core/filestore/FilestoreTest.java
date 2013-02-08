@@ -25,6 +25,7 @@ import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
+import org.tdar.filestore.Filestore.StorageMethod;
 import org.tdar.filestore.PairtreeFilestore;
 
 import com.opensymphony.xwork2.interceptor.annotations.Before;
@@ -123,8 +124,10 @@ public class FilestoreTest {
         PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
         InformationResourceFileVersion version = generateVersion(TEST_DOCUMENT_NAME);
         File f = new File(TEST_DOCUMENT);
-        store.storeAndRotate(f, version, 5);
-        store.storeAndRotate(f, version, 5);
+        StorageMethod rotate = StorageMethod.ROTATE;
+        rotate.setRotations(5);
+        store.storeAndRotate(f, version, rotate);
+        store.storeAndRotate(f, version, rotate);
 
         File tmpFile = version.getFile();
         assertTrue(tmpFile.exists());
@@ -132,6 +135,23 @@ public class FilestoreTest {
                 FilenameUtils.getExtension(tmpFile.getName())));
         assertTrue(rotated.exists());
     }
+    
+//    @Test
+//    @Rollback(true)
+//    public void filestoreDateRotationTest() throws IOException {
+//        cleanup();
+//        PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
+//        InformationResourceFileVersion version = generateVersion(TEST_DOCUMENT_NAME);
+//        File f = new File(TEST_DOCUMENT);
+//        StorageMethod rotate = StorageMethod.DATE;
+//        store.storeAndRotate(f, version, rotate);
+//
+//        File tmpFile = version.getFile();
+//        assertTrue(tmpFile.exists());
+//        File rotated = new File(tmpFile.getParentFile(), String.format("%s.1.%s", FilenameUtils.getBaseName(tmpFile.getName()),
+//                FilenameUtils.getExtension(tmpFile.getName())));
+//        assertTrue(rotated.exists());
+//    }
 
     private InformationResourceFileVersion generateVersion(String name) {
         Document ir = new Document();
