@@ -135,7 +135,7 @@ public class CollectionController extends AbstractPersistableController<Resource
     }
 
     @Override
-    public void postSaveCleanup(String returnString) {
+    public void indexPersistable() {
         /*
          * if we want to be really "aggressive" we only need to do this if
          * (a) permissions change

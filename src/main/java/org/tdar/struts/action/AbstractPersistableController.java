@@ -241,10 +241,8 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
                 if (shouldSaveResource()) {
                     getGenericService().saveOrUpdate(persistable);
                 }
-                if (persistable instanceof Indexable) {
-                    ((Indexable) persistable).setReadyToIndex(true);
-                    getSearchIndexService().index((Indexable) persistable);
-                }
+                
+                indexPersistable();
                 // who cares what the save implementation says. if there's errors return INPUT
                 if (!getActionErrors().isEmpty()) {
                     logger.debug("Action errors found; Replacing return status of {} with {}", actionReturnStatus, INPUT);
@@ -278,6 +276,13 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
             return INPUT;
         }
         return actionReturnStatus;
+    }
+
+    protected void indexPersistable() {
+        if (persistable instanceof Indexable) {
+            ((Indexable) persistable).setReadyToIndex(true);
+            getSearchIndexService().index((Indexable) persistable);
+        }
     }
 
     private void logAction(String action_) {

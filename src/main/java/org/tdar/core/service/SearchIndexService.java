@@ -315,4 +315,18 @@ public class SearchIndexService {
     public void setGenericService(GenericService genericService) {
         this.genericService = genericService;
     }
+
+    public void indexProject(Project project) {
+        project.setCachedInformationResources(new HashSet<InformationResource>(projectDao.findAllResourcesInProject(project)));
+        project.setReadyToIndex(true);
+        index(project);
+        log.debug("reindexing project contents");
+        indexCollection(project.getCachedInformationResources());
+        log.debug("completed reindexing project contents");
+    }
+
+    @Async
+    public void indexProjectAsync(final Project project) {
+        indexProject(project);
+    }
 }
