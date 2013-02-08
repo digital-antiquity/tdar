@@ -2,7 +2,6 @@ package org.tdar.struts.action.resource;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 
 import org.apache.commons.collections.ListUtils;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Facetable;
-import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
@@ -66,15 +64,11 @@ public class ProjectController extends AbstractResourceController<Project> imple
     }
 
     @Override
-    public void postSaveCleanup(String returnString) {
-        super.postSaveCleanup(returnString);
-        // reindex any child resources so that that searches will pick up any new keywords they should "inherit"
-        logger.debug("reindexing project contents");
-        getProject().setCachedInformationResources(new HashSet<InformationResource>(getProjectService().findAllResourcesInProject(getProject())));
+    public void indexPersistable() {
         if (isAsync()) {
-            getSearchIndexService().indexCollectionAsync(getProject().getCachedInformationResources());
+            getSearchIndexService().indexProjectAsync(getPersistable());
         } else {
-            getSearchIndexService().indexCollection(getProject().getCachedInformationResources());
+            getSearchIndexService().indexProject(getPersistable());
         }
     }
 
