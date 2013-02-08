@@ -10,8 +10,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.exceptions.ConfigurationException;
@@ -22,8 +20,6 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.TestConstants;
-import org.tdar.core.bean.entity.ResourceCreator;
-import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.Project;
@@ -103,7 +99,7 @@ public class JAXBITCase extends AbstractSearchControllerITCase {
             }
         });
     }
-    
+
     // make sure we're detecting enum errors.
     @Test
     @Rollback
@@ -151,7 +147,7 @@ public class JAXBITCase extends AbstractSearchControllerITCase {
             FileUtils.copyFile(generateSchema, schemaFile);
             testValidXMLSchemaResponse(FileUtils.readFileToString(generateSchema));
         } catch (Exception e) {
-            logger.warn("exception",e);
+            logger.warn("exception", e);
             assertFalse("I should not exist. fix me, please?", true);
         }
     }

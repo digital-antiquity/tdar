@@ -222,6 +222,7 @@ public class DatasetController extends AbstractInformationResourceController<Dat
             addActionErrorWithException(tde.getMessage(), tde);
             return INPUT_COLUMNS;
         }
+        getResourceService().saveRecordToFilestore(getPersistable());
         return getPostSaveAction().getResultName(!hasOntologies);
     }
 

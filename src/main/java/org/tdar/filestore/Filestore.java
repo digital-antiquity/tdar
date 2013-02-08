@@ -32,6 +32,22 @@ import org.tdar.core.exception.TdarRuntimeException;
 
 public interface Filestore {
 
+    public enum StorageMethod {
+        NO_ROTATION,
+        ROTATE,
+        DATE;
+        private int rotations = 0;
+
+        public int getRotations() {
+            return rotations;
+        }
+
+        public void setRotations(int rotations) {
+            this.rotations = rotations;
+        }
+
+    }
+
     public enum LogType {
         FILESTORE_VERIFICATION("verify"),
         AUTHORITY_MANAGEMENT("authmgmt"),
@@ -71,7 +87,7 @@ public interface Filestore {
      * @return {@link String} the fileId assigned to the content
      * @throws {@link IOException}
      */
-    public abstract String storeAndRotate(InputStream content, InformationResourceFileVersion version, int maxRotations) throws IOException;
+    public abstract String storeAndRotate(InputStream content, InformationResourceFileVersion version, StorageMethod rotation) throws IOException;
 
     /**
      * Write a file to the filestore.
@@ -82,7 +98,7 @@ public interface Filestore {
      */
     public abstract String store(File content, InformationResourceFileVersion version) throws IOException;
 
-    public abstract String storeAndRotate(File content, InformationResourceFileVersion version, int maxRotations) throws IOException;
+    public abstract String storeAndRotate(File content, InformationResourceFileVersion version, StorageMethod rotation) throws IOException;
 
     public abstract void storeLog(LogType type, String filename, String message);
 
@@ -262,6 +278,38 @@ public interface Filestore {
         public String getSizeAsReadableString() {
             return FileUtils.byteCountToDisplaySize(FileUtils.sizeOfDirectory(new File(getFilestoreLocation())));
         }
-}
+
+        protected void rotate(File outFile, StorageMethod rotation) {
+            logger.trace("rotating file: {}", outFile.getName());
+            File parentDir = outFile.getParentFile();
+            for (int i = rotation.getRotations(); i > 0; i--) {
+                String baseName = FilenameUtils.getBaseName(outFile.getName());
+                String ext = FilenameUtils.getExtension(outFile.getName());
+                String rotationParent = String.format(".%s.", Integer.toString(i - 1));
+                String rotationTarget = String.format(".%s.", Integer.toString(i));
+                if (i == 1) {
+                    rotationParent = ".";
+                }
+                rotationTarget = String.format("%s%s%s", baseName, rotationTarget, ext);
+                rotationParent = String.format("%s%s%s", baseName, rotationParent, ext);
+
+                logger.trace("rotating from: {} to {}", rotationParent, rotationTarget);
+
+                File parentFile = new File(parentDir, rotationParent);
+                File targetFile = new File(parentDir, rotationTarget);
+                logger.trace(parentFile.getAbsolutePath());
+
+                if (parentFile.exists()) {
+                    try {
+                        FileUtils.copyFile(parentFile, targetFile);
+                    } catch (IOException e) {
+                        logger.warn("something happened when saving file", e);
+                    }
+                    logger.debug("rotating file {} to {}", parentFile.getAbsolutePath(), targetFile.getAbsolutePath());
+                }
+            }
+        }
+
+    }
 
 }
