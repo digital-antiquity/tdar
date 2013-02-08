@@ -51,6 +51,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.XmlService;
+import org.tdar.filestore.Filestore.StorageMethod;
 import org.tdar.search.geosearch.GeoSearchService;
 import org.tdar.struts.data.AggregateDownloadStatistic;
 import org.tdar.struts.data.AggregateViewStatistic;
@@ -159,7 +160,9 @@ public class ResourceService extends GenericService {
         version.setFileVersionType(VersionType.RECORD);
         version.setInformationResourceId(resource.getId());
         try {
-            TdarConfiguration.getInstance().getFilestore().storeAndRotate(new StringInputStream(xmlService.convertToXML(resource)), version, 5);
+            StorageMethod rotate = StorageMethod.DATE;
+//            rotate.setRotations(5);
+            TdarConfiguration.getInstance().getFilestore().storeAndRotate(new StringInputStream(xmlService.convertToXML(resource)), version, rotate);
         } catch (Exception e) {
             logger.error("something happend when converting record to XML:" + resource, e);
             throw new TdarRecoverableRuntimeException("could not save xml record");
