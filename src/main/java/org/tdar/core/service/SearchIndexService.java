@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.CacheMode;
 import org.hibernate.FlushMode;
@@ -245,6 +246,7 @@ public class SearchIndexService {
                     index(fullTextSession, genericService.merge(toIndex));
                 } catch (Exception e) {
                     log.error("exception in indexing", e);
+                    log.error(String.format("%s %s", ExceptionUtils.getRootCauseMessage(e), ExceptionUtils.getRootCauseStackTrace(e)), ExceptionUtils.getRootCause(e));
                 }
             }
             fullTextSession.flushToIndexes();

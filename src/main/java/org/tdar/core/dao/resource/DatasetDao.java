@@ -202,4 +202,9 @@ public class DatasetDao extends ResourceDao<Dataset> {
         return (Number) createCriteria.list().get(0);
     }
 
+    public List<Long> findAllResourceIdsWithFiles() {
+        Query query = getCurrentSession().getNamedQuery(QUERY_INFORMATIONRESOURCES_WITH_FILES);
+        return query.list();
+    }
+
 }

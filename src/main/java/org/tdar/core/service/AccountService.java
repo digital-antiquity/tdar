@@ -100,25 +100,6 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         return new ResourceEvaluator(getLatestActivityModel(), resources.toArray(new Resource[0]));
     }
 
-    /*
-     * public void addResourceToAccount(Person user, Resource resource) {
-     * Set<Account> accounts = listAvailableAccountsForUser(user);
-     * // if it doesn't count
-     * AccountAdditionStatus canAddResource = null;
-     * for (Account account : accounts) {
-     * ResourceEvaluator resourceEvaluator = getResourceEvaluator(resource);
-     * canAddResource = account.canAddResource(resourceEvaluator);
-     * if (canAddResource == AccountAdditionStatus.CAN_ADD_RESOURCE) {
-     * account.updateQuotas(resourceEvaluator);
-     * break;
-     * }
-     * }
-     * if (canAddResource != AccountAdditionStatus.CAN_ADD_RESOURCE) {
-     * throw new TdarQuotaException(Account.ACCOUNT_IS_OVERDRAWN, canAddResource);
-     * }
-     * }
-     */
-
     public AccountGroup getAccountGroup(Account account) {
         return getDao().getAccountGroup(account);
     }
@@ -143,22 +124,20 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
                 return true;
             }
         }
-        // logger.info("user {} has no accounts or balance", user.getProperName());
         return false;
     }
 
     @Transactional
-    public void markResourcesAsFlagged(Collection<Resource> resources) {
+    protected void markResourcesAsFlagged(Collection<Resource> resources) {
         for (Resource resource : resources) {
             resource.setPreviousStatus(resource.getStatus());
             resource.setStatus(Status.FLAGGED_ACCOUNT_BALANCE);
         }
-        // saveOrUpdateAll(resources);
 
     }
 
     @Transactional
-    public void unMarkResourcesAsFlagged(Collection<Resource> resources) {
+    protected void unMarkResourcesAsFlagged(Collection<Resource> resources) {
         for (Resource resource : resources) {
             if (resource.getStatus() != Status.FLAGGED_ACCOUNT_BALANCE)
                 continue;
@@ -169,31 +148,12 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             resource.setStatus(status);
             resource.setPreviousStatus(null);
         }
-        // saveOrUpdateAll(resources);
     }
 
     @Transactional
     public AccountAdditionStatus updateQuota(Account account, Resource... resources) {
         return updateQuota(account, Arrays.asList(resources));
     }
-
-    // @Transactional
-    // public void updateQuotaAndResetResourceStatus(Account account) {
-    // if (!account.isOverdrawn(getResourceEvaluator())) {
-    // throw new TdarQuotaException("account not charged enough", null);
-    // } else {
-    // List<Resource> resources = new ArrayList<Resource>();
-    //
-    // for (Resource resource : account.getResources()) {
-    // if (resource.getStatus() == Status.FLAGGED_ACCOUNT_BALANCE) {
-    // resource.setStatus(resource.getPreviousStatus());
-    // resource.setPreviousStatus(null);
-    // resources.add(resource);
-    // }
-    // }
-    // // saveOrUpdateAll(resources);
-    // }
-    // }
 
     @Transactional
     public void updateAccountInfo(Account account) {
@@ -286,11 +246,15 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     }
 
     private boolean hasSpaceFor(Resource resource, Account account) {
-        if (account.getAvailableSpaceInBytes() - resource.getEffectiveSpaceUsed() >= 0
-                && account.getAvailableNumberOfFiles() - resource.getEffectiveFilesUsed() >= 0) {
-            return true;
+        BillingActivityModel model = getLatestActivityModel();
+        //Trivial changes should fall through and not update because they are no-op in terms of effective changes
+        if (model.getCountingSpace() && account.getAvailableSpaceInBytes() - resource.getEffectiveSpaceUsed() < 0) {
+            return false;
         }
-        return false;
+        if (model.getCountingFiles() && account.getAvailableNumberOfFiles() - resource.getEffectiveFilesUsed() < 0) {
+            return false;
+        }
+        return true;
     }
 
     @Transactional
