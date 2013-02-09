@@ -32,7 +32,7 @@ public class ResourceServiceITCase extends AbstractIntegrationTestCase {
         assertEquals(0, doc.getCoverageDates().size());
 
     }
-
+    
     @Test
     @Rollback
     public void testSaveHasResourceExistingNull() throws InstantiationException, IllegalAccessException {

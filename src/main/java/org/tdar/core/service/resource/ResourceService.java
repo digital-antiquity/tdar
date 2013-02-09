@@ -474,4 +474,9 @@ public class ResourceService extends GenericService {
             return Collections.EMPTY_LIST;
         return datasetDao.getLogEntriesForResource(resource);
     }
+
+    @Transactional
+    public List<Long> findAllResourceIdsWithFiles() {
+        return datasetDao.findAllResourceIdsWithFiles();
+    }
 }

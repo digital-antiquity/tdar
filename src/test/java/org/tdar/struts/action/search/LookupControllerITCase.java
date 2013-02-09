@@ -428,6 +428,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         project.setTitle(title);
         project.setDescription(title);
         projectController.setServletRequest(getServletPostRequest());
+        projectController.setAsync(false);
         projectController.save();
         Assert.assertNotNull(project.getId());
         assertTrue(project.getId() != -1L);
