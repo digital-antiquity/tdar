@@ -81,12 +81,11 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
         model.setActive(true);
         model.setVersion(100);
         genericService.saveOrUpdate(model);
-        ResourceEvaluator re = new ResourceEvaluator(model);
         Document resource = generateInformationResourceWithFileAndUser();
         resource.setAccount(account);
         genericService.saveOrUpdate(resource);
         AccountAdditionStatus updateQuota = accountService.updateQuota(account, resource);
-        assertEquals(AccountAdditionStatus.NOT_ENOUGH_FILES, updateQuota);
+        assertEquals(AccountAdditionStatus.NOT_ENOUGH_SPACE, updateQuota);
 
         Invoice invoice = new Invoice();
         invoice.markUpdated(getBasicUser());
@@ -101,7 +100,7 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
         genericService.saveOrUpdate(activity);
         genericService.saveOrUpdate(invoice);
         genericService.saveOrUpdate(account);
-//        accountService.updateQuotaAndResetResourceStatus(account);
+        accountService.updateQuota(account, account.getResources());
 
         assertEquals(Status.ACTIVE, resource.getStatus());
     }
