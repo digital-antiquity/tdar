@@ -5,18 +5,18 @@
 <meta name="lastModifiedDate" content="$Date$"/>
 </head>
 <body>
+<@edit.sidebar/>
 
     <h1>Edit Table Metadata for ${dataset.title}</h1>
     <h3>Table ${dataTable.displayName}, ${dataTable.dataTableColumns?size } columns</h3>
 
-<@edit.sidebar/>
 
 
 <#if dataTable.dataTableColumns?has_content>
 
 <!--TODO: .container sets content width, it should be outside of grid layout  (or a grid-layout parent) --> 
 <!-- we break this rule so that navbar will be correct with when it is .affix'd, for all responsive profiles --> 
-<div id='subnavbar2' class="container subnavbar"  data-offset-top="250" data-spy="affix">
+<div id='subnavbar2' class="subnavbar"  data-offset-top="250" data-spy="affix">
     <div class="navbar">
         <#-- <select name="chooseColumn" onChange="goToColumn(this)"> -->
         <div class="navbar-inner">
