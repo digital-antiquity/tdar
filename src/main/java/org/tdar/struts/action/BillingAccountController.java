@@ -23,7 +23,6 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.struts.RequiresTdarUserGroup;
 
 @Component
 @Scope("prototype")
@@ -98,10 +97,9 @@ public class BillingAccountController extends AbstractPersistableController<Acco
         getAccount().getAuthorizedMembers().clear();
         getAccount().getAuthorizedMembers().addAll(getGenericService().loadFromSparseEntities(getAuthorizedMembers(), Person.class));
         logger.info("authorized members: {}", getAccount().getAuthorizedMembers());
-        // if (Persistable.Base.isTransient(persistable)) {
-        // persistable.setName(name);
-        // persistable.setDescription(description);
-        // }
+        if (Persistable.Base.isNotTransient(getAccount())) {
+            getAccountService().updateQuota(getAccount(), getAccount().getResources());
+        }
         return SUCCESS;
     }
 
