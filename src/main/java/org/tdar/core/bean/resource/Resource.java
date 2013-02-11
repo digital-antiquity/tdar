@@ -983,6 +983,9 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     public void setStatus(Status status) {
+        if (this.status != status) {
+            setPreviousStatus(this.status);
+        }
         this.status = status;
     }
 
