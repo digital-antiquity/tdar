@@ -64,13 +64,12 @@ public class BillingAccountController extends AbstractPersistableController<Acco
         return NEW_ACCOUNT;
     }
 
-    @Action("list")
-    @RequiresTdarUserGroup(TdarGroup.TDAR_BILLING_MANAGER)
-    public String execute() {
-        getAccounts().addAll(getAccountService().findAll());
-        return SUCCESS;
+    public void loadListData() {
+        if (getAuthenticationAndAuthorizationService().isMember(getAuthenticatedUser(), TdarGroup.TDAR_BILLING_MANAGER)) {
+            getAccounts().addAll(getAccountService().findAll());
+        }
     }
-    
+
     public Invoice getInvoice() {
         return getGenericService().find(Invoice.class, invoiceId);
     }

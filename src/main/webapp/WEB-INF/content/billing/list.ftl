@@ -8,7 +8,7 @@
 <h1>All Accounts</h1>
 <ul>
   <#list accounts as account>
-   <li><a href="<@s.url value="/billing/${account_.id?c}"/>">${account.name}</a> (${account.owner.properName}) </li>
+   <li><a href="<@s.url value="/billing/${account.id?c}"/>">${account.name}</a> (${account.owner.properName}) </li>
   </#list>
 </ul>
 </body>
