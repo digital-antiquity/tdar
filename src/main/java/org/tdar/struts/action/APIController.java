@@ -60,7 +60,8 @@ public class APIController extends AuthenticationAware.Base {
 
     private Resource importedRecord;
     private String message;
-    private List<String> confidentialFiles = new ArrayList<String>();
+    private List<String> restrictedFiles = new ArrayList<String>();
+    private FileAccessRestriction fileAccessRestriction = FileAccessRestriction.PUBLIC;
     private Long id;
     private InputStream inputStream;
 
@@ -102,8 +103,8 @@ public class APIController extends AuthenticationAware.Base {
         List<FileProxy> proxies = new ArrayList<FileProxy>();
         for (int i = 0; i < uploadFileFileName.size(); i++) {
             FileProxy proxy = new FileProxy(uploadFileFileName.get(i), uploadFile.get(i), VersionType.UPLOADED, FileAction.ADD);
-            if (confidentialFiles.contains(uploadFileFileName.get(i))) {
-                proxy.setRestriction(FileAccessRestriction.CONFIDENTIAL);
+            if (restrictedFiles.contains(uploadFileFileName.get(i))) {
+                proxy.setRestriction(getFileAccessRestriction());
             }
             proxies.add(proxy);
         }
@@ -244,12 +245,12 @@ public class APIController extends AuthenticationAware.Base {
         this.projectId = projectId;
     }
 
-    public List<String> getConfidentialFiles() {
-        return confidentialFiles;
+    public List<String> getRestrictedFiles() {
+        return restrictedFiles;
     }
 
-    public void setConfidentialFiles(List<String> confidentialFiles) {
-        this.confidentialFiles = confidentialFiles;
+    public void setRestrictedFiles(List<String> confidentialFiles) {
+        this.restrictedFiles = confidentialFiles;
     }
 
     public Long getAccountId() {
@@ -266,6 +267,14 @@ public class APIController extends AuthenticationAware.Base {
 
     public void setInputStream(InputStream inputStream) {
         this.inputStream = inputStream;
+    }
+
+    public FileAccessRestriction getFileAccessRestriction() {
+        return fileAccessRestriction;
+    }
+
+    public void setFileAccessRestriction(FileAccessRestriction fileAccessRestriction) {
+        this.fileAccessRestriction = fileAccessRestriction;
     }
 
 }
