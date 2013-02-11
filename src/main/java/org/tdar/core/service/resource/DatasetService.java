@@ -1,6 +1,5 @@
 package org.tdar.core.service.resource;
 
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -329,8 +328,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         }
     }
 
-    private DataTable reconcileDataTable(Dataset dataset, DataTable existingTable,
-            DataTable tableToPersist) {
+    private DataTable reconcileDataTable(Dataset dataset, DataTable existingTable, DataTable tableToPersist) {
         if (CollectionUtils.isNotEmpty(tableToPersist.getDataTableColumns())) {
             // if there is an analogous existing table, try to reconcile all the columns from the incoming data table
             // with the columns from the existing data table.
@@ -580,7 +578,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             String val = "NULL";
             Object obj = rs.getObject(key.getName());
             if (obj != null) {
-                val =obj.toString();
+                val = obj.toString();
             }
             results.put(key, val);
         }
@@ -744,7 +742,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
     }
 
     private boolean isRetranslationNeeded(CodingSheet incomingCodingSheet, CodingSheet existingCodingSheet) {
-        logger.info("{} {} {}",incomingCodingSheet,existingCodingSheet, ObjectUtils.equals(incomingCodingSheet, existingCodingSheet));
+        logger.info("{} {} {}", incomingCodingSheet, existingCodingSheet, ObjectUtils.equals(incomingCodingSheet, existingCodingSheet));
         if (ObjectUtils.equals(incomingCodingSheet, existingCodingSheet)) {
             return false;
         }
