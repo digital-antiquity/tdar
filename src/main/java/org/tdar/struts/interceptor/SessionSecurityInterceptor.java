@@ -14,6 +14,8 @@ import org.tdar.struts.WriteableSession;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.utils.activity.Activity;
 import org.tdar.utils.activity.IgnoreActivity;
+import org.tdar.web.SessionData;
+import org.tdar.web.SessionDataAware;
 
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.ActionProxy;
@@ -31,13 +33,14 @@ import com.opensymphony.xwork2.interceptor.Interceptor;
  * @author <a href='mailto:adam.brin@asu.edu'>Adam Brin</a>
  * @version $Rev$
  */
-public class SessionSecurityInterceptor implements Interceptor {
+public class SessionSecurityInterceptor implements SessionDataAware, Interceptor {
 
     private final static long serialVersionUID = -6781980335181526980L;
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private transient GenericService genericService;
+    private SessionData sessionData;
 
     @Override
     public String intercept(ActionInvocation invocation) throws Exception {
@@ -53,6 +56,9 @@ public class SessionSecurityInterceptor implements Interceptor {
         Activity activity = null;
         if (!ReflectionService.methodOrActionContainsAnnotation(invocation, IgnoreActivity.class)) {
             activity = new Activity(ServletActionContext.getRequest());
+            if (getSessionData() != null && getSessionData().isAuthenticated()) {
+                activity.setUser(sessionData.getPerson());
+            }
             ActivityManager.getInstance().addActivityToQueue(activity);
         }
 
@@ -97,6 +103,16 @@ public class SessionSecurityInterceptor implements Interceptor {
 
     @Override
     public void init() {
+    }
+
+    @Override
+    public SessionData getSessionData() {
+        return sessionData;
+    }
+
+    @Override
+    public void setSessionData(SessionData sessionData) {
+        this.sessionData = sessionData;
     }
 
 }
