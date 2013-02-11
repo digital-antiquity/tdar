@@ -1,4 +1,4 @@
-<h1 id="top"><h1 id="top"><img src="http://core.tdar.org/images/r4/bg-logo.png" title="tDAR - the Digital Archaeological Record" usemap="tdarmap">
+<h1 id="top"><h1 id="top"><img src="http://core.tdar.org/images/r4/bg-logo.png" title="tDAR - the Digital Archaeological Record" usemap="#tdarmap">
 <map name="tdarmap">
   <area shape="rect" coords="0,0,187,65" href="/" alt="tDAR" tabindex="-1">  
   <area shape="rect" coords="0,65,187,77" href="http://www.digitalantiquity.org/" alt="digital antiquity" tabindex="-1">
