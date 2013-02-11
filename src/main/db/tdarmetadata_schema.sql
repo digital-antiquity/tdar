@@ -24,6 +24,27 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 SET search_path = public, pg_catalog;
 
+--
+-- Name: add_publisher_institutions(); Type: FUNCTION; Schema: public; Owner: tdar
+--
+
+CREATE FUNCTION add_publisher_institutions() RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+DECLARE publisher_ varchar(255);
+begin
+	for publisher_ in SELECT DISTINCT trim(publisher) FROM document WHERE trim(publisher) != '' AND trim(lower(publisher)) NOT IN (SELECT DISTINCT trim(lower(name)) FROM institution) LOOP
+    	INSERT INTO creator (id, date_created) VALUES(nextval('creator_id_seq'), now());
+	    INSERT INTO institution(id, name) VALUES(currval('creator_id_seq'), publisher_);
+	    RAISE NOTICE 'adding publisher: %', publisher_;
+	end loop;
+
+END;
+$$;
+
+
+ALTER FUNCTION public.add_publisher_institutions() OWNER TO tdar;
+
 SET default_tablespace = '';
 
 SET default_with_oids = false;
@@ -205,12 +226,13 @@ CREATE TABLE collection (
     name character varying(255),
     updater_id bigint,
     parent_id bigint,
-    orientation character varying(50) DEFAULT 'LIST',
+    orientation character varying(50) DEFAULT 'LIST'::character varying,
     collection_type character varying(255),
     visible boolean DEFAULT false NOT NULL,
     date_created timestamp without time zone DEFAULT now(),
     date_updated timestamp without time zone DEFAULT now(),
-    sort_order character varying(25)
+    sort_order character varying(25),
+    owner_id bigint
 );
 
 
@@ -348,11 +370,53 @@ CREATE TABLE creator (
     last_updated timestamp without time zone,
     location character varying(255),
     url character varying(64),
-    description text
+    description text,
+    status character varying(25) DEFAULT 'ACTIVE'::character varying
 );
 
 
 ALTER TABLE public.creator OWNER TO tdar;
+
+--
+-- Name: creator_address; Type: TABLE; Schema: public; Owner: tdar; Tablespace: 
+--
+
+CREATE TABLE creator_address (
+    id bigint NOT NULL,
+    city character varying(255),
+    phone character varying(255),
+    postal character varying(255),
+    state character varying(255),
+    street1 character varying(255),
+    street2 character varying(255),
+    type character varying(255),
+    creator_id bigint NOT NULL,
+    country character varying(255)
+);
+
+
+ALTER TABLE public.creator_address OWNER TO tdar;
+
+--
+-- Name: creator_address_id_seq; Type: SEQUENCE; Schema: public; Owner: tdar
+--
+
+CREATE SEQUENCE creator_address_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.creator_address_id_seq OWNER TO tdar;
+
+--
+-- Name: creator_address_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: tdar
+--
+
+ALTER SEQUENCE creator_address_id_seq OWNED BY creator_address.id;
+
 
 --
 -- Name: creator_synonym; Type: TABLE; Schema: public; Owner: tdar; Tablespace: 
@@ -377,7 +441,9 @@ CREATE TABLE culture_keyword (
     approved boolean NOT NULL,
     index character varying(255),
     selectable boolean NOT NULL,
-    parent_id bigint
+    parent_id bigint,
+    status character varying(25) DEFAULT 'ACTIVE'::character varying,
+    merge_keyword_id bigint
 );
 
 
@@ -637,6 +703,40 @@ ALTER SEQUENCE explore_cache_decade_id_seq OWNED BY explore_cache_decade.id;
 
 
 --
+-- Name: explore_cache_year; Type: TABLE; Schema: public; Owner: tdar; Tablespace: 
+--
+
+CREATE TABLE explore_cache_year (
+    id bigint NOT NULL,
+    key integer,
+    item_count bigint
+);
+
+
+ALTER TABLE public.explore_cache_year OWNER TO tdar;
+
+--
+-- Name: explore_cache_year_id_seq; Type: SEQUENCE; Schema: public; Owner: tdar
+--
+
+CREATE SEQUENCE explore_cache_year_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.explore_cache_year_id_seq OWNER TO tdar;
+
+--
+-- Name: explore_cache_year_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: tdar
+--
+
+ALTER SEQUENCE explore_cache_year_id_seq OWNED BY explore_cache_year.id;
+
+
+--
 -- Name: full_user_id_seq; Type: SEQUENCE; Schema: public; Owner: tdar
 --
 
@@ -658,7 +758,9 @@ CREATE TABLE geographic_keyword (
     id bigint NOT NULL,
     definition text,
     label character varying(255) NOT NULL,
-    level character varying(50)
+    level character varying(50),
+    status character varying(25) DEFAULT 'ACTIVE'::character varying,
+    merge_keyword_id bigint
 );
 
 
@@ -705,7 +807,8 @@ CREATE TABLE homepage_cache_geographic_keyword (
     id bigint NOT NULL,
     label character varying(255) NOT NULL,
     level character varying(50) NOT NULL,
-    resource_count bigint
+    resource_count bigint,
+    keyword_id bigint
 );
 
 
@@ -874,7 +977,8 @@ CREATE TABLE information_resource_file (
     status character varying(32),
     number_of_parts bigint,
     restriction character varying(50) DEFAULT 'PUBLIC'::character varying,
-    date_made_public timestamp without time zone
+    date_made_public timestamp without time zone,
+    error_message text
 );
 
 
@@ -951,7 +1055,8 @@ CREATE TABLE information_resource_file_version (
     file_version integer,
     width integer,
     information_resource_file_id bigint,
-    total_time bigint
+    total_time bigint,
+    effective_size bigint
 );
 
 
@@ -1006,7 +1111,9 @@ CREATE TABLE institution (
     location character varying(255),
     name character varying(255) NOT NULL,
     url character varying(255),
-    parentinstitution_id bigint
+    parentinstitution_id bigint,
+    status character varying(25) DEFAULT 'ACTIVE'::character varying,
+    merge_creator_id bigint
 );
 
 
@@ -1054,7 +1161,9 @@ ALTER TABLE public.institution_synonym OWNER TO tdar;
 CREATE TABLE investigation_type (
     id bigint NOT NULL,
     definition text,
-    label character varying(255) NOT NULL
+    label character varying(255) NOT NULL,
+    status character varying(25) DEFAULT 'ACTIVE'::character varying,
+    merge_keyword_id bigint
 );
 
 
@@ -1134,7 +1243,9 @@ SET default_with_oids = false;
 CREATE TABLE material_keyword (
     id bigint NOT NULL,
     definition text,
-    label character varying(255) NOT NULL
+    label character varying(255) NOT NULL,
+    status character varying(25) DEFAULT 'ACTIVE'::character varying,
+    merge_keyword_id bigint
 );
 
 
@@ -1249,7 +1360,9 @@ ALTER TABLE public.ontology_node_synonym OWNER TO tdar;
 CREATE TABLE other_keyword (
     id bigint NOT NULL,
     definition text,
-    label character varying(255) NOT NULL
+    label character varying(255) NOT NULL,
+    status character varying(25) DEFAULT 'ACTIVE'::character varying,
+    merge_keyword_id bigint
 );
 
 
@@ -1324,7 +1437,8 @@ CREATE TABLE person (
     penultimate_login timestamp without time zone,
     phone_public boolean DEFAULT false NOT NULL,
     email_public boolean DEFAULT false NOT NULL,
-    username character varying(255)
+    username character varying(255),
+    merge_creator_id bigint
 );
 
 
@@ -1368,6 +1482,322 @@ ALTER TABLE public.personal_filestore_ticket_id_seq OWNER TO tdar;
 ALTER SEQUENCE personal_filestore_ticket_id_seq OWNED BY personal_filestore_ticket.id;
 
 
+--
+-- Name: pos_account; Type: TABLE; Schema: public; Owner: tdar; Tablespace: 
+--
+
+CREATE TABLE pos_account (
+    id bigint NOT NULL,
+    date_created timestamp without time zone,
+    description character varying(255),
+    date_expires timestamp without time zone,
+    date_updated timestamp without time zone,
+    name character varying(255),
+    status character varying(255),
+    modifier_id bigint NOT NULL,
+    owner_id bigint NOT NULL,
+    account_group_id bigint,
+    files_used bigint DEFAULT 0,
+    space_used bigint DEFAULT 0,
+    resources_used bigint DEFAULT 0
+);
+
+
+ALTER TABLE public.pos_account OWNER TO tdar;
+
+--
+-- Name: pos_account_group; Type: TABLE; Schema: public; Owner: tdar; Tablespace: 
+--
+
+CREATE TABLE pos_account_group (
+    id bigint NOT NULL,
+    date_created timestamp without time zone,
+    description character varying(255),
+    date_updated timestamp without time zone,
+    name character varying(255),
+    modifier_id bigint NOT NULL,
+    owner_id bigint NOT NULL,
+    status character varying(25) DEFAULT 'ACTIVE'::character varying
+);
+
+
+ALTER TABLE public.pos_account_group OWNER TO tdar;
+
+--
+-- Name: pos_account_group_id_seq; Type: SEQUENCE; Schema: public; Owner: tdar
+--
+
+CREATE SEQUENCE pos_account_group_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.pos_account_group_id_seq OWNER TO tdar;
+
+--
+-- Name: pos_account_group_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: tdar
+--
+
+ALTER SEQUENCE pos_account_group_id_seq OWNED BY pos_account_group.id;
+
+
+--
+-- Name: pos_account_id_seq; Type: SEQUENCE; Schema: public; Owner: tdar
+--
+
+CREATE SEQUENCE pos_account_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.pos_account_id_seq OWNER TO tdar;
+
+--
+-- Name: pos_account_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: tdar
+--
+
+ALTER SEQUENCE pos_account_id_seq OWNED BY pos_account.id;
+
+
+--
+-- Name: pos_billing_activity; Type: TABLE; Schema: public; Owner: tdar; Tablespace: 
+--
+
+CREATE TABLE pos_billing_activity (
+    id bigint NOT NULL,
+    currency character varying(255),
+    enabled boolean,
+    groupname character varying(255),
+    name character varying(255),
+    numberoffiles bigint,
+    numberofhours integer,
+    numberofmb bigint,
+    numberofresources bigint,
+    displaynumberoffiles bigint,
+    displaynumberofmb bigint,
+    displaynumberofresources bigint,
+    price real,
+    min_allowed_files bigint,
+    model_id bigint,
+    activity_type character varying(25) DEFAULT 'PRODUCTION'::character varying,
+    sort_order integer
+);
+
+
+ALTER TABLE public.pos_billing_activity OWNER TO tdar;
+
+--
+-- Name: pos_billing_activity_id_seq; Type: SEQUENCE; Schema: public; Owner: tdar
+--
+
+CREATE SEQUENCE pos_billing_activity_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.pos_billing_activity_id_seq OWNER TO tdar;
+
+--
+-- Name: pos_billing_activity_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: tdar
+--
+
+ALTER SEQUENCE pos_billing_activity_id_seq OWNED BY pos_billing_activity.id;
+
+
+--
+-- Name: pos_billing_model; Type: TABLE; Schema: public; Owner: tdar; Tablespace: 
+--
+
+CREATE TABLE pos_billing_model (
+    id bigint NOT NULL,
+    date_created timestamp without time zone,
+    description character varying(255),
+    active boolean,
+    counting_files boolean,
+    counting_space boolean,
+    counting_resources boolean,
+    version integer
+);
+
+
+ALTER TABLE public.pos_billing_model OWNER TO tdar;
+
+--
+-- Name: pos_billing_model_id_seq; Type: SEQUENCE; Schema: public; Owner: tdar
+--
+
+CREATE SEQUENCE pos_billing_model_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.pos_billing_model_id_seq OWNER TO tdar;
+
+--
+-- Name: pos_billing_model_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: tdar
+--
+
+ALTER SEQUENCE pos_billing_model_id_seq OWNED BY pos_billing_model.id;
+
+
+--
+-- Name: pos_group_members; Type: TABLE; Schema: public; Owner: tdar; Tablespace: 
+--
+
+CREATE TABLE pos_group_members (
+    user_id bigint NOT NULL,
+    account_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.pos_group_members OWNER TO tdar;
+
+--
+-- Name: pos_invoice; Type: TABLE; Schema: public; Owner: tdar; Tablespace: 
+--
+
+CREATE TABLE pos_invoice (
+    id bigint NOT NULL,
+    date_created timestamp without time zone,
+    total real,
+    transactionstatus character varying(25),
+    address_id bigint,
+    owner_id bigint,
+    executor_id bigint,
+    invoicenumber character varying(25),
+    otherreason character varying(255),
+    account_id bigint,
+    billingphone bigint,
+    expirationyear integer,
+    expirationmonth integer,
+    creditcardtype character varying(25),
+    transaction_type character varying(50),
+    account_type character varying(50),
+    transaction_date timestamp without time zone,
+    number_of_files bigint,
+    number_of_mb bigint,
+    transaction_id character varying(255),
+    response_id bigint
+);
+
+
+ALTER TABLE public.pos_invoice OWNER TO tdar;
+
+--
+-- Name: pos_invoice_id_seq; Type: SEQUENCE; Schema: public; Owner: tdar
+--
+
+CREATE SEQUENCE pos_invoice_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.pos_invoice_id_seq OWNER TO tdar;
+
+--
+-- Name: pos_invoice_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: tdar
+--
+
+ALTER SEQUENCE pos_invoice_id_seq OWNED BY pos_invoice.id;
+
+
+--
+-- Name: pos_item; Type: TABLE; Schema: public; Owner: tdar; Tablespace: 
+--
+
+CREATE TABLE pos_item (
+    id bigint NOT NULL,
+    quantity integer,
+    activity_id bigint NOT NULL,
+    invoice_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.pos_item OWNER TO tdar;
+
+--
+-- Name: pos_item_id_seq; Type: SEQUENCE; Schema: public; Owner: tdar
+--
+
+CREATE SEQUENCE pos_item_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.pos_item_id_seq OWNER TO tdar;
+
+--
+-- Name: pos_item_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: tdar
+--
+
+ALTER SEQUENCE pos_item_id_seq OWNED BY pos_item.id;
+
+
+--
+-- Name: pos_members; Type: TABLE; Schema: public; Owner: tdar; Tablespace: 
+--
+
+CREATE TABLE pos_members (
+    user_id bigint NOT NULL,
+    account_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.pos_members OWNER TO tdar;
+
+--
+-- Name: pos_transaction_log; Type: TABLE; Schema: public; Owner: tdar; Tablespace: 
+--
+
+CREATE TABLE pos_transaction_log (
+    id bigint NOT NULL,
+    date_created timestamp without time zone,
+    transactionid character varying(255),
+    response text
+);
+
+
+ALTER TABLE public.pos_transaction_log OWNER TO tdar;
+
+--
+-- Name: pos_transaction_log_id_seq; Type: SEQUENCE; Schema: public; Owner: tdar
+--
+
+CREATE SEQUENCE pos_transaction_log_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.pos_transaction_log_id_seq OWNER TO tdar;
+
+--
+-- Name: pos_transaction_log_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: tdar
+--
+
+ALTER SEQUENCE pos_transaction_log_id_seq OWNED BY pos_transaction_log.id;
+
+
 SET default_with_oids = true;
 
 --
@@ -1376,7 +1806,8 @@ SET default_with_oids = true;
 
 CREATE TABLE project (
     id bigint NOT NULL,
-    sort_order character varying(50) DEFAULT 'RESOURCE_TYPE'::character varying
+    sort_order character varying(50) DEFAULT 'RESOURCE_TYPE'::character varying,
+    orientation character varying(50) DEFAULT 'LIST'::character varying
 );
 
 
@@ -1450,7 +1881,11 @@ CREATE TABLE resource (
     date_updated timestamp without time zone,
     status character varying(50) DEFAULT 'ACTIVE'::character varying NOT NULL,
     external_id character varying(255),
-    uploader_id bigint
+    uploader_id bigint,
+    account_id bigint,
+    previous_status character varying(50),
+    total_files bigint,
+    total_space_in_bytes bigint
 );
 
 
@@ -1938,7 +2373,9 @@ ALTER SEQUENCE sensory_data_scan_id_seq OWNED BY sensory_data_scan.id;
 CREATE TABLE site_name_keyword (
     id bigint NOT NULL,
     definition text,
-    label character varying(255) NOT NULL
+    label character varying(255) NOT NULL,
+    status character varying(25) DEFAULT 'ACTIVE'::character varying,
+    merge_keyword_id bigint
 );
 
 
@@ -1988,7 +2425,9 @@ CREATE TABLE site_type_keyword (
     approved boolean NOT NULL,
     index character varying(255),
     selectable boolean NOT NULL,
-    parent_id bigint
+    parent_id bigint,
+    status character varying(25) DEFAULT 'ACTIVE'::character varying,
+    merge_keyword_id bigint
 );
 
 
@@ -2104,7 +2543,9 @@ ALTER SEQUENCE stats_id_seq OWNED BY stats.id;
 CREATE TABLE temporal_keyword (
     id bigint NOT NULL,
     definition text,
-    label character varying(255) NOT NULL
+    label character varying(255) NOT NULL,
+    status character varying(25) DEFAULT 'ACTIVE'::character varying,
+    merge_keyword_id bigint
 );
 
 
@@ -2270,6 +2711,13 @@ ALTER TABLE ONLY coverage_date ALTER COLUMN id SET DEFAULT nextval('coverage_dat
 -- Name: id; Type: DEFAULT; Schema: public; Owner: tdar
 --
 
+ALTER TABLE ONLY creator_address ALTER COLUMN id SET DEFAULT nextval('creator_address_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: tdar
+--
+
 ALTER TABLE ONLY culture_keyword ALTER COLUMN id SET DEFAULT nextval('culture_keyword_id_seq'::regclass);
 
 
@@ -2292,6 +2740,13 @@ ALTER TABLE ONLY data_table_relationship ALTER COLUMN id SET DEFAULT nextval('da
 --
 
 ALTER TABLE ONLY explore_cache_decade ALTER COLUMN id SET DEFAULT nextval('explore_cache_decade_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY explore_cache_year ALTER COLUMN id SET DEFAULT nextval('explore_cache_year_id_seq'::regclass);
 
 
 --
@@ -2369,6 +2824,55 @@ ALTER TABLE ONLY other_keyword ALTER COLUMN id SET DEFAULT nextval('other_keywor
 --
 
 ALTER TABLE ONLY personal_filestore_ticket ALTER COLUMN id SET DEFAULT nextval('personal_filestore_ticket_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY pos_account ALTER COLUMN id SET DEFAULT nextval('pos_account_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY pos_account_group ALTER COLUMN id SET DEFAULT nextval('pos_account_group_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY pos_billing_activity ALTER COLUMN id SET DEFAULT nextval('pos_billing_activity_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY pos_billing_model ALTER COLUMN id SET DEFAULT nextval('pos_billing_model_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY pos_invoice ALTER COLUMN id SET DEFAULT nextval('pos_invoice_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY pos_item ALTER COLUMN id SET DEFAULT nextval('pos_item_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY pos_transaction_log ALTER COLUMN id SET DEFAULT nextval('pos_transaction_log_id_seq'::regclass);
 
 
 --
@@ -2557,6 +3061,14 @@ ALTER TABLE ONLY latitude_longitude
 
 
 --
+-- Name: creator_address_pkey; Type: CONSTRAINT; Schema: public; Owner: tdar; Tablespace: 
+--
+
+ALTER TABLE ONLY creator_address
+    ADD CONSTRAINT creator_address_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: creator_pkey; Type: CONSTRAINT; Schema: public; Owner: tdar; Tablespace: 
 --
 
@@ -2626,6 +3138,14 @@ ALTER TABLE ONLY document
 
 ALTER TABLE ONLY explore_cache_decade
     ADD CONSTRAINT explore_cache_decade_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: explore_cache_year_pkey; Type: CONSTRAINT; Schema: public; Owner: tdar; Tablespace: 
+--
+
+ALTER TABLE ONLY explore_cache_year
+    ADD CONSTRAINT explore_cache_year_pkey PRIMARY KEY (id);
 
 
 --
@@ -2803,9 +3323,6 @@ ALTER TABLE ONLY person
 ALTER TABLE ONLY personal_filestore_ticket
     ADD CONSTRAINT personal_filestore_ticket_pkey PRIMARY KEY (id);
 
---added by jtd. FK can only be added after person defined and person.id becomes PK
-ALTER TABLE collection ADD COLUMN owner_id bigint references person;
-
 
 --
 -- Name: pk_stats; Type: CONSTRAINT; Schema: public; Owner: tdar; Tablespace: 
@@ -2813,6 +3330,78 @@ ALTER TABLE collection ADD COLUMN owner_id bigint references person;
 
 ALTER TABLE ONLY stats
     ADD CONSTRAINT pk_stats PRIMARY KEY (id);
+
+
+--
+-- Name: pos_account_group_pkey; Type: CONSTRAINT; Schema: public; Owner: tdar; Tablespace: 
+--
+
+ALTER TABLE ONLY pos_account_group
+    ADD CONSTRAINT pos_account_group_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pos_account_pkey; Type: CONSTRAINT; Schema: public; Owner: tdar; Tablespace: 
+--
+
+ALTER TABLE ONLY pos_account
+    ADD CONSTRAINT pos_account_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pos_billing_activity_pkey; Type: CONSTRAINT; Schema: public; Owner: tdar; Tablespace: 
+--
+
+ALTER TABLE ONLY pos_billing_activity
+    ADD CONSTRAINT pos_billing_activity_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pos_billing_model_pkey; Type: CONSTRAINT; Schema: public; Owner: tdar; Tablespace: 
+--
+
+ALTER TABLE ONLY pos_billing_model
+    ADD CONSTRAINT pos_billing_model_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pos_group_members_pkey; Type: CONSTRAINT; Schema: public; Owner: tdar; Tablespace: 
+--
+
+ALTER TABLE ONLY pos_group_members
+    ADD CONSTRAINT pos_group_members_pkey PRIMARY KEY (user_id, account_id);
+
+
+--
+-- Name: pos_invoice_pkey; Type: CONSTRAINT; Schema: public; Owner: tdar; Tablespace: 
+--
+
+ALTER TABLE ONLY pos_invoice
+    ADD CONSTRAINT pos_invoice_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pos_item_pkey; Type: CONSTRAINT; Schema: public; Owner: tdar; Tablespace: 
+--
+
+ALTER TABLE ONLY pos_item
+    ADD CONSTRAINT pos_item_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pos_members_pkey; Type: CONSTRAINT; Schema: public; Owner: tdar; Tablespace: 
+--
+
+ALTER TABLE ONLY pos_members
+    ADD CONSTRAINT pos_members_pkey PRIMARY KEY (user_id, account_id);
+
+
+--
+-- Name: pos_transaction_log_pkey; Type: CONSTRAINT; Schema: public; Owner: tdar; Tablespace: 
+--
+
+ALTER TABLE ONLY pos_transaction_log
+    ADD CONSTRAINT pos_transaction_log_pkey PRIMARY KEY (id);
 
 
 --
@@ -3473,6 +4062,22 @@ ALTER TABLE ONLY coding_sheet
 
 
 --
+-- Name: collection_owner_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY collection
+    ADD CONSTRAINT collection_owner_id_fkey FOREIGN KEY (owner_id) REFERENCES person(id);
+
+
+--
+-- Name: collection_owner_id_fkey1; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY collection
+    ADD CONSTRAINT collection_owner_id_fkey1 FOREIGN KEY (owner_id) REFERENCES person(id);
+
+
+--
 -- Name: contributor_request_applicant_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
 --
 
@@ -3486,6 +4091,22 @@ ALTER TABLE ONLY contributor_request
 
 ALTER TABLE ONLY contributor_request
     ADD CONSTRAINT contributor_request_approver_id_fkey FOREIGN KEY (approver_id) REFERENCES person(id) ON UPDATE CASCADE;
+
+
+--
+-- Name: creator_address_creator_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY creator_address
+    ADD CONSTRAINT creator_address_creator_id_fkey FOREIGN KEY (creator_id) REFERENCES creator(id);
+
+
+--
+-- Name: culture_keyword_merge_keyword_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY culture_keyword
+    ADD CONSTRAINT culture_keyword_merge_keyword_id_fkey FOREIGN KEY (merge_keyword_id) REFERENCES culture_keyword(id);
 
 
 --
@@ -3897,6 +4518,14 @@ ALTER TABLE ONLY resource_annotation
 
 
 --
+-- Name: geographic_keyword_merge_keyword_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY geographic_keyword
+    ADD CONSTRAINT geographic_keyword_merge_keyword_id_fkey FOREIGN KEY (merge_keyword_id) REFERENCES geographic_keyword(id);
+
+
+--
 -- Name: homepage_featured_item_cache_resource_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
 --
 
@@ -3977,11 +4606,35 @@ ALTER TABLE ONLY institution
 
 
 --
+-- Name: institution_merge_creator_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY institution
+    ADD CONSTRAINT institution_merge_creator_id_fkey FOREIGN KEY (merge_creator_id) REFERENCES institution(id);
+
+
+--
 -- Name: institution_parentinstitution_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
 --
 
 ALTER TABLE ONLY institution
     ADD CONSTRAINT institution_parentinstitution_id_fkey FOREIGN KEY (parentinstitution_id) REFERENCES institution(id);
+
+
+--
+-- Name: investigation_type_merge_keyword_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY investigation_type
+    ADD CONSTRAINT investigation_type_merge_keyword_id_fkey FOREIGN KEY (merge_keyword_id) REFERENCES investigation_type(id);
+
+
+--
+-- Name: material_keyword_merge_keyword_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY material_keyword
+    ADD CONSTRAINT material_keyword_merge_keyword_id_fkey FOREIGN KEY (merge_keyword_id) REFERENCES material_keyword(id);
 
 
 --
@@ -4001,6 +4654,14 @@ ALTER TABLE ONLY ontology_node
 
 
 --
+-- Name: other_keyword_merge_keyword_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY other_keyword
+    ADD CONSTRAINT other_keyword_merge_keyword_id_fkey FOREIGN KEY (merge_keyword_id) REFERENCES other_keyword(id);
+
+
+--
 -- Name: person_creator_fk; Type: FK CONSTRAINT; Schema: public; Owner: tdar
 --
 
@@ -4017,11 +4678,155 @@ ALTER TABLE ONLY person
 
 
 --
+-- Name: person_merge_creator_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY person
+    ADD CONSTRAINT person_merge_creator_id_fkey FOREIGN KEY (merge_creator_id) REFERENCES person(id);
+
+
+--
+-- Name: pos_account_account_group_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY pos_account
+    ADD CONSTRAINT pos_account_account_group_id_fkey FOREIGN KEY (account_group_id) REFERENCES pos_account_group(id);
+
+
+--
+-- Name: pos_account_group_modifier_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY pos_account_group
+    ADD CONSTRAINT pos_account_group_modifier_id_fkey FOREIGN KEY (modifier_id) REFERENCES person(id);
+
+
+--
+-- Name: pos_account_group_owner_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY pos_account_group
+    ADD CONSTRAINT pos_account_group_owner_id_fkey FOREIGN KEY (owner_id) REFERENCES person(id);
+
+
+--
+-- Name: pos_account_modifier_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY pos_account
+    ADD CONSTRAINT pos_account_modifier_id_fkey FOREIGN KEY (modifier_id) REFERENCES person(id);
+
+
+--
+-- Name: pos_account_owner_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY pos_account
+    ADD CONSTRAINT pos_account_owner_id_fkey FOREIGN KEY (owner_id) REFERENCES person(id);
+
+
+--
+-- Name: pos_billing_activity_model_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY pos_billing_activity
+    ADD CONSTRAINT pos_billing_activity_model_id_fkey FOREIGN KEY (model_id) REFERENCES pos_billing_model(id);
+
+
+--
+-- Name: pos_group_members_account_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY pos_group_members
+    ADD CONSTRAINT pos_group_members_account_id_fkey FOREIGN KEY (account_id) REFERENCES pos_account_group(id);
+
+
+--
+-- Name: pos_group_members_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY pos_group_members
+    ADD CONSTRAINT pos_group_members_user_id_fkey FOREIGN KEY (user_id) REFERENCES person(id);
+
+
+--
+-- Name: pos_invoice_address_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY pos_invoice
+    ADD CONSTRAINT pos_invoice_address_id_fkey FOREIGN KEY (address_id) REFERENCES creator_address(id);
+
+
+--
+-- Name: pos_invoice_executor_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY pos_invoice
+    ADD CONSTRAINT pos_invoice_executor_id_fkey FOREIGN KEY (executor_id) REFERENCES person(id);
+
+
+--
+-- Name: pos_invoice_owner_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY pos_invoice
+    ADD CONSTRAINT pos_invoice_owner_id_fkey FOREIGN KEY (owner_id) REFERENCES person(id);
+
+
+--
+-- Name: pos_invoice_response_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY pos_invoice
+    ADD CONSTRAINT pos_invoice_response_id_fkey FOREIGN KEY (response_id) REFERENCES pos_transaction_log(id);
+
+
+--
+-- Name: pos_item_activity_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY pos_item
+    ADD CONSTRAINT pos_item_activity_id_fkey FOREIGN KEY (activity_id) REFERENCES pos_billing_activity(id);
+
+
+--
+-- Name: pos_item_invoice_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY pos_item
+    ADD CONSTRAINT pos_item_invoice_id_fkey FOREIGN KEY (invoice_id) REFERENCES pos_invoice(id);
+
+
+--
+-- Name: pos_members_account_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY pos_members
+    ADD CONSTRAINT pos_members_account_id_fkey FOREIGN KEY (account_id) REFERENCES pos_account(id);
+
+
+--
+-- Name: pos_members_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY pos_members
+    ADD CONSTRAINT pos_members_user_id_fkey FOREIGN KEY (user_id) REFERENCES person(id);
+
+
+--
 -- Name: related_comparative_collection_resource_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
 --
 
 ALTER TABLE ONLY related_comparative_collection
     ADD CONSTRAINT related_comparative_collection_resource_id_fkey FOREIGN KEY (resource_id) REFERENCES resource(id);
+
+
+--
+-- Name: resource_account_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY resource
+    ADD CONSTRAINT resource_account_id_fkey FOREIGN KEY (account_id) REFERENCES pos_account(id);
 
 
 --
@@ -4185,6 +4990,22 @@ ALTER TABLE ONLY resource
 
 
 --
+-- Name: site_name_keyword_merge_keyword_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY site_name_keyword
+    ADD CONSTRAINT site_name_keyword_merge_keyword_id_fkey FOREIGN KEY (merge_keyword_id) REFERENCES site_name_keyword(id);
+
+
+--
+-- Name: site_type_keyword_merge_keyword_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY site_type_keyword
+    ADD CONSTRAINT site_type_keyword_merge_keyword_id_fkey FOREIGN KEY (merge_keyword_id) REFERENCES site_type_keyword(id);
+
+
+--
 -- Name: site_type_keyword_parent_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
 --
 
@@ -4198,6 +5019,14 @@ ALTER TABLE ONLY site_type_keyword
 
 ALTER TABLE ONLY source_collection
     ADD CONSTRAINT source_collection_resource_id_fkey FOREIGN KEY (resource_id) REFERENCES resource(id);
+
+
+--
+-- Name: temporal_keyword_merge_keyword_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: tdar
+--
+
+ALTER TABLE ONLY temporal_keyword
+    ADD CONSTRAINT temporal_keyword_merge_keyword_id_fkey FOREIGN KEY (merge_keyword_id) REFERENCES temporal_keyword(id);
 
 
 --
