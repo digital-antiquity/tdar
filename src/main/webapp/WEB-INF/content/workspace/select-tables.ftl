@@ -101,10 +101,11 @@ $(function() {
 <div class="row">
 <div class="span6">
 <h3>Learn About Data Integration</h3>
-<p>tDAR's revolutionary data integration tool is designed to simplify the process to combine and reconcile two or more disparate data sets into a single, new data set, for computational analysis. The resulting data set can be easily downloaded and fed into SASS, SPSS, or R for additional flexibility.</p>
+<p>${siteAcronym}'s revolutionary data integration tool is a simple interface to help you combine two or more disparate data sets into a single, new data set. The resulting data set can be easily downloaded and fed into SASS, SPSS, or R for analysis.</p>
 <h3>Getting Started</h3>
-<p>To get started, you must first upload or find data sets and bookmark them.  Each data set must have at least one column mapped to the same shared ontology within ${siteAcronym}. The ontology enables different values such as <em>Chair</em> and <em>Seat</em> to be reconciled as similar, but also <em>Chair</em> and <em>Furniture</em> to be placed within a hierarchical relationship.</p>
-<p>Once you have two or more data sets loaded, you may select columns to include within the final data set and then filter the results based on your ontologies.  You can read more about data integration <a href="https://dev.tdar.org/confluence/display/TDAR/Data+Integration">here</a>.
+<p>To get started, you either upload a data set to ${siteAcronym} or find data sets and bookmark them. You then ensure that at least one column from each data set is mapped to the same ontology. In ${siteAcronym}, 
+the key to integrating columns from different data sets is the ontology. It is a classification tool that helps reconcile different variable states from separate data sets. For example, an ontology might reconcile the values "chair" and "seat" as similar values, or it could even associate both values under the broader category "Furniture." </p>
+<p>After you have mapped your data sets to ontologies, you can then filter the results to create the integrated data set. You simply select the columns you want to appear in the final set. You can read more about data integration <a href="https://dev.tdar.org/confluence/display/TDAR/Data+Integration">here</a>.
 <ul>
 	<li><a href="<@s.url value="/search/results.action?integratableOptions=YES&startRecord=0"/>">Find Data Sets</a></li>
 	<li><a href="https://dev.tdar.org/confluence/display/TDAR/Bookmarking+a+Dataset+for+Data+Integration">Bookmark Data Sets</a></li>
