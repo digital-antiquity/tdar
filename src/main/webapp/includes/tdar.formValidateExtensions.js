@@ -162,9 +162,9 @@
         //if we came here by way of a form 're-validate', we need to make sure that validation logic in registerCheckboxInfo happens first.
         registerCheckboxInfo.apply(element);
         
-        if($($selectedElement).is(':disabled')) {
-            var val = $($selectedElement).val().toLowerCase().replace('_', ' ');
-            $($selectedElement).attr("title",  "The selection '" + val + "' is no longer valid for column " + displayName);
+        if($selectedElement.is(':disabled')) {
+            var val = $selectedElement.val().toLowerCase().replace('_', ' ');
+            element.title = "The selection '" + val + "' is no longer valid for column " + displayName;
             return false;
         }
         
@@ -173,8 +173,9 @@
         if (square == undefined || square.length == 0 ) {
             return true;
         } else {
-        	$($selectedElement).attr("title", "Column " + displayName + " contains errors or invalid selections");   
+            element.title =  "Column " + displayName + " contains errors or invalid selections";   
             return false;
         }
     });
+    
 	

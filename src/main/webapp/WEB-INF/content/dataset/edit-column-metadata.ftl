@@ -360,7 +360,6 @@ $(document).ready(function() {
 
 /* this function manages the display of the checkboxes next to a column field when someone changes one of the values, it changes
    the color if mapped properly to something */
-//FIXME: confirm these calls to .first() are pointless (THEY ARE NOT), then remove
 
 function registerCheckboxInfo() {
     var $target = $($(this).parents(".datatablecolumn").first());
@@ -383,7 +382,6 @@ function registerCheckboxInfo() {
       ontologyInfo.show();
     }
 
-    $("#error").html('<ul></ul>');
     if (val != 'CODED_VALUE') {
       codingInfo.hide();
     } else {
