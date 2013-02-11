@@ -8,9 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.ListUtils;
@@ -26,7 +24,6 @@ import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
-import org.hibernate.search.FullTextQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -53,7 +50,6 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAccessType;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -62,20 +58,14 @@ import org.tdar.core.service.RssService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
-import org.tdar.search.query.builder.InstitutionQueryBuilder;
-import org.tdar.search.query.builder.PersonQueryBuilder;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.GeneralSearchQueryPart;
-import org.tdar.search.query.part.InstitutionQueryPart;
-import org.tdar.search.query.part.PersonQueryPart;
-import org.tdar.search.query.part.PhraseFormatter;
 import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.data.KeywordNode;
-import org.tdar.struts.data.ResourceCreatorProxy;
 import org.tdar.struts.interceptor.HttpOnlyIfUnauthenticated;
 
 /**
@@ -353,7 +343,13 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
         for (SearchParameters group : groups) {
             group.setExplore(explore);
-            updateResourceCreators(group);
+            try {
+                getSearchService().updateResourceCreators(group, MAX_CREATOR_RECORDS_TO_RESOLVE);
+            } catch (Exception e) {
+                logger.error("{} ", e);
+                addActionError(COULD_NOT_PROCESS_CREATOR_SEARCH);
+            }
+
             topLevelQueryPart.append(group.toQueryPartGroup());
         }
         queryBuilder.append(topLevelQueryPart);
@@ -378,65 +374,6 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             return INPUT;
         }
 
-    }
-
-    private void updateResourceCreators(SearchParameters group) {
-        logger.trace("updating proxies");
-        Map<ResourceCreatorProxy, List<ResourceCreatorProxy>> replacements = new HashMap<ResourceCreatorProxy, List<ResourceCreatorProxy>>();
-        List<ResourceCreatorProxy> proxies = group.getResourceCreatorProxies();
-        for (ResourceCreatorProxy proxy : proxies) {
-            if (proxy == null)
-                continue;
-            ResourceCreator rc = proxy.getResourceCreator();
-            if (rc != null && proxy.isValid()) {
-                ArrayList<ResourceCreatorProxy> values = new ArrayList<ResourceCreatorProxy>();
-                QueryBuilder q = null;
-                Creator creator = rc.getCreator();
-                if (Persistable.Base.isTransient(creator)) {
-                    replacements.put(proxy, values);
-                    if (creator instanceof Institution) {
-                        q = new InstitutionQueryBuilder();
-                        InstitutionQueryPart iqp = new InstitutionQueryPart();
-                        iqp.setPhraseFormatters(PhraseFormatter.WILDCARD, PhraseFormatter.QUOTED);
-                        iqp.add((Institution) creator);
-                        q.append(iqp);
-                    } else {
-                        q = new PersonQueryBuilder();
-                        PersonQueryPart pqp = new PersonQueryPart();
-                        pqp.setPhraseFormatters(PhraseFormatter.WILDCARD, PhraseFormatter.QUOTED);
-                        pqp.add((Person) creator);
-                        q.append(pqp);
-                    }
-
-                    q.append(new FieldQueryPart<Status>("status", Status.ACTIVE));
-                    List<Creator> list = null;
-                    logger.trace(q.generateQueryString());
-                    try {
-                        FullTextQuery search = getSearchService().search(q, null);
-                        search.setMaxResults(MAX_CREATOR_RECORDS_TO_RESOLVE);
-                        list = search.list();
-                    } catch (Exception e) {
-                        logger.error("{} ", e);
-                        addActionError(COULD_NOT_PROCESS_CREATOR_SEARCH);
-                    }
-                    if (CollectionUtils.isNotEmpty(list)) {
-                        for (Creator c : (List<Creator>) list) {
-                            values.add(new ResourceCreatorProxy(c, rc.getRole()));
-                        }
-                    }
-                }
-            } else {
-                replacements.put(proxy, null);
-            }
-        }
-        for (ResourceCreatorProxy toReplace : replacements.keySet()) {
-            proxies.remove(toReplace);
-            List<ResourceCreatorProxy> values = replacements.get(toReplace);
-            if (CollectionUtils.isNotEmpty(values)) {
-                proxies.addAll(values);
-            }
-        }
-        logger.trace("result: {} ", proxies);
     }
 
     private String basicSearch() {
