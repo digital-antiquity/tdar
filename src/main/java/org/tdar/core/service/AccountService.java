@@ -130,7 +130,6 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     @Transactional
     protected void markResourcesAsFlagged(Collection<Resource> resources) {
         for (Resource resource : resources) {
-            resource.setPreviousStatus(resource.getStatus());
             resource.setStatus(Status.FLAGGED_ACCOUNT_BALANCE);
         }
 
@@ -146,7 +145,6 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
                 status = Status.ACTIVE;
             }
             resource.setStatus(status);
-            resource.setPreviousStatus(null);
         }
     }
 

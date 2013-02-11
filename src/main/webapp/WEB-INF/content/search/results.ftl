@@ -37,7 +37,7 @@
                 <h2 class="totalRecords">Search Options</h2>
 
     <ul class="tools media-list">
-        <li class="media"><a href="<@search.searchUrl "advanced"/>" rel="nofollow"><i class="pull-left search-magnify-icon-red" ></i>Refine your search &raquo;</a></li>
+        <li class="media"><a href="<@search.searchUrl "advanced"/>" rel="noindex"><i class="pull-left search-magnify-icon-red" ></i>Refine your search &raquo;</a></li>
 <#if lookupSource == 'RESOURCE'>
         <li class="media"><i class="pull-left search-download-icon-red" ></i><div class="media-body">Download these results &raquo;
         <#if sessionData?? && sessionData.authenticated && (totalRecords > 0) && (actionName=="results")>

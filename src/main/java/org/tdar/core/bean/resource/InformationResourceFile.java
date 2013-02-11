@@ -90,6 +90,15 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         public String getLabel() {
             return WordUtils.capitalize(this.name().toLowerCase());
         }
+        
+        public boolean isRestricted() {
+            switch (this) {
+                case PUBLIC:
+                    return false;
+                default:
+                    return true;
+            }
+        }
     }
 
     public enum FileStatus {

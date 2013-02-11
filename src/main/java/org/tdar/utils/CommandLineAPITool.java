@@ -28,7 +28,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -38,7 +37,6 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.utils.URIUtils;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
@@ -48,6 +46,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.configuration.TdarConfiguration;
 
 /**
@@ -65,7 +64,7 @@ public class CommandLineAPITool {
     private static final String OPTION_ACCOUNTID = "accountid";
     private static final String OPTION_SLEEP = "sleep";
     private static final String OPTION_PROJECT_ID = "projectid";
-
+    private static final String OPTION_ACCESS_RESTRICTION = "accessRestrictions";
     private static final String ALPHA_TDAR_ORG = "alpha.tdar.org";
     private static final String CORE_TDAR_ORG = "core.tdar.org";
 
@@ -78,7 +77,9 @@ public class CommandLineAPITool {
     private Long projectId;
     private Long accountId;
     private Long msSleepBetween;
+    private FileAccessRestriction fileAccessRestriction = FileAccessRestriction.PUBLIC;
     private List<String> seen = new ArrayList<String>();
+
     /**
      * return codes
      */
@@ -112,6 +113,9 @@ public class CommandLineAPITool {
                 .create(OPTION_SLEEP));
         options.addOption(OptionBuilder.withArgName(OPTION_LOG_FILE).hasArg().withDescription(siteAcronym + "logFile")
                 .create(OPTION_LOG_FILE));
+        options.addOption(OptionBuilder.withArgName(OPTION_ACCESS_RESTRICTION).hasArg()
+                .withDescription("file access restrictions (" + StringUtils.join(FileAccessRestriction.values()) + ")")
+                .create(OPTION_ACCESS_RESTRICTION));
         CommandLineParser parser = new GnuParser();
 
         // TODO: lies! all lies!!!
@@ -151,6 +155,10 @@ public class CommandLineAPITool {
 
             if (line.hasOption(OPTION_SLEEP)) {
                 importer.setMsSleepBetween(new Long(line.getOptionValue(OPTION_SLEEP)));
+            }
+
+            if (line.hasOption(OPTION_ACCESS_RESTRICTION)) {
+                importer.setFileAccessRestriction(FileAccessRestriction.valueOf(line.getOptionValue(OPTION_ACCESS_RESTRICTION)));
             }
 
             if (line.hasOption(OPTION_LOG_FILE)) {
@@ -330,7 +338,7 @@ public class CommandLineAPITool {
 
     public boolean makeAPICall(File record, List<File> attachments) throws UnsupportedEncodingException, IOException {
         String path = record.getPath();
-        HttpPost apicall = new HttpPost("https://" + getHostname() + "/api/upload?uploadedItem=" +URLEncoder.encode(path));
+        HttpPost apicall = new HttpPost("https://" + getHostname() + "/api/upload?uploadedItem=" + URLEncoder.encode(path));
         MultipartEntity reqEntity = new MultipartEntity();
         boolean callSuccessful = true;
         if (seen.contains(path)) {
@@ -347,11 +355,17 @@ public class CommandLineAPITool {
             reqEntity.addPart("accountId", new StringBody(accountId.toString()));
         }
 
+        reqEntity.addPart("accessRestriction", new StringBody(getFileAccessRestriction().name()));
+
         if (!CollectionUtils.isEmpty(attachments)) {
             for (int i = 0; i < attachments.size(); i++) {
                 reqEntity.addPart("uploadFile", new FileBody(attachments.get(i)));
+                if (getFileAccessRestriction().isRestricted()) {
+                    reqEntity.addPart("restrictedFiles", new StringBody(attachments.get(i).getName()));
+                }
             }
         }
+
         apicall.setEntity(reqEntity);
         logger.debug("      files: " + StringUtils.join(attachments, ", "));
 
@@ -370,8 +384,8 @@ public class CommandLineAPITool {
                 logger.debug(resp);
             }
         }
-        
-        FileUtils.writeStringToFile(getLogFile(), path +"\r\n",true);
+
+        FileUtils.writeStringToFile(getLogFile(), path + "\r\n", true);
         logger.info("done: " + path);
         try {
             Thread.sleep(getMsSleepBetween());
@@ -450,5 +464,13 @@ public class CommandLineAPITool {
 
     public void setSeen(List<String> seen) {
         this.seen = seen;
+    }
+
+    public FileAccessRestriction getFileAccessRestriction() {
+        return fileAccessRestriction;
+    }
+
+    public void setFileAccessRestriction(FileAccessRestriction fileAccessRestriction) {
+        this.fileAccessRestriction = fileAccessRestriction;
     }
 }

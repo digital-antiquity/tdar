@@ -1,6 +1,7 @@
 package org.tdar.struts.action;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -22,6 +23,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.struts.RequiresTdarUserGroup;
 
 @Component
 @Scope("prototype")
@@ -34,7 +36,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     private static final long serialVersionUID = 2912533895769561917L;
     public static final String NEW_ACCOUNT = "new_account";
     private Long invoiceId;
-    private Set<Account> accounts;
+    private Set<Account> accounts = new HashSet<Account>();
 
     private AccountGroup accountGroup;
     private List<Person> authorizedMembers = new ArrayList<Person>();
@@ -60,6 +62,12 @@ public class BillingAccountController extends AbstractPersistableController<Acco
             return SUCCESS;
         }
         return NEW_ACCOUNT;
+    }
+
+    public void loadListData() {
+        if (getAuthenticationAndAuthorizationService().isMember(getAuthenticatedUser(), TdarGroup.TDAR_BILLING_MANAGER)) {
+            getAccounts().addAll(getAccountService().findAll());
+        }
     }
 
     public Invoice getInvoice() {
