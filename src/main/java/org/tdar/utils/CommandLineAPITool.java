@@ -45,6 +45,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.configuration.TdarConfiguration;
 
 /**
@@ -59,7 +60,7 @@ public class CommandLineAPITool {
     private static final String OPTION_USERNAME = "username";
     private static final String OPTION_HOST = "host";
     private static final String OPTION_PROJECT_ID = "projectid";
-
+    private static final String OPTION_ACCESS_RESTRICTION = "accessRestrictions";
     private static final String ALPHA_TDAR_ORG = "alpha.tdar.org";
     private static final String CORE_TDAR_ORG = "core.tdar.org";
 
@@ -69,7 +70,10 @@ public class CommandLineAPITool {
     private String username = "";
     private String password = "";
     private Long projectId;
-
+    private Long accountId;
+    private Long msSleepBetween;
+    private FileAccessRestriction fileAccessRestriction = FileAccessRestriction.PUBLIC;
+    private List<String> seen = new ArrayList<String>();
     /**
      * return codes
      */
@@ -97,6 +101,16 @@ public class CommandLineAPITool {
                 .create(OPTION_CONFIG));
         options.addOption(OptionBuilder.withArgName(OPTION_PROJECT_ID).hasArg().withDescription(siteAcronym + " Project ID to associate w/ resource")
                 .create(OPTION_PROJECT_ID));
+        options.addOption(OptionBuilder.withArgName(OPTION_ACCOUNTID).hasArg().withDescription(siteAcronym + "tDAR Account Id")
+                .create(OPTION_ACCOUNTID));
+        options.addOption(OptionBuilder.withArgName(OPTION_SLEEP).hasArg().withDescription(siteAcronym + "timeToSleep")
+                .create(OPTION_SLEEP));
+        options.addOption(OptionBuilder.withArgName(OPTION_LOG_FILE).hasArg().withDescription(siteAcronym + "logFile")
+                .create(OPTION_LOG_FILE));
+        options.addOption(OptionBuilder.withArgName(OPTION_ACCESS_RESTRICTION).hasArg()
+                .withDescription("file access restrictions (" + StringUtils.join(FileAccessRestriction.values()) + ")")
+                .create(OPTION_ACCESS_RESTRICTION));
+
         CommandLineParser parser = new GnuParser();
 
         // TODO: lies! all lies!!!
@@ -128,6 +142,28 @@ public class CommandLineAPITool {
 
             if (line.hasOption(OPTION_PROJECT_ID)) {
                 importer.setProjectId(new Long(line.getOptionValue(OPTION_PROJECT_ID)));
+            }
+
+            if (line.hasOption(OPTION_ACCOUNTID)) {
+                importer.setAccountId(new Long(line.getOptionValue(OPTION_ACCOUNTID)));
+            }
+
+            if (line.hasOption(OPTION_SLEEP)) {
+                importer.setMsSleepBetween(new Long(line.getOptionValue(OPTION_SLEEP)));
+            }
+
+            if (line.hasOption(OPTION_ACCESS_RESTRICTION)) {
+                importer.setFileAccessRestriction(FileAccessRestriction.valueOf(line.getOptionValue(OPTION_ACCESS_RESTRICTION)));
+            }
+
+            if (line.hasOption(OPTION_LOG_FILE)) {
+                importer.setLogFile(line.getOptionValue(OPTION_LOG_FILE));
+                try {
+                    importer.getSeen().addAll(FileUtils.readLines(importer.getLogFile()));
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
             }
 
             if (line.hasOption(OPTION_CONFIG)) {
@@ -297,6 +333,8 @@ public class CommandLineAPITool {
 
     public boolean makeAPICall(File record, List<File> attachments) throws UnsupportedEncodingException, IOException {
         HttpPost apicall = new HttpPost("http://" + getHostname() + "/api/upload");
+        String path = record.getPath();
+        HttpPost apicall = new HttpPost("https://" + getHostname() + "/api/upload?uploadedItem=" + URLEncoder.encode(path));
         MultipartEntity reqEntity = new MultipartEntity();
         boolean callSuccessful = true;
 
@@ -306,11 +344,22 @@ public class CommandLineAPITool {
             logger.debug("setting projectId:" + projectId);
             reqEntity.addPart("projectId", new StringBody(projectId.toString()));
         }
+        if (accountId != null) {
+            logger.trace("setting accountId:" + accountId);
+            reqEntity.addPart("accountId", new StringBody(accountId.toString()));
+        }
+
+        reqEntity.addPart("accessRestriction", new StringBody(getFileAccessRestriction().name()));
+
         if (!CollectionUtils.isEmpty(attachments)) {
             for (int i = 0; i < attachments.size(); i++) {
                 reqEntity.addPart("uploadFile", new FileBody(attachments.get(i)));
+                if (getFileAccessRestriction().isRestricted()) {
+                    reqEntity.addPart("restrictedFiles", new StringBody(attachments.get(i).getName()));
+                }
             }
         }
+
         apicall.setEntity(reqEntity);
         logger.debug("      files: " + StringUtils.join(attachments, ", "));
 
@@ -328,6 +377,14 @@ public class CommandLineAPITool {
             if (resp != null && resp != "") {
                 logger.debug(resp);
             }
+        }
+
+        FileUtils.writeStringToFile(getLogFile(), path + "\r\n", true);
+        logger.info("done: " + path);
+        try {
+            Thread.sleep(getMsSleepBetween());
+        } catch (Exception e) {
+
         }
         return callSuccessful;
     }
@@ -369,5 +426,45 @@ public class CommandLineAPITool {
 
     public void setProjectId(Long projectId) {
         this.projectId = projectId;
+    }
+
+    public Long getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(Long accountId) {
+        this.accountId = accountId;
+    }
+
+    public Long getMsSleepBetween() {
+        return msSleepBetween;
+    }
+
+    public void setMsSleepBetween(Long msSleepBetween) {
+        this.msSleepBetween = msSleepBetween;
+    }
+
+    public File getLogFile() {
+        return logFile;
+    }
+
+    public void setLogFile(String logFile) {
+        this.logFile = new File(logFile);
+    }
+
+    public List<String> getSeen() {
+        return seen;
+    }
+
+    public void setSeen(List<String> seen) {
+        this.seen = seen;
+    }
+
+    public FileAccessRestriction getFileAccessRestriction() {
+        return fileAccessRestriction;
+    }
+
+    public void setFileAccessRestriction(FileAccessRestriction fileAccessRestriction) {
+        this.fileAccessRestriction = fileAccessRestriction;
     }
 }
