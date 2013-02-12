@@ -19,7 +19,6 @@
 </@edit.basicInformation>
 <@edit.citationInfo "sensoryData" />
 
-<@edit.asyncFileUpload "Sensory Data Files" true />
 
 <@edit.allCreators 'Sensory Data Creators' authorshipProxies 'authorship' />
 
@@ -66,6 +65,30 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
     </div>
     </div>
 </div>
+
+<style>
+ #registeredDatasetDiv, #polygonalMeshDatasetDiv, #divScanInfo,#divImageInfo  {
+ display:none;
+ visbility: hidden;
+ }
+ </style>
+
+
+<@s.radio name='sensoryData.scanType' id="scanType" emptyOption='false' listValue="label"  
+            list='%{scannerTechnologyTypes}' label="Scan Type" theme="bootstrap" />
+
+<div class="well">
+	<h3>Metadata Template</h3>
+	<p>Due to the variability and complexity of sensory data scans, we're providing a template you can use to include the details of how your scan was captured and composed.  Please download.</p>
+	
+	<p><a class="btn btn-success">DOWNLOAD TEMPLATE</a></p>
+	<br/>
+	<@s.file label="Completed Metadata Template" cssClass="validateFileType" labelposition='top' name='uploadedFiles' size='40'/>
+</div>
+
+<@edit.asyncFileUpload "Sensory Data Files" true />
+
+
 
 <div id="divScanInfo">
     <#assign _scans=sensoryDataScans />
@@ -185,7 +208,7 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
     <br />
     <div tiplabel="Registration Error" tooltipcontent="Total RMS error from global registration in scan units.">
         <@s.textfield maxLength="255" name="sensoryData.registrationErrorUnits" cssClass="shortfield number" label="Reg. Error" labelposition="left" />
-    </span>
+    </div>
     <div tiplabel="Total Number of points In File" tooltipcontent="Total number of points in finalregistered point cloud">
         <@s.textfield maxLength="255" name="sensoryData.finalRegistrationPoints" cssClass="right-shortfield number" label="# Points in File" labelposition="left" />
     </div>
