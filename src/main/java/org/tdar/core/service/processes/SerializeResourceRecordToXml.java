@@ -49,12 +49,12 @@ public class SerializeResourceRecordToXml extends ScheduledBatchProcess<Resource
 
     @Override
     public int getBatchSize() {
-        return 5;
+        return 500;
     }
     
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 
 }
