@@ -615,13 +615,15 @@ function changeSubcategory(categoryIdSelect, subCategoryIdSelect) {
     });
 }
 
-function setAdhocTarget(elem) {
-    console.log(elem);
-    adhocTarget = $(elem).closest("div");
-    return false;
+//indicate the root context  to use when populateTarget is called. 
+function setAdhocTarget(elem, selector) {
+    var _selector = selector;
+    if (!_selector) selector = "div";
+    var adhocTarget = $(elem).closest(_selector);
+    var $('body'.data("adhocTarget", adhocTarget);
+    //return false;
 }
 
-var adhocTarget = null;
 
 function showTooltip(x, y, contents) {
     $('<div id="flottooltip">' + contents + '</div>').css({
@@ -667,12 +669,14 @@ function sortFilesAlphabetically() {
 //populate a coding sheet / ontology field from an adhoc add-resource child page. 
 //for now, let's assume there's never more than one adhoc child in play...
 function populateTarget(obj) {
+    var $body = $("body");
+    var adhocTarget = $body.data("adhocTarget");
     if(typeof(adhocTarget) == 'undefined') return;
 
     console.log("populateTarget called.   adHocTarget:%s", adhocTarget);
     $('input[type=hidden]', adhocTarget).val(obj.id);
     $('input[type=text]', adhocTarget).val(obj.title);
-    adhocTarget = null;
+    $body.removeData("adhocTarget");
 }
 
 

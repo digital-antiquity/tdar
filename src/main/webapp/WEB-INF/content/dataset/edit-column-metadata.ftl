@@ -176,7 +176,7 @@
             <@s.hidden id="${column_index}_cid" name="dataTableColumns[${column_index}].defaultCodingSheet.id" cssClass="codingsheetidfield" value="${codingId}" />
             <@edit.combobox name="dataTableColumns[${column_index}].defaultCodingSheet.title"  target="#columnDiv_${column_index}"
              label="Translate your data using a Coding Sheet:"
-             autocompleteParentElement="#columnDiv_${column_index}"
+             autocompleteParentElement="#divCodingSheet-${column_index}"
              autocompleteIdElement="#${column_index}_cid"
              placeholder="Enter the name of a Coding Sheet"
              addNewLink="/coding-sheet/add?returnToResourceMappingId=${resource.id?c}"
