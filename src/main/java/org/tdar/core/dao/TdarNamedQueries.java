@@ -83,7 +83,7 @@ public interface TdarNamedQueries {
     public static final String DOWNLOAD_BY = "admin.download";
     public static final String LOGS_FOR_RESOURCE = "admin.logsforResource";
     public static final String RESOURCE_ACCESS_HISTORY = "admin.accessHistory";
-
+    public static final String FILE_DOWNLOAD_HISTORY = "admin.fileFileHistory";
     public static final String RESOURCES_WITH_NULL_ACCOUNT_ID = "account.resourceNull";
     public static final String ACCOUNT_QUOTA_INIT = "account.quota.init";
     public static final String RESOURCES_WITH_NON_MATCHING_ACCOUNT_ID = "account.resourceDifferent";

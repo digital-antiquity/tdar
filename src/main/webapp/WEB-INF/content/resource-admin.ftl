@@ -17,6 +17,25 @@
 </#list>
 </table>
 
+<h2>Download Stats</h2>
+<#list downloadStats?keys as key>
+<#if downloadStats.get(key)?has_content>
+<h3>${key}</h3>
+<table class="tableFormat table">
+    <tr>
+        <th>downloads</th>
+        <th>day</th>
+    </tr>
+<#list (downloadStats.get(key)) as stats>
+    <tr>
+        <td>${stats.count}</td>
+        <td>${stats.aggregateDate}</td>
+    </tr>
+</#list>
+</table>
+</#if>
+</#list>
+
 <h2>Resource Revision History</h2>
 <table class="table tableFormat">
     <tr>

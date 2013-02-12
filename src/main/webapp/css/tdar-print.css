@@ -20,4 +20,13 @@
     content: "" !important;
   }
 
+  .show-print {
+	  display:block !important;
+	  visibility:visible !Important;
+  }
+
+	.atlwdg-trigger {
+	display:none;
+	visbility:hidden;
+	}
 }

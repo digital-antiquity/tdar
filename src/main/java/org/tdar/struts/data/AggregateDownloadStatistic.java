@@ -16,6 +16,12 @@ public class AggregateDownloadStatistic implements Serializable {
     public AggregateDownloadStatistic() {
     }
 
+    public AggregateDownloadStatistic(Long fileId, Date date, Number count) {
+        this.informationResourceFileId = fileId;
+        this.aggregateDate = date;
+        this.count = count;
+    }
+
     public AggregateDownloadStatistic(Date date, Number count, String filename, Long irfId, Long irId) {
         this.aggregateDate = date;
         this.count = count;

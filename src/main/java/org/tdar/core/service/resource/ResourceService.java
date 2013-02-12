@@ -464,6 +464,11 @@ public class ResourceService extends GenericService {
     }
 
     @Transactional
+    public List<AggregateDownloadStatistic> getAggregateDownloadStatsForFile(DateGranularity granularity, Date start, Date end, Long minCount,Long iRFileId) {
+        return datasetDao.getDownloadStatsForFile(granularity, start, end, minCount, iRFileId);
+    }
+
+    @Transactional
     public List<AggregateViewStatistic> getUsageStatsForResources(DateGranularity granularity, Date start, Date end, Long minCount, List<Long> resourceIds) {
         return datasetDao.getUsageStatsForResource(granularity, start, end, minCount, resourceIds);
     }
