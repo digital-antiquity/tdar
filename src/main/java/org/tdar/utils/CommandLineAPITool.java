@@ -11,6 +11,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -59,6 +60,9 @@ public class CommandLineAPITool {
     private static final String OPTION_PASSWORD = "password";
     private static final String OPTION_USERNAME = "username";
     private static final String OPTION_HOST = "host";
+    private static final String OPTION_LOG_FILE = "logFile";
+    private static final String OPTION_ACCOUNTID = "accountid";
+    private static final String OPTION_SLEEP = "sleep";
     private static final String OPTION_PROJECT_ID = "projectid";
     private static final String OPTION_ACCESS_RESTRICTION = "accessRestrictions";
     private static final String ALPHA_TDAR_ORG = "alpha.tdar.org";
@@ -69,11 +73,13 @@ public class CommandLineAPITool {
     private String hostname = ALPHA_TDAR_ORG; // DEFAULT SHOULD NOT BE CORE
     private String username = "";
     private String password = "";
+    private File logFile = new File("import.log");
     private Long projectId;
     private Long accountId;
     private Long msSleepBetween;
     private FileAccessRestriction fileAccessRestriction = FileAccessRestriction.PUBLIC;
     private List<String> seen = new ArrayList<String>();
+
     /**
      * return codes
      */
@@ -99,7 +105,7 @@ public class CommandLineAPITool {
                 .create(OPTION_FILE));
         options.addOption(OptionBuilder.withArgName(OPTION_CONFIG).hasArg().withDescription("optional configuration file")
                 .create(OPTION_CONFIG));
-        options.addOption(OptionBuilder.withArgName(OPTION_PROJECT_ID).hasArg().withDescription(siteAcronym + " Project ID to associate w/ resource")
+        options.addOption(OptionBuilder.withArgName(OPTION_PROJECT_ID).hasArg().withDescription(siteAcronym + "Project ID to associate w/ resource")
                 .create(OPTION_PROJECT_ID));
         options.addOption(OptionBuilder.withArgName(OPTION_ACCOUNTID).hasArg().withDescription(siteAcronym + "tDAR Account Id")
                 .create(OPTION_ACCOUNTID));
@@ -110,7 +116,6 @@ public class CommandLineAPITool {
         options.addOption(OptionBuilder.withArgName(OPTION_ACCESS_RESTRICTION).hasArg()
                 .withDescription("file access restrictions (" + StringUtils.join(FileAccessRestriction.values()) + ")")
                 .create(OPTION_ACCESS_RESTRICTION));
-
         CommandLineParser parser = new GnuParser();
 
         // TODO: lies! all lies!!!
@@ -235,7 +240,7 @@ public class CommandLineAPITool {
                         usernamePasswordCredentials);
 
                 logger.info("creating challenge/response authentication request for alpha");
-                HttpGet tdarIPAuth = new HttpGet("http://" + getHostname() + "/");
+                HttpGet tdarIPAuth = new HttpGet("https://" + getHostname() + "/");
                 logger.debug(tdarIPAuth.getRequestLine());
                 HttpResponse response = httpclient.execute(tdarIPAuth);
                 HttpEntity entity = response.getEntity();
@@ -243,7 +248,7 @@ public class CommandLineAPITool {
             }
 
             // make tdar authentication call
-            HttpPost tdarAuth = new HttpPost("http://" + getHostname() + "/login/process");
+            HttpPost tdarAuth = new HttpPost("https://" + getHostname() + "/login/process");
             List<NameValuePair> postNameValuePairs = new ArrayList<NameValuePair>();
             postNameValuePairs.add(new BasicNameValuePair("loginUsername", getUsername()));
             postNameValuePairs.add(new BasicNameValuePair("loginPassword", getPassword()));
@@ -332,16 +337,17 @@ public class CommandLineAPITool {
     }
 
     public boolean makeAPICall(File record, List<File> attachments) throws UnsupportedEncodingException, IOException {
-        HttpPost apicall = new HttpPost("http://" + getHostname() + "/api/upload");
         String path = record.getPath();
         HttpPost apicall = new HttpPost("https://" + getHostname() + "/api/upload?uploadedItem=" + URLEncoder.encode(path));
         MultipartEntity reqEntity = new MultipartEntity();
         boolean callSuccessful = true;
-
+        if (seen.contains(path)) {
+            logger.debug("skipping: " + path);
+        }
         reqEntity.addPart("record", new StringBody(FileUtils.readFileToString(record)));
 
         if (projectId != null) {
-            logger.debug("setting projectId:" + projectId);
+            logger.trace("setting projectId:" + projectId);
             reqEntity.addPart("projectId", new StringBody(projectId.toString()));
         }
         if (accountId != null) {
