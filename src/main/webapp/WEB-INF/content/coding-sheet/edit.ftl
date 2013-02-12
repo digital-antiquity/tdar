@@ -58,8 +58,8 @@
                     </span>
                     
                         
-                    <a class="btn btn-small"target="_blank" 
-                        onclick="setAdhocTarget(this);" 
+                    <a class="btn btn-small"target="adhoc_1" 
+                        onclick="setAdhocTarget(this, '#divOntology');" 
                         href='<@s.url value="/ontology/add?returnToResourceMappingId=${resource.id?c}"/>'>Create An Ontology</a>
                 </div>
              </div>

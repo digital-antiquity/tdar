@@ -949,7 +949,7 @@ this bit of freemarker is voodoo:
                         value="${value}" cssClass="${cssClass}" />
                         <button type="button" class="btn show-all"><i class="icon-chevron-down"></i></button>         
                         <#if addNewLink?has_content>           
-                        <a href="${addNewLink}"  onClick="setAdhocTarget(this);" class="btn show-all" target="_blank">add new</a>
+                        <a href="${addNewLink}"  onClick="setAdhocTarget(this, '${autocompleteParentElement?js_string}');" class="btn show-all" target="adhoc_1">add new</a>
                         </#if>                    
                     </div>
             <#if bootstrapControl>
