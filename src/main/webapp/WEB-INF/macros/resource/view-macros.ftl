@@ -1000,7 +1000,7 @@ ${_date?string('MM/dd/yyyy')}<#t>
 <#macro datatableChildJavascript>
 <script type="text/javascript">
 $(function() {
-    if(window.opener && window.opener.adhocTarget)  {
+    if(window.opener && window.opener.TDAR.common.adhocTarget)  {
         window.opener.populateTarget({
             id:${resource.id?c},
             title:"${resource.title?js_string}"

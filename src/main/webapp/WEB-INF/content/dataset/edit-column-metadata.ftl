@@ -194,7 +194,7 @@
              value="${ontologyTxt}"  
              label="Map it to an Ontology:"
              placeholder="Enter the name of an Ontology"
-             autocompleteParentElement="#columnDiv_${column_index}"
+             autocompleteParentElement="#divOntology-${column_index}"
              autocompleteIdElement="#${column_index}_oid"
              addNewLink="/ontology/add?returnToResourceMappingId=${resource.id?c}"
              

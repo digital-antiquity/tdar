@@ -620,8 +620,10 @@ function setAdhocTarget(elem, selector) {
     var _selector = selector;
     if (!_selector) selector = "div";
     var adhocTarget = $(elem).closest(_selector);
-    var $('body'.data("adhocTarget", adhocTarget);
-    //return false;
+    $('body').data("adhocTarget", adhocTarget);
+    //expose target for use by child window
+    TDAR.common.adhocTarget = adhocTarget;
+    //return false; 
 }
 
 
@@ -677,6 +679,8 @@ function populateTarget(obj) {
     $('input[type=hidden]', adhocTarget).val(obj.id);
     $('input[type=text]', adhocTarget).val(obj.title);
     $body.removeData("adhocTarget");
+    TDAR.common.adhocTarget = null;
+
 }
 
 
