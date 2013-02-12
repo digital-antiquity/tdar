@@ -313,20 +313,21 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         }
         return fileProxiesToProcess;
     }
-//
-//    @Override
-//    protected void postSaveCleanup(String returnString) {
-//        // try {
-//        // if (ticketId != null) {
-//        // PersonalFilestore filestore = filestoreService.getPersonalFilestore(getAuthenticatedUser());
-//        // filestore.purge(getGenericService().find(PersonalFilestoreTicket.class, ticketId));
-//        //
-//        // }
-//        // } catch (Exception e) {
-//        // logger.warn("an error occured when trying to cleanup the filestore: {} for {} ", ticketId, getAuthenticatedUser());
-//        // logger.debug("exception:", e);
-//        // }
-//    }
+
+    //
+    // @Override
+    // protected void postSaveCleanup(String returnString) {
+    // // try {
+    // // if (ticketId != null) {
+    // // PersonalFilestore filestore = filestoreService.getPersonalFilestore(getAuthenticatedUser());
+    // // filestore.purge(getGenericService().find(PersonalFilestoreTicket.class, ticketId));
+    // //
+    // // }
+    // // } catch (Exception e) {
+    // // logger.warn("an error occured when trying to cleanup the filestore: {} for {} ", ticketId, getAuthenticatedUser());
+    // // logger.debug("exception:", e);
+    // // }
+    // }
 
     protected void loadResourceProviderInformation() {
         // load resource provider institution and publishers

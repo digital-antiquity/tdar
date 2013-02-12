@@ -25,4 +25,8 @@
 	  visibility:visible !Important;
   }
 
+	.atlwdg-trigger {
+	display:none;
+	visbility:hidden;
+	}
 }

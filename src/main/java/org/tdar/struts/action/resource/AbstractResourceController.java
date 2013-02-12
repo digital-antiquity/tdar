@@ -5,8 +5,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -39,6 +41,8 @@ import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
+import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotation;
@@ -55,6 +59,7 @@ import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.data.AggregateDownloadStatistic;
 import org.tdar.struts.data.AggregateViewStatistic;
 import org.tdar.struts.data.DateGranularity;
 import org.tdar.struts.data.KeywordNode;
@@ -137,7 +142,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     private List<ResourceRevisionLog> resourceLogEntries;
 
-    private List<AggregateViewStatistic> usageStatsForResources;
+    private List<AggregateViewStatistic> usageStatsForResources = new ArrayList<AggregateViewStatistic>();
+    private Map<String, List<AggregateDownloadStatistic>> downloadStats = new HashMap<String, List<AggregateDownloadStatistic>>();
 
     private void initializeResourceCreatorProxyLists() {
         if (getPersistable().getResourceCreators() == null)
@@ -907,6 +913,15 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         setResourceLogEntries(getResourceService().getLogsForResource(getPersistable()));
         setUsageStatsForResources(getResourceService().getUsageStatsForResources(DateGranularity.WEEK, new Date(0L), new Date(), 1L,
                 Arrays.asList(getPersistable().getId())));
+        if (getPersistable() instanceof InformationResource) {
+            int i = 0;
+            for (InformationResourceFile file : ((InformationResource) getPersistable()).getInformationResourceFiles()) {
+                i++;
+                getDownloadStats().put(String.format("%s. %s", i ,file.getFileName()) ,
+                        getResourceService().getAggregateDownloadStatsForFile(DateGranularity.WEEK, new Date(0L), new Date(), 1L, file.getId()));
+                logger.info("{} {}", file.getId(), getDownloadStats().get(file.getFileName()));
+            }
+        }
         return SUCCESS;
     }
 
@@ -952,5 +967,13 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public boolean isBulkUpload() {
         return false;
+    }
+
+    public Map<String, List<AggregateDownloadStatistic>> getDownloadStats() {
+        return downloadStats;
+    }
+
+    public void setDownloadStats(Map<String, List<AggregateDownloadStatistic>> downloadStats) {
+        this.downloadStats = downloadStats;
     }
 }

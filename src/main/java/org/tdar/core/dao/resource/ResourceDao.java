@@ -315,6 +315,16 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         return query.list();
     }
 
+    
+    public List<AggregateDownloadStatistic> getDownloadStatsForFile(DateGranularity granularity, Date start, Date end, Long minCount, Long ... irFileIds) {
+        Query query = getCurrentSession().getNamedQuery(FILE_DOWNLOAD_HISTORY);
+        query.setParameter("start", start);
+        query.setParameter("end", end);
+        query.setParameter("minCount", minCount);
+        query.setParameterList("fileIds", Arrays.asList(irFileIds));
+        return query.list();
+    }
+
     private Query setupStatsQuery(DateGranularity granularity, Date start, Date end, Long minCount, boolean download) {
         Query query = getCurrentSession().getNamedQuery(ACCESS_BY);
         if (download) {
