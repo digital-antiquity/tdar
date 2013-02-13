@@ -33,7 +33,7 @@
 </form>
 </#if>
 
-<p><@edit.embargoCheck /></p>
+<p><@view.embargoCheck /></p>
 
 <div class="row">
     <div class="span9">
