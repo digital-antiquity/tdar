@@ -213,6 +213,12 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     private HashQueue<String, FileProxy> buildProxyQueue(List<FileProxy> proxies) {
         HashQueue<String, FileProxy> hashQueue = new HashQueue<String, FileProxy>();
         for (FileProxy proxy : proxies) {
+            if (proxy == null)
+                continue;
+            if (proxy.getAction() == null) {
+                logger.error("null proxy action on '{}'", proxy);
+                proxy.setAction(FileAction.NONE);
+            }
             if (proxy.getAction().shouldExpectFileHandle()) {
                 hashQueue.push(proxy.getFilename(), proxy);
             }
