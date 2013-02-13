@@ -19,8 +19,8 @@
 <#if (dataset.dataTables?has_content)>
 
 <#if authenticatedUser??  && ((resource.latestUploadedVersion?? && resource.latestUploadedVersion.informationResourceFile.public) || allowedToViewConfidentialFiles)>
-
 <h3>Browse the Data Set</h3>
+
 <#if (dataset.dataTables?size > 1)>
 <form>
     <label for="table_select">Choose Table:</label>
@@ -32,6 +32,8 @@
     </select>
 </form>
 </#if>
+
+<p><@edit.embargoCheck /></p>
 
 <div class="row">
     <div class="span9">
