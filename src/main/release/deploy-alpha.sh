@@ -9,8 +9,16 @@ fi
 
 cd /home/tdar/tdar.src/
 hg pull
-hg update -C
+#hg update -C
 mvn clean compile war:war -Palpha
-sudo service tomcat6 stop
-sudo rm -Rrf ~tdar/app/ROOT
-sudo service tomcat6 restart
+if [ $? -ne 0 ] 
+  then
+   echo "==============================================="
+   echo "|               BUILD FAILED                  |"
+   echo "|             SKIPPING  DEPLOY                |"
+   echo "==============================================="
+  else
+    sudo service tomcat6 stop
+    sudo rm -Rrf ~tdar/app/ROOT
+    sudo service tomcat6 restart
+fi

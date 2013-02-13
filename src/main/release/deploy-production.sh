@@ -12,7 +12,14 @@ hg pull
 hg update -C
 perl src/main/release/release.pl
 mvn clean compile war:war -Pproduction
-sudo service tomcat6 stop
-sudo rm -Rrf ~tdar/app/ROOT
-sudo service tomcat6 restart
-sudo service apache2 restart
+if [ $? -ne 0 ] 
+  then
+   echo "==============================================="
+   echo "|               BUILD FAILED                  |"
+   echo "|             SKIPPING  DEPLOY                |"
+   echo "==============================================="
+  else
+    sudo service tomcat6 stop
+    sudo rm -Rrf ~tdar/app/ROOT
+    sudo service tomcat6 restart
+fi
