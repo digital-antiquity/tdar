@@ -604,9 +604,11 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
         return internalPage.getWebResponse().getContentAsString();
     }
-
-    public String getPageCode() {
-        String content = internalPage.getWebResponse().getContentAsString();
+    
+    
+    //return a fun-sized version of the response string ( title section, the error section and h1 through to the footer);
+    public String getExpurgatedPageCode() {
+        String content = getPageCode();
         String out = "";
         try {
             if (content.indexOf(BEGIN_PAGE_HEADER) != -1 && content.indexOf(BEGIN_TDAR_CONTENT) != -1 && content.indexOf(BEGIN_TDAR_FOOTER) != -1) {
@@ -617,6 +619,12 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return content;
+    }
+   
+
+    public String getPageCode() {
+        String content = internalPage.getWebResponse().getContentAsString();
         return content;
     }
 
