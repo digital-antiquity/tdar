@@ -85,7 +85,7 @@ import com.threelevers.css.Selector;
  */
 public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
-    public static final String RESTRICTED_ACCESS_TEXT = "this resource is restricted from general view";
+    public static final String RESTRICTED_ACCESS_TEXT = "This resource is restricted from general view";
 
     private static final String ELIPSIS = "<!-- ==================== ... ======================= -->";
     private static final String BEGIN_PAGE_HEADER = "<!-- BEGIN-PAGE-HEADER -->";
@@ -607,6 +607,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     
     
     //return a fun-sized version of the response string ( title section, the error section and h1 through to the footer);
+    //FIXME:  too much expurgation!!!
     public String getExpurgatedPageCode() {
         String content = getPageCode();
         String out = "";
