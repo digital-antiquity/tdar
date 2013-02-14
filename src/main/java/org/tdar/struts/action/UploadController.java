@@ -13,6 +13,7 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -32,11 +33,10 @@ import org.tdar.struts.data.FileProxy;
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
-// @Results({@Result(name = "exception", type = "stream",
-// params = {
-// "contentType", "application/json",
-// "inputName", "jsonInputStream"})
-// })
+ @Results({
+ @Result(name = "exception", type = "httpheader", params = { "error", "500" }),
+ @Result(name = "input", type = "httpheader", params = { "error", "500" })
+ })
 public class UploadController extends AuthenticationAware.Base {
 
     @Autowired
