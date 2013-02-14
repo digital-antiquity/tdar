@@ -161,7 +161,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     @Transactional
     public AccountAdditionStatus updateQuota(Account account, Collection<Resource> resourcesToEvaluate) {
         logger.info("updating quota(s)");
-        if (account == null) {
+        if (Persistable.Base.isNullOrTransient(account)) {
             throw new TdarRecoverableRuntimeException(ACCOUNT_IS_NULL);
         }
         // evaluate resources
@@ -176,30 +176,33 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         List<Resource> newItems = new ArrayList<Resource>();
         List<Resource> existingItems = new ArrayList<Resource>();
         // Account localAccount = account;
+        Set<Account> toCleanup = new HashSet<Account>();
         for (Resource resource : resourcesToEvaluate) {
             // if the account is null -- die
             if (resource == null) {
                 continue;
             }
-            if (Persistable.Base.isNotNullOrTransient(account) && Persistable.Base.isNullOrTransient(resource.getAccount()) ||
-                    account.getResources().contains(resource)) {
+            if (Persistable.Base.isNullOrTransient(resource.getAccount()) || account.getResources().contains(resource)) {
                 newItems.add(resource);
                 continue;
             }
 
-            if (Persistable.Base.isNullOrTransient(account) && Persistable.Base.isNullOrTransient(resource.getAccount())) {
-                throw new TdarRecoverableRuntimeException(String.format("resource: %s is not assigned to an account", resource));
-            }
-
             // if we're dealing with multiple accounts ... die
-            if (Persistable.Base.isNotNullOrTransient(account) && !account.equals(resource.getAccount())) {
-                throw new TdarRuntimeException(String.format("we don't yet support multiple accounts applied to a single action, %s and %s", account,
-                        resource.getAccount()));
+            if (!account.equals(resource.getAccount())) {
+                Account oldAccount = resource.getAccount();
+                toCleanup.add(oldAccount);
+                oldAccount.getResources().remove(resource);
+                newItems.add(resource);
+                continue;
             }
             existingItems.add(resource);
         }
         getDao().merge(account);
 
+        for (Account old : toCleanup) {
+            updateAccountInfo(old);
+        }
+        
         logger.info("existing:{} new:{}", existingItems, newItems);
         Set<Resource> flagged = new HashSet<Resource>();
         Set<Resource> unflagged = new HashSet<Resource>();
@@ -245,7 +248,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     private boolean hasSpaceFor(Resource resource, Account account) {
         BillingActivityModel model = getLatestActivityModel();
-        //Trivial changes should fall through and not update because they are no-op in terms of effective changes
+        // Trivial changes should fall through and not update because they are no-op in terms of effective changes
         if (model.getCountingSpace() && account.getAvailableSpaceInBytes() - resource.getEffectiveSpaceUsed() < 0) {
             return false;
         }
