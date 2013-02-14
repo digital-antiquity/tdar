@@ -12,10 +12,12 @@ import java.util.regex.Pattern;
 
 import org.junit.Test;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.resource.Image;
+import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
+import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.struts.data.FileProxy;
 
 
 public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
@@ -64,6 +66,8 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         // the logged in creator should be able to see the image
         String path = internalPage.getUrl().getPath().toLowerCase();
         assertTrue("expecting to be on view page. Actual path:" + path, path.matches(REGEX_IMAGE_VIEW));
+        logger.debug("source of view page: {}", getPageCode());
+        assertTextPresent(RESTRICTED_ACCESS_TEXT);
         String viewPage = path;
         String editPage = path + "/edit";
         logger.debug("view:" + viewPage);
@@ -134,9 +138,32 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertFalse(statusCode == 200); // make sure we have a "bad" status code though
         gotoPage(viewPage);
         assertTextNotPresent("/thumbnail");
+        
+        Long imageId = extractTdarIdFromCurrentURL();
 
         assertDeniedAccess(irFileVersionIds);
+        
+       //compile irfileversion ids in a different way and try again.
+       irFileVersionIds.clear();
+       Image image = genericService.find(Image.class, imageId);
+       for(InformationResourceFile irfile : image.getInformationResourceFiles()) {
+           for(InformationResourceFileVersion irv : irfile.getInformationResourceFileVersions()) {
+               if(irv != null) {
+                   irFileVersionIds.add(irv.getId());
+               }
+           }
+       }
+       assertDeniedAccess(irFileVersionIds);
+        
+        
 
+    }
+    
+    @Test
+    public void testImageGalleryConfidentialityRules() {
+        //if user uploads confidential image:
+        // only users with view access should be able to see image in image galery
+        
     }
 
     public void assertDeniedAccess(List<Long> irFileVersionIds) {

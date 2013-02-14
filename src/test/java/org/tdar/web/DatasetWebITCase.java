@@ -76,7 +76,6 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     @Test
     @Rollback(true)
     public void testCreateDatasetRecord() {
-        final String CONFIDENTIAL_TEXT = "this resource is restricted from general view";
         
         // upload a file ahead of submitting the form
         
@@ -89,7 +88,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         Long codingSheetId = testCodingSheetCreation(ontologyId);
 
         gotoPage("/dataset/" + datasetId);
-        assertTextPresentIgnoreCase(CONFIDENTIAL_TEXT);
+        assertTextPresentIgnoreCase(RESTRICTED_ACCESS_TEXT);
         
         clickLinkWithText(TABLE_METADATA);
 
@@ -114,7 +113,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertTextPresentIgnoreCase("translated");
         
         //ensure that changing column metadata didn't implicitly change file access rights
-        assertTextPresentIgnoreCase(CONFIDENTIAL_TEXT);
+        assertTextPresentIgnoreCase(RESTRICTED_ACCESS_TEXT);
     }
     
     @Test
