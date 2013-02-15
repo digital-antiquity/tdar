@@ -12,6 +12,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <#macro basicInformation itemTypeLabel="file" itemPrefix="resource" isBulk=false>
 <div class="well-alt" id="basicInformationSection">
     <h2>Basic Information</h2>
+
   <#if resource.id?? &&  resource.id != -1>
       <@s.hidden name="id"  value="${resource.id?c}" />
   </#if>
@@ -53,6 +54,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <#nested>
 </div>
 
+<@accountSection />
 </#macro>
 
 <#macro abstractSection itemPrefix="resource">
@@ -734,7 +736,7 @@ applyInheritance(project, formSelector);
 <#if payPerIngestEnabled>
     <div class="well-alt" id="accountsection">
         <h2>Choose an account to bill from:</h2>
-        <@s.select name="accountId" list="%{activeAccounts}" listValue="name" listKey="id" required=true cssClass="Required"/>
+        <@s.select name="accountId" list="%{activeAccounts}" listValue="name" listKey="id" emptyOption="true" required=true cssClass="required"/>
     </div>
 </#if>
 </#macro>
@@ -1117,6 +1119,7 @@ jquery validation hooks?)
     <@resourceNoteSection showInherited />
 
     <@accountSection />
+
 
     <#if !resource.resourceType.document>
       <@relatedCollections showInherited />
