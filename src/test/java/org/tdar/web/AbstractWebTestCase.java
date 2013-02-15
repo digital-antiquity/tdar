@@ -608,7 +608,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     
     //return a fun-sized version of the response string ( title section, the error section and h1 through to the footer);
     //FIXME:  too much expurgation!!!
-    public String getExpurgatedPageCode() {
+    public String getPageBodyCode() {
         String content = getPageCode();
         String out = "";
         try {
