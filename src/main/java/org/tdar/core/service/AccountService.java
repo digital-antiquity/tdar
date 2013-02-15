@@ -329,7 +329,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         option.getItems().add(lowest);
         BillingActivity spaceActivity = getSpaceActivity();
         if (lowest == null) {
-            logger.error("no options found for f:{} m:{} ", numFiles, numMb);
+            logger.warn("no options found for f:{} m:{} ", numFiles, numMb);
             return null;
         }
         Long spaceAvailable = lowest.getQuantity() * lowest.getActivity().getNumberOfMb();
