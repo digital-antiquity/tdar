@@ -477,7 +477,7 @@ No coding rules have been entered for this coding sheet yet.
 
 <#macro statusCallout onStatus cssClass>
 <#if persistable.status.toString().equalsIgnoreCase(onStatus) >
-<div class="${cssClass}-alert alert">
+<div class="alert-${cssClass} alert">
     <p><#nested></p>
 </div>
 </#if>
@@ -502,7 +502,7 @@ No coding rules have been entered for this coding sheet yet.
 
 
 <#macro pageStatusCallout>
-<#local status="warning">
+<#local status="error">
 <#if (persistable.status)?has_content && !persistable.active >
 <#if persistable.status == 'DRAFT'>
   <#local status="info"/>
