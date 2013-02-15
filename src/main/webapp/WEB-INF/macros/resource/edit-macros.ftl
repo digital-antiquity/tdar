@@ -734,10 +734,24 @@ applyInheritance(project, formSelector);
 
 <#macro accountSection>
 <#if payPerIngestEnabled>
+    <#if activeAccounts?size == 1>
+    <div class="well-alt" id="accountsection">
+        <h2>Billing Account Information</h2>
+        <div class="control-group">
+            <label class="control-label">Account Name</label>
+            <div class="controls">
+                <#list activeAccounts as activeAccount>
+                <span class="uneditable-input">${activeAccount.name}</span>
+                </#list>            
+            </div>
+        </div>
+    </div>
+    <#else>
     <div class="well-alt" id="accountsection">
         <h2>Choose an account to bill from:</h2>
-        <@s.select name="accountId" list="%{activeAccounts}" listValue="name" listKey="id" emptyOption="true" required=true cssClass="required"/>
+        <@s.select name="accountId" list="%{activeAccounts}" title="Choose a valid account to bill from" listValue="name" listKey="id" emptyOption="true" required=true cssClass="required"/>
     </div>
+    </#if>
 </#if>
 </#macro>
 
