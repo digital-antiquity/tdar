@@ -249,8 +249,9 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     @Override
     protected void postSaveCallback(String actionMessage) {
         //if user has single billing account, use that (ignore the form)
-        if(getActiveAccounts().size() == 1 ) {
-            setAccountId(getActiveAccounts().iterator().next().getId());
+        List<Account> accounts = new ArrayList<Account>(getAccountService().listAvailableAccountsForUser(getAuthenticatedUser()));
+        if(accounts.size() == 1 ) {
+            setAccountId(accounts.get(0).getId());
         }
         
         if (actionMessage == SUCCESS) {
