@@ -437,7 +437,7 @@ No coding rules have been entered for this coding sheet yet.
 </#macro>
 
 <#macro kvp key="" val="" noescape=false>
-	<#if val?has_content>
+	<#if val?has_content && val != 'NULL' >
        <p class="sml"><strong>${key}:</strong> <#if noescape><#noescape>${val}</#noescape><#else>${val}</#if></p>
     </#if>
 </#macro>
