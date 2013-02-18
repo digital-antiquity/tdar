@@ -52,6 +52,6 @@ grants from the <a href="http://www.mellon.org" target='_blank'>Andrew W. Mellon
 and 0624341), and a grant jointly funded by the <a href="http://neh.gov/" target='_blank'>National Endowment for the Humanities</a>  (PX-50022-09) and the Higher Education Funding Council for 
 England of the United Kingdom acting through the <a href="http://www.jisc.ac.uk/" target='_blank'>Joint Information Systems Committee</a> (JISC). Any opinions, findings, conclusions
 or recommendations expressed in this material are those of the author(s) and do not necessarily reflect those of the National Science Foundation, the Mellon Foundation, the National Endowment 
-for the Humanities or the Joint Information Systems Committee. <br/>Copyright &copy; ${.now?string("yyyy")} Digital Antiquity.
+for the Humanities or the Joint Information Systems Committee. <br/>Copyright &copy; ${.now?string("yyyy")} Digital Antiquity.  <a href="/credit">Design Info</a>
 </p>
 </div>
