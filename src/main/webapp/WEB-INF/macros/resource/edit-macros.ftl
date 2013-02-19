@@ -760,7 +760,6 @@ applyInheritance(project, formSelector);
     <div class="controls controls-row">
         <div class="span6">
             <div class="controls-row">
-                <@s.hidden name="resourceNotes[${note_index}].id" cssClass="dont-inherit" />
                 <@s.select theme="tdar" emptyOption='false' name='resourceNotes[${note_index}].type' list='%{noteTypes}' listValue="label" />
             </div>
             <div class="controls-row">
