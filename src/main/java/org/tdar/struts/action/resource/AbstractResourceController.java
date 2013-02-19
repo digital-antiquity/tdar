@@ -707,7 +707,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             resourceNotes = new ArrayList<ResourceNote>();
         }
         //FIXME: sort dies if collection has nulls.  need to do this in loadBasicResourceMetadata after culling.
-        //Collections.sort(resourceNotes);
+        resourceNotes.removeAll(Collections.singletonList(null));
+        Collections.sort(resourceNotes);
         return resourceNotes;
     }
 
