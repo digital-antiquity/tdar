@@ -19,6 +19,8 @@ import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.Persistable.Sequence;
+import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
@@ -420,6 +422,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         saveSpatialContext();
         saveCitations();
 
+        prepSequence(resourceNotes);
         getResourceService().saveHasResources((Resource) getPersistable(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, resourceNotes,
                 getResource().getResourceNotes(), ResourceNote.class);
         saveResourceCreators();
@@ -430,7 +433,17 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
                 getResource().getResourceAnnotations(), ResourceAnnotation.class);
         getResourceCollectionService().saveSharedResourceCollections(getResource(), resourceCollections, getResource().getResourceCollections(),
                 getAuthenticatedUser(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS);
+        
     }
+    
+    public <T extends Sequenceable<T>> void prepSequence(List<T> list) {
+        if(list == null) return;
+        if(list.isEmpty()) return;
+        list.removeAll(Collections.singletonList(null));
+        Sequence.applySequence(list);
+    }
+    
+    
 
     protected void logModification(String message) {
         logResourceModification(getPersistable(), message, null);
@@ -490,6 +503,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         // load full access users
 
         getResourceNotes().addAll(getResource().getResourceNotes());
+        Collections.sort(getResourceNotes());
         getSourceCollections().addAll(getResource().getSourceCollections());
         getRelatedComparativeCollections().addAll(getResource().getRelatedComparativeCollections());
         getAuthorizedUsers().addAll(getResourceCollectionService().getAuthorizedUsersForResource(getResource()));
@@ -706,9 +720,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         if (resourceNotes == null) {
             resourceNotes = new ArrayList<ResourceNote>();
         }
-        //FIXME: sort dies if collection has nulls.  need to do this in loadBasicResourceMetadata after culling.
-        resourceNotes.removeAll(Collections.singletonList(null));
-        Collections.sort(resourceNotes);
         return resourceNotes;
     }
 
