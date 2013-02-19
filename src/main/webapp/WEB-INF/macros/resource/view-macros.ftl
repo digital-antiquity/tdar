@@ -135,10 +135,12 @@ View freemarker macros
                         'IMAGE':'page-white-picture','SENSORY_DATA':'page-white-picture','ONTOLOGY','page-white-text'
           } />
 
-        <#assign showAll = ""/>
+        <#local showAll = ""/>
+        <#local visibleCount = 0>
         <#list resource.informationResourceFiles as irfile>
-         <#if (irfile_index > 4)><#assign showAll = "view-hidden-extra-files"/></#if>
+         <#if (visibleCount > 4)><#local showAll = "view-hidden-extra-files"/></#if>
               <#if irfile.latestUploadedVersion??>
+                  <#if !irfile.deleted><#local visibleCount = 1 + visibleCount /></#if>
                       <#local ext = extensionMap[irfile.latestUploadedVersion.extension?lower_case ]!'' />
                       <#if !ext?has_content>
                       <#local ext = extensionMap[resource.resourceType ] />
