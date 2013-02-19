@@ -31,7 +31,6 @@ import org.tdar.core.dao.AccountDao;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.data.PricingOption;
@@ -130,7 +129,9 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     @Transactional
     protected void markResourcesAsFlagged(Collection<Resource> resources) {
         for (Resource resource : resources) {
-            resource.setStatus(Status.FLAGGED_ACCOUNT_BALANCE);
+            if (!getResourceEvaluator().getUncountedResourceStatuses().contains(resource.getStatus())) {
+                resource.setStatus(Status.FLAGGED_ACCOUNT_BALANCE);
+            }
         }
 
     }
@@ -202,7 +203,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         for (Account old : toCleanup) {
             updateAccountInfo(old);
         }
-        
+
         logger.info("existing:{} new:{}", existingItems, newItems);
         Set<Resource> flagged = new HashSet<Resource>();
         Set<Resource> unflagged = new HashSet<Resource>();
