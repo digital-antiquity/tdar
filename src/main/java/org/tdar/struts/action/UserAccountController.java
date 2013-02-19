@@ -118,6 +118,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         }
     }
 
+    
     @Action("view")
     @SkipValidation
     @HttpsOnly
@@ -129,6 +130,18 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         logger.warn("User {}(id:{}) attempted to access account view page for {}(id:{})", new Object[] { getAuthenticatedUser(),
                 getAuthenticatedUser().getId(), person, personId });
         return UNAUTHORIZED;
+    }
+
+    @Action(value="welcome", results={
+            @Result(name = SUCCESS, location = "view.ftl")
+    })
+    @SkipValidation
+    @HttpsOnly
+    public String welcome() {
+        if (!isAuthenticated()) return "new";
+        person = getAuthenticatedUser();
+        personId = person.getId();
+        return SUCCESS;
     }
 
     // FIXME: not implemented yet.
@@ -148,7 +161,7 @@ public class UserAccountController extends AuthenticationAware.Base implements P
         return SUCCESS;
     }
 
-    @Action(value = "register", results = { @Result(name = "success", type = "redirect", location = "view?personId=${person.id}"),
+    @Action(value = "register", results = { @Result(name = "success", type = "redirect", location = "welcome"),
             @Result(name = "input", location = "edit.ftl") })
     @HttpsOnly
     public String create() {
