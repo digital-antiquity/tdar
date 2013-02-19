@@ -13,7 +13,9 @@
 </head>
 <body>
 <h1>Invoice <span class="small">{${invoice.transactionStatus}}</span></h1>
-
+<#if invoice.otherReason?has_content>
+<p>${invoice.otherReason}</p>
+</#if>
 <@invoicecommon.printInvoice />
 
 <div class="container row">

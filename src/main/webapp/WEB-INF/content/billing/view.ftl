@@ -15,7 +15,9 @@
 
 <h1>${account.name!"Your account"} <#if accountGroup?has_content><span>${accountGroup.name}</span></#if></h1>
 
+<#if account.description?has_content>
 <p>${account.description!""}</p>
+</#if>
 
 <h3>Overall Usage</h3>
 <table class="tableFormat table">
@@ -30,7 +32,7 @@
  <#if billingActivityModel.countingFiles>
  	${account.availableNumberOfFiles}
  <#else>
-   <b>Unlimited</b>
+   <b>n/a</b>
  </#if>
  </td>
 </tr>
@@ -40,7 +42,7 @@
  <#if billingActivityModel.countingSpace>
  ${account.availableSpaceInMb} mb
  <#else>
-   <b>Unlimited</b>
+   <b>n/a</b>
  </#if>
  </td>
 </tr>
@@ -50,7 +52,7 @@
  <#if billingActivityModel.countingResources>
  ${account.availableResources}
  <#else>
-   <b>Unlimited</b>
+   <b>n/a</b>
  </#if>
  </td>
 </tr>
@@ -78,7 +80,7 @@
         <td> ${invoice.totalNumberOfFiles}</td>
         <td> ${invoice.totalSpaceInMb}</td>
         <td> ${invoice.totalResources}</td>
-        <td> <#if invoice.proxy>n/a<#else>$${invoice.total!0}</#if></td>
+        <td> <#if invoice.proxy && !billingManager>n/a<#else>$${invoice.total!0}</#if></td>
     </tr>
 </#list>
 </table>
