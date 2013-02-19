@@ -48,6 +48,6 @@ vim:sts=2:sw=2:filetype=jsp
     <dd>${person.rpaNumber!""}</dd>
     </#if>
 </dl>
-<a class="btn btn-primary" href="<@s.url value='/entity/person/myprofile>">Edit your Profile</a>
+<a class="btn btn-primary" href="<@s.url value='/entity/person/myprofile' />">Edit your Profile</a>
 </div>
 </body> 
