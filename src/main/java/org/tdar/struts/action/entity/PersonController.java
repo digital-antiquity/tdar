@@ -1,5 +1,8 @@
 package org.tdar.struts.action.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -9,6 +12,7 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
@@ -31,16 +35,19 @@ public class PersonController extends AbstractCreatorController<Person> {
     private String newUsername;
     private String password;
     private String confirmPassword;
+    private List<Account> accounts;
+    
     @Autowired
     ObfuscationService obfuscationService;
 
     @Action(value="myprofile", results={
-            @Result(name = SUCCESS, type = "redirect", location = "edit?id=${id}")
+            @Result(name = SUCCESS, location = "edit.ftl")
     })
     @SkipValidation
-    public String myProfile() {
+    public String myProfile() throws TdarActionException {
         setId(getAuthenticatedUser().getId());
-        return SUCCESS;
+        prepare();
+        return edit();
     }
     
     @Override
@@ -205,6 +212,14 @@ public class PersonController extends AbstractCreatorController<Person> {
 
     public void setNewUsername(String newUserName) {
         this.newUsername = newUserName;
+    }
+    
+    public List<Account> getAccounts() {
+        if(accounts == null) {
+            accounts = new ArrayList<Account>();
+            accounts.addAll(getAccountService().listAvailableAccountsForUser(getAuthenticatedUser()));
+        }
+        return accounts;
     }
 
 }

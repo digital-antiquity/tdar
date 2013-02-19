@@ -27,7 +27,7 @@ vim:sts=2:sw=2:filetype=jsp
 </div>
 
 <div class="well">
-<h2>Account Details</h2>
+<h2>Profile Details</h2>
 <dl class="dl-horizontal">
     <dt>Name:</dt>
     <dd>${person.properName}</dd>
@@ -48,6 +48,6 @@ vim:sts=2:sw=2:filetype=jsp
     <dd>${person.rpaNumber!""}</dd>
     </#if>
 </dl>
-<a class="btn btn-primary" href="<@s.url value='/entity/person/edit?id=${sessionData.person.id?c}'/>">Edit your Account Settings</a>
+<a class="btn btn-primary" href="<@s.url value='/entity/person/myprofile>">Edit your Profile</a>
 </div>
 </body> 

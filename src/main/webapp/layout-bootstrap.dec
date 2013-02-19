@@ -70,18 +70,25 @@
                             <li><a href="<@s.url value="/resource/add"/>">Upload a resource</a></li>
                             <li><a href="<@s.url value="/project/add"/>">Create a project</a></li>
                             <li><a href="<@s.url value="/collection/add"/>">Create a collection</a></li>
-                            <li><a href="<@s.url value="/dashboard"/>">View my resources</a></li>
+                            <li><a href="<@s.url value="/dashboard"/>">View my dashboard</a></li>
                             <li><a href="<@s.url value="/dashboard#bookmarks"/>">Bookmarks</a></li>
                         </ul>
     
                         <ul>
-                            <#if administrator >
-                                <li><a href="<@s.url value="/admin/searchindex/build"/>">reindex</a></li>
-                            </#if>
-                            <li><a href="<@s.url value='/entity/person/edit?id=${sessionData.person.id?c}'/>">Account Settings</a></li>
+                            <li><a href="<@s.url value='/entity/person/myprofile'/>">My Profile</a></li>
                             <li><a href="${commentUrlEscaped}?subject=tDAR%20comments">Contact Us</a></li>
                             <li><a href="<@s.url value="/logout"/>">Sign Out</a></li>
                         </ul>
+                        
+                        <#if administrator>
+                        <ul>
+                            <li>Administrator Options</li>
+                            <li><a href="<@s.url value='/admin'/>">Admin main</a></li>
+                            <li><a href="<@s.url value='/admin/system/activity'/>">System activity</a></li>
+                            <li><a href="<@s.url value='/admin/searchindex/build'/>">reindex</a></li>
+                        </ul>
+                        </#if>
+                        
                     </div>
                 </#if>
 

@@ -999,6 +999,22 @@ this bit of freemarker is voodoo:
     </#if>
 </#macro>
 
+<#macro billingAccountList accountList>
+<#if (payPerIngestEnabled!false)>
+<h2>Your Billing Accounts</h2>
+<ul>
+<#list accountList as account>
+    <li>
+        <a href="<@s.url value="/billing/${account.id?c}" />">${account.name!"unamed"}</a>
+    </li>
+</#list>
+<li><a href="/cart/add">Create a new account or add more to an existing one </a></li>
+</ul>
+</#if>        
+</#macro>
+
+
+
 </#escape>
 
 
