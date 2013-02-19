@@ -1131,7 +1131,6 @@ jquery validation hooks?)
 
     <@resourceNoteSection showInherited />
 
-    <@accountSection />
 
 
     <#if !resource.resourceType.document>
