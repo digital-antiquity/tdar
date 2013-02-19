@@ -17,7 +17,7 @@ public class Activity implements Serializable {
     private static final long serialVersionUID = 1078566853797118113L;
 
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
-
+    private static final String MOZILLA = "Mozilla/5.0 (compatible;";
     private Date startDate;
     private Date endDate;
     private Long totalTime = -1L;
@@ -39,7 +39,8 @@ public class Activity implements Serializable {
     }
 
     public static String formatRequest(HttpServletRequest request) {
-        return String.format("%s:%s?%s", request.getMethod(), request.getServletPath(), request.getQueryString() == null ? "" : StringUtils.left(request.getQueryString(), 10));
+        return String.format("%s:%s?%s", request.getMethod(), request.getServletPath(),
+                request.getQueryString() == null ? "" : StringUtils.left(request.getQueryString(), 10));
     }
 
     public Activity(HttpServletRequest httpServletRequest) {
@@ -151,6 +152,11 @@ public class Activity implements Serializable {
     }
 
     public void setBrowser(String browser) {
+        browser = browser.trim();
+        if (browser.contains(MOZILLA) && browser.endsWith(")")) {
+            browser = browser.replace(MOZILLA, "");
+            browser = browser.substring(0, browser.length() - 2);
+        }
         this.browser = browser;
     }
 

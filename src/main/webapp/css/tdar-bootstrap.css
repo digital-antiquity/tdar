@@ -1391,3 +1391,9 @@ img.responsive-image {
 	visibility:hidden;
 	display:none;
 }
+
+
+.highlightrow td {
+	background: lightgoldenrodyellow !important;
+	
+}
