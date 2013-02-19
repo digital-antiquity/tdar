@@ -706,11 +706,14 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         if (resourceNotes == null) {
             resourceNotes = new ArrayList<ResourceNote>();
         }
-        Collections.sort(resourceNotes);
+        //FIXME: sort dies if collection has nulls.  need to do this in loadBasicResourceMetadata after culling.
+        //Collections.sort(resourceNotes);
         return resourceNotes;
     }
 
-    public void setResourceNotes(List<ResourceNote> resourceNotes) {
+    //FIXME: JTd: I think we should make all controller collection setters protected unless service layer absolutely. Confirm w/ others and change signatures
+    //       or revert this method back to public if there are objections.
+    protected void setResourceNotes(List<ResourceNote> resourceNotes) {
         this.resourceNotes = resourceNotes;
     }
 

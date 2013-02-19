@@ -121,9 +121,10 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         docValMap.put("resourceNotes[0].type", ResourceNoteType.GENERAL.name());
         alternateTextLookup.add(ResourceNoteType.GENERAL.getLabel());
         docValMap.put("resourceNotes[0].note", "A Moose once bit my sister...");
-        docValMap.put("resourceNotes[1].type", ResourceNoteType.REDACTION.name());
+        //introduce a gap in the list (e.g. a user adds notes and then deleted the middle item)
+        docValMap.put("resourceNotes[2].type", ResourceNoteType.REDACTION.name());
         alternateTextLookup.add(ResourceNoteType.REDACTION.getLabel());
-        docValMap.put("resourceNotes[1].note", "We apologise for the fault in the subtitles. Those responsible have been sacked.");
+        docValMap.put("resourceNotes[2].note", "We apologise for the fault in the subtitles. Those responsible have been sacked.");
 
         docMultiValMap.put("investigationTypeIds", Arrays.asList(new String[] { "1", "2", "3", "5" }));
         docMultiValMap.put("approvedSiteTypeKeywordIds", Arrays.asList(new String[] { "273", "312" }));

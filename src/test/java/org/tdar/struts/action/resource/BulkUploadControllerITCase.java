@@ -120,7 +120,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         Collections.sort(siteTypeKeywordIds);
         bulkUploadController.setApprovedSiteTypeKeywordIds(siteTypeKeywordIds);
         ResourceNote note = new ResourceNote(ResourceNoteType.GENERAL, "A harrowing tale of note");
-        bulkUploadController.setResourceNotes(Arrays.asList(note));
+        bulkUploadController.getResourceNotes().addAll(Arrays.asList(note));
         bulkUploadController.getPersistable().setTitle(BulkUploadTemplate.BULK_TEMPLATE_TITLE);
         // add some source/ comparative collections
         addComparitiveCollections(bulkUploadController);
