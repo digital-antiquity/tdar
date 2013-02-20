@@ -13,7 +13,9 @@ import static org.tdar.TestConstants.TEST_DOCUMENT_NAME;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
@@ -33,6 +35,8 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
     public static HashMap<String, String> docValMap;
     public static HashMap<String, List<String>> docMultiValMap = new HashMap<String, List<String>>();
     public static HashMap<String, List<String>> docMultiValMapLab = new HashMap<String, List<String>>();
+    //we will assert the presence of these values, but we don't care what order they appear
+    public static Map<String, String> docUnorderdValMap = new HashMap<String, String>();
     public static List<String> alternateTextLookup = new ArrayList<String>();
     public static List<String> alternateCodeLookup = new ArrayList<String>();
     public static String REGEX_DOCUMENT_VIEW = "\\/document\\/\\d+$";
@@ -121,6 +125,7 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         docValMap.put("resourceNotes[0].type", ResourceNoteType.GENERAL.name());
         alternateTextLookup.add(ResourceNoteType.GENERAL.getLabel());
         docValMap.put("resourceNotes[0].note", "A Moose once bit my sister...");
+        //introduce a gap in the list (e.g. a user adds notes and then deleted the middle item)
         docValMap.put("resourceNotes[1].type", ResourceNoteType.REDACTION.name());
         alternateTextLookup.add(ResourceNoteType.REDACTION.getLabel());
         docValMap.put("resourceNotes[1].note", "We apologise for the fault in the subtitles. Those responsible have been sacked.");
@@ -136,6 +141,10 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         docMultiValMapLab.put("materialKeywordIds", Arrays.asList(new String[] { "Fire Cracked Rock", "Mineral", "Wood" }));
         docMultiValMapLab.put("approvedCultureKeywordIds", Arrays.asList(new String[] { "Hopewell", "Middle Woodland", "African American" }));
 
+        //look for these values in end product (and the edit form), but the system may alter the form field names (e.g. due to culling nulls in lists)
+        docUnorderdValMap.put("resourceNotes[5].type", ResourceNoteType.RIGHTS_ATTRIBUTION.name());
+        docUnorderdValMap.put("resourceNotes[5].note", "I'm not internationally known, but I'm known to rock a microphone.");
+        
     }
 
     @Test
@@ -151,6 +160,9 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         gotoPage("/document/add");
         setInput("ticketId", ticketId);
         addFileProxyFields(0, FileAccessRestriction.CONFIDENTIAL, TEST_DOCUMENT_NAME);
+        
+        docValMap.putAll(docUnorderdValMap);
+        
         for (String key : docValMap.keySet()) {
             setInput(key, docValMap.get(key));
         }
@@ -195,22 +207,25 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         }
 
         webClient.getCache().clear();
+        
+        //go to the edit page and ensure (some) of the form fields and values that we originally created are still present 
         clickLinkWithText("edit");
         logger.debug("----now on edit page----");
         logger.trace(getPageText());
 
         for (String key : docValMap.keySet()) {
             String val = docValMap.get(key);
+            
+            //ignore id fields,  file uploads, and fields with  UPPER CASE  VALUES (huh?)
             if (key.contains("Ids") || key.contains("upload") || val.toUpperCase().equals(val))
                 continue;
-
-            // FIXME: THE MAIN ISSUE HERE IS ONE OF ORDER NOTES FIELDS ARE NOT BEING SAVED AND KEPT IN THE ORDER
-            // THEY'RE BEING ENTERED, HENCE THE TEST FAILS
-            if (key.contains("[0]") || key.contains("[1]")) {
+            
+            
+            if (docUnorderdValMap.containsKey(key)) {
                 assertTextPresent(docValMap.get(key));
-                continue;
+            } else {
+                assertTrue("element:" + key + " should be set to:" + val, checkInput(key, val));
             }
-            assertTrue("element:" + key + " should be set to:" + val, checkInput(key, val));
         }
 
         for (String key : docMultiValMap.keySet()) {

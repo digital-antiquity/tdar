@@ -12,6 +12,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <#macro basicInformation itemTypeLabel="file" itemPrefix="resource" isBulk=false>
 <div class="well-alt" id="basicInformationSection">
     <h2>Basic Information</h2>
+
   <#if resource.id?? &&  resource.id != -1>
       <@s.hidden name="id"  value="${resource.id?c}" />
   </#if>
@@ -53,6 +54,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <#nested>
 </div>
 
+<@accountSection />
 </#macro>
 
 <#macro abstractSection itemPrefix="resource">
@@ -732,10 +734,24 @@ applyInheritance(project, formSelector);
 
 <#macro accountSection>
 <#if payPerIngestEnabled>
+    <#if activeAccounts?size == 1>
+    <div class="well-alt" id="accountsection">
+        <h2>Billing Account Information</h2>
+        <div class="control-group">
+            <label class="control-label">Account Name</label>
+            <div class="controls">
+                <#list activeAccounts as activeAccount>
+                <span class="uneditable-input">${activeAccount.name}</span>
+                </#list>            
+            </div>
+        </div>
+    </div>
+    <#else>
     <div class="well-alt" id="accountsection">
         <h2>Choose an account to bill from:</h2>
-        <@s.select name="accountId" list="%{activeAccounts}" listValue="name" listKey="id" required=true cssClass="Required"/>
+        <@s.select name="accountId" list="%{activeAccounts}" title="Choose a valid account to bill from" listValue="name" listKey="id" emptyOption="true" required=true cssClass="required"/>
     </div>
+    </#if>
 </#if>
 </#macro>
 
@@ -744,7 +760,6 @@ applyInheritance(project, formSelector);
     <div class="controls controls-row">
         <div class="span6">
             <div class="controls-row">
-                <@s.hidden name="resourceNotes[${note_index}].id" cssClass="dont-inherit" />
                 <@s.select theme="tdar" emptyOption='false' name='resourceNotes[${note_index}].type' list='%{noteTypes}' listValue="label" />
             </div>
             <div class="controls-row">
@@ -1116,7 +1131,7 @@ jquery validation hooks?)
 
     <@resourceNoteSection showInherited />
 
-    <@accountSection />
+
 
     <#if !resource.resourceType.document>
       <@relatedCollections showInherited />

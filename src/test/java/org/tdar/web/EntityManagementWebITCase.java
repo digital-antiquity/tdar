@@ -26,6 +26,12 @@ public class EntityManagementWebITCase extends AbstractAuthenticatedWebTestCase 
         assertButtonPresentWithText("Save");
 
     }
+    
+    @Test 
+    public void testViewMyProfilePage() {
+        gotoPage("/entity/person/myprofile");
+        assertTextPresent(getUser().getProperName());
+    }
 
     @Test
     public void testPersonLoggedOut() {

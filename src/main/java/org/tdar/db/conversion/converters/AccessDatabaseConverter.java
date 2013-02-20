@@ -1,6 +1,7 @@
 package org.tdar.db.conversion.converters;
 
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -16,6 +17,11 @@ import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.poifs.filesystem.DirectoryEntry;
+import org.apache.poi.poifs.filesystem.DocumentEntry;
+import org.apache.poi.poifs.filesystem.Entry;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.tools.ant.filters.StringInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
@@ -156,14 +162,51 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                         continue;
                     StringBuilder sb = new StringBuilder();
                     for (Object currentObject : currentRow.values()) {
+                        DataTableColumn currentColumn = dataTable.getDataTableColumns().get(j);
                         if (currentObject == null) {
                             j++;
                             continue;
                         }
                         String currentObjectAsString = currentObject.toString();
+                        if (currentColumn.getColumnDataType() == DataTableColumnType.BLOB) {
+                            
+                            logger.info(currentObject.getClass().getCanonicalName());
+//                            byte[] data = (byte[])currentObject;
+//                            logger.info("data: {} ", data);
+                            /*
+                            POIFSFileSystem fs;
+                            try
+                            {
+                                fs = new POIFSFileSystem(new ByteArrayInputStream((byte[])));
+                                DirectoryEntry root = fs.getRoot();
+                                // dir is an instance of DirectoryEntry ...
+                                Iterator<Entry> entries = root.getEntries();
+                                while (entries.hasNext()) {
+                                Entry entry  = entries.next();
+                                    System.out.println("found entry: " + entry.getName());
+                                    if (entry instanceof DirectoryEntry)
+                                    {
+                                        // .. recurse into this directory
+                                    }
+                                    else if (entry instanceof DocumentEntry)
+                                    {
+                                        // entry is a document, which you can read
+                                    }
+                                    else
+                                    {
+                                        // currently, either an Entry is a DirectoryEntry or a DocumentEntry,
+                                        // but in the future, there may be other entry subinterfaces. The
+                                        // internal data structure certainly allows for a lot more entry types.
+                                    }
+                                }
+                            } catch (IOException e)
+                            {
+                                logger.error("poi error", e);
+                            }*/
+                        }
                         sb.append(currentObjectAsString).append(" ");
 
-                        valueColumnMap.put(dataTable.getDataTableColumns().get(j), currentObjectAsString);
+                        valueColumnMap.put(currentColumn, currentObjectAsString);
                         j++;
                     }
                     sb.append("\r\n");

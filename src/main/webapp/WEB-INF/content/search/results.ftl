@@ -164,7 +164,7 @@
         <li class="media">
             <#if (facetlist?size > 1)>
 				<i class="pull-left search-list-check<#if currentValues?size == 1>ed</#if>box-grey"></i>
-                <div class="media-body"><a rel="nofollow" href="<@s.url includeParams="all">
+                <div class="media-body"><a rel="noindex" href="<@s.url includeParams="all">
                     <@s.param name="${facetParam}">${facet}</@s.param>
                     <@s.param name="startRecord" value="0"/>
                     <#if facetParam != "documentType">
@@ -202,7 +202,7 @@
         <#if facet.plural?has_content><#assign facetText=facet.plural/>
         <#elseif facet.label?has_content><#assign facetText=facet.label/>
         </#if>
-        <a rel="nofollow" href="<@s.url includeParams="all">
+        <a rel="noindex" href="<@s.url includeParams="all">
             <@s.param name="${facetParam}"value="" />
             <@s.param name="startRecord" value="0"/>
             <#if facetParam != "documentType">

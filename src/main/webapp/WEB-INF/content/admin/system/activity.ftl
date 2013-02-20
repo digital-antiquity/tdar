@@ -23,7 +23,7 @@ pre, td {
 </ul>
 
 
-<h3>Recent Actions</h3>
+<h3>User Agents</h3>
 <table class="tableFormat table">
     <thead>
         <tr>
@@ -42,16 +42,22 @@ pre, td {
     </tbody>
 </table>
 <br/>
+<h3>Recent Activity</h3>
 <table class="tableFormat table">
     <thead>
         <tr>
-            <th>date</th><th>total time (ms)</th><th>request</th>
+            <th>date</th><th>user</th><th>total time (ms)</th><th>request</th>
         </tr>
     </thead>
     <tbody>
     <#list activityList as activity>
-     <tr>
+    <#assign highlight = false/>
+    <#if activity.user?has_content || activity.name?contains("POST")>
+    	<#assign highlight=true />
+	</#if>
+     <tr class="${highlight?string('highlightrow','')}">
         <td>${activity.startDate?datetime}</td>
+        <td><#if activity.user?has_content>${activity.user.properName}</#if></td>
         <td>${(activity.totalTime?c)!default("-")}</td>
         <#noescape>
         <td width=550>${(activity.name!"")?html?replace("&", "<wbr>&")}</td>

@@ -52,7 +52,8 @@ public class Invoice extends Base implements Updatable {
         PREPARED,
         PENDING_TRANSACTION,
         TRANSACTION_SUCCESSFUL,
-        TRANSACTION_FAILED;
+        TRANSACTION_FAILED,
+        TRANSACTION_CANCELLED;
 
         public boolean isComplete() {
             switch (this) {
@@ -315,6 +316,7 @@ public class Invoice extends Base implements Updatable {
     public boolean isModifiable() {
         switch (transactionStatus) {
             case TRANSACTION_FAILED:
+            case TRANSACTION_CANCELLED:
             case TRANSACTION_SUCCESSFUL:
                 return false;
             default:

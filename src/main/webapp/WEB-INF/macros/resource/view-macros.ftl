@@ -135,10 +135,12 @@ View freemarker macros
                         'IMAGE':'page-white-picture','SENSORY_DATA':'page-white-picture','ONTOLOGY','page-white-text'
           } />
 
-        <#assign showAll = ""/>
+        <#local showAll = ""/>
+        <#local visibleCount = 0>
         <#list resource.informationResourceFiles as irfile>
-         <#if (irfile_index > 4)><#assign showAll = "view-hidden-extra-files"/></#if>
+         <#if (visibleCount > 4)><#local showAll = "view-hidden-extra-files"/></#if>
               <#if irfile.latestUploadedVersion??>
+                  <#if !irfile.deleted><#local visibleCount = 1 + visibleCount /></#if>
                       <#local ext = extensionMap[irfile.latestUploadedVersion.extension?lower_case ]!'' />
                       <#if !ext?has_content>
                       <#local ext = extensionMap[resource.resourceType ] />
@@ -437,7 +439,7 @@ No coding rules have been entered for this coding sheet yet.
 </#macro>
 
 <#macro kvp key="" val="" noescape=false>
-	<#if val?has_content>
+	<#if val?has_content && val != 'NULL' >
        <p class="sml"><strong>${key}:</strong> <#if noescape><#noescape>${val}</#noescape><#else>${val}</#if></p>
     </#if>
 </#macro>
@@ -477,7 +479,7 @@ No coding rules have been entered for this coding sheet yet.
 
 <#macro statusCallout onStatus cssClass>
 <#if persistable.status.toString().equalsIgnoreCase(onStatus) >
-<div class="${cssClass}-alert alert">
+<div class="alert-${cssClass} alert">
     <p><#nested></p>
 </div>
 </#if>
@@ -502,7 +504,7 @@ No coding rules have been entered for this coding sheet yet.
 
 
 <#macro pageStatusCallout>
-<#local status="warning">
+<#local status="error">
 <#if (persistable.status)?has_content && !persistable.active >
 <#if persistable.status == 'DRAFT'>
   <#local status="info"/>
