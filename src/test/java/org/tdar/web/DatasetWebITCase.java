@@ -85,6 +85,8 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         Long codingSheetId = testCodingSheetCreation(ontologyId);
 
         gotoPage("/dataset/" + datasetId);
+        assertTextPresentIgnoreCase(RESTRICTED_ACCESS_TEXT);
+        
         clickLinkWithText(TABLE_METADATA);
 
         assertTextPresentInCode(datasetId.toString());
@@ -106,7 +108,8 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         assertTrue(internalPage.getUrl().toString().endsWith("/dataset/" + datasetId));
         assertTextPresentIgnoreCase("translated");
-
+        //ensure that changing column metadata didn't implicitly change file access rights
+        assertTextPresentIgnoreCase(RESTRICTED_ACCESS_TEXT);
     }
     
     @Test

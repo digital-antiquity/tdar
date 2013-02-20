@@ -85,6 +85,8 @@ import com.threelevers.css.Selector;
  */
 public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
+    public static final String RESTRICTED_ACCESS_TEXT = "this resource is restricted from general view";
+
     private static final String ELIPSIS = "<!-- ==================== ... ======================= -->";
     private static final String BEGIN_PAGE_HEADER = "<!-- BEGIN-PAGE-HEADER -->";
     private static final String BEGIN_TDAR_CONTENT = "<!-- BEGIN-TDAR-CONTENT -->";

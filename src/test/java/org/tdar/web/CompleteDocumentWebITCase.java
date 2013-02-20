@@ -40,7 +40,7 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
     public CompleteDocumentWebITCase() {
         docValMap = new HashMap<String, String>();
         // removing inline implementation of HashMap to remove serialization warning
-        alternateTextLookup.add("Note: this resource is restricted from general view");
+        alternateTextLookup.add(RESTRICTED_ACCESS_TEXT);
 
         docValMap.put("projectId", "1");
         docValMap.put("document.title", "My Sample Document");
