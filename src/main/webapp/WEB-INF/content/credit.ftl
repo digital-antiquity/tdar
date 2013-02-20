@@ -2,7 +2,7 @@
 
 
 <h2>About the Design</h2>
-
+Digital Antiquity worked with <a href="http://fervorcreative.com/">Fervor Creative</a> to re-envision the public interface for tDAR, with the primary goals of simplifying and enhancing the interface.<br/>
 
 
 <h2>Image Credits and Sources</h2>
@@ -64,6 +64,10 @@ United States  2013</p>
 <p><b><a href="http://thenounproject.com/noun/pinboard/#icon-No5192">http://thenounproject.com/noun/pinboard/#icon-No5192</a><br>
 <b>Designed by</b>  Michael Rowe    <br/>
 Australia  2012</p>
+
+<p><b><a href="http://thenounproject.com/noun/protection/#icon-No4218">http://thenounproject.com/noun/protection/#icon-No4218</a><br/>
+<b>Designed by</b>  United Nations OCHA</br>
+ 2012</p>
 
 <p><b><a href="http://thenounproject.com/noun/folder/#icon-No650">http://thenounproject.com/noun/folder/#icon-No650</a><br>
 <b>Collaboration by</b>  Jack Biesek, Gladys Brenner, Margaret Faye, Healther Merrifield, Kate Keating, Wendy Olmstead, Todd Pierce, Jamie Cowgill & Jim Bolek <br/>
