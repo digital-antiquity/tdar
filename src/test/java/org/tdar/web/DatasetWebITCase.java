@@ -18,6 +18,8 @@ import java.util.regex.Pattern;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.resource.Dataset;
+import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.configuration.TdarConfiguration;
 
 /**
@@ -26,6 +28,8 @@ import org.tdar.core.configuration.TdarConfiguration;
  */
 public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
+    //FIXME: add datatable controller browse tests. See EditInheritingSectionsWebITCase#testProjectJson on how to parse/inspect.   
+    
     private static final String WEST_COAST_CITIES = "West Coast Cities";
     private static final String EAST_COAST_CITIES = "East Coast Cities";
     private static final String WASHINGTON_3 = "washington";
@@ -103,6 +107,29 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertTrue(internalPage.getUrl().toString().endsWith("/dataset/" + datasetId));
         assertTextPresentIgnoreCase("translated");
 
+    }
+    
+    @Test
+    @Rollback
+    public void testConfidentialDatatableView() {
+        testCreateDatasetRecord();
+        String viewPageUrl = internalPage.getUrl().toString();
+        Long datasetId = extractTdarIdFromCurrentURL();
+        //make sure we can get the get the datatable browse content.
+        Dataset dataset = datasetService.find(datasetId);
+        DataTable datatable = dataset.getDataTables().iterator().next();
+        String browseDataUrl = "/datatable/browse?id=" + datatable.getId();
+        gotoPage(browseDataUrl);
+        //does this look like json?
+        assertTextPresentInCode("columnEncodingType");
+        assertFalse("response should be json, not html", getPageCode().contains("<html"));
+        
+        //currently logged in as user,  log out and then log in as basic user  (without view rights) 
+        logout();
+        login(); 
+
+        gotoPage(browseDataUrl);
+        assertTextPresentInCode("{}");
     }
 
     private void uploadDataset() {

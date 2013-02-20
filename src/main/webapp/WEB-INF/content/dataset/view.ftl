@@ -76,7 +76,7 @@ $(document).ready(function() {
                      </#if>
                  </#list>
            ],
-           "sAjaxSource": "<@s.url value="/datatable/browse?id=${dataTable.id}" />"
+           "sAjaxSource": "<@s.url value="/datatable/browse?id=${dataTable.id?c}" />"
     };
     registerLookupDataTable(options);    
 } );
