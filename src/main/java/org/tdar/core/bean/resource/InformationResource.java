@@ -943,7 +943,7 @@ public abstract class InformationResource extends Resource {
     public List<InformationResourceFile> getVisibleFiles() {
         ArrayList<InformationResourceFile> visibleFiles = new ArrayList<InformationResourceFile>();
         for (InformationResourceFile irfile : getInformationResourceFiles()) {
-            if (irfile.isViewable() && !irfile.isDeleted() && !irfile.isConfidential()) {
+            if (irfile.isViewable() && !irfile.isDeleted() ) {
                 visibleFiles.add(irfile);
             }
         }

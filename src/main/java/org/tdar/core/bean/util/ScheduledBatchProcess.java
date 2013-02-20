@@ -139,6 +139,7 @@ public abstract class ScheduledBatchProcess<P extends Persistable> extends Sched
     public synchronized List<Long> getBatchIdQueue() {
         if (allIds == null) {
             allIds = findAllIds();
+            Collections.sort(allIds);
         }
         return allIds;
     }

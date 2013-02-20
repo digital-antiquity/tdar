@@ -604,6 +604,7 @@ No coding rules have been entered for this coding sheet yet.
           </div>   
    </#list>
   </div>
+	<p><@embargoCheck /></p>
 
    <#if (authenticatedUser?? && numImagesToDisplay > 0 ) || ( numImagesToDisplay > 1) >
 <script type="text/javascript">
