@@ -150,17 +150,7 @@ public class ResourceController extends AuthenticationAware.Base {
         resourceTypes.put(resourceType, resourceType.getLabel());
     }
 
-    // FIXME: this is really ugly, simplify + refactor
-    public Project getProject() {
-        Project project = getProjectService().find(projectId);
-        projectId = project.getId();
-        return project;
-    }
-
     public Long getProjectId() {
-        if (Persistable.Base.isNullOrTransient(projectId)) {
-            getProject();
-        }
         return projectId;
     }
 
