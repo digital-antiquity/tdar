@@ -153,11 +153,13 @@ public class BrowseController extends AbstractLookupController {
             setPersistable(creator);
             setMode("browseCreators");
             setSortField(SortOption.RESOURCE_TYPE);
-            String descr = String.format("All Resources from %s", creator.getProperName());
-            setSearchDescription(descr);
-            setSearchTitle(descr);
-            setRecordsPerPage(50);
-            handleSearch(queryBuilder);
+            if (Persistable.Base.isNotNullOrTransient(creator)) {
+                String descr = String.format("All Resources from %s", creator.getProperName());
+                setSearchDescription(descr);
+                setSearchTitle(descr);
+                setRecordsPerPage(50);
+                handleSearch(queryBuilder);
+            }
         }
         // reset fields which can be broken by the searching hydration obfuscating things
         creator = getGenericService().find(Creator.class, getId());

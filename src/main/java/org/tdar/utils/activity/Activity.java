@@ -151,14 +151,19 @@ public class Activity implements Serializable {
         return browser;
     }
 
-    //FIXME:  cleaning up the user-agent value dies if this header is not present.  commenting out for now.
-    public void setBrowser(String browser) {
-//        browser = browser.trim();
-//        if (browser.contains(MOZILLA) && browser.endsWith(")")) {
-//            browser = browser.replace(MOZILLA, "");
-//            browser = browser.substring(0, browser.length() - 2);
-//        }
-        this.browser = browser;
+    public void setBrowser(String browser_) {
+        this.browser = browser_;
+        if (StringUtils.isNotBlank(browser)) {
+            try {
+            browser = browser.trim();
+            if (browser.contains(MOZILLA) && browser.endsWith(")")) {
+                browser = browser.replace(MOZILLA, "");
+                browser = browser.substring(0, browser.length() - 2);
+            }
+            } catch (Exception e) {
+                logger.debug("exception: {}", e);
+            }
+        }
     }
 
     public boolean hasExpired(long since) {
