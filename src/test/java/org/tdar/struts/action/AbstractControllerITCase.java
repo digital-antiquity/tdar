@@ -157,7 +157,8 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationTestCa
         }
 
         if (users != null) {
-            controller.setAuthorizedUsers(users);
+            controller.getAuthorizedUsers().clear();
+            controller.getAuthorizedUsers().addAll(users);
         }
         resourceCollection.setSortBy(SortOption.RESOURCE_TYPE);
         controller.setServletRequest(getServletPostRequest());

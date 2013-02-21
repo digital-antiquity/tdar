@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.Dataset;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.configuration.TdarConfiguration;
 
@@ -76,7 +77,8 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     @Rollback(true)
     public void testCreateDatasetRecord() {
         // upload a file ahead of submitting the form
-
+        
+        docValMap.put("fileProxies[0].restriction",  FileAccessRestriction.CONFIDENTIAL.name());
         uploadDataset();
 
         assertTextPresentInPage(TEST_DATASET_NAME);
