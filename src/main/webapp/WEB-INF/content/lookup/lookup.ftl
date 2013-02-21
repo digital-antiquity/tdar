@@ -1,8 +1,10 @@
 <#if callback??>${callback}(</#if>
 {"${lookupSource.collectionName!"results"}":[
-<@s.iterator value="results" var="jsonResult" status="status">
-${jsonResult.toJSON().toString()}<@s.if test="!#status.last">,</@s.if>
-</@s.iterator>
+<#if jsonResult?has_content>
+<#list results as jsonResult>
+${jsonResult.toJSON().toString()}<#if !jsonResult_has_next>,</#if>
+</#list>
+</#if>
 ],
 "status": {
    "recordsPerPage" : ${recordsPerPage?c},

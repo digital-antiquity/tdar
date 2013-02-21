@@ -5,7 +5,7 @@
 <#import "common-account.ftl" as accountcommon>
 
 <head>
-<title>Your cart</title>
+<title>${account.name!"Your account"}</title>
 <meta name="lastModifiedDate" content="$Date$"/>
 </head>
 <body>
