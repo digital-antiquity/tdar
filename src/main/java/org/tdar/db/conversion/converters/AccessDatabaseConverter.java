@@ -1,0 +1,309 @@
+package org.tdar.db.conversion.converters;
+
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.BufferUnderflowException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.poi.poifs.filesystem.DirectoryEntry;
+import org.apache.poi.poifs.filesystem.DocumentEntry;
+import org.apache.poi.poifs.filesystem.Entry;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.tools.ant.filters.StringInputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.core.bean.resource.datatable.DataTableColumnRelationship;
+import org.tdar.core.bean.resource.datatable.DataTableColumnRelationshipType;
+import org.tdar.core.bean.resource.datatable.DataTableColumnType;
+import org.tdar.core.bean.resource.datatable.DataTableRelationship;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.db.model.abstracts.TargetDatabase;
+
+import com.healthmarketscience.jackcess.Column;
+import com.healthmarketscience.jackcess.Database;
+import com.healthmarketscience.jackcess.Index;
+import com.healthmarketscience.jackcess.IndexData.ColumnDescriptor;
+import com.healthmarketscience.jackcess.PropertyMap;
+import com.healthmarketscience.jackcess.Relationship;
+import com.healthmarketscience.jackcess.Table;
+
+/**
+ * The class reads an access db file, and converts it into other types of db
+ * files.
+ * 
+ * @author <a href='Yan.Qi@asu.edu'>Yan Qi</a>
+ * @version $Revision$
+ * @latest $Date$
+ */
+public class AccessDatabaseConverter extends DatasetConverter.Base {
+    private static final String DB_PREFIX = "d";
+    private static final String ERROR_CORRUPT_DB = "The system was unable to read portions of this Access database. It is possible this issue may be resolved By using the \"Compact and Repair \" feature in Microsoft Access.";
+    protected Logger logger = LoggerFactory.getLogger(getClass());
+
+    public String getDatabasePrefix() {
+        return DB_PREFIX;
+    }
+
+    public AccessDatabaseConverter() {
+    }
+
+    public AccessDatabaseConverter(InformationResourceFileVersion version, TargetDatabase targetDatabase) {
+        setTargetDatabase(targetDatabase);
+        setInformationResourceFileVersion(version);
+    }
+
+    protected void openInputDatabase()
+            throws IOException {
+        File databaseFile = getInformationResourceFileVersion().getFile();
+        // if we use ReadOnly Mode here we have the ability to open older files... http://jira.pentaho.com/browse/PDI-5111
+        setDatabase(Database.open(databaseFile, true));
+        this.setIrFileId(getInformationResourceFileVersion().getId());
+        this.setFilename(databaseFile.getName());
+    }
+
+    /**
+     * Dumps the access database wrapped by this converter into the target
+     * database (in our current case, PostgresDatabase).
+     * 
+     * @param targetDatabase
+     */
+    public void dumpData() throws Exception {
+        // start dumping ...
+        Map<String, DataTable> dataTableNameMap = new HashMap<String, DataTable>();
+        setIndexedContentsFile(new File(FileUtils.getTempDirectory(), String.format("%s.%s.%s", getFilename(), "index", "txt")));
+        FileOutputStream fileOutputStream = new FileOutputStream(getIndexedContentsFile());
+        BufferedOutputStream indexedFileOutputStream = new BufferedOutputStream(fileOutputStream);
+        for (String tableName : getDatabase().getTableNames()) {
+            // generate and sanitize new table name
+            DataTable dataTable = createDataTable(tableName);
+            dataTableNameMap.put(tableName, dataTable);
+            // drop the table if it has been there
+            targetDatabase.dropTable(dataTable);
+
+            Table currentTable = getDatabase().getTable(tableName);
+            List<Column> columnList = currentTable.getColumns();
+            for (Column currentColumn : columnList) {
+                DataTableColumnType dataType = DataTableColumnType.VARCHAR;
+                logger.info("Incoming column \t name:{}  type:{}", currentColumn.getName(), currentColumn.getType());
+                // NOTE: switch passthrough is intentional here (e.g. big, long, int types should all convert to BIGINT)
+                switch (currentColumn.getType()) {
+                    case BOOLEAN:
+                        dataType = DataTableColumnType.BOOLEAN;
+                        break;
+                    case DOUBLE:
+                    case NUMERIC:
+                    case FLOAT:
+                    case MONEY:
+                        dataType = DataTableColumnType.DOUBLE;
+                        break;
+                    case BYTE:
+                    case LONG:
+                    case INT:
+                        dataType = DataTableColumnType.BIGINT;
+                        break;
+                    case TEXT:
+                    case MEMO:
+                    case GUID:
+                        dataType = DataTableColumnType.TEXT;
+                        break;
+                    case SHORT_DATE_TIME:
+                        dataType = DataTableColumnType.DATETIME;
+                        break;
+                    case BINARY:
+                    case UNKNOWN_11:
+                    case UNKNOWN_0D:
+                    case OLE:
+                        dataType = DataTableColumnType.BLOB;
+                        break;
+                    default:
+                        dataType = DataTableColumnType.VARCHAR;
+                }
+
+                DataTableColumn dataTableColumn = createDataTableColumn(currentColumn.getName(), dataType, dataTable);
+                currentColumn.getProperties();
+
+                Object description_ = currentColumn.getProperties().getValue(PropertyMap.DESCRIPTION_PROP);
+                if (description_ != null && !StringUtils.isEmpty(description_.toString())) {
+                    dataTableColumn.setDescription(description_.toString());
+                }
+                logger.info("Converted column\t obj:{}\t description:{}\t length:{}", new Object[] { dataTableColumn, dataTableColumn.getDescription(),
+                        dataTableColumn.getLength() });
+                if (dataType == DataTableColumnType.VARCHAR) {
+                    dataTableColumn.setLength(Short.valueOf(currentColumn.getLengthInUnits()).intValue());
+                    logger.trace("currentColumn:{}\t length:{}\t length in units:{}", new Object[] { currentColumn, currentColumn.getLength(),
+                            currentColumn.getLengthInUnits() });
+                }
+            }
+
+            targetDatabase.createTable(dataTable);
+
+            try {
+                int rowCount = getDatabase().getTable(tableName).getRowCount();
+                for (int i = 0; i < rowCount; i++) {
+                    HashMap<DataTableColumn, String> valueColumnMap = new HashMap<DataTableColumn, String>();
+                    Map<String, Object> currentRow = currentTable.getNextRow();
+                    int j = 0;
+                    if (currentRow == null)
+                        continue;
+                    StringBuilder sb = new StringBuilder();
+                    for (Object currentObject : currentRow.values()) {
+                        DataTableColumn currentColumn = dataTable.getDataTableColumns().get(j);
+                        if (currentObject == null) {
+                            j++;
+                            continue;
+                        }
+                        String currentObjectAsString = currentObject.toString();
+                        if (currentColumn.getColumnDataType() == DataTableColumnType.BLOB) {
+                            
+                            logger.info(currentObject.getClass().getCanonicalName());
+//                            byte[] data = (byte[])currentObject;
+//                            logger.info("data: {} ", data);
+                            /*
+                            POIFSFileSystem fs;
+                            try
+                            {
+                                fs = new POIFSFileSystem(new ByteArrayInputStream((byte[])));
+                                DirectoryEntry root = fs.getRoot();
+                                // dir is an instance of DirectoryEntry ...
+                                Iterator<Entry> entries = root.getEntries();
+                                while (entries.hasNext()) {
+                                Entry entry  = entries.next();
+                                    System.out.println("found entry: " + entry.getName());
+                                    if (entry instanceof DirectoryEntry)
+                                    {
+                                        // .. recurse into this directory
+                                    }
+                                    else if (entry instanceof DocumentEntry)
+                                    {
+                                        // entry is a document, which you can read
+                                    }
+                                    else
+                                    {
+                                        // currently, either an Entry is a DirectoryEntry or a DocumentEntry,
+                                        // but in the future, there may be other entry subinterfaces. The
+                                        // internal data structure certainly allows for a lot more entry types.
+                                    }
+                                }
+                            } catch (IOException e)
+                            {
+                                logger.error("poi error", e);
+                            }*/
+                        }
+                        sb.append(currentObjectAsString).append(" ");
+
+                        valueColumnMap.put(currentColumn, currentObjectAsString);
+                        j++;
+                    }
+                    sb.append("\r\n");
+                    targetDatabase.addTableRow(dataTable, valueColumnMap);
+                    IOUtils.write(sb.toString(), indexedFileOutputStream);
+                }
+            } catch (BufferUnderflowException bex) {
+                throw new TdarRecoverableRuntimeException(ERROR_CORRUPT_DB);
+            } catch (IllegalStateException iex) {
+                throw new TdarRecoverableRuntimeException(ERROR_CORRUPT_DB);
+            }
+        }
+        completePreparedStatements();
+        IOUtils.closeQuietly(indexedFileOutputStream);
+        Set<DataTableRelationship> relationships = new HashSet<DataTableRelationship>();
+        for (String tableName1 : getDatabase().getTableNames()) {
+            for (String tableName2 : getDatabase().getTableNames()) {
+                if (tableName1.equals(tableName2))
+                    continue;
+                for (Relationship relationship : getDatabase().getRelationships(getDatabase().getTable(tableName1), getDatabase().getTable(tableName2))) {
+                    if (!tableName1.equals(relationship.getFromTable().getName()))
+                        continue;
+                    logger.trace(relationship.getName());
+                    DataTableRelationship relationshipToPersist = new DataTableRelationship();
+                    // iterate over the two lists of columns (from- and to-) and pair them up
+                    Iterator<Column> fromColumns = relationship.getFromColumns().iterator();
+                    Iterator<Column> toColumns = relationship.getToColumns().iterator();
+                    while (fromColumns.hasNext() && toColumns.hasNext()) {
+                        Column fromColumn = fromColumns.next();
+                        Column toColumn = toColumns.next();
+                        DataTableColumn fromDataTableColumn = dataTableNameMap.get(tableName1).getColumnByDisplayName(fromColumn.getName());
+                        DataTableColumn toDataTableColumn = dataTableNameMap.get(tableName2).getColumnByDisplayName(toColumn.getName());
+                        DataTableColumnRelationship columnRelationship = new DataTableColumnRelationship();
+                        columnRelationship.setLocalColumn(fromDataTableColumn);
+                        columnRelationship.setForeignColumn(toDataTableColumn);
+                        columnRelationship.setRelationship(relationshipToPersist);
+                        relationshipToPersist.getColumnRelationships().add(columnRelationship);
+                    }
+
+                    // determine the type of relationship: one-to-one, one-to-many, or many-to-one
+                    if (relationship.isOneToOne()) {
+                        relationshipToPersist.setType(DataTableColumnRelationshipType.ONE_TO_ONE);
+                    } else {
+                        // The relationship is a one-to-many or many-to-one, but which?
+                        // The "one" side of the relationship is the side whose key columns are a superset of the columns of a unique index on that table.
+                        List<Column> possiblyUniqueKeyColumns = relationship.getFromColumns();
+                        if (isUniqueKey(possiblyUniqueKeyColumns)) {
+                            relationshipToPersist.setType(DataTableColumnRelationshipType.ONE_TO_MANY);
+                        } else {
+                            relationshipToPersist.setType(DataTableColumnRelationshipType.MANY_TO_ONE);
+                        }
+                    }
+
+                    logger.trace(relationship.isLeftOuterJoin() + " left outer join");
+                    logger.trace(relationship.isRightOuterJoin() + " right outer join");
+                    logger.trace(relationship.isOneToOne() + " one to one");
+                    logger.trace(relationship.cascadeDeletes() + " cascade deletes");
+                    logger.trace(relationship.cascadeUpdates() + " cascade updates");
+                    logger.trace(relationship.getFlags() + " :flags");
+                    logger.trace("++++++++++++++++++++++++++++++++++++++++++++++++++++");
+                    logger.info("{}", relationshipToPersist);
+                    relationships.add(relationshipToPersist);
+                }
+                setRelationships(relationships);
+            }
+        }
+    }
+
+    /**
+     * Determine whether the set of columns in this Access database table would consistute a unique key,
+     * by looking for corresponding unique key indexes in the table.
+     * 
+     * @param possiblyUniqueKeyColumns
+     * @return
+     */
+    private boolean isUniqueKey(List<Column> possiblyUniqueKeyColumns) {
+        // an empty list of columns is bogus
+        if (possiblyUniqueKeyColumns.isEmpty())
+            return false;
+
+        // search through the table's indexes...
+        for (Index index : possiblyUniqueKeyColumns.get(0).getTable().getIndexes()) {
+            // if the index is unique then it may provide proof that the relationship's key is also unique
+            if (index.isUnique()) {
+                // assemble a list of the columns
+                List<Column> uniqueKeyColumns = new ArrayList<Column>();
+                for (ColumnDescriptor descriptor : index.getColumns()) {
+                    uniqueKeyColumns.add(descriptor.getColumn());
+                }
+                // check if the relationship's columns include all the unique key's columns
+                if (possiblyUniqueKeyColumns.containsAll(uniqueKeyColumns)) {
+                    return true;
+                }
+            }
+        }
+
+        // our set of columns did not match any unique indexes
+        return false;
+    }
+}

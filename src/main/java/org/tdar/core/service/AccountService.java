@@ -1,0 +1,447 @@
+package org.tdar.core.service;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.Account.AccountAdditionStatus;
+import org.tdar.core.bean.billing.AccountGroup;
+import org.tdar.core.bean.billing.BillingActivity;
+import org.tdar.core.bean.billing.BillingActivity.BillingActivityType;
+import org.tdar.core.bean.billing.BillingActivityModel;
+import org.tdar.core.bean.billing.BillingItem;
+import org.tdar.core.bean.billing.Invoice;
+import org.tdar.core.bean.billing.ResourceEvaluator;
+import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.Status;
+import org.tdar.core.dao.AccountDao;
+import org.tdar.core.dao.GenericDao;
+import org.tdar.core.dao.external.auth.TdarGroup;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
+import org.tdar.core.service.resource.ResourceService;
+import org.tdar.struts.data.PricingOption;
+import org.tdar.struts.data.PricingOption.PricingType;
+
+@Transactional(readOnly = true)
+@Service
+public class AccountService extends ServiceInterface.TypedDaoBase<Account, AccountDao> {
+
+    public static final String ACCOUNT_IS_NULL = "account is null";
+    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+    @Autowired
+    private GenericDao genericDao;
+
+    @Autowired
+    ResourceService resourceService;
+
+    @Autowired
+    AuthenticationAndAuthorizationService authService;
+
+    /*
+     * Find all accounts for user: return accounts that are active and have not met their quota
+     */
+    public Set<Account> listAvailableAccountsForUser(Person user) {
+        if (Persistable.Base.isNullOrTransient(user)) {
+            return Collections.emptySet();
+        }
+        return getDao().findAccountsForUser(user);
+    }
+
+    public List<BillingActivity> getActiveBillingActivities() {
+        List<BillingActivity> toReturn = new ArrayList<BillingActivity>();
+        for (BillingActivity activity : genericDao.findAll(BillingActivity.class)) {
+            if (activity.getEnabled()) {
+                toReturn.add(activity);
+            }
+        }
+        Collections.sort(toReturn);
+        logger.trace("{}", toReturn);
+        return toReturn;
+
+    }
+
+    public BillingActivityModel getLatestActivityModel() {
+        List<BillingActivityModel> findAll = getDao().findAll(BillingActivityModel.class);
+        BillingActivityModel latest = null;
+        for (BillingActivityModel model : findAll) {
+            if (!model.getActive())
+                continue;
+            if (latest == null || latest.getVersion() == null || model.getVersion() > latest.getVersion()) {
+                latest = model;
+            }
+        }
+        return latest;
+    }
+
+    public ResourceEvaluator getResourceEvaluator() {
+        return getResourceEvaluator(new Resource[0]);
+    }
+
+    public ResourceEvaluator getResourceEvaluator(Resource... resources) {
+        return new ResourceEvaluator(getLatestActivityModel(), resources);
+    }
+
+    public ResourceEvaluator getResourceEvaluator(Collection<Resource> resources) {
+        return new ResourceEvaluator(getLatestActivityModel(), resources.toArray(new Resource[0]));
+    }
+
+    public AccountGroup getAccountGroup(Account account) {
+        return getDao().getAccountGroup(account);
+    }
+
+    public boolean checkThatInvoiceBeAssigned(Invoice find, Account account) {
+
+        if (authService.isMember(find.getTransactedBy(), TdarGroup.TDAR_BILLING_MANAGER)) {
+            return true;
+        }
+
+        if (account.getOwner().equals(find.getTransactedBy()) || account.getAuthorizedMembers().contains(find.getTransactedBy())) {
+            return true;
+        }
+        throw new TdarRecoverableRuntimeException("cannot assign invoice to account");
+    }
+
+    public boolean hasSpaceInAnAccount(Person user, ResourceType type) {
+        for (Account account : listAvailableAccountsForUser(user)) {
+            logger.trace("evaluating account {}", account.getName());
+            if (account.isActive() && account.hasMinimumForNewRecord(getResourceEvaluator(), type)) {
+                logger.info("account '{}' has minimum balance for {}", account.getName(), user.getProperName());
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Transactional
+    protected void markResourcesAsFlagged(Collection<Resource> resources) {
+        for (Resource resource : resources) {
+            if (!getResourceEvaluator().getUncountedResourceStatuses().contains(resource.getStatus())) {
+                resource.setStatus(Status.FLAGGED_ACCOUNT_BALANCE);
+            }
+        }
+
+    }
+
+    @Transactional
+    protected void unMarkResourcesAsFlagged(Collection<Resource> resources) {
+        for (Resource resource : resources) {
+            if (resource.getStatus() != Status.FLAGGED_ACCOUNT_BALANCE)
+                continue;
+            Status status = resource.getPreviousStatus();
+            if (status == null) {
+                status = Status.ACTIVE;
+            }
+            resource.setStatus(status);
+        }
+    }
+
+    @Transactional
+    public AccountAdditionStatus updateQuota(Account account, Resource... resources) {
+        return updateQuota(account, Arrays.asList(resources));
+    }
+
+    @Transactional
+    public void updateAccountInfo(Account account) {
+        getDao().updateAccountInfo(account);
+    }
+
+    @Transactional
+    public AccountAdditionStatus updateQuota(Account account, Collection<Resource> resourcesToEvaluate) {
+        logger.info("updating quota(s)");
+        if (Persistable.Base.isNullOrTransient(account)) {
+            throw new TdarRecoverableRuntimeException(ACCOUNT_IS_NULL);
+        }
+        // evaluate resources
+        getResourceEvaluator(resourcesToEvaluate);
+        saveOrUpdateAll(resourcesToEvaluate);
+        getDao().updateTransientAccountOnResources(resourcesToEvaluate);
+        getDao().updateAccountInfo(account);
+        AccountAdditionStatus status = AccountAdditionStatus.CAN_ADD_RESOURCE;
+        account.getAvailableSpaceInBytes();
+        account.getAvailableNumberOfFiles();
+        // if the account is null ...
+        List<Resource> newItems = new ArrayList<Resource>();
+        List<Resource> existingItems = new ArrayList<Resource>();
+        // Account localAccount = account;
+        Set<Account> toCleanup = new HashSet<Account>();
+        for (Resource resource : resourcesToEvaluate) {
+            // if the account is null -- die
+            if (resource == null) {
+                continue;
+            }
+            if (Persistable.Base.isNullOrTransient(resource.getAccount()) || account.getResources().contains(resource)) {
+                newItems.add(resource);
+                continue;
+            }
+
+            // if we're dealing with multiple accounts ... die
+            if (!account.equals(resource.getAccount())) {
+                Account oldAccount = resource.getAccount();
+                toCleanup.add(oldAccount);
+                oldAccount.getResources().remove(resource);
+                newItems.add(resource);
+                continue;
+            }
+            existingItems.add(resource);
+        }
+        getDao().merge(account);
+
+        for (Account old : toCleanup) {
+            updateAccountInfo(old);
+        }
+
+        logger.info("existing:{} new:{}", existingItems, newItems);
+        Set<Resource> flagged = new HashSet<Resource>();
+        Set<Resource> unflagged = new HashSet<Resource>();
+        // not technically necessary to process these separately, but prefer incremental changes to wholesale adds
+        processResourceGroup(account, existingItems, flagged, unflagged);
+        processResourceGroup(account, newItems, flagged, unflagged);
+        account.getResources().addAll(newItems);
+        markResourcesAsFlagged(flagged);
+        unMarkResourcesAsFlagged(unflagged);
+        logger.info("s{} f{} r:{} ", account.getAvailableSpaceInBytes(), account.getAvailableNumberOfFiles(), unflagged);
+        if (flagged.size() > 0) {
+            if (account.getAvailableSpaceInBytes() < 0) {
+                status = AccountAdditionStatus.NOT_ENOUGH_SPACE;
+            } else {
+                status = AccountAdditionStatus.NOT_ENOUGH_FILES;
+            }
+        }
+        logger.info("marking {} resources {} FLAGGED", status, flagged);
+        saveOrUpdateAll(resourcesToEvaluate);
+        // FIXME: may not work exactly because resource evaluations may not have been "saved" yet.
+        updateAccountInfo(account);
+        saveOrUpdate(account);
+        return status;
+    }
+
+    private void processResourceGroup(Account account, List<Resource> existingItems, Set<Resource> flagged, Set<Resource> unflagged) {
+        for (Resource resource : existingItems) {
+            if (hasSpaceFor(resource, account)) {
+                unflagged.add(resource);
+            } else {
+                flagged.add(resource);
+            }
+            updateMarkers(resource, account);
+        }
+    }
+
+    private void updateMarkers(Resource resource, Account account) {
+        account.setSpaceUsedInBytes(account.getSpaceUsedInBytes() + resource.getEffectiveSpaceUsed());
+        account.setFilesUsed(account.getFilesUsed() + resource.getEffectiveFilesUsed());
+        logger.info(String.format("%s %s %s %s", account.getSpaceUsedInBytes(), resource.getEffectiveSpaceUsed(), account.getFilesUsed(),
+                resource.getEffectiveFilesUsed()));
+    }
+
+    private boolean hasSpaceFor(Resource resource, Account account) {
+        BillingActivityModel model = getLatestActivityModel();
+        // Trivial changes should fall through and not update because they are no-op in terms of effective changes
+        if (model.getCountingSpace() && account.getAvailableSpaceInBytes() - resource.getEffectiveSpaceUsed() < 0) {
+            return false;
+        }
+        if (model.getCountingFiles() && account.getAvailableNumberOfFiles() - resource.getEffectiveFilesUsed() < 0) {
+            return false;
+        }
+        return true;
+    }
+
+    @Transactional
+    public void updateTransientAccountInfo(Collection<Resource> resources) {
+        getDao().updateTransientAccountOnResources(resources);
+    }
+
+    public BillingActivity getSpaceActivity() {
+        for (BillingActivity activity : getActiveBillingActivities()) {
+            if (activity.getActivityType() == BillingActivityType.TEST) {
+                continue;
+            }
+            if ((activity.getNumberOfFiles() == null || activity.getNumberOfFiles() == 0)
+                    && (activity.getNumberOfResources() == null || activity.getNumberOfResources() == 0) && activity.getNumberOfMb() != null
+                    && activity.getNumberOfMb() > 0) {
+                return activity;
+            }
+        }
+        return null;
+    }
+
+    public PricingOption getCheapestActivityByFiles(Long numFiles_, Long numMb_, boolean exact) {
+        Long numFiles = 0L;
+        Long numMb = 0L;
+        if (numFiles_ != null) {
+            numFiles = numFiles_;
+        }
+        if (numMb_ != null) {
+            numMb = numMb_;
+        }
+
+        if (numFiles == 0 && numMb == 0) {
+            return null;
+        }
+
+        PricingOption option = new PricingOption(PricingType.SIZED_BY_FILE_ONLY);
+        if (!exact) {
+            option.setType(PricingType.SIZED_BY_FILE_ABOVE_TIER);
+        }
+        List<BillingItem> items = new ArrayList<BillingItem>();
+        logger.info("files: {} mb: {}", numFiles, numMb);
+
+        for (BillingActivity activity : getActiveBillingActivities()) {
+            int calculatedNumberOfFiles = numFiles.intValue(); // Don't use test activities or activities that are Just about MB
+            if (activity.getActivityType() == BillingActivityType.TEST || !activity.supportsFileLimit()) {
+                continue;
+            }
+            logger.trace("n:{} min:{}", numFiles, activity.getMinAllowedNumberOfFiles());
+            if (exact && numFiles < activity.getMinAllowedNumberOfFiles())
+                continue;
+
+            // 2 cases (1) exact value; (2) where the next step up might actually be cheaper
+            if (!exact && activity.getMinAllowedNumberOfFiles() >= numFiles) {
+                calculatedNumberOfFiles = activity.getMinAllowedNumberOfFiles().intValue();
+            }
+
+            BillingItem e = new BillingItem(activity, calculatedNumberOfFiles);
+            logger.trace(" -- {} ({})", e.getActivity().getName(), e);
+            items.add(e);
+        }
+        logger.trace("{} {}", option, items);
+        // finding the cheapest
+        BillingItem lowest = null;
+        for (BillingItem item : items) {
+            if (lowest == null) {
+                lowest = item;
+            } else if (lowest.getSubtotal() > item.getSubtotal()) {
+                lowest = item;
+            }
+        }
+        option.getItems().add(lowest);
+        BillingActivity spaceActivity = getSpaceActivity();
+        if (lowest == null) {
+            logger.warn("no options found for f:{} m:{} ", numFiles, numMb);
+            return null;
+        }
+        Long spaceAvailable = lowest.getQuantity() * lowest.getActivity().getNumberOfMb();
+        Long spaceNeeded = numMb - spaceAvailable;
+        logger.info("adtl. space needed: {} avail: {} ", spaceNeeded, spaceAvailable);
+        logger.info("space act: {} ", getSpaceActivity());
+        calculateSpaceActivity(option, spaceActivity, spaceNeeded);
+
+        if (option.getTotalMb() < numMb || option.getTotalFiles() < numFiles) {
+            return null;
+        }
+
+        return option;
+    }
+
+    public void calculateSpaceActivity(PricingOption option, BillingActivity spaceActivity, Long spaceNeeded) {
+        BillingItem extraSpace;
+        if (spaceNeeded > 0 && spaceActivity != null) {
+            int qty = (int) Account.divideByRoundUp(spaceNeeded, spaceActivity.getNumberOfMb());
+            extraSpace = new BillingItem(spaceActivity, qty);
+            option.getItems().add(extraSpace);
+        }
+    }
+
+    public PricingOption getCheapestActivityBySpace(Long numFiles_, Long spaceInMb_) {
+        Long numFiles = 0L;
+        Long spaceInMb = 0L;
+        if (numFiles_ != null) {
+            numFiles = numFiles_;
+        }
+        if (spaceInMb_ != null) {
+            spaceInMb = spaceInMb_;
+        }
+
+        if (numFiles == 0 && spaceInMb == 0) {
+            return null;
+        }
+
+        PricingOption option = new PricingOption(PricingType.SIZED_BY_MB);
+        List<BillingItem> items = new ArrayList<BillingItem>();
+        BillingActivity spaceActivity = getSpaceActivity();
+        if (spaceActivity != null && (numFiles == null || numFiles.intValue() == 0)) {
+            calculateSpaceActivity(option, spaceActivity, spaceInMb);
+            return option;
+        }
+
+        for (BillingActivity activity : getActiveBillingActivities()) {
+            if (activity.getActivityType() == BillingActivityType.TEST) {
+                continue;
+            }
+
+            if (activity.supportsFileLimit()) {
+                Long total = Account.divideByRoundUp(spaceInMb, activity.getNumberOfMb());
+                Long minAllowedNumberOfFiles = activity.getMinAllowedNumberOfFiles();
+                if (minAllowedNumberOfFiles == null) {
+                    minAllowedNumberOfFiles = 0L;
+                }
+
+                if (total * activity.getNumberOfFiles() < minAllowedNumberOfFiles) {
+                    total = minAllowedNumberOfFiles;
+                }
+
+                if (total < numFiles / activity.getNumberOfFiles()) {
+                    total = numFiles;
+                }
+                items.add(new BillingItem(activity, total.intValue()));
+            }
+        }
+        BillingItem lowest = null;
+        for (BillingItem item : items) {
+            if (lowest == null) {
+                lowest = item;
+            } else if (lowest.getSubtotal() > item.getSubtotal()) {
+                lowest = item;
+            }
+        }
+        option.getItems().add(lowest);
+        if (option == null || option.getTotalMb() < spaceInMb || option.getTotalFiles() < numFiles) {
+            return null;
+        }
+
+        return option;
+    }
+
+    public PricingOption calculateCheapestActivities(Invoice invoice) {
+        PricingOption lowestByMB = getCheapestActivityBySpace(invoice.getNumberOfFiles(), invoice.getNumberOfMb());
+        PricingOption lowestByFiles = getCheapestActivityByFiles(invoice.getNumberOfFiles(), invoice.getNumberOfMb(), false);
+
+        // If we are using the ok amount of space for that activity...
+        if (lowestByFiles != null) {
+            logger.info("lowest by files: {}", lowestByFiles.getSubtotal());
+        }
+        if (lowestByMB != null) {
+            logger.info("lowest by space: {} ", lowestByMB.getSubtotal());
+        }
+        if (lowestByMB == null || lowestByFiles.getSubtotal() < lowestByMB.getSubtotal()) {
+            return lowestByFiles;
+        }
+        return lowestByMB;
+    }
+
+    public PricingOption calculateActivities(Invoice invoice, PricingType pricingType) {
+        switch (pricingType) {
+            case SIZED_BY_FILE_ABOVE_TIER:
+                return getCheapestActivityBySpace(invoice.getNumberOfFiles(), invoice.getNumberOfMb());
+            case SIZED_BY_FILE_ONLY:
+                return getCheapestActivityByFiles(invoice.getNumberOfFiles(), invoice.getNumberOfMb(), false);
+            case SIZED_BY_MB:
+                return getCheapestActivityBySpace(invoice.getNumberOfFiles(), invoice.getNumberOfMb());
+        }
+        return null;
+    }
+
+}
