@@ -152,4 +152,8 @@ public class AccountGroup extends Base implements Updatable {
         this.status = status;
     }
 
+    public Date getDateUpdated() {
+        return lastModified;
+    }
+
 }

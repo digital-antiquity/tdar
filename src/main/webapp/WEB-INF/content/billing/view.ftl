@@ -107,8 +107,10 @@
         <th>Status</th>
         <th>Name</th>
         <th>Resource Type</th>
+        <th>Files</th>
+        <th>Space (MB)</th>
     </tr>
-<#list account.resources as resource>
+<#list resources as resource>
 	<#assign stat = ""/>
 	<#if resource.status == 'FLAGGED_ACCOUNT_BALANCE'>
 	<#assign stat = "error"/>
@@ -118,6 +120,8 @@
 	<td>${resource.status.label}</td>
     <td><a href="<@s.url value="/${resource.resourceType.urlNamespace}/${resource.id?c}"/>">${resource.title}</a></td>
     <td>${resource.resourceType.label}</td>
+    <td>${resource.filesUsed}</td>
+    <td>${resource.spaceUsedInMb}</td>
 </tr>
 </#list>
 </table>

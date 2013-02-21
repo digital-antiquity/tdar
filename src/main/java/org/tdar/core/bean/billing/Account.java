@@ -256,7 +256,7 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
 
     public Long getAvailableSpaceInBytes() {
         Long totalSpace = getTotalSpaceInBytes();
-        logger.info("total space: {} , used {} ", totalSpace, getSpaceUsedInBytes());
+        logger.trace("total space: {} , used {} ", totalSpace, getSpaceUsedInBytes());
         return totalSpace - getSpaceUsedInBytes();
     }
 
@@ -424,24 +424,7 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
         return canAddResource(re) == AccountAdditionStatus.CAN_ADD_RESOURCE;
     }
 
-    public static double divideBy(Number number1, Number number2) {
-        double n1 = 0;
-        double n2 = 0;
-        if (number1 != null) {
-            n1 = number1.doubleValue();
-        }
-        if (number2 != null) {
-            n2 = number2.doubleValue();
-        }
-        return n1 / n2;
+    public Date getDateUpdated() {
+        return lastModified;
     }
-
-    public static long divideByRoundUp(Number number1, Number number2) {
-        return (long) Math.ceil(divideBy(number1, number2));
-    }
-
-    public static long divideByRoundDown(Number number1, Number number2) {
-        return (long) Math.floor(divideBy(number1, number2));
-    }
-
 }

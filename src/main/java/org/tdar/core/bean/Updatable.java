@@ -6,6 +6,8 @@
  */
 package org.tdar.core.bean;
 
+import java.util.Date;
+
 import org.tdar.core.bean.entity.Person;
 
 /**
@@ -15,4 +17,6 @@ import org.tdar.core.bean.entity.Person;
 public interface Updatable {
 
     public void markUpdated(Person p);
+    
+    public Date getDateUpdated();
 }
