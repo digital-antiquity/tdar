@@ -85,6 +85,7 @@ import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -370,7 +371,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     // "created" or updated
     // does not persist
     private transient boolean created = false;
-
+    private transient boolean updated = false;
     @Column(name = "external_id")
     private String externalId;
 
@@ -1092,6 +1093,7 @@ public class Resource extends JsonModel.Base implements Persistable,
 
     public void markUpdated(Person p) {
         setUpdatedBy(p);
+        setUpdated(true);
         setDateUpdated(new Date());
         if (dateCreated == null || submitter == null) {
             setDateCreated(new Date());
@@ -1705,7 +1707,20 @@ public class Resource extends JsonModel.Base implements Persistable,
     }
 
     @XmlTransient
+    public Long getSpaceUsedInMb() {
+        return Persistable.Base.divideByRoundUp(spaceInBytesUsed, ONE_MB);
+    }
+    
+    @XmlTransient
     public Long getEffectiveFilesUsed() {
         return getFilesUsed() - getPreviousFilesUsed();
+    }
+
+    public boolean isUpdated() {
+        return updated;
+    }
+
+    public void setUpdated(boolean updated) {
+        this.updated = updated;
     }
 }

@@ -161,7 +161,7 @@ public class ResourceService extends GenericService {
         version.setInformationResourceId(resource.getId());
         try {
             StorageMethod rotate = StorageMethod.DATE;
-//            rotate.setRotations(5);
+            // rotate.setRotations(5);
             TdarConfiguration.getInstance().getFilestore().storeAndRotate(new StringInputStream(xmlService.convertToXML(resource)), version, rotate);
         } catch (Exception e) {
             logger.error("something happend when converting record to XML:" + resource, e);
@@ -464,7 +464,7 @@ public class ResourceService extends GenericService {
     }
 
     @Transactional
-    public List<AggregateDownloadStatistic> getAggregateDownloadStatsForFile(DateGranularity granularity, Date start, Date end, Long minCount,Long iRFileId) {
+    public List<AggregateDownloadStatistic> getAggregateDownloadStatsForFile(DateGranularity granularity, Date start, Date end, Long minCount, Long iRFileId) {
         return datasetDao.getDownloadStatsForFile(granularity, start, end, minCount, iRFileId);
     }
 
@@ -484,4 +484,5 @@ public class ResourceService extends GenericService {
     public List<Long> findAllResourceIdsWithFiles() {
         return datasetDao.findAllResourceIdsWithFiles();
     }
+
 }

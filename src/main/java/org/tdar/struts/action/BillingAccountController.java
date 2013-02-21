@@ -20,9 +20,11 @@ import org.tdar.core.bean.billing.AccountGroup;
 import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.GenericService;
 
 @Component
 @Scope("prototype")
@@ -36,6 +38,7 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     public static final String NEW_ACCOUNT = "new_account";
     private Long invoiceId;
     private Set<Account> accounts = new HashSet<Account>();
+    private List<Resource> resources = new ArrayList<Resource>();
 
     private AccountGroup accountGroup;
     private List<Person> authorizedMembers = new ArrayList<Person>();
@@ -100,6 +103,8 @@ public class BillingAccountController extends AbstractPersistableController<Acco
         if (Persistable.Base.isNotTransient(getAccount())) {
             getAccountService().updateQuota(getAccount(), getAccount().getResources());
         }
+        getResources().addAll(getAccount().getResources());
+        GenericService.sortByUpdatedDate(getResources());
         return SUCCESS;
     }
 
@@ -219,5 +224,13 @@ public class BillingAccountController extends AbstractPersistableController<Acco
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<Resource> getResources() {
+        return resources;
+    }
+
+    public void setResources(List<Resource> resources) {
+        this.resources = resources;
     }
 }

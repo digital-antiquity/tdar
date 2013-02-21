@@ -244,7 +244,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
             throw new TdarRecoverableRuntimeException("something went wrong, file " + fileProxy.getFilename() + " does not exist");
         }
         InformationResourceFileVersion version = new InformationResourceFileVersion(fileProxy.getVersionType(), filename, irFile);
-//        setInformationResourceFileMetadata(irFile, fileProxy);
+        // setInformationResourceFileMetadata(irFile, fileProxy);
         irFile.addFileVersion(version);
         filestore.store(fileProxy.getFile(), version);
         genericDao.save(version);

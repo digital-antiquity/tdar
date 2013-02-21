@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -178,11 +180,17 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         List<Resource> existingItems = new ArrayList<Resource>();
         // Account localAccount = account;
         Set<Account> toCleanup = new HashSet<Account>();
+        boolean hasUpdates = false;
         for (Resource resource : resourcesToEvaluate) {
             // if the account is null -- die
             if (resource == null) {
                 continue;
             }
+
+            if (resource.isUpdated()) {
+                hasUpdates = true;
+            }
+
             if (Persistable.Base.isNullOrTransient(resource.getAccount()) || account.getResources().contains(resource)) {
                 newItems.add(resource);
                 continue;
@@ -208,8 +216,16 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         Set<Resource> flagged = new HashSet<Resource>();
         Set<Resource> unflagged = new HashSet<Resource>();
         // not technically necessary to process these separately, but prefer incremental changes to wholesale adds
-        processResourceGroup(account, existingItems, flagged, unflagged);
-        processResourceGroup(account, newItems, flagged, unflagged);
+        if (hasUpdates) {
+            processResourceGroup(account, existingItems, flagged, unflagged, Mode.UPDATE);
+            processResourceGroup(account, newItems, flagged, unflagged, Mode.UPDATE);
+        } else {
+            account.setSpaceUsedInBytes(0L);
+            account.setFilesUsed(0L);
+            account.initTotals();
+            logger.info("s{} f{} r:{} ", account.getAvailableSpaceInBytes(), account.getAvailableNumberOfFiles(), unflagged);
+            processResourcesChronologically(account, resourcesToEvaluate, flagged, unflagged);
+        }
         account.getResources().addAll(newItems);
         markResourcesAsFlagged(flagged);
         unMarkResourcesAsFlagged(unflagged);
@@ -229,31 +245,69 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         return status;
     }
 
-    private void processResourceGroup(Account account, List<Resource> existingItems, Set<Resource> flagged, Set<Resource> unflagged) {
+    private void processResourcesChronologically(Account account, Collection<Resource> resourcesToEvaluate, Set<Resource> flagged, Set<Resource> unflagged) {
+        List<Resource> resourceList = new ArrayList<Resource>(resourcesToEvaluate);
+        GenericService.sortByUpdatedDate(resourceList);
+        processResourceGroup(account, resourceList, flagged, unflagged, Mode.ADD);
+
+    }
+
+    private void processResourceGroup(Account account, List<Resource> existingItems, Set<Resource> flagged, Set<Resource> unflagged, Mode mode) {
+        boolean seenFlagged = false;
         for (Resource resource : existingItems) {
-            if (hasSpaceFor(resource, account)) {
+            if (hasSpaceFor(resource, account, mode)) {
                 unflagged.add(resource);
+                updateMarkers(resource, account, mode);
             } else {
+                if (!seenFlagged) {
+                    logger.info("First Flagged item: {}",resource.getId());
+                    seenFlagged=true;
+                }
                 flagged.add(resource);
             }
-            updateMarkers(resource, account);
+        }
+        for (Resource resource : flagged) {
+            updateMarkers(resource, account, mode);
         }
     }
 
-    private void updateMarkers(Resource resource, Account account) {
-        account.setSpaceUsedInBytes(account.getSpaceUsedInBytes() + resource.getEffectiveSpaceUsed());
-        account.setFilesUsed(account.getFilesUsed() + resource.getEffectiveFilesUsed());
-        logger.info(String.format("%s %s %s %s", account.getSpaceUsedInBytes(), resource.getEffectiveSpaceUsed(), account.getFilesUsed(),
-                resource.getEffectiveFilesUsed()));
+    enum Mode {
+        UPDATE,
+        ADD;
     }
 
-    private boolean hasSpaceFor(Resource resource, Account account) {
+    private void updateMarkers(Resource resource, Account account, Mode mode) {
+        Long files = resource.getEffectiveFilesUsed();
+        Long space = resource.getEffectiveSpaceUsed();
+        if (mode == Mode.ADD) {
+            files = resource.getFilesUsed();
+            space = resource.getSpaceInBytesUsed();
+        }
+        logger.info(String.format("%s(%s) %s(%s) r:%s", account.getSpaceUsedInBytes(), space, account.getFilesUsed(), files, resource.getId()));
+        account.setSpaceUsedInBytes(account.getSpaceUsedInBytes() + space);
+        account.setFilesUsed(account.getFilesUsed() + files);
+    }
+
+    private boolean hasSpaceFor(Resource resource, Account account, Mode mode) {
         BillingActivityModel model = getLatestActivityModel();
+        Long files = resource.getEffectiveFilesUsed();
+        Long space = resource.getEffectiveSpaceUsed();
+        if (mode == Mode.ADD) {
+            files = resource.getFilesUsed();
+            space = resource.getSpaceInBytesUsed();
+        }
+
+        if (files == 0 && space == 0) {
+            return true;
+        }
+
         // Trivial changes should fall through and not update because they are no-op in terms of effective changes
-        if (model.getCountingSpace() && account.getAvailableSpaceInBytes() - resource.getEffectiveSpaceUsed() < 0) {
+        if (model.getCountingSpace() && account.getAvailableSpaceInBytes() - space < 0) {
+            logger.info("{} {} {}", account.getAvailableSpaceInBytes(), space, resource.getId());
             return false;
         }
-        if (model.getCountingFiles() && account.getAvailableNumberOfFiles() - resource.getEffectiveFilesUsed() < 0) {
+        if (model.getCountingFiles() && account.getAvailableNumberOfFiles() - files < 0) {
+            logger.info("{} {} {}", account.getAvailableNumberOfFiles(), files, resource.getId());
             return false;
         }
         return true;

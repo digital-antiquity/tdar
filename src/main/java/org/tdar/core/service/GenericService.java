@@ -2,6 +2,8 @@ package org.tdar.core.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +14,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.ScrollableResults;
 import org.hibernate.stat.Statistics;
@@ -24,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.DeHydratable;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.GenericDao.FindOptions;
@@ -372,4 +376,14 @@ public class GenericService {
         genericDao.forceDelete(entity);
     }
 
+    public static <T extends Updatable> void sortByUpdatedDate(List<T> resourcesToEvaluate) {
+        Collections.sort(resourcesToEvaluate, new Comparator<T>() {
+
+            @Override
+            public int compare(T o1, T o2) {
+                return ObjectUtils.compare(o1.getDateUpdated(), o2.getDateUpdated());
+            }
+        });
+        
+    }
 }
