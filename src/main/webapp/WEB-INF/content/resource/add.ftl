@@ -1,5 +1,5 @@
 <#macro link type title>
-    <#if (projectId?? && projectId > 0)>
+    <#if ((projectId!0) > 0)>
     <a href="<@s.url value="/${type}/add" />?projectId=${projectId?c}">${title}</a>
     <#else>
     <a href="<@s.url value="/${type}/add" />">${title}</a>
