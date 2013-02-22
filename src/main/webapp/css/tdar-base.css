@@ -1284,3 +1284,7 @@ vertical-align: middle;
 .table-row-separator-above {
 	border-top: 2px DASHED #AAA;
 }
+
+.strikethrough {
+	text-decoration: line-through;
+}

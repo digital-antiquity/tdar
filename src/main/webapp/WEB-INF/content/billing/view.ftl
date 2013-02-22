@@ -69,7 +69,11 @@
         <th>total</th>
     </tr>
 <#list account.invoices as invoice>
-    <tr>
+	<#assign extraClass=""/>
+	<#if invoice.invalid>
+		<#assign extraClass="strikethrough" />
+	</#if>
+    <tr class="${extraClass}">
         <td><a href="<@s.url value="/cart/${invoice.id?c}" />"/>${invoice.dateCreated}</a></td>
         <td>
             ${invoice.owner.properName}

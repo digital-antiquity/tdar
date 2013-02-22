@@ -62,6 +62,16 @@ public class Invoice extends Base implements Updatable {
             }
             return true;
         }
+
+        public boolean isInvalid() {
+            switch (this) {
+                case TRANSACTION_CANCELLED:
+                case TRANSACTION_FAILED:
+                    return true;
+                default:
+                    return false;
+            }
+        }
     }
 
     public Invoice() {
@@ -82,7 +92,7 @@ public class Invoice extends Base implements Updatable {
     private Date dateCreated;
     // the confirmation id for this invoice
 
-    @Column(name="transaction_id")
+    @Column(name = "transaction_id")
     private String transactionId;
 
     @Enumerated(EnumType.STRING)
@@ -103,7 +113,7 @@ public class Invoice extends Base implements Updatable {
 
     @OneToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     private BillingTransactionLog response;
-    
+
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     @JoinColumn(nullable = false, name = "executor_id")
     @NotNull
@@ -380,7 +390,7 @@ public class Invoice extends Base implements Updatable {
     public void setResponse(BillingTransactionLog response) {
         this.response = response;
     }
-    
+
     @Transient
     public boolean isProxy() {
         return ObjectUtils.notEqual(owner, transactedBy);
@@ -389,5 +399,5 @@ public class Invoice extends Base implements Updatable {
     public Date getDateUpdated() {
         return dateCreated;
     }
-    
+
 }
