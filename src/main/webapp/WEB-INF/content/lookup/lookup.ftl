@@ -2,7 +2,7 @@
 {"${lookupSource.collectionName!"results"}":[
 <#if results?has_content>
 <#list results as jsonResult>
-${jsonResult.toJSON().toString()}<#if !jsonResult_has_next>,</#if>
+${jsonResult.toJSON().toString()}<#if jsonResult_has_next>,</#if>
 </#list>
 </#if>
 ],
