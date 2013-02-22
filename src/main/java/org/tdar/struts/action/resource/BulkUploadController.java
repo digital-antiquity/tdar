@@ -211,11 +211,6 @@ public class BulkUploadController extends AbstractInformationResourceController<
         return SUCCESS;
     }
     
-    @Override
-    //We don't want to do any cleanup, so we override w/ a no-op.   Since bulk upload is asynchronous,  the service layer will need to take
-    //care of cleanup.
-    protected void postSaveCleanup(String returnString) {}
-
     /**
      * Get the current concept.
      * 
