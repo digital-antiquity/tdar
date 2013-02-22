@@ -151,13 +151,21 @@ public class Activity implements Serializable {
         return browser;
     }
 
-    public void setBrowser(String browser) {
-        browser = browser.trim();
-        if (browser.contains(MOZILLA) && browser.endsWith(")")) {
-            browser = browser.replace(MOZILLA, "");
-            browser = browser.substring(0, browser.length() - 2);
+    public void setBrowser(String browser_) {
+        this.browser = browser_;
+    }
+
+    public String getSimpleBrowserName() {
+        String browser_ = this.browser;
+        if (StringUtils.isNotBlank(browser_)) {
+            browser_ = browser_.trim();
+            if (browser_.contains(MOZILLA) && browser_.endsWith(")")) {
+                browser_ = browser_.replace(MOZILLA, "");
+                browser_ = browser_.substring(0, browser_.length() - 2);
+            }
         }
-        this.browser = browser;
+        return browser_;
+
     }
 
     public boolean hasExpired(long since) {

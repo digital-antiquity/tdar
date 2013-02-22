@@ -103,8 +103,6 @@ public class BillingAccountController extends AbstractPersistableController<Acco
         if (Persistable.Base.isNotTransient(getAccount())) {
             getAccountService().updateQuota(getAccount(), getAccount().getResources());
         }
-        getResources().addAll(getAccount().getResources());
-        GenericService.sortByUpdatedDate(getResources());
         return SUCCESS;
     }
 
@@ -139,6 +137,8 @@ public class BillingAccountController extends AbstractPersistableController<Acco
     public String loadViewMetadata() {
         setAccountGroup(getAccountService().getAccountGroup(getAccount()));
         getAuthorizedMembers().addAll(getAccount().getAuthorizedMembers());
+        getResources().addAll(getAccount().getResources());
+        GenericService.sortByUpdatedDate(getResources());
         return SUCCESS;
     }
 

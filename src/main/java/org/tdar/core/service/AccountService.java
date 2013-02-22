@@ -4,12 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -179,7 +177,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         List<Resource> newItems = new ArrayList<Resource>();
         List<Resource> existingItems = new ArrayList<Resource>();
         // Account localAccount = account;
-        Set<Account> toCleanup = new HashSet<Account>();
+        Set<Account> additionalAccountsToCleanup = new HashSet<Account>();
         boolean hasUpdates = false;
         for (Resource resource : resourcesToEvaluate) {
             // if the account is null -- die
@@ -196,19 +194,20 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
                 continue;
             }
 
-            // if we're dealing with multiple accounts ... die
+            // if we're dealing with multiple accounts ... 
             if (!account.equals(resource.getAccount())) {
                 Account oldAccount = resource.getAccount();
-                toCleanup.add(oldAccount);
+                additionalAccountsToCleanup.add(oldAccount);
                 oldAccount.getResources().remove(resource);
                 newItems.add(resource);
                 continue;
             }
             existingItems.add(resource);
+            account.getResources().add(resource);
         }
         getDao().merge(account);
 
-        for (Account old : toCleanup) {
+        for (Account old : additionalAccountsToCleanup) {
             updateAccountInfo(old);
         }
 
@@ -220,13 +219,29 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             processResourceGroup(account, existingItems, flagged, unflagged, Mode.UPDATE);
             processResourceGroup(account, newItems, flagged, unflagged, Mode.UPDATE);
         } else {
+            // start at 0 and re-add everything
+            // sort by date updated
             account.setSpaceUsedInBytes(0L);
             account.setFilesUsed(0L);
             account.initTotals();
             logger.info("s{} f{} r:{} ", account.getAvailableSpaceInBytes(), account.getAvailableNumberOfFiles(), unflagged);
             processResourcesChronologically(account, resourcesToEvaluate, flagged, unflagged);
         }
-        account.getResources().addAll(newItems);
+
+        status = updateResourceStatusesAndReconcileAccountStatus(account, status, flagged, unflagged);
+        saveOrUpdateAll(resourcesToEvaluate);
+        // FIXME: may not work exactly because resource evaluations may not have been "saved" yet.
+        // 20.2.13 -- appears ok
+        updateAccountInfo(account);
+        saveOrUpdate(account);
+        logger.trace("files used: {} ", account.getFilesUsed());
+        logger.trace("files avail: {} ", account.getAvailableNumberOfFiles());
+        logger.trace("space used: {} ", account.getSpaceUsedInMb());
+        logger.trace("space avail: {} ", account.getAvailableSpaceInMb());
+        return status;
+    }
+
+    private AccountAdditionStatus updateResourceStatusesAndReconcileAccountStatus(Account account, AccountAdditionStatus status, Set<Resource> flagged, Set<Resource> unflagged) {
         markResourcesAsFlagged(flagged);
         unMarkResourcesAsFlagged(unflagged);
         logger.info("s{} f{} r:{} ", account.getAvailableSpaceInBytes(), account.getAvailableNumberOfFiles(), unflagged);
@@ -238,10 +253,6 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             }
         }
         logger.info("marking {} resources {} FLAGGED", status, flagged);
-        saveOrUpdateAll(resourcesToEvaluate);
-        // FIXME: may not work exactly because resource evaluations may not have been "saved" yet.
-        updateAccountInfo(account);
-        saveOrUpdate(account);
         return status;
     }
 
@@ -252,16 +263,21 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     }
 
-    private void processResourceGroup(Account account, List<Resource> existingItems, Set<Resource> flagged, Set<Resource> unflagged, Mode mode) {
+    /*
+     * For each item, determine if the account has space for it, if so, add it, if not, add it to the flagged list.
+     * Wait until the very end to add the weight of the flagged resources to try and get as many resources visible
+     * and functional as possible.
+     */
+    private void processResourceGroup(Account account, List<Resource> items, Set<Resource> flagged, Set<Resource> unflagged, Mode mode) {
         boolean seenFlagged = false;
-        for (Resource resource : existingItems) {
+        for (Resource resource : items) {
             if (hasSpaceFor(resource, account, mode)) {
                 unflagged.add(resource);
                 updateMarkers(resource, account, mode);
             } else {
                 if (!seenFlagged) {
-                    logger.info("First Flagged item: {}",resource.getId());
-                    seenFlagged=true;
+                    logger.info("First Flagged item: {}", resource.getId());
+                    seenFlagged = true;
                 }
                 flagged.add(resource);
             }
@@ -276,6 +292,11 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         ADD;
     }
 
+    /*
+     * Update the account files and space settings.  Based on Mode.  Mode for a full re-evaulation of the account will be 
+     * ADD whereby the total space used is evaluated.  Otherwise, in UPDATE, the differential change between last save and
+     * current is used.
+     */
     private void updateMarkers(Resource resource, Account account, Mode mode) {
         Long files = resource.getEffectiveFilesUsed();
         Long space = resource.getEffectiveSpaceUsed();

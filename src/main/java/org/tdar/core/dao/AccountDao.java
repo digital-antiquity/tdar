@@ -113,6 +113,7 @@ public class AccountDao extends Dao.HibernateBase<Account> {
     public void updateAccountInfo(Account account) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.ACCOUNT_QUOTA_INIT);
         query.setParameter("accountId", account.getId());
+        query.setParameterList("statuses", Arrays.asList(Status.ACTIVE, Status.DRAFT, Status.DUPLICATE,Status.FLAGGED_ACCOUNT_BALANCE));
         Long totalFiles = 0L;
         Long totalSpaceInBytes = 0L;
         for (Object objs : query.list()) {

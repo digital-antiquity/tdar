@@ -340,4 +340,8 @@ public class BulkUploadController extends AbstractInformationResourceController<
         this.templateFilename = templateFilename;
     }
 
+    @Override
+    protected void postSaveCleanup(String returnString) {
+        //don't clean up personal filestore -- we have called async methods that need access to them and will handle cleanup.
+    }
 }

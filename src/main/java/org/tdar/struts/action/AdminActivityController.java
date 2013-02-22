@@ -76,13 +76,13 @@ public class AdminActivityController extends AuthenticationAware.Base {
         });
         setCounters(new HashMap<String, Integer>());
         for (Activity activity : activityList) {
-            Integer num = getCounters().get(activity.getBrowser());
+            Integer num = getCounters().get(activity.getSimpleBrowserName());
             if (num == null) {
                 num = 1;
             } else {
                 num++;
             }
-            getCounters().put(activity.getBrowser(), num);
+            getCounters().put(activity.getSimpleBrowserName(), num);
         }
         
         setActivePeople(getAuthenticationAndAuthorizationService().getCurrentlyActiveUsers());

@@ -1383,6 +1383,12 @@ img.responsive-image {
 
 .showcase-button-wrapper {
 	display:none;
+}
+
+
+.highlightrow td {
+	background: lightgoldenrodyellow !important;
+	
 	visibility:hidden;
 }
 
