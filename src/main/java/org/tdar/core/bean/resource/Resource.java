@@ -372,6 +372,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     // does not persist
     private transient boolean created = false;
     private transient boolean updated = false;
+    
     @Column(name = "external_id")
     private String externalId;
 
@@ -1716,6 +1717,7 @@ public class Resource extends JsonModel.Base implements Persistable,
         return getFilesUsed() - getPreviousFilesUsed();
     }
 
+    @XmlTransient
     public boolean isUpdated() {
         return updated;
     }
