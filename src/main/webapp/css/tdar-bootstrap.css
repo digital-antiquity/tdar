@@ -1388,18 +1388,4 @@ img.responsive-image {
 
 .highlightrow td {
 	background: lightgoldenrodyellow !important;
-	
-	visibility:hidden;
-}
-
-/* overwritten in tdar-print */
-.show-print {
-	visibility:hidden;
-	display:none;
-}
-
-
-.highlightrow td {
-	background: lightgoldenrodyellow !important;
-	
 }
