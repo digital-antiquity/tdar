@@ -188,6 +188,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             if (resource.isUpdated()) {
                 hasUpdates = true;
             }
+            account.getResources().add(resource);
 
             if (Persistable.Base.isNullOrTransient(resource.getAccount()) || account.getResources().contains(resource)) {
                 newItems.add(resource);
@@ -203,7 +204,6 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
                 continue;
             }
             existingItems.add(resource);
-            account.getResources().add(resource);
         }
         getDao().merge(account);
 
