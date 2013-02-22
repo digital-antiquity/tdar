@@ -332,7 +332,7 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.ACCOUNT_QUOTA_INIT,
-                query = "select sum(res.filesUsed), sum(res.spaceInBytesUsed) from Resource res where account_id =:accountId and status in ('ACTIVE','DRAFT')"
+                query = "select sum(res.filesUsed), sum(res.spaceInBytesUsed) from Resource res where account_id =:accountId and status in (:statuses)"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_INFORMATIONRESOURCES_WITH_FILES,
