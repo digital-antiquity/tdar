@@ -31,6 +31,7 @@ import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.runner.Description;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1042,6 +1043,11 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         personmap.put("person.contributorReason", "there is a reason");
         // personmap.put("person.rpaNumber", "1234567890");
         personmap.put("requestingContributorAccess", "true");
+    }
+    
+    @Override
+    public void onFail(Throwable e, Description description) {
+        logger.error("{} failed. server response below:\n\n {}", description.getDisplayName(), getPageCode());
     }
 
 }
