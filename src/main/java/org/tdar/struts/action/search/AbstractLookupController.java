@@ -444,6 +444,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         return lookupSource;
     }
 
+    //FIXME: This should always just be "results".  Remove this setter and update client js to expect 'results' field. 
     public void setLookupSource(LookupSource lookupSource) {
         this.lookupSource = lookupSource;
     }

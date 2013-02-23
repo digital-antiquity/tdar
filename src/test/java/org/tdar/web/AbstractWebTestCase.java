@@ -1047,7 +1047,8 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     
     @Override
     public void onFail(Throwable e, Description description) {
-        logger.error("{} failed. server response below:\n\n {}", description.getDisplayName(), getPageCode());
+       //FIXME:  need to get this to fire *before* the @After method logs out.  otherwise the pageCode will always be the tdar login screen.
+       // logger.error("{} failed. server response below:\n\n {}", description.getDisplayName(), getPageCode());
     }
 
 }

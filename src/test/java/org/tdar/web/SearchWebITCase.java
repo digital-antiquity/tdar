@@ -97,26 +97,6 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertTextPresent("2008 New Philadelphia Archaeology Report");
     }
 
-    private void reindex() {
-        gotoPage("/admin/searchindex/build");
-        gotoPage("/admin/searchindex/checkstatus");
-        logger.info(getPageCode());
-        int count = 0;
-        while (!getPageCode().contains("\"percentDone\" : 100")) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                fail("InterruptedException during reindex.  sorry.");
-            }
-            gotoPage("/admin/searchindex/checkstatus");
-            logger.info(getPageCode());
-            if (count == 1000) {
-                fail("we went through 1000 iterations of waiting for the search index to build... assuming something is wrong");
-            }
-            count++;
-        }
-    }
-
     @Test
     public void testUncontrolledSiteTypeKeywords() {
         reindex();
