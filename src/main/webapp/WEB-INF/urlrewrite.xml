@@ -137,8 +137,13 @@
 	</rule>
 
 	<rule>
-		<from>/sitemap/(.+)(\.(xml|gz))$</from>
+		<from>^/sitemap/(.+)(\.(gz|xml))$</from>
 		<to>/sitemap/sitemap?filename=$1$2</to>
+	</rule>
+
+	<rule>
+		<from>^/sitemap([^/]+)$</from>
+		<to>/sitemap/sitemap?filename=sitemap$1</to>
 	</rule>
 
 	<rule>

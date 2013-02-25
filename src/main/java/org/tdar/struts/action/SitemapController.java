@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -39,7 +41,7 @@ public class SitemapController  extends AuthenticationAware.Base {
     @Action("sitemap")
     public String execute() {
         File dir = new File(getTdarConfiguration().getSitemapDir());
-        File file = new File(dir, filename);
+        File file = new File(dir, FilenameUtils.getName(filename));
         if (file.exists() && file.isFile()) {
             try {
                 setInputStream(new FileInputStream(file));
