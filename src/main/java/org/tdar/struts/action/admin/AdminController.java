@@ -116,10 +116,11 @@ public class AdminController extends AuthenticationAware.Base {
         return SUCCESS;
     }
 
-    @Action(value="rebuildHomepageCaches",results={
+    @Action(value="rebuildCaches",results={
             @Result(name = SUCCESS, type = "redirect", location = "/admin")
     })
-    public String rebuildHomepageCaches() {
+    public String rebuildCaches() {
+        scheduledProcessService.updateSitemap();
         scheduledProcessService.updateHomepage();
         getActionMessages().add("Scheduled... check admin activity controller to test");
         return SUCCESS;
