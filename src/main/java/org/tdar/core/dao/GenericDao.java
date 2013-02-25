@@ -80,6 +80,10 @@ public class GenericDao {
         return getCurrentSession().createQuery("select id from " + persistentClass.getName()).list();
     }
 
+    public List<Long> findActiveIds(Class<? extends HasStatus> persistentClass) {
+        return getCurrentSession().createQuery(String.format("select id from %s where status in ('ACTIVE')", persistentClass.getName())).list();
+    }
+
     @SuppressWarnings("unchecked")
     public <E> List<Long> findAllIds(Class<E> persistentClass, long startId, long endId) {
         String hqlfmt = "select id from %s where id between %s and %s order by id asc";

@@ -59,11 +59,6 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
         return getDao().findByTitle(title);
     }
 
-//    @Transactional(readOnly = true)
-//    public List<Project> findAllSorted() {
-//        return getDao().findAllSorted();
-//    }
-
     @Transactional(readOnly = true)
     public List<Project> findAllSparseEditableProjects(Person person) {
         return getDao().findAllEditableProjects(person);

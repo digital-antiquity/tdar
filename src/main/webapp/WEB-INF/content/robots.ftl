@@ -7,4 +7,4 @@ Disallow: /search/advanced
 <#else>
 Disallow: *
 </#if>
-Crawl-Delay: 10
+Sitemap: /sitemap/${sitemapFile}

@@ -37,6 +37,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestName;
+import org.junit.rules.TestWatcher;
+import org.junit.runner.Description;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -160,6 +162,17 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     @Rule
     public TestName testName = new TestName();
+    
+    @Rule 
+    public TestWatcher failWatcher = new TestWatcher() {
+        
+
+        @Override
+        protected void failed(Throwable e, Description description) {
+            AbstractIntegrationTestCase.this.onFail(e, description);
+        }
+        
+    };
 
     @Before
     public final void announceTestStarting() {
@@ -171,6 +184,9 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         getControllers().clear();
         setIgnoreActionErrors(false);
     }
+
+    //Called when your test fails.  Did I say "when"?  I meant "if".
+    public void onFail(Throwable e, Description description) {}
 
     @After
     public final void announceTestOver() {

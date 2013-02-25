@@ -143,6 +143,10 @@ public class TdarConfiguration {
     public static TdarConfiguration getInstance() {
         return INSTANCE;
     }
+    
+    public String getSitemapDir() {
+        return String.format("%s/%s", getPersonalFileStoreLocation(), "sitemap");
+    }
 
     public String getBaseUrl() {
         String base = "http://" + getHostName();

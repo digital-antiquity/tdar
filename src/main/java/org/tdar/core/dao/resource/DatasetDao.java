@@ -207,4 +207,9 @@ public class DatasetDao extends ResourceDao<Dataset> {
         return query.list();
     }
 
+    public List<Resource> findAllSparseActiveResources() {
+        Query query = getCurrentSession().getNamedQuery(QUERY_SPARSE_ACTIVE_RESOURCES);
+        return query.list();
+    }
+
 }

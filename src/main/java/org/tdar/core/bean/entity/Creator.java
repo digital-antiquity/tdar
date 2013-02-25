@@ -42,6 +42,7 @@ import org.hibernate.search.annotations.Resolution;
 import org.hibernate.search.annotations.Store;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.URLConstants;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Indexable;
@@ -348,7 +349,7 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
     }
 
     public String getUrlNamespace() {
-        return "browse/creators";
+        return URLConstants.ENTITY_NAMESPACE;
     }
 
     public abstract boolean hasNoPersistableValues();

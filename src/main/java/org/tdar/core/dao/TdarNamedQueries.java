@@ -49,6 +49,7 @@ public interface TdarNamedQueries {
     public static final String QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME = "rescol.accessibleName";
     public static final String QUERY_SPARSE_EDITABLE_RESOURCES = "resource.editable.sparse";
     public static final String QUERY_COLLECTION_BY_PARENT = "collection.parent";
+    public static final String QUERY_COLLECTIONS_PUBLIC_ACTIVE = "collection.activeId";
     public static final String QUERY_COLLECTION_BY_AUTH_OWNER = "collection.authOwnerId_name";
     public static final String QUERY_COLLECTION_PUBLIC_WITH_HIDDEN_PARENT = "collection.hiddenParent";
     public static final String QUERY_EXTERNAL_ID_SYNC = "resource.externalId";
@@ -91,6 +92,7 @@ public interface TdarNamedQueries {
     public static final String ACCOUNTS_FOR_PERSON = "accounts.forPerson";
     public static final String ACCOUNT_GROUPS_FOR_PERSON = "accountgroups.forPerson";
     public static final String QUERY_INFORMATIONRESOURCES_WITH_FILES = "informationResources.withFiles";
+    public static final String QUERY_SPARSE_ACTIVE_RESOURCES = "resources.active";
     // raw SQL/HQL queries
 
     public static final String QUERY_SQL_DASHBOARD =

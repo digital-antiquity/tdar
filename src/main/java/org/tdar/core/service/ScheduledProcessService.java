@@ -41,6 +41,7 @@ import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.processes.DoiProcess;
 import org.tdar.core.service.processes.RebuildHomepageCache;
+import org.tdar.core.service.processes.SitemapGeneratorProcess;
 import org.tdar.core.service.resource.InformationResourceFileVersionService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.Filestore;
@@ -141,6 +142,12 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     public void updateDois() {
         logger.info("updating DOIs");
         queue(scheduledProcessMap.get(DoiProcess.class));
+    }
+
+    @Scheduled(cron = "20 15 0 * * *")
+    public void updateSitemap() {
+        logger.info("updating Sitemaps");
+        queue(scheduledProcessMap.get(SitemapGeneratorProcess.class));
     }
 
     @Scheduled(cron = "1 15 0 * * *")

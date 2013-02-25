@@ -289,4 +289,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         return collections;
     }
 
+    public List<Long> findAllPublicActiveCollectionIds() {
+        return getDao().findAllPublicActiveCollectionIds();
+    }
+
 }

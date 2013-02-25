@@ -87,4 +87,9 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         return null;
     }
 
+    public List<Long> findAllPublicActiveCollectionIds() {
+        Query query = getCurrentSession().getNamedQuery(QUERY_COLLECTIONS_PUBLIC_ACTIVE);
+        return query.list();
+    }
+
 }

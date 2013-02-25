@@ -26,13 +26,15 @@ public class UrlService {
     }
 
     public String absoluteUrl(Addressable resource) {
-        return String.format("%s%s", StringUtils.stripEnd(getBaseUrl(), "/"),
-                relativeUrl(resource));
+        return String.format("%s%s", StringUtils.stripEnd(getBaseUrl(), "/"), relativeUrl(resource));
     }
 
     public String relativeUrl(Addressable resource) {
-        return String.format("/%s/%s", resource.getUrlNamespace(),
-                resource.getId());
+        return String.format("/%s/%s", resource.getUrlNamespace(), resource.getId());
+    }
+
+    public String absoluteUrl(String namespace, Long id) {
+        return String.format("%s/%s/%s", StringUtils.stripEnd(getBaseUrl(), "/"), namespace, id);
     }
 
     public String downloadUrl(InformationResourceFileVersion version) {
