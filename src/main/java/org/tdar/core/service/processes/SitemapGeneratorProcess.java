@@ -41,9 +41,10 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
     private UrlService urlService;
 
     int batchCount = 0;
-
+    boolean run = false;
     @Override
     public void execute() {
+        run = true;
         TdarConfiguration config = TdarConfiguration.getInstance();
         File file = new File(config.getSitemapDir());
         try {
@@ -134,13 +135,11 @@ public class SitemapGeneratorProcess extends ScheduledProcess.Base<HomepageGeogr
 
     @Override
     public boolean isCompleted() {
-        // TODO Auto-generated method stub
-        return false;
+        return run;
     }
 
     @Override
     public boolean isSingleRunProcess() {
-        // TODO Auto-generated method stub
         return false;
     }
 
