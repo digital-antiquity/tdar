@@ -57,6 +57,18 @@
 </ul>
  
 
+<h1>Resources by ${siteAcronym} Year</h1>
+
+<ul>
+   <#list scholarData?sort_by("key") as key>
+
+	<#assign tdarYear = key.key?substring(3) />
+	<li> <a href="<@s.url value="/year-${key.key?c}"/>">${key.key?c}</a> </li>
+	</#list>
+</ul>
+
+
+
 <#macro searchFor queryParam term displayTerm wrappingTag>
      <${wrappingTag} class="bullet"><a href="<@s.url value="/search/results?${queryParam}=${term}&explore=true"/>">${displayTerm}</a></${wrappingTag}>
 </#macro>

@@ -70,7 +70,7 @@
     </tr>
 <#list account.invoices as invoice>
 	<#assign extraClass=""/>
-	<#if invoice.invalid>
+	<#if invoice.transactionStatus.invalid>
 		<#assign extraClass="strikethrough" />
 	</#if>
     <tr class="${extraClass}">

@@ -100,8 +100,8 @@
 	</rule>
 
 	<rule>
-		<from>^/browse/scholar/20([0-9][0-9])$</from>
-		<to>/search/results?groups%5B0%5D.operator=AND&amp;groups%5B0%5D.fieldTypes%5B0%5D=DATE_REGISTERED&amp;groups%5B0%5D.registeredDates%5B0%5D.start=1%2F1%2F$1&amp;groups%5B0%5D.registeredDates%5B0%5D.end=12%2F31%2F$1&amp;sortField=DATE_UPDATED
+		<from>^/year-20([0-9][0-9])$</from>
+		<to>/search/results?groups%5B0%5D.operator=AND&amp;groups%5B0%5D.fieldTypes%5B0%5D=DATE_REGISTERED&amp;groups%5B0%5D.registeredDates%5B0%5D.start=1%2F1%2F$1&amp;groups%5B0%5D.registeredDates%5B0%5D.end=12%2F31%2F$1&amp;sortField=DATE_UPDATED&amp;hideFacetsAndSort=true
 		</to>
 	</rule>
 
