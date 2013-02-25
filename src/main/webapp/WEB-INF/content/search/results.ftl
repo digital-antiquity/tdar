@@ -31,56 +31,56 @@
     </div>
 
 <#if (totalRecords > 0)>
-
+<#if !hideFacetsAndSort>
     <div id="sidebar-left" parse="true" class="options hidden-phone">
                 
                 <h2 class="totalRecords">Search Options</h2>
 
     <ul class="tools media-list">
         <li class="media"><a href="<@search.searchUrl "advanced"/>" rel="noindex"><i class="pull-left search-magnify-icon-red" ></i>Refine your search &raquo;</a></li>
-<#if lookupSource == 'RESOURCE'>
-        <li class="media"><i class="pull-left search-download-icon-red" ></i><div class="media-body">Download these results &raquo;
-        <#if sessionData?? && sessionData.authenticated && (totalRecords > 0) && (actionName=="results")>
-            <@search.searchLink "download" "to Excel" />
-            <#if totalRecords &gt; maxDownloadRecords>
-                Limited to the first ${maxDownloadRecords} results.    
-            </#if>
-    
-        <#else>
-        Login
-         </#if></div>
-        </li>
-</#if>
-<!--        <li>Subscribe via &raquo;
-            <a class="subscribe"  href="${rssUrl}">RSS</a>
-        </li> -->
-        </ul>
-
-<#if lookupSource == 'RESOURCE'>
-        <h3>View Options</h3> 
-        <ul class="tools media-list">
-                <li class="media"><a href="<@s.url includeParams="all">
-                    <@s.param name="orientation">LIST</@s.param>
-                </@s.url>"><i class="pull-left search-list-icon-red"></i>List</a></li>
-                <li class="media"><a href="<@s.url includeParams="all">
-                    <@s.param name="orientation">GRID</@s.param>
-                </@s.url>"><i class="pull-left search-grid-icon-red"></i>Grid</a></li>
-                <li class="media"><a href="<@s.url includeParams="all">
-                    <@s.param name="orientation">MAP</@s.param>
-                </@s.url>"><i class="pull-left search-map-icon-red"></i>Map</a></li>
-        </ul>
-</#if>
-                <form>
-                    <@facetBy facetlist=resourceTypeFacets currentValues=resourceTypes label="Resource Type(s)" facetParam="resourceTypes" />
-                    <@facetBy facetlist=documentTypeFacets currentValues=documentType label="Document Type(s)" facetParam="documentType" />
-                    <@facetBy facetlist=integratableOptionFacets currentValues=integratableOptions label="Integratable" facetParam="integratableOptions" />
-                    <@facetBy facetlist=fileAccessFacets currentValues=fileAccess label="File Access" facetParam="fileAccess" />
-                </form>
+	<#if lookupSource == 'RESOURCE'>
+	        <li class="media"><i class="pull-left search-download-icon-red" ></i><div class="media-body">Download these results &raquo;
+	        <#if sessionData?? && sessionData.authenticated && (totalRecords > 0) && (actionName=="results")>
+	            <@search.searchLink "download" "to Excel" />
+	            <#if totalRecords &gt; maxDownloadRecords>
+	                Limited to the first ${maxDownloadRecords} results.    
+	            </#if>
+	    
+	        <#else>
+	        Login
+	         </#if></div>
+	        </li>
+	</#if>
+	<!--        <li>Subscribe via &raquo;
+	            <a class="subscribe"  href="${rssUrl}">RSS</a>
+	        </li> -->
+	        </ul>
+	
+	<#if lookupSource == 'RESOURCE'>
+	        <h3>View Options</h3> 
+	        <ul class="tools media-list">
+	                <li class="media"><a href="<@s.url includeParams="all">
+	                    <@s.param name="orientation">LIST</@s.param>
+	                </@s.url>"><i class="pull-left search-list-icon-red"></i>List</a></li>
+	                <li class="media"><a href="<@s.url includeParams="all">
+	                    <@s.param name="orientation">GRID</@s.param>
+	                </@s.url>"><i class="pull-left search-grid-icon-red"></i>Grid</a></li>
+	                <li class="media"><a href="<@s.url includeParams="all">
+	                    <@s.param name="orientation">MAP</@s.param>
+	                </@s.url>"><i class="pull-left search-map-icon-red"></i>Map</a></li>
+	        </ul>
+	</#if>
+    <form>
+        <@facetBy facetlist=resourceTypeFacets currentValues=resourceTypes label="Resource Type(s)" facetParam="resourceTypes" />
+        <@facetBy facetlist=documentTypeFacets currentValues=documentType label="Document Type(s)" facetParam="documentType" />
+        <@facetBy facetlist=integratableOptionFacets currentValues=integratableOptions label="Integratable" facetParam="integratableOptions" />
+        <@facetBy facetlist=fileAccessFacets currentValues=fileAccess label="File Access" facetParam="fileAccess" />
+    </form>
     </div>
     <div class="visible-phone">
     <@search.searchLink "advanced" "Refine your search &raquo;" />
     </div>
-
+</#if>
     
     <#if (referrer?? && referrer == 'TAG')>
         <div class="notice">
@@ -101,13 +101,15 @@
 
 
      <h2 class="totalRecords">${startRecord+1}-${lastRec} (${totalRecords} Results)</h2>
+	<#if !hideFacetsAndSort>
      <div class="sort">
          <p>Sort By:</p>
          <form action=''>
             <@search.sortFields true/>
          </form>
      </div>
-
+	</#if>
+	
     <div class="tdarresults">
     <br/>
     <hr class="dbl" />

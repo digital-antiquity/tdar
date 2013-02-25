@@ -100,6 +100,8 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     private static final String SOMETHING_HAPPENED_WITH_EXCEL_EXPORT = "something happened with excel export";
     private static final String COULD_NOT_PROCESS_CREATOR_SEARCH = "could not process creator search";
     private static final int MAX_CREATOR_RECORDS_TO_RESOLVE = 10;
+    private boolean hideFacetsAndSort = false;
+    
     @Autowired
     private RssService rssService;
     @Autowired
@@ -936,6 +938,14 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
     public void setOrientation(DisplayOrientation orientation) {
         this.orientation = orientation;
+    }
+
+    public boolean isHideFacetsAndSort() {
+        return hideFacetsAndSort;
+    }
+
+    public void setHideFacetsAndSort(boolean hideFacetsAndSort) {
+        this.hideFacetsAndSort = hideFacetsAndSort;
     }
 
 }

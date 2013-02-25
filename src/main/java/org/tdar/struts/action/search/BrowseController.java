@@ -84,11 +84,6 @@ public class BrowseController extends AbstractLookupController {
         setCultureKeywords(getGenericKeywordService().findAllApprovedWithCache(CultureKeyword.class));
         setSiteTypeKeywords(getGenericKeywordService().findAllApprovedWithCache(SiteTypeKeyword.class));
         setTimelineData(getGenericService().findAll(BrowseDecadeCountCache.class));
-        return SUCCESS;
-    }
-
-    @Action("scholar")
-    public String year() {
         setScholarData(getGenericService().findAll(BrowseYearCountCache.class));
         return SUCCESS;
     }
