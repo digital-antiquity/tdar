@@ -6,6 +6,27 @@
 <#escape _untrusted as _untrusted?html >
 <h1>Explore ${siteAcronym}</h1>
 
+ <h2>Browse Resources by Title</h2>
+   <div>
+	 <#list alphabet as letter>
+	     <@searchFor "groups[0].startingLetter" letter letter "span"/>
+	 </#list>
+   </div>
+<br/>
+<br/>
+
+<h2>Resources by ${siteAcronym} Year</h2>
+
+<div>
+   <#list scholarData?sort_by("key") as key>
+
+	<#assign tdarYear = key.key?substring(3) />
+	<span class="bullet"> <a href="<@s.url value="/year-${key.key?c}"/>">${key.key?c}</a> </span>
+	</#list>
+<br/>
+</div>
+<br/>
+
 <div class="row">
     <div class="span6">
         <@common.barGraph resourceCacheObjects=homepageResourceCountCache graphLabel="${siteAcronym} by the Numbers" graphHeight=304 />
@@ -16,13 +37,6 @@
         <@common.worldMap />
     </div>
 </div>
-<br/><br/>
- <h2>Browse Resources by Title</h2>
-     <ul>
- <#list alphabet as letter>
-     <@searchFor "groups[0].startingLetter" letter letter "span"/>
- </#list>
-    </ul>
 
 <h2>Browse By Decade</h2>
 <@common.flotBarGraph resourceCacheObjects=timelineData graphWidth=900 graphHeight=300 graphLabel="${siteAcronym} by decade" rotateColors=false labelRotation=-90 minWidth=10 searchKey="groups[0].creationDecades" explore=true max=2100 min=1400 />
@@ -57,15 +71,6 @@
 </ul>
  
 
-<h1>Resources by ${siteAcronym} Year</h1>
-
-<ul>
-   <#list scholarData?sort_by("key") as key>
-
-	<#assign tdarYear = key.key?substring(3) />
-	<li> <a href="<@s.url value="/year-${key.key?c}"/>">${key.key?c}</a> </li>
-	</#list>
-</ul>
 
 
 
