@@ -8,9 +8,33 @@ if [  $(id -u) -eq 0  ]
    exit 1
 fi
 
+
+export PARAM=" -C "
+while getopts Dr: opt; do
+  case $opt in
+    r)
+      export PARAM=" -r $OPTARG "
+      ;;
+    D)
+      export PARAM=""
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
+      ;;
+    :)
+      echo "Option -$OPTARG requires an argument." >&2
+      exit 1
+      ;;
+  esac
+done
+
+echo " hg update $PARAM "
+
+
 cd /home/tdar/tdar.src/
 hg pull
-hg update -C
+hg update $PARAM
 perl src/main/release/release.pl
 mvn clean compile war:war -Pproduction
 if [ $? -ne 0 ] 
