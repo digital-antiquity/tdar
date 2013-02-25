@@ -51,7 +51,7 @@ public class BrowseWebITCase extends AbstractAnonymousWebTestCase {
 
     @Test
     public void testExploreGoogleScholar() {
-        gotoPage("/browse/scholar");
+        gotoPage("/year-2012");
     }
 
     @Test
