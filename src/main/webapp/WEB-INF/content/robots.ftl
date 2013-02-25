@@ -5,6 +5,7 @@ Disallow: /search/rss
 Disallow: /search/download
 Disallow: /filestore/
 Disallow: /search/advanced
+Allow: /browse/explore
 <#else>
 Disallow: *
 </#if>
