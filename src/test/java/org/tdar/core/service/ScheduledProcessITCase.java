@@ -25,6 +25,7 @@ import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.statistics.AggregateStatistic;
 import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 import org.tdar.core.bean.util.ScheduledBatchProcess;
+import org.tdar.core.service.processes.SitemapGeneratorProcess;
 
 import static org.junit.Assert.*;
 
@@ -82,6 +83,14 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         assertTrue(mock.getBatchIdQueue().isEmpty());
         mock.cleanup();
         assertFalse("ScheduledBatchProcess should be reset now", mock.isCompleted());
+    }
+
+    @Autowired
+    private SitemapGeneratorProcess sitemap;
+
+    @Test
+    public void testSitemapGen() {
+        sitemap.execute();
     }
 
     @Test

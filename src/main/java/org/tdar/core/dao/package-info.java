@@ -45,6 +45,9 @@
                 name = TdarNamedQueries.QUERY_SPARSE_EDITABLE_RESOURCES,
                 query = "SELECT distinct new Resource(res.id, res.title, res.resourceType) " + TdarNamedQueries.HQL_EDITABLE_RESOURCE_SUFFIX),
         @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_SPARSE_ACTIVE_RESOURCES,
+                query = "SELECT distinct new Resource(res.id, res.title, res.resourceType) from Resource as res where res.status in ('ACTIVE') "),
+        @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_USER_GET_ALL_RESOURCES_COUNT,
                 query = "SELECT count(res.id) " + TdarNamedQueries.HQL_EDITABLE_RESOURCE_SUFFIX),
         @org.hibernate.annotations.NamedQuery(
@@ -163,6 +166,11 @@
                 name = TdarNamedQueries.QUERY_COLLECTION_BY_PARENT,
                 query = "from ResourceCollection as col where (col.parent.id=:parent or (col.parent.id is NULL AND :parent is NULL)) and col.type in (:collectionTypes) and (visible=:visible or :visible is NULL)"
         ),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_COLLECTIONS_PUBLIC_ACTIVE,
+                query = "SELECT id from ResourceCollection as col where col.type not in ('INTERNAL') and col.visible is true "
+        ),
+        
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTION_BY_AUTH_OWNER,
                 query = "select distinct col from ResourceCollection as col left join col.authorizedUsers as authorizedUser where "

@@ -1,5 +1,6 @@
 package org.tdar.struts.action;
 
+import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -56,6 +57,7 @@ public class IndexAction extends AuthenticationAware.Base {
 
     private List<SyndEntry> rssEntries;
 
+    private String sitemapFile = "sitemap_index.xml";
     @Override
     @HttpOnlyIfUnauthenticated
     @Actions({
@@ -72,6 +74,10 @@ public class IndexAction extends AuthenticationAware.Base {
             })
     })
     public String execute() {
+        File file = new File(getTdarConfiguration().getSitemapDir(), sitemapFile);
+        if (!file.exists()) {
+            setSitemapFile("sitemap1.xml.gz");
+        }
         return SUCCESS;
     }
 
@@ -172,6 +178,14 @@ public class IndexAction extends AuthenticationAware.Base {
 
     public void setRssEntries(List<SyndEntry> rssEntries) {
         this.rssEntries = rssEntries;
+    }
+
+    public String getSitemapFile() {
+        return sitemapFile;
+    }
+
+    public void setSitemapFile(String sitemapFile) {
+        this.sitemapFile = sitemapFile;
     }
 
 }

@@ -134,6 +134,12 @@ public class ResourceService extends GenericService {
         logResourceModification(modifiedResource, person, message, null);
     }
 
+    
+    @Transactional(readOnly = true)
+    public List<Resource> findAllSparseActiveResources() {
+        return datasetDao.findAllSparseActiveResources();
+    }
+
     /**
      * @param <T>
      * @param modifiedResource
