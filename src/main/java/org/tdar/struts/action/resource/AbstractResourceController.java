@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -186,8 +187,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     @Override
     public String loadAddMetadata() {
         if (getTdarConfiguration().isPayPerIngestEnabled()) {
-            setActiveAccounts(getAccountService().listAvailableAccountsForUser(getAuthenticatedUser()));
-            getAccountService().updateTransientAccountInfo((List<Resource>) Arrays.asList(getResource()));
+            getAccountService().updateTransientAccountInfo(getResource());
+            setActiveAccounts(new HashSet<Account>(determineActiveAccounts()));
             if (Persistable.Base.isNotNullOrTransient(getResource().getAccount())) {
                 setAccountId(getResource().getAccount().getId());
             }
@@ -195,6 +196,18 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         }
         return SUCCESS;
     }
+    
+    
+    protected List<Account> determineActiveAccounts() {
+        List<Account> accounts = new LinkedList<Account>(getAccountService().listAvailableAccountsForUser(getAuthenticatedUser()));
+        //put the resource's account at the front if current user doesn't already belong to it
+        Account resourceAccount = getResource().getAccount();
+        if(resourceAccount != null   && !accounts.contains(resourceAccount)) {
+            accounts.add(0, resourceAccount);
+        }
+        return  accounts;
+    }
+   
 
     @Override
     public String loadEditMetadata() {
@@ -250,8 +263,9 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     @Override
     protected void postSaveCallback(String actionMessage) {
-        //if user has single billing account, use that (ignore the form)
-        List<Account> accounts = new ArrayList<Account>(getAccountService().listAvailableAccountsForUser(getAuthenticatedUser()));
+        //if user has single billing account, use that (ignore the form);
+        getAccountService().updateTransientAccountInfo(getResource());
+        List<Account> accounts = determineActiveAccounts();
         if(accounts.size() == 1 ) {
             setAccountId(accounts.get(0).getId());
         }
