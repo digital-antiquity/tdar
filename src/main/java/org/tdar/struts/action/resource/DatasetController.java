@@ -237,11 +237,11 @@ public class DatasetController extends AbstractInformationResourceController<Dat
         if (CollectionUtils.isNotEmpty(columnsToRemap)) {
             if (isAsync()) {
                 getDatasetService().remapColumnsAsync(columnsToRemap, getPersistable().getProject());
+                getSearchIndexService().indexProjectAsync(getPersistable().getProject());
             } else {
                 getDatasetService().remapColumns(columnsToRemap, getPersistable().getProject());
+                getSearchIndexService().indexProject(getPersistable().getProject());
             }
-            Set<InformationResource> resourcesInProject = getProjectService().findAllResourcesInProject(getPersistable().getProject());
-            getSearchIndexService().indexCollectionAsync(resourcesInProject);
         }
     };
 

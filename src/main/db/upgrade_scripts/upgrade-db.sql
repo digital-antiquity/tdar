@@ -339,3 +339,6 @@ ALTER table pos_billing_activity add column sort_order int;
 
 ALTER table resource add column total_files bigint;
 ALTER table resource add column total_space_in_bytes bigint;
+
+-- 2-26-13
+alter table information_resource add constraint irMappingKey Foreign key (mappeddatakeycolumn_id)  references data_table_column ;

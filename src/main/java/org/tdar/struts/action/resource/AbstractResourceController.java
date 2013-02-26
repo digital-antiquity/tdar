@@ -189,7 +189,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         if (getTdarConfiguration().isPayPerIngestEnabled()) {
             getAccountService().updateTransientAccountInfo(getResource());
             setActiveAccounts(new HashSet<Account>(determineActiveAccounts()));
-            if (Persistable.Base.isNotNullOrTransient(getResource().getAccount())) {
+            if (Persistable.Base.isNotNullOrTransient(getResource()) && Persistable.Base.isNotNullOrTransient(getResource().getAccount())) {
                 setAccountId(getResource().getAccount().getId());
             }
             logger.info("setting active accounts to {} ", getActiveAccounts());
