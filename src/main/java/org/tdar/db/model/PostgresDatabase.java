@@ -1,6 +1,6 @@
 package org.tdar.db.model;
 
-import java.sql.Blob;
+import java.io.ByteArrayInputStream;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -19,19 +19,18 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import javax.sql.DataSource;
-import javax.sql.rowset.serial.SerialBlob;
 
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.tools.ant.filters.StringInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
@@ -511,7 +510,7 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
                     preparedStatement.setLong(i, Long.parseLong(colValue));
                     break;
                 case BLOB:
-                    preparedStatement.setBinaryStream(i, new StringInputStream(colValue), colValue.length());
+                    preparedStatement.setBinaryStream(i, new ByteArrayInputStream(colValue.getBytes()), colValue.length());
                     break;
                 case DATE:
                 case DATETIME:
@@ -531,7 +530,8 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
                         java.sql.Timestamp sqlDate = new java.sql.Timestamp(date.getTime());
                         preparedStatement.setTimestamp(i, sqlDate);
                     } else {
-                        throw new TdarRecoverableRuntimeException(String.format("don't know how to parse date: %s in column '%s' of table '%s'",  colValue.toString(), column.getName(), column.getDataTable().getName()));
+                        throw new TdarRecoverableRuntimeException(String.format("don't know how to parse date: %s in column '%s' of table '%s'",
+                                colValue.toString(), column.getName(), column.getDataTable().getName()));
                     }
                     break;
                 default:

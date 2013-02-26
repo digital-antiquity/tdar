@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable.Base;
@@ -49,11 +50,9 @@ import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.DataTableColumnRelationship;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.core.dao.resource.DatasetDao;
-import org.tdar.core.dao.resource.ProjectDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.DataIntegrationService;
 import org.tdar.core.service.ExcelService;
-import org.tdar.core.service.SearchIndexService;
 import org.tdar.core.service.XmlService;
 import org.tdar.core.service.excel.SheetProxy;
 import org.tdar.db.model.PostgresDatabase;
@@ -61,6 +60,7 @@ import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.data.ResultMetadataWrapper;
+import org.tdar.utils.Pair;
 
 /**
  * $Id$
@@ -78,13 +78,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
     private ResourceService resourceService;
 
     @Autowired
-    private SearchIndexService searchIndexService;
-
-    @Autowired
     private DataIntegrationService dataIntegrationService;
-
-    @Autowired
-    private ProjectDao projectDao;
 
     @Autowired
     private ExcelService excelService;
@@ -148,8 +142,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         }
         getInformationResourceFileService().deleteTranslatedFiles(file);
 
-        // FIXME: remove synchronize once Hibernate learns more about unique
-        // constraints
+        // FIXME: remove synchronize once Hibernate learns more about unique constraints
         // http://community.jboss.org/wiki/HibernateFAQ-AdvancedProblems#Hibernate_is_violating_a_unique_constraint
         getDao().synchronize();
 
@@ -590,15 +583,15 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
     }
 
     @Transactional
-    public void updateMappings(Project project, Collection<DataTableColumn> columns) {
+    public List<DataTableColumn> updateMappings(Project project, Collection<DataTableColumn> columns) {
+        List<DataTableColumn> columnsToMap = new ArrayList<DataTableColumn>();
         if (CollectionUtils.isEmpty(columns)) {
-            return;
+            return columnsToMap;
         }
         if (project == Project.NULL) {
             throw new TdarRecoverableRuntimeException("Unable to update mappings for an unspecified project.");
         }
         getDao().unmapAllColumnsInProject(project, columns);
-        boolean hasMappedColumns = false;
         for (DataTableColumn column : columns) {
             logger.info("mapping dataset to resources using column: {} ", column);
             Dataset dataset = column.getDataTable().getDataset();
@@ -609,34 +602,47 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
                 throw new TdarRecoverableRuntimeException("dataset project " + project + " somehow wasn't the same as " + project);
             }
             if (column.isMappingColumn()) {
-                /*
-                 * Take the distinct column values mapped and associate them with files in tDAR based on:
-                 * - shared project
-                 * - filename matches column value either (a) with extension or (b) with separator eg: file1.jpg;file2.jpg
-                 * NOTE: a manual reindex happens at the end
-                 */
-                @SuppressWarnings("unused")
-                List<String> updatedValues = getDao().mapColumnToResource(column, tdarDataImportDatabase.selectNonNullDistinctValues(column));
-                hasMappedColumns = true;
+                columnsToMap.add(column);
                 // FIXME: could add custom logic to add a backpointer (new column) to DB that has "mapped" set to true based on updatedValues
             }
         }
-        if (hasMappedColumns) {
-            // mapping columns to the resource runs a raw sql update, refresh the state of the Project.
-            getDao().refresh(project);
-            // have to reindex...
-        }
-        Set<InformationResource> resourcesInProject = projectDao.findAllResourcesInProject(project);
-        searchIndexService.indexCollection(resourcesInProject);
+        return columnsToMap;
     }
 
     public List<Long> findAllIds() {
         return getDao().findAllIds();
     }
 
-    public boolean updateColumnMetadata(Dataset dataset, DataTable dataTable, List<DataTableColumn> dataTableColumns, Person authenticatedUser) {
+    @Async
+    @Transactional
+    public void remapColumnsAsync(final List<DataTableColumn> columns, final Project project) {
+        remapColumns(columns, project);
+    }
+
+    @Transactional
+    public void remapColumns(List<DataTableColumn> columns, Project project) {
+        logger.info("remapping columns: {} in {} ", columns, project);
+        if (CollectionUtils.isNotEmpty(columns) && project != null) {
+            // mapping columns to the resource runs a raw sql update, refresh the state of the Project.
+            getDao().refresh(project);
+            // have to reindex...
+            /*
+             * Take the distinct column values mapped and associate them with files in tDAR based on:
+             * - shared project
+             * - filename matches column value either (a) with extension or (b) with separator eg: file1.jpg;file2.jpg
+             * NOTE: a manual reindex happens at the end
+             */
+            for (DataTableColumn column : columns) {
+                getDao().mapColumnToResource(column, tdarDataImportDatabase.selectNonNullDistinctValues(column));
+            }
+        }
+    }
+
+    @Transactional
+    public Pair<Boolean, List<DataTableColumn>> updateColumnMetadata(Dataset dataset, DataTable dataTable, List<DataTableColumn> dataTableColumns,
+            Person authenticatedUser) {
         boolean hasOntologies = false;
-        logger.info("updating column metadata");
+        Pair<Boolean, List<DataTableColumn>> toReturn = new Pair<Boolean, List<DataTableColumn>>(hasOntologies, new ArrayList<DataTableColumn>());
         List<DataTableColumn> columnsToTranslate = new ArrayList<DataTableColumn>();
         List<DataTableColumn> columnsToMap = new ArrayList<DataTableColumn>();
         for (DataTableColumn incomingColumn : dataTableColumns) {
@@ -729,8 +735,8 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             getDao().update(existingColumn);
         }
         dataset.markUpdated(authenticatedUser);
+        toReturn.getSecond().addAll(updateMappings(dataset.getProject(), columnsToMap));
         save(dataset);
-        updateMappings(dataset.getProject(), columnsToMap);
         if (!columnsToTranslate.isEmpty()) {
             // create the translation file for this dataset.
             logger.debug("creating translated file");
@@ -738,7 +744,8 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             createTranslatedFile(dataset);
         }
         logDataTableColumns(dataTable, "data column metadata registration", authenticatedUser);
-        return hasOntologies;
+        logger.info("hasOntology: {} , mappingColumns: {} ", toReturn.getFirst(), toReturn.getSecond());
+        return toReturn;
     }
 
     private boolean isRetranslationNeeded(CodingSheet incomingCodingSheet, CodingSheet existingCodingSheet) {

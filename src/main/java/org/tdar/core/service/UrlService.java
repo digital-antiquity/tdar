@@ -29,6 +29,16 @@ public class UrlService {
         return String.format("%s%s", StringUtils.stripEnd(getBaseUrl(), "/"), relativeUrl(resource));
     }
 
+    public static String reformatViewUrl(String url) {
+        if (url.matches("(.+)/view\\?id=([0-9]+)&?$")) {
+            url = url.replaceFirst("(.+)/view\\?id=(\\d+)", "$1/$2");
+        } else if (url.matches("(.+)/view\\?id=([0-9]+)&(.+)$")) {
+            url = url.replaceFirst("(.+)/view\\?id=(\\d+)&(.+)", "$1/$2?$3");
+        }
+
+        return url;
+    }
+    
     public String relativeUrl(Addressable resource) {
         return String.format("/%s/%s", resource.getUrlNamespace(), resource.getId());
     }

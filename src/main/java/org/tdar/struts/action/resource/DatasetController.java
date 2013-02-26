@@ -23,6 +23,7 @@ import org.tdar.core.bean.resource.CategoryType;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.Dataset;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.ResourceType;
@@ -31,9 +32,11 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.MeasurementUnit;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.service.resource.DatasetService;
 import org.tdar.struts.WriteableSession;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FileProxy;
+import org.tdar.utils.Pair;
 
 /**
  * $Id$
@@ -214,17 +217,33 @@ public class DatasetController extends AbstractInformationResourceController<Dat
      */
     public String saveColumnMetadata() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
-        boolean hasOntologies = false;
+        Pair<Boolean, List<DataTableColumn>> updateResults = new Pair<Boolean, List<DataTableColumn>>(false, new ArrayList<DataTableColumn>());
         try {
-            hasOntologies = getDatasetService().updateColumnMetadata(getPersistable(), getDataTable(), getDataTableColumns(), getAuthenticatedUser());
+            updateResults = getDatasetService().updateColumnMetadata(getPersistable(), getDataTable(), getDataTableColumns(), getAuthenticatedUser());
         } catch (Throwable tde) {
             logger.error(tde.getMessage(), tde);
             addActionErrorWithException(tde.getMessage(), tde);
             return INPUT_COLUMNS;
         }
+        this.columnsToRemap = updateResults.getSecond();
         getResourceService().saveRecordToFilestore(getPersistable());
-        return getPostSaveAction().getResultName(!hasOntologies);
+        postSaveColumnMetadataCleanup();
+        return getPostSaveAction().getResultName(!updateResults.getFirst());
     }
+
+    private List<DataTableColumn> columnsToRemap;
+
+    protected void postSaveColumnMetadataCleanup() {
+        if (CollectionUtils.isNotEmpty(columnsToRemap)) {
+            if (isAsync()) {
+                getDatasetService().remapColumnsAsync(columnsToRemap, getPersistable().getProject());
+                getSearchIndexService().indexProjectAsync(getPersistable().getProject());
+            } else {
+                getDatasetService().remapColumns(columnsToRemap, getPersistable().getProject());
+                getSearchIndexService().indexProject(getPersistable().getProject());
+            }
+        }
+    };
 
     @Override
     protected String save(Dataset dataset) {

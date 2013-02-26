@@ -684,16 +684,16 @@ function populateTarget(obj) {
 }
 
 
-function toggleCopyrightHolder() {
-
-    $("#copyrightHolderTable input[type!='radio']").val("");
-
-    $("#copyrightPerson").toggle();
-    $("#copyrightInstitution").toggle();
-    $("#copyright_holder_institution_name").toggleClass("required");
-    $("#copyright_holder_person_first_name").toggleClass("required");
-    $("#copyright_holder_person_last_name").toggleClass("required");
-}
+//function toggleCopyrightHolder() {
+//
+//    $("#copyrightHolderTable input[type!='radio']").val("");
+//
+//    $("#copyrightPerson").toggle();
+//    $("#copyrightInstitution").toggle();
+//    $("#copyright_holder_institution_name").toggleClass("required");
+//    $("#copyright_holder_person_first_name").toggleClass("required");
+//    $("#copyright_holder_person_last_name").toggleClass("required");
+//}
 
 function toggleLicense() {
 
@@ -995,6 +995,9 @@ TDAR.common = function() {
         $(".creatorProxyTable").on("click", '.creator-toggle-button', function(event){
             var $this = $(this);
             var $top = $this.closest(".repeat-row");
+            if ($top == undefined) {
+            	$top = $this.closest(".control-group");
+            }
             if ($(event.target).hasClass("personButton")) {
                 $(".creatorPerson", $top).removeClass("hidden");
                 $(".creatorInstitution",$top).removeClass("hidden").addClass("hidden");
@@ -1038,9 +1041,9 @@ TDAR.common = function() {
         //ahad: toggle license
         $(".licenseRadio",$("#license_section")).change(toggleLicense);
         
-        //ahad: toggle person/institution for copyright holder
-        $("#copyright_holder_type_person").change(toggleCopyrightHolder);
-        $("#copyright_holder_type_institution").change(toggleCopyrightHolder);
+//        //ahad: toggle person/institution for copyright holder
+//        $("#copyright_holder_type_person").change(toggleCopyrightHolder);
+//        $("#copyright_holder_type_institution").change(toggleCopyrightHolder);
     
         //if page has a navbar,  wire it up and refresh it whenever something changes page size (e.g. repeatrow additions)
         

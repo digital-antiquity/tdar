@@ -217,9 +217,10 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                 throw new TdarRecoverableRuntimeException(ERROR_CORRUPT_DB);
             } catch (IllegalStateException iex) {
                 throw new TdarRecoverableRuntimeException(ERROR_CORRUPT_DB);
+            } finally {
+                completePreparedStatements();
             }
         }
-        completePreparedStatements();
         IOUtils.closeQuietly(indexedFileOutputStream);
         Set<DataTableRelationship> relationships = new HashSet<DataTableRelationship>();
         for (String tableName1 : getDatabase().getTableNames()) {

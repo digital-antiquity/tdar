@@ -3,13 +3,12 @@ package org.tdar.struts.interceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.cxf.common.util.UrlUtils;
 import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.ReflectionService;
+import org.tdar.core.service.UrlService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.TdarActionSupport;
 
@@ -55,9 +54,15 @@ public class HttpsInterceptor implements Interceptor {
         if (protocol == "https") {
             newPort = config.getHttpsPort();
         }
-        
+
         String baseUrl = String.format("%s://%s%s%s%s", protocol, config.getHostName(), config.getPort() == 80 ? "" : ":" + newPort,
                 request.getServletPath(), request.getQueryString() == null ? "" : "?" + request.getQueryString());
+        try {
+            baseUrl = UrlService.reformatViewUrl(baseUrl);
+        } catch (Exception e) {
+            logger.error("error in reformatting view URL",e);
+        }
+        
         return baseUrl;
     }
 
@@ -70,7 +75,7 @@ public class HttpsInterceptor implements Interceptor {
 
         if (request.getMethod().equalsIgnoreCase("get")) {
             response.sendRedirect(changeUrlProtocol("https", request));
-        } else if ( invocation.getAction() instanceof TdarActionSupport) {
+        } else if (invocation.getAction() instanceof TdarActionSupport) {
             logger.warn("ERROR_HTTPS_ONLY");
             ((TdarActionSupport) invocation.getAction()).addActionError(ERROR_HTTPS_ONLY);
         }

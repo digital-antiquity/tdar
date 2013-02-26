@@ -1325,10 +1325,9 @@ $(function() {
 <#if copyrightMandatory>
     <div class="glide" tiplabel="Primary Copyright Holder" tooltipcontent="Use this field to nominate a primary copyright holder. Other information about copyright can be added in the 'notes' section by creating a new 'Rights & Attribution note.">
         <h3>${sectionTitle}</h3>
-
-    <table id="copyrightHolderTable">
-      <@creatorProxyRow proxy=copyrightHolderProxy proxy_index="" prefix="copyrightHolder" required=true includeRole=false required=true/>
-    </table>
+    <div id="copyrightHolderTable" class="creatorProxyTable">
+      <@creatorProxyRow proxy=copyrightHolderProxy proxy_index="" prefix="copyrightHolder" required=true includeRole=false />
+    </div>
 </#if>
 </#macro>
 

@@ -147,14 +147,19 @@
 	</rule>
 
 	<rule>
-		<from>^/(project|dataset|ontology|image|billing|video|document|sensory-data|cart|coding-sheet|collection)/([0-9]+)/(admin|view|edit|upload|delete|columns|mapping|citations|dc|mods|json|xml)$
+		<from>^/(project|dataset|ontology|image|billing|video|document|sensory-data|cart|coding-sheet|collection)/([0-9]+)/(admin|view|edit|upload|delete|columns|mapping|citations|dc|mods|json|xml)\??(.*)$
 		</from>
-		<to>/$1/$3?id=$2</to>
+		<to>/$1/$3?id=$2&amp;$3</to>
 	</rule>
 	<outbound-rule>
 		<from>^/(project|dataset|ontology|image|billing|video|document|sensory-data|cart|coding-sheet|collection)/(admin|view|edit|xml|upload|delete|columns|citations|mapping|dc|mods)\?id=([0-9]+)$
 		</from>
 		<to>/$1/$3/$2</to>
+	</outbound-rule>
+	<outbound-rule>
+		<from>^/(project|dataset|ontology|image|billing|video|document|sensory-data|cart|coding-sheet|collection)/(admin|view|edit|xml|upload|delete|columns|citations|mapping|dc|mods)\?id=([0-9]+)&amp;(.*)$
+		</from>
+		<to>/$1/$3/$2?$4</to>
 	</outbound-rule>
 
 	<rule>

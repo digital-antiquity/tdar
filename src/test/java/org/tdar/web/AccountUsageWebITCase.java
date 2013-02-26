@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.tdar.TestConstants;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
@@ -45,5 +46,33 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         gotoPage("/logout");
     }
     
+    
+    @Test
+    public void testAccountListWhenEditingAsAdmin() throws Exception {
+        Map<String, String> personmap = new HashMap<String, String>();
+        setupBasicUser(personmap, "bobloblaw123");
+        testLogin(personmap, true);
+
+        gotoPage("/cart/add");
+        setInput("invoice.numberOfMb", "20");
+        setInput("invoice.numberOfFiles", "2");
+        submitForm();
+        setInput("invoice.paymentMethod", "CREDIT_CARD");
+        String invoiceId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL);
+        String accountName = "loblaw account";
+        String accountId = addInvoiceToNewAccount(invoiceId, null, accountName);
+        
+        createDocumentAndUploadFile("my first document");
+        logger.debug("page url is: {}",  internalPage.getUrl());
+        
+        Long docid = extractTdarIdFromCurrentURL();
+        String viewUrl = internalPage.getUrl().getPath(); 
+        gotoPage("/logout");
+        
+        login(TestConstants.ADMIN_USERNAME, TestConstants.ADMIN_PASSWORD);
+        
+        gotoPage("/document/" + docid + "/edit");
+        assertTextPresent(accountName);
+    }
     
 }
