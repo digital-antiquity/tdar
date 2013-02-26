@@ -50,7 +50,6 @@ import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.DataTableColumnRelationship;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.core.dao.resource.DatasetDao;
-import org.tdar.core.dao.resource.ProjectDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.DataIntegrationService;
 import org.tdar.core.service.ExcelService;
@@ -80,9 +79,6 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
 
     @Autowired
     private DataIntegrationService dataIntegrationService;
-
-    @Autowired
-    private ProjectDao projectDao;
 
     @Autowired
     private ExcelService excelService;
@@ -739,8 +735,8 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             getDao().update(existingColumn);
         }
         dataset.markUpdated(authenticatedUser);
-        save(dataset);
         toReturn.getSecond().addAll(updateMappings(dataset.getProject(), columnsToMap));
+        save(dataset);
         if (!columnsToTranslate.isEmpty()) {
             // create the translation file for this dataset.
             logger.debug("creating translated file");

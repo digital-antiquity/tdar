@@ -241,7 +241,7 @@ public class DatasetController extends AbstractInformationResourceController<Dat
                 getDatasetService().remapColumns(columnsToRemap, getPersistable().getProject());
             }
             Set<InformationResource> resourcesInProject = getProjectService().findAllResourcesInProject(getPersistable().getProject());
-            getSearchIndexService().indexCollection(resourcesInProject);
+            getSearchIndexService().indexCollectionAsync(resourcesInProject);
         }
     };
 

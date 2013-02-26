@@ -1,6 +1,7 @@
 package org.tdar.core.service.resource;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -76,6 +77,7 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
 
     @Transactional(readOnly = true)
     public Set<InformationResource> findAllResourcesInProject(Project p, Status... statuses) {
+        p.setCachedInformationResources(new HashSet<InformationResource>());
         Set<InformationResource> informationResources = getDao().findAllResourcesInProject(p, statuses);
         return informationResources;
     }
