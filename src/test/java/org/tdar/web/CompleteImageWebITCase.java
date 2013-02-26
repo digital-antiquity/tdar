@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.coverage.CoverageType;
@@ -22,13 +23,17 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.LicenseType;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.junit.MultipleTdarConfigurationRunner;
+import org.tdar.junit.RunWithTdarConfiguration;
 
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 
+@RunWith(MultipleTdarConfigurationRunner.class)
+@RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.properties", "src/test/resources/tdar.ahad.properties" })
 public class CompleteImageWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
-    private static final String COPYRIGHT_HOLDER_PERSON_FIRST_NAME = "copyrightHolderProxy.person.firstName";
-    private static final String COPYRIGHT_HOLDER_PERSON_LAST_NAME = "copyrightHolderProxy.person.lastName";
+    private static final String COPYRIGHT_HOLDER_PERSON_FIRST_NAME = "copyrightHolderProxies.person.firstName";
+    private static final String COPYRIGHT_HOLDER_PERSON_LAST_NAME = "copyrightHolderProxies.person.lastName";
     private static final List<String> VALUES_NOT_SHOWN_ON_OVERVIEW_PAGE = Arrays.asList(new String[] { COPYRIGHT_HOLDER_PERSON_FIRST_NAME,
             COPYRIGHT_HOLDER_PERSON_LAST_NAME, TestConstants.COPYRIGHT_HOLDER_TYPE });
 

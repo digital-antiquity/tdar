@@ -95,7 +95,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     protected FileAnalyzer analyzer;
     private boolean hasDeletedFiles = false;
     // protected PersonalFilestoreTicket filestoreTicket;
-    private ResourceCreatorProxy copyrightHolderProxy = new ResourceCreatorProxy();
+    private ResourceCreatorProxy copyrightHolderProxies = new ResourceCreatorProxy();
 
     @Autowired
     protected PersonalFilestoreService filestoreService;
@@ -356,7 +356,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         setResourceProviderInstitution(getResource().getResourceProviderInstitution());
         setPublisher(getResource().getPublisher());
         if (isCopyrightMandatory() && Persistable.Base.isNotNullOrTransient(getResource().getCopyrightHolder())) {
-            copyrightHolderProxy = new ResourceCreatorProxy(getResource().getCopyrightHolder(), ResourceCreatorRole.COPYRIGHT_HOLDER);
+            copyrightHolderProxies = new ResourceCreatorProxy(getResource().getCopyrightHolder(), ResourceCreatorRole.COPYRIGHT_HOLDER);
         }
     }
 
@@ -372,8 +372,8 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             getResource().setPublisher(getEntityService().findOrSaveCreator(new Institution(publisherName)));
         }
 
-        if (isCopyrightMandatory() && copyrightHolderProxy != null) {
-            ResourceCreator transientCreator = copyrightHolderProxy.getResourceCreator();
+        if (isCopyrightMandatory() && copyrightHolderProxies != null) {
+            ResourceCreator transientCreator = copyrightHolderProxies.getResourceCreator();
             logger.debug("setting copyright holder to:  {} ", transientCreator);
             getResource().setCopyrightHolder(getEntityService().findOrSaveCreator(transientCreator.getCreator()));
         }
@@ -720,10 +720,15 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             String resourceTypeLabel = getPersistable().getResourceType().getLabel();
             addActionError("Please enter a valid creation year for " + resourceTypeLabel);
         }
-        if (isCopyrightMandatory() && copyrightHolderProxy != null) {
-            ResourceCreator transientCreator = copyrightHolderProxy.getResourceCreator();
-            if (StringUtils.isEmpty(transientCreator.getCreator().getProperName().trim())) {
-                logger.debug("No copyright holder set for {}", getPersistable());
+        if (isCopyrightMandatory()) {
+            if (copyrightHolderProxies != null && copyrightHolderProxies.getActualCreatorType() != null) {
+                ResourceCreator transientCreator = copyrightHolderProxies.getResourceCreator();
+                logger.info("{} {}", copyrightHolderProxies, transientCreator);
+                if (transientCreator != null && StringUtils.isEmpty(transientCreator.getCreator().getProperName().trim())) {
+                    logger.debug("No copyright holder set for {}", getPersistable());
+                    addActionError("Please enter a copyright holder!");
+                }
+            } else {
                 addActionError("Please enter a copyright holder!");
             }
         }
@@ -756,12 +761,12 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         this.hasDeletedFiles = hasDeletedFiles;
     }
 
-    public void setCopyrightHolderProxy(ResourceCreatorProxy copyrightHolderProxy) {
-        this.copyrightHolderProxy = copyrightHolderProxy;
+    public void setCopyrightHolderProxies(ResourceCreatorProxy copyrightHolderProxy) {
+        this.copyrightHolderProxies = copyrightHolderProxy;
     }
 
-    public ResourceCreatorProxy getCopyrightHolderProxy() {
-        return copyrightHolderProxy;
+    public ResourceCreatorProxy getCopyrightHolderProxies() {
+        return copyrightHolderProxies;
     }
 
     public boolean supportsMultipleFileUpload() {
