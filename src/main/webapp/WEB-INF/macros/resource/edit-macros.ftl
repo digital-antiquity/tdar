@@ -1097,7 +1097,7 @@ jquery validation hooks?)
     </#if>
 
     <#if resource.resourceType.label?lower_case != 'project'>
-        <@copyrightHolders 'Primary Copyright Holder *' copyrightHolderProxy />
+        <@copyrightHolders 'Primary Copyright Holder *' copyrightHolderProxies />
     </#if>
 </#macro>
 
@@ -1321,12 +1321,12 @@ $(function() {
 </#macro>
 
 
-<#macro copyrightHolders sectionTitle copyrightHolderProxy >
+<#macro copyrightHolders sectionTitle copyrightHolderProxies >
 <#if copyrightMandatory>
     <div class="glide" tiplabel="Primary Copyright Holder" tooltipcontent="Use this field to nominate a primary copyright holder. Other information about copyright can be added in the 'notes' section by creating a new 'Rights & Attribution note.">
         <h3>${sectionTitle}</h3>
     <div id="copyrightHolderTable" class="creatorProxyTable">
-      <@creatorProxyRow proxy=copyrightHolderProxy proxy_index="" prefix="copyrightHolder" required=true includeRole=false />
+      <@creatorProxyRow proxy=copyrightHolderProxies proxy_index="" prefix="copyrightHolder" required=true includeRole=false />
     </div>
 </#if>
 </#macro>

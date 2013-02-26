@@ -17,14 +17,18 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.junit.MultipleTdarConfigurationRunner;
+import org.tdar.junit.RunWithTdarConfiguration;
 
 /**
  * @author Adam Brin
  * 
  */
+@RunWith(MultipleTdarConfigurationRunner.class)
 public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
 
     @Test
@@ -46,6 +50,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
     }
 
     @Test
+    @RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.properties", "src/test/resources/tdar.cc.properties" })
     public void testValidBulkUpload() {
         Map<String, String> extra = new HashMap<String, String>();
         extra.put("investigationTypeIds", "1");
