@@ -85,8 +85,8 @@ public class DatasetResourceMappingITCase extends AbstractDataIntegrationTestCas
         }
         controller.setDataTableColumns(dataTableColumns_);
         assertTrue(seenMappingColumn);
+        controller.setAsync(false);
         controller.saveColumnMetadata();
-        // FIXME: replace with verifyTransactionCallback
 
         setVerifyTransactionCallback(new TransactionCallback<Image>() {
             @Override
