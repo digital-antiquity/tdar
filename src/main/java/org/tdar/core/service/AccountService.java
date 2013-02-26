@@ -342,6 +342,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     @Transactional
     public void updateTransientAccountInfo(Resource resource) {
         //TODO: add hql/sql for account lookup by resource
+        if(resource == null) return;
         updateTransientAccountInfo(Arrays.asList(resource));
     }
 
