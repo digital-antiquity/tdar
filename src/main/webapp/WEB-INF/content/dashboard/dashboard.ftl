@@ -229,7 +229,9 @@
 <div class="row">
 	<div class="span9">
 	<h2 id="bookmarks">Your Bookmarks</h2>
-	<@rlist.listResources resourcelist=bookmarkedResources sortfield='RESOURCE_TYPE' editable=false bookmarkable=true  expanded=true listTag='ol' headerTag="h3" />
+	<#if bookmarkedResources??>
+	   <@rlist.listResources resourcelist=bookmarkedResources sortfield='RESOURCE_TYPE' editable=false bookmarkable=true  expanded=true listTag='ol' headerTag="h3" />
+	</#if>
 	</div>
 </div>
 </#macro>
