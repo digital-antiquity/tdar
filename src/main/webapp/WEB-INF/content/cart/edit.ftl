@@ -11,6 +11,17 @@
 }
 </style>
 </head>
+<#macro pricingOption label files storage cost id=label?lower_case>
+<div class="span2 well" id=div${id}>
+    <h3><span class="red">$${cost}</span>: ${label}</h3>
+    <ul>
+        <li>${files}</li>
+        <li>${storage}</li>
+    </ul>
+    
+    <button type="button" class="tdar-button" id="${id}-option">SELECT</button>
+</div>
+</#macro>
 <body>
 <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal disableFormNavigate" enctype='multipart/form-data' action='save'>
 
@@ -28,38 +39,11 @@
 		<div class="row">
 			<@rates />			
 			<div class="span8">
+				<h2>Suggested Levels</h2>
 				<div class="row">
-				<h2 style="margin-left:30px">Suggested Levels</h2>
-					<br/>
-					<br/>
-					<div class="span2 well">
-					<h3><span class="red">$50</span>: Small</h3>
-					<ul>
-						<li>1 File</li>
-						<li>10 MB</li>
-					</ul>
-		
-					<span class="tdar-button" id="small-option">SELECT</span>
-					</div>
-					<div class="span2 well">
-					<h3><span class="red">$400</span>: Medium</h3>
-					<ul>
-						<li>10 Files</li>
-						<li>100 MB</li>
-					</ul>
-		
-					<span class="tdar-button" id="medium-option">SELECT</span>
-					
-					</div>
-					<div class="span2 well">
-					<h3><span class="red">$2,500</span>: Large </h3>
-					<ul>
-						<li>100 Files</li>
-						<li>1 GB</li>
-					</ul>
-		
-					<span class="tdar-button" id="large-option">SELECT</span>
-					</div>
+    			    <@pricingOption label="Small" files="1 File" storage="10 MB" cost=50 />
+    			    <@pricingOption label="Medium" files="10 Files" storage="100 MB" cost=400 />
+    			    <@pricingOption label="Large" files="100 Files" storage="1 GB" cost=2500 />
 				</div>
 			</div>
 		</div>
