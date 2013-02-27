@@ -21,6 +21,7 @@ import org.tdar.core.bean.cache.HomepageResourceCountCache;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
@@ -132,8 +133,13 @@ public class BrowseController extends AbstractLookupController {
             queryBuilder.setOperator(Operator.AND);
 
             SearchParameters params = new SearchParameters(Operator.OR);
-            params.getResourceCreatorProxies().add(new ResourceCreatorProxy(creator, null));
-
+            // could use "creator type" to filter; but this doesn't cover the creator type "OTHER"
+            for (ResourceCreatorRole role : ResourceCreatorRole.values()) {
+                if (role == ResourceCreatorRole.UPDATER) {
+                    continue;
+                }
+                params.getResourceCreatorProxies().add(new ResourceCreatorProxy(creator, role));
+            }
             queryBuilder.append(params);
             ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
             getAuthenticationAndAuthorizationService().initializeReservedSearchParameters(reservedSearchParameters, getAuthenticatedUser());
