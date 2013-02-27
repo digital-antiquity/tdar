@@ -7,8 +7,8 @@ TDAR.repeatrow = function() {
     "use strict";
     
     /**
-     *  public: register a repeatrow element
-     *  This has the effect of adding a "add another"  button after each matched element.  Clicking the addnew button clones 
+     *  public: register a repeat-row element
+     *  This has the effect of adding a "add another"  button after each matched element.  Clicking the add another button clones 
      *  the element specified by options.rowSelector, and places it after that element in the dom.
      *  
      *  events: 
@@ -35,7 +35,7 @@ TDAR.repeatrow = function() {
             $('button', $button).click(function() {
                 var element = $(_options.rowSelector, parentElement).last();
                 var $clone = _cloneSection(element, parentElement);
-                var idx = $(parentElement).find('.repeat-row').length
+                var idx = $(parentElement).find('.repeat-row').length;
                 $(parentElement).trigger("repeatrowadded", [parentElement, $clone[0], idx]);
 
                 // set focus on the first input field (or designate w/ repeatrow-focus class).
@@ -55,7 +55,7 @@ TDAR.repeatrow = function() {
             TDAR.repeatrow.deleteRow(rowElem);
             $(parentElement).trigger('repeatrowdeleted');
         });
-    }
+    };
 
         
     // clone an element, append it to another element.  
@@ -105,15 +105,15 @@ TDAR.repeatrow = function() {
          */
 
         //remove any tags that shouldn't be copied
-        $clone
+        $clone;
         // skip any tags that with the repeat-row-skip attribute
         $clone.find('*').not(".repeat-row-skip").each(function() {
             var elem = this;
             $([ "id", "autoVal", "name", "autocompleteIdElement", "autocompleteParentElement" ]).each(function(i, attrName) {
-                // replace occurances of [num]
+                // replace occurrences of [num]
                 _replaceAttribute(elem, attrName, '[' + currentId + ']', '[' + nextId + ']');
 
-                // replace occurances of _num_
+                // replace occurrences of _num_
                 _replaceAttribute(elem, attrName, '_' + currentId + '_', '_' + nextId + '_');
             });
         });
@@ -123,11 +123,11 @@ TDAR.repeatrow = function() {
         _clearInputs($clone);
 
         return $clone;
-    }
+    };
     
     
     
-    // private: replace last occurance of str in attribute with rep
+    // private: replace last occurrence of str in attribute with rep
     var _replaceAttribute = function(elem, attrName, str, rep) {
         var oldval = $(elem).attr(attrName);
         if (!oldval) return;
@@ -138,7 +138,7 @@ TDAR.repeatrow = function() {
                 oldval.length);
         var newval = beginPart + rep + endPart;
         $(elem).attr(attrName, newval);
-    }
+    };
     
 
     // private: clear input elements in a cloned element
