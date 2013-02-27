@@ -35,8 +35,8 @@ public class CompleteImageWebITCase extends AbstractAdminAuthenticatedWebTestCas
     private static final String COPYRIGHT_HOLDER_PERSON_FIRST_NAME = "copyrightHolderProxies.person.firstName";
     private static final String COPYRIGHT_HOLDER_PERSON_LAST_NAME = "copyrightHolderProxies.person.lastName";
     private static final List<String> VALUES_NOT_SHOWN_ON_OVERVIEW_PAGE = Arrays.asList(new String[] { COPYRIGHT_HOLDER_PERSON_FIRST_NAME,
-            COPYRIGHT_HOLDER_PERSON_LAST_NAME, TestConstants.COPYRIGHT_HOLDER_TYPE });
-
+            COPYRIGHT_HOLDER_PERSON_LAST_NAME });
+//, TestConstants.COPYRIGHT_HOLDER_TYPE
     public static HashMap<String, String> docValMap = new HashMap<String, String>();
     public static HashMap<String, List<String>> docMultiValMap = new HashMap<String, List<String>>();
     public static HashMap<String, List<String>> docMultiValMapLab = new HashMap<String, List<String>>();
@@ -105,7 +105,7 @@ public class CompleteImageWebITCase extends AbstractAdminAuthenticatedWebTestCas
         docValMap.put("coverageDates[1].dateType", CoverageType.RADIOCARBON_DATE.name());
 
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-            docValMap.put(TestConstants.COPYRIGHT_HOLDER_TYPE, "Person");
+//            docValMap.put(TestConstants.COPYRIGHT_HOLDER_TYPE, "Person");
             docValMap.put(COPYRIGHT_HOLDER_PERSON_LAST_NAME, "Disney");
             docValMap.put(COPYRIGHT_HOLDER_PERSON_FIRST_NAME, "Walt");
             //docValMap.put(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Disney Corp.");

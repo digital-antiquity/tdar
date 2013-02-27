@@ -101,7 +101,7 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         }
 
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-            docValMap.put(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+//            docValMap.put(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
             docValMap.put(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
         }
         docValMap.put("siteNameKeywords[0]", "sandy");

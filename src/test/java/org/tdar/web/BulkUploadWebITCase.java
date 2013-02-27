@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +20,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
@@ -51,7 +53,16 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
 
     @Test
     @RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.properties", "src/test/resources/tdar.cc.properties" })
-    public void testValidBulkUpload() {
+    public void testValidBulkUpload() throws MalformedURLException {
+
+        gotoPage("/cart/add");
+        setInput("invoice.numberOfMb", "20");
+        setInput("invoice.numberOfFiles", "2");
+        submitForm();
+        setInput("invoice.paymentMethod", "CREDIT_CARD");
+        String invoiceId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL);
+        String accountId = addInvoiceToNewAccount(invoiceId, null, "my first account");
+
         Map<String, String> extra = new HashMap<String, String>();
         extra.put("investigationTypeIds", "1");
         extra.put("latitudeLongitudeBoxes[0].maximumLatitude", "41.83228739643032");
