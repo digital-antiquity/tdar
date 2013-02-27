@@ -67,7 +67,6 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         docValMap.put("dataset.date", "1923");
         docValMap.put("uploadedFiles", TestConstants.TEST_DATA_INTEGRATION_DIR + TEST_DATASET_NAME);
 
-        addCopyrightHolder(docValMap);
     }
 
     @Test
@@ -144,6 +143,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     private void uploadDataset() {
         gotoPage("/dataset/add");
+        addCopyrightHolder(docValMap);
         for (String key : docValMap.keySet()) {
             setInput(key, docValMap.get(key));
         }

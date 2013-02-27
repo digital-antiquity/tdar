@@ -119,7 +119,6 @@ public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
         setInput(TestConstants.DOCUENT_DATE_CREATED, "1923");
         setInput(TestConstants.DOCUMENT_FIELD_DESCRIPTION, docDescription);
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-//            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
             setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
         }
     }
