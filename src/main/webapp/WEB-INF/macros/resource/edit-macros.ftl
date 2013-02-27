@@ -829,7 +829,7 @@ applyInheritance(project, formSelector);
 </div> <!-- section -->
 </#macro>
 
-<#macro creatorProxyRow proxy=proxy prefix=prefix proxy_index=proxy_index type_override="NONE" required=false includeRole=true>
+<#macro creatorProxyRow proxy=proxy prefix=prefix proxy_index=proxy_index type_override="NONE" required=false includeRole=true deleteable=true>
     <#assign relevantPersonRoles=personAuthorshipRoles />
     <#assign relevantInstitutionRoles=institutionAuthorshipRoles />
     <#if prefix=='credit'>
@@ -858,7 +858,11 @@ applyInheritance(project, formSelector);
                     hidden=(type_override == "PERSON" || (creatorType=='PERSON' && type_override=='NONE')) required=(creatorType=='INSTITUTION' && required)/>
             </div>
             <div class="span1">
+                <#if deleteable>
                 <button class="btn  btn-mini repeat-row-delete " type="button" tabindex="-1" ><i class="icon-trash"></i></button>
+                <#else>
+                <button class="btn  btn-mini row-clear " type="button" tabindex="-1" ><i class="icon-remove-sign"></i> Clear</button>
+                </#if>
             </div>
         </div>
     </div>
@@ -1322,11 +1326,11 @@ $(function() {
 
 
 <#macro copyrightHolders sectionTitle copyrightHolderProxies >
-<#if copyrightMandatory>
+<#if !copyrightMandatory>
     <div class="glide" tiplabel="Primary Copyright Holder" tooltipcontent="Use this field to nominate a primary copyright holder. Other information about copyright can be added in the 'notes' section by creating a new 'Rights & Attribution note.">
         <h3>${sectionTitle}</h3>
     <div id="copyrightHolderTable" class="creatorProxyTable">
-      <@creatorProxyRow proxy=copyrightHolderProxies proxy_index="" prefix="copyrightHolder" required=true includeRole=false />
+      <@creatorProxyRow proxy=copyrightHolderProxies proxy_index="" prefix="copyrightHolder" required=true includeRole=false deleteable=false />
     </div>
 </#if>
 </#macro>
@@ -1583,10 +1587,10 @@ $(function() {
     <div id='${rowIdElement}' class="creatorPerson <#if hidden>hidden</#if> <#if includeRepeatRow>repeat-row</#if>">
         <@s.hidden name='${strutsPrefix}${personPrefix}.id' value='${(person.id!-1)?c}' id="${idIdElement}"  cssClass="validIdRequired" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"   />
         <div class="controls-row">
-            <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass}" placeholder="Last Name"  readonly=isDisabled autocompleteParentElement="#${rowIdElement}"
+            <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass}" placeholder="Last Name" title="Last Name  is required in this section"  readonly=isDisabled autocompleteParentElement="#${rowIdElement}"
                 autocompleteIdElement="#${idIdElement}" autocompleteName="lastName" autocomplete="off"
                 name="${strutsPrefix}${personPrefix}.lastName" maxlength="255" /> 
-            <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass}" placeholder="First Name"  readonly=isDisabled autocomplete="off"
+            <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass}" placeholder="First Name" title="First Name is required in this section" readonly=isDisabled autocomplete="off"
                 name="${strutsPrefix}${personPrefix}.firstName" maxlength="255" autocompleteName="firstName"
                 autocompleteIdElement="#${idIdElement}" 
                 autocompleteParentElement="#${rowIdElement}"  />
@@ -1614,7 +1618,7 @@ $(function() {
             autocompleteIdElement="#${idIdElement}" 
             autocompleteName="institution" 
             autocompleteParentElement="#${rowIdElement}"
-            name="${strutsPrefix}${personPrefix}.institution.name" maxlength="255" />
+            name="${strutsPrefix}${personPrefix}.institution.name" maxlength="255" title="Institution Name is required in this section" />
         </div>
     </div>
 </#macro>

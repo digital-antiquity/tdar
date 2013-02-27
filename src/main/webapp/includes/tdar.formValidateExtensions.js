@@ -1,4 +1,5 @@
-	$.validator
+//TODO:  put these rules in one big json, add them en-masse
+$.validator
 			.addMethod(
 					"formatUS",
 					function(value, element) {
@@ -77,6 +78,7 @@
 		return value.match(/^(((\-?)(\d+)(\.?)(\d*))|)$/);
 	}, "a valid lat/long in the format DEG.Min/Sec (eg. -67.892068) required");
 
+	//FIXME: Modify .validIdRequired to support subtle+complex requirements for person, user, copyrightholder contexts 
 	$.validator
 			.addMethod(
 					"validIdRequired",
@@ -177,5 +179,7 @@
             return false;
         }
     });
+    
+    
     
 	

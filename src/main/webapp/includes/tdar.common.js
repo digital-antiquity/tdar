@@ -946,6 +946,14 @@ TDAR.common = function() {
         });
         
         $("#jserror").val("SAVE");
+        
+        // delete/clear .repeat-row element and fire event
+        $('#copyrightHolderTable').on("click", ".row-clear", function(e){
+            var rowElem = $(this).parents(".repeat-row")[0];
+            TDAR.repeatrow.deleteRow(rowElem);
+        });
+        
+        
     };
     
     
