@@ -1326,7 +1326,7 @@ $(function() {
 
 
 <#macro copyrightHolders sectionTitle copyrightHolderProxies >
-<#if !copyrightMandatory>
+<#if copyrightMandatory>
     <div class="glide" tiplabel="Primary Copyright Holder" tooltipcontent="Use this field to nominate a primary copyright holder. Other information about copyright can be added in the 'notes' section by creating a new 'Rights & Attribution note.">
         <h3>${sectionTitle}</h3>
     <div id="copyrightHolderTable" class="creatorProxyTable">
