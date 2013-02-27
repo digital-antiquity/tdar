@@ -144,7 +144,7 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             setInput(String.format("%s.%s", rt.getFieldName(), "title"), "test");
             setInput(String.format("%s.%s", rt.getFieldName(), "description"), "test");
             if (isCopyrightMandatory() && isNotAddProject(path)) {
-                setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+//                setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
                 setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
             }
             if (!rt.isProject()) {

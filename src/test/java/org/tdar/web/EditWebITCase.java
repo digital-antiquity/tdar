@@ -104,7 +104,7 @@ public class EditWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         setInput("dataset.date", "2002");
         setInput("dataset.description", "trying to save this with a malformed csv should return action errors ");
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+//            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
             setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
         }
         submitForm();

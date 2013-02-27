@@ -16,17 +16,22 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.junit.MultipleTdarConfigurationRunner;
+import org.tdar.junit.RunWithTdarConfiguration;
 
 /**
  * @author Adam Brin
  * 
  */
+@RunWith(MultipleTdarConfigurationRunner.class)
+@RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.properties", "src/test/resources/tdar.ahad.properties" })
 public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     //FIXME: add datatable controller browse tests. See EditInheritingSectionsWebITCase#testProjectJson on how to parse/inspect.   
@@ -49,7 +54,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     private static void addCopyrightHolder(final HashMap<String, String> valueMap) {
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-            valueMap.put(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+//            valueMap.put(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
             valueMap.put(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
         }
     }

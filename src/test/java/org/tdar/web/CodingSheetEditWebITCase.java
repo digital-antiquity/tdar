@@ -3,10 +3,15 @@ package org.tdar.web;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.junit.MultipleTdarConfigurationRunner;
+import org.tdar.junit.RunWithTdarConfiguration;
 
+@RunWith(MultipleTdarConfigurationRunner.class)
+@RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.properties", "src/test/resources/tdar.ahad.properties" })
 public class CodingSheetEditWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     private static final String PARENT_PROJECT_ID_FIELD = "projectId";
@@ -33,7 +38,7 @@ public class CodingSheetEditWebITCase extends AbstractAdminAuthenticatedWebTestC
         setInput("codingSheet.date", "1937");
         setInput(CODING_SHEET_INPUT_METHOD_FIELD, CODING_SHEET_INPUT_METHOD_TEXT);
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+//            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
             setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
         }
         submitFormWithoutErrorCheck("Save");
