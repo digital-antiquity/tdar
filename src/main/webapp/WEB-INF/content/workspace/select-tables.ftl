@@ -84,7 +84,7 @@ $(function() {
 <h1>Data Integration</h1>
 
 <div class="row">
-<#if !bookmarkedDataTables.empty >
+<#if (bookmarkedDataTables)?? && !bookmarkedDataTables.empty >
 <div class="span12">
     <h3>Step 1: Select Datasets to Integrate or Display</h3>
     <@s.form name='selectDTForm' method='post' action='select-columns'>
