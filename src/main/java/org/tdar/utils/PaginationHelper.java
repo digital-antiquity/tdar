@@ -78,11 +78,11 @@ public class PaginationHelper {
    
     
     public boolean isSnippedLeft() {
-        return distEnd > visiblePageCount; 
+        return distStart > visiblePageCount ; 
     }
     
     public boolean isSnippedRight() {
-        return distStart > visiblePageCount;
+        return distEnd > visiblePageCount;
     }
    
     //page number of the page displayed by the left snip
@@ -136,4 +136,33 @@ public class PaginationHelper {
         if(!isSnippedLeft()) return idx;
         return idx + sbLeft;
     }
+    
+    public String toString() {
+        return render(this);
+                
+    }
+    
+    
+    static String render(PaginationHelper ph) {
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0; i < ph.getVisiblePageCount(); i++) {
+            int pad = ph.getSuggestedPadding();
+            String fmtsel = "[%" + pad + "s]";
+            String fmtreg = " %" + pad + "s ";
+            String fmt = ph.getCurrentPage() == i ? fmtsel : fmtreg;
+            String page;
+            if(
+                    (ph.isSnippedLeft() && ph.getSnipIndexLeft() == i) || 
+                    (ph.isSnippedRight() && (ph.getSnipIndexRight() == i))
+            )  {
+                page = String.format(fmt,  "..");
+            } else {
+                page = String.format(fmt,  ph.getPageNumber(i) + 1);
+            }
+            sb.append(page);
+        }
+        
+        return sb.toString();
+    }
+
 }

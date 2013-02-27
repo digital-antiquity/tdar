@@ -20,37 +20,58 @@ public class PaginationHelperTest {
     }
     
     @Test
-    public void testOneSnip() {
+    public void testRightSnip() {
         int itemsPerPage = 50;
         int itemCount =  5000;
         int visiblePages = 10;
         int currentPage = 0;
-        PaginationHelper ph = new PaginationHelper(itemCount, itemsPerPage, visiblePages, currentPage);
+        PaginationHelper ph = newPaginationHelper(itemCount, itemsPerPage, visiblePages, currentPage);
         
-        logger.debug(render(ph));
-        assertFalse("right side should be snipped", ph.isSnippedRight());
-        assertTrue("left side should not be snipped", ph.isSnippedLeft());
+        assertTrue("right side should be snipped", ph.isSnippedRight());
+        assertFalse("left side should not be snipped", ph.isSnippedLeft());
+        
+        assertEquals("first page should be 0", 0, ph.getPageNumber(0));
     }
     
-    private String render(PaginationHelper ph) {
-        StringBuilder sb = new StringBuilder();
-        for(int i = 0; i < ph.getVisiblePageCount(); i++) {
-            int pad = ph.getSuggestedPadding();
-            String fmtsel = "[%" + pad + "s]";
-            String fmtreg = " %" + pad + "s ";
-            String fmt = ph.getCurrentPage() == i ? fmtsel : fmtreg;
-            String page;
-            if(
-                    (ph.isSnippedLeft() && ph.getSnipIndexLeft() == i) || 
-                    (ph.isSnippedRight() && (ph.getSnipIndexRight() == i))
-            )  {
-                page = String.format(fmt,  "..");
-            } else {
-                page = String.format(fmt,  ph.getPageNumber(i) + 1);
-            }
-            sb.append(page);
-        }
-        
-        return sb.toString();
+    
+    @Test
+    public void testLeftSnip() {
+        PaginationHelper ph = newPaginationHelper(5000, 25, 20, 5000/25);
+        assertTrue("should be snipped on the left", ph.isSnippedLeft());
     }
+    
+    @Test
+    public void testLeftSnipLastPage() {
+        PaginationHelper ph = newPaginationHelper(5000, 25, 20, 5000/25);
+        int expectedPage = 5000 / 25; 
+        assertEquals("last page number", expectedPage, ph.getPageNumber(20));
+    }
+    
+    @Test
+    public void testPageAfterLeftSnip() {
+        PaginationHelper ph = newPaginationHelper(5000, 25, 20, 5000/25);
+        assertEquals("page after snip should be lastPage-(visiblePages-3)", (5000/25) - (20-3), ph.getPageNumber(19));
+        assertEquals("first page should be 0", 0, ph.getPageNumber(0));
+    }
+    
+    @Test
+    public void testPageBeforeRightSnip() {
+        
+    }
+    
+    @Test
+    public void testPageCount() {
+        assertEquals("should have 200 pages", 200, (newPaginationHelper(5000, 25, 20, 0)).getPageCount());
+        assertEquals("should have 200 pages", 200, (newPaginationHelper(4976, 25, 20, 0)).getPageCount());
+    }
+    
+    PaginationHelper newPaginationHelper(int itemCount, int itemsPerPage,  int visiblePages, int currentPage) {
+        PaginationHelper ph = new PaginationHelper(itemCount, itemsPerPage, visiblePages, currentPage);
+        Exception ex = new Exception();
+        ex.fillInStackTrace();
+        StackTraceElement[] st = ex.getStackTrace();
+        logger.debug("{}:{}:: {}",new Object[] {st[1].getMethodName(), st[1].getLineNumber(), ph});
+        return ph;
+    }
+    
 }
