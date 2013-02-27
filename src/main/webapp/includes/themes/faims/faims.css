@@ -1,0 +1,45 @@
+#home {
+	background: url(/includes/themes/ahad/images/bg-home.jpg) center 115px
+		no-repeat;
+}
+
+#alt,#sub {
+	background: url(/includes/themes/ahad/images/bg-sub.jpg) top center
+		no-repeat;
+}
+
+footer {
+	margin-top: 60px;
+	background: url(/includes/themes/ahad/images/bg-footer.png) repeat;
+	padding: 50px 0;
+}
+
+#alt.not-production {
+	background-color: #F4F4F4;
+}
+
+.hero ul {
+	top: -10px;
+}
+
+h1,h2,h3,header .welcome-drop p,#home .news span,.why article p,.why article ul,.contrib p,.contrib ul,.contrib .span3 li,.searchresults p,.searchresults aside li,.searchresults .sort p,.searchresults .sort form,.searchresults .pagin td.prev,.searchresults .pagin td.next,.searchresults .pagin li,header .welcome-drop p
+	{
+	font-family: "soleil", sans-serif !important;
+}
+
+#home .news li,.cols p,.tableFormat td,header form input.searchbox,header .welcome-drop a,.hero input.searchbox,#slider p,#slider span,.bucket p,#alt aside li,.why article li,.contrib li,.contrib .span3 p,.searchresults aside li,.searchresults aside label,.searchresults article p,footer ul,footer li
+	{
+	font-family: "ff-tisa-web-pro", serif !important;
+}
+
+form .required {
+	font-weight: bold;
+	background-color: #FFC;
+}
+
+/* following doesn't get picked up yet */
+form .required label:after {
+	color: #e32;
+	content: '*';
+	display: inline;
+}

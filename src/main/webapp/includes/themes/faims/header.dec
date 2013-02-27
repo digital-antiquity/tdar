@@ -1,0 +1,5 @@
+<div class="span3">
+    <p><a href="/"><img src="<@s.url value="/${themeDir}images/faims_logo.png" />" width="120" alt="FA|MS" /></a>
+    <strong> ${tdarConfiguration.serverEnvironmentStatus} Server</strong>
+</div>
+<!--div id="digant"><a id="diganttext" href="http://www.ands.org.au">Sponsored by the Australian<br />National Data Service</a></div --> 

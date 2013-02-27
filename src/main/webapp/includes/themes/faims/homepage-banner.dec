@@ -1,0 +1,7 @@
+<h3>The Federated Archaeological Information Management System</h3>
+
+<p><strong>Your</strong> on-line Australian archive for archaeological information.</p>
+<form name="searchheader" action="<@s.url value="/search/results"/>" class="searchheader">
+    <input type="text" name="query" placeholder="Find archaeological data..." class="searchbox input-xxlarge">
+    <a href="/search">advanced</a>
+</form><h3>The Federated Archaeological Information Management System</h3>
