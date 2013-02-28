@@ -1,75 +1,38 @@
 package org.tdar.utils;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.junit.Assert.*;
 
-@Ignore
+
 public class PaginationHelperTest {
 
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
-
+    
     @Test
-    public void testNoSnip() {
-        PaginationHelper ph = new PaginationHelper(400, 50, 10, 4);
-        assertFalse("no pages snipped", ph.isSnippedLeft());
-        assertFalse("no pages snipped", ph.isSnippedRight());
-        assertEquals(400 / 50, ph.getPageCount());
+    public void testLowRange() {
+        for (int i = 0; i < 5; i++) {
+            PaginationHelper ph = newPaginationHelper(5000, 10, 10, i);
+            assertEquals("minimum page should still be 0", 0, ph.getMinimumPageNumber());
+            assertEquals("max page should be 9", 9, ph.getMaximumPageNumber());
+        }
+        for (int i = 5; i < 20; i++) {
+            PaginationHelper ph = newPaginationHelper(5000, 10, 10, i);
+            assertEquals("minimum page should be i - window size / 2", i - ph.getWindowSize()/2, ph.getMinimumPageNumber());
+        }
     }
     
     @Test
-    public void testRightSnip() {
-        int itemsPerPage = 50;
-        int itemCount =  5000;
-        int visiblePages = 10;
-        int currentPage = 0;
-        PaginationHelper ph = newPaginationHelper(itemCount, itemsPerPage, visiblePages, currentPage);
-        
-        assertTrue("right side should be snipped", ph.isSnippedRight());
-        assertFalse("left side should not be snipped", ph.isSnippedLeft());
-        
-        assertEquals("first page should be 0", 0, ph.getPageNumber(0));
-    }
-    
-    
-    @Test
-    public void testLeftSnip() {
-        PaginationHelper ph = newPaginationHelper(5000, 25, 20, 5000/25);
-        assertTrue("should be snipped on the left", ph.isSnippedLeft());
-    }
-    
-    @Test
-    public void testLeftSnipLastPage() {
-        PaginationHelper ph = newPaginationHelper(5000, 25, 10, 199);
-        assertEquals("page count", 200, ph.getPageCount());
-        assertEquals("last page number", 199, ph.getPageNumber(9));
-    }
-    
-    @Test
-    public void testPageAfterLeftSnip() {
-        PaginationHelper ph = newPaginationHelper(5000, 25, 10, 199);
-        assertEquals("page count", 200, ph.getPageCount());
-        assertTrue("results should be snipped on left", ph.isSnippedLeft());
-        int expected =  193;
-        int actual = ph.getPageNumber(3);
-        assertEquals("page after left-snip ", expected, actual );
-        assertEquals("first page should be 0", 0, ph.getPageNumber(0));
-    }
-    @Test 
-    public void testPageAfterLeftSnip2() {
-        PaginationHelper ph = newPaginationHelper(4976, 25, 20, 199);
-        int expected = 183;
-        int actual = ph.getPageNumber(3);
-        assertEquals("page after left-snip ", expected, actual );
-    }
-    
-    
-    @Test
-    public void testPageBeforeRightSnip() {
-        fail("not implemenned");
+    public void testHighRange() {
+        for (int i = 500; i > 494; --i) {
+            PaginationHelper ph = newPaginationHelper(5000, 10, 10, i);
+            assertEquals("minimum page number should be 490", 490, ph.getMinimumPageNumber());
+            assertEquals("maximum page number should be 499", 499, ph.getMaximumPageNumber());            
+        }
+        PaginationHelper ph = newPaginationHelper(5000, 10, 10, 494);
+        assertEquals("maximum page number should be 498", 498, ph.getMaximumPageNumber());
     }
     
     @Test
@@ -78,7 +41,7 @@ public class PaginationHelperTest {
         assertEquals("should have 200 pages", 200, (newPaginationHelper(4976, 25, 20, 0)).getPageCount());
     }
     
-    PaginationHelper newPaginationHelper(int itemCount, int itemsPerPage,  int visiblePages, int currentPage) {
+    private PaginationHelper newPaginationHelper(int itemCount, int itemsPerPage,  int visiblePages, int currentPage) {
         PaginationHelper ph = new PaginationHelper(itemCount, itemsPerPage, visiblePages, currentPage);
         Exception ex = new Exception();
         ex.fillInStackTrace();
