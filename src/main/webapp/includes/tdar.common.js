@@ -739,7 +739,8 @@ TDAR.common = function() {
              $(element).closest("div.control-group").addClass("error");
          },
          unhighlight:function(element, errorClass, validClass) {
-             $(element).closest("div.control-group").removeClass("error");
+        	 if (!$(element).hasClass('skip_validation'))
+        		 $(element).closest("div.control-group").removeClass("error");
          },
         showErrors: function(errorMap, errorList) {
             this.defaultShowErrors();
