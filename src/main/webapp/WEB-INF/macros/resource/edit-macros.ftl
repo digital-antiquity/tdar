@@ -663,7 +663,7 @@ applyInheritance(project, formSelector);
 <div class="well-alt" id="relatedCollectionsSectionGlide">
     <h2>Museum or Archive Collections</h2>
     <@inheritsection checkboxId="cbInheritingCollectionInformation" name='resource.inheritingCollectionInformation' showInherited=showInherited />
-    <div id="relatedCollectionsSection" >
+    <div id="relatedCollectionsSection">
         <div id="divSourceCollectionControl" class="control-group repeatLastRow">
             <label class="control-label">Source Collections</label>
             <#list _sourceCollections as sourceCollection>
@@ -677,7 +677,7 @@ applyInheritance(project, formSelector);
                 <@sourceCollectionRow relatedComparativeCollection "relatedComparativeCollection" relatedComparativeCollection_index/>
             </#list>
         </div> 
-        <@helptext.sourceRelatedCollection />    
+        <@helptext.sourceRelatedCollection />
     </div>
 </div>
 </#macro>
@@ -829,7 +829,8 @@ applyInheritance(project, formSelector);
 </div> <!-- section -->
 </#macro>
 
-<#macro creatorProxyRow proxy=proxy prefix=prefix proxy_index=proxy_index type_override="NONE" required=false includeRole=true>
+<#macro creatorProxyRow proxy=proxy prefix=prefix proxy_index=proxy_index type_override="NONE" 
+    required=false includeRole=true leadTitle="">
     <#assign relevantPersonRoles=personAuthorshipRoles />
     <#assign relevantInstitutionRoles=institutionAuthorshipRoles />
     <#if prefix=='credit'>
@@ -838,7 +839,6 @@ applyInheritance(project, formSelector);
     </#if>
 
     <#if proxy??>
-
     <div id="${prefix}Row_${proxy_index}_" class="repeat-row control-group">
           <#assign creatorType = proxy.actualCreatorType!"PERSON" />
           <!-- fixme: careful with this styling -->
@@ -852,10 +852,12 @@ applyInheritance(project, formSelector);
             <#--assuming we are in a span9 and that a controls-div is 2 cells narrower, our width should be span 7 -->
             <div class="span6">
                 <@userRow person=proxy.person _indexNumber=proxy_index _personPrefix="person" prefix="${prefix}Proxies" 
-                    includeRole=includeRole hidden=(creatorType =='INSTITUTION' || type_override == "INSTITUTION") required=(creatorType=='PERSON' && required) />
-    
-                <@institutionRow institution=proxy.institution _indexNumber=proxy_index includeRole=includeRole _institutionPrefix="institution" prefix="${prefix}Proxies" 
-                    hidden=(type_override == "PERSON" || (creatorType=='PERSON' && type_override=='NONE')) required=(creatorType=='INSTITUTION' && required)/>
+                    includeRole=includeRole hidden=(creatorType =='INSTITUTION' || type_override == "INSTITUTION") 
+                    required=(required) leadTitle="${leadTitle}"/>
+
+                <@institutionRow institution=proxy.institution _indexNumber=proxy_index includeRole=includeRole _institutionPrefix="institution" 
+                    prefix="${prefix}Proxies" hidden=(type_override == "PERSON" || (creatorType=='PERSON' && type_override=='NONE')) 
+                    required=(required) leadTitle="${leadTitle}"/>
             </div>
             <div class="span1">
                 <button class="btn  btn-mini repeat-row-delete " type="button" tabindex="-1" ><i class="icon-trash"></i></button>
@@ -1097,7 +1099,7 @@ jquery validation hooks?)
     </#if>
 
     <#if resource.resourceType.label?lower_case != 'project'>
-        <@copyrightHolders 'Primary Copyright Holder *' copyrightHolderProxies />
+        <@copyrightHolders 'Primary Copyright Holder' copyrightHolderProxies />
     </#if>
 </#macro>
 
@@ -1322,13 +1324,16 @@ $(function() {
 
 
 <#macro copyrightHolders sectionTitle copyrightHolderProxies >
-<#if copyrightMandatory>
-    <div class="glide" tiplabel="Primary Copyright Holder" tooltipcontent="Use this field to nominate a primary copyright holder. Other information about copyright can be added in the 'notes' section by creating a new 'Rights & Attribution note.">
-        <h3>${sectionTitle}</h3>
-    <div id="copyrightHolderTable" class="creatorProxyTable">
-      <@creatorProxyRow proxy=copyrightHolderProxies proxy_index="" prefix="copyrightHolder" required=true includeRole=false />
-    </div>
-</#if>
+    <#if copyrightMandatory>
+        <@helptext.copyrightHoldersTip />
+        <div class="" id="copyrightHoldersSection" tiplabel="Primary Copyright Holder" tooltipcontent="#divCopyrightHoldersTip" >
+            <h2>${sectionTitle}</h2>
+            <div id="copyrightHolderTable" class="control-group table repeatLastRow creatorProxyTable">
+                <@creatorProxyRow proxy=copyrightHolderProxies proxy_index="" prefix="copyrightHolder" required=true 
+                    includeRole=false required=true leadTitle="copyright holder "/>
+            </div>
+        </div>
+    </#if>
 </#macro>
 
 <#macro license>
@@ -1567,7 +1572,7 @@ $(function() {
 
 
 <#macro userRow person=person _indexNumber=0 isDisabled=false prefix="authorizedMembers" required=false _personPrefix="" includeRole=false
-    includeRepeatRow=false includeRights=false  hidden=false isUser=false>
+    includeRepeatRow=false includeRights=false  hidden=false isUser=false leadTitle="">
 <#local disabled =  isDisabled?string("disabled", "") />
 <#local readonly = isDisabled?string("readonly", "") />
 <#local lookupType="nameAutoComplete"/>
@@ -1580,16 +1585,22 @@ $(function() {
 <#local rowIdElement="${prefix}Row_${_indexNumber}_p" />
 <#local idIdElement="${prefix}Id__id_${_indexNumber}_p" />
 <#local requiredClass><#if required>required</#if></#local>
+<#local firstnameTitle>A ${leadTitle}first name<#if required> is required</#if></#local>
+<#local surnameTitle>A ${leadTitle}last name<#if required> is required</#if></#local>
     <div id='${rowIdElement}' class="creatorPerson <#if hidden>hidden</#if> <#if includeRepeatRow>repeat-row</#if>">
         <@s.hidden name='${strutsPrefix}${personPrefix}.id' value='${(person.id!-1)?c}' id="${idIdElement}"  cssClass="validIdRequired" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"   />
         <div class="controls-row">
             <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass}" placeholder="Last Name"  readonly=isDisabled autocompleteParentElement="#${rowIdElement}"
                 autocompleteIdElement="#${idIdElement}" autocompleteName="lastName" autocomplete="off"
-                name="${strutsPrefix}${personPrefix}.lastName" maxlength="255" /> 
+                name="${strutsPrefix}${personPrefix}.lastName" maxlength="255" 
+                title="${surnameTitle}"
+                 /> 
             <@s.textfield theme="tdar" cssClass="span2 ${lookupType} ${requiredClass}" placeholder="First Name"  readonly=isDisabled autocomplete="off"
                 name="${strutsPrefix}${personPrefix}.firstName" maxlength="255" autocompleteName="firstName"
                 autocompleteIdElement="#${idIdElement}" 
-                autocompleteParentElement="#${rowIdElement}"  />
+                autocompleteParentElement="#${rowIdElement}" 
+                 title="${firstnameTitle}" 
+                />
 
             <#if includeRole || includeRights>
             
@@ -1607,10 +1618,10 @@ $(function() {
             </#if>
         </div>
         <div class="controls-row">
-        <@s.textfield theme="tdar" cssClass="span3 ${lookupType}" placeholder="Email (optional)" readonly=isDisabled autocomplete="off"
+        <@s.textfield theme="tdar" cssClass="span3 ${lookupType} skip_validation" placeholder="Email (optional)" readonly=isDisabled autocomplete="off"
             autocompleteIdElement="#${idIdElement}" autocompleteName="email" autocompleteParentElement="#${rowIdElement}"
             name="${strutsPrefix}${personPrefix}.email" maxlength="255"/>
-        <@s.textfield theme="tdar" cssClass="span3 ${lookupType}" placeholder="Institution Name (Optional)" readonly=isDisabled autocomplete="off"
+        <@s.textfield theme="tdar" cssClass="span3 ${lookupType} skip_validation" placeholder="Institution Name (Optional)" readonly=isDisabled autocomplete="off"
             autocompleteIdElement="#${idIdElement}" 
             autocompleteName="institution" 
             autocompleteParentElement="#${rowIdElement}"
@@ -1619,7 +1630,8 @@ $(function() {
     </div>
 </#macro>
 
-<#macro institutionRow institution _indexNumber=0 prefix="authorizedMembers" required=false includeRole=false _institutionPrefix=""  hidden=false>
+<#macro institutionRow institution _indexNumber=0 prefix="authorizedMembers" required=false includeRole=false _institutionPrefix=""  
+    hidden=false leadTitle="">
 <#local _index=""/>
 <#if _indexNumber?string!=''><#local _index="[${_indexNumber}]" /></#if>
 <#local institutionPrefix="" />
@@ -1627,15 +1639,19 @@ $(function() {
 <#local strutsPrefix="${prefix}${_index}" />
 <#local rowIdElement="${prefix}Row_${_indexNumber}_i" />
 <#local idIdElement="${prefix}Id__id_${_indexNumber}_i" />
+<#local requiredClass><#if required>required</#if></#local>
+<#local institutionTitle>The ${leadTitle}institution name<#if required> is required</#if></#local>
 
     <div id='${rowIdElement}' class="creatorInstitution <#if hidden >hidden</#if>">
 
         <@s.hidden name='${strutsPrefix}${institutionPrefix}.id' value='${(institution.id!-1)?c}' id="${idIdElement}"  cssClass="validIdRequired" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"  />
                 <div class="controls-row">
-                    <@s.textfield theme="tdar" cssClass="institutionAutoComplete institution span4" placeholder="Institution Name" autocomplete="off"
+                    <@s.textfield theme="tdar" cssClass="institutionAutoComplete institution span4 ${requiredClass}" placeholder="Institution Name" autocomplete="off"
                         autocompleteIdElement="#${idIdElement}" autocompleteName="name" 
                         autocompleteParentElement="#${rowIdElement}"
-                        name="${strutsPrefix}${institutionPrefix}.name" maxlength="255" />
+                        name="${strutsPrefix}${institutionPrefix}.name" maxlength="255"
+                        title="${institutionTitle}" 
+                        />
 
                     <#if includeRole>
                     <@s.select theme="tdar" name="${strutsPrefix}.role" listValue='label' list=relevantInstitutionRoles cssClass="creator-role-select span2" />
