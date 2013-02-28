@@ -1,16 +1,16 @@
 #home {
-	background: url(/includes/themes/ahad/images/bg-home.jpg) center 115px
+	background: url(/includes/themes/faims/images/bg-home.jpg) center 115px
 		no-repeat;
 }
 
 #alt,#sub {
-	background: url(/includes/themes/ahad/images/bg-sub.jpg) top center
+	background: url(/includes/themes/faims/images/bg-sub.jpg) top center
 		no-repeat;
 }
 
 footer {
 	margin-top: 60px;
-	background: url(/includes/themes/ahad/images/bg-footer.png) repeat;
+	background: url(/includes/themes/faims/images/bg-footer.png) repeat;
 	padding: 50px 0;
 }
 
