@@ -203,15 +203,15 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     @Override
     public String loadViewMetadata() {
-//        getAuthorizedUsers().addAll(getPersistable().getAuthorizedUsers());
-//        resources.addAll(getPersistable().getResources());
-//        for (Resource resource : getPersistable().getResources()) {
-//            getAuthenticationAndAuthorizationService().applyTransientViewableFlag(resource, getAuthenticatedUser());
-//        }
+        // getAuthorizedUsers().addAll(getPersistable().getAuthorizedUsers());
+        // resources.addAll(getPersistable().getResources());
+        // for (Resource resource : getPersistable().getResources()) {
+        // getAuthenticationAndAuthorizationService().applyTransientViewableFlag(resource, getAuthenticatedUser());
+        // }
         setParentId(getPersistable().getParentId());
         return SUCCESS;
     }
-    
+
     @Override
     public String loadEditMetadata() {
         super.loadEditMetadata();
@@ -274,14 +274,10 @@ public class CollectionController extends AbstractPersistableController<Resource
         Collections.sort(collections);
 
         if (isEditor()) {
-            List<Long> collectionIds = Persistable.Base.extractIds(getResourceCollectionService().findAllChildCollectionsRecursive(getPersistable(), CollectionType.SHARED));
+            List<Long> collectionIds = Persistable.Base.extractIds(getResourceCollectionService().findAllChildCollectionsRecursive(getPersistable(),
+                    CollectionType.SHARED));
             collectionIds.add(getId());
-            setTotalResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, null,
-                    collectionIds, null,
-                    null, null));
-            setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, null,
-                    collectionIds, null,
-                    null, Arrays.asList(VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED_TEXT)));
+            setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, null, collectionIds, null, null));
         }
 
         if (getPersistable() != null) {

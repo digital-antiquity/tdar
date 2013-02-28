@@ -235,15 +235,10 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         getAccountService().updateTransientAccountInfo((List<Resource>) Arrays.asList(getResource()));
 
         if (isEditor()) {
-            List<VersionType> versionTypes = Arrays.asList(VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED_TEXT);
             if (getPersistableClass().equals(Project.class)) {
-                setTotalResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, null, null, Arrays.asList(getId()), null, null));
-                setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, null, null, Arrays.asList(getId()), null,
-                        versionTypes));
+                setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, null, null, Arrays.asList(getId()), null));
             } else {
-                setTotalResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, Arrays.asList(getId()), null, null, null, null));
-                setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, Arrays.asList(getId()), null, null, null,
-                        versionTypes));
+                setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, Arrays.asList(getId()), null, null, null));
             }
         }
 
