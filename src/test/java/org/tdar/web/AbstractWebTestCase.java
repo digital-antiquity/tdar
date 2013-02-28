@@ -930,6 +930,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         assertTrue(response.contains(TransactionStatus.PENDING_TRANSACTION.name()));
         checkInput(NelnetTransactionItem.getInvoiceIdKey(), invoiceid);
         checkInput(NelnetTransactionItem.getUserIdKey(), Long.toString(getUserId()));
+//        logger.info(getPageBodyCode());
         checkInput(NelnetTransactionItem.AMOUNT_DUE.name(), total);
         clickElementWithId("process-payment_0");
         response = getAccountPollingRequest(polingUrl);

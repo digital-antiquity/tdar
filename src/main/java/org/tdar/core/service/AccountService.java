@@ -161,7 +161,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
 
     @Transactional
     public AccountAdditionStatus updateQuota(Account account, Collection<Resource> resourcesToEvaluate) {
-        logger.info("updating quota(s)");
+        logger.info("updating quota(s) {} {}", account, resourcesToEvaluate);
         if (Persistable.Base.isNullOrTransient(account)) {
             throw new TdarRecoverableRuntimeException(ACCOUNT_IS_NULL);
         }

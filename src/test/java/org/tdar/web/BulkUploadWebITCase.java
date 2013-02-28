@@ -23,6 +23,7 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 
@@ -52,16 +53,18 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
     }
 
     @Test
-    @RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.properties", "src/test/resources/tdar.cc.properties" })
+    @RunWithTdarConfiguration(runWith = {"src/test/resources/tdar.properties" , "src/test/resources/tdar.cc.properties" })
     public void testValidBulkUpload() throws MalformedURLException {
 
-        gotoPage("/cart/add");
-        setInput("invoice.numberOfMb", "20");
-        setInput("invoice.numberOfFiles", "2");
-        submitForm();
-        setInput("invoice.paymentMethod", "CREDIT_CARD");
-        String invoiceId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL);
-        String accountId = addInvoiceToNewAccount(invoiceId, null, "my first account");
+        if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
+            gotoPage("/cart/add");
+            setInput("invoice.numberOfMb", "200");
+            setInput("invoice.numberOfFiles", "20");
+            submitForm();
+            setInput("invoice.paymentMethod", "CREDIT_CARD");
+            String invoiceId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL);
+            String accountId = addInvoiceToNewAccount(invoiceId, null, "my first account");
+        }
 
         Map<String, String> extra = new HashMap<String, String>();
         extra.put("investigationTypeIds", "1");
@@ -70,6 +73,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         extra.put("latitudeLongitudeBoxes[0].minimumLatitude", "41.82608370627639");
         extra.put("latitudeLongitudeBoxes[0].minimumLongitude", "-71.41018867492676");
         extra.put(PROJECT_ID_FIELDNAME, "3805");
+//        extra.put("accountId", accountId);
         extra.put("resource.inheritingInvestigationInformation", "true");
         extra.put("resourceProviderInstitutionName", "Digital Antiquity");
         File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
@@ -138,6 +142,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         submitForm();
         assertTrue(internalPage.getUrl().toString().contains("save.action"));
         assertTextPresentIgnoreCase("Bulk Upload Status");
+        logger.info(getPageCode());
         assertTextPresentInCode("$.ajax");
         String statusPage = "/batch/checkstatus?ticketId=" + ticketId;
         gotoPage(statusPage);

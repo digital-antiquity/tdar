@@ -269,11 +269,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     @Override
     protected void postSaveCallback(String actionMessage) {
         //if user has single billing account, use that (ignore the form);
-        getAccountService().updateTransientAccountInfo(getResource());
-        List<Account> accounts = determineActiveAccounts();
-        if(accounts.size() == 1 ) {
-            setAccountId(accounts.get(0).getId());
-        }
+        setupAccountForSaving();
         
         if (actionMessage == SUCCESS) {
             // getAccountService().getResourceEvaluator().evaluateResources(getResource());
@@ -292,6 +288,14 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             String logMessage = String.format("%s edited and saved by %s:\ttdar id:%s\ttitle:[%s]", getResource().getResourceType().getLabel(),
                     getAuthenticatedUser(), getResource().getId(), StringUtils.left(getResource().getTitle(), 100));
             logModification(logMessage);
+        }
+    }
+
+    protected void setupAccountForSaving() {
+        getAccountService().updateTransientAccountInfo(getResource());
+        List<Account> accounts = determineActiveAccounts();
+        if(accounts.size() == 1 ) {
+            setAccountId(accounts.get(0).getId());
         }
     }
 

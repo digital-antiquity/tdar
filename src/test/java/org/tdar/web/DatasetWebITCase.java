@@ -52,10 +52,11 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     public static String DESCRIPTION = "A resource description";
     public static final String SPITAL_DB_NAME = "Spital Abone database.mdb";
 
-    private static void addCopyrightHolder(final HashMap<String, String> valueMap) {
+    private void addCopyrightHolder(final HashMap<String, String> valueMap) {
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-//            valueMap.put(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
             valueMap.put(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
+        } else {
+            valueMap.remove(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME);
         }
     }
 
@@ -223,7 +224,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         logger.info(getInput("subcategoryId").asXml());
         logger.trace(getPageText());
         submitForm();
-         logger.info(getPageText());
+//         logger.info(getPageText());
         for (String key : codingMap.keySet()) {
             // avoid the issue of the fuzzy distances or truncation... use just the
             // top of the lat/long

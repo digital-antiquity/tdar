@@ -108,7 +108,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
         logger.debug("excel manifest is: {}", excelManifest);
         handleAsyncUploads();
         Collection<FileProxy> fileProxiesToProcess = getFileProxiesToProcess();
-
+        setupAccountForSaving();
         if (isAsync()) {
             logger.info("running asyncronously");
             bulkUploadService.saveAsync(image, getAuthenticatedUser(), getTicketId(), excelManifest, fileProxiesToProcess, getAccountId());

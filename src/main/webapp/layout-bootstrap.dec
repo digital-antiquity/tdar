@@ -17,12 +17,12 @@
         <link rel="search" type="application/opensearchdescription+xml" href='<@s.url value="/opensearch.xml"/>' title="Search ${siteAcronym}"> 
 
 		<#-- dev only 
-        <script src="//ajax.aspnetcdn.com/ajax/modernizr/modernizr-2.0.6-development-only.js"></script>
+        <script src="${protocol}//ajax.aspnetcdn.com/ajax/modernizr/modernizr-2.0.6-development-only.js"></script>
         -->
 		<script src="/includes/modernizr-custom-2.6.2.min.js"></script>
         
-		<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet">
-		<!--[if gt IE 8]><!--> <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen"> <!--<![endif]-->
+		<link href="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet">
+		<!--[if gt IE 8]><!--> <link href="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen"> <!--<![endif]-->
 		
 
         <link rel="stylesheet" type="text/css" href='//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_version}/themes/base/jquery-ui.css'>
@@ -30,10 +30,10 @@
         <link href="<@s.url value="/css/vc/${common.tdarBuildId}/tdar-print.css"/>" rel="stylesheet" media="print">
         
         <script src="<@s.url value="/includes/tdar.core.js"/>"></script>
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/${jquery_version}/jquery.min.js"></script>
-        <script src="//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_version}/jquery-ui.min.js"></script>
+        <script src="${protocol}//ajax.googleapis.com/ajax/libs/jquery/${jquery_version}/jquery.min.js"></script>
+        <script src="${protocol}//ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_version}/jquery-ui.min.js"></script>
 
-        <script type="text/javascript" src="//www.google.com/jsapi"></script>
+        <script type="text/javascript" src="${protocol}//www.google.com/jsapi"></script>
         <#--end maps support -->
         <#include "${themeDir}/head.dec" />
 
@@ -231,9 +231,9 @@ ${_stacktrace?html}
         </div>
 
     </footer>
-        <script src="//ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"></script>        
+        <script src="${protocol}//ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"></script>        
         <#--TODO: decide whether it's wise to use a bootstrap CDN.  For now I'm using this for convenience -->
-        <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+        <script src="${protocol}//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
 
         <script type="text/javascript">
         //functionality for "welcome back, so-and-so!" (pulled from main.js)
