@@ -11,6 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.InformationResourceFile;
@@ -18,8 +19,12 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.junit.MultipleTdarConfigurationRunner;
+import org.tdar.junit.RunWithTdarConfiguration;
 
 
+@RunWith(MultipleTdarConfigurationRunner.class)
+@RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.properties", "src/test/resources/tdar.ahad.properties" })
 public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     public static HashMap<String, String> docValMap = new HashMap<String, String>();
@@ -55,7 +60,7 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         setInput(DESCRIPTION_FIELDNAME, DESCRIPTION);
         setInput("image.date", "1984");
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+//            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
             setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
         }
         // FIXME: need to create input

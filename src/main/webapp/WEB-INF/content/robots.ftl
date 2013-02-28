@@ -9,4 +9,4 @@ Allow: /browse/explore
 <#else>
 Disallow: *
 </#if>
-Sitemap: http://${hostName}/sitemap/${sitemapFile}
+Sitemap: ${protocol}//${hostName}/sitemap/${sitemapFile}

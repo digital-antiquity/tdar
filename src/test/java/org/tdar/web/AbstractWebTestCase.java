@@ -904,7 +904,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         setInput("ticketId", ticketId);
         setInput("projectId", Long.toString(TestConstants.ADMIN_PROJECT_ID));
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+//            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
             setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
         }
 
@@ -930,6 +930,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         assertTrue(response.contains(TransactionStatus.PENDING_TRANSACTION.name()));
         checkInput(NelnetTransactionItem.getInvoiceIdKey(), invoiceid);
         checkInput(NelnetTransactionItem.getUserIdKey(), Long.toString(getUserId()));
+//        logger.info(getPageBodyCode());
         checkInput(NelnetTransactionItem.AMOUNT_DUE.name(), total);
         clickElementWithId("process-payment_0");
         response = getAccountPollingRequest(polingUrl);

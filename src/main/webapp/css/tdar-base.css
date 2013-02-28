@@ -75,6 +75,10 @@ a:hover {
 }
 
 
+/*override native button style for our fancy tdar-buttons */
+button.tdar-button, submit.tdar-button[type=button] {
+    border: none;
+}
 a.button, .tdar-button {
 	font-family: helvetica, arial, sans-serif;
 //	width: 130px;
@@ -97,6 +101,7 @@ a.button, .tdar-button {
 	zoom: 1;
 	padding-left: 8px;
 	padding-right: 8px;
+	cursor:pointer; 
 }
 
 a.button:hover , .tdar-button:hover {

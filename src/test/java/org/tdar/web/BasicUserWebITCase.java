@@ -3,9 +3,14 @@ package org.tdar.web;
 import java.util.HashMap;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.tdar.TestConstants;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.junit.MultipleTdarConfigurationRunner;
+import org.tdar.junit.RunWithTdarConfiguration;
 
+@RunWith(MultipleTdarConfigurationRunner.class)
+@RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.properties", "src/test/resources/tdar.ahad.properties" })
 public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
     private static final String DESCRIPTION = "descriptionthisisauniquetest";
     private static final String TITLE = "title of a test document";
@@ -24,7 +29,7 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
         docValMap.put("document.date", "1923");
         docValMap.put("status", "DRAFT");
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-            docValMap.put(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+//            docValMap.put(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
             docValMap.put(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
         }
         for (String key : docValMap.keySet()) {

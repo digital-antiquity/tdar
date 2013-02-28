@@ -5,12 +5,17 @@ import static org.junit.Assert.assertTrue;
 import java.util.HashMap;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.tdar.TestConstants;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.junit.MultipleTdarConfigurationRunner;
+import org.tdar.junit.RunWithTdarConfiguration;
 
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlInput;
 
+@RunWith(MultipleTdarConfigurationRunner.class)
+@RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.properties", "src/test/resources/tdar.ahad.properties" })
 public class SensoryDataWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     String SDOC_TITLE = "a sensory document";
@@ -28,7 +33,7 @@ public class SensoryDataWebITCase extends AbstractAdminAuthenticatedWebTestCase 
         setInput("sensoryData.date", "1943");
         setInput(SDOC_FIELD_DESCRIPTION, SDOC_DESC);
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+//            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
             setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
         }
         submitForm();
@@ -117,7 +122,7 @@ public class SensoryDataWebITCase extends AbstractAdminAuthenticatedWebTestCase 
         sensoryHash.put("sensoryData.rgbPreservedFromOriginal", "true"); // setting checkbox/radio
         
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-            sensoryHash.put(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+//            sensoryHash.put(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
             sensoryHash.put(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
         }
         

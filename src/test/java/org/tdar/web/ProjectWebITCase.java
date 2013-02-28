@@ -20,7 +20,7 @@ public class ProjectWebITCase extends AbstractAdminAuthenticatedWebTestCase{
         setInput("document.date", "1999");
         setInput("projectId", TestConstants.PARENT_PROJECT_ID.toString());
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+//            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
             setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
         }
         submitForm();

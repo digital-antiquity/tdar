@@ -20,7 +20,7 @@ public class CrossActionPostWebITCase extends AbstractAuthenticatedWebTestCase {
         setInput("document.description", "this is the description");
         setInput("document.date", "1934");
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+//            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
             setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
         }
         submitForm();

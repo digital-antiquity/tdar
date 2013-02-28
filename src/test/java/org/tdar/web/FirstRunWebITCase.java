@@ -7,12 +7,15 @@ package org.tdar.web;
 import java.net.URL;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.tdar.TestConstants;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.junit.MultipleTdarConfigurationRunner;
+import org.tdar.junit.RunWithTdarConfiguration;
 
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
@@ -20,6 +23,8 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
  * @author Adam Brin
  * 
  */
+@RunWith(MultipleTdarConfigurationRunner.class)
+@RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.properties", "src/test/resources/tdar.ahad.properties" })
 public class FirstRunWebITCase extends AbstractAuthenticatedWebTestCase {
 
     public static final String TEST_TITLE = "This is a test title";
@@ -43,7 +48,7 @@ public class FirstRunWebITCase extends AbstractAuthenticatedWebTestCase {
         setInput("ticketId", ticketId);
         setInput("projectId", Long.toString(TestConstants.ADMIN_PROJECT_ID));
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+//            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
             setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
         }
         
@@ -90,7 +95,7 @@ public class FirstRunWebITCase extends AbstractAuthenticatedWebTestCase {
         setInput("fileTextInput", codingSheetRules);
         setInput("projectId", Long.toString(TestConstants.ADMIN_PROJECT_ID));
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+//            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
             setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
         }
         

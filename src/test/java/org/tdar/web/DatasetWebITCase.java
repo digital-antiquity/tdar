@@ -16,17 +16,22 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.junit.MultipleTdarConfigurationRunner;
+import org.tdar.junit.RunWithTdarConfiguration;
 
 /**
  * @author Adam Brin
  * 
  */
+@RunWith(MultipleTdarConfigurationRunner.class)
+@RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.properties", "src/test/resources/tdar.ahad.properties" })
 public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     //FIXME: add datatable controller browse tests. See EditInheritingSectionsWebITCase#testProjectJson on how to parse/inspect.   
@@ -47,10 +52,11 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     public static String DESCRIPTION = "A resource description";
     public static final String SPITAL_DB_NAME = "Spital Abone database.mdb";
 
-    private static void addCopyrightHolder(final HashMap<String, String> valueMap) {
+    private void addCopyrightHolder(final HashMap<String, String> valueMap) {
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-            valueMap.put(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
             valueMap.put(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
+        } else {
+            valueMap.remove(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME);
         }
     }
 
@@ -62,7 +68,6 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         docValMap.put("dataset.date", "1923");
         docValMap.put("uploadedFiles", TestConstants.TEST_DATA_INTEGRATION_DIR + TEST_DATASET_NAME);
 
-        addCopyrightHolder(docValMap);
     }
 
     @Test
@@ -141,6 +146,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     private void uploadDataset() {
         gotoPage("/dataset/add");
+        addCopyrightHolder(docValMap);
         for (String key : docValMap.keySet()) {
             setInput(key, docValMap.get(key));
         }
@@ -220,7 +226,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         logger.info(getInput("subcategoryId").asXml());
         logger.trace(getPageText());
         submitForm();
-         logger.info(getPageText());
+//         logger.info(getPageText());
         for (String key : codingMap.keySet()) {
             // avoid the issue of the fuzzy distances or truncation... use just the
             // top of the lat/long

@@ -2,12 +2,17 @@ package org.tdar.web;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.tdar.TestConstants;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.junit.MultipleTdarConfigurationRunner;
+import org.tdar.junit.RunWithTdarConfiguration;
 import org.w3c.dom.Element;
 
+@RunWith(MultipleTdarConfigurationRunner.class)
+@RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.properties", "src/test/resources/tdar.ahad.properties" })
 public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
 
     // ensure that a 'deleted item no longer shows up in bookmarks
@@ -114,7 +119,6 @@ public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
         setInput(TestConstants.DOCUENT_DATE_CREATED, "1923");
         setInput(TestConstants.DOCUMENT_FIELD_DESCRIPTION, docDescription);
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
             setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
         }
     }
