@@ -86,6 +86,7 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
         this.name = name;
     }
 
+    @Override
     @XmlElement
     // FIXME: this seemingly conflicts w/ @Field annotations on Creator.getName(). Figure out which declaration is working
     @Fields({
@@ -98,6 +99,7 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
         return name;
     }
 
+    @Override
     public String getProperName() {
         return getName();
     }
@@ -106,6 +108,7 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
         this.name = name;
     }
 
+    @Override
     public String getUrl() {
         return url;
     }

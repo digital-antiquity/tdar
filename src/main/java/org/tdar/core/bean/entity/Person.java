@@ -148,11 +148,13 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
      * 
      * @return formatted String name
      */
+    @Override
     @Transient
     public String getName() {
         return lastName + ", " + firstName;
     }
 
+    @Override
     @Transient
     public String getProperName() {
         return firstName + " " + lastName;

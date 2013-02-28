@@ -163,6 +163,7 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
     // @OneToMany(cascade = CascadeType.ALL, mappedBy = "creator", fetch = FetchType.LAZY, orphanRemoval = true)
     // private Set<ResourceCreator> resourceCreators = new LinkedHashSet<ResourceCreator>();
 
+    @Override
     @Fields({ @Field(name = "name", analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
             @Field(name = "name_kwd", analyzer = @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)),
             @Field(name = QueryFieldNames.CREATOR_NAME_SORT, norms = Norms.NO, store = Store.YES) })
