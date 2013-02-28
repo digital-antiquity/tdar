@@ -43,21 +43,33 @@ public class PaginationHelperTest {
     
     @Test
     public void testLeftSnipLastPage() {
-        PaginationHelper ph = newPaginationHelper(5000, 25, 20, 5000/25);
-        int expectedPage = 5000 / 25; 
-        assertEquals("last page number", expectedPage, ph.getPageNumber(20));
+        PaginationHelper ph = newPaginationHelper(5000, 25, 10, 199);
+        assertEquals("page count", 200, ph.getPageCount());
+        assertEquals("last page number", 199, ph.getPageNumber(9));
     }
     
     @Test
     public void testPageAfterLeftSnip() {
-        PaginationHelper ph = newPaginationHelper(5000, 25, 20, 5000/25);
-        assertEquals("page after snip should be lastPage-(visiblePages-3)", (5000/25) - (20-3), ph.getPageNumber(19));
+        PaginationHelper ph = newPaginationHelper(5000, 25, 10, 199);
+        assertEquals("page count", 200, ph.getPageCount());
+        assertTrue("results should be snipped on left", ph.isSnippedLeft());
+        int expected =  193;
+        int actual = ph.getPageNumber(3);
+        assertEquals("page after left-snip ", expected, actual );
         assertEquals("first page should be 0", 0, ph.getPageNumber(0));
     }
+    @Test 
+    public void testPageAfterLeftSnip2() {
+        PaginationHelper ph = newPaginationHelper(4976, 25, 20, 199);
+        int expected = 183;
+        int actual = ph.getPageNumber(3);
+        assertEquals("page after left-snip ", expected, actual );
+    }
+    
     
     @Test
     public void testPageBeforeRightSnip() {
-        
+        fail("not implemenned");
     }
     
     @Test

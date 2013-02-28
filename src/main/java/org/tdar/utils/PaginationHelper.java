@@ -31,6 +31,9 @@ public class PaginationHelper {
     //page number of the last page preceding the right snip
     private int sbRight;
     
+    boolean snipped = false;
+    
+    
     private static SummaryProvider NULL_PROVIDER = new SummaryProvider() {
         public String getStartSummary(int pageNumber) {
             return null;
@@ -58,6 +61,9 @@ public class PaginationHelper {
         this.summaryProvider = summaryProvider;
         
         //derive the rest
+        
+        snipped = pageCount <= visiblePageCount;
+        
         double dpc = (float)(itemCount) / itemsPerPage;
         this.pageCount = (int)Math.ceil(dpc);
         
@@ -67,12 +73,23 @@ public class PaginationHelper {
         sbLeft = 0;
         sbRight = pageCount - 1;
         
-        if(isSnippedLeft()) {
-            sbLeft = currentPage - (maxVisiblePages / 2 - 1);
-        }
         
-        if(isSnippedRight()) {
+        
+        /* My snipping 'logic':
+         *     -If # of result pages exceeds how many pages we display on the screen, we snip the list of pages
+         *          + we 'snip' out pages based on proximity of the current page to the first page and proximity to last page 
+         *          + the list of pages will always show the first few pages of results, and the last few pages of results
+         *          + 
+         */
+        if(isSnippedLeft() && isSnippedRight()) {
+            sbLeft = currentPage - (maxVisiblePages / 2 - 1);
             sbRight = currentPage + (maxVisiblePages / 2 - 1);
+        } else if(isSnippedLeft()){
+            //if only left side is snipped,  the pagenum after the snip will be maxpage - the snip offset - 1 slot for rendering the gap
+            //sbLeft = (pageCount - (maxVisiblePages - SNIP_OFFSET - 1)) - 1;
+            sbLeft  = (pageCount - maxVisiblePages) + SNIP_OFFSET + 1;
+        } else if(isSnippedRight()) {
+            sbRight = (pageCount - SNIP_OFFSET - 1) -1;
         }
     }
    
@@ -133,8 +150,16 @@ public class PaginationHelper {
     }
     
     public int getPageNumber(int idx) {
+        if(!snipped) return idx;
+        if(idx < SNIP_OFFSET ) return idx;
+        //if idx is to the right of the right snip
+        if(idx >= visiblePageCount - 1 - SNIP_OFFSET) return (pageCount - 1) - ((visiblePageCount - 1) - idx);
+        
+        //if idx is left of the right snip, and there is no left snip
         if(!isSnippedLeft()) return idx;
-        return idx + sbLeft;
+        
+        //idx is between the the left & right snip..
+        return sbLeft + (idx - (SNIP_OFFSET + 1));
     }
     
     public String toString() {
@@ -142,6 +167,10 @@ public class PaginationHelper {
                 
     }
     
+    public boolean isSnipIndex(int idx) {
+        return (isSnippedLeft() && getSnipIndexLeft() == idx) || 
+        (isSnippedRight() && (getSnipIndexRight() == idx));
+    }
     
     static String render(PaginationHelper ph) {
         StringBuilder sb = new StringBuilder();
@@ -149,7 +178,7 @@ public class PaginationHelper {
             int pad = ph.getSuggestedPadding();
             String fmtsel = "[%" + pad + "s]";
             String fmtreg = " %" + pad + "s ";
-            String fmt = ph.getCurrentPage() == i ? fmtsel : fmtreg;
+            String fmt = ph.getCurrentPage() == ph.getPageNumber(i) ? fmtsel : fmtreg;
             String page;
             if(
                     (ph.isSnippedLeft() && ph.getSnipIndexLeft() == i) || 
@@ -163,6 +192,12 @@ public class PaginationHelper {
         }
         
         return sb.toString();
+    }
+    
+    public static PaginationHelper withStartRecord(int totalItems, int itemsPerPage, int maxVisiblePages, int startRecord) {
+        //lock the startRecord to the first record in a page 
+        int currentPage = startRecord / itemsPerPage;
+        return new PaginationHelper(totalItems, itemsPerPage, maxVisiblePages, currentPage);
     }
 
 }
