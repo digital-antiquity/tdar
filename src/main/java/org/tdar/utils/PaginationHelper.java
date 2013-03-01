@@ -47,10 +47,25 @@ public class PaginationHelper {
     }
     
     public int getMinimumPageNumber() {
-        if (isCurrentPageNearEnd()) {
-            return getMaximumPageNumber() - windowSize + 1; 
+        
+        if(pageCount <= windowSize) return 0;
+        
+        //index of current page within window (same as Math.floor(windowSize/2f))
+        int cpi = windowSize / 2;
+        
+        //distance of cpi to window end (not always windowSize/2)
+        int distw = windowSize - cpi;
+        
+        //distance of currentpage to last page
+        int distl = pageCount - currentPage;
+        
+        
+        if (distl < distw ) {
+            cpi = windowSize - distl;
+        } else if (currentPage < cpi) {
+            cpi = currentPage;
         }
-        return Math.max(0, currentPage - getWindowInterval());
+        return currentPage - cpi;
     }
     
     public boolean isCurrentPageNearBeginning() {
@@ -62,10 +77,7 @@ public class PaginationHelper {
     }
     
     public int getMaximumPageNumber() {
-        if (isCurrentPageNearBeginning()) {
-            return getWindowSize() - 1;
-        }
-        return Math.min(pageCount - 1, currentPage + (windowSize / 2) - 1);
+        return Math.min(pageCount - 1, getMinimumPageNumber() + windowSize - 1);
     }
 
     public int getPageCount() {
@@ -90,7 +102,6 @@ public class PaginationHelper {
     }
     
     public String toString() {
-        logger.debug("range: [{} -> {}]", getMinimumPageNumber(), getMaximumPageNumber());
         StringBuilder sb = new StringBuilder();
         for(int i = 0; i < getWindowSize(); i++) {
             int pad = getSuggestedPadding();
@@ -100,7 +111,9 @@ public class PaginationHelper {
             String fmt = getCurrentPage() == pageNumber ? fmtsel : fmtreg;
             sb.append(String.format(fmt, pageNumber));
         }
-        return sb.toString();
+        String fmt = "{<%s> ic:%4s ipp:%3s pc:%3s cp:%3s min:%3s max:%3s}";
+        String str = String.format(fmt, sb.toString(), totalNumberOfItems, itemsPerPage, pageCount, currentPage, getMinimumPageNumber(), getMaximumPageNumber());
+        return str;
     }
     
     public static PaginationHelper withStartRecord(int totalItems, int itemsPerPage, int maxVisiblePages, int startRecord) {
