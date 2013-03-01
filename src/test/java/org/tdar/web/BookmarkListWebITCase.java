@@ -2,17 +2,12 @@ package org.tdar.web;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.tdar.TestConstants;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.junit.MultipleTdarConfigurationRunner;
-import org.tdar.junit.RunWithTdarConfiguration;
 import org.w3c.dom.Element;
 
-@RunWith(MultipleTdarConfigurationRunner.class)
-@RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.properties", "src/test/resources/tdar.ahad.properties" })
 public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
 
     // ensure that a 'deleted item no longer shows up in bookmarks
@@ -84,7 +79,7 @@ public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
         clickLinkOnPage("bookmark");
         gotoPage(viewPage);
         gotoPage(URLConstants.DASHBOARD);
-        
+
         assertTextPresentInCode(docTitle);
 
         if (status == Status.DELETED || status == Status.FLAGGED) {
@@ -96,10 +91,10 @@ public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
             gotoPage(URLConstants.DASHBOARD);
             boolean seen = false;
             for (Element el : querySelectorAll("#bookmarks")) {
-                    if (el.toString().contains(docTitle)) {
-                        seen = true;
-                    }
-                    logger.info(el.toString());
+                if (el.toString().contains(docTitle)) {
+                    seen = true;
+                }
+                logger.info(el.toString());
             }
             Assert.assertFalse(seen);
         }

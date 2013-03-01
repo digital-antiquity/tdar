@@ -350,20 +350,20 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 
     public ResourceSpaceUsageStatistic getResourceSpaceUsageStatistics(List<Long> personId, List<Long> resourceId, List<Long> collectionId,
             List<Long> projectId,
-            List<Status> statuses, List<VersionType> types) {
+            List<Status> statuses) {
         List<Status> statuses_ = new ArrayList<Status>(Arrays.asList(Status.values()));
         List<VersionType> types_ = new ArrayList<VersionType>(Arrays.asList(VersionType.values()));
 
-        if (CollectionUtils.isNotEmpty(types)) {
-            types_ = types;
-        }
+//        if (CollectionUtils.isNotEmpty(types)) {
+//            types_ = types;
+//        }
 
         if (CollectionUtils.isNotEmpty(statuses)) {
             statuses_ = statuses;
         }
 
-        Object[] params = { resourceId, projectId, personId, collectionId, statuses_, types_ };
-        logger.info("admin stats [resources: {} projects: {} people: {} collections: {} statuses: {} types: {} ]", params);
+        Object[] params = { resourceId, projectId, personId, collectionId, statuses_};
+        logger.info("admin stats [resources: {} projects: {} people: {} collections: {} statuses: {}  ]", params);
         Query query = null;
         if (CollectionUtils.isNotEmpty(resourceId)) {
             query = getCurrentSession().getNamedQuery(SPACE_BY_RESOURCE);
@@ -385,7 +385,7 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
             return null;
         }
         query.setParameterList("statuses", statuses_);
-        query.setParameterList("types", types_);
+//        query.setParameterList("types", types_);
         List<?> list = query.list();
         for (Object obj_ : list) {
             Object[] obj = (Object[]) obj_;

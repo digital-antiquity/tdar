@@ -1,3 +1,4 @@
+
 /* FIXME: still unsupported
 @org.hibernate.annotations.NamedNativeQueries({
 	@org.hibernate.annotations.NamedNativeQuery(
@@ -276,27 +277,27 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.SPACE_BY_SUBMITTER,
-                query = "select sum( irfv.fileLength ) as len, count(irfv), count(res) from InformationResource res left join res.informationResourceFiles as irf left join irf.informationResourceFileVersions as irfv"
+                query = "select sum( res.spaceInBytesUsed) as len, sum(res.filesUsed), count(res) from InformationResource res"
                         +
-                        " where res.submitter.id in (:submitterIds) and res.status in (:statuses) and irfv.fileVersionType in (:types)"
+                        " where res.submitter.id in (:submitterIds) and res.status in (:statuses) "
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.SPACE_BY_RESOURCE,
-                query = "select sum( irfv.fileLength ) as len, count(irfv), count(res) from InformationResource res left join res.informationResourceFiles as irf left join irf.informationResourceFileVersions as irfv"
+                query = "select sum( res.spaceInBytesUsed) as len, sum(res.filesUsed),  count(res) from InformationResource res "
                         +
-                        " where res.id in (:resourceIds) and res.status in (:statuses) and irfv.fileVersionType in (:types)"
+                        " where res.id in (:resourceIds) and res.status in (:statuses) "
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.SPACE_BY_PROJECT,
-                query = "select sum( irfv.fileLength ) as len, count(irfv), count(res) from InformationResource res left join res.informationResourceFiles as irf left join irf.informationResourceFileVersions as irfv"
+                query = "select sum( res.spaceInBytesUsed) as len, sum(res.filesUsed),  count(res) from InformationResource res "
                         +
-                        " where res.project.id in (:projectIds) and res.status in (:statuses) and irfv.fileVersionType in (:types)"
+                        " where res.project.id in (:projectIds) and res.status in (:statuses) "
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.SPACE_BY_COLLECTION,
-                query = "select sum( irfv.fileLength ) as len, count(irfv), count(res) from ResourceCollection coll left join coll.resources as res left join res.informationResourceFiles as irf left join irf.informationResourceFileVersions as irfv"
+                query = "select sum( res.spaceInBytesUsed) as len, sum(res.filesUsed), count(res) from ResourceCollection coll left join coll.resources as res "
                         +
-                        " where coll.id in (:collectionIds) and res.status in (:statuses) and irfv.fileVersionType in (:types)"
+                        " where coll.id in (:collectionIds) and res.status in (:statuses) "
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.ACCESS_BY,

@@ -3,166 +3,124 @@ package org.tdar.utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * $Id$
+ * 
+ * zero-based pagination helper 
+ * 
+ * @author Jim
+ * @version $Rev$
+ */
 public class PaginationHelper {
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
-
     
-    private int itemCount;
+    private int totalNumberOfItems;
     private int itemsPerPage;
-    private int visiblePageCount;
+    // sliding window size (number of page elements to include)
+    private int windowSize;
     private int currentPage;
-    private SummaryProvider summaryProvider;
-
-    //where to put snip-indicator when presenting subset of resultPages (pageCount > maxVisiblePages)
-    private static int SNIP_OFFSET = 2;
     
     //stuff we derive
     private int pageCount;
-    
-    //distance from current page to last page
-    private int distEnd;
-    
-    //distance from first page to current page
-    private int distStart;
-    
-    //page number of the first page following the left snip
-    private int sbLeft;
-    
-    //page number of the last page preceding the right snip
-    private int sbRight;
-    
-    private static SummaryProvider NULL_PROVIDER = new SummaryProvider() {
-        public String getStartSummary(int pageNumber) {
-            return null;
-        }
 
-        public String getEndSummary(int pageNumber) {
-            return null;
-        }
-    };
-    
-    public static interface SummaryProvider {
-        public String getStartSummary(int pageNumber);
-        public String getEndSummary(int pageNumber);
-    }
-    
-    public PaginationHelper(int itemCount, int itemsPerPage,  int visiblePages, int currentPage) {
-        this(itemCount, itemsPerPage, visiblePages, currentPage, NULL_PROVIDER);
-    }
-    
-    public PaginationHelper(int itemCount, int itemsPerPage, int maxVisiblePages, int currentPage, SummaryProvider summaryProvider) {
-        this.itemCount = itemCount;
+    public PaginationHelper(int itemCount, int itemsPerPage, int maxVisiblePages, int currentPage) {
+        this.totalNumberOfItems = itemCount;
         this.itemsPerPage = itemsPerPage;
-        this.visiblePageCount = maxVisiblePages;
+        this.windowSize = maxVisiblePages;
         this.currentPage = currentPage;
-        this.summaryProvider = summaryProvider;
         
         //derive the rest
         double dpc = (float)(itemCount) / itemsPerPage;
         this.pageCount = (int)Math.ceil(dpc);
-        
-        this.distEnd = (pageCount - 1) - currentPage;
-        this.distStart = currentPage;
-        
-        sbLeft = 0;
-        sbRight = pageCount - 1;
-        
-        if(isSnippedLeft()) {
-            sbLeft = currentPage - (maxVisiblePages / 2 - 1);
+    }
+    
+    public boolean hasPrevious() {
+        return currentPage > 0;
+    }
+    
+    public boolean hasNext() {
+        return currentPage < pageCount;
+    }
+    
+    public int getWindowInterval() {
+        return windowSize / 2;
+    }
+    
+    public int getMinimumPageNumber() {
+        if (isCurrentPageNearEnd()) {
+            return getMaximumPageNumber() - windowSize + 1; 
         }
-        
-        if(isSnippedRight()) {
-            sbRight = currentPage + (maxVisiblePages / 2 - 1);
+        return Math.max(0, currentPage - getWindowInterval());
+    }
+    
+    public boolean isCurrentPageNearBeginning() {
+        return currentPage < getWindowInterval();
+    }
+    
+    public boolean isCurrentPageNearEnd() {
+        return (pageCount - currentPage < getWindowInterval());        
+    }
+    
+    public int getMaximumPageNumber() {
+        if (isCurrentPageNearBeginning()) {
+            return getWindowSize() - 1;
         }
-    }
-   
-    
-    public boolean isSnippedLeft() {
-        return distStart > visiblePageCount ; 
-    }
-    
-    public boolean isSnippedRight() {
-        return distEnd > visiblePageCount;
-    }
-   
-    //page number of the page displayed by the left snip
-    public int getSectionBorderLeft() {
-        return sbLeft;
-    }
-    
-    public int getSectionBorderRight() {
-        return sbRight;
-    }
-    
-    public int getFirstItem(int pageNumber) {
-        if(pageNumber > pageCount) return -1;
-        return itemsPerPage * pageNumber;
-    }
-    
-    public int getLastItem(int pageNumber) {
-        if(pageNumber > pageCount) return -1;
-        int lastItem = itemsPerPage * pageNumber + itemsPerPage - 1;
-        if(lastItem >= itemCount) lastItem = itemCount - 1;
-        return lastItem;
+        return Math.min(pageCount - 1, currentPage + (windowSize / 2) - 1);
     }
 
     public int getPageCount() {
         return pageCount;
     }
-    
-    public int getSnipIndexLeft() {
-        return SNIP_OFFSET;
-    }
-    
-    
-    public int getSnipIndexRight() {
-        return pageCount - 1 - SNIP_OFFSET;
-    }
-    
+
     //recommended  width (in characters) to alot for each page number
     public int getSuggestedPadding() {
         return Integer.toString(pageCount).length();
     }
 
-    public int getVisiblePageCount() {
-        return visiblePageCount;
+    public int getWindowSize() {
+        return windowSize;
     }
 
     public int getCurrentPage() {
-        return this.currentPage;
+        return currentPage;
     }
     
-    public int getPageNumber(int idx) {
-        if(!isSnippedLeft()) return idx;
-        return idx + sbLeft;
+    public int getPageNumber(int windowIndex) {
+        return getMinimumPageNumber() + windowIndex;
     }
     
     public String toString() {
-        return render(this);
-                
-    }
-    
-    
-    static String render(PaginationHelper ph) {
+        logger.debug("range: [{} -> {}]", getMinimumPageNumber(), getMaximumPageNumber());
         StringBuilder sb = new StringBuilder();
-        for(int i = 0; i < ph.getVisiblePageCount(); i++) {
-            int pad = ph.getSuggestedPadding();
+        for(int i = 0; i < getWindowSize(); i++) {
+            int pad = getSuggestedPadding();
             String fmtsel = "[%" + pad + "s]";
             String fmtreg = " %" + pad + "s ";
-            String fmt = ph.getCurrentPage() == i ? fmtsel : fmtreg;
-            String page;
-            if(
-                    (ph.isSnippedLeft() && ph.getSnipIndexLeft() == i) || 
-                    (ph.isSnippedRight() && (ph.getSnipIndexRight() == i))
-            )  {
-                page = String.format(fmt,  "..");
-            } else {
-                page = String.format(fmt,  ph.getPageNumber(i) + 1);
-            }
-            sb.append(page);
+            int pageNumber = getPageNumber(i);
+            String fmt = getCurrentPage() == pageNumber ? fmtsel : fmtreg;
+            sb.append(String.format(fmt, pageNumber));
         }
-        
         return sb.toString();
+    }
+    
+    public static PaginationHelper withStartRecord(int totalItems, int itemsPerPage, int maxVisiblePages, int startRecord) {
+        //lock the startRecord to the first record in a page 
+        int currentPage = startRecord / itemsPerPage;
+        return new PaginationHelper(totalItems, itemsPerPage, maxVisiblePages, currentPage);
+    }
+
+    /**
+     * @return the totalNumberOfItems
+     */
+    public int getTotalNumberOfItems() {
+        return totalNumberOfItems;
+    }
+
+    /**
+     * @return the itemsPerPage
+     */
+    public int getItemsPerPage() {
+        return itemsPerPage;
     }
 
 }

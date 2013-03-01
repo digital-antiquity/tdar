@@ -455,8 +455,8 @@ public class ResourceService extends GenericService {
     @Transactional
     public ResourceSpaceUsageStatistic getResourceSpaceUsageStatistics(List<Long> personId, List<Long> resourceId, List<Long> collectionId,
             List<Long> projectId,
-            List<Status> statuses, List<VersionType> types) {
-        return datasetDao.getResourceSpaceUsageStatistics(personId, resourceId, collectionId, projectId, statuses, types);
+            List<Status> statuses) {
+        return datasetDao.getResourceSpaceUsageStatistics(personId, resourceId, collectionId, projectId, statuses);
     }
 
     @Transactional

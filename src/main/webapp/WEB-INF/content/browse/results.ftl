@@ -14,13 +14,22 @@
 
 <@view.pageStatusCallout />
 
-
-<h1><#if creator?? && creator.properName??>${creator.properName}</#if></h1>
 <#if creator??>
+
+<h1><#if creator.properName??>${creator.properName}</#if></h1>
+<#assign scope="http://schema.org/Person"/>
+<#if creator.creatorType == 'INSTITUTION'>
+	<#assign scope="http://schema.org/Organization"/>
+</#if>
+
+<div itemscope itemtype="${scope}">
+    <meta itemprop="name" content="${creator.properName}" />
+
     <#if creator.institution??>
-    <a href="<@s.url value="${creator.institution.id?c}"/>">${creator.institution}</a>
+	
+    <a itemprop="affiliation" href="<@s.url value="${creator.institution.id?c}"/>">${creator.institution}</a>
     </#if>
-    <p>${creator.description!''}</p>
+    <p itemprop="description">${creator.description!''}</p>
     <br/>
         <#if creator.creatorType == 'PERSON'>
            <#if authenticated && (editor ||  id == authenticatedUser.id ) >
@@ -47,7 +56,7 @@
                 </tr>
                 <tr>
                     <#if creator.emailPublic || (editor || id == authenticatedUser.id) >
-                        <td>
+                        <td itemprop="email">
                             <@view.textfield "Email" creator.email />
                         </td>
                     <#else>
@@ -56,7 +65,7 @@
                         </td>
                     </#if>
                     <#if creator.phonePublic || (editor || id == authenticatedUser.id)>
-                        <td>
+                        <td itemprop="telephone">
                             <@view.textfield "Phone" creator.phone true />
                         </td>
                     <#else>
@@ -76,19 +85,19 @@
 
                 <@common.resourceUsageInfo />
 
-<#if (editor || id == authenticatedUser.id) >
-<#list creator.addresses  as address>
-    <div class="controls-row">
-        <@common.printAddress  address=address creatorType=creator.creatorType?lower_case creatorId=creator.id />
-    </div>
-</#list>
-
-</#if>
+				<#if (editor || id == authenticatedUser.id) >
+					<#list creator.addresses  as address>
+					    <div class="controls-row">
+					        <@common.printAddress  address=address creatorType=creator.creatorType?lower_case creatorId=creator.id />
+					    </div>
+					</#list>
+				
+				</#if>
             </#if>
-<br/>        
+		<br/>        
         </#if>
+</div>
 </#if>
-
 <@search.basicPagination label="Records" />
 
 <div class="glide">

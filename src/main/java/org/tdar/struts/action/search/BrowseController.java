@@ -114,12 +114,9 @@ public class BrowseController extends AbstractLookupController {
         setSearchTitle(ALL_TDAR_COLLECTIONS);
 
         if (isEditor()) {
-            setTotalResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, null,
-                    Persistable.Base.extractIds(getResourceCollectionService().findAllDirectChildCollections(getId(), null, CollectionType.SHARED)), null,
-                    null, null));
             setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(null, null,
                     Persistable.Base.extractIds(getResourceCollectionService().findAllDirectChildCollections(getId(), null, CollectionType.SHARED)), null,
-                    null, Arrays.asList(VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED_TEXT)));
+                    null));
         }
 
         return SUCCESS;
@@ -146,9 +143,7 @@ public class BrowseController extends AbstractLookupController {
             queryBuilder.append(reservedSearchParameters);
 
             if (isEditor() && creator instanceof Person) {
-                setTotalResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(Arrays.asList(getId()), null, null, null, null, null));
-                setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(Arrays.asList(getId()), null, null, null, null,
-                        Arrays.asList(VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED_TEXT)));
+                setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(Arrays.asList(getId()), null, null, null, null));
             }
 
             setPersistable(creator);

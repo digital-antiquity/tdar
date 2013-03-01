@@ -17,6 +17,7 @@
 </#list>
 </table>
 
+<#if downloadStats?has_content>
 <h2>Download Stats</h2>
 <#list downloadStats?keys as key>
 <#if downloadStats.get(key)?has_content>
@@ -35,6 +36,7 @@
 </table>
 </#if>
 </#list>
+</#if>
 
 <h2>Resource Revision History</h2>
 <table class="table tableFormat">
