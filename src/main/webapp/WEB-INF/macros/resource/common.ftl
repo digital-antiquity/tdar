@@ -869,12 +869,12 @@ this bit of freemarker is voodoo:
 </#macro>
 
 <#macro printAddress address=address creatorId=-1 creatorType='person'  modifiable=false deletable=false showLabel=true>
-        <p>
+        <p itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
 <#if address.type?has_content && showLabel><b>${address.type.label!""}</b><br></#if>
-           ${address.street1}<br/>
-           ${address.street2}<br/>
-           ${address.city}, ${address.state}, ${address.postal}<br/>
-           ${address.country}<#if modifiable><br/>
+           <span itemprop="streetAddress">${address.street1}<br/>
+           ${address.street2}</span><br/>
+           <span itemprop="addressLocality">${address.city}</span>, <span itemprop="addressRegion">${address.state}</span>, <span itemprop="postalCode">${address.postal}</span><br/>
+           <span itemprop="addressCountry">${address.country}</span><#if modifiable><br/>
            <a href="<@s.url value="/entity/${creatorType}/${creatorId?c}/address?addressId=${address.id}"/>">edit</a>
            </#if><#if deletable && modifiable> |</#if> 
            <#if deletable>
