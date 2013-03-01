@@ -16,7 +16,7 @@ public class PaginationHelperTest {
         Exception ex = new Exception();
         ex.fillInStackTrace();
         StackTraceElement[] st = ex.getStackTrace();
-        logger.debug("{}:{}:: {}",new Object[] {st[1].getMethodName(), st[1].getLineNumber(), ph});
+        logger.trace("{}:{}:: {}",new Object[] {st[1].getMethodName(), st[1].getLineNumber(), ph});
         return ph;
     }
     
@@ -53,7 +53,7 @@ public class PaginationHelperTest {
     @Test 
     public void testOddWindowSize() {
         for(int i = 0; i < pagecount(5000, 25); i++ ){
-            PaginationHelper ph = newPaginationHelper(2500, 25, 11, i);
+            PaginationHelper ph = newPaginationHelper(5000, 25, 11, i);
             assertEquals("pagecount should alwasys be 200", 200, ph.getPageCount());
         }
     }
@@ -108,8 +108,8 @@ public class PaginationHelperTest {
             assertEquals("first page in window should be " + expectedMin, expectedMin, actualMin);
             assertEquals("last page in window should be " + expectedMax, expectedMax, actualMax);
         }
-            
-        }
+    }
+    
     
     @Test 
     public void testPageCountLessThanWindowSize() {
@@ -120,6 +120,26 @@ public class PaginationHelperTest {
             assertEquals("window should not exceed pagecount", 4, ph.getMaximumPageNumber());
         }
     }
+    
+    @Test 
+    public void testPageNumberAndCurrentPageIndex() {
+        for(int items = 0; items < 500; items+=10) {
+            for(int itemsPerPage =  10; itemsPerPage < 30; itemsPerPage++) {
+                for(int windowSize = 9; windowSize < 15; windowSize++) {
+                    for(int currentPage = 0; currentPage < pagecount(items, itemsPerPage); currentPage++ ) {
+                        PaginationHelper ph = newPaginationHelper(items, itemsPerPage, windowSize, currentPage);
+                        assertEquals("minpage + cpi should be " + currentPage, currentPage, ph.getMinimumPageNumber() + ph.getCurrentPageWindowIndex());
+                        for(int i = 0; i < windowSize; i++) {
+                            int expectedPage = ph.getMinimumPageNumber() + i;
+                            int actualPage = ph.getPageNumber(i);
+                            assertEquals("page number at window[" + i + "] should be " + expectedPage, expectedPage, actualPage);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     
     //expected page count
     private int pagecount (int items, int itemsPerPage) {

@@ -22,6 +22,23 @@ public class PaginationHelper {
     
     //stuff we derive
     private int pageCount;
+    
+    //min pageNumber in the window
+    private int minimumPageNumber;
+    
+    //max page in the window
+    private int maximumPageNumber;
+
+    //index of current page within window
+    private int currentPageIndex;
+    
+    int padding;
+    
+    public static PaginationHelper withStartRecord(int totalItems, int itemsPerPage, int maxVisiblePages, int startRecord) {
+        //lock the startRecord to the first record in a page 
+        int currentPage = startRecord / itemsPerPage;
+        return new PaginationHelper(totalItems, itemsPerPage, maxVisiblePages, currentPage);
+    }
 
     public PaginationHelper(int itemCount, int itemsPerPage, int maxVisiblePages, int currentPage) {
         this.totalNumberOfItems = itemCount;
@@ -32,6 +49,34 @@ public class PaginationHelper {
         //derive the rest
         double dpc = (float)(itemCount) / itemsPerPage;
         this.pageCount = (int)Math.ceil(dpc);
+
+        if(pageCount <= windowSize) {
+            minimumPageNumber = 0;
+            maximumPageNumber = pageCount - 1;
+            currentPageIndex = currentPage;
+        } else {
+            //average case,  cpi in the middle (when windowSize is odd) or right-of-middle (if windowSize is even)
+            currentPageIndex = windowSize / 2;
+            
+            //distance of cpi to window end (not always windowSize/2) + 1
+            int distw = windowSize - currentPageIndex;
+            //distance of currentpage to last page + 1
+            int distl = pageCount - currentPage;
+
+            //adjust cpi if current page is near the end
+            if (distl < distw ) {
+                currentPageIndex = windowSize - distl;
+                
+            //adjust cpi if currentPage is near the start 
+            } else if (currentPage < currentPageIndex) {
+                currentPageIndex = currentPage;
+            }
+            
+            minimumPageNumber = currentPage - currentPageIndex;
+            maximumPageNumber = minimumPageNumber + windowSize - 1;
+        }
+       
+        padding = Integer.toString(maximumPageNumber).length();
     }
     
     public boolean hasPrevious() {
@@ -42,42 +87,17 @@ public class PaginationHelper {
         return currentPage < pageCount;
     }
     
-    public int getWindowInterval() {
-        return windowSize / 2;
-    }
-    
     public int getMinimumPageNumber() {
-        
-        if(pageCount <= windowSize) return 0;
-        
-        //index of current page within window (same as Math.floor(windowSize/2f))
-        int cpi = windowSize / 2;
-        
-        //distance of cpi to window end (not always windowSize/2)
-        int distw = windowSize - cpi;
-        
-        //distance of currentpage to last page
-        int distl = pageCount - currentPage;
-        
-        
-        if (distl < distw ) {
-            cpi = windowSize - distl;
-        } else if (currentPage < cpi) {
-            cpi = currentPage;
-        }
-        return currentPage - cpi;
+        return minimumPageNumber;
     }
     
-    public boolean isCurrentPageNearBeginning() {
-        return currentPage < getWindowInterval();
-    }
-    
-    public boolean isCurrentPageNearEnd() {
-        return (pageCount - currentPage < getWindowInterval());        
+    public int getCurrentPageWindowIndex() {
+        return currentPageIndex;
     }
     
     public int getMaximumPageNumber() {
-        return Math.min(pageCount - 1, getMinimumPageNumber() + windowSize - 1);
+        //return Math.min(pageCount - 1, getMinimumPageNumber() + windowSize - 1);
+        return maximumPageNumber;
     }
 
     public int getPageCount() {
@@ -86,7 +106,7 @@ public class PaginationHelper {
 
     //recommended  width (in characters) to alot for each page number
     public int getSuggestedPadding() {
-        return Integer.toString(pageCount).length();
+        return padding;
     }
 
     public int getWindowSize() {
@@ -98,28 +118,21 @@ public class PaginationHelper {
     }
     
     public int getPageNumber(int windowIndex) {
-        return getMinimumPageNumber() + windowIndex;
+        return minimumPageNumber + windowIndex;
     }
     
     public String toString() {
         StringBuilder sb = new StringBuilder();
         for(int i = 0; i < getWindowSize(); i++) {
-            int pad = getSuggestedPadding();
-            String fmtsel = "[%" + pad + "s]";
-            String fmtreg = " %" + pad + "s ";
+            String fmtsel = "[%" + padding + "s]";
+            String fmtreg = " %" + padding + "s ";
             int pageNumber = getPageNumber(i);
-            String fmt = getCurrentPage() == pageNumber ? fmtsel : fmtreg;
+            String fmt = currentPageIndex == i ? fmtsel : fmtreg;
             sb.append(String.format(fmt, pageNumber));
         }
         String fmt = "{<%s> ic:%4s ipp:%3s pc:%3s cp:%3s min:%3s max:%3s}";
-        String str = String.format(fmt, sb.toString(), totalNumberOfItems, itemsPerPage, pageCount, currentPage, getMinimumPageNumber(), getMaximumPageNumber());
+        String str = String.format(fmt, sb.toString(), totalNumberOfItems, itemsPerPage, pageCount, currentPage, minimumPageNumber, maximumPageNumber);
         return str;
-    }
-    
-    public static PaginationHelper withStartRecord(int totalItems, int itemsPerPage, int maxVisiblePages, int startRecord) {
-        //lock the startRecord to the first record in a page 
-        int currentPage = startRecord / itemsPerPage;
-        return new PaginationHelper(totalItems, itemsPerPage, maxVisiblePages, currentPage);
     }
 
     /**
