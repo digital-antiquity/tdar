@@ -29,7 +29,6 @@ import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
@@ -63,8 +62,8 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     public static final String INVOICE = "invoice";
     public static final String POLLING = "polling";
     public static final String SPECIFY_SOMETHING = "please choose something";
-    private Integer extraItemQuantity = 0;
-    private String extraItemName;
+    private List<Long> extraItemIds = new ArrayList<Long>();
+    private List<Integer> extraItemQuantities = new ArrayList<Integer>();
     private Person owner;
     private String callback;
     private PricingType pricingType = null;
@@ -87,15 +86,16 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         }
 
         persistable.getItems().clear();
-        if (getExtraItemQuantity() > 0 && StringUtils.isNotBlank(getExtraItemName())) {
-            logger.trace("{} {}", getExtraItemName(), getExtraItemQuantity());
-            for (BillingActivity act : getAccountService().getActiveBillingActivities()) {
-                logger.trace("{}", act.getName());
-                if (act.getName().trim().equalsIgnoreCase(getExtraItemName())) {
-                    logger.info("adding {}", act);
-                    getInvoice().getItems().add(new BillingItem(act, getExtraItemQuantity()));
-                }
+        Map<Long, BillingActivity> actIdMap = Persistable.Base.createIdMap(getAccountService().getActiveBillingActivities());
+        for (int i = 0; i < getExtraItemIds().size(); i++) {
+            BillingActivity act = actIdMap.get(getExtraItemIds().get(i));
+            Integer quantity = getExtraItemQuantities().get(i);
+            logger.info("{} {} {}", getExtraItemIds().get(i), act, quantity);
+            if (act == null || quantity == null || quantity < 1) {
+                continue;
             }
+            logger.info("adding {}", act);
+            getInvoice().getItems().add(new BillingItem(act, quantity));
         }
 
         List<BillingItem> items = new ArrayList<BillingItem>();
@@ -569,22 +569,6 @@ public class CartController extends AbstractPersistableController<Invoice> imple
         this.addressRequired = addressRequired;
     }
 
-    public String getExtraItemName() {
-        return extraItemName;
-    }
-
-    public void setExtraItemName(String extraItemName) {
-        this.extraItemName = extraItemName;
-    }
-
-    public Integer getExtraItemQuantity() {
-        return extraItemQuantity;
-    }
-
-    public void setExtraItemQuantity(Integer extraItemQuantity) {
-        this.extraItemQuantity = extraItemQuantity;
-    }
-
     public PricingType getPricingType() {
         return pricingType;
     }
@@ -599,6 +583,22 @@ public class CartController extends AbstractPersistableController<Invoice> imple
 
     public void setOwner(Person owner) {
         this.owner = owner;
+    }
+
+    public List<Long> getExtraItemIds() {
+        return extraItemIds;
+    }
+
+    public void setExtraItemIds(List<Long> extraItemIds) {
+        this.extraItemIds = extraItemIds;
+    }
+
+    public List<Integer> getExtraItemQuantities() {
+        return extraItemQuantities;
+    }
+
+    public void setExtraItemQuantities(List<Integer> extraItemQuantities) {
+        this.extraItemQuantities = extraItemQuantities;
     }
 
 }
