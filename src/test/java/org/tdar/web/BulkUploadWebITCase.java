@@ -53,9 +53,9 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
     }
 
     @Test
-    @RunWithTdarConfiguration(runWith = {"src/test/resources/tdar.properties" , "src/test/resources/tdar.cc.properties" })
+    @RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.properties", "src/test/resources/tdar.cc.properties" })
     public void testValidBulkUpload() throws MalformedURLException {
-
+        String accountId = "";
         if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
             gotoPage("/cart/add");
             setInput("invoice.numberOfMb", "200");
@@ -63,7 +63,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
             submitForm();
             setInput("invoice.paymentMethod", "CREDIT_CARD");
             String invoiceId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL);
-            String accountId = addInvoiceToNewAccount(invoiceId, null, "my first account");
+            accountId = addInvoiceToNewAccount(invoiceId, null, "my first account");
         }
 
         Map<String, String> extra = new HashMap<String, String>();
@@ -73,7 +73,9 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         extra.put("latitudeLongitudeBoxes[0].minimumLatitude", "41.82608370627639");
         extra.put("latitudeLongitudeBoxes[0].minimumLongitude", "-71.41018867492676");
         extra.put(PROJECT_ID_FIELDNAME, "3805");
-//        extra.put("accountId", accountId);
+        if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
+            extra.put("accountId", accountId);
+        }
         extra.put("resource.inheritingInvestigationInformation", "true");
         extra.put("resourceProviderInstitutionName", "Digital Antiquity");
         File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
@@ -122,8 +124,16 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         setInput("status", Status.ACTIVE.name());
         setInput("uploadedFiles", TestConstants.TEST_BULK_DIR + filename);
         if (extra != null) {
+            boolean hasInput = true;
+            try {
+                getInput("accountId");
+            } catch (Exception e) {
+                hasInput = false;
+            }
             for (String key : extra.keySet()) {
-                setInput(key, extra.get(key));
+                if (!key.equals("accountId") || hasInput) {
+                    setInput(key, extra.get(key));
+                }
             }
         }
         if (extra != null && !extra.containsKey(PROJECT_ID_FIELDNAME)) {
