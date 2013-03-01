@@ -1135,9 +1135,9 @@ nav ul {
 }
 
 /* remove margin for first column when using grid-layout in a control-group so that they line up a little better with other fields. **/
-/* TODO: determine if this is necessary, or if I'm using the bootstrap elements incorrectly */
-.controls.controls-row>div[class *="span"]:first-child {
-	margin-left: 0;
+/* TODO: this is necessary in bootstrap 2.2.2,  but I suspect it will be accounted for in later version  */
+.controls-row>div[class *="span"]:first-child {
+    margin-left: 0;
 }
 
 .searchheader input[type=text] {
