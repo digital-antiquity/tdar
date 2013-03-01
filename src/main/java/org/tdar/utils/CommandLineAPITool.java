@@ -64,7 +64,7 @@ public class CommandLineAPITool {
     private static final String OPTION_ACCOUNTID = "accountid";
     private static final String OPTION_SLEEP = "sleep";
     private static final String OPTION_PROJECT_ID = "projectid";
-    private static final String OPTION_ACCESS_RESTRICTION = "accessRestrictions";
+    private static final String OPTION_ACCESS_RESTRICTION = "fileAccessRestriction";
     private static final String ALPHA_TDAR_ORG = "alpha.tdar.org";
     private static final String CORE_TDAR_ORG = "core.tdar.org";
 
