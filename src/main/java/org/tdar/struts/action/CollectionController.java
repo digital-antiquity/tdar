@@ -30,6 +30,7 @@ import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.struts.data.FacetGroup;
+import org.tdar.utils.PaginationHelper;
 
 @Component
 @Scope("prototype")
@@ -52,6 +53,7 @@ public class CollectionController extends AbstractPersistableController<Resource
     private SortOption secondarySortField;
     private SortOption sortField;
     private String mode = "CollectionBrowse";
+    private PaginationHelper paginationHelper;
 
     @Override
     public boolean isEditable() {
@@ -482,4 +484,10 @@ public class CollectionController extends AbstractPersistableController<Resource
     public List<FacetGroup<? extends Facetable>> getFacetFields() {
         return null;
     }
+    
+    public PaginationHelper getPaginationHelper() {
+        if(paginationHelper == null) paginationHelper = PaginationHelper.withSearchResults(this);
+        return paginationHelper;
+    }
+    
 }

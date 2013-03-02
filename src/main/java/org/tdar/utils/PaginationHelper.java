@@ -2,6 +2,8 @@ package org.tdar.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.Indexable;
+import org.tdar.search.query.SearchResultHandler;
 
 /**
  * $Id$
@@ -39,6 +41,13 @@ public class PaginationHelper {
         int currentPage = startRecord / itemsPerPage;
         return new PaginationHelper(totalItems, itemsPerPage, maxVisiblePages, currentPage);
     }
+    
+    //FIXME: A better solution (for jar) might be to remove most fields from SearchResultHandler and add getPaginationHelper(), 
+    //but for stable branch let's be less disruptive
+    public static <I extends Indexable> PaginationHelper withSearchResults(SearchResultHandler<I> results) {
+        return withStartRecord(results.getTotalRecords(), results.getRecordsPerPage(), 20, results.getStartRecord());
+    }
+    
 
     public PaginationHelper(int itemCount, int itemsPerPage, int maxVisiblePages, int currentPage) {
         this.totalNumberOfItems = itemCount;

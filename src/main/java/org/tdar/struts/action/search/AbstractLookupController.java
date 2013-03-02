@@ -36,6 +36,7 @@ import org.tdar.search.query.part.PhraseFormatter;
 import org.tdar.search.query.part.QueryGroup;
 import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.utils.PaginationHelper;
 
 /**
  * @author Adam Brin
@@ -64,6 +65,8 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     private boolean showAll = false;
 
     private LookupSource lookupSource;
+
+    private PaginationHelper paginationHelper;
 
     protected void handleSearch(QueryBuilder q) throws ParseException {
         getSearchService().handleSearch(q, this);
@@ -446,5 +449,10 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
 
     public void setLookupSource(LookupSource lookupSource) {
         this.lookupSource = lookupSource;
+    }
+    
+    public PaginationHelper getPaginationHelper() {
+        if(paginationHelper == null) paginationHelper = PaginationHelper.withSearchResults(this);
+        return paginationHelper;
     }
 }

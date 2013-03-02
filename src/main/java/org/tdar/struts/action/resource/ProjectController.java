@@ -23,6 +23,7 @@ import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.struts.data.FacetGroup;
+import org.tdar.utils.PaginationHelper;
 
 /**
  * $Id$
@@ -49,6 +50,7 @@ public class ProjectController extends AbstractResourceController<Project> imple
     private SortOption secondarySortField;
     private SortOption sortField;
     private String mode = "ProjectBrowse";
+    private PaginationHelper paginationHelper;
 
     /**
      * Projects contain no additional metadata beyond basic Resource metadata so saveBasicResourceMetadata() should work.
@@ -274,4 +276,10 @@ public class ProjectController extends AbstractResourceController<Project> imple
     public List<FacetGroup<? extends Facetable>> getFacetFields() {
         return null;
     }
+    
+    public PaginationHelper getPaginationHelper() {
+        if(paginationHelper == null) paginationHelper = PaginationHelper.withSearchResults(this);
+        return paginationHelper;
+    }
+    
 }
