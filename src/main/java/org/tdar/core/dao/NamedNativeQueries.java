@@ -38,7 +38,7 @@ public final class NamedNativeQueries {
         for (int i = 0; i < filenames.size(); i++) {
             filenames.set(i, StringEscapeUtils.escapeSql(filenames.get(i)));
         }
-        String filenameCheck = "filename";
+        String filenameCheck = "lower(filename)";
         if (column.isIgnoreFileExtension()) {
             filenameCheck = "substring(lower(irfv.filename), 0, length(irfv.filename) - length(irfv.extension) + 1)";
         }
