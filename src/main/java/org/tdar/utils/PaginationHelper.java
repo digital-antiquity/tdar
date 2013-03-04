@@ -157,5 +157,23 @@ public class PaginationHelper {
     public int getItemsPerPage() {
         return itemsPerPage;
     }
+    
+    public int getFirstItem() {
+        return firstItemOnPage(currentPage);
+    }
+    
+    public int getLastItem() {
+        int firstItem = firstItemOnPage(currentPage);
+        int lastItem = firstItem + itemsPerPage - 1;
+        if(lastItem > totalNumberOfItems - 1) {
+            lastItem = totalNumberOfItems - 1;
+        }
+        return lastItem;
+    }
+    
+    public int firstItemOnPage(int page) {
+        return page * itemsPerPage;
+    }
+    
 
 }

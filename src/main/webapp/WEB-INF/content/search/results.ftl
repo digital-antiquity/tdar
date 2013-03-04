@@ -8,14 +8,6 @@
 </head>
 <body>
 
-
-
-<#assign firstRecord = paginationHelper.itemsPerPage * paginationHelper.currentPage >
-<#assign lastRecord = paginationHelper.itemsPerPage * paginationHelper.currentPage + paginationHelper.itemsPerPage - 1 >
-<#if (lastRecord > paginationHelper.totalNumberOfItems - 1)>
-<#assign lastRecord = paginationHelper.totalNumberOfItems - 1>
-</#if>
-
     <div id="titlebar" parse="true">
         <#if searchPhrase?? && !explore>
             <h1>Search Results: <span>${searchPhrase}</span></h1>
@@ -104,7 +96,7 @@
     
 
 
-     <h2 class="totalRecords">${firstRecord + 1}-${lastRecord + 1} (${paginationHelper.totalNumberOfItems} Results)</h2>
+     <h2 class="totalRecords">${paginationHelper.firstItem + 1}-${paginationHelper.lastItem + 1} (${paginationHelper.totalNumberOfItems} Results)</h2>
 	<#if !hideFacetsAndSort>
      <div class="sort">
          <p>Sort By:</p>

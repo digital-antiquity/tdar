@@ -180,21 +180,16 @@
 
 
 <#macro basicPagination label="Records" showIfOnePage=false helper=paginationHelper>
-<#local firstRecord = helper.itemsPerPage * helper.currentPage >
-<#local lastRecord = helper.itemsPerPage * helper.currentPage + helper.itemsPerPage - 1 >
-<#if lastRecord > (helper.totalNumberOfItems-1)>
-<#local lastRecord = (helper.totalNumberOfItems-1) >
-</#if>
 
 <#if (helper.pageCount > 1)>
   <div class="glide">
-    <div id="recordTotal">${label} ${firstRecord} - ${lastRecord} of ${helper.totalNumberOfItems}
+    <div id="recordTotal">${label} ${helper.firstItem + 1} - ${helper.lastItem + 1} of ${helper.totalNumberOfItems}
     </div> 
     <@pagination ""/> 
   </div>
 <#elseif (helper.totalNumberOfItems > 0 && showIfOnePage)>
   <div class="glide">
-  Displaying ${label} ${firstRecord} - ${helper.totalNumberOfItems} of ${helper.totalNumberOfItems}
+  Displaying ${label} ${helper.firstItem + 1} - ${helper.lastItem + 1} of ${helper.totalNumberOfItems}
   </div>
 </#if>
 </#macro>
