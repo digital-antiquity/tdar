@@ -4,7 +4,7 @@
 <#import "/WEB-INF/macros/resource/list-macros.ftl" as list>
 <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
 <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
-<@search.initResultPagination/>
+<#-- @search.initResultPagination/ -->
  <@search.headerLinks includeRss=false />
 
 
