@@ -40,7 +40,11 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.search.Explanation;
+import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.FetchProfile;
+import org.hibernate.annotations.FetchProfiles;
 import org.hibernate.annotations.Type;
+import org.hibernate.annotations.FetchProfile.FetchOverride;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Boost;
@@ -86,6 +90,17 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 @Entity
 @Indexed(index = "Collection")
 @Table(name = "collection")
+@FetchProfiles(value = {
+        @FetchProfile(name="simple", fetchOverrides = {
+                @FetchOverride(association = "resources", mode = FetchMode.JOIN, entity = ResourceCollection.class),
+                @FetchOverride(association="authorizedUsers", mode = FetchMode.JOIN, entity= ResourceCollection.class),
+                @FetchOverride(association="user", mode = FetchMode.JOIN, entity= AuthorizedUser.class),
+                @FetchOverride(association="owner", mode = FetchMode.JOIN, entity= ResourceCollection.class),
+                @FetchOverride(association="updater", mode = FetchMode.JOIN, entity= ResourceCollection.class),
+                @FetchOverride(association="parent", mode = FetchMode.JOIN, entity= ResourceCollection.class),
+        })
+})
+
 public class ResourceCollection extends Persistable.Base implements HasName, Updatable, Indexable, Validatable, Addressable, Comparable<ResourceCollection>,
         SimpleSearch, Sortable, Viewable, DeHydratable {
 

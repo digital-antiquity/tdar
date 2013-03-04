@@ -30,6 +30,7 @@ import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.GenericDao.FindOptions;
@@ -392,5 +393,9 @@ public class GenericService {
     @Transactional
     public List<Long> findActiveIds(Class<? extends HasStatus> class1) {
         return genericDao.findActiveIds(class1);
+    }
+
+    public <T> List<T> findAllWithProfile(Class<T> class1, List<Long> ids, String profileName) {
+        return getDao().findAllWithProfile(class1, ids, profileName);
     }
 }
