@@ -93,12 +93,15 @@ public class BillingAccountController extends AbstractPersistableController<Acco
                 getAccount().setOwner(invoice.getOwner());
             }
             getAccountService().checkThatInvoiceBeAssigned(invoice, getAccount()); // throw exception if you cannot
+            // make sure you add back all of the valid account holders
+            getAuthorizedMembers().addAll(getAccount().getAuthorizedMembers());
             getAccount().getInvoices().add(invoice);
             getGenericService().saveOrUpdate(invoice);
             getGenericService().saveOrUpdate(getAccount());
         }
         getAccount().getAuthorizedMembers().clear();
         getAccount().getAuthorizedMembers().addAll(getGenericService().loadFromSparseEntities(getAuthorizedMembers(), Person.class));
+
         logger.info("authorized members: {}", getAccount().getAuthorizedMembers());
         if (Persistable.Base.isNotTransient(getAccount())) {
             getAccountService().updateQuota(getAccount(), getAccount().getResources());

@@ -22,7 +22,7 @@
     <@s.textfield name="name" cssClass="input-xlarge" label="Account Name"/>
     <@s.textarea name="description" cssClass="input-xlarge" label="Account Description"/>
 
-	<@accountcommon.accountInfoForm />
+	<@accountcommon.accountInfoForm hideUsers=false />
 
 
 <script>

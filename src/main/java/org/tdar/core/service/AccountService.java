@@ -304,7 +304,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             files = resource.getFilesUsed();
             space = resource.getSpaceInBytesUsed();
         }
-        logger.info(String.format("%s(%s) %s(%s) r:%s", account.getSpaceUsedInBytes(), space, account.getFilesUsed(), files, resource.getId()));
+        logger.debug(String.format("%s(%s) %s(%s) r:%s", account.getSpaceUsedInBytes(), space, account.getFilesUsed(), files, resource.getId()));
         account.setSpaceUsedInBytes(account.getSpaceUsedInBytes() + space);
         account.setFilesUsed(account.getFilesUsed() + files);
     }

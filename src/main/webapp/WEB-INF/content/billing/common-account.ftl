@@ -1,6 +1,6 @@
 <#escape _untrusted as _untrusted?html>
 
-<#macro accountInfoForm>
+<#macro accountInfoForm hideUsers=false>
     <@s.hidden name="invoiceId" />    
     
 	 <#if billingManager>
@@ -10,9 +10,10 @@
    		</div>
    	</#if>
     </#if>
-    <h3>Who can charge to this account </h3>
-    <@edit.listMemberUsers />
-    
+    <#if !hideUsers>
+	    <h3>Who can charge to this account </h3>
+	    <@edit.listMemberUsers />
+	</#if>    
     <@edit.submit fileReminder=false />
 
 </#macro>
