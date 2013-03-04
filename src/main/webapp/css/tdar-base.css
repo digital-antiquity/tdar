@@ -1042,13 +1042,13 @@ h1 span,h4 span {
 	margin: 0;
 	padding: 0;
 	list-style: none;
-	display: inline;
+	display: inline-block;
 }
 
 .pagin li { 
 	font-weight: 600;
 	font-size: 13px;
-	margin: 0 6px;
+	margin: 0 3px;
 }
 
 footer { 

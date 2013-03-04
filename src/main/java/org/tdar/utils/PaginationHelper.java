@@ -93,7 +93,7 @@ public class PaginationHelper {
     }
     
     public boolean hasNext() {
-        return currentPage < pageCount;
+        return currentPage < (pageCount - 1);
     }
     
     public int getMinimumPageNumber() {
