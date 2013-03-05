@@ -162,7 +162,7 @@ function prepareDateFields(selectElem) {
     case "CALENDAR_DATE":
         $(startElem).rules("add", {
             range : [ -99900, 2100 ],
-            lessThanEqual : endElem,
+            lessThanEqual : [endElem,"Calender Start", "Calendar End"],
             required : function() {
                 return $(endElem).val() != "";
             }
@@ -177,7 +177,7 @@ function prepareDateFields(selectElem) {
     case "RADIOCARBON_DATE":
         $(startElem).rules("add", {
             range : [ 0, 100000 ],
-            greaterThanEqual : endElem,
+            greaterThanEqual : [endElem, "Radiocarbon Start", "Radiocarbon End"],
             required : function() {
                 return $(endElem).val() != "";
             }
@@ -191,10 +191,7 @@ function prepareDateFields(selectElem) {
         break;
     case "NONE":
         $(startElem).rules("add", {
-        	empty: startElem
-        });
-        $(endElem).rules("add", {
-        	empty: endElem
+        	blankCoverageDate: {"start":startElem, "end":endElem}
         });
         break;
     }
@@ -736,10 +733,16 @@ TDAR.common = function() {
         errorLabelContainer : $("#error ul"),
         wrapper: "li",
         highlight: function(element, errorClass, validClass) {
+            $(element).addClass("error");
              $(element).closest("div.control-group").addClass("error");
          },
          unhighlight:function(element, errorClass, validClass) {
-             $(element).closest("div.control-group").removeClass("error");
+             $(element).removeClass("error");
+             //highlight this div until all controls in group are valid
+             var $controlGroup = $(element).closest("div.control-group");
+             if($controlGroup.find('.error').length === 0) {
+                 $controlGroup.removeClass("error");
+             }
          },
         showErrors: function(errorMap, errorList) {
             this.defaultShowErrors();
