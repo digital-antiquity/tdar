@@ -102,6 +102,11 @@ public class LookupController extends AbstractLookupController<Indexable> {
             valueGroup.append(new AutocompleteTitleQueryPart(getTerm()));
         }
 
+        if (StringUtils.isNumeric(getTerm()) && StringUtils.isNotBlank(getTerm())) {
+            valueGroup.append(new FieldQueryPart<String>(QueryFieldNames.ID, getTerm()));
+            valueGroup.setOperator(Operator.OR);
+        }
+        
         // assumption: if sortCategoryId is set, we assume we are serving a coding-sheet/ontology autocomplete
         // FIXME: instead of guessing this way it may be better to break codingsheet/ontology autocomplete lookups to another action.
         if (getSortCategoryId() != null && getSortCategoryId() > -1) {

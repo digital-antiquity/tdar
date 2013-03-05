@@ -16,6 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.JsonModel;
@@ -327,6 +328,16 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         assertTrue("at least one document", resources.size() >= 1);
     }
 
+    @Test
+    public void testResourceLookupByTdarId() {
+        searchIndexService.indexAll(Resource.class);
+        // get back all documents
+        controller.setTerm(TestConstants.TEST_DOCUMENT_ID);
+        controller.lookupResource();
+        List<Indexable> resources = controller.getResults();
+        assertTrue("at least one document", resources.size() >= 1);
+    }
+    
     @Test
     public void testResourceLookupByProjectId() {
         searchIndexService.indexAll(Resource.class);
