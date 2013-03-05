@@ -77,4 +77,6 @@ public interface TargetDatabase extends Database {
 
     public List<String[]> query(String selectSql, ParameterizedRowMapper<String[]> parameterizedRowMapper);
 
+    public List<List<String>> selectAllFromTable(DataTable dataTable, ResultSetExtractor<List<List<String>>> resultSetExtractor, boolean includeGenerated,  String query);
+
 }

@@ -71,6 +71,48 @@ import org.tdar.utils.Pair;
 @Service
 public class DatasetService extends AbstractInformationResourceService<Dataset, DatasetDao> {
 
+    private final class TdarDataResultSetExtractor implements ResultSetExtractor<List<List<String>>> {
+        private final ResultMetadataWrapper wrapper;
+        private final int start;
+        private final int page;
+        private final DataTable dataTable;
+
+        private TdarDataResultSetExtractor(ResultMetadataWrapper wrapper, int start, int page, DataTable dataTable) {
+            this.wrapper = wrapper;
+            this.start = start;
+            this.page = page;
+            this.dataTable = dataTable;
+        }
+
+        @Override
+        public List<List<String>> extractData(ResultSet rs) throws SQLException, DataAccessException {
+            List<List<String>> results = new ArrayList<List<String>>();
+            int rowNum = 1;
+            while (rs.next()) {
+                Map<DataTableColumn, String> result = convertResultSetRowToDataTableColumnMap(dataTable, rs);
+                if (rs.isFirst()) {
+                    wrapper.setFields(new ArrayList<DataTableColumn>(result.keySet()));
+                }
+
+                if (rowNum > start && rowNum <= start + page) {
+                    ArrayList<String> values = new ArrayList<String>();
+                    for (DataTableColumn col : wrapper.getFields()) {
+                        if (col.isVisible()) {
+                            values.add(result.get(col));
+                        }
+                    }
+                    results.add(values);
+                }
+                rowNum++;
+
+                if (rs.isLast()) {
+                    wrapper.setTotalRecords(rs.getRow());
+                }
+            }
+            return results;
+        }
+    }
+
     @Autowired
     private TargetDatabase tdarDataImportDatabase;
 
@@ -479,40 +521,28 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         wrapper.setRecordsPerPage(page);
         wrapper.setStartRecord(start);
 
-        ResultSetExtractor<List<List<String>>> resultSetExtractor = new ResultSetExtractor<List<List<String>>>() {
-            @Override
-            public List<List<String>> extractData(ResultSet rs) throws SQLException, DataAccessException {
-                List<List<String>> results = new ArrayList<List<String>>();
-                int rowNum = 1;
-                while (rs.next()) {
-                    Map<DataTableColumn, String> result = convertResultSetRowToDataTableColumnMap(dataTable, rs);
-                    if (rs.isFirst()) {
-                        wrapper.setFields(new ArrayList<DataTableColumn>(result.keySet()));
-                    }
-
-                    if (rowNum > start && rowNum <= start + page) {
-                        ArrayList<String> values = new ArrayList<String>();
-                        for (DataTableColumn col : wrapper.getFields()) {
-                            if (col.isVisible()) {
-                                values.add(result.get(col));
-                            }
-                        }
-                        results.add(values);
-                    }
-                    rowNum++;
-
-                    if (rs.isLast()) {
-                        wrapper.setTotalRecords(rs.getRow());
-                    }
-                }
-                return results;
-            }
-        };
+        ResultSetExtractor<List<List<String>>> resultSetExtractor = new TdarDataResultSetExtractor(wrapper, start, page, dataTable);
         try {
             wrapper.setResults(tdarDataImportDatabase.selectAllFromTableInImportOrder(dataTable, resultSetExtractor, includeGenerated));
         } catch (BadSqlGrammarException e) {
             logger.trace("order column did not exist", e);
             wrapper.setResults(tdarDataImportDatabase.selectAllFromTable(dataTable, resultSetExtractor, includeGenerated));
+        }
+        return wrapper;
+    }
+
+    
+    @Transactional
+    public ResultMetadataWrapper selectFromDataTable(final DataTable dataTable, final int start, final int page, boolean includeGenerated, String query) {
+        final ResultMetadataWrapper wrapper = new ResultMetadataWrapper();
+        wrapper.setRecordsPerPage(page);
+        wrapper.setStartRecord(start);
+
+        ResultSetExtractor<List<List<String>>> resultSetExtractor = new TdarDataResultSetExtractor(wrapper, start, page, dataTable);
+        try {
+            wrapper.setResults(tdarDataImportDatabase.selectAllFromTable(dataTable, resultSetExtractor, includeGenerated, query));
+        } catch (BadSqlGrammarException e) {
+            logger.trace("order column did not exist", e);
         }
         return wrapper;
     }

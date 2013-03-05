@@ -19,7 +19,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
@@ -754,6 +753,8 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
         String chr = "\'";
         if (doubleQuote) {
             chr = "\"";
+        } else {
+            term = StringUtils.replace(term, "'", "''");
         }
         return " " + chr + term + chr + " ";
     }
@@ -949,4 +950,25 @@ public class PostgresDatabase implements TargetDatabase, RowOperations {
         throw new NotImplementedException("Not allowed. Deletion of records is out of scope");
     }
 
+    @Override
+    public List<List<String>> selectAllFromTable(DataTable dataTable, ResultSetExtractor<List<List<String>>> resultSetExtractor, boolean includeGenerated,
+            String query) {
+        List<String> coalesce = new ArrayList<String>();
+        for (DataTableColumn column : dataTable.getDataTableColumns()) {
+            coalesce.add(String.format("coalesce(\"%s\",'') ",column.getName()));
+        }
+
+        String selectColumns = "*";
+        if (!includeGenerated) {
+            selectColumns = "\"" + StringUtils.join(dataTable.getColumnNames(), "\", \"") + "\"";
+        }
+
+
+        String vector = StringUtils.join(coalesce, " || ' ' || ");
+        String sql = String.format("SELECT %s from %s where to_tsvector('english', %s) @@ to_tsquery(%s)", selectColumns,dataTable.getName(), vector, quote(query,false));
+                logger.debug(sql);
+        return jdbcTemplate.query(sql, resultSetExtractor);
+    }
+
+    
 }
