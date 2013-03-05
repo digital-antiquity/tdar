@@ -34,6 +34,8 @@ public class UrlService {
             url = url.replaceFirst("(.+)/view\\?id=(\\d+)", "$1/$2");
         } else if (url.matches("(.+)/view\\?id=([0-9]+)&(.+)$")) {
             url = url.replaceFirst("(.+)/view\\?id=(\\d+)&(.+)", "$1/$2?$3");
+        } else if (url.matches("(.+)/creators\\?id=([0-9]+)&?$")) {
+            url = url.replaceFirst("(.+)/creators\\?id=(\\d+)", "$1/creators/$2");
         } else if (url.matches("(.+)/creators\\?id=([0-9]+)&(.+)$")) {
             url = url.replaceFirst("(.+/creators)\\?id=(\\d+)&(.+)", "$1/$2?$3");
         }
