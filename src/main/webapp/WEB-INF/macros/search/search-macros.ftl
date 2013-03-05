@@ -99,10 +99,11 @@
   <link rel="alternate" type="application/atom+xml" title="Atom 1.0" href="${rssUrl}" />
   </#if>
   <#if (nextPageStartRecord < totalRecords) >
-      <link rel="next" href="<@s.url value="" includeParams="all" ><@s.param name="startRecord" value="${nextPageStartRecord?c}"/></@s.url>"/>
+  
+      <link rel="next" href="<@s.url value="${namespace}/${actionName}" includeParams="all" ><@s.param name="startRecord" value="${nextPageStartRecord?c}"/></@s.url>"/>
   </#if>
   <#if (prevPageStartRecord > 0) >
-      <link rel="previous" href="<@s.url value="" includeParams="all" ><@s.param name="startRecord" value="${prevPageStartRecord?c}" /></@s.url>"/>
+      <link rel="previous" href="<@s.url value="${namespace}/${actionName}" includeParams="all" ><@s.param name="startRecord" value="${prevPageStartRecord?c}" /></@s.url>"/>
   </#if>
 </#macro>
 
@@ -111,7 +112,7 @@
     <a href="<@searchUrl path><#nested></@searchUrl>">${linkText}</a>
 </#macro>
 
-<#macro searchUrl path><@s.url includeParams="all" value="${path}"><#if path?? && path!="results"><@s.param name="id" value=""/></#if><#nested></@s.url></#macro>
+<#macro searchUrl path><@s.url includeParams="all" value="${path}"><#nested></@s.url></#macro>
 
 <#macro paginationLink startRecord path linkText>
     <span class="paginationLink">
@@ -185,7 +186,7 @@
   <div class="glide">
     <div id="recordTotal">${label} ${helper.firstItem + 1} - ${helper.lastItem + 1} of ${helper.totalNumberOfItems}
     </div> 
-    <@pagination ""/> 
+    <@pagination path="${namespace}/${actionName}"/> 
   </div>
 <#elseif (helper.totalNumberOfItems > 0 && showIfOnePage)>
   <div class="glide">

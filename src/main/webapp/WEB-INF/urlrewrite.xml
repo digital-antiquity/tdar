@@ -196,12 +196,15 @@
 		<from>^/(dashboard)/?$</from>
 		<to>/$1/$1</to>
 	</rule>
-
 	<outbound-rule>
 		<from>^/(dashboard)/dashboard/?$</from>
 		<to>/$1</to>
 	</outbound-rule>
 
+	<outbound-rule>
+		<from>^/browse/creators\?id=(\d+)(.*)</from>
+		<to>/browse/creators/$1?$2</to>
+	</outbound-rule>
 
 
 	<!-- <rule> <from>^/document/add/([A-Z_]+)$</from> <to>/document/add?documentType=$1</to> 
