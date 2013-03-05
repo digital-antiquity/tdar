@@ -220,9 +220,9 @@ public class CollectionController extends AbstractPersistableController<Resource
         getAuthorizedUsers().addAll(getPersistable().getAuthorizedUsers());
         // FIXME: this could be replaced with a load that's a skeleton object (title, resourceType, date)
         resources.addAll(getPersistable().getResources());
-        for (Resource resource : getPersistable().getResources()) {
-            getAuthenticationAndAuthorizationService().applyTransientViewableFlag(resource, getAuthenticatedUser());
-        }
+//        for (Resource resource : getPersistable().getResources()) {
+//            getAuthenticationAndAuthorizationService().applyTransientViewableFlag(resource, getAuthenticatedUser());
+//        }
         setParentId(getPersistable().getParentId());
         return SUCCESS;
     }
