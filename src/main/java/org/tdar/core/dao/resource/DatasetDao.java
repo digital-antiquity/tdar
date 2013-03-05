@@ -121,29 +121,29 @@ public class DatasetDao extends ResourceDao<Dataset> {
         return query.list();
     }
 
-    @SuppressWarnings("unchecked")
-    public List<InformationResource> findByFilename(List<String> valuesToMatch, DataTableColumn column) {
-        List<String> filenames = new ArrayList<String>();
-        for (String value : valuesToMatch) {
-            if (column.isIgnoreFileExtension()) {
-                filenames.add(FilenameUtils.getBaseName(value.toLowerCase()) + ".");
-            } else {
-                filenames.add(value.toLowerCase());
-            }
-        }
-        Query query = getCurrentSession().getNamedQuery(QUERY_MATCHING_FILES);
-        query.setParameterList("filenamesToMatch", filenames);
-        query.setParameter("projectId", column.getDataTable().getDataset().getProject().getId());
-        query.setParameterList("versionTypes", Arrays.asList(VersionType.UPLOADED,
-                VersionType.ARCHIVAL, VersionType.UPLOADED_ARCHIVAL));
-        List<InformationResource> toReturn = new ArrayList<InformationResource>();
-        for (InformationResourceFileVersion version : (List<InformationResourceFileVersion>) query.list()) {
-            // add checks for (a) latest version (b) matching is correct
-            toReturn.add(version.getInformationResourceFile().getInformationResource());
-        }
-        logger.debug("find by filename: " + toReturn);
-        return toReturn;
-    }
+//    @SuppressWarnings("unchecked")
+//    public List<InformationResource> findByFilename(List<String> valuesToMatch, DataTableColumn column) {
+//        List<String> filenames = new ArrayList<String>();
+//        for (String value : valuesToMatch) {
+//            if (column.isIgnoreFileExtension()) {
+//                filenames.add(FilenameUtils.getBaseName(value.toLowerCase()) + ".");
+//            } else {
+//                filenames.add(value.toLowerCase());
+//            }
+//        }
+//        Query query = getCurrentSession().getNamedQuery(QUERY_MATCHING_FILES);
+//        query.setParameterList("filenamesToMatch", filenames);
+//        query.setParameter("projectId", column.getDataTable().getDataset().getProject().getId());
+//        query.setParameterList("versionTypes", Arrays.asList(VersionType.UPLOADED,
+//                VersionType.ARCHIVAL, VersionType.UPLOADED_ARCHIVAL));
+//        List<InformationResource> toReturn = new ArrayList<InformationResource>();
+//        for (InformationResourceFileVersion version : (List<InformationResourceFileVersion>) query.list()) {
+//            // add checks for (a) latest version (b) matching is correct
+//            toReturn.add(version.getInformationResourceFile().getInformationResource());
+//        }
+//        logger.debug("find by filename: " + toReturn);
+//        return toReturn;
+//    }
 
     /*
      * Take the distinct column values mapped and associate them with files in tDAR based on:

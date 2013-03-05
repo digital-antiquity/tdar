@@ -67,7 +67,7 @@ public interface TdarNamedQueries {
     public static final String QUERY_KEYWORD_COUNT_FILE_EXTENSION = "adminStats.fileExtensions";
     public static final String QUERY_RECENT_USERS_ADDED = "adminStats.recentUsers";
     public static final String QUERY_RECENT = "adminStats.recentFiles";
-    public static final String QUERY_MATCHING_FILES = "datasetRelated.Files";
+//    public static final String QUERY_MATCHING_FILES = "datasetRelated.Files";
     public static final String QUERY_USAGE_STATS = "adminStats.usage";
     public static final String QUERY_FILE_STATS = "adminStats.fileDetails";
     public static final String QUERY_MAPPED_CODING_RULES = "dataTableColumn.mappedCodingRules";
