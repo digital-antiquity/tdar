@@ -50,6 +50,7 @@ public interface TdarNamedQueries {
     public static final String QUERY_SPARSE_EDITABLE_RESOURCES = "resource.editable.sparse";
     public static final String QUERY_COLLECTION_BY_PARENT = "collection.parent";
     public static final String QUERY_COLLECTIONS_PUBLIC_ACTIVE = "collection.activeId";
+    public static final String QUERY_COLLECTION_RESOURCES_WITH_STATUS = "collection.resourcesWithStatus";
     public static final String QUERY_COLLECTION_BY_AUTH_OWNER = "collection.authOwnerId_name";
     public static final String QUERY_COLLECTION_PUBLIC_WITH_HIDDEN_PARENT = "collection.hiddenParent";
     public static final String QUERY_EXTERNAL_ID_SYNC = "resource.externalId";

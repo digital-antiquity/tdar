@@ -22,9 +22,7 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
@@ -90,47 +88,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         getGenericService().saveOrUpdate(persistable);
         getResourceCollectionService().saveAuthorizedUsersForResourceCollection(persistable, getAuthorizedUsers(), shouldSaveResource());
 
-        List<Resource> rehydratedIncomingResources = getGenericService().loadFromSparseEntities(resources, Resource.class);
-        List<Resource> toRemove = new ArrayList<Resource>();
-        for (Resource resource : persistable.getResources()) {
-            if (!rehydratedIncomingResources.contains(resource)) {
-                resource.getResourceCollections().remove(persistable);
-                toRemove.add(resource);
-            }
-        }
-        // set the deleted resources aside first
-        List<Resource> deletedResources = new ArrayList<Resource>();
-        for (Resource resource : persistable.getResources()) {
-            if (resource.isDeleted()) {
-                deletedResources.add(resource);
-            }
-        }
-        persistable.getResources().removeAll(toRemove);
-        getGenericService().saveOrUpdate(persistable);
-        List<Resource> ineligibleResources = new ArrayList<Resource>();
-        for (Resource resource : rehydratedIncomingResources) {
-
-            logger.info(getAuthenticatedUser().toString());
-            if (!getAuthenticationAndAuthorizationService().canEditResource(getAuthenticatedUser(), resource)) {
-                ineligibleResources.add(resource);
-                logger.info("{}", resource);
-            } else {
-                resource.getResourceCollections().add(persistable);
-            }
-        }
-
-        // remove all of the undesirable resources that that the user just tried to add
-        rehydratedIncomingResources.removeAll(ineligibleResources);
-        // getResourceCollectionService().findAllChildCollectionsRecursive(persistable, CollectionType.SHARED);
-        persistable.getResources().addAll(rehydratedIncomingResources);
-
-        // add all the deleted resources that were already in the colleciton
-        persistable.getResources().addAll(deletedResources);
-        getGenericService().saveOrUpdate(persistable);
-        if (ineligibleResources.size() > 0) {
-            throw new TdarRecoverableRuntimeException(
-                    "the following resources could not be added to the collection because you do not have the rights to add them: " + ineligibleResources);
-        }
+        List<Resource> rehydratedIncomingResources = getResourceCollectionService().reconcileIncomingResourcesForCollection(persistable, getAuthenticatedUser(), resources);
         logger.trace("{}", rehydratedIncomingResources);
         logger.debug("RESOURCES {}", persistable.getResources());
         return SUCCESS;
@@ -220,9 +178,9 @@ public class CollectionController extends AbstractPersistableController<Resource
         getAuthorizedUsers().addAll(getPersistable().getAuthorizedUsers());
         // FIXME: this could be replaced with a load that's a skeleton object (title, resourceType, date)
         resources.addAll(getPersistable().getResources());
-//        for (Resource resource : getPersistable().getResources()) {
-//            getAuthenticationAndAuthorizationService().applyTransientViewableFlag(resource, getAuthenticatedUser());
-//        }
+        // for (Resource resource : getPersistable().getResources()) {
+        // getAuthenticationAndAuthorizationService().applyTransientViewableFlag(resource, getAuthenticatedUser());
+        // }
         setParentId(getPersistable().getParentId());
         return SUCCESS;
     }
@@ -484,10 +442,11 @@ public class CollectionController extends AbstractPersistableController<Resource
     public List<FacetGroup<? extends Facetable>> getFacetFields() {
         return null;
     }
-    
+
     public PaginationHelper getPaginationHelper() {
-        if(paginationHelper == null) paginationHelper = PaginationHelper.withSearchResults(this);
+        if (paginationHelper == null)
+            paginationHelper = PaginationHelper.withSearchResults(this);
         return paginationHelper;
     }
-    
+
 }

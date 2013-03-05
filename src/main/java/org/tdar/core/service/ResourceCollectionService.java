@@ -14,10 +14,12 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.functors.NotNullPredicate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
@@ -26,8 +28,11 @@ import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.Status;
+import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.search.query.SortOption;
 
@@ -38,6 +43,50 @@ import org.tdar.search.query.SortOption;
 
 @Service
 public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<ResourceCollection, ResourceCollectionDao> {
+
+    @Autowired
+    AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
+
+    @Transactional
+    public List<Resource> reconcileIncomingResourcesForCollection(ResourceCollection persistable, Person authenticatedUser, List<Resource> resources) {
+        Map<Long, Resource> incomingIdMap = Persistable.Base.createIdMap(resources);
+        List<Resource> toRemove = new ArrayList<Resource>();
+        for (Resource resource : persistable.getResources()) {
+            if (!incomingIdMap.containsKey(resource.getId())) {
+                resource.getResourceCollections().remove(persistable);
+                toRemove.add(resource);
+            }
+        }
+        // set the deleted resources aside first
+        List<Resource> deletedResources = findAllResourcesWithStatus(persistable, Status.DELETED, Status.FLAGGED, Status.DUPLICATE,
+                Status.FLAGGED_ACCOUNT_BALANCE);
+
+        persistable.getResources().removeAll(toRemove);
+        saveOrUpdate(persistable);
+        List<Resource> ineligibleResources = new ArrayList<Resource>();
+        List<Resource> rehydratedIncomingResources = getDao().loadFromSparseEntities(resources, Resource.class);
+        logger.info("{} ", authenticatedUser);
+        for (Resource resource : rehydratedIncomingResources) {
+            if (!authenticationAndAuthorizationService.canEditResource(authenticatedUser, resource)) {
+                ineligibleResources.add(resource);
+            } else {
+                resource.getResourceCollections().add(persistable);
+            }
+        }
+        // remove all of the undesirable resources that that the user just tried to add
+        rehydratedIncomingResources.removeAll(ineligibleResources);
+        // getResourceCollectionService().findAllChildCollectionsRecursive(persistable, CollectionType.SHARED);
+        persistable.getResources().addAll(rehydratedIncomingResources);
+
+        // add all the deleted resources that were already in the colleciton
+        persistable.getResources().addAll(deletedResources);
+        saveOrUpdate(persistable);
+        if (ineligibleResources.size() > 0) {
+            throw new TdarRecoverableRuntimeException(
+                    "the following resources could not be added to the collection because you do not have the rights to add them: " + ineligibleResources);
+        }
+        return rehydratedIncomingResources;
+    }
 
     @Transactional
     public void saveAuthorizedUsersForResource(Resource resource, List<AuthorizedUser> authorizedUsers, boolean shouldSave) {
@@ -75,10 +124,10 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         }
         // note: we assume here that the authorizedUser validation will happen in saveAuthorizedUsersForResourceCollection
         saveAuthorizedUsersForResourceCollection(internalCollection, authorizedUsers, shouldSave);
-//        if (CollectionUtils.isNotEmpty(internalCollection.getAuthorizedUsers())) {
-//            resource.getResourceCollections().remove(internalCollection);
-//            getDao().delete(internalCollection);
-//        }
+        // if (CollectionUtils.isNotEmpty(internalCollection.getAuthorizedUsers())) {
+        // resource.getResourceCollections().remove(internalCollection);
+        // getDao().delete(internalCollection);
+        // }
     }
 
     public List<AuthorizedUser> getAuthorizedUsersForResource(Resource resource) {
@@ -139,7 +188,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
         // the request may have edited the an existing authUser's permissions, so clear out the old set and go w/ most recent set.
         currentUsers.clear();
-        
+
         ResourceCollection.normalizeAuthorizedUsers(authorizedUsers);
 
         if (CollectionUtils.isNotEmpty(authorizedUsers)) {
@@ -218,8 +267,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         Iterator<ResourceCollection> iterator = current.iterator();
         while (iterator.hasNext()) {
             ResourceCollection resourceCollection = iterator.next();
-            
-            //retain internal collections, but remove any existing shared collections that don't exist in the incoming list of shared collections
+
+            // retain internal collections, but remove any existing shared collections that don't exist in the incoming list of shared collections
             if (!incoming_.contains(resourceCollection) && resourceCollection.isShared()) {
                 toRemove.add(resourceCollection);
             }
@@ -291,6 +340,10 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
     public List<Long> findAllPublicActiveCollectionIds() {
         return getDao().findAllPublicActiveCollectionIds();
+    }
+
+    public List<Resource> findAllResourcesWithStatus(ResourceCollection persistable, Status... statuses) {
+        return getDao().findAllResourcesWithStatus(persistable, statuses);
     }
 
 }
