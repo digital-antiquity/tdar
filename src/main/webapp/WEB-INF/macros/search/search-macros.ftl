@@ -98,12 +98,17 @@
   <#if includeRss>
   <link rel="alternate" type="application/atom+xml" title="Atom 1.0" href="${rssUrl}" />
   </#if>
+    <#-- if id parameter was added to querystring via urlrewrite inbound rule, we need to remove it when rendering relative url's  -->
+    <#local path = "">
+    <#if (actionName!"")=="results">
+    <#local path=actionName>
+    </#if>
+    
   <#if (nextPageStartRecord < totalRecords) >
-  
-      <link rel="next" href="<@s.url value="${namespace}/${actionName}" includeParams="all" ><@s.param name="startRecord" value="${nextPageStartRecord?c}"/></@s.url>"/>
+      <link rel="next" href="<@searchUrl path><@s.param name="startRecord" value="${nextPageStartRecord?c}"/></@searchUrl>"/>
   </#if>
-  <#if (prevPageStartRecord > 0) >
-      <link rel="previous" href="<@s.url value="${namespace}/${actionName}" includeParams="all" ><@s.param name="startRecord" value="${prevPageStartRecord?c}" /></@s.url>"/>
+  <#if  paginationHelper.hasPrevious() >
+      <link rel="previous" href="<@searchUrl path ><@s.param name="startRecord" value="${prevPageStartRecord?c}" /></@searchUrl>"/>
   </#if>
 </#macro>
 
@@ -112,7 +117,7 @@
     <a href="<@searchUrl path><#nested></@searchUrl>">${linkText}</a>
 </#macro>
 
-<#macro searchUrl path><@s.url includeParams="all" value="${path}"><#nested></@s.url></#macro>
+<#macro searchUrl path><@s.url includeParams="all" value="${path}"><#if path?? && path!="results"><@s.param name="id" value=""/></#if><#nested></@s.url></#macro>
 
 <#macro paginationLink startRecord path linkText>
     <span class="paginationLink">
@@ -186,7 +191,7 @@
   <div class="glide">
     <div id="recordTotal">${label} ${helper.firstItem + 1} - ${helper.lastItem + 1} of ${helper.totalNumberOfItems}
     </div> 
-    <@pagination path="${namespace}/${actionName}"/> 
+    <@pagination ""/> 
   </div>
 <#elseif (helper.totalNumberOfItems > 0 && showIfOnePage)>
   <div class="glide">

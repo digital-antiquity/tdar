@@ -4,9 +4,9 @@
 <#import "/WEB-INF/macros/resource/list-macros.ftl" as list>
 <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
 <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
-<@search.headerLinks includeRss=false />
 
 <head>
+<@search.headerLinks includeRss=false />
 <title>${resourceCollection.name!"untitled collection"}</title>
 <meta name="lastModifiedDate" content="$Date$"/>
 <@view.canonical resourceCollection />
@@ -16,7 +16,6 @@
 <@view.toolbar "collection" "view" />
 
 <@view.pageStatusCallout />
-
 <h1>${resourceCollection.name!"untitled collection"}</h1>
 <#if resourceCollection.visible || viewable>
 <!-- Don't show header if header doesn't exist -->
