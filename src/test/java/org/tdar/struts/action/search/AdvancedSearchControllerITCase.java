@@ -851,6 +851,32 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Test
     @Rollback()
     // sparse collections like projects and collections should get partially hydrated when rendering the "refine" page
+    public void testSparseObjectNameLoading() {
+        String colname = "my fancy collection";
+        Project proj = createAndSaveNewResource(Project.class);
+        ResourceCollection coll = createAndSaveNewResourceCollection(colname);
+        searchIndexService.index(coll);
+        proj.getResourceCollections().add(coll);
+        searchIndexService.index(proj);
+
+        // simulate searchParamerters that represents a project at [0] and collection at [1]
+//        firstGroup().getProjects().add(new Project(null,proj.getName()));
+//        firstGroup().getCollections().add(null); // [0]
+        firstGroup().getCollections().add(new ResourceCollection(colname, null, null, null, true, null)); // [1]
+
+        controller.search();
+
+        // skeleton lists should have been loaded w/ sparse records...
+//        assertEquals(proj.getTitle(), firstGroup().getProjects().get(0).getTitle());
+        assertEquals(colname, firstGroup().getCollections().get(0).getName());
+        assertTrue(controller.getResults().contains(proj));
+//        assertEquals(proj.getId(), firstGroup().getProjects().get(0).getId());
+//        assertEquals(coll.getId(), firstGroup().getCollections().get(1).getId());
+    }
+
+    @Test
+    @Rollback()
+    // sparse collections like projects and collections should get partially hydrated when rendering the "refine" page
     public void testLookupObjectLoading() {
         String colname = "my fancy collection";
         Project proj = createAndSaveNewResource(Project.class);
