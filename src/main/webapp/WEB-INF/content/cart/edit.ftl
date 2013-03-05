@@ -84,23 +84,28 @@
     <@s.hidden name="id" value="${invoice.id?c!-1}" />
     <#if !production || administrator || editor >
     <hr>
-    <p><b>For Testing Only:</b></p>
-		<div class="control-group">
-    <label class="control-label" for="extraItemQuantity">Quantity</label>
-				    <div class="controls">
-			    <input type="text" name="extraItemQuantity" id="extraItemQuantity" value="0" label="Quantity"  class="integer span2"/>
-		</div>
-	</div>
-		<div class="control-group">
-	    <label class="control-label" for="extraItemQuantity">Type</label>
-	    <div class="controls">
-	    <label><input type="radio" name="extraItemName" checked=checked  value="" id="extraItemName" /> None</label>
+    <p><b>For Admin Use Only:</b></p>
+	<table class="table tableFormat">
+		<thead>
+		<tr>
+			<th>Quantity</th>
+			<th>Item</th>
+		</tr>
+		</thead>
 	    <#list activities as act>
 		    <#if !act.production >
-			    <label><input type="radio" name="extraItemName"  value="${act.name}" id="extraItemName_${act.name}" /> ${act.name}</label>
+			<tr>
+				<td>
+				<@s.textfield name="extraItemQuantities[${act_index}]" cssClass="integer span2"/>
+				</td>
+				<td>
+					${act.name}
+					<@s.hidden name="extraItemIds[${act_index}]" value="${act.id?c}"/>
+				</td>				
+			</tr>
 	    	</#if>
 		</#list>
-		</div>
+		</table>
 	</div>
 
 	</#if>

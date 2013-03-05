@@ -65,6 +65,13 @@ public class GenericDao {
         logger.trace("object: {}", obj);
         return obj;
     }
+    
+    public <E> List<E> findAllWithProfile(Class<E> class1, List<Long> ids, String profileName) {
+        getCurrentSession().enableFetchProfile(profileName);
+        List<E> ret = findAll(class1,ids);
+        getCurrentSession().disableFetchProfile(profileName);
+        return ret;
+    }
 
     @SuppressWarnings("unchecked")
     public <E> List<E> findAll(Class<E> persistentClass, Collection<Long> ids) {

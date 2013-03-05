@@ -106,28 +106,6 @@
   </#if>
 </#macro>
 
-<#macro initResultPagination>
-    <#global firstRec = (startRecord + 1) />
-    <#global curPage = ((startRecord/recordsPerPage)?floor + 1) />
-    <#global numPages = ((totalRecords/recordsPerPage)?ceiling) />
-    <#global lastRec = nextPageStartRecord>
-    
-    <#if (firstRec > totalRecords)>
-     <#assign numPages = 0 />
-     <#assign firstRec = totalRecords/>
-    </#if>
-    
-    <#if (nextPageStartRecord > totalRecords) >
-        <#global lastRec = totalRecords>
-    </#if>
-    
-    <#if (firstRec - recordsPerPage) < 1 >
-        <#assign prevPageStartRec = 0>
-    <#else>
-        <#assign prevPageStartRec = firstRec - recordsPerPage - 1>
-    </#if>
-</#macro>
-
 
 <#macro searchLink path linkText>
     <a href="<@searchUrl path><#nested></@searchUrl>">${linkText}</a>
@@ -150,66 +128,50 @@
     </#list>
 </#macro>
 
-<#macro pagination path="results">
-    <#if (numPages <= 1)>
-    <#return />
-    </#if>
-
-  <#assign start =0>
-  <#assign end =numPages -1>
-  <#if numPages &gt; 40 && curPage &gt; 19 >
-    <#assign start = curPage - 20>
-  </#if>
-  <#if numPages &gt; 40 && curPage &lt; numPages -19 >
-    <#assign end = curPage + 19>
-  </#if> 
-
+<#macro pagination path="results" helper=paginationHelper>
+<div id="divPaginationSection" class="">
+<#if (helper.totalNumberOfItems >0)>
     <table class="pagin">
-                    <tr>
-                        <#if (firstRec > 1)>
-                        <td class="prev">
-                            <@paginationLink startRecord=prevPageStartRec path="${path}" linkText="Previous" />
-                        </td>
-                        </#if>
-                        <td class="page">
-                            <ul>
-                              <#if start != 0>
-                                <li>
-                                  <@paginationLink startRecord=(0 * recordsPerPage) path="${path}" linkText="first" />
-                                 </li>
-                                <li>...</li>
-                              </#if>
-                            <#if (numPages > 1)>
-                                <#list start..end as i>
-                                <li>
-                                    <#if (i + 1) = curPage>
-                                                            <#-- FIXME: there are 2 of these spans with
-                                                            the same id being generated.  Turn this into
-                                                            a CSS class instead or is this a bug?
-                                                            -->
-                                        <span id="currentResultPage">${i + 1}</span>
-                                    <#else>
-                                        <@paginationLink startRecord=(i * recordsPerPage) path="${path}" linkText=(i + 1) />
-                                    </#if>
-                                </li>
-                                </#list>
-                                <#else>
-                                <li>1</li>
-                            </#if>
-                            <#if (end != numPages && nextPageStartRecord < totalRecords)>
-                                <li>
-                                      <@paginationLink startRecord=(totalRecords - totalRecords % recordsPerPage) path="${path}" linkText="Last" />
-                                </li>
-                            </#if>
-                            </ul>
-                        </td>
-                            <#if (nextPageStartRecord < totalRecords) >
-                        <td class="next">
-                                <@paginationLink startRecord=nextPageStartRecord path="${path}" linkText="Next" />
-                        </td>
-                            </#if>
-                    </tr>
-                </table>
+        <tr>
+        <#if helper.hasPrevious()>
+        <td class="prev">
+            <@paginationLink startRecord=(helper.itemsPerPage * (helper.currentPage - 1)) path=path linkText="Previous" />
+        </td>
+        </#if>
+        <td class="page">
+            <ul>
+              <#if (0 < helper.minimumPageNumber) >
+                <li>
+                  <@paginationLink startRecord=0 path=path linkText="First" />
+                 </li>
+                <li>...</li>
+              </#if>
+                <#list helper.minimumPageNumber..helper.maximumPageNumber as i>
+                <li>
+                    <#if i == helper.currentPage>
+                        <span class="currentResultPage">${i + 1}</span>
+                    <#else>
+                        <@paginationLink startRecord=(i * helper.itemsPerPage) path=path linkText=(i + 1) />
+                    </#if>
+                </li>
+                </#list>
+            <#if (helper.maximumPageNumber < (helper.pageCount - 1))>
+                <li>...</li>
+                <li>
+                      <@paginationLink startRecord=(helper.itemsPerPage * (helper.pageCount-1)) path=path linkText="Last" />
+                </li>
+            </#if>
+            </ul>
+        </td>
+            <#if (helper.hasNext()) >
+        <td class="next">
+                <@paginationLink startRecord=(helper.itemsPerPage * (helper.currentPage + 1)) path=path linkText="Next" />
+        </td>
+            </#if>
+        </tr>
+    </table>
+</div>
+</#if>
 </#macro>
 
 <#macro bcad _year>
@@ -217,17 +179,18 @@
 </#macro>
 
 
-<#macro basicPagination label="Records" showIfOnePage=false>
-<#if (totalRecords > 0 && numPages > 1)>
+<#macro basicPagination label="Records" showIfOnePage=false helper=paginationHelper>
+
+<#if (helper.pageCount > 1)>
   <div class="glide">
-    <div id="recordTotal">${label} ${firstRec} - ${lastRec} of ${totalRecords}
+    <div id="recordTotal">${label} ${helper.firstItem + 1} - ${helper.lastItem + 1} of ${helper.totalNumberOfItems}
     </div> 
     <@pagination ""/> 
   </div>
-<#elseif (totalRecords > 0 && showIfOnePage)>
+<#elseif (helper.totalNumberOfItems > 0 && showIfOnePage)>
   <div class="glide">
-  Displaying ${label} ${firstRec} - ${totalRecords} of ${totalRecords}
+  Displaying ${label} ${helper.firstItem + 1} - ${helper.lastItem + 1} of ${helper.totalNumberOfItems}
   </div>
-
 </#if>
 </#macro>
+

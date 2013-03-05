@@ -23,7 +23,7 @@ public interface SearchResultHandler<I extends Indexable> {
 
     public static final int DEFAULT_START = 0;
     public static final int DEFAULT_RESULT_SIZE = 25;
-
+    
     SortOption getSortField();
 
     SortOption getSecondarySortField();

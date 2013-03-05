@@ -8,10 +8,6 @@
 </head>
 <body>
 
-
-
-    <@search.initResultPagination/>
-
     <div id="titlebar" parse="true">
         <#if searchPhrase?? && !explore>
             <h1>Search Results: <span>${searchPhrase}</span></h1>
@@ -97,10 +93,10 @@
         <a href="http://dev.tdar.org/confluence/display/TDAR/Data+Integration">visit our documentation for more details</a>
         </div>
     </#if>
+    
 
 
-
-     <h2 class="totalRecords">${startRecord+1}-${lastRec} (${totalRecords} Results)</h2>
+     <h2 class="totalRecords">${paginationHelper.firstItem + 1}-${paginationHelper.lastItem + 1} (${paginationHelper.totalNumberOfItems} Results)</h2>
 	<#if !hideFacetsAndSort>
      <div class="sort">
          <p>Sort By:</p>
@@ -136,11 +132,10 @@
 </div>
     <hr class="dbl" />
     <@search.pagination ""/>
+    
 <#else>
     <h2>No records match the query.</h2>
 </#if>
-
-
 
 <script type="text/javascript">
         //pretty controls for sort options, sidebar options (pulled from main.js)

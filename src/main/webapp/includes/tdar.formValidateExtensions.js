@@ -110,22 +110,23 @@
 		if (this.optional(element))
 			return true;
 		var i = parseInt(value);
-		var j = parseInt($(param).val());
+		var j = parseInt($(param[0]).val());
 		return i <= j;
-	}, "This value must be less than the maximum value");
+	}, "A {1} value must be less than the {2} value");
 
 	$.validator.addMethod('greaterThanEqual', function(value, element, param) {
 		if (this.optional(element))
 			return true;
 		var i = parseInt(value);
-		var j = parseInt($(param).val());
+		var j = parseInt($(param[0]).val());
 		return i >= j;
-	}, "This value must be greater than the minimum value");
+	}, "A {1} value must be greater than the {2} value");
 
 	
-	$.validator.addMethod('empty', function(value, element, param) {
-		return value == undefined || value.length ==  0;
-	}, "This value must be greater than the minimum value");
+	$.validator.addMethod('blankCoverageDate', function(value, element, param) {
+	    var concatval = "" + $(param.start).val() + $(param.end).val();
+		return concatval.length ===  0;
+	}, "Choose a valid coverage date type:  'Calendar' or 'Radiocarbon'");
 
 	$.validator.addMethod('asyncFilesRequired', function(value, elem) {
 		return $('tr', '#files').not('.noFiles').size() > 0;

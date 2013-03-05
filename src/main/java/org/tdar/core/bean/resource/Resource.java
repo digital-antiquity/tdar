@@ -52,6 +52,7 @@ import org.apache.lucene.search.Explanation;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.FetchProfile;
 import org.hibernate.annotations.FetchProfile.FetchOverride;
+import org.hibernate.annotations.FetchProfiles;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.Type;
@@ -85,7 +86,6 @@ import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.billing.Account;
-import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -137,9 +137,12 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
         CodingSheet.class, Dataset.class, Ontology.class, Image.class, SensoryData.class, Video.class })
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @XmlType(name = "resource")
-@FetchProfile(name = "resource-with-people", fetchOverrides = {
-        @FetchOverride(association = "resourceCreators", mode = FetchMode.JOIN, entity = Resource.class),
-        @FetchOverride(association = "submitter", mode = FetchMode.JOIN, entity = Resource.class) })
+@FetchProfiles(value = {
+        @FetchProfile(name = "resource-with-people", fetchOverrides = {
+                @FetchOverride(association = "resourceCreators", mode = FetchMode.JOIN, entity = Resource.class),
+                @FetchOverride(association = "submitter", mode = FetchMode.JOIN, entity = Resource.class) }),
+        @FetchProfile(name="simple", fetchOverrides = { })
+})
 public class Resource extends JsonModel.Base implements Persistable,
         Comparable<Resource>, HasName, Updatable, Indexable, Validatable, SimpleSearch,
         HasStatus, OaiDcProvider, Obfuscatable, Viewable, Addressable,
@@ -372,7 +375,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     // does not persist
     private transient boolean created = false;
     private transient boolean updated = false;
-    
+
     @Column(name = "external_id")
     private String externalId;
 
@@ -1711,7 +1714,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     public Long getSpaceUsedInMb() {
         return Persistable.Base.divideByRoundUp(spaceInBytesUsed, ONE_MB);
     }
-    
+
     @XmlTransient
     public Long getEffectiveFilesUsed() {
         return getFilesUsed() - getPreviousFilesUsed();

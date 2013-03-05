@@ -66,6 +66,22 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
     
     @Test
     @Rollback
+    public void testSparseResource() throws Exception {
+        ResourceCollection collection = new ResourceCollection("test", "test", SortOption.TITLE, CollectionType.SHARED, true, getAdminUser());
+        collection.markUpdated(getAdminUser());
+        collection.setResources(new HashSet<Resource>(genericService.findRandom(Resource.class, 20)));
+        genericService.saveOrUpdate(collection);
+        Long collectionId = collection.getId();
+        collection = null;
+        collection = genericService.findAllWithProfile(ResourceCollection.class, Arrays.asList(collectionId),"simple").get(0);
+        for (Resource resource : collection.getResources()) {
+            logger.info("{} {} " , resource, resource.getSubmitter());
+        }
+        
+    }
+
+    @Test
+    @Rollback
     public void testResourceCollectionController() throws Exception
     {
         Person testPerson = createAndSaveNewPerson("a@basda.com", "1234");
@@ -451,8 +467,8 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         rc.setSortBy(SortOption.ID);
         rc.setOrientation(DisplayOrientation.LIST);
 
-        //Add three authusers. two of the authusers are redundant and should be normalized to the user with 
-        //the best permissions.
+        // Add three authusers. two of the authusers are redundant and should be normalized to the user with
+        // the best permissions.
         AuthorizedUser user1Viewer = detach(createAuthUser(GeneralPermissions.VIEW_ALL));
         AuthorizedUser user1Modifier = new AuthorizedUser(user1Viewer.getUser(), GeneralPermissions.MODIFY_METADATA);
         AuthorizedUser user2 = detach(createAuthUser(GeneralPermissions.ADMINISTER_GROUP));
@@ -474,8 +490,8 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         assertTrue("only the modifier & admin authusers should remain", rc2.getAuthorizedUsers().contains(user1Modifier));
         assertTrue("only the modifier & admin authusers should remain", rc2.getAuthorizedUsers().contains(user2));
     }
-    
-    private AuthorizedUser createAuthUser(GeneralPermissions permissions)  {
+
+    private AuthorizedUser createAuthUser(GeneralPermissions permissions) {
         Person person = new Person();
         person.setFirstName(UUID.randomUUID().toString());
         person.setLastName(UUID.randomUUID().toString());
@@ -485,7 +501,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         AuthorizedUser authuser = new AuthorizedUser(person, permissions);
         return authuser;
     }
-    
+
     private <T> T detach(T obj) {
         genericService.detachFromSession(obj);
         return obj;

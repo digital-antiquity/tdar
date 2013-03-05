@@ -1042,13 +1042,13 @@ h1 span,h4 span {
 	margin: 0;
 	padding: 0;
 	list-style: none;
-	display: inline;
+	display: inline-block;
 }
 
 .pagin li { 
 	font-weight: 600;
 	font-size: 13px;
-	margin: 0 6px;
+	margin: 0 3px;
 }
 
 footer { 
@@ -1137,7 +1137,7 @@ nav ul {
 /* remove margin for first column when using grid-layout in a control-group so that they line up a little better with other fields. **/
 /* TODO: this is necessary in bootstrap 2.2.2,  but I suspect it will be accounted for in later version  */
 .controls-row>div[class *="span"]:first-child {
-	margin-left: 0;
+    margin-left: 0;
 }
 
 .searchheader input[type=text] {

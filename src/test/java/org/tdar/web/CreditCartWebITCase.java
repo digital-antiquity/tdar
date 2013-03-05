@@ -7,15 +7,34 @@ import java.net.MalformedURLException;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.URLConstants;
+import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
+import org.tdar.core.service.AccountService;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.CartController;
 
+import com.gargoylesoftware.htmlunit.ElementNotFoundException;
+import com.gargoylesoftware.htmlunit.html.HtmlElement;
+
 @RunWith(MultipleTdarConfigurationRunner.class)
 @RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.cc.properties" })
 public class CreditCartWebITCase extends AbstractAuthenticatedWebTestCase {
+
+    @Autowired
+    AccountService accountService;
+
+    public Long getItemId(String name) {
+        for (BillingActivity activity : accountService.getActiveBillingActivities()) {
+            if (activity.getName().equalsIgnoreCase(name)) {
+                logger.info("{} {} ", activity.getName(), activity.getId());
+                return activity.getId();
+            }
+        }
+        return -1L;
+    }
 
     @Test
     public void testCartIncomplete() throws MalformedURLException {
@@ -144,8 +163,7 @@ public class CreditCartWebITCase extends AbstractAuthenticatedWebTestCase {
         gotoPage("/cart/add");
         setInput("invoice.numberOfMb", "2000");
         setInput("invoice.numberOfFiles", "10");
-        setInput("extraItemName", "error");
-        setInput("extraItemQuantity", "1");
+        setExtraItem("error", "1");
 
         submitForm();
 
@@ -161,8 +179,7 @@ public class CreditCartWebITCase extends AbstractAuthenticatedWebTestCase {
         gotoPage("/cart/add");
         setInput("invoice.numberOfMb", "2000");
         setInput("invoice.numberOfFiles", "10");
-        setInput("extraItemName", "unknown");
-        setInput("extraItemQuantity", "1");
+        setExtraItem("unknown", "1");
 
         submitForm();
 
@@ -173,13 +190,32 @@ public class CreditCartWebITCase extends AbstractAuthenticatedWebTestCase {
         testAccountPollingResponse("140531", TransactionStatus.TRANSACTION_FAILED);
     }
 
+    private void setExtraItem(String name, String val) {
+        for (int i = 0; i < 100; i++) {
+            try {
+                HtmlElement input = getInput(String.format("extraItemIds[%s]", i));
+                if (input != null) {
+                    String string = getItemId(name).toString();
+                    logger.info(" {}|{} ",input.getAttribute("value"), string);
+                    if (input.getAttribute("value").equals(string)) {
+                        setInput(String.format("extraItemQuantities[%s]", i), val);
+                        logger.info("setting value {} {}", input.toString(), i);
+                    }
+                }
+            } catch (ElementNotFoundException e) {
+            } catch (Exception e) {
+                logger.warn("{}", e);
+            }
+        }
+    }
+
     @Test
     public void testCartDecline() throws MalformedURLException {
         gotoPage("/cart/add");
         setInput("invoice.numberOfMb", "2000");
         setInput("invoice.numberOfFiles", "10");
-        setInput("extraItemName", "decline");
-        setInput("extraItemQuantity", "1");
+
+        setExtraItem("decline", "1");
 
         submitForm();
 
