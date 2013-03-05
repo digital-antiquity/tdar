@@ -1,11 +1,8 @@
 //TODO:  put these rules in one big json, add them en-masse
-$.validator
-			.addMethod(
-					"formatUS",
-					function(value, element) {
+// Why?
+$.validator.addMethod("formatUS",function(value, element) {
 						return this.optional(element)
-								|| value
-										.match(/^(0[1-9]|1[012]|[1-9])\/(0[1-9]|[12][0-9]|3[01]|[1-9])\/(19|20)\d\d$/);
+								|| value.match(/^(0[1-9]|1[012]|[1-9])\/(0[1-9]|[12][0-9]|3[01]|[1-9])\/(19|20)\d\d$/);
 					}, "The date format mm/dd/yyyy is expected");
 
 	$.validator.addMethod("latLong", function(value, element) {
