@@ -6,6 +6,7 @@
  */
 package org.tdar.core.dao.resource;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -16,6 +17,8 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.Dao;
 
 /**
@@ -79,8 +82,8 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         query.setLong("userId", user.getId());
         query.setString("name", collection.getName());
         @SuppressWarnings("unchecked")
-        List<ResourceCollection> list = (List<ResourceCollection>)query.list();
-        logger.info("{}",list);
+        List<ResourceCollection> list = (List<ResourceCollection>) query.list();
+        logger.info("{}", list);
         if (CollectionUtils.isNotEmpty(list)) {
             return list.get(0);
         }
@@ -90,6 +93,14 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
     public List<Long> findAllPublicActiveCollectionIds() {
         Query query = getCurrentSession().getNamedQuery(QUERY_COLLECTIONS_PUBLIC_ACTIVE);
         return query.list();
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Resource> findAllResourcesWithStatus(ResourceCollection persistable, Status[] statuses) {
+        Query query = getCurrentSession().getNamedQuery(QUERY_COLLECTION_RESOURCES_WITH_STATUS);
+        query.setParameterList("ids", Arrays.asList(persistable.getId()));
+        query.setParameterList("statuses", Arrays.asList(statuses));
+        return (List<Resource>) query.list();
     }
 
 }

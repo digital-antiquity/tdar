@@ -341,7 +341,7 @@ public class SearchParameters {
         queryPartGroup.append(new TemporalQueryPart(getCoverageDates(), getOperator()));
         queryPartGroup.append(new SpatialQueryPart(getLatitudeLongitudeBoxes()));
         // NOTE: I AM "SHARED" the autocomplete will supply the "public"
-        queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, "Collection", "resourceCollection.",
+        queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, "Collection", "resourceCollections.",
                 ResourceCollection.class,
                 getCollections()));
 

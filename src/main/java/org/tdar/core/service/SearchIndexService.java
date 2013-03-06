@@ -74,7 +74,7 @@ public class SearchIndexService {
     private List<Class<? extends Indexable>> getDefaultClassesToIndex() {
         List<Class<? extends Indexable>> toReindex = new ArrayList<Class<? extends Indexable>>();
         for (LookupSource source : LookupSource.values()) {
-            //FIXME::
+            // FIXME::
             if (source == LookupSource.RESOURCE) {
                 toReindex.add(Resource.class);
             } else {
@@ -246,7 +246,8 @@ public class SearchIndexService {
                     index(fullTextSession, genericService.merge(toIndex));
                 } catch (Exception e) {
                     log.error("exception in indexing", e);
-                    log.error(String.format("%s %s", ExceptionUtils.getRootCauseMessage(e), ExceptionUtils.getRootCauseStackTrace(e)), ExceptionUtils.getRootCause(e));
+                    log.error(String.format("%s %s", ExceptionUtils.getRootCauseMessage(e), ExceptionUtils.getRootCauseStackTrace(e)),
+                            ExceptionUtils.getRootCause(e));
                 }
             }
             fullTextSession.flushToIndexes();

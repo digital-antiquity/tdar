@@ -98,11 +98,17 @@
   <#if includeRss>
   <link rel="alternate" type="application/atom+xml" title="Atom 1.0" href="${rssUrl}" />
   </#if>
+    <#-- if id parameter was added to querystring via urlrewrite inbound rule, we need to remove it when rendering relative url's  -->
+    <#local path = "">
+    <#if (actionName!"")=="results">
+    <#local path=actionName>
+    </#if>
+    
   <#if (nextPageStartRecord < totalRecords) >
-      <link rel="next" href="<@s.url value="" includeParams="all" ><@s.param name="startRecord" value="${nextPageStartRecord?c}"/></@s.url>"/>
+      <link rel="next" href="<@searchUrl path><@s.param name="startRecord" value="${nextPageStartRecord?c}"/></@searchUrl>"/>
   </#if>
-  <#if (prevPageStartRecord > 0) >
-      <link rel="previous" href="<@s.url value="" includeParams="all" ><@s.param name="startRecord" value="${prevPageStartRecord?c}" /></@s.url>"/>
+  <#if  paginationHelper.hasPrevious() >
+      <link rel="previous" href="<@searchUrl path ><@s.param name="startRecord" value="${prevPageStartRecord?c}" /></@searchUrl>"/>
   </#if>
 </#macro>
 

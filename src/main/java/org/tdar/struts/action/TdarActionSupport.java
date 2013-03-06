@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.ServletRequestAware;
 import org.apache.struts2.interceptor.ServletResponseAware;
 import org.slf4j.Logger;
@@ -174,6 +175,9 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return TdarConfiguration.getInstance();
     }
 
+    public String getNamespace() {
+        return ServletActionContext.getActionMapping().getNamespace();
+    }
     public String getActionName() {
         if (ActionContext.getContext() == null)
             return null;

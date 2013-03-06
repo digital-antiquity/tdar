@@ -36,7 +36,7 @@ public final class NamedNativeQueries {
             List<VersionType> types) {
         // SQL escape all incoming filenames
         for (int i = 0; i < filenames.size(); i++) {
-            filenames.set(i, StringEscapeUtils.escapeSql(filenames.get(i)));
+            filenames.set(i, StringEscapeUtils.escapeSql(filenames.get(i).toLowerCase()));
         }
         String filenameCheck = "lower(filename)";
         if (column.isIgnoreFileExtension()) {

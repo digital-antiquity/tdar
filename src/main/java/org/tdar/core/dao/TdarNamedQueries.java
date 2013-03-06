@@ -50,6 +50,7 @@ public interface TdarNamedQueries {
     public static final String QUERY_SPARSE_EDITABLE_RESOURCES = "resource.editable.sparse";
     public static final String QUERY_COLLECTION_BY_PARENT = "collection.parent";
     public static final String QUERY_COLLECTIONS_PUBLIC_ACTIVE = "collection.activeId";
+    public static final String QUERY_COLLECTION_RESOURCES_WITH_STATUS = "collection.resourcesWithStatus";
     public static final String QUERY_COLLECTION_BY_AUTH_OWNER = "collection.authOwnerId_name";
     public static final String QUERY_COLLECTION_PUBLIC_WITH_HIDDEN_PARENT = "collection.hiddenParent";
     public static final String QUERY_EXTERNAL_ID_SYNC = "resource.externalId";
@@ -66,7 +67,7 @@ public interface TdarNamedQueries {
     public static final String QUERY_KEYWORD_COUNT_FILE_EXTENSION = "adminStats.fileExtensions";
     public static final String QUERY_RECENT_USERS_ADDED = "adminStats.recentUsers";
     public static final String QUERY_RECENT = "adminStats.recentFiles";
-    public static final String QUERY_MATCHING_FILES = "datasetRelated.Files";
+//    public static final String QUERY_MATCHING_FILES = "datasetRelated.Files";
     public static final String QUERY_USAGE_STATS = "adminStats.usage";
     public static final String QUERY_FILE_STATS = "adminStats.fileDetails";
     public static final String QUERY_MAPPED_CODING_RULES = "dataTableColumn.mappedCodingRules";
