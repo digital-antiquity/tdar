@@ -436,13 +436,13 @@ ${resource.resourceType.label}
 <#-- provides a fieldset just for full user access -->
 <#macro fullAccessRights tipsSelector="#divAccessRightsTips">
 <#local _authorizedUsers=authorizedUsers />
+<#local _isSubmitter = authenticatedUser.id == ((persistable.submitter.id)!-1)>
 <#if _authorizedUsers.empty><#local _authorizedUsers=[blankAuthorizedUser]></#if>
 <@helptext.accessRights />
 
 <div id="divAccessRights" tiplabel="Access Rights" tooltipcontent="${tipsSelector}">
 <h2><a name="accessRights"></a>Access Rights</h2>
 <h3>Users who can view or modify this resource</h3>
-
 <div id="accessRightsRecords" class="<#if !ableToUploadFiles?has_content || ableToUploadFiles>repeatLastRow</#if>" data-addAnother="add another user">
     <div class="control-group">
         <label class="control-label">Users</label>
@@ -450,7 +450,7 @@ ${resource.resourceType.label}
         <#list _authorizedUsers as authorizedUser>
             <#if authorizedUser??>
             	<#local disabled = false>
-            	<#if authorizedUser.user.id == authenticatedUser.id || ableToUploadFiles?has_content && !ableToUploadFiles>
+            	<#if (authorizedUser.user.id == authenticatedUser.id && !_isSubmitter) || !(ableToUploadFiles!false)>
 	            	<#local disabled = true>
             	</#if>
            	    <div class="controls-row repeat-row"  id="authorizedUsersRow_${authorizedUser_index}_">
