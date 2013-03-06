@@ -623,11 +623,11 @@ No coding rules have been entered for this coding sheet yet.
 <#macro infoResourceBasicInformation>
 <#local files = resource.filesWithProcessingErrors />
 
-<#if (files?size > 0 ) && authenticatedUser?? >
+<#if (files?size > 0 ) && authenticatedUser??  && (administrator || editable) >
 <div class="alert alert-error">
 <h3>The following Files have Processing Errors</h3>
 <ul>	<#list files as file>
-	<li>${file.fileName} - ${file.ErrorMessage!""}</li>
+	<li>${file.fileName} - ${file.errorMessage!""}</li>
 	</#list>
 </ul>
 <br/>
