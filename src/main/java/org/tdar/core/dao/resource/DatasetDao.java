@@ -1,10 +1,14 @@
 package org.tdar.core.dao.resource;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -15,23 +19,27 @@ import org.hibernate.Query;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.statistics.ResourceAccessStatistic;
 import org.tdar.core.dao.NamedNativeQueries;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ReflectionService;
+import org.tdar.db.model.abstracts.TargetDatabase;
 
 /**
  * $Id$
@@ -48,6 +56,53 @@ public class DatasetDao extends ResourceDao<Dataset> {
 
     public DatasetDao() {
         super(Dataset.class);
+    }
+
+    @Autowired
+    private TargetDatabase tdarDataImportDatabase;
+
+    public void assignMappedDataForInformationResource(InformationResource resource) {
+        String key = resource.getMappedDataKeyValue();
+        DataTableColumn column = resource.getMappedDataKeyColumn();
+        if (StringUtils.isBlank(key) || column == null) {
+            return;
+        }
+        final DataTable table = column.getDataTable();
+        ResultSetExtractor<Map<DataTableColumn, String>> resultSetExtractor = new ResultSetExtractor<Map<DataTableColumn, String>>() {
+            @Override
+            public Map<DataTableColumn, String> extractData(ResultSet rs) throws SQLException, DataAccessException {
+                while (rs.next()) {
+                    Map<DataTableColumn, String> results = convertResultSetRowToDataTableColumnMap(table, rs);
+                    return results;
+                }
+                return null;
+            }
+        };
+
+        Map<DataTableColumn, String> dataTableQueryResults = tdarDataImportDatabase.selectAllFromTable(column, key, resultSetExtractor);
+        resource.setRelatedDatasetData(dataTableQueryResults);
+    }
+
+    /*
+     * Return a HashMap that maps data table columns to values
+     */
+    public Map<DataTableColumn, String> convertResultSetRowToDataTableColumnMap(final DataTable table, ResultSet rs) throws SQLException {
+        Map<DataTableColumn, String> results = new HashMap<DataTableColumn, String>();
+        for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
+            DataTableColumn col = table.getColumnByName(rs.getMetaData().getColumnName(i));
+            if (col != null && col.isVisible()) { // ignore if null (non translated version of translated)
+                results.put(col, null);
+            }
+        }
+        for (DataTableColumn key : results.keySet()) {
+            String val = "NULL";
+            Object obj = rs.getObject(key.getName());
+            if (obj != null) {
+                val = obj.toString();
+            }
+            results.put(key, val);
+        }
+        return results;
     }
 
     public boolean canLinkDataToOntology(Dataset dataset) {
@@ -121,29 +176,29 @@ public class DatasetDao extends ResourceDao<Dataset> {
         return query.list();
     }
 
-//    @SuppressWarnings("unchecked")
-//    public List<InformationResource> findByFilename(List<String> valuesToMatch, DataTableColumn column) {
-//        List<String> filenames = new ArrayList<String>();
-//        for (String value : valuesToMatch) {
-//            if (column.isIgnoreFileExtension()) {
-//                filenames.add(FilenameUtils.getBaseName(value.toLowerCase()) + ".");
-//            } else {
-//                filenames.add(value.toLowerCase());
-//            }
-//        }
-//        Query query = getCurrentSession().getNamedQuery(QUERY_MATCHING_FILES);
-//        query.setParameterList("filenamesToMatch", filenames);
-//        query.setParameter("projectId", column.getDataTable().getDataset().getProject().getId());
-//        query.setParameterList("versionTypes", Arrays.asList(VersionType.UPLOADED,
-//                VersionType.ARCHIVAL, VersionType.UPLOADED_ARCHIVAL));
-//        List<InformationResource> toReturn = new ArrayList<InformationResource>();
-//        for (InformationResourceFileVersion version : (List<InformationResourceFileVersion>) query.list()) {
-//            // add checks for (a) latest version (b) matching is correct
-//            toReturn.add(version.getInformationResourceFile().getInformationResource());
-//        }
-//        logger.debug("find by filename: " + toReturn);
-//        return toReturn;
-//    }
+    // @SuppressWarnings("unchecked")
+    // public List<InformationResource> findByFilename(List<String> valuesToMatch, DataTableColumn column) {
+    // List<String> filenames = new ArrayList<String>();
+    // for (String value : valuesToMatch) {
+    // if (column.isIgnoreFileExtension()) {
+    // filenames.add(FilenameUtils.getBaseName(value.toLowerCase()) + ".");
+    // } else {
+    // filenames.add(value.toLowerCase());
+    // }
+    // }
+    // Query query = getCurrentSession().getNamedQuery(QUERY_MATCHING_FILES);
+    // query.setParameterList("filenamesToMatch", filenames);
+    // query.setParameter("projectId", column.getDataTable().getDataset().getProject().getId());
+    // query.setParameterList("versionTypes", Arrays.asList(VersionType.UPLOADED,
+    // VersionType.ARCHIVAL, VersionType.UPLOADED_ARCHIVAL));
+    // List<InformationResource> toReturn = new ArrayList<InformationResource>();
+    // for (InformationResourceFileVersion version : (List<InformationResourceFileVersion>) query.list()) {
+    // // add checks for (a) latest version (b) matching is correct
+    // toReturn.add(version.getInformationResourceFile().getInformationResource());
+    // }
+    // logger.debug("find by filename: " + toReturn);
+    // return toReturn;
+    // }
 
     /*
      * Take the distinct column values mapped and associate them with files in tDAR based on:

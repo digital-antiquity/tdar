@@ -30,6 +30,7 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.HibernateSearchDao;
+import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.ProjectDao;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.search.index.LookupSource;
@@ -48,7 +49,7 @@ public class SearchIndexService {
     private GenericService genericService;
 
     @Autowired
-    private DatasetService datasetService;
+    private DatasetDao datasetDao;
 
     @Autowired
     private ResourceCollectionService resourceCollectionService;
@@ -157,7 +158,7 @@ public class SearchIndexService {
 
     private void index(FullTextSession fullTextSession, Object item) {
         if (item instanceof InformationResource) {
-            datasetService.assignMappedDataForInformationResource(((InformationResource) item));
+            datasetDao.assignMappedDataForInformationResource(((InformationResource) item));
         }
 
         if (item instanceof Project) {

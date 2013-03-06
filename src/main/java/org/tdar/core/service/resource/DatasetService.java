@@ -53,6 +53,7 @@ import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.DataIntegrationService;
 import org.tdar.core.service.ExcelService;
+import org.tdar.core.service.SearchIndexService;
 import org.tdar.core.service.XmlService;
 import org.tdar.core.service.excel.SheetProxy;
 import org.tdar.db.model.PostgresDatabase;
@@ -73,6 +74,9 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
 
     @Autowired
     private TargetDatabase tdarDataImportDatabase;
+
+    @Autowired
+    private SearchIndexService searchIndexService;
 
     @Autowired
     private ResourceService resourceService;
@@ -485,7 +489,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
                 List<List<String>> results = new ArrayList<List<String>>();
                 int rowNum = 1;
                 while (rs.next()) {
-                    Map<DataTableColumn, String> result = convertResultSetRowToDataTableColumnMap(dataTable, rs);
+                    Map<DataTableColumn, String> result = getDao().convertResultSetRowToDataTableColumnMap(dataTable, rs);
                     if (rs.isFirst()) {
                         wrapper.setFields(new ArrayList<DataTableColumn>(result.keySet()));
                     }
@@ -544,7 +548,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             @Override
             public Map<DataTableColumn, String> extractData(ResultSet rs) throws SQLException, DataAccessException {
                 while (rs.next()) {
-                    Map<DataTableColumn, String> results = convertResultSetRowToDataTableColumnMap(table, rs);
+                    Map<DataTableColumn, String> results = getDao().convertResultSetRowToDataTableColumnMap(table, rs);
                     return results;
                 }
                 return null;
@@ -554,28 +558,6 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
 
         Map<DataTableColumn, String> dataTableQueryResults = tdarDataImportDatabase.selectAllFromTable(column, key, resultSetExtractor);
         resource.setRelatedDatasetData(dataTableQueryResults);
-    }
-
-    /*
-     * Return a HashMap that maps data table columns to values
-     */
-    private Map<DataTableColumn, String> convertResultSetRowToDataTableColumnMap(final DataTable table, ResultSet rs) throws SQLException {
-        Map<DataTableColumn, String> results = new HashMap<DataTableColumn, String>();
-        for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
-            DataTableColumn col = table.getColumnByName(rs.getMetaData().getColumnName(i));
-            if (col != null && col.isVisible()) { // ignore if null (non translated version of translated)
-                results.put(col, null);
-            }
-        }
-        for (DataTableColumn key : results.keySet()) {
-            String val = "NULL";
-            Object obj = rs.getObject(key.getName());
-            if (obj != null) {
-                val = obj.toString();
-            }
-            results.put(key, val);
-        }
-        return results;
     }
 
     public List<Resource> findRecentlyUpdatedItemsInLastXDays(int days) {
@@ -636,6 +618,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
                 getDao().mapColumnToResource(column, tdarDataImportDatabase.selectNonNullDistinctValues(column));
             }
         }
+        searchIndexService.indexProject(project);
     }
 
     @Transactional
