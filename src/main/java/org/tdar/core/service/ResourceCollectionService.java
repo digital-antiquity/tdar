@@ -59,6 +59,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             }
             toEvaluate.remove(resource);
         }
+        logger.info("incoming: {} existing: {} new: {}", resources.size(), persistable.getResources().size(), toEvaluate.size());
         // toEvaluate should retain the "new" resources to the collection
 
         // set the deleted resources aside first
