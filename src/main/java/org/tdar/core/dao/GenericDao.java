@@ -82,6 +82,15 @@ public class GenericDao {
         return query.setParameterList("ids", ids).list();
     }
 
+    
+    @SuppressWarnings("unchecked")
+    public <F extends HasStatus> List<F> findAllWithStatus(Class<F> persistentClass, Status ... statuses) {
+        Query query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_FIND_ALL_WITH_STATUS, persistentClass.getName()));
+        return query.setParameterList("statuses", statuses).list();
+    }
+
+    
+    
     @SuppressWarnings("unchecked")
     public <E> List<Long> findAllIds(Class<E> persistentClass) {
         return getCurrentSession().createQuery("select id from " + persistentClass.getName()).list();

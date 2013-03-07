@@ -30,6 +30,7 @@ import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -167,6 +168,11 @@ public class GenericService {
         return genericDao.findAll(persistentClass, start, numberOfRecords);
     }
 
+    @Transactional(readOnly=true)
+    public <F extends HasStatus> List<F> findAllWithStatus(Class<F> persistentClass, Status ... statuses) {
+        return getDao().findAllWithStatus(persistentClass, statuses);
+    }
+    
     @Transactional(readOnly = true)
     public <T> List<T> findAllSorted(Class<T> persistentClass) {
         return genericDao.findAllSorted(persistentClass);
