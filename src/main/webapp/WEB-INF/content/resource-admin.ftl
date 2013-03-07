@@ -14,10 +14,10 @@ var data = [];
 
 
 	<#list usageStatsForResources as stats>
-            data.push(["${stats.aggregateDate?string("yyyy-MM-dd")}", ${stats.count?c}]);
+            data.push([new Date("${stats.aggregateDate?string("yyyy-MM-dd")}"), ${stats.count?c}]);
         </#list>
         d0.label = "Views";
-        d0.color = "${settings.barColors[ 0 % settings.barColors?size ]}";
+        d0.color = "${settings.barColors[ 2 % settings.barColors?size ]}";
 
     $.plot($("#graphviewstats"), [ {label: d0.label, data: data ,color: d0.color }],{
           bars: {
@@ -29,7 +29,7 @@ var data = [];
             mode:"time",
             minTickSize: [1, "day"],
 	        timeformat: "%y-%m-%d",
-	        min: (new Date(${resource.dateRegistered?string("yyyy-MM-dd")})),
+	        min: (new Date("${resource.dateCreated?string("yyyy-MM-dd")}")),
             max: (new Date())
         },
         legend : {
