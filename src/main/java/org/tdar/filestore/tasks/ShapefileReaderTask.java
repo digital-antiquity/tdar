@@ -20,7 +20,7 @@ public class ShapefileReaderTask extends AbstractTask {
     public void run() throws Exception {
 
         
-        File file = new File("mayshapefile.shp");
+        File file = new File("C:\\Users\\abrin\\Desktop\\Ruins of Tikal map-v11.tif.xml");
 //        http://stackoverflow.com/questions/2044876/does-anyone-know-of-a-library-in-java-that-can-parse-esri-shapefiles
         try {
           Map connect = new HashMap();
@@ -29,7 +29,7 @@ public class ShapefileReaderTask extends AbstractTask {
           DataStore dataStore = DataStoreFinder.getDataStore(connect);
           String[] typeNames = dataStore.getTypeNames();
           String typeName = typeNames[0];
-
+          getLogger().info(typeName);
           System.out.println("Reading content " + typeName);
 
           FeatureSource featureSource = dataStore.getFeatureSource(typeName);
@@ -46,7 +46,9 @@ public class ShapefileReaderTask extends AbstractTask {
             iterator.close();
           }
 
-        } catch (Throwable e) {}        
+        } catch (Throwable e) {
+            getLogger().error("exception" , e);
+        }        
     }
 
     @Override

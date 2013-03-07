@@ -27,6 +27,7 @@ import org.tdar.core.service.workflow.MessageService;
 import org.tdar.core.service.workflow.Workflow;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.PairtreeFilestore;
+import org.tdar.filestore.tasks.ShapefileReaderTask;
 
 /**
  * @author Adam Brin
@@ -42,6 +43,7 @@ public class FileArchiveITCase extends AbstractIntegrationTestCase {
 
     protected Logger logger = Logger.getLogger(getClass());
 
+    
     @Test
     public void testAnalyzerSuggestions() {
         assertEquals(ResourceType.DOCUMENT, fileAnalyzer.suggestTypeForFileExtension("doc", ResourceType.DOCUMENT));
