@@ -53,6 +53,7 @@ import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.DataIntegrationService;
 import org.tdar.core.service.ExcelService;
+import org.tdar.core.service.SearchIndexService;
 import org.tdar.core.service.XmlService;
 import org.tdar.core.service.excel.SheetProxy;
 import org.tdar.db.model.PostgresDatabase;
@@ -71,50 +72,11 @@ import org.tdar.utils.Pair;
 @Service
 public class DatasetService extends AbstractInformationResourceService<Dataset, DatasetDao> {
 
-    private final class TdarDataResultSetExtractor implements ResultSetExtractor<List<List<String>>> {
-        private final ResultMetadataWrapper wrapper;
-        private final int start;
-        private final int page;
-        private final DataTable dataTable;
-
-        private TdarDataResultSetExtractor(ResultMetadataWrapper wrapper, int start, int page, DataTable dataTable) {
-            this.wrapper = wrapper;
-            this.start = start;
-            this.page = page;
-            this.dataTable = dataTable;
-        }
-
-        @Override
-        public List<List<String>> extractData(ResultSet rs) throws SQLException, DataAccessException {
-            List<List<String>> results = new ArrayList<List<String>>();
-            int rowNum = 1;
-            while (rs.next()) {
-                Map<DataTableColumn, String> result = convertResultSetRowToDataTableColumnMap(dataTable, rs);
-                if (rs.isFirst()) {
-                    wrapper.setFields(new ArrayList<DataTableColumn>(result.keySet()));
-                }
-
-                if (rowNum > start && rowNum <= start + page) {
-                    ArrayList<String> values = new ArrayList<String>();
-                    for (DataTableColumn col : wrapper.getFields()) {
-                        if (col.isVisible()) {
-                            values.add(result.get(col));
-                        }
-                    }
-                    results.add(values);
-                }
-                rowNum++;
-
-                if (rs.isLast()) {
-                    wrapper.setTotalRecords(rs.getRow());
-                }
-            }
-            return results;
-        }
-    }
-
     @Autowired
     private TargetDatabase tdarDataImportDatabase;
+
+    @Autowired
+    private SearchIndexService searchIndexService;
 
     @Autowired
     private ResourceService resourceService;
@@ -521,7 +483,35 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         wrapper.setRecordsPerPage(page);
         wrapper.setStartRecord(start);
 
-        ResultSetExtractor<List<List<String>>> resultSetExtractor = new TdarDataResultSetExtractor(wrapper, start, page, dataTable);
+        ResultSetExtractor<List<List<String>>> resultSetExtractor = new ResultSetExtractor<List<List<String>>>() {
+            @Override
+            public List<List<String>> extractData(ResultSet rs) throws SQLException, DataAccessException {
+                List<List<String>> results = new ArrayList<List<String>>();
+                int rowNum = 1;
+                while (rs.next()) {
+                    Map<DataTableColumn, String> result = convertResultSetRowToDataTableColumnMap(dataTable, rs);
+                    if (rs.isFirst()) {
+                        wrapper.setFields(new ArrayList<DataTableColumn>(result.keySet()));
+                    }
+
+                    if (rowNum > start && rowNum <= start + page) {
+                        ArrayList<String> values = new ArrayList<String>();
+                        for (DataTableColumn col : wrapper.getFields()) {
+                            if (col.isVisible()) {
+                                values.add(result.get(col));
+                            }
+                        }
+                        results.add(values);
+                    }
+                    rowNum++;
+
+                    if (rs.isLast()) {
+                        wrapper.setTotalRecords(rs.getRow());
+                    }
+                }
+                return results;
+            }
+        };
         try {
             wrapper.setResults(tdarDataImportDatabase.selectAllFromTableInImportOrder(dataTable, resultSetExtractor, includeGenerated));
         } catch (BadSqlGrammarException e) {
@@ -531,7 +521,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         return wrapper;
     }
 
-    
+
     @Transactional
     public ResultMetadataWrapper selectFromDataTable(final DataTable dataTable, final int start, final int page, boolean includeGenerated, String query) {
         final ResultMetadataWrapper wrapper = new ResultMetadataWrapper();
@@ -546,7 +536,48 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         }
         return wrapper;
     }
+    private final class TdarDataResultSetExtractor implements ResultSetExtractor<List<List<String>>> {
+        private final ResultMetadataWrapper wrapper;
+        private final int start;
+        private final int page;
+        private final DataTable dataTable;
 
+        private TdarDataResultSetExtractor(ResultMetadataWrapper wrapper, int start, int page, DataTable dataTable) {
+            this.wrapper = wrapper;
+            this.start = start;
+            this.page = page;
+            this.dataTable = dataTable;
+        }
+
+        @Override
+        public List<List<String>> extractData(ResultSet rs) throws SQLException, DataAccessException {
+            List<List<String>> results = new ArrayList<List<String>>();
+            int rowNum = 1;
+            while (rs.next()) {
+                Map<DataTableColumn, String> result = DatasetService.convertResultSetRowToDataTableColumnMap(dataTable, rs);
+                if (rs.isFirst()) {
+                    wrapper.setFields(new ArrayList<DataTableColumn>(result.keySet()));
+                }
+
+                if (rowNum > start && rowNum <= start + page) {
+                    ArrayList<String> values = new ArrayList<String>();
+                    for (DataTableColumn col : wrapper.getFields()) {
+                        if (col.isVisible()) {
+                            values.add(result.get(col));
+                        }
+                    }
+                    results.add(values);
+                }
+                rowNum++;
+
+                if (rs.isLast()) {
+                    wrapper.setTotalRecords(rs.getRow());
+                }
+            }
+            return results;
+        }
+    }
+    
     @Transactional
     public List<DataTableRelationship> listRelationshipsForColumns(DataTableColumn column) {
         List<DataTableRelationship> relationships = new ArrayList<DataTableRelationship>();
@@ -584,28 +615,6 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
 
         Map<DataTableColumn, String> dataTableQueryResults = tdarDataImportDatabase.selectAllFromTable(column, key, resultSetExtractor);
         resource.setRelatedDatasetData(dataTableQueryResults);
-    }
-
-    /*
-     * Return a HashMap that maps data table columns to values
-     */
-    private Map<DataTableColumn, String> convertResultSetRowToDataTableColumnMap(final DataTable table, ResultSet rs) throws SQLException {
-        Map<DataTableColumn, String> results = new HashMap<DataTableColumn, String>();
-        for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
-            DataTableColumn col = table.getColumnByName(rs.getMetaData().getColumnName(i));
-            if (col != null && col.isVisible()) { // ignore if null (non translated version of translated)
-                results.put(col, null);
-            }
-        }
-        for (DataTableColumn key : results.keySet()) {
-            String val = "NULL";
-            Object obj = rs.getObject(key.getName());
-            if (obj != null) {
-                val = obj.toString();
-            }
-            results.put(key, val);
-        }
-        return results;
     }
 
     public List<Resource> findRecentlyUpdatedItemsInLastXDays(int days) {
@@ -666,6 +675,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
                 getDao().mapColumnToResource(column, tdarDataImportDatabase.selectNonNullDistinctValues(column));
             }
         }
+        searchIndexService.indexProject(project);
     }
 
     @Transactional
@@ -790,4 +800,28 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             return true;
         }
     }
+
+    /*
+     * Return a HashMap that maps data table columns to values
+     * FIXME: where should this really live
+     */
+    public static Map<DataTableColumn, String> convertResultSetRowToDataTableColumnMap(final DataTable table, ResultSet rs) throws SQLException {
+        Map<DataTableColumn, String> results = new HashMap<DataTableColumn, String>();
+        for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
+            DataTableColumn col = table.getColumnByName(rs.getMetaData().getColumnName(i));
+            if (col != null && col.isVisible()) { // ignore if null (non translated version of translated)
+                results.put(col, null);
+            }
+        }
+        for (DataTableColumn key : results.keySet()) {
+            String val = "NULL";
+            Object obj = rs.getObject(key.getName());
+            if (obj != null) {
+                val = obj.toString();
+            }
+            results.put(key, val);
+        }
+        return results;
+    }
+
 }
