@@ -14,6 +14,15 @@ vim:sts=2:sw=2
   <filter>
     <filter-name>UrlRewriteFilter</filter-name>
     <filter-class>org.tuckey.web.filters.urlrewrite.UrlRewriteFilter</filter-class>
+   	<init-param>
+	    <param-name>confReloadCheckInterval</param-name>
+	    <param-value>0</param-value>
+	</init-param>    
+    <init-param>
+        <param-name>logLevel</param-name>
+        <param-value>DEBUG</param-value>
+    </init-param>
+     -->  
     <!-- set the amount of seconds the conf file will be checked for reload
     can be a valid integer (0 denotes check every time,
     -1 denotes no reload check, default -1) -->

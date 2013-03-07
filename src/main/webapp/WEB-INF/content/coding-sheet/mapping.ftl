@@ -208,7 +208,7 @@ function applyLocalAutoComplete(selector, db) {
 $(document).ready(function() {
     $("#autosuggest").click(autosuggest);
     $("#clearAll").click(clearall);
-    $("#mapontologyform").FormNavigate("Leaving the page will cause any unsaved data to be lost!");
+    $("#mapontologyform").FormNavigate({message:"Leaving the page will cause any unsaved data to be lost!"});
     $("#selectColumn").unbind("change");
     $('button.ui-button').hover(function() {
         $(this).addClass("ui-state-hover");
