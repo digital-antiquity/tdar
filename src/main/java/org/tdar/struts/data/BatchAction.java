@@ -9,7 +9,7 @@ import org.tdar.core.bean.resource.Status;
 public class BatchAction implements Serializable {
 
     private static final long serialVersionUID = 8434507061461095484L;
-    private List<Long> resourceIds = new ArrayList<>();
+    private List<Long> resourceIds = new ArrayList<Long>();
     private Status status;
     private Long accountId = -1L;
     private Long collectionId = -1L;
