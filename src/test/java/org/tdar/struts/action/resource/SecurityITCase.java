@@ -41,6 +41,7 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
         assertFalse(authenticationAndAuthorizationService.canViewConfidentialInformation(getUser(), doc));
     }
 
+    
     @Test
     @Rollback
     public void testEmbargoed() throws InstantiationException, IllegalAccessException {

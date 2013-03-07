@@ -29,7 +29,6 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
@@ -50,21 +49,26 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     @Transactional
     public List<Resource> reconcileIncomingResourcesForCollection(ResourceCollection persistable, Person authenticatedUser, List<Resource> resources) {
         Map<Long, Resource> incomingIdMap = Persistable.Base.createIdMap(resources);
-        List<Resource> toRemove = new ArrayList<Resource>();
+        List<Resource> toRemove = new ArrayList<Resource>(); // not in incoming but in existing collection
+        List<Resource> toEvaluate = new ArrayList<Resource>(resources); // in incoming but not existing
+        List<Resource> ineligibleResources = new ArrayList<Resource>(); // existing resources the user doesn't have the rights to add
         for (Resource resource : persistable.getResources()) {
             if (!incomingIdMap.containsKey(resource.getId())) {
                 resource.getResourceCollections().remove(persistable);
                 toRemove.add(resource);
             }
+            toEvaluate.remove(resource);
         }
+        logger.info("incoming: {} existing: {} new: {}", resources.size(), persistable.getResources().size(), toEvaluate.size());
+        // toEvaluate should retain the "new" resources to the collection
+
         // set the deleted resources aside first
         List<Resource> deletedResources = findAllResourcesWithStatus(persistable, Status.DELETED, Status.FLAGGED, Status.DUPLICATE,
                 Status.FLAGGED_ACCOUNT_BALANCE);
 
         persistable.getResources().removeAll(toRemove);
         saveOrUpdate(persistable);
-        List<Resource> ineligibleResources = new ArrayList<Resource>();
-        List<Resource> rehydratedIncomingResources = getDao().loadFromSparseEntities(resources, Resource.class);
+        List<Resource> rehydratedIncomingResources = getDao().loadFromSparseEntities(toEvaluate, Resource.class);
         logger.info("{} ", authenticatedUser);
         for (Resource resource : rehydratedIncomingResources) {
             if (!authenticationAndAuthorizationService.canEditResource(authenticatedUser, resource)) {

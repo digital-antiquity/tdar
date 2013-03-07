@@ -21,6 +21,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.UserAccountController;
+import org.tdar.struts.interceptor.HttpsOnly;
 
 @Component
 @Scope("prototype")
@@ -43,6 +44,7 @@ public class PersonController extends AbstractCreatorController<Person> {
     @Action(value="myprofile", results={
             @Result(name = SUCCESS, location = "edit.ftl")
     })
+    @HttpsOnly
     @SkipValidation
     public String myProfile() throws TdarActionException {
         setId(getAuthenticatedUser().getId());

@@ -156,6 +156,14 @@ public class TdarConfiguration {
         return base;
     }
 
+    public String getBaseSecureUrl() {
+        String base = "https://" + getHostName();
+        if (getHttpsPort() != 443) {
+            base += ":" + getHttpsPort();
+        }
+        return base;
+    }
+
     public String getHostName() {
         return assistant.getStringProperty("app.hostname", DEFAULT_HOSTNAME);
     }

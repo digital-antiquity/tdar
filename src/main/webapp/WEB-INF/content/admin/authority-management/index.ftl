@@ -5,13 +5,7 @@
     <title>Authority Management - Merge Duplicates</title>
     <script type='text/javascript'>
     $(function() {
-        var selEntityType = $("#selEntityType");
-        if (selEntityType != undefined) {
-            searchControls = $('.searchControl');
-            selEntityType.change(updateSearchControl).change();
-            applyWatermarks(document);
-            $('span.button').button().click(clearDupeList);
-        }
+    	TDAR.auth.initAuthTable();
         $("#txtInstitution, #txtFirstName, #txtLastName, #txtInstitution, #txtEmail, #txtKeyword").bindWithDelay("keyup", 
                 function() {$("#dupe_datatable").dataTable().fnDraw();} ,500);
      });
@@ -59,13 +53,13 @@
             <div id="divPersonSearchControl" class="searchControl">
                 <h3>Person Search</h3>
                 <div class="width30percent marginLeft10" >
-                    <@s.textfield cssClass="watermarked" id='txtFirstName' watermark="First Name"name="firstName" maxlength="255"  />
-                    <@s.textfield cssClass="watermarked" id='txtLastName' watermark="Last Name" name="lastName" maxlength="255"  /> 
-                    <@s.textfield cssClass="watermarked" id='txtEmail' watermark="Email" name="email" maxlength="255"/>
+                    <@s.textfield id='txtFirstName' placeholder="First Name"name="firstName" maxlength="255"  />
+                    <@s.textfield  id='txtLastName' placeholder="Last Name" name="lastName" maxlength="255"  /> 
+                    <@s.textfield  id='txtEmail' placeholder="Email" name="email" maxlength="255"/>
                     <br />
                 </div>
                 <div class="width99percent marginLeft10">
-                    <@s.textfield cssClass="watermarked" id='txtInstitution' watermark="Institution Name" name="institution" maxlength="255"  />
+                    <@s.textfield  id='txtInstitution' placeholder="Institution Name" name="institution" maxlength="255"  />
                 </div>
             </div>
         </form>
@@ -73,7 +67,7 @@
     
     
     <div class="glide" id="divIdentifyDupes">
-          <table id='dupe_datatable'></table>
+          <table id='dupe_datatable' class="table tableFormat"></table>
     </div>
     
     

@@ -9,7 +9,7 @@
 </#macro>
 
 <#macro renderPersonTable>
-    <table class="tableFormat table table-striped">
+    <table class="tableFormat table ">
         <thead>
             <tr>
                 <th>ID</th>
@@ -32,7 +32,7 @@
 </#macro>
 
 <#macro renderInstitutionTable> 
-    <table class="tableFormat table table-striped">
+    <table class="tableFormat table ">
         <thead>
             <tr>
                 <th>ID</th>
@@ -51,7 +51,7 @@
 </#macro>
 
 <#macro renderKeywordTable>
-    <table class="tableFormat table table-striped">
+    <table class="tableFormat table ">
         <thead>
             <tr>
                 <th>ID</th>
@@ -68,11 +68,6 @@
         </tbody>
     </table>
 </#macro>
-<script type="text/javascript">
-    $(document).ready(function() {
-        applyZebraColors();
-    });
-</script>
 
 
 

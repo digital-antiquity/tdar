@@ -1,3 +1,14 @@
+/**
+ * Map rendering / edit support.
+ * 
+ * Requires:  jquery,  latLongUtil-1.0.js
+ */
+TDAR.namespace("auth");
+TDAR.auth = function() {
+    "use strict";
+    var self = {};
+
+
 var searchControls;
 var selEntityType;
 var dataTable = null;
@@ -14,11 +25,11 @@ var g_settingsMap = {
                        {sTitle:"First", mDataProp:"firstName", tdarSortOption:'FIRST_NAME'},
                        {sTitle:"Last", mDataProp:"lastName", tdarSortOption:'LAST_NAME'},
                        {sTitle:"Email", mDataProp:"email", tdarSortOption:'CREATOR_EMAIL', bSortable:false}], //FIXME: make sortable
-            sPaginationType:"full_numbers",
+            sPaginationType:"bootstrap",
             sAjaxDataProp: 'people',
             selectableRows: true,
             requestCallback: getPersonSearchData,
-            sDom:'<"datatabletop"ilrp>t<>' //omit the search box
+            "sDom": "<'row'<'span6'l><'pull-right span3'r>>t<'row'<'span4'i><'span5'p>>"
         },
         institution:{
             tableSelector: '#dupe_datatable',
@@ -28,7 +39,8 @@ var g_settingsMap = {
             aoColumns:[
                        {sTitle:"id", bUseRendered: false, mDataProp:"id", tdarSortOption:'ID'},
                        {sTitle:"Name", mDataProp:"name", tdarSortOption:'CREATOR_NAME'}],
-            sPaginationType:"full_numbers",
+            "sDom": "<'row'<'span6'l><'pull-right span3'r>>t<'row'<'span4'i><'span5'p>>",  //no text filter!
+            sPaginationType:"bootstrap",
             sAjaxDataProp: 'institutions',
             selectableRows: true,
             requestCallback: function(searchBoxContents) {
@@ -36,8 +48,8 @@ var g_settingsMap = {
                     minLookupLength:0,
                     institution: $('#txtInstitution').val()
                 };
-            },
-            sDom:'<"datatabletop"ilrp>t<>' //omit the search box
+            }
+//            sDom:'<"datatabletop"ilrp>t<>' //omit the search box
        },
         keyword:{
             tableSelector: '#dupe_datatable',
@@ -47,7 +59,7 @@ var g_settingsMap = {
             aoColumns:[
                        {sTitle:"id", bUseRendered: false, mDataProp:"id", tdarSortOption:'ID'},
                        {sTitle:"Label", mDataProp:"label", tdarSortOption:'LABEL'}],
-            sPaginationType:"full_numbers",
+            sPaginationType:"bootstrap",
             sAjaxDataProp: 'items',
             selectableRows: true,
             requestCallback: function(searchBoxContents) {
@@ -55,7 +67,7 @@ var g_settingsMap = {
                             term: $('#txtKeyword').val()
                 };
             },
-            sDom:'<"datatabletop"ilrp>t<>' //omit the search box
+            "sDom": "<'row'<'span6'l><'pull-right span3'r>>t<'row'<'span4'i><'span5'p>>"
         }
 };
 
@@ -74,7 +86,7 @@ function registerDataTable() {
 }
 
 //show the correct search control based on the value of the 'entity type' dropdown
-function updateSearchControl() {
+function _updateSearchControl() {
     searchControls.hide();
     selEntityType = $('#selEntityType');
     var entityTypeVal=selEntityType.val();
@@ -94,7 +106,7 @@ function updateSearchControl() {
     
     if(entityTypeVal) {
         registerDataTable();
-        clearDupeList();
+        _clearDupeList();
     }
 }
 
@@ -156,12 +168,27 @@ function renderSelectedDupes(id, obj, isAdded) {
     $('#pDupeInfo').toggle(dupeCount > 0);
 }
 
-function clearDupeList() {
+function _clearDupeList() {
     dataTable.data('selectedRows', {});
     $('input[type=checkbox]', dataTable).prop('checked', false);
     renderSelectedDupes(null, null, null);
     return false;
 }
 
+function _initAuthTable() {
+    var selEntityType = $("#selEntityType");
+    if (selEntityType != undefined) {
+        searchControls = $('.searchControl');
+        selEntityType.change(_updateSearchControl).change();
+        applyWatermarks(document);
+        $('span.button').button().click(_clearDupeList);
+    }
 
+}
 
+return {
+	clearDupeList: _clearDupeList,
+	updateSearchControl: _updateSearchControl,
+	initAuthTable: _initAuthTable
+};
+}();

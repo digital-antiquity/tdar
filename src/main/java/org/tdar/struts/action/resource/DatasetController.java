@@ -23,7 +23,6 @@ import org.tdar.core.bean.resource.CategoryType;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.Dataset;
-import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.ResourceType;
@@ -32,7 +31,6 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.MeasurementUnit;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
-import org.tdar.core.service.resource.DatasetService;
 import org.tdar.struts.WriteableSession;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FileProxy;
@@ -237,10 +235,8 @@ public class DatasetController extends AbstractInformationResourceController<Dat
         if (CollectionUtils.isNotEmpty(columnsToRemap)) {
             if (isAsync()) {
                 getDatasetService().remapColumnsAsync(columnsToRemap, getPersistable().getProject());
-                getSearchIndexService().indexProjectAsync(getPersistable().getProject());
             } else {
                 getDatasetService().remapColumns(columnsToRemap, getPersistable().getProject());
-                getSearchIndexService().indexProject(getPersistable().getProject());
             }
         }
     };

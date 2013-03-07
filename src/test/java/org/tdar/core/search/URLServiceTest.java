@@ -17,5 +17,6 @@ public class URLServiceTest {
         assertEquals("/project/edit?id=1234", UrlService.reformatViewUrl("/project/edit?id=1234"));
         assertEquals("/project/1234?startRecord=100", UrlService.reformatViewUrl("/project/view?id=1234&startRecord=100"));
         assertEquals("/browse/creators/1234?startRecord=100", UrlService.reformatViewUrl("/browse/creators?id=1234&startRecord=100"));
+        assertEquals("/browse/creators/1234", UrlService.reformatViewUrl("/browse/creators?id=1234"));
     }
 }
