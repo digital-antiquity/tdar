@@ -106,17 +106,6 @@ function replaceAttribute(elem, attrName, str, rep) {
     }
 }
 
-
-function navigateTempIgnore() {
-    $.each(document.forms, function(){
-        var $form = $(this);
-        var oldVal = $form.data("formNavigate");
-        $form.data("formNavigate", true);
-        setTimeout(function(){$form.data("formNavigate", oldVal)}, 100);
-    });
-    
-}
-
 function refreshInputDisplay() {
     var selectedInputMethod = $('#inputMethodId').val();
     var showUploadDiv = (selectedInputMethod == 'file');
@@ -814,6 +803,8 @@ TDAR.common = function() {
                 _submitButtonStartWait();
                 _clearInputs($(f).find(".creatorPerson.hidden, .creatorInstitution.hidden")); 
                 $('#error').hide();
+                
+                $(f).FormNavigate("clean");
                 f.submit();
                 
             }
@@ -1101,7 +1092,9 @@ TDAR.common = function() {
         $("#possibleJsError").val("SAVE");
         $(form).not('.disableFormNavigate').FormNavigate({
             message:"Leaving the page will cause any unsaved data to be lost!",
-            customEvents: "repeatrowdeleted fileuploadstarted fileuploadfinished"});
+            customEvents: "repeatrowdeleted fileuploadstarted fileuploadfinished",
+            cleanOnSubmit: false
+        });
 
     };
     
