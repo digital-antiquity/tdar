@@ -45,6 +45,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.AsyncUpdateReceiver;
+import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.AsyncUpdateReceiver.DefaultReceiver;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.Account;
@@ -71,6 +72,8 @@ import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.data.ResourceCreatorProxy;
 import org.tdar.utils.Pair;
 import org.tdar.utils.activity.Activity;
+
+import com.google.protobuf.UnknownFieldSet.Field;
 
 /**
  * @author Adam Brin
@@ -424,6 +427,23 @@ public class BulkUploadService {
         for (ResourceType clas : resourceClasses) {
             nameSet.addAll(reflectionService.findBulkAnnotationsOnClass(clas.getResourceClass()));
         }
+
+        Iterator<CellMetadata> fields = nameSet.iterator();
+        while (fields.hasNext()) {
+            CellMetadata field = fields.next();
+            logger.info(field.getName() + " "  + field.getDisplayName());
+            if (!TdarConfiguration.getInstance().getLicenseEnabled()) {
+                if (StringUtils.isNotBlank(field.getDisplayName()) && (field.getDisplayName().equals(BulkImportField.LICENSE_TEXT) || field.getDisplayName().equals(BulkImportField.LICENSE_TYPE))) {
+                    fields.remove();
+                }
+            }
+            if (!TdarConfiguration.getInstance().getCopyrightMandatory()) {
+                if (field.getName().contains("copyrightHolder") || StringUtils.isNotBlank(field.getDisplayName()) && (field.getDisplayName().contains(BulkImportField.COPYRIGHT_HOLDER))) {
+                    fields.remove();
+                }
+            }
+        }
+
         return nameSet;
     }
 

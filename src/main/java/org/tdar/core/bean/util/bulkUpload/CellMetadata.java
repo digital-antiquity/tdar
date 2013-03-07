@@ -185,36 +185,6 @@ public class CellMetadata {
         return sb.toString();
     }
 
-    // /*
-    // * (non-Javadoc)
-    // *
-    // * @see java.lang.Comparable#compareTo(java.lang.Object)
-    // */
-    // @Override
-    // public int compareTo(CellMetadata o) {
-    // if (o.getMappedClass().equals(getMappedClass()) || o.getOrder() < 1) {
-    // if (o.getOrder() > getOrder()) {
-    // return -1;
-    // } else if (o.getOrder() < getOrder()) {
-    // return 1;
-    // }
-    // }
-    // try {
-    // if (o.getMappedClass() != getMappedClass()) {
-    // if (o.getMappedClass().equals(Institution.class) && getMappedClass().equals(Person.class)) {
-    // return -1;
-    // }
-    // if (getMappedClass().equals(Institution.class) && o.getMappedClass().equals(Person.class)) {
-    // return 1;
-    // }
-    // return getMappedClass().getSimpleName().compareTo(o.getMappedClass().getSimpleName());
-    // }
-    // } catch (Exception e) {
-    // // do nothing
-    // }
-    // return getName().compareTo(o.getName());
-    // }
-
     /**
      * @return the order
      */
@@ -231,7 +201,7 @@ public class CellMetadata {
     }
 
     public String getPropertyName() {
-        if (name.indexOf(".") != -1) {
+        if (name != null && name.indexOf(".") != -1) {
             return name.substring(name.lastIndexOf(".") + 1);
         }
         return name;
