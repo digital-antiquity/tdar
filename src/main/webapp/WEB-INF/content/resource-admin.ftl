@@ -29,8 +29,8 @@ var data = [];
             mode:"time",
             minTickSize: [1, "day"],
 	        timeformat: "%y-%m-%d",
-	        min: (new Date("2010-01-01")),
-            max: (new Date("2020-01-01"))
+	        min: (new Date(${resource.dateRegistered?string("yyyy-MM-dd")})),
+            max: (new Date())
         },
         legend : {
             show:true,
