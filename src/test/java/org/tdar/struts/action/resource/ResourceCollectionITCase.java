@@ -700,7 +700,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         assertEquals(getUser(), first.getOwner());
         assertEquals(1, first.getResources().size());
     }
-
+    
     @Test
     @Rollback
     public void testDocumentControllerAssigningResourceCollectionsWithLocalRights() throws Exception
@@ -1075,4 +1075,154 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         assertTrue("resource should be viewable", ((Viewable) controller.getResults().get(0)).isViewable());
     }
 
+    
+    @Test
+    public void testResourceCollectionRightsRevoking() throws TdarActionException {
+        Person registeredUser = createAndSaveNewPerson("testDraftResourceVisibleByAuthuser", "foo");
+        controller = generateNewInitializedController(CollectionController.class, getUser());
+        controller.prepare();
+        ResourceCollection rc = controller.getPersistable();
+        // project = null;
+        // Long pid = project.getId();
+        controller.getAuthorizedUsers().add(new AuthorizedUser(registeredUser, GeneralPermissions.ADMINISTER_GROUP));
+        controller.getPersistable().setName("test");
+        controller.getPersistable().setDescription("description");
+        controller.setServletRequest(getServletPostRequest());
+        controller.setAsync(false);
+        String result = controller.save();
+        assertEquals(TdarActionSupport.SUCCESS, result);
+        Long rcid = controller.getPersistable().getId();
+        // confirm resource is viewable by author of collection
+        controller = generateNewInitializedController(CollectionController.class,registeredUser);
+        controller.setId(rcid);
+        controller.prepare();
+        controller.edit();
+        controller.getAuthorizedUsers().clear();
+        controller.setServletRequest(getServletPostRequest());
+        controller.setAsync(false);
+        result = controller.save();
+        
+        // make sure it draft resource can't be seen by registered user (but not an authuser)
+        controller = generateNewInitializedController(CollectionController.class, registeredUser);
+        controller.setId(rcid);
+        controller.prepare();
+        boolean seen =false;
+        try {
+            controller.edit();
+        } catch (Exception e) {
+            seen =true;
+            logger.warn("error",e);
+        }
+        assertTrue(seen);
+        ignoreActionErrors(true);
+    }
+    
+    @Test
+    public void testResourceCollectionRightsRevokingHier() throws TdarActionException {
+        Person registeredUser = createAndSaveNewPerson("testDraftResourceVisibleByAuthuser", "foo");
+        controller = generateNewInitializedController(CollectionController.class, getUser());
+        controller.prepare();
+        ResourceCollection rc = controller.getPersistable();
+        // project = null;
+        // Long pid = project.getId();
+        controller.getAuthorizedUsers().add(new AuthorizedUser(registeredUser, GeneralPermissions.ADMINISTER_GROUP));
+        controller.getPersistable().setName("test");
+        controller.getPersistable().setDescription("description");
+        controller.setServletRequest(getServletPostRequest());
+        controller.setAsync(false);
+        String result = controller.save();
+        assertEquals(TdarActionSupport.SUCCESS, result);
+        Long rcid = controller.getPersistable().getId();
+
+        
+        controller = generateNewInitializedController(CollectionController.class, getUser());
+        controller.prepare();
+        ResourceCollection rcChild = controller.getPersistable();
+        // project = null;
+        // Long pid = project.getId();
+        controller.setParentId(rcid);
+        controller.getPersistable().setName("test child");
+        controller.getPersistable().setDescription("description");
+        controller.setServletRequest(getServletPostRequest());
+        controller.setAsync(false);
+        result = controller.save();
+        assertEquals(TdarActionSupport.SUCCESS, result);
+        Long rcid2 = controller.getPersistable().getId();
+
+        
+        
+        // confirm resource is viewable by author of collection
+        controller = generateNewInitializedController(CollectionController.class,registeredUser);
+        controller.setId(rcid2);
+        controller.prepare();
+        controller.edit();
+        controller.setParentId(null);
+        controller.setServletRequest(getServletPostRequest());
+        controller.setAsync(false);
+        result = controller.save();
+        
+        // make sure it draft resource can't be seen by registered user (but not an authuser)
+        controller = generateNewInitializedController(CollectionController.class, registeredUser);
+        controller.setId(rcid2);
+        controller.prepare();
+        boolean seen =false;
+        try {
+            controller.edit();
+        } catch (Exception e) {
+            seen =true;
+            logger.warn("error",e);
+        }
+        assertTrue(seen);
+        ignoreActionErrors(true);
+    }
+
+    @Test
+    public void testResourceCollectionRightsRevokingHierOwnerFails() throws TdarActionException {
+        Person registeredUser = createAndSaveNewPerson("testDraftResourceVisibleByAuthuser", "foo");
+        controller = generateNewInitializedController(CollectionController.class, registeredUser);
+        controller.prepare();
+        ResourceCollection rc = controller.getPersistable();
+        // project = null;
+        // Long pid = project.getId();
+        controller.getPersistable().setName("test");
+        controller.getPersistable().setDescription("description");
+        controller.setServletRequest(getServletPostRequest());
+        controller.setAsync(false);
+        String result = controller.save();
+        assertEquals(TdarActionSupport.SUCCESS, result);
+        Long rcid = controller.getPersistable().getId();
+
+        
+        controller = generateNewInitializedController(CollectionController.class, getUser());
+        controller.prepare();
+        ResourceCollection rcChild = controller.getPersistable();
+        // project = null;
+        // Long pid = project.getId();
+        controller.setParentId(rcid);
+        controller.getPersistable().setName("test child");
+        controller.getPersistable().setDescription("description");
+        controller.setServletRequest(getServletPostRequest());
+        controller.setAsync(false);
+        result = controller.save();
+        assertEquals(TdarActionSupport.SUCCESS, result);
+        Long rcid2 = controller.getPersistable().getId();
+
+        
+        /*
+         * This test is expected to fail in-that hierarchical collection "owners" have no rights implicitly.
+         * Change this test when we figure out what "should" change in package-info
+         */
+        controller = generateNewInitializedController(CollectionController.class,registeredUser);
+        controller.setId(rcid2);
+        controller.prepare();
+        boolean seen =false;
+        try {
+            controller.edit();
+        } catch (Exception e) {
+            seen =true;
+            logger.warn("error",e);
+        }
+        assertTrue(seen);
+        ignoreActionErrors(true);
+    }
 }

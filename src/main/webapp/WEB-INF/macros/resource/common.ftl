@@ -1006,6 +1006,9 @@ this bit of freemarker is voodoo:
         <a href="<@s.url value="/billing/${account.id?c}" />">${account.name!"unamed"}</a>
     </li>
 </#list>
+<#if billingManager>
+	<li><a href="<@s.url value="/billing/list" />">All Accounts</a></li>
+</#if>
 <li><a href="/cart/add">Create a new account or add more to an existing one </a></li>
 </ul>
 </#if>        
