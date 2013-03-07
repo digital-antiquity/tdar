@@ -738,9 +738,9 @@ TDAR.common = function() {
          },
          unhighlight:function(element, errorClass, validClass) {
              $(element).removeClass("error");
-             //highlight this div until all controls in group are valid
+             //highlight this div until all visible controls in group are valid
              var $controlGroup = $(element).closest("div.control-group");
-             if($controlGroup.find('.error').length === 0) {
+             if($controlGroup.find('.error:visible').length === 0) {
                  $controlGroup.removeClass("error");
              }
          },
