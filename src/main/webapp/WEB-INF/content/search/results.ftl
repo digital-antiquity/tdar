@@ -97,21 +97,16 @@
 
 
     <div id="divResultsSortControl">
-        <div>
-            <h2 class="totalRecords">${paginationHelper.firstItem + 1}-${paginationHelper.lastItem + 1} (${paginationHelper.totalNumberOfItems} Results)</h2>
-        </div>
     	<#if !hideFacetsAndSort>
-    	<div class="pull-right">
-            <form action='' class="form-horizontal">
-               <@search.sortFields true/>
-            </form>
-        	</#if>
-    	</div>
+        <div class="form-horizontal pull-right">
+           <@search.sortFields true/>
+        </div>
+    	</#if>
+        <h2 class="totalRecords">${paginationHelper.firstItem + 1}-${paginationHelper.lastItem + 1} (${paginationHelper.totalNumberOfItems} Results)</h2>
 	</div>
 	
     <div class="tdarresults">
-    <br/>
-    <hr class="dbl" />
+    <hr class="dbl" style="clear:both">
 <#if lookupSource == 'COLLECTION' || lookupSource='RESOURCE'>
     <#--fixme: replace explicit map sizes with css names -->
     <@rlist.listResources resourcelist=results sortfield=sortField expanded=true listTag="span" itemTag="span" titleTag="h3" orientation=orientation mapPosition="top" mapHeight="450"/>
