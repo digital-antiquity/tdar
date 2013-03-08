@@ -450,7 +450,7 @@ ${resource.resourceType.label}
         <#list _authorizedUsers as authorizedUser>
             <#if authorizedUser??>
             	<#local disabled = false>
-            	<#if (authorizedUser.user.id == authenticatedUser.id && !_isSubmitter) || !(ableToUploadFiles!false)>
+            	<#if (authorizedUser.user.id == authenticatedUser.id && !_isSubmitter) || ableToUploadFiles?has_content && !ableToUploadFiles>
 	            	<#local disabled = true>
             	</#if>
            	    <div class="controls-row repeat-row"  id="authorizedUsersRow_${authorizedUser_index}_">
