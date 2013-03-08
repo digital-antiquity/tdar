@@ -35,6 +35,7 @@ import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.data.PricingOption;
 import org.tdar.struts.data.PricingOption.PricingType;
+import org.tdar.utils.AccountEvaluationHelper;
 
 @Transactional(readOnly = true)
 @Service
@@ -214,24 +215,27 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         logger.info("existing:{} new:{}", existingItems, newItems);
         Set<Resource> flagged = new HashSet<Resource>();
         Set<Resource> unflagged = new HashSet<Resource>();
+        AccountEvaluationHelper helper = new AccountEvaluationHelper(account, getLatestActivityModel());
         // not technically necessary to process these separately, but prefer incremental changes to wholesale adds
         if (hasUpdates) {
-            processResourceGroup(account, existingItems, flagged, unflagged, Mode.UPDATE);
-            processResourceGroup(account, newItems, flagged, unflagged, Mode.UPDATE);
+            processResourceGroup(helper, existingItems, flagged, unflagged, Mode.UPDATE);
+            processResourceGroup(helper, newItems, flagged, unflagged, Mode.UPDATE);
         } else {
             // start at 0 and re-add everything
             // sort by date updated
             account.setSpaceUsedInBytes(0L);
             account.setFilesUsed(0L);
             account.initTotals();
+            helper = new AccountEvaluationHelper(account, getLatestActivityModel());
             logger.info("s{} f{} r:{} ", account.getAvailableSpaceInBytes(), account.getAvailableNumberOfFiles(), unflagged);
-            processResourcesChronologically(account, resourcesToEvaluate, flagged, unflagged);
+            processResourcesChronologically(helper, resourcesToEvaluate, flagged, unflagged);
         }
 
-        status = updateResourceStatusesAndReconcileAccountStatus(account, status, flagged, unflagged);
+        status = updateResourceStatusesAndReconcileAccountStatus(helper, status, flagged, unflagged);
         saveOrUpdateAll(resourcesToEvaluate);
         // FIXME: may not work exactly because resource evaluations may not have been "saved" yet.
         // 20.2.13 -- appears ok
+        helper.updateAccount();
         updateAccountInfo(account);
         saveOrUpdate(account);
         logger.trace("files used: {} ", account.getFilesUsed());
@@ -241,12 +245,12 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         return status;
     }
 
-    private AccountAdditionStatus updateResourceStatusesAndReconcileAccountStatus(Account account, AccountAdditionStatus status, Set<Resource> flagged, Set<Resource> unflagged) {
+    private AccountAdditionStatus updateResourceStatusesAndReconcileAccountStatus(AccountEvaluationHelper helper, AccountAdditionStatus status, Set<Resource> flagged, Set<Resource> unflagged) {
         markResourcesAsFlagged(flagged);
         unMarkResourcesAsFlagged(unflagged);
-        logger.info("s{} f{} r:{} ", account.getAvailableSpaceInBytes(), account.getAvailableNumberOfFiles(), unflagged);
+        logger.info("s{} f{} r:{} ", helper.getAvailableSpaceInBytes(), helper.getAvailableNumberOfFiles(), unflagged);
         if (flagged.size() > 0) {
-            if (account.getAvailableSpaceInBytes() < 0) {
+            if (helper.getAvailableSpaceInBytes() < 0) {
                 status = AccountAdditionStatus.NOT_ENOUGH_SPACE;
             } else {
                 status = AccountAdditionStatus.NOT_ENOUGH_FILES;
@@ -256,10 +260,10 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         return status;
     }
 
-    private void processResourcesChronologically(Account account, Collection<Resource> resourcesToEvaluate, Set<Resource> flagged, Set<Resource> unflagged) {
+    private void processResourcesChronologically(AccountEvaluationHelper helper, Collection<Resource> resourcesToEvaluate, Set<Resource> flagged, Set<Resource> unflagged) {
         List<Resource> resourceList = new ArrayList<Resource>(resourcesToEvaluate);
         GenericService.sortByUpdatedDate(resourceList);
-        processResourceGroup(account, resourceList, flagged, unflagged, Mode.ADD);
+        processResourceGroup(helper, resourceList, flagged, unflagged, Mode.ADD);
 
     }
 
@@ -268,12 +272,12 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
      * Wait until the very end to add the weight of the flagged resources to try and get as many resources visible
      * and functional as possible.
      */
-    private void processResourceGroup(Account account, List<Resource> items, Set<Resource> flagged, Set<Resource> unflagged, Mode mode) {
+    private void processResourceGroup(AccountEvaluationHelper helper, List<Resource> items, Set<Resource> flagged, Set<Resource> unflagged, Mode mode) {
         boolean seenFlagged = false;
         for (Resource resource : items) {
-            if (hasSpaceFor(resource, account, mode)) {
+            if (hasSpaceFor(resource, helper, mode)) {
                 unflagged.add(resource);
-                updateMarkers(resource, account, mode);
+                updateMarkers(resource, helper, mode);
             } else {
                 if (!seenFlagged) {
                     logger.info("First Flagged item: {}", resource.getId());
@@ -283,7 +287,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             }
         }
         for (Resource resource : flagged) {
-            updateMarkers(resource, account, mode);
+            updateMarkers(resource, helper, mode);
         }
     }
 
@@ -297,20 +301,19 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
      * ADD whereby the total space used is evaluated.  Otherwise, in UPDATE, the differential change between last save and
      * current is used.
      */
-    private void updateMarkers(Resource resource, Account account, Mode mode) {
+    private void updateMarkers(Resource resource, AccountEvaluationHelper helper, Mode mode) {
         Long files = resource.getEffectiveFilesUsed();
         Long space = resource.getEffectiveSpaceUsed();
         if (mode == Mode.ADD) {
             files = resource.getFilesUsed();
             space = resource.getSpaceInBytesUsed();
         }
-        logger.debug(String.format("%s(%s) %s(%s) r:%s", account.getSpaceUsedInBytes(), space, account.getFilesUsed(), files, resource.getId()));
-        account.setSpaceUsedInBytes(account.getSpaceUsedInBytes() + space);
-        account.setFilesUsed(account.getFilesUsed() + files);
+        logger.debug(String.format("%s(%s) %s(%s) r:%s", helper.getSpaceUsedInBytes(), space, helper.getFilesUsed(), files, resource.getId()));
+        helper.setSpaceUsedInBytes(helper.getSpaceUsedInBytes() + space);
+        helper.setFilesUsed(helper.getFilesUsed() + files);
     }
 
-    private boolean hasSpaceFor(Resource resource, Account account, Mode mode) {
-        BillingActivityModel model = getLatestActivityModel();
+    private boolean hasSpaceFor(Resource resource, AccountEvaluationHelper helper, Mode mode) {
         Long files = resource.getEffectiveFilesUsed();
         Long space = resource.getEffectiveSpaceUsed();
         if (mode == Mode.ADD) {
@@ -323,12 +326,12 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         }
 
         // Trivial changes should fall through and not update because they are no-op in terms of effective changes
-        if (model.getCountingSpace() && account.getAvailableSpaceInBytes() - space < 0) {
-            logger.info("{} {} {}", account.getAvailableSpaceInBytes(), space, resource.getId());
+        if (helper.getModel().getCountingSpace() && helper.getAvailableSpaceInBytes() - space < 0) {
+            logger.info("{} {} {}", helper.getAvailableSpaceInBytes(), space, resource.getId());
             return false;
         }
-        if (model.getCountingFiles() && account.getAvailableNumberOfFiles() - files < 0) {
-            logger.info("{} {} {}", account.getAvailableNumberOfFiles(), files, resource.getId());
+        if (helper.getModel().getCountingFiles() && helper.getAvailableNumberOfFiles() - files < 0) {
+            logger.info("{} {} {}", helper.getAvailableNumberOfFiles(), files, resource.getId());
             return false;
         }
         return true;
