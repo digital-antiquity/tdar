@@ -940,6 +940,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         this.orientation = orientation;
     }
 
+    @Override
     public boolean isHideFacetsAndSort() {
         return hideFacetsAndSort;
     }

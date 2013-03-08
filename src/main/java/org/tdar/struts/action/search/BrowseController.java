@@ -89,19 +89,6 @@ public class BrowseController extends AbstractLookupController {
         return SUCCESS;
     }
 
-    // FIXME: if we had real facets, this would not be needed
-    // @Action(value = "places", results = { @Result(location = "results.ftl") })
-    // public String browsePlaces() {
-    // setResults(getResourceService().findResourceLinkedValues(GeographicKeyword.class));
-    // return SUCCESS;
-    // }
-    //
-    // @Action(value = "cultures", results = { @Result(location = "results.ftl") })
-    // public String browseCultures() {
-    // setResults(getResourceService().findResourceLinkedValues(CultureKeyword.class));
-    // return SUCCESS;
-    // }
-
     @Action("collections")
     public String browseCollections() throws ParseException {
         QueryBuilder qb = new ResourceCollectionQueryBuilder();
@@ -288,5 +275,6 @@ public class BrowseController extends AbstractLookupController {
     public void setPersistable(Persistable persistable) {
         this.persistable = persistable;
     }
+    
 
 }

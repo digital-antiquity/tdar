@@ -50,7 +50,7 @@
 	<!--        <li>Subscribe via &raquo;
 	            <a class="subscribe"  href="${rssUrl}">RSS</a>
 	        </li> -->
-	        </ul>
+    </ul>
 	
 	<#if lookupSource == 'RESOURCE'>
 	        <h3>View Options</h3> 
@@ -96,17 +96,23 @@
     
 
 
+    
     <div id="divResultsSortControl">
-    	<#if !hideFacetsAndSort>
-        <div class="form-horizontal pull-right">
-           <@search.sortFields true/>
+        <div class="row">
+            <div class="span4">
+                <h2 class="totalRecords">${paginationHelper.firstItem + 1}-${paginationHelper.lastItem + 1} (${paginationHelper.totalNumberOfItems} Results)</h2>
+            </div>
+            <div class="span5">
+            	<#if !hideFacetsAndSort>
+                <div class="form-horizontal pull-right">
+                   <@search.sortFields true/>
+                </div>
+            	</#if>
+        	</div>
         </div>
-    	</#if>
-        <h2 class="totalRecords">${paginationHelper.firstItem + 1}-${paginationHelper.lastItem + 1} (${paginationHelper.totalNumberOfItems} Results)</h2>
 	</div>
 	
     <div class="tdarresults">
-    <hr class="dbl" style="clear:both">
 <#if lookupSource == 'COLLECTION' || lookupSource='RESOURCE'>
     <#--fixme: replace explicit map sizes with css names -->
     <@rlist.listResources resourcelist=results sortfield=sortField expanded=true listTag="span" itemTag="span" titleTag="h3" orientation=orientation mapPosition="top" mapHeight="450"/>
@@ -128,7 +134,6 @@
 	</#list>
 </#if>
 </div>
-    <hr class="dbl" />
     <@search.pagination ""/>
     
 <#else>
