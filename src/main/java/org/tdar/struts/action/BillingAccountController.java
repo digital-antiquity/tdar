@@ -25,6 +25,7 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.GenericService;
+import org.tdar.struts.WriteableSession;
 
 @Component
 @Scope("prototype")
@@ -84,7 +85,10 @@ public class BillingAccountController extends AbstractPersistableController<Acco
         if (Persistable.Base.isTransient(getAccount()) && StringUtils.isNotBlank(getName())) {
             getAccount().setName(getName());
             getAccount().setDescription(getDescription());
+        } else {
+            getAuthorizedMembers().addAll(getAccount().getAuthorizedMembers());
         }
+        
         if (Persistable.Base.isNotNullOrTransient(invoiceId)) {
             Invoice invoice = getInvoice();
             logger.info("attaching invoice: {} ", invoice);
@@ -94,24 +98,31 @@ public class BillingAccountController extends AbstractPersistableController<Acco
             }
             getAccountService().checkThatInvoiceBeAssigned(invoice, getAccount()); // throw exception if you cannot
             // make sure you add back all of the valid account holders
-            getAuthorizedMembers().addAll(getAccount().getAuthorizedMembers());
             getAccount().getInvoices().add(invoice);
             getGenericService().saveOrUpdate(invoice);
             getGenericService().saveOrUpdate(getAccount());
+            updateQuotas();
         }
         getAccount().getAuthorizedMembers().clear();
         getAccount().getAuthorizedMembers().addAll(getGenericService().loadFromSparseEntities(getAuthorizedMembers(), Person.class));
 
         logger.info("authorized members: {}", getAccount().getAuthorizedMembers());
-        if (Persistable.Base.isNotTransient(getAccount())) {
-            getAccountService().updateQuota(getAccount(), getAccount().getResources());
-        }
         return SUCCESS;
     }
 
     @Override
     protected void delete(Account persistable) {
         // TODO Auto-generated method stub
+    }
+    
+    @SkipValidation
+    @WriteableSession
+    @Action(value = "updateQuotas", results = {
+            @Result(name = SUCCESS, location = "view?id=${id}", type = "redirect")
+    })
+    public String updateQuotas() {
+            getAccountService().updateQuota(getAccount(), getAccount().getResources());
+            return TdarActionSupport.SUCCESS;
     }
 
     @Override
