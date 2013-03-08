@@ -1,6 +1,8 @@
 package org.tdar.core.service.processes;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +49,9 @@ public class OverdrawnAccountUpdate extends ScheduledBatchProcess<Account> {
     @Override
     public void execute() {
         List<Account> accounts = genericDao.findAll(getPersistentClass(), getNextBatch());
-        emailService.sendTemplate("overdrawn-admin.txt", accounts, "admin accounts");
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("accounts",accounts);
+        emailService.sendTemplate("overdrawn-admin.ftl", map, "admin accounts");
     }
 
     @Override

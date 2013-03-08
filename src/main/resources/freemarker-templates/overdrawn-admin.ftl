@@ -2,9 +2,9 @@ The following accounts are overdrawn:
 <#list accounts as account>
 ${account.name} ( ${account.owner.properName} - ${account.owner.email} )
 ===================================================
-Resources: ${account.totalResources} (Used: ${account.resourcesUsed}) 
-Files: ${account.totalFiles} (Used: ${account.filesUsed}) 
-Space: ${account.totalSpaceInMb} (Used: ${account.spaceUsed})
+Resources: ${account.totalNumberOfResources} (Used: ${account.resourcesUsed}) 
+Files: ${account.totalNumberOfFiles} (Used: ${account.filesUsed}) 
+Space: ${account.totalSpaceInMb} (Used: ${account.spaceUsedInMb})
 
 Flagged Items:
 <#list account.flaggedResources as resource>

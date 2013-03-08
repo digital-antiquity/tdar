@@ -2,7 +2,6 @@ package org.tdar.core.service;
 
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,12 +22,14 @@ public class FreemarkerServiceITCase extends AbstractIntegrationTestCase {
     @Test
     public void testFreemarkerRendering() throws IOException {
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put("foo", "Hieronymous");
-        map.put("bar", "Basho");
-        String output = freemarkerService.render(new File("./"), "test-email.ftl", map);
+        String heir = "Hieronymous";
+        map.put("foo", heir);
+        String boash = "Boash";
+        map.put("bar", boash);
+        String output = freemarkerService.render("test-email.ftl", map);
         logger.debug("output: {}", output);
-        assertTrue(output.contains("Hieronymous"));
-        assertTrue(output.contains("Basho"));
+        assertTrue(output.contains(heir));
+        assertTrue(output.contains(boash));
     }
 
 }
