@@ -341,6 +341,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.geotools</groupId>
+			<artifactId>gt-geotiff</artifactId>
+			<version>${geotools.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools</groupId>
 			<artifactId>gt-swing</artifactId>
 			<version>${geotools.version}</version>
 		</dependency>
@@ -1100,9 +1105,8 @@
 				<configuration>
 					<source>1.7</source>
 					<target>1.7</target>
-<!--          <executable>${env.JAVA_HOME_7}/bin/javac</executable>
-        <fork>true</fork>
- -->				</configuration>
+					<!-- <executable>${env.JAVA_HOME_7}/bin/javac</executable> <fork>true</fork> -->
+				</configuration>
 			</plugin>
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
@@ -1133,39 +1137,17 @@
 			</plugin>
 
 			<plugin>
-			<!-- 
-		<repository>
-			<id>maven.org</id>
-			<url>http://repo2.maven.org/maven2</url>
-		</repository>
-
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-maven-plugin</artifactId>
-				<version>9.0.0.RC0</version>
-				<configuration>
-					<testClassesDirectory>src/test/resources/</testClassesDirectory>
-					<useTestScope>${use.test.classpath}</useTestScope>
-					<connectors>
-						<connector implementation="org.eclipse.jetty.server.ServerConnector">
-							<port>${jetty.port}</port>
-							<maxIdleTime>60000</maxIdleTime>
-						</connector>
-						<connector implementation="org.eclipse.jetty.server.ServerConnector">
-							<port>${jetty.ssl.port}</port>
-							<maxIdleTime>60000</maxIdleTime>
-							<keystore>${project.build.directory}/jetty-ssl.keystore</keystore>
-							<password>jetty6</password>
-							<keyPassword>jetty6</keyPassword>
-						</connector>
-					</connectors>
-					<contextPath>/</contextPath>
-					<webDefaultXml>src/main/resources/webdefault.xml</webDefaultXml>
-					<scanIntervalSeconds>0</scanIntervalSeconds>
-					<stopKey>tdar</stopKey>
-					<stopPort>${jetty.stop.port}</stopPort>
-				</configuration>
-			
-			 -->
+				<!-- <repository> <id>maven.org</id> <url>http://repo2.maven.org/maven2</url> 
+					</repository> <groupId>org.eclipse.jetty</groupId> <artifactId>jetty-maven-plugin</artifactId> 
+					<version>9.0.0.RC0</version> <configuration> <testClassesDirectory>src/test/resources/</testClassesDirectory> 
+					<useTestScope>${use.test.classpath}</useTestScope> <connectors> <connector 
+					implementation="org.eclipse.jetty.server.ServerConnector"> <port>${jetty.port}</port> 
+					<maxIdleTime>60000</maxIdleTime> </connector> <connector implementation="org.eclipse.jetty.server.ServerConnector"> 
+					<port>${jetty.ssl.port}</port> <maxIdleTime>60000</maxIdleTime> <keystore>${project.build.directory}/jetty-ssl.keystore</keystore> 
+					<password>jetty6</password> <keyPassword>jetty6</keyPassword> </connector> 
+					</connectors> <contextPath>/</contextPath> <webDefaultXml>src/main/resources/webdefault.xml</webDefaultXml> 
+					<scanIntervalSeconds>0</scanIntervalSeconds> <stopKey>tdar</stopKey> <stopPort>${jetty.stop.port}</stopPort> 
+					</configuration> -->
 				<groupId>org.mortbay.jetty</groupId>
 				<artifactId>maven-jetty-plugin</artifactId>
 				<version>6.1.26</version>
