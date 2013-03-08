@@ -1,8 +1,8 @@
 package org.tdar.core.bean;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -238,7 +238,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         // assertEquals(resourcesUsed.longValue() + resource.getResourcesUsed(), account.getResourcesUsed().longValue());
         assertEquals(filesUsed.longValue() + resource.getFilesUsed(), account.getFilesUsed().longValue());
     }
-    
+
     @Test
     @Rollback
     public void testAccountUpdateQuotaOverdrawnMinorEdit() throws InstantiationException, IllegalAccessException {
@@ -274,10 +274,10 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         ok.setTitle("new title");
         accountService.updateQuota(account, ok);
         assertEquals(Status.ACTIVE, ok.getStatus());
-        addFileToResource((InformationResource)ok, new File(TestConstants.TEST_DOCUMENT_DIR, "/t1/test.pdf"));
+        addFileToResource((InformationResource) ok, new File(TestConstants.TEST_DOCUMENT_DIR, "/t1/test.pdf"));
         accountService.updateQuota(account, ok);
         assertEquals(Status.FLAGGED_ACCOUNT_BALANCE, ok.getStatus());
-        
+
     }
 
     @Test
