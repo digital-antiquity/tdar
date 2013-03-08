@@ -235,8 +235,10 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         }
 
         status = updateResourceStatusesAndReconcileAccountStatus(helper, status, flagged, unflagged);
-        if (CollectionUtils.isNotEmpty(flagged) || account.isOverdrawn(getResourceEvaluator())) {
+        boolean overdrawn = !account.isOverdrawn(getResourceEvaluator());
+        if (CollectionUtils.isNotEmpty(flagged) || overdrawn) {
             account.setStatus(Status.FLAGGED_ACCOUNT_BALANCE);
+            logger.info("marking account as FLAGGED {} {}", overdrawn, flagged);
         } else {
             account.setStatus(Status.ACTIVE);
         }
