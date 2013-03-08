@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -196,7 +197,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
                 continue;
             }
 
-            // if we're dealing with multiple accounts ... 
+            // if we're dealing with multiple accounts ...
             if (!account.equals(resource.getAccount())) {
                 Account oldAccount = resource.getAccount();
                 additionalAccountsToCleanup.add(oldAccount);
@@ -223,6 +224,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         } else {
             // start at 0 and re-add everything
             // sort by date updated
+            account.setStatus(Status.ACTIVE);
             account.setSpaceUsedInBytes(0L);
             account.setFilesUsed(0L);
             account.initTotals();
@@ -232,6 +234,12 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         }
 
         status = updateResourceStatusesAndReconcileAccountStatus(helper, status, flagged, unflagged);
+        if (CollectionUtils.isNotEmpty(flagged) || account.isOverdrawn(getResourceEvaluator())) {
+            account.setStatus(Status.FLAGGED_ACCOUNT_BALANCE);
+        } else {
+            account.setStatus(Status.ACTIVE);
+        }
+        
         saveOrUpdateAll(resourcesToEvaluate);
         // FIXME: may not work exactly because resource evaluations may not have been "saved" yet.
         // 20.2.13 -- appears ok
@@ -245,7 +253,8 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         return status;
     }
 
-    private AccountAdditionStatus updateResourceStatusesAndReconcileAccountStatus(AccountEvaluationHelper helper, AccountAdditionStatus status, Set<Resource> flagged, Set<Resource> unflagged) {
+    private AccountAdditionStatus updateResourceStatusesAndReconcileAccountStatus(AccountEvaluationHelper helper, AccountAdditionStatus status,
+            Set<Resource> flagged, Set<Resource> unflagged) {
         markResourcesAsFlagged(flagged);
         unMarkResourcesAsFlagged(unflagged);
         logger.info("s{} f{} r:{} ", helper.getAvailableSpaceInBytes(), helper.getAvailableNumberOfFiles(), unflagged);
@@ -260,7 +269,8 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         return status;
     }
 
-    private void processResourcesChronologically(AccountEvaluationHelper helper, Collection<Resource> resourcesToEvaluate, Set<Resource> flagged, Set<Resource> unflagged) {
+    private void processResourcesChronologically(AccountEvaluationHelper helper, Collection<Resource> resourcesToEvaluate, Set<Resource> flagged,
+            Set<Resource> unflagged) {
         List<Resource> resourceList = new ArrayList<Resource>(resourcesToEvaluate);
         GenericService.sortByUpdatedDate(resourceList);
         processResourceGroup(helper, resourceList, flagged, unflagged, Mode.ADD);
@@ -297,8 +307,8 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     }
 
     /*
-     * Update the account files and space settings.  Based on Mode.  Mode for a full re-evaulation of the account will be 
-     * ADD whereby the total space used is evaluated.  Otherwise, in UPDATE, the differential change between last save and
+     * Update the account files and space settings. Based on Mode. Mode for a full re-evaulation of the account will be
+     * ADD whereby the total space used is evaluated. Otherwise, in UPDATE, the differential change between last save and
      * current is used.
      */
     private void updateMarkers(Resource resource, AccountEvaluationHelper helper, Mode mode) {
@@ -341,11 +351,12 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     public void updateTransientAccountInfo(Collection<Resource> resources) {
         getDao().updateTransientAccountOnResources(resources);
     }
-    
+
     @Transactional
     public void updateTransientAccountInfo(Resource resource) {
-        //TODO: add hql/sql for account lookup by resource
-        if(resource == null) return;
+        // TODO: add hql/sql for account lookup by resource
+        if (resource == null)
+            return;
         updateTransientAccountInfo(Arrays.asList(resource));
     }
 
