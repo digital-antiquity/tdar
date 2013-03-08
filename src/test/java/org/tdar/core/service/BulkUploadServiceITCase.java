@@ -24,6 +24,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
@@ -41,12 +42,16 @@ import org.tdar.core.bean.util.bulkUpload.BulkUploadTemplate;
 import org.tdar.core.bean.util.bulkUpload.CellMetadata;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.junit.MultipleTdarConfigurationRunner;
+import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.utils.ExcelUnit;
 
 /**
  * @author Adam Brin
  * 
  */
+
+@RunWith(MultipleTdarConfigurationRunner.class)
 public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
 
     @Autowired
@@ -67,6 +72,7 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
+    @RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.properties", "src/test/resources/tdar.ahad.properties" })
     public void testTemplate() throws FileNotFoundException, IOException {
         HSSFWorkbook workbook = bulkUploadService.createExcelTemplate();
         File file = File.createTempFile("templateTest", ".xls", TdarConfiguration.getInstance().getTempDirectory());
@@ -80,21 +86,28 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
         excelUnit.assertCellEquals(1, 0, BulkUploadTemplate.EXAMPLE_PDF);
         excelUnit.assertCellEquals(2, 0, BulkUploadTemplate.EXAMPLE_TIFF);
         excelUnit.assertCellCommentEquals(0, 0, BulkImportField.FILENAME_DESCRIPTION);
-        
-        excelUnit.assertCellEquals(0, 1, BulkImportField.TITLE_LABEL+ "*");
+
+        excelUnit.assertCellEquals(0, 1, BulkImportField.TITLE_LABEL + "*");
         excelUnit.assertCellCommentEquals(0, 1, BulkImportField.TITLE_DESCRIPTION);
 
-        excelUnit.assertCellEquals(0, 2, BulkImportField.DESCRIPTION_LABEL+ "*");
+        excelUnit.assertCellEquals(0, 2, BulkImportField.DESCRIPTION_LABEL + "*");
         excelUnit.assertCellCommentEquals(0, 2, BulkImportField.DESCRIPTION_DESCRIPTION);
 
-        excelUnit.assertCellEquals(0, 13, BulkImportField.YEAR_LABEL+ "*");
-        excelUnit.assertCellCommentEquals(0, 13, BulkImportField.YEAR_DESCRIPTION);
-
         if (!TdarConfiguration.getInstance().getLicenseEnabled()) {
-        excelUnit.assertRowDoesNotContain(0, BulkImportField.LICENSE_TYPE);
+            excelUnit.assertRowDoesNotContain(0, BulkImportField.LICENSE_TYPE);
+            excelUnit.assertCellEquals(0, 13, BulkImportField.YEAR_LABEL + "*");
+            excelUnit.assertCellCommentEquals(0, 13, BulkImportField.YEAR_DESCRIPTION);
         } else {
             excelUnit.assertRowContains(0, BulkImportField.LICENSE_TYPE);
+            excelUnit.assertRowContains(0, BulkImportField.YEAR_LABEL + "*");
         }
+
+        if (!TdarConfiguration.getInstance().getCopyrightMandatory()) {
+            excelUnit.assertRowDoesNotContain(0, BulkImportField.COPYRIGHT_HOLDER);
+        } else {
+            excelUnit.assertRowContains(0, BulkImportField.COPYRIGHT_HOLDER);
+        }
+
         sheet.getRow(1).getCell(3).isPartOfArrayFormulaGroup();
     }
 

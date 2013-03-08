@@ -54,6 +54,7 @@ import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.keyword.CultureKeyword;
@@ -212,9 +213,8 @@ public abstract class InformationResource extends Resource {
     private String publisherLocation;
 
     @JoinColumn(name = "copyright_holder_id")
-    @BulkImportField(label = BulkImportField.COPYRIGHT_HOLDER, required = true)
     @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
-    // @BulkImportField(implementedSubclasses = { Person.class, Institution.class }, label = "Primary Copyright Holder", order = 1)
+    @BulkImportField(label = BulkImportField.COPYRIGHT_HOLDER, required = true, implementedSubclasses = { Person.class, Institution.class }, order = 1)
     private Creator copyrightHolder;
 
     // downward inheritance sections

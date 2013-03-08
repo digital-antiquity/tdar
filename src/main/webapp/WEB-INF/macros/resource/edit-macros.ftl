@@ -450,7 +450,7 @@ ${resource.resourceType.label}
         <#list _authorizedUsers as authorizedUser>
             <#if authorizedUser??>
             	<#local disabled = false>
-            	<#if (authorizedUser.user.id == authenticatedUser.id && !_isSubmitter) || !(ableToUploadFiles!false)>
+            	<#if (authorizedUser.user.id == authenticatedUser.id && !_isSubmitter) || ableToUploadFiles?has_content && !ableToUploadFiles>
 	            	<#local disabled = true>
             	</#if>
            	    <div class="controls-row repeat-row"  id="authorizedUsersRow_${authorizedUser_index}_">
@@ -933,7 +933,11 @@ jquery validation hooks?)
     <h2>${uploadLabel}</h2>
   
     <div class="">
+	<#if multipleFileUploadEnabled>
     <p><span class="label">Note:</span> You can only have ${maxUploadFilesPerRecord} per record.<br/></p> 
+    <#else>
+    <p><span class="label">Note:</span> To replace a file, simply upload the updated version.<br/></p> 
+    </#if>
     </div>
 	<br/>
     <#if !ableToUploadFiles>
