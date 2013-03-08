@@ -935,7 +935,11 @@ jquery validation hooks?)
     <h2>${uploadLabel}</h2>
   
     <div class="">
+	<#if multipleFileUploadEnabled>
     <p><span class="label">Note:</span> You can only have ${maxUploadFilesPerRecord} per record.<br/></p> 
+    <#else>
+    <p><span class="label">Note:</span> To replace a file, simply upload the updated version.<br/></p> 
+    </#if>
     </div>
 	<br/>
     <#if !ableToUploadFiles>
@@ -1327,11 +1331,12 @@ $(function() {
 
 <#macro copyrightHolders sectionTitle copyrightHolderProxies >
 <#if copyrightMandatory>
-    <div class="glide" tiplabel="Primary Copyright Holder" tooltipcontent="Use this field to nominate a primary copyright holder. Other information about copyright can be added in the 'notes' section by creating a new 'Rights & Attribution note.">
+    <div class="glide" tiplabel="Primary Copyright Holder" tooltipcontent="#divCopyrightHolderTip">
         <h3>${sectionTitle}</h3>
     <div id="copyrightHolderTable" class="creatorProxyTable">
       <@creatorProxyRow proxy=copyrightHolderProxies proxy_index="" prefix="copyrightHolder" required=true includeRole=false deleteable=false />
     </div>
+    <@helptext.copyrightHolder />
 </#if>
 </#macro>
 
