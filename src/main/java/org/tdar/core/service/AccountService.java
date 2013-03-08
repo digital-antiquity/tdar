@@ -216,6 +216,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         logger.info("existing:{} new:{}", existingItems, newItems);
         Set<Resource> flagged = new HashSet<Resource>();
         Set<Resource> unflagged = new HashSet<Resource>();
+        account.initTotals();
         AccountEvaluationHelper helper = new AccountEvaluationHelper(account, getLatestActivityModel());
         // not technically necessary to process these separately, but prefer incremental changes to wholesale adds
         if (hasUpdates) {

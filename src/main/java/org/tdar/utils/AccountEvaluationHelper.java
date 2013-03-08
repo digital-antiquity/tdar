@@ -7,8 +7,8 @@ public class AccountEvaluationHelper {
 
     private Long id;
     private BillingActivityModel model;
-    private Long availableSpaceInBytes;
-    private Long availableNumberOfFiles;
+    private Long allocatedSpaceInBytes;
+    private Long allocatedNumberOfFiles;
     private Long filesUsed;
     private Long spaceUsedInBytes;
     private Account account;
@@ -16,8 +16,8 @@ public class AccountEvaluationHelper {
     public AccountEvaluationHelper(Account account, BillingActivityModel model) {
         this.id = account.getId();
         this.model = model;
-        this.availableSpaceInBytes = account.getAvailableSpaceInBytes();
-        this.availableNumberOfFiles = account.getAvailableNumberOfFiles();
+        this.allocatedSpaceInBytes = account.getAvailableSpaceInBytes();
+        this.allocatedNumberOfFiles = account.getAvailableNumberOfFiles();
         this.spaceUsedInBytes = account.getSpaceUsedInBytes();
         this.filesUsed = account.getFilesUsed();
         this.account = account;
@@ -40,19 +40,11 @@ public class AccountEvaluationHelper {
     }
 
     public Long getAvailableSpaceInBytes() {
-        return availableSpaceInBytes;
-    }
-
-    public void setAvailableSpaceInBytes(Long availableSpaceInBytes) {
-        this.availableSpaceInBytes = availableSpaceInBytes;
+        return allocatedSpaceInBytes - spaceUsedInBytes;
     }
 
     public Long getAvailableNumberOfFiles() {
-        return availableNumberOfFiles;
-    }
-
-    public void setAvailableNumberOfFiles(Long availableNumberOfFiles) {
-        this.availableNumberOfFiles = availableNumberOfFiles;
+        return allocatedNumberOfFiles - filesUsed;
     }
 
     public Long getFilesUsed() {
