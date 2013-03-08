@@ -105,6 +105,7 @@ public interface TdarNamedQueries {
                     "union select id from resource where updater_id=:submitterId or submitter_id=:submitterId)";
     public static final String QUERY_SQL_COUNT = "SELECT COUNT(*) FROM %1$s";
     public static final String QUERY_FIND_ALL_WITH_IDS = "FROM %s WHERE id in (:ids)";
+    public static final String QUERY_FIND_ALL_WITH_STATUS = "FROM %s WHERE status in (:statuses)";
     public static final String QUERY_SQL_COUNT_ACTIVE_RESOURCE = "SELECT COUNT(*) FROM %1$s where status='ACTIVE'";
     public static final String QUERY_SQL_COUNT_ACTIVE_RESOURCE_WITH_FILES = "select count(distinct  resource.id) from  resource, information_resource_file where  resource.status='ACTIVE' and resource.resource_type='%1$s' and resource.id=information_resource_id";
     public static final String QUERY_SQL_RESOURCE_INCREMENT_USAGE = "update Resource r set r.accessCounter=accessCounter+1 where r.id=:resourceId";

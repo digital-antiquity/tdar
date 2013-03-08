@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
+import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
@@ -22,9 +23,11 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.SensoryData;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.statistics.AggregateStatistic;
 import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 import org.tdar.core.bean.util.ScheduledBatchProcess;
+import org.tdar.core.service.processes.OverdrawnAccountUpdate;
 import org.tdar.core.service.processes.SitemapGeneratorProcess;
 
 import static org.junit.Assert.*;
@@ -72,6 +75,20 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         }
     }
 
+    @Autowired
+    OverdrawnAccountUpdate oau;
+    
+    @Test
+    @Rollback
+    public void testAccountEmail() {
+        // NOTE: needs manual testing to ensure that this actually handles bookmarks properly...
+        // THIS TEST WILL FAIL IF RUN IN ECLIPSE WITHOUT DOING A VERIFY FIRST (it needs access to includes)
+        Account account = setupAccountForPerson(getBasicUser());
+        account.setStatus(Status.FLAGGED_ACCOUNT_BALANCE);
+        genericService.saveOrUpdate(account);
+        oau.execute();
+    }
+    
     @Test
     public void testCleanup() throws Exception {
         MockScheduledProcess mock = new MockScheduledProcess();

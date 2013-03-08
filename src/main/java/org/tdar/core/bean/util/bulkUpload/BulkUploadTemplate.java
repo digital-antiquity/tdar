@@ -58,10 +58,6 @@ public class BulkUploadTemplate {
         CellStyle headerStyle2 = CellFormat.BOLD.setColor(new HSSFColor.GREY_25_PERCENT()).setWrapping(true).setFontSize((short) 10).createStyle(workbook);
         CellStyle requiredStyle = CellFormat.BOLD.setWrapping(false).createStyle(workbook);
         requiredStyle.setFillForegroundColor(new HSSFColor.ROSE().getIndex());
-//        headerStyle2.setRotation((short)45);
-//        resourceCreatorRoleStyle.setRotation((short)45);
-//        requiredStyle.setRotation((short)45);
-//        defaultStyle.setRotation((short)45);
         
         HashMap<String, String> exampleDoc = new HashMap<String, String>();
         HashMap<String, String> exampleImage = new HashMap<String, String>();
