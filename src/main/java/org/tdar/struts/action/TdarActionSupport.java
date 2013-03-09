@@ -29,6 +29,7 @@ import org.tdar.core.service.AccountService;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.DataIntegrationService;
 import org.tdar.core.service.EntityService;
+import org.tdar.core.service.FreemarkerService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCollectionService;
@@ -100,6 +101,8 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     private transient BookmarkedResourceService bookmarkedResourceService;
     @Autowired
     private transient EntityService entityService;
+    @Autowired
+    private transient FreemarkerService freemarkerService;
 
     @Autowired
     private transient AuthenticationAndAuthorizationService authenticationAndAuthorizationService;
@@ -379,6 +382,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return searchIndexService;
     }
 
+    public FreemarkerService getFreemarkerService() {
+        return freemarkerService;
+    }
+    
     /**
      * Returns a list of Strings resulting from applying toString to each
      * element of the incoming Collection.

@@ -21,7 +21,7 @@ public class FreemarkerService {
     private Configuration freemarkerConfiguration;
 
     @Autowired
-    FileSystemResourceDao fileDao;
+    private FileSystemResourceDao fileDao;
 
     public String render(String templateName, Object dataModel) throws IOException {
         try {
