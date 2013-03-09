@@ -29,6 +29,7 @@ import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 import org.tdar.core.bean.util.ScheduledBatchProcess;
 import org.tdar.core.service.processes.OverdrawnAccountUpdate;
 import org.tdar.core.service.processes.SitemapGeneratorProcess;
+import org.tdar.core.service.processes.WeeklyStatisticsLoggingProcess;
 
 import static org.junit.Assert.*;
 
@@ -130,6 +131,9 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         assertSame("number of runs should be 1 now", 1, numberOfRuns);
 
     }
+    
+    @Autowired
+    WeeklyStatisticsLoggingProcess processingTask;
 
     @SuppressWarnings("deprecation")
     @Test
@@ -149,7 +153,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         createAndSaveNewInformationResource(Ontology.class, false);
         createAndSaveNewInformationResource(SensoryData.class, true);
         InformationResource generateInformationResourceWithFile = generateInformationResourceWithFileAndUser();
-        scheduledProcessService.generateWeeklyStats();
+        processingTask.execute();
         flush();
         List<AggregateStatistic> allStats = genericService.findAll(AggregateStatistic.class);
         Map<AggregateStatistic.StatisticType, AggregateStatistic> map = new HashMap<AggregateStatistic.StatisticType, AggregateStatistic>();
