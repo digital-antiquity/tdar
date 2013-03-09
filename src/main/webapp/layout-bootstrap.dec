@@ -188,7 +188,9 @@ ${_stacktrace?html}
         <#assign spanSize = 6/>
     </#if> 
 
-    <#if lookupSource?has_content ><#assign part="searchresults" /></#if>
+    <#--FIXME: need a better way to hint to layout that we are rendering search results, or perhaps just use a separate layout file  -->
+    <#if (lookupSource?? || actionName=='collections') ><#assign part="searchresults" /></#if>
+    
     <#if page.properties["div.titlebar"]?has_content>
         ${page.properties["div.titlebar"]}
     </#if>

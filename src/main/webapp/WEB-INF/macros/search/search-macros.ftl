@@ -32,11 +32,7 @@
         </div>
         
     <h2>Sorting Options and Submit</h2>
-    <div class="control-group">
-        
-        <label class="control-label">Sort By</label>
-        <@sortFields />
-    </div>
+    <@sortFields />
 </#macro>
 
 <#macro typeSelected type>
@@ -69,11 +65,11 @@
 </div>
 </#macro>
 
-<#macro sortFields javascriptOn=false>
+<#macro sortFields javascriptOn=false label="Sort By">
 
 <@s.select value="sortField" name='sortField'  
-        emptyOption='false' listValue='label' list='%{sortOptions}'/>
-
+        emptyOption='false' listValue='label' label=label list='%{sortOptions}'/>
+    <#--FIXME: move this block to tdar.common.js, bind if select has 'autoreload' class -->
     <#if javascriptOn>
       <script type='text/javascript'>
       $("#sortField").change(function() {

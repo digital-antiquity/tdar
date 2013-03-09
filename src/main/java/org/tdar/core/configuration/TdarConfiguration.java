@@ -518,7 +518,7 @@ public class TdarConfiguration {
         return assistant.getStringProperty("jira.link", "https://dev.tdar.org/jira/s/en_USgh0sw9-418945332/844/18/1.2.9/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?collectorId=959f12a3");
     }
     
-    public String getFremarkerTemplateDirectory() {
-        return assistant.getStringProperty("freemarker.templatedir", "includes/email/");
+    public File getFremarkerTemplateDirectory() {
+        return new File(assistant.getStringProperty("freemarker.templatedir", "includes/email/"));
     }
 }

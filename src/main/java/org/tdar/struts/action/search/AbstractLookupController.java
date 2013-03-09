@@ -455,4 +455,12 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         if(paginationHelper == null) paginationHelper = PaginationHelper.withSearchResults(this);
         return paginationHelper;
     }
+    
+    /**
+     * indicates whether view layer should hide facet + sort controls 
+     * @return 
+     */
+    public boolean isHideFacetsAndSort() {
+        return true;
+    }
 }

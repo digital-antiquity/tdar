@@ -2,10 +2,10 @@ package org.tdar.core.service;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,20 +20,16 @@ public class FreemarkerServiceITCase extends AbstractIntegrationTestCase {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Test
-    public void testNothing() {
-        Assert.assertNotNull(freemarkerService);
-        logger.debug("yay it wired up!");
-    }
-
-    @Test
-    public void testFreemarkerRendering() {
+    public void testFreemarkerRendering() throws IOException {
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put("foo", "Hieronymous");
-        map.put("bar", "Basho");
+        String heir = "Hieronymous";
+        map.put("foo", heir);
+        String boash = "Boash";
+        map.put("bar", boash);
         String output = freemarkerService.render("test-email.ftl", map);
         logger.debug("output: {}", output);
-        assertTrue(output.contains("Hieronymous"));
-        assertTrue(output.contains("Basho"));
+        assertTrue(output.contains(heir));
+        assertTrue(output.contains(boash));
     }
 
 }

@@ -124,7 +124,7 @@ public class CreditCartWebITCase extends AbstractAuthenticatedWebTestCase {
         assertTextPresent("12");
         assertTextPresent("$5,430");
         assertTextPresent("$1,350");
-        logger.info(getPageText());
+        logger.trace(getPageText());
 
     }
 

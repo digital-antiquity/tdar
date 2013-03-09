@@ -23,14 +23,13 @@ import org.apache.pdfbox.util.PDFMergerUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.FileSystemResourceDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
 /*
@@ -41,7 +40,6 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 public class PdfService implements Serializable {
 
     private static final long serialVersionUID = 2111947231803271925L;
-    private static final String TESTING_PATH_FOR_INCLUDES_DIRECTORY = "/../ROOT/";
     private static final String DOT_PDF = ".pdf";
     private static final String COVER_PAGE = "cover_page";
     private static final int LEFT_MARGIN = 73;
@@ -134,10 +132,10 @@ public class PdfService implements Serializable {
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private UrlService urlService;
+    FileSystemResourceDao fileDao;
 
     @Autowired
-    ResourceLoader resourceLoader;
+    private UrlService urlService;
 
     /*
      * Provided a submitter and a file version, it creates a cover page from the resource, and then combines them
@@ -151,7 +149,7 @@ public class PdfService implements Serializable {
                 String path = String.format("%s%s%s", TdarConfiguration.getInstance().getThemeDir(), COVER_PAGE, DOT_PDF);
 
                 // get the template
-                File template = loadTemplate(path);
+                File template = fileDao.loadTemplate(path);
 
                 // create the cover page
                 template = createCoverPage(submitter, template, document);
@@ -176,25 +174,6 @@ public class PdfService implements Serializable {
         }
         merger.mergeDocuments();
         return outputFile;
-    }
-
-    // helper to load the PDF Template for the cover page
-    private File loadTemplate(String path) throws IOException, FileNotFoundException {
-        Resource resource = resourceLoader.getResource(path);
-        File template = null;
-        if (resource.exists()) {
-            template = resource.getFile();
-        } else {
-            resource = resourceLoader.getResource(".");
-            logger.debug("{}", resource);
-            // TO SUPPORT TESTING
-            template = new File(resource.getFile().getAbsolutePath() + TESTING_PATH_FOR_INCLUDES_DIRECTORY + path);
-            logger.debug("{}", path);
-            if (!template.exists()) {
-                throw new FileNotFoundException(path);
-            }
-        }
-        return template;
     }
 
     // Create the cover pge from the template file and the resource
@@ -222,7 +201,8 @@ public class PdfService implements Serializable {
 
         cursorPositionFromBottom = writeOnPage(content, document.getTitle(), FontHelper.HELVETICA_SIXTEEN_POINT, true, LEFT_MARGIN, cursorPositionFromBottom);
         cursorPositionFromBottom = writeOnPage(content, "", FontHelper.HELVETICA_SIXTEEN_POINT, true, LEFT_MARGIN, cursorPositionFromBottom);
-        cursorPositionFromBottom = writeLabelPairOnPage(content, "Author(s) / Editor(s): ", document.getFormattedAuthorList(), FontHelper.HELVETICA_TWELVE_POINT,
+        cursorPositionFromBottom = writeLabelPairOnPage(content, "Author(s) / Editor(s): ", document.getFormattedAuthorList(),
+                FontHelper.HELVETICA_TWELVE_POINT,
                 LEFT_MARGIN,
                 cursorPositionFromBottom);
         cursorPositionFromBottom = writeLabelPairOnPage(content, "Published: ", document.getFormattedSourceInformation(), FontHelper.HELVETICA_TWELVE_POINT,

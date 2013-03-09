@@ -17,6 +17,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -194,6 +195,16 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     // FIXME: THIS IS A POTENTIAL ISSUE FOR PERFORMANCE WHEREBY IT COULD BE LINKED TO THOUSANDS OF THINGS
     public Set<Resource> getResources() {
         return resources;
+    }
+
+    @Transient
+    public Set<Resource> getFlaggedResources() {
+        Set<Resource> flagged = new HashSet<Resource>();
+        for (Resource resource : getResources()) {
+            if (resource.getStatus() == Status.FLAGGED_ACCOUNT_BALANCE)
+                flagged.add(resource);
+        }
+        return flagged;
     }
 
     /**

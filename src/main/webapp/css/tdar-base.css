@@ -33,16 +33,13 @@ body {
     background-color: #efe;
 }
 
-/*todo: remove comments when confirmed not needed */
-#home hr,#alt hr {
+/** FIXME: This labryinth of rules for HR tags is starting to damage my calm.  replace  cascading form w/ hr.classname equivalent so it's easier to
+pinpoint usage **/
+hr {
 	border: 0;
 	border-top: 1px solid #999;
-	/* border-bottom: none; /* unnecessary, i think*/
 	height: 1px;
-	/* float: left;  /* originally an ff workaround, but this causes issues w/ neighbor elements. in all other browsers */
-	/* display: block; /* unnecessary */
-	/* width: 100%; /* unnecessary */
-	margin: 30px 0 30px 40px;
+	margin: 30px 0 30px 0;
 }
 
 hr.dbl {
@@ -50,9 +47,11 @@ hr.dbl {
 	height: 2px;
 }
 
+/**
 .span9 hr {
 	margin-left: 0 !important;
 }
+**/
 
 
 #alt h3 {
@@ -923,10 +922,8 @@ h1 span,h4 span {
 .searchresults h2.totalRecords {
 	font-size: 20px;
 	line-height: 24px;
-	float: left;
-	/* pagination balances sorting at top FIXME: should be specific, not general */
 	margin-top: 7px;
-	margin-bottom: 10px !important;
+	margin-bottom: 10px;
 }
 
 .searchresults aside h4 {
@@ -987,15 +984,19 @@ h1 span,h4 span {
 	background-position: 0 1px;
 }
 
+/**
 .searchresults .sort {
 	float: right;
 }
+**/
 
+/**
 .searchresults .sort p,.searchresults .sort form { 
 	float: left;
 	margin: 0;
 	padding: 0;
 }
+**/
 
 .searchresults .sort p {
 	font-size: 13px;
@@ -1010,7 +1011,7 @@ h1 span,h4 span {
 	clear: both;
 }
 
-.searchresults article hr {
+.searchresults  hr {
 	margin: 24px 0;
 }
 

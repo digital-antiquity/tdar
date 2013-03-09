@@ -6,8 +6,7 @@
  */
 package org.tdar.core.service;
 
-import java.io.FileNotFoundException;
-import java.text.SimpleDateFormat;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -17,7 +16,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,24 +26,17 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.bean.statistics.AggregateStatistic;
-import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 import org.tdar.core.bean.util.ScheduledProcess;
 import org.tdar.core.bean.util.UpgradeTask;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
-import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.processes.DoiProcess;
+import org.tdar.core.service.processes.FilestoreWeeklyLoggingProcess;
 import org.tdar.core.service.processes.RebuildHomepageCache;
 import org.tdar.core.service.processes.SitemapGeneratorProcess;
-import org.tdar.core.service.resource.InformationResourceFileVersionService;
-import org.tdar.core.service.resource.ResourceService;
-import org.tdar.filestore.Filestore;
-import org.tdar.filestore.Filestore.LogType;
+import org.tdar.core.service.processes.WeeklyStatisticsLoggingProcess;
 
 /**
  * 
@@ -64,21 +55,10 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     private static final long ONE_MIN_MS = 60000;
     private static final long FIVE_MIN_MS = ONE_MIN_MS * 5;
     private static final long TWO_MIN_MS = ONE_MIN_MS * 2;
-    public static String BAR = "\r\n========================================================\r\n";
-    @Autowired
-    private InformationResourceFileVersionService informationResourceFileVersionService;
-    @Autowired
-    private EmailService emailService;
     @Autowired
     private SearchIndexService searchIndexService;
     @Autowired
     private GenericService genericService;
-    @Autowired
-    private ResourceService resourceService;
-    @Autowired
-    private EntityService entityService;
-    @Autowired
-    private ResourceCollectionService resourceCollectionService;
     @Autowired
     private AuthenticationAndAuthorizationService authenticationService;
 
@@ -92,37 +72,12 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
 
     @Scheduled(cron = "12 0 0 * * SUN")
     public void generateWeeklyStats() {
-        logger.info("generating weekly stats");
-        List<AggregateStatistic> stats = new ArrayList<AggregateStatistic>();
-        stats.add(generateStatistics(StatisticType.NUM_PROJECT, resourceService.countActiveResources(ResourceType.PROJECT), ""));
-        stats.add(generateStatistics(StatisticType.NUM_DOCUMENT, resourceService.countActiveResources(ResourceType.DOCUMENT), ""));
-        stats.add(generateStatistics(StatisticType.NUM_DATASET, resourceService.countActiveResources(ResourceType.DATASET), ""));
-        stats.add(generateStatistics(StatisticType.NUM_VIDEO, resourceService.countActiveResources(ResourceType.VIDEO), ""));
-        stats.add(generateStatistics(StatisticType.NUM_CODING_SHEET, resourceService.countActiveResources(ResourceType.CODING_SHEET), ""));
-        stats.add(generateStatistics(StatisticType.NUM_SENSORY_DATA, resourceService.countActiveResources(ResourceType.SENSORY_DATA), ""));
-        stats.add(generateStatistics(StatisticType.NUM_ONTOLOGY, resourceService.countActiveResources(ResourceType.ONTOLOGY), ""));
-        stats.add(generateStatistics(StatisticType.NUM_IMAGE, resourceService.countActiveResources(ResourceType.IMAGE), ""));
-
-        stats.add(generateStatistics(StatisticType.NUM_DOCUMENT_WITH_FILES, resourceService.countActiveResourcesWithFiles(ResourceType.DOCUMENT), ""));
-        stats.add(generateStatistics(StatisticType.NUM_DATASET_WITH_FILES, resourceService.countActiveResourcesWithFiles(ResourceType.DATASET), ""));
-        stats.add(generateStatistics(StatisticType.NUM_VIDEO_WITH_FILES, resourceService.countActiveResourcesWithFiles(ResourceType.VIDEO), ""));
-        stats.add(generateStatistics(StatisticType.NUM_CODING_SHEET_WITH_FILES, resourceService.countActiveResourcesWithFiles(ResourceType.CODING_SHEET), ""));
-        stats.add(generateStatistics(StatisticType.NUM_SENSORY_DATA_WITH_FILES, resourceService.countActiveResourcesWithFiles(ResourceType.SENSORY_DATA), ""));
-        stats.add(generateStatistics(StatisticType.NUM_ONTOLOGY_WITH_FILES, resourceService.countActiveResourcesWithFiles(ResourceType.ONTOLOGY), ""));
-        stats.add(generateStatistics(StatisticType.NUM_IMAGE_WITH_FILES, resourceService.countActiveResourcesWithFiles(ResourceType.IMAGE), ""));
-
-        
-        stats.add(generateStatistics(StatisticType.NUM_USERS, entityService.findAllRegisteredUsers(null).size(), ""));
-        stats.add(generateStatistics(StatisticType.NUM_ACTUAL_CONTRIBUTORS, entityService.findNumberOfActualContributors(), ""));
-        stats.add(generateStatistics(StatisticType.NUM_COLLECTIONS, resourceCollectionService.findAllResourceCollections().size(), ""));
-        long repositorySize = TdarConfiguration.getInstance().getFilestore().getSizeInBytes();
-        stats.add(generateStatistics(StatisticType.REPOSITORY_SIZE, Long.valueOf(repositorySize), FileUtils.byteCountToDisplaySize(repositorySize)));
-        genericService.save(stats);
+        queue(scheduledProcessMap.get(WeeklyStatisticsLoggingProcess.class));
     }
-    
+
     @Scheduled(fixedDelay = FIVE_MIN_MS)
     public void checkAuthService() {
-        if (! authenticationService.getProvider().isConfigured()) {
+        if (!authenticationService.getProvider().isConfigured()) {
             logger.error("Unconfigured provider: {}", authenticationService.getProvider());
         }
     }
@@ -155,74 +110,10 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
         queue(scheduledProcessMap.get(RebuildHomepageCache.class));
     }
 
-    protected AggregateStatistic generateStatistics(AggregateStatistic.StatisticType statisticType, Number value, String comment) {
-        AggregateStatistic stat = new AggregateStatistic();
-        stat.setRecordedDate(new Date());
-        stat.setStatisticType(statisticType);
-        stat.setComment(comment);
-        stat.setValue(value.longValue());
-        logger.info("stat: {}", stat);
-        return stat;
-    }
-
     @Scheduled(cron = "5 0 0 * * SUN")
     @Async
-    public void verifyTdarFiles() {
-        if (!getTdarConfiguration().shouldRunPeriodicEvents()) {
-            return;
-        }
-        logger.info("beginning automated verification of files");
-        Filestore filestore = getTdarConfiguration().getFilestore();
-        StringBuffer missing = new StringBuffer();
-        StringBuffer tainted = new StringBuffer();
-        StringBuffer other = new StringBuffer();
-        StringBuffer subject = new StringBuffer("Problem Files Report");
-        int count = 0;
-        for (InformationResourceFileVersion version : informationResourceFileVersionService.findAll()) {
-            try {
-                if (!filestore.verifyFile(version)) {
-                    count++;
-                    tainted.append(String.format(" - %s's checksum does not match the one stored [%s]\r\n", version.getFilename(),
-                            version.getInformationResourceId()));
-                }
-            } catch (FileNotFoundException e) {
-                count++;
-                missing.append(String.format(" - %s not found [%s]\r\n", version.getFilename(), version.getInformationResourceId()));
-                logger.debug("file not found ", e);
-            } catch (Exception e) {
-                count++;
-                tainted.append(String.format(" - %s had a problem [%s]\r\n", version.getFilename(), version.getInformationResourceId()));
-                logger.debug("other error ", e);
-            }
-        }
-
-        if (missing.length() > 0)
-            missing.insert(0, "\r\n" + BAR + "MISSING FILES" + BAR + "");
-        if (tainted.length() > 0)
-            tainted.insert(0, "\r\n" + BAR + "TAINTED FILES" + BAR + "");
-        if (other.length() > 0)
-            other.insert(0, "\r\n" + BAR + "OTHER PROBLEMS" + BAR + "");
-
-        String end = " No issues found.";
-        if (count == 0) {
-            subject.append(" [NONE]");
-        }
-        else {
-            subject.append(" [" + count + "]");
-            missing.append(tainted).append(other);
-            end = missing.toString();
-        }
-
-        String message = String.format("This is an automated message from %s reporting on files with issues.\r\nRun on: %s %s\n %s", TdarConfiguration.getInstance().getSiteAcronym(),TdarConfiguration
-                .getInstance().getBaseUrl(), new Date(), end);
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        String filename = "verify-" + df.format(new Date()) + ".txt";
-        filestore.storeLog(LogType.FILESTORE_VERIFICATION, filename, message);
-
-        logger.debug(subject + "[ " + getTdarConfiguration().getSystemAdminEmail() + " ]");
-        logger.debug(message);
-        emailService.send(message, subject.toString());
-        logger.info("ending automated verification of files");
+    public void verifyTdarFiles() throws IOException {
+        queue(scheduledProcessMap.get(FilestoreWeeklyLoggingProcess.class));
     }
 
     private TdarConfiguration getTdarConfiguration() {
