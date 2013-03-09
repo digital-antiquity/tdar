@@ -1,5 +1,6 @@
 package org.tdar.struts.action.admin;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Date;
@@ -110,7 +111,7 @@ public class AdminController extends AuthenticationAware.Base {
     @Action(value="verifyFilestore",results={
             @Result(name = SUCCESS, type = "redirect", location = "/admin")
     })
-    public String verifyFilestore() {
+    public String verifyFilestore() throws IOException {
         scheduledProcessService.verifyTdarFiles();
         getActionMessages().add("Running ... this may take a while");
         return SUCCESS;
