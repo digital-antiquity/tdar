@@ -1,4 +1,4 @@
-User ${user.properName} performed a dedupe operation.
+User ${user} performed a dedupe operation.
 
 Authority: ${authority}
 Record Type: ${className}
