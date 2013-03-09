@@ -2,6 +2,7 @@ package org.tdar.core.service.processes;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -106,17 +107,21 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
     protected void batchCleanup() {
         StringBuilder sb = new StringBuilder();
         long total = 0;
+        Map<String,Object> map = new HashMap<String,Object>();
         if (batchResults != null) {
-            sb.append(DoiProcess.CREATED).append(":").append(batchResults.get(DoiProcess.CREATED)).append("\r\n");
-            sb.append(DoiProcess.UPDATED).append(":").append(batchResults.get(DoiProcess.UPDATED)).append("\r\n");
-            sb.append(DoiProcess.DELETED).append(":").append(batchResults.get(DoiProcess.DELETED)).append("\r\n");
+            map.put(DoiProcess.CREATED, batchResults.get(DoiProcess.CREATED));
+            map.put(DoiProcess.UPDATED, batchResults.get(DoiProcess.UPDATED));
+            map.put(DoiProcess.DELETED, batchResults.get(DoiProcess.DELETED));
             total += batchResults.get(DoiProcess.CREATED).size();
             total += batchResults.get(DoiProcess.UPDATED).size();
             total += batchResults.get(DoiProcess.DELETED).size();
         }
+        map.put("total",total);
+        map.put("date",new Date());
+        
         if (sb.length() > 0 && total > 0) {
             logger.info("sending email");
-            emailService.send(sb.toString(), emailService.getTdarConfiguration().getSiteAcronym()+ " DOI Creation Info");
+            emailService.sendTemplate("doi-daily", map, emailService.getTdarConfiguration().getSiteAcronym()+ " DOI Creation Info");
         }
         batchResults.clear();
         initializeBatchResults();

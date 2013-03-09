@@ -52,6 +52,8 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableMapConverter;
 @Service
 public class AuthorityManagementService {
 
+    private static final String SUBJECT = "%s Authority Management Service: user %s merged %s %s records to '%s'";
+
     @Autowired
     private ReflectionDao reflectionDao;
 
@@ -260,7 +262,6 @@ public class AuthorityManagementService {
 
     private <T extends Dedupable> void logAndNotify(AuthorityManagementLog<T> logData) {
         logger.debug("{}", logData);
-        String bar = "\r\n========================================================\r\n";
 
         // log the xml to filestore/logs
         Filestore filestore = TdarConfiguration.getInstance().getFilestore();
@@ -279,30 +280,17 @@ public class AuthorityManagementService {
         filestore.storeLog(LogType.AUTHORITY_MANAGEMENT, filename, xml);
 
         // now send a summary email
-        String subject = String.format(
-                TdarConfiguration.getInstance().getSiteAcronym() + " Authority Management Service: user %s merged %s %s records to '%s'",
-                logData.getUserDisplayName(),
-                numUpdated,
-                className,
-                logData.getAuthority().toString());
+        String subject = String.format(SUBJECT,
+                TdarConfiguration.getInstance().getSiteAcronym(), logData.getUserDisplayName(), numUpdated, className, logData.getAuthority().toString());
 
-        StringBuffer body = new StringBuffer(String.format("User %s performed a dedupe operation.\r\n\r\n", logData.getUserDisplayName()));
-        // String fmt = "%1$-20s %2$s\r\n"; //key: value
-        String fmt = "%1$s %2$s\r\n";
-        body.append(String.format(fmt, "Authority:", logData.getAuthority()));
-        body.append(String.format(fmt, "Record Type:", className));
-        body.append(String.format(fmt, "Records Updated:", numUpdated));
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("user", logData.getUserDisplayName());
+        map.put("authority", logData.getAuthority());
+        map.put("className", className);
+        map.put("numUpdated", numUpdated);
 
-        body.append(bar);
-        body.append("records merged");
-        body.append(bar);
-
-        for (Object p : logData.getUpdatedReferrers().keySet()) {
-            body.append("\r\n  -");
-            body.append(p);
-        }
-        logger.debug(body.toString());
-        emailService.send(body.toString(), subject);
+        map.put("referrers", logData.getUpdatedReferrers().keySet());
+        emailService.sendTemplate("auth-report.ftl", map, subject);
     }
 
     @XmlRootElement

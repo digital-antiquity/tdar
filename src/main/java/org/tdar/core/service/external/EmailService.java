@@ -1,6 +1,5 @@
 package org.tdar.core.service.external;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +28,6 @@ import org.tdar.core.service.FreemarkerService;
 @Service
 public class EmailService {
 
-    @SuppressWarnings("unused")
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final static String FROM_EMAIL_NAME = "info@";
@@ -42,9 +40,9 @@ public class EmailService {
 
     public void sendTemplate(String templateName, Object dataModel, String subject, Person... recipients) {
         try {
-        send(freemarkerService.render(templateName, dataModel), subject, recipients);
+            send(freemarkerService.render(templateName, dataModel), subject, recipients);
         } catch (IOException fnf) {
-            logger.error("Email template file not found (" + subject +")", fnf);
+            logger.error("Email template file not found (" + subject + ")", fnf);
         }
     }
 
