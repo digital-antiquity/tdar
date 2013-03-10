@@ -31,8 +31,7 @@
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO, // NOTE: THIS MAY REQUIRE ADDITIONAL WORK INNER JOIN WILL PRECLUDE OwnerId w/no authorized users
             query = "SELECT distinct resCol from ResourceCollection resCol left join resCol.authorizedUsers as authUser where (authUser.user.id=:userId or resCol.owner=:userId) and"
-                    +
-                    " resCol.type!='INTERNAL'"),
+                    + " resCol.type!='INTERNAL'"),
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.QUERY_IS_ALLOWED_TO_MANAGE,
             query = "SELECT distinct 1 from " +
@@ -72,8 +71,7 @@
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.QUERY_SPARSE_EMPTY_PROJECTS,
             query = "select new Project(project.id, project.title) from Project project where (submitter.id=:submitter) and project.status in ('ACTIVE', 'DRAFT') "
-                    +
-                    " and not exists(select 1 from InformationResource ir where ir.status in ('ACTIVE','DRAFT') and ir.project.id = project.id)"
+                    + " and not exists(select 1 from InformationResource ir where ir.status in ('ACTIVE','DRAFT') and ir.project.id = project.id)"
     ),
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.QUERY_CONTRIBUTORREQUEST_PENDING,
@@ -110,8 +108,7 @@
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.QUERY_INFORMATIONRESOURCE_FIND_BY_FILENAME,
             query = "SELECT file from InformationResourceFile as file, InformationResourceFileVersion as version where file.informationResource = :resource and "
-                    +
-                    "file=version.informationResourceFile and file.latestVersion=version.version and version.filename = :filename"
+                    + "file=version.informationResourceFile and file.latestVersion=version.version and version.filename = :filename"
     ),
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.QUERY_ONTOLOGYNODE_ALL_CHILDREN_WITH_WILDCARD,
@@ -178,8 +175,7 @@
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.QUERY_COLLECTION_BY_AUTH_OWNER,
             query = "select distinct col from ResourceCollection as col left join col.authorizedUsers as authorizedUser where "
-                    +
-                    "col.type in (:collectionTypes) and (col.owner.id=:authOwnerId or (authorizedUser.user.id=:authOwnerId and authorizedUser.effectiveGeneralPermission >  :equivPerm)) order by col.name"
+                    + "col.type in (:collectionTypes) and (col.owner.id=:authOwnerId or (authorizedUser.user.id=:authOwnerId and authorizedUser.effectiveGeneralPermission >  :equivPerm)) order by col.name"
     ),
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.QUERY_COLLECTION_PUBLIC_WITH_HIDDEN_PARENT,
@@ -281,26 +277,22 @@
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.SPACE_BY_SUBMITTER,
             query = "select sum( res.spaceInBytesUsed) as len, sum(res.filesUsed), count(res) from InformationResource res"
-                    +
-                    " where res.submitter.id in (:submitterIds) and res.status in (:statuses) "
+                    + " where res.submitter.id in (:submitterIds) and res.status in (:statuses) "
     ),
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.SPACE_BY_RESOURCE,
             query = "select sum( res.spaceInBytesUsed) as len, sum(res.filesUsed),  count(res) from InformationResource res "
-                    +
-                    " where res.id in (:resourceIds) and res.status in (:statuses) "
+                    + " where res.id in (:resourceIds) and res.status in (:statuses) "
     ),
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.SPACE_BY_PROJECT,
             query = "select sum( res.spaceInBytesUsed) as len, sum(res.filesUsed),  count(res) from InformationResource res "
-                    +
-                    " where res.project.id in (:projectIds) and res.status in (:statuses) "
+                    + " where res.project.id in (:projectIds) and res.status in (:statuses) "
     ),
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.SPACE_BY_COLLECTION,
             query = "select sum( res.spaceInBytesUsed) as len, sum(res.filesUsed), count(res) from ResourceCollection coll left join coll.resources as res "
-                    +
-                    " where coll.id in (:collectionIds) and res.status in (:statuses) "
+                    + " where coll.id in (:collectionIds) and res.status in (:statuses) "
     ),
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.ACCESS_BY,
