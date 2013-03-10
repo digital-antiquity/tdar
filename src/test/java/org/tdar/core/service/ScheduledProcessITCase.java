@@ -27,6 +27,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.statistics.AggregateStatistic;
 import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 import org.tdar.core.bean.util.ScheduledBatchProcess;
+import org.tdar.core.service.processes.FilestoreWeeklyLoggingProcess;
 import org.tdar.core.service.processes.OverdrawnAccountUpdate;
 import org.tdar.core.service.processes.SitemapGeneratorProcess;
 import org.tdar.core.service.processes.WeeklyStatisticsLoggingProcess;
@@ -78,18 +79,26 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     OverdrawnAccountUpdate oau;
-    
+
+    @Autowired
+    FilestoreWeeklyLoggingProcess fsp;
+
+    @Test
+    public void testVerifyProcess() {
+        fsp.execute();
+        fail("need to fill out test");
+    }
+
     @Test
     @Rollback
     public void testAccountEmail() {
-        // NOTE: needs manual testing to ensure that this actually handles bookmarks properly...
-        // THIS TEST WILL FAIL IF RUN IN ECLIPSE WITHOUT DOING A VERIFY FIRST (it needs access to includes)
         Account account = setupAccountForPerson(getBasicUser());
         account.setStatus(Status.FLAGGED_ACCOUNT_BALANCE);
         genericService.saveOrUpdate(account);
         oau.execute();
+        fail("need to fill out test");
     }
-    
+
     @Test
     public void testCleanup() throws Exception {
         MockScheduledProcess mock = new MockScheduledProcess();
@@ -131,7 +140,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         assertSame("number of runs should be 1 now", 1, numberOfRuns);
 
     }
-    
+
     @Autowired
     WeeklyStatisticsLoggingProcess processingTask;
 
