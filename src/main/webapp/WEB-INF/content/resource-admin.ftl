@@ -9,17 +9,26 @@
 <script>
 $(function() {
 
-var d0 = {};
+
+var results = [];
 var data = [];
-
-
-	<#list usageStatsForResources as stats>
+	    <#list usageStatsForResources as stats>
             data.push([new Date("${stats.aggregateDate?string("yyyy-MM-dd")}"), ${stats.count?c}]);
         </#list>
-        d0.label = "Views";
-        d0.color = "${settings.barColors[ 2 % settings.barColors?size ]}";
+        results.push({label: "Views", data: data ,color: "#000000" });
+        
+		<#list downloadStats?keys as key>
+		<#if downloadStats.get(key)?has_content>
+		var row${key_index} = [];
+		<#list (downloadStats.get(key)) as stats>
+			row${key_index}.push([new Date("${stats.aggregateDate?string("yyyy-MM-dd")}"), ${stats.count?c}]);
+		</#list>
+		var colr = "${settings.barColors[ key_index % settings.barColors?size ]}";
+		results.push({label: "${key}", data: row${key_index} ,color: colr });
+		</#if>
+		</#list>
 
-    $.plot($("#graphviewstats"), [ {label: d0.label, data: data ,color: d0.color }],{
+    $.plot($("#graphstats"), results,{
           bars: {
             show: true,
             barWidth: 5,
@@ -39,7 +48,7 @@ var data = [];
     });
 });
 </script>
-<div id="graphviewstats" style="height:120px"></div>
+<div id="graphstats" style="height:120px"></div>
 </#noescape>
 <table class="tableFormat table">
     <tr>
