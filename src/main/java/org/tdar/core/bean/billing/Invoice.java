@@ -20,8 +20,10 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.entity.Address;
@@ -47,13 +49,19 @@ public class Invoice extends Base implements Updatable {
     private final static String[] JSON_PROPERTIES = { "id", "paymentMethod", "transactionStatus", "totalFiles", "totalResources", "totalSpace",
             "calculatedCost", "total" };
 
-    public enum TransactionStatus {
-        PREPARED,
-        PENDING_TRANSACTION,
-        TRANSACTION_SUCCESSFUL,
-        TRANSACTION_FAILED,
-        TRANSACTION_CANCELLED;
+    public enum TransactionStatus implements HasLabel {
+        PREPARED("Prepared"),
+        PENDING_TRANSACTION("Pending Transaction"),
+        TRANSACTION_SUCCESSFUL("Transaction Successful"),
+        TRANSACTION_FAILED("Transaction Failed"),
+        TRANSACTION_CANCELLED("Transaction Cancelled");
 
+        private String label;
+        
+        private TransactionStatus(String label) {
+            this.label = label;
+        }
+        
         public boolean isComplete() {
             switch (this) {
                 case PENDING_TRANSACTION:
@@ -71,6 +79,10 @@ public class Invoice extends Base implements Updatable {
                 default:
                     return false;
             }
+        }
+        
+        public String getLabel() {
+            return this.label;
         }
     }
 

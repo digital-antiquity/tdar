@@ -12,7 +12,7 @@
 
 </head>
 <body>
-<h1>Invoice <span class="small">{${invoice.transactionStatus}}</span></h1>
+<h1>Invoice <span class="small">{${invoice.transactionStatus.label}}</span></h1>
 <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal disableFormNavigate" enctype='multipart/form-data' action='/cart/process-payment-request?id=${invoice.id?c}'>
     <@s.hidden name="id" value="${invoice.id?c!-1}" />
 <#--    <@s.hidden name="invoice.id" /> -->
