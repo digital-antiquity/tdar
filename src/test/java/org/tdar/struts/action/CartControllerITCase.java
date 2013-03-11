@@ -1,5 +1,6 @@
 package org.tdar.struts.action;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -163,6 +164,7 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         CartController controller = setupPaymentTests();
         Invoice invoice = runSuccessfullTransaction(controller);
         assertEquals(TransactionStatus.TRANSACTION_SUCCESSFUL, invoice.getTransactionStatus());
+        fail("should be testing email contains the right info and not a freemarker error");
     }
 
     private Invoice runSuccessfullTransaction(CartController controller) throws TdarActionException {

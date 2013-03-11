@@ -2,8 +2,8 @@ package org.tdar.struts.action;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 
@@ -20,7 +20,6 @@ import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.GenericService;
-import org.tdar.core.service.external.EmailService;
 
 public class AuthorityManagementControllerITCase extends AbstractAdminControllerITCase {
 
@@ -28,9 +27,6 @@ public class AuthorityManagementControllerITCase extends AbstractAdminController
 
     @Autowired
     private GenericService genericService;
-
-    @Autowired
-    EmailService emailService;
 
     @Before
     public void setup() {
@@ -103,6 +99,7 @@ public class AuthorityManagementControllerITCase extends AbstractAdminController
         // this syncronize is necessary (apparently) because we need to ensure that any pending deletes that may throw key violations fire
         // before this test terminates.
         genericService.synchronize();
+        fail("should test email");
     }
 
     @Test
