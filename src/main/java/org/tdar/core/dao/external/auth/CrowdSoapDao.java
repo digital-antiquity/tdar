@@ -58,6 +58,7 @@ public class CrowdSoapDao extends BaseAuthenticationProvider {
         this.httpAuthenticator = httpAuthenticator;
     }
 
+    @Override
     public boolean isConfigured() {
         if (securityServerClient == null || httpAuthenticator == null) {
             logger.debug("client and/or authenticator are null " + securityServerClient + " " + httpAuthenticator);
