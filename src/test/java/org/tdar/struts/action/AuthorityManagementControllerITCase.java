@@ -11,6 +11,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.DedupeableType;
 import org.tdar.core.bean.entity.Institution;
@@ -19,7 +20,9 @@ import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.service.AuthorityManagementService;
 import org.tdar.core.service.GenericService;
+import org.tdar.core.service.processes.OverdrawnAccountUpdate;
 
 public class AuthorityManagementControllerITCase extends AbstractAdminControllerITCase {
 
@@ -99,7 +102,11 @@ public class AuthorityManagementControllerITCase extends AbstractAdminController
         // this syncronize is necessary (apparently) because we need to ensure that any pending deletes that may throw key violations fire
         // before this test terminates.
         genericService.synchronize();
-        fail("should test email");
+        SimpleMailMessage received = mockMailSender.getMessages().get(0);
+        assertTrue(received.getSubject().contains(AuthorityManagementService.SERVICE_NAME));
+        assertTrue(received.getText().contains("records merged"));
+        assertEquals(received.getFrom(), emailService.getFromEmail());
+        assertEquals(received.getTo()[0], getTdarConfiguration().getSystemAdminEmail());
     }
 
     @Test

@@ -52,7 +52,8 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableMapConverter;
 @Service
 public class AuthorityManagementService {
 
-    private static final String SUBJECT = "%s Authority Management Service: user %s merged %s %s records to '%s'";
+    public static final String SERVICE_NAME = "Authority Management Service:";
+    public static final String SUBJECT = "%s " + SERVICE_NAME + " user %s merged %s %s records to '%s'";
 
     @Autowired
     private ReflectionDao reflectionDao;

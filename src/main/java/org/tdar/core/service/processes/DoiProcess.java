@@ -25,6 +25,8 @@ import org.tdar.utils.Pair;
 @Component
 public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
 
+    public static final String SUBJECT = " DOI Creation Info";
+
     private static final long serialVersionUID = 6004534173920064945L;
 
     public static final String DELETED = "DELETED";
@@ -121,7 +123,7 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
         
         if (sb.length() > 0 && total > 0) {
             logger.info("sending email");
-            emailService.sendTemplate("doi-daily", map, emailService.getTdarConfiguration().getSiteAcronym()+ " DOI Creation Info");
+            emailService.sendTemplate("doi-daily", map, emailService.getTdarConfiguration().getSiteAcronym()+ SUBJECT);
         }
         batchResults.clear();
         initializeBatchResults();

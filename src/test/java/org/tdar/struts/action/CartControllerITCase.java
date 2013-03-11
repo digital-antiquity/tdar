@@ -1,6 +1,5 @@
 package org.tdar.struts.action;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -16,6 +15,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.BillingActivity;
@@ -164,7 +164,10 @@ public class CartControllerITCase extends AbstractResourceControllerITCase {
         CartController controller = setupPaymentTests();
         Invoice invoice = runSuccessfullTransaction(controller);
         assertEquals(TransactionStatus.TRANSACTION_SUCCESSFUL, invoice.getTransactionStatus());
-        fail("should be testing email contains the right info and not a freemarker error");
+        SimpleMailMessage received = mockMailSender.getMessages().get(0);
+        assertTrue(received.getSubject().contains(CartController.SUBJECT));
+        assertTrue(received.getText().contains("Transaction Status"));
+        assertEquals(received.getFrom(), emailService.getFromEmail());
     }
 
     private Invoice runSuccessfullTransaction(CartController controller) throws TdarActionException {
