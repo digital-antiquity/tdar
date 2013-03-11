@@ -460,7 +460,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     }
 
     public List<PaymentMethod> getAllPaymentMethods() {
-        if (isAdministrator()) {
+        if (isBillingManager()) {
             return Arrays.asList(PaymentMethod.values());
         } else {
             return Arrays.asList(PaymentMethod.CREDIT_CARD);
