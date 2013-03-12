@@ -171,7 +171,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             if (explore) {
                 return exploreSearch();
             }
-            boolean resetSearch = processLegacySearch();
+            boolean resetSearch = processLegacySearchParameters();
 
             if (StringUtils.isNotBlank(query) && !resetSearch) {
                 logger.trace("running basic search");
@@ -307,11 +307,9 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
      * For these requests we translate the provided arguments into a data
      * structure that can be understood by "new search".
      * 
-     * @return
+     * @return true if this method translated a legacy search, false if this is not a legacy search
      */
-    // FIXME: processLegacySearch is an inaccurate name. processSimpleApiSearch
-    // is more like it.
-    private boolean processLegacySearch() {
+    private boolean processLegacySearchParameters() {
         // assumption: it's okay to wipe out the groups[] if we detect a legacy
         // request, and that you can't combine two different types (for
         // example: an id search combined with a uncontrolledCultureKeyword
@@ -337,6 +335,10 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
                 || !getGeographicKeywords().isEmpty()) {
             logger.trace("legacy api: uncontrolled keyword");
             groups.clear();
+            setLegacyFieldtypes(SearchFieldType.FFK_SITE, getSiteNameKeywords());
+            setLegacyFieldtypes(SearchFieldType.FFK_CULTURAL, getUncontrolledCultureKeywords());
+            setLegacyFieldtypes(SearchFieldType.FFK_SITE_TYPE, getUncontrolledSiteTypeKeywords());
+            setLegacyFieldtypes(SearchFieldType.FFK_GEOGRAPHIC, getGeographicKeywords());
             groups.add(legacySearchParameters);
             return true;
         }
@@ -441,14 +443,22 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         logger.trace("result: {} ", proxies);
     }
 
+    //this is a no-op if basic search not detected
+    private boolean processBasicSearchParameters() {
+        boolean isBasic = StringUtils.isNotBlank(query);
+        if(isBasic) {
+            SearchParameters terms = new SearchParameters();
+            terms.setOperator(Operator.AND);
+            terms.getAllFields().add(query);
+            terms.getFieldTypes().add(SearchFieldType.ALL_FIELDS);
+            groups.add(terms);
+        }
+        return isBasic;
+    }
+
     private String basicSearch() {
-        // translate basic search field(s) so that they can be processed by
-        // advancedSearch()
-        SearchParameters terms = new SearchParameters();
-        terms.setOperator(Operator.AND);
-        terms.getAllFields().add(query);
-        terms.getFieldTypes().add(SearchFieldType.ALL_FIELDS);
-        groups.add(terms);
+        // translate basic search field(s) so that they can be processed by advancedSearch()
+        processBasicSearchParameters();
         return advancedSearch();
     }
 
@@ -467,12 +477,25 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
     @Actions({
             @Action(value = "basic", results = { @Result(name = SUCCESS, location = "advanced.ftl") }),
-            @Action(value = "advanced"),
             @Action(value = "collection", results = { @Result(name = SUCCESS, location = "advanced.ftl") }),
             @Action(value = "person", results = { @Result(name = SUCCESS, location = "advanced.ftl") }),
             @Action(value = "institution", results = { @Result(name = SUCCESS, location = "advanced.ftl") })
     })
     public String execute() {
+        return SUCCESS;
+    }
+    
+    @Action(value="advanced")
+    public String advanced() {
+        //process query paramter or legacy parameters, if present.
+        processBasicSearchParameters();
+        processLegacySearchParameters();
+        
+        //if refining a search, make sure we inflate any deflated terms
+        for(SearchParameters sp : groups) {
+            getSearchService().inflateSearchParameters(sp);
+        }
+        
         return SUCCESS;
     }
 
@@ -646,6 +669,15 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         getReservedSearchParameters().getDocumentTypes().add(doctype);
     }
 
+    //when translating legacysearch, we need to set the field types so that the 'refine your search' feature works
+    private void setLegacyFieldtypes(SearchFieldType fieldType, List<?> list) {
+        if(list.size()==0)return;
+        legacySearchParameters.getFieldTypes().clear();
+        for(int i = 0; i < list.size(); i++) {
+            legacySearchParameters.getFieldTypes().add(fieldType);
+        }
+    }
+    
     // legacy keyword lookup support
     public void setSiteNameKeywords(List<String> kwds) {
         legacySearchParameters.setSiteNames(kwds);

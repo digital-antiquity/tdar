@@ -919,7 +919,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         //simulate /search?query=this is a test.   We expect the form to pre-populate with this search term
         String query = "this is a test";
         controller.setQuery(query);
-        controller.execute();
+        controller.advanced();
         assertTrue("first group should have one term", firstGroup().getAllFields().size() > 0);
         assertEquals("query should appear on first term", query, firstGroup().getAllFields().get(0));
     }
@@ -927,17 +927,18 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Test
     //if user gets to the results page via clicking on persons name from resource view page,  querystring only contains person.id field.  So before 
     //rendering the 'refine your search' version of the search form the controller must inflate query components.
-    public void testRefinePersonIdOnly() {
-        Person person = new Person();
-        person.setId(1L);
-        ResourceCreatorProxy rcp = new ResourceCreatorProxy(person, ResourceCreatorRole.SUBMITTER);
-        firstGroup().getResourceCreatorProxies().add(rcp);
-        controller.execute();
+    public void testRefineSearchWithSparseProject() {
+        Project persisted = createAndSaveNewProject();
+        Project sparse = new Project();
+        //ensure the project is in  
+        genericService.synchronize();
+        sparse.setId(persisted.getId());
+        firstGroup().getProjects().add(sparse);
+        controller.advanced();
         
-        assertEquals("Allen", firstGroup().getResourceCreatorProxies().get(0).getPerson().getFirstName());
+        assertEquals("sparse project should have been inflated", persisted.getTitle(), firstGroup().getProjects().get(0).getTitle());
     }
     
-
     private void assertOnlyOneResult(InformationResource informationResource) {
         doSearch();
         assertEquals("expecting two results: doc and project", 2, controller.getResults().size());

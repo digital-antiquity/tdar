@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -52,6 +53,7 @@ import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Facetable;
+import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
@@ -68,6 +70,7 @@ import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.QueryGroup;
 import org.tdar.search.query.part.QueryPart;
 import org.tdar.struts.action.search.ReservedSearchParameters;
+import org.tdar.struts.action.search.SearchParameters;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.utils.Pair;
 
@@ -621,5 +624,22 @@ public class SearchService {
         Matcher m = luceneSantizeQueryPattern.matcher(unsafeQuery);
         return m.replaceAll("$1\\\\$2$3");
     }
+    
+    public void inflateSearchParameters(SearchParameters searchParameters) {
+        List<List<? extends Persistable>> lists = searchParameters.getSparseLists();
+        for(List<? extends Persistable>list : lists) {
+            //making unchecked cast so compiler accepts call to set()
+            @SuppressWarnings("unchecked")
+            ListIterator<Persistable> itor = (ListIterator<Persistable>)list.listIterator();
+            while(itor.hasNext()) {
+                Persistable sparse = itor.next();
+                if(sparse != null) {
+                    Persistable persistable = genericService.find(sparse.getClass(), sparse.getId());
+                    itor.set(persistable);
+                }
+            }
+        }
+    }
+    
 
 }
