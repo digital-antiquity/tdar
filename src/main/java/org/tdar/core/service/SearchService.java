@@ -53,7 +53,6 @@ import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Facetable;
-import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
@@ -624,22 +623,23 @@ public class SearchService {
         Matcher m = luceneSantizeQueryPattern.matcher(unsafeQuery);
         return m.replaceAll("$1\\\\$2$3");
     }
-    
+
     public void inflateSearchParameters(SearchParameters searchParameters) {
+        // FIXME: refactor to ue genericService.populateSparseObjectsById() which optimizes the qeries to the DB
+        // Also, consider moving into genericService
         List<List<? extends Persistable>> lists = searchParameters.getSparseLists();
-        for(List<? extends Persistable>list : lists) {
-            //making unchecked cast so compiler accepts call to set()
+        for (List<? extends Persistable> list : lists) {
+            // making unchecked cast so compiler accepts call to set()
             @SuppressWarnings("unchecked")
-            ListIterator<Persistable> itor = (ListIterator<Persistable>)list.listIterator();
-            while(itor.hasNext()) {
+            ListIterator<Persistable> itor = (ListIterator<Persistable>) list.listIterator();
+            while (itor.hasNext()) {
                 Persistable sparse = itor.next();
-                if(sparse != null) {
+                if (sparse != null) {
                     Persistable persistable = genericService.find(sparse.getClass(), sparse.getId());
                     itor.set(persistable);
                 }
             }
         }
     }
-    
 
 }
