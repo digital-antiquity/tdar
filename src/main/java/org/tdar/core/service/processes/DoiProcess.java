@@ -119,7 +119,7 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
         
         if (total > 0) {
             logger.info("sending email");
-            emailService.sendTemplate("doi-daily", map, emailService.getTdarConfiguration().getSiteAcronym()+ SUBJECT);
+            emailService.sendTemplate("doi-daily.ftl", map, emailService.getTdarConfiguration().getSiteAcronym()+ SUBJECT);
         }
         batchResults.clear();
         initializeBatchResults();
