@@ -23,6 +23,8 @@ import org.tdar.filestore.Filestore.LogType;
 @Component
 public class FilestoreWeeklyLoggingProcess extends ScheduledProcess.Base<HomepageGeographicKeywordCache> {
 
+    public static final String PROBLEM_FILES_REPORT = "Problem Files Report";
+
     private static final long serialVersionUID = -6196804675468219433L;
 
     @Autowired
@@ -50,7 +52,7 @@ public class FilestoreWeeklyLoggingProcess extends ScheduledProcess.Base<Homepag
         map.put("tainted", tainted);
         map.put("missing", missing);
 
-        StringBuffer subject = new StringBuffer("Problem Files Report");
+        StringBuffer subject = new StringBuffer(PROBLEM_FILES_REPORT);
         int count = 0;
         for (InformationResourceFileVersion version : informationResourceFileVersionService.findAll()) {
             try {

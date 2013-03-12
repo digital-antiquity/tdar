@@ -22,11 +22,11 @@
 
   .show-print {
 	  display:block !important;
-	  visibility:visible !Important;
+	  visibility:visible !important;
   }
 
   .atlwdg-trigger {
-	display:none;
+	display:none !important;
 	visbility:hidden;
   }
 }

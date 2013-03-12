@@ -20,7 +20,14 @@
 
 <div class="container row">
     <div class="span3">
-        <h3>Billing Address</h3>
+        <h3>Billing Information</h3>
+        <#if invoice.owner??>
+        <b>Account Owner</b>
+        <br>${invoice.owner.properName}
+        </#if>
+        
+        
+        
 	<#if invoice.address?has_content>
         <@common.printAddress invoice.address/>
 	</#if>

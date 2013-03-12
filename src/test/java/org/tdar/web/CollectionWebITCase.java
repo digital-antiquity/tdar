@@ -34,30 +34,14 @@ public class CollectionWebITCase  extends AbstractAdminAuthenticatedWebTestCase{
     public static final String FMT_AUTHUSERS_INSTITUTION = "authorizedUsers[%s].user.institution.name";
     public static final String FMT_AUTHUSERS_PERMISSION = "authorizedUsers[%s].generalPermission";
     
-    
-    
     @Test 
     //crate a collection with some resources,  then edit it by adding some authorized users and removing a few resources
     public void testCreateThenEditCollection() {
         assertNotNull(genericService);
-        gotoPage("/collection/add");
         String name = "my fancy collection";
         String desc = "description goes here";
-        setInput("resourceCollection.name", name);
-        setInput("resourceCollection.description", desc);
-        
         List<? extends Resource> someResources = getSomeResources();
-        
-        for(int i = 0 ; i < someResources.size(); i++) {
-            Resource resource = someResources.get(i);
-            //FIXME: we don't set id's in the form this way but setInput() doesn't understand 'resources.id' syntax.   fix it so that it can.
-            String fieldName = "resources[" + i + "].id";
-            String fieldValue = "" + resource.getId();
-            logger.debug("setting  fieldName:{}\t value:{}", fieldName, fieldValue);
-            createInput("hidden", "resources.id", fieldValue);
-        }
-        
-        submitForm();
+        createTestCollection(name, desc, someResources);
         assertTextPresent(name);
         assertTextPresent(desc);
         logger.trace(getHtmlPage().asText());
@@ -225,30 +209,4 @@ public class CollectionWebITCase  extends AbstractAdminAuthenticatedWebTestCase{
         }
         
     }
-    
-    private List<? extends Resource> getSomeResources() {
-        List<? extends Resource> alldocs = genericService.findAll(Document.class);
-        List<? extends Resource> somedocs = alldocs.subList(0, Math.min(10, alldocs.size())); //get no more than 10 docs, pls
-        return somedocs;
-    }
-    
-    private List<Person> getSomeUsers() {
-        //let's only get authorized users
-        List<Person> allRegisteredUsers = entityService.findAllRegisteredUsers(null);
-        List<Person> someRegisteredUsers = allRegisteredUsers.subList(0, Math.min(10,  allRegisteredUsers.size()));
-        return someRegisteredUsers;
-    }
-    
-    private List<Person> getSomePeople() {
-        List<Person> allNonUsers = entityService.findAll();
-        allNonUsers.removeAll(entityService.findAllRegisteredUsers(null));
-        List<Person> someNonUsers = allNonUsers.subList(0, Math.min(10,  allNonUsers.size()));
-        return someNonUsers;
-    }
-    
-    
-    
-    
-    
-    
 }

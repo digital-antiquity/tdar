@@ -11,6 +11,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
+import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.service.AccountService;
 import org.tdar.core.service.GenericService;
 
@@ -78,6 +79,16 @@ public class InvoiceITCase extends AbstractIntegrationTestCase {
         item.setActivity(new BillingActivity());
         assertTrue(item.isValid());
         assertTrue(item.isValidForController());
+    }
+    
+    @Test
+    @Rollback
+    public void testJsonStatus() {
+        Invoice invoice = new Invoice();
+        invoice.setTransactionStatus(TransactionStatus.PREPARED);
+        String json = invoice.toJSON().toString();
+        assertTrue("status in json", json.indexOf(TransactionStatus.PREPARED.name()) > -1);
+        
     }
 
     private List<BillingItem> setupBillingItem(Invoice invoice, long numberOfFiles, long numberOfMb) {

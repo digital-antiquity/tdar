@@ -41,8 +41,6 @@ import org.tdar.core.service.AuthorityManagementService.AuthorityManagementLog;
 
 public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCase {
 
-    boolean oldActuallySend;
-
     @Autowired
     AuthorityManagementService authorityManagementService;
 

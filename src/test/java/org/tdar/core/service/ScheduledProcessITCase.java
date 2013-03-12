@@ -12,6 +12,7 @@ import java.util.Map;
 import org.apache.commons.collections.CollectionUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.billing.Account;
@@ -86,7 +87,11 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     @Test
     public void testVerifyProcess() {
         fsp.execute();
-        fail("need to fill out test");
+        SimpleMailMessage received = mockMailSender.getMessages().get(0);
+        assertTrue(received.getSubject().contains(FilestoreWeeklyLoggingProcess.PROBLEM_FILES_REPORT));
+        assertTrue(received.getText().contains("not found"));
+        assertEquals(received.getFrom(), emailService.getFromEmail());
+        assertEquals(received.getTo()[0], getTdarConfiguration().getSystemAdminEmail());
     }
 
     @Test
@@ -96,7 +101,11 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         account.setStatus(Status.FLAGGED_ACCOUNT_BALANCE);
         genericService.saveOrUpdate(account);
         oau.execute();
-        fail("need to fill out test");
+        SimpleMailMessage received = mockMailSender.getMessages().get(0);
+        assertTrue(received.getSubject().contains(OverdrawnAccountUpdate.SUBJECT));
+        assertTrue(received.getText().contains("Flagged Items"));
+        assertEquals(received.getFrom(), emailService.getFromEmail());
+        assertEquals(received.getTo()[0], getTdarConfiguration().getSystemAdminEmail());
     }
 
     @Test

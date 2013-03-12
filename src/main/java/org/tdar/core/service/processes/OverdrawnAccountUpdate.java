@@ -17,6 +17,7 @@ import org.tdar.core.service.external.EmailService;
 @Component
 public class OverdrawnAccountUpdate extends ScheduledBatchProcess<Account> {
 
+    public static final String SUBJECT = "overdrawn accounts";
     /**
      * 
      */
@@ -51,7 +52,7 @@ public class OverdrawnAccountUpdate extends ScheduledBatchProcess<Account> {
         List<Account> accounts = genericDao.findAll(getPersistentClass(), getNextBatch());
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("accounts",accounts);
-        emailService.sendTemplate("overdrawn-admin.ftl", map, "admin accounts");
+        emailService.sendTemplate("overdrawn-admin.ftl", map, SUBJECT);
     }
 
     @Override

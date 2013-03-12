@@ -46,6 +46,7 @@ import org.tdar.struts.interceptor.PostOnly;
 @Namespace("/cart")
 public class CartController extends AbstractPersistableController<Invoice> implements ParameterAware {
 
+    public static final String SUBJECT = "Billing Transaction";
     public static final String SIMPLE = "simple";
     public static final String A_BILING_ADDRESS_IS_REQUIRED = "a biling address is required";
     public static final String VALID_PHONE_NUMBER_IS_REQUIRED = "a valid phone number is required (212) 555-1212";
@@ -378,7 +379,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
                     try {
                         Person person = new Person("Billing", "Info", getTdarConfiguration().getBillingAdminEmail());
                         getGenericService().markReadOnly(person);
-                        getEmailService().sendTemplate("transaction-complete-admin.ftl", map, "tDAR Billing Transaction", person);
+                        getEmailService().sendTemplate("transaction-complete-admin.ftl", map, getSiteAcronym() + SUBJECT, person);
                     } catch (Exception e) {
                         logger.error("could not send email: {} ", e);
                     }
@@ -460,7 +461,7 @@ public class CartController extends AbstractPersistableController<Invoice> imple
     }
 
     public List<PaymentMethod> getAllPaymentMethods() {
-        if (isAdministrator()) {
+        if (isBillingManager()) {
             return Arrays.asList(PaymentMethod.values());
         } else {
             return Arrays.asList(PaymentMethod.CREDIT_CARD);

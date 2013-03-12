@@ -1,5 +1,9 @@
 package org.tdar.core.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -7,6 +11,7 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.InformationResource;
@@ -16,8 +21,6 @@ import org.tdar.core.dao.external.pid.ExternalIDProvider;
 import org.tdar.core.service.processes.DoiProcess;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.utils.Pair;
-
-import static org.junit.Assert.*;
 
 /**
  * $Id$
@@ -63,8 +66,8 @@ public class DOIServiceITCase extends AbstractIntegrationTestCase {
         toBeUpdated.markUpdated(getAdminUser());
         toBeDeleted.setDescription(toBeDeleted.getTitle());
         toBeUpdated.setDescription(toBeUpdated.getTitle());
-        ((InformationResource)toBeUpdated).setDate(1243);
-        ((InformationResource)toBeDeleted).setDate(1243);
+        ((InformationResource) toBeUpdated).setDate(1243);
+        ((InformationResource) toBeDeleted).setDate(1243);
         resourceService.saveOrUpdate(toBeUpdated);
         resourceService.saveOrUpdate(toBeDeleted);
 
@@ -86,5 +89,10 @@ public class DOIServiceITCase extends AbstractIntegrationTestCase {
         assertEquals(1, created_.size());
         assertTrue(updated_.size() > 0);
         assertTrue(deleted_.size() > 0);
+//        SimpleMailMessage received = mockMailSender.getMessages().get(0);
+//        assertTrue(received.getSubject().contains(DoiProcess.SUBJECT));
+//        assertTrue(received.getText().contains("DOI Daily"));
+//        assertEquals(received.getFrom(), emailService.getFromEmail());
+
     }
 }

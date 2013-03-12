@@ -2,13 +2,13 @@ package org.tdar.web;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -35,6 +35,7 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     private static final String ADVANCED_SEARCH_BASE_URL = "/search/advanced";
     private static final String BASIC_SEARCH_BASE_URL = "/search/basic";
     private static final String SEARCH_RESULTS_BASE_URL = "/search/results";
+    private static int indexCount = 0;
 
     @Autowired
     SearchIndexService indexService;
@@ -47,6 +48,14 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             logger.trace("checkbox: " + cb);
         }
 
+    }
+    
+    @Before
+    //FIXME: bad for several reasons. @BeforeClass would be better,  but need to make reindex public void static first.
+    public void indexFirst() {
+        if(indexCount++ < 1) {
+            reindex();
+        }
     }
 
     // FIXME: I get an exception when I try to modify the contents of the
@@ -969,4 +978,17 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertNotNull("could not find element", element);
         assertTrue("checkbox isn't checked", element.isChecked());
     }
+    
+    @Test
+    //refine a collection search
+    public void testModifyCollectionSearch() {
+        String name = "superduper";
+        createTestCollection(name, "description goes here", getSomeResources());
+        gotoPage("/search/collection");
+        setInput("query", name);
+        submitForm("Search");
+        clickLinkWithText("Refine your search");
+        checkInput("query", name);
+    }
+    
 }
