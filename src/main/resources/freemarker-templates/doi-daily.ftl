@@ -1,4 +1,4 @@
-DOI Daily Update run on ${date}
+DOI Daily Update run on ${date?datetime}
 
 <#if created?has_content>
 CREATED: ${created}

@@ -11,6 +11,7 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.InformationResource;
@@ -88,10 +89,10 @@ public class DOIServiceITCase extends AbstractIntegrationTestCase {
         assertEquals(1, created_.size());
         assertTrue(updated_.size() > 0);
         assertTrue(deleted_.size() > 0);
-        // SimpleMailMessage received = mockMailSender.getMessages().get(0);
-        // assertTrue(received.getSubject().contains(DoiProcess.SUBJECT));
-        // assertTrue(received.getText().contains("DOI Daily"));
-        // assertEquals(received.getFrom(), emailService.getFromEmail());
+         SimpleMailMessage received = mockMailSender.getMessages().get(0);
+         assertTrue(received.getSubject().contains(DoiProcess.SUBJECT));
+         assertTrue(received.getText().contains("DOI Daily"));
+         assertEquals(received.getFrom(), emailService.getFromEmail());
 
     }
 }
