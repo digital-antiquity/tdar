@@ -13,10 +13,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Assert;
-
 import org.apache.lucene.queryParser.ParseException;
+import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -913,6 +913,30 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         assertFalse(controller.getRelevantInstitutionRoles().contains(ResourceCreatorRole.UPDATER));
         assertTrue(controller.getRelevantInstitutionRoles().contains(ResourceCreatorRole.RESOURCE_PROVIDER));
     }
+    
+    @Test
+    public void testRefineSimpleSearch() {
+        //simulate /search?query=this is a test.   We expect the form to pre-populate with this search term
+        String query = "this is a test";
+        controller.setQuery(query);
+        controller.execute();
+        assertTrue("first group should have one term", firstGroup().getAllFields().size() > 0);
+        assertEquals("query should appear on first term", query, firstGroup().getAllFields().get(0));
+    }
+    
+    @Test
+    //if user gets to the results page via clicking on persons name from resource view page,  querystring only contains person.id field.  So before 
+    //rendering the 'refine your search' version of the search form the controller must inflate query components.
+    public void testRefinePersonIdOnly() {
+        Person person = new Person();
+        person.setId(1L);
+        ResourceCreatorProxy rcp = new ResourceCreatorProxy(person, ResourceCreatorRole.SUBMITTER);
+        firstGroup().getResourceCreatorProxies().add(rcp);
+        controller.execute();
+        
+        assertEquals("Allen", firstGroup().getResourceCreatorProxies().get(0).getPerson().getFirstName());
+    }
+    
 
     private void assertOnlyOneResult(InformationResource informationResource) {
         doSearch();
