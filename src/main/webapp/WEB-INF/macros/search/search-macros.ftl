@@ -115,6 +115,12 @@
 
 <#macro searchUrl path><@s.url includeParams="all" value="${path}"><#if path?? && path!="results"><@s.param name="id" value=""/></#if><#nested></@s.url></#macro>
 
+<#macro refineUrl actionName=actionName>
+<#local _actionmap = {"results": "advanced", "people": "person", "collections": "collection", "institutions":"institution"}><#t>
+<#local _path = _actionmap[actionName]><#t>
+<@searchUrl _path/><#t>
+</#macro>
+
 <#macro paginationLink startRecord path linkText>
     <span class="paginationLink">
     <@searchLink path linkText>

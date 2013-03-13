@@ -17,17 +17,17 @@
   <#local showProject = false />
   <#local prev =""/>
   <#local first = true/>
-  <#assign listTag_=listTag/>  
+  <#local listTag_=listTag/>  
   <#assign itemTag_=itemTag/> 
   <#assign itemClass = ""/>
   
   <#-- setup default -->
   <#if orientation == "GRID">
-    <#assign listTag_="div"/>  
+    <#local listTag_="div"/>  
     <#assign itemClass = "span2"/>
     <#assign itemTag_="div"/> 
   <#elseif orientation == "MAP" >
-    <#assign listTag_="ol"/>  
+    <#local listTag_="ol"/>  
     <#assign itemTag_="li"/> 
     <div class="resource-list row">
       <#if mapPosition=="top" || mapPosition == "right">
@@ -126,22 +126,31 @@
 
 
 <#macro printDescription resource=resource expanded=false orientation=DEFAULT_ORIENTATION length=80 showProject=false>
+<#local _desc = (resource.description)?has_content?string(resource.description ,"Description not available") />
+<#--//FIXME: need non-hokey way to determine whether tdar should omit resource.description from search results. -->
+<#if _desc?starts_with("The information in this record has been migrated into tDAR from the National Archaeological Database Reports Module")>
+<#local _desc = "Description not available" />
+</#if>
+<#local _rid = resource.id?c >
+<#--//FIXME: need non-hokey way to determine whether persistable is collection  -->
+<#if resource.class.simpleName == 'ResourceCollection'>
+<#local _rid = "C${resource.id?c}" >
+</#if>
+
             <#if expanded && orientation != 'GRID'>
                 <div class="listItemPart">
-            <#if (resource.citationRecord?has_content && resource.citationRecord && !resource.resourceType.project)>
-               <span class='cartouche' title="Citation only; this record has no attached files.">Citation</span></#if>
-            <@common.cartouche resource true><@listCreators resource/></@common.cartouche>  
+                <#if (resource.citationRecord?has_content && resource.citationRecord && !resource.resourceType.project)>
+                <span class='cartouche' title="Citation only; this record has no attached files.">Citation</span>
+                </#if>
+                <@common.cartouche resource true><@listCreators resource/></@common.cartouche>  
                 <@view.unapiLink resource  />
                 <#if showProject && !resource.resourceType.project >
                 <p class="project">${resource.project.title}</p>
                 </#if>
-                <#if resource.description?has_content && !resource.description?starts_with("The information in this record has been migrated into tDAR from the National Archaeological Database Reports Module") >
                     <p class="abstract">
-<span class="pull-right small">[tDAR id: ${resource.id?c}]</span>                        <@common.truncate resource.description!"No description specified." length />
+                        <span class="pull-right small">[tDAR id: ${_rid}]</span>                        
+                        <@common.truncate _desc length />
                     </p>
-                </#if>
-	 
-                <br/>
                 </div>
             </#if>
 </#macro>

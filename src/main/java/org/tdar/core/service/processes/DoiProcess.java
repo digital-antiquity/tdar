@@ -70,9 +70,6 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
     @Override
     public void execute() {
         ExternalIDProvider idProvider = getProvider();
-//        if (idProvider == null || !idProvider.isConfigured()) {
-//            return;
-//        }
         try {
             idProvider.connect();
             processBatch(getNextBatch());
@@ -107,7 +104,6 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
 
     @Override
     protected void batchCleanup() {
-        StringBuilder sb = new StringBuilder();
         long total = 0;
         Map<String,Object> map = new HashMap<String,Object>();
         if (batchResults != null) {
@@ -121,9 +117,9 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
         map.put("total",total);
         map.put("date",new Date());
         
-        if (sb.length() > 0 && total > 0) {
+        if (total > 0) {
             logger.info("sending email");
-            emailService.sendTemplate("doi-daily", map, emailService.getTdarConfiguration().getSiteAcronym()+ SUBJECT);
+            emailService.sendTemplate("doi-daily.ftl", map, emailService.getTdarConfiguration().getSiteAcronym()+ SUBJECT);
         }
         batchResults.clear();
         initializeBatchResults();
