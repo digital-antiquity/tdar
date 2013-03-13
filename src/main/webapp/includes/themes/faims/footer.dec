@@ -2,28 +2,28 @@
     <div class="span3"> 
         <h4>About</h4> 
             <ul> 
-                <li><a class="" href="http://www.fedarch.org/wordpress/?cat=3">News</a></li>
+                <li><a class="external" href="http://www.fedarch.org/wordpress/?cat=3">News</a></li>
                 <!-- li><a class="" href="${helpUrl}">Getting started</a></li --> 
-                <li><a class="" href=" http://www.fedarch.org/wordpress/?page_id=648">Our Team</a></li>
-                <li><a class="" href=" www.fedarch.org">The FAIMS Project</a></li>
-                <li><a href="http://www.fedarch.org/wordpress/?page_id=655">Software</a></li>
+                <li><a class="external" href="http://www.fedarch.org/wordpress/?page_id=648">Our Team</a></li>
+                <li><a class="external" href="http://www.fedarch.org">The FAIMS Project</a></li>
+                <li><a class="external" href="http://www.fedarch.org/wordpress/?page_id=655">Software</a></li>
             </ul> 
     </div> 
     <div class="span3">
         <h4>Use</h4> 
             <ul> 
-                <li><a href='http://www.guidestogoodpractice.org/'>Guides to Good Practice</a></li>
-                <li><a href="http://www.fedarch.org/wordpress/?page_id=640">Help</a></li>
-                <li><a href="http://www.fedarch.org/wordpress/?page_id=634">User Agreement</a></li>
-                <li><a href="http://www.fedarch.org/wordpress/?page_id=661">Contributing</a></li>
-                <li><a href="http://www.fedarch.org/wordpress/?page_id=659">Pricing</a></li> 
+                <li><a class="external" href='http://www.guidestogoodpractice.org/'>Guides to Good Practice</a></li>
+                <li><a class="external" href="http://www.fedarch.org/wordpress/?page_id=640">Help</a></li>
+                <li><a class="external" href="http://www.fedarch.org/wordpress/?page_id=634">User Agreement</a></li>
+                <li><a class="external" href="http://www.fedarch.org/wordpress/?page_id=661">Contributing</a></li>
+                <li><a class="external" href="http://www.fedarch.org/wordpress/?page_id=659">Pricing</a></li> 
             </ul> 
     </div> 
     <div class="span3"> 
         <h4>Contact</h4> 
             <ul>
                 <li><a href="mailto:repository@fedarch.org?subject=FAIMS%20comments">repository@fedarch.org</a></li>
-                <li><a href="http://www.fedarch.org/wordpress/?page_id=84">Other contacts</a></li>
+                <li><a class="external" href="http://www.fedarch.org/wordpress/?page_id=84">Other contacts</a></li>
             </ul> 
      </div>
      <div class="span3">
@@ -41,14 +41,14 @@
     </div>
      
 </div>
-<div class="row no-print" id="copyright">  
-    <p class="copyright-notice">${siteAcronym} is hosted by the <a href="http://www.latrobe.edu.au/humanities/">Faculty of Humanities and Social Sciences</a> and the 
-        <a href="http://www.latrobe.edu.au/eresearch/">eResearch Office</a> of <a href="http://www.latrobe.edu.au/">La Trobe University</a>. It was enabled with 
-        funding from the <a href="http://ands.org.au/">Australian National Data Service</A> (ANDS) in partnership with the <a href="http://versi.edu.au/">Victorian 
-        eResearch Strategic Initiative (VeRSI)</a>, and is powered by <a href="http://www.tdar.org">tDAR</a>, an application built by 
-        <a href="http://digitalantiquity.org">Digital Antiquity</a>. ANDS is supported by the Australian Government through the National Collaborative Research 
-        Infrastructure Strategy Program and the Education Investment Fund (EIF) Super Science Initiative. Unless otherwise stated the copyright to all data, 
-        documents and metadata is retained by the copyright holder. The opinions, methods and conclusions expressed or implicit in these works may not represent 
-        the views of La Trobe University, ANDS, VeRSI, The Australian Government, Digital Antiquity or any related organisation, and remain the responsibility of 
-        the depositor.</p>
+<div class="row no-print footerlogos" id="copyright" >  
+    <p>OUR PARTNERS
+    <div class="footerlogos">
+        <a href="http://www.nectar.org.au/"><img class="footerlogo" src="/includes/themes/faims/images/nectar-small.jpg"></a>
+        <a href="http://www.unsw.edu.au/"><img class="footerlogo" src="/includes/themes/faims/images/unswL.png"></a>
+        <a href="http://www.latrobe.edu.au/"><img class="footerlogo" src="/includes/themes/faims/images/LaTrobe.png"></a>
+        <a href="http://www.intersect.org.au/"><img class="footerlogo" src="/includes/themes/faims/images/Intersect_Logo2colour-small.png"></a>
+        <a href="http://www.versi.edu.au/"><img class="footerlogo" src="/includes/themes/faims/images/versi2.png"></a>
+        <a href="http://sydney.edu.au/"><img class="footerlogo" src="/includes/themes/faims/images/usyd.png"></a>
+    </div>
 </div>
