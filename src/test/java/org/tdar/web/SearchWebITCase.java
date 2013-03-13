@@ -987,7 +987,7 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         gotoPage("/search/collection");
         setInput("query", name);
         submitForm("Search");
-        clickLinkWithText("Refine your search");
+        clickLinkWithText("Refine your search »");
         checkInput("query", name);
     }
     
