@@ -521,4 +521,11 @@ public class SearchParameters {
         this.filenames = filenames;
     }
 
+    public List<List<? extends Persistable>> getSparseLists() {
+        List<List<? extends Persistable>> lists = new ArrayList<List<? extends Persistable>>();
+        lists.add(sparseProjects);
+        lists.add(sparseCollections);
+        return lists;
+    }
+
 }

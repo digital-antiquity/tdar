@@ -987,8 +987,16 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         gotoPage("/search/collection");
         setInput("query", name);
         submitForm("Search");
-        clickLinkWithText("Refine your search");
+        clickLinkWithText("Refine your search »");
         checkInput("query", name);
+    }
+    
+    @Test
+    public void testModifyLegacySiteNameSearch() {
+        //here we skip the step of creating the site name... we just need to make sure search terms on form are populated
+        String siteName = "disneyland";
+        gotoPage("/search/advanced?siteNameKeywords=" + siteName);
+        checkInput("groups[0].siteNames[0]", siteName);
     }
     
 }

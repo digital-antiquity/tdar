@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -630,6 +631,24 @@ public class SearchService {
     public String sanitize(String unsafeQuery) {
         Matcher m = luceneSantizeQueryPattern.matcher(unsafeQuery);
         return m.replaceAll("$1\\\\$2$3");
+    }
+
+    public void inflateSearchParameters(SearchParameters searchParameters) {
+        // FIXME: refactor to ue genericService.populateSparseObjectsById() which optimizes the qeries to the DB
+        // Also, consider moving into genericService
+        List<List<? extends Persistable>> lists = searchParameters.getSparseLists();
+        for (List<? extends Persistable> list : lists) {
+            // making unchecked cast so compiler accepts call to set()
+            @SuppressWarnings("unchecked")
+            ListIterator<Persistable> itor = (ListIterator<Persistable>) list.listIterator();
+            while (itor.hasNext()) {
+                Persistable sparse = itor.next();
+                if (sparse != null) {
+                    Persistable persistable = genericService.find(sparse.getClass(), sparse.getId());
+                    itor.set(persistable);
+                }
+            }
+        }
     }
 
     @SuppressWarnings("unchecked")
