@@ -98,11 +98,25 @@
         </#if>
 </div>
 </#if>
-<@search.basicPagination label="Records" />
+<div id="divResultsSortControl">
+    <div class="row">
+        <div class="span4">
+            <@search.totalRecordsSection tag="h2" helper=paginationHelper itemType="Record"/>
+        </div>
+        <div class="span5">
+            <#if !hideFacetsAndSort>
+            <div class="form-horizontal pull-right">
+               <@search.sortFields true/>
+            </div>
+            </#if>
+        </div>
+    </div>
+</div>
 
-<div class="glide">
+<div class="tdarresults">
 <#if results??>
 <@list.listResources resourcelist=results sortfield="RESOURCE_TYPE" titleTag="h5" />
 </#if>
 </div>
+<@search.basicPagination "Results"/>
 </#escape>

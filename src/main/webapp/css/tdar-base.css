@@ -919,7 +919,7 @@ h1 span,h4 span {
 	margin: 45px 0 50px 40px;
 }
 
-.searchresults h2.totalRecords {
+h2.totalRecords {
 	font-size: 20px;
 	line-height: 24px;
 	margin-top: 7px;

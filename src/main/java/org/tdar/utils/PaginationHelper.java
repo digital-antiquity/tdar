@@ -174,6 +174,41 @@ public class PaginationHelper {
     public int firstItemOnPage(int page) {
         return page * itemsPerPage;
     }
+
+    public int getStartRecord() {
+        if (getTotalNumberOfItems() == 0) {
+            return 0;
+        } else {
+            return getFirstItem() + 1;
+        }
+    }
     
+    public int getNextPage() {
+        return getCurrentPage() + 1;
+    }
+
+    public int getPreviousPage() {
+        return getPreviousPage() - 1;
+    }
+    
+    public int getNextPageStartRecord() {
+        return getItemsPerPage() * getNextPage();
+    }
+
+    public int getLastPage() {
+        return getItemsPerPage() * getPageCount()-  1;
+    }
+    
+    public int getPrevousPageStartRecord() {
+        return getItemsPerPage() * getPreviousPage();
+    }
+    
+    public int getEndRecord() {
+        if (getTotalNumberOfItems() == 0) {
+            return 0;
+        } else {
+            return getLastItem() + 1;
+        }
+    }
 
 }

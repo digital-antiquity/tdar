@@ -27,7 +27,7 @@
 <div id="divResultsSortControl">
     <div class="row">
         <div class="span4">
-            <h2 class="totalRecords">${paginationHelper.firstItem + 1}-${paginationHelper.lastItem + 1} (${paginationHelper.totalNumberOfItems} Collections)</h2>
+            <@search.totalRecordsSection tag="h2" helper=paginationHelper itemType="Collection"/>
         </div>
         <div class="span5">
             <#if !hideFacetsAndSort>

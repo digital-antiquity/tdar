@@ -143,7 +143,7 @@
         <tr>
         <#if helper.hasPrevious()>
         <td class="prev">
-            <@paginationLink startRecord=(helper.itemsPerPage * (helper.currentPage - 1)) path=path linkText="Previous" />
+            <@paginationLink startRecord=helper.previousPageStartRecord path=path linkText="Previous" />
         </td>
         </#if>
         <td class="page">
@@ -166,14 +166,14 @@
             <#if (helper.maximumPageNumber < (helper.pageCount - 1))>
                 <li>...</li>
                 <li>
-                      <@paginationLink startRecord=(helper.itemsPerPage * (helper.pageCount-1)) path=path linkText="Last" />
+                      <@paginationLink startRecord=helper.lastPage path=path linkText="Last" />
                 </li>
             </#if>
             </ul>
         </td>
             <#if (helper.hasNext()) >
         <td class="next">
-                <@paginationLink startRecord=(helper.itemsPerPage * (helper.currentPage + 1)) path=path linkText="Next" />
+                <@paginationLink startRecord=helper.nextPageStartRecord path=path linkText="Next" />
         </td>
             </#if>
         </tr>
@@ -188,17 +188,16 @@
 
 
 <#macro basicPagination label="Records" showIfOnePage=false helper=paginationHelper>
-
-<#if (helper.pageCount > 1)>
-  <div class="glide">
-    <div id="recordTotal">${label} ${helper.firstItem + 1} - ${helper.lastItem + 1} of ${helper.totalNumberOfItems}
-    </div> 
-    <@pagination ""/> 
-  </div>
-<#elseif (helper.totalNumberOfItems > 0 && showIfOnePage)>
-  <div class="glide">
-  Displaying ${label} ${helper.firstItem + 1} - ${helper.lastItem + 1} of ${helper.totalNumberOfItems}
-  </div>
-</#if>
+	<#if (helper.pageCount > 1)>
+	  <div class="glide">
+	    <@pagination ""/> 
+	  </div>
+	</#if>
 </#macro>
 
+<#macro totalRecordsSection tag="h2" helper=paginationHelper itemType="Resource">
+    <${tag} class="totalRecords">
+    	${helper.startRecord}-${helper.endRecord} (${helper.totalNumberOfItems} ${itemType}<#if (helper.totalNumberOfItems != 1)>s</#if>)
+    </${tag}>
+
+</#macro>
