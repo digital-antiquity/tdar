@@ -3,7 +3,7 @@
 <h3>Preamble</h3>
 <p>The Federated Archaeological Information Management System (‘<i>${siteAcronym}</i>’) repository provides the platform to share unpublished catalogues, datasets, documents, manuscripts, images and published works (‘<i>resources</i>’), or parts thereof, for the purposes of conducting research, and creating new archaeological knowledge.  Individuals and/or the Institutions they may represent (‘<i>Users</i>’) are expected to use these resources respectfully, to observe the copyright and other conditions stated on this website, and where appropriate share the results of their resulting research by publishing it on ${siteAcronym} or other sustainable public archive for archaeological data.</p>
 <p>The majority of ${siteAcronym} resources represent years of research by numerous archaeologists, historians and other specialists, and some describe material culture of high significance to some communities.  Depositors are expected to make every effort to identify the creators and copyright holders of these works, and other parties with vested interest in the resources, prior to publication.</p>
-<p>Unless otherwise stated, all works published on this site are subject to the <i><a href="http://creativecommons.org/licenses/by-nc-sa/3.0/au/">Creative Commons Attribution License</a></i> (CC BY-NC-SA 3.0).
+<p>Unless otherwise stated, all works published on this site are subject to the <i><a  class="external" href="http://creativecommons.org/licenses/by-nc-sa/3.0/au/">Creative Commons Attribution License</a></i> (CC BY-NC-SA 3.0).
 This User Agreement is subject to change.</p>
 <a href="#" onclick="$('#fullLicenseText').toggle();">View full text of agreement</a>
 
