@@ -411,7 +411,13 @@ table td  {vertical-align:bottom;}
         <#if rotateColors>
            <#local color_=settings.barColors[key.resourceType.order - 1] />
         </#if>
-          #${key.cssId} {background-color: ${color_}; height: ${(2 * graphHeight * (key.logCount / resourceTypeCount))?floor}px }
+        <#local heightToUse = (2 * graphHeight * (key.logCount / resourceTypeCount))?floor >
+        <#local preferredHeight = (graphHeight - 50)> <#-- The 50 allows for the labels etc at the bottom -->
+        <#if heightToUse < preferredHeight>
+          #${key.cssId} {background-color: ${color_}; height: ${heightToUse}px }
+        <#else>
+          #${key.cssId} {background-color: ${color_}; height: ${preferredHeight}px }
+        </#if>
     </#if>
    </#list>
 
