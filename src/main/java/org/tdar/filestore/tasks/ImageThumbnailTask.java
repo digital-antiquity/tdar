@@ -234,7 +234,7 @@ public class ImageThumbnailTask extends AbstractTask {
 
     private static Long calculateUncompressedSize(InformationResourceFileVersion version) {
         try {
-            return version.getHeight() * version.getWidth() * 3L;
+            return version.getHeight() * version.getWidth() * 3L * 8L;
         } catch (Exception e) {
             e.printStackTrace();
         }
