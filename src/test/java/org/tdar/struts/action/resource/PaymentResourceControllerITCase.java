@@ -11,6 +11,7 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
@@ -27,6 +28,7 @@ import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.FileProxy;
+import org.tdar.utils.AccountEvaluationHelper;
 import org.tdar.utils.Pair;
 
 @RunWith(MultipleTdarConfigurationRunner.class)
@@ -137,27 +139,44 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
 
     @Test
     @Rollback()
+    @RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.cc.properties" })
     public void testSecondarySaveWithValidAccount() throws Exception {
         BillingActivityModel model = new BillingActivityModel();
         model.setCountingResources(false);
         genericService.saveOrUpdate(model);
         Account account = setupAccountWithInvoiceFiveResourcesAndSpace(model);
         genericService.saveOrUpdate(account);
-
-        extracted();
-        extracted();
-        extracted();
-
+        
+        String fmt = "pass %s";
+        int i = 1;
+        extracted(String.format(fmt, i++), account);
+        
+        extracted(String.format(fmt, i++), account);
+        extracted(String.format(fmt, i++), account);
+ 
     }
+    
+    private int filesRemain(Account account) {
+        AccountEvaluationHelper helper = new AccountEvaluationHelper(account, accountService.getLatestActivityModel());
+        long filesRemaining = helper.getAvailableNumberOfFiles();
+        return (int)filesRemaining;
+    }
+    
 
-    private void extracted() throws TdarActionException, FileNotFoundException {
+    private void extracted(String title, Account expectedAccount) throws TdarActionException, FileNotFoundException {
         controller = generateNewInitializedController(DocumentController.class);
         Document d = setupDocument();
         d.setStatus(Status.DRAFT);
         controller.setDocument(d);
         controller.setServletRequest(getServletPostRequest());
+        int filesRemainBefore = filesRemain(expectedAccount);
         assertEquals(TdarActionSupport.SUCCESS, controller.save());
+        int filesRemainAfter = filesRemain(expectedAccount);
+        assertEquals("files remainning should be the same because resource has no files", filesRemainBefore, filesRemainAfter);
         Long id = d.getId();
+        Account account = accountService.find(controller.getAccountId());
+        assertEquals(expectedAccount, account);
+       
         d = null;
         controller = generateNewInitializedController(DocumentController.class);
         controller.setId(id);
@@ -168,8 +187,11 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         controller.setTicketId(uploadFilesAsync.getFirst().getId());
         controller.setFileProxies(uploadFilesAsync.getSecond());
         controller.setServletRequest(getServletPostRequest());
-        assertEquals(TdarActionSupport.SUCCESS, controller.save());
-        assertEquals(Status.DRAFT, controller.getResource().getStatus());
+        String actionResult = controller.save();
+        filesRemainAfter = filesRemain(expectedAccount);
+        assertEquals(title + ":files remaining should decrement by 1", filesRemainBefore - 1, filesRemainAfter);
+        assertEquals(title + ": expecting successful save", TdarActionSupport.SUCCESS, actionResult);
+        assertEquals(title + ": resource should be in draft", Status.DRAFT, controller.getResource().getStatus());
     }
 
     private Pair<String, Exception> setupResource(Document d) {
