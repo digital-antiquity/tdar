@@ -188,7 +188,7 @@ public class PaginationHelper {
     }
 
     public int getPreviousPage() {
-        return getPreviousPage() - 1;
+        return getCurrentPage() - 1;
     }
     
     public int getNextPageStartRecord() {
