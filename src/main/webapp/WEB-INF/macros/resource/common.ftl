@@ -416,7 +416,7 @@ table td  {vertical-align:bottom;}
             <#-- TDAR 2875: Kneecap this graph entry. Will only affect emptyish databases -->
             <#local heightToUse = (graphHeight - 50)> 
         </#if>
-          #${key.cssId} {background-color: ${color_}; height: ${heightToUse}px }
+        #${key.cssId} {background-color: ${color_}; height: ${heightToUse}px }
     </#if>
    </#list>
 
