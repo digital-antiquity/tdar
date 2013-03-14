@@ -407,17 +407,16 @@ table td  {vertical-align:bottom;}
 
    <#list resourceCacheObjects?sort_by("key") as key>
     <#if (key.count > 0)>
-       <#local color_= settings.barColors[0] />
+       <#local color_= settings.barColors[0]>
         <#if rotateColors>
-           <#local color_=settings.barColors[key.resourceType.order - 1] />
+           <#local color_=settings.barColors[key.resourceType.order - 1]>
         </#if>
-        <#local heightToUse = (2 * graphHeight * (key.logCount / resourceTypeCount))?floor >
-        <#local preferredHeight = (graphHeight - 50)> <#-- The 50 allows for the labels etc at the bottom -->
-        <#if heightToUse < preferredHeight>
+        <#local heightToUse = (2 * graphHeight * (key.logCount / resourceTypeCount))?floor>
+        <#if (graphHeight < heightToUse)>
+            <#-- TDAR 2875: Kneecap this graph entry. Will only affect emptyish databases -->
+            <#local heightToUse = (graphHeight - 50)> 
+        </#if>
           #${key.cssId} {background-color: ${color_}; height: ${heightToUse}px }
-        <#else>
-          #${key.cssId} {background-color: ${color_}; height: ${preferredHeight}px }
-        </#if>
     </#if>
    </#list>
 
