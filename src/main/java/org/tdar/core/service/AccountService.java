@@ -173,8 +173,8 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         getDao().updateTransientAccountOnResources(resourcesToEvaluate);
         getDao().updateAccountInfo(account);
         AccountAdditionStatus status = AccountAdditionStatus.CAN_ADD_RESOURCE;
-        account.getAvailableSpaceInBytes();
-        account.getAvailableNumberOfFiles();
+//        account.getAvailableSpaceInBytes();
+//        account.getAvailableNumberOfFiles();
         // if the account is null ...
         List<Resource> newItems = new ArrayList<Resource>();
         List<Resource> existingItems = new ArrayList<Resource>();
