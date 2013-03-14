@@ -13,12 +13,13 @@ import org.tdar.search.query.QueryFieldNames;
  * @version $Revision$
  */
 public enum ResourceType implements HasLabel, Comparable<ResourceType>, Facetable {
-    CODING_SHEET("Coding Sheet", 8, "Dataset", "unknown", CodingSheet.class),
+    CODING_SHEET("Coding Sheet", 9, "Dataset", "unknown", CodingSheet.class),
     DATASET("Dataset", 3, "Dataset", "unknown", Dataset.class),
     DOCUMENT("Document", 1, "Text", "document", Document.class),
     IMAGE("Image", 2, "Still Image", "unknown", Image.class),
-    SENSORY_DATA("3D & Sensory Data", 6, "Interactive Resource", "unknown", SensoryData.class),
-    ONTOLOGY("Ontology", 7, "Dataset", "unknown", Ontology.class),
+    SENSORY_DATA("3D & Sensory Data", 7, "Interactive Resource", "unknown", SensoryData.class),
+    GEOSPATIAL("GIS",6, "Dataset", "unknown", Geospatial.class),
+    ONTOLOGY("Ontology", 8, "Dataset", "unknown", Ontology.class),
     PROJECT("Project", 5, Project.class),
     VIDEO("Video", 4, "Moving Image", "unknown", Video.class);
 
@@ -49,6 +50,8 @@ public enum ResourceType implements HasLabel, Comparable<ResourceType>, Facetabl
                 return "Ontologies";
             case SENSORY_DATA:
                 return SENSORY_DATA.label;
+            case GEOSPATIAL:
+                return GEOSPATIAL.label;
             default:
                 return getLabel().concat("s");
         }
@@ -83,6 +86,10 @@ public enum ResourceType implements HasLabel, Comparable<ResourceType>, Facetabl
 
     public boolean isSensoryData() {
         return this == SENSORY_DATA;
+    }
+
+    public boolean isGeospatial() {
+        return this == GEOSPATIAL;
     }
 
     public boolean isCodingSheet() {
@@ -201,6 +208,7 @@ public enum ResourceType implements HasLabel, Comparable<ResourceType>, Facetabl
     public boolean hasDemensions() {
         switch (this) {
             case IMAGE:
+            case GEOSPATIAL: //?
             case SENSORY_DATA:
                 return true;
             default:
