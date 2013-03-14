@@ -3,20 +3,30 @@ package org.tdar.struts.action.resource;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.PersonalFilestoreTicket;
+import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.AccountService;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.Pair;
 
 @RunWith(MultipleTdarConfigurationRunner.class)
@@ -123,6 +133,58 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         // Assert.assertEquals(Status.FLAGGED_ACCOUNT_BALANCE, d.getStatus());
         Assert.assertFalse(CollectionUtils.isEmpty(controller.getActionErrors()));
         setIgnoreActionErrors(true);
+    }
+
+    @Test
+    @Rollback()
+    public void testSecondarySaveWithValidAccount() throws Exception {
+        BillingActivityModel model = new BillingActivityModel();
+        model.setCountingResources(false);
+        genericService.saveOrUpdate(model);
+        Account account = setupAccountWithInvoiceFiveResourcesAndSpace(model);
+        genericService.saveOrUpdate(account);
+
+        extracted();
+        extracted();
+        extracted();
+//        extracted();
+//        logger.info("account: {}", d.getAccount());
+//        Pair<String, Exception> tdae = setupResource(d);
+//        assertTrue(CollectionUtils.isNotEmpty(getController().getActionErrors()));
+//        logger.info("errors {}", getController().getActionErrors());
+//        assertTrue(getController().getActionErrors().contains(AccountService.ACCOUNT_IS_NULL));
+//        Long newId = controller.getResource().getId();
+//
+//        Assert.assertNotNull(entityService.findByEmail("new@email.com"));
+//        // now reload the document and see if the institution was saved.
+//
+//        Assert.assertNotEquals("resource id should be -1 after unpaid resource addition", newId, Long.valueOf(-1L));
+//        Assert.assertNull("controller should not be successful", null);
+//        // Assert.assertEquals(Status.FLAGGED_ACCOUNT_BALANCE, d.getStatus());
+//        Assert.assertFalse(CollectionUtils.isEmpty(controller.getActionErrors()));
+//        setIgnoreActionErrors(true);
+    }
+
+    private void extracted() throws TdarActionException, FileNotFoundException {
+        controller = generateNewInitializedController(DocumentController.class);
+        Document d = setupDocument();
+        d.setStatus(Status.DRAFT);
+        controller.setDocument(d);
+        controller.setServletRequest(getServletPostRequest());
+        assertEquals(TdarActionSupport.SUCCESS, controller.save());
+        Long id = d.getId();
+        d = null;
+        controller = generateNewInitializedController(DocumentController.class);
+        controller.setId(id);
+        controller.prepare();
+        controller.edit();
+        File file = new File(TestConstants.TEST_DOCUMENT_DIR + TestConstants.TEST_DOCUMENT_NAME);
+        Pair<PersonalFilestoreTicket, List<FileProxy>> uploadFilesAsync = uploadFilesAsync(Arrays.asList(file));
+        controller.setTicketId(uploadFilesAsync.getFirst().getId());
+        controller.setFileProxies(uploadFilesAsync.getSecond());
+        controller.setServletRequest(getServletPostRequest());
+        assertEquals(TdarActionSupport.SUCCESS, controller.save());
+        assertEquals(Status.DRAFT, controller.getResource().getStatus());
     }
 
     private Pair<String, Exception> setupResource(Document d) {

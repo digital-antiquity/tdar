@@ -833,6 +833,15 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return account;
     }
 
+    public Account setupAccountWithInvoiceFiveResourcesAndSpace(BillingActivityModel model) {
+        Account account = new Account();
+        Invoice invoice = initAccount(account, new BillingActivity("10 resource", 5f, 0, 5L, 5L, 50L, model));
+        /* add one resource */
+        // account.resetTransientTotals();
+        genericService.saveOrUpdate(account);
+        return account;
+    }
+
     private Invoice initAccount(Account account, BillingActivity activity) {
         account.markUpdated(getUser());
         Invoice invoice = new Invoice();
