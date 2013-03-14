@@ -147,22 +147,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         extracted();
         extracted();
         extracted();
-//        extracted();
-//        logger.info("account: {}", d.getAccount());
-//        Pair<String, Exception> tdae = setupResource(d);
-//        assertTrue(CollectionUtils.isNotEmpty(getController().getActionErrors()));
-//        logger.info("errors {}", getController().getActionErrors());
-//        assertTrue(getController().getActionErrors().contains(AccountService.ACCOUNT_IS_NULL));
-//        Long newId = controller.getResource().getId();
-//
-//        Assert.assertNotNull(entityService.findByEmail("new@email.com"));
-//        // now reload the document and see if the institution was saved.
-//
-//        Assert.assertNotEquals("resource id should be -1 after unpaid resource addition", newId, Long.valueOf(-1L));
-//        Assert.assertNull("controller should not be successful", null);
-//        // Assert.assertEquals(Status.FLAGGED_ACCOUNT_BALANCE, d.getStatus());
-//        Assert.assertFalse(CollectionUtils.isEmpty(controller.getActionErrors()));
-//        setIgnoreActionErrors(true);
+
     }
 
     private void extracted() throws TdarActionException, FileNotFoundException {

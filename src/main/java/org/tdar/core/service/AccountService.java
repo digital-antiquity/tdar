@@ -217,6 +217,8 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         Set<Resource> flagged = new HashSet<Resource>();
         Set<Resource> unflagged = new HashSet<Resource>();
         account.initTotals();
+        logger.info("act space used: {} avail:{} ", account.getSpaceUsedInBytes(), account.getAvailableSpaceInBytes());
+        logger.info("act files used: {} avail:{} ", account.getFilesUsed(), account.getAvailableNumberOfFiles());
         AccountEvaluationHelper helper = new AccountEvaluationHelper(account, getLatestActivityModel());
         // not technically necessary to process these separately, but prefer incremental changes to wholesale adds
         if (hasUpdates) {
@@ -337,7 +339,8 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         if (files == 0 && space == 0) {
             return true;
         }
-
+        logger.info("space used: {} avail:{} ", helper.getSpaceUsedInBytes(), helper.getAvailableSpaceInBytes());
+        logger.info("files used: {} avail:{} ", helper.getFilesUsed(), helper.getAvailableNumberOfFiles());
         // Trivial changes should fall through and not update because they are no-op in terms of effective changes
         if (helper.getModel().getCountingSpace() && helper.getAvailableSpaceInBytes() - space < 0) {
             logger.info("{} {} {}", helper.getAvailableSpaceInBytes(), space, resource.getId());
