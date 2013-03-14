@@ -1,4 +1,5 @@
 <div class="span3">
-    <p><a href="/"><img src="<@s.url value="/${themeDir}images/FAIMS-Small-B.png" />" alt="FA|MS" /></a>
-            <strong> ${tdarConfiguration.serverEnvironmentStatus} Server</strong>
+    <p><a href="/">
+            <img class="faimslogo" src="<@s.url value="/${themeDir}images/FAIMS-Small-B.png" />" alt="FA|MS" />
+       </a> <strong class="faimslogo">${tdarConfiguration.serverEnvironmentStatus}</strong>
 </div>
