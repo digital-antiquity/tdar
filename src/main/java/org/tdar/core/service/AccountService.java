@@ -528,7 +528,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         if (lowestByMB != null) {
             logger.info("lowest by space: {} ", lowestByMB.getSubtotal());
         }
-        if (lowestByMB == null || lowestByFiles.getSubtotal() < lowestByMB.getSubtotal()) {
+        if (lowestByMB == null || (lowestByFiles != null && lowestByFiles.getSubtotal() < lowestByMB.getSubtotal())) {
             return lowestByFiles;
         }
         return lowestByMB;
