@@ -54,6 +54,11 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingActivity;
+import org.tdar.core.bean.billing.BillingActivityModel;
+import org.tdar.core.bean.billing.BillingItem;
+import org.tdar.core.bean.billing.Invoice;
+import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthenticationToken;
@@ -795,6 +800,54 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         }
     }
 
+    public Account setupAccountWithInvoiceFor6Mb(BillingActivityModel model) {
+        Account account = new Account();
+        BillingActivity activity = new BillingActivity("6 mb", 10f, 0, 0L, 0L, 6L, model);
+        Invoice invoice = initAccount(account, activity);
+        genericService.saveOrUpdate(account);
+        return account;
+    }
+
+    public Account setupAccountWithInvoiceForOneFile(BillingActivityModel model) {
+        Account account = new Account();
+        Invoice invoice = initAccount(account, new BillingActivity("1 file", 10f, 0, 0L, 1L, 0L, model));
+        genericService.saveOrUpdate(account);
+        return account;
+    }
+
+    public Account setupAccountWithInvoiceForOneResource(BillingActivityModel model) {
+        Account account = new Account();
+        Invoice invoice = initAccount(account, new BillingActivity("1 resource", 10f, 0, 1L, 0L, 0L, model));
+        /* add one resource */
+        // account.resetTransientTotals();
+        genericService.saveOrUpdate(account);
+        return account;
+    }
+
+    public Account setupAccountWithInvoiceSomeResourcesAndSpace(BillingActivityModel model) {
+        Account account = new Account();
+        Invoice invoice = initAccount(account, new BillingActivity("10 resource", 100f, 0, 10L, 10L, 100L, model));
+        /* add one resource */
+        // account.resetTransientTotals();
+        genericService.saveOrUpdate(account);
+        return account;
+    }
+
+    private Invoice initAccount(Account account, BillingActivity activity) {
+        account.markUpdated(getUser());
+        Invoice invoice = new Invoice();
+        invoice.markUpdated(getUser());
+        account.getInvoices().add(invoice);
+        genericService.saveOrUpdate(activity.getModel());
+        genericService.saveOrUpdate(activity);
+        invoice.getItems().add(new BillingItem(activity, 1));
+        invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
+        invoice.markFinal();
+        genericService.saveOrUpdate(invoice);
+        genericService.saveOrUpdate(invoice.getItems());
+        return invoice;
+    }
+    
     public Account setupAccountForPerson(Person p) {
         Account account = new Account("my account");
         account.setOwner(p);
