@@ -51,4 +51,13 @@
         <a href="http://www.versi.edu.au/"><img class="footerlogo" src="/includes/themes/faims/images/versi2.png"></a>
         <a href="http://sydney.edu.au/"><img class="footerlogo" src="/includes/themes/faims/images/usyd.png"></a>
     </div>
+    <p class="copyright-notice">${siteAcronym} is hosted by <a href="http://www.latrobe.edu.au/humanities/">Faculty of Humanities and Social Sciences</a> and the 
+       <a href="http://www.latrobe.edu.au/eresearch/">eResearch Office</a> of <a href="http://www.latrobe.edu.au/">La Trobe University</a>. It was enabled with 
+       funding from the <a href="http://ands.org.au/">Australian National Data Service</A> (ANDS) in partnership with the <a href="http://versi.edu.au/">Victorian 
+       eResearch Strategic Initiative (VeRSI)</a>, and is powered by <a href="http://www.tdar.org">tDAR</a>, an application built by 
+       <a href="http://digitalantiquity.org">Digital Antiquity</a>. ANDS is supported by the Australian Government through the National Collaborative Research 
+       Infrastructure Strategy Program and the Education Investment Fund (EIF) Super Science Initiative. Unless otherwise stated the copyright to all data, 
+       documents and metadata is retained by the copyright holder. The opinions, methods and conclusions expressed or implicit in these works may not represent 
+       the views of La Trobe University, ANDS, VeRSI, The Australian Government, Digital Antiquity or any related organisation, and remain the responsibility of 
+       the depositor.</p>
 </div>

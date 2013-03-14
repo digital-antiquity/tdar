@@ -67,6 +67,11 @@ footer {
     vertical-align: top;
 }
 
+.copyright-notice {
+	text-align: justify;
+	font-size: 10px;
+}
+
 #alt.not-production {
 	background-color: #F4F4F4;
 }
