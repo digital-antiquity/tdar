@@ -178,8 +178,8 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         logger.info("act space used: {} avail:{} ", account.getSpaceUsedInBytes(), account.getAvailableSpaceInBytes());
         logger.info("act files used: {} avail:{} ", account.getFilesUsed(), account.getAvailableNumberOfFiles());
         AccountEvaluationHelper helper = new AccountEvaluationHelper(account, getLatestActivityModel());
-        logger.trace("helper space used: {} avail:{} ", helper.getSpaceUsedInBytes(), helper.getAvailableSpaceInBytes());
-        logger.trace("helper files used: {} avail:{} ", helper.getFilesUsed(), helper.getAvailableNumberOfFiles());
+        logger.info("helper space used: {} avail:{} ", helper.getSpaceUsedInBytes(), helper.getAvailableSpaceInBytes());
+        logger.info("helper files used: {} avail:{} ", helper.getFilesUsed(), helper.getAvailableNumberOfFiles());
 
         boolean hasUpdates = updateAccountAssociations(account, resourcesToEvaluate, helper);
 

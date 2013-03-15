@@ -48,5 +48,7 @@ public interface TestConstants {
     
 //    public static final String COPYRIGHT_HOLDER_TYPE = "copyrightHolderType";
     public static final String COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME = "copyrightHolderProxies.institution.name";
+    
+    public static final Long NO_ASSOCIATED_PROJECT = -1L;
 
 }
