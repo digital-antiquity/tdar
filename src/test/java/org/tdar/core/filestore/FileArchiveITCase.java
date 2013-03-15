@@ -43,7 +43,6 @@ public class FileArchiveITCase extends AbstractIntegrationTestCase {
 
     protected Logger logger = Logger.getLogger(getClass());
 
-    
     @Test
     public void testAnalyzerSuggestions() {
         assertEquals(ResourceType.DOCUMENT, fileAnalyzer.suggestTypeForFileExtension("doc", ResourceType.DOCUMENT));
@@ -60,6 +59,14 @@ public class FileArchiveITCase extends AbstractIntegrationTestCase {
         testArchiveFormat(store, "ark_hm_headpot_scans.tar");
         testArchiveFormat(store, "ark_hm_headpot_scans.zip");
         testArchiveFormat(store, "ark_hm_headpot_scans.tgz");
+    }
+
+    @Test
+    @Rollback
+    public void testShapefile() throws Exception {
+        PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
+        ShapefileReaderTask task = new ShapefileReaderTask();
+        task.run();
     }
 
     public void testArchiveFormat(PairtreeFilestore store, String filename) throws InstantiationException, IllegalAccessException, IOException, Exception {
