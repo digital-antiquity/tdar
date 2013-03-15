@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
 @Results({
     @Result(name = "success", type = "stream",
             params = {
-                    "inputName", "inputStream",
+                    "inputName", "inputStream"
             }
     ),
 @Result(name = "error", type = "httpheader", params = { "error", "404" }),

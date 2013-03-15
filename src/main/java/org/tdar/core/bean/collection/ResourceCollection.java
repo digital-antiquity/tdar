@@ -97,7 +97,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
                 @FetchOverride(association="user", mode = FetchMode.JOIN, entity= AuthorizedUser.class),
                 @FetchOverride(association="owner", mode = FetchMode.JOIN, entity= ResourceCollection.class),
                 @FetchOverride(association="updater", mode = FetchMode.JOIN, entity= ResourceCollection.class),
-                @FetchOverride(association="parent", mode = FetchMode.JOIN, entity= ResourceCollection.class),
+                @FetchOverride(association="parent", mode = FetchMode.JOIN, entity= ResourceCollection.class)
         })
 })
 
