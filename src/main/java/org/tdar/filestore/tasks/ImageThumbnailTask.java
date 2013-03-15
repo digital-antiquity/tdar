@@ -134,7 +134,7 @@ public class ImageThumbnailTask extends AbstractTask {
         try {
             outputFilename = URLEncoder.encode(outputFilename, "UTF-8");
         } catch (Exception e) {
-            getLogger().debug(e);
+            getLogger().debug("exception writing derivative image:",e);
         }
         File outputPath = new File(getWorkflowContext().getWorkingDirectory(), outputFilename);
 
@@ -179,7 +179,7 @@ public class ImageThumbnailTask extends AbstractTask {
         try {
             outputStream = new FileOutputStream(outputFile);
         } catch (FileNotFoundException e) {
-            getLogger().debug(e);
+            getLogger().debug("exception writing derivative image:",e);
         }
 
         try {
