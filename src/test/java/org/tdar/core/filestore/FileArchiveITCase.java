@@ -27,7 +27,6 @@ import org.tdar.core.service.workflow.MessageService;
 import org.tdar.core.service.workflow.Workflow;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.PairtreeFilestore;
-import org.tdar.filestore.tasks.ShapefileReaderTask;
 
 /**
  * @author Adam Brin
@@ -59,14 +58,6 @@ public class FileArchiveITCase extends AbstractIntegrationTestCase {
         testArchiveFormat(store, "ark_hm_headpot_scans.tar");
         testArchiveFormat(store, "ark_hm_headpot_scans.zip");
         testArchiveFormat(store, "ark_hm_headpot_scans.tgz");
-    }
-
-    @Test
-    @Rollback
-    public void testShapefile() throws Exception {
-        PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
-        ShapefileReaderTask task = new ShapefileReaderTask();
-        task.run();
     }
 
     public void testArchiveFormat(PairtreeFilestore store, String filename) throws InstantiationException, IllegalAccessException, IOException, Exception {

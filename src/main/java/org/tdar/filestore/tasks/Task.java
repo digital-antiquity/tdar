@@ -9,7 +9,8 @@ import java.io.Serializable;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.filestore.WorkflowContext;
@@ -50,7 +51,7 @@ public interface Task extends Serializable {
     public abstract static class AbstractTask implements Task {
 
         private static final long serialVersionUID = 3655364565734681218L;
-        private final transient Logger logger = Logger.getLogger(getClass());
+        private final transient Logger logger = LoggerFactory.getLogger(getClass());
         private WorkflowContext workflowContext;
 
         public void setWorkflowContext(WorkflowContext ctx) {
