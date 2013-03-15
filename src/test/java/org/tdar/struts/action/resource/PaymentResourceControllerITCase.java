@@ -49,6 +49,20 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
     public void setController(DocumentController controller) {
         this.controller = controller;
     }
+    
+    private class UsagePair extends Pair<Long, Long> {
+        public UsagePair(Long first, Long second) {
+            super(first, second);
+        }
+        
+        public long files() {
+            return getFirst();
+        }
+        
+        public long bytes() {
+            return getSecond();
+        }
+    }
 
     @Test
     @Rollback()
@@ -151,11 +165,15 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         }
     }
 
-    private int filesRemain(Account account) {
+
+    private UsagePair amountRemaining(Account account) {
         AccountEvaluationHelper helper = new AccountEvaluationHelper(account, accountService.getLatestActivityModel());
-        long filesRemaining = helper.getAvailableNumberOfFiles();
-        return (int) filesRemaining;
+        UsagePair pair = new UsagePair(helper.getAvailableNumberOfFiles(), helper.getAvailableSpaceInBytes());
+        return pair;
     }
+    
+    
+    
 
     private void extracted(String title, Account expectedAccount) throws TdarActionException, FileNotFoundException {
         controller = generateNewInitializedController(DocumentController.class);
@@ -163,10 +181,11 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         d.setStatus(Status.DRAFT);
         controller.setDocument(d);
         controller.setServletRequest(getServletPostRequest());
-        int filesRemainBefore = filesRemain(expectedAccount);
+        UsagePair statsBefore = amountRemaining(expectedAccount);
         assertEquals(TdarActionSupport.SUCCESS, controller.save());
-        int filesRemainAfter = filesRemain(expectedAccount);
-        assertEquals("files remainning should be the same because resource has no files", filesRemainBefore, filesRemainAfter);
+        
+        UsagePair statsAfter = amountRemaining(expectedAccount);
+        assertEquals("files remainning should be the same because resource has no files", statsBefore, statsAfter);
         Long id = d.getId();
         Account account = accountService.find(controller.getAccountId());
         assertEquals(expectedAccount, account);
@@ -180,10 +199,12 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         Pair<PersonalFilestoreTicket, List<FileProxy>> uploadFilesAsync = uploadFilesAsync(Arrays.asList(file));
         controller.setTicketId(uploadFilesAsync.getFirst().getId());
         controller.setFileProxies(uploadFilesAsync.getSecond());
+        long fileSize = file.length();
         controller.setServletRequest(getServletPostRequest());
         String actionResult = controller.save();
-        filesRemainAfter = filesRemain(expectedAccount);
-        assertEquals(title + ":files remaining should decrement by 1", filesRemainBefore - 1, filesRemainAfter);
+        statsAfter = amountRemaining(expectedAccount);
+        assertEquals(title + ":files remaining should decrement by 1", statsBefore.files() - 1, statsAfter.files());
+        assertEquals(title + ":space remaining should decrement by " + fileSize, statsBefore.bytes() - fileSize, statsAfter.bytes());
         assertEquals(title + ": expecting successful save", TdarActionSupport.SUCCESS, actionResult);
         assertEquals(title + ": resource should be in draft", Status.DRAFT, controller.getResource().getStatus());
     }
