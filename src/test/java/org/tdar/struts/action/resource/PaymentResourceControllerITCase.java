@@ -187,6 +187,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         Document d = setupDocument();
         d.setStatus(Status.DRAFT);
         controller.setDocument(d);
+        controller.setAccountId(expectedAccount.getId());
         controller.setServletRequest(getServletPostRequest());
         UsagePair statsBefore = amountRemaining(expectedAccount);
         assertEquals("errors: " + StringUtils.join(controller.getActionErrors(),", "), TdarActionSupport.SUCCESS, controller.save());
