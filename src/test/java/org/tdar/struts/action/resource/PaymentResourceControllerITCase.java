@@ -11,7 +11,6 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
@@ -139,29 +138,24 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
 
     @Test
     @Rollback()
-    @RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.cc.properties" })
     public void testSecondarySaveWithValidAccount() throws Exception {
         BillingActivityModel model = new BillingActivityModel();
         model.setCountingResources(false);
         genericService.saveOrUpdate(model);
         Account account = setupAccountWithInvoiceFiveResourcesAndSpace(model);
         genericService.saveOrUpdate(account);
-        
+
         String fmt = "pass %s";
-        int i = 1;
-        extracted(String.format(fmt, i++), account);
-        
-        extracted(String.format(fmt, i++), account);
-        extracted(String.format(fmt, i++), account);
- 
+        for (int i=1; i < 4; i++) {
+        extracted(String.format(fmt, i), account);
+        }
     }
-    
+
     private int filesRemain(Account account) {
         AccountEvaluationHelper helper = new AccountEvaluationHelper(account, accountService.getLatestActivityModel());
         long filesRemaining = helper.getAvailableNumberOfFiles();
-        return (int)filesRemaining;
+        return (int) filesRemaining;
     }
-    
 
     private void extracted(String title, Account expectedAccount) throws TdarActionException, FileNotFoundException {
         controller = generateNewInitializedController(DocumentController.class);
@@ -176,7 +170,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         Long id = d.getId();
         Account account = accountService.find(controller.getAccountId());
         assertEquals(expectedAccount, account);
-       
+
         d = null;
         controller = generateNewInitializedController(DocumentController.class);
         controller.setId(id);

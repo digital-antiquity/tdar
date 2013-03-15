@@ -173,11 +173,58 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         getDao().updateTransientAccountOnResources(resourcesToEvaluate);
         getDao().updateAccountInfo(account);
         AccountAdditionStatus status = AccountAdditionStatus.CAN_ADD_RESOURCE;
-//        account.getAvailableSpaceInBytes();
-//        account.getAvailableNumberOfFiles();
         // if the account is null ...
-        List<Resource> newItems = new ArrayList<Resource>();
-        List<Resource> existingItems = new ArrayList<Resource>();
+        account.initTotals();
+        logger.info("act space used: {} avail:{} ", account.getSpaceUsedInBytes(), account.getAvailableSpaceInBytes());
+        logger.info("act files used: {} avail:{} ", account.getFilesUsed(), account.getAvailableNumberOfFiles());
+        AccountEvaluationHelper helper = new AccountEvaluationHelper(account, getLatestActivityModel());
+        logger.trace("helper space used: {} avail:{} ", helper.getSpaceUsedInBytes(), helper.getAvailableSpaceInBytes());
+        logger.trace("helper files used: {} avail:{} ", helper.getFilesUsed(), helper.getAvailableNumberOfFiles());
+
+        boolean hasUpdates = updateAccountAssociations(account, resourcesToEvaluate, helper);
+
+        logger.info("existing:{} new:{}", helper.getExistingItems(), helper.getNewItems());
+
+        // not technically necessary to process these separately, but prefer incremental changes to wholesale adds
+        if (hasUpdates) {
+            processResourceGroup(helper, helper.getExistingItems(), Mode.UPDATE);
+            processResourceGroup(helper, helper.getNewItems(), Mode.UPDATE);
+        } else {
+            // start at 0 and re-add everything
+            // sort by date updated
+            account.setStatus(Status.ACTIVE);
+            account.setSpaceUsedInBytes(0L);
+            account.setFilesUsed(0L);
+            account.initTotals();
+            helper = new AccountEvaluationHelper(account, getLatestActivityModel());
+            logger.info("s{} f{} r:{} ", account.getAvailableSpaceInBytes(), account.getAvailableNumberOfFiles(), helper.getUnflagged());
+            processResourcesChronologically(helper, resourcesToEvaluate);
+        }
+
+        status = updateResourceStatusesAndReconcileAccountStatus(helper, status);
+        boolean overdrawn = !account.isOverdrawn(getResourceEvaluator());
+        if (CollectionUtils.isNotEmpty(helper.getFlagged()) || overdrawn) {
+            account.setStatus(Status.FLAGGED_ACCOUNT_BALANCE);
+            logger.info("marking account as FLAGGED {} {}", overdrawn, helper.getFlagged());
+        } else {
+            account.setStatus(Status.ACTIVE);
+        }
+
+        saveOrUpdateAll(resourcesToEvaluate);
+        // FIXME: may not work exactly because resource evaluations may not have been "saved" yet.
+        // 20.2.13 -- appears ok
+        helper.updateAccount();
+        updateAccountInfo(account);
+        saveOrUpdate(account);
+        logger.trace("files used: {} ", account.getFilesUsed());
+        logger.trace("files avail: {} ", account.getAvailableNumberOfFiles());
+        logger.trace("space used: {} ", account.getSpaceUsedInMb());
+        logger.trace("space avail: {} ", account.getAvailableSpaceInMb());
+        return status;
+    }
+
+    @Transactional
+    private boolean updateAccountAssociations(Account account, Collection<Resource> resourcesToEvaluate, AccountEvaluationHelper helper) {
         // Account localAccount = account;
         Set<Account> additionalAccountsToCleanup = new HashSet<Account>();
         boolean hasUpdates = false;
@@ -193,7 +240,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             account.getResources().add(resource);
 
             if (Persistable.Base.isNullOrTransient(resource.getAccount()) || account.getResources().contains(resource)) {
-                newItems.add(resource);
+                helper.getNewItems().add(resource);
                 continue;
             }
 
@@ -202,84 +249,38 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
                 Account oldAccount = resource.getAccount();
                 additionalAccountsToCleanup.add(oldAccount);
                 oldAccount.getResources().remove(resource);
-                newItems.add(resource);
+                helper.getNewItems().add(resource);
                 continue;
             }
-            existingItems.add(resource);
+            helper.getExistingItems().add(resource);
         }
         getDao().merge(account);
 
         for (Account old : additionalAccountsToCleanup) {
             updateAccountInfo(old);
         }
-
-        logger.info("existing:{} new:{}", existingItems, newItems);
-        Set<Resource> flagged = new HashSet<Resource>();
-        Set<Resource> unflagged = new HashSet<Resource>();
-        account.initTotals();
-        logger.info("act space used: {} avail:{} ", account.getSpaceUsedInBytes(), account.getAvailableSpaceInBytes());
-        logger.info("act files used: {} avail:{} ", account.getFilesUsed(), account.getAvailableNumberOfFiles());
-        AccountEvaluationHelper helper = new AccountEvaluationHelper(account, getLatestActivityModel());
-        // not technically necessary to process these separately, but prefer incremental changes to wholesale adds
-        if (hasUpdates) {
-            processResourceGroup(helper, existingItems, flagged, unflagged, Mode.UPDATE);
-            processResourceGroup(helper, newItems, flagged, unflagged, Mode.UPDATE);
-        } else {
-            // start at 0 and re-add everything
-            // sort by date updated
-            account.setStatus(Status.ACTIVE);
-            account.setSpaceUsedInBytes(0L);
-            account.setFilesUsed(0L);
-            account.initTotals();
-            helper = new AccountEvaluationHelper(account, getLatestActivityModel());
-            logger.info("s{} f{} r:{} ", account.getAvailableSpaceInBytes(), account.getAvailableNumberOfFiles(), unflagged);
-            processResourcesChronologically(helper, resourcesToEvaluate, flagged, unflagged);
-        }
-
-        status = updateResourceStatusesAndReconcileAccountStatus(helper, status, flagged, unflagged);
-        boolean overdrawn = !account.isOverdrawn(getResourceEvaluator());
-        if (CollectionUtils.isNotEmpty(flagged) || overdrawn) {
-            account.setStatus(Status.FLAGGED_ACCOUNT_BALANCE);
-            logger.info("marking account as FLAGGED {} {}", overdrawn, flagged);
-        } else {
-            account.setStatus(Status.ACTIVE);
-        }
-        
-        saveOrUpdateAll(resourcesToEvaluate);
-        // FIXME: may not work exactly because resource evaluations may not have been "saved" yet.
-        // 20.2.13 -- appears ok
-        helper.updateAccount();
-        updateAccountInfo(account);
-        saveOrUpdate(account);
-        logger.trace("files used: {} ", account.getFilesUsed());
-        logger.trace("files avail: {} ", account.getAvailableNumberOfFiles());
-        logger.trace("space used: {} ", account.getSpaceUsedInMb());
-        logger.trace("space avail: {} ", account.getAvailableSpaceInMb());
-        return status;
+        return hasUpdates;
     }
 
-    private AccountAdditionStatus updateResourceStatusesAndReconcileAccountStatus(AccountEvaluationHelper helper, AccountAdditionStatus status,
-            Set<Resource> flagged, Set<Resource> unflagged) {
-        markResourcesAsFlagged(flagged);
-        unMarkResourcesAsFlagged(unflagged);
-        logger.info("s{} f{} r:{} ", helper.getAvailableSpaceInBytes(), helper.getAvailableNumberOfFiles(), unflagged);
-        if (flagged.size() > 0) {
+    private AccountAdditionStatus updateResourceStatusesAndReconcileAccountStatus(AccountEvaluationHelper helper, AccountAdditionStatus status) {
+        markResourcesAsFlagged(helper.getFlagged());
+        unMarkResourcesAsFlagged(helper.getUnflagged());
+        logger.info("s{} f{} r:{} ", helper.getAvailableSpaceInBytes(), helper.getAvailableNumberOfFiles(), helper.getUnflagged());
+        if (helper.getFlagged().size() > 0) {
             if (helper.getAvailableSpaceInBytes() < 0) {
                 status = AccountAdditionStatus.NOT_ENOUGH_SPACE;
             } else {
                 status = AccountAdditionStatus.NOT_ENOUGH_FILES;
             }
         }
-        logger.info("marking {} resources {} FLAGGED", status, flagged);
+        logger.info("marking {} resources {} FLAGGED", status, helper.getUnflagged());
         return status;
     }
 
-    private void processResourcesChronologically(AccountEvaluationHelper helper, Collection<Resource> resourcesToEvaluate, Set<Resource> flagged,
-            Set<Resource> unflagged) {
+    private void processResourcesChronologically(AccountEvaluationHelper helper, Collection<Resource> resourcesToEvaluate) {
         List<Resource> resourceList = new ArrayList<Resource>(resourcesToEvaluate);
         GenericService.sortByUpdatedDate(resourceList);
-        processResourceGroup(helper, resourceList, flagged, unflagged, Mode.ADD);
-
+        processResourceGroup(helper, resourceList, Mode.ADD);
     }
 
     /*
@@ -287,21 +288,21 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
      * Wait until the very end to add the weight of the flagged resources to try and get as many resources visible
      * and functional as possible.
      */
-    private void processResourceGroup(AccountEvaluationHelper helper, List<Resource> items, Set<Resource> flagged, Set<Resource> unflagged, Mode mode) {
+    private void processResourceGroup(AccountEvaluationHelper helper, List<Resource> items, Mode mode) {
         boolean seenFlagged = false;
         for (Resource resource : items) {
             if (hasSpaceFor(resource, helper, mode)) {
-                unflagged.add(resource);
+                helper.getUnflagged().add(resource);
                 updateMarkers(resource, helper, mode);
             } else {
                 if (!seenFlagged) {
                     logger.info("First Flagged item: {}", resource.getId());
                     seenFlagged = true;
                 }
-                flagged.add(resource);
+                helper.getFlagged().add(resource);
             }
         }
-        for (Resource resource : flagged) {
+        for (Resource resource : helper.getFlagged()) {
             updateMarkers(resource, helper, mode);
         }
     }
