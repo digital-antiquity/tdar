@@ -53,6 +53,8 @@ public class ShapefileReaderTask extends AbstractTask {
                 }
             }
             getLogger().info(tiffCov.toString());
+            //http://docs.geotools.org/latest/userguide/library/coverage/grid.html#coveragestack
+            
             getLogger().info("env {} ", tiffCov.getEnvelope());
             getLogger().info("CRS {} ", tiffCov.getCoordinateReferenceSystem());
             getLogger().info("Geom {} ", tiffCov.getGridGeometry().toString());
