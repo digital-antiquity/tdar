@@ -1,5 +1,6 @@
 package org.tdar.struts.action.resource;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -9,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -152,7 +154,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
 
     @Test
     @Rollback()
-    public void testSecondarySaveWithValidAccount() throws Exception {
+    public void testSecondarySaveWithValidAccount() {
         BillingActivityModel model = new BillingActivityModel();
         model.setCountingResources(false);
         genericService.saveOrUpdate(model);
@@ -160,8 +162,13 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         genericService.saveOrUpdate(account);
 
         String fmt = "pass %s";
+        try {
         for (int i=1; i < 4; i++) {
         extracted(String.format(fmt, i), account);
+        }
+        } catch (Exception e) {
+            logger.error("Exception happened", e);
+            fail(e.getMessage());
         }
     }
 
@@ -182,7 +189,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         controller.setDocument(d);
         controller.setServletRequest(getServletPostRequest());
         UsagePair statsBefore = amountRemaining(expectedAccount);
-        assertEquals(TdarActionSupport.SUCCESS, controller.save());
+        assertEquals("errors: " + StringUtils.join(controller.getActionErrors(),", "), TdarActionSupport.SUCCESS, controller.save());
         
         UsagePair statsAfter = amountRemaining(expectedAccount);
         assertEquals("files remainning should be the same because resource has no files", statsBefore, statsAfter);
@@ -201,11 +208,10 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         controller.setFileProxies(uploadFilesAsync.getSecond());
         long fileSize = file.length();
         controller.setServletRequest(getServletPostRequest());
-        String actionResult = controller.save();
+        assertEquals("errors: " + StringUtils.join(controller.getActionErrors(),", "), TdarActionSupport.SUCCESS, controller.save());
         statsAfter = amountRemaining(expectedAccount);
         assertEquals(title + ":files remaining should decrement by 1", statsBefore.files() - 1, statsAfter.files());
         assertEquals(title + ":space remaining should decrement by " + fileSize, statsBefore.bytes() - fileSize, statsAfter.bytes());
-        assertEquals(title + ": expecting successful save", TdarActionSupport.SUCCESS, actionResult);
         assertEquals(title + ": resource should be in draft", Status.DRAFT, controller.getResource().getStatus());
     }
 
