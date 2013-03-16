@@ -283,6 +283,10 @@
 					<artifactId>commons-codec</artifactId>
 					<groupId>commons-codec</groupId>
 				</exclusion>
+				<exclusion>
+				    <artifactId>commons-exec</artifactId>
+				    <groupId>org.apache.commons</groupId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
@@ -400,10 +404,6 @@
 			<artifactId>cssselectors</artifactId>
 			<version>1.0</version>
 		</dependency>
-
-		<!--<dependency> <groupId>org.seleniumhq.selenium</groupId> <artifactId>selenium-java</artifactId> 
-			<version>2.21.0</version> </dependency> <dependency> <groupId>org.seleniumhq.selenium</groupId> 
-			<artifactId>selenium-server</artifactId> <version>2.21.0</version> </dependency> -->
 		<dependency>
 			<groupId>org.apache.struts</groupId>
 			<artifactId>struts2-core</artifactId>
@@ -839,6 +839,14 @@
 
 		<!-- OData (odata4j) Stuff: End -->
 
+        <!--  selenium tests: experimental and may likely go away -->
+            <dependency>
+                <groupId>org.seleniumhq.selenium</groupId>
+                <artifactId>selenium-java</artifactId>
+                <version>2.31.0</version>
+            </dependency>
+              
+            
 	</dependencies>
 	<pluginRepositories>
 		<pluginRepository>
@@ -1225,6 +1233,9 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.12</version>
 				<configuration>
+                    <excludes>
+                        <exclude>**/experimental/*.java</exclude>
+                    </excludes>
 					<forkMode>never</forkMode>
 					<skip>${maven.test.skip}</skip>
 					<systemProperties>
@@ -1276,6 +1287,9 @@
 				</executions>
 				<configuration>
 					<argLine>${jvm.args} -DenableContextSwitchingConfig=true</argLine>
+                    <excludes>
+                        <exclude>**/experimental/*.java</exclude>
+                    </excludes>
 				</configuration>
 			</plugin>
 		</plugins>
