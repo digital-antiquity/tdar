@@ -70,12 +70,10 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         docValMap.put("authorizedUsers[1].user.id", "5349");
         docValMap.put("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
         docValMap.put("authorizedUsers[1].generalPermission", GeneralPermissions.VIEW_ALL.name());
+        docValMap.put("authorizedUsers[0].user.properName", "Michelle Elliott");
+        docValMap.put("authorizedUsers[1].user.properName", "Joshua Watts");
         alternateCodeLookup.add(GeneralPermissions.MODIFY_RECORD.name());
         alternateCodeLookup.add(GeneralPermissions.VIEW_ALL.name());
-        docValMap.put("authorizedUsers[0].user.firstName", "Michelle");
-        docValMap.put("authorizedUsers[0].user.lastName", "Elliott");
-        docValMap.put("authorizedUsers[1].user.firstName", "Joshua");
-        docValMap.put("authorizedUsers[1].user.lastName", "Watts");
         docValMap.put("document.doi", "doi:10.1016/j.iheduc.2003.11.004");
         docValMap.put("document.isbn", "9780385483995");
         alternateTextLookup.add(Language.SPANISH.getLabel());
