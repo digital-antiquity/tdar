@@ -16,11 +16,11 @@ import org.hibernate.search.annotations.Indexed;
  * @author Adam Brin
  * @version $Revision: 543$
  */
-//@Entity
+@Entity
 @Indexed
-//@Table(name = "geospatial")
-//@XmlRootElement(name = "geospatial")
-public class Geospatial extends InformationResource {
+@Table(name = "geospatial")
+@XmlRootElement(name = "geospatial")
+public class Geospatial extends Dataset {
 
     /**
      * 
