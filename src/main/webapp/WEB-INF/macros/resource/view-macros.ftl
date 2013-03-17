@@ -400,7 +400,7 @@ No coding rules have been entered for this coding sheet yet.
 
             <#if administrator>
             <dt><p><strong>Status</strong></p></dt>
-            <dd><p>${resource.status.label}</p></dd>
+            <dd><p>${resource.status.label} <#if resource.previousStatus?has_content && resource.previousStatus != resource.status>(${resource.previousStatus.label})</#if></p></dd>
             </#if>
             <dt><p><strong>Last Updated by</strong></p></dt>
             <dd><p><a href="<@s.url value="/browse/creators/${resource.updatedBy.id?c}"/>">${resource.updatedBy.properName!""}</a> on ${resource.dateUpdated?date!""}</p></dd>
