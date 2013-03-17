@@ -23,6 +23,25 @@ $(function(){
 </script>
 </head>
 <body>
+
+    <div id='subnavbar' class="subnavbar-scrollspy affix-top subnavbar resource-nav navbar-static no-print"  data-offset-top="250" data-spy="affix" >
+      <div class="">
+        <div class="container" >
+        <ul class="nav">
+        	<li class="alwaysHidden"><a href="#top">top</a></li>
+            <li class="active"><a href="#basicInformationSection">Basic</a></li>
+            <li><a href="#authorshipSection">Authors</a></li>
+            <li><a href="#divAccessRights">Rights</a></li>
+            <li><a href="#divResourcesSesction">Resources</a></li>
+        </ul>
+            <div id="fakeSubmitDiv" class="pull-right">
+                <button type=button class="button btn btn-primary submitButton" id="fakeSubmitButton">Save</button>
+                <img src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner"  style="display:none"/>
+            </div>
+        </div>
+      </div>
+    </div>
+
 <div id="sidebar-right" parse="true">
     <div id="notice">
     <h3>Introduction</h3>
@@ -35,7 +54,7 @@ $(function(){
 <@s.form name='metadataForm' id='metadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='save'>
 
 <h2>Basic Information</h2>
-<div class="" tiplabel="Basic Information"  tooltipcontent="Enter a name and description for this collection.  You may also choose a &quot;parent 
+<div class="" id="basicInformationSection" tiplabel="Basic Information"  tooltipcontent="Enter a name and description for this collection.  You may also choose a &quot;parent 
     collection&quot; which allows you to inherit all of the access permissions defined by the parent.">
   <#if resourceCollection.id?? &&  resourceCollection.id != -1>
       <@s.hidden name="id"  value="${resourceCollection.id?c}" />
@@ -95,7 +114,7 @@ The form will check for matches in the ${siteAcronym} database and populate the 
 </div>
 <@edit.fullAccessRights tipsSelector="#divCollectionAccessRightsTips" />
 
-<div class="glide" tiplabel="Add/Remove Resources" tooltipcontent="Check the items in this table to add them to your collection.  Navigate the pages
+<div class="glide" id="divResourcesSesction" tiplabel="Add/Remove Resources" tooltipcontent="Check the items in this table to add them to your collection.  Navigate the pages
                     in this list by clicking the left/right arrows at the bottom of this table.  Use the input fields above the table to limit the number
                     of results.">
     <h2>Add/Remove Resources</h2>
