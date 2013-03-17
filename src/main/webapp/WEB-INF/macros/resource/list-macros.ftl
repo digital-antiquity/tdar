@@ -170,7 +170,6 @@
 
 <#macro searchResultTitleSection result titleTag>
     <#local titleCssClass="search-result-title-${result.status!('ACTIVE')}" />
-    <!-- <h3><a href="">Casa Grande Ruins National Monument, A Centennial History of the First Prehistoric Reserve, 1892-1992</a></h3> -->
     <#if titleTag?has_content>
         <${titleTag} class="${titleCssClass}">
     </#if>
