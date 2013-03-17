@@ -126,33 +126,36 @@
 
 
 <#macro printDescription resource=resource expanded=false orientation=DEFAULT_ORIENTATION length=80 showProject=false>
-<#local _desc = (resource.description)?has_content?string(resource.description ,"Description not available") />
-<#--//FIXME: need non-hokey way to determine whether tdar should omit resource.description from search results. -->
-<#if _desc?starts_with("The information in this record has been migrated into tDAR from the National Archaeological Database Reports Module")>
-<#local _desc = "Description not available" />
-</#if>
-<#local _rid = resource.id?c >
-<#--//FIXME: need non-hokey way to determine whether persistable is collection  -->
-<#if resource.class.simpleName == 'ResourceCollection'>
-<#local _rid = "C${resource.id?c}" >
-</#if>
-
-            <#if expanded && orientation != 'GRID'>
-                <div class="listItemPart">
-                <#if (resource.citationRecord?has_content && resource.citationRecord && !resource.resourceType.project)>
-                <span class='cartouche' title="Citation only; this record has no attached files.">Citation</span>
-                </#if>
-                <@common.cartouche resource true><@listCreators resource/></@common.cartouche>  
-                <@view.unapiLink resource  />
-                <#if showProject && !resource.resourceType.project >
-                <p class="project">${resource.project.title}</p>
-                </#if>
-                    <p class="abstract">
-                        <span class="pull-right small">[tDAR id: ${_rid}]</span>                        
-                        <@common.truncate _desc length />
-                    </p>
-                </div>
-            </#if>
+	<#if resource?has_content>
+		<#local _desc = "Description not available"/>
+		<#if (resource.description)?has_content >
+			<#if !resource.description?starts_with("The information in this record has been migrated into tDAR from the National Archaeological Database Reports Module")>
+				<#local _desc = resource.description />
+			</#if>
+		</#if>
+		<#local _rid = resource.id?c >
+		<#--//FIXME: need non-hokey way to determine whether persistable is collection  -->
+		<#if resource.class.simpleName == 'ResourceCollection'>
+			<#local _rid = "C${resource.id?c}" >
+		</#if>
+	
+        <#if expanded && orientation != 'GRID'>
+            <div class="listItemPart">
+	            <#if (resource.citationRecord?has_content && resource.citationRecord && !resource.resourceType.project)>
+		            <span class='cartouche' title="Citation only; this record has no attached files.">Citation</span>
+	            </#if>
+	            <@common.cartouche resource true><@listCreators resource/></@common.cartouche>  
+	            <@view.unapiLink resource  />
+	            <#if showProject && !resource.resourceType.project >
+		            <p class="project">${resource.project.title}</p>
+	            </#if>
+	            <p class="abstract">
+	                <span class="pull-right small">[tDAR id: ${_rid}]</span>                        
+	                <@common.truncate _desc length />
+	            </p>
+            </div>
+        </#if>
+	</#if>
 </#macro>
 
     <#macro printLuceneExplanation resource>
@@ -167,7 +170,6 @@
 
 <#macro searchResultTitleSection result titleTag>
     <#local titleCssClass="search-result-title-${result.status!('ACTIVE')}" />
-    <!-- <h3><a href="">Casa Grande Ruins National Monument, A Centennial History of the First Prehistoric Reserve, 1892-1992</a></h3> -->
     <#if titleTag?has_content>
         <${titleTag} class="${titleCssClass}">
     </#if>

@@ -249,6 +249,14 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         setInput(name, value, true);
     }
 
+    public void setInput(String name, Number value) {
+        setInput(name, String.format("%s",  value));
+    }
+
+    public<T extends Enum<T>> void setInput(String name,  T value) {
+        setInput(name, String.format("%s",  value.name()));
+    }
+
     public void setInput(String name, String value, boolean overrideCreate) {
         HtmlPage page = (HtmlPage) internalPage;
         String id = null;

@@ -29,9 +29,9 @@ public class DoiProcess extends ScheduledBatchProcess<InformationResource> {
 
     private static final long serialVersionUID = 6004534173920064945L;
 
-    public static final String DELETED = "DELETED";
-    public static final String UPDATED = "UPDATED";
-    public static final String CREATED = "CREATED";
+    public static final String DELETED = "deleted";
+    public static final String UPDATED = "updated";
+    public static final String CREATED = "created";
     public static final String DOI_KEY = "DOI";
 
     @Autowired

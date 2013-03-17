@@ -1,22 +1,35 @@
 package org.tdar.struts.action.resource;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.PersonalFilestoreTicket;
+import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.AccountService;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts.data.FileProxy;
+import org.tdar.utils.AccountEvaluationHelper;
 import org.tdar.utils.Pair;
 
 @RunWith(MultipleTdarConfigurationRunner.class)
@@ -37,6 +50,20 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
 
     public void setController(DocumentController controller) {
         this.controller = controller;
+    }
+    
+    private class UsagePair extends Pair<Long, Long> {
+        public UsagePair(Long first, Long second) {
+            super(first, second);
+        }
+        
+        public long files() {
+            return getFirst();
+        }
+        
+        public long bytes() {
+            return getSecond();
+        }
     }
 
     @Test
@@ -123,6 +150,70 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         // Assert.assertEquals(Status.FLAGGED_ACCOUNT_BALANCE, d.getStatus());
         Assert.assertFalse(CollectionUtils.isEmpty(controller.getActionErrors()));
         setIgnoreActionErrors(true);
+    }
+
+    @Test
+    @Rollback()
+    public void testSecondarySaveWithValidAccount() {
+        BillingActivityModel model = new BillingActivityModel();
+        model.setCountingResources(false);
+        genericService.saveOrUpdate(model);
+        Account account = setupAccountWithInvoiceFiveResourcesAndSpace(model);
+        genericService.saveOrUpdate(account);
+
+        String fmt = "pass %s";
+        try {
+        for (int i=1; i < 4; i++) {
+        extracted(String.format(fmt, i), account);
+        }
+        } catch (Exception e) {
+            logger.error("Exception happened", e);
+            fail(e.getMessage());
+        }
+    }
+
+
+    private UsagePair amountRemaining(Account account) {
+        AccountEvaluationHelper helper = new AccountEvaluationHelper(account, accountService.getLatestActivityModel());
+        UsagePair pair = new UsagePair(helper.getAvailableNumberOfFiles(), helper.getAvailableSpaceInBytes());
+        return pair;
+    }
+    
+    
+    
+
+    private void extracted(String title, Account expectedAccount) throws TdarActionException, FileNotFoundException {
+        controller = generateNewInitializedController(DocumentController.class);
+        Document d = setupDocument();
+        d.setStatus(Status.DRAFT);
+        controller.setDocument(d);
+        controller.setAccountId(expectedAccount.getId());
+        controller.setServletRequest(getServletPostRequest());
+        UsagePair statsBefore = amountRemaining(expectedAccount);
+        assertEquals("errors: " + StringUtils.join(controller.getActionErrors(),", "), TdarActionSupport.SUCCESS, controller.save());
+        
+        UsagePair statsAfter = amountRemaining(expectedAccount);
+        assertEquals("files remainning should be the same because resource has no files", statsBefore, statsAfter);
+        Long id = d.getId();
+        Account account = accountService.find(controller.getAccountId());
+        assertEquals(expectedAccount, account);
+
+        d = null;
+        controller = generateNewInitializedController(DocumentController.class);
+        controller.setId(id);
+        controller.prepare();
+        controller.edit();
+        File file = new File(TestConstants.TEST_DOCUMENT_DIR + TestConstants.TEST_DOCUMENT_NAME);
+        Pair<PersonalFilestoreTicket, List<FileProxy>> uploadFilesAsync = uploadFilesAsync(Arrays.asList(file));
+        controller.setTicketId(uploadFilesAsync.getFirst().getId());
+        controller.setFileProxies(uploadFilesAsync.getSecond());
+        long fileSize = file.length();
+        controller.setServletRequest(getServletPostRequest());
+        assertEquals("errors: " + StringUtils.join(controller.getActionErrors(),", "), TdarActionSupport.SUCCESS, controller.save());
+        statsAfter = amountRemaining(expectedAccount);
+        assertEquals(title + ":files remaining should decrement by 1", statsBefore.files() - 1, statsAfter.files());
+        assertEquals(title + ":space remaining should decrement by " + fileSize, statsBefore.bytes() - fileSize, statsAfter.bytes());
+        assertEquals(title + ": resource should be in draft", Status.DRAFT, controller.getResource().getStatus());
     }
 
     private Pair<String, Exception> setupResource(Document d) {
