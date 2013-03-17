@@ -206,7 +206,7 @@ Use these fields to properly credit individuals and institutions for their contr
 
 </#escape>
 
-<#macro copyrightHolder>
+<#macro copyrightHoldersTip>
 <div id="divCopyrightHolderTip" class="hidden">
 Use this field to nominate a primary copyright holder. Other information about copyright can be added in the 'notes' section by creating a new 'Rights & Attribution note.
 </div>
