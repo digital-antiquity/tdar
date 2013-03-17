@@ -209,8 +209,8 @@ TDAR.uri = function(path) {
 </#macro>
 
 
-<#macro resourceCollectionsRights effectiveResourceCollections_>
-    <#if effectiveResourceCollections_?has_content>
+<#macro resourceCollectionsRights collections=effectiveResourceCollections_ owner="">
+    <#if collections?has_content>
     <h3>Access Permissions</h3>
     <#nested />
     <table class="tableFormat table">
@@ -218,7 +218,16 @@ TDAR.uri = function(path) {
     <#list availablePermissions as permission>
     <th>${permission.label}</th>
     </#list>
-    <#list effectiveResourceCollections_ as collection_ >
+    <#if owner?has_content>
+	    <tr>
+		     <td>Local Resource</td>
+		     <td>${owner.properName} (Submitter)</td>
+		     <td><i class="icon-ok"></i></td>
+		     <td><i class="icon-ok"></i></td>
+		     <td><i class="icon-ok"></i></td>
+	    </tr>
+    </#if>
+    <#list collections as collection_ >
       <#if collection_.authorizedUsers?has_content >
         <#list collection_.authorizedUsers as user>
         <tr>
@@ -226,7 +235,7 @@ TDAR.uri = function(path) {
             <#if !collection_.internal>
                <a href="<@s.url value="/collection/${collection_.id?c}"/>"> ${collection_.name!"<em>un-named</em>"}</a>
             <#else>
-                Local resource
+                Local Resource
             </#if>
           </td>
           <td>

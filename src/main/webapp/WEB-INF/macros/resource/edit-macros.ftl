@@ -52,6 +52,15 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     </#if>
 </#if>
     <#nested>
+    <#if editor>
+        <div class="control-group" id="divSubmitter">
+            <label class="control-label">Submitter</label>
+            <div class="controls controls-row">
+		    <@registeredUserRow person=submitter isDisabled=disabled   _personPrefix="" _indexNumber='' 
+		       prefix="submitter" includeRights=false includeRepeatRow=false />
+	       </div>
+       </div>
+     </#if>
 </div>
 
 <@accountSection />
@@ -455,8 +464,8 @@ ${resource.resourceType.label}
             	</#if>
            	    <div class="controls-row repeat-row"  id="authorizedUsersRow_${authorizedUser_index}_">
                	    <div class="span6">
-                        <@userRow person=authorizedUser.user isDisabled=disabled _indexNumber=authorizedUser_index includeRole=false _personPrefix="user" 
-                           prefix="authorizedUsers" includeRights=true isUser=true includeRepeatRow=false />
+                        <@registeredUserRow person=authorizedUser.user isDisabled=disabled _indexNumber=authorizedUser_index  _personPrefix="user" 
+                           prefix="authorizedUsers" includeRights=true includeRepeatRow=false />
                     </div>
                     <div class="span1">
                         <@clearDeleteButton id="accessRightsRecordsDelete${authorizedUser_index}" disabled=disabled />
@@ -471,7 +480,7 @@ ${resource.resourceType.label}
 <#nested>
 
  <#if persistable.resourceType??>
-  <@resourceCollectionsRights effectiveResourceCollections >
+  <@resourceCollectionsRights collections=effectiveResourceCollections owner=submitter >
   <#--Note: this does not reflect changes to resource collection you have made until you save.-->
   </@resourceCollectionsRights>
  </#if>
@@ -1630,6 +1639,44 @@ $(function() {
             autocompleteName="institution" 
             autocompleteParentElement="#${rowIdElement}"
             name="${strutsPrefix}${personPrefix}.institution.name" maxlength="255" />
+        </div>
+    </div>
+</#macro>
+
+
+
+<#macro registeredUserRow person=person _indexNumber=0 isDisabled=false prefix="authorizedMembers" required=false _personPrefix="" 
+    includeRepeatRow=false includeRights=false  hidden=false leadTitle="">
+<#local disabled =  isDisabled?string("disabled", "") />
+<#local readonly = isDisabled?string("readonly", "") />
+<#local lookupType="userAutoComplete"/>
+<#local _index=""/>
+<#if _indexNumber?string!=''><#local _index="[${_indexNumber?c}]" /></#if>
+<#local personPrefix="" />
+<#if _personPrefix!=""><#local personPrefix=".${_personPrefix}"></#if>
+<#local strutsPrefix="${prefix}${_index}" />
+<#local rowIdElement="${prefix}Row_${_indexNumber}_p" />
+<#local idIdElement="${prefix}Id__id_${_indexNumber}_p" />
+<#local requiredClass><#if required>required</#if></#local>
+<#local nameTitle>A ${leadTitle} name<#if required> is required</#if></#local>
+    <div id='${rowIdElement}' class="creatorPerson <#if hidden>hidden</#if> <#if includeRepeatRow>repeat-row</#if>">
+        <@s.hidden name='${strutsPrefix}${personPrefix}.id' value='${(person.id!-1)?c}' id="${idIdElement}"  cssClass="validIdRequired" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"   />
+        <div class="controls-row">
+            <@s.textfield theme="tdar" cssClass="span3 ${lookupType} ${requiredClass}" placeholder="Name"  readonly=isDisabled autocomplete="off"
+                name="${strutsPrefix}${personPrefix}.properName" maxlength="255" autocompleteName="properName"
+                autocompleteIdElement="#${idIdElement}" 
+                autocompleteParentElement="#${rowIdElement}" 
+                 title="${nameTitle}" 
+                />
+
+            <#if includeRights>
+                    <@s.select theme="tdar" cssClass="creator-rights-select span2" name="${strutsPrefix}.generalPermission" emptyOption='false' 
+                        listValue='label' list='%{availablePermissions}' disabled=isDisabled />
+                    <#--HACK: disabled fields do not get sent in request, so we copy generalPermission via hidden field and prevent it from being cloned -->
+                    <@s.hidden name="${strutsPrefix}.generalPermission" cssClass="repeat-row-remove" />
+            <#else>
+                <span class="span2">&nbsp;</span> 
+            </#if>
         </div>
     </div>
 </#macro>

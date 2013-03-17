@@ -1014,6 +1014,7 @@ TDAR.common = function() {
         delegateCreator("#authorshipTable", false, true);
         delegateCreator("#creditTable", false, true);
         delegateCreator("#divAccessRights", true, false);
+        delegateCreator("#divSubmitter", true, false);
         delegateCreator("#copyrightHolderTable",false,true);
         delegateAnnotationKey("#resourceAnnotationsTable", "annotation", "annotationkey");
         delegateKeyword("#siteNameKeywordsRepeatable", "sitename", "SiteNameKeyword");

@@ -391,8 +391,11 @@ No coding rules have been entered for this coding sheet yet.
     <div>
         <dl class="dl-horizontal">
             <dt><p><strong>Created by</strong></p></dt>
-            <dd><p><a href="<@s.url value="/browse/creators/${resource.submitter.id?c}"/>">${resource.submitter.properName}</a> on ${resource.dateCreated}</p></dd>
-
+            <dd><p><a href="<@s.url value="/browse/creators/${resource.submitter.id?c}"/>">${resource.submitter.properName}</a> <#if resource.submitter.id == resource.uploader.id> on ${resource.dateCreated}</#if></p></dd>
+        	<#if resource.submitter.id != resource.uploader.id>
+	            <dt><p><strong>Uploaded by</strong></p></dt>
+	            <dd><p><a href="<@s.url value="/browse/creators/${resource.uploader.id?c}"/>">${resource.uploader.properName}</a> on ${resource.dateCreated}</p></dd>
+			</#if>
 			<#if resource.account?has_content && (administrator || editable) >
             	<dt><p><strong>Account</strong></p></dt>
             	<dd><p><a href="<@s.url value="/billing/${resource.account.id?c}"/>">${resource.account.name}</a></p></dd>
@@ -400,7 +403,7 @@ No coding rules have been entered for this coding sheet yet.
 
             <#if administrator>
             <dt><p><strong>Status</strong></p></dt>
-            <dd><p>${resource.status.label}</p></dd>
+            <dd><p>${resource.status.label} <#if resource.previousStatus?has_content && resource.previousStatus != resource.status>(${resource.previousStatus.label})</#if></p></dd>
             </#if>
             <dt><p><strong>Last Updated by</strong></p></dt>
             <dd><p><a href="<@s.url value="/browse/creators/${resource.updatedBy.id?c}"/>">${resource.updatedBy.properName!""}</a> on ${resource.dateUpdated?date!""}</p></dd>
@@ -410,12 +413,12 @@ No coding rules have been entered for this coding sheet yet.
     </div>
 
     <#nested>
-    <@resourceCollectionsRights effectiveResourceCollections />
+    <@resourceCollectionsRights collections=effectiveResourceCollections owner=resource.submitter />
     </#if>
 </#macro>
 
 <#macro authorizedUsers collection >
-    <@resourceCollectionsRights collection.hierarchicalResourceCollections />
+    <@resourceCollectionsRights collections=collection.hierarchicalResourceCollections />
 </#macro>
 
 <#macro infoResourceAccessRights>
@@ -555,8 +558,9 @@ No coding rules have been entered for this coding sheet yet.
     </#if>
 
     <#if copyrightMandatory && resource.copyrightHolder?? >
-        <strong>Primary Copyright Holder:</strong>
+        <p class="sml"><strong>Primary Copyright Holder:</strong>
         <@browse resource.copyrightHolder />
+        </p>
     </#if>
 </p>
 

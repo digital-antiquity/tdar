@@ -115,6 +115,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private List<String> otherKeywords;
 
     private ModsDocument modsDocument;
+    private Person submitter;
     private DublinCoreDocument dcDocument;
     private List<String> temporalKeywords;
     private List<String> geographicKeywords;
@@ -132,8 +133,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private List<ResourceNote> resourceNotes;
     private List<ResourceCreatorProxy> authorshipProxies;
     private List<ResourceCreatorProxy> creditProxies;
-
-    private Long submitterId;
 
     private List<ResourceAnnotation> resourceAnnotations;
     private Long activeResourceCount;
@@ -186,6 +185,12 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     @SuppressWarnings("unchecked")
     @Override
     public String loadAddMetadata() {
+        if (Persistable.Base.isNotNullOrTransient(getResource()) ) {
+            setSubmitter(getResource().getSubmitter());
+        } else {
+            setSubmitter(getAuthenticatedUser());
+        }
+        
         if (getTdarConfiguration().isPayPerIngestEnabled()) {
             getAccountService().updateTransientAccountInfo(getResource());
             setActiveAccounts(new HashSet<Account>(determineActiveAccounts()));
@@ -416,22 +421,22 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             getResourceService().saveOrUpdate(getPersistable());
         }
 
-        if (Persistable.Base.isNotNullOrTransient(getSubmitterId())) {
-            Person uploader = getEntityService().find(getSubmitterId());
+        if (Persistable.Base.isNotNullOrTransient(getSubmitter())) {
+            Person uploader = getEntityService().find(getSubmitter().getId());
             getPersistable().setSubmitter(uploader);
             // if I change the owner, and the owner is me, then make sure I don't loose permissions on the record
-            if (uploader.equals(getAuthenticatedUser())) {
-                boolean found = false;
-                for (AuthorizedUser user : getAuthorizedUsers()) {
-                    if (user.getUser().equals(uploader)) {
-                        found = true;
-                    }
-                }
-                // if we're setting the sbumitter
-                if (!found) {
-                    getAuthorizedUsers().add(new AuthorizedUser(uploader, GeneralPermissions.MODIFY_RECORD));
-                }
-            }
+//            if (uploader.equals(getAuthenticatedUser())) {
+//                boolean found = false;
+//                for (AuthorizedUser user : getAuthorizedUsers()) {
+//                    if (user.getUser().equals(uploader)) {
+//                        found = true;
+//                    }
+//                }
+//                // if we're setting the sbumitter
+//                if (!found) {
+//                    getAuthorizedUsers().add(new AuthorizedUser(uploader, GeneralPermissions.MODIFY_RECORD));
+//                }
+//            }
         }
 
         getResourceCollectionService().saveAuthorizedUsersForResource(getResource(), getAuthorizedUsers(), shouldSaveResource());
@@ -934,14 +939,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return viewableResourceCollections;
     }
 
-    public Long getSubmitterId() {
-        return submitterId;
-    }
-
-    public void setSubmitterId(Long submitterId) {
-        this.submitterId = submitterId;
-    }
-
     @SkipValidation
     @Action(value = "admin", results = {
             @Result(name = SUCCESS, location = "../resource-admin.ftl")
@@ -1014,5 +1011,13 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public void setDownloadStats(Map<String, List<AggregateDownloadStatistic>> downloadStats) {
         this.downloadStats = downloadStats;
+    }
+
+    public Person getSubmitter() {
+        return submitter;
+    }
+
+    public void setSubmitter(Person submitter) {
+        this.submitter = submitter;
     }
 }
