@@ -2,6 +2,8 @@ package org.tdar.odata.server;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 
+import java.util.Set;
+
 import org.apache.log4j.Logger;
 import org.eclipse.jetty.client.ContentExchange;
 import org.junit.Test;
@@ -11,6 +13,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Dataset;
+import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
 
@@ -68,8 +71,11 @@ public class ODataMetadataRequestDBIntegrationITCase extends AbstractHeavyFitTes
 
         Dataset dataset = createTestDataset();
         dataset.markUpdated(knownPerson);
-
-        genericService.save(dataset);
+        Set<DataTable> dataTables = dataset.getDataTables();
+        dataset.getDataTables().clear();
+        genericService.saveOrUpdate(dataset);
+        dataset.setDataTables(dataTables);
+        genericService.saveOrUpdate(dataset);
     }
 
     protected Logger getLogger() {
