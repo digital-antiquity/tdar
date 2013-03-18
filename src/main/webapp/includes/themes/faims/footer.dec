@@ -22,7 +22,7 @@
     <div class="span3"> 
         <h4>Contact</h4> 
             <ul>
-                <li><a href="mailto:repository@fedarch.org?subject=FAIMS%20comments">repository@fedarch.org</a></li>
+                <li><a href="mailto:${contactEmail}?subject=FAIMS%20comments">Email: ${contactEmail}</a></li>
                 <li><a class="external" href="http://www.fedarch.org/wordpress/?page_id=84">Other contacts</a></li>
             </ul> 
      </div>

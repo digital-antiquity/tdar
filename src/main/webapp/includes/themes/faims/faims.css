@@ -53,27 +53,29 @@
 
 footer {
 	background: none repeat scroll 0 0 white;
+	margin-top: 50px;
+	padding: 10px 0;
 }
 
 .footer-links {
-    background : #dc9530;
-    margin-top: 50px;
+	background: #dc9530;
+	margin-top: 10px;
 	padding: 10px 0px 10px;
 }
 
 .footerlogos a {
-    color: #001CA8;
+	color: #001CA8;
 }
 
 .footerlogos {
-    text-align:center;
-     padding: 10px 0 0;
+	text-align: center;
+	padding: 10px 0 0;
 }
 
 .footerlogo {
-    height: 40px;
-    margin: 5px;
-    vertical-align: top;
+	height: 40px;
+	margin: 5px;
+	vertical-align: top;
 }
 
 .copyright-notice {
@@ -100,7 +102,6 @@ h1,h2,h3,header .welcome-drop p,#home .news span,.why article p,.why article ul,
     font-family: 'TeXGyreAdventorItalic', Arial, sans-serif !important;
 }
 */
-
 h1,h2,h3,h4,h5,h6 {
 	font-family: 'TeXGyreAdventorRegular', Arial, sans-serif;
 	letter-spacing: 0;
@@ -109,7 +110,7 @@ h1,h2,h3,h4,h5,h6 {
 body {
 	color: black;
 	font-family: 'TeXGyreAdventorRegular', Arial, sans-serif;
-    font-size: 15px;
+	font-size: 15px;
 }
 
 .faimslogo {
@@ -117,17 +118,17 @@ body {
 	color: gray;
 }
 
-a.button, .tdar-button, header nav li.button a {
-    background-color: #dc9530;
-    font-family: 'TeXGyreAdventorRegular', Arial, sans-serif;
+a.button,.tdar-button,header nav li.button a {
+	background-color: #dc9530;
+	font-family: 'TeXGyreAdventorRegular', Arial, sans-serif;
 }
 
 a {
-    color: #001ca8;
+	color: #001ca8;
 }
 
-a.button:hover, .tdar-button:hover, header nav li.button a:hover  {
-    background-color: orange;
+a.button:hover,.tdar-button:hover,header nav li.button a:hover {
+	background-color: orange;
 }
 
 a.external {
