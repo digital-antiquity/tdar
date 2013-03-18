@@ -51,6 +51,12 @@
 	background: url(/includes/themes/faims/images/bg-sub.jpg) top center no-repeat;
 }
 
+.faimslogo {
+	padding: 10px;
+	color: gray;
+	height: 95px;
+}
+
 footer {
 	background: none repeat scroll 0 0 white;
 	margin-top: 50px;
@@ -111,11 +117,6 @@ body {
 	color: black;
 	font-family: 'TeXGyreAdventorRegular', Arial, sans-serif;
 	font-size: 15px;
-}
-
-.faimslogo {
-	padding: 10px;
-	color: gray;
 }
 
 a.button,.tdar-button,header nav li.button a {
