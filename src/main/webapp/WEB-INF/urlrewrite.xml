@@ -131,6 +131,13 @@
 		<to>/search/results$1</to>
 	</rule>
 
+	<!--  when run at the root context; the struts2 freemarker setup does not seem to properly route requests through the servlet;
+		hence requests from http://localhost/ are routed to /about -->
+	<rule>
+		<from>^/$</from>
+		<to>/about</to>
+	</rule>
+
 	<rule>
 		<from>^/(search|advanced)/?$</from>
 		<to>/search/basic</to>

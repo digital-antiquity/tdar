@@ -40,7 +40,7 @@
 
     <#assign uri = request.requestURI />
     <#assign bodyid = 'home' />
-    <#if (uri != '' && uri != '/')>
+    <#if (uri != '' && uri != '/about')>
         <#assign bodyid = "alt" />
     </#if>
     <@header.css production />

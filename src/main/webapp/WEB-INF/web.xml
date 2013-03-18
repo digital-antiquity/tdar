@@ -2,11 +2,9 @@
 <!--
 vim:sts=2:sw=2
 -->
-<web-app   xmlns="http://java.sun.com/xml/ns/javaee"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<web-app   xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
-         metadata-complete="true"
-         version="3.0" >
+         metadata-complete="true" version="3.0" >
   <display-name>The Digital Archaeological Record</display-name>
   
   <!-- set session timeout -->
@@ -21,16 +19,14 @@ vim:sts=2:sw=2
     <!-- set the amount of seconds the conf file will be checked for reload
     can be a valid integer (0 denotes check every time,
     -1 denotes no reload check, default -1) -->
-    <!-- 
    	<init-param>
 	    <param-name>confReloadCheckInterval</param-name>
 	    <param-value>-1</param-value>
 	</init-param>    
     <init-param>
         <param-name>logLevel</param-name>
-        <param-value>DEBUG</param-value>
+        <param-value>INFO</param-value>
     </init-param>
-     -->  
   </filter>
 
   <!--	This filter is used to ensure that lazily initialized collections can
@@ -40,11 +36,6 @@ vim:sts=2:sw=2
   <filter>
     <filter-name>osiv-filter</filter-name>
     <filter-class>org.springframework.orm.hibernate4.support.OpenSessionInViewFilter</filter-class>
-  </filter>
-  
-  <filter>
-    <filter-name>sitemesh</filter-name>
-    <filter-class>com.opensymphony.sitemesh.webapp.SiteMeshFilter</filter-class>
   </filter>
   
   <!-- 	This filter is used to allow for Spring session-scoped objects (such
@@ -66,6 +57,13 @@ vim:sts=2:sw=2
     <filter-class>org.apache.struts2.dispatcher.ng.filter.StrutsExecuteFilter</filter-class>
 		
   </filter>
+
+  <filter>
+    <filter-name>sitemesh</filter-name>
+    <filter-class>com.opensymphony.sitemesh.webapp.SiteMeshFilter</filter-class>
+  </filter>
+  
+
   <!-- END FILTERS -->
 
   <filter-mapping>
@@ -115,10 +113,10 @@ vim:sts=2:sw=2
   
   <!--  https://blogs.oracle.com/enterprisetechtips/entry/jersey_and_spring -->
   <!-- Also used by tDAR in general. -->
-	<listener>
+  	<listener>
 		<listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
 	</listener>  
-  
+	
   <listener>
     <listener-class>org.apache.struts2.dispatcher.ng.listener.StrutsListener</listener-class>
   </listener>

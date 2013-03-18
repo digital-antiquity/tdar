@@ -58,8 +58,9 @@ public class IndexAction extends AuthenticationAware.Base {
     private List<SyndEntry> rssEntries;
 
     private String sitemapFile = "sitemap_index.xml";
-    @Override
+
     @HttpOnlyIfUnauthenticated
+    @Override
     @Actions({
             @Action("terms"),
             @Action("contact"),
