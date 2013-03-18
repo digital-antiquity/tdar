@@ -6,7 +6,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.sql.Date;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,6 +31,7 @@ import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
+import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -161,6 +161,7 @@ public abstract class AbstractFitTest {
         dataTable.setDataset(dataset);
         DataTableColumn dataTableColumn0 = new DataTableColumn();
         dataTableColumn0.setName("id");
+        dataTableColumn0.setColumnDataType(DataTableColumnType.BIGINT);
         dataTableColumn0.setDisplayName("Identifier");
         DataTableColumnEncodingType columnEncodingType = DataTableColumnEncodingType.UNCODED_VALUE;
         dataTableColumn0.setColumnEncodingType(columnEncodingType);
@@ -169,6 +170,12 @@ public abstract class AbstractFitTest {
         dataTable.setDisplayName("Pompeii:Insula of Julia Felix");
         dataTable.setDataTableColumns(Arrays.asList(dataTableColumn0));
         return dataset;
+    }
+
+    public ContentExchange setupExchange(String url) throws IOException, InterruptedException {
+        ContentExchange exchange = getTestingClient().sendRequest(url);
+        exchange.waitForDone();
+        return exchange;
     }
 
 }

@@ -3,7 +3,6 @@ package org.tdar.odata.server;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.jmock.Expectations;
@@ -30,13 +29,10 @@ public class MetaDataBuilderTest {
         dataSet.setTitle("Grecian Urns");
 
         DataTable dataTable = new DataTable();
-        @SuppressWarnings("serial")
-        DataTableColumn dataTableColumn0 = new DataTableColumn() {
-            {
-                setName("id");
-            }
-        };
-        dataTable.setDataTableColumns(Arrays.asList(dataTableColumn0));
+
+        DataTableColumn dataTableColumn0 = new DataTableColumn();
+        dataTableColumn0.setName("id");
+        dataTable.getDataTableColumns().add(dataTableColumn0);
         dataTable.setDataset(dataSet);
 
         final RepositoryService repositoryService = context.mock(RepositoryService.class);

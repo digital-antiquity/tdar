@@ -26,7 +26,7 @@ public class TDataSetFeedRequestIntegrationITCase extends AbstractLightFitTest {
     @Test
     @DirtiesContext
     public void testFeedUrl() throws Exception {
-        ContentExchange exchange = getTestingClient().sendRequest(Constant.TDATASETS_FEED_URL);
+        ContentExchange exchange = setupExchange(Constant.TDATASETS_FEED_URL);
         exchange.waitForDone();
         verifyResponseIsReturned(exchange);
     }
@@ -34,8 +34,7 @@ public class TDataSetFeedRequestIntegrationITCase extends AbstractLightFitTest {
     @Test
     @DirtiesContext
     public void testMetaDataResponseContent() throws Exception {
-        ContentExchange exchange = getTestingClient().sendRequest(Constant.TDATASETS_FEED_URL);
-        exchange.waitForDone();
+        ContentExchange exchange = setupExchange(Constant.TDATASETS_FEED_URL);
         String inXMLString = exchange.getResponseContent();
 
         // See: tdataset_feed_response.xml

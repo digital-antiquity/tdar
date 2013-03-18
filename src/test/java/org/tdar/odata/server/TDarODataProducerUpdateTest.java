@@ -15,9 +15,8 @@ import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
 import org.odata4j.exceptions.ForbiddenException;
 import org.odata4j.exceptions.NotFoundException;
+import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.datatable.DataTable;
-import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.odata.server.MetaData.EntitySet;
 
 @RunWith(JMock.class)
@@ -80,16 +79,10 @@ public class TDarODataProducerUpdateTest {
 
         String concreteDataRecordEntityName = "Italy/Pompeii: Insula of Julia Felix_s";
 
-        final DataTable dataTable = new DataTable();
+        Dataset dataset = AbstractFitTest.createTestDataset();
+        final DataTable dataTable = dataset.getDataTables().iterator().next();
         dataTable.setName("Italy/Pompeii: Insula of Julia Felix");
         final AbstractDataRecord dataRecord = new AbstractDataRecord(1234L, dataTable);
-
-        List<DataTableColumn> dataTableColumns = new ArrayList<DataTableColumn>();
-        DataTableColumn dataTableColumn = new DataTableColumn();
-        dataTableColumn.setName("id");
-        dataTableColumn.setColumnDataType(DataTableColumnType.BIGINT);
-        dataTableColumns.add(dataTableColumn);
-        dataTable.setDataTableColumns(dataTableColumns);
 
         final RepositoryService repositoryService = context.mock(RepositoryService.class);
         context.checking(new Expectations() {

@@ -31,16 +31,14 @@ public class ODataMetadataRequestIntegrationITCase extends AbstractLightFitTest 
 
     @Test
     public void testMetaDataUrl() throws Exception {
-        ContentExchange exchange = getTestingClient().sendRequest(Constant.META_DATA_URL);
-        exchange.waitForDone();
+        ContentExchange exchange = setupExchange(Constant.META_DATA_URL);
         verifyResponseIsReturned(exchange);
     }
 
     @Test
     @DirtiesContext
     public void testMetaDataResponseContent() throws Exception {
-        ContentExchange exchange = getTestingClient().sendRequest(Constant.META_DATA_URL);
-        exchange.waitForDone();
+        ContentExchange exchange = setupExchange(Constant.META_DATA_URL);
         String inXMLString = exchange.getResponseContent();
 
         // See: odata_metadata_response.xml

@@ -4,9 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -41,11 +39,7 @@ public class TDarODataProducerTest {
             }
         });
 
-        final RepositoryService repositoryService = context.mock(RepositoryService.class);
-        context.checking(new Expectations() {
-            {
-            }
-        });
+        final RepositoryService repositoryService = setupMockRepositoryService();
 
         new TDarODataProducer(repositoryService, metadataBuilder);
     }
@@ -54,19 +48,9 @@ public class TDarODataProducerTest {
     public void testGetMetadataDelegatesToBuilder() {
         final EdmDataServices edmDataServices = EdmDataServices.newBuilder().build();
 
-        final RepositoryService repositoryService = context.mock(RepositoryService.class);
-        context.checking(new Expectations() {
-            {
-            }
-        });
+        final RepositoryService repositoryService = setupMockRepositoryService();
 
-        final IMetaDataBuilder metadataBuilder = context.mock(IMetaDataBuilder.class);
-        context.checking(new Expectations() {
-            {
-                oneOf(metadataBuilder).build();
-                will(returnValue(edmDataServices));
-            }
-        });
+        final IMetaDataBuilder metadataBuilder = setupMockMetadataBuilder(edmDataServices);
 
         TDarODataProducer producer = new TDarODataProducer(repositoryService, metadataBuilder);
         producer.getMetadata();
@@ -80,20 +64,10 @@ public class TDarODataProducerTest {
     @Test(expected = NotFoundException.class)
     public void testGetEntitiesForTDataSetsRequestButNoSetsAvailable() {
 
-        final RepositoryService repositoryService = context.mock(RepositoryService.class);
-        context.checking(new Expectations() {
-            {
-            }
-        });
+        final RepositoryService repositoryService = setupMockRepositoryService();
 
         final EdmDataServices edmDataServices = EdmDataServices.newBuilder().build();
-        final IMetaDataBuilder metadataBuilder = context.mock(IMetaDataBuilder.class);
-        context.checking(new Expectations() {
-            {
-                oneOf(metadataBuilder).build();
-                will(returnValue(edmDataServices));
-            }
-        });
+        final IMetaDataBuilder metadataBuilder = setupMockMetadataBuilder(edmDataServices);
 
         TDarODataProducer producer = new TDarODataProducer(repositoryService, metadataBuilder);
         QueryInfo queryInfo = new QueryInfo();
@@ -102,34 +76,53 @@ public class TDarODataProducerTest {
         assertEquals(0, entitiesResponse.getEntities().size());
     }
 
+    private IMetaDataBuilder setupMockMetadataBuilder(final EdmDataServices edmDataServices) {
+        final IMetaDataBuilder metadataBuilder = context.mock(IMetaDataBuilder.class);
+        context.checking(new Expectations() {
+            {
+                oneOf(metadataBuilder).build();
+                will(returnValue(edmDataServices));
+            }
+        });
+        return metadataBuilder;
+    }
+
+    private RepositoryService setupMockRepositoryService() {
+        final RepositoryService repositoryService = context.mock(RepositoryService.class);
+        context.checking(new Expectations() {
+            {
+            }
+        });
+        return repositoryService;
+    }
+
+    public Dataset setupTestDataset(String name) {
+        Dataset dataSet = new Dataset();
+        dataSet.setTitle(name);
+
+        DataTable dataTable = new DataTable();
+        dataTable.setName(name);
+        DataTableColumn dataTableColumn = new DataTableColumn();
+        dataTableColumn.setName("id");
+
+        dataTable.getDataTableColumns().add(dataTableColumn);
+        dataTable.setDataset(dataSet);
+        dataSet.getDataTables().add(dataTable);
+        return dataSet;
+    }
+
     @Test
     public void testGetEntitiesForTDataSetsRequestWithOneDataSetAvailable() {
 
         final List<Dataset> ownedDataSets = new ArrayList<Dataset>();
-
-        Dataset dataSet = new Dataset();
-        dataSet.setTitle("Grecian urns");
-
-        DataTable dataTable = new DataTable();
-        @SuppressWarnings("serial")
-        DataTableColumn dataTableColumn = new DataTableColumn() {
-            {
-                setName("id");
-            }
-        };
-        dataTable.setDataTableColumns(Arrays.asList(dataTableColumn));
-        dataTable.setDataset(dataSet);
-        final List<DataTable> dataTables = Arrays.asList(dataTable);
-        Set<DataTable> ownedDataTables = new HashSet<DataTable>(dataTables);
-        dataSet.setDataTables(ownedDataTables);
-
+        final Dataset dataSet = setupTestDataset("Grecian urns");
         ownedDataSets.add(dataSet);
 
         final RepositoryService repositoryService = context.mock(RepositoryService.class);
         context.checking(new Expectations() {
             {
                 oneOf(repositoryService).findAllOwnedDataTables();
-                will(returnValue(dataTables));
+                will(returnValue(dataSet.getDataTables()));
                 oneOf(repositoryService).findAllOwnedDatasets();
                 will(returnValue(ownedDataSets));
             }
@@ -150,34 +143,11 @@ public class TDarODataProducerTest {
         final List<Dataset> ownedDataSets = new ArrayList<Dataset>();
         final List<DataTable> dataTables = new ArrayList<DataTable>();
 
-        Dataset dataSet0 = new Dataset();
-        dataSet0.setTitle("Grecian urns");
+        final Dataset dataSet0 = setupTestDataset("Grecian urns");
+        final Dataset dataSet1 = setupTestDataset("Hand Axes");
 
-        DataTable dataTable0 = new DataTable();
-        @SuppressWarnings("serial")
-        DataTableColumn dataTableColumn0 = new DataTableColumn() {
-            {
-                setName("id");
-            }
-        };
-        dataTable0.setDataTableColumns(Arrays.asList(dataTableColumn0));
-        dataTable0.setDataset(dataSet0);
-
-        Dataset dataSet1 = new Dataset();
-        dataSet1.setTitle("Hand Axes");
-
-        DataTable dataTable1 = new DataTable();
-        @SuppressWarnings("serial")
-        DataTableColumn dataTableColumn1 = new DataTableColumn() {
-            {
-                setName("id");
-            }
-        };
-        dataTable1.setDataTableColumns(Arrays.asList(dataTableColumn1));
-        dataTable1.setDataset(dataSet1);
-
-        dataTables.add(dataTable0);
-        dataTables.add(dataTable1);
+        dataTables.addAll(dataSet0.getDataTables());
+        dataTables.addAll(dataSet1.getDataTables());
 
         ownedDataSets.add(dataSet0);
         ownedDataSets.add(dataSet1);
@@ -205,19 +175,7 @@ public class TDarODataProducerTest {
     public void testDataSetToOEntityProducesAnEntity() {
 
         final List<DataTable> dataTables = new ArrayList<DataTable>();
-
-        Dataset dataSet = new Dataset();
-        dataSet.setTitle("Grecian Urns");
-
-        DataTable dataTable = new DataTable();
-        @SuppressWarnings("serial")
-        DataTableColumn dataTableColumn0 = new DataTableColumn() {
-            {
-                setName("id");
-            }
-        };
-        dataTable.setDataTableColumns(Arrays.asList(dataTableColumn0));
-        dataTable.setDataset(dataSet);
+        final Dataset dataSet = setupTestDataset("Grecian urns");
 
         final RepositoryService repositoryService = context.mock(RepositoryService.class);
         context.checking(new Expectations() {
@@ -231,7 +189,7 @@ public class TDarODataProducerTest {
         EdmDataServices metaData = metaDataBuilder.build();
         EdmEntitySet entitySet = metaData.findEdmEntitySet(EntitySet.T_DATA_SETS);
 
-        dataTables.add(dataTable);
+        dataTables.addAll(dataSet.getDataTables());
 
         TDarODataProducer producer = new TDarODataProducer(repositoryService, metaDataBuilder);
         OEntity dataSetOEntity = producer.dataSetToOEntity(metaData, entitySet, dataSet);
@@ -242,38 +200,19 @@ public class TDarODataProducerTest {
     @Test
     public void testDataSetToOEntityProducesALink() {
 
-        final List<DataTable> dataTables = new ArrayList<DataTable>();
-
-        Dataset dataSet = new Dataset();
-        dataSet.setTitle("Grecian Urns");
-
-        DataTable dataTable0 = new DataTable();
-        @SuppressWarnings("serial")
-        DataTableColumn dataTableColumn0 = new DataTableColumn() {
-            {
-                setName("id");
-            }
-        };
-        dataTable0.setDataTableColumns(Arrays.asList(dataTableColumn0));
-        dataTables.add(dataTable0);
+        final Dataset dataSet0 = setupTestDataset("Grecian urns");
 
         DataTable dataTable1 = new DataTable();
-        @SuppressWarnings("serial")
-        DataTableColumn dataTableColumn1 = new DataTableColumn() {
-            {
-                setName("id");
-            }
-        };
-        dataTable1.setDataTableColumns(Arrays.asList(dataTableColumn1));
-        dataTables.add(dataTable1);
-
-        dataSet.setDataTables(new HashSet<DataTable>(dataTables));
+        DataTableColumn dataTableColumn1 = new DataTableColumn();
+        dataTableColumn1.setName("id");
+        dataTable1.getDataTableColumns().add(dataTableColumn1);
+        dataSet0.getDataTables().add(dataTable1);
 
         final RepositoryService repositoryService = context.mock(RepositoryService.class);
         context.checking(new Expectations() {
             {
                 oneOf(repositoryService).findAllOwnedDataTables();
-                will(returnValue(dataTables));
+                will(returnValue(dataSet0.getDataTables()));
             }
         });
 
@@ -282,7 +221,7 @@ public class TDarODataProducerTest {
         EdmEntitySet entitySet = metaData.findEdmEntitySet(EntitySet.T_DATA_SETS);
 
         TDarODataProducer producer = new TDarODataProducer(repositoryService, metaDataBuilder);
-        OEntity dataSetOEntity = producer.dataSetToOEntity(metaData, entitySet, dataSet);
+        OEntity dataSetOEntity = producer.dataSetToOEntity(metaData, entitySet, dataSet0);
         // Always 1 datatables link.
         assertEquals(1, dataSetOEntity.getLinks().size());
         assertEquals("TDataTables", dataSetOEntity.getLink("TDataTables", OLink.class).getHref());
@@ -291,20 +230,10 @@ public class TDarODataProducerTest {
     @Test(expected = NotFoundException.class)
     public void testGetEntitiesForTDataTablesRequestButNoDataTablesAvailable() {
 
-        final RepositoryService repositoryService = context.mock(RepositoryService.class);
-        context.checking(new Expectations() {
-            {
-            }
-        });
+        final RepositoryService repositoryService = setupMockRepositoryService();
 
         final EdmDataServices edmDataServices = EdmDataServices.newBuilder().build();
-        final IMetaDataBuilder metadataBuilder = context.mock(IMetaDataBuilder.class);
-        context.checking(new Expectations() {
-            {
-                oneOf(metadataBuilder).build();
-                will(returnValue(edmDataServices));
-            }
-        });
+        final IMetaDataBuilder metadataBuilder = setupMockMetadataBuilder(edmDataServices);
 
         TDarODataProducer producer = new TDarODataProducer(repositoryService, metadataBuilder);
         QueryInfo queryInfo = new QueryInfo();
@@ -339,31 +268,23 @@ public class TDarODataProducerTest {
         assertEquals(1, entitiesResponse.getEntities().size());
     }
 
+    public DataTable setupDataTableWithIdColumn(String name) {
+        DataTable dataTable0 = new DataTable();
+        dataTable0.setName(name);
+        DataTableColumn dataTableColumn0 = new DataTableColumn();
+        dataTableColumn0.setName("id");
+        dataTable0.getDataTableColumns().add(dataTableColumn0);
+        return dataTable0;
+    }
+
     @Test
     public void testGetEntitiesForTDataTablesRequestWithTwoDataTablesAvailable() {
 
         final List<DataTable> ownedDataTables = new ArrayList<DataTable>();
 
-        DataTable dataTable0 = new DataTable();
-        dataTable0.setName("Italy/Pompeii: Insula of Julia Felix");
-        @SuppressWarnings("serial")
-        DataTableColumn dataTableColumn0 = new DataTableColumn() {
-            {
-                setName("id");
-            }
-        };
-        dataTable0.setDataTableColumns(Arrays.asList(dataTableColumn0));
+        DataTable dataTable0 = setupDataTableWithIdColumn("Italy/Pompeii: Insula of Julia Felix");
+        DataTable dataTable1 = setupDataTableWithIdColumn("Britain/Silchester: Calleva Atrebatum");
         ownedDataTables.add(dataTable0);
-
-        DataTable dataTable1 = new DataTable();
-        dataTable1.setName("Britain/Silchester: Calleva Atrebatum");
-        @SuppressWarnings("serial")
-        DataTableColumn dataTableColumn1 = new DataTableColumn() {
-            {
-                setName("id");
-            }
-        };
-        dataTable1.setDataTableColumns(Arrays.asList(dataTableColumn1));
         ownedDataTables.add(dataTable1);
 
         final RepositoryService repositoryService = context.mock(RepositoryService.class);
@@ -388,16 +309,7 @@ public class TDarODataProducerTest {
     public void testDataTableToOEntityProducesAnEntity() {
 
         final List<DataTable> ownedDataTables = new ArrayList<DataTable>();
-
-        DataTable dataTable0 = new DataTable();
-        dataTable0.setName("Italy/Pompeii: Insula of Julia Felix");
-        @SuppressWarnings("serial")
-        DataTableColumn dataTableColumn0 = new DataTableColumn() {
-            {
-                setName("id");
-            }
-        };
-        dataTable0.setDataTableColumns(Arrays.asList(dataTableColumn0));
+        DataTable dataTable0 = setupDataTableWithIdColumn("Italy/Pompeii: Insula of Julia Felix");
         ownedDataTables.add(dataTable0);
 
         final RepositoryService repositoryService = context.mock(RepositoryService.class);
@@ -425,20 +337,7 @@ public class TDarODataProducerTest {
 
         final List<DataTable> ownedDataTables = new ArrayList<DataTable>();
 
-        DataTable dataTable0 = new DataTable();
-        dataTable0.setName("Italy/Pompeii: Insula of Julia Felix");
-        @SuppressWarnings("serial")
-        DataTableColumn dataTableColumn0 = new DataTableColumn() {
-            {
-                setName("id");
-            }
-        };
-        dataTable0.setDataTableColumns(Arrays.asList(dataTableColumn0));
-        ownedDataTables.add(dataTable0);
-
-        Dataset dataSet = new Dataset();
-        dataTable0.setDataset(dataSet);
-
+        Dataset dataSet = setupTestDataset("Italy/Pompeii: Insula of Julia Felix");
         final RepositoryService repositoryService = context.mock(RepositoryService.class);
         context.checking(new Expectations() {
             {
@@ -452,7 +351,7 @@ public class TDarODataProducerTest {
         EdmEntitySet entitySet = metaData.findEdmEntitySet(EntitySet.T_DATA_TABLES);
 
         TDarODataProducer producer = new TDarODataProducer(null, metaDataBuilder);
-        OEntity dataTableOEntity = producer.dataTableToOEntity(metaData, entitySet, dataTable0);
+        OEntity dataTableOEntity = producer.dataTableToOEntity(metaData, entitySet, dataSet.getDataTables().iterator().next());
         // Always 1 datarecords link since it is a collection.
         assertEquals(1, dataTableOEntity.getLinks().size());
         assertEquals("TDataRecords", dataTableOEntity.getLink("TDataRecords", OLink.class).getHref());
@@ -510,15 +409,7 @@ public class TDarODataProducerTest {
         final List<DataTable> ownedDataTables = new ArrayList<DataTable>();
         final List<AbstractDataRecord> ownedDataRecords = new ArrayList<AbstractDataRecord>();
 
-        final DataTable dataTable = new DataTable();
-        dataTable.setName("Italy/Pompeii: Insula of Julia Felix");
-        @SuppressWarnings("serial")
-        DataTableColumn dataTableColumn = new DataTableColumn() {
-            {
-                setName("id");
-            }
-        };
-        dataTable.setDataTableColumns(Arrays.asList(dataTableColumn));
+        final DataTable dataTable = setupDataTableWithIdColumn("Italy/Pompeii: Insula of Julia Felix");
 
         AbstractDataRecord dataRecord = new AbstractDataRecord(12345L, dataTable);
         ownedDataRecords.add(dataRecord);
@@ -552,16 +443,7 @@ public class TDarODataProducerTest {
 
         final List<AbstractDataRecord> ownedDataRecords = new ArrayList<AbstractDataRecord>();
         final List<DataTable> ownedDataTables = new ArrayList<DataTable>();
-
-        final DataTable dataTable = new DataTable();
-        dataTable.setName("Italy/Pompeii: Insula of Julia Felix");
-        @SuppressWarnings("serial")
-        DataTableColumn dataTableColumn = new DataTableColumn() {
-            {
-                setName("id");
-            }
-        };
-        dataTable.setDataTableColumns(Arrays.asList(dataTableColumn));
+        final DataTable dataTable = setupDataTableWithIdColumn("Italy/Pompeii: Insula of Julia Felix");
 
         AbstractDataRecord dataRecord0 = new AbstractDataRecord(12345L, dataTable);
         ownedDataRecords.add(dataRecord0);
@@ -597,16 +479,16 @@ public class TDarODataProducerTest {
     public void testDataRecordToOEntityProducesAnEntity() {
 
         final List<DataTable> ownedDataTables = new ArrayList<DataTable>();
-
-        DataTable dataTable = new DataTable();
-        dataTable.setName("Italy/Pompeii: Insula of Julia Felix");
-        @SuppressWarnings("serial")
-        DataTableColumn dataTableColumn = new DataTableColumn() {
-            {
-                setName("id");
-            }
-        };
-        dataTable.setDataTableColumns(Arrays.asList(dataTableColumn));
+        DataTable dataTable = setupDataTableWithIdColumn("Italy/Pompeii: Insula of Julia Felix");
+        // new DataTable();
+        // dataTable.setName("Italy/Pompeii: Insula of Julia Felix");
+        // @SuppressWarnings("serial")
+        // DataTableColumn dataTableColumn = new DataTableColumn() {
+        // {
+        // setName("id");
+        // }
+        // };
+        // dataTable.setDataTableColumns(Arrays.asList(dataTableColumn));
 
         AbstractDataRecord dataRecord0 = new AbstractDataRecord(12345L, dataTable);
 
@@ -634,8 +516,7 @@ public class TDarODataProducerTest {
     @Test
     public void testDataRecordToOEntityProducesEntityWithMultipleProperties() {
 
-        final DataTable dataTable = new DataTable();
-        dataTable.setName("Italy/Pompeii: Insula of Julia Felix");
+        final DataTable dataTable = setupDataTableWithIdColumn("Italy/Pompeii: Insula of Julia Felix");
 
         AbstractDataRecord dataRecord0 = new AbstractDataRecord(12345L, dataTable) {
             {
@@ -643,19 +524,10 @@ public class TDarODataProducerTest {
             }
         };
 
-        List<DataTableColumn> dataTableColumns = new ArrayList<DataTableColumn>();
-
-        DataTableColumn dataTableColumn0 = new DataTableColumn();
-        dataTableColumn0.setName("id");
-        dataTableColumn0.setColumnDataType(DataTableColumnType.BIGINT);
-        dataTableColumns.add(dataTableColumn0);
-
         DataTableColumn dataTableColumn1 = new DataTableColumn();
         dataTableColumn1.setName("title");
         dataTableColumn1.setColumnDataType(DataTableColumnType.VARCHAR);
-        dataTableColumns.add(dataTableColumn1);
-
-        dataTable.setDataTableColumns(dataTableColumns);
+        dataTable.getDataTableColumns().add(dataTableColumn1);
 
         final RepositoryService repositoryService = context.mock(RepositoryService.class);
         context.checking(new Expectations() {
@@ -679,16 +551,9 @@ public class TDarODataProducerTest {
     @Test
     public void testDataRecordToOEntityProducesNoLink() {
 
-        final DataTable dataTable = new DataTable();
+        Dataset dataset = AbstractFitTest.createTestDataset();
+        final DataTable dataTable = dataset.getDataTables().iterator().next();
         dataTable.setName("Italy/Pompeii: Insula of Julia Felix");
-        @SuppressWarnings("serial")
-        DataTableColumn dataTableColumn = new DataTableColumn() {
-            {
-                setName("id");
-            }
-        };
-        dataTable.setDataTableColumns(Arrays.asList(dataTableColumn));
-
         final RepositoryService repositoryService = context.mock(RepositoryService.class);
         context.checking(new Expectations() {
             {

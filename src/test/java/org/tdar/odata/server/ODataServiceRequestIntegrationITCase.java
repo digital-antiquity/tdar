@@ -37,16 +37,14 @@ public class ODataServiceRequestIntegrationITCase extends AbstractLightFitTest {
     @Test
     @DirtiesContext
     public void testServiceUrl() throws Exception {
-        ContentExchange exchange = getTestingClient().sendRequest(Constant.SERVICE_URL);
-        exchange.waitForDone();
+        ContentExchange exchange = setupExchange(Constant.SERVICE_URL);
         verifyResponseIsReturned(exchange);
     }
 
     @Test
     @DirtiesContext
     public void testMetaDataResponseContent() throws Exception {
-        ContentExchange exchange = getTestingClient().sendRequest(Constant.SERVICE_URL);
-        exchange.waitForDone();
+        ContentExchange exchange = setupExchange(Constant.SERVICE_URL);
         String inXMLString = exchange.getResponseContent();
 
         // See: odata_service_response.xml

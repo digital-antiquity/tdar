@@ -2,11 +2,6 @@ package org.tdar.odata.server;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 
-import java.sql.Date;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.LinkedHashSet;
-
 import org.apache.log4j.Logger;
 import org.eclipse.jetty.client.ContentExchange;
 import org.junit.Test;
@@ -16,11 +11,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Dataset;
-import org.tdar.core.bean.resource.datatable.DataTable;
-import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
+import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
-import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 
 /**
  * Integration test that talks to the tdar test database.
@@ -45,7 +37,7 @@ public class ODataMetadataRequestDBIntegrationITCase extends AbstractHeavyFitTes
     private GenericService genericService;
 
     @Autowired
-    private AuthenticationAndAuthorizationService authService;
+    private EntityService entityService;
 
     @Test
     public void testMetaDataUrl() throws Exception {
@@ -70,17 +62,7 @@ public class ODataMetadataRequestDBIntegrationITCase extends AbstractHeavyFitTes
     protected void createTestScenario() {
 
         // Set a user to define entity ownership.
-        // Need to understand the test database and the actual ownership defined there.
-        Person authenticatedUser = new Person("Keith", "Kintigh", "kintigh@asu.edu");
-        authenticatedUser.setUsername("kintigh@asu.edu");
-
-        Person knownPerson = genericService.findByProperty(Person.class, "username", authenticatedUser.getUsername());
-        if (knownPerson == null) {
-            knownPerson = authenticatedUser;
-            genericService.save(knownPerson);
-            getLogger().info("Somehow the test person is missing from the database.");
-            // throw new RuntimeException("Somehow the test person is missing from the database." );
-        }
+        Person knownPerson = entityService.findByEmail("kintigh@asu.edu");
         getTestingServer().setPerson(knownPerson);
         // Database setup
 
@@ -89,7 +71,6 @@ public class ODataMetadataRequestDBIntegrationITCase extends AbstractHeavyFitTes
 
         genericService.save(dataset);
     }
-
 
     protected Logger getLogger() {
         return logger;
