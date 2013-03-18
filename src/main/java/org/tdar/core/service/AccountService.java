@@ -63,6 +63,16 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         return getDao().findAccountsForUser(user);
     }
 
+    /*
+     * Find all accounts for user: return accounts that are active and have not met their quota
+     */
+    public List<Invoice> listUnassignedInvoicesForUser(Person user) {
+        if (Persistable.Base.isNullOrTransient(user)) {
+            return Collections.emptyList();
+        }
+        return getDao().findUnassignedInvoicesForUser(user);
+    }
+
     public List<BillingActivity> getActiveBillingActivities() {
         List<BillingActivity> toReturn = new ArrayList<BillingActivity>();
         for (BillingActivity activity : genericDao.findAll(BillingActivity.class)) {
@@ -117,11 +127,35 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         throw new TdarRecoverableRuntimeException("cannot assign invoice to account");
     }
 
-    public boolean hasSpaceInAnAccount(Person user, ResourceType type) {
-        for (Account account : listAvailableAccountsForUser(user)) {
+    @Transactional
+    public boolean hasSpaceInAnAccount(Person user, ResourceType type, boolean createAccountIfNeeded) {
+        Set<Account> accounts = listAvailableAccountsForUser(user);
+        for (Account account : accounts) {
             logger.trace("evaluating account {}", account.getName());
             if (account.isActive() && account.hasMinimumForNewRecord(getResourceEvaluator(), type)) {
                 logger.info("account '{}' has minimum balance for {}", account.getName(), user.getProperName());
+                return true;
+            }
+        }
+
+        Account account = null;
+        if (createAccountIfNeeded) {
+            List<Invoice> unassignedInvoices = listUnassignedInvoicesForUser(user);
+            logger.info("unassigned invoices: {} ", unassignedInvoices);
+            if (CollectionUtils.isNotEmpty(unassignedInvoices)) {
+                if (CollectionUtils.isNotEmpty(accounts) && accounts.size() == 1) {
+                    account = accounts.iterator().next();
+                } else {
+                    account = new Account();
+                    account.setName("Generated account for " + user.getProperName());
+                    account.markUpdated(user);
+                    genericDao.saveOrUpdate(account);
+                }
+
+                for (Invoice invoice : unassignedInvoices) {
+                    account.getInvoices().add(invoice);
+                }
+                genericDao.saveOrUpdate(account);
                 return true;
             }
         }

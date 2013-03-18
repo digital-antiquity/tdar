@@ -341,6 +341,14 @@
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.QUERY_INFORMATIONRESOURCES_WITH_FILES,
             query = "SELECT file.informationResource.id from InformationResourceFile file"
+    ),
+    @org.hibernate.annotations.NamedQuery(
+            name = TdarNamedQueries.INVOICES_FOR_PERSON,
+            query = "from Invoice where owner.id = :personId"
+    ),
+    @org.hibernate.annotations.NamedQuery(
+            name = TdarNamedQueries.UNASSIGNED_INVOICES_FOR_PERSON,
+            query = "from Invoice where owner.id = :personId and account_id is null and transactionStatus in (:statuses)"
     )
 
 })

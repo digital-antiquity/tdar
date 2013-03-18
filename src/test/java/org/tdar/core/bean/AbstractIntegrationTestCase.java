@@ -844,9 +844,14 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     private Invoice initAccount(Account account, BillingActivity activity) {
         account.markUpdated(getUser());
+        Invoice invoice = setupInvoice(activity);
+        account.getInvoices().add(invoice);
+        return invoice;
+    }
+
+    public Invoice setupInvoice(BillingActivity activity) {
         Invoice invoice = new Invoice();
         invoice.markUpdated(getUser());
-        account.getInvoices().add(invoice);
         genericService.saveOrUpdate(activity.getModel());
         genericService.saveOrUpdate(activity);
         invoice.getItems().add(new BillingItem(activity, 1));
