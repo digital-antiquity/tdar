@@ -1,6 +1,6 @@
 <h1>The FAIMS Repository</h1>
 
-<p>The home of Australian archaeological data</p>
+<p>For archaeological data</p>
 <form name="searchheader" action="<@s.url value="/search/results"/>" class="searchheader">
     <input type="text" name="query" placeholder="Find archaeological data..." class="searchbox input-xxlarge">
     <a href="/search">advanced</a>
