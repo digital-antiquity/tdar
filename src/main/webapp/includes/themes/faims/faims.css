@@ -52,13 +52,22 @@
 }
 
 footer {
+	background: none repeat scroll 0 0 white;
+}
+
+.footer-links {
     background : #dc9530;
     margin-top: 50px;
-	padding: 10px 0;
+	padding: 10px 0px 10px;
+}
+
+.footerlogos a {
+    color: #001CA8;
 }
 
 .footerlogos {
     text-align:center;
+     padding: 10px 0 0;
 }
 
 .footerlogo {
