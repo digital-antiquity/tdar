@@ -53,8 +53,22 @@
 
 .faimslogo {
 	padding: 10px;
-	color: gray;
 	height: 95px;
+}
+
+.logosection {
+	margin-left: -20px;
+	color: gray;
+}
+
+.hero ul {
+	top: -10px;
+}
+
+.hero {
+	height: 230px;
+	margin: 51px 0px 0px 20px;
+	position: relative;
 }
 
 footer {
@@ -91,10 +105,6 @@ footer {
 
 #alt.not-production {
 	background-color: #F4F4F4;
-}
-
-.hero ul {
-	top: -10px;
 }
 
 /*
