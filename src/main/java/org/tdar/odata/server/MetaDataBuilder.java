@@ -1,9 +1,8 @@
 package org.tdar.odata.server;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.odata4j.core.ODataConstants;
@@ -61,7 +60,7 @@ public class MetaDataBuilder implements IMetaDataBuilder {
         this.repositoryService = repositoryService;
     }
 
-    // RR: not keen on this approach of using "global" variables 
+    // RR: not keen on this approach of using "global" variables
     // to accumulate results,
     // but the alternative turned out to be rather messy.
     private void initialiseAccumulators() {
@@ -137,18 +136,18 @@ public class MetaDataBuilder implements IMetaDataBuilder {
         EdmEntityType.Builder dateRecordEntityTypeBuilder = null;
         EdmEntitySet.Builder dataRecordEntitySetBuilder = null;
         {
-            List<DataTable> ownedDataTables = repositoryService.findAllOwnedDataTables();
+            Collection<DataTable> ownedDataTables = repositoryService.findAllOwnedDataTables();
             for (DataTable dataTable : ownedDataTables)
             {
                 // TODO RR: the data tables do not provid with a primary key called id or anything else as far as I can tell.
                 // This assertion is commented out just to allow the integration tests to pass.
-//                DataTableColumn pkColumn = dataTable.getColumnByName(DataTableColumn.TDAR_ROW_ID.getName());
-//                if (pkColumn == null)
-//                {
-//                    // TODO RR: investigate if data tables are always provided with a primary key called id.
-//                    throw new RuntimeException("The data table should always have a column with a name of id . " + dataTable.getName());
-//                }
-                 List<DataTableColumn> dataTableColumns = dataTable.getDataTableColumns();
+                // DataTableColumn pkColumn = dataTable.getColumnByName(DataTableColumn.TDAR_ROW_ID.getName());
+                // if (pkColumn == null)
+                // {
+                // // TODO RR: investigate if data tables are always provided with a primary key called id.
+                // throw new RuntimeException("The data table should always have a column with a name of id . " + dataTable.getName());
+                // }
+                List<DataTableColumn> dataTableColumns = dataTable.getDataTableColumns();
                 dateRecordEntityTypeBuilder = EdmEntityType.newBuilder()
                         .setNamespace(namespace)
                         .setName(dataTable.getName())
@@ -182,18 +181,18 @@ public class MetaDataBuilder implements IMetaDataBuilder {
                     .setEntityType(dataTableEntityTypeBuilder);
 
             EdmAssociation.Builder association = defineAssociation(
-                    MetaData.Association.T_DATA_RECORDS, 
-                    EdmMultiplicity.ONE, EdmMultiplicity.MANY, 
+                    MetaData.Association.T_DATA_RECORDS,
+                    EdmMultiplicity.ONE, EdmMultiplicity.MANY,
                     dataTableEntityTypeBuilder, dataTableEntitySetBuilder,
                     abstractDateRecordEntityTypeBuilder, abstractDataRecordEntitySetBuilder);
             dataTableEntityTypeBuilder.addNavigationProperties(EdmNavigationProperty.newBuilder(association.getName())
                     .setRelationship(association)
                     .setFromTo(association.getEnd1(), association.getEnd2()));
-            
+
             entitySetBuilders.add(dataTableEntitySetBuilder);
             entityTypeBuilders.add(dataTableEntityTypeBuilder);
         }
-        
+
         // The topmost/root entity TDataSet
         EdmEntityType.Builder dataSetEntityTypeBuilder = null;
         EdmEntitySet.Builder dataSetEntitySetBuilder = null;
@@ -211,8 +210,8 @@ public class MetaDataBuilder implements IMetaDataBuilder {
                     .setEntityType(dataSetEntityTypeBuilder);
 
             EdmAssociation.Builder association = defineAssociation(
-                    MetaData.Association.T_DATA_TABLES, 
-                    EdmMultiplicity.ONE, EdmMultiplicity.MANY, 
+                    MetaData.Association.T_DATA_TABLES,
+                    EdmMultiplicity.ONE, EdmMultiplicity.MANY,
                     dataSetEntityTypeBuilder, dataSetEntitySetBuilder,
                     dataTableEntityTypeBuilder, dataTableEntitySetBuilder);
             dataSetEntityTypeBuilder.addNavigationProperties(EdmNavigationProperty.newBuilder(association.getName())
@@ -283,8 +282,7 @@ public class MetaDataBuilder implements IMetaDataBuilder {
         for (DataTableColumn column : dataTableColumns) {
             String columnName = column.getName();
             DataTableColumnType columnDataType = column.getColumnDataType();
-            properties.add(EdmProperty.newBuilder(columnName)
-                    .setType(typeMapping.get(columnDataType)));
+            properties.add(EdmProperty.newBuilder(columnName).setType(columnDataType.getEdmSimpleType()));
         }
         return properties;
     }
@@ -292,19 +290,6 @@ public class MetaDataBuilder implements IMetaDataBuilder {
     @Override
     public String getNameSpace() {
         return namespace;
-    }
-    
-    // See: http://msdn.microsoft.com/en-us/library/bb896344.aspx
-    private static Map<DataTableColumnType, EdmSimpleType<?>> typeMapping = new HashMap<DataTableColumnType, EdmSimpleType<?>>();
-    static 
-    {
-        typeMapping.put(DataTableColumnType.BOOLEAN, EdmSimpleType.BOOLEAN);
-        typeMapping.put(DataTableColumnType.VARCHAR, EdmSimpleType.STRING);
-        typeMapping.put(DataTableColumnType.BIGINT, EdmSimpleType.INT64);
-        typeMapping.put(DataTableColumnType.DOUBLE, EdmSimpleType.DOUBLE);
-        typeMapping.put(DataTableColumnType.TEXT, EdmSimpleType.STRING);
-        typeMapping.put(DataTableColumnType.DATE, EdmSimpleType.DATETIME);
-        typeMapping.put(DataTableColumnType.DATETIME, EdmSimpleType.DATETIME);
     }
 
     private Logger getLogger() {

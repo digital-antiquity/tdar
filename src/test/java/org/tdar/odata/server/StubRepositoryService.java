@@ -1,6 +1,7 @@
 package org.tdar.odata.server;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +19,7 @@ public class StubRepositoryService implements InitialisableRepositoryService {
     private List<Dataset> ownedDataSets = new ArrayList<Dataset>();
     @SuppressWarnings("unused")
     private List<String> entityNames;
-    private List<DataTable> ownedDataTables;
+    private Collection<DataTable> ownedDataTables;
 
     private Map<String, Map<String, Map<String, Object>>> dataModel = new HashMap<String, Map<String, Map<String, Object>>>();
 
@@ -70,7 +71,7 @@ public class StubRepositoryService implements InitialisableRepositoryService {
     }
 
     @Override
-    public List<DataTable> findAllOwnedDataTables() {
+    public Collection<DataTable> findAllOwnedDataTables() {
         return ownedDataTables;
     }
 
@@ -104,7 +105,7 @@ public class StubRepositoryService implements InitialisableRepositoryService {
     }
 
     @Override
-    public void saveOwnedDataTables(ArrayList<DataTable> ownedDataTables) {
+    public void saveOwnedDataTables(Collection<DataTable> ownedDataTables) {
         this.ownedDataTables = ownedDataTables;
     }
 

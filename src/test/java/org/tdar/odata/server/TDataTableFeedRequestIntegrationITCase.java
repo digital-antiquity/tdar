@@ -21,7 +21,7 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"Placeholder-context.xml"})
+@ContextConfiguration(locations = { "Placeholder-context.xml" })
 public class TDataTableFeedRequestIntegrationITCase extends AbstractLightFitTest {
 
     private final Logger logger = Logger.getLogger(getClass());
@@ -80,32 +80,15 @@ public class TDataTableFeedRequestIntegrationITCase extends AbstractLightFitTest
         assertXpathExists(xpathExpression, inXMLString);
     }
 
-    
     // TODO RR: add test for expanded response query.
 
     @Override
     protected void createTestScenario() {
         super.createTestScenario();
-        
-        LinkedHashSet<DataTable> dataTables = new LinkedHashSet<DataTable>();
 
-        Dataset dataset = new Dataset();
-        dataset.setTitle(Constant.GRECIAN_URNS_DATASET_NAME);
-        dataset.setUpdatedBy(new Person("Frankie", "Bloggs", null));
-        
-        DataTable dataTable = new DataTable();
-        
-        @SuppressWarnings("serial")
-        DataTableColumn dataTableColumn0 = new DataTableColumn() {{setName("id");}};
-        dataTable.setDataTableColumns(Arrays.asList(dataTableColumn0));
-        
-        dataTable.setName("Pompeii:Insula of Julia Felix");
-        dataTable.setDataset(dataset);
-        dataTables.add(dataTable);
-        
-        dataset.setDataTables(dataTables);
-        
-        repositoryService.saveOwnedDataTables(new ArrayList<DataTable>(dataTables));
+        Dataset dataset = createTestDataset();
+
+        repositoryService.saveOwnedDataTables(dataset.getDataTables());
     }
 
     protected Logger getLogger() {
