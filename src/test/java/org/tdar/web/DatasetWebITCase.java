@@ -22,6 +22,7 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
@@ -99,10 +100,10 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         assertTextPresentInCode(datasetId.toString());
 
-        assertTrue("Column1 should not be blank", checkInput("dataTableColumns[1].columnEncodingType", "UNCODED_VALUE"));
-        setInput("dataTableColumns[0].columnEncodingType", "0UNCODED_VALUE", false);
+        assertTrue("Column1 should not be blank", checkInput("dataTableColumns[1].columnEncodingType", DataTableColumnEncodingType.UNCODED_VALUE.name()));
+        setInput("dataTableColumns[0].columnEncodingType", DataTableColumnEncodingType.UNCODED_VALUE.name(), false);
 
-        setInput("dataTableColumns[1].columnEncodingType", "1CODED_VALUE", false);
+        setInput("dataTableColumns[1].columnEncodingType", DataTableColumnEncodingType.CODED_VALUE.name(), false);
         setInput("dataTableColumns[1].categoryVariable.id", "1", false); // ARCHITECTURE
         setInput("dataTableColumns[1].tempSubCategoryVariable.id", "27", false); // MATERIAL
         setInput("dataTableColumns[1].description", "column description for city", false);
