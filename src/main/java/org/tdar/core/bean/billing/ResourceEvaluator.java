@@ -87,6 +87,7 @@ public class ResourceEvaluator implements Serializable {
                 status = resource.getStatus();
             }
             if (uncountedResourceTypes.contains(resource.getResourceType()) || uncountedResourceStatuses.contains(status)) {
+                logger.trace("skipping because of status {} or type: {}", status, resource.getResourceType());
                 resource.setCountedInBillingEvaluation(false);
                 continue;
             }
@@ -98,14 +99,12 @@ public class ResourceEvaluator implements Serializable {
                 InformationResource informationResource = (InformationResource) resource;
                 for (InformationResourceFile file : informationResource.getInformationResourceFiles()) {
                     if (file.isDeleted() && !includeDeletedFilesInCounts) {
-                        resource.setCountedInBillingEvaluation(false);
                         continue;
                     }
                     filesUsed_++;
                     for (InformationResourceFileVersion version : file.getInformationResourceFileVersions()) {
                         // we use version 1 because it's the original uploaded version
                         if (!includeAllVersionsInCounts && !version.getVersion().equals(1) || !version.isUploaded()) {
-                            resource.setCountedInBillingEvaluation(false);
                             continue;
                         }
                         if (version.getFileLength() != null) {

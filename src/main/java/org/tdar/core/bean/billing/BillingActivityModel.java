@@ -112,5 +112,10 @@ public class BillingActivityModel extends org.tdar.core.bean.Persistable.Base {
     public void setActivities(List<BillingActivity> activities) {
         this.activities = activities;
     }
+    
+    @Override
+    public String toString() {
+        return String.format("%s r:%s f:%s s:%s", getVersion(), countingFiles, countingResources, countingSpace);
+    }
 
 }

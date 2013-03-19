@@ -203,6 +203,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             throw new TdarRecoverableRuntimeException(ACCOUNT_IS_NULL);
         }
         // evaluate resources
+        logger.trace("model {}" ,getLatestActivityModel());
         getResourceEvaluator(resourcesToEvaluate);
         saveOrUpdateAll(resourcesToEvaluate);
         getDao().updateTransientAccountOnResources(resourcesToEvaluate);
@@ -379,7 +380,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             return true;
         }
         if (!resource.isCountedInBillingEvaluation()) {
-            logger.info("Skipping {} in eval b/c it's not counted", resource.getId());
+            logger.debug("Skipping {} in eval b/c it's not counted", resource.getId());
             return true;
         }
         logger.info("space used: {} avail:{} ", helper.getSpaceUsedInBytes(), helper.getAvailableSpaceInBytes());
