@@ -332,7 +332,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     private String checkRadioButton(String value, List<DomElement> radioButtons) {
         List<HtmlInput> buttonsFound = new ArrayList<HtmlInput>();
         for (DomElement radioButton : radioButtons) {
-            if (radioButton.getId().toLowerCase().endsWith(value.toLowerCase())) {
+            if (radioButton.getAttribute("value").equals(value)) {
                 buttonsFound.add((HtmlInput) radioButton);
             }
         }
