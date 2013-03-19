@@ -1,0 +1,5 @@
+<div class="alert alert-error"> 
+  <p><strong>Warning!</strong> This is a Test Site, for the purpose of debugging software in the process of development. 
+  Features may not work as expected and data may be lost at any time.</p>
+  <p>If you wish to deposit data contact <a href="mailto:repository@fedarch.org?subject=FAIMS%20deposit">repository@fedarch.org</a>.</p>
+</div>
