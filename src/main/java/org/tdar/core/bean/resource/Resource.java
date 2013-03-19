@@ -179,6 +179,7 @@ public class Resource extends JsonModel.Base implements Persistable,
 
     private transient Long previousSpaceInBytesUsed = 0L;
     private transient Long previousFilesUsed = 0L;
+    private transient boolean countedInBillingEvaluation = true;
 
     @Deprecated
     public Resource(Long id, String title) {
@@ -1725,5 +1726,14 @@ public class Resource extends JsonModel.Base implements Persistable,
 
     public void setUpdated(boolean updated) {
         this.updated = updated;
+    }
+
+    @XmlTransient
+    public boolean isCountedInBillingEvaluation() {
+        return countedInBillingEvaluation;
+    }
+
+    public void setCountedInBillingEvaluation(boolean countedInBillingEvaluation) {
+        this.countedInBillingEvaluation = countedInBillingEvaluation;
     }
 }

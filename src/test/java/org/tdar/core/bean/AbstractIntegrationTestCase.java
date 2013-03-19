@@ -167,16 +167,15 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     @Rule
     public TestName testName = new TestName();
-    
-    @Rule 
+
+    @Rule
     public TestWatcher failWatcher = new TestWatcher() {
-        
 
         @Override
         protected void failed(Throwable e, Description description) {
             AbstractIntegrationTestCase.this.onFail(e, description);
         }
-        
+
     };
 
     @Before
@@ -190,8 +189,9 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         setIgnoreActionErrors(false);
     }
 
-    //Called when your test fails.  Did I say "when"?  I meant "if".
-    public void onFail(Throwable e, Description description) {}
+    // Called when your test fails. Did I say "when"? I meant "if".
+    public void onFail(Throwable e, Description description) {
+    }
 
     @After
     public final void announceTestOver() {
@@ -603,8 +603,8 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return ignoreActionErrors;
     }
 
-    
     private Person sessionUser;
+
     /**
      * @return
      */
@@ -614,7 +614,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         }
         return getUser();
     }
-    
+
     public void setSessionUser(Person user) {
         this.sessionUser = user;
     }
@@ -800,58 +800,58 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         }
     }
 
-    public Account setupAccountWithInvoiceFor6Mb(BillingActivityModel model) {
+    public Account setupAccountWithInvoiceFor6Mb(BillingActivityModel model, Person user) {
         Account account = new Account();
         BillingActivity activity = new BillingActivity("6 mb", 10f, 0, 0L, 0L, 6L, model);
-        Invoice invoice = initAccount(account, activity);
+        Invoice invoice = initAccount(account, activity, getUser());
         genericService.saveOrUpdate(account);
         return account;
     }
 
-    public Account setupAccountWithInvoiceForOneFile(BillingActivityModel model) {
+    public Account setupAccountWithInvoiceForOneFile(BillingActivityModel model, Person user) {
         Account account = new Account();
-        Invoice invoice = initAccount(account, new BillingActivity("1 file", 10f, 0, 0L, 1L, 0L, model));
+        Invoice invoice = initAccount(account, new BillingActivity("1 file", 10f, 0, 0L, 1L, 0L, model), user);
         genericService.saveOrUpdate(account);
         return account;
     }
 
-    public Account setupAccountWithInvoiceForOneResource(BillingActivityModel model) {
+    public Account setupAccountWithInvoiceForOneResource(BillingActivityModel model, Person user) {
         Account account = new Account();
-        Invoice invoice = initAccount(account, new BillingActivity("1 resource", 10f, 0, 1L, 0L, 0L, model));
+        Invoice invoice = initAccount(account, new BillingActivity("1 resource", 10f, 0, 1L, 0L, 0L, model), user);
         /* add one resource */
         // account.resetTransientTotals();
         genericService.saveOrUpdate(account);
         return account;
     }
 
-    public Account setupAccountWithInvoiceSomeResourcesAndSpace(BillingActivityModel model) {
+    public Account setupAccountWithInvoiceSomeResourcesAndSpace(BillingActivityModel model, Person user) {
         Account account = new Account();
-        Invoice invoice = initAccount(account, new BillingActivity("10 resource", 100f, 0, 10L, 10L, 100L, model));
+        Invoice invoice = initAccount(account, new BillingActivity("10 resource", 100f, 0, 10L, 10L, 100L, model), user);
         /* add one resource */
         // account.resetTransientTotals();
         genericService.saveOrUpdate(account);
         return account;
     }
 
-    public Account setupAccountWithInvoiceFiveResourcesAndSpace(BillingActivityModel model) {
+    public Account setupAccountWithInvoiceFiveResourcesAndSpace(BillingActivityModel model, Person user) {
         Account account = new Account();
-        Invoice invoice = initAccount(account, new BillingActivity("10 resource", 5f, 0, 5L, 5L, 50L, model));
+        Invoice invoice = initAccount(account, new BillingActivity("10 resource", 5f, 0, 5L, 5L, 50L, model), user);
         /* add one resource */
         // account.resetTransientTotals();
         genericService.saveOrUpdate(account);
         return account;
     }
 
-    private Invoice initAccount(Account account, BillingActivity activity) {
-        account.markUpdated(getUser());
-        Invoice invoice = setupInvoice(activity);
+    private Invoice initAccount(Account account, BillingActivity activity, Person user) {
+        account.markUpdated(user);
+        Invoice invoice = setupInvoice(activity, user);
         account.getInvoices().add(invoice);
         return invoice;
     }
 
-    public Invoice setupInvoice(BillingActivity activity) {
+    public Invoice setupInvoice(BillingActivity activity, Person user) {
         Invoice invoice = new Invoice();
-        invoice.markUpdated(getUser());
+        invoice.markUpdated(user);
         genericService.saveOrUpdate(activity.getModel());
         genericService.saveOrUpdate(activity);
         invoice.getItems().add(new BillingItem(activity, 1));
@@ -861,7 +861,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         genericService.saveOrUpdate(invoice.getItems());
         return invoice;
     }
-    
+
     public Account setupAccountForPerson(Person p) {
         Account account = new Account("my account");
         account.setOwner(p);
@@ -877,12 +877,12 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     public static void assertNotEquals(String msg, Object obj1, Object obj2) {
         if (StringUtils.isNotBlank(msg)) {
-        assertTrue(msg, ObjectUtils.notEqual(obj1, obj2));
+            assertTrue(msg, ObjectUtils.notEqual(obj1, obj2));
         } else {
-            assertTrue(String.format("'%s' == '%s'",obj1,obj2), ObjectUtils.notEqual(obj1, obj2));
+            assertTrue(String.format("'%s' == '%s'", obj1, obj2), ObjectUtils.notEqual(obj1, obj2));
         }
     }
-    
+
     public static void assertNotEmpty(Collection<?> results) {
         assertTrue(CollectionUtils.isNotEmpty(results));
     }
