@@ -129,6 +129,21 @@ public class EditWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     		assertNoFakeRoles(url);
     	}
     }
+
+    @Test
+    //failing to fill out all required fields should cause controller to send us back to the edit page (i.e.action should return INPUT)
+    public void testDocumentInputPage() {
+        gotoPage("/document/add");
+        
+        setInput(TestConstants.DOCUMENT_FIELD_TITLE, ""); 
+        setInput(TestConstants.DOCUMENT_FIELD_DESCRIPTION, "");
+        setInput("projectId", TestConstants.PARENT_PROJECT_ID);
+        submitForm();
+        
+        //we should be sent back to the edit page with some error messages at the top (but no exceptions/ stack traces)
+        assertNoErrorTextPresent();
+    }
+
     
     private void assertNoFakeRoles(String editPage) {
     	gotoPage(editPage);

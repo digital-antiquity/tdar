@@ -86,9 +86,12 @@ public class ResourceEvaluator implements Serializable {
             if (resource.getStatus() != null) {
                 status = resource.getStatus();
             }
-            if (uncountedResourceTypes.contains(resource.getResourceType()) || uncountedResourceStatuses.contains(status))
+            if (uncountedResourceTypes.contains(resource.getResourceType()) || uncountedResourceStatuses.contains(status)) {
+                logger.trace("skipping because of status {} or type: {}", status, resource.getResourceType());
+                resource.setCountedInBillingEvaluation(false);
                 continue;
-
+            }
+            
             resourcesUsed++;
             long filesUsed_ = 0;
             long spaceUsed_ = 0;
@@ -101,8 +104,9 @@ public class ResourceEvaluator implements Serializable {
                     filesUsed_++;
                     for (InformationResourceFileVersion version : file.getInformationResourceFileVersions()) {
                         // we use version 1 because it's the original uploaded version
-                        if (!includeAllVersionsInCounts && !version.getVersion().equals(1) || !version.isUploaded())
+                        if (!includeAllVersionsInCounts && !version.getVersion().equals(1) || !version.isUploaded()) {
                             continue;
+                        }
                         if (version.getFileLength() != null) {
                             spaceUsed_ += version.getFileLength();
                         }

@@ -128,7 +128,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     // private List<String> relatedCitations;
     private List<RelatedComparativeCollection> relatedComparativeCollections;
     private Long accountId;
-    private Set<Account> activeAccounts = new HashSet<Account>();
+    private Set<Account> activeAccounts;
 
     private List<ResourceNote> resourceNotes;
     private List<ResourceCreatorProxy> authorshipProxies;
@@ -994,6 +994,9 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     public Set<Account> getActiveAccounts() {
+        if(activeAccounts == null) {
+            activeAccounts = new HashSet<Account>(determineActiveAccounts());
+        }
         return activeAccounts;
     }
 

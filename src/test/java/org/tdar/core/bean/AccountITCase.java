@@ -64,9 +64,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
     public void testUnassignedInvoice() {
         Person person = createAndSaveNewPerson();
         assertTrue(CollectionUtils.isEmpty(accountService.listAvailableAccountsForUser(person)));
-        Invoice setupInvoice = setupInvoice(new BillingActivity("10 resource", 100f, 0, 10L, 10L, 100L, accountService.getLatestActivityModel()));
-        setupInvoice.setOwner(person);
-        setupInvoice.markUpdated(person);
+        Invoice setupInvoice = setupInvoice(new BillingActivity("10 resource", 100f, 0, 10L, 10L, 100L, accountService.getLatestActivityModel()), person);
         setupInvoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
         genericService.saveOrUpdate(setupInvoice);
         assertTrue(accountService.hasSpaceInAnAccount(person, null, true));
@@ -132,19 +130,19 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         Document resource = generateInformationResourceWithFileAndUser();
         re.evaluateResources(resource);
         // public BillingActivity(String name, Float price, Integer numHours, Long numberOfResources, Long numberOfFiles, Long numberOfMb) {
-        Account account = setupAccountWithInvoiceForOneResource(model);
+        Account account = setupAccountWithInvoiceForOneResource(model, getUser());
         updateModel(model, true, false, false);
         assertEquals(AccountAdditionStatus.CAN_ADD_RESOURCE, account.canAddResource(re));
         updateModel(model, false, true, false);
 
         /* add one file */
         logger.info("af: {} , ref: {}", account.getAvailableNumberOfFiles(), re.getFilesUsed());
-        account = setupAccountWithInvoiceForOneFile(model);
+        account = setupAccountWithInvoiceForOneFile(model, getUser());
         assertEquals(AccountAdditionStatus.CAN_ADD_RESOURCE, account.canAddResource(re));
 
         /* add 5 MB */
         updateModel(model, false, false, true);
-        account = setupAccountWithInvoiceFor6Mb(model);
+        account = setupAccountWithInvoiceFor6Mb(model, getUser());
         assertEquals(AccountAdditionStatus.CAN_ADD_RESOURCE, account.canAddResource(re));
         updateModel(model, false, false, false);
         assertEquals(AccountAdditionStatus.CAN_ADD_RESOURCE, account.canAddResource(re));
@@ -155,7 +153,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
     public void testAccountUpdateQuotaValid() throws InstantiationException, IllegalAccessException {
         BillingActivityModel model = new BillingActivityModel();
         updateModel(model, false, false, true);
-        Account account = setupAccountWithInvoiceFor6Mb(model);
+        Account account = setupAccountWithInvoiceFor6Mb(model, getUser());
         ResourceEvaluator re = new ResourceEvaluator(model);
         Document resource = generateInformationResourceWithFileAndUser();
         re.evaluateResources(resource);
@@ -215,7 +213,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         model.setActive(true);
         model.setVersion(100); // forcing the model to be the "latest"
         genericService.saveOrUpdate(model);
-        Account account = setupAccountWithInvoiceForOneFile(model);
+        Account account = setupAccountWithInvoiceForOneFile(model, getUser());
         Document resource = generateInformationResourceWithFileAndUser();
         Document resource2 = generateInformationResourceWithFileAndUser();
         logger.info("f{} s{}", resource.getFilesUsed(), resource.getSpaceInBytesUsed());
@@ -287,7 +285,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
     @Rollback
     public void testDeletedRemovesFromAccount() throws InstantiationException, IllegalAccessException, IOException {
         BillingActivityModel model = accountService.getLatestActivityModel();
-        Account account = setupAccountWithInvoiceSomeResourcesAndSpace(model);
+        Account account = setupAccountWithInvoiceSomeResourcesAndSpace(model, getUser());
         Document doc = createAndSaveNewInformationResource(Document.class);
         addFileToResource(doc, new File(TestConstants.TEST_DOCUMENT_DIR, "/t1/test.pdf"));
         accountService.getResourceEvaluator(doc);

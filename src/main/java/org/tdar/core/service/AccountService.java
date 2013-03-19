@@ -66,6 +66,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     /*
      * Find all accounts for user: return accounts that are active and have not met their quota
      */
+    @SuppressWarnings("unchecked")
     public List<Invoice> listUnassignedInvoicesForUser(Person user) {
         if (Persistable.Base.isNullOrTransient(user)) {
             return Collections.emptyList();
@@ -202,6 +203,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             throw new TdarRecoverableRuntimeException(ACCOUNT_IS_NULL);
         }
         // evaluate resources
+        logger.trace("model {}" ,getLatestActivityModel());
         getResourceEvaluator(resourcesToEvaluate);
         saveOrUpdateAll(resourcesToEvaluate);
         getDao().updateTransientAccountOnResources(resourcesToEvaluate);
@@ -352,6 +354,9 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
      * current is used.
      */
     private void updateMarkers(Resource resource, AccountEvaluationHelper helper, Mode mode) {
+        if (!resource.isCountedInBillingEvaluation()) {
+            return;
+        }
         Long files = resource.getEffectiveFilesUsed();
         Long space = resource.getEffectiveSpaceUsed();
         if (mode == Mode.ADD) {
@@ -372,6 +377,10 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         }
 
         if (files == 0 && space == 0) {
+            return true;
+        }
+        if (!resource.isCountedInBillingEvaluation()) {
+            logger.debug("Skipping {} in eval b/c it's not counted", resource.getId());
             return true;
         }
         logger.info("space used: {} avail:{} ", helper.getSpaceUsedInBytes(), helper.getAvailableSpaceInBytes());

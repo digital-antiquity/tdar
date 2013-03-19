@@ -1,8 +1,8 @@
 package org.tdar.struts.action.resource;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -51,16 +51,16 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
     public void setController(DocumentController controller) {
         this.controller = controller;
     }
-    
+
     private class UsagePair extends Pair<Long, Long> {
         public UsagePair(Long first, Long second) {
             super(first, second);
         }
-        
+
         public long files() {
             return getFirst();
         }
-        
+
         public long bytes() {
             return getSecond();
         }
@@ -158,29 +158,25 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         BillingActivityModel model = new BillingActivityModel();
         model.setCountingResources(false);
         genericService.saveOrUpdate(model);
-        Account account = setupAccountWithInvoiceFiveResourcesAndSpace(model);
+        Account account = setupAccountWithInvoiceFiveResourcesAndSpace(model, getUser());
         genericService.saveOrUpdate(account);
 
         String fmt = "pass %s";
         try {
-        for (int i=1; i < 4; i++) {
-        extracted(String.format(fmt, i), account);
-        }
+            for (int i = 1; i < 4; i++) {
+                extracted(String.format(fmt, i), account);
+            }
         } catch (Exception e) {
             logger.error("Exception happened", e);
             fail(e.getMessage());
         }
     }
 
-
     private UsagePair amountRemaining(Account account) {
         AccountEvaluationHelper helper = new AccountEvaluationHelper(account, accountService.getLatestActivityModel());
         UsagePair pair = new UsagePair(helper.getAvailableNumberOfFiles(), helper.getAvailableSpaceInBytes());
         return pair;
     }
-    
-    
-    
 
     private void extracted(String title, Account expectedAccount) throws TdarActionException, FileNotFoundException {
         controller = generateNewInitializedController(DocumentController.class);
@@ -190,8 +186,8 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         controller.setAccountId(expectedAccount.getId());
         controller.setServletRequest(getServletPostRequest());
         UsagePair statsBefore = amountRemaining(expectedAccount);
-        assertEquals("errors: " + StringUtils.join(controller.getActionErrors(),", "), TdarActionSupport.SUCCESS, controller.save());
-        
+        assertEquals("errors: " + StringUtils.join(controller.getActionErrors(), ", "), TdarActionSupport.SUCCESS, controller.save());
+
         UsagePair statsAfter = amountRemaining(expectedAccount);
         assertEquals("files remainning should be the same because resource has no files", statsBefore, statsAfter);
         Long id = d.getId();
@@ -209,7 +205,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         controller.setFileProxies(uploadFilesAsync.getSecond());
         long fileSize = file.length();
         controller.setServletRequest(getServletPostRequest());
-        assertEquals("errors: " + StringUtils.join(controller.getActionErrors(),", "), TdarActionSupport.SUCCESS, controller.save());
+        assertEquals("errors: " + StringUtils.join(controller.getActionErrors(), ", "), TdarActionSupport.SUCCESS, controller.save());
         statsAfter = amountRemaining(expectedAccount);
         assertEquals(title + ":files remaining should decrement by 1", statsBefore.files() - 1, statsAfter.files());
         assertEquals(title + ":space remaining should decrement by " + fileSize, statsBefore.bytes() - fileSize, statsAfter.bytes());
