@@ -250,7 +250,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <#if bulkUpload>
 	Resource
 <#else>
-${resource.resourceType.label}
+<#noescape>${resource.resourceType.label}</#noescape>
 </#if>
 </#macro>
 

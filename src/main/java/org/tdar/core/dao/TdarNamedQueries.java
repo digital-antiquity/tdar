@@ -94,6 +94,8 @@ public interface TdarNamedQueries {
     public static final String ACCOUNT_GROUPS_FOR_PERSON = "accountgroups.forPerson";
     public static final String QUERY_INFORMATIONRESOURCES_WITH_FILES = "informationResources.withFiles";
     public static final String QUERY_SPARSE_ACTIVE_RESOURCES = "resources.active";
+    public static final String INVOICES_FOR_PERSON = "invoices.forPerson";
+    public static final String UNASSIGNED_INVOICES_FOR_PERSON = "invoices.unassignedForPerson";
     // raw SQL/HQL queries
 
     public static final String QUERY_SQL_DASHBOARD =

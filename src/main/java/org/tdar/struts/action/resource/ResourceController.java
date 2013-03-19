@@ -9,9 +9,7 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.struts.action.AuthenticationAware;
 
@@ -46,12 +44,13 @@ public class ResourceController extends AuthenticationAware.Base {
      * Passthrough action, just loads add.ftl via conventions plugin.
      */
     @Action(value = "add",
-            results={
-            @Result(name=BILLING, location = "../billing-note.ftl"),
-            @Result(name=SUCCESS, location = "add.ftl")
-    })
+            results = {
+                    @Result(name = BILLING, location = "../billing-note.ftl"),
+                    @Result(name = SUCCESS, location = "add.ftl")
+            })
     public String execute() {
-        if (!getTdarConfiguration().isPayPerIngestEnabled() || getAuthenticatedUser().getContributor() == true && getAccountService().hasSpaceInAnAccount(getAuthenticatedUser(), ResourceType.DOCUMENT)) {
+        if (!getTdarConfiguration().isPayPerIngestEnabled() || getAuthenticatedUser().getContributor() == true
+                && isAllowedToCreateResource()) {
             return SUCCESS;
         }
         return BILLING;
@@ -88,8 +87,8 @@ public class ResourceController extends AuthenticationAware.Base {
     }
 
     public boolean isAllowedToCreateResource() {
-//        logger.info("ppi: {}", getTdarConfiguration().isPayPerIngestEnabled());
-        if (getTdarConfiguration().isPayPerIngestEnabled() == false || getAccountService().hasSpaceInAnAccount(getAuthenticatedUser(), null)) {
+        // logger.info("ppi: {}", getTdarConfiguration().isPayPerIngestEnabled());
+        if (getTdarConfiguration().isPayPerIngestEnabled() == false || getAccountService().hasSpaceInAnAccount(getAuthenticatedUser(), null,true)) {
             return true;
         }
         return false;

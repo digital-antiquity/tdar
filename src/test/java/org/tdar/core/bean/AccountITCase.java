@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -23,6 +24,7 @@ import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.billing.ResourceEvaluator;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Image;
@@ -55,6 +57,20 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         Document document = generateInformationResourceWithFileAndUser();
         accountProcess.process(document.getSubmitter());
         genericService.synchronize();
+    }
+
+    @Test
+    @Rollback
+    public void testUnassignedInvoice() {
+        Person person = createAndSaveNewPerson();
+        assertTrue(CollectionUtils.isEmpty(accountService.listAvailableAccountsForUser(person)));
+        Invoice setupInvoice = setupInvoice(new BillingActivity("10 resource", 100f, 0, 10L, 10L, 100L, accountService.getLatestActivityModel()));
+        setupInvoice.setOwner(person);
+        setupInvoice.markUpdated(person);
+        setupInvoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
+        genericService.saveOrUpdate(setupInvoice);
+        assertTrue(accountService.hasSpaceInAnAccount(person, null, true));
+        assertNotEmpty(accountService.listAvailableAccountsForUser(person));
     }
 
     @Test
@@ -133,7 +149,6 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         updateModel(model, false, false, false);
         assertEquals(AccountAdditionStatus.CAN_ADD_RESOURCE, account.canAddResource(re));
     }
-
 
     @Test
     @Rollback

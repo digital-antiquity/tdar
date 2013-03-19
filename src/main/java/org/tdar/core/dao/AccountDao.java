@@ -16,6 +16,8 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.billing.AccountGroup;
+import org.tdar.core.bean.billing.Invoice;
+import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
@@ -113,7 +115,7 @@ public class AccountDao extends Dao.HibernateBase<Account> {
     public void updateAccountInfo(Account account) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.ACCOUNT_QUOTA_INIT);
         query.setParameter("accountId", account.getId());
-        query.setParameterList("statuses", Arrays.asList(Status.ACTIVE, Status.DRAFT, Status.DUPLICATE,Status.FLAGGED_ACCOUNT_BALANCE));
+        query.setParameterList("statuses", Arrays.asList(Status.ACTIVE, Status.DRAFT, Status.DUPLICATE, Status.FLAGGED_ACCOUNT_BALANCE));
         Long totalFiles = 0L;
         Long totalSpaceInBytes = 0L;
         for (Object objs : query.list()) {
@@ -127,5 +129,18 @@ public class AccountDao extends Dao.HibernateBase<Account> {
         }
         account.setFilesUsed(totalFiles);
         account.setSpaceUsedInBytes(totalSpaceInBytes);
+    }
+
+    public List findUnassignedInvoicesForUser(Person user) {
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.UNASSIGNED_INVOICES_FOR_PERSON);
+        query.setParameter("personId", user.getId());
+        query.setParameterList("statuses", Arrays.asList(TransactionStatus.TRANSACTION_SUCCESSFUL));
+        return query.list();
+    }
+
+    public List findInvoicesForUser(Person user) {
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.INVOICES_FOR_PERSON);
+        query.setParameter("personId", user.getId());
+        return query.list();
     }
 }
