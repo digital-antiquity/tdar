@@ -90,7 +90,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
      * even if the billing account has plenty of space remaining.
      * @throws Exception
      */
-    public void testTheSnitkerConundrum() throws Exception{
+    public void testUploadOnSecondEditProperAccountDecriment() throws Exception{
         //create 2 accounts w/ 10 files & 4x the MB that we need
         File file = new File(TestConstants.TEST_DOCUMENT);
         int spaceNeeded = (int)Math.ceil((file.length() / BYTES_PER_MEGABYTE) * 4);
