@@ -1181,7 +1181,7 @@
 							<keyPassword>jetty6</keyPassword>
 						</connector>
 					</connectors>
-					<contextPath>/</contextPath>
+<!--					<contextPath>/</contextPath> -->
 					<webDefaultXml>src/main/resources/webdefault.xml</webDefaultXml>
 					<scanIntervalSeconds>0</scanIntervalSeconds>
 					<stopKey>tdar</stopKey>
