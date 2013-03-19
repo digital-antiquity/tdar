@@ -196,7 +196,7 @@ public class PaginationHelper {
     }
 
     public int getLastPage() {
-        return getItemsPerPage() * getPageCount()-  1;
+        return getItemsPerPage() * (getPageCount()-  1) ;
     }
     
     public int getPreviousPageStartRecord() {
