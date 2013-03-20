@@ -482,7 +482,6 @@ public class SearchService {
                     logger.trace("not adding {} ", fieldValue);
                 }
             }
-            logger.info("Result: {} " , lookupMap.get(cls));
         }
         // load sparse entities, and put them into a map to look them back up by
         Map<Class, Map<Long, Persistable>> idLookupMap = new HashMap<Class, Map<Long, Persistable>>();
