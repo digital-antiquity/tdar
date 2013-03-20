@@ -189,6 +189,25 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             assertTrue(String.format("should have at least one result for: %s", type.name()), sawSomething);
         }
     }
+    
+    @Test
+    @Rollback
+    public void testPagination() {
+        gotoPage("/search/results?recordsPerPage=2&includedStatuses=DRAFT&includedStatuses=ACTIVE&includedStatuses=DELETED");
+        boolean sawSomething = false;
+        for (Element element : querySelectorAll(".pagin a")) {
+            String href = element.getAttribute("href");
+            if (!element.getAttribute("href").toLowerCase().contains("bookmark")) {
+                gotoPage("/search/results" + href);
+                assertTextNotPresent("greater than total");
+                if (href.contains("25")) {
+                    logger.info(getPageBodyCode());
+                }
+                sawSomething = true;
+            }
+        }
+        assertTrue("should see links on the page", sawSomething);
+    }
 
     private boolean isCopyrightMandatory() {
         return TdarConfiguration.getInstance().getCopyrightMandatory();

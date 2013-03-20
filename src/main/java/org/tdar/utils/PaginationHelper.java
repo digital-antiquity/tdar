@@ -14,6 +14,8 @@ import org.tdar.search.query.SearchResultHandler;
  * @version $Rev$
  */
 public class PaginationHelper {
+    public static final int DEFAULT_ITEMS_PER_WINDOW = 20;
+
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
     
     private int totalNumberOfItems;
@@ -42,10 +44,8 @@ public class PaginationHelper {
         return new PaginationHelper(totalItems, itemsPerPage, maxVisiblePages, currentPage);
     }
     
-    //FIXME: A better solution (for jar) might be to remove most fields from SearchResultHandler and add getPaginationHelper(), 
-    //but for stable branch let's be less disruptive
     public static <I extends Indexable> PaginationHelper withSearchResults(SearchResultHandler<I> results) {
-        return withStartRecord(results.getTotalRecords(), results.getRecordsPerPage(), 20, results.getStartRecord());
+        return withStartRecord(results.getTotalRecords(), results.getRecordsPerPage(), DEFAULT_ITEMS_PER_WINDOW, results.getStartRecord());
     }
     
 
@@ -196,7 +196,7 @@ public class PaginationHelper {
     }
 
     public int getLastPage() {
-        return getItemsPerPage() * getPageCount()-  1;
+        return getItemsPerPage() * (getPageCount()-  1) ;
     }
     
     public int getPreviousPageStartRecord() {
