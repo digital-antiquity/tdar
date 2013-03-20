@@ -1,17 +1,16 @@
 package org.tdar.core.bean.entity;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -140,6 +139,15 @@ public class PersonITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback(true)
+    /**
+     * 
+     * This test makes various assertions based on our expectations of our implementation of hashCode() and equals(). How we think it works: 
+     *  - If object.id == -1,  hashcode is object.id.hashCode()
+     *  - If object.id != -1,  hashcode is based on object.equalityFields
+     *  - we cache an object's hashCode() value to avoid "hiding" set/map items by modifying their contents (e.g. saving an object in a set)
+     *  
+     */
+    //FIXME This test currently fails because it violates the hashCode contract {@link java.lang.Object#hashCode()}.
     public void testPersonEqualsHashCode() {
         final String emailPrefix = "uniquely";
         LinkedHashSet<Person> personSet = new LinkedHashSet<Person>();
@@ -147,29 +155,50 @@ public class PersonITCase extends AbstractIntegrationTestCase {
         int numberOfPersonsToCreate = 10;
         for (int i = 0; i < numberOfPersonsToCreate; i++) {
             Person person = createAndSaveNewPerson(emailPrefix + i + TestConstants.DEFAULT_EMAIL, "");
-            personSet.add(person);
             ids.add(person.getId());
+            personSet.add(person);
         }
+        
         assertEquals(numberOfPersonsToCreate, personSet.size());
         ArrayList<Person> personList = new ArrayList<Person>(personSet);
         for (int i = 0; i < numberOfPersonsToCreate; i++) {
             Person persistedPerson = personList.get(i);
             Person person = new Person();
-            assertNotSame(persistedPerson.hashCode(), person.hashCode());
             person.setFirstName(TestConstants.DEFAULT_FIRST_NAME);
-            assertFalse(personSet.contains(person));
-            assertNotSame(persistedPerson.hashCode(), person.hashCode());
-            assertFalse(persistedPerson.equals(person));
             person.setLastName(TestConstants.DEFAULT_LAST_NAME);
-            assertFalse(personSet.contains(person));
-            assertNotSame(persistedPerson.hashCode(), person.hashCode());
-            assertFalse(persistedPerson.equals(person));
-
             person.setEmail(emailPrefix + i + TestConstants.DEFAULT_EMAIL);
-            // FIXME: hack to get hashCode() to not think this is a transient instance and return
-            // Object.hashCode().. should rethink this.
-            person.setId(3L);
-            assertTrue(personSet + " should contain " + person, personSet.contains(person));
+            assertFalse(persistedPerson.equals(person));
+            //setting the ID should now make this person 'equal' to one of the person objects in the set,  per our definition of equality
+            person.setId(persistedPerson.getId());
+            
+            //now that we set the id, it's safe to lock down the hashcode
+            int hashcode1 = person.hashCode();
+            logger.debug("locking down person.hashCode() to: {}", hashcode1);
+
+            //hashcode should be locked down, changing the id should not effect hashcode
+            person.setId(person.getId()  + 15L);
+            assertEquals(hashcode1, person.hashCode());
+            
+            //okay now set ID back to original value
+            person.setId(person.getId() - 15L);
+            
+            assertEquals(persistedPerson, person);
+            if(!personSet.contains(person)) {
+                logger.error("hashset.contains() should be true for {} but was false", person); 
+                int[] hashcodes = new int[personSet.size()];
+                int j= 0;
+                for(Person peep : personSet) {
+                    hashcodes[j++] = peep.hashCode();
+                }
+                logger.error("personset hashcodes: {}", hashcodes);
+                logger.error("    person hashcode: {}", person.hashCode());
+                
+                String expectation = "If two objects are equal according to the equals(Object) method, then calling the hashCode method on each of the two " +
+                		"objects must produce the same integer result.";
+                assertEquals(expectation, persistedPerson, person);
+                assertEquals(expectation, persistedPerson.hashCode(), person.hashCode());
+            }
+            //assertTrue(personSet + " should contain " + person, personSet.contains(person));
             assertEquals(persistedPerson.hashCode(), person.hashCode());
             assertTrue(personSet.contains(person));
             assertEquals(persistedPerson, person);
