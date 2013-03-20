@@ -69,7 +69,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
     @Test
     @Rollback()
     public void testCreateWithoutValidAccount() throws Exception {
-        controller = generateNewInitializedController(DocumentController.class);
+        controller = generateNewInitializedController(DocumentController.class, createAndSaveNewPerson());
         Assert.assertTrue(getTdarConfiguration().isPayPerIngestEnabled());
         Assert.assertTrue(CollectionUtils.isEmpty(controller.getActiveAccounts()));
         initControllerFields();

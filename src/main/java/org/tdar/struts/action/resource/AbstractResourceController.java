@@ -53,7 +53,6 @@ import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
-import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
@@ -196,23 +195,20 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         }
         return SUCCESS;
     }
-    
-    
-    
-    //Return list of acceptable billing accounts. If the resource has an account, this method will include it in the returned list even
-    //if the user does not have explicit rights to the account (e.g. so that a user w/ edit rights on the resource can modify the resource
+
+    // Return list of acceptable billing accounts. If the resource has an account, this method will include it in the returned list even
+    // if the user does not have explicit rights to the account (e.g. so that a user w/ edit rights on the resource can modify the resource
     // and maintain original billing account).
     protected List<Account> determineActiveAccounts() {
         List<Account> accounts = new LinkedList<Account>(getAccountService().listAvailableAccountsForUser(getAuthenticatedUser()));
-        if(getResource() != null) {
+        if (getResource() != null) {
             Account resourceAccount = getResource().getAccount();
-            if(resourceAccount != null   && !accounts.contains(resourceAccount)) {
+            if (resourceAccount != null && !accounts.contains(resourceAccount)) {
                 accounts.add(0, resourceAccount);
             }
         }
-        return  accounts;
+        return accounts;
     }
-   
 
     @Override
     public String loadEditMetadata() {
@@ -263,9 +259,9 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     @Override
     protected void postSaveCallback(String actionMessage) {
-        //if user has single billing account, use that (ignore the form);
+        // if user has single billing account, use that (ignore the form);
         setupAccountForSaving();
-        
+
         if (actionMessage == SUCCESS) {
             // getAccountService().getResourceEvaluator().evaluateResources(getResource());
             if (shouldSaveResource()) {
@@ -289,7 +285,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     protected void setupAccountForSaving() {
         getAccountService().updateTransientAccountInfo(getResource());
         List<Account> accounts = determineActiveAccounts();
-        if(accounts.size() == 1 ) {
+        if (accounts.size() == 1) {
             setAccountId(accounts.get(0).getId());
         }
     }
@@ -305,7 +301,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     @Override
     public boolean isAbleToCreateBillableItem() {
         if (!getTdarConfiguration().isPayPerIngestEnabled() || getAuthenticatedUser().getContributor() == true
-                && getAccountService().hasSpaceInAnAccount(getAuthenticatedUser(), getResource().getResourceType(),true)) {
+                && getAccountService().hasSpaceInAnAccount(getAuthenticatedUser(), getResource().getResourceType(), true)) {
             return true;
         }
         return false;
@@ -451,17 +447,17 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
                 getResource().getResourceAnnotations(), ResourceAnnotation.class);
         getResourceCollectionService().saveSharedResourceCollections(getResource(), resourceCollections, getResource().getResourceCollections(),
                 getAuthenticatedUser(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS);
-        
+
     }
-    
+
     public <T extends Sequenceable<T>> void prepSequence(List<T> list) {
-        if(list == null) return;
-        if(list.isEmpty()) return;
+        if (list == null)
+            return;
+        if (list.isEmpty())
+            return;
         list.removeAll(Collections.singletonList(null));
         Sequence.applySequence(list);
     }
-    
-    
 
     protected void logModification(String message) {
         logResourceModification(getPersistable(), message, null);
@@ -741,8 +737,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return resourceNotes;
     }
 
-    //FIXME: JTd: I think we should make all controller collection setters protected unless service layer absolutely. Confirm w/ others and change signatures
-    //       or revert this method back to public if there are objections.
+    // FIXME: JTd: I think we should make all controller collection setters protected unless service layer absolutely. Confirm w/ others and change signatures
+    // or revert this method back to public if there are objections.
     protected void setResourceNotes(List<ResourceNote> resourceNotes) {
         this.resourceNotes = resourceNotes;
     }
@@ -956,7 +952,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             int i = 0;
             for (InformationResourceFile file : ((InformationResource) getPersistable()).getInformationResourceFiles()) {
                 i++;
-                getDownloadStats().put(String.format("%s. %s", i ,file.getFileName()) ,
+                getDownloadStats().put(String.format("%s. %s", i, file.getFileName()),
                         getResourceService().getAggregateDownloadStatsForFile(DateGranularity.WEEK, new Date(0L), new Date(), 1L, file.getId()));
                 logger.info("{} {}", file.getId(), getDownloadStats().get(file.getFileName()));
             }
@@ -997,7 +993,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     public Set<Account> getActiveAccounts() {
-        if(activeAccounts == null) {
+        if (activeAccounts == null) {
             activeAccounts = new HashSet<Account>(determineActiveAccounts());
         }
         return activeAccounts;
