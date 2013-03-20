@@ -31,8 +31,7 @@ public class ShapefileReaderTask extends AbstractTask {
 
     @Override
     public void run() throws Exception {
-
-        File file = new File("C:\\Users\\abrin\\Desktop\\Ruins of Tikal map-v11.tif");
+        File file = getWorkflowContext().getOriginalFile().getFile();
         // http://stackoverflow.com/questions/2044876/does-anyone-know-of-a-library-in-java-that-can-parse-esri-shapefiles
 
         if (file.getName().endsWith("tif")) {
