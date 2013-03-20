@@ -83,6 +83,7 @@ public class BookmarkedResource extends Persistable.Base {
 
     @SuppressWarnings("unchecked")
     public List<?> getEqualityFields() {
+        //ab probably okay as not nullable fields
         return Arrays.asList(person, resource);
     }
 

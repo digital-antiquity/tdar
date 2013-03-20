@@ -441,6 +441,7 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
     @SuppressWarnings("unchecked")
     @Override
     public List<?> getEqualityFields() {
+        //ab probably okay as it includes Id
         return Arrays.asList(getInformationResourceFileId(), version, fileVersionType, getId());
     }
 

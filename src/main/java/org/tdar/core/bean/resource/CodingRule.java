@@ -89,6 +89,7 @@ public class CodingRule extends Persistable.Base implements Comparable<CodingRul
 
     @Override
     public List<?> getEqualityFields() {
+        //ab probably okay as not nullable fields
         return Arrays.asList(getCode());
     }
 

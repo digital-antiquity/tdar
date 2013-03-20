@@ -54,7 +54,7 @@ public class ResourceAnnotationKey extends Persistable.Base implements Indexable
     @Column(name = "annotation_data_type")
     private ResourceAnnotationDataType annotationDataType;
 
-    @Column(length = 128, unique = true)
+    @Column(length = 128, unique = true,nullable=false)
     @Fields({ @Field(name = "annotationkey_auto", norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)) })
     private String key;
 
@@ -126,6 +126,7 @@ public class ResourceAnnotationKey extends Persistable.Base implements Indexable
 
     @Override
     public List<?> getEqualityFields() {
+        //ab probably okay as not nullable fields
         return Arrays.asList(key);
     }
 
