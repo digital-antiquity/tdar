@@ -11,7 +11,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -34,7 +33,6 @@ import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.search.query.SortOption;
-import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.ResourceCreatorProxy;
 
@@ -93,14 +91,16 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         controller.getProject().setTitle("test");
         controller.getProject().setDescription("test");
         controller.setServletRequest(getServletPostRequest());
+        controller.setAsync(false);
         controller.save();
         Project project = controller.getProject();
         project = genericService.merge(project);
         List<Creator> people = new ArrayList<Creator>();
         for (ResourceCreator creator : project.getResourceCreators()) {
-            logger.info(creator + " " + creator.getCreator().getId());
+            logger.info("{}", creator);
             people.add(creator.getCreator());
         }
+        assertEquals(6, people.size());
         assertEquals("First and Second person should be the same (difference institution)", people.get(0), people.get(1));
         assertEquals("First and Sixth person should be the same (difference case)", people.get(0), people.get(5));
         assertEquals("First and Fourth person should be the same (email null)", people.get(0), people.get(1));
@@ -170,12 +170,6 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         // THESE NEXT TESTS SHOULD BE TRUE IF INHERITANCE IS TURNED BACK ON FROM PROJECT -> RESOURCE
         assertFalse(authenticationAndAuthorizationService.canEditResource(testModify, testResource));
         assertFalse(authenticationAndAuthorizationService.canEditResource(testAdmin, testResource));
-    }
-
-    @Test
-    @Rollback
-    public void testCollectionRightsToProjectAndTheirChildren() {
-
     }
 
     @Override

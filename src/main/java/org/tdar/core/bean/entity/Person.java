@@ -248,9 +248,9 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
 
     public String toString() {
         if (institution != null && !StringUtils.isBlank(institution.toString())) {
-            return String.format("%s [%s | %s]", getName(), email, institution);
+            return String.format("%s [%s | %s | %s]", getName(), getId(), email, institution);
         }
-        return String.format("%s [%s]", getName(), "No institution specified.");
+        return String.format("%s [%s | %s]", getName(), getId(), "No institution specified.");
     }
 
     /**
