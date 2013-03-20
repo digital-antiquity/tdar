@@ -319,7 +319,7 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
 
     @XmlTransient
     public List<?> getEqualityFields() {
-        return Arrays.asList(getId());
+        return Arrays.asList(email);
     }
 
     @XmlTransient
