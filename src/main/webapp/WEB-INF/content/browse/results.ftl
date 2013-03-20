@@ -86,18 +86,21 @@
                 <@common.resourceUsageInfo />
 
 				<#if (editor || id == authenticatedUser.id) >
+				<h3>Addresses</h3>
+				<div class="row">
 					<#list creator.addresses  as address>
-					    <div class="controls-row">
+					    <div class="span3">
 					        <@common.printAddress  address=address creatorType=creator.creatorType?lower_case creatorId=creator.id />
 					    </div>
 					</#list>
-				
+				</div>
 				</#if>
             </#if>
 		<br/>        
         </#if>
 </div>
 </#if>
+<#if results??>
 <div id="divResultsSortControl">
     <div class="row">
         <div class="span4">
@@ -114,9 +117,10 @@
 </div>
 
 <div class="tdarresults">
-<#if results??>
 <@list.listResources resourcelist=results sortfield="RESOURCE_TYPE" titleTag="h5" />
-</#if>
 </div>
 <@search.basicPagination "Results"/>
+<#else>
+No Resources associated with ${creator.properName}
+</#if>
 </#escape>

@@ -24,6 +24,7 @@
 </div>
 -->
 
+<#if results?has_content>
 <div id="divResultsSortControl">
     <div class="row">
         <div class="span4">
@@ -45,7 +46,9 @@
 
 
 <@search.basicPagination "Collections"/>
-
+<#else>
+No collections
+</#if>
 
 </body>
 </#escape>
