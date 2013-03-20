@@ -344,7 +344,6 @@ public class SearchParameters {
         queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, "Collection", "resourceCollections.",
                 ResourceCollection.class,
                 getCollections()));
-        logger.info("resource creators: {}", resourceCreatorProxies);
         queryPartGroup.append(new CreatorQueryPart<Creator>(QueryFieldNames.CREATOR_ROLE_IDENTIFIER, Creator.class, null, resourceCreatorProxies));
 
         // explore: decade

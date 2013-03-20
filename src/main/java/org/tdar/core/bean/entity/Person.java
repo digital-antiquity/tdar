@@ -32,7 +32,6 @@ import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.resource.BookmarkedResource;
-import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 
@@ -320,7 +319,7 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
 
     @XmlTransient
     public List<?> getEqualityFields() {
-        return Arrays.asList(email);
+        return Arrays.asList(getId());
     }
 
     @XmlTransient
