@@ -1,8 +1,6 @@
 package org.tdar.core.bean.resource.sensory;
 
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -193,10 +191,4 @@ public class SensoryDataScan extends Persistable.Sequence<SensoryDataScan> imple
     public String toString() {
         return filename + " (" + getId() + " )";
     }
-
-    @Override
-    public List<?> getEqualityFields() {
-        return Arrays.asList(getId());
-    }
-
 }

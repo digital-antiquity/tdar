@@ -232,13 +232,28 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
             return false;
         }
     }
+    private transient int hashCode = -1;
 
+    /*
+     * copied from Persistable.Base.hashCode() (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
     @Override
     public int hashCode() {
-        if (Persistable.Base.isTransient(this)) {
-            return super.hashCode();
+        Logger logger = LoggerFactory.getLogger(getClass());
+        Object[] obj = { hashCode, getClass().getSimpleName(), getId() };
+        if (hashCode == -1) {
+            if (Persistable.Base.isNullOrTransient(this)) {
+                hashCode = super.hashCode();
+            } else {
+                hashCode = Persistable.Base.toHashCode(this);
+            }
+
+            logger.trace("setting hashCode to {} ({}) {}", obj);
+        } else {
+            logger.trace("returning existing hashCode to {} ({}) {}", obj);
         }
-        return Persistable.Base.toHashCode(this);
+        return hashCode;
     }
 
     /**

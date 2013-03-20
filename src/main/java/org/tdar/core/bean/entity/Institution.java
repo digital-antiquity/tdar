@@ -155,7 +155,7 @@ public class Institution extends Creator implements Comparable<Institution>, Ded
 
     @Override
     public List<?> getEqualityFields() {
-        return Arrays.asList(name);
+        return Arrays.asList(getId());
     }
 
     @Override

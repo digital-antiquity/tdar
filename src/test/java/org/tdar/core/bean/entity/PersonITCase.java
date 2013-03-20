@@ -8,6 +8,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -30,7 +31,7 @@ public class PersonITCase extends AbstractIntegrationTestCase {
 
     @Test
     public void testEmptyFind() {
-        Person p = genericService.find(Person.class, (Long)null);
+        Person p = genericService.find(Person.class, (Long) null);
         assertNull(p);
     }
 
@@ -136,7 +137,7 @@ public class PersonITCase extends AbstractIntegrationTestCase {
         assertEquals("should have CreatorType.PERSON set on CreatorType", CreatorType.PERSON, person.getCreatorType());
         assertNotNull("should have a date created", person.getDateCreated());
     }
-    
+
     @Test
     @Rollback(true)
     public void testPersonEqualsHashCode() {
@@ -163,7 +164,7 @@ public class PersonITCase extends AbstractIntegrationTestCase {
             assertFalse(personSet.contains(person));
             assertNotSame(persistedPerson.hashCode(), person.hashCode());
             assertFalse(persistedPerson.equals(person));
-            
+
             person.setEmail(emailPrefix + i + TestConstants.DEFAULT_EMAIL);
             // FIXME: hack to get hashCode() to not think this is a transient instance and return
             // Object.hashCode().. should rethink this.
@@ -172,7 +173,7 @@ public class PersonITCase extends AbstractIntegrationTestCase {
             assertEquals(persistedPerson.hashCode(), person.hashCode());
             assertTrue(personSet.contains(person));
             assertEquals(persistedPerson, person);
-            
+
             person.setId(ids.get(i));
             assertTrue(personSet.contains(person));
             assertEquals(personList.get(i), person);
