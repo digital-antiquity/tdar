@@ -328,9 +328,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         boolean seenFlagged = false;
         for (Resource resource : items) {
             if (hasSpaceFor(resource, helper, mode)) {
-                if (resource.getStatus() != Status.FLAGGED_ACCOUNT_BALANCE) {
                     helper.getUnflagged().add(resource);
-                }
                 updateMarkers(resource, helper, mode);
             } else {
                 if (!seenFlagged) {
