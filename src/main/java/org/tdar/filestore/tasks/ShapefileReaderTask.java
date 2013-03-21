@@ -5,10 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
-import org.geotools.coverage.grid.io.AbstractGridFormat;
-import org.geotools.coverage.grid.io.GridFormatFinder;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFinder;
 import org.geotools.data.FeatureSource;
@@ -20,6 +18,7 @@ import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.feature.Feature;
 import org.opengis.feature.GeometryAttribute;
+import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.filestore.tasks.Task.AbstractTask;
 
 public class ShapefileReaderTask extends AbstractTask {
@@ -33,15 +32,22 @@ public class ShapefileReaderTask extends AbstractTask {
     public void run() throws Exception {
         File file = getWorkflowContext().getOriginalFile().getFile();
         // http://stackoverflow.com/questions/2044876/does-anyone-know-of-a-library-in-java-that-can-parse-esri-shapefiles
+        File workingDir = new File(getWorkflowContext().getWorkingDirectory(), file.getName());
+        workingDir.mkdir();
+        FileUtils.copyFileToDirectory(file, workingDir);
+        File workingOriginal = new File(workingDir, file.getName());
+        for (InformationResourceFileVersion version : getWorkflowContext().getSupportingFiles()) {
+            FileUtils.copyFileToDirectory(version.getFile(), workingDir);
+        }
 
-        if (file.getName().endsWith("tif")) {
+        if (workingOriginal.getName().endsWith("tif")) {
 
-//            AbstractGridFormat format = GridFormatFinder.findFormat(file);
-//            AbstractGridCoverage2DReader reader = format.getReader(file);
+            // AbstractGridFormat format = GridFormatFinder.findFormat(file);
+            // AbstractGridCoverage2DReader reader = format.getReader(file);
 
             GeoTiffFormat gtf = new GeoTiffFormat();
-            Hints hints = new Hints(Hints.DEFAULT_COORDINATE_REFERENCE_SYSTEM, gtf.getDefaultCRS());
-            GridCoverageReader reader = gtf.getReader(file, hints);
+//            Hints hints = new Hints(Hints.DEFAULT_COORDINATE_REFERENCE_SYSTEM, gtf.getDefaultCRS());
+            GridCoverageReader reader = gtf.getReader(workingOriginal);//, hints
             // getLogger().info("subname: {} ", reader.getCurrentSubname());
             getLogger().info("format: {} ({}) -- {} ", reader.getFormat().getVendor(), reader.getFormat().getVersion(), reader.getFormat().getDescription());
             // getLogger().info("more coverages: {} ", reader.hasMoreGridCoverages());
@@ -52,8 +58,8 @@ public class ShapefileReaderTask extends AbstractTask {
                 }
             }
             getLogger().info(tiffCov.toString());
-            //http://docs.geotools.org/latest/userguide/library/coverage/grid.html#coveragestack
-            
+            // http://docs.geotools.org/latest/userguide/library/coverage/grid.html#coveragestack
+
             getLogger().info("env {} ", tiffCov.getEnvelope());
             getLogger().info("CRS {} ", tiffCov.getCoordinateReferenceSystem());
             getLogger().info("Geom {} ", tiffCov.getGridGeometry().toString());
@@ -65,7 +71,7 @@ public class ShapefileReaderTask extends AbstractTask {
         } else {
             try {
                 Map connect = new HashMap();
-                connect.put("url", file.toURL());
+                connect.put("url", workingOriginal.toURL());
 
                 DataStore dataStore = DataStoreFinder.getDataStore(connect);
                 String[] typeNames = dataStore.getTypeNames();

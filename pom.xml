@@ -284,16 +284,17 @@
 					<groupId>commons-codec</groupId>
 				</exclusion>
 				<exclusion>
-				    <artifactId>commons-exec</artifactId>
-				    <groupId>org.apache.commons</groupId>
+					<artifactId>commons-exec</artifactId>
+					<groupId>org.apache.commons</groupId>
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<dependency>
+<!-- 		<dependency>
 			<groupId>javax.measure</groupId>
 			<artifactId>jsr-275</artifactId>
 			<version>1.0.0</version>
 		</dependency>
+ -->
 		<dependency>
 			<groupId>rome</groupId>
 			<artifactId>rome</artifactId>
@@ -343,6 +344,23 @@
 			<artifactId>gt-shapefile</artifactId>
 			<version>${geotools.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-epsg-extension</artifactId>
+			<version>${geotools.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-epsg-hsql</artifactId>
+			<version>${geotools.version}</version>
+		</dependency>
+<!--
+ 		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-epsg-wkt</artifactId>
+			<version>${geotools.version}</version>
+		</dependency>
+ -->
 		<dependency>
 			<groupId>org.geotools</groupId>
 			<artifactId>gt-geotiff</artifactId>
@@ -839,14 +857,14 @@
 
 		<!-- OData (odata4j) Stuff: End -->
 
-        <!--  selenium tests: experimental and may likely go away -->
-            <dependency>
-                <groupId>org.seleniumhq.selenium</groupId>
-                <artifactId>selenium-java</artifactId>
-                <version>2.31.0</version>
-            </dependency>
-              
-            
+		<!-- selenium tests: experimental and may likely go away -->
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-java</artifactId>
+			<version>2.31.0</version>
+		</dependency>
+
+
 	</dependencies>
 	<pluginRepositories>
 		<pluginRepository>
@@ -1157,16 +1175,16 @@
 					<scanIntervalSeconds>0</scanIntervalSeconds> <stopKey>tdar</stopKey> <stopPort>${jetty.stop.port}</stopPort> 
 					</configuration> -->
 				<groupId>org.mortbay.jetty</groupId>
-<artifactId>jetty-maven-plugin</artifactId>
-<version>8.1.10.v20130312</version>
+				<artifactId>jetty-maven-plugin</artifactId>
+				<version>8.1.10.v20130312</version>
 				<configuration>
 					<testClassesDirectory>src/test/resources/</testClassesDirectory>
 					<useTestClasspath>${use.test.classpath}</useTestClasspath>
-<scanIntervalSeconds>10</scanIntervalSeconds>
-<scanTargets>
-<scanTarget>src/main/webapp/WEB-INF/web.xml</scanTarget>
-</scanTargets>
-<contextXml>src/main/resources/jetty-context.xml</contextXml>
+					<scanIntervalSeconds>10</scanIntervalSeconds>
+					<scanTargets>
+						<scanTarget>src/main/webapp/WEB-INF/web.xml</scanTarget>
+					</scanTargets>
+					<contextXml>src/main/resources/jetty-context.xml</contextXml>
 
 					<connectors>
 						<connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
@@ -1181,7 +1199,7 @@
 							<keyPassword>jetty6</keyPassword>
 						</connector>
 					</connectors>
-<!--					<contextPath>/</contextPath> -->
+					<!-- <contextPath>/</contextPath> -->
 					<webDefaultXml>src/main/resources/webdefault.xml</webDefaultXml>
 					<scanIntervalSeconds>0</scanIntervalSeconds>
 					<stopKey>tdar</stopKey>
@@ -1239,9 +1257,9 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.12</version>
 				<configuration>
-                    <excludes>
-                        <exclude>**/experimental/*.java</exclude>
-                    </excludes>
+					<excludes>
+						<exclude>**/experimental/*.java</exclude>
+					</excludes>
 					<forkMode>never</forkMode>
 					<skip>${maven.test.skip}</skip>
 					<systemProperties>
@@ -1293,9 +1311,9 @@
 				</executions>
 				<configuration>
 					<argLine>${jvm.args} -DenableContextSwitchingConfig=true</argLine>
-                    <excludes>
-                        <exclude>**/experimental/*.java</exclude>
-                    </excludes>
+					<excludes>
+						<exclude>**/experimental/*.java</exclude>
+					</excludes>
 				</configuration>
 			</plugin>
 		</plugins>
