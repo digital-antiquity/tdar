@@ -99,7 +99,7 @@ Projects in ${siteAcronym} contain and help organize a variety of different info
 
 <#macro confidentialFile>
   <div id="divConfidentialAccessReminder" class="hidden">
-      <em>Embargoed records will become public in ${embargoPeriodInYears} years. Confidential records will not be made public. Use the &quot;Access Rights&quot; section to assign access to this file for specific users.</em>
+      <em>Embargoed records will become public in ${embargoPeriodInYears} years. Confidential records will not be made public. Use the &quot;Access Rights&quot; section to assign access to this file for specific users. All metadata is public regardless of whether the file is marked as confidential or embargoed.</em>
   </div>
 </#macro>
 

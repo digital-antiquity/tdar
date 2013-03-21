@@ -920,7 +920,7 @@ jquery validation hooks?)
       <@singleFileUpload>
           <div class="field indentFull">
           <@s.select name="fileProxies[0].restriction" id="cbConfidential" labelposition="right" label="This item has access restrictions" listValue="label" list=fileAccessRestrictions  />
-          <div><b>NOTE:</b> by changing this from 'public', only the metadata will be visible to users, they will not be able to view this item.  
+          <div><b>NOTE:</b> by changing this from 'public', all of the metadata will be visible to users, they will not be able to view or download this file.  
           You may explicity grant read access to users below.</div>
           <br />     
           </div>
