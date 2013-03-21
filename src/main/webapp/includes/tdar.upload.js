@@ -270,7 +270,8 @@ TDAR.fileupload = function() {
         $fileAction.val("REPLACE");
         
         $targetRow.find('.replacement-text').text("(replacing " + originalFilename + ")");
-        $targetRow.find('input, select').prop("disabled", true);
+        $targetRow.find('input, select, button.delete-button').prop("disabled", true);;
+        $targetRow.addClass('replace-target');
     }
     
     //TODO: pull out redundant sections before adam has a chance to put this in a ticket for me.
@@ -279,6 +280,7 @@ TDAR.fileupload = function() {
         $targetRow.find('input, select').prop("disabled", false).each(function() {
             $(this).attr("name", $(this).data("original-name"));
         });
+        $targetRow.find('button.delete-button').prop("disabled", false);
         
         $originalRow.find('.replacement-text').text('');
         $originalRow.removeClass("replacement-selected");
@@ -289,6 +291,7 @@ TDAR.fileupload = function() {
         var $filename = $originalRow.find('.fileReplaceName');
         $filename.val($filename.data('original-filename'));
         $.removeData($originalRow[0], "jqTargetRow");
+        $targetRow.removeClass('replace-target');
     }
     
     
