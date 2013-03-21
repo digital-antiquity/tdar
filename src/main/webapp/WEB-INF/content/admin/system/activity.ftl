@@ -1,5 +1,8 @@
 <#escape _untrusted as _untrusted?html >
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
+<#import "../admin-common.ftl" as admin>
+
+
 <head>
 <title>Administrator Dashboard: Recent Activity</title>
 <meta name="lastModifiedDate" content="$Date$"/>
@@ -11,6 +14,7 @@ pre, td {
 </style>
 </head>
 <body>
+<@admin.header/>
 <h2>Recent System Activity</h2>
 <hr/>
 <@s.actionerror />

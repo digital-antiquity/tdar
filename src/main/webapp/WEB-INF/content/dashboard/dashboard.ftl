@@ -16,8 +16,8 @@
 <div id="titlebar" parse="true">
     <h1>${authenticatedUser.properName}'s Dashboard</h1>
     
+    <#if payPerIngestEnabled>
     <div class="news alert">
-        <#if payPerIngestEnabled>
         <B>${siteAcronym} Update:</B>
         Please note we are now charging to upload materials to ${siteAcronym}, please see <a href="http://www.tdar.org/about/pricing"> our website</a> for more information. 
         <br/>
@@ -25,8 +25,8 @@
         <#if (authenticatedUser.id < 145165 )> 
         If you are a contributor who uploaded files to tDAR during the free period, we've generated an account for those files.  As a thank you for your support, we have credited your account with one additional file (up to 10 MB, a $50 value) to get your next project started.  </#if>
         <br/>
-        </#if>
     </div>
+    </#if>
 </div>
 
 

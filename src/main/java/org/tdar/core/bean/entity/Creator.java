@@ -76,8 +76,7 @@ import org.tdar.search.query.QueryFieldNames;
 @XmlSeeAlso({ Person.class, Institution.class })
 @XmlAccessorType(XmlAccessType.PROPERTY)
 public abstract class Creator extends JsonModel.Base implements Persistable, HasName, HasStatus, Indexable, Updatable, OaiDcProvider,
-        Obfuscatable, Validatable,
-        Addressable {
+        Obfuscatable, Validatable, Addressable {
 
     protected final static transient Logger logger = LoggerFactory.getLogger(Creator.class);
     private transient boolean obfuscated;

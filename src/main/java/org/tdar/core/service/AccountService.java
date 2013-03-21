@@ -203,7 +203,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             throw new TdarRecoverableRuntimeException(ACCOUNT_IS_NULL);
         }
         // evaluate resources
-        logger.trace("model {}" ,getLatestActivityModel());
+        logger.trace("model {}", getLatestActivityModel());
         getResourceEvaluator(resourcesToEvaluate);
         saveOrUpdateAll(resourcesToEvaluate);
         getDao().updateTransientAccountOnResources(resourcesToEvaluate);
@@ -328,7 +328,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         boolean seenFlagged = false;
         for (Resource resource : items) {
             if (hasSpaceFor(resource, helper, mode)) {
-                helper.getUnflagged().add(resource);
+                    helper.getUnflagged().add(resource);
                 updateMarkers(resource, helper, mode);
             } else {
                 if (!seenFlagged) {

@@ -16,7 +16,6 @@ import java.util.Set;
 import org.apache.lucene.queryParser.ParseException;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -132,13 +131,35 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         }
     }
 
-    
     @Test
     @Rollback
     public void testPersonSearchWithoutAutocomplete() {
         String lastName = "Watts";
         Person person = new Person(null, lastName, null);
         lookForCreatorNameInResult(lastName, person);
+    }
+
+    @Test
+    @Rollback
+    public void testMultiplePersonSearch() {
+        Long peopleIds[] = { 8044L, 8344L, 8393L, 8608L, 8009L };
+        List<Person> people = genericService.findAll(Person.class, Arrays.asList(peopleIds));
+        assertEquals(4, people.size());
+        logger.info("{}", people);
+        List<String> names = new ArrayList<String>();
+        for (Person person : people) {
+            names.add(person.getProperName());
+            Person p = new Person();
+            p.setId(person.getId());
+            ResourceCreator rc = new ResourceCreator(p, null);
+            firstGroup().getResourceCreatorProxies().add(new ResourceCreatorProxy(rc));
+        }
+        doSearch();
+        logger.info(controller.getSearchPhrase());
+        for (String name : names) {
+            assertTrue(controller.getSearchPhrase().contains(name));
+        }
+        // lookForCreatorNameInResult(lastName, person);
     }
 
     @Test
@@ -860,18 +881,18 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         searchIndexService.index(proj);
 
         // simulate searchParamerters that represents a project at [0] and collection at [1]
-//        firstGroup().getProjects().add(new Project(null,proj.getName()));
-//        firstGroup().getCollections().add(null); // [0]
+        // firstGroup().getProjects().add(new Project(null,proj.getName()));
+        // firstGroup().getCollections().add(null); // [0]
         firstGroup().getCollections().add(new ResourceCollection(colname, null, null, null, true, null)); // [1]
 
         controller.search();
 
         // skeleton lists should have been loaded w/ sparse records...
-//        assertEquals(proj.getTitle(), firstGroup().getProjects().get(0).getTitle());
+        // assertEquals(proj.getTitle(), firstGroup().getProjects().get(0).getTitle());
         assertEquals(colname, firstGroup().getCollections().get(0).getName());
         assertTrue(controller.getResults().contains(proj));
-//        assertEquals(proj.getId(), firstGroup().getProjects().get(0).getId());
-//        assertEquals(coll.getId(), firstGroup().getCollections().get(1).getId());
+        // assertEquals(proj.getId(), firstGroup().getProjects().get(0).getId());
+        // assertEquals(coll.getId(), firstGroup().getCollections().get(1).getId());
     }
 
     @Test
@@ -913,32 +934,32 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         assertFalse(controller.getRelevantInstitutionRoles().contains(ResourceCreatorRole.UPDATER));
         assertTrue(controller.getRelevantInstitutionRoles().contains(ResourceCreatorRole.RESOURCE_PROVIDER));
     }
-    
+
     @Test
     public void testRefineSimpleSearch() {
-        //simulate /search?query=this is a test.   We expect the form to pre-populate with this search term
+        // simulate /search?query=this is a test. We expect the form to pre-populate with this search term
         String query = "this is a test";
         controller.setQuery(query);
         controller.advanced();
         assertTrue("first group should have one term", firstGroup().getAllFields().size() > 0);
         assertEquals("query should appear on first term", query, firstGroup().getAllFields().get(0));
     }
-    
+
     @Test
-    //if user gets to the results page via clicking on persons name from resource view page,  querystring only contains person.id field.  So before 
-    //rendering the 'refine your search' version of the search form the controller must inflate query components.
+    // if user gets to the results page via clicking on persons name from resource view page, querystring only contains person.id field. So before
+    // rendering the 'refine your search' version of the search form the controller must inflate query components.
     public void testRefineSearchWithSparseProject() {
         Project persisted = createAndSaveNewProject();
         Project sparse = new Project();
-        //ensure the project is in  
+        // ensure the project is in
         genericService.synchronize();
         sparse.setId(persisted.getId());
         firstGroup().getProjects().add(sparse);
         controller.advanced();
-        
+
         assertEquals("sparse project should have been inflated", persisted.getTitle(), firstGroup().getProjects().get(0).getTitle());
     }
-    
+
     private void assertOnlyOneResult(InformationResource informationResource) {
         doSearch();
         assertEquals("expecting two results: doc and project", 2, controller.getResults().size());
@@ -976,7 +997,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
     protected void reindex() {
         searchIndexService.purgeAll();
-        searchIndexService.indexAll(Resource.class, Person.class,Institution.class, ResourceCollection.class);
+        searchIndexService.indexAll(Resource.class, Person.class, Institution.class, ResourceCollection.class);
     }
 
     protected void doSearch() {

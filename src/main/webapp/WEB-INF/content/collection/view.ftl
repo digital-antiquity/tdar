@@ -35,42 +35,51 @@
   </div>
 </#if>
 
-    <#if ( results?has_content )>
-<div class="search">
-    <@search.basicPagination "Records" />
-</div>
+    <#if  results?has_content && results?size !=0 >
 
-<hr/>
+		<div id="divResultsSortControl">
+		    <div class="row">
+		        <div class="span4">
+				    <@search.totalRecordsSection tag="h2" helper=paginationHelper itemType="Record"/>
+		        </div>
+		        <div class="span5"></div>
+		    </div>
+		</div>
 
-<#assign mapSize="450" />
-<#if (totalRecords > 10)>
-	<#assign mapSize="700" />
-</#if>
-<#if (totalRecords > 18)>
-	<#assign mapSize="1000" />
-</#if>
+
+		<#assign mapSize="450" />
+		<#if (totalRecords > 10)>
+			<#assign mapSize="700" />
+		</#if>
+		<#if (totalRecords > 18)>
+			<#assign mapSize="1000" />
+		</#if>
          
-    <@list.listResources resourcelist=results sortfield=resourceCollection.sortBy  titleTag="h5" listTag="ul" itemTag="li" itemsPerRow=5
-        orientation=resourceCollection.orientation    mapPosition="left" mapHeight=mapSize />
-    </#if>
+		<div class="tdarresults">
+		    <@list.listResources resourcelist=results sortfield=resourceCollection.sortBy  titleTag="h5" listTag="ul" itemTag="li" itemsPerRow=5
+		        orientation=resourceCollection.orientation    mapPosition="left" mapHeight=mapSize />
+		</div>
 
-<#if editable>
-<div class="glide">
-  <h3>Administrative Information</h3>
-  
-    <@common.resourceUsageInfo />
-  
-    <p><b>Collection Type:</b> ${resourceCollection.type.label}</p>
-    <p><b>Visible:</b> ${resourceCollection.visible?string}</p>
-    <p><b>Owner:</b> <a href="<@s.url value="/browse/creators/${resourceCollection.owner.id?c}"/>">${resourceCollection.owner}</a></p>
-    <#if resourceCollection.sortBy??><p><b>Sort by:</b> ${resourceCollection.sortBy.label}</p></#if>
-
-    <@view.authorizedUsers resourceCollection />
-</div>
-</#if>
+		<@search.basicPagination "Records" />
+	<#else>
+	This collection is either empty or you do not currently have permissions to view the contents.
+	</#if>
+		<#if editable>
+		  <h3>Administrative Information</h3>
+		  
+		    <@common.resourceUsageInfo />
+		  
+		    <p><b>Collection Type:</b> ${resourceCollection.type.label}</p>
+		    <p><b>Visible:</b> ${resourceCollection.visible?string}</p>
+		    <p><b>Owner:</b> <a href="<@s.url value="/browse/creators/${resourceCollection.owner.id?c}"/>">${resourceCollection.owner}</a></p>
+		    <#if resourceCollection.sortBy??><p><b>Sort by:</b> ${resourceCollection.sortBy.label}</p></#if>
+		
+		    <@view.authorizedUsers resourceCollection />
+		</#if>
 <#else>
 This collection is not accessible
 </#if>
+
 <script type='text/javascript'>
 $(document).ready(function(){
     $(initializeView);
