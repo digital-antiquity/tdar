@@ -476,19 +476,17 @@ public class SearchService {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private <T extends Persistable> void hydrateQueryParts(QueryGroup q) {
         List<AbstractHydrateableQueryPart> partList = findAllHydratableParts(q);
-        Map<Class, List<T>> lookupMap = new HashMap<Class, List<T>>();
+        Map<Class, Set<T>> lookupMap = new HashMap<Class, Set<T>>();
         // iterate through all of the values and get them into a map of <class -> Set<Item,..>
         for (int i = 0; i < partList.size(); i++) {
             Class<T> cls = (Class<T>) partList.get(i).getActualClass();
             if (lookupMap.get(cls) == null) {
-                lookupMap.put(cls, new ArrayList<T>());
+                lookupMap.put(cls, new HashSet<T>());
             }
             for (T fieldValue : (List<T>) partList.get(i).getFieldValues()) {
                 // T cast = (T) fieldValue;
                 if (Persistable.Base.isNotTransient(fieldValue)) {
                     lookupMap.get(cls).add(fieldValue);
-                } else {
-                    logger.trace("not adding {} ", fieldValue);
                 }
             }
         }
@@ -501,8 +499,6 @@ public class SearchService {
             } else {
                 hydrated = genericService.loadFromSparseEntities(lookupMap.get(cls), cls);
             }
-            logger.trace("toLookup: {} {} result: {}", cls, lookupMap.get(cls), hydrated);
-
             idLookupMap.put(cls, (Map<Long, Persistable>) Persistable.Base.createIdMap(hydrated));
         }
 
@@ -514,12 +510,9 @@ public class SearchService {
                 T fieldValue = (T) part.getFieldValues().get(j);
                 if (Persistable.Base.isNotTransient(fieldValue)) {
                     part.getFieldValues().set(j, idLookupMap.get(cls).get(fieldValue.getId()));
-                } else {
-                    logger.info("not adding: {} ", idLookupMap.get(cls),fieldValue);
                 }
             }
             part.update();
-            logger.trace("final result: {}", part);
         }
     }
 
