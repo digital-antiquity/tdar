@@ -50,7 +50,7 @@ TDAR.fileupload = function() {
             }
         }, _options));
         
-        var $filesContainer = $fileupload.fileupload('option', 'fileContainer');
+        var $filesContainer = $fileupload.fileupload('option', 'filesContainer');
         
         $fileupload.bind("fileuploadcompleted", _updateReplaceButtons);
         $fileupload.bind("fileuploadcompleted", _updateReminder);
@@ -110,7 +110,40 @@ TDAR.fileupload = function() {
         //dynamically generate the replace-with dropdown list items with the the candidate replacement files
         $fileupload.on("click", "button.replace-button", _buildReplaceDropdown);
         
-        //console.log("register() done")
+        
+        var helper = {
+                context: $fileupload,
+                updateFileAction: _updateFileAction,
+                //list of existing and new files that are not deleted or serving as a file replacement
+                validFiles: function() {
+                    var $rows = $filesContainer.find('tr.template-download').not('.replace-target, .deleted-file');
+                    
+                    var files = $rows.map(function(){
+                        var file = {};
+                        $(this).find('[type=hidden]').each(function(){
+                            file[$(this).attr("class")] = $(this).val();
+                        });
+                        file.context = $(this);
+                        return file;
+                    }).get();
+                    
+                    //translate property names and add extension
+                    files = $.map(files, function(file){
+                        return {
+                            id: parseInt(file.fileId),
+                            action: file.fileAction,
+                            filename: file.fileReplaceName,
+                            sequence: parseInt(file.fileSequenceNumber),
+                            ext:  file.fileReplaceName.substring(file.fileReplaceName.lastIndexOf(".") + 1).toLowerCase(),
+                            context: file.context
+                        }
+                    });
+                    return files;
+                }
+        };
+        
+        $(_options.formSelector).data('fileuploadHelper', helper);
+        return helper;
     };
     
     
