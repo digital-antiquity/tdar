@@ -74,7 +74,14 @@
       <result name="login" type="redirect">/login</result>
       <result name="error" type="freemarker">/WEB-INF/content/errors/error.ftl</result>
       <result name="badrequest" type="freemarker">/WEB-INF/content/errors/error.ftl</result>
+      <!-- 
       <result name="exception" type="freemarker">/WEB-INF/content/errors/exception.ftl</result>
+       -->
+       <!-- good: we send propper http error code(so google doesn't keep this page).  Bad: user gets ugly page with no helpful message.  -->
+      <result name="exception" type="httpheader">
+          <param name="error">500</param>
+          <param name="errorMessage">The system experienced an unhandled exception</param>       
+      </result>
       <result name="unauthorized" type="freemarker">/WEB-INF/content/errors/unauthorized.ftl</result>
       <result name="gone" type="freemarker">/WEB-INF/content/errors/resource-deleted.ftl</result>
       <result name="not_found" type="freemarker">/WEB-INF/content/errors/page-not-found.ftl</result>
