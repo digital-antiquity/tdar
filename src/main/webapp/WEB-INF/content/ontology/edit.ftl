@@ -79,8 +79,6 @@ Core
 
 <@edit.resourceNoteSection />
 
-<@edit.accountSection />
-
 <@edit.fullAccessRights />
 
 <@edit.submit  fileReminder=false />

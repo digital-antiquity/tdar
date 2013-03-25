@@ -1,13 +1,19 @@
 package org.tdar.web;
 
 import java.util.HashMap;
+import java.util.Iterator;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.tdar.TestConstants;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
+
+import com.gargoylesoftware.htmlunit.ElementNotFoundException;
+import com.gargoylesoftware.htmlunit.html.DomElement;
+import com.gargoylesoftware.htmlunit.html.HtmlElement;
 
 @RunWith(MultipleTdarConfigurationRunner.class)
 @RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.properties", "src/test/resources/tdar.ahad.properties" })
@@ -49,5 +55,65 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
         assertTextPresent(DESCRIPTION);
 
     }
+    
+    
+    private void chooseFirstBillingAccount() {
+        HtmlElement input = null;
+        try {
+            input = getInput("accountId");
+        } catch (ElementNotFoundException ex) {}
+        if(input == null) return;
+        
+        //get the 2nd option which is the first billing account
+        Iterator<DomElement> options = input.getChildElements().iterator();
+        options.next();  //skip the blank
+        DomElement option = options.next();
+        String accountId = option.getAttribute("value");
+        setInput("accountId", accountId);
+    }
+    
+    public void assertViewPage() {
+        String url = internalPage.getUrl().toString();
+        Assert.assertTrue("expecting to be on the view page.  actual page is: " + url, url.matches("^.*\\d+$"));
+    }
+    
+    public void fillOutRequiredfields(String prefix) {
+        setInput(prefix + ".title", "minimal test");
+        setInput(prefix + ".date", "2002");
+        //setInput("accountId", "???");
+        setInput(prefix + ".description", "testing");
+        setInput("projectId", "-1");
+    }
+
+    //create a resource with only required field values.  assert that we land on the view page.  This will hopefully weed out silly
+    //mistakes like omitting necessary form field or duplicating a form field.
+    public void createMinimalResource(String url, String prefix) {
+        gotoPage(url);
+        chooseFirstBillingAccount();
+        fillOutRequiredfields(prefix);
+        submitForm();
+        assertViewPage();
+    }
+    
+    public void createMinimalResource(String url, String prefix, String textInput) {
+        gotoPage(url);
+        chooseFirstBillingAccount();
+        fillOutRequiredfields(prefix);
+        setInput("fileTextInput", textInput);
+        submitForm();
+        assertViewPage();
+        
+    }
+    
+    @Test
+    public void testMinimalCreate() {
+        createMinimalResource("/document/add", "document");
+        createMinimalResource("/image/add", "image");
+        createMinimalResource("/coding-sheet/add", "codingSheet", "doh, a female dear\nfa, a long long way to run\n");
+        createMinimalResource("/ontology/add", "ontology", "level1\n\tlevel2\n");
+        createMinimalResource("/sensory-data/add", "sensoryData");
+        createMinimalResource("/dataset/add", "dataset");
+    }
+    
 
 }
