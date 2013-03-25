@@ -179,5 +179,19 @@ public class PersonITCase extends AbstractIntegrationTestCase {
             assertEquals(persistedPerson.hashCode(), person.hashCode());
         }
     }
+    
+    @Test
+    @Rollback
+    //this test is a bit more academic, but is another examlple of where our hashcode/equals implementation fails.
+    //per java docs: if A == B is true, and B==C is true, then A == C should be true
+    public void testPersonTransitiveEquality() {
+        Person a = new Person("Loblaw", "Bob", "bob.loblaw@compuserve.net");
+        Person b = new Person("Loblaw", "Bob", "bob.loblaw@compuserve.net");
+        Person c = new Person("Loblaw", "Bob", "bob.loblaw@compuserve.net");
+        genericService.save(b);
+        assertEquals("a should equal b", a, b);
+        assertEquals("b should equal c", b, c);
+        assertEquals("a should equal c", a, c);
+    }
 
 }
