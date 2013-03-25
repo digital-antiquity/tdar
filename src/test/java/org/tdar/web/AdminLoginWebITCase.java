@@ -1,6 +1,7 @@
 package org.tdar.web;
 
 import org.junit.Test;
+import org.tdar.TestConstants;
 
 /**
  * @author Adam Brin
@@ -8,6 +9,13 @@ import org.junit.Test;
  */
 public class AdminLoginWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
+    private static final String ENTITY_INSTITUTION_EDIT = "/entity/institution/%s/edit";
+
+    @Test
+    public void testInstitutionEdit() {
+        gotoPage(String.format(ENTITY_INSTITUTION_EDIT,TestConstants.TEST_INSTITUTION_ID));
+        submitForm();
+    }
     @Test
     public void testAdminLogin() {
         assertTextPresentInPage("Admin");

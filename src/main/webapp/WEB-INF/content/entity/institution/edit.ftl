@@ -2,7 +2,7 @@
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
 <head>
-    <#if (id!-1 > 0 )>
+    <#if (id?has_content && id > 0 )>
         <title>Editing ${institution.name}</title>
     <#else>
         <title>Add a new Institution</title>
