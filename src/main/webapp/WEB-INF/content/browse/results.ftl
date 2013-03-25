@@ -83,17 +83,27 @@
                 </tr>
                 </table>
 
+				
                 <@common.resourceUsageInfo />
 
 				<#if (editor || id == authenticatedUser.id) >
-				<h3>Addresses</h3>
-				<div class="row">
-					<#list creator.addresses  as address>
-					    <div class="span3">
-					        <@common.printAddress  address=address creatorType=creator.creatorType?lower_case creatorId=creator.id />
-					    </div>
-					</#list>
-				</div>
+				<p><strong>Groups</strong></p>
+				<ul>
+				<#list groups as group>
+					<li>${group}</li>
+				</#list>
+				</ul>
+				
+					<#if creator.addresses?has_content >
+					<h3>Addresses</h3>
+					<div class="row">
+						<#list creator.addresses  as address>
+						    <div class="span3">
+						        <@common.printAddress  address=address creatorType=creator.creatorType?lower_case creatorId=creator.id />
+						    </div>
+						</#list>
+					</div>
+					</#if>
 				</#if>
             </#if>
 		<br/>        

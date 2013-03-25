@@ -529,5 +529,9 @@ public class AuthenticationAndAuthorizationService extends AbstractConfigurableS
         return false;
     }
 
+    public Collection<String> getGroupMembership(Person person) {
+        return Arrays.asList(getAuthenticationProvider().findGroupMemberships(person));
+    }
+
 
 }

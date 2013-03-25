@@ -37,11 +37,12 @@ public class PersonController extends AbstractCreatorController<Person> {
     private String password;
     private String confirmPassword;
     private List<Account> accounts;
-    
+    private List<String> groups = new ArrayList<String>();
+
     @Autowired
     ObfuscationService obfuscationService;
 
-    @Action(value="myprofile", results={
+    @Action(value = "myprofile", results = {
             @Result(name = SUCCESS, location = "edit.ftl")
     })
     @HttpsOnly
@@ -51,7 +52,7 @@ public class PersonController extends AbstractCreatorController<Person> {
         prepare();
         return edit();
     }
-    
+
     @Override
     protected String save(Person person) {
         validateAndProcessPasswordChange();
@@ -148,6 +149,9 @@ public class PersonController extends AbstractCreatorController<Person> {
     @Override
     public String loadViewMetadata() {
         // nothing to do here, the person record was already loaded by prepare()
+        if (isEditor()) {
+            getGroups().addAll(getAuthenticationAndAuthorizationService().getGroupMembership(getPerson()));
+        }
         return SUCCESS;
     }
 
@@ -215,13 +219,21 @@ public class PersonController extends AbstractCreatorController<Person> {
     public void setNewUsername(String newUserName) {
         this.newUsername = newUserName;
     }
-    
+
     public List<Account> getAccounts() {
-        if(accounts == null) {
+        if (accounts == null) {
             accounts = new ArrayList<Account>();
             accounts.addAll(getAccountService().listAvailableAccountsForUser(getAuthenticatedUser()));
         }
         return accounts;
+    }
+
+    public List<String> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(List<String> groups) {
+        this.groups = groups;
     }
 
 }
