@@ -30,7 +30,7 @@
                 <@s.select theme="tdar" value="institution.status" name='status'  emptyOption='false' listValue='label' list='%{statuses}'/>
             </div>  
         </div>
-
+		</#if>
 
         <br /><@s.textfield name="institution.location" label="Location" id="txtLocation" cssClass="input-xlarge"  maxlength=255 />
         <br /><@s.textfield name="institution.url" label="Website" id="txtUrl" cssClass="input-xlarge url"  maxlength=255 />
