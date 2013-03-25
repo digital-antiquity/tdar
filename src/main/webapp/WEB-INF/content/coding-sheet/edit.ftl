@@ -135,8 +135,6 @@
 <@edit.resourceNoteSection />
 <@helptext.resourceCreator />
 
-<@edit.accountSection />
-
 <@edit.fullAccessRights />
 
 <@edit.submit  fileReminder=false  />

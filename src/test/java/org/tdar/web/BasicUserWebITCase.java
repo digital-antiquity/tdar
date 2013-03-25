@@ -2,6 +2,7 @@ package org.tdar.web;
 
 import java.util.HashMap;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.tdar.TestConstants;
@@ -49,5 +50,49 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
         assertTextPresent(DESCRIPTION);
 
     }
+    
+    
+    
+    public void assertViewPage() {
+        String url = internalPage.getUrl().toString();
+        Assert.assertTrue("expecting to be on the view page.  actual page is: " + url, url.matches("^.*\\d+$"));
+    }
+    
+    public void fillOutRequiredfields(String prefix) {
+        setInput(prefix + ".title", "minimal test");
+        setInput(prefix + ".date", "2002");
+        //setInput("accountId", "???");
+        setInput(prefix + ".description", "testing");
+        setInput("projectId", "-1");
+    }
+
+    //create a resource with only required field values.  assert that we land on the view page.  This will hopefully weed out silly
+    //mistakes like omitting necessary form field or duplicating a form field.
+    public void createMinimalResource(String url, String prefix) {
+        gotoPage(url);
+        fillOutRequiredfields(prefix);
+        submitForm();
+        assertViewPage();
+    }
+    
+    public void createMinimalResource(String url, String prefix, String textInput) {
+        gotoPage(url);
+        fillOutRequiredfields(prefix);
+        setInput("fileTextInput", textInput);
+        submitForm();
+        assertViewPage();
+        
+    }
+    
+    @Test
+    public void testMinimalCreate() {
+        createMinimalResource("/document/add", "document");
+        createMinimalResource("/image/add", "image");
+        createMinimalResource("/coding-sheet/add", "codingSheet", "doh, a female dear\nfa, a long long way to run\n");
+        createMinimalResource("/ontology/add", "ontology", "level1\n\tlevel2\n");
+        createMinimalResource("/sensory-data/add", "sensoryData");
+        createMinimalResource("/dataset/add", "dataset");
+    }
+    
 
 }
