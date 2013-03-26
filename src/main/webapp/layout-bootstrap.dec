@@ -58,7 +58,7 @@
                 <#include "${themeDir}/header.dec" />
                 <#if (authenticatedUser??) > 
 
-                    <p class="welcome no-print ">
+                    <p id="welcome-menu" class="welcome no-print ">
                         Welcome back, <a href="">${authenticatedUser.properName}</a>
                     </p>
     
@@ -241,7 +241,7 @@ ${_stacktrace?html}
         //functionality for "welcome back, so-and-so!" (pulled from main.js)
         //FIXME: needs refactoring
         $(function(){
-            $(".welcome a").click(function(){
+            $("#welcome-menu a").click(function(){
                 $(".welcome-drop").toggle();
                 return false;
             });
