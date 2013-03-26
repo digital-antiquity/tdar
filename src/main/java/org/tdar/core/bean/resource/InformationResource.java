@@ -1024,7 +1024,7 @@ public abstract class InformationResource extends Resource {
     public List<InformationResourceFile> getFilesWithProcessingErrors() {
         List<InformationResourceFile> files = new ArrayList<InformationResourceFile>();
         for (InformationResourceFile file : getInformationResourceFiles()) {
-            if (file.getStatus() == FileStatus.PROCESSING_ERROR) {
+            if (file.getStatus() == FileStatus.PROCESSING_ERROR || file.getStatus() == FileStatus.PROCESSING_WARNING) {
                 files.add(file);
             }
         }

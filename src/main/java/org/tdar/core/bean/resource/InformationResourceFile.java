@@ -107,7 +107,8 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         // whether or not this InformationResourceFile has been converted into postgres
         PROCESSED,
         DELETED,
-        PROCESSING_ERROR;
+        PROCESSING_ERROR,
+        PROCESSING_WARNING;
     }
 
     @ManyToOne(optional = false)

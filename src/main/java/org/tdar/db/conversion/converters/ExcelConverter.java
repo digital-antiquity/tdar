@@ -75,12 +75,11 @@ public class ExcelConverter extends DatasetConverter.Base {
             workbook = WorkbookFactory.create(new FileInputStream(excelFile));
         } catch (InvalidFormatException exception) {
             logger.debug("cannot read excel file (invalid format)", exception);
-            String errorMessage = "Couldn't create workbook from "
-                    + excelFile.getAbsolutePath();
+            String errorMessage = "Couldn't create workbook from " + excelFile.getAbsolutePath();
             logger.error(errorMessage, exception);
             throw new TdarRecoverableRuntimeException(errorMessage, exception);
         } catch (IllegalArgumentException exception) {
-            logger.error("Couldn't create workbook, likely due to invalid Excel file or Excel 2003 file.",exception);
+            logger.error("Couldn't create workbook, likely due to invalid Excel file or Excel 2003 file.", exception);
             throw new TdarRecoverableRuntimeException(
                     ERROR_WRONG_EXCEL_FORMAT,
                     exception);
@@ -106,7 +105,7 @@ public class ExcelConverter extends DatasetConverter.Base {
 
         List<Exception> exceptions = new ArrayList<Exception>();
         int numberOfActualSheets = 0;
-        for (int sheetIndex = numberOfSheets -1; sheetIndex >= 0; sheetIndex--) {
+        for (int sheetIndex = numberOfSheets - 1; sheetIndex >= 0; sheetIndex--) {
             // skip empty sheets
             Sheet currentSheet = workbook.getSheetAt(sheetIndex);
             String sheetName = workbook.getSheetName(sheetIndex);
@@ -206,7 +205,7 @@ public class ExcelConverter extends DatasetConverter.Base {
             Row currentRow = currentSheet.getRow(rowIndex);
             if (currentRow == null)
                 continue;
-            
+
             if (currentRow.getFirstCellNum() < 0)
                 continue;
 

@@ -32,10 +32,7 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
         String orig = "SCIDD_Storage_Basin_Phase_2DR_redacted_pages.pdf";
         File origFile = new File(baseDir, orig);
         WorkflowContext ctx = new WorkflowContext();
-        ctx.setWorkingDirectory(new File(
-                // FileUtils.getTempDirectoryPath()
-                System.getProperty("java.io.tmpdir")
-                ));
+        ctx.setWorkingDirectory(new File(System.getProperty("java.io.tmpdir")));
         task.setWorkflowContext(ctx);
         InformationResourceFileVersion vers = new InformationResourceFileVersion(VersionType.UPLOADED, origFile.getName(), 1, -1L, -1L);
         ctx.setOriginalFile(vers);
@@ -117,6 +114,7 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
             if (document.isEncrypted()) {
                 getLogger().info("access permissions: " + document.getCurrentAccessPermission());
                 getLogger().info("security manager: " + document.getSecurityHandler());
+                getWorkflowContext().setErrorFatal(true);
                 throw new TdarRecoverableRuntimeException(ENCRYPTION_WARNING);
             }
 
@@ -128,6 +126,7 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
             // }
             getWorkflowContext().setNumPages(document.getNumberOfPages());
         } catch (IOException e) {
+            getWorkflowContext().setErrorFatal(true);
             getLogger().info("IO Exception ocurred", e);
             // } catch (CryptographyException ce) {
             // getLogger().info(ce);

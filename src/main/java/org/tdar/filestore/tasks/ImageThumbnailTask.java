@@ -94,6 +94,7 @@ public class ImageThumbnailTask extends AbstractTask {
         }
         if (ijSource == null) {
             getLogger().debug("Unable to load source image: " + sourceFile);
+            getWorkflowContext().setErrorFatal(true);
             throw new TdarRecoverableRuntimeException("Please check that the image you uploaded is ok: " + msg);
         } else {
             if (getWorkflowContext().getResourceType().hasDemensions()) {
