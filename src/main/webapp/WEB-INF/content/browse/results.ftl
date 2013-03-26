@@ -87,7 +87,7 @@
                 <@common.resourceUsageInfo />
 
 				<#if (editor || id == authenticatedUser.id) >
-				<p><strong>Groups</strong></p>
+				<p><strong>Group Membership</strong></p>
 				<ul>
 				<#list groups as group>
 					<li>${group}</li>

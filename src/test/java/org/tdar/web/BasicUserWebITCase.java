@@ -7,6 +7,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.resource.LicenseType;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
@@ -22,7 +24,6 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
     private static final String TITLE = "title of a test document";
     private static final String TESTCOLLECTIONNAME = "TESTCOLLECTIONNAME";
 
-
     @Test
     public void testDraftPermissions() {
         gotoPage("/document/add");
@@ -35,7 +36,7 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
         docValMap.put("document.date", "1923");
         docValMap.put("status", "DRAFT");
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-//            docValMap.put(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+            // docValMap.put(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
             docValMap.put(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
         }
         for (String key : docValMap.keySet()) {
@@ -45,75 +46,98 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
         assertTextPresent(TESTCOLLECTIONNAME);
         clickLinkWithText(TESTCOLLECTIONNAME);
         assertTextPresent(TITLE);
-        gotoPage("/search/results?query="+DESCRIPTION);
+        gotoPage("/search/results?query=" + DESCRIPTION);
         assertTextPresent(TITLE);
         assertTextPresent(DESCRIPTION); // should be in the "search description"
         logout();
-        gotoPageWithoutErrorCheck("/search/results?includedStatuses=DRAFT&useSubmitterContext=true&query="+DESCRIPTION);
+        gotoPageWithoutErrorCheck("/search/results?includedStatuses=DRAFT&useSubmitterContext=true&query=" + DESCRIPTION);
         assertTextNotPresent(TITLE);
         assertErrorsPresent();
         assertTextPresent(DESCRIPTION);
 
     }
-    
-    
+
     private void chooseFirstBillingAccount() {
         HtmlElement input = null;
-        try {
-            input = getInput("accountId");
-        } catch (ElementNotFoundException ex) {}
-        if(input == null) return;
-        
-        //get the 2nd option which is the first billing account
+        if (getTdarConfiguration().getInstance().isPayPerIngestEnabled()) {
+            try {
+                input = getInput("accountId");
+            } catch (ElementNotFoundException ex) {
+            }
+        } else {
+            Assert.assertTrue("there should be no accountId input if pay-per-ingest is enabled", input == null);
+        }
+        if (input == null)
+            return;
+
+        // get the 2nd option which is the first billing account
         Iterator<DomElement> options = input.getChildElements().iterator();
-        options.next();  //skip the blank
+        options.next(); // skip the blank
         DomElement option = options.next();
         String accountId = option.getAttribute("value");
         setInput("accountId", accountId);
     }
-    
+
     public void assertViewPage() {
         String url = internalPage.getUrl().toString();
         Assert.assertTrue("expecting to be on the view page.  actual page is: " + url, url.matches("^.*\\d+$"));
     }
-    
-    public void fillOutRequiredfields(String prefix) {
+
+    public void fillOutRequiredfields(ResourceType resourceType) {
+        String prefix = resourceType.getFieldName();
         setInput(prefix + ".title", "minimal test");
-        setInput(prefix + ".date", "2002");
-        //setInput("accountId", "???");
+        if (!resourceType.isProject()) {
+            if (getInput("projectId") == null) {
+                logger.info(getPageBodyCode());
+            }
+            setInput("projectId", "-1");
+            setInput(prefix + ".date", "2002");
+            if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
+                setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
+            }
+        } else {
+
+//            if (TdarConfiguration.getInstance().getLicenseEnabled()) {
+//                setInput("resource.licenseType", LicenseType.OTHER.name());
+//                setInput("resource.licenseText", "my custom license");
+//            }
+        }
         setInput(prefix + ".description", "testing");
-        setInput("projectId", "-1");
     }
 
-    //create a resource with only required field values.  assert that we land on the view page.  This will hopefully weed out silly
-    //mistakes like omitting necessary form field or duplicating a form field.
-    public void createMinimalResource(String url, String prefix) {
-        gotoPage(url);
+    // create a resource with only required field values. assert that we land on the view page. This will hopefully weed out silly
+    // mistakes like omitting necessary form field or duplicating a form field.
+    public void createMinimalResource(ResourceType resourceType) {
+        createMinimalResource(resourceType, null);
+    }
+
+    public void createMinimalResource(ResourceType resourceType, String textInput) {
+        String uri = String.format("/%s/add", resourceType.getUrlNamespace());
+        gotoPage(uri);
         chooseFirstBillingAccount();
-        fillOutRequiredfields(prefix);
+        fillOutRequiredfields(resourceType);
+        if (textInput != null) {
+            setInput("fileTextInput", textInput);
+        }
         submitForm();
         assertViewPage();
+
     }
-    
-    public void createMinimalResource(String url, String prefix, String textInput) {
-        gotoPage(url);
-        chooseFirstBillingAccount();
-        fillOutRequiredfields(prefix);
-        setInput("fileTextInput", textInput);
-        submitForm();
-        assertViewPage();
-        
-    }
-    
+
     @Test
     public void testMinimalCreate() {
-        createMinimalResource("/document/add", "document");
-        createMinimalResource("/image/add", "image");
-        createMinimalResource("/coding-sheet/add", "codingSheet", "doh, a female dear\nfa, a long long way to run\n");
-        createMinimalResource("/ontology/add", "ontology", "level1\n\tlevel2\n");
-        createMinimalResource("/sensory-data/add", "sensoryData");
-        createMinimalResource("/dataset/add", "dataset");
+        for (ResourceType resourceType : ResourceType.values()) {
+            if (resourceType.isSupporting()) {
+                if (resourceType.isCodingSheet()) {
+                    createMinimalResource(resourceType, "doh, a female dear\nfa, a long long way to run\n");
+                }
+                if (resourceType.isOntology()) {
+                    createMinimalResource(resourceType, "level1\n\tlevel2\n");
+                }
+            } else {
+                createMinimalResource(resourceType);
+            }
+        }
     }
-    
 
 }

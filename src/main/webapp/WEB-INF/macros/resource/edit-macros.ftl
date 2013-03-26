@@ -1124,7 +1124,7 @@ jquery validation hooks?)
           <@edit.license />
       </#if>
       <#if copyrightEnabled??>
-          <@edit.copyrightHolders />
+          <@edit.copyrightHolders "Copyright Holders" copyrightHolderProxies />
       </#if>
     </#if>
     <@resourceCreators 'Individual and Institutional Roles' creditProxies 'credit'  />
