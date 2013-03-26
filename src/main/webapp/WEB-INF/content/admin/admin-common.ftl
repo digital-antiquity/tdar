@@ -16,10 +16,10 @@
         <td><a href="<@s.url value="/admin/usage/stats"/>">Usage Statistics</a> </td>
         <td><a href="<@s.url value="/admin/user"/>">User Statistics</a> </td>
         <td><a href="<@s.url value="/admin/keyword-stats"/>">Keyword Statistics</a> </td>
-        <td><a href="<@s.url value="/admin/system/activity"/>">System Activity</a> </td>
         <td><a href="<@s.url value="/admin/contributors"/>">Contributor Requests</a></td>
 		<td><a href="<@s.url value="/admin/authority-management/index"/>">DeDupe</a></td>
         <#if administrator >
+        <td><a href="<@s.url value="/admin/system/activity"/>">System Activity</a> </td>
             <td><a href="<@s.url value="/admin/searchindex/build"/>">Reindex</a></td>
         </#if>
 </tr>
