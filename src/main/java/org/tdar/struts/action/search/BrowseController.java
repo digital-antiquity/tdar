@@ -27,7 +27,6 @@ import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.resource.Facetable;
-import org.tdar.core.bean.resource.VersionType;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.QueryBuilder;
@@ -70,6 +69,7 @@ public class BrowseController extends AbstractLookupController {
     private List<BrowseYearCountCache> scholarData;
     private List<BrowseDecadeCountCache> timelineData;
     private ResourceSpaceUsageStatistic totalResourceAccessStatistic;
+    private List<String> groups = new ArrayList<String>();
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
     private List<HomepageGeographicKeywordCache> geographicKeywordCache = new ArrayList<HomepageGeographicKeywordCache>();
     private List<HomepageResourceCountCache> homepageResourceCountCache = new ArrayList<HomepageResourceCountCache>();
@@ -130,6 +130,8 @@ public class BrowseController extends AbstractLookupController {
             queryBuilder.append(reservedSearchParameters);
 
             if (isEditor() && creator instanceof Person) {
+                getGroups().addAll(getAuthenticationAndAuthorizationService().getGroupMembership((Person)creator));
+
                 setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(Arrays.asList(getId()), null, null, null, null));
             }
 
@@ -275,6 +277,13 @@ public class BrowseController extends AbstractLookupController {
     public void setPersistable(Persistable persistable) {
         this.persistable = persistable;
     }
-    
+
+    public List<String> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(List<String> groups) {
+        this.groups = groups;
+    }
 
 }
