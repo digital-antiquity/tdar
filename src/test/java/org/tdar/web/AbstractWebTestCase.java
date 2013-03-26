@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -242,7 +243,11 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
     public HtmlElement getInput(String name) {
         HtmlPage page = (HtmlPage) internalPage;
-        return page.getElementByName(name);
+        try {
+            return page.getElementByName(name);
+        } catch (ElementNotFoundException nse) {
+            throw new NoSuchElementException(String.format("Input * with Name %s on page %s cannot be found",name, internalPage.getUrl().toString()));
+        }
     }
 
     public void setInput(String name, String value) {

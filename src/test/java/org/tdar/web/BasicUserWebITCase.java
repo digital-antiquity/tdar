@@ -59,12 +59,12 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
 
     private void chooseFirstBillingAccount() {
         HtmlElement input = null;
-        try {
-            input = getInput("accountId");
-        } catch (ElementNotFoundException ex) {
-        }
-
-        if (!getTdarConfiguration().isPayPerIngestEnabled()) {
+        if (getTdarConfiguration().getInstance().isPayPerIngestEnabled()) {
+            try {
+                input = getInput("accountId");
+            } catch (ElementNotFoundException ex) {
+            }
+        } else {
             Assert.assertTrue("there should be no accountId input if pay-per-ingest is enabled", input == null);
         }
         if (input == null)
@@ -86,18 +86,21 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
     public void fillOutRequiredfields(ResourceType resourceType) {
         String prefix = resourceType.getFieldName();
         setInput(prefix + ".title", "minimal test");
-        if (resourceType != ResourceType.PROJECT) {
+        if (!resourceType.isProject()) {
+            if (getInput("projectId") == null) {
+                logger.info(getPageBodyCode());
+            }
+            setInput("projectId", "-1");
             setInput(prefix + ".date", "2002");
             if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
                 setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
             }
-
-            if (TdarConfiguration.getInstance().getLicenseEnabled()) {
-                setInput("resource.licenseType", LicenseType.OTHER.name());
-                setInput("resource.licenseText", "my custom license");
-            }
         } else {
-            setInput("projectId", "-1");
+
+//            if (TdarConfiguration.getInstance().getLicenseEnabled()) {
+//                setInput("resource.licenseType", LicenseType.OTHER.name());
+//                setInput("resource.licenseText", "my custom license");
+//            }
         }
         setInput(prefix + ".description", "testing");
     }
@@ -125,10 +128,10 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
     public void testMinimalCreate() {
         for (ResourceType resourceType : ResourceType.values()) {
             if (resourceType.isSupporting()) {
-                if (resourceType == ResourceType.CODING_SHEET) {
+                if (resourceType.isCodingSheet()) {
                     createMinimalResource(resourceType, "doh, a female dear\nfa, a long long way to run\n");
                 }
-                if (resourceType == ResourceType.ONTOLOGY) {
+                if (resourceType.isOntology()) {
                     createMinimalResource(resourceType, "level1\n\tlevel2\n");
                 }
             } else {
