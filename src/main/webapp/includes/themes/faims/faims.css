@@ -152,6 +152,11 @@ form .required {
 	background-color: #FFC;
 }
 
+label .required {
+	color: red;
+	background-color:transparent;
+}
+
 /* following doesn't get picked up yet */
 form .required label:after {
 	color: #e32;
