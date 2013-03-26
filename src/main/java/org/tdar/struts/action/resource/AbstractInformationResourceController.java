@@ -42,6 +42,7 @@ import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.data.ResourceCreatorProxy;
 import org.tdar.utils.ExceptionWrapper;
 import org.tdar.utils.HashQueue;
+import org.tdar.utils.Pair;
 
 /**
  * $Id$
@@ -259,13 +260,20 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         ArrayList<InformationResourceFile> modifiedFiles = new ArrayList<InformationResourceFile>();
         PersonalFilestore filestore = filestoreService.getPersonalFilestore(getAuthenticatedUser());
 
-        List<ExceptionWrapper> exceptions = getInformationResourceService().processFileProxies(filestore, getPersistable(), fileProxiesToProcess,
+        Pair<List<ExceptionWrapper>, Boolean> exceptions = getInformationResourceService().processFileProxies(filestore, getPersistable(),
+                fileProxiesToProcess,
                 modifiedFiles, ticketId);
-        for (ExceptionWrapper exception : exceptions) {
-            addActionError(exception.getMessage());
-            getStackTraces().add(exception.getStackTrace());
+        if (exceptions.getSecond()) {
+            for (ExceptionWrapper exception : exceptions.getFirst()) {
+                addActionError(exception.getMessage());
+                getStackTraces().add(exception.getStackTrace());
+            }
+        } else {
+            for (ExceptionWrapper exception : exceptions.getFirst()) {
+                addActionMessage(exception.getMessage());
+                getStackTraces().add(exception.getStackTrace());
+            }
         }
-
         try {
             setResourceFilesHaveChanged(true);
             processUploadedFiles(modifiedFiles);

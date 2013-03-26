@@ -30,9 +30,11 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ServiceInterface;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.Filestore;
+import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.utils.ExceptionWrapper;
+import org.tdar.utils.Pair;
 
 /**
  * $Id: AbstractInformationResourceService.java 1466 2011-01-18 20:32:38Z abrin$
@@ -98,16 +100,21 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     }
 
     @Transactional
-    public List<ExceptionWrapper> processFileProxies(PersonalFilestore filestore, T resource, List<FileProxy> fileProxiesToProcess,
+    public Pair<List<ExceptionWrapper>, Boolean> processFileProxies(PersonalFilestore filestore, T resource, List<FileProxy> fileProxiesToProcess,
             List<InformationResourceFile> modifiedFiles, Long ticketId) {
         List<ExceptionWrapper> exceptionsAndMessages = new ArrayList<ExceptionWrapper>();
+        Pair<List<ExceptionWrapper>, Boolean> toReturn = new Pair<List<ExceptionWrapper>, Boolean>(exceptionsAndMessages, false);
         for (FileProxy fileProxy : fileProxiesToProcess) {
             try {
                 InformationResourceFile file = processFileProxy(resource, fileProxy);
                 if (file != null) {
                     modifiedFiles.add(file);
-                    if (file.getWorkflowContext() != null) {
-                        List<ExceptionWrapper> exceptions = file.getWorkflowContext().getExceptions();
+                    WorkflowContext context = file.getWorkflowContext();
+                    if (context != null) {
+                        if (context.isErrorFatal()) {
+                            toReturn.setSecond(true);
+                        }
+                        List<ExceptionWrapper> exceptions = context.getExceptions();
                         logger.info("EXCEPTIONS: {}", exceptions);
                         exceptionsAndMessages.addAll(exceptions);
                     }
@@ -121,7 +128,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
             filestore.purge(getDao().find(PersonalFilestoreTicket.class, ticketId));
 
         }
-        return exceptionsAndMessages;
+        return toReturn;
     }
 
     @Transactional
