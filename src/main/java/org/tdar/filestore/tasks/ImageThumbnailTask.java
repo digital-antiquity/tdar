@@ -86,6 +86,10 @@ public class ImageThumbnailTask extends AbstractTask {
         Opener opener = new Opener();
         opener.setSilentMode(true);
         IJ.redirectErrorMessages(true);
+        if (sourceFile == null || !sourceFile.exists()) {
+            getWorkflowContext().setErrorFatal(true);
+            throw new TdarRecoverableRuntimeException("File does not exist");
+        }
         ijSource = opener.openImage(sourceFile.getAbsolutePath());
 
         String msg = IJ.getErrorMessage();
@@ -94,7 +98,9 @@ public class ImageThumbnailTask extends AbstractTask {
         }
         if (ijSource == null) {
             getLogger().debug("Unable to load source image: " + sourceFile);
-            getWorkflowContext().setErrorFatal(true);
+            if (!msg.contains("Note: IJ cannot open CMYK JPEGs")) {
+                getWorkflowContext().setErrorFatal(true);
+            }
             throw new TdarRecoverableRuntimeException("Please check that the image you uploaded is ok: " + msg);
         } else {
             if (getWorkflowContext().getResourceType().hasDemensions()) {
@@ -135,7 +141,7 @@ public class ImageThumbnailTask extends AbstractTask {
         try {
             outputFilename = URLEncoder.encode(outputFilename, "UTF-8");
         } catch (Exception e) {
-            getLogger().debug("exception writing derivative image:",e);
+            getLogger().debug("exception writing derivative image:", e);
         }
         File outputPath = new File(getWorkflowContext().getWorkingDirectory(), outputFilename);
 
@@ -180,7 +186,7 @@ public class ImageThumbnailTask extends AbstractTask {
         try {
             outputStream = new FileOutputStream(outputFile);
         } catch (FileNotFoundException e) {
-            getLogger().debug("exception writing derivative image:",e);
+            getLogger().debug("exception writing derivative image:", e);
         }
 
         try {
