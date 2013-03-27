@@ -414,7 +414,7 @@ public abstract class InformationResource extends Resource {
     public int getTotalNumberOfFiles() {
         return informationResourceFiles.size();
     }
-    
+
     public int getTotalNumberOfActiveFiles() {
         int count = 0;
         for (InformationResourceFile file : informationResourceFiles) {
@@ -528,7 +528,7 @@ public abstract class InformationResource extends Resource {
         List<URI> fileURIs = new ArrayList<URI>();
         for (InformationResourceFile irFile : files) {
             try {
-                if (irFile.getRestriction() != FileAccessRestriction.PUBLIC)
+                if (irFile.getRestriction().isRestricted())
                     continue;
                 InformationResourceFileVersion indexableVersion = irFile.getIndexableVersion();
                 if (indexableVersion.getFile().exists()) {
@@ -944,7 +944,7 @@ public abstract class InformationResource extends Resource {
     public List<InformationResourceFile> getVisibleFiles() {
         ArrayList<InformationResourceFile> visibleFiles = new ArrayList<InformationResourceFile>();
         for (InformationResourceFile irfile : getInformationResourceFiles()) {
-            if (irfile.isViewable() && !irfile.isDeleted() ) {
+            if (irfile.isViewable() && !irfile.isDeleted()) {
                 visibleFiles.add(irfile);
             }
         }

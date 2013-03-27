@@ -10,6 +10,8 @@
 <title>${resourceCollection.name!"untitled collection"}</title>
 <meta name="lastModifiedDate" content="$Date$"/>
 <@view.canonical resourceCollection />
+<#assign rssUrl>/search/rss?groups[0].fieldTypes[0]=COLLECTION&groups[0].collections[0].id=${resourceCollection.id?c}&groups[0].collections[0].name=${(resourceCollection.name!"untitled")?url}</#assign>
+<@search.rssUrlTag url=rssUrl />
 
 </head>
 <body>
