@@ -102,7 +102,6 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         assertTrue(controller.getResults().contains(e));
     }
 
-
     @Test
     @Rollback(true)
     public void testInvisibleCollectionLookupFoundByBasicUser() {
@@ -337,7 +336,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         List<Indexable> resources = controller.getResults();
         assertTrue("at least one document", resources.size() >= 1);
     }
-    
+
     @Test
     public void testResourceLookupByProjectId() {
         searchIndexService.indexAll(Resource.class);
@@ -531,7 +530,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         searchIndexService.indexAll(Person.class);
         // "log out"
         controller = generateNewController(LookupController.class);
-        initAnonymousUserinit(controller);
+        initAnonymousUser(controller);
         controller.setRecordsPerPage(Integer.MAX_VALUE);
         controller.setMinLookupLength(0);
         controller.lookupPerson();
@@ -557,10 +556,10 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         assertEquals(email, jim.getEmail());
 
     }
-    
+
     @Test
     @Rollback
-    //special characters need to be escaped or stripped prior to search
+    // special characters need to be escaped or stripped prior to search
     public void testLookupWithSpecialCharactors() {
         setTextFields("l[]bl aw\\");
         controller.setMinLookupLength(0);
@@ -570,9 +569,8 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         controller.lookupResource();
         controller.lookupResourceCollection();
     }
-    
-    
-    //we don't care about making sense,  we just want to catch parsing errors.
+
+    // we don't care about making sense, we just want to catch parsing errors.
     private void setTextFields(String str) {
         controller.setFirstName(str);
         controller.setLastName(str);
@@ -581,6 +579,5 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         controller.setTerm(str);
         controller.setTitle(str);
     }
-    
 
 }

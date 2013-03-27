@@ -73,11 +73,11 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         genericService.saveOrUpdate(collection);
         Long collectionId = collection.getId();
         collection = null;
-        collection = genericService.findAllWithProfile(ResourceCollection.class, Arrays.asList(collectionId),"simple").get(0);
+        collection = genericService.findAllWithProfile(ResourceCollection.class, Arrays.asList(collectionId), "simple").get(0);
         for (Resource resource : collection.getResources()) {
-            logger.info("{} {} " , resource, resource.getSubmitter());
+            logger.info("{} {} ", resource, resource.getSubmitter());
         }
-        
+
     }
 
     @Test
@@ -555,7 +555,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         assertFalse(collections.contains(childCollectionHidden));
         controller = generateNewController(CollectionController.class);
         // TESTING ANONYMOUS USER
-        initAnonymousUserinit(controller);
+        initAnonymousUser(controller);
         controller.setId(parentCollection.getId());
         controller.prepare();
         assertEquals(TdarActionSupport.SUCCESS, controller.view());
@@ -700,7 +700,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         assertEquals(getUser(), first.getOwner());
         assertEquals(1, first.getResources().size());
     }
-    
+
     @Test
     @Rollback
     public void testDocumentControllerAssigningResourceCollectionsWithLocalRights() throws Exception
@@ -786,7 +786,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         assertTrue(controller.getResults().contains(activeDocument));
 
         controller = generateNewController(CollectionController.class);
-        initAnonymousUserinit(controller);
+        initAnonymousUser(controller);
         controller.setId(collection.getId());
         controller.prepare();
         controller.view();
@@ -1073,7 +1073,6 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         assertTrue("resource should be viewable", ((Viewable) controller.getResults().get(0)).isViewable());
     }
 
-    
     @Test
     public void testResourceCollectionRightsRevoking() throws TdarActionException {
         Person registeredUser = createAndSaveNewPerson("testDraftResourceVisibleByAuthuser", "foo");
@@ -1091,7 +1090,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         assertEquals(TdarActionSupport.SUCCESS, result);
         Long rcid = controller.getPersistable().getId();
         // confirm resource is viewable by author of collection
-        controller = generateNewInitializedController(CollectionController.class,registeredUser);
+        controller = generateNewInitializedController(CollectionController.class, registeredUser);
         controller.setId(rcid);
         controller.prepare();
         controller.edit();
@@ -1099,22 +1098,22 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         controller.setServletRequest(getServletPostRequest());
         controller.setAsync(false);
         result = controller.save();
-        
+
         // make sure it draft resource can't be seen by registered user (but not an authuser)
         controller = generateNewInitializedController(CollectionController.class, registeredUser);
         controller.setId(rcid);
         controller.prepare();
-        boolean seen =false;
+        boolean seen = false;
         try {
             controller.edit();
         } catch (Exception e) {
-            seen =true;
-            logger.warn("error",e);
+            seen = true;
+            logger.warn("error", e);
         }
         assertTrue(seen);
         ignoreActionErrors(true);
     }
-    
+
     @Test
     public void testResourceCollectionRightsRevokingHier() throws TdarActionException {
         Person registeredUser = createAndSaveNewPerson("testDraftResourceVisibleByAuthuser", "foo");
@@ -1132,7 +1131,6 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         assertEquals(TdarActionSupport.SUCCESS, result);
         Long rcid = controller.getPersistable().getId();
 
-        
         controller = generateNewInitializedController(CollectionController.class, getUser());
         controller.prepare();
         ResourceCollection rcChild = controller.getPersistable();
@@ -1147,10 +1145,8 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         assertEquals(TdarActionSupport.SUCCESS, result);
         Long rcid2 = controller.getPersistable().getId();
 
-        
-        
         // confirm resource is viewable by author of collection
-        controller = generateNewInitializedController(CollectionController.class,registeredUser);
+        controller = generateNewInitializedController(CollectionController.class, registeredUser);
         controller.setId(rcid2);
         controller.prepare();
         controller.edit();
@@ -1158,17 +1154,17 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         controller.setServletRequest(getServletPostRequest());
         controller.setAsync(false);
         result = controller.save();
-        
+
         // make sure it draft resource can't be seen by registered user (but not an authuser)
         controller = generateNewInitializedController(CollectionController.class, registeredUser);
         controller.setId(rcid2);
         controller.prepare();
-        boolean seen =false;
+        boolean seen = false;
         try {
             controller.edit();
         } catch (Exception e) {
-            seen =true;
-            logger.warn("error",e);
+            seen = true;
+            logger.warn("error", e);
         }
         assertTrue(seen);
         ignoreActionErrors(true);
@@ -1190,7 +1186,6 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         assertEquals(TdarActionSupport.SUCCESS, result);
         Long rcid = controller.getPersistable().getId();
 
-        
         controller = generateNewInitializedController(CollectionController.class, getUser());
         controller.prepare();
         ResourceCollection rcChild = controller.getPersistable();
@@ -1205,20 +1200,19 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         assertEquals(TdarActionSupport.SUCCESS, result);
         Long rcid2 = controller.getPersistable().getId();
 
-        
         /*
          * This test is expected to fail in-that hierarchical collection "owners" have no rights implicitly.
          * Change this test when we figure out what "should" change in package-info
          */
-        controller = generateNewInitializedController(CollectionController.class,registeredUser);
+        controller = generateNewInitializedController(CollectionController.class, registeredUser);
         controller.setId(rcid2);
         controller.prepare();
-        boolean seen =false;
+        boolean seen = false;
         try {
             controller.edit();
         } catch (Exception e) {
-            seen =true;
-            logger.warn("error",e);
+            seen = true;
+            logger.warn("error", e);
         }
         assertTrue(seen);
         ignoreActionErrors(true);

@@ -70,6 +70,7 @@ import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Project;
@@ -289,8 +290,13 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     }
 
     public InformationResource addFileToResource(InformationResource ir, File file) {
+        return addFileToResource(ir, file, FileAccessRestriction.PUBLIC);
+    }
+
+    public InformationResource addFileToResource(InformationResource ir, File file, FileAccessRestriction restriction) {
         try {
             FileProxy proxy = new FileProxy(file.getName(), file, VersionType.UPLOADED, FileAction.ADD);
+            proxy.setRestriction(restriction);
             informationResourceService.processFileProxy(ir, proxy);
             // informationResourceService.addOrReplaceInformationResourceFile(ir, new FileInputStream(file), file.getName(), FileAction.ADD,
             // VersionType.UPLOADED);
@@ -483,7 +489,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         init(controller, getSessionUser());
     }
 
-    protected void initAnonymousUserinit(TdarActionSupport controller) {
+    protected void initAnonymousUser(TdarActionSupport controller) {
         init(controller, null);
     }
 
