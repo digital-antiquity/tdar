@@ -625,8 +625,10 @@ No coding rules have been entered for this coding sheet yet.
 </#macro>
 
 <#macro infoResourceBasicInformation>
-<#local files = resource.filesWithProcessingErrors />
-
+<#local files = resource.filesWithFatalProcessingErrors />
+<#if editor>
+	<#local files = resource.filesWithProcessingErrors />
+</#if>
 <#if (files?size > 0 ) && authenticatedUser??  && (administrator || editable) >
 <div class="alert alert-error">
 <h3>The following Files have Processing Errors</h3>

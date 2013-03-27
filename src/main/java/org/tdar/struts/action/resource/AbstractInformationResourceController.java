@@ -261,8 +261,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         PersonalFilestore filestore = filestoreService.getPersonalFilestore(getAuthenticatedUser());
 
         Pair<List<ExceptionWrapper>, Boolean> exceptions = getInformationResourceService().processFileProxies(filestore, getPersistable(),
-                fileProxiesToProcess,
-                modifiedFiles, ticketId);
+                fileProxiesToProcess, modifiedFiles, ticketId);
         if (exceptions.getSecond()) {
             for (ExceptionWrapper exception : exceptions.getFirst()) {
                 addActionError(exception.getMessage());
