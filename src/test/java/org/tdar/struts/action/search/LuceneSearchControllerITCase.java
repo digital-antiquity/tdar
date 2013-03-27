@@ -27,10 +27,10 @@ import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.SearchIndexService;
 import org.tdar.junit.TdarAssert;
@@ -128,8 +128,6 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         assertTrue(controller.getResults().contains(document));
         assertTrue(controller.getResults().get(0).equals(document) || controller.getResults().get(1).equals(document));
     }
-    
-    
 
     @Test
     @Rollback(true)
@@ -442,11 +440,11 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
     @Test
     @Rollback
     public void testLookupResourceWithDateRegisteredRange() throws InstantiationException, IllegalAccessException {
-        // From the Hibernate documentation: 
-        // "The default Date bridge uses Lucene's DateTools to convert from and to String. This means that all dates are expressed in GMT time." 
+        // From the Hibernate documentation:
+        // "The default Date bridge uses Lucene's DateTools to convert from and to String. This means that all dates are expressed in GMT time."
         // The Joda DateMidnight defaults to DateTimeZone.getDefault(). Which is probably *not* GMT
         // So for the tests below to work in, say, Australia, we need to force the DateMidnight to the GMT time zone...
-        // ie: 
+        // ie:
         // DateTimeZone dtz = DateTimeZone.forID("Australia/Melbourne");
         // will break this test.
         DateTimeZone dtz = DateTimeZone.forID("GMT");
@@ -459,7 +457,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         Document document2 = createAndSaveNewInformationResource(Document.class, createAndSaveNewPerson("lookuptest2@mailinator.com", ""));
         DateMidnight dm2 = new DateMidnight(2002, 11, 1, dtz);
         document2.setDateCreated(dm2.toDate());
-        
+
         genericService.saveOrUpdate(document1, document2);
         searchIndexService.index(document1, document2);
 
@@ -470,7 +468,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         firstGroup().getRegisteredDates().add(dateRange);
 
         doSearch("");
-        
+
         assertTrue(controller.getResults().contains(document1));
         assertTrue(controller.getResults().contains(document2));
 
@@ -480,7 +478,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         firstGroup().getRegisteredDates().add(dateRange);
 
         doSearch("");
-        
+
         assertTrue(controller.getResults().contains(document1));
         assertFalse(controller.getResults().contains(document2));
     }
@@ -511,13 +509,12 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         doSearch("\"test ( abc ");
     }
 
-
     @Test
     @Rollback(true)
     public void testAttachedFileSearch() throws InstantiationException, IllegalAccessException {
         String resourceTitle = "33-Cu-314";
         Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
-        addFileToResource(document,new File(TestConstants.TEST_DOCUMENT_DIR + "test-file.rtf"));
+        addFileToResource(document, new File(TestConstants.TEST_DOCUMENT_DIR + "test-file.rtf"));
         searchIndexService.index(document);
         firstGroup().setContents(Arrays.asList("fun"));
         doSearch("");
@@ -531,13 +528,12 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
 
     }
 
-
     @Test
     @Rollback(true)
     public void testConfidentialFileSearch() throws InstantiationException, IllegalAccessException {
         String resourceTitle = "33-Cu-314";
         Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
-        addFileToResource(document,new File(TestConstants.TEST_DOCUMENT_DIR + "test-file.rtf"),FileAccessRestriction.CONFIDENTIAL);
+        addFileToResource(document, new File(TestConstants.TEST_DOCUMENT_DIR + "test-file.rtf"), FileAccessRestriction.CONFIDENTIAL);
         searchIndexService.index(document);
         controller = generateNewController(AdvancedSearchController.class);
         initAnonymousUser(controller); // Anonymous user cannot find text in contents
@@ -553,5 +549,4 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
 
     }
 
-    
 }

@@ -16,6 +16,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser.Operator;
@@ -141,6 +142,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     private ArrayList<ResourceAccessType> fileAccessFacets = new ArrayList<ResourceAccessType>();
     private ArrayList<IntegratableOptions> integratableOptionFacets = new ArrayList<IntegratableOptions>();
 
+    private String latLongBox;
     // we plan to support some types of legacy requests. For example, the old
     // querystring format for id searches, basic search, and search by keyword
     // we will do this by having the same setter names as the old search
@@ -316,7 +318,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         // search on the same querystring)
 
         // legacy search by id?
-        if (getId() != null) {
+        if (Persistable.Base.isNotNullOrTransient(getId())) {
             logger.trace("legacy api:  tdar id");
             groups.clear();
             groups.add(new SearchParameters());
@@ -325,6 +327,11 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             return true;
         }
 
+        LatitudeLongitudeBox latLong = getParsedLatLongBox();
+        if (latLong != null) {
+            setMap(latLong);
+        }
+        
         // legacy search by keyword
         // at the time of this writing the view layer only created links for
         // culture, site type, and siteName keywords. everything else
@@ -344,6 +351,28 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         }
 
         return false;
+    }
+
+    private LatitudeLongitudeBox getParsedLatLongBox() {
+        if (StringUtils.isNotBlank(getLatLongBox())) {
+            String[] latLong = StringUtils.split(getLatLongBox(), ",");
+            if (latLong == null || latLong.length < 4) {
+                return null;
+            }
+            for (String num : latLong) {
+                if (!NumberUtils.isNumber(num)) {
+                    return null;
+                }
+            }
+
+            LatitudeLongitudeBox box = new LatitudeLongitudeBox();
+            box.setMinx(Double.parseDouble(latLong[0]));
+            box.setMiny(Double.parseDouble(latLong[1]));
+            box.setMaxx(Double.parseDouble(latLong[2]));
+            box.setMaxy(Double.parseDouble(latLong[3]));
+            return box;
+        }
+        return null;
     }
 
     private String advancedSearch() {
@@ -976,6 +1005,14 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
     public void setHideFacetsAndSort(boolean hideFacetsAndSort) {
         this.hideFacetsAndSort = hideFacetsAndSort;
+    }
+
+    public String getLatLongBox() {
+        return latLongBox;
+    }
+
+    public void setLatLongBox(String latLongBox) {
+        this.latLongBox = latLongBox;
     }
 
 }

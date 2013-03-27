@@ -293,7 +293,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return addFileToResource(ir, file, FileAccessRestriction.PUBLIC);
     }
 
-    public InformationResource addFileToResource(InformationResource ir, File file,FileAccessRestriction restriction) {
+    public InformationResource addFileToResource(InformationResource ir, File file, FileAccessRestriction restriction) {
         try {
             FileProxy proxy = new FileProxy(file.getName(), file, VersionType.UPLOADED, FileAction.ADD);
             proxy.setRestriction(restriction);
