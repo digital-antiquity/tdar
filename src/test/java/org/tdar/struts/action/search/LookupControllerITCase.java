@@ -531,7 +531,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         searchIndexService.indexAll(Person.class);
         // "log out"
         controller = generateNewController(LookupController.class);
-        initAnonymousUserinit(controller);
+        initAnonymousUser(controller);
         controller.setRecordsPerPage(Integer.MAX_VALUE);
         controller.setMinLookupLength(0);
         controller.lookupPerson();

@@ -30,6 +30,7 @@ import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.SearchIndexService;
 import org.tdar.junit.TdarAssert;
@@ -529,6 +530,28 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         assertTrue(controller.getResults().contains(document));
 
     }
-    
+
+
+    @Test
+    @Rollback(true)
+    public void testConfidentialFileSearch() throws InstantiationException, IllegalAccessException {
+        String resourceTitle = "33-Cu-314";
+        Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
+        addFileToResource(document,new File(TestConstants.TEST_DOCUMENT_DIR + "test-file.rtf"),FileAccessRestriction.CONFIDENTIAL);
+        searchIndexService.index(document);
+        controller = generateNewController(AdvancedSearchController.class);
+        initAnonymousUser(controller); // Anonymous user cannot find text in contents
+        firstGroup().setContents(Arrays.asList("fun"));
+        doSearch("");
+        logger.info("results:{}", controller.getResults());
+        assertFalse(controller.getResults().contains(document));
+        reset(); // user who uploaded cannot see resource with full-text either
+        firstGroup().setContents(Arrays.asList("have fun digging"));
+        doSearch("");
+        logger.info("results:{}", controller.getResults());
+        assertFalse(controller.getResults().contains(document));
+
+    }
+
     
 }

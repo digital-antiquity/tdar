@@ -555,7 +555,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         assertFalse(collections.contains(childCollectionHidden));
         controller = generateNewController(CollectionController.class);
         // TESTING ANONYMOUS USER
-        initAnonymousUserinit(controller);
+        initAnonymousUser(controller);
         controller.setId(parentCollection.getId());
         controller.prepare();
         assertEquals(TdarActionSupport.SUCCESS, controller.view());
@@ -786,7 +786,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         assertTrue(controller.getResults().contains(activeDocument));
 
         controller = generateNewController(CollectionController.class);
-        initAnonymousUserinit(controller);
+        initAnonymousUser(controller);
         controller.setId(collection.getId());
         controller.prepare();
         controller.view();
