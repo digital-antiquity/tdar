@@ -86,13 +86,17 @@
     </#if>
 </#macro>
 
+<#macro rssUrlTag url>
+	<link rel="alternate" type="application/atom+xml" title="Atom 1.0" href="<@s.url value="${url}" />" />
+</#macro>
+
 
 <#macro headerLinks includeRss=false>
   <meta name="totalResults" content="${totalRecords}" />
   <meta name="startIndex" content="${startRecord}" />
   <meta name="itemsPerPage" content="${recordsPerPage}" />
   <#if includeRss>
-  <link rel="alternate" type="application/atom+xml" title="Atom 1.0" href="${rssUrl}" />
+  <@rssUrlTag url=rssUrl />
   </#if>
     <#-- if id parameter was added to querystring via urlrewrite inbound rule, we need to remove it when rendering relative url's  -->
     <#local path = "">

@@ -101,7 +101,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     private static final String COULD_NOT_PROCESS_CREATOR_SEARCH = "could not process creator search";
     private static final int MAX_CREATOR_RECORDS_TO_RESOLVE = 10;
     private boolean hideFacetsAndSort = false;
-    
+
     @Autowired
     private RssService rssService;
     @Autowired
@@ -286,8 +286,8 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             setSecondarySortField(SortOption.TITLE);
             setMode("rss");
             search();
-            setSearchTitle(getSearchSubtitle());
-            setSearchDescription(StringEscapeUtils.escapeXml(getSearchPhrase()));
+            setSearchTitle(getSearchSubtitle() + ": " + StringEscapeUtils.escapeXml(getSearchPhrase()));
+            setSearchDescription(TdarConfiguration.getInstance().getSiteAcronym() + " search results: " + StringEscapeUtils.escapeXml(getSearchPhrase()));
             setInputStream(rssService.createRssFeedFromResourceList(
                     getSessionData().getPerson(), this, getRecordsPerPage(),
                     getStartRecord(), getTotalRecords(), getRssUrl()));
@@ -443,10 +443,10 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         logger.trace("result: {} ", proxies);
     }
 
-    //this is a no-op if basic search not detected
+    // this is a no-op if basic search not detected
     private boolean processBasicSearchParameters() {
         boolean isBasic = StringUtils.isNotBlank(query);
-        if(isBasic) {
+        if (isBasic) {
             SearchParameters terms = new SearchParameters();
             terms.setOperator(Operator.AND);
             terms.getAllFields().add(query);
@@ -484,18 +484,18 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     public String execute() {
         return SUCCESS;
     }
-    
-    @Action(value="advanced")
+
+    @Action(value = "advanced")
     public String advanced() {
-        //process query paramter or legacy parameters, if present.
+        // process query paramter or legacy parameters, if present.
         processBasicSearchParameters();
         processLegacySearchParameters();
-        
-        //if refining a search, make sure we inflate any deflated terms
-        for(SearchParameters sp : groups) {
+
+        // if refining a search, make sure we inflate any deflated terms
+        for (SearchParameters sp : groups) {
             getSearchService().inflateSearchParameters(sp);
         }
-        
+
         return SUCCESS;
     }
 
@@ -541,18 +541,15 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     }
 
     public List<InvestigationType> getAllInvestigationTypes() {
-        return getGenericKeywordService().findAllWithCache(
-                InvestigationType.class);
+        return getGenericKeywordService().findAllWithCache(InvestigationType.class);
     }
 
     public KeywordNode<CultureKeyword> getAllApprovedCultureKeywords() {
-        return KeywordNode.organizeKeywords(getGenericKeywordService()
-                .findAllApprovedWithCache(CultureKeyword.class));
+        return KeywordNode.organizeKeywords(getGenericKeywordService().findAllApprovedWithCache(CultureKeyword.class));
     }
 
     public KeywordNode<SiteTypeKeyword> getAllApprovedSiteTypeKeywords() {
-        return KeywordNode.organizeKeywords(getGenericKeywordService()
-                .findAllApprovedWithCache(SiteTypeKeyword.class));
+        return KeywordNode.organizeKeywords(getGenericKeywordService().findAllApprovedWithCache(SiteTypeKeyword.class));
     }
 
     List<MaterialKeyword> allMaterialKeywords;
@@ -562,8 +559,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     public List<MaterialKeyword> getAllMaterialKeywords() {
 
         if (CollectionUtils.isEmpty(allMaterialKeywords)) {
-            allMaterialKeywords = getGenericKeywordService().findAllWithCache(
-                    MaterialKeyword.class);
+            allMaterialKeywords = getGenericKeywordService().findAllWithCache(MaterialKeyword.class);
             Collections.sort(allMaterialKeywords);
         }
         return allMaterialKeywords;
@@ -669,15 +665,16 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         getReservedSearchParameters().getDocumentTypes().add(doctype);
     }
 
-    //when translating legacysearch, we need to set the field types so that the 'refine your search' feature works
+    // when translating legacysearch, we need to set the field types so that the 'refine your search' feature works
     private void setLegacyFieldtypes(SearchFieldType fieldType, List<?> list) {
-        if(list.size()==0)return;
+        if (list.size() == 0)
+            return;
         legacySearchParameters.getFieldTypes().clear();
-        for(int i = 0; i < list.size(); i++) {
+        for (int i = 0; i < list.size(); i++) {
             legacySearchParameters.getFieldTypes().add(fieldType);
         }
     }
-    
+
     // legacy keyword lookup support
     public void setSiteNameKeywords(List<String> kwds) {
         legacySearchParameters.setSiteNames(kwds);
