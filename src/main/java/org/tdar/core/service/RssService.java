@@ -140,7 +140,7 @@ public class RssService implements Serializable {
                         entry.setAuthors(authors);
                     }
                     LatitudeLongitudeBox latLong = resource.getFirstActiveLatitudeLongitudeBox();
-                    if (latLong != null) {
+                    if (latLong != null && authenticationAndAuthorizationService.isAdministrator(user)) {
                         GeoRSSModule geoRss = new W3CGeoModuleImpl();
                         geoRss.setLatitude(latLong.getCenterLatitude());
                         geoRss.setLatitude(latLong.getCenterLongitude());
