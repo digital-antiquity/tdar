@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.OaiDcProvider;
 import org.tdar.core.bean.Viewable;
+import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.resource.InformationResource;
@@ -38,6 +39,9 @@ import org.tdar.search.query.SearchResultHandler;
 
 import com.sun.syndication.feed.atom.Link;
 import com.sun.syndication.feed.module.Module;
+import com.sun.syndication.feed.module.georss.GeoRSSModule;
+import com.sun.syndication.feed.module.georss.GeoRSSUtils;
+import com.sun.syndication.feed.module.georss.W3CGeoModuleImpl;
 import com.sun.syndication.feed.module.opensearch.OpenSearchModule;
 import com.sun.syndication.feed.module.opensearch.impl.OpenSearchModuleImpl;
 import com.sun.syndication.feed.synd.SyndContent;
@@ -97,7 +101,7 @@ public class RssService implements Serializable {
         osm.setItemsPerPage(recordsPerPage);
         osm.setStartIndex(startRecord);
         osm.setTotalResults(totalRecords);
-
+        
         Link link = new Link();
         link.setHref(urlService.getBaseUrl() + "/includes/opensearch.xml");
         link.setType("application/opensearchdescription+xml");
@@ -135,6 +139,14 @@ public class RssService implements Serializable {
                     if (authors.size() > 0) {
                         entry.setAuthors(authors);
                     }
+                    LatitudeLongitudeBox latLong = resource.getFirstActiveLatitudeLongitudeBox();
+                    if (latLong != null) {
+                        GeoRSSModule geoRss = new W3CGeoModuleImpl();
+                        geoRss.setLatitude(latLong.getCenterLatitude());
+                        geoRss.setLatitude(latLong.getCenterLongitude());
+                        entry.getModules().add(geoRss);
+                    }
+                    
                     if (resource_ instanceof InformationResource && ((InformationResource) resource_).getLatestUploadedVersions().size() > 0) {
                         for (InformationResourceFile file : ((InformationResource) resource_).getVisibleFiles()) {
                             addEnclosure(user, entry, file.getLatestUploadedVersion());
