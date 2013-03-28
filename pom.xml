@@ -301,11 +301,11 @@
 			<version>0.1</version>
 		</dependency>
 		<dependency>
-			<groupId>rome</groupId>
-			<artifactId>georss</artifactId>
-			<version>0.1</version>
+			<groupId>org.geonames</groupId>
+			<artifactId>georss-rome</artifactId>
+			<version>0.9.8</version>
 		</dependency>
-		<!-- <dependency> <groupId>com.thoughtworks.xstream</groupId> <artifactId>xstream</artifactId> 
+            		<!-- <dependency> <groupId>com.thoughtworks.xstream</groupId> <artifactId>xstream</artifactId> 
 			<version>1.4.3</version> </dependency> -->		<!-- Spring LDAP -->
 		<dependency>
 			<groupId>org.springframework.ldap</groupId>
