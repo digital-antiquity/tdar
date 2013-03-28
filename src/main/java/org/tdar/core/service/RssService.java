@@ -69,7 +69,7 @@ public class RssService implements Serializable {
     private static final long serialVersionUID = 8223380890944917677L;
 
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
-    public static final Pattern INVALID_XML_CHARS = Pattern.compile("[\u0001\u0009\\u000A\\u000D\uD800\uDFFF]");
+    public static final Pattern INVALID_XML_CHARS = Pattern.compile("[\u0001\u0009\u0018\\u000A\\u000D\uD800\uDFFF]");
     // \uDC00-\uDBFF -\uD7FF\uE000-\uFFFD
 
     @Autowired
@@ -176,8 +176,8 @@ public class RssService implements Serializable {
     }
 
     public static String stripInvalidXMLCharacters(String text) {
-        Pattern INVALID_XML_CHARS = Pattern.compile("[^\\u0009\\u0018\\u000A\\u000D\\u0020-\\uD7FF\\uE000-\\uFFFD\uD800\uDC00-\uDBFF\uDFFF]");
-        return INVALID_XML_CHARS.matcher(text).replaceAll("");
+        Pattern VALID_XML_CHARS = Pattern.compile("[^\\u0009\\u0018\\u000A\\u000D\\u0020-\\uD7FF\\uE000-\\uFFFD\uD800\uDC00-\uDBFF\uDFFF]");
+        return VALID_XML_CHARS.matcher(text).replaceAll("");
     }
 
     @SuppressWarnings("unchecked")

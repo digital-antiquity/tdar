@@ -17,13 +17,20 @@ public class XMLCharMatcherTest {
         Matcher matcher = RssService.INVALID_XML_CHARS.matcher(tst);
         assertTrue(matcher.matches());
     }
+    
+    @Test
+    public void testControl() {
+        String tst = "\u0018";
+        Matcher matcher = RssService.INVALID_XML_CHARS.matcher(tst);
+        assertTrue(matcher.matches());
+    }
 
     @Test
     public void testValidChar() {
         String tst = "abc1";
         Matcher matcher = RssService.INVALID_XML_CHARS.matcher(tst);
         assertFalse(matcher.matches());
-        assertEquals(tst, RssService.cleanStringForXML(tst));
+        assertEquals(tst, RssService.stripInvalidXMLCharacters(tst));
     }
 
 }
