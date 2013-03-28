@@ -67,7 +67,7 @@ pre, td {
     	<#assign highlight=true />
 	</#if>
 	<#if activity.name?contains("POST") >
-		highlightPost=true
+		<#assign highlightPost=true />
 	</#if>
      <tr class="${highlight?string('highlightrow-yellow','')} ${highlightPost?string('highlightrow-green','')}">
         <td>${activity.startDate?datetime}</td>
