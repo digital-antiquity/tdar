@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.OaiDcProvider;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Person;
@@ -41,7 +42,7 @@ import com.sun.syndication.feed.atom.Link;
 import com.sun.syndication.feed.module.Module;
 import com.sun.syndication.feed.module.georss.GMLModuleImpl;
 import com.sun.syndication.feed.module.georss.GeoRSSModule;
-import com.sun.syndication.feed.module.georss.geometries.Position;
+import com.sun.syndication.feed.module.georss.geometries.Envelope;
 import com.sun.syndication.feed.module.opensearch.OpenSearchModule;
 import com.sun.syndication.feed.module.opensearch.impl.OpenSearchModuleImpl;
 import com.sun.syndication.feed.synd.SyndContent;
@@ -140,9 +141,10 @@ public class RssService implements Serializable {
                         entry.setAuthors(authors);
                     }
                     LatitudeLongitudeBox latLong = resource.getFirstActiveLatitudeLongitudeBox();
-                    if (latLong != null && authenticationAndAuthorizationService.isAdministrator(user)) {
+                    if (latLong != null && Persistable.Base.isNotNullOrTransient(user)) {
                         GeoRSSModule geoRss = new GMLModuleImpl();
-                        geoRss.setPosition(new Position(latLong.getCenterLatitude(), latLong.getCenterLongitude()));
+                        geoRss.setGeometry(new Envelope(latLong.getMinObfuscatedLatitude(), latLong.getMinObfuscatedLongitude(), latLong
+                                .getMaxObfuscatedLatitude(), latLong.getMaxObfuscatedLongitude()));
                         entry.getModules().add(geoRss);
                     }
 
