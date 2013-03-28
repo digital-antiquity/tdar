@@ -32,6 +32,7 @@ import org.tdar.filestore.tasks.Task.AbstractTask;
  */
 public class ImageThumbnailTask extends AbstractTask {
 
+    public static final String ERROR_PROCESSING_COULD_NOT_OPEN = "Please check that the image you uploaded is ok: ";
     private static final long serialVersionUID = -108766461810056577L;
     private static final String JPG_FILE_EXT = ".jpg";
     public static final int LARGE = 600;
@@ -101,7 +102,8 @@ public class ImageThumbnailTask extends AbstractTask {
             if (!msg.contains("Note: IJ cannot open CMYK JPEGs")) {
                 getWorkflowContext().setErrorFatal(true);
             }
-            throw new TdarRecoverableRuntimeException("Please check that the image you uploaded is ok: " + msg);
+
+            throw new TdarRecoverableRuntimeException(ERROR_PROCESSING_COULD_NOT_OPEN + msg);
         } else {
             if (getWorkflowContext().getResourceType().hasDemensions()) {
                 InformationResourceFileVersion origVersion = getWorkflowContext().getOriginalFile();

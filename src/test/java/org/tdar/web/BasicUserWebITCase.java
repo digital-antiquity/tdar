@@ -1,13 +1,14 @@
 package org.tdar.web;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.tdar.TestConstants;
-import org.tdar.core.bean.resource.LicenseType;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
@@ -16,6 +17,7 @@ import org.tdar.junit.RunWithTdarConfiguration;
 import com.gargoylesoftware.htmlunit.ElementNotFoundException;
 import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
+
 
 @RunWith(MultipleTdarConfigurationRunner.class)
 @RunWithTdarConfiguration(runWith = { "src/test/resources/tdar.properties", "src/test/resources/tdar.ahad.properties" })
@@ -65,7 +67,7 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
             } catch (ElementNotFoundException ex) {
             }
         } else {
-            Assert.assertTrue("there should be no accountId input if pay-per-ingest is enabled", input == null);
+            assertTrue("there should be no accountId input if pay-per-ingest is enabled", input == null);
         }
         if (input == null)
             return;
@@ -80,7 +82,12 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
 
     public void assertViewPage() {
         String url = internalPage.getUrl().toString();
-        Assert.assertTrue("expecting to be on the view page.  actual page is: " + url, url.matches("^.*\\d+$"));
+        assertTrue("expecting to be on the view page.  actual page is: " + url, url.matches("^.*\\d+$"));
+    }
+    
+    public void assertEditPageForInputResult() {
+        String url = internalPage.getUrl().toString();
+        assertTrue("expecting to be on the edit page due to INPUT result.  actual page is: " + url, url.matches(".*save.action.*"));
     }
 
     public void fillOutRequiredfields(ResourceType resourceType) {
@@ -95,15 +102,10 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
             if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
                 setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
             }
-        } else {
-
-//            if (TdarConfiguration.getInstance().getLicenseEnabled()) {
-//                setInput("resource.licenseType", LicenseType.OTHER.name());
-//                setInput("resource.licenseText", "my custom license");
-//            }
         }
         setInput(prefix + ".description", "testing");
     }
+    
 
     // create a resource with only required field values. assert that we land on the view page. This will hopefully weed out silly
     // mistakes like omitting necessary form field or duplicating a form field.
@@ -138,6 +140,21 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
                 createMinimalResource(resourceType);
             }
         }
+    }
+    
+    @Test
+    public void testTicketIdAfterValidationFail() {
+        String ticketId = getPersonalFilestoreTicketId();
+        gotoPage("/image/add");
+        logger.debug("\n\nbody page \n\n{}\n\n\n");
+        fillOutRequiredfields(ResourceType.IMAGE);
+        setInput("ticketId", ticketId);
+        //set the ticket id, but not necessary to add a file.
+        setInput("image.title", "");
+        submitForm();
+        assertEditPageForInputResult();
+        String newTicketId = getInput("ticketId").getAttribute("value");
+        assertEquals("ticketId should be same as original edit form", ticketId, newTicketId);
     }
 
 }

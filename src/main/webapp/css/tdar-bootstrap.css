@@ -1386,8 +1386,16 @@ img.responsive-image {
 }
 
 
-.highlightrow td {
+.highlightrow-yellow td {
 	background: lightgoldenrodyellow !important;
+}
+
+.highlightrow-green td {
+	background: honeydew !important;
+}
+
+.highlightrow-blue td {
+	background: lightblue !important;
 }
 
 /* fancy double-border for top of search results. */

@@ -49,13 +49,11 @@ public class OpenSearchWebITCase extends AbstractWebTestCase {
     }
 
     private String searchUrlElementText() {
-        return "<Url type=\"text/html\" template=\"http://" + CONFIG.getHostName()
-                + "/search/search?query={searchTerms}&amp;resourceType={custom:resourceTypes?}\" />";
+        return "http://" + CONFIG.getHostName();
     }
 
     private String atomUrlElementText() {
-        return "<Url type=\"application/atom+xml\" template=\"http://" + CONFIG.getHostName()
-                + "/search/rss?query={searchTerms}&amp;resourceType={custom:resourceTypes?}\" />";
+        return "<Url type=\"application/atom+xml\" template=\"http://" + CONFIG.getHostName();
     }
 
     private String asXml(final String tagname, final String value) {

@@ -22,7 +22,13 @@ pre, td {
 <h3>Active Users</h3>
 <ul>
 	<#list activePeople as user>
-	<li><a href="<@s.url value="/browse/creators/${user.id?c}"/>">${user.properName}</a></li>
+	<li>
+	<#if user?has_content>
+	<a href="<@s.url value="/browse/creators/${user.id?c}"/>">${user.properName}</a></li>
+	<#else>
+	Unknown User
+	</#if>
+	</li>
 	</#list>
 </ul>
 
@@ -56,10 +62,14 @@ pre, td {
     <tbody>
     <#list activityList as activity>
     <#assign highlight = false/>
-    <#if activity.user?has_content || activity.name?contains("POST")>
+    <#assign highlightPost = false/>
+    <#if activity.user?has_content>
     	<#assign highlight=true />
 	</#if>
-     <tr class="${highlight?string('highlightrow','')}">
+	<#if activity.name?contains("POST") >
+		<#assign highlightPost=true />
+	</#if>
+     <tr class="${highlight?string('highlightrow-yellow','')} ${highlightPost?string('highlightrow-green','')}">
         <td>${activity.startDate?datetime}</td>
         <td><#if activity.user?has_content>${activity.user.properName}</#if></td>
         <td>${(activity.totalTime?c)!default("-")}</td>

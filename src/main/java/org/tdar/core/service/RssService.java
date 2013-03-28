@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.OaiDcProvider;
 import org.tdar.core.bean.Viewable;
+import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.resource.InformationResource;
@@ -38,6 +39,9 @@ import org.tdar.search.query.SearchResultHandler;
 
 import com.sun.syndication.feed.atom.Link;
 import com.sun.syndication.feed.module.Module;
+import com.sun.syndication.feed.module.georss.GMLModuleImpl;
+import com.sun.syndication.feed.module.georss.GeoRSSModule;
+import com.sun.syndication.feed.module.georss.geometries.Position;
 import com.sun.syndication.feed.module.opensearch.OpenSearchModule;
 import com.sun.syndication.feed.module.opensearch.impl.OpenSearchModuleImpl;
 import com.sun.syndication.feed.synd.SyndContent;
@@ -135,6 +139,13 @@ public class RssService implements Serializable {
                     if (authors.size() > 0) {
                         entry.setAuthors(authors);
                     }
+                    LatitudeLongitudeBox latLong = resource.getFirstActiveLatitudeLongitudeBox();
+                    if (latLong != null && authenticationAndAuthorizationService.isAdministrator(user)) {
+                        GeoRSSModule geoRss = new GMLModuleImpl();
+                        geoRss.setPosition(new Position(latLong.getCenterLatitude(), latLong.getCenterLongitude()));
+                        entry.getModules().add(geoRss);
+                    }
+
                     if (resource_ instanceof InformationResource && ((InformationResource) resource_).getLatestUploadedVersions().size() > 0) {
                         for (InformationResourceFile file : ((InformationResource) resource_).getVisibleFiles()) {
                             addEnclosure(user, entry, file.getLatestUploadedVersion());
@@ -165,7 +176,7 @@ public class RssService implements Serializable {
     }
 
     public static String stripInvalidXMLCharacters(String text) {
-        Pattern INVALID_XML_CHARS = Pattern.compile("[^\\u0009\\u000A\\u000D\\u0020-\\uD7FF\\uE000-\\uFFFD\uD800\uDC00-\uDBFF\uDFFF]");
+        Pattern INVALID_XML_CHARS = Pattern.compile("[^\\u0009\\u0018\\u000A\\u000D\\u0020-\\uD7FF\\uE000-\\uFFFD\uD800\uDC00-\uDBFF\uDFFF]");
         return INVALID_XML_CHARS.matcher(text).replaceAll("");
     }
 
