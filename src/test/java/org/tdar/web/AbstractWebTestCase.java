@@ -153,6 +153,23 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     protected WebClient getWebClient() {
         return webClient;
     }
+    
+    //TODO: implemnent this, if viable (not sure yet if it will be easy or crazy hard).
+    /**
+     * asserts whether current web page contains text that matches regex based on the provided reges. So, if format string is 
+     * 
+     * "Hello %s,  how are you doing this fine %s?"
+     * 
+     *  becomes...
+     *  
+     *  /.*Hello (.*?), how are you doing this fine (.*?)\?/i
+     *  
+     * @param formatString
+     */
+    public void assertContainsFormat(String formatString) {
+        fail("not implemented");
+    }
+    
 
     /**
      * Go to the specified page, with explicit assertions that the server did not return with a 500 error or contain any inline exception text
@@ -167,7 +184,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         assertNoErrorTextPresent();
         return statusCode;
     }
-
+    
     /**
      * Same as gotoPage(), but does not perform any assertions on the server response
      * 

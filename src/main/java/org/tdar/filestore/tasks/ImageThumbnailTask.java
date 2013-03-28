@@ -22,6 +22,7 @@ import javax.imageio.ImageIO;
 import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.VersionType;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.tasks.Task.AbstractTask;
@@ -31,8 +32,7 @@ import org.tdar.filestore.tasks.Task.AbstractTask;
  * 
  */
 public class ImageThumbnailTask extends AbstractTask {
-
-    public static final String ERROR_PROCESSING_COULD_NOT_OPEN = "Please check that the image you uploaded is ok: ";
+    public static final String FMT_ERROR_PROCESSING_COULD_NOT_OPEN = "%s is either corrupt or uses an invalid format (error:\"%s\")";
     private static final long serialVersionUID = -108766461810056577L;
     private static final String JPG_FILE_EXT = ".jpg";
     public static final int LARGE = 600;
@@ -89,13 +89,16 @@ public class ImageThumbnailTask extends AbstractTask {
         IJ.redirectErrorMessages(true);
         ijSource = opener.openImage(sourceFile.getAbsolutePath());
 
+        //log the whole error message but strip filestore path before it trickles up to end-user 
         String msg = IJ.getErrorMessage();
         if (StringUtils.isNotBlank(msg)) {
             getLogger().error(msg);
+            msg = stripPath(msg);
         }
         if (ijSource == null) {
-            getLogger().debug("Unable to load source image: " + sourceFile);
-            throw new TdarRecoverableRuntimeException(ERROR_PROCESSING_COULD_NOT_OPEN + msg);
+            getLogger().info("Unable to load source image: " + sourceFile);
+            String errorMessage = String.format(FMT_ERROR_PROCESSING_COULD_NOT_OPEN, sourceFile.getName(), msg);
+            throw new TdarRecoverableRuntimeException(errorMessage);
         } else {
             if (getWorkflowContext().getResourceType().hasDemensions()) {
                 InformationResourceFileVersion origVersion = getWorkflowContext().getOriginalFile();
@@ -112,6 +115,16 @@ public class ImageThumbnailTask extends AbstractTask {
                 throw new TdarRecoverableRuntimeException("processing error", e);
             }
         }
+    }
+   
+    private String stripPath(String errorMessage) {
+        String fsl = TdarConfiguration.getInstance().getFileStoreLocation();
+        String result = errorMessage;
+        int end = errorMessage.indexOf(fsl);
+        if(end > -1) {
+            result = errorMessage.substring(0, end);
+        }
+        return result;
     }
 
     File generateFilename(String originalFilename, int resolution) {

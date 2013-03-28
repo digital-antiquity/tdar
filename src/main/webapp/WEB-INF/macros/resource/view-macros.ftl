@@ -403,7 +403,7 @@ No coding rules have been entered for this coding sheet yet.
             <dd><p>${resource.status.label} <#if resource.previousStatus?has_content && resource.previousStatus != resource.status>(${resource.previousStatus.label})</#if></p></dd>
             </#if>
             <dt><p><strong>Last Updated by</strong></p></dt>
-            <dd><p><a href="<@s.url value="/browse/creators/${resource.updatedBy.id?c}"/>">${resource.updatedBy.properName!""}</a> on ${resource.dateUpdated?date!""}</p></dd>
+            <dd><p><a href="<@s.url value="/browse/creators/${resource.updatedBy.id?c}"/>">${resource.updatedBy.properName!""}</a> on ${resource.dateUpdated!(resource.dateCreated)}</p></dd>
             <dt><p><strong>Viewed</strong></p></dt>
             <dd><p>${resource.transientAccessCount!"0"} time(s)</p></dd>
         </dl>
