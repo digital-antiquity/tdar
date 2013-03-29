@@ -59,7 +59,7 @@ $(document).ready(function() {
     TDAR.common.initEditPage($('#MetadataForm')[0]);
     $(".transactionType[type=radio]").click(function() {switchType(this,'#MetadataForm');});
    if (!$(".transactionType[type=radio]:checked").length) {
-    $($(".transactionType[type=radio]")[0]).click();
+    $(".transactionType[type=radio]").first().click();
    }
    switchType($(".transactionType[type=radio]:checked",$('#MetadataForm')),"#MetadataForm");
    

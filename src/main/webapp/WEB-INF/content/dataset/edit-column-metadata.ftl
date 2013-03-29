@@ -95,7 +95,7 @@
   <!-- <small style="float:right">jump to: <a href="#top">top</a> | <a href="#submitButton">save</a></small> --></h3>
 
     <span tooltipcontent="#columnTypeToolTip" tiplabel="Column Type">
-    <@s.radio id='columnEncoding_${column_index}' name='dataTableColumns[${column_index}].columnEncodingType' label="Column Type:"
+    <@s.radio name='dataTableColumns[${column_index}].columnEncodingType' label="Column Type:"
     cssClass="columnEncoding" target="#columnDiv_${column_index}"
          listValue='label' emptyOption='false' list='%{allColumnEncodingTypes}'/>
     </span>

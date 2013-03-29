@@ -28,7 +28,7 @@
 
 <@edit.citationInfo "document">
     <div tiplabel="Document Type"  tooltipcontent="Select the document type. Appropriate citation fields will be displayed below." class="doctype">
-        <@s.radio name='document.documentType' id="documentType" emptyOption='false' listValue="label"  
+        <@s.radio name='document.documentType' emptyOption='false' listValue="label"  
             list='%{documentTypes}' label="Document Type" theme="bootstrap" />
     </div>
             
@@ -78,7 +78,7 @@
     </div>
 
     <div class="doctypeToggle thesis" id="t-degree">
-        <@s.radio name='document.degree' label="Degree" id="degreeType" emptyOption='false' listValue="label"  list='%{degrees}' />
+        <@s.radio name='document.degree' label="Degree" emptyOption='false' listValue="label"  list='%{degrees}' />
     </div> 
           
     <div tooltipcontent="Actual physical location of a copy of the document, e.g. an agency, repository, or library." tiplabel="Copy Location">

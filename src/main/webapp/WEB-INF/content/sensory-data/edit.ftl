@@ -74,7 +74,7 @@ value="<#if sensoryData.surveyDateEnd??><@view.shortDate sensoryData.surveyDateE
  </style>
 
 
-<@s.radio name='sensoryData.scanType' id="scanType" emptyOption='false' listValue="label"  
+<@s.radio name='sensoryData.scanType' emptyOption='false' listValue="label"  
             list='%{scannerTechnologyTypes}' label="Scan Type" theme="bootstrap" />
 
 <div class="well">
