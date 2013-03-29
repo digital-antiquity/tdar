@@ -29,7 +29,7 @@ public class ResourceCreatorRoleTestCase {
 
     @Test
     public void testWhatever() {
-        HashSet<Person> personSet = new HashSet<>();
+        HashSet<Person> personSet = new HashSet<Person>();
         for (int i = 1; i < 3; i++) {
             Person person = new Person();
             Long lng = new Long(i);
