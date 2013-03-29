@@ -290,9 +290,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             search();
             setSearchTitle(getSearchSubtitle() + ": " + StringEscapeUtils.escapeXml(getSearchPhrase()));
             setSearchDescription(TdarConfiguration.getInstance().getSiteAcronym() + " search results: " + StringEscapeUtils.escapeXml(getSearchPhrase()));
-            setInputStream(rssService.createRssFeedFromResourceList(
-                    getSessionData().getPerson(), this, getRecordsPerPage(),
-                    getStartRecord(), getTotalRecords(), getRssUrl()));
+            setInputStream(rssService.createRssFeedFromResourceList(this, getRssUrl(), true, true));
         } catch (Exception e) {
             logger.error("rss error", e);
             addActionErrorWithException("could not process your search", e);
@@ -331,7 +329,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         if (latLong != null) {
             setMap(latLong);
         }
-        
+
         // legacy search by keyword
         // at the time of this writing the view layer only created links for
         // culture, site type, and siteName keywords. everything else

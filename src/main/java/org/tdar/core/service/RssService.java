@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.OaiDcProvider;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Person;
@@ -93,15 +92,15 @@ public class RssService implements Serializable {
     }
 
     @SuppressWarnings("unused")
-    public <I extends Indexable> ByteArrayInputStream createRssFeedFromResourceList(Person user, SearchResultHandler<I> handler,
-            Integer recordsPerPage, Integer startRecord, Integer totalRecords, String rssUrl) throws IOException, FeedException {
+    public <I extends Indexable> ByteArrayInputStream createRssFeedFromResourceList(SearchResultHandler<I> handler,String rssUrl, boolean includeGeoRss, boolean includeEnclosures) throws IOException, FeedException {
         SyndFeed feed = new SyndFeedImpl();
         feed.setFeedType("atom_1.0");
+        
         feed.setTitle(TdarConfiguration.getInstance().getSiteAcronym() + " Search Results: " + cleanStringForXML(handler.getSearchTitle()));
         OpenSearchModule osm = new OpenSearchModuleImpl();
-        osm.setItemsPerPage(recordsPerPage);
-        osm.setStartIndex(startRecord);
-        osm.setTotalResults(totalRecords);
+        osm.setItemsPerPage(handler.getRecordsPerPage());
+        osm.setStartIndex(handler.getStartRecord());
+        osm.setTotalResults(handler.getTotalRecords());
 
         Link link = new Link();
         link.setHref(urlService.getBaseUrl() + "/includes/opensearch.xml");
@@ -141,19 +140,19 @@ public class RssService implements Serializable {
                         entry.setAuthors(authors);
                     }
                     LatitudeLongitudeBox latLong = resource.getFirstActiveLatitudeLongitudeBox();
-                    if (latLong != null && Persistable.Base.isNotNullOrTransient(user)) {
+                    if (latLong != null && includeGeoRss) {
                         GeoRSSModule geoRss = new GMLModuleImpl();
                         geoRss.setGeometry(new Envelope(latLong.getMinObfuscatedLatitude(), latLong.getMinObfuscatedLongitude(), latLong
                                 .getMaxObfuscatedLatitude(), latLong.getMaxObfuscatedLongitude()));
                         entry.getModules().add(geoRss);
                     }
 
-                    if (resource_ instanceof InformationResource && ((InformationResource) resource_).getLatestUploadedVersions().size() > 0) {
+                    if (resource_ instanceof InformationResource && ((InformationResource) resource_).getLatestUploadedVersions().size() > 0 && includeEnclosures) {
                         for (InformationResourceFile file : ((InformationResource) resource_).getVisibleFiles()) {
-                            addEnclosure(user, entry, file.getLatestUploadedVersion());
+                            addEnclosure(handler.getAuthenticatedUser(), entry, file.getLatestUploadedVersion());
                             InformationResourceFileVersion thumb = file.getLatestThumbnail();
                             if (thumb != null) {
-                                addEnclosure(user, entry, thumb);
+                                addEnclosure(handler.getAuthenticatedUser(), entry, thumb);
                             }
                         }
                     }
