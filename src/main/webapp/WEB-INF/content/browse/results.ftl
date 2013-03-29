@@ -110,7 +110,7 @@
         </#if>
 </div>
 </#if>
-<#if results??>
+<#if ( results?? && results?size > 0) >
 <div id="divResultsSortControl">
     <div class="row">
         <div class="span4">
