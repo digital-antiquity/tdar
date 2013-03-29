@@ -76,6 +76,7 @@ public class AdminController extends AuthenticationAware.Base {
     private Map<ResourceType, List<BigInteger>> currentResourceStats;
 
     private Map<Date, Map<StatisticType, Long>> historicalResourceStats;
+    private Map<Date, Map<StatisticType, Long>> historicalResourceStatsWithFiles;
     private Map<Date, Map<StatisticType, Long>> historicalCollectionStats;
     private Map<Date, Map<StatisticType, Long>> historicalUserStats;
     private Map<Date, Map<StatisticType, Long>> historicalRepositorySizes;
@@ -104,6 +105,7 @@ public class AdminController extends AuthenticationAware.Base {
         setFileUploadedAverageStats(getStatisticService().getFileAverageStats(Arrays.asList(VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED_TEXT, VersionType.ARCHIVAL)));
         setExtensionStats(getInformationResourceFileService().getAdminFileExtensionStats());
         setHistoricalResourceStats(getStatisticService().getResourceStatistics());
+        setHistoricalResourceStatsWithFiles(getStatisticService().getResourceStatisticsWithFiles());
         setHistoricalCollectionStats(getStatisticService().getCollectionStatistics());
         return SUCCESS;
     }
@@ -309,6 +311,14 @@ public class AdminController extends AuthenticationAware.Base {
 
     public void setFileUploadedAverageStats(Map<String, List<Number>> fileUploadedAverageStats) {
         this.fileUploadedAverageStats = fileUploadedAverageStats;
+    }
+
+    public Map<Date, Map<StatisticType, Long>> getHistoricalResourceStatsWithFiles() {
+        return historicalResourceStatsWithFiles;
+    }
+
+    public void setHistoricalResourceStatsWithFiles(Map<Date, Map<StatisticType, Long>> historicalResourceStatsWithFiles) {
+        this.historicalResourceStatsWithFiles = historicalResourceStatsWithFiles;
     }
 
 }

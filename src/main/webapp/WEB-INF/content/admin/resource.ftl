@@ -5,8 +5,10 @@
 
 <@admin.header/>
 
+<@admin.statsTable historicalResourceStatsWithFiles "Resource Statistics (With Files)" "resourceStatsWithFiles" />
 
-<@admin.statsTable historicalResourceStats "Resource Statistics" "resourceStats" />
+<@admin.statsTable historicalResourceStats "Resource Statistics (All)" "resourceStats" />
+
 
 <@admin.statsTable historicalCollectionStats "Collection Statistics" "collectionStats" />
 
