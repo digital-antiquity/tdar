@@ -49,7 +49,7 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
     @Test
     @Rollback(true)
     public void testExcelExport() throws InstantiationException, IllegalAccessException, ParseException, FileNotFoundException, IOException, InvalidFormatException {
-        searchIndexService.indexAll(Resource.class);
+        searchIndexService.indexAll(getAdminUser(), Resource.class);
         currentUser = getBasicUser();
         controller.setSessionData(new SessionData()); // create unauthenticated session
         getServletRequest().setAttribute("RequestURI", "http://www.test.com");
@@ -74,7 +74,7 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
     @Test
     @Rollback(true)
     public void testExcelFailUnauthenticatedExport() throws InstantiationException, IllegalAccessException, ParseException, FileNotFoundException, IOException {
-        searchIndexService.indexAll(Resource.class);
+        searchIndexService.indexAll(getAdminUser(), Resource.class);
         currentUser = null;
         controller.setSessionData(new SessionData()); // create unauthenticated session
         getServletRequest().setAttribute("RequestURI", "http://www.test.com");

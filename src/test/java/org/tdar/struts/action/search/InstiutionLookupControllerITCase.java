@@ -36,7 +36,7 @@ public class InstiutionLookupControllerITCase extends AbstractIntegrationTestCas
         genericService.saveOrUpdate(person);
         person.setInstitution(inst);
         genericService.saveOrUpdate(inst);
-        searchIndexService.indexAll(Person.class);
+        searchIndexService.indexAll(getAdminUser(), Person.class);
         controller.setInstitution("TQF");
         String result = controller.lookupPerson();
         assertEquals("result should be success", LookupController.SUCCESS, result);
@@ -47,7 +47,7 @@ public class InstiutionLookupControllerITCase extends AbstractIntegrationTestCas
     @Test
     @Rollback(true)
     public void testValidInstitutionWithSpace() {
-        searchIndexService.indexAll(Person.class);
+        searchIndexService.indexAll(getAdminUser(), Person.class);
         controller.setInstitution("University of");
         String result = controller.lookupPerson();
         assertEquals("result should be success", LookupController.SUCCESS, result);
@@ -59,7 +59,7 @@ public class InstiutionLookupControllerITCase extends AbstractIntegrationTestCas
     @Test
     @Rollback(true)
     public void testInstitutionEmpty() {
-        searchIndexService.indexAll(Person.class);
+        searchIndexService.indexAll(getAdminUser(), Person.class);
         // FIXME: should not need to be quoted
         controller.setInstitution("University ABCD");
         String result = controller.lookupPerson();
@@ -71,7 +71,7 @@ public class InstiutionLookupControllerITCase extends AbstractIntegrationTestCas
     @Test
     @Rollback(true)
     public void testInstitutionLookupWithNoResults() {
-        searchIndexService.indexAll(Institution.class);
+        searchIndexService.indexAll(getAdminUser(), Institution.class);
         controller.setInstitution("fdaksfddfde");
         controller.lookupInstitution();
         List<Indexable> institutions = controller.getResults();
@@ -80,7 +80,7 @@ public class InstiutionLookupControllerITCase extends AbstractIntegrationTestCas
 
     @Test
     public void testInstitutionLookupWithOneResult() {
-        searchIndexService.indexAll(Institution.class);
+        searchIndexService.indexAll(getAdminUser(), Institution.class);
         controller.setInstitution("tfqa");
         controller.lookupInstitution();
         List<Indexable> institutions = controller.getResults();
@@ -90,7 +90,7 @@ public class InstiutionLookupControllerITCase extends AbstractIntegrationTestCas
     // given test script, searching 'digital' should return multiple results that start with 'Digital Antiquity'
     @Test
     public void testInstitutionLookupWithMultiple() {
-        searchIndexService.indexAll(Institution.class);
+        searchIndexService.indexAll(getAdminUser(), Institution.class);
         controller.setInstitution("University");
         controller.lookupInstitution();
         List<Indexable> institutions = controller.getResults();
@@ -101,7 +101,7 @@ public class InstiutionLookupControllerITCase extends AbstractIntegrationTestCas
     @Test
     @Rollback(true)
     public void testInstitutionLookupWithBlanks() {
-        searchIndexService.indexAll(Institution.class);
+        searchIndexService.indexAll(getAdminUser(), Institution.class);
         String blanks = "    ";
         controller.setInstitution(blanks);
         controller.lookupInstitution();
@@ -179,7 +179,7 @@ public class InstiutionLookupControllerITCase extends AbstractIntegrationTestCas
 
     private List<Institution> setupInstitutionsForLookup() {
         String name1 = "U.S. Department of the Interior";
-        searchIndexService.indexAll(Institution.class);
+        searchIndexService.indexAll(getAdminUser(), Institution.class);
         List<Institution> insts = Arrays.asList(new Institution(name1),
                 new Institution("National Geographic Society (U.S.)")
                 , new Institution("Robertson Research (U.S.)")

@@ -89,7 +89,7 @@ public class CollectionSearchControllerITCase extends AbstractSearchControllerIT
     @Override
     protected void reindex() {
         searchIndexService.purgeAll();
-        searchIndexService.indexAll(ResourceCollection.class);
+        searchIndexService.indexAll(getAdminUser(), ResourceCollection.class);
     }
 
     @Override

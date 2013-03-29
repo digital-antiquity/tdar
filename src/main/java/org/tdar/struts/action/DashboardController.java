@@ -25,7 +25,9 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.service.ActivityManager;
 import org.tdar.search.query.SortOption;
+import org.tdar.utils.activity.Activity;
 
 /**
  * $Id$
@@ -66,6 +68,13 @@ public class DashboardController extends AuthenticationAware.Base {
         getResourceCollections().addAll(getResourceCollectionService().findParentOwnerCollections(getAuthenticatedUser()));
         getSharedResourceCollections().addAll(getEntityService().findAccessibleResourceCollections(getAuthenticatedUser()));
         // removing duplicates
+        if (isEditor()) {
+            for (Activity activity : ActivityManager.getInstance().getActivityQueue()) {
+                if (activity.isIndexingActivity() && !activity.hasEnded()) {
+                    addActionMessage(String.format("%s is RE-INDEXING %s (%s)", activity.getUser().getProperName(), getSiteAcronym(), activity.getStartDate()));
+                }
+            }
+        }
         getSharedResourceCollections().removeAll(getResourceCollections());
         Collections.sort(resourceCollections);
         Collections.sort(sharedResourceCollections);

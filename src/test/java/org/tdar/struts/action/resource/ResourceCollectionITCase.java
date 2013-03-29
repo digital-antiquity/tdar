@@ -529,7 +529,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         BrowseController controller_ = generateNewInitializedController(BrowseController.class);
         Long fileId = testFile.getId();
         searchIndexService.flushToIndexes();
-        searchIndexService.indexAll(Resource.class);
+        searchIndexService.indexAll(getAdminUser(), Resource.class);
         testFile = null;
         genericService.synchronize();
         // WHY DOES THE SYNCHRONIZE ON THE INDEX CALL DO ANYTHING HERE VS THE

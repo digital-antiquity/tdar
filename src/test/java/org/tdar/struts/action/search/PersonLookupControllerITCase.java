@@ -30,7 +30,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
 
     @Test
     public void testPersonLookupWithNoResults() {
-        searchIndexService.indexAll(Person.class);
+        searchIndexService.indexAll(getAdminUser(), Person.class);
         controller.setFirstName("bobby");
         String result = controller.lookupPerson();
         assertEquals("operation successful", result, LookupController.SUCCESS);
@@ -40,7 +40,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
 
     @Test
     public void testPersonLookupTooShortOverride() {
-        searchIndexService.indexAll(Person.class);
+        searchIndexService.indexAll(getAdminUser(), Person.class);
         controller.setLastName("B");
         controller.setMinLookupLength(0);
         String result = controller.lookupPerson();
@@ -51,7 +51,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
 
     @Test
     public void testPersonLookupTooShort() {
-        searchIndexService.indexAll(Person.class);
+        searchIndexService.indexAll(getAdminUser(), Person.class);
         controller.setLastName("Br");
         String result = controller.lookupPerson();
         assertEquals("result should be success", LookupController.SUCCESS, result);
@@ -61,7 +61,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
 
     @Test
     public void testPersonLookupWithOneResult() {
-        searchIndexService.indexAll(Person.class);
+        searchIndexService.indexAll(getAdminUser(), Person.class);
         controller.setEmail("test@tdar.org");
         String result = controller.lookupPerson();
         assertEquals("result should be success", LookupController.SUCCESS, result);
@@ -72,7 +72,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
     @Test
     // we should properly escape input
     public void testPersonWithInvalidInput() {
-        searchIndexService.indexAll(Person.class);
+        searchIndexService.indexAll(getAdminUser(), Person.class);
         // FIXME: need more invalid input examples than just paren
         controller.setLastName("(    ");
         String result = controller.lookupPerson();
@@ -82,7 +82,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
 
     @Test
     public void testRegisteredPersonLookupWithOneResult() {
-        searchIndexService.indexAll(Person.class);
+        searchIndexService.indexAll(getAdminUser(), Person.class);
         controller.setFirstName("Keit");
         controller.setRegistered("true");
         String result = controller.lookupPerson();
@@ -115,7 +115,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationTestCase {
 
     @Test
     public void testPersonLookupWithSeveralResults() {
-        searchIndexService.indexAll(Person.class);
+        searchIndexService.indexAll(getAdminUser(), Person.class);
         // based on our test data this should return at least two records (john doe and jane doe)
         String partialLastName = "Mann";
         controller.setLastName(partialLastName);

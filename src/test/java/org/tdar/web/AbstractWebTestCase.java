@@ -42,9 +42,9 @@ import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplate.NelnetTransactionItem;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -137,7 +137,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
                 try {
                     URL current = internalPage.getUrl();
                     prefix = String.format("%s://%s:%s", current.getProtocol(), current.getHost(), current.getPort());
-                    logger.info("SETTING URL TO {}{}" , prefix , localPath);
+                    logger.info("SETTING URL TO {}{}", prefix, localPath);
                 } catch (Exception e) {
                     logger.trace("{}", e);
                 }
@@ -153,23 +153,22 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     protected WebClient getWebClient() {
         return webClient;
     }
-    
-    //TODO: implemnent this, if viable (not sure yet if it will be easy or crazy hard).
+
+    // TODO: implemnent this, if viable (not sure yet if it will be easy or crazy hard).
     /**
-     * asserts whether current web page contains text that matches regex based on the provided reges. So, if format string is 
+     * asserts whether current web page contains text that matches regex based on the provided reges. So, if format string is
      * 
      * "Hello %s,  how are you doing this fine %s?"
      * 
-     *  becomes...
-     *  
-     *  /.*Hello (.*?), how are you doing this fine (.*?)\?/i
-     *  
+     * becomes...
+     * 
+     * /.*Hello (.*?), how are you doing this fine (.*?)\?/i
+     * 
      * @param formatString
      */
     public void assertContainsFormat(String formatString) {
         fail("not implemented");
     }
-    
 
     /**
      * Go to the specified page, with explicit assertions that the server did not return with a 500 error or contain any inline exception text
@@ -184,7 +183,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         assertNoErrorTextPresent();
         return statusCode;
     }
-    
+
     /**
      * Same as gotoPage(), but does not perform any assertions on the server response
      * 
@@ -263,7 +262,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         try {
             return page.getElementByName(name);
         } catch (ElementNotFoundException nse) {
-            throw new NoSuchElementException(String.format("Input * with Name %s on page %s cannot be found",name, internalPage.getUrl().toString()));
+            throw new NoSuchElementException(String.format("Input * with Name %s on page %s cannot be found", name, internalPage.getUrl().toString()));
         }
     }
 
@@ -272,11 +271,11 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     }
 
     public void setInput(String name, Number value) {
-        setInput(name, String.format("%s",  value));
+        setInput(name, String.format("%s", value));
     }
 
-    public<T extends Enum<T>> void setInput(String name,  T value) {
-        setInput(name, String.format("%s",  value.name()));
+    public <T extends Enum<T>> void setInput(String name, T value) {
+        setInput(name, String.format("%s", value.name()));
     }
 
     public void setInput(String name, String value, boolean overrideCreate) {
@@ -635,10 +634,9 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
         return internalPage.getWebResponse().getContentAsString();
     }
-    
-    
-    //return a fun-sized version of the response string ( title section, the error section and h1 through to the footer);
-    //FIXME:  too much expurgation!!!
+
+    // return a fun-sized version of the response string ( title section, the error section and h1 through to the footer);
+    // FIXME: too much expurgation!!!
     public String getPageBodyCode() {
         String content = getPageCode();
         String out = "";
@@ -653,7 +651,6 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         }
         return content;
     }
-   
 
     public String getPageCode() {
         String content = internalPage.getWebResponse().getContentAsString();
@@ -700,7 +697,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
     public void testProjectView() {
         // this should probably be done @before every test but it would slow things down even more
-        searchIndexService.indexAll();
+        searchIndexService.indexAll(getAdminUser());
 
         gotoPage("/project/3805");
         logger.trace(getPageText());
@@ -934,7 +931,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         setInput("ticketId", ticketId);
         setInput("projectId", Long.toString(TestConstants.ADMIN_PROJECT_ID));
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-//            setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+            // setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
             setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
         }
 
@@ -960,7 +957,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         assertTrue(response.contains(TransactionStatus.PENDING_TRANSACTION.name()));
         checkInput(NelnetTransactionItem.getInvoiceIdKey(), invoiceid);
         checkInput(NelnetTransactionItem.getUserIdKey(), Long.toString(getUserId()));
-//        logger.info(getPageBodyCode());
+        // logger.info(getPageBodyCode());
         checkInput(NelnetTransactionItem.AMOUNT_DUE.name(), total);
         clickElementWithId("process-payment_0");
         response = getAccountPollingRequest(polingUrl);
@@ -1075,11 +1072,11 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         // personmap.put("person.rpaNumber", "1234567890");
         personmap.put("requestingContributorAccess", "true");
     }
-    
+
     @Override
     public void onFail(Throwable e, Description description) {
-       //FIXME:  need to get this to fire *before* the @After method logs out.  otherwise the pageCode will always be the tdar login screen.
-       // logger.error("{} failed. server response below:\n\n {}", description.getDisplayName(), getPageCode());
+        // FIXME: need to get this to fire *before* the @After method logs out. otherwise the pageCode will always be the tdar login screen.
+        // logger.error("{} failed. server response below:\n\n {}", description.getDisplayName(), getPageCode());
     }
 
 }

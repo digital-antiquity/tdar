@@ -48,7 +48,7 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
     public void testForInheritedCulturalInformationFromProject1() {
         logger.info("{}", getUser());
         Long imgId = setupImage();
-        searchIndexService.indexAll(Resource.class);
+        searchIndexService.indexAll(getAdminUser(), Resource.class);
         setResourceTypes(getInheritingTypes());
         List<String> approvedCultureKeywordIds = new ArrayList<String>();
         approvedCultureKeywordIds.add("9");
@@ -65,7 +65,7 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
         controller = generateNewInitializedController(AdvancedSearchController.class, getAdminUser());
         controller.setRecordsPerPage(50);
         Long datasetId = setupDataset();
-        searchIndexService.indexAll(Resource.class);
+        searchIndexService.indexAll(getAdminUser(), Resource.class);
         setResourceTypes(allResourceTypes);
         setStatuses(Status.DELETED);
         doSearch("precambrian");
@@ -76,7 +76,7 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
     @Rollback(true)
     public void testDeletedMaterialsAreNotVisible() {
         Long datasetId = setupDataset();
-        searchIndexService.indexAll(Resource.class);
+        searchIndexService.indexAll(getAdminUser(), Resource.class);
         setResourceTypes(allResourceTypes);
         setStatuses(Status.DELETED);
         doSearch("precambrian");
@@ -103,7 +103,7 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
     @Rollback(true)
     public void testDraftMaterialsAreIndexed() {
         Long imgId = setupImage();
-        searchIndexService.indexAll(Resource.class);
+        searchIndexService.indexAll(getAdminUser(), Resource.class);
         setResourceTypes(allResourceTypes);
         setStatuses(Status.DRAFT);
         doSearch("description");
@@ -115,7 +115,7 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
     public void testHierarchicalCultureKeywordsAreIndexed() {
         Long imgId = setupImage();
         logger.info("Created new image: " + imgId);
-        searchIndexService.indexAll(Resource.class);
+        searchIndexService.indexAll(getAdminUser(), Resource.class);
         setResourceTypes(allResourceTypes);
         setStatusAll();
         doSearch("PaleoIndian");
