@@ -71,10 +71,13 @@
 		  
 		    <@common.resourceUsageInfo />
 		  
-		    <p><b>Collection Type:</b> ${resourceCollection.type.label}</p>
-		    <p><b>Visible:</b> ${resourceCollection.visible?string}</p>
-		    <p><b>Owner:</b> <a href="<@s.url value="/browse/creators/${resourceCollection.owner.id?c}"/>">${resourceCollection.owner}</a></p>
-		    <#if resourceCollection.sortBy??><p><b>Sort by:</b> ${resourceCollection.sortBy.label}</p></#if>
+		    <p><strong>Collection Type:</strong> ${resourceCollection.type.label}</p>
+            <dt><p><strong>Created by</strong></p></dt>
+            <dd><p><a href="<@s.url value="/browse/creators/${resourceCollection.owner.id?c}"/>">${resourceCollection.owner.properName}</a> on ${resourceCollection.dateCreated}</p></dd>
+            <dt><p><strong>Updated By</strong></p></dt>
+            <dd><p><a href="<@s.url value="/browse/creators/${resourceCollection.updater.id?c}"/>">${resourceCollection.updater.properName}</a> on ${resourceCollection.dateUpdated}</p></dd>
+		    <p><strong>Visible:</strong> ${resourceCollection.visible?string}</p>
+		    <#if resourceCollection.sortBy??><p><strong>Sort by:</strong> ${resourceCollection.sortBy.label}</p></#if>
 		
 		    <@view.authorizedUsers resourceCollection />
 		</#if>

@@ -131,6 +131,8 @@
 </div>
 <@search.basicPagination "Results"/>
 <#else>
-No Resources associated with ${creator.properName}
+	<#if (creator.properName)?has_content>
+	No Resources associated with ${creator.properName}
+	</#if>
 </#if>
 </#escape>
