@@ -59,6 +59,24 @@ public class ShapefileITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
+    @Rollback
+    public void testPolyShapeWithData() throws Exception {
+        PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
+        ShapefileReaderTask task = new ShapefileReaderTask();
+        WorkflowContext wc = new WorkflowContext();
+        String name = "Occ_3l";
+        String string = TestConstants.TEST_SHAPEFILE_DIR + name;
+        InformationResourceFileVersion originalFile = generateAndStoreVersion(Geospatial.class, name + ".shp", new File(string + ".shp"), store);
+        for (String ext : new String[]{".dbf",".sbn",".sbx",".shp.xml",".shx",".xml"}) {
+            wc.getSupportingFiles().add( generateAndStoreVersion(Geospatial.class, name + ext, new File(string + ext), store));
+
+        }
+        wc.setOriginalFile(originalFile);
+        task.setWorkflowContext(wc);
+        task.run();
+    }
+
+    @Test
     @Ignore
     @Rollback
     public void testGeoTiffAUX() throws Exception {

@@ -78,15 +78,18 @@ public class ShapefileReaderTask extends AbstractTask {
                 String typeName = typeNames[0];
                 getLogger().info(typeName);
                 System.out.println("Reading content " + typeName);
-
+                getLogger().info("infO: {} {} ({})", dataStore.getInfo().getTitle(), dataStore.getInfo().getDescription(), dataStore.getInfo().getKeywords());
                 FeatureSource featureSource = dataStore.getFeatureSource(typeName);
                 FeatureCollection collection = featureSource.getFeatures();
                 FeatureIterator iterator = collection.features();
+                getLogger().debug("{}",dataStore.getNames());
 
                 try {
                     while (iterator.hasNext()) {
                         Feature feature = iterator.next();
                         GeometryAttribute sourceGeometry = feature.getDefaultGeometryProperty();
+                        getLogger().info(" {} {} : {}", sourceGeometry, sourceGeometry.getName(), sourceGeometry.getUserData());
+                        getLogger().info("\t {} ",feature.getValue());
                     }
                 } finally {
                     iterator.close();

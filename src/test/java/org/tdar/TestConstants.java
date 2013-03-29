@@ -18,7 +18,7 @@ public interface TestConstants {
     public static String TEST_SENSORY_DIR = TEST_ROOT_DIR + "sensory/";
     public static final String TEST_DOCUMENT_DIR = TEST_ROOT_DIR + "documents/";
     public static final String TEST_GIS_DIR = "gis/";
-    public static final String TEST_SHAPEFILE = TEST_ROOT_DIR +  TEST_GIS_DIR + "Continents_ClippedEast.shp";
+    public static final String TEST_SHAPEFILE_DIR = TEST_ROOT_DIR +  TEST_GIS_DIR + "shapefiles/tijeras/";
     public static String TEST_GEOTIFF_TFW = TEST_ROOT_DIR +  TEST_GIS_DIR + "geotiff/Untitled.tfw";
     public static String TEST_GEOTIFF_COMBINED = TEST_ROOT_DIR +  TEST_GIS_DIR + "geotiff/geo-combined-untitled.tif";
     public static String TEST_GEOTIFF = TEST_ROOT_DIR +  TEST_GIS_DIR + "geotiff/Untitled.tif";
