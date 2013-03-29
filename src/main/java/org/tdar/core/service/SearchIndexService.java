@@ -25,6 +25,7 @@ import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -68,8 +69,8 @@ public class SearchIndexService {
 
     public static final String BUILD_LUCENE_INDEX_ACTIVITY_NAME = "Build Lucene Search Index";
 
-    public void indexAll(AsyncUpdateReceiver updateReceiver) {
-        indexAll(updateReceiver, getDefaultClassesToIndex());
+    public void indexAll(AsyncUpdateReceiver updateReceiver, Person person) {
+        indexAll(updateReceiver, getDefaultClassesToIndex(), person);
     }
 
     private List<Class<? extends Indexable>> getDefaultClassesToIndex() {
@@ -86,12 +87,14 @@ public class SearchIndexService {
     }
 
     @SuppressWarnings("deprecation")
-    public void indexAll(AsyncUpdateReceiver updateReceiver, List<Class<? extends Indexable>> classesToIndex) {
+    public void indexAll(AsyncUpdateReceiver updateReceiver, List<Class<? extends Indexable>> classesToIndex, Person person) {
         if (updateReceiver == null) {
             updateReceiver = getDefaultUpdateReceiver();
         }
         Activity activity = new Activity();
         activity.setName(BUILD_LUCENE_INDEX_ACTIVITY_NAME);
+        activity.setIndexingActivity(true);
+        activity.setUser(person);
         activity.setMessage(String.format("reindexing %s", StringUtils.join(classesToIndex, ", ")));
         activity.start();
         ActivityManager.getInstance().addActivityToQueue(activity);
@@ -263,12 +266,12 @@ public class SearchIndexService {
         getFullTextSession().flushToIndexes();
     }
 
-    public void indexAll() {
-        indexAll(getDefaultUpdateReceiver(), getDefaultClassesToIndex());
+    public void indexAll(Person person) {
+        indexAll(getDefaultUpdateReceiver(), getDefaultClassesToIndex(), person);
     }
 
-    public void indexAll(Class<? extends Indexable>... classes) {
-        indexAll(getDefaultUpdateReceiver(), Arrays.asList(classes));
+    public void indexAll(Person person, Class<? extends Indexable>... classes) {
+        indexAll(getDefaultUpdateReceiver(), Arrays.asList(classes), person);
     }
 
     // an update receiver that doesn't do anything

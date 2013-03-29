@@ -41,7 +41,7 @@ import com.sun.syndication.feed.atom.Link;
 import com.sun.syndication.feed.module.Module;
 import com.sun.syndication.feed.module.georss.GMLModuleImpl;
 import com.sun.syndication.feed.module.georss.GeoRSSModule;
-import com.sun.syndication.feed.module.georss.geometries.Position;
+import com.sun.syndication.feed.module.georss.geometries.Envelope;
 import com.sun.syndication.feed.module.opensearch.OpenSearchModule;
 import com.sun.syndication.feed.module.opensearch.impl.OpenSearchModuleImpl;
 import com.sun.syndication.feed.synd.SyndContent;
@@ -69,7 +69,7 @@ public class RssService implements Serializable {
     private static final long serialVersionUID = 8223380890944917677L;
 
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
-    public static final Pattern INVALID_XML_CHARS = Pattern.compile("[\u0001\u0009\\u000A\\u000D\uD800\uDFFF]");
+    public static final Pattern INVALID_XML_CHARS = Pattern.compile("[\u0001\u0009\u0018\\u000A\\u000D\uD800\uDFFF]");
     // \uDC00-\uDBFF -\uD7FF\uE000-\uFFFD
 
     @Autowired
@@ -92,15 +92,15 @@ public class RssService implements Serializable {
     }
 
     @SuppressWarnings("unused")
-    public <I extends Indexable> ByteArrayInputStream createRssFeedFromResourceList(Person user, SearchResultHandler<I> handler,
-            Integer recordsPerPage, Integer startRecord, Integer totalRecords, String rssUrl) throws IOException, FeedException {
+    public <I extends Indexable> ByteArrayInputStream createRssFeedFromResourceList(SearchResultHandler<I> handler,String rssUrl, boolean includeGeoRss, boolean includeEnclosures) throws IOException, FeedException {
         SyndFeed feed = new SyndFeedImpl();
         feed.setFeedType("atom_1.0");
+        
         feed.setTitle(TdarConfiguration.getInstance().getSiteAcronym() + " Search Results: " + cleanStringForXML(handler.getSearchTitle()));
         OpenSearchModule osm = new OpenSearchModuleImpl();
-        osm.setItemsPerPage(recordsPerPage);
-        osm.setStartIndex(startRecord);
-        osm.setTotalResults(totalRecords);
+        osm.setItemsPerPage(handler.getRecordsPerPage());
+        osm.setStartIndex(handler.getStartRecord());
+        osm.setTotalResults(handler.getTotalRecords());
 
         Link link = new Link();
         link.setHref(urlService.getBaseUrl() + "/includes/opensearch.xml");
@@ -140,18 +140,19 @@ public class RssService implements Serializable {
                         entry.setAuthors(authors);
                     }
                     LatitudeLongitudeBox latLong = resource.getFirstActiveLatitudeLongitudeBox();
-                    if (latLong != null && authenticationAndAuthorizationService.isAdministrator(user)) {
+                    if (latLong != null && includeGeoRss) {
                         GeoRSSModule geoRss = new GMLModuleImpl();
-                        geoRss.setPosition(new Position(latLong.getCenterLatitude(), latLong.getCenterLongitude()));
+                        geoRss.setGeometry(new Envelope(latLong.getMinObfuscatedLatitude(), latLong.getMinObfuscatedLongitude(), latLong
+                                .getMaxObfuscatedLatitude(), latLong.getMaxObfuscatedLongitude()));
                         entry.getModules().add(geoRss);
                     }
 
-                    if (resource_ instanceof InformationResource && ((InformationResource) resource_).getLatestUploadedVersions().size() > 0) {
+                    if (resource_ instanceof InformationResource && ((InformationResource) resource_).getLatestUploadedVersions().size() > 0 && includeEnclosures) {
                         for (InformationResourceFile file : ((InformationResource) resource_).getVisibleFiles()) {
-                            addEnclosure(user, entry, file.getLatestUploadedVersion());
+                            addEnclosure(handler.getAuthenticatedUser(), entry, file.getLatestUploadedVersion());
                             InformationResourceFileVersion thumb = file.getLatestThumbnail();
                             if (thumb != null) {
-                                addEnclosure(user, entry, thumb);
+                                addEnclosure(handler.getAuthenticatedUser(), entry, thumb);
                             }
                         }
                     }
@@ -176,8 +177,8 @@ public class RssService implements Serializable {
     }
 
     public static String stripInvalidXMLCharacters(String text) {
-        Pattern INVALID_XML_CHARS = Pattern.compile("[^\\u0009\\u0018\\u000A\\u000D\\u0020-\\uD7FF\\uE000-\\uFFFD\uD800\uDC00-\uDBFF\uDFFF]");
-        return INVALID_XML_CHARS.matcher(text).replaceAll("");
+        Pattern VALID_XML_CHARS = Pattern.compile("[^\\u0009\\u0018\\u000A\\u000D\\u0020-\\uD7FF\\uE000-\\uFFFD\uD800\uDC00-\uDBFF\uDFFF]");
+        return VALID_XML_CHARS.matcher(text).replaceAll("");
     }
 
     @SuppressWarnings("unchecked")

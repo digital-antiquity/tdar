@@ -188,7 +188,7 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
 
     protected void reindex() {
         searchIndexService.purgeAll();
-        searchIndexService.indexAll(Resource.class);
+        searchIndexService.indexAll(getAdminUser(), Resource.class);
     }
 
     protected void setStatuses(Status... status) {

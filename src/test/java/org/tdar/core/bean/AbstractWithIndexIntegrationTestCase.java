@@ -15,7 +15,7 @@ public abstract class AbstractWithIndexIntegrationTestCase extends AbstractContr
 
     @Before
     public void setupIndex() {
-    	getSearchIndexService().indexAll();
+    	getSearchIndexService().indexAll(getAdminUser());
     }
 
 }

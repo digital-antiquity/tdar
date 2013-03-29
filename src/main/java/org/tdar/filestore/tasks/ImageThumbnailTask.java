@@ -31,8 +31,7 @@ import org.tdar.filestore.tasks.Task.AbstractTask;
  * 
  */
 public class ImageThumbnailTask extends AbstractTask {
-
-    public static final String ERROR_PROCESSING_COULD_NOT_OPEN = "Please check that the image you uploaded is ok: ";
+    public static final String FMT_ERROR_PROCESSING_COULD_NOT_OPEN = "%s is either corrupt or uses an invalid format (error:\"%s\")";
     private static final long serialVersionUID = -108766461810056577L;
     private static final String JPG_FILE_EXT = ".jpg";
     public static final int LARGE = 600;
@@ -103,7 +102,8 @@ public class ImageThumbnailTask extends AbstractTask {
                 getWorkflowContext().setErrorFatal(true);
             }
 
-            throw new TdarRecoverableRuntimeException(ERROR_PROCESSING_COULD_NOT_OPEN + msg);
+            String errorMessage = String.format(FMT_ERROR_PROCESSING_COULD_NOT_OPEN, sourceFile.getName(), msg);
+            throw new TdarRecoverableRuntimeException(errorMessage);
         } else {
             if (getWorkflowContext().getResourceType().hasDemensions()) {
                 InformationResourceFileVersion origVersion = getWorkflowContext().getOriginalFile();

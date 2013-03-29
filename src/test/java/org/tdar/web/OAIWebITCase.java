@@ -42,7 +42,7 @@ public class OAIWebITCase extends AbstractWebTestCase {
     @Before
     public void prepareOai() throws SAXException, IOException, ParserConfigurationException, XpathException {
         // reindex
-        indexService.indexAll();
+        indexService.indexAll(getAdminUser());
 
         // establish namespace bindings for the XPath tests
         HashMap<String, String> namespaceBindings = new HashMap();

@@ -278,9 +278,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             search();
             setSearchTitle(getSearchSubtitle() + ": " + StringEscapeUtils.escapeXml(getSearchPhrase()));
             setSearchDescription(TdarConfiguration.getInstance().getSiteAcronym() + " search results: " + StringEscapeUtils.escapeXml(getSearchPhrase()));
-            setInputStream(rssService.createRssFeedFromResourceList(
-                    getSessionData().getPerson(), this, getRecordsPerPage(),
-                    getStartRecord(), getTotalRecords(), getRssUrl()));
+            setInputStream(rssService.createRssFeedFromResourceList(this, getRssUrl(), true, true));
         } catch (Exception e) {
             logger.error("rss error", e);
             addActionErrorWithException("could not process your search", e);

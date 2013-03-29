@@ -44,7 +44,7 @@ public class RawLuceneSearchControllerITCase extends AbstractSearchControllerITC
     @Ignore("Not currently implemented")
     public void testSearchPhraseWithQuote() {
         setIgnoreActionErrors(true);
-        searchIndexService.indexAll(Resource.class);
+        searchIndexService.indexAll(getAdminUser(), Resource.class);
         doSearch("\"test");
         assertHasErrors();
     }
@@ -53,14 +53,14 @@ public class RawLuceneSearchControllerITCase extends AbstractSearchControllerITC
     @Test
     @Ignore("Not currently implemented")
     public void testSearchPhraseWithColon() {
-        searchIndexService.indexAll(Resource.class);
+        searchIndexService.indexAll(getAdminUser(), Resource.class);
         doSearch("test : abc ");
     }
 
     @Test
     @Ignore("Not currently implemented")
     public void testSearchPhraseWithLuceneSyntax() {
-        searchIndexService.indexAll(Resource.class);
+        searchIndexService.indexAll(getAdminUser(), Resource.class);
         doSearch("title:abc");
     }
 
@@ -69,21 +69,21 @@ public class RawLuceneSearchControllerITCase extends AbstractSearchControllerITC
     @Ignore("Not currently implemented")
     public void testSearchPhraseWithUnbalancedParenthesis() {
         setIgnoreActionErrors(true);
-        searchIndexService.indexAll(Resource.class);
+        searchIndexService.indexAll(getAdminUser(), Resource.class);
         doSearch("\"test ( abc ");
     }
 
     @Test
     @Ignore("Not currently implemented")
     public void testAndInSearchPhrase() {
-        searchIndexService.indexAll(Resource.class);
+        searchIndexService.indexAll(getAdminUser(), Resource.class);
         doSearch("Moon AND River");
     }
 
     @Test
     @Ignore("Not currently implemented")
     public void testOrInSearchPhrase() {
-        searchIndexService.indexAll(Resource.class);
+        searchIndexService.indexAll(getAdminUser(), Resource.class);
         doSearch("Moon OR River");
     }
 

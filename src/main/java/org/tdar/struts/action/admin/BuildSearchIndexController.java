@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.Indexable;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.SearchIndexService;
@@ -80,15 +81,19 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
         List<Class<? extends Indexable>> toReindex = new ArrayList<Class<? extends Indexable>>();
         logger.info("{}", getIndexesToRebuild());
         for (LookupSource source : getIndexesToRebuild()) {
-            toReindex.addAll(Arrays.asList(source.getClasses()));
+            if (source == LookupSource.RESOURCE) {
+                toReindex.add(Resource.class);
+            } else {
+                toReindex.addAll(Arrays.asList(source.getClasses()));
+            }
         }
 
         logger.info("to reindex: {}", toReindex);
 
         if (CollectionUtils.isEmpty(toReindex)) {
-            searchIndexService.indexAll(this);
+            searchIndexService.indexAll(this, getAuthenticatedUser());
         } else {
-            searchIndexService.indexAll(this, toReindex);
+            searchIndexService.indexAll(this, toReindex,getAuthenticatedUser());
         }
         if (isProduction()) {
             getEmailService().send(String.format(INDEXING_STARTED, toReindex, getHostName(), date, new Date()), "indexing completed");

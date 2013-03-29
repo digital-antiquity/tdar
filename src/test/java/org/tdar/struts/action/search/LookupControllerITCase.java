@@ -288,7 +288,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
                 sheets.add(cs);
             }
         }
-        searchIndexService.indexAll(Resource.class);
+        searchIndexService.indexAll(getAdminUser(), Resource.class);
         controller.setResourceTypes(Arrays.asList(ResourceType.CODING_SHEET));
         controller.setTerm("Taxonomic Level");
         controller.setRecordsPerPage(10);
@@ -319,7 +319,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
 
     @Test
     public void testResourceLookupByType() {
-        searchIndexService.indexAll(Resource.class);
+        searchIndexService.indexAll(getAdminUser(), Resource.class);
         // get back all documents
         controller.setResourceTypes(Arrays.asList(ResourceType.DOCUMENT));
         controller.lookupResource();
@@ -329,7 +329,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
 
     @Test
     public void testResourceLookupByTdarId() {
-        searchIndexService.indexAll(Resource.class);
+        searchIndexService.indexAll(getAdminUser(), Resource.class);
         // get back all documents
         controller.setTerm(TestConstants.TEST_DOCUMENT_ID);
         controller.lookupResource();
@@ -339,7 +339,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
 
     @Test
     public void testResourceLookupByProjectId() {
-        searchIndexService.indexAll(Resource.class);
+        searchIndexService.indexAll(getAdminUser(), Resource.class);
         controller.setProjectId(3073L);
         controller.lookupResource();
         List<Indexable> resources = controller.getResults();
@@ -348,7 +348,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
 
     @Test
     public void testKeywordLookup() {
-        searchIndexService.indexAll(GeographicKeyword.class, CultureKeyword.class);
+        searchIndexService.indexAll(getAdminUser(), GeographicKeyword.class, CultureKeyword.class);
         controller.setKeywordType("culturekeyword");
         controller.setTerm("Folsom");
         controller.lookupKeyword();
@@ -367,7 +367,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         key2.setResourceAnnotationType(ResourceAnnotationType.IDENTIFIER);
         genericService.save(key2);
 
-        searchIndexService.indexAll(ResourceAnnotationKey.class);
+        searchIndexService.indexAll(getAdminUser(), ResourceAnnotationKey.class);
         controller.setTerm("IS");
         controller.lookupAnnotationKey();
         List<Indexable> resources = controller.getResults();
@@ -385,7 +385,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
     public void testDeletedResourceFilteredForNonAdmins() throws Exception {
         initControllerForDashboard();
 
-        searchIndexService.indexAll(Resource.class);
+        searchIndexService.indexAll(getAdminUser(), Resource.class);
         controller.setUseSubmitterContext(true);
         Project proj = createProjectViaProjectController("project to be deleted");
 
@@ -448,7 +448,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
     // TODO: need filtered test (e.g. only ontologies in a certain project)
 
     public void initControllerFields() {
-        searchIndexService.indexAll();
+        searchIndexService.indexAll(getAdminUser());
         List<String> types = new ArrayList<String>();
         types.add("DOCUMENT");
         types.add("ONTOLOGY");
@@ -493,7 +493,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         flaggedDoc.setStatus(Status.FLAGGED);
         List<Document> docs = Arrays.asList(activeDoc, draftDoc, flaggedDoc);
         entityService.saveOrUpdateAll(docs);
-        searchIndexService.indexAll(Resource.class);
+        searchIndexService.indexAll(getAdminUser(), Resource.class);
 
         // login as an admin
         controller = generateNewController(LookupController.class);
@@ -527,7 +527,7 @@ public class LookupControllerITCase extends AbstractIntegrationTestCase {
         // important! normally the SessionSecurityInterceptor would mark the session as readonly, but we need to do it manually in a test
         genericService.markReadOnly();
 
-        searchIndexService.indexAll(Person.class);
+        searchIndexService.indexAll(getAdminUser(), Person.class);
         // "log out"
         controller = generateNewController(LookupController.class);
         initAnonymousUser(controller);

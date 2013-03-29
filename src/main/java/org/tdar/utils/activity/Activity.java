@@ -34,6 +34,8 @@ public class Activity implements Serializable {
     private String browser;
     private String host;
 
+    private boolean indexingActivity = false;
+
     public Activity() {
         start();
     }
@@ -181,5 +183,13 @@ public class Activity implements Serializable {
 
     public void setHost(String host) {
         this.host = host;
+    }
+
+    public void setIndexingActivity(boolean b) {
+        indexingActivity = b;
+    }
+
+    public boolean isIndexingActivity() {
+        return indexingActivity;
     }
 }

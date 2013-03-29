@@ -42,9 +42,9 @@ import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.Invoice.TransactionStatus;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplate.NelnetTransactionItem;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -137,7 +137,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
                 try {
                     URL current = internalPage.getUrl();
                     prefix = String.format("%s://%s:%s", current.getProtocol(), current.getHost(), current.getPort());
-                    logger.info("SETTING URL TO {}{}" , prefix , localPath);
+                    logger.info("SETTING URL TO {}{}", prefix, localPath);
                 } catch (Exception e) {
                     logger.trace("{}", e);
                 }
@@ -152,6 +152,22 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
     protected WebClient getWebClient() {
         return webClient;
+    }
+
+    // TODO: implemnent this, if viable (not sure yet if it will be easy or crazy hard).
+    /**
+     * asserts whether current web page contains text that matches regex based on the provided reges. So, if format string is
+     * 
+     * "Hello %s,  how are you doing this fine %s?"
+     * 
+     * becomes...
+     * 
+     * /.*Hello (.*?), how are you doing this fine (.*?)\?/i
+     * 
+     * @param formatString
+     */
+    public void assertContainsFormat(String formatString) {
+        fail("not implemented");
     }
 
     /**
@@ -246,7 +262,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
         try {
             return page.getElementByName(name);
         } catch (ElementNotFoundException nse) {
-            throw new NoSuchElementException(String.format("Input * with Name %s on page %s cannot be found",name, internalPage.getUrl().toString()));
+            throw new NoSuchElementException(String.format("Input * with Name %s on page %s cannot be found", name, internalPage.getUrl().toString()));
         }
     }
 
@@ -255,11 +271,11 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     }
 
     public void setInput(String name, Number value) {
-        setInput(name, String.format("%s",  value));
+        setInput(name, String.format("%s", value));
     }
 
-    public<T extends Enum<T>> void setInput(String name,  T value) {
-        setInput(name, String.format("%s",  value.name()));
+    public <T extends Enum<T>> void setInput(String name, T value) {
+        setInput(name, String.format("%s", value.name()));
     }
 
     public void setInput(String name, String value, boolean overrideCreate) {
@@ -683,7 +699,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
 
     public void testProjectView() {
         // this should probably be done @before every test but it would slow things down even more
-        searchIndexService.indexAll();
+        searchIndexService.indexAll(getAdminUser());
 
         gotoPage("/project/3805");
         logger.trace(getPageText());

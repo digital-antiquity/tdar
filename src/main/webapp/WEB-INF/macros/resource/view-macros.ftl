@@ -558,7 +558,7 @@ No coding rules have been entered for this coding sheet yet.
     </#if>
 
     <#if copyrightMandatory && resource.copyrightHolder?? >
-        <p class="sml"><strong>Primary Copyright Holder:</strong>
+        <strong>Primary Copyright Holder:</strong>
         <@browse resource.copyrightHolder />
         </p>
     </#if>
