@@ -34,11 +34,13 @@
 
 <@edit.sharedFormComponents />
 
+
 </@s.form>
 
 
 <@edit.asyncUploadTemplates />
 <@edit.resourceJavascript formSelector="#ImageMetadataForm" selPrefix="#image" includeAsync=true includeInheritance=true />
+
 
 
 </body>

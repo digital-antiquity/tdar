@@ -863,9 +863,6 @@ TDAR.inheritance = function() {
     };
     
     var _registerInheritSection = function(options) {
-        if($(options.divSelector).length !== 1) {
-            console.error("_registerInheritSection - bad divSelector: %s", options.divSelector );
-        }
         var $checkbox = $(options.cbSelector);
         if($checkbox.length === 0 ) return;
         

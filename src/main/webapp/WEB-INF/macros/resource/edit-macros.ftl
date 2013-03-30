@@ -625,7 +625,7 @@ $(function(){
 	       informationResourceId: id, 
 	       acceptFileTypes: acceptFileTypes, 
 	       formSelector:"${formSelector}",
-	       fileInput: $('#fileAsyncUpload')
+	       inputSelector: '#fileAsyncUpload'
 	       });
     </#if>
     </#if>
@@ -936,7 +936,7 @@ jquery validation hooks?)
 </#macro>
 
 
-<#macro asyncFileUpload uploadLabel="Attach Files" showMultiple=false divTitle="Upload" divId="divFileUpload" >
+<#macro asyncFileUpload uploadLabel="Attach Files" showMultiple=false divTitle="Upload" divId="divFileUpload" inputFileCss="" >
 <div id="${divId}" class="well-alt">
     <@s.hidden name="ticketId" id="ticketId" />
     <h2>${uploadLabel}</h2>
@@ -958,7 +958,7 @@ jquery validation hooks?)
             <span class="btn btn-success fileinput-button">
                 <i class="icon-plus icon-white"></i>
                 <span>Add files...</span>
-            <input type="file" name="uploadFile" id="fileAsyncUpload" multiple="multiple" class="requiredtypes">
+            <input type="file" name="uploadFile" id="fileAsyncUpload" multiple="multiple" class="${inputFileCss}">
             </span>
             <#-- we don't want the 'bulk operations' for now,  might be handy later -->
             <#--

@@ -144,12 +144,41 @@ $.validator.addMethod("columnEncoding", function(value, element) {
     }
 });
 
-$.validator.addMethod("requiredtypes", function(value, element, parm) {
-    console.log("requiredTypes called!");
-    console.dir({
-        "value": value,
-        "element": element,
-        "parm": parm
-    });
-    return true;
-});
+$.validator.addMethod("gis-ancillary-files", function(value, element) {
+    //get the helper,  find out what kind of files have been added;
+    var gisExt = "jpg";
+    var gisHelperExts = ["aaa", "bbb", "ccc"];
+    
+    var errors = [];
+    var helper = $(element).data("fileuploadHelper");
+    var validFiles = helper.validFiles();
+    if(validFiles.length) {
+        var extmap = {};
+        var compositeFiles = $.map(validFiles, function(file, idx){
+            if(extmap[file.base] === undefined) {
+                extmap[file.base] = {};
+            }
+            extmap[file.base][file.ext] = true;
+            return file.ext === gisExt ? file : null;
+        });
+        var incompleteFiles = $.map(compositeFiles, function(file, idx) {
+            var neededFiles = $.map(gisHelperExts, function(ext) {
+                if(!extmap[file.base][ext])  {
+                    var neededFile = file.base + "." + ext;
+                    errors.push(file.filename + " should be accompanied by " + neededFile)
+                    return neededFile;
+                }
+            });
+            file.neededFiles = neededFiles;
+            if(file.neededFiles.length) return file;
+        });
+        var i, j;
+        
+    }
+    return errors.length === 0;
+    
+    //TODO: return a count of unmatched files in the error message, and specific errors in the #files section when we highlight 
+    }, $.validator.format("One or more of your uploads is missing an accompanying file"));
+
+
+

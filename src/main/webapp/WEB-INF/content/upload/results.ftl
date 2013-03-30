@@ -1,6 +1,6 @@
-[
+{"files":[
 <#list uploadFileFileName as fileName>
-{    
+{   
     "name":"${fileName!"error"}",
     "type":"${uploadFileContentType[fileName_index]!"error"}",
     "size":${(uploadFileSize[fileName_index]!0)?c},
@@ -8,3 +8,4 @@
 }<#if fileName_has_next>,</#if>
 </#list>
 ]
+}

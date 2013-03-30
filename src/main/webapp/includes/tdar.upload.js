@@ -109,8 +109,11 @@ TDAR.fileupload = function() {
         
         
         var helper = {
-                context: $fileupload,
+                //reference back to fileupload widget's container element
+                context: $fileupload[0],
+                
                 updateFileAction: _updateFileAction,
+                
                 //list of existing and new files that are not deleted or serving as a file replacement
                 validFiles: function() {
                     var $rows = $filesContainer.find('tr.template-download').not('.replace-target, .deleted-file');
@@ -126,12 +129,14 @@ TDAR.fileupload = function() {
                     
                     //translate property names and add extension
                     files = $.map(files, function(file){
+                        var ext = file.fileReplaceName.substring(file.fileReplaceName.lastIndexOf(".") + 1).toLowerCase();
                         return {
                             id: parseInt(file.fileId),
                             action: file.fileAction,
                             filename: file.fileReplaceName,
                             sequence: parseInt(file.fileSequenceNumber),
-                            ext:  file.fileReplaceName.substring(file.fileReplaceName.lastIndexOf(".") + 1).toLowerCase(),
+                            ext:  ext,
+                            base: file.fileReplaceName.substr(0, file.fileReplaceName.length - ext.length - 1),
                             context: file.context
                         }
                     });
@@ -139,7 +144,9 @@ TDAR.fileupload = function() {
                 }
         };
         
-        $(_options.formSelector).data('fileuploadHelper', helper);
+        //add reference to helper object 
+        $(_options.formSelector).add(_options.inputSelector).data('fileuploadHelper', helper);
+        
         return helper;
     };
     
