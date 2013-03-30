@@ -292,6 +292,9 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             search();
             setSearchTitle(getSearchSubtitle() + ": " + StringEscapeUtils.escapeXml(getSearchPhrase()));
             setSearchDescription(TdarConfiguration.getInstance().getSiteAcronym() + " search results: " + StringEscapeUtils.escapeXml(getSearchPhrase()));
+            if (getAuthenticatedUser() == null) {
+                geoMode = GeoRssMode.NONE;
+            }
             setInputStream(rssService.createRssFeedFromResourceList(this, getRssUrl(), geoMode, true));
         } catch (Exception e) {
             logger.error("rss error", e);
