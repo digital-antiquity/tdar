@@ -152,6 +152,7 @@ $.validator.addMethod("gis-ancillary-files", function(value, element) {
     var errors = [];
     var helper = $(element).data("fileuploadHelper");
     var validFiles = helper.validFiles();
+    var incompleteFiles = [];
     if(validFiles.length) {
         var extmap = {};
         var compositeFiles = $.map(validFiles, function(file, idx){
@@ -161,7 +162,7 @@ $.validator.addMethod("gis-ancillary-files", function(value, element) {
             extmap[file.base][file.ext] = true;
             return file.ext === gisExt ? file : null;
         });
-        var incompleteFiles = $.map(compositeFiles, function(file, idx) {
+        incompleteFiles = $.map(compositeFiles, function(file, idx) {
             var neededFiles = $.map(gisHelperExts, function(ext) {
                 if(!extmap[file.base][ext])  {
                     var neededFile = file.base + "." + ext;
@@ -175,10 +176,33 @@ $.validator.addMethod("gis-ancillary-files", function(value, element) {
         var i, j;
         
     }
+    $(element).data('incompleteFiles', incompleteFiles);
     return errors.length === 0;
     
-    //TODO: return a count of unmatched files in the error message, and specific errors in the #files section when we highlight 
     }, $.validator.format("One or more of your uploads is missing an accompanying file"));
 
 
-
+//add custom highlight/unhighlight handler
+//TODO figure out where to put/call this
+var _registerValidationHandlers($fileupload) {
+    var $filesContainer = $fileupload.fileupload('option', 'filesContainer');
+    var helper = $fileupload.data('fileuploadHelper');
+    $filesContiner.find('.missingFiles').remove();
+    
+    $filesContainer.on('highlight', function(evt, errorClass, validClass){
+        var incompleteFiles = $(helper.inputSelector).data('incompleteFiles');
+        $.each(incompleteFiles, function(file, idx){
+            var $td = file.context.find('td:first');
+            var $missing = $('<ul class="missingFiles"></ul>')
+            $.each(file.missingFiles, function(missingFile, idx){
+                $missing.append('<li> missing ' + missingFile + '</li>');
+            });
+            $td.append($missing);
+        });
+        
+    });
+    
+    $filesContainer.on('unhighlight', function(evt, errorClass, validClass){
+        $filesContiner.find('.missingFiles').remove();
+    }); 
+}

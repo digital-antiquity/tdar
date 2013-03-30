@@ -111,8 +111,8 @@ TDAR.fileupload = function() {
         var helper = {
                 //reference back to fileupload widget's container element
                 context: $fileupload[0],
-                
                 updateFileAction: _updateFileAction,
+                inputSelector: _options.inputSelector,
                 
                 //list of existing and new files that are not deleted or serving as a file replacement
                 validFiles: function() {
@@ -144,7 +144,11 @@ TDAR.fileupload = function() {
                 }
         };
         
-        //add reference to helper object 
+        if($.validator) {
+            _registerValidationHandlers($fileupload);
+        }
+        
+        //add reference to helper object  to form and inputFile
         $(_options.formSelector).add(_options.inputSelector).data('fileuploadHelper', helper);
         
         return helper;
@@ -346,7 +350,6 @@ TDAR.fileupload = function() {
     var _getRowId = function() {
         return _nextRowId++;
     }
-    
     
     //expose public elements
     return {
