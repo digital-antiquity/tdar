@@ -56,6 +56,7 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ExcelService;
 import org.tdar.core.service.RssService;
+import org.tdar.core.service.RssService.GeoRssMode;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
@@ -90,7 +91,8 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     private static final String CREATED_IN_THE_DECADE_S = "Created in the Decade: %s";
     private static final String SOMETHING_HAPPENED_WITH_EXCEL_EXPORT = "something happened with excel export";
     private boolean hideFacetsAndSort = false;
-
+    private GeoRssMode geoMode = GeoRssMode.POINT;
+    
     @Autowired
     private RssService rssService;
     @Autowired
@@ -278,7 +280,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             search();
             setSearchTitle(getSearchSubtitle() + ": " + StringEscapeUtils.escapeXml(getSearchPhrase()));
             setSearchDescription(TdarConfiguration.getInstance().getSiteAcronym() + " search results: " + StringEscapeUtils.escapeXml(getSearchPhrase()));
-            setInputStream(rssService.createRssFeedFromResourceList(this, getRssUrl(), true, true));
+            setInputStream(rssService.createRssFeedFromResourceList(this, getRssUrl(), geoMode, true));
         } catch (Exception e) {
             logger.error("rss error", e);
             addActionErrorWithException("could not process your search", e);
@@ -945,6 +947,14 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
     public void setLatLongBox(String latLongBox) {
         this.latLongBox = latLongBox;
+    }
+
+    public GeoRssMode getGeoMode() {
+        return geoMode;
+    }
+
+    public void setGeoMode(GeoRssMode geoMode) {
+        this.geoMode = geoMode;
     }
 
 }

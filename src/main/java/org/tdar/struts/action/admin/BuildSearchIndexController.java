@@ -94,7 +94,7 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
         logger.info("to reindex: {}", toReindex);
         Person person = null;
         if (Persistable.Base.isNotNullOrTransient(getUserId())) {
-            getEntityService().find(getUserId());
+            person = getEntityService().find(getUserId());
         }
 
         if (CollectionUtils.isEmpty(toReindex)) {
