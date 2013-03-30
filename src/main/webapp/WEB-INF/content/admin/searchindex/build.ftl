@@ -23,7 +23,7 @@ function updateProgress() {
 var url = "<@s.url value="checkstatus"/>?";
 var indx =0;
 $('input[type=checkbox]:checked').each(function() {
- url += "indexesToRebuild[" + indx+ "]=" + $(this).val() + "&";
+ url += "indexesToRebuild[" + indx+ "]=" + $(this).val() + "&userId=${authenticatedUser.id?c}&";
  indx++;
 });
     $.getJSON(url, function(data) {

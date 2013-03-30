@@ -18,6 +18,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.Indexable;
+import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.service.ActivityManager;
@@ -42,6 +44,7 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
     private int percentDone;
     private String phase;
     private String callback;
+    private Long userId;
 
     LinkedList<Throwable> errors = new LinkedList<Throwable>();
 
@@ -89,11 +92,15 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
         }
 
         logger.info("to reindex: {}", toReindex);
+        Person person = null;
+        if (Persistable.Base.isNotNullOrTransient(getUserId())) {
+            getEntityService().find(getUserId());
+        }
 
         if (CollectionUtils.isEmpty(toReindex)) {
-            searchIndexService.indexAll(this, getAuthenticatedUser());
+            searchIndexService.indexAll(this, person);
         } else {
-            searchIndexService.indexAll(this, toReindex,getAuthenticatedUser());
+            searchIndexService.indexAll(this, toReindex, person);
         }
         if (isProduction()) {
             getEmailService().send(String.format(INDEXING_STARTED, toReindex, getHostName(), date, new Date()), "indexing completed");
@@ -197,6 +204,14 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
 
     public void setIndexesToRebuild(List<LookupSource> indexesToRebuild) {
         this.indexesToRebuild = indexesToRebuild;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
 }
