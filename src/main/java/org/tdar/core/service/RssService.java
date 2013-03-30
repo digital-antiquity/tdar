@@ -42,6 +42,7 @@ import com.sun.syndication.feed.module.Module;
 import com.sun.syndication.feed.module.georss.GMLModuleImpl;
 import com.sun.syndication.feed.module.georss.GeoRSSModule;
 import com.sun.syndication.feed.module.georss.geometries.Envelope;
+import com.sun.syndication.feed.module.georss.geometries.Position;
 import com.sun.syndication.feed.module.opensearch.OpenSearchModule;
 import com.sun.syndication.feed.module.opensearch.impl.OpenSearchModuleImpl;
 import com.sun.syndication.feed.synd.SyndContent;
@@ -70,7 +71,12 @@ public class RssService implements Serializable {
 
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
     public static final Pattern INVALID_XML_CHARS = Pattern.compile("[\u0001\u0009\u0018\\u000A\\u000D\uD800\uDFFF]");
+
     // \uDC00-\uDBFF -\uD7FF\uE000-\uFFFD
+
+    public enum GeoRssMode {
+        NONE, POINT, ENVELOPE;
+    }
 
     @Autowired
     private UrlService urlService;
@@ -92,10 +98,11 @@ public class RssService implements Serializable {
     }
 
     @SuppressWarnings("unused")
-    public <I extends Indexable> ByteArrayInputStream createRssFeedFromResourceList(SearchResultHandler<I> handler,String rssUrl, boolean includeGeoRss, boolean includeEnclosures) throws IOException, FeedException {
+    public <I extends Indexable> ByteArrayInputStream createRssFeedFromResourceList(SearchResultHandler<I> handler, String rssUrl, GeoRssMode mode,
+            boolean includeEnclosures) throws IOException, FeedException {
         SyndFeed feed = new SyndFeedImpl();
         feed.setFeedType("atom_1.0");
-        
+
         feed.setTitle(TdarConfiguration.getInstance().getSiteAcronym() + " Search Results: " + cleanStringForXML(handler.getSearchTitle()));
         OpenSearchModule osm = new OpenSearchModuleImpl();
         osm.setItemsPerPage(handler.getRecordsPerPage());
@@ -140,14 +147,20 @@ public class RssService implements Serializable {
                         entry.setAuthors(authors);
                     }
                     LatitudeLongitudeBox latLong = resource.getFirstActiveLatitudeLongitudeBox();
-                    if (latLong != null && includeGeoRss) {
+                    if (latLong != null && mode != GeoRssMode.NONE) {
                         GeoRSSModule geoRss = new GMLModuleImpl();
-                        geoRss.setGeometry(new Envelope(latLong.getMinObfuscatedLatitude(), latLong.getMinObfuscatedLongitude(), latLong
-                                .getMaxObfuscatedLatitude(), latLong.getMaxObfuscatedLongitude()));
+                        if (mode == GeoRssMode.ENVELOPE) {
+                            geoRss.setGeometry(new Envelope(latLong.getMinObfuscatedLatitude(), latLong.getMinObfuscatedLongitude(), latLong
+                                    .getMaxObfuscatedLatitude(), latLong.getMaxObfuscatedLongitude()));
+                        }
+                        if (mode == GeoRssMode.POINT) {
+                            geoRss.setPosition(new Position(latLong.getCenterLatitude(), latLong.getCenterLongitude()));
+                        }
                         entry.getModules().add(geoRss);
                     }
 
-                    if (resource_ instanceof InformationResource && ((InformationResource) resource_).getLatestUploadedVersions().size() > 0 && includeEnclosures) {
+                    if (resource_ instanceof InformationResource && ((InformationResource) resource_).getLatestUploadedVersions().size() > 0
+                            && includeEnclosures) {
                         for (InformationResourceFile file : ((InformationResource) resource_).getVisibleFiles()) {
                             addEnclosure(handler.getAuthenticatedUser(), entry, file.getLatestUploadedVersion());
                             InformationResourceFileVersion thumb = file.getLatestThumbnail();

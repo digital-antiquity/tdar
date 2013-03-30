@@ -15,7 +15,7 @@
 
 <div id="titlebar" parse="true">
     <h1>${authenticatedUser.properName}'s Dashboard</h1>
-    
+
     <#if payPerIngestEnabled>
     <div class="news alert">
         <B>${siteAcronym} Update:</B>

@@ -58,7 +58,7 @@ public class DashboardController extends AuthenticationAware.Base {
     private Map<Status, Long> statusCountForUser = new HashMap<Status, Long>();
     private Set<Account> accounts = new HashSet<Account>();
     private Set<Account> overdrawnAccounts = new HashSet<Account>();
-
+    
     @Override
     @Action("dashboard")
     public String execute() {
@@ -70,8 +70,9 @@ public class DashboardController extends AuthenticationAware.Base {
         // removing duplicates
         if (isEditor()) {
             for (Activity activity : ActivityManager.getInstance().getActivityQueue()) {
-                if (activity.isIndexingActivity() && !activity.hasEnded()) {
-                    addActionMessage(String.format("%s is RE-INDEXING %s (%s)", activity.getUser().getProperName(), getSiteAcronym(), activity.getStartDate()));
+                if (activity.isIndexingActivity() ) {
+                    String msg = String.format("%s is RE-INDEXING %s (%s)", activity.getUser().getProperName(), getSiteAcronym(), activity.getStartDate());
+                    addActionMessage(msg);
                 }
             }
         }

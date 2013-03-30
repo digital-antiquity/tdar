@@ -20,10 +20,10 @@ $(document).ready(function(){
 function updateProgress() {
 
 
-var url = "<@s.url value="checkstatus"/>?";
+var url = "<@s.url value="checkstatus"/>?userId=${authenticatedUser.id?c}&";
 var indx =0;
 $('input[type=checkbox]:checked').each(function() {
- url += "indexesToRebuild[" + indx+ "]=" + $(this).val() + "&userId=${authenticatedUser.id?c}&";
+ url += "indexesToRebuild[" + indx+ "]=" + $(this).val();
  indx++;
 });
     $.getJSON(url, function(data) {
