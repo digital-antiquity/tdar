@@ -36,7 +36,7 @@ public abstract class AbstractAdminAuthenticatedWebTestCase extends AbstractAuth
             } catch (InterruptedException e) {
                 fail("InterruptedException during reindex.  sorry.");
             }
-            gotoPage("/admin/searchindex/checkstatus");
+            gotoPage("/admin/searchindex/checkstatus?userId="+getAdminUserId());
             logger.info(getPageCode());
             if (count == 1000) {
                 fail("we went through 1000 iterations of waiting for the search index to build... assuming something is wrong");
