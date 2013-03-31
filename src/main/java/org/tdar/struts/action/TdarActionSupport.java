@@ -532,7 +532,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     public boolean isReindexing() {
         Activity indexingTask = ActivityManager.getInstance().getIndexingTask();
-        if (indexingTask != null) {
+        if (indexingTask != null && !indexingTask.hasEnded()) {
             return true;
         }
         return false;
