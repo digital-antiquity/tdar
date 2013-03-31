@@ -42,7 +42,15 @@ $(function() {
 
 <@admin.statsTable historicalUserStats "User Statistics" "userstats" />
 
-
+<h3>Repeated Logins</h3>
+<table class="table tableFormat">
+	<thead>
+		<tr><th># of logins</th><th>user count</th></tr>
+		<#list userLoginStats as count>
+			<tr><td>${count.first?c}</td><td>${count.second?c}</td></tr>
+		</#list>
+	</thead>
+</table>
 
 <div class="glide">
 <h3>Recently Registered Users </h3>

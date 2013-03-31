@@ -25,6 +25,7 @@ public interface TdarNamedQueries {
     public static final String QUERY_PROJECT_INDEPENDENTRESOURCES_PROJECTS = "project.independentResourcesProject";
     public static final String QUERY_PROJECT_EDITABLE = "project.editable";
     public static final String QUERY_PROJECT_VIEWABLE = "project.viewable";
+    public static final String QUERY_LOGIN_STATS = "admin.userLogin";
     public static final String QUERY_PROJECT_ALL_OTHER = "project.all.other";
     public static final String QUERY_RESOURCE_RESOURCETYPE = "resource.resourceType";
     public static final String QUERY_RESOURCE_MODIFIED_SINCE = "resource.modifiedSince";

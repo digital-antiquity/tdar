@@ -450,17 +450,20 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     public void setLookupSource(LookupSource lookupSource) {
         this.lookupSource = lookupSource;
     }
-    
+
     public PaginationHelper getPaginationHelper() {
-        if(paginationHelper == null) paginationHelper = PaginationHelper.withSearchResults(this);
+        if (paginationHelper == null)
+            paginationHelper = PaginationHelper.withSearchResults(this);
         return paginationHelper;
     }
-    
+
     /**
-     * indicates whether view layer should hide facet + sort controls 
-     * @return 
+     * indicates whether view layer should hide facet + sort controls
+     * 
+     * @return
      */
     public boolean isHideFacetsAndSort() {
         return true;
     }
+
 }

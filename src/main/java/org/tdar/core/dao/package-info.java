@@ -350,6 +350,10 @@
     @org.hibernate.annotations.NamedQuery(
             name = TdarNamedQueries.UNASSIGNED_INVOICES_FOR_PERSON,
             query = "from Invoice where owner.id = :personId and account_id is null and transactionStatus in (:statuses)"
+    ),
+    @org.hibernate.annotations.NamedQuery(
+            name = TdarNamedQueries.QUERY_LOGIN_STATS,
+            query = "select totalLogins, count(id) from Person where totalLogins > 0 group by totalLogins order by totalLogins asc"
     )
 
 })

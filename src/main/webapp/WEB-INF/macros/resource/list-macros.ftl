@@ -20,6 +20,7 @@
   <#local listTag_=listTag/>  
   <#assign itemTag_=itemTag/> 
   <#assign itemClass = ""/>
+  <@common.reindexingNote />
   
   <#-- setup default -->
   <#if orientation == "GRID">

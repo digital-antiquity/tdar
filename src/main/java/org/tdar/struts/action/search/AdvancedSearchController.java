@@ -92,7 +92,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     private static final String SOMETHING_HAPPENED_WITH_EXCEL_EXPORT = "something happened with excel export";
     private boolean hideFacetsAndSort = false;
     private GeoRssMode geoMode = GeoRssMode.POINT;
-    
+
     @Autowired
     private RssService rssService;
     @Autowired
@@ -280,7 +280,12 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             search();
             setSearchTitle(getSearchSubtitle() + ": " + StringEscapeUtils.escapeXml(getSearchPhrase()));
             setSearchDescription(TdarConfiguration.getInstance().getSiteAcronym() + " search results: " + StringEscapeUtils.escapeXml(getSearchPhrase()));
-            setInputStream(rssService.createRssFeedFromResourceList(this, getRssUrl(), geoMode, true));
+            if (getAuthenticatedUser() == null) {
+                geoMode = GeoRssMode.NONE;
+            }
+            if (!isReindexing()) {
+                setInputStream(rssService.createRssFeedFromResourceList(this, getRssUrl(), geoMode, true));
+            }
         } catch (Exception e) {
             logger.error("rss error", e);
             addActionErrorWithException("could not process your search", e);

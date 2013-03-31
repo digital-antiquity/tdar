@@ -47,6 +47,8 @@ public class ActivityManager {
         }
         return null;
     }
+    
+    
 
     public synchronized void cleanup(long expirationTimeInMillis) {
         Iterator<Activity> iterator = activityQueue.iterator();
@@ -58,5 +60,14 @@ public class ActivityManager {
                 logger.trace("removing {}", activity);
             }
         }
+    }
+
+    public synchronized Activity getIndexingTask() {
+        for (Activity activity : ActivityManager.getInstance().getActivityQueue()) {
+            if (activity.isIndexingActivity() ) {
+                return activity;
+            }
+        }
+        return null;
     }
 }

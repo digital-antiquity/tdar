@@ -1028,7 +1028,13 @@ this bit of freemarker is voodoo:
 </#if>        
 </#macro>
 
-
+<#macro reindexingNote>
+ <#if reindexing?? && reindexing >
+	<div class=" alert">
+	    <p>Please note: ${siteAcronym} is currently being updated and not all searches will return the complete results. </p>
+	</div>
+ </#if>
+</#macro>
 
 </#escape>
 
