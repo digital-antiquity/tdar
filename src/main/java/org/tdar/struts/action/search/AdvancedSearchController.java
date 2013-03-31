@@ -104,7 +104,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     private static final int MAX_CREATOR_RECORDS_TO_RESOLVE = 10;
     private boolean hideFacetsAndSort = false;
     private GeoRssMode geoMode = GeoRssMode.POINT;
-    
+
     @Autowired
     private RssService rssService;
     @Autowired
@@ -295,7 +295,9 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             if (getAuthenticatedUser() == null) {
                 geoMode = GeoRssMode.NONE;
             }
-            setInputStream(rssService.createRssFeedFromResourceList(this, getRssUrl(), geoMode, true));
+            if (!isReindexing()) {
+                setInputStream(rssService.createRssFeedFromResourceList(this, getRssUrl(), geoMode, true));
+            }
         } catch (Exception e) {
             logger.error("rss error", e);
             addActionErrorWithException("could not process your search", e);

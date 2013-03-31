@@ -72,6 +72,7 @@ public class AdminController extends AuthenticationAware.Base {
     private List<Pair<TemporalKeyword, Integer>> temporalKeywordStats;
     private Map<String, Float> extensionStats;
     private List<Person> recentUsers;
+    private List<Pair<Long,Long>> userLoginStats;
     private List<Resource> recentlyUpdatedResources;
     private Map<ResourceType, List<BigInteger>> currentResourceStats;
 
@@ -133,6 +134,7 @@ public class AdminController extends AuthenticationAware.Base {
     public String userInfo() {
         setHistoricalUserStats(getStatisticService().getUserStatistics());
         setRecentUsers(getEntityService().findAllRegisteredUsers(10));
+        setUserLoginStats(getStatisticService().getUserLoginStats());
         return SUCCESS;
     }
 
@@ -319,6 +321,14 @@ public class AdminController extends AuthenticationAware.Base {
 
     public void setHistoricalResourceStatsWithFiles(Map<Date, Map<StatisticType, Long>> historicalResourceStatsWithFiles) {
         this.historicalResourceStatsWithFiles = historicalResourceStatsWithFiles;
+    }
+
+    public List<Pair<Long,Long>> getUserLoginStats() {
+        return userLoginStats;
+    }
+
+    public void setUserLoginStats(List<Pair<Long,Long>> userLoginStats) {
+        this.userLoginStats = userLoginStats;
     }
 
 }

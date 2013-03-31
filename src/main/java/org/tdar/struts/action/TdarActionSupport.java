@@ -26,6 +26,7 @@ import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.AccountService;
+import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.DataIntegrationService;
 import org.tdar.core.service.EntityService;
@@ -50,6 +51,7 @@ import org.tdar.core.service.resource.OntologyNodeService;
 import org.tdar.core.service.resource.OntologyService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.utils.activity.Activity;
 import org.tdar.web.SessionData;
 
 import com.opensymphony.xwork2.ActionContext;
@@ -527,4 +529,13 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public String getJiraScriptLink() {
         return getTdarConfiguration().getJiraScriptLink();
     }
+
+    public boolean isReindexing() {
+        Activity indexingTask = ActivityManager.getInstance().getIndexingTask();
+        if (indexingTask != null) {
+            return true;
+        }
+        return false;
+    }
+
 }

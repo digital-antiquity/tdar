@@ -58,7 +58,7 @@ public class DashboardController extends AuthenticationAware.Base {
     private Map<Status, Long> statusCountForUser = new HashMap<Status, Long>();
     private Set<Account> accounts = new HashSet<Account>();
     private Set<Account> overdrawnAccounts = new HashSet<Account>();
-    
+
     @Override
     @Action("dashboard")
     public String execute() {
@@ -68,13 +68,10 @@ public class DashboardController extends AuthenticationAware.Base {
         getResourceCollections().addAll(getResourceCollectionService().findParentOwnerCollections(getAuthenticatedUser()));
         getSharedResourceCollections().addAll(getEntityService().findAccessibleResourceCollections(getAuthenticatedUser()));
         // removing duplicates
-        if (isEditor()) {
-            for (Activity activity : ActivityManager.getInstance().getActivityQueue()) {
-                if (activity.isIndexingActivity() ) {
-                    String msg = String.format("%s is RE-INDEXING %s (%s)", activity.getUser().getProperName(), getSiteAcronym(), activity.getStartDate());
-                    addActionMessage(msg);
-                }
-            }
+        Activity indexingTask = ActivityManager.getInstance().getIndexingTask();
+        if (isEditor() && indexingTask != null) {
+            String msg = String.format("%s is RE-INDEXING %s (%s)", indexingTask.getUser().getProperName(), getSiteAcronym(), indexingTask.getStartDate());
+            addActionMessage(msg);
         }
         getSharedResourceCollections().removeAll(getResourceCollections());
         Collections.sort(resourceCollections);
