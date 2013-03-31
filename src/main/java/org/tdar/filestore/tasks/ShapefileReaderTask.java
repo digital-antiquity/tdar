@@ -1,6 +1,7 @@
 package org.tdar.filestore.tasks;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,8 @@ import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.feature.Feature;
 import org.opengis.feature.GeometryAttribute;
+import org.opengis.feature.type.PropertyDescriptor;
+import org.opengis.feature.type.PropertyType;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.filestore.tasks.Task.AbstractTask;
 
@@ -83,7 +86,16 @@ public class ShapefileReaderTask extends AbstractTask {
                 FeatureCollection collection = featureSource.getFeatures();
                 FeatureIterator iterator = collection.features();
                 getLogger().debug("{}",dataStore.getNames());
-
+//                Filter filter = CQL.toFilter(text.getText());
+//                SimpleFeatureCollection features = source.getFeatures(filter);
+//                FeatureCollectionTableModel model = new FeatureCollectionTableModel(features);
+                for (PropertyDescriptor descriptors : collection.getSchema().getDescriptors()) {
+                    PropertyType type = descriptors.getType();
+                    getLogger().info("schema: {} {} ({}) " , descriptors.getName(), descriptors.getUserData(), type);
+                    getLogger().info("\t: {} {} ({}) " , type.getBinding(), type.getName(), type.getDescription());
+    
+                }
+                
                 try {
                     while (iterator.hasNext()) {
                         Feature feature = iterator.next();
