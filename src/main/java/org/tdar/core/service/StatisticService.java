@@ -13,6 +13,7 @@ import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.statistics.AggregateStatistic;
 import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 import org.tdar.core.dao.StatisticDao;
+import org.tdar.utils.Pair;
 
 import com.ibm.icu.util.GregorianCalendar;
 
@@ -63,6 +64,10 @@ public class StatisticService extends ServiceInterface.TypedDaoBase<AggregateSta
         List<StatisticType> types = Arrays.asList(StatisticType.NUM_CODING_SHEET_WITH_FILES, StatisticType.NUM_DATASET_WITH_FILES, StatisticType.NUM_DOCUMENT_WITH_FILES,
                 StatisticType.NUM_IMAGE_WITH_FILES, StatisticType.NUM_ONTOLOGY_WITH_FILES, StatisticType.NUM_PROJECT, StatisticType.NUM_SENSORY_DATA_WITH_FILES, StatisticType.NUM_VIDEO_WITH_FILES);
         return getDao().getStatistics(startDate, new Date(), types.toArray(new StatisticType[0]));
+    }
+
+    public List<Pair<Long, Long>> getUserLoginStats() {
+        return getDao().getUserLoginStats();
     }
     
 }

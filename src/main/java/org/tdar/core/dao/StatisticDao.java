@@ -13,6 +13,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.statistics.AggregateStatistic;
 import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
+import org.tdar.utils.Pair;
 
 @Component
 public class StatisticDao extends Dao.HibernateBase<AggregateStatistic> {
@@ -22,12 +23,12 @@ public class StatisticDao extends Dao.HibernateBase<AggregateStatistic> {
     }
 
     @SuppressWarnings("unchecked")
-    public Map<Date, Map<StatisticType, Long>> getStatistics(Date fromDate, Date toDate, StatisticType ... types) {
+    public Map<Date, Map<StatisticType, Long>> getStatistics(Date fromDate, Date toDate, StatisticType... types) {
         Query query = getCurrentSession().getNamedQuery(QUERY_USAGE_STATS);
         query.setDate("fromDate", fromDate);
         query.setDate("toDate", toDate);
         query.setParameterList("statTypes", types);
-        Map<Date, Map<StatisticType,Long>> toReturn = new HashMap<Date, Map<StatisticType,Long>>();
+        Map<Date, Map<StatisticType, Long>> toReturn = new HashMap<Date, Map<StatisticType, Long>>();
         for (AggregateStatistic result : (List<AggregateStatistic>) query.list()) {
             Date date = result.getRecordedDate();
             if (!toReturn.containsKey(date)) {
@@ -36,7 +37,7 @@ public class StatisticDao extends Dao.HibernateBase<AggregateStatistic> {
                     toReturn.get(date).put(type, 0L);
                 }
             }
-            Map<StatisticType,Long> stat = toReturn.get(date);
+            Map<StatisticType, Long> stat = toReturn.get(date);
             stat.put(result.getStatisticType(), result.getValue());
         }
 
@@ -65,11 +66,22 @@ public class StatisticDao extends Dao.HibernateBase<AggregateStatistic> {
         for (Object[] result_ : (List<Object[]>) query.list()) {
             List<Number> stat = new ArrayList<Number>();
             toReturn.put((String) result_[0], stat);
-            stat.add((Double) result_[1]); //average
-            stat.add((Long) result_[2]); //min
-            stat.add((Long) result_[3]); //max
+            stat.add((Double) result_[1]); // average
+            stat.add((Long) result_[2]); // min
+            stat.add((Long) result_[3]); // max
         }
         return toReturn;
     }
-    
+
+    public List<Pair<Long, Long>> getUserLoginStats() {
+        Query query = getCurrentSession().getNamedQuery(QUERY_LOGIN_STATS);
+        List<Pair<Long, Long>> toReturn = new ArrayList<Pair<Long, Long>>();
+        for (Object[] result_ : (List<Object[]>) query.list()) {
+            Number total = (Number) result_[0];
+            Number count = (Number) result_[1];
+            toReturn.add(Pair.create(total.longValue(), count.longValue()));
+        }
+        return toReturn;
+    }
+
 }
