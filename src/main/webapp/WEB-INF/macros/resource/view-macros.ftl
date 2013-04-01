@@ -565,7 +565,10 @@ No coding rules have been entered for this coding sheet yet.
 
 <h2>Summary</h2>
 <p>
-  ${resource.description!"No description specified."}
+  <#local description = resource.description!"No description specified."/>
+  <#noescape>
+    ${(description)?html?replace("[\r\n]++","</p><p>","r")}
+  </#noescape>
 </p>
 
 <hr />
