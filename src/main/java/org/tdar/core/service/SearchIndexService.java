@@ -156,6 +156,7 @@ public class SearchIndexService {
             log.warn(ex);
             updateReceiver.addError(ex);
         }
+        activity.end();
     }
 
     private void index(FullTextSession fullTextSession, Object item) {

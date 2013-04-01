@@ -23,6 +23,7 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.SearchIndexService;
 import org.tdar.web.SessionData;
 import org.xml.sax.SAXException;
@@ -110,6 +111,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
     @Test
     @Rollback(true)
     public void testFindResourceBuildRss() throws XpathException, SAXException, IOException, InterruptedException {
+        ActivityManager.getInstance().getActivityQueue().clear();
         Resource r = genericService.find(Resource.class, 3074L);
         r.setStatus(Status.ACTIVE);
         genericService.saveOrUpdate(r);
