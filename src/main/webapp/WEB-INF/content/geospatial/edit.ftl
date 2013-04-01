@@ -16,7 +16,7 @@
 
 <@s.form name='geospatialMetadataForm' id='geospatialMetadataForm'  cssClass="form-horizontal disableFormNavigate"  method='post' enctype='multipart/form-data' action='save'>
 
-<@edit.basicInformation itemTypeLabel="geospatial" itemPrefix="geospatial">
+<@edit.basicInformation "geospatial" "geospatial">
 
 </@edit.basicInformation>
 
