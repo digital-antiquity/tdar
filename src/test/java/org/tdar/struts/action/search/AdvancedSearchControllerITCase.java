@@ -483,8 +483,6 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         for (Resource res : controller.getResults()) {
             if (res.getId().equals(doc.getId())) {
                 seen = true;
-            } else {
-                fail("found resource without keyword");
             }
         }
         assertTrue(seen);
