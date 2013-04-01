@@ -4,11 +4,11 @@ import java.util.Set;
 
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.convention.annotation.Result;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Geospatial;
-import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.struts.data.FileProxy;
 
@@ -27,13 +27,13 @@ import org.tdar.struts.data.FileProxy;
 @Component
 @Scope("prototype")
 @Namespace("/geospatial")
-public class GeospatialController extends AbstractInformationResourceController<Geospatial>{
+@Result(name = "input", location = "edit.ftl")
+public class GeospatialController extends AbstractDatasetController<Geospatial> {
 
     /**
      * 
      */
     private static final long serialVersionUID = 1L;
-
 
     @Override
     protected String save(Geospatial persistable) {
@@ -62,13 +62,11 @@ public class GeospatialController extends AbstractInformationResourceController<
     public Class<Geospatial> getPersistableClass() {
         return Geospatial.class;
     }
-    
-    
+
     public Dataset getGeospatial() {
         return getPersistable();
     }
 
-    
     @Override
     public Set<String> getValidFileExtensions() {
         return analyzer.getExtensionsForType(getPersistable().getResourceType());
