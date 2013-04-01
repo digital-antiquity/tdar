@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.TestConstants;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
@@ -462,6 +463,25 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         for (Resource res : controller.getResults()) {
             logger.info("{}", res);
             if (res.getGeographicKeywords().contains(kwd)) {
+                seen = true;
+            } else {
+                fail("found resource without keyword");
+            }
+        }
+        assertTrue(seen);
+    }
+
+    
+    @Test
+    @Rollback(true)
+    public void testFilenameFound() throws InstantiationException, IllegalAccessException {
+        Document doc = generateInformationResourceWithFileAndUser();
+        searchIndexService.index(doc);
+        firstGroup().getFilenames().add(TestConstants.TEST_DOCUMENT_NAME);
+        doSearch();
+        boolean seen = false;
+        for (Resource res : controller.getResults()) {
+            if (res.getId().equals(doc.getId())) {
                 seen = true;
             } else {
                 fail("found resource without keyword");

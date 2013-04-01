@@ -3,6 +3,8 @@ package org.tdar.struts.data;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.tdar.core.bean.resource.InformationResource;
+
 public class AggregateDownloadStatistic implements Serializable {
 
     private static final long serialVersionUID = 1698960536676588440L;
@@ -12,6 +14,8 @@ public class AggregateDownloadStatistic implements Serializable {
     String filename;
     Long informationResourceFileId;
     Long informationResourceId;
+
+    private transient InformationResource informationResource;
 
     public AggregateDownloadStatistic() {
     }
@@ -70,4 +74,12 @@ public class AggregateDownloadStatistic implements Serializable {
         this.informationResourceId = informationResourceId;
     }
 
+    public void setInformationResource(InformationResource informationResource) {
+        this.informationResource = informationResource;
+        this.informationResourceId = informationResource.getId();
+    }
+
+    public InformationResource getInformationResource() {
+        return this.informationResource;
+    }
 }

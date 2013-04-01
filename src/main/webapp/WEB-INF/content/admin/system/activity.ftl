@@ -15,7 +15,7 @@ pre, td {
 </head>
 <body>
 <@admin.header/>
-<h2>Recent System Activity</h2>
+<h1>Recent System Activity</h1>
 <hr/>
 <@s.actionerror />
 

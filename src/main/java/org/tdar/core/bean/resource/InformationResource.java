@@ -145,7 +145,7 @@ public abstract class InformationResource extends Resource {
     @OneToMany(mappedBy = "informationResource", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
     @OrderBy("sequenceNumber asc")
     @JSONTransient
-    @IndexedEmbedded
+    @IndexedEmbedded(prefix="")
     private Set<InformationResourceFile> informationResourceFiles = new LinkedHashSet<InformationResourceFile>();
 
     @BulkImportField(label = "Metadata Language", comment = BulkImportField.METADATA_LANGUAGE_DESCRIPTION)
@@ -926,6 +926,7 @@ public abstract class InformationResource extends Resource {
     @Transient
     @JSONTransient
     @XmlTransient
+    @IndexedEmbedded
     public List<InformationResourceFile> getVisibleFilesWithThumbnails() {
         ArrayList<InformationResourceFile> visibleFiles = new ArrayList<InformationResourceFile>();
         for (InformationResourceFile irfile : getVisibleFiles()) {
