@@ -2,6 +2,7 @@
 <title>Build ${siteAcronym} Index</title>
 <script type="text/javascript">
 var $buildStatus, $buildLog, $progressbar;
+var production = ${production?string('true', 'false')};
 $(document).ready(function(){
     $buildStatus = $('#buildStatus');
     $buildLog = $('#buildLog');
@@ -10,13 +11,20 @@ $(document).ready(function(){
     $progressbar.progressbar({value : 0});
     $("#idxBtn").click(
         function(){
-            this.disabled = true;
-            $buildStatus.empty().append("Building Index...");
-    setTimeout(updateProgress, 200);
+            var confirmed = true;
+            if(production) {
+                confirmed = confirm("You are in production.  are you sure you want to do this?");
+            }
+            
+            if(confirmed) {
+                this.disabled = true;
+                $buildStatus.empty().append("Building Index...");
+                setTimeout(updateProgress, 200);
+            }
         }
     );
 });
-  
+
 function updateProgress() {
 
 
@@ -57,7 +65,21 @@ $('input[type=checkbox]:checked').each(function() {
 <div>
 <div id="progressbar"></div>
 <br/>
-<input type='button' value='Build Index' id='idxBtn' />
+<#if reindexing!false>
+<div class="alert">
+  <button type="button" class="close" data-dismiss="alert">&times;</button>
+  <strong>REINDEX IN PROGRESS!</strong> You are already reindexing on this server.
+</div>
+</#if>
+<#if production>
+<div class="alert">
+  <button type="button" class="close" data-dismiss="alert">&times;</button>
+  <strong>Hey!</strong> You are on the production server.  Please do be careful.
+</div>
+<input type='button' value='Build Index on core.tdar.org' id='idxBtn' class="btn btn-danger" />
+<#else>
+<input type='button' value='Build Index' id='idxBtn' class="btn"/>
+</#if>
 <br/>
 <br/>
 <span id="buildStatus"></span>
