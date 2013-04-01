@@ -145,7 +145,7 @@ public abstract class InformationResource extends Resource {
     @OneToMany(mappedBy = "informationResource", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
     @OrderBy("sequenceNumber asc")
     @JSONTransient
-    @IndexedEmbedded(prefix="")
+    @IndexedEmbedded
     private Set<InformationResourceFile> informationResourceFiles = new LinkedHashSet<InformationResourceFile>();
 
     @BulkImportField(label = "Metadata Language", comment = BulkImportField.METADATA_LANGUAGE_DESCRIPTION)

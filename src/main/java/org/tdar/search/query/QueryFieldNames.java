@@ -76,7 +76,7 @@ public interface QueryFieldNames {
     public static final String RESOURCE_ACCESS_TYPE = "resourceAccessType";
     public static final String PROPER_NAME = "properName";
     public static final String RESOURCE_CREATORS_PROPER_NAME = "resourceCreators.creator." + PROPER_NAME;
-//    public static final String INFORMATION_RESOURCE_FILES_FILENAME = "informationResourceFiles.filename";
+    public static final String INFORMATION_RESOURCE_FILES_FILENAME = "informationResourceFiles.filename";
     public static final String RESOURCE_PROVIDER_ID = "resourceProviderInstitution.id";
     public static final String CATEGORY_ID = "categoryVariable.id";
     public static final String CATEGORY_LABEL = "categoryVariable.label";
