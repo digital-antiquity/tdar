@@ -87,7 +87,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
         doSearch("");
         controller.viewRss();
         // the record we created should be the absolute first record
-        assertEquals(document,controller.getResults().get(0));
+        assertEquals(document, controller.getResults().get(0));
     }
 
     @Test
@@ -103,10 +103,9 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
         logger.debug(viewRss);
         logger.debug("{}", controller.getActionErrors());
         // the record we created should be the absolute first record
-        assertEquals(0,controller.getActionErrors().size());
+        assertEquals(0, controller.getActionErrors().size());
     }
 
-    
     @Test
     @Rollback(true)
     public void testFindResourceBuiIdRss() throws XpathException, SAXException, IOException {
@@ -123,7 +122,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
 
         assertTrue(resultsContainId(3074l));
         logger.info(rssFeed);
-        assertTrue(rssFeed.contains(r.getId().toString()));
+        assertTrue("feed should contain id " + r.getId() + ": " + rssFeed, rssFeed.contains(r.getId().toString()));
         assertTrue(rssFeed.contains("Durrington Walls Humerus Dataset"));
         assertXpathEvaluatesTo("Durrington Walls Humerus Dataset", "/atom:feed/atom:entry/atom:title", rssFeed);
     }
