@@ -893,7 +893,9 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase {
     }
 
     protected void assertFileSizes(Page page, List<File> files) {
-        JSONArray jsonArray = (JSONArray) JSONSerializer.toJSON(page.getWebResponse().getContentAsString());
+        JSONObject json = (JSONObject) JSONSerializer.toJSON(page.getWebResponse().getContentAsString());
+        JSONArray jsonArray = json.getJSONArray("files");
+        logger.info(jsonArray.toString());
         for (int i = 0; i < files.size(); i++) {
             Assert.assertEquals("file size reported from server should be same as original", files.get(i).length(), jsonArray.getJSONObject(i).getLong("size"));
         }

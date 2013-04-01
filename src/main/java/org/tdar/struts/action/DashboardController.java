@@ -68,10 +68,14 @@ public class DashboardController extends AuthenticationAware.Base {
         getResourceCollections().addAll(getResourceCollectionService().findParentOwnerCollections(getAuthenticatedUser()));
         getSharedResourceCollections().addAll(getEntityService().findAccessibleResourceCollections(getAuthenticatedUser()));
         // removing duplicates
+        try {
         Activity indexingTask = ActivityManager.getInstance().getIndexingTask();
         if (isEditor() && indexingTask != null) {
             String msg = String.format("%s is RE-INDEXING %s (%s)", indexingTask.getUser().getProperName(), getSiteAcronym(), indexingTask.getStartDate());
             addActionMessage(msg);
+        }
+        } catch (Throwable t) {
+            logger.error("what???", t);
         }
         getSharedResourceCollections().removeAll(getResourceCollections());
         Collections.sort(resourceCollections);

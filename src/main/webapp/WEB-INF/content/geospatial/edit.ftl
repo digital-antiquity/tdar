@@ -20,6 +20,7 @@
 
 </@edit.basicInformation>
 
+<@edit.citationInfo "geospatial" />
 <@edit.chooseProjectSection />
 
 <@edit.asyncFileUpload  uploadLabel="Attach GIS Files" showMultiple=true inputFileCss="gis-ancillary-files" />

@@ -1,7 +1,6 @@
 package org.tdar.filestore.tasks;
 
 import java.io.File;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +10,6 @@ import org.apache.commons.lang.ArrayUtils;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFinder;
 import org.geotools.data.FeatureSource;
-import org.geotools.factory.Hints;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.gce.geotiff.GeoTiffFormat;
@@ -49,8 +47,8 @@ public class ShapefileReaderTask extends AbstractTask {
             // AbstractGridCoverage2DReader reader = format.getReader(file);
 
             GeoTiffFormat gtf = new GeoTiffFormat();
-//            Hints hints = new Hints(Hints.DEFAULT_COORDINATE_REFERENCE_SYSTEM, gtf.getDefaultCRS());
-            GridCoverageReader reader = gtf.getReader(workingOriginal);//, hints
+            // Hints hints = new Hints(Hints.DEFAULT_COORDINATE_REFERENCE_SYSTEM, gtf.getDefaultCRS());
+            GridCoverageReader reader = gtf.getReader(workingOriginal);// , hints
             // getLogger().info("subname: {} ", reader.getCurrentSubname());
             getLogger().info("format: {} ({}) -- {} ", reader.getFormat().getVendor(), reader.getFormat().getVersion(), reader.getFormat().getDescription());
             // getLogger().info("more coverages: {} ", reader.hasMoreGridCoverages());
@@ -85,23 +83,23 @@ public class ShapefileReaderTask extends AbstractTask {
                 FeatureSource featureSource = dataStore.getFeatureSource(typeName);
                 FeatureCollection collection = featureSource.getFeatures();
                 FeatureIterator iterator = collection.features();
-                getLogger().debug("{}",dataStore.getNames());
-//                Filter filter = CQL.toFilter(text.getText());
-//                SimpleFeatureCollection features = source.getFeatures(filter);
-//                FeatureCollectionTableModel model = new FeatureCollectionTableModel(features);
+                getLogger().debug("{}", dataStore.getNames());
+                // Filter filter = CQL.toFilter(text.getText());
+                // SimpleFeatureCollection features = source.getFeatures(filter);
+                // FeatureCollectionTableModel model = new FeatureCollectionTableModel(features);
                 for (PropertyDescriptor descriptors : collection.getSchema().getDescriptors()) {
                     PropertyType type = descriptors.getType();
-                    getLogger().info("schema: {} {} ({}) " , descriptors.getName(), descriptors.getUserData(), type);
-                    getLogger().info("\t: {} {} ({}) " , type.getBinding(), type.getName(), type.getDescription());
-    
+                    getLogger().info("schema: {} {} ({}) ", descriptors.getName(), descriptors.getUserData(), type);
+                    getLogger().info("\t: {} {} ({}) ", type.getBinding(), type.getName(), type.getDescription());
+
                 }
-                
+
                 try {
                     while (iterator.hasNext()) {
                         Feature feature = iterator.next();
                         GeometryAttribute sourceGeometry = feature.getDefaultGeometryProperty();
                         getLogger().info(" {} {} : {}", sourceGeometry, sourceGeometry.getName(), sourceGeometry.getUserData());
-                        getLogger().info("\t {} ",feature.getValue());
+                        getLogger().info("\t {} ", feature.getValue());
                     }
                 } finally {
                     iterator.close();
