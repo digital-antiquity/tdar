@@ -146,7 +146,7 @@ public class Activity implements Serializable {
     }
 
     public boolean hasEnded() {
-        return (this.endDate == null);
+        return (this.endDate != null);
     }
 
     public String getBrowser() {
