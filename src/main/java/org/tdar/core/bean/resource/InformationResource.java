@@ -927,6 +927,7 @@ public abstract class InformationResource extends Resource {
     @Transient
     @JSONTransient
     @XmlTransient
+    @IndexedEmbedded
     public List<InformationResourceFile> getVisibleFilesWithThumbnails() {
         ArrayList<InformationResourceFile> visibleFiles = new ArrayList<InformationResourceFile>();
         for (InformationResourceFile irfile : getVisibleFiles()) {

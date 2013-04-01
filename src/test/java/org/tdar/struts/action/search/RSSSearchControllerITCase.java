@@ -1,6 +1,7 @@
 package org.tdar.struts.action.search;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -22,6 +23,7 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.SearchIndexService;
 import org.tdar.web.SessionData;
 import org.xml.sax.SAXException;
@@ -87,7 +89,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
         doSearch("");
         controller.viewRss();
         // the record we created should be the absolute first record
-        assertEquals(document,controller.getResults().get(0));
+        assertEquals(document, controller.getResults().get(0));
     }
 
     @Test
@@ -103,27 +105,30 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
         logger.debug(viewRss);
         logger.debug("{}", controller.getActionErrors());
         // the record we created should be the absolute first record
-        assertEquals(0,controller.getActionErrors().size());
+        assertEquals(0, controller.getActionErrors().size());
     }
 
-    
     @Test
     @Rollback(true)
-    public void testFindResourceBuiIdRss() throws XpathException, SAXException, IOException {
+    public void testFindResourceBuildRss() throws XpathException, SAXException, IOException, InterruptedException {
+        ActivityManager.getInstance().getActivityQueue().clear();
         Resource r = genericService.find(Resource.class, 3074L);
         r.setStatus(Status.ACTIVE);
         genericService.saveOrUpdate(r);
         searchIndexService.index(r);
+        genericService.synchronize();
+        Thread.sleep(1000l);
         controller.setId(r.getId());
         controller.getResourceTypes().addAll(Arrays.asList(ResourceType.DATASET));
         controller.setSessionData(new SessionData()); // create unauthenticated session
+        assertFalse(controller.isReindexing());
         doSearch("");
         controller.viewRss();
         String rssFeed = IOUtils.toString(controller.getInputStream());
 
         assertTrue(resultsContainId(3074l));
         logger.info(rssFeed);
-        assertTrue(rssFeed.contains(r.getId().toString()));
+        assertTrue("feed should contain id " + r.getId() + ": " + rssFeed, rssFeed.contains(r.getId().toString()));
         assertTrue(rssFeed.contains("Durrington Walls Humerus Dataset"));
         assertXpathEvaluatesTo("Durrington Walls Humerus Dataset", "/atom:feed/atom:entry/atom:title", rssFeed);
     }

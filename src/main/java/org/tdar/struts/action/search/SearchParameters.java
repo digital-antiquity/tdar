@@ -306,7 +306,7 @@ public class SearchParameters {
         queryPartGroup.append(new GeneralSearchResourceQueryPart(this.getAllFields()));
         queryPartGroup.append(new TitleQueryPart(this.getTitles()));
         queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.CONTENT, "File Contents", contents));
-        queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.FILENAME, "Filename", filenames));
+        queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.INFORMATION_RESOURCE_FILES_FILENAME, "Filename", filenames));
 
         // freeform keywords
         appendKeywordQueryParts(queryPartGroup, OtherKeyword.class, QueryFieldNames.ACTIVE_OTHER_KEYWORDS, Arrays.asList(this.getOtherKeywords()));

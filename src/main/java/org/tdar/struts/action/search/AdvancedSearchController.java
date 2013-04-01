@@ -1,9 +1,11 @@
 package org.tdar.struts.action.search;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -285,6 +287,8 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             }
             if (!isReindexing()) {
                 setInputStream(rssService.createRssFeedFromResourceList(this, getRssUrl(), geoMode, true));
+            } else {
+                setInputStream(new ByteArrayInputStream("".getBytes()));
             }
         } catch (Exception e) {
             logger.error("rss error", e);
