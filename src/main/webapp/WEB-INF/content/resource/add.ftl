@@ -38,18 +38,18 @@
 	 </h3>
         </div>
     </div>
-     <#if administrator>
     <div class="row">
+     <#if administrator>
         <div class="span4">
             <h3 class="video-mid-red"><@link "video" "Video" /></h3>
             A video
         </div>
+    </#if>
         <div class="span4">
             <h3 class="geospatial-mid-red"><@link "geospatial" "Geospatial" /></h3>
             Geospatial
         </div>
     </div>
-    </#if>
     <div class="row">
         <div class="span4">
                 <h3 class="sensory_data-mid-red"><@link "sensory-data" "Sensory Data / 3D Scan" /></h3>
