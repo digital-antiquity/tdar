@@ -1,6 +1,7 @@
 package org.tdar.struts.action.search;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -108,14 +109,17 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
 
     @Test
     @Rollback(true)
-    public void testFindResourceBuiIdRss() throws XpathException, SAXException, IOException {
+    public void testFindResourceBuildRss() throws XpathException, SAXException, IOException, InterruptedException {
         Resource r = genericService.find(Resource.class, 3074L);
         r.setStatus(Status.ACTIVE);
         genericService.saveOrUpdate(r);
         searchIndexService.index(r);
+        genericService.synchronize();
+        Thread.sleep(1000l);
         controller.setId(r.getId());
         controller.getResourceTypes().addAll(Arrays.asList(ResourceType.DATASET));
         controller.setSessionData(new SessionData()); // create unauthenticated session
+        assertFalse(controller.isReindexing());
         doSearch("");
         controller.viewRss();
         String rssFeed = IOUtils.toString(controller.getInputStream());
