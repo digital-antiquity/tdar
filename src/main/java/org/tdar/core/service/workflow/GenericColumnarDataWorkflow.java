@@ -19,6 +19,7 @@ import org.tdar.db.conversion.converters.AccessDatabaseConverter;
 import org.tdar.db.conversion.converters.CsvConverter;
 import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.db.conversion.converters.ExcelConverter;
+import org.tdar.db.conversion.converters.ShapeFileDatabaseConverter;
 import org.tdar.db.conversion.converters.TabConverter;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.tasks.ConvertDatasetTask;
@@ -50,6 +51,7 @@ public class GenericColumnarDataWorkflow extends BaseWorkflow {
         registerFileExtension("mdb", AccessDatabaseConverter.class, null, ResourceType.DATASET);
         registerFileExtension("accdb", AccessDatabaseConverter.class, null, ResourceType.DATASET);
         registerFileExtension("mdbx", AccessDatabaseConverter.class, null, ResourceType.DATASET);
+        registerFileExtension("shp", ShapeFileDatabaseConverter.class, null, ResourceType.DATASET);
         addTask(IndexableTextExtractionTask.class, WorkflowPhase.CREATE_DERIVATIVE);
         addTask(ConvertDatasetTask.class, WorkflowPhase.CREATE_DERIVATIVE);
     }

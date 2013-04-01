@@ -68,7 +68,7 @@ public class ShapefileITCase extends AbstractIntegrationTestCase {
         String string = TestConstants.TEST_SHAPEFILE_DIR + name;
         InformationResourceFileVersion originalFile = generateAndStoreVersion(Geospatial.class, name + ".shp", new File(string + ".shp"), store);
         for (String ext : new String[]{".dbf",".sbn",".sbx",".shp.xml",".shx",".xml"}) {
-            wc.getSupportingFiles().add( generateAndStoreVersion(Geospatial.class, name + ext, new File(string + ext), store));
+            originalFile.getSupportingFiles().add( generateAndStoreVersion(Geospatial.class, name + ext, new File(string + ext), store));
 
         }
         wc.setOriginalFile(originalFile);
@@ -76,6 +76,9 @@ public class ShapefileITCase extends AbstractIntegrationTestCase {
         task.run();
     }
 
+    
+    
+    
     @Test
     @Ignore
     @Rollback

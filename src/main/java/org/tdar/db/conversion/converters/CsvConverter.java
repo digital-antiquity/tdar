@@ -34,7 +34,8 @@ public class CsvConverter extends SimpleConverter {
         return DB_PREFIX;
     }
 
-    public CsvConverter() {};
+    public CsvConverter() {
+    };
 
     public CsvConverter(InformationResourceFileVersion version, TargetDatabase targetDatabase) {
         setTargetDatabase(targetDatabase);
@@ -70,15 +71,13 @@ public class CsvConverter extends SimpleConverter {
         DataTable dataTable = createDataTable(getTableName());
 
         for (int i = 0; i < getHeaderLine().length; i++) {
-            createDataTableColumn(getHeaderLine()[i], DataTableColumnType.TEXT,
-                    dataTable);
+            createDataTableColumn(getHeaderLine()[i], DataTableColumnType.TEXT, dataTable);
         }
 
         targetDatabase.createTable(dataTable);
 
         // initialize our most-desired-datatype statistics
-        ConversionStatisticsManager statisticsManager = new ConversionStatisticsManager(
-                dataTable.getDataTableColumns());
+        ConversionStatisticsManager statisticsManager = new ConversionStatisticsManager(dataTable.getDataTableColumns());
 
         // iterate through the rest of the CSVReader file.
         int numberOfLines = 0;
@@ -98,13 +97,10 @@ public class CsvConverter extends SimpleConverter {
 
             for (int i = 0; i < line.length; i++) {
                 if (count <= getHeaderLine().length) {
-                    columnToValueMap.put(
-                            dataTable.getDataTableColumns().get(i), line[i]);
-                    statisticsManager.updateStatistics(dataTable
-                            .getDataTableColumns().get(i), line[i]);
+                    columnToValueMap.put(dataTable.getDataTableColumns().get(i), line[i]);
+                    statisticsManager.updateStatistics(dataTable.getDataTableColumns().get(i), line[i]);
                 } else {
-                    logger.warn("Discarding degenerate data value at index "
-                            + count + " : " + line[i]);
+                    logger.warn("Discarding degenerate data value at index " + count + " : " + line[i]);
                 }
             }
             targetDatabase.addTableRow(dataTable, columnToValueMap);

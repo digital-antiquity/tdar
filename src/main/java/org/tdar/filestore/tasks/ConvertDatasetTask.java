@@ -40,6 +40,7 @@ public class ConvertDatasetTask extends AbstractTask {
             throw new TdarRecoverableRuntimeException(
                     msg);
         }
+
         // drop this dataset's actual data tables from the tdardata database - we'll delete the actual hibernate metadata entities later after
         // performing reconciliation so we can preserve as much column-level metadata as possible
         getLogger().info(String.format("dropping tables %s", getWorkflowContext().getDataTablesToCleanup()));
@@ -52,6 +53,7 @@ public class ConvertDatasetTask extends AbstractTask {
         getWorkflowContext().setTransientResource(transientDataset);
         DatasetConverter databaseConverter = DatasetConversionFactory.getConverter(versionToConvert, getWorkflowContext().getTargetDatabase());
         // returns the set of transient POJOs from the incoming dataset.
+
         Set<DataTable> tablesToPersist = databaseConverter.execute();
         File indexedContents = databaseConverter.getIndexedContentsFile();
         getLogger().trace("FILE:**** : " + indexedContents);

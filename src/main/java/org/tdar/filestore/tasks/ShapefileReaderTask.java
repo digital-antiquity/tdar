@@ -1,6 +1,7 @@
 package org.tdar.filestore.tasks;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +21,12 @@ import org.opengis.feature.GeometryAttribute;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.feature.type.PropertyType;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
+import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.filestore.tasks.Task.AbstractTask;
+
+import com.vividsolutions.jts.geom.MultiLineString;
 
 public class ShapefileReaderTask extends AbstractTask {
 
@@ -37,7 +43,7 @@ public class ShapefileReaderTask extends AbstractTask {
         workingDir.mkdir();
         FileUtils.copyFileToDirectory(file, workingDir);
         File workingOriginal = new File(workingDir, file.getName());
-        for (InformationResourceFileVersion version : getWorkflowContext().getSupportingFiles()) {
+        for (InformationResourceFileVersion version : getWorkflowContext().getOriginalFile().getSupportingFiles()) {
             FileUtils.copyFileToDirectory(version.getFile(), workingDir);
         }
 
@@ -87,10 +93,30 @@ public class ShapefileReaderTask extends AbstractTask {
                 // Filter filter = CQL.toFilter(text.getText());
                 // SimpleFeatureCollection features = source.getFeatures(filter);
                 // FeatureCollectionTableModel model = new FeatureCollectionTableModel(features);
+                List<DataTableColumn> columns = new ArrayList<>();
                 for (PropertyDescriptor descriptors : collection.getSchema().getDescriptors()) {
                     PropertyType type = descriptors.getType();
-                    getLogger().info("schema: {} {} ({}) ", descriptors.getName(), descriptors.getUserData(), type);
-                    getLogger().info("\t: {} {} ({}) ", type.getBinding(), type.getName(), type.getDescription());
+                    DataTableColumnType columnType = DataTableColumnType.BLOB;
+                    if (type.getBinding().isAssignableFrom(String.class) ) {
+                        columnType = DataTableColumnType.VARCHAR;
+                    } else if (type.getBinding().isAssignableFrom(Double.class) ) {
+                        columnType = DataTableColumnType.DOUBLE;
+                    } else if (type.getBinding().isAssignableFrom(Long.class) ) {
+                        columnType = DataTableColumnType.BIGINT;
+                    } else if (type.getBinding().isAssignableFrom(MultiLineString.class) ) {
+                        columnType = DataTableColumnType.BLOB;
+                    } else {
+                        getLogger().error("unknown binding: {} ", type.getBinding());
+                    }
+                    DataTableColumn column = new DataTableColumn();
+                    columns.add(column);
+                    column.setColumnDataType(columnType);
+                    column.setDisplayName(descriptors.getName().getLocalPart());
+                    //FIXME:normalization
+                    column.setName(descriptors.getName().getLocalPart());
+                    getLogger().info("adding column: {}", column);
+//                    getLogger().info("schema: {} {} ({}) ", descriptors.getName(), descriptors.getUserData(), type);
+//                    getLogger().info("\t: {} {} ({}) ", type.getBinding(), type.getName(), type.getDescription());
 
                 }
 
