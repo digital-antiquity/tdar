@@ -184,10 +184,10 @@ $.validator.addMethod("gis-ancillary-files", function(value, element) {
 
 //add custom highlight/unhighlight handler
 //TODO figure out where to put/call this
-var _registerValidationHandlers($fileupload) {
+var _registerValidationHandlers = function($fileupload) {
     var $filesContainer = $fileupload.fileupload('option', 'filesContainer');
     var helper = $fileupload.data('fileuploadHelper');
-    $filesContiner.find('.missingFiles').remove();
+    $filesContainer.find('.missingFiles').remove();
     
     $filesContainer.on('highlight', function(evt, errorClass, validClass){
         var incompleteFiles = $(helper.inputSelector).data('incompleteFiles');
