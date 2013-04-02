@@ -575,7 +575,7 @@ No coding rules have been entered for this coding sheet yet.
 
     <#nested>
     <#if resource.url! != ''>
-        <b>URL:</b><a href="${resource.url?html}" title="${resource.url?html}"><@truncate resource.url?html 80 /></a><br/>
+        <p><strong>URL:</strong><a href="${resource.url?html}" title="${resource.url?html}"><@truncate resource.url?html 80 /></a></p><br/>
     </#if>
 
 </#macro>
