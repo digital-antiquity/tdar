@@ -5,6 +5,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.BufferUnderflowException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.zip.InflaterInputStream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -22,6 +24,10 @@ import org.apache.poi.poifs.filesystem.DocumentEntry;
 import org.apache.poi.poifs.filesystem.Entry;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.tools.ant.filters.StringInputStream;
+import org.geotools.feature.simple.SimpleFeatureImpl;
+import org.geotools.resources.coverage.FeatureUtilities;
+import org.jaitools.jts.CoordinateSequence2D;
+import org.opengis.geometry.Geometry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
@@ -34,6 +40,7 @@ import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.db.model.abstracts.TargetDatabase;
 
+import com.adobe.xmp.impl.Base64;
 import com.healthmarketscience.jackcess.Column;
 import com.healthmarketscience.jackcess.Database;
 import com.healthmarketscience.jackcess.Index;
@@ -41,6 +48,12 @@ import com.healthmarketscience.jackcess.IndexData.ColumnDescriptor;
 import com.healthmarketscience.jackcess.PropertyMap;
 import com.healthmarketscience.jackcess.Relationship;
 import com.healthmarketscience.jackcess.Table;
+import com.sun.syndication.feed.module.georss.GMLParser;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.PrecisionModel;
+import com.vividsolutions.jts.io.WKBHexFileReader;
+import com.vividsolutions.jts.io.WKBReader;
+import com.vividsolutions.jts.io.WKTReader;
 
 /**
  * The class reads an access db file, and converts it into other types of db
@@ -169,40 +182,31 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                         }
                         String currentObjectAsString = currentObject.toString();
                         if (currentColumn.getColumnDataType() == DataTableColumnType.BLOB) {
-                            
+
                             logger.info(currentObject.getClass().getCanonicalName());
-//                            byte[] data = (byte[])currentObject;
-//                            logger.info("data: {} ", data);
-                            /*
-                            POIFSFileSystem fs;
-                            try
-                            {
-                                fs = new POIFSFileSystem(new ByteArrayInputStream((byte[])));
-                                DirectoryEntry root = fs.getRoot();
-                                // dir is an instance of DirectoryEntry ...
-                                Iterator<Entry> entries = root.getEntries();
-                                while (entries.hasNext()) {
-                                Entry entry  = entries.next();
-                                    System.out.println("found entry: " + entry.getName());
-                                    if (entry instanceof DirectoryEntry)
-                                    {
-                                        // .. recurse into this directory
-                                    }
-                                    else if (entry instanceof DocumentEntry)
-                                    {
-                                        // entry is a document, which you can read
-                                    }
-                                    else
-                                    {
-                                        // currently, either an Entry is a DirectoryEntry or a DocumentEntry,
-                                        // but in the future, there may be other entry subinterfaces. The
-                                        // internal data structure certainly allows for a lot more entry types.
-                                    }
-                                }
-                            } catch (IOException e)
-                            {
-                                logger.error("poi error", e);
-                            }*/
+                            byte[] data = (byte[]) currentObject;
+//                            InflaterInputStream iis = new InflaterInputStream(new ByteArrayInputStream(data));
+//                            byte[] uncompressed = IOUtils.toByteArray(iis);
+                            logger.info("{}", currentObject.toString());
+//                            logger.info("{}", uncompressed);
+                            // DATA here is paired with the data in the GDBGeomColumns table to describe the feature type, etc
+                            GeometryFactory factory = new GeometryFactory();
+//                            factory.
+//                            WKBReader reader = new WKBReader(factory);
+                            
+                            //http://sourceforge.net/mailarchive/message.php?msg_id=30646557
+                            //http://sourceforge.net/mailarchive/message.php?msg_id=29982387
+                            //https://github.com/geotools/geotools/blob/master/modules/unsupported/ogr/ogr-jni/pom.xml
+                            //http://www.giser.net/wp-content/uploads/2011/01/extended-shapefile-format.pdf
+                            // this does not work, see  ogrpgeogeometry.cpp in ( extended_shapefile_format.pdf)
+                            // and http://stackoverflow.com/questions/11483189/transact-sql-function-for-convert-from-esri-personal-geodatabase-shape-column-to
+                            com.vividsolutions.jts.geom.Geometry g = null;
+                            try {
+                                g = new WKBReader(factory).read(data);
+                            } catch (Exception e) {
+                                logger.error("{}", e);
+                            }
+                            // logger.info("data: {} ", data);
                         }
                         sb.append(currentObjectAsString).append(" ");
 

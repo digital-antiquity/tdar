@@ -6,6 +6,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
@@ -28,6 +29,13 @@ import org.tdar.filestore.PairtreeFilestore;
  */
 public class TdarConfiguration {
 
+    public static final List<String> STOP_WORDS = Arrays.asList("the", "and", "a", "to", "of", "in", "i", "is", "that", "it", "on", "you", "this", "for",
+            "but", "with", "are", "have", "be", "at", "or", "as", "was", "so", "if", "out", "not");
+    private static final String JIRA_LINK = "https://dev.tdar.org/jira/s/en_USgh0sw9-418945332/844/18/1.2.9/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?collectorId=959f12a3";
+    private static final String DESCRIPTION = "tDAR is an international digital archive and repository that houses data about archaeological investigations, research, resources, and scholarship.  tDAR provides researchers new avenues to discover and integrate information relevant to topics they are studying.   Users can search tDAR for digital documents, data sets, images, GIS files, and other data resources from archaeological projects spanning the globe.  For data sets, users also can use data integration tools in tDAR to simplify and illuminate comparative research.";
+    private static final String SECURITY_EXCEPTION_COULD_NOT_CREATE_PERSONAL_FILESTORE_HOME_DIRECTORY = "Security Exception: could not create personal filestore home directory";
+    private static final String MESSAGE_QUEUE_IS_ENABLED_BUT_A_USERNAME_AND_PASSWORD_IS_NOT_DEFINED = "Message Queue is enabled, but a username and password is not defined";
+    public static final String COULDN_T_CREATE_TEMPORARY_DIRECTORY_AT = "Couldn't create temporary directory at : ";
     public static final int DEFAULT_SCHEDULED_PROCESS_START_ID = 0;
     public static final int DEFAULT_SCHEDULED_PROCESS_END_ID = 400000;
 
@@ -81,9 +89,7 @@ public class TdarConfiguration {
         try {
             stopWords.addAll(IOUtils.readLines(new FileInputStream(assistant.getStringProperty("lucene.stop.words.file"))));
         } catch (Exception e) {
-            stopWords.addAll(Arrays.asList(
-                    "the", "and", "a", "to", "of", "in", "i", "is", "that", "it", "on", "you", "this", "for",
-                    "but", "with", "are", "have", "be", "at", "or", "as", "was", "so", "if", "out", "not"));
+            stopWords.addAll(STOP_WORDS);
         }
     }
 
@@ -130,8 +136,7 @@ public class TdarConfiguration {
                 }
             }
         } catch (SecurityException ex) {
-            msg = "Security Exception: could not create personal filestore home directory";
-            logger.error(msg, ex);
+            logger.error(SECURITY_EXCEPTION_COULD_NOT_CREATE_PERSONAL_FILESTORE_HOME_DIRECTORY, ex);
             pathExists = false;
         }
         if (!pathExists) {
@@ -143,7 +148,7 @@ public class TdarConfiguration {
     public static TdarConfiguration getInstance() {
         return INSTANCE;
     }
-    
+
     public String getSitemapDir() {
         return String.format("%s/%s", getPersonalFileStoreLocation(), "sitemap");
     }
@@ -243,17 +248,14 @@ public class TdarConfiguration {
     }
 
     public File getTempDirectory() {
-        File file = new File(assistant.getStringProperty("tmp.dir",
-                getFileStoreLocation() + "/tmp"));
+        File file = new File(assistant.getStringProperty("tmp.dir", System.getProperty("java.io.tmpdir")));
         if (file.exists() && file.isDirectory()) {
             return file;
         }
         if (!file.mkdirs()) {
-            logger.warn("Couldn't create temporary directory at : "
-                    + file.getAbsolutePath());
-            throw new IllegalStateException(
-                    "Couldn't create temporary directory at : "
-                            + file.getAbsolutePath());
+            String msg = COULDN_T_CREATE_TEMPORARY_DIRECTORY_AT + file.getAbsolutePath();
+            logger.warn(msg);
+            throw new IllegalStateException(msg);
         }
         return file;
     }
@@ -305,7 +307,7 @@ public class TdarConfiguration {
 
     private void testQueue() {
         if (useExternalMessageQueue() && (StringUtils.isEmpty(getMessageQueuePwd()) || StringUtils.isEmpty(getMessageQueueUser()))) {
-            throw new IllegalStateException("Message Queue is enabled, but a username and password is not defined");
+            throw new IllegalStateException(MESSAGE_QUEUE_IS_ENABLED_BUT_A_USERNAME_AND_PASSWORD_IS_NOT_DEFINED);
         }
     }
 
@@ -388,9 +390,7 @@ public class TdarConfiguration {
 
     public String getSystemDescription() {
         return assistant
-                .getStringProperty(
-                        "oai.repository.description",
-                        "tDAR is an international digital archive and repository that houses data about archaeological investigations, research, resources, and scholarship.  tDAR provides researchers new avenues to discover and integrate information relevant to topics they are studying.   Users can search tDAR for digital documents, data sets, images, GIS files, and other data resources from archaeological projects spanning the globe.  For data sets, users also can use data integration tools in tDAR to simplify and illuminate comparative research.");
+                .getStringProperty("oai.repository.description", DESCRIPTION);
     }
 
     public int getScheduledProcessStartId() {
@@ -513,11 +513,11 @@ public class TdarConfiguration {
     public Boolean getShowJiraLink() {
         return assistant.getBooleanProperty("jira.link.show", true);
     }
-    
+
     public String getJiraScriptLink() {
-        return assistant.getStringProperty("jira.link", "https://dev.tdar.org/jira/s/en_USgh0sw9-418945332/844/18/1.2.9/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?collectorId=959f12a3");
+        return assistant.getStringProperty("jira.link", JIRA_LINK);
     }
-    
+
     public File getFremarkerTemplateDirectory() {
         return new File(assistant.getStringProperty("freemarker.templatedir", "includes/email/"));
     }
