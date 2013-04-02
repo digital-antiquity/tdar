@@ -61,7 +61,7 @@ public class Person extends Creator implements Comparable<Person>, Dedupable<Per
     private static final long serialVersionUID = -3863573773250268081L;
 
     @Transient
-    private final static String[] JSON_PROPERTIES = { "id", "firstName", "lastName", "institution", "email", "name", "properName", "fullName" };
+    private final static String[] JSON_PROPERTIES = { "id", "firstName", "lastName", "institution", "email", "name", "properName", "fullName", "registered" };
 
     public Person() {
     }
