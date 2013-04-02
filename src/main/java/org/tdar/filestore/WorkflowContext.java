@@ -38,7 +38,6 @@ public class WorkflowContext implements Serializable {
     private Long informationResourceId;
     private List<InformationResourceFileVersion> versions;
     private InformationResourceFileVersion originalFile;
-    private List<InformationResourceFileVersion> supportingFiles = new ArrayList<InformationResourceFileVersion>();
     private File workingDirectory;
     private int numPages = -1;
     private transient Filestore filestore;
@@ -224,14 +223,6 @@ public class WorkflowContext implements Serializable {
 
     public void setWorkflowClass(Class<? extends Workflow> workflowClass) {
         this.workflowClass = workflowClass;
-    }
-
-    public List<InformationResourceFileVersion> getSupportingFiles() {
-        return supportingFiles;
-    }
-
-    public void setSupportingFiles(List<InformationResourceFileVersion> supportingFiles) {
-        this.supportingFiles = supportingFiles;
     }
 
     @XmlTransient

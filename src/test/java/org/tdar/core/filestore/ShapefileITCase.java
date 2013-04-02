@@ -40,7 +40,7 @@ public class ShapefileITCase extends AbstractIntegrationTestCase {
         InformationResourceFileVersion supportingFile = generateAndStoreVersion(Geospatial.class, "untitled.tfw", new File(TestConstants.TEST_GEOTIFF_TFW),
                 store);
         wc.setOriginalFile(originalFile);
-        wc.getSupportingFiles().add(supportingFile);
+        originalFile.getSupportingFiles().add(supportingFile);
         task.setWorkflowContext(wc);
         task.run();
     }
@@ -67,8 +67,8 @@ public class ShapefileITCase extends AbstractIntegrationTestCase {
         String name = "Occ_3l";
         String string = TestConstants.TEST_SHAPEFILE_DIR + name;
         InformationResourceFileVersion originalFile = generateAndStoreVersion(Geospatial.class, name + ".shp", new File(string + ".shp"), store);
-        for (String ext : new String[]{".dbf",".sbn",".sbx",".shp.xml",".shx",".xml"}) {
-            originalFile.getSupportingFiles().add( generateAndStoreVersion(Geospatial.class, name + ext, new File(string + ext), store));
+        for (String ext : new String[] { ".dbf", ".sbn", ".sbx", ".shp.xml", ".shx", ".xml" }) {
+            originalFile.getSupportingFiles().add(generateAndStoreVersion(Geospatial.class, name + ext, new File(string + ext), store));
 
         }
         wc.setOriginalFile(originalFile);
@@ -76,9 +76,6 @@ public class ShapefileITCase extends AbstractIntegrationTestCase {
         task.run();
     }
 
-    
-    
-    
     @Test
     @Ignore
     @Rollback
@@ -89,9 +86,8 @@ public class ShapefileITCase extends AbstractIntegrationTestCase {
         String name = "Ruins of Tikal map-v11";
         String string = "c:/Users/abrin/Desktop/" + name;
         InformationResourceFileVersion originalFile = generateAndStoreVersion(Geospatial.class, name + ".tif", new File(string + ".tif"), store);
-        for (String ext : new String[]{".aux", ".tif.xml", ".tif.aux.xml"}) {
-            wc.getSupportingFiles().add( generateAndStoreVersion(Geospatial.class, name + ext, new File(string + ext), store));
-
+        for (String ext : new String[] { ".aux", ".tif.xml", ".tif.aux.xml" }) {
+            originalFile.getSupportingFiles().add(generateAndStoreVersion(Geospatial.class, name + ext, new File(string + ext), store));
         }
         wc.setOriginalFile(originalFile);
         task.setWorkflowContext(wc);

@@ -1,7 +1,6 @@
 package org.tdar.filestore.tasks;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,17 +15,8 @@ import org.geotools.feature.FeatureIterator;
 import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridCoverageReader;
-import org.opengis.feature.Feature;
-import org.opengis.feature.GeometryAttribute;
-import org.opengis.feature.type.PropertyDescriptor;
-import org.opengis.feature.type.PropertyType;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
-import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.filestore.tasks.Task.AbstractTask;
-
-import com.vividsolutions.jts.geom.MultiLineString;
 
 public class ShapefileReaderTask extends AbstractTask {
 
@@ -76,11 +66,12 @@ public class ShapefileReaderTask extends AbstractTask {
             getLogger().info(" {} ", sources);
             // GeoTiffReader rdr = (GeoTiffReader) ((new GeoTiffFormat()).getReader(file));
         } else {
+            DataStore dataStore = null;
             try {
                 Map connect = new HashMap();
                 connect.put("url", workingOriginal.toURL());
 
-                DataStore dataStore = DataStoreFinder.getDataStore(connect);
+                dataStore = DataStoreFinder.getDataStore(connect);
                 String[] typeNames = dataStore.getTypeNames();
                 String typeName = typeNames[0];
                 getLogger().info(typeName);
@@ -90,49 +81,11 @@ public class ShapefileReaderTask extends AbstractTask {
                 FeatureCollection collection = featureSource.getFeatures();
                 FeatureIterator iterator = collection.features();
                 getLogger().debug("{}", dataStore.getNames());
-                // Filter filter = CQL.toFilter(text.getText());
-                // SimpleFeatureCollection features = source.getFeatures(filter);
-                // FeatureCollectionTableModel model = new FeatureCollectionTableModel(features);
-                List<DataTableColumn> columns = new ArrayList<>();
-                for (PropertyDescriptor descriptors : collection.getSchema().getDescriptors()) {
-                    PropertyType type = descriptors.getType();
-                    DataTableColumnType columnType = DataTableColumnType.BLOB;
-                    if (type.getBinding().isAssignableFrom(String.class) ) {
-                        columnType = DataTableColumnType.VARCHAR;
-                    } else if (type.getBinding().isAssignableFrom(Double.class) ) {
-                        columnType = DataTableColumnType.DOUBLE;
-                    } else if (type.getBinding().isAssignableFrom(Long.class) ) {
-                        columnType = DataTableColumnType.BIGINT;
-                    } else if (type.getBinding().isAssignableFrom(MultiLineString.class) ) {
-                        columnType = DataTableColumnType.BLOB;
-                    } else {
-                        getLogger().error("unknown binding: {} ", type.getBinding());
-                    }
-                    DataTableColumn column = new DataTableColumn();
-                    columns.add(column);
-                    column.setColumnDataType(columnType);
-                    column.setDisplayName(descriptors.getName().getLocalPart());
-                    //FIXME:normalization
-                    column.setName(descriptors.getName().getLocalPart());
-                    getLogger().info("adding column: {}", column);
-//                    getLogger().info("schema: {} {} ({}) ", descriptors.getName(), descriptors.getUserData(), type);
-//                    getLogger().info("\t: {} {} ({}) ", type.getBinding(), type.getName(), type.getDescription());
-
-                }
-
-                try {
-                    while (iterator.hasNext()) {
-                        Feature feature = iterator.next();
-                        GeometryAttribute sourceGeometry = feature.getDefaultGeometryProperty();
-                        getLogger().info(" {} {} : {}", sourceGeometry, sourceGeometry.getName(), sourceGeometry.getUserData());
-                        getLogger().info("\t {} ", feature.getValue());
-                    }
-                } finally {
-                    iterator.close();
-                }
 
             } catch (Throwable e) {
                 getLogger().error("exception", e);
+            } finally {
+                dataStore.dispose();
             }
         }
     }

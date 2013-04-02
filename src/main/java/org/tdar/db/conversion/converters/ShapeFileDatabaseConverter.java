@@ -28,7 +28,6 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.db.conversion.ConversionStatisticsManager;
 import org.tdar.db.model.abstracts.TargetDatabase;
-import org.tdar.struts.data.IntegrationColumn.ColumnType;
 
 import com.vividsolutions.jts.geom.MultiLineString;
 
@@ -150,6 +149,7 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
             throw new TdarRecoverableRuntimeException(ERROR_CORRUPT_DB);
         } finally {
             iterator.close();
+            dataStore.dispose();
             completePreparedStatements();
             alterTableColumnTypes(dataTable, statisticsManager.getStatistics());
         }
