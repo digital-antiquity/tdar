@@ -128,5 +128,15 @@ public class AuthorizedUser extends Base implements Persistable {
     public Integer getEffectiveGeneralPermission() {
         return effectiveGeneralPermission;
     }
+    
+    public String getTest() {
+        return test;
+    }
+
+    public void setTest(String test) {
+        this.test = test;
+    }
+
+    private transient String test = "";
 
 }

@@ -184,19 +184,20 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
     public void editAddressDelete() throws TdarActionException {
         final Long presonId = addAddressToNewPerson();
         Person person = genericService.find(Person.class, presonId);
+        Long addressId =  person.getAddresses().iterator().next().getId();
         // this seems hokey
         genericService.detachFromSession(person);
-        controller = generateNewInitializedController(PersonController.class);
-        controller.setAddressId(person.getAddresses().iterator().next().getId());
-        controller.setId(presonId);
         person = null;
+        controller = generateNewInitializedController(PersonController.class);
+        controller.setAddressId(addressId);
+        controller.setId(presonId);
         controller.prepare();
         controller.setServletRequest(getServletPostRequest());
         logger.info("hi");
         String saveAddress = controller.deleteAddress();
         assertEquals(PersonController.SUCCESS, saveAddress);
         controller = null;
-
+//        genericService.synchronize();
 //        setVerifyTransactionCallback(new TransactionCallback<Person>() {
 //            @Override
 //            public Person doInTransaction(TransactionStatus status) {

@@ -474,6 +474,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         AuthorizedUser user1Viewer = detach(createAuthUser(GeneralPermissions.VIEW_ALL));
         AuthorizedUser user1Modifier = new AuthorizedUser(user1Viewer.getUser(), GeneralPermissions.MODIFY_METADATA);
         AuthorizedUser user2 = detach(createAuthUser(GeneralPermissions.ADMINISTER_GROUP));
+        user2.setTest("1234");
         controller.getAuthorizedUsers().addAll(Arrays.asList(user1Viewer, user1Modifier, user2));
 
         controller.setServletRequest(getServletPostRequest());
@@ -493,14 +494,16 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         // fails because HashCode changed
         assertFalse("only the modifier & admin authusers should remain", rc2.getAuthorizedUsers().contains(user1Modifier));
         assertFalse("only the modifier & admin authusers should remain", rc2.getAuthorizedUsers().contains(user2));
-
-        genericService.refresh(rc2);
-        assertTrue("only the modifier & admin authusers should remain", rc2.getAuthorizedUsers().contains(user1Modifier));
-        assertTrue("only the modifier & admin authusers should remain", rc2.getAuthorizedUsers().contains(user2));
-
+        assertEquals("1234", user2.getTest());
         List<Long> extractIds = Persistable.Base.extractIds(rc2.getAuthorizedUsers());
         assertTrue("only the modifier & admin authusers should remain", extractIds.contains(user1Modifier.getId()));
         assertTrue("only the modifier & admin authusers should remain", extractIds.contains(user2.getId()));
+
+        genericService.refresh(rc2);
+        assertEquals("1234", user2.getTest());
+        assertTrue("only the modifier & admin authusers should remain", rc2.getAuthorizedUsers().contains(user1Modifier));
+        assertTrue("only the modifier & admin authusers should remain", rc2.getAuthorizedUsers().contains(user2));
+
 
     }
 

@@ -42,12 +42,11 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.search.Explanation;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.FetchProfile;
+import org.hibernate.annotations.FetchProfile.FetchOverride;
 import org.hibernate.annotations.FetchProfiles;
 import org.hibernate.annotations.Type;
-import org.hibernate.annotations.FetchProfile.FetchOverride;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.Boost;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Fields;
 import org.hibernate.search.annotations.Indexed;
@@ -70,7 +69,6 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.JSONTransient;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
 import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
@@ -92,16 +90,15 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 @Indexed(index = "Collection")
 @Table(name = "collection")
 @FetchProfiles(value = {
-        @FetchProfile(name="simple", fetchOverrides = {
+        @FetchProfile(name = "simple", fetchOverrides = {
                 @FetchOverride(association = "resources", mode = FetchMode.JOIN, entity = ResourceCollection.class),
-                @FetchOverride(association="authorizedUsers", mode = FetchMode.JOIN, entity= ResourceCollection.class),
-                @FetchOverride(association="user", mode = FetchMode.JOIN, entity= AuthorizedUser.class),
-                @FetchOverride(association="owner", mode = FetchMode.JOIN, entity= ResourceCollection.class),
-                @FetchOverride(association="updater", mode = FetchMode.JOIN, entity= ResourceCollection.class),
-                @FetchOverride(association="parent", mode = FetchMode.JOIN, entity= ResourceCollection.class)
+                @FetchOverride(association = "authorizedUsers", mode = FetchMode.JOIN, entity = ResourceCollection.class),
+                @FetchOverride(association = "user", mode = FetchMode.JOIN, entity = AuthorizedUser.class),
+                @FetchOverride(association = "owner", mode = FetchMode.JOIN, entity = ResourceCollection.class),
+                @FetchOverride(association = "updater", mode = FetchMode.JOIN, entity = ResourceCollection.class),
+                @FetchOverride(association = "parent", mode = FetchMode.JOIN, entity = ResourceCollection.class)
         })
 })
-
 public class ResourceCollection extends Persistable.Base implements HasName, Updatable, Indexable, Validatable, Addressable, Comparable<ResourceCollection>,
         SimpleSearch, Sortable, Viewable, DeHydratable {
 
@@ -133,7 +130,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     @Fields({
             @Field(name = QueryFieldNames.COLLECTION_NAME_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class))
             , @Field(name = QueryFieldNames.COLLECTION_NAME) })
-//    @Boost(1.5f)
+    // @Boost(1.5f)
     private String name;
 
     @Lob
@@ -224,7 +221,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         this.name = name;
     }
 
-//    @Boost(1.2f)
+    // @Boost(1.2f)
     @Field
     public String getDescription() {
         return description;
@@ -558,7 +555,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     }
 
     @Field
-//    @Boost(1.5f)
+    // @Boost(1.5f)
     public String getTitle() {
         return getName();
     }
