@@ -218,12 +218,6 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
 
     @Override
     public boolean equals(Object candidate) {
-        if (this == candidate) {
-            return true;
-        }
-        if (this == null || candidate == null) {
-            return false;
-        }
         try {
             return Persistable.Base.isEqual(this, Creator.class.cast(candidate));
         } catch (ClassCastException e) {

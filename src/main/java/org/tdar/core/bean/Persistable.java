@@ -133,17 +133,11 @@ public interface Persistable extends Serializable {
         public int hashCode() {
             Logger logger = LoggerFactory.getLogger(getClass());
             int hashCode = -1;
-            if (isNullOrTransient(this)) {
-                hashCode = super.hashCode();
-            } else {
-                hashCode = toHashCode(this);
+            hashCode = toHashCode(this);
+            if(logger.isTraceEnabled()) {
+                Object[] obj = { hashCode, getClass().getSimpleName(), getId() };
+                logger.trace("setting hashCode to {} ({}) {}", obj);
             }
-            Object[] obj = { hashCode, getClass().getSimpleName(), getId() };
-
-            logger.trace("setting hashCode to {} ({}) {}", obj);
-            // } else {
-            // logger.trace("returning existing hashCode to {} ({}) {}", obj);
-            // }
             return hashCode;
         }
 
@@ -167,34 +161,21 @@ public interface Persistable extends Serializable {
          * @return
          */
         public static boolean isEqual(Persistable a, Persistable b) {
-
-            if (a == null || b == null) {
-                return false;
-            }
-
+            if(a==null || b==null) return false;
+            if(a==b) return true;
+            if(!(a.getClass().equals(b.getClass()))) return false;
+            
             Logger logger = LoggerFactory.getLogger(a.getClass());
 
-            if (isTransient(a) && isTransient(b)) {
-                // if both objects are transient then these two objects aren't safely comparable outside of
-                // object pointer equality, which should already have been tested via equals(Object).
-                return false;
-            }
-
-            // short-circuit when ids are equal.
-            if (ObjectUtils.equals(a.getId(), b.getId())) {
-                return true;
-            }
-
             EqualsBuilder equalsBuilder = new EqualsBuilder();
-            List<?> selfEqualityFields = a.getEqualityFields();
-            List<?> candidateEqualityFields = b.getEqualityFields();
-            logger.trace(String.format("comparing %s with %s", selfEqualityFields, candidateEqualityFields));
-            if (CollectionUtils.isEmpty(selfEqualityFields) || selfEqualityFields.size() != candidateEqualityFields.size()) {
-                logger.warn("empty or mismatched equivalence fields for " + a.getClass() + ": " + selfEqualityFields + "<-->" + candidateEqualityFields);
-                return false;
-            }
-            for (int i = 0; i < selfEqualityFields.size(); i++) {
-                equalsBuilder.append(selfEqualityFields.get(i), candidateEqualityFields.get(i));
+            
+            if(isNotTransient(a) && isNotTransient(b)) {
+                equalsBuilder.append(a.getId(), b.getId());
+            } else {
+                Object[] selfEqualityFields = a.getEqualityFields().toArray();
+                Object[] candidateEqualityFields = b.getEqualityFields().toArray();
+                logger.trace(String.format("comparing %s with %s", selfEqualityFields, candidateEqualityFields));
+                equalsBuilder.append(selfEqualityFields, candidateEqualityFields);
             }
             return equalsBuilder.isEquals();
         }
@@ -372,7 +353,6 @@ public interface Persistable extends Serializable {
                 sequenceNumber++;
             }
         }
-
     }
 
 }

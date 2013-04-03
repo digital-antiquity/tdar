@@ -220,6 +220,9 @@ public class PersonITCase extends AbstractIntegrationTestCase {
         Person b = new Person("Loblaw", "Bob", "bob.loblaw@compuserve.net");
         Person c = new Person("Loblaw", "Bob", "bob.loblaw@compuserve.net");
         genericService.save(b);
+        
+        boolean eq = a.equals(b);
+        logger.debug("a == b: {}", eq);
         assertEquals("a should equal b", a, b);
         assertEquals("b should equal c", b, c);
         assertEquals("a should equal c", a, c);
