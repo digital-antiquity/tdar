@@ -23,52 +23,52 @@ import org.tdar.filestore.tasks.ShapefileReaderTask;
 public class ShapefileITCase extends AbstractIntegrationTestCase {
 
     protected Logger logger = Logger.getLogger(getClass());
-//
-//    @Test
-//    @Rollback
-//    public void testGeoTiffArc10() throws Exception {
-//        PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
-//        ShapefileReaderTask task = new ShapefileReaderTask();
-//        WorkflowContext wc = new WorkflowContext();
-//        InformationResourceFileVersion originalFile = generateAndStoreVersion(Geospatial.class, "untitled.tif", new File(TestConstants.TEST_GEOTIFF), store);
-//        InformationResourceFileVersion supportingFile = generateAndStoreVersion(Geospatial.class, "untitled.tfw", new File(TestConstants.TEST_GEOTIFF_TFW),
-//                store);
-//        wc.setOriginalFile(originalFile);
-//        originalFile.getSupportingFiles().add(supportingFile);
-//        task.setWorkflowContext(wc);
-//        task.run();
-//    }
-//
-//    @Test
-//    @Rollback
-//    public void testGeoTiffCombined() throws Exception {
-//        PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
-//        ShapefileReaderTask task = new ShapefileReaderTask();
-//        WorkflowContext wc = new WorkflowContext();
-//        InformationResourceFileVersion originalFile = generateAndStoreVersion(Geospatial.class, "untitled.tif", new File(TestConstants.TEST_GEOTIFF_COMBINED),
-//                store);
-//        wc.setOriginalFile(originalFile);
-//        task.setWorkflowContext(wc);
-//        task.run();
-//    }
-//
-//    @Test
-//    @Rollback
-//    public void testPolyShapeWithData() throws Exception {
-//        PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
-//        ShapefileReaderTask task = new ShapefileReaderTask();
-//        WorkflowContext wc = new WorkflowContext();
-//        String name = "Occ_3l";
-//        String string = TestConstants.TEST_SHAPEFILE_DIR + name;
-//        InformationResourceFileVersion originalFile = generateAndStoreVersion(Geospatial.class, name + ".shp", new File(string + ".shp"), store);
-//        for (String ext : new String[] { ".dbf", ".sbn", ".sbx", ".shp.xml", ".shx", ".xml" }) {
-//            originalFile.getSupportingFiles().add(generateAndStoreVersion(Geospatial.class, name + ext, new File(string + ext), store));
-//
-//        }
-//        wc.setOriginalFile(originalFile);
-//        task.setWorkflowContext(wc);
-//        task.run();
-//    }
+
+    @Test
+    @Rollback
+    public void testGeoTiffArc10WithWorldFile() throws Exception {
+        PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
+        ShapefileReaderTask task = new ShapefileReaderTask();
+        WorkflowContext wc = new WorkflowContext();
+        InformationResourceFileVersion originalFile = generateAndStoreVersion(Geospatial.class, "untitled.tif", new File(TestConstants.TEST_GEOTIFF), store);
+        InformationResourceFileVersion supportingFile = generateAndStoreVersion(Geospatial.class, "untitled.tfw", new File(TestConstants.TEST_GEOTIFF_TFW),
+                store);
+        wc.setOriginalFile(originalFile);
+        originalFile.getSupportingFiles().add(supportingFile);
+        task.setWorkflowContext(wc);
+        task.run();
+    }
+
+    @Test
+    @Rollback
+    public void testGeoTiffCombined() throws Exception {
+        PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
+        ShapefileReaderTask task = new ShapefileReaderTask();
+        WorkflowContext wc = new WorkflowContext();
+        InformationResourceFileVersion originalFile = generateAndStoreVersion(Geospatial.class, "untitled.tif", new File(TestConstants.TEST_GEOTIFF_COMBINED),
+                store);
+        wc.setOriginalFile(originalFile);
+        task.setWorkflowContext(wc);
+        task.run();
+    }
+
+    @Test
+    @Rollback
+    public void testPolyShapeWithData() throws Exception {
+        PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
+        ShapefileReaderTask task = new ShapefileReaderTask();
+        WorkflowContext wc = new WorkflowContext();
+        String name = "Occ_3l";
+        String string = TestConstants.TEST_SHAPEFILE_DIR + name;
+        InformationResourceFileVersion originalFile = generateAndStoreVersion(Geospatial.class, name + ".shp", new File(string + ".shp"), store);
+        for (String ext : new String[] { ".dbf", ".sbn", ".sbx", ".shp.xml", ".shx", ".xml" }) {
+            originalFile.getSupportingFiles().add(generateAndStoreVersion(Geospatial.class, name + ext, new File(string + ext), store));
+
+        }
+        wc.setOriginalFile(originalFile);
+        task.setWorkflowContext(wc);
+        task.run();
+    }
 
     @Test
     @Rollback
