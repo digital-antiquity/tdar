@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.hibernate.id.IdentityGenerator.GetGeneratedKeysDelegate;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.DisplayOrientation;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
@@ -487,8 +489,19 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         ResourceCollection rc2 = controller.getResourceCollection();
         assertEquals(rc.getName(), rc2.getName());
         assertEquals("2 redundant authusers should have been normalized", 2, rc2.getAuthorizedUsers().size());
+        
+        // fails because HashCode changed
+        assertFalse("only the modifier & admin authusers should remain", rc2.getAuthorizedUsers().contains(user1Modifier));
+        assertFalse("only the modifier & admin authusers should remain", rc2.getAuthorizedUsers().contains(user2));
+
+        genericService.refresh(rc2);
         assertTrue("only the modifier & admin authusers should remain", rc2.getAuthorizedUsers().contains(user1Modifier));
         assertTrue("only the modifier & admin authusers should remain", rc2.getAuthorizedUsers().contains(user2));
+
+        List<Long> extractIds = Persistable.Base.extractIds(rc2.getAuthorizedUsers());
+        assertTrue("only the modifier & admin authusers should remain", extractIds.contains(user1Modifier.getId()));
+        assertTrue("only the modifier & admin authusers should remain", extractIds.contains(user2.getId()));
+
     }
 
     private AuthorizedUser createAuthUser(GeneralPermissions permissions) {

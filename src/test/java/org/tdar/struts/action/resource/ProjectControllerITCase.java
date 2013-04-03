@@ -1,5 +1,6 @@
 package org.tdar.struts.action.resource;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -100,6 +101,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
             logger.info("{}", creator);
             people.add(creator.getCreator());
         }
+        fail("I'm a bad test");
         assertEquals(6, people.size());
         assertEquals("First and Second person should be the same (difference institution)", people.get(0), people.get(1));
         assertEquals("First and Sixth person should be the same (difference case)", people.get(0), people.get(5));
