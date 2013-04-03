@@ -1,20 +1,28 @@
 package org.tdar.filestore.tasks;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
+import org.geotools.GML;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFinder;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
+import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.FeatureCollections;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridCoverageReader;
+import org.opengis.feature.Feature;
+import org.opengis.feature.simple.SimpleFeatureType;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.filestore.tasks.Task.AbstractTask;
 
@@ -81,7 +89,29 @@ public class ShapefileReaderTask extends AbstractTask {
                 FeatureCollection collection = featureSource.getFeatures();
                 FeatureIterator iterator = collection.features();
                 getLogger().debug("{}", dataStore.getNames());
+                SimpleFeatureType TYPE = DataUtilities.createType("location", "geom:Point,name:String");
 
+                File locationFile = new File("location.xsd");
+                locationFile = locationFile.getCanonicalFile();
+                locationFile.createNewFile();
+
+                URL locationURL = locationFile.toURI().toURL();
+                URL baseURL = locationFile.getParentFile().toURI().toURL();
+
+                FileOutputStream xsd = new FileOutputStream(locationFile);
+
+                GML encode = new GML(GML.Version.GML2);
+                encode.setBaseURL(baseURL);
+                encode.setNamespace("location", locationURL.toExternalForm());
+                FeatureIterator featureIterator = collection.features();
+//                SimpleFeatureCollection sfc = FeatureCollections.newCollection("internal");
+//                encode.
+//                while (featureIterator.hasNext()) {
+//                    Feature feature = featureIterator.next();
+////                    encode.encode(out, feature.getType());
+//                }
+//                Collection
+//                encode.encode(xsd, collection);
             } catch (Throwable e) {
                 getLogger().error("exception", e);
             } finally {
