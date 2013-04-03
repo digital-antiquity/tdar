@@ -19,8 +19,9 @@ public interface TestConstants {
     public static final String TEST_DOCUMENT_DIR = TEST_ROOT_DIR + "documents/";
     public static final String TEST_GIS_DIR = "gis/";
     public static final String TEST_SHAPEFILE_DIR = TEST_ROOT_DIR +  TEST_GIS_DIR + "shapefiles/tijeras/";
-    public static String TEST_GEOTIFF_TFW = TEST_ROOT_DIR +  TEST_GIS_DIR + "geotiff/Untitled.tfw";
-    public static String TEST_GEOTIFF_COMBINED = TEST_ROOT_DIR +  TEST_GIS_DIR + "geotiff/geo-combined-untitled.tif";
+    public static String TEST_GEOTIFF_DIR = TEST_ROOT_DIR +  TEST_GIS_DIR + "geotiff/";
+    public static String TEST_GEOTIFF_TFW = TEST_GEOTIFF_DIR + "Untitled.tfw";
+    public static String TEST_GEOTIFF_COMBINED = TEST_GEOTIFF_DIR+ "geo-combined-untitled.tif";
     public static String TEST_GEOTIFF = TEST_ROOT_DIR +  TEST_GIS_DIR + "geotiff/Untitled.tif";
     public static final String TEST_ONTOLOGY_DIR = TEST_ROOT_DIR + "ontology/";
     public static final String TEST_IMAGE_DIR = TEST_ROOT_DIR + "images/";
