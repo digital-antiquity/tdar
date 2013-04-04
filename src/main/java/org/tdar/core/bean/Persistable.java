@@ -196,7 +196,12 @@ public interface Persistable extends Serializable {
             if (persistable == null) {
                 return builder.toHashCode();
             }
-            builder.append(persistable.getEqualityFields().toArray());
+            if (isTransient(persistable)) {
+                builder.append(persistable.getEqualityFields().toArray());
+            } else {
+                // FIXING:: if two objects are equal, then they should have the same HashCode; this breaks w/o below
+                builder.append(persistable.getId());
+            }
             // FIXME: make sure this doesn't break the contract wrt equals.
             return builder.toHashCode();
         }

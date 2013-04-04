@@ -5,8 +5,10 @@ import java.util.Set;
 
 import org.junit.Assert;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.openqa.selenium.internal.selenesedriver.GetElementAttribute;
 import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
 
@@ -37,17 +39,22 @@ public class ResourceAnnotationTest {
         Long id = -1L;
         k1.setId(id);
         k2.setId(id);
-//        Assert.assertNotSame("these keys should have different hashcodes", k1.hashCode(), k2.hashCode());
+        Assert.assertNotSame("these keys should have different hashcodes", k1.hashCode(), k2.hashCode());
         Assert.assertNotEquals("equality based on field,  values should be different", k1, k2);
-        Assert.assertEquals("equality based on id, values should be equal", a1, a2);
-        
-//        Assert.assertNotSame("these annotations should have different hashcodes", a1.hashCode(), a2.hashCode());
+        Assert.assertNotEquals("equality based on field,  values should be different", a1, a2);
+        Assert.assertNotSame("these annotations should have different hashcodes", a1.hashCode(), a2.hashCode());
+
+        // making ID non-transient
+        id = 1L;
 
         a1.setId(id);
         a2.setId(id);
-//        Assert.assertNotSame("these annotations should have different hashcodes", a1.hashCode(), a2.hashCode());
+        Assert.assertNotSame("these annotations should have different hashcodes", a1.hashCode(), a2.hashCode());
         Assert.assertEquals("equality based on id,  should be equal", a1, a2);
-
+        logger.info(String.format("%s==%s %s==%s", a1.hashCode(), a2.hashCode(), a1.getEqualityFields(), a2.getEqualityFields()));
+        Assert.assertEquals("hashcodes should now be equal if ids are equal", a1.hashCode(), a2.hashCode());
+        
+        
         // okay, put these in a set and make sure the set has one item
         Set<ResourceAnnotation> set = new HashSet<ResourceAnnotation>();
         set.add(a1);
