@@ -22,7 +22,6 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.lucene.analysis.KeywordAnalyzer;
@@ -132,9 +131,8 @@ public interface Persistable extends Serializable {
         @Override
         public int hashCode() {
             Logger logger = LoggerFactory.getLogger(getClass());
-            int hashCode = -1;
-            hashCode = toHashCode(this);
-            if(logger.isTraceEnabled()) {
+            int hashCode = toHashCode(this);
+            if (logger.isTraceEnabled()) {
                 Object[] obj = { hashCode, getClass().getSimpleName(), getId() };
                 logger.trace("setting hashCode to {} ({}) {}", obj);
             }
@@ -161,15 +159,18 @@ public interface Persistable extends Serializable {
          * @return
          */
         public static boolean isEqual(Persistable a, Persistable b) {
-            if(a==null || b==null) return false;
-            if(a==b) return true;
-            if(!(a.getClass().equals(b.getClass()))) return false;
-            
+            if (a == null || b == null)
+                return false;
+            if (a == b)
+                return true;
+            if (!(a.getClass().equals(b.getClass())))
+                return false;
+
             Logger logger = LoggerFactory.getLogger(a.getClass());
 
             EqualsBuilder equalsBuilder = new EqualsBuilder();
-            
-            if(isNotTransient(a) && isNotTransient(b)) {
+
+            if (isNotTransient(a) && isNotTransient(b)) {
                 equalsBuilder.append(a.getId(), b.getId());
             } else {
                 Object[] selfEqualityFields = a.getEqualityFields().toArray();
@@ -192,6 +193,9 @@ public interface Persistable extends Serializable {
 
         public static int toHashCode(Persistable persistable) {
             HashCodeBuilder builder = new HashCodeBuilder(23, 37);
+            if (persistable == null) {
+                return builder.toHashCode();
+            }
             builder.append(persistable.getEqualityFields().toArray());
             // FIXME: make sure this doesn't break the contract wrt equals.
             return builder.toHashCode();

@@ -1,6 +1,7 @@
 package org.tdar.core.bean.resource.datatable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -87,6 +88,11 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
 
     @Column(nullable = false)
     private String name;
+    
+    @Override
+    public java.util.List<?> getEqualityFields() {
+        return Arrays.asList(getName(), columnEncodingType);
+    };
 
     @Column(nullable = false, name = "display_name")
     @Field
@@ -383,7 +389,7 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
 
     public List<String> getMappedDataValues(OntologyNode node) {
         ArrayList<String> values = new ArrayList<String>();
-        for (CodingRule rule: getDefaultCodingSheet().getCodingRules()) {
+        for (CodingRule rule : getDefaultCodingSheet().getCodingRules()) {
             if (ObjectUtils.equals(node, rule.getOntologyNode())) {
                 values.add(rule.getTerm());
             }

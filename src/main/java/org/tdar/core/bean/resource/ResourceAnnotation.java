@@ -1,5 +1,6 @@
 package org.tdar.core.bean.resource;
 
+import java.util.Arrays;
 import java.util.Date;
 
 import javax.persistence.CascadeType;
@@ -62,6 +63,11 @@ public class ResourceAnnotation extends Persistable.Base implements HasResource<
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "last_updated")
     private Date lastUpdated;
+
+    @Override
+    public java.util.List<?> getEqualityFields() {
+        return Arrays.asList(getResourceAnnotationKey().getKey(), getValue());
+    };
 
     @Field
     public String getPairedValue() {

@@ -1,6 +1,7 @@
 package org.tdar.core.bean.resource.datatable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -74,6 +75,15 @@ public class DataTable extends Persistable.Base {
     private transient Map<Long, DataTableColumn> idToColumnMap;
     private transient Map<String, DataTableColumn> displayNameToColumnMap;
     private transient int dataTableColumnHashCode = -1;
+
+    @Override
+    public java.util.List<?> getEqualityFields() {
+        Long pid = -1L;
+        if (dataset != null) {
+            pid = dataset.getId();
+        }
+        return Arrays.asList(name, pid, dataTableColumnHashCode);
+    };
 
     @XmlElement(name = "resourceRef")
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
