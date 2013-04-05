@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -45,6 +46,23 @@ public class PersonITCase extends AbstractIntegrationTestCase {
         assertNotNull(person);
         assertNotNull(person.getId());
         assertTrue(person.getId() > 0);
+    }
+
+    @Test
+    @Rollback(true)
+    public void testFindPerson() {
+        Person person = new Person();
+        person.setFirstName("j");
+        person.setLastName("");
+        Person findOrSaveCreator = entityService.findOrSaveCreator(person);
+        logger.info("person: {} {}", findOrSaveCreator, findOrSaveCreator.getId());
+        assertTrue(12540 < findOrSaveCreator.getId());
+        Person person2 = new Person();
+        person2.setFirstName("jim");
+        person2.setLastName("");
+        Person findOrSaveCreator2 = entityService.findOrSaveCreator(person2);
+        logger.info("person: {} {}", findOrSaveCreator2, findOrSaveCreator2.getId());
+        assertEquals(8608L , findOrSaveCreator2.getId().longValue());
     }
 
     @Test
