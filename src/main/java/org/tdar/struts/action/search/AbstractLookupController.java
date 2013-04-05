@@ -379,16 +379,17 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
             incomingPerson.setLastName(lastName);
             valid = true;
         }
+
+        if (StringUtils.isEmpty(firstName) && StringUtils.isEmpty(lastName) && checkMinString(term)) {
+            incomingPerson.setWildcardName(term);
+            valid = true;
+        }
+
         if (checkMinString(institution)) {
             valid = true;
             Institution incomingInstitution = new Institution(institution);
             incomingPerson.setInstitution(incomingInstitution);
             getGenericService().detachFromSession(incomingInstitution);
-        }
-
-        if (!valid && checkMinString(term)) {
-            incomingPerson.setWildcardName(term);
-            valid = true;
         }
 
         // ignore email field for unauthenticated users.

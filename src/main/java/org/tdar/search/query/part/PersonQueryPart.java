@@ -24,14 +24,16 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
         List<String> insts = new ArrayList<String>();
         QueryPartGroup group = new QueryPartGroup();
         for (Person pers : getFieldValues()) {
+            boolean hasName = false;
             if (StringUtils.isNotBlank(pers.getFirstName())) {
                 fns.add(pers.getFirstName());
+                hasName= true;
             }
             if (StringUtils.isNotBlank(pers.getLastName())) {
                 lns.add(pers.getLastName());
+                hasName= true;
             }
-            
-            if (StringUtils.isNotBlank(pers.getWildcardName())) {
+            if (!hasName && StringUtils.isNotBlank(pers.getWildcardName())) {
                 fns.add(pers.getWildcardName());
                 lns.add(pers.getWildcardName());
                 group.setOperator(Operator.OR);
@@ -82,7 +84,6 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
             qpg.append(new FieldQueryPart<Boolean>("registered", Boolean.TRUE));
             return qpg.generateQueryString();
         }
-
         return group.toString();
     }
 
