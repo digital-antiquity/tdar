@@ -133,7 +133,9 @@
 	                    <a href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>">edit</a> |
 	                    <a href="<@s.url value='/${res.urlNamespace}/delete'><@s.param name="id" value="${res.id?c}"/></@s.url>">delete</a>
 	                </span>
-	                        <a href="<@s.url value='/${res.urlNamespace}/view'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@common.truncate res.title 65 /></a>
+	                        <a href="<@s.url value='/${res.urlNamespace}/view'
+	                           ><@s.param name="id" value="${res.id?c}"/></@s.url>"><@common.truncate res.title 60 /></a>
+                            <small>(ID: ${res.id?c})</small>
 	                        </@common.cartouche>
 	                </span>
 	            </li>
@@ -150,12 +152,14 @@
 	<div class="row">
 	    <div class="span9" id="divEmptyProjects">
 	        <h2>Empty Projects</h2>
-	        <ol style='list-style-position:inside' id="emptyProjects">
+	        <ol id="emptyProjects">
 	        <#list emptyProjects as res>
 	        <li id="li-recent-resource-${res.id?c}">
 	                <a href="<@s.url value='/${res.urlNamespace}/view'><@s.param name="id" value="${res.id?c}"/></@s.url>">
-	                    <@common.truncate res.title 70 />
-	                </a> 
+	                    <@common.truncate res.title 60 />
+	                </a>
+                    <small>(ID: ${res.id?c})</small>
+	                 
 	            <div class="recent-nav pull-right">
 	                <a href="<@s.url value='/resource/add?projectId=${res.id?c}'><@s.param name="id" value="${res.id?c}"/></@s.url>" title="add a resource to this project">add resource</a> |
 	                <a href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>">edit</a> |
