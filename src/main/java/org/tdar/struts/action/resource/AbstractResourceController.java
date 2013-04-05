@@ -474,7 +474,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             allProxies.addAll(authorshipProxies);
         if (creditProxies != null)
             allProxies.addAll(creditProxies);
-
+        logger.info("ResourceCreators before DB lookup: {} ", allProxies);
         int sequence = 0;
         List<ResourceCreator> incomingResourceCreators = new ArrayList<ResourceCreator>();
         // convert the list of proxies to a list of resource creators

@@ -49,6 +49,29 @@ public class PersonITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback(true)
+    public void testFindPerson() {
+        Person person = new Person();
+        person.setFirstName("j");
+        person.setLastName("");
+        Person findOrSaveCreator = entityService.findOrSaveCreator(person);
+        logger.info("person: {} {}", findOrSaveCreator, findOrSaveCreator.getId());
+        assertTrue(12540 < findOrSaveCreator.getId());
+        Person person2 = new Person();
+        person2.setFirstName("jim");
+        person2.setLastName("");
+        Person findOrSaveCreator2 = entityService.findOrSaveCreator(person2);
+        logger.info("person: {} {}", findOrSaveCreator2, findOrSaveCreator2.getId());
+        assertTrue(12540 < findOrSaveCreator2.getId());
+        Person person3 = new Person();
+        person3.setFirstName("jim");
+        person3.setLastName("DeVos");
+        Person findOrSaveCreator3 = entityService.findOrSaveCreator(person3);
+        logger.info("person: {} {}", findOrSaveCreator3, findOrSaveCreator3.getId());
+        assertEquals(8608L , findOrSaveCreator3.getId().longValue());
+    }
+
+    @Test
+    @Rollback(true)
     public void testModifyPerson() {
         Person person = setupPerson();
         Long id = person.getId();

@@ -458,8 +458,12 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <div class="controls">
         <#list _authorizedUsers as authorizedUser>
             <#if authorizedUser??>
+            	<#local auid = -1>
+            	<#if authorizedUser.user?has_content>
+            	<#local auid = authorizedUser.user.id>
+            	</#if>
             	<#local disabled = false>
-            	<#if (authorizedUser.user.id == authenticatedUser.id && !_isSubmitter) || ableToUploadFiles?has_content && !ableToUploadFiles>
+            	<#if (auid == authenticatedUser.id && !_isSubmitter) || ableToUploadFiles?has_content && !ableToUploadFiles>
 	            	<#local disabled = true>
             	</#if>
            	    <div class="controls-row repeat-row"  id="authorizedUsersRow_${authorizedUser_index}_">

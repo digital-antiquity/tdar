@@ -149,6 +149,10 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
                 transientPerson.setInstitution(findOrSaveInstitution(transientPerson.getInstitution()));
             }
             Set<Person> people = getDao().findByPerson(transientPerson);
+            /*
+             * Perhaps this should match only if FirstName and LastName are not empty, but I can see cases
+             * where LastName may not be empty but firstName is... 
+             */
             if (!people.isEmpty()) {
                 blessedPerson = people.iterator().next();
             }
@@ -201,8 +205,8 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
     public Long findNumberOfActualContributors() {
         return getDao().findNumberOfActualContributors();
     }
-    
-    @Transactional(readOnly=true)
+
+    @Transactional(readOnly = true)
     public Set<Long> findAllContributorIds() {
         return getDao().findAllContributorIds();
     }
