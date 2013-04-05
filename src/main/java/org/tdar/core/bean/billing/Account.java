@@ -1,5 +1,6 @@
 package org.tdar.core.bean.billing;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -109,6 +110,11 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     private Long spaceUsedInBytes = 0L;
     @Column(name = "resources_used")
     private Long resourcesUsed = 0L;
+
+    @Override
+    public java.util.List<?> getEqualityFields() {
+        return Arrays.asList(name, description,status,owner, authorizedMembers, invoices,resourcesUsed, filesUsed, spaceUsedInBytes, resources);
+    };
 
     /**
      * @return the invoices

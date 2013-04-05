@@ -6,6 +6,8 @@
  */
 package org.tdar.core.bean.entity;
 
+import java.util.Arrays;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -53,6 +55,11 @@ public class AuthorizedUser extends Base implements Persistable {
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false, name = "user_id")
     private Person user;
+
+    @Override
+    public java.util.List<?> getEqualityFields() {
+        return Arrays.asList(user, generalPermission, adminPermission);
+    };
 
     /**
      * @param person

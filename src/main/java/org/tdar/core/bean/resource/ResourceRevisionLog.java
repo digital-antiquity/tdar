@@ -1,5 +1,6 @@
 package org.tdar.core.bean.resource;
 
+import java.util.Arrays;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -51,6 +52,11 @@ public class ResourceRevisionLog extends Persistable.Base {
     @Column(name="payload", nullable=true)
     private String payload;
     
+    @Override
+    public java.util.List<?> getEqualityFields() {
+        return Arrays.asList(resource, logMessage, person, payload, timestamp);
+    };
+
     
     public Resource getResource() {
         return resource;

@@ -1,5 +1,6 @@
 package org.tdar.core.bean.statistics;
 
+import java.util.Arrays;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -24,6 +25,11 @@ public abstract class AbstractResourceStatistic<S extends Persistable> extends P
     public Date getDate() {
         return date;
     }
+
+    @Override
+    public java.util.List<?> getEqualityFields() {
+        return Arrays.asList(getReference(), getDate());
+    };
 
     public void setDate(Date date) {
         this.date = date;

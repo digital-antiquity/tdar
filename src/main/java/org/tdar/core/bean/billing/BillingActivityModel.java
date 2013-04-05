@@ -1,6 +1,7 @@
 package org.tdar.core.bean.billing;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -45,6 +46,11 @@ public class BillingActivityModel extends org.tdar.core.bean.Persistable.Base {
 
     @Column(name = "date_created")
     private Date dateCreated;
+
+    @Override
+    public java.util.List<?> getEqualityFields() {
+        return Arrays.asList(active,countingFiles, countingResources, countingSpace, version);
+    };
 
     @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, mappedBy="model")
     private List<BillingActivity> activities = new ArrayList<BillingActivity>();

@@ -1,5 +1,6 @@
 package org.tdar.core.bean.billing;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -70,6 +71,11 @@ public class AccountGroup extends Base implements Updatable {
     @JoinTable(name = "pos_group_members", joinColumns = { @JoinColumn(nullable = false, name = "user_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false, name = "account_id") })
     private Set<Person> authorizedMembers = new HashSet<Person>();
+
+    @Override
+    public java.util.List<?> getEqualityFields() {
+        return Arrays.asList(name, description,status,owner, authorizedMembers);
+    };
 
     public Set<Account> getAccounts() {
         return accounts;

@@ -7,6 +7,7 @@
 package org.tdar.core.bean.collection;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -125,6 +126,11 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     private static final long serialVersionUID = -5308517783896369040L;
     private transient Float score;
     private transient Explanation explanation;
+
+    @Override
+    public java.util.List<?> getEqualityFields() {
+        return Arrays.asList(type, name, owner, resources);
+    };
 
     @Column
     @Fields({

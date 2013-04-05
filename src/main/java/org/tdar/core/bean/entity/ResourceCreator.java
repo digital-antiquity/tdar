@@ -1,5 +1,7 @@
 package org.tdar.core.bean.entity;
 
+import java.util.Arrays;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -52,6 +54,12 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
         setCreator(creator);
         setRole(role);
     }
+    
+    @Override
+    public java.util.List<?> getEqualityFields() {
+        return Arrays.asList(creator, role);
+    };
+
 
     public ResourceCreator() {
     }

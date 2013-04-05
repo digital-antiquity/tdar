@@ -1,5 +1,7 @@
 package org.tdar.core.bean.resource.sensory;
 
+import java.util.Arrays;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -24,6 +26,11 @@ public class SensoryDataImage extends Persistable.Sequence<SensoryDataImage> imp
     public String getFilename() {
         return filename;
     }
+    @Override
+    public java.util.List<?> getEqualityFields() {
+        return Arrays.asList(filename, description);
+    };
+
 
     public void setFilename(String filename) {
         this.filename = filename;

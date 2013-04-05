@@ -1,6 +1,7 @@
 package org.tdar.core.bean.billing;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -97,6 +98,11 @@ public class Invoice extends Base implements Updatable {
             getItems().addAll(items);
         }
     }
+
+    @Override
+    public java.util.List<?> getEqualityFields() {
+        return Arrays.asList(owner,getPaymentMethod(), numberOfFiles, numberOfMb, items);
+    };
 
     @NotNull
     @Column(name = "date_created")

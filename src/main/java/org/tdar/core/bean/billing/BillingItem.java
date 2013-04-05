@@ -1,5 +1,7 @@
 package org.tdar.core.bean.billing;
 
+import java.util.Arrays;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -36,6 +38,11 @@ public class BillingItem extends Base implements Validatable {
 
     public BillingItem() {
     }
+
+    @Override
+    public java.util.List<?> getEqualityFields() {
+        return Arrays.asList(activity,quantity);
+    };
 
     public BillingItem(BillingActivity activity, int quantity) {
         this.activity = activity;

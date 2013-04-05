@@ -1,5 +1,7 @@
 package org.tdar.core.bean.billing;
 
+import java.util.Arrays;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -54,6 +56,12 @@ public class BillingActivity extends Persistable.Base implements Comparable<Bill
 
     public BillingActivity() {
     }
+
+    @Override
+    public java.util.List<?> getEqualityFields() {
+        return Arrays.asList(name, numberOfFiles, numberOfHours, numberOfMb, numberOfResources, activityType, model);
+    };
+
 
     public BillingActivity(String name, Float price, BillingActivityModel model) {
         this();

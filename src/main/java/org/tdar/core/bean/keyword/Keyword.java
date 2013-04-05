@@ -1,5 +1,7 @@
 package org.tdar.core.bean.keyword;
 
+import java.util.Arrays;
+
 import javax.persistence.Column;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -66,6 +68,11 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
                 @Field(name = "labelKeyword", analyzer = @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)),
                 @Field(name = QueryFieldNames.LABEL_SORT, norms = Norms.NO, store = Store.YES, analyze = Analyze.NO) })
         private String label;
+
+        @Override
+        public java.util.List<?> getEqualityFields() {
+            return Arrays.asList(label, getKeywordType());
+        };
 
         @Lob
         @Type(type = "org.hibernate.type.StringClobType")

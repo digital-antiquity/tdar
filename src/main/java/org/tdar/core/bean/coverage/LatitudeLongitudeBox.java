@@ -1,5 +1,6 @@
 package org.tdar.core.bean.coverage;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -119,7 +120,13 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
     public Double getCenterLongitude() {
         return (getMaxObfuscatedLongitude() + getMinObfuscatedLongitude()) / 2.0;
     }
+    
+    @Override
+    public java.util.List<?> getEqualityFields() {
+        return Arrays.asList(minimumLatitude, minimumLongitude,maximumLatitude,maximumLongitude);
+    };
 
+    
     /*
      * This randomize function is used when displaying lat/longs on a map. It is
      * passed the max and the min lat or long and then uses a salt to randomize.

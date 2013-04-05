@@ -1,12 +1,11 @@
 package org.tdar.core.bean.billing;
 
+import java.util.Arrays;
 import java.util.Date;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -34,6 +33,11 @@ public class BillingTransactionLog extends Base {
     // the confirmation id for this invoice
 
     private String transactionId;
+
+    @Override
+    public java.util.List<?> getEqualityFields() {
+        return Arrays.asList(transactionId, responseInJson);
+    };
 
     public BillingTransactionLog() {}
     

@@ -1,5 +1,6 @@
 package org.tdar.core.bean.entity;
 
+import java.util.Arrays;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -40,6 +41,11 @@ public class AuthenticationToken extends Persistable.Base {
         token.setSessionStart(new Date());
         return token;
     }
+
+    @Override
+    public java.util.List<?> getEqualityFields() {
+        return Arrays.asList(sessionEnd, sessionStart,person);
+    };
 
     public Person getPerson() {
         return person;

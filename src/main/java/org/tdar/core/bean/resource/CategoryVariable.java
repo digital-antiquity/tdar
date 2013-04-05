@@ -1,5 +1,6 @@
 package org.tdar.core.bean.resource;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Set;
 import java.util.SortedSet;
@@ -76,6 +77,11 @@ public class CategoryVariable extends Persistable.Base implements Comparable<Cat
     public void setName(String name) {
         this.name = name;
     }
+
+    @Override
+    public java.util.List<?> getEqualityFields() {
+        return Arrays.asList(parent, name, type);
+    };
 
     @ElementCollection()
     @JoinTable(name = "category_variable_synonyms")

@@ -1,5 +1,7 @@
 package org.tdar.core.bean.resource.datatable;
 
+import java.util.Arrays;
+
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -35,6 +37,11 @@ public class DataTableColumnRelationship extends Persistable.Base {
     @ManyToOne(optional = false)
     @JoinColumn(name = "foreign_column_id")
     private DataTableColumn foreignColumn;
+
+    @Override
+    public java.util.List<?> getEqualityFields() {
+        return Arrays.asList(relationship, localColumn, foreignColumn);
+    };
 
     /**
      * @return the localColumn

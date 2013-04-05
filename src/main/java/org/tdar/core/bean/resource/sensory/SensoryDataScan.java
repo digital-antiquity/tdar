@@ -1,5 +1,6 @@
 package org.tdar.core.bean.resource.sensory;
 
+import java.util.Arrays;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -62,6 +63,12 @@ public class SensoryDataScan extends Persistable.Sequence<SensoryDataScan> imple
 
     @Column(name = "matrix_applied", nullable = false)
     private boolean matrixApplied;
+
+    @Override
+    public java.util.List<?> getEqualityFields() {
+        //????
+        return Arrays.asList(scanDate, scannerTechnology, filename, transformationMatrix, pointsInScan, scanNotes);
+    };
 
     public String getFilename() {
         return filename;

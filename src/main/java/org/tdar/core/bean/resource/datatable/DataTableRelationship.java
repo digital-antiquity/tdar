@@ -1,5 +1,6 @@
 package org.tdar.core.bean.resource.datatable;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -42,6 +43,11 @@ public class DataTableRelationship extends Persistable.Base {
     public DataTableColumnRelationshipType getType() {
         return type;
     }
+
+    @Override
+    public java.util.List<?> getEqualityFields() {
+        return Arrays.asList(type, columnRelationships);
+    };
 
     @XmlElementWrapper(name = "columnRelationships")
     @XmlElement(name = "columnRelationship")
