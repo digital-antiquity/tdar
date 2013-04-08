@@ -40,7 +40,7 @@ public class DataTableColumnRelationship extends Persistable.Base {
 
     @Override
     public java.util.List<?> getEqualityFields() {
-        return Arrays.asList(relationship, localColumn, foreignColumn);
+        return Arrays.asList(localColumn, foreignColumn);
     };
 
     /**
