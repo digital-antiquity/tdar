@@ -71,6 +71,8 @@ function applyPersonAutoComplete($elements, usersOnly, showCreate) {
         if (usersOnly) {
             requestData.registered = true;
         }
+        delete(requestData.term);
+        
         // var lemail = (usersOnly) ? '' : getEmail(
         // this.element).val();
     };
