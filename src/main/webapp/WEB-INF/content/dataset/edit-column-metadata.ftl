@@ -180,7 +180,7 @@
              autocompleteIdElement="#${column_index}_cid"
              placeholder="Enter the name of a Coding Sheet"
              addNewLink="/coding-sheet/add?returnToResourceMappingId=${resource.id?c}"
-            value="${codingTxt}" cssClass="input-xxlarge codingsheetfield" />
+            value="${codingTxt}" cssClass="input-xxlarge-combo codingsheetfield" />
     </div>
      <div id='divOntology-${column_index}' class="ontologyInfo " tooltipcontent="#ontologyToolTip" tiplabel="Ontology">
             <#assign ontologyId="" />
@@ -198,7 +198,7 @@
              autocompleteIdElement="#${column_index}_oid"
              addNewLink="/ontology/add?returnToResourceMappingId=${resource.id?c}"
              
-             cssClass="input-xxlarge ontologyfield" />
+             cssClass="input-xxlarge-combo ontologyfield" />
     </div>
     <br/>
     <div class="mappingInfo" tooltipcontent="#mappingToolTip" tiplabel="Mapping ${siteAcronym} Resources">
