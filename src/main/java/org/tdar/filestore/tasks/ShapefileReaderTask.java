@@ -20,6 +20,7 @@ import org.geotools.data.FeatureSource;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.gce.geotiff.GeoTiffFormat;
+import org.geotools.kml.KMLConfiguration;
 import org.geotools.xml.Parser;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridCoverageReader;
@@ -99,27 +100,19 @@ public class ShapefileReaderTask extends AbstractTask {
                     getLogger().debug("{}", dataStore.getNames());
                     SimpleFeatureType TYPE = DataUtilities.createType("location", "geom:Point,name:String");
 
-                    File locationFile = new File("location.xsd");
-                    locationFile = locationFile.getCanonicalFile();
-                    locationFile.createNewFile();
-
-                    URL locationURL = locationFile.toURI().toURL();
-                    URL baseURL = locationFile.getParentFile().toURI().toURL();
-
-                    FileOutputStream xsd = new FileOutputStream(locationFile);
-
-                    GML encode = new GML(GML.Version.GML2);
-                    encode.setBaseURL(baseURL);
-                    encode.setNamespace("location", locationURL.toExternalForm());
-                    FeatureIterator featureIterator = collection.features();
-                    // SimpleFeatureCollection sfc = FeatureCollections.newCollection("internal");
-                    // encode.
-                    // while (featureIterator.hasNext()) {
-                    // Feature feature = featureIterator.next();
-                    // // encode.encode(out, feature.getType());
-                    // }
-                    // Collection
-                    // encode.encode(xsd, collection);
+//                    File locationFile = new File("location.xsd");
+//                    locationFile = locationFile.getCanonicalFile();
+//                    locationFile.createNewFile();
+//
+//                    URL locationURL = locationFile.toURI().toURL();
+//                    URL baseURL = locationFile.getParentFile().toURI().toURL();
+//
+//                    FileOutputStream xsd = new FileOutputStream(locationFile);
+//
+//                    GML encode = new GML(GML.Version.GML2);
+//                    encode.setBaseURL(baseURL);
+//                    encode.setNamespace("location", locationURL.toExternalForm());
+//                    FeatureIterator featureIterator = collection.features();
                 } catch (Throwable e) {
                     getLogger().error("exception", e);
                 } finally {
@@ -127,10 +120,12 @@ public class ShapefileReaderTask extends AbstractTask {
                 }
                 break;
             case "kml":
-//                Parser parser = new Parser(new KMLConfiguration());
-//                SimpleFeature f = (SimpleFeature) parser.parse( new FileInputStream(file));
-//                Collection placemarks = (Collection) f.getAttribute("Feature");
-                
+                Parser parser = new Parser(new KMLConfiguration());
+                SimpleFeature f = (SimpleFeature) parser.parse( new FileInputStream(file));
+                Collection placemarks = (Collection) f.getAttribute("Feature");
+                for (Object mark : placemarks) {
+                    getLogger().info("{}", mark);
+                }
                 break;
         }
     }
