@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.resource.Project;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
@@ -50,6 +51,27 @@ public class CodingSheetEditWebITCase extends AbstractAdminAuthenticatedWebTestC
         // assertTextPresent(ERROR_MESSAGE_BLANK_CODING_RULES);
         assertTrue("nothing to see here... everything works just fine.", true);
 
+    }
+    
+    @Test
+    //after creating an invalid coding sheet, we should be sent back to the INPUT page and should see an action message.  
+    public void testCreateInvalidCodingSheet() {
+        gotoPage("/coding-sheet/add");
+        setInput("codingSheet.title", "test invalid coding sheet");
+        setInput("codingSheet.description", "test invalid coding sheet");
+        setInput("codingSheet.date", "2001");
+        setInput("projectId", TestConstants.PARENT_PROJECT_ID);
+        StringBuilder sb = new StringBuilder();
+        sb.append("a apple\n")
+            .append("b berries\n")
+            .append("c carrots]n");
+        setInput("fileTextInput", sb.toString());
+        
+       submitForm();
+       //we should be on the INPUT page.
+       logger.debug("\n\n\n\n {} \n\n\n", getPageBodyCode());
+       assertTrue("expecting to still be on INPUT page.  actual page is " + htmlPage.getUrl(), htmlPage.getUrl().toString().contains("save.action"));
+       assertNoErrorTextPresent();
     }
 
 }

@@ -67,12 +67,11 @@ function applyPersonAutoComplete($elements, usersOnly, showCreate) {
     options.showCreate = showCreate;
     options.minLength = 3;
 
+    //unlike insitu we keep the 'term' property because we need it for the new user autocomplete control
     options.enhanceRequestData = function(requestData) {
         if (usersOnly) {
             requestData.registered = true;
         }
-        // var lemail = (usersOnly) ? '' : getEmail(
-        // this.element).val();
     };
 
     options.customRender = function(ul, item) {
