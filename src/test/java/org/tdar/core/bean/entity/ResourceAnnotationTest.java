@@ -20,6 +20,7 @@ public class ResourceAnnotationTest {
 
         ResourceAnnotation a1 = new ResourceAnnotation();
         ResourceAnnotation a2 = new ResourceAnnotation();
+      
         ResourceAnnotationKey k1 = new ResourceAnnotationKey();
         ResourceAnnotationKey k2 = new ResourceAnnotationKey();
         String sameValue = "a value";
@@ -33,33 +34,42 @@ public class ResourceAnnotationTest {
         a2.setResourceAnnotationKey(k2);
         a2.setValue(sameValue);
 
-        //FIXME: technically hashcodes don't *need* to be different if they not equal.
-//        Assert.assertNotSame("these keys should have different hashcodes", k1.hashCode(), k2.hashCode());
-        // set the id to be the same, they should *still* have different hashcodes
         Long id = -1L;
         k1.setId(id);
         k2.setId(id);
-        Assert.assertNotSame("these keys should have different hashcodes", k1.hashCode(), k2.hashCode());
-        Assert.assertNotEquals("equality based on field,  values should be different", k1, k2);
-        Assert.assertNotEquals("equality based on field,  values should be different", a1, a2);
-        Assert.assertNotSame("these annotations should have different hashcodes", a1.hashCode(), a2.hashCode());
+        Assert.assertNotEquals("equality based on 'business key',  values should be different", k1, k2);
+        Assert.assertNotEquals("equality based on 'business key',  values should be different", a1, a2);
 
-        // making ID non-transient
+        // making ID non-transient  (shouldn't make a difference on hashcode or equality for this class)
         id = 1L;
-
         a1.setId(id);
         a2.setId(id);
-        Assert.assertNotSame("these annotations should have different hashcodes", a1.hashCode(), a2.hashCode());
-        Assert.assertEquals("equality based on id,  should be equal", a1, a2);
+        Assert.assertNotEquals("equality based on 'business key',  values should still be different", a1, a2);
         logger.info(String.format("%s==%s %s==%s", a1.hashCode(), a2.hashCode(), a1.getEqualityFields(), a2.getEqualityFields()));
-        Assert.assertEquals("hashcodes should now be equal if ids are equal", a1.hashCode(), a2.hashCode());
         
         
-        // okay, put these in a set and make sure the set has one item
+        // ensure the set has two items since these two annotations are unique
         Set<ResourceAnnotation> set = new HashSet<ResourceAnnotation>();
         set.add(a1);
         set.add(a2);
-        Assert.assertEquals("set should have one item in it", 1, set.size());
+        Assert.assertEquals("set should have one item in it", 2, set.size());
+        
+        
+        //create a new resourceAnnotation that is the same as (but not identical to) a1
+        ResourceAnnotation a1c = new ResourceAnnotation();
+        ResourceAnnotationKey k1c = new ResourceAnnotationKey();
+        //feed original string through buffer to force equal string that is not identical 
+        a1c.setValue( (new StringBuffer(a1.getValue())).toString());
+        k1c.setKey( ( new StringBuffer( k1.getKey() ) ).toString() );  
+        a1c.setResourceAnnotationKey(k1c);
+        
+        Assert.assertEquals("expecting equal but not identical", a1, a1c);
+        Assert.assertNotSame("expecting equal but not identical", a1, a1c);
+        
+        Assert.assertEquals("expecting equal but not identical", k1.getKey(), k1c.getKey());
+        Assert.assertNotSame("expecting equal but not identical", k1.getKey(), k1c.getKey());
+        
+        
     }
 
 }

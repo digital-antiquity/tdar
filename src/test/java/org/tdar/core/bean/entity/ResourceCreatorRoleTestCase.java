@@ -36,7 +36,8 @@ public class ResourceCreatorRoleTestCase {
             person.setId(lng);
             personSet.add(person);
         }
-        assertEquals(2, personSet.size());
+        //Person equality will always be based on equalityFields, and so the personset should only contain one instance.
+        assertEquals(1, personSet.size());
         logger.info(personSet);
     }
 
