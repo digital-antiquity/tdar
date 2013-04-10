@@ -1109,7 +1109,7 @@ public class Resource extends JsonModel.Base implements Persistable,
 
     @Override
     public List<?> getEqualityFields() {
-        return Arrays.asList(hashCode());
+        return Collections.emptyList();
     }
 
     @Override
