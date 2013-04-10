@@ -127,7 +127,7 @@ var data = [];
         <td>${file.informationResourceFileType}</td>
         <td>${file.latestVersion}</td>
         <td>${file.restriction}</td>
-        <td>${file.status}</td>
+        <td><#if file.status?has_content>${file.status!""}</#if></td>
        	<#assign orig = file.latestUploadedVersion />
        	<td></td>
        	<td></td>
