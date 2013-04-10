@@ -52,6 +52,8 @@ import org.tdar.core.bean.resource.Dataset.IntegratableOptions;
 import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.InformationResourceFile;
+import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAccessType;
 import org.tdar.core.bean.resource.ResourceType;
@@ -907,6 +909,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
                 if (isEditor()) {
                     fieldNames.add("Status");
+                    fieldNames.add("FileNames");
                     fieldNames.add("Date Added");
                     fieldNames.add("Submitted By");
                     fieldNames.add("Date Last Updated");
@@ -940,23 +943,27 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
                         Resource r = (Resource) result;
                         Integer dateCreated = null;
                         Integer numFiles = 0;
+                        List<String> filenames = new ArrayList<String>();
+                        String location = "";
+                        String projectName = "";
                         if (result instanceof InformationResource) {
-                            dateCreated = ((InformationResource) result).getDate();
-                            numFiles = ((InformationResource) result).getTotalNumberOfFiles();
+                            InformationResource ir = (InformationResource) result;
+                            dateCreated = ir.getDate();
+                            numFiles = ir.getTotalNumberOfFiles();
+                            for (InformationResourceFileVersion file : ir.getLatestUploadedVersions()) {
+                                filenames.add(file.getFilename());
+                            }
+                            InformationResource ires = ((InformationResource) r);
+                            location = ires.getCopyLocation();
+                            projectName = ires.getProjectTitle();
+
                         }
                         List<Creator> authors = new ArrayList<Creator>();
 
                         for (ResourceCreator creator : r.getPrimaryCreators()) {
                             authors.add(creator.getCreator());
                         }
-                        String location = "";
-                        String projectName = "";
-                        if (r instanceof InformationResource) {
-                            InformationResource ires = ((InformationResource) r);
-                            location = ires.getCopyLocation();
-                            projectName = ires.getProjectTitle();
 
-                        }
                         ArrayList<Object> data = new ArrayList<Object>(
                                 Arrays.asList(r.getId(), r.getResourceType(), r.getTitle(), dateCreated, authors,
                                         projectName, r.getShortenedDescription(), numFiles,
@@ -964,6 +971,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
 
                         if (isEditor()) {
                             data.add(r.getStatus());
+                            data.add(StringUtils.join(filenames, ","));
                             data.add(r.getDateCreated());
                             data.add(r.getSubmitter().getProperName());
                             data.add(r.getDateUpdated());
