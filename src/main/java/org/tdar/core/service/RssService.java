@@ -146,8 +146,27 @@ public class RssService implements Serializable {
                     if (authors.size() > 0) {
                         entry.setAuthors(authors);
                     }
+
+                    boolean hasRestrictions = false;
+                    if (resource_ instanceof InformationResource) {
+                        InformationResource informationResource = (InformationResource) resource_;
+                        hasRestrictions = informationResource.hasConfidentialFiles();
+                        if (informationResource.getLatestUploadedVersions().size() > 0 && includeEnclosures) {
+                            for (InformationResourceFile file : informationResource.getVisibleFiles()) {
+                                addEnclosure(handler.getAuthenticatedUser(), entry, file.getLatestUploadedVersion());
+                                InformationResourceFileVersion thumb = file.getLatestThumbnail();
+                                if (thumb != null) {
+                                    addEnclosure(handler.getAuthenticatedUser(), entry, thumb);
+                                }
+                            }
+                        }
+                    }
+
                     LatitudeLongitudeBox latLong = resource.getFirstActiveLatitudeLongitudeBox();
-                    if (latLong != null && mode != GeoRssMode.NONE) {
+                    /*
+                     * If LatLong is not Obfuscated and we don't have confidential files then ...
+                     */
+                    if (latLong != null && mode != GeoRssMode.NONE && !latLong.isObfuscated() && !hasRestrictions) {
                         GeoRSSModule geoRss = new GMLModuleImpl();
                         if (mode == GeoRssMode.ENVELOPE) {
                             geoRss.setGeometry(new Envelope(latLong.getMinObfuscatedLatitude(), latLong.getMinObfuscatedLongitude(), latLong
@@ -159,16 +178,6 @@ public class RssService implements Serializable {
                         entry.getModules().add(geoRss);
                     }
 
-                    if (resource_ instanceof InformationResource && ((InformationResource) resource_).getLatestUploadedVersions().size() > 0
-                            && includeEnclosures) {
-                        for (InformationResourceFile file : ((InformationResource) resource_).getVisibleFiles()) {
-                            addEnclosure(handler.getAuthenticatedUser(), entry, file.getLatestUploadedVersion());
-                            InformationResourceFileVersion thumb = file.getLatestThumbnail();
-                            if (thumb != null) {
-                                addEnclosure(handler.getAuthenticatedUser(), entry, thumb);
-                            }
-                        }
-                    }
                 }
                 entry.setDescription(description);
                 entry.setLink(urlService.absoluteUrl(oaiResource));
