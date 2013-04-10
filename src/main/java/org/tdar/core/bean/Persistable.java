@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -165,22 +166,18 @@ public interface Persistable extends Serializable {
                 return true;
             if (!(a.getClass().equals(b.getClass())))
                 return false;
+            //at this point we know that a and b are: not null, not identical,  and are the same class
+            
+            //if base equalityFields is empty,  equality should be based only on identity (just like Object.equals()) 
+            if(a.getEqualityFields().isEmpty())
+                return a == b;  //will always be false at this point, but a==b is semantically correct
 
+            //OKAY. The persistable specifies how they define equality.  The customer is always right.
             Logger logger = LoggerFactory.getLogger(a.getClass());
-
             EqualsBuilder equalsBuilder = new EqualsBuilder();
             Object[] selfEqualityFields = a.getEqualityFields().toArray();
             Object[] candidateEqualityFields = b.getEqualityFields().toArray();
             equalsBuilder.append(selfEqualityFields, candidateEqualityFields);
-
-//            if (isNotTransient(a) && isNotTransient(b)) {
-//                equalsBuilder.append(a.getId(), b.getId());
-//            } else {
-//                Object[] selfEqualityFields = a.getEqualityFields().toArray();
-//                Object[] candidateEqualityFields = b.getEqualityFields().toArray();
-//                logger.trace(String.format("comparing %s with %s", selfEqualityFields, candidateEqualityFields));
-//                equalsBuilder.append(selfEqualityFields, candidateEqualityFields);
-//            }
             return equalsBuilder.isEquals();
         }
 
@@ -195,30 +192,24 @@ public interface Persistable extends Serializable {
         }
 
         public static int toHashCode(Persistable persistable) {
+            //since we typically get called from instance method it's unlikely persistable will be null, but lets play safe...
+            if(persistable == null) return 0;  
+            
+            //if no equality fields defined we use Java's base implementation
+            if(persistable.getEqualityFields() == null ) return System.identityHashCode(persistable);
+            
             HashCodeBuilder builder = new HashCodeBuilder(23, 37);
-            if (persistable == null) {
-                //theoretically impossible (right?): if instance.hashCode() calls static toHashCode(instance) then instance cannot be null. 
-                return builder.toHashCode();
-            }
             builder.append(persistable.getEqualityFields().toArray());
-//            if (isTransient(persistable)) {
-//                builder.append(persistable.getEqualityFields().toArray());
-//            } 
-//            else {
-//                // FIXING:: if two objects are equal, then they should have the same HashCode; this breaks w/o below
-//                builder.append(persistable.getId());
-//            }
-            // FIXME: make sure this doesn't break the contract wrt equals.
             return builder.toHashCode();
         }
 
         /**
-         * By default, use only the database ID as the implementation
+         * By default, base the hashcode off of object's inherent hashcode.   
          */
         @Override
         @XmlTransient
         public List<?> getEqualityFields() {
-            return Arrays.asList(getId());
+            return Collections.emptyList();
         }
 
         /*
