@@ -120,6 +120,32 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         return (getMaxObfuscatedLongitude() + getMinObfuscatedLongitude()) / 2.0;
     }
 
+    private boolean isActuallyObfuscated() {
+        return (getMinObfuscatedLongitude() != getMinimumLongitude() || getMaxObfuscatedLongitude() != getMaximumLongitude()
+                || getMinObfuscatedLatitude() != getMinimumLatitude() || getMaxObfuscatedLatitude() != getMaximumLatitude());
+    }
+
+    /* fixme ** test */
+    public Double getCenterLatitudeIfNotObfuscated() {
+        Double centerLatitude = getCenterLatitude(); // init obfuscated properly
+        @SuppressWarnings("unused")
+        Double centerLongitude = getCenterLongitude(); // init obfuscated properly
+        if (isActuallyObfuscated()) {
+            return null;
+        }
+        return centerLatitude;
+    }
+
+    public Double getCenterLongitudeIfNotObfuscated() {
+        @SuppressWarnings("unused")
+        Double centerLatitude = getCenterLatitude(); // init obfuscated properly
+        Double centerLongitude = getCenterLongitude();// init obfuscated properly
+        if (isActuallyObfuscated()) {
+            return null;
+        }
+        return centerLongitude;
+    }
+
     /*
      * This randomize function is used when displaying lat/longs on a map. It is
      * passed the max and the min lat or long and then uses a salt to randomize.
@@ -144,7 +170,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         } else {
             return num;
         }
-        latLong.obfuscated = true;
+        latLong.setObfuscated(true);
 
         if (num < num2) { // -5 < -3
             add *= -1;

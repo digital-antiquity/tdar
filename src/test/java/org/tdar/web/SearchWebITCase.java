@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -134,6 +135,14 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
                 .getOptionsForContext(Resource.class)) {
             gotoPage(SEARCH_RESULTS_BASE_URL + "?query=&sortField="
                     + option.name());
+        }
+    }
+
+    @Test
+    public void testMapAndOtherOrientations() {
+        for (DisplayOrientation orientation : DisplayOrientation.values()) {
+            gotoPage(SEARCH_RESULTS_BASE_URL + "?query=Philadelphia&orientation="+ orientation.name()); //has obfuscated data
+            gotoPage(SEARCH_RESULTS_BASE_URL + "?query=Nebraska&orientation="+ orientation.name()); // doesn't
         }
     }
 

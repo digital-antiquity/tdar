@@ -80,9 +80,9 @@
         </#if>  
 	        <#-- printing item tag -->
             <@printTag itemTag_ "listItem ${itemClass!''}" false>
-            <#--  && !resource.firstActiveLatitudeLongitudeBox.obfuscated -->
-            <#if orientation == 'MAP' && resource.firstActiveLatitudeLongitudeBox?has_content 
-             &&!resource.hasConfidentialFiles()
+
+            <#if orientation == 'MAP' && (resource.firstActiveLatitudeLongitudeBox.centerLatitudeIfNotObfuscated)?has_content  &&
+            (resource.firstActiveLatitudeLongitudeBox.centerLongitudeIfNotObfuscated)?has_content &&!resource.hasConfidentialFiles()
              > data-lat="${resource.firstActiveLatitudeLongitudeBox.centerLatitude?c}"
             data-long="${resource.firstActiveLatitudeLongitudeBox.centerLongitude?c}" </#if>
             </@printTag>
