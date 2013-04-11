@@ -134,7 +134,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
      * http://www.movable-type.co.uk/scripts/html
      */
 
-    public static Double obfuscate(Double num, Double num2, int type) {
+    public static Double obfuscate(Double num, Double num2, int type, LatitudeLongitudeBox latLong) {
         Random r = new Random();
         double salt = ONE_MILE_IN_DEGREE_MINUTES;
         double add = 0;
@@ -144,7 +144,8 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         } else {
             return num;
         }
-
+        latLong.obfuscated = true;
+        
         if (num < num2) { // -5 < -3
             add *= -1;
             salt *= -1;
@@ -171,28 +172,28 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
 
     public Double getMinObfuscatedLatitude() {
         if (minObfuscatedLatitude == null) {
-            minObfuscatedLatitude = obfuscate(minimumLatitude, maximumLatitude, LATITUDE);
+            minObfuscatedLatitude = obfuscate(minimumLatitude, maximumLatitude, LATITUDE, this);
         }
         return minObfuscatedLatitude;
     }
 
     public Double getMaxObfuscatedLatitude() {
         if (maxObfuscatedLatitude == null) {
-            maxObfuscatedLatitude = obfuscate(maximumLatitude, minimumLatitude, LATITUDE);
+            maxObfuscatedLatitude = obfuscate(maximumLatitude, minimumLatitude, LATITUDE, this);
         }
         return maxObfuscatedLatitude;
     }
 
     public Double getMinObfuscatedLongitude() {
         if (minObfuscatedLongitude == null) {
-            minObfuscatedLongitude = obfuscate(minimumLongitude, maximumLongitude, LONGITUDE);
+            minObfuscatedLongitude = obfuscate(minimumLongitude, maximumLongitude, LONGITUDE, this);
         }
         return minObfuscatedLongitude;
     }
 
     public Double getMaxObfuscatedLongitude() {
         if (maxObfuscatedLongitude == null) {
-            maxObfuscatedLongitude = obfuscate(maximumLongitude, minimumLongitude, LONGITUDE);
+            maxObfuscatedLongitude = obfuscate(maximumLongitude, minimumLongitude, LONGITUDE, this);
         }
         return maxObfuscatedLongitude;
     }

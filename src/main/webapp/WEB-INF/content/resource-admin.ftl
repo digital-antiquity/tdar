@@ -89,6 +89,7 @@ var data = [];
 </#if>
 </#if>
 
+
 <h2>Resource Revision History</h2>
 <table class="table tableFormat">
     <tr>
@@ -106,6 +107,52 @@ var data = [];
 </table>
 
 
+
+<#if (resource.informationResourceFiles?has_content )>
+<h2>File History</h2>
+<table class="table tableFormat">
+    <tr>
+    	<th colspan="2">Name</th>
+        <th>Type</th>
+        <th>Version #</th>
+        <th>Restriction</th>
+		<th>Status</th>
+		<th>Size</th>
+		<th>MimeType</th>
+        <th>Processing Errors?</th>
+    </tr>
+<#list resource.informationResourceFiles as file>
+    <tr>
+        <td colspan="2">${file.fileName}</td>
+        <td>${file.informationResourceFileType}</td>
+        <td>${file.latestVersion}</td>
+        <td>${file.restriction}</td>
+        <td><#if file.status?has_content>${file.status!""}</#if></td>
+       	<#assign orig = file.latestUploadedVersion />
+       	<td></td>
+       	<td></td>
+        <td><#if file.errorMessage?has_content>${file.errorMessage}</#if></td>
+    </tr>
+	<#list file.informationResourceFileVersions as vers>
+		<#if vers.uploaded >
+		<tr>
+			<td></td>
+	        <td>
+          <a href="<@s.url value='/filestore/${vers.id?c}/get'/>" onClick="registerDownload('<@s.url value='/filestore/${vers.id?c}/get'/>', '${id?c}')" >${vers.filename}</a></td>
+	        <td>${vers.fileVersionType} </td>
+	        <td>${vers.version}</td>
+	        <td></td>
+	        <td></td>
+	       	<#assign orig = file.latestUploadedVersion />
+	       	<td>${vers.fileLength}</td>
+	       	<td>${vers.mimeType}</td>
+			<td></td>
+		</tr>
+		</#if>
+	</#list>
+</#list>
+</table>
+</#if>
 
 <@view.accessRights />
 

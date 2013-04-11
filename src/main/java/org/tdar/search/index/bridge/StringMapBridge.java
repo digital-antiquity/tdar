@@ -8,6 +8,7 @@ import org.hibernate.search.bridge.LuceneOptions;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.service.GenericService;
+import org.tdar.search.query.QueryFieldNames;
 
 /**
  * 
@@ -38,7 +39,7 @@ public class StringMapBridge implements FieldBridge {
                 keyName = GenericService.extractStringValue(key);
             }
             
-            opts.addFieldToDocument("dataValuePair", keyName + ":" + map.get(key), doc);
+            opts.addFieldToDocument(QueryFieldNames.DATA_VALUE_PAIR, keyName + ":" + map.get(key), doc);
         }
     }
 

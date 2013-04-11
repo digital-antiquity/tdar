@@ -394,6 +394,17 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
         return filesUsed;
     }
 
+    public Float getTotalCost() {
+        Float total = 0f;
+        for (Invoice invoice : invoices) {
+            TransactionStatus status2 = invoice.getTransactionStatus();
+            if (status2.isComplete() && !status2.isInvalid()) {
+                total += invoice.getTotal();
+            }
+        }
+        return total;
+    }
+
     public void setFilesUsed(Long filesUsed) {
         this.filesUsed = filesUsed;
     }
