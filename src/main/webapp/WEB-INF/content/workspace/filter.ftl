@@ -133,12 +133,12 @@ checks, absent values are indicated with red x's.
 
 <script type='text/javascript'>
 function selectAllChildren(id, value) {
-    $("input[id*='ontologyNodeCheckboxId_" + id + "']").prop('checked', value);
+    $("input:enabled[id*='ontologyNodeCheckboxId_" + id + "']").prop('checked', value);
     return false;
 }
 function selectChildren(index, value) {
-    $("input[id$='" + index + "']").prop('checked', value);
-    $("input[id*='" + index + "\\.']").prop('checked', value);
+    $("input:enabled[id$='" + index + "']").prop('checked', value);
+    $("input:enabled[id*='" + index + "\\.']").prop('checked', value);
     return false;
 }
 
