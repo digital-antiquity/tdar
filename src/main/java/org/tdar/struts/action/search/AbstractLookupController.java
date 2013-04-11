@@ -374,15 +374,17 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
             incomingPerson.setFirstName(firstName);
             valid = true;
         }
-        if (checkMinString(term)) {
-            incomingPerson.setWildcardName(term);
-            valid = true;
-        }
 
         if (checkMinString(lastName)) {
             incomingPerson.setLastName(lastName);
             valid = true;
         }
+
+        if (StringUtils.isEmpty(firstName) && StringUtils.isEmpty(lastName) && checkMinString(term)) {
+            incomingPerson.setWildcardName(term);
+            valid = true;
+        }
+
         if (checkMinString(institution)) {
             valid = true;
             Institution incomingInstitution = new Institution(institution);

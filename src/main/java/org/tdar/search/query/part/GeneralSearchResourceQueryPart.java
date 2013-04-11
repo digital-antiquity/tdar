@@ -2,6 +2,8 @@ package org.tdar.search.query.part;
 
 import java.util.Collection;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.tdar.search.query.QueryFieldNames;
 
 public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
@@ -39,13 +41,14 @@ public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
 
         FieldQueryPart<String> creatorPart = new FieldQueryPart<String>(QueryFieldNames.RESOURCE_CREATORS_PROPER_NAME, cleanedQueryString);
         FieldQueryPart<String> content = new FieldQueryPart<String>(QueryFieldNames.CONTENT, cleanedQueryString);
-
+        FieldQueryPart<String> linkedContent = new FieldQueryPart<String>(QueryFieldNames.DATA_VALUE_PAIR, cleanedQueryString);
+        
         if (cleanedQueryString.contains(" ")) {
             creatorPart.setProximity(2);
         }
         queryPart.append(creatorPart.setBoost(CREATOR_BOOST));
-
         queryPart.append(content);
+        queryPart.append(linkedContent);
         return queryPart;
     }
 

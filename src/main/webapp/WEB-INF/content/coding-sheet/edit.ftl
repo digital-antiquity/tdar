@@ -49,7 +49,7 @@
                  placeholder="Enter the name of an Ontology"
                  autocompleteParentElement="#divOntology"
                  autocompleteIdElement="#oid"
-                 cssClass="longfield ontologyfield" />
+                 cssClass="input-xxlarge-combo ontologyfield" />
                  
              <div class="control-group">
                 <div class="controls">

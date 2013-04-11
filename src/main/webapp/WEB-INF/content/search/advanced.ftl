@@ -360,7 +360,7 @@ $(document).ready(function(){
 <#macro templateProject fieldIndex="{termid}" groupid="{groupid}">
         <div class="term PROJECT">
             <@s.hidden name="groups[${groupid}].projects[${fieldIndex}].id" id="projects_${groupid}_${fieldIndex}_id" />
-            <@common.combobox cssClass="input-xxlarge projectcombo" name="groups[${groupid}].projects[${fieldIndex}].title" 
+            <@common.combobox cssClass="input-xxlarge-combo projectcombo" name="groups[${groupid}].projects[${fieldIndex}].title" 
                 autocompleteIdElement="#projects_${groupid}_${fieldIndex}_id" 
                 target="" label="" placeholder="enter project name" value=""  bootstrapControl=false />
         </div>
@@ -371,7 +371,7 @@ $(document).ready(function(){
         <div class="term COLLECTION">
             <@s.hidden name="groups[${groupid}].collections[${fieldIndex}].id" id="collections_${groupid}_${fieldIndex}_id" />
             <@common.combobox name="groups[${groupid}].collections[${fieldIndex}].name" id="collections_${groupid}_${fieldIndex}_name"  
-                cssClass="input-xxlarge collectioncombo" autocompleteIdElement="#collections_${groupid}_${fieldIndex}_id" 
+                cssClass="input-xxlarge-combo collectioncombo" autocompleteIdElement="#collections_${groupid}_${fieldIndex}_id" 
                 target="" label="" placeholder="enter collection name" value="" bootstrapControl=false/>
         </div>
 </#macro>

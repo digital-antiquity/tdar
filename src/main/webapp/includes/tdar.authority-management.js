@@ -21,7 +21,8 @@ var g_settingsMap = {
             "bLengthChange": false,
             "bFilter": true,
             aoColumns:[
-                       {sTitle:"id", bUseRendered: false, mDataProp:"id", tdarSortOption:'ID'},
+                       {sTitle:"person id", bUseRendered: false, mDataProp:"id", tdarSortOption:'ID'},
+                       {sTitle:"registered",  mDataProp:"registered", tdarSortOption:'ID', bSortable:false},
                        {sTitle:"First", mDataProp:"firstName", tdarSortOption:'FIRST_NAME'},
                        {sTitle:"Last", mDataProp:"lastName", tdarSortOption:'LAST_NAME'},
                        {sTitle:"Email", mDataProp:"email", tdarSortOption:'CREATOR_EMAIL', bSortable:false}], //FIXME: make sortable

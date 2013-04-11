@@ -18,6 +18,7 @@ import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
@@ -101,6 +102,8 @@ public class ProjectController extends AbstractResourceController<Project> imple
             setSecondarySortField(SortOption.TITLE);
             try {
                 getSearchService().handleSearch(qb, this);
+            } catch (TdarRecoverableRuntimeException e) {
+                addActionErrorWithException(e.getMessage(), e);
             } catch (Exception e) {
                 addActionErrorWithException("something happend", e);
             }

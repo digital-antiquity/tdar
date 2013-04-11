@@ -121,10 +121,6 @@ left: 0!important;
 	line-height: 12px;
 }
 
-#recentlyEditedResources {
-	margin-right: 40px;
-}
-
 #recentlyEditedResources .recent-nav {
 	float: right;
 }
@@ -1316,6 +1312,7 @@ p.copyright-notice {
 #notice {
 	font-family: 'ff-tisa-web-pro', serif;
 	background-color: #f0eeeb;
+	z-index:-1;
 }
 
 #notice h2 {
@@ -1413,4 +1410,9 @@ div.tdarresults {
 
 #divResultsSortControl .control-group {
     margin-bottom: 0;
+}
+
+/* use this class if your textbox has combobox buttons that should add up to xx-large width*/
+.input-xxlarge-combo {
+    width: 412px;
 }

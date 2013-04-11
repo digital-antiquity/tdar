@@ -130,8 +130,11 @@ public class BrowseController extends AbstractLookupController {
             queryBuilder.append(reservedSearchParameters);
 
             if (isEditor() && creator instanceof Person) {
-                getGroups().addAll(getAuthenticationAndAuthorizationService().getGroupMembership((Person)creator));
-
+                try {
+                    getGroups().addAll(getAuthenticationAndAuthorizationService().getGroupMembership((Person) creator));
+                } catch (Throwable e) {
+                    logger.error("problem communicating with crowd getting user info for {} ", creator, e);
+                }
                 setUploadedResourceAccessStatistic(getResourceService().getResourceSpaceUsageStatistics(Arrays.asList(getId()), null, null, null, null));
             }
 

@@ -38,7 +38,7 @@ public class WorkflowContext implements Serializable {
     private Long informationResourceId;
     private List<InformationResourceFileVersion> versions;
     private InformationResourceFileVersion originalFile;
-    private File workingDirectory;
+    private File workingDirectory = TdarConfiguration.getInstance().getTempDirectory();
     private int numPages = -1;
     private transient Filestore filestore;
     private boolean processedSuccessfully = false;

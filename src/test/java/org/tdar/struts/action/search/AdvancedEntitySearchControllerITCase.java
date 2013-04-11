@@ -69,7 +69,7 @@ public class AdvancedEntitySearchControllerITCase extends AbstractSearchControll
         assertNotEmpty(controller.getCreatorResults());
         for (Indexable obj : controller.getCreatorResults()) {
             Creator inst = (Creator) obj;
-            assertTrue(inst.getProperName().toLowerCase().contains(term.toLowerCase()));
+            assertTrue(String.format("Creator %s should match %s",inst, term), inst.getProperName().toLowerCase().contains(term.toLowerCase()));
         }
         logger.info("{}", controller.getResults());
     }

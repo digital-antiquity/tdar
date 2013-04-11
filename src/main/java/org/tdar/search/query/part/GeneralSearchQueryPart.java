@@ -1,5 +1,6 @@
 package org.tdar.search.query.part;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 import org.apache.commons.lang.StringUtils;
@@ -38,9 +39,13 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
 
         logger.trace(cleanedQueryString);
 
+        
         FieldQueryPart<String> titlePart = new FieldQueryPart<String>(QueryFieldNames.TITLE, cleanedQueryString);
         FieldQueryPart<String> descriptionPart = new FieldQueryPart<String>(QueryFieldNames.DESCRIPTION, cleanedQueryString);
         FieldQueryPart<String> allFields = new FieldQueryPart<String>(QueryFieldNames.ALL, cleanedQueryString).setBoost(ANY_FIELD_BOOST);
+        FieldQueryPart<String> allFieldsAsPart = new FieldQueryPart<String>(QueryFieldNames.ALL, Arrays.asList(StringUtils.split(cleanedQueryString))).setBoost(ANY_FIELD_BOOST);
+        allFieldsAsPart.setOperator(Operator.AND);
+        allFieldsAsPart.setPhraseFormatters(PhraseFormatter.ESCAPED);
 
         if (cleanedQueryString.contains(" ")) {
             // APPLIES WEIGHTING BASED ON THE "PHRASE" NOT THE TERM
@@ -55,6 +60,8 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
         primary.append(titlePart.setBoost(TITLE_BOOST));
         primary.append(descriptionPart.setBoost(DESCRIPTION_BOOST));
         primary.append(allFields);
+        primary.append(allFieldsAsPart);
+
         primary.setOperator(Operator.OR);
         return primary;
     }

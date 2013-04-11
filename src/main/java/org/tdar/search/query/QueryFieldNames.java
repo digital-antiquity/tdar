@@ -87,5 +87,6 @@ public interface QueryFieldNames {
     public static final String DATE_CREATED_DECADE = "decadeCreated";
     public static final String CREATOR_ROLE_IDENTIFIER = "crid";
     public static final String FILENAME = "filename";
+    public static final String DATA_VALUE_PAIR = "dataValuePair";
     
 }

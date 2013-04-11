@@ -16,6 +16,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.Dao;
 import org.tdar.core.dao.TdarNamedQueries;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
 /**
  * $Id$
@@ -72,12 +73,9 @@ public class PersonDao extends Dao.HibernateBase<Person> {
             return hs;
         }
         Criteria criteria = getCriteria();
-        if (StringUtils.isNotBlank(person.getFirstName())) {
-            criteria.add(Restrictions.eq("firstName", person.getFirstName()));
-        }
-        if (StringUtils.isNotBlank(person.getLastName())) {
-            criteria.add(Restrictions.eq("lastName", person.getLastName()));
-        }
+        criteria.add(Restrictions.eq("firstName", person.getFirstName()));
+        criteria.add(Restrictions.eq("lastName", person.getLastName()));
+
         if (StringUtils.isNotBlank(person.getInstitutionName())) {
             criteria.createCriteria("institution").add(Restrictions.eq("name", person.getInstitutionName()));
         }
