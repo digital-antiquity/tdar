@@ -2,6 +2,8 @@ package org.tdar.search.query.part;
 
 import java.util.Collection;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.tdar.search.query.QueryFieldNames;
 
 public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
@@ -45,7 +47,6 @@ public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
             creatorPart.setProximity(2);
         }
         queryPart.append(creatorPart.setBoost(CREATOR_BOOST));
-
         queryPart.append(content);
         queryPart.append(linkedContent);
         return queryPart;

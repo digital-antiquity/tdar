@@ -178,6 +178,24 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
 
     @Test
     @Rollback(true)
+    public void testHyphenatedSiteNameSearchCombined() throws InstantiationException, IllegalAccessException {
+        String resourceTitle = "what fun";
+        SiteNameKeyword snk = new SiteNameKeyword();
+        String label = "33-Cu-314";
+        snk.setLabel(label);
+        Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
+        genericService.save(snk);
+        document.getSiteNameKeywords().add(snk);
+        searchIndexService.index(document);
+        setupTestDocuments();
+        doSearch("what fun 33-Cu-314");
+        logger.info("results:{}", controller.getResults());
+        assertTrue(controller.getResults().contains(document));
+        assertTrue(controller.getResults().get(0).equals(document) || controller.getResults().get(1).equals(document));
+    }
+
+    @Test
+    @Rollback(true)
     public void testFindResourceTypePhrase() {
         setResourceTypes(Arrays.asList(ResourceType.DOCUMENT, ResourceType.IMAGE));
         doSearch("");
