@@ -147,10 +147,9 @@ public class RssService implements Serializable {
                         entry.setAuthors(authors);
                     }
 
-                    boolean hasRestrictions = false;
+                    boolean hasRestrictions = resource.hasConfidentialFiles();
                     if (resource_ instanceof InformationResource) {
                         InformationResource informationResource = (InformationResource) resource_;
-                        hasRestrictions = informationResource.hasConfidentialFiles();
                         if (informationResource.getLatestUploadedVersions().size() > 0 && includeEnclosures) {
                             for (InformationResourceFile file : informationResource.getVisibleFiles()) {
                                 addEnclosure(handler.getAuthenticatedUser(), entry, file.getLatestUploadedVersion());
