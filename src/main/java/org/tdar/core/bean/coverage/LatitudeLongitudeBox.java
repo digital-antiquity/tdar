@@ -45,7 +45,7 @@ import org.tdar.search.index.bridge.TdarPaddedNumberBridge;
 // (name="latitudeLongitudeBox")
 public class LatitudeLongitudeBox extends Persistable.Base implements HasResource<Resource>, Obfuscatable {
 
-    private transient boolean obfuscated;
+    private transient boolean obfuscated = false;
     private transient Double minObfuscatedLatitude = null;
     private transient Double minObfuscatedLongitude = null;
     private transient Double maxObfuscatedLatitude = null;
@@ -145,7 +145,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
             return num;
         }
         latLong.obfuscated = true;
-        
+
         if (num < num2) { // -5 < -3
             add *= -1;
             salt *= -1;
