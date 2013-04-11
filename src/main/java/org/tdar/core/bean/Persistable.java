@@ -201,14 +201,18 @@ public interface Persistable extends Serializable {
         public static int toHashCode(Persistable persistable) {
             //since we typically get called from instance method it's unlikely persistable will be null, but lets play safe...
             if(persistable == null) return 0;
-
-            if(isTransient(persistable)) return 0;  
-            
-            //if no equality fields defined we use Java's base implementation
-            if(persistable.getEqualityFields() == null ) return System.identityHashCode(persistable);
-            
             HashCodeBuilder builder = new HashCodeBuilder(23, 37);
-            builder.append(persistable.getEqualityFields().toArray());
+
+            if(persistable.getEqualityFields().isEmpty()) {
+                if(isTransient(persistable)) {
+                    return 0;
+                } else {
+                    builder.append(persistable.getId());
+                }
+            } else {
+                builder.append(persistable.getEqualityFields().toArray());
+            }
+            
             return builder.toHashCode();
         }
 

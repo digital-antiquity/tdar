@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.GenericService;
@@ -162,26 +163,26 @@ public class PersonITCase extends AbstractIntegrationTestCase {
         ArrayList<Person> personList = new ArrayList<Person>(personSet);
         for (int i = 0; i < numberOfPersonsToCreate; i++) {
             Person persistedPerson = personList.get(i);
+
+            //person equality based on business key. if we copy the business key fields the two person objects should be equal
             Person person = new Person();
-            person.setFirstName(TestConstants.DEFAULT_FIRST_NAME);
-            person.setLastName(TestConstants.DEFAULT_LAST_NAME);
-            person.setEmail(emailPrefix + i + TestConstants.DEFAULT_EMAIL);
-            assertFalse(persistedPerson.equals(person));
-            // setting the ID should now make this person 'equal' to one of the person objects in the set, per our definition of equality
-            person.setId(persistedPerson.getId());
+            person.setEmail(persistedPerson.getEmail());
+            person.setRegistered(persistedPerson.isRegistered());
+            person.setLastName(persistedPerson.getLastName());
+            person.setFirstName(persistedPerson.getFirstName());
+            person.setPhone(persistedPerson.getPhone());
+            assertEquals(persistedPerson, person);
 
-            // now that we set the id, it's safe to lock down the hashcode
-            int hashcode1 = person.hashCode();
-            logger.debug("locking down person.hashCode() to: {}", hashcode1);
+            //the person record is 'transient'.  
+            assertTrue(Persistable.Base.isTransient(person));
+            //if we simulate a save by giving it an ID...
+            person.setId(persistedPerson.getId() + 15L);
 
-            // hashcode should be locked down, changing the id should not effect hashcode
-            person.setId(person.getId() + 15L);
+            //... it should still be equal to persistedPerson
+            assertEquals("these should still be equal even after save", persistedPerson, person);
+            assertEquals("therefore hashcodes should be the same", persistedPerson.hashCode(), person.hashCode());
 
-            // this was assertEquals before when hashCode was cached
-            assertNotEquals(hashcode1, person.hashCode());
 
-            // okay now set ID back to original value
-            person.setId(person.getId() - 15L);
 
             assertEquals(persistedPerson, person);
             if (!personSet.contains(person)) {
@@ -199,7 +200,6 @@ public class PersonITCase extends AbstractIntegrationTestCase {
                 assertEquals(expectation, persistedPerson, person);
                 assertEquals(expectation, persistedPerson.hashCode(), person.hashCode());
             }
-            // assertTrue(personSet + " should contain " + person, personSet.contains(person));
             assertEquals(persistedPerson.hashCode(), person.hashCode());
             assertTrue(personSet.contains(person));
             assertEquals(persistedPerson, person);
