@@ -205,7 +205,7 @@ public interface Persistable extends Serializable {
 
             if(persistable.getEqualityFields().isEmpty()) {
                 if(isTransient(persistable)) {
-                    return 0;
+                    return System.identityHashCode(persistable);
                 } else {
                     builder.append(persistable.getId());
                 }
