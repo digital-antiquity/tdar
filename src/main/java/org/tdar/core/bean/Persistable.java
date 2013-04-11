@@ -168,17 +168,24 @@ public interface Persistable extends Serializable {
                 return false;
             //at this point we know that a and b are: not null, not identical,  and are the same class
             
-            //if base equalityFields is empty,  equality should be based only on identity (just like Object.equals()) 
-            if(a.getEqualityFields().isEmpty())
-                return a == b;  //will always be false at this point, but a==b is semantically correct
+            //unless subclass says otherwise, use ID for equals & hashcode
+            if(a.getEqualityFields().isEmpty()) {
+                if(isTransient(a) || isTransient(b)){
+                    //we treat transient objects the same as null.  equals is always false and hashcode is always 0
+                    return false;
+                } else {
+                    return a.getId().equals(b.getId());
+                }
+            } else {
+                //OKAY. The persistable specifies how they define equality.  The customer is always right.
+                Logger logger = LoggerFactory.getLogger(a.getClass());
+                EqualsBuilder equalsBuilder = new EqualsBuilder();
+                Object[] selfEqualityFields = a.getEqualityFields().toArray();
+                Object[] candidateEqualityFields = b.getEqualityFields().toArray();
+                equalsBuilder.append(selfEqualityFields, candidateEqualityFields);
+                return equalsBuilder.isEquals();
+            }
 
-            //OKAY. The persistable specifies how they define equality.  The customer is always right.
-            Logger logger = LoggerFactory.getLogger(a.getClass());
-            EqualsBuilder equalsBuilder = new EqualsBuilder();
-            Object[] selfEqualityFields = a.getEqualityFields().toArray();
-            Object[] candidateEqualityFields = b.getEqualityFields().toArray();
-            equalsBuilder.append(selfEqualityFields, candidateEqualityFields);
-            return equalsBuilder.isEquals();
         }
 
         public static <P extends Persistable> Map<Long, P> createIdMap(Collection<P> items) {
@@ -193,7 +200,9 @@ public interface Persistable extends Serializable {
 
         public static int toHashCode(Persistable persistable) {
             //since we typically get called from instance method it's unlikely persistable will be null, but lets play safe...
-            if(persistable == null) return 0;  
+            if(persistable == null) return 0;
+
+            if(isTransient(persistable)) return 0;  
             
             //if no equality fields defined we use Java's base implementation
             if(persistable.getEqualityFields() == null ) return System.identityHashCode(persistable);
