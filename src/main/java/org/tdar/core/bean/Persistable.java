@@ -160,28 +160,41 @@ public interface Persistable extends Serializable {
          * @return
          */
         public static boolean isEqual(Persistable a, Persistable b) {
-            if (a == null || b == null)
+            Logger logger = LoggerFactory.getLogger(a.getClass());
+            if (a == null || b == null) {
+                logger.trace("false b/c one is null");
                 return false;
-            if (a == b)
+            }
+            if (a == b) {
+                logger.trace("object equality");
                 return true;
-            if (!(a.getClass().equals(b.getClass())))
+            }
+            /* Some tests are failing b/c javaasist subclass? or bytecode manipulation of tDAR classes:
+             * eg: AdvancedSearchControllerITCase.testResourceCreatorPerson:
+             * result: final equality false b/c of class class org.tdar.core.bean.resource.Document != class org.tdar.core.bean.resource.Document_$$_javassist_62 
+             */
+            if (!(a.getClass().isAssignableFrom(b.getClass()))) {
+                logger.trace("false b/c of class {} != {} ", a.getClass(), b.getClass());
                 return false;
+            }
             //at this point we know that a and b are: not null, not identical,  and are the same class
             
             //unless subclass says otherwise, use ID for equals & hashcode
             if(a.getEqualityFields().isEmpty()) {
                 if(isTransient(a) || isTransient(b)){
+                    logger.trace("false b/c of transience {} != {} ", a, b);
                     //we treat transient objects the same as null.  equals is always false and hashcode is always 0
                     return false;
                 } else {
+                    logger.trace("compairing IDs {} != {} ", a, b);
                     return a.getId().equals(b.getId());
                 }
             } else {
                 //OKAY. The persistable specifies how they define equality.  The customer is always right.
-                Logger logger = LoggerFactory.getLogger(a.getClass());
                 EqualsBuilder equalsBuilder = new EqualsBuilder();
                 Object[] selfEqualityFields = a.getEqualityFields().toArray();
                 Object[] candidateEqualityFields = b.getEqualityFields().toArray();
+                logger.trace("comparing equality fields {} != {} ", selfEqualityFields, candidateEqualityFields);
                 equalsBuilder.append(selfEqualityFields, candidateEqualityFields);
                 return equalsBuilder.isEquals();
             }

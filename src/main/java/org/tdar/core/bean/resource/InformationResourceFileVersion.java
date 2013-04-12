@@ -295,7 +295,7 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
         try {
             file = TdarConfiguration.getInstance().getFilestore().retrieveFile(this);
         } catch (FileNotFoundException e) {
-            logger.warn("No file found in store with ID: " + getFilename() + " and path:" + path + " (" + getId() + ")");
+            logger.trace("No file found in store with ID: " + getFilename() + " and path:" + path + " (" + getId() + ")");
         }
         return file;
     }
