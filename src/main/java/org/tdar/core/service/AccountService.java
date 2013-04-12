@@ -471,6 +471,11 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
                 lowest = item;
             } else if (lowest.getSubtotal() > item.getSubtotal()) {
                 lowest = item;
+            } else if (lowest.getSubtotal().equals(item.getSubtotal())) {
+                /*
+                 * FIXME: if two items have the SAME price, but one has more "stuff" we should choose the one with more "stuff"
+                 */
+                logger.info("{} =??= {} ", lowest, item);
             }
         }
         option.getItems().add(lowest);
