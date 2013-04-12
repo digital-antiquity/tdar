@@ -362,6 +362,7 @@ public class Resource extends JsonModel.Base implements Persistable,
     @XmlTransient
     private Set<ResourceRevisionLog> resourceRevisionLog = new HashSet<ResourceRevisionLog>();
 
+    //FIXME: do we really want cascade all here? even delete?
     @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
     @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false, name = "collection_id") })

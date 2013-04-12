@@ -47,14 +47,15 @@ public class DatasetITCase extends AbstractIntegrationTestCase {
     @Rollback(true)
     public void testEqualsHashCode() {
         List<Dataset> datasets = datasetService.findAll();
+        assertFalse(datasets.isEmpty());
         for (Dataset dataset : datasets) {
             Dataset freshDataset = createAndSaveNewDataset();
             assertFalse(dataset.equals(freshDataset));
             assertFalse(dataset.hashCode() == freshDataset.hashCode());
             freshDataset = new Dataset();
             freshDataset.setTitle("fresh dataset");
-            assertFalse(dataset.equals(freshDataset));
-            assertFalse(dataset.hashCode() == freshDataset.hashCode());
+            assertNotEquals(dataset, freshDataset);
+            assertNotEquals(dataset.hashCode(),freshDataset.hashCode());
             freshDataset.setId(dataset.getId());
             assertEquals(dataset, freshDataset);
             assertEquals(dataset.hashCode(), freshDataset.hashCode());
