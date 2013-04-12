@@ -1,6 +1,5 @@
 package org.tdar.struts.action.search;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
@@ -11,11 +10,11 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.search.index.LookupSource;
 
 @Transactional
 public class AdvancedEntitySearchControllerITCase extends AbstractSearchControllerITCase {
 
-    
     @Test
     @Rollback
     public void testInstitutionSearch() {
@@ -23,12 +22,10 @@ public class AdvancedEntitySearchControllerITCase extends AbstractSearchControll
         init(controller);
         String term = "arizona";
         controller.setQuery(term);
-        String searchInstitutions = controller.searchInstitutions();
+        doSearch(controller, LookupSource.INSTITUTION);
         assertResultsOkay(term, controller);
-        assertEquals(AbstractLookupController.SUCCESS, searchInstitutions);
     }
 
-    
     @Test
     @Rollback
     public void testPersonSearch() {
@@ -36,9 +33,8 @@ public class AdvancedEntitySearchControllerITCase extends AbstractSearchControll
         init(controller);
         String term = "Manney";
         controller.setQuery(term);
-        String searchInstitutions = controller.searchPeople();
+        doSearch(controller, LookupSource.PERSON);
         assertResultsOkay(term, controller);
-        assertEquals(AbstractLookupController.SUCCESS, searchInstitutions);
     }
 
     @Test
@@ -48,9 +44,8 @@ public class AdvancedEntitySearchControllerITCase extends AbstractSearchControll
         init(controller);
         String term = "Joshua Watts";
         controller.setQuery(term);
-        String searchInstitutions = controller.searchPeople();
+        doSearch(controller, LookupSource.PERSON);
         assertResultsOkay(term, controller);
-        assertEquals(AbstractLookupController.SUCCESS, searchInstitutions);
     }
 
     @Test
@@ -60,16 +55,15 @@ public class AdvancedEntitySearchControllerITCase extends AbstractSearchControll
         init(controller);
         String term = "Arizona State";
         controller.setQuery(term);
-        String searchInstitutions = controller.searchInstitutions();
+        doSearch(controller, LookupSource.INSTITUTION);
         assertResultsOkay(term, controller);
-        assertEquals(AbstractLookupController.SUCCESS, searchInstitutions);
     }
 
     private void assertResultsOkay(String term, AdvancedSearchController controller) {
         assertNotEmpty(controller.getCreatorResults());
         for (Indexable obj : controller.getCreatorResults()) {
             Creator inst = (Creator) obj;
-            assertTrue(String.format("Creator %s should match %s",inst, term), inst.getProperName().toLowerCase().contains(term.toLowerCase()));
+            assertTrue(String.format("Creator %s should match %s", inst, term), inst.getProperName().toLowerCase().contains(term.toLowerCase()));
         }
         logger.info("{}", controller.getResults());
     }
@@ -78,7 +72,7 @@ public class AdvancedEntitySearchControllerITCase extends AbstractSearchControll
     public void before() {
         reindex();
     }
-    
+
     @Override
     protected void reindex() {
         searchIndexService.purgeAll();

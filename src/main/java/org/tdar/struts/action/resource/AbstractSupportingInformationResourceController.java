@@ -15,6 +15,7 @@ import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.struts.action.TdarActionException;
 
 public abstract class AbstractSupportingInformationResourceController<R extends InformationResource> extends AbstractInformationResourceController<R> {
 
@@ -53,7 +54,7 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
     private ArrayList<Resource> relatedResources;
 
     @Override
-    protected void loadCustomMetadata() {
+    protected void loadCustomMetadata() throws TdarActionException {
         super.loadCustomMetadata();
         if (getPersistable() instanceof SupportsResource) {
             SupportsResource supporting = (SupportsResource) getPersistable();

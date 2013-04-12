@@ -25,6 +25,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.SearchIndexService;
+import org.tdar.struts.action.TdarActionException;
 import org.tdar.web.SessionData;
 import org.xml.sax.SAXException;
 
@@ -82,7 +83,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
 
     @Test
     @Rollback(true)
-    public void testRssDefaultSortOrder() throws InstantiationException, IllegalAccessException {
+    public void testRssDefaultSortOrder() throws InstantiationException, IllegalAccessException, TdarActionException {
         InformationResource document = generateDocumentWithUser();
         searchIndexService.index(document);
         controller.setSessionData(new SessionData()); // create unauthenticated session
@@ -94,7 +95,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
 
     @Test
     @Rollback(true)
-    public void testRssInvalidCharacters() throws InstantiationException, IllegalAccessException {
+    public void testRssInvalidCharacters() throws InstantiationException, IllegalAccessException, TdarActionException {
         InformationResource document = generateDocumentWithUser();
         document.setDescription("\u0001");
         genericService.saveOrUpdate(document);
@@ -110,7 +111,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
 
     @Test
     @Rollback(true)
-    public void testFindResourceBuildRss() throws XpathException, SAXException, IOException, InterruptedException {
+    public void testFindResourceBuildRss() throws XpathException, SAXException, IOException, InterruptedException, TdarActionException {
         ActivityManager.getInstance().getActivityQueue().clear();
         Resource r = genericService.find(Resource.class, 3074L);
         r.setStatus(Status.ACTIVE);

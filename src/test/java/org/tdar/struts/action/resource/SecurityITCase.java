@@ -19,6 +19,7 @@ import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.service.EntityService;
 import org.tdar.struts.action.DownloadController;
+import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 
 import static org.junit.Assert.*;
@@ -133,7 +134,7 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
 
     // @Test
     @Rollback
-    public void testAbstractInformationResourceControllerConfidential() throws InstantiationException, IllegalAccessException {
+    public void testAbstractInformationResourceControllerConfidential() throws InstantiationException, IllegalAccessException, TdarActionException {
         logger.info("test confidential");
         Document doc = (Document) generateInformationResourceWithFile();
         doc.getInformationResourceFiles().iterator().next().setRestriction(FileAccessRestriction.CONFIDENTIAL);
@@ -145,7 +146,7 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
 
     // @Test
     @Rollback
-    public void testAbstractInformationResourceControllerEmbargoed() throws InstantiationException, IllegalAccessException {
+    public void testAbstractInformationResourceControllerEmbargoed() throws InstantiationException, IllegalAccessException, TdarActionException {
         logger.info("test embargoed");
         Document doc = setupEmbargoedDoc();
         DocumentController controller = generateNewInitializedController(DocumentController.class);
@@ -155,7 +156,7 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
 
     // @Test
     @Rollback
-    public void testAbstractInformationResourceControllerEmbargoedAndConfidential() throws InstantiationException, IllegalAccessException {
+    public void testAbstractInformationResourceControllerEmbargoedAndConfidential() throws InstantiationException, IllegalAccessException, TdarActionException {
         logger.info("test combined");
         Document doc = setupEmbargoedDoc();
         doc.getInformationResourceFiles().iterator().next().setRestriction(FileAccessRestriction.CONFIDENTIAL);
@@ -167,7 +168,7 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
 
     // @Test
     @Rollback
-    public void testAbstractInformationResourceControllerReadUser() throws InstantiationException, IllegalAccessException {
+    public void testAbstractInformationResourceControllerReadUser() throws InstantiationException, IllegalAccessException, TdarActionException {
         Document doc = setupReadUserDoc();
         DocumentController controller = generateNewInitializedController(DocumentController.class);
         loadResourceFromId(controller, doc.getId());
@@ -176,7 +177,7 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
 
     // @Test
     @Rollback
-    public void testAbstractInformationResourceControllerFullUser() throws InstantiationException, IllegalAccessException {
+    public void testAbstractInformationResourceControllerFullUser() throws InstantiationException, IllegalAccessException, TdarActionException {
         Document doc = setupFullUserDoc();
         DocumentController controller = generateNewInitializedController(DocumentController.class);
         loadResourceFromId(controller, doc.getId());

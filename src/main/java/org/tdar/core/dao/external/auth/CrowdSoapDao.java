@@ -5,6 +5,7 @@ import java.rmi.RemoteException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.codehaus.xfire.XFireRuntimeException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -279,8 +280,12 @@ public class CrowdSoapDao extends BaseAuthenticationProvider {
 
     @Override
     public String[] findGroupMemberships(Person person) {
+        String toFind = person.getUsername();
+        if (StringUtils.isBlank(toFind)) {
+            toFind = person.getEmail();
+        }
         try {
-            return securityServerClient.findGroupMemberships(person.getUsername());
+            return securityServerClient.findGroupMemberships(toFind);
         } catch (RemoteException e) {
             logger.error("Caught RemoteException while trying to contact the crowd server", e);
             throw new RuntimeException(e);

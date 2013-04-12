@@ -56,6 +56,7 @@ import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
@@ -360,8 +361,8 @@ public class SearchService {
         logger.debug("{}: {} (SORT:{},{})\t LUCENE: {} | HYDRATION: {} | # RESULTS: {} | START #: {}", searchMetadata);
 
         if (resultHandler.getStartRecord() > ftq.getResultSize()) {
-            throw new TdarRecoverableRuntimeException(String.format("Start record %s is greater than total number of results %s",
-                    resultHandler.getStartRecord(), ftq.getResultSize()));
+            throw new SearchPaginationException(String.format("Start record %s is greater than total number of results %s", resultHandler.getStartRecord(),
+                    ftq.getResultSize()));
         }
 
         logger.trace("returning: {}", toReturn);
@@ -506,7 +507,7 @@ public class SearchService {
                 if (Persistable.Base.isNotTransient(fieldValue)) {
                     part.getFieldValues().set(j, idLookupMap.get(cls).get(fieldValue.getId()));
                 } else {
-                    logger.info("not adding: {} ", idLookupMap.get(cls),fieldValue);
+                    logger.info("not adding: {} ", idLookupMap.get(cls), fieldValue);
                 }
             }
             part.update();

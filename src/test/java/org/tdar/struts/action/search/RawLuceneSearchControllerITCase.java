@@ -14,6 +14,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.SearchIndexService;
+import org.tdar.search.index.LookupSource;
 import org.tdar.struts.action.TdarActionSupport;
 
 @Transactional
@@ -91,7 +92,7 @@ public class RawLuceneSearchControllerITCase extends AbstractSearchControllerITC
     @Override
     protected void doSearch(String query) {
         controller.setRawQuery(query);
-        controller.search();
+        AbstractSearchControllerITCase.doSearch(controller, LookupSource.RESOURCE);
         logger.info("search (" + controller.getQuery() + ") found: " + controller.getTotalRecords());
     }
     

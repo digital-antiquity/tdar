@@ -166,7 +166,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         }
     }
 
-    protected void loadCustomMetadata() {
+    protected void loadCustomMetadata() throws TdarActionException {
     };
 
     @Override
@@ -211,7 +211,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     @Override
-    public String loadEditMetadata() {
+    public String loadEditMetadata() throws TdarActionException {
         loadAddMetadata();
         loadBasicMetadata();
         loadCustomMetadata();
@@ -219,7 +219,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     @Override
-    public String loadViewMetadata() {
+    public String loadViewMetadata() throws TdarActionException {
         if (getResource() == null)
             return ERROR;
         // loadBasicMetadata();

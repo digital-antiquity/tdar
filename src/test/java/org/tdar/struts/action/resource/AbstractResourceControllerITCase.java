@@ -12,6 +12,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.service.AccountService;
 import org.tdar.struts.action.AbstractControllerITCase;
+import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.ResourceCreatorProxy;
 
 /**
@@ -30,7 +31,7 @@ public abstract class AbstractResourceControllerITCase extends AbstractControlle
     @Autowired
     AccountService accountService;
 
-    public static void loadResourceFromId(AbstractResourceController<?> controller, Long id) {
+    public static void loadResourceFromId(AbstractResourceController<?> controller, Long id) throws TdarActionException {
         controller.setId(id);
         controller.prepare();
         controller.loadBasicMetadata();

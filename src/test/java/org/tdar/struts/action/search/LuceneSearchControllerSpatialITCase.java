@@ -18,6 +18,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.SearchIndexService;
+import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.part.SpatialQueryPart;
 import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.TdarActionSupport;
@@ -44,7 +45,7 @@ public class LuceneSearchControllerSpatialITCase extends AbstractControllerITCas
 
     private void doSearch(String query) {
         controller.setQuery(query);
-        controller.search();
+        AbstractSearchControllerITCase.doSearch(controller, LookupSource.RESOURCE);
         logger.info("search (" + controller.getQuery() + ") found: " + controller.getTotalRecords());
     }
 
@@ -81,7 +82,7 @@ public class LuceneSearchControllerSpatialITCase extends AbstractControllerITCas
 
     private void performGeoSearch(double minLatY, double minLongX, double maxLatY, double maxLongX) {
         controller.setMap(new LatitudeLongitudeBox(minLongX, minLatY, maxLongX, maxLatY));
-        controller.search();
+        AbstractSearchControllerITCase.doSearch(controller, LookupSource.RESOURCE);
     }
 
     @Test

@@ -1,12 +1,15 @@
 package org.tdar.struts.action.search;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +32,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.SearchIndexService;
+import org.tdar.search.index.LookupSource;
 import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.TdarActionSupport;
 
@@ -180,9 +184,36 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
         return list;
     }
 
+    public static void doSearch(AdvancedSearchController controller, LookupSource resource) {
+        Exception e = null;
+        String msg = null;
+        try {
+            switch(resource) {
+                case COLLECTION:
+                    msg = controller.searchCollections();
+                    break;
+                case PERSON:
+                    msg =controller.searchPeople();
+                    break;
+                case INSTITUTION:
+                    msg = controller.searchInstitutions();
+                    break;
+                case RESOURCE:
+                    msg =controller.search();
+                    break;
+                case KEYWORD:
+                    fail();
+            }
+        } catch (Exception ex) {
+            e =ex;
+        }
+        Assert.assertTrue("there should not be an exception", e == null);
+        assertEquals(AbstractLookupController.SUCCESS, msg);
+    }
+
     protected void doSearch(String query) {
         controller.setQuery(query);
-        controller.search();
+        doSearch(controller, LookupSource.RESOURCE);
         logger.info("search (" + controller.getQuery() + ") found: " + controller.getTotalRecords());
     }
 

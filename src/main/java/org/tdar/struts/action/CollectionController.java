@@ -23,14 +23,12 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
-import org.tdar.core.service.ActivityManager;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.utils.PaginationHelper;
-import org.tdar.utils.activity.Activity;
 
 @Component
 @Scope("prototype")
@@ -90,7 +88,8 @@ public class CollectionController extends AbstractPersistableController<Resource
         getGenericService().saveOrUpdate(persistable);
         getResourceCollectionService().saveAuthorizedUsersForResourceCollection(persistable, getAuthorizedUsers(), shouldSaveResource());
 
-        List<Resource> rehydratedIncomingResources = getResourceCollectionService().reconcileIncomingResourcesForCollection(persistable, getAuthenticatedUser(), resources);
+        List<Resource> rehydratedIncomingResources = getResourceCollectionService().reconcileIncomingResourcesForCollection(persistable,
+                getAuthenticatedUser(), resources);
         logger.trace("{}", rehydratedIncomingResources);
         logger.debug("RESOURCES {}", persistable.getResources());
         return SUCCESS;
@@ -175,7 +174,7 @@ public class CollectionController extends AbstractPersistableController<Resource
     }
 
     @Override
-    public String loadEditMetadata() {
+    public String loadEditMetadata() throws TdarActionException {
         super.loadEditMetadata();
         getAuthorizedUsers().addAll(getPersistable().getAuthorizedUsers());
         // FIXME: this could be replaced with a load that's a skeleton object (title, resourceType, date)

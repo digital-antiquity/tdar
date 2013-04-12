@@ -11,6 +11,7 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.search.index.LookupSource;
 
 @Transactional
 public class CollectionSearchControllerITCase extends AbstractSearchControllerITCase {
@@ -82,7 +83,7 @@ public class CollectionSearchControllerITCase extends AbstractSearchControllerIT
     @Override
     protected void doSearch(String query) {
         controller.setQuery(query);
-        controller.searchCollections();
+        AbstractSearchControllerITCase.doSearch(controller, LookupSource.COLLECTION);
         logger.info("search (" + controller.getQuery() + ") found: " + controller.getTotalRecords());
     }
 

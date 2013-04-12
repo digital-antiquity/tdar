@@ -60,6 +60,8 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.exception.SearchPaginationException;
+import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ExcelService;
 import org.tdar.core.service.RssService;
@@ -78,6 +80,7 @@ import org.tdar.search.query.part.InstitutionQueryPart;
 import org.tdar.search.query.part.PersonQueryPart;
 import org.tdar.search.query.part.PhraseFormatter;
 import org.tdar.search.query.part.QueryPartGroup;
+import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.data.KeywordNode;
 import org.tdar.struts.data.ResourceCreatorProxy;
@@ -172,7 +175,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     @Action(value = "results", results = {
             @Result(name = "success", location = "results.ftl"),
             @Result(name = INPUT, location = "advanced.ftl") })
-    public String search() {
+    public String search() throws TdarActionException {
         setLookupSource(LookupSource.RESOURCE);
         try {
             if (explore) {
@@ -196,7 +199,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     @Action(value = "collections", results = {
             @Result(name = "success", location = "results.ftl"),
             @Result(name = INPUT, location = "advanced.ftl") })
-    public String searchCollections() {
+    public String searchCollections() throws TdarActionException{
         setSortOptions(SortOption.getOptionsForContext(ResourceCollection.class));
         try {
             return collectionSearch();
@@ -209,7 +212,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     @Action(value = "institutions", results = {
             @Result(name = "success", location = "results.ftl"),
             @Result(name = INPUT, location = "advanced.ftl") })
-    public String searchInstitutions() {
+    public String searchInstitutions() throws TdarActionException {
         setSortOptions(SortOption.getOptionsForContext(Institution.class));
         setMinLookupLength(0);
         try {
@@ -223,7 +226,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     @Action(value = "people", results = {
             @Result(name = "success", location = "results.ftl"),
             @Result(name = INPUT, location = "advanced.ftl") })
-    public String searchPeople() {
+    public String searchPeople() throws TdarActionException{
         setSortOptions(SortOption.getOptionsForContext(Person.class));
         setMinLookupLength(0);
         try {
@@ -235,7 +238,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
     }
 
     // FIXME: "explore" results belong in a separate controller.
-    public String exploreSearch() {
+    public String exploreSearch() throws TdarActionException {
         processExploreRequest();
         advancedSearch();
         return SUCCESS;
@@ -287,7 +290,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
             "documentName", "rssFeed", "formatOutput", "true", "inputName",
             "inputStream", "contentType", "application/rss+xml",
             "contentLength", "${contentLength}", "contentEncoding", "UTF-8" }) })
-    public String viewRss() {
+    public String viewRss() throws TdarActionException {
         try {
             setSortField(SortOption.ID_REVERSE);
             setSecondarySortField(SortOption.TITLE);
@@ -385,7 +388,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         return null;
     }
 
-    private String advancedSearch() {
+    private String advancedSearch() throws TdarActionException {
         determineSearchTitle();
         setMode("SEARCH");
         // beforeSearch();
@@ -407,6 +410,8 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         try {
             logger.trace("queryBuilder: {}", queryBuilder);
             getSearchService().handleSearch(queryBuilder, this);
+        } catch (SearchPaginationException spe) {
+            throw new TdarActionException(StatusCode.BAD_REQUEST, spe);
         } catch (TdarRecoverableRuntimeException tdre) {
             logger.warn("search parse exception: {}", tdre.getMessage());
             addActionError(tdre.getMessage());
@@ -495,7 +500,7 @@ public class AdvancedSearchController extends AbstractLookupController<Resource>
         return isBasic;
     }
 
-    private String basicSearch() {
+    private String basicSearch() throws TdarActionException {
         // translate basic search field(s) so that they can be processed by advancedSearch()
         processBasicSearchParameters();
         return advancedSearch();

@@ -61,6 +61,7 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
             }
             ActivityManager.getInstance().addActivityToQueue(activity);
         }
+        logger.debug("<< activity begin: {} ", activity);
 
         String mark = "READ ONLY";
         if (ReflectionService.methodOrActionContainsAnnotation(invocation, WriteableSession.class)) {
@@ -85,7 +86,7 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
             try {
                 if (activity != null) {
                     activity.end();
-                    logger.debug("activity: {} ", activity);
+                    logger.debug(">> activity end: {} ", activity);
                 }
             }
             finally {

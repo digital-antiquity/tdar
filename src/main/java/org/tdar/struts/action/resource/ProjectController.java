@@ -18,11 +18,14 @@ import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.exception.SearchPaginationException;
+import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
+import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.utils.PaginationHelper;
 
@@ -95,15 +98,15 @@ public class ProjectController extends AbstractResourceController<Project> imple
         return getProjectService().findAllResourcesInProject(getProject(), Status.ACTIVE, Status.DRAFT);
     }
 
-    protected void loadCustomMetadata() {
+    protected void loadCustomMetadata() throws TdarActionException {
         if (getPersistable() != null) {
             ResourceQueryBuilder qb = getSearchService().buildResourceContainedInSearch(QueryFieldNames.PROJECT_ID, getProject(), getAuthenticatedUser());
             setSortField(getProject().getSortBy());
             setSecondarySortField(SortOption.TITLE);
             try {
                 getSearchService().handleSearch(qb, this);
-            } catch (TdarRecoverableRuntimeException e) {
-                addActionErrorWithException(e.getMessage(), e);
+            } catch (SearchPaginationException e) {
+                throw new TdarActionException(StatusCode.BAD_REQUEST, e);
             } catch (Exception e) {
                 addActionErrorWithException("something happend", e);
             }

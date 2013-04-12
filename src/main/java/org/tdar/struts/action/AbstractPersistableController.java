@@ -358,7 +358,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         return loadEditMetadata();
     }
 
-    public String loadEditMetadata() {
+    public String loadEditMetadata() throws TdarActionException {
         return loadViewMetadata();
     }
 
@@ -613,7 +613,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
         this.persistableClass = persistableClass;
     }
 
-    public abstract String loadViewMetadata();
+    public abstract String loadViewMetadata() throws TdarActionException;
 
     protected boolean isNullOrNew() {
         return !isPersistableIdSet();
