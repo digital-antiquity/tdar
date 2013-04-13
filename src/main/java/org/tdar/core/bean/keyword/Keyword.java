@@ -1,6 +1,7 @@
 package org.tdar.core.bean.keyword;
 
 import java.util.Arrays;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.EnumType;
@@ -71,7 +72,9 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
 
         @Override
         public java.util.List<?> getEqualityFields() {
-            return Arrays.asList(label, getKeywordType());
+            List<String> asList = Arrays.asList(getLabel(), getKeywordType());
+//            logger.info("list: {}", asList);
+            return asList;
         };
 
         @Lob

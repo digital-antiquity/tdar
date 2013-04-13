@@ -151,6 +151,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         for (Person person : people) {
             names.add(person.getProperName());
             Person p = new Person();
+            // this will likely fail because skeleton people are being put into a set further down the chain... 
             p.setId(person.getId());
             ResourceCreator rc = new ResourceCreator(p, null);
             firstGroup().getResourceCreatorProxies().add(new ResourceCreatorProxy(rc));

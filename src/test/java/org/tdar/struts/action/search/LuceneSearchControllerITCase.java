@@ -235,6 +235,10 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         setResourceTypes(ResourceType.DOCUMENT, ResourceType.IMAGE);
         CultureKeyword keyword1 = genericKeywordService.findByLabel(CultureKeyword.class, "Folsom");
         CultureKeyword keyword2 = genericKeywordService.findByLabel(CultureKeyword.class, "Early Archaic");
+        logger.info(keyword1.getLabel());
+        logger.info(keyword2.getLabel());
+        // this test is failing because the "Skeleton" versions of these fields just have IDs, and thus, when they're put into a set
+        // they fall in on themselves, thus, bad.
         firstGroup().getApprovedCultureKeywordIdLists().add(Arrays.asList(keyword1.getId().toString(), keyword2.getId().toString()));
         firstGroup().getAllFields().add("test");
         doSearch("");
@@ -413,6 +417,8 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
 
         // TODO:dynamically get the list of 'used investigation types' and the resources that use them
         addInvestigationTypes();
+        // this fails because all of the Skeleton Investigation Types with IDs get put into a set, and thus fold into each other
+        // because equality based on label[NULL]
         setResourceTypes(allResourceTypes);
         setStatuses(Status.ACTIVE, Status.DELETED, Status.DRAFT, Status.FLAGGED);
         doSearch("");
