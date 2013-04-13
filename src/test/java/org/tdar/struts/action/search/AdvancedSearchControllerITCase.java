@@ -517,11 +517,11 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         if (status == Status.DELETED && authenticationAndAuthorizationService.cannot(InternalTdarRights.SEARCH_FOR_DELETED_RECORDS, user) ||
                 status == Status.FLAGGED && authenticationAndAuthorizationService.cannot(InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, user)) {
             logger.debug("expecting exception");
-            doSearch();
+            doSearch(true);
             assertTrue(String.format("expected action errors %s", stat), controller.getActionErrors().size() > 0);
         } else if (status == Status.DRAFT && authenticationAndAuthorizationService.cannot(InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS, user)) {
             // this was in the test, but with the new status search I think this is more accurate to be commented out as
-            doSearch();
+            doSearch(null);
             for (Resource res : controller.getResults()) {
                 if (res.isDraft() && !res.getSubmitter().equals(user)) {
                     fail("we should only see our own drafts here");
@@ -1012,7 +1012,11 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     }
 
     protected void doSearch() {
-        AbstractSearchControllerITCase.doSearch(controller, LookupSource.RESOURCE);
+        doSearch(false);
+    }
+    
+    protected void doSearch(Boolean b) {
+        AbstractSearchControllerITCase.doSearch(controller, LookupSource.RESOURCE, b);
         logger.info("search found: " + controller.getTotalRecords());
     }
 

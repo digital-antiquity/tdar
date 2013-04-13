@@ -185,35 +185,50 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
     }
 
     public static void doSearch(AdvancedSearchController controller, LookupSource resource) {
+        doSearch(controller, resource, false);
+    }
+
+    public static void doSearch(AdvancedSearchController controller, LookupSource resource, Boolean b) {
         Exception e = null;
         String msg = null;
         try {
-            switch(resource) {
+            switch (resource) {
                 case COLLECTION:
                     msg = controller.searchCollections();
                     break;
                 case PERSON:
-                    msg =controller.searchPeople();
+                    msg = controller.searchPeople();
                     break;
                 case INSTITUTION:
                     msg = controller.searchInstitutions();
                     break;
                 case RESOURCE:
-                    msg =controller.search();
+                    msg = controller.search();
                     break;
                 case KEYWORD:
                     fail();
             }
         } catch (Exception ex) {
-            e =ex;
+            e = ex;
         }
-        Assert.assertTrue("there should not be an exception", e == null);
-        assertEquals(AbstractLookupController.SUCCESS, msg);
+        if (b == Boolean.TRUE) {
+            Assert.assertTrue(String.format("there should be an exception %s or returned input %s", e, msg),
+                    e != null || AbstractLookupController.INPUT.equals(msg));
+        } else if (b == Boolean.FALSE){
+            Assert.assertTrue("there should not be an exception", e == null);
+            assertEquals(AbstractLookupController.SUCCESS, msg);
+        } else {
+            // "maybe" state -- in some cases (looped state in AdvancedSearchController.testResultCountsAsBasicUser for example)
+        }
     }
 
     protected void doSearch(String query) {
+        doSearch(query, false);
+    }
+
+    protected void doSearch(String query, Boolean exceptions) {
         controller.setQuery(query);
-        doSearch(controller, LookupSource.RESOURCE);
+        doSearch(controller, LookupSource.RESOURCE, exceptions);
         logger.info("search (" + controller.getQuery() + ") found: " + controller.getTotalRecords());
     }
 
