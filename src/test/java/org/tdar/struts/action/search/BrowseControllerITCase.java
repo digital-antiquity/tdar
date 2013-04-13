@@ -17,6 +17,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 
 public class BrowseControllerITCase extends AbstractSearchControllerITCase {
@@ -34,13 +35,13 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
 
     @Test
     @Rollback
-    public void testBrowsePersonWithResults() throws InstantiationException, IllegalAccessException, ParseException {
+    public void testBrowsePersonWithResults() throws InstantiationException, IllegalAccessException, ParseException, TdarActionException {
         testBrowseController(getAdminUser());
     }
     
     @Test
     @Rollback
-    public void testBrowseInstitutionWithResults() throws InstantiationException, IllegalAccessException, ParseException {
+    public void testBrowseInstitutionWithResults() throws InstantiationException, IllegalAccessException, ParseException, TdarActionException {
         Institution institution = new Institution("testBrowseControllerInstitution");
         entityService.save(institution);
         testBrowseController(institution);
@@ -63,7 +64,7 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
     
     @Test
     @Rollback
-    public void testNewCreatorHasNoResourceAssociations() throws ParseException {
+    public void testNewCreatorHasNoResourceAssociations() throws ParseException, TdarActionException {
         Creator creator = createAndSaveNewPerson("testNewPersonHasNoResourceAssociations@tdar.org", "");
         controller.setId(creator.getId());
         controller.browseCreators();
@@ -83,7 +84,7 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
         return getBasicUser();
     }
 
-    private void testBrowseController(Creator creator) throws InstantiationException, IllegalAccessException, ParseException {
+    private void testBrowseController(Creator creator) throws InstantiationException, IllegalAccessException, ParseException, TdarActionException {
         Document doc = genericService.find(Document.class, setupDatedDocument());
         ResourceCreator rc = new ResourceCreator( creator, ResourceCreatorRole.CONTRIBUTOR);
         assertTrue(rc.isValidForResource(doc));
