@@ -6,10 +6,10 @@
  */
 package org.tdar.struts.action.resource;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,14 +21,10 @@ import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
-import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Image;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.service.EntityService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.struts.data.FileProxy;
 
 /**
  * @author Adam Brin
@@ -59,7 +55,7 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
         assertNotNull(imgId);
 
         imageController = generateNewController(ImageController.class);
-        init(imageController,p);
+        init(imageController, p);
         imageController.setId(imgId);
         imageController.prepare();
         imageController.edit();
@@ -69,17 +65,17 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
         assertEquals(TdarActionSupport.SUCCESS, imageController.save());
         genericService.synchronize();
         imageController = generateNewController(ImageController.class);
-        init(imageController,p);
+        init(imageController, p);
         imageController.setId(imgId);
         imageController.prepare();
-        boolean seen =false;
+        boolean seen = false;
         try {
             imageController.edit();
         } catch (TdarActionException e) {
             seen = true;
         }
         assertTrue(seen);
-        
+
     }
 
     @Test
@@ -104,7 +100,7 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
         assertNotNull(imgId);
 
         imageController = generateNewController(ImageController.class);
-        init(imageController,p);
+        init(imageController, p);
         imageController.setId(imgId);
         imageController.prepare();
         imageController.edit();
@@ -115,17 +111,17 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
         assertEquals(TdarActionSupport.SUCCESS, imageController.save());
         genericService.synchronize();
         imageController = generateNewController(ImageController.class);
-        init(imageController,p);
+        init(imageController, p);
         imageController.setId(imgId);
         imageController.prepare();
-        boolean seen =false;
+        boolean seen = false;
         try {
             imageController.edit();
         } catch (TdarActionException e) {
             seen = true;
         }
         assertTrue(seen);
-        
+
     }
 
     /*

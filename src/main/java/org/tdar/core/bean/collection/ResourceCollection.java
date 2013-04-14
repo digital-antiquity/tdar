@@ -129,8 +129,8 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     @Override
     public java.util.List<?> getEqualityFields() {
-//        return Arrays.asList(type, name, owner);
-        return Arrays.asList(type, name, owner, resources);
+//        return Arrays.asList(type, name, owner, resources);
+        return Arrays.asList(type, name, owner);
     };
 
     @Column

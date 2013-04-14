@@ -6,6 +6,7 @@ package org.tdar.core.filestore;
 import java.io.File;
 
 import org.apache.log4j.Logger;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
@@ -20,6 +21,7 @@ import org.tdar.filestore.tasks.ShapefileReaderTask;
  * @author Adam Brin
  * 
  */
+@Ignore
 public class ShapefileITCase extends AbstractIntegrationTestCase {
 
     protected Logger logger = Logger.getLogger(getClass());

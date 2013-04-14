@@ -15,7 +15,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.hibernate.id.IdentityGenerator.GetGeneratedKeysDelegate;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -65,7 +64,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
     {
         controller = generateNewInitializedController(CollectionController.class);
     }
-    
+
     @Test
     @Rollback
     public void testSparseResource() throws Exception {
@@ -471,9 +470,9 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
 
         // Add three authusers. two of the authusers are redundant and should be normalized to the user with
         // the best permissions.
-        AuthorizedUser user1Viewer = detach(createAuthUser(GeneralPermissions.VIEW_ALL));
+        AuthorizedUser user1Viewer = createAuthUser(GeneralPermissions.VIEW_ALL);
         AuthorizedUser user1Modifier = new AuthorizedUser(user1Viewer.getUser(), GeneralPermissions.MODIFY_METADATA);
-        AuthorizedUser user2 = detach(createAuthUser(GeneralPermissions.ADMINISTER_GROUP));
+        AuthorizedUser user2 = createAuthUser(GeneralPermissions.ADMINISTER_GROUP);
         user2.setTest("1234");
         controller.getAuthorizedUsers().addAll(Arrays.asList(user1Viewer, user1Modifier, user2));
 
@@ -490,10 +489,10 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         ResourceCollection rc2 = controller.getResourceCollection();
         assertEquals(rc.getName(), rc2.getName());
         assertEquals("2 redundant authusers should have been normalized", 2, rc2.getAuthorizedUsers().size());
-        
+
         // fails because HashCode changed
-        assertFalse("only the modifier & admin authusers should remain", rc2.getAuthorizedUsers().contains(user1Modifier));
-        assertFalse("only the modifier & admin authusers should remain", rc2.getAuthorizedUsers().contains(user2));
+        assertTrue("only the modifier & admin authusers should remain", rc2.getAuthorizedUsers().contains(user1Modifier));
+        assertTrue("only the modifier & admin authusers should remain", rc2.getAuthorizedUsers().contains(user2));
         assertEquals("1234", user2.getTest());
         List<Long> extractIds = Persistable.Base.extractIds(rc2.getAuthorizedUsers());
         assertTrue("only the modifier & admin authusers should remain", extractIds.contains(user1Modifier.getId()));
@@ -503,7 +502,6 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         assertEquals("1234", user2.getTest());
         assertTrue("only the modifier & admin authusers should remain", rc2.getAuthorizedUsers().contains(user1Modifier));
         assertTrue("only the modifier & admin authusers should remain", rc2.getAuthorizedUsers().contains(user2));
-
 
     }
 
@@ -516,11 +514,6 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase
         genericService.saveOrUpdate(person);
         AuthorizedUser authuser = new AuthorizedUser(person, permissions);
         return authuser;
-    }
-
-    private <T> T detach(T obj) {
-        genericService.detachFromSession(obj);
-        return obj;
     }
 
     @Test

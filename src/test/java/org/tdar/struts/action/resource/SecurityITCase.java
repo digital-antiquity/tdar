@@ -267,7 +267,8 @@ public class SecurityITCase extends AbstractResourceControllerITCase {
         //with the equals and hashCode of AuthorizedUser, this is now never going to be true
         AuthorizedUser authorizedUser = new AuthorizedUser(getAdminUser(), GeneralPermissions.VIEW_ALL);
         AuthorizedUser authorizedUser2 = new AuthorizedUser(getAdminUser(), GeneralPermissions.VIEW_ALL);
-        assertNotEquals(authorizedUser, authorizedUser2);
+        // if we're using equality Fields, then these should be equal
+        assertEquals(authorizedUser, authorizedUser2);
     }
 
     /*
