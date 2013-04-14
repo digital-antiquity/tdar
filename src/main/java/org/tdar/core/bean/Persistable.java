@@ -220,8 +220,7 @@ public interface Persistable extends Serializable {
 
             List<?> equalityTest = new ArrayList(persistable.getEqualityFields());
             equalityTest.removeAll(Collections.singleton(null));
-
-            if (equalityTest.isEmpty()) {
+            if (CollectionUtils.isEmpty(equalityTest)) {
                 if (isTransient(persistable)) {
                     return System.identityHashCode(persistable);
                 } else {
