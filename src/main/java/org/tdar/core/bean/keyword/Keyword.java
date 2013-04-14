@@ -72,7 +72,8 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
 
         @Override
         public java.util.List<?> getEqualityFields() {
-            List<String> asList = Arrays.asList(getLabel(), getKeywordType());
+            // don't need keyword type because we're differentiating on class
+            List<String> asList = Arrays.asList(label);
 //            logger.info("list: {}", asList);
             return asList;
         };

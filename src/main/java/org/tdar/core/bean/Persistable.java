@@ -2,7 +2,6 @@ package org.tdar.core.bean;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -169,28 +168,30 @@ public interface Persistable extends Serializable {
                 logger.trace("object equality");
                 return true;
             }
-            /* Some tests are failing b/c javaasist subclass? or bytecode manipulation of tDAR classes:
+            /*
+             * Some tests are failing b/c javaasist subclass? or bytecode manipulation of tDAR classes:
              * eg: AdvancedSearchControllerITCase.testResourceCreatorPerson:
-             * result: final equality false b/c of class class org.tdar.core.bean.resource.Document != class org.tdar.core.bean.resource.Document_$$_javassist_62 
+             * result: final equality false b/c of class class org.tdar.core.bean.resource.Document != class
+             * org.tdar.core.bean.resource.Document_$$_javassist_62
              */
             if (!(a.getClass().isAssignableFrom(b.getClass()))) {
                 logger.trace("false b/c of class {} != {} ", a.getClass(), b.getClass());
                 return false;
             }
-            //at this point we know that a and b are: not null, not identical,  and are the same class
-            
-            //unless subclass says otherwise, use ID for equals & hashcode
-            if(a.getEqualityFields().isEmpty()) {
-                if(isTransient(a) || isTransient(b)){
+            // at this point we know that a and b are: not null, not identical, and are the same class
+
+            // unless subclass says otherwise, use ID for equals & hashcode
+            if (a.getEqualityFields().isEmpty()) {
+                if (isTransient(a) || isTransient(b)) {
                     logger.trace("false b/c of transience {} != {} ", a, b);
-                    //we treat transient objects the same as null.  equals is always false and hashcode is always 0
+                    // we treat transient objects the same as null. equals is always false and hashcode is always 0
                     return false;
                 } else {
                     logger.trace("compairing IDs {} != {} ", a, b);
                     return a.getId().equals(b.getId());
                 }
             } else {
-                //OKAY. The persistable specifies how they define equality.  The customer is always right.
+                // OKAY. The persistable specifies how they define equality. The customer is always right.
                 EqualsBuilder equalsBuilder = new EqualsBuilder();
                 Object[] selfEqualityFields = a.getEqualityFields().toArray();
                 Object[] candidateEqualityFields = b.getEqualityFields().toArray();
@@ -212,12 +213,16 @@ public interface Persistable extends Serializable {
         }
 
         public static int toHashCode(Persistable persistable) {
-            //since we typically get called from instance method it's unlikely persistable will be null, but lets play safe...
-            if(persistable == null) return 0;
+            // since we typically get called from instance method it's unlikely persistable will be null, but lets play safe...
+            if (persistable == null)
+                return 0;
             HashCodeBuilder builder = new HashCodeBuilder(23, 37);
 
-            if(persistable.getEqualityFields().isEmpty()) {
-                if(isTransient(persistable)) {
+            List<?> equalityTest = new ArrayList(persistable.getEqualityFields());
+            equalityTest.removeAll(Collections.singleton(null));
+
+            if (equalityTest.isEmpty()) {
+                if (isTransient(persistable)) {
                     return System.identityHashCode(persistable);
                 } else {
                     builder.append(persistable.getId());
@@ -225,12 +230,12 @@ public interface Persistable extends Serializable {
             } else {
                 builder.append(persistable.getEqualityFields().toArray());
             }
-            
+
             return builder.toHashCode();
         }
 
         /**
-         * By default, base the hashcode off of object's inherent hashcode.   
+         * By default, base the hashcode off of object's inherent hashcode.
          */
         @Override
         @XmlTransient
