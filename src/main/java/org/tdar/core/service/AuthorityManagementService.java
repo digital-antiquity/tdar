@@ -290,7 +290,7 @@ public class AuthorityManagementService {
         map.put("className", className);
         map.put("numUpdated", numUpdated);
 
-        map.put("referrers", logData.getUpdatedReferrers().keySet());
+        map.put("referrers", logData.getUpdatedReferrers());
         emailService.sendTemplate("auth-report.ftl", map, subject);
     }
 

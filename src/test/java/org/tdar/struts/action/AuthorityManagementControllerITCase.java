@@ -3,7 +3,6 @@ package org.tdar.struts.action;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 
@@ -22,7 +21,6 @@ import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.AuthorityManagementService;
 import org.tdar.core.service.GenericService;
-import org.tdar.core.service.processes.OverdrawnAccountUpdate;
 
 public class AuthorityManagementControllerITCase extends AbstractAdminControllerITCase {
 

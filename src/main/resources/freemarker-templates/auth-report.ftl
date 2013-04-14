@@ -1,6 +1,6 @@
 User ${user} performed a dedupe operation.
 
-Authority: ${authority}
+Authority: ${authority} ${authority.id?c}
 Record Type: ${className}
 Records Updated: ${numUpdated}
 
@@ -8,6 +8,6 @@ Records Updated: ${numUpdated}
 records merged
 ========================================================
 
-<#list referrers as referrer>
+<#list referrers?values as referrer>
  - ${referrer}
 </#list>
