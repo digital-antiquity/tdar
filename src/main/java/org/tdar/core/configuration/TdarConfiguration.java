@@ -11,6 +11,7 @@ import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.geotools.resources.image.ImageUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.LicenseType;
@@ -74,6 +75,11 @@ public class TdarConfiguration {
         initPersonalFilestorePath();
         testQueue();
         initializeStopWords();
+        if (ImageUtilities.isMediaLibAvailable()) {
+            logger.info("JAI ImageIO available and configured");
+        } else {
+            logger.error("JAI-ImageIO is not properly installed with Native Libraries\n\nInstructions for Installation: http://docs.geoserver.org/latest/en/user/production/java.html");
+        }
     }
 
     public String getConfigurationFile() {
