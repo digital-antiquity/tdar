@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.service.ExcelService;
 import org.tdar.core.service.excel.CellFormat;
 
@@ -72,10 +73,10 @@ public class BulkUploadTemplate {
         exampleDoc.put("startPage", "20");
         exampleDoc.put("endPage", "40");
         exampleDoc.put("issn", "1111-1111");
-        exampleDoc.put("documentType", "BOOK_SECTION");
+        exampleDoc.put("documentType", DocumentType.BOOK_SECTION.name());
         exampleImage.put("title", "EXAMPLE TITLE");
 
-        exampleImage.put("ResourceCreatorPerson.role", "CREATOR");
+        exampleImage.put("ResourceCreatorPerson.role", ResourceCreatorRole.CREATOR.name());
         exampleImage.put("ResourceCreatorPerson.Person.email", "test@test.com");
         exampleImage.put("ResourceCreatorPerson.Person.firstName", "First Name");
         exampleImage.put("ResourceCreatorPerson.Person.lastName", "Last Name");
@@ -83,9 +84,9 @@ public class BulkUploadTemplate {
         exampleDoc.put("ResourceCreatorPerson.Person.email", "test@test.com");
         exampleDoc.put("ResourceCreatorPerson.Person.firstName", "First Name");
         exampleDoc.put("ResourceCreatorPerson.Person.lastName", "Last Name");
-        exampleDoc.put("ResourceCreatorPerson.role", "AUTHOR");
+        exampleDoc.put("ResourceCreatorPerson.role", ResourceCreatorRole.AUTHOR.name());
 
-        exampleDoc.put("ResourceCreatorInstitution.role", "AUTHOR");
+        exampleDoc.put("ResourceCreatorInstitution.role", ResourceCreatorRole.AUTHOR.name());
         exampleDoc.put("ResourceCreatorInstitution.Institution.name", "Institutional Author");
 
         Drawing drawing = sheet.createDrawingPatriarch();
@@ -94,6 +95,21 @@ public class BulkUploadTemplate {
         HSSFDataValidationHelper validationHelper = new HSSFDataValidationHelper(sheet);
         Set<CellMetadata> enumFields = new HashSet<CellMetadata>();
         for (CellMetadata field : fieldnameSet) {
+
+
+            row.createCell(i).setCellValue(field.getOutputName());
+            CellStyle style = defaultStyle;
+            if (field.getMappedClass() != null && field.getMappedClass().equals(Document.class)) {
+                style = headerStyle2;
+            } else if (field.isRequired()) {
+                style = requiredStyle;
+            } else if (CollectionUtils.isNotEmpty(field.getEnumList()) && ArrayUtils.contains(ResourceCreatorRole.values(), field.getEnumList().get(0))) {
+                style = resourceCreatorRoleStyle;
+                field.getEnumList().removeAll(ResourceCreatorRole.getOtherRoles());
+            } else {
+                style = defaultStyle;
+            }
+            row.getCell(i).setCellStyle(style);
 
             if (CollectionUtils.isNotEmpty(field.getEnumList())) {
                 getExcelService().addColumnValidation(sheet, i, validationHelper, field.getEnumList().toArray(new Enum[0]));
@@ -107,19 +123,6 @@ public class BulkUploadTemplate {
                     getExcelService().addIntegerColumnValidation(sheet, i, validationHelper, EXCEL_MIN_NUM, EXCEL_MAX_NUM);
                 }
             }
-
-            row.createCell(i).setCellValue(field.getOutputName());
-            CellStyle style = defaultStyle;
-            if (field.getMappedClass() != null && field.getMappedClass().equals(Document.class)) {
-                style = headerStyle2;
-            } else if (field.isRequired()) {
-                style = requiredStyle;
-            } else if (CollectionUtils.isNotEmpty(field.getEnumList()) && ArrayUtils.contains(ResourceCreatorRole.values(), field.getEnumList().get(0))) {
-                style = resourceCreatorRoleStyle;
-            } else {
-                style = defaultStyle;
-            }
-            row.getCell(i).setCellStyle(style);
 
             getExcelService().addComment(factory, drawing, row.getCell(i), field.getComment());
 
