@@ -73,13 +73,13 @@ $(document).ready(function() {
           <@makeDeleteLink namespace current />
         </#if>
         <#if persistable.resourceType??>
-        <@list.bookmark resource true true />
-        <#if resource.resourceType == "PROJECT">
-          <@makeLink "resource" "add?projectId=${resource.id?c}" "add new resource to project" "add" "" false false "hidden-tablet hidden-phone"/>
-          <@makeLink "resource" "add?projectId=${resource.id?c}" "add item" "add" "" false false "hidden-desktop"/>
+	        <@list.bookmark resource true true />
+	        <#if resource.resourceType == "PROJECT">
+	          <@makeLink "resource" "add?projectId=${resource.id?c}" "add new resource to project" "add" "" false false "hidden-tablet hidden-phone"/>
+	          <@makeLink "resource" "add?projectId=${resource.id?c}" "add item" "add" "" false false "hidden-desktop"/>
+	        </#if>
         </#if>
         <#nested>
-        </#if>
        <#elseif creator??>
         <@makeViewLink namespace current />
         <#if ableToEditAnything>

@@ -102,7 +102,7 @@ public class AuthorityManagementControllerITCase extends AbstractAdminController
         genericService.synchronize();
         SimpleMailMessage received = mockMailSender.getMessages().get(0);
         assertTrue(received.getSubject().contains(AuthorityManagementService.SERVICE_NAME));
-        assertTrue(received.getText().contains("records merged"));
+        assertTrue(received.getText().contains("Records Merged"));
         assertEquals(received.getFrom(), emailService.getFromEmail());
         assertEquals(received.getTo()[0], getTdarConfiguration().getSystemAdminEmail());
     }

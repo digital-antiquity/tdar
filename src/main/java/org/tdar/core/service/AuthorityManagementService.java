@@ -289,8 +289,9 @@ public class AuthorityManagementService {
         map.put("authority", logData.getAuthority());
         map.put("className", className);
         map.put("numUpdated", numUpdated);
-
-        map.put("referrers", logData.getUpdatedReferrers());
+        map.put("dups", logData.getDupes());
+        
+        map.put("referrers", logData.getUpdatedReferrers().entrySet());
         emailService.sendTemplate("auth-report.ftl", map, subject);
     }
 
