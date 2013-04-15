@@ -113,21 +113,7 @@ public class BrowseController extends AbstractLookupController {
     public String browseCreators() throws ParseException {
         if (Persistable.Base.isNotNullOrTransient(getId())) {
             creator = getGenericService().find(Creator.class, getId());
-            QueryBuilder queryBuilder = new ResourceQueryBuilder();
-            queryBuilder.setOperator(Operator.AND);
-
-            SearchParameters params = new SearchParameters(Operator.OR);
-            // could use "creator type" to filter; but this doesn't cover the creator type "OTHER"
-            for (ResourceCreatorRole role : ResourceCreatorRole.values()) {
-                if (role == ResourceCreatorRole.UPDATER) {
-                    continue;
-                }
-                params.getResourceCreatorProxies().add(new ResourceCreatorProxy(creator, role));
-            }
-            queryBuilder.append(params);
-            ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
-            getAuthenticationAndAuthorizationService().initializeReservedSearchParameters(reservedSearchParameters, getAuthenticatedUser());
-            queryBuilder.append(reservedSearchParameters);
+            QueryBuilder queryBuilder = getSearchService().generateQueryForRelatedResources(creator,getAuthenticatedUser());
 
             if (isEditor() && creator instanceof Person) {
                 try {
@@ -153,6 +139,7 @@ public class BrowseController extends AbstractLookupController {
         creator = getGenericService().find(Creator.class, getId());
         return SUCCESS;
     }
+
 
     // @Action(value = "materials", results = { @Result(location = "results.ftl") })
     // public String browseMaterialTypes() {

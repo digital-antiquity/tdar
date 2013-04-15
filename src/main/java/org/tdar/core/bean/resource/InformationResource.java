@@ -38,7 +38,6 @@ import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.Boost;
 import org.hibernate.search.annotations.DynamicBoost;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.FieldBridge;
@@ -65,7 +64,6 @@ import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.configuration.JSONTransient;
@@ -356,7 +354,7 @@ public abstract class InformationResource extends Resource {
     }
 
     @Transient
-//    @Boost(1.5f)
+    // @Boost(1.5f)
     @Fields({
             @Field(name = QueryFieldNames.PROJECT_TITLE),
             @Field(name = QueryFieldNames.PROJECT_TITLE_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)),
@@ -515,7 +513,7 @@ public abstract class InformationResource extends Resource {
     @FieldBridge(impl = PersistentReaderBridge.class)
     @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)
     @Transient
-//    @Boost(0.5f)
+    // @Boost(0.5f)
     @XmlTransient
     @JSONTransient
     public List<URI> getContent() {
@@ -896,7 +894,17 @@ public abstract class InformationResource extends Resource {
     public List<String> getCreatorRoleIdentifiers() {
         List<String> list = super.getCreatorRoleIdentifiers();
         list.add(ResourceCreator.getCreatorRoleIdentifier(getResourceProviderInstitution(), ResourceCreatorRole.RESOURCE_PROVIDER));
+        list.add(ResourceCreator.getCreatorRoleIdentifier(getPublisher(), ResourceCreatorRole.PUBLISHER));
         return list;
+    }
+
+    @Override
+    @XmlTransient
+    public List<Creator> getRelatedCreators() {
+        List<Creator> creators = super.getRelatedCreators();
+        creators.add(getResourceProviderInstitution());
+        creators.add(getPublisher());
+        return creators;
     }
 
     public boolean isInheritingNoteInformation() {

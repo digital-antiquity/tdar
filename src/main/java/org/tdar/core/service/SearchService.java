@@ -55,6 +55,7 @@ import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
+import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
@@ -708,5 +709,24 @@ public class SearchService {
             }
         }
         logger.trace("result: {} ", proxies);
+    }
+
+    public QueryBuilder generateQueryForRelatedResources(Creator creator, Person user) {
+            QueryBuilder queryBuilder = new ResourceQueryBuilder();
+            queryBuilder.setOperator(Operator.AND);
+
+            SearchParameters params = new SearchParameters(Operator.OR);
+            // could use "creator type" to filter; but this doesn't cover the creator type "OTHER"
+            for (ResourceCreatorRole role : ResourceCreatorRole.values()) {
+                if (role == ResourceCreatorRole.UPDATER) {
+                    continue;
+                }
+                params.getResourceCreatorProxies().add(new ResourceCreatorProxy(creator, role));
+            }
+            queryBuilder.append(params);
+            ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
+            authenticationAndAuthorizationService.initializeReservedSearchParameters(reservedSearchParameters, user);
+            queryBuilder.append(reservedSearchParameters);
+            return queryBuilder;
     }
 }

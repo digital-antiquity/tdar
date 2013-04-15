@@ -92,6 +92,7 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
+import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
@@ -141,7 +142,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
         @FetchProfile(name = "resource-with-people", fetchOverrides = {
                 @FetchOverride(association = "resourceCreators", mode = FetchMode.JOIN, entity = Resource.class),
                 @FetchOverride(association = "submitter", mode = FetchMode.JOIN, entity = Resource.class) }),
-        @FetchProfile(name="simple", fetchOverrides = { })
+        @FetchProfile(name = "simple", fetchOverrides = {})
 })
 public class Resource extends JsonModel.Base implements Persistable,
         Comparable<Resource>, HasName, Updatable, Indexable, Validatable, SimpleSearch,
@@ -1191,14 +1192,7 @@ public class Resource extends JsonModel.Base implements Persistable,
         StringBuilder sb = new StringBuilder();
         sb.append(getTitle()).append(" ").append(getDescription()).append(" ").append(getAdditonalKeywords()).append(" ");
 
-        Collection<Keyword> kwds = new HashSet<Keyword>();
-        kwds.addAll(getActiveCultureKeywords());
-        kwds.addAll(getIndexedGeographicKeywords());
-        kwds.addAll(getActiveSiteNameKeywords());
-        kwds.addAll(getActiveSiteTypeKeywords());
-        kwds.addAll(getActiveMaterialKeywords());
-        kwds.addAll(getActiveOtherKeywords());
-        kwds.addAll(getActiveTemporalKeywords());
+        Collection<Keyword> kwds = getAllActiveKeywords();
 
         for (Keyword kwd : kwds) {
             if (kwd instanceof HierarchicalKeyword) {
@@ -1237,6 +1231,19 @@ public class Resource extends JsonModel.Base implements Persistable,
             sb.append(src.getText()).append(" ");
         }
         return sb.toString();
+    }
+
+    @XmlTransient
+    public Collection<Keyword> getAllActiveKeywords() {
+        Collection<Keyword> kwds = new HashSet<Keyword>();
+        kwds.addAll(getActiveCultureKeywords());
+        kwds.addAll(getIndexedGeographicKeywords());
+        kwds.addAll(getActiveSiteNameKeywords());
+        kwds.addAll(getActiveSiteTypeKeywords());
+        kwds.addAll(getActiveMaterialKeywords());
+        kwds.addAll(getActiveOtherKeywords());
+        kwds.addAll(getActiveTemporalKeywords());
+        return kwds;
     }
 
     /**
@@ -1544,6 +1551,16 @@ public class Resource extends JsonModel.Base implements Persistable,
         list.add(ResourceCreator.getCreatorRoleIdentifier(getUpdatedBy(),
                 ResourceCreatorRole.UPDATER));
         return list;
+    }
+
+    @XmlTransient
+    public List<Creator> getRelatedCreators() {
+        List<Creator> creators = new ArrayList<>();
+        for (ResourceCreator creator : resourceCreators) {
+            creators.add(creator.getCreator());
+        }
+        creators.add(getSubmitter());
+        return creators;
     }
 
     protected StringBuilder appendIfNotBlank(StringBuilder sb, String str,

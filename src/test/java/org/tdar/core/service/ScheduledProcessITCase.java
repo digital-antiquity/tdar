@@ -16,12 +16,16 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.billing.Account;
+import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.entity.Institution;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Ontology;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.Status;
@@ -30,6 +34,7 @@ import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 import org.tdar.core.bean.util.ScheduledBatchProcess;
 import org.tdar.core.service.processes.FilestoreWeeklyLoggingProcess;
 import org.tdar.core.service.processes.OverdrawnAccountUpdate;
+import org.tdar.core.service.processes.PersonAnalysisProcess;
 import org.tdar.core.service.processes.SitemapGeneratorProcess;
 import org.tdar.core.service.processes.WeeklyStatisticsLoggingProcess;
 
@@ -153,6 +158,20 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     @Autowired
     WeeklyStatisticsLoggingProcess processingTask;
 
+    
+    @Autowired
+    PersonAnalysisProcess pap;
+    
+    @Test
+    @Rollback(true)
+    public void testPersonAnalytics() throws InstantiationException, IllegalAccessException {
+        searchIndexService.purgeAll();
+        searchIndexService.indexAll(getAdminUser(), Resource.class, Person.class, Institution.class, ResourceCollection.class);
+
+        pap.execute();
+    }
+    
+    
     @SuppressWarnings("deprecation")
     @Test
     @Rollback(true)
