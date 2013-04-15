@@ -3,7 +3,6 @@ package org.tdar.struts.action;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 
@@ -22,7 +21,6 @@ import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.AuthorityManagementService;
 import org.tdar.core.service.GenericService;
-import org.tdar.core.service.processes.OverdrawnAccountUpdate;
 
 public class AuthorityManagementControllerITCase extends AbstractAdminControllerITCase {
 
@@ -104,7 +102,7 @@ public class AuthorityManagementControllerITCase extends AbstractAdminController
         genericService.synchronize();
         SimpleMailMessage received = mockMailSender.getMessages().get(0);
         assertTrue(received.getSubject().contains(AuthorityManagementService.SERVICE_NAME));
-        assertTrue(received.getText().contains("records merged"));
+        assertTrue(received.getText().contains("Records Merged"));
         assertEquals(received.getFrom(), emailService.getFromEmail());
         assertEquals(received.getTo()[0], getTdarConfiguration().getSystemAdminEmail());
     }
