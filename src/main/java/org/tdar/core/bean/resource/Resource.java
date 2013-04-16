@@ -1315,6 +1315,11 @@ public class Resource extends JsonModel.Base implements Persistable,
         return status == Status.DRAFT;
     }
 
+    @Override
+    public boolean isDuplicate() {
+        return status == Status.DUPLICATE;
+    }
+
     @Transient
     @XmlTransient
     public boolean isFlagged() {

@@ -172,5 +172,20 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable {
             return this.status == Status.DELETED;
         }
 
+        @Override
+        public boolean isDraft() {
+            return status == Status.DRAFT;
+        }
+
+        @Override
+        public boolean isFlagged() {
+            return status == Status.FLAGGED;
+        }
+
+        @Override
+        public boolean isDuplicate() {
+            return status == Status.DUPLICATE;
+        }
+
     }
 }

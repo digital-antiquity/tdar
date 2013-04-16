@@ -449,4 +449,19 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     public Date getDateUpdated() {
         return lastModified;
     }
+
+    @Override
+    public boolean isDraft() {
+        return status == Status.DRAFT;
+    }
+
+    @Override
+    public boolean isFlagged() {
+        return status == Status.FLAGGED;
+    }
+
+    @Override
+    public boolean isDuplicate() {
+        return status == Status.DUPLICATE;
+    }
 }
