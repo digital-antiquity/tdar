@@ -1,13 +1,14 @@
-User ${user} performed a dedupe operation.
+User ${log.userDisplayName} performed a dedupe operation.
 
-Authority: ${authority} [id:${authority.id?c}]
+Authority: ${log.authority} [id:${log.authority.id?c}]
 Record Type: ${className}
 Records Updated: ${numUpdated}
+Dedupe Mode: ${log.dupeMode}
  
 ========================================================
  Duplicates
 ========================================================
-<#list dups as dup>
+<#list log.dupes as dup>
  - ${dup.id?c}: ${dup}
 </#list>
 

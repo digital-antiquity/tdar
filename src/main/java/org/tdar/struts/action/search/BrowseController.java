@@ -20,6 +20,7 @@ import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
 import org.tdar.core.bean.cache.HomepageResourceCountCache;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Creator;
+import org.tdar.core.bean.entity.Dedupable;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.keyword.CultureKeyword;
@@ -122,11 +123,18 @@ public class BrowseController extends AbstractLookupController {
 
             SearchParameters params = new SearchParameters(Operator.OR);
             // could use "creator type" to filter; but this doesn't cover the creator type "OTHER"
-            for (ResourceCreatorRole role : ResourceCreatorRole.values()) {
-                if (role == ResourceCreatorRole.UPDATER) {
-                    continue;
+            List<Creator> creators = new ArrayList<Creator>();
+            creators.add(creator);
+            if (creator instanceof Dedupable) {
+                creators.addAll(((Dedupable) creator).getSynonyms());
+            }
+            for (Creator toFind : creators) {
+                for (ResourceCreatorRole role : ResourceCreatorRole.values()) {
+                    if (role == ResourceCreatorRole.UPDATER) {
+                        continue;
+                    }
+                    params.getResourceCreatorProxies().add(new ResourceCreatorProxy(toFind, role));
                 }
-                params.getResourceCreatorProxies().add(new ResourceCreatorProxy(creator, role));
             }
             queryBuilder.append(params);
             ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
@@ -151,7 +159,7 @@ public class BrowseController extends AbstractLookupController {
                 setSearchTitle(descr);
                 setRecordsPerPage(50);
                 try {
-                handleSearch(queryBuilder);
+                    handleSearch(queryBuilder);
                 } catch (SearchPaginationException spe) {
                     throw new TdarActionException(StatusCode.BAD_REQUEST, spe);
                 } catch (TdarRecoverableRuntimeException tdre) {

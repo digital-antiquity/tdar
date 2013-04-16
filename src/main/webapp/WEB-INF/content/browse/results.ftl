@@ -30,6 +30,10 @@
     <a itemprop="affiliation" href="<@s.url value="${creator.institution.id?c}"/>">${creator.institution}</a>
     </#if>
     <p itemprop="description">${creator.description!''}</p>
+	<#if creator.synonyms?has_content>
+	<p>Alternate Names: <#list creator.synonyms as syn>${syn.properName}<#if syn_index !=0>,</#if></#list>
+	</p>
+	</#if>
     <br/>
         <#if creator.creatorType == 'PERSON'>
            <#if authenticated && (editor ||  id == authenticatedUser.id ) >

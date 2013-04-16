@@ -52,6 +52,20 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableMapConverter;
 @Service
 public class AuthorityManagementService {
 
+    public enum DupeMode {
+        /*
+         * Authority Management really needs multiple modes:
+         * 1. Typo cleanup mode -- remove the dups and pretend they never existed
+         * 2. Synonym mode -- mark the dups as dups; keep them, but change all references from the current thing to the authority (5 versions of the same person
+         * at the same time)
+         * 3. User consolidation mode -- mark the "dups" as dups, but keep the references set on the "dup" instead of the authority. If I have 2 versions of a
+         * person from different jobs, this is useful for consolidating the people, but keeping the context of that person at that time.
+         */
+        DELETE_DUPLICATES,
+        MARK_AND_CONSOLDIATE_DUPS,
+        MARK_DUPS;
+    }
+
     public static final String SERVICE_NAME = "Authority Management Service:";
     public static final String SUBJECT = "%s " + SERVICE_NAME + " user %s merged %s %s records to '%s'";
 
@@ -156,20 +170,20 @@ public class AuthorityManagementService {
      *  and setters.
      *  
      */
-    public <T extends Dedupable> void updateReferrers(Person user, Class<T> referredClass, Set<Long> dupeIds, Long authorityId, boolean shouldDelete) {
+    public <T extends Dedupable> void updateReferrers(Person user, Class<? extends Dedupable> class1, Set<Long> dupeIds, Long authorityId, DupeMode dupeMode) {
         Activity activity = new Activity();
-        activity.setName(String.format("update-referrers:: referredClass:%s\tauthorityId:%s", referredClass.getSimpleName(), authorityId));
+        activity.setName(String.format("update-referrers:: referredClass:%s\tauthorityId:%s", class1.getSimpleName(), authorityId));
         ActivityManager.getInstance().addActivityToQueue(activity);
         activity.start();
 
         int maxAffectedRecordsCount = TdarConfiguration.getInstance().getAuthorityManagementMaxAffectedRecords();
         int affectedRecordCount = 0;
         // get a list of all the referrer objects and the Fields that contain the reference.
-        Map<Field, ScrollableResults> referrers = getReferrers(referredClass, dupeIds);
+        Map<Field, ScrollableResults> referrers = getReferrers(class1, dupeIds);
 
         // instantiate the duplicates and the authority record
-        Set<T> dupes = new HashSet<T>(genericDao.findAll(referredClass, dupeIds));
-        T authority = genericDao.find(referredClass, authorityId);
+        Set<T> dupes = new HashSet<T>((Collection<? extends T>) genericDao.findAll(class1, dupeIds));
+        T authority = (T) genericDao.find(class1, authorityId);
 
         // prevent 'protected' records from being deleted
         if (countProtectedRecords(dupes) > 0) {
@@ -184,7 +198,7 @@ public class AuthorityManagementService {
         // -if many-to-one
         // + get scalar setter and set to authority record
         // -hibsession.save() each reference
-        AuthorityManagementLog<T> authorityManagementLog = new AuthorityManagementLog<T>(authority, dupes, user);
+        AuthorityManagementLog<T> authorityManagementLog = new AuthorityManagementLog<T>(authority, dupes, user, dupeMode);
         for (Map.Entry<Field, ScrollableResults> entry : referrers.entrySet()) {
             Field field = entry.getKey();
             ScrollableResults scrollableResults = entry.getValue();
@@ -193,24 +207,26 @@ public class AuthorityManagementService {
                 affectedRecordCount++;
 
                 Persistable referrer = (Persistable) scrollableResults.get(0);
-                if (Collection.class.isAssignableFrom(field.getType())) {
-                    // remove all dupes from the Collection and add in the authoritative entity (unless it's there already)
-                    Collection<T> collection = reflectionService.callFieldGetter(referrer, field);
-                    for (T dupe : dupes) {
-                        if (collection.remove(dupe)) {
-                            authorityManagementLog.add(referrer, field, (Persistable) dupe);
+                if (dupeMode != DupeMode.MARK_DUPS) {
+                    if (Collection.class.isAssignableFrom(field.getType())) {
+                        // remove all dupes from the Collection and add in the authoritative entity (unless it's there already)
+                        Collection<T> collection = reflectionService.callFieldGetter(referrer, field);
+                        for (T dupe : dupes) {
+                            if (collection.remove(dupe)) {
+                                authorityManagementLog.add(referrer, field, (Persistable) dupe);
+                            }
+                        }
+                        if (!collection.contains(authority)) {
+                            collection.add(authority);
                         }
                     }
-                    if (!collection.contains(authority)) {
-                        collection.add(authority);
+                    else {
+                        T dupe = reflectionService.callFieldGetter(referrer, field);
+                        authorityManagementLog.add(referrer, field, (Persistable) dupe);
+                        reflectionService.callFieldSetter(referrer, field, authority);
                     }
+                    genericDao.saveOrUpdate(referrer);
                 }
-                else {
-                    T dupe = reflectionService.callFieldGetter(referrer, field);
-                    authorityManagementLog.add(referrer, field, (Persistable) dupe);
-                    reflectionService.callFieldSetter(referrer, field, authority);
-                }
-                genericDao.saveOrUpdate(referrer);
 
             }
             scrollableResults.close();
@@ -228,7 +244,7 @@ public class AuthorityManagementService {
         logAndNotify(authorityManagementLog);
 
         // add the dupes to the authority as synonyms
-        processSynonyms(authority, dupes, shouldDelete);
+        processSynonyms(authority, dupes, dupeMode);
 
         // finally, delete each dupe
         genericDao.saveOrUpdate(dupes);
@@ -248,15 +264,19 @@ public class AuthorityManagementService {
     }
 
     @SuppressWarnings("rawtypes")
-    private <T extends Dedupable> void processSynonyms(T authority, Set<T> dupes, boolean delete) {
+    private <T extends Dedupable> void processSynonyms(T authority, Set<T> dupes, DupeMode markAndConsoldiateDups) {
         for (T dup : dupes) {
             authority.getSynonyms().addAll(dup.getSynonyms());
             dup.getSynonyms().clear();
-            if (delete) {
-                dup.setStatus(Status.DELETED);
-            } else {
-                dup.setStatus(Status.DUPLICATE);
-                authority.getSynonyms().addAll(dupes);
+            switch (markAndConsoldiateDups) {
+                case DELETE_DUPLICATES:
+                    dup.setStatus(Status.DELETED);
+                    break;
+                case MARK_DUPS:
+                case MARK_AND_CONSOLDIATE_DUPS:
+                    dup.setStatus(Status.DUPLICATE);
+                    authority.getSynonyms().addAll(dupes);
+                    break;
             }
         }
     }
@@ -285,12 +305,10 @@ public class AuthorityManagementService {
                 TdarConfiguration.getInstance().getSiteAcronym(), logData.getUserDisplayName(), numUpdated, className, logData.getAuthority().toString());
 
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put("user", logData.getUserDisplayName());
-        map.put("authority", logData.getAuthority());
+        map.put("log", logData);
         map.put("className", className);
         map.put("numUpdated", numUpdated);
-        map.put("dups", logData.getDupes());
-        
+
         map.put("referrers", logData.getUpdatedReferrers().entrySet());
         emailService.sendTemplate("auth-report.ftl", map, subject);
     }
@@ -336,13 +354,15 @@ public class AuthorityManagementService {
         private Set<R> dupes;
         // map of referrer -> ( [field containing the dupe, id of the dupe] ... )
         private Map<Persistable, AuthorityManagementLogPart> updatedReferrers = new HashMap<Persistable, AuthorityManagementLogPart>();
+        private DupeMode dupeMode;
 
         public AuthorityManagementLog() {
         }
 
-        public AuthorityManagementLog(R authority, Set<R> dupes, Person user) {
+        public AuthorityManagementLog(R authority, Set<R> dupes, Person user, DupeMode dupeMode) {
             this.authority = authority;
             this.dupes = dupes;
+            this.setDupeMode(dupeMode);
             this.userDisplayName = String.format("%s (%s)", user.getProperName(), user.getId());
         }
 
@@ -403,6 +423,14 @@ public class AuthorityManagementService {
 
         public void setUserDisplayName(String userDisplayName) {
             this.userDisplayName = userDisplayName;
+        }
+
+        public DupeMode getDupeMode() {
+            return dupeMode;
+        }
+
+        public void setDupeMode(DupeMode dupeMode) {
+            this.dupeMode = dupeMode;
         }
 
     }

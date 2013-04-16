@@ -20,6 +20,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.AuthorityManagementService;
+import org.tdar.core.service.AuthorityManagementService.DupeMode;
 import org.tdar.struts.RequiresTdarUserGroup;
 import org.tdar.struts.WriteableSession;
 
@@ -126,7 +127,8 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
 
         // so now we should have everything we need to pass to the service
         try {
-            authorityManagementService.updateReferrers(getAuthenticatedUser(), entityType.getType(), selectedDupeIds, authorityId, false);
+            authorityManagementService.updateReferrers(getAuthenticatedUser(), entityType.getType(), selectedDupeIds, authorityId,
+                    DupeMode.MARK_AND_CONSOLDIATE_DUPS);
         } catch (TdarRecoverableRuntimeException trex) {
             addActionErrorWithException("Could not de-dupe", trex);
             return INPUT;

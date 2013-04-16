@@ -38,6 +38,7 @@ import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.AuthorityManagementService.AuthorityManagementLog;
+import org.tdar.core.service.AuthorityManagementService.DupeMode;
 
 public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCase {
 
@@ -140,7 +141,7 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
         d2.setUpdatedBy(dupe2);
         resourceService.save(d1);
         resourceService.save(d2);
-        
+
         // ResourceCreator is trickier than the others because the creator field may refer to Institution or Person
         ResourceCreator resourceCreator = new ResourceCreator(dupe1, ResourceCreatorRole.AUTHOR);
         resourceCreator.setSequenceNumber(1);
@@ -153,7 +154,7 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
 
         // great, now lets do some deduping;
         Set<Long> dupeIds = new HashSet<Long>(Arrays.asList(dupe1Id, dupe2Id));
-        authorityManagementService.updateReferrers(getAdminUser(), Person.class, dupeIds, authorityId, false);
+        authorityManagementService.updateReferrers(getAdminUser(), Person.class, dupeIds, authorityId, DupeMode.MARK_AND_CONSOLDIATE_DUPS);
 
         // makes sure that the dupes no longer exist
         Assert.assertEquals("dupe should be deleted:" + dupe1, Status.DUPLICATE, entityService.find(dupe1Id).getStatus());
@@ -192,7 +193,7 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
 
         // great, now lets do some deduping;
         Set<Long> dupeIds = new HashSet<Long>(Arrays.asList(dupe1Id, dupe2Id));
-        authorityManagementService.updateReferrers(getAdminUser(), OtherKeyword.class, dupeIds, authorityId, false);
+        authorityManagementService.updateReferrers(getAdminUser(), OtherKeyword.class, dupeIds, authorityId, DupeMode.MARK_AND_CONSOLDIATE_DUPS);
 
         // makes sure that the dupes no longer exist
         Assert.assertEquals("dupe should be deleted:" + dupe1, Status.DUPLICATE, genericKeywordService.find(OtherKeyword.class, dupe1Id).getStatus());
@@ -236,7 +237,7 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
         Set<Person> dupes = new HashSet<Person>(genericService.findRandom(Person.class, 5));
         dupes.remove(person);
 
-        AuthorityManagementLog<Person> result = new AuthorityManagementLog<Person>(person, dupes, getAdminUser());
+        AuthorityManagementLog<Person> result = new AuthorityManagementLog<Person>(person, dupes, getAdminUser(), DupeMode.MARK_AND_CONSOLDIATE_DUPS);
         Person firstDupe = dupes.iterator().next();
         Document d = new Document();
         // WE ARE TESTING LOGGING AND NOTHING ELSE -- yes, THIS IS INSANE
@@ -278,8 +279,9 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
     private <D extends Dedupable<?>> void saveAndTestDedupeSynonym(Class<D> type, D authority, D dupe) {
         genericService.save(authority);
         genericService.save(dupe);
-        authorityManagementService.updateReferrers(getAdminUser(), type, new HashSet<Long>(Arrays.asList(dupe.getId())), authority.getId(), false);
-//        dupe = null;
+        authorityManagementService.updateReferrers(getAdminUser(), type, new HashSet<Long>(Arrays.asList(dupe.getId())), authority.getId(),
+                DupeMode.MARK_AND_CONSOLDIATE_DUPS);
+        // dupe = null;
         String message = "authority should have synonym '" + dupe + "' after deduping " + type.getSimpleName() + " record";
         Assert.assertTrue(message, authority.getSynonyms().contains(dupe));
     }
