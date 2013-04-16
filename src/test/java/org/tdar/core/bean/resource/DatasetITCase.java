@@ -49,6 +49,8 @@ public class DatasetITCase extends AbstractIntegrationTestCase {
         List<Dataset> datasets = datasetService.findAll();
         assertFalse(datasets.isEmpty());
         for (Dataset dataset : datasets) {
+            if(dataset instanceof Geospatial) 
+                continue;
             Dataset freshDataset = createAndSaveNewDataset();
             assertFalse(dataset.equals(freshDataset));
             assertFalse(dataset.hashCode() == freshDataset.hashCode());
