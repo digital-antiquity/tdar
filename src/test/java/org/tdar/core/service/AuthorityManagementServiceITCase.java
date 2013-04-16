@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
+import org.tdar.core.bean.DedupeableType;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator;
@@ -121,23 +122,38 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
 
     @Test
     @Rollback
-    public void testDedupeManyToOne() throws Exception {
+    public void testDedupManyToOneDelete() throws Exception {
+        testDedupeManyToOne(DupeMode.DELETE_DUPLICATES);
+    }
+
+    @Test
+    @Rollback
+    public void testDedupManyToOneMerge() throws Exception {
+        testDedupeManyToOne(DupeMode.MARK_DUPS_AND_CONSOLDIATE);
+    }
+
+    @Test
+    @Rollback
+    public void testDedupManyToOneMark() throws Exception {
+        testDedupeManyToOne(DupeMode.MARK_DUPS_ONLY);
+    }
+
+    public void testDedupeManyToOne(DupeMode mode) throws Exception {
         Person authority = new Person("John", "Doe", "authority_record@bar.com");
         Person dupe1 = new Person("John", "Dough", "johndough@bar.com");
         Person dupe2 = new Person("John", "D'oh", "johndoh@bar.com");
         genericService.save(authority);
         genericService.save(dupe1);
         genericService.save(dupe2);
-
         Long authorityId = authority.getId();
         Long dupe1Id = dupe1.getId();
         Long dupe2Id = dupe2.getId();
-
+        
         // create some many-to-one references
         Document d1 = createAndSaveNewInformationResource(Document.class);
-        d1.setSubmitter(dupe1);
-
         Document d2 = createAndSaveNewInformationResource(Document.class);
+
+        d1.setSubmitter(dupe1);
         d2.setUpdatedBy(dupe2);
         resourceService.save(d1);
         resourceService.save(d2);
@@ -154,25 +170,57 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
 
         // great, now lets do some deduping;
         Set<Long> dupeIds = new HashSet<Long>(Arrays.asList(dupe1Id, dupe2Id));
-        authorityManagementService.updateReferrers(getAdminUser(), Person.class, dupeIds, authorityId, DupeMode.MARK_AND_CONSOLDIATE_DUPS);
-
-        // makes sure that the dupes no longer exist
-        Assert.assertEquals("dupe should be deleted:" + dupe1, Status.DUPLICATE, entityService.find(dupe1Id).getStatus());
-        Assert.assertEquals("dupe should be deleted:" + dupe2, Status.DUPLICATE, entityService.find(dupe2Id).getStatus());
-
-        // todo: make sure that the authority replaced all the dupes of the former referrers
+        authorityManagementService.updateReferrers(getAdminUser(), Person.class, dupeIds, authorityId, mode);
         d1 = genericService.find(Document.class, d1.getId());
         d2 = genericService.find(Document.class, d2.getId());
         user1 = genericService.find(AuthorizedUser.class, user1.getId());
+        switch (mode) {
+            case DELETE_DUPLICATES:
+                Assert.assertEquals("dupe should be deleted:" + dupe1, Status.DELETED, entityService.find(dupe1Id).getStatus());
+                Assert.assertEquals("dupe should be deleted:" + dupe2, Status.DELETED, entityService.find(dupe2Id).getStatus());
+                Assert.assertEquals("authority should have replaced dupe", authority, d1.getSubmitter());
+                Assert.assertEquals("authority should have replaced dupe", authority, d2.getUpdatedBy());
+                Assert.assertEquals("authority should have replaced dupe", authority, user1.getUser());
+                break;
+            case MARK_DUPS_AND_CONSOLDIATE:
+            // makes sure that the dupes no longer exist
+                Assert.assertEquals("dupe should be deleted:" + dupe1, Status.DUPLICATE, entityService.find(dupe1Id).getStatus());
+                Assert.assertEquals("dupe should be deleted:" + dupe2, Status.DUPLICATE, entityService.find(dupe2Id).getStatus());
+                Assert.assertEquals("authority should have replaced dupe", authority, d1.getSubmitter());
+                Assert.assertEquals("authority should have replaced dupe", authority, d2.getUpdatedBy());
+                Assert.assertEquals("authority should have replaced dupe", authority, user1.getUser());
+                break;
+            case MARK_DUPS_ONLY:
+                Assert.assertEquals("dupe should be deleted:" + dupe1, Status.DUPLICATE, entityService.find(dupe1Id).getStatus());
+                Assert.assertEquals("dupe should be deleted:" + dupe2, Status.DUPLICATE, entityService.find(dupe2Id).getStatus());
+                Assert.assertNotEquals("authority should have replaced dupe", authority, d1.getSubmitter());
+                Assert.assertNotEquals("authority should have replaced dupe", authority, d2.getUpdatedBy());
+                Assert.assertNotEquals("authority should have replaced dupe", authority, user1.getUser());
+                break;
+        }
+        // todo: make sure that the authority replaced all the dupes of the former referrers
 
-        Assert.assertEquals("authority should have replaced dupe", authority, d1.getSubmitter());
-        Assert.assertEquals("authority should have replaced dupe", authority, d2.getUpdatedBy());
-        Assert.assertEquals("authority should have replaced dupe", authority, user1.getUser());
     }
 
     @Test
     @Rollback
-    public void testDedupeManyToMany() throws Exception {
+    public void testDedupManyToManyDelete() throws Exception {
+        testDedupeManyToMany(DupeMode.DELETE_DUPLICATES);
+    }
+
+    @Test
+    @Rollback
+    public void testDedupManyToManyMerge() throws Exception {
+        testDedupeManyToMany(DupeMode.MARK_DUPS_AND_CONSOLDIATE);
+    }
+
+    @Test
+    @Rollback
+    public void testDedupManyToManyMark() throws Exception {
+        testDedupeManyToMany(DupeMode.MARK_DUPS_ONLY);
+    }
+
+    public void testDedupeManyToMany(DupeMode mode) throws Exception {
 
         OtherKeyword authority = createAndSaveKeyword(OtherKeyword.class, "authority keyword", "this is the authority keyword");
         OtherKeyword dupe1 = createAndSaveKeyword(OtherKeyword.class, "dupe keyword", "this is not the authority keyword");
@@ -193,18 +241,41 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
 
         // great, now lets do some deduping;
         Set<Long> dupeIds = new HashSet<Long>(Arrays.asList(dupe1Id, dupe2Id));
-        authorityManagementService.updateReferrers(getAdminUser(), OtherKeyword.class, dupeIds, authorityId, DupeMode.MARK_AND_CONSOLDIATE_DUPS);
-
-        // makes sure that the dupes no longer exist
-        Assert.assertEquals("dupe should be deleted:" + dupe1, Status.DUPLICATE, genericKeywordService.find(OtherKeyword.class, dupe1Id).getStatus());
-        Assert.assertEquals("dupe should be deleted:" + dupe2, Status.DUPLICATE, genericKeywordService.find(OtherKeyword.class, dupe2Id).getStatus());
+        authorityManagementService.updateReferrers(getAdminUser(), OtherKeyword.class, dupeIds, authorityId, mode);
 
         // todo: make sure that the authority replaced all the dupes of the former referrers
         doc1 = genericService.find(Document.class, doc1.getId());
         doc2 = genericService.find(Document.class, doc2.getId());
 
-        Assert.assertTrue("authority should replace dupe", doc1.getOtherKeywords().contains(authority));
-        Assert.assertTrue("authority should replace dupe", doc2.getOtherKeywords().contains(authority));
+
+        switch (mode) {
+            case DELETE_DUPLICATES:
+                // makes sure that the dupes no longer exist
+                Assert.assertEquals("dupe should be deleted:" + dupe1, Status.DELETED, genericKeywordService.find(OtherKeyword.class, dupe1Id).getStatus());
+                Assert.assertEquals("dupe should be deleted:" + dupe2, Status.DELETED, genericKeywordService.find(OtherKeyword.class, dupe2Id).getStatus());
+                Assert.assertTrue("authority should replace dupe", doc1.getOtherKeywords().contains(authority));
+                Assert.assertFalse("authority should replace dupe", doc1.getOtherKeywords().contains(dupe1));
+                Assert.assertFalse("authority should replace dupe", doc2.getOtherKeywords().contains(dupe2));
+                Assert.assertTrue("authority should replace dupe", doc2.getOtherKeywords().contains(authority));
+                break;
+            case MARK_DUPS_AND_CONSOLDIATE:
+                // makes sure that the dupes no longer exist
+                Assert.assertEquals("dupe should be deleted:" + dupe1, Status.DUPLICATE, genericKeywordService.find(OtherKeyword.class, dupe1Id).getStatus());
+                Assert.assertEquals("dupe should be deleted:" + dupe2, Status.DUPLICATE, genericKeywordService.find(OtherKeyword.class, dupe2Id).getStatus());
+                Assert.assertTrue("authority should replace dupe", doc1.getOtherKeywords().contains(authority));
+                Assert.assertFalse("authority should replace dupe", doc1.getOtherKeywords().contains(dupe1));
+                Assert.assertFalse("authority should replace dupe", doc2.getOtherKeywords().contains(dupe2));
+                Assert.assertTrue("authority should replace dupe", doc2.getOtherKeywords().contains(authority));
+                break;
+            case MARK_DUPS_ONLY:
+                // makes sure that the dupes no longer exist
+                Assert.assertEquals("dupe should be deleted:" + dupe1, Status.DUPLICATE, genericKeywordService.find(OtherKeyword.class, dupe1Id).getStatus());
+                Assert.assertEquals("dupe should be deleted:" + dupe2, Status.DUPLICATE, genericKeywordService.find(OtherKeyword.class, dupe2Id).getStatus());
+                Assert.assertTrue("authority should replace dupe", doc1.getOtherKeywords().contains(dupe1));
+                Assert.assertTrue("authority should replace dupe", doc2.getOtherKeywords().contains(dupe2));
+                break;
+        }
+
     }
 
     @Test
@@ -237,7 +308,7 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
         Set<Person> dupes = new HashSet<Person>(genericService.findRandom(Person.class, 5));
         dupes.remove(person);
 
-        AuthorityManagementLog<Person> result = new AuthorityManagementLog<Person>(person, dupes, getAdminUser(), DupeMode.MARK_AND_CONSOLDIATE_DUPS);
+        AuthorityManagementLog<Person> result = new AuthorityManagementLog<Person>(person, dupes, getAdminUser(), DupeMode.MARK_DUPS_AND_CONSOLDIATE);
         Person firstDupe = dupes.iterator().next();
         Document d = new Document();
         // WE ARE TESTING LOGGING AND NOTHING ELSE -- yes, THIS IS INSANE
@@ -280,7 +351,7 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
         genericService.save(authority);
         genericService.save(dupe);
         authorityManagementService.updateReferrers(getAdminUser(), type, new HashSet<Long>(Arrays.asList(dupe.getId())), authority.getId(),
-                DupeMode.MARK_AND_CONSOLDIATE_DUPS);
+                DupeMode.MARK_DUPS_AND_CONSOLDIATE);
         // dupe = null;
         String message = "authority should have synonym '" + dupe + "' after deduping " + type.getSimpleName() + " record";
         Assert.assertTrue(message, authority.getSynonyms().contains(dupe));

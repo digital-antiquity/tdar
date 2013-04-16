@@ -89,6 +89,10 @@
     <#default>
         <@renderKeywordTable />
 </#switch>  
+
+<@s.select labelposition='top' label='De-Dupe Mode' name='mode' 
+     list='%{allDupModes}' title="De-Dupe Modes" />
+
 <br />
 <@s.submit value="Merge selected duplicates" />
 <a href="index" class="button">Go back to duplicate selection page</a>

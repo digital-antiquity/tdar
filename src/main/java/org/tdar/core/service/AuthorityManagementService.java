@@ -62,8 +62,8 @@ public class AuthorityManagementService {
          * person from different jobs, this is useful for consolidating the people, but keeping the context of that person at that time.
          */
         DELETE_DUPLICATES,
-        MARK_AND_CONSOLDIATE_DUPS,
-        MARK_DUPS;
+        MARK_DUPS_AND_CONSOLDIATE,
+        MARK_DUPS_ONLY;
     }
 
     public static final String SERVICE_NAME = "Authority Management Service:";
@@ -175,7 +175,7 @@ public class AuthorityManagementService {
         activity.setName(String.format("update-referrers:: referredClass:%s\tauthorityId:%s", class1.getSimpleName(), authorityId));
         ActivityManager.getInstance().addActivityToQueue(activity);
         activity.start();
-
+        logger.info("deduping {} [{}: auth: {}]", class1, dupeMode, authorityId);
         int maxAffectedRecordsCount = TdarConfiguration.getInstance().getAuthorityManagementMaxAffectedRecords();
         int affectedRecordCount = 0;
         // get a list of all the referrer objects and the Fields that contain the reference.
@@ -207,7 +207,7 @@ public class AuthorityManagementService {
                 affectedRecordCount++;
 
                 Persistable referrer = (Persistable) scrollableResults.get(0);
-                if (dupeMode != DupeMode.MARK_DUPS) {
+                if (dupeMode != DupeMode.MARK_DUPS_ONLY) {
                     if (Collection.class.isAssignableFrom(field.getType())) {
                         // remove all dupes from the Collection and add in the authoritative entity (unless it's there already)
                         Collection<T> collection = reflectionService.callFieldGetter(referrer, field);
@@ -272,8 +272,8 @@ public class AuthorityManagementService {
                 case DELETE_DUPLICATES:
                     dup.setStatus(Status.DELETED);
                     break;
-                case MARK_DUPS:
-                case MARK_AND_CONSOLDIATE_DUPS:
+                case MARK_DUPS_ONLY:
+                case MARK_DUPS_AND_CONSOLDIATE:
                     dup.setStatus(Status.DUPLICATE);
                     authority.getSynonyms().addAll(dupes);
                     break;
@@ -310,7 +310,11 @@ public class AuthorityManagementService {
         map.put("numUpdated", numUpdated);
 
         map.put("referrers", logData.getUpdatedReferrers().entrySet());
-        emailService.sendTemplate("auth-report.ftl", map, subject);
+        try {
+            emailService.sendTemplate("auth-report.ftl", map, subject);
+        } catch (Exception e) {
+            logger.warn("could not send email: {} ", e);
+        }
     }
 
     @XmlRootElement
