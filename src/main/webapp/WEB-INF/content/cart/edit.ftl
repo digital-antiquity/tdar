@@ -26,6 +26,8 @@
 <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal disableFormNavigate" enctype='multipart/form-data' action='save'>
 
 <h1>What would you like to put into tDAR?</h1>
+<p>In tDAR, billing accounts are used to manage resources.  Each resource must be associated with an account. tDAR is run by Digital Antiquity, a not-for-profit organization dedicated to the preservation of archaeological information. The fees related to upload are used to ensure the proper preservation of materials uploaded to tDAR.</p><p><strong>Managing Accounts</strong><br>Accounts can be shared between users, and users can grant access to modify or manage resources to any tDAR user they choose.</p>
+<h2>Rates &amp; Calculator</h2>
 <div class="row">
 	<div class="span12">
 	<ul class="nav nav-tabs" >

@@ -157,7 +157,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     }
 
     @SkipValidation
-    @Action(value = DELETE_CONSTANT, results = { @Result(name = SUCCESS, type = "redirect", location = URLConstants.DASHBOARD),
+    @Action(value = DELETE_CONSTANT, results = { @Result(name = SUCCESS, type = TYPE_REDIRECT, location = URLConstants.DASHBOARD),
             @Result(name = CONFIRM, location = "/WEB-INF/content/confirm-delete.ftl") })
     @WriteableSession
     public String delete() throws TdarActionException {
@@ -194,7 +194,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     }
 
     @Action(value = "save", results = {
-            @Result(name = SUCCESS, type = "redirect", location = "${saveSuccessPath}?id=${persistable.id}"),
+            @Result(name = SUCCESS, type = TYPE_REDIRECT, location = "${saveSuccessPath}?id=${persistable.id}"),
             @Result(name = SUCCESS_ASYNC, location = "view-async.ftl"),
             @Result(name = INPUT, location = "edit.ftl")
     })
@@ -325,7 +325,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
     @SkipValidation
     @Action(value = "add", results = {
             @Result(name = SUCCESS, location = "edit.ftl"),
-            @Result(name = BILLING, location = "../billing-note.ftl")
+            @Result(name = BILLING, type=TYPE_REDIRECT, location = "/cart/add")
     })
     @HttpsOnly
     public String add() throws TdarActionException {
