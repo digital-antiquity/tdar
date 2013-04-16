@@ -47,9 +47,9 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         createDocumentAndUploadFile("my first document");
         createDocumentAndUploadFile("my second document");
         gotoPage("/document/add");
-        assertTextPresent("You must create an account");
+        assertTextPresent("What would you like to put into tDAR");
         gotoPage("/resource/add");
-        assertTextPresent("You must create an account");
+        assertTextPresent("What would you like to put into tDAR");
         logger.info(getPageText());
         gotoPage("/logout");
     }
