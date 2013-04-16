@@ -156,7 +156,7 @@ public class AuthorityManagementService {
      *  and setters.
      *  
      */
-    public <T extends Dedupable> void updateReferrers(Class<T> referredClass, Set<Long> dupeIds, Long authorityId, boolean shouldDelete) {
+    public <T extends Dedupable> void updateReferrers(Person user, Class<T> referredClass, Set<Long> dupeIds, Long authorityId, boolean shouldDelete) {
         Activity activity = new Activity();
         activity.setName(String.format("update-referrers:: referredClass:%s\tauthorityId:%s", referredClass.getSimpleName(), authorityId));
         ActivityManager.getInstance().addActivityToQueue(activity);
@@ -184,7 +184,7 @@ public class AuthorityManagementService {
         // -if many-to-one
         // + get scalar setter and set to authority record
         // -hibsession.save() each reference
-        AuthorityManagementLog<T> authorityManagementLog = new AuthorityManagementLog<T>(authority, dupes);
+        AuthorityManagementLog<T> authorityManagementLog = new AuthorityManagementLog<T>(authority, dupes, user);
         for (Map.Entry<Field, ScrollableResults> entry : referrers.entrySet()) {
             Field field = entry.getKey();
             ScrollableResults scrollableResults = entry.getValue();
@@ -340,9 +340,10 @@ public class AuthorityManagementService {
         public AuthorityManagementLog() {
         }
 
-        public AuthorityManagementLog(R authority, Set<R> dupes) {
+        public AuthorityManagementLog(R authority, Set<R> dupes, Person user) {
             this.authority = authority;
             this.dupes = dupes;
+            this.userDisplayName = String.format("%s (%s)", user.getProperName(), user.getId());
         }
 
         public void add(Persistable referrer, Field field, Persistable dupe) {

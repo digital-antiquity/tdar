@@ -126,7 +126,7 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
 
         // so now we should have everything we need to pass to the service
         try {
-            authorityManagementService.updateReferrers(entityType.getType(), selectedDupeIds, authorityId, false);
+            authorityManagementService.updateReferrers(getAuthenticatedUser(), entityType.getType(), selectedDupeIds, authorityId, false);
         } catch (TdarRecoverableRuntimeException trex) {
             addActionErrorWithException("Could not de-dupe", trex);
             return INPUT;

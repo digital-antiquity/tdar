@@ -153,7 +153,7 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
 
         // great, now lets do some deduping;
         Set<Long> dupeIds = new HashSet<Long>(Arrays.asList(dupe1Id, dupe2Id));
-        authorityManagementService.updateReferrers(Person.class, dupeIds, authorityId, false);
+        authorityManagementService.updateReferrers(getAdminUser(), Person.class, dupeIds, authorityId, false);
 
         // makes sure that the dupes no longer exist
         Assert.assertEquals("dupe should be deleted:" + dupe1, Status.DUPLICATE, entityService.find(dupe1Id).getStatus());
@@ -192,7 +192,7 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
 
         // great, now lets do some deduping;
         Set<Long> dupeIds = new HashSet<Long>(Arrays.asList(dupe1Id, dupe2Id));
-        authorityManagementService.updateReferrers(OtherKeyword.class, dupeIds, authorityId, false);
+        authorityManagementService.updateReferrers(getAdminUser(), OtherKeyword.class, dupeIds, authorityId, false);
 
         // makes sure that the dupes no longer exist
         Assert.assertEquals("dupe should be deleted:" + dupe1, Status.DUPLICATE, genericKeywordService.find(OtherKeyword.class, dupe1Id).getStatus());
@@ -236,7 +236,7 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
         Set<Person> dupes = new HashSet<Person>(genericService.findRandom(Person.class, 5));
         dupes.remove(person);
 
-        AuthorityManagementLog<Person> result = new AuthorityManagementLog<Person>(person, dupes);
+        AuthorityManagementLog<Person> result = new AuthorityManagementLog<Person>(person, dupes, getAdminUser());
         Person firstDupe = dupes.iterator().next();
         Document d = new Document();
         // WE ARE TESTING LOGGING AND NOTHING ELSE -- yes, THIS IS INSANE
@@ -278,7 +278,7 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
     private <D extends Dedupable<?>> void saveAndTestDedupeSynonym(Class<D> type, D authority, D dupe) {
         genericService.save(authority);
         genericService.save(dupe);
-        authorityManagementService.updateReferrers(type, new HashSet<Long>(Arrays.asList(dupe.getId())), authority.getId(), false);
+        authorityManagementService.updateReferrers(getAdminUser(), type, new HashSet<Long>(Arrays.asList(dupe.getId())), authority.getId(), false);
 //        dupe = null;
         String message = "authority should have synonym '" + dupe + "' after deduping " + type.getSimpleName() + " record";
         Assert.assertTrue(message, authority.getSynonyms().contains(dupe));
