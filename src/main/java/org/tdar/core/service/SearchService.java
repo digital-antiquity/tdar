@@ -17,6 +17,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
@@ -46,12 +47,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 import org.tdar.core.bean.DeHydratable;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.entity.Creator;
+import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.ResourceCreator;
+import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.Facetable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
@@ -63,15 +67,21 @@ import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.DynamicQueryComponent;
+import org.tdar.search.query.builder.InstitutionQueryBuilder;
+import org.tdar.search.query.builder.PersonQueryBuilder;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.AbstractHydrateableQueryPart;
 import org.tdar.search.query.part.FieldQueryPart;
+import org.tdar.search.query.part.InstitutionQueryPart;
+import org.tdar.search.query.part.PersonQueryPart;
+import org.tdar.search.query.part.PhraseFormatter;
 import org.tdar.search.query.part.QueryGroup;
 import org.tdar.search.query.part.QueryPart;
 import org.tdar.struts.action.search.ReservedSearchParameters;
 import org.tdar.struts.action.search.SearchParameters;
 import org.tdar.struts.data.FacetGroup;
+import org.tdar.struts.data.ResourceCreatorProxy;
 import org.tdar.utils.Pair;
 
 @Service
@@ -468,12 +478,12 @@ public class SearchService {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private <T extends Persistable> void hydrateQueryParts(QueryGroup q) {
         List<AbstractHydrateableQueryPart> partList = findAllHydratableParts(q);
-        Map<Class, List<T>> lookupMap = new HashMap<Class, List<T>>();
+        Map<Class, Set<T>> lookupMap = new HashMap<Class, Set<T>>();
         // iterate through all of the values and get them into a map of <class -> Set<Item,..>
         for (int i = 0; i < partList.size(); i++) {
             Class<T> cls = (Class<T>) partList.get(i).getActualClass();
             if (lookupMap.get(cls) == null) {
-                lookupMap.put(cls, new ArrayList<T>());
+                lookupMap.put(cls, new HashSet<T>());
             }
             for (T fieldValue : (List<T>) partList.get(i).getFieldValues()) {
                 // T cast = (T) fieldValue;
@@ -650,4 +660,81 @@ public class SearchService {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    public void updateResourceCreators(SearchParameters group, Integer maxCreatorsToResolve) throws ParseException {
+        logger.trace("updating proxies");
+        int maxToResolve = 1000;
+        if (maxCreatorsToResolve != null & maxCreatorsToResolve > 0) {
+            maxToResolve = maxCreatorsToResolve;
+        }
+        Map<ResourceCreatorProxy, List<ResourceCreatorProxy>> replacements = new HashMap<ResourceCreatorProxy, List<ResourceCreatorProxy>>();
+        List<ResourceCreatorProxy> proxies = group.getResourceCreatorProxies();
+        for (ResourceCreatorProxy proxy : proxies) {
+            if (proxy == null)
+                continue;
+            ResourceCreator rc = proxy.getResourceCreator();
+            if (rc != null && proxy.isValid()) {
+                ArrayList<ResourceCreatorProxy> values = new ArrayList<ResourceCreatorProxy>();
+                QueryBuilder q = null;
+                Creator creator = rc.getCreator();
+                if (Persistable.Base.isTransient(creator)) {
+                    replacements.put(proxy, values);
+                    if (creator instanceof Institution) {
+                        q = new InstitutionQueryBuilder();
+                        InstitutionQueryPart iqp = new InstitutionQueryPart();
+                        iqp.setPhraseFormatters(PhraseFormatter.WILDCARD, PhraseFormatter.QUOTED);
+                        iqp.add((Institution) creator);
+                        q.append(iqp);
+                    } else {
+                        q = new PersonQueryBuilder();
+                        PersonQueryPart pqp = new PersonQueryPart();
+                        pqp.setPhraseFormatters(PhraseFormatter.WILDCARD, PhraseFormatter.QUOTED);
+                        pqp.add((Person) creator);
+                        q.append(pqp);
+                    }
+
+                    q.append(new FieldQueryPart<Status>("status", Status.ACTIVE));
+                    List<Creator> list = null;
+                    logger.trace(q.generateQueryString());
+                    FullTextQuery search = search(q, null);
+                    search.setMaxResults(maxToResolve);
+                    list = search.list();
+                    if (CollectionUtils.isNotEmpty(list)) {
+                        for (Creator c : (List<Creator>) list) {
+                            values.add(new ResourceCreatorProxy(c, rc.getRole()));
+                        }
+                    }
+                }
+            } else {
+                replacements.put(proxy, null);
+            }
+        }
+        for (ResourceCreatorProxy toReplace : replacements.keySet()) {
+            proxies.remove(toReplace);
+            List<ResourceCreatorProxy> values = replacements.get(toReplace);
+            if (CollectionUtils.isNotEmpty(values)) {
+                proxies.addAll(values);
+            }
+        }
+        logger.trace("result: {} ", proxies);
+    }
+
+    public QueryBuilder generateQueryForRelatedResources(Creator creator, Person user) {
+            QueryBuilder queryBuilder = new ResourceQueryBuilder();
+            queryBuilder.setOperator(Operator.AND);
+
+            SearchParameters params = new SearchParameters(Operator.OR);
+            // could use "creator type" to filter; but this doesn't cover the creator type "OTHER"
+            for (ResourceCreatorRole role : ResourceCreatorRole.values()) {
+                if (role == ResourceCreatorRole.UPDATER) {
+                    continue;
+                }
+                params.getResourceCreatorProxies().add(new ResourceCreatorProxy(creator, role));
+            }
+            queryBuilder.append(params);
+            ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
+            authenticationAndAuthorizationService.initializeReservedSearchParameters(reservedSearchParameters, user);
+            queryBuilder.append(reservedSearchParameters);
+            return queryBuilder;
+    }
 }
