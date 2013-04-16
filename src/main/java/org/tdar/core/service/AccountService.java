@@ -328,7 +328,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         boolean seenFlagged = false;
         for (Resource resource : items) {
             if (hasSpaceFor(resource, helper, mode)) {
-                    helper.getUnflagged().add(resource);
+                helper.getUnflagged().add(resource);
                 updateMarkers(resource, helper, mode);
             } else {
                 if (!seenFlagged) {
@@ -471,6 +471,13 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
                 lowest = item;
             } else if (lowest.getSubtotal() > item.getSubtotal()) {
                 lowest = item;
+            } else if (lowest.getSubtotal().equals(item.getSubtotal())) {
+                /*
+                 * FIXME: if two items have the SAME price, but one has more "stuff" we should choose the one with more "stuff"
+                 * Caution: there are many corner cases whereby we may not know about how to determine what's the better pricing decision when we're providing a
+                 * per-file and per-mb price. eg: 8 files and 200 MB or 10 files and 150? There's no way to choose. 
+                 */
+                logger.info("{} =??= {} ", lowest, item);
             }
         }
         option.getItems().add(lowest);

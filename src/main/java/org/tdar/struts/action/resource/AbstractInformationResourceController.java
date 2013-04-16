@@ -454,7 +454,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     }
 
     @Override
-    protected void loadCustomMetadata() {
+    protected void loadCustomMetadata() throws TdarActionException {
         super.loadCustomMetadata();
         loadInformationResourceProperties();
         loadResourceProviderInformation();

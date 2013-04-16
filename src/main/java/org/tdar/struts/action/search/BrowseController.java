@@ -27,12 +27,16 @@ import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.resource.Facetable;
+import org.tdar.core.exception.SearchPaginationException;
+import org.tdar.core.exception.StatusCode;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
+import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FacetGroup;
 import org.tdar.struts.data.ResourceCreatorProxy;
 import org.tdar.struts.data.ResourceSpaceUsageStatistic;
@@ -110,7 +114,7 @@ public class BrowseController extends AbstractLookupController {
     }
 
     @Action(value = "creators", results = { @Result(location = "results.ftl") })
-    public String browseCreators() throws ParseException {
+    public String browseCreators() throws ParseException, TdarActionException {
         if (Persistable.Base.isNotNullOrTransient(getId())) {
             creator = getGenericService().find(Creator.class, getId());
             QueryBuilder queryBuilder = getSearchService().generateQueryForRelatedResources(creator,getAuthenticatedUser());
@@ -132,7 +136,16 @@ public class BrowseController extends AbstractLookupController {
                 setSearchDescription(descr);
                 setSearchTitle(descr);
                 setRecordsPerPage(50);
+                try {
                 handleSearch(queryBuilder);
+                } catch (SearchPaginationException spe) {
+                    throw new TdarActionException(StatusCode.BAD_REQUEST, spe);
+                } catch (TdarRecoverableRuntimeException tdre) {
+                    logger.warn("search parse exception: {}", tdre.getMessage());
+                    addActionError(tdre.getMessage());
+                } catch (ParseException e) {
+                    logger.warn("search parse exception: {}", e.getMessage());
+                }
             }
         }
         // reset fields which can be broken by the searching hydration obfuscating things

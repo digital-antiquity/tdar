@@ -287,10 +287,9 @@ public class AuthorityManagementService {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("user", logData.getUserDisplayName());
         map.put("authority", logData.getAuthority());
-        map.put("dups", logData.getDupes());
         map.put("className", className);
         map.put("numUpdated", numUpdated);
-
+        map.put("dups", logData.getDupes());
         
         map.put("referrers", logData.getUpdatedReferrers().entrySet());
         emailService.sendTemplate("auth-report.ftl", map, subject);

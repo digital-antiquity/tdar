@@ -64,7 +64,7 @@ public class CodingSheetController extends AbstractSupportingInformationResource
     private SortedMap<String, List<OntologyNode>> suggestions;
 
     @Override
-    protected void loadCustomMetadata() {
+    protected void loadCustomMetadata() throws TdarActionException {
         super.loadCustomMetadata();
         setOntology(getCodingSheet().getDefaultOntology());
     };

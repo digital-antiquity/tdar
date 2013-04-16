@@ -45,7 +45,7 @@ import org.tdar.search.index.bridge.TdarPaddedNumberBridge;
 // (name="latitudeLongitudeBox")
 public class LatitudeLongitudeBox extends Persistable.Base implements HasResource<Resource>, Obfuscatable {
 
-    private transient boolean obfuscated;
+    private transient boolean obfuscated = false;
     private transient Double minObfuscatedLatitude = null;
     private transient Double minObfuscatedLongitude = null;
     private transient Double maxObfuscatedLatitude = null;
@@ -120,6 +120,32 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         return (getMaxObfuscatedLongitude() + getMinObfuscatedLongitude()) / 2.0;
     }
 
+    private boolean isActuallyObfuscated() {
+        return (getMinObfuscatedLongitude() != getMinimumLongitude() || getMaxObfuscatedLongitude() != getMaximumLongitude()
+                || getMinObfuscatedLatitude() != getMinimumLatitude() || getMaxObfuscatedLatitude() != getMaximumLatitude());
+    }
+
+    /* fixme ** test */
+    public Double getCenterLatitudeIfNotObfuscated() {
+        Double centerLatitude = getCenterLatitude(); // init obfuscated properly
+        @SuppressWarnings("unused")
+        Double centerLongitude = getCenterLongitude(); // init obfuscated properly
+        if (isActuallyObfuscated()) {
+            return null;
+        }
+        return centerLatitude;
+    }
+
+    public Double getCenterLongitudeIfNotObfuscated() {
+        @SuppressWarnings("unused")
+        Double centerLatitude = getCenterLatitude(); // init obfuscated properly
+        Double centerLongitude = getCenterLongitude();// init obfuscated properly
+        if (isActuallyObfuscated()) {
+            return null;
+        }
+        return centerLongitude;
+    }
+
     /*
      * This randomize function is used when displaying lat/longs on a map. It is
      * passed the max and the min lat or long and then uses a salt to randomize.
@@ -134,7 +160,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
      * http://www.movable-type.co.uk/scripts/html
      */
 
-    public static Double obfuscate(Double num, Double num2, int type, LatitudeLongitudeBox latLong) {
+    public static Double obfuscate(Double num, Double num2, int type) {
         Random r = new Random();
         double salt = ONE_MILE_IN_DEGREE_MINUTES;
         double add = 0;
@@ -144,8 +170,7 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
         } else {
             return num;
         }
-        latLong.obfuscated = true;
-        
+
         if (num < num2) { // -5 < -3
             add *= -1;
             salt *= -1;
@@ -172,28 +197,28 @@ public class LatitudeLongitudeBox extends Persistable.Base implements HasResourc
 
     public Double getMinObfuscatedLatitude() {
         if (minObfuscatedLatitude == null) {
-            minObfuscatedLatitude = obfuscate(minimumLatitude, maximumLatitude, LATITUDE, this);
+            minObfuscatedLatitude = obfuscate(minimumLatitude, maximumLatitude, LATITUDE);
         }
         return minObfuscatedLatitude;
     }
 
     public Double getMaxObfuscatedLatitude() {
         if (maxObfuscatedLatitude == null) {
-            maxObfuscatedLatitude = obfuscate(maximumLatitude, minimumLatitude, LATITUDE, this);
+            maxObfuscatedLatitude = obfuscate(maximumLatitude, minimumLatitude, LATITUDE);
         }
         return maxObfuscatedLatitude;
     }
 
     public Double getMinObfuscatedLongitude() {
         if (minObfuscatedLongitude == null) {
-            minObfuscatedLongitude = obfuscate(minimumLongitude, maximumLongitude, LONGITUDE, this);
+            minObfuscatedLongitude = obfuscate(minimumLongitude, maximumLongitude, LONGITUDE);
         }
         return minObfuscatedLongitude;
     }
 
     public Double getMaxObfuscatedLongitude() {
         if (maxObfuscatedLongitude == null) {
-            maxObfuscatedLongitude = obfuscate(maximumLongitude, minimumLongitude, LONGITUDE, this);
+            maxObfuscatedLongitude = obfuscate(maximumLongitude, minimumLongitude, LONGITUDE);
         }
         return maxObfuscatedLongitude;
     }

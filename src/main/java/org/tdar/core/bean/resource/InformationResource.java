@@ -755,12 +755,14 @@ public abstract class InformationResource extends Resource {
 
     @Transient
     @JSONTransient
+    @Override
     public boolean hasConfidentialFiles() {
         return !getConfidentialFiles().isEmpty();
     }
 
     @Transient
     @JSONTransient
+    @Override
     public boolean hasEmbargoedFiles() {
         for (InformationResourceFile file : getConfidentialFiles()) {
             if (file.isEmbargoed())

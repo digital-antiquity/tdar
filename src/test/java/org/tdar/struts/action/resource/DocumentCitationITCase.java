@@ -40,7 +40,7 @@ public class DocumentCitationITCase extends AbstractResourceControllerITCase {
 
     private DocumentController controller;
 
-    private void navigateTo(Long tdarId) {
+    private void navigateTo(Long tdarId) throws TdarActionException {
         loadResourceFromId(controller, tdarId);
     }
 

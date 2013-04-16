@@ -26,6 +26,7 @@ import org.tdar.core.dao.HibernateSearchDao;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.SearchIndexService;
 import org.tdar.search.query.SortOption;
+import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.search.AdvancedSearchController;
 import org.tdar.struts.action.search.SearchParameters;
@@ -109,7 +110,7 @@ public class SearchRelevancyITCase extends AbstractResourceControllerITCase {
     @Test
     @Rollback
     // FIXME: Throw more results into the mix so they won't just happen to be sorted even when sorting is turned off (even a broken clock is right twice a day).
-    public void testLocationRelevancy() throws IOException {
+    public void testLocationRelevancy() throws IOException, TdarActionException {
         prepareInformationResources();
         runIndex();
         controller.setQuery(SEMI_UNIQUE_NAME);
@@ -149,7 +150,7 @@ public class SearchRelevancyITCase extends AbstractResourceControllerITCase {
     // given resource1 and resource2, where both have same title/desc/keywords, assert resource1 is more relevant because it has an attachment
     @Test
     @Rollback
-    public void testInheritanceInSearching() throws InstantiationException, IllegalAccessException {
+    public void testInheritanceInSearching() throws InstantiationException, IllegalAccessException, TdarActionException {
         Project p = new Project();
         p.setTitle("test project");
         p.markUpdated(getUser());

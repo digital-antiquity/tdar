@@ -52,6 +52,7 @@ import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.SearchIndexService;
 import org.tdar.core.service.external.AuthenticationAndAuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.TdarActionSupport;
@@ -516,11 +517,11 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         if (status == Status.DELETED && authenticationAndAuthorizationService.cannot(InternalTdarRights.SEARCH_FOR_DELETED_RECORDS, user) ||
                 status == Status.FLAGGED && authenticationAndAuthorizationService.cannot(InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, user)) {
             logger.debug("expecting exception");
-            doSearch();
+            doSearch(true);
             assertTrue(String.format("expected action errors %s", stat), controller.getActionErrors().size() > 0);
         } else if (status == Status.DRAFT && authenticationAndAuthorizationService.cannot(InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS, user)) {
             // this was in the test, but with the new status search I think this is more accurate to be commented out as
-            doSearch();
+            doSearch(null);
             for (Resource res : controller.getResults()) {
                 if (res.isDraft() && !res.getSubmitter().equals(user)) {
                     fail("we should only see our own drafts here");
@@ -637,7 +638,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         assertNotNull(documentId);
         firstGroup().getOtherKeywords().add(ok.getLabel());
         controller.getResourceTypes().add(ResourceType.DOCUMENT);
-        controller.search();
+        AbstractSearchControllerITCase.doSearch(controller, LookupSource.RESOURCE);
         Set<Indexable> results = new HashSet<Indexable>();
         results.addAll(controller.getResults());
         assertEquals("only expecting one result", 1L, controller.getResults().size());
@@ -663,7 +664,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         assertNotNull(documentId);
         firstGroup().getTemporalKeywords().add(tk.getLabel());
         controller.getResourceTypes().add(ResourceType.DOCUMENT);
-        controller.search();
+        AbstractSearchControllerITCase.doSearch(controller, LookupSource.RESOURCE);
         Set<Indexable> results = new HashSet<Indexable>();
         results.addAll(controller.getResults());
         assertEquals("only expecting one result", 1L, controller.getResults().size());
@@ -689,7 +690,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         assertNotNull(documentId);
         firstGroup().getGeographicKeywords().add(gk.getLabel());
         controller.getResourceTypes().add(ResourceType.DOCUMENT);
-        controller.search();
+        AbstractSearchControllerITCase.doSearch(controller, LookupSource.RESOURCE);
         Set<Indexable> results = new HashSet<Indexable>();
         results.addAll(controller.getResults());
         assertEquals("only expecting one result", 1L, controller.getResults().size());
@@ -717,7 +718,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         Long submitterId = doc.getSubmitter().getId();
         assertFalse(submitterId == -1);
         firstGroup().getResourceCreatorProxies().add(new ResourceCreatorProxy(doc.getSubmitter(), ResourceCreatorRole.SUBMITTER));
-        controller.search();
+        AbstractSearchControllerITCase.doSearch(controller, LookupSource.RESOURCE);
         assertTrue("only one result expected", 1 <= controller.getResults().size());
         assertTrue(controller.getResults().contains(doc));
     }
@@ -728,7 +729,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         Document doc = createDocumentWithContributorAndSubmitter();
         ResourceCreator contributor = doc.getResourceCreators().iterator().next();
         firstGroup().getResourceCreatorProxies().add(new ResourceCreatorProxy(contributor.getCreator(), contributor.getRole()));
-        controller.search();
+        AbstractSearchControllerITCase.doSearch(controller, LookupSource.RESOURCE);
         assertEquals("only one result expected", 1L, controller.getResults().size());
         assertEquals(doc, controller.getResults().iterator().next());
     }
@@ -748,7 +749,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         genericService.saveOrUpdate(doc);
         searchIndexService.index(doc);
         firstGroup().getTitles().add(title);
-        controller.search();
+        AbstractSearchControllerITCase.doSearch(controller, LookupSource.RESOURCE);
         logger.info("{}", controller.getResults());
         assertEquals("only one result expected", 1L, controller.getResults().size());
         assertEquals(doc, controller.getResults().iterator().next());
@@ -852,15 +853,10 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     public void testAllFieldsSearchDescriptionGrammar() {
         String TEST_VALUE = "spam"; // damn vikings!
         controller.setQuery(TEST_VALUE);
-        controller.search();
-        logger.debug("search phrase:{}", controller.getSearchPhrase());
-        logger.debug("search phrase:{}", controller.getSearchPhrase());
-        logger.debug("search phrase:{}", controller.getSearchPhrase());
-        logger.debug("search phrase:{}", controller.getSearchPhrase());
-        logger.debug("search phrase:{}", controller.getSearchPhrase());
-        logger.debug("search phrase:{}", controller.getSearchPhrase());
-        logger.debug("search phrase:{}", controller.getSearchPhrase());
-        logger.debug("search phrase:{}", controller.getSearchPhrase());
+        AbstractSearchControllerITCase.doSearch(controller, LookupSource.RESOURCE);
+        for (int i=0;i < 10;i++) {
+            logger.debug("search phrase:{}", controller.getSearchPhrase());
+        }
         int occurances = controller.getSearchPhrase().split(TEST_VALUE).length;
         assertTrue("search description should have gooder english than it currently does", occurances <= 2);
     }
@@ -879,8 +875,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         firstGroup().getProjects().add(sparseProject(proj.getId()));
         firstGroup().getCollections().add(null); // [0]
         firstGroup().getCollections().add(sparseCollection(coll.getId())); // [1]
-
-        controller.search();
+        AbstractSearchControllerITCase.doSearch(controller, LookupSource.RESOURCE);
 
         // skeleton lists should have been loaded w/ sparse records...
         assertEquals(proj.getTitle(), firstGroup().getProjects().get(0).getTitle());
@@ -902,8 +897,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         // firstGroup().getProjects().add(new Project(null,proj.getName()));
         // firstGroup().getCollections().add(null); // [0]
         firstGroup().getCollections().add(new ResourceCollection(colname, null, null, null, true, null)); // [1]
-
-        controller.search();
+        AbstractSearchControllerITCase.doSearch(controller, LookupSource.RESOURCE);
 
         // skeleton lists should have been loaded w/ sparse records...
         // assertEquals(proj.getTitle(), firstGroup().getProjects().get(0).getTitle());
@@ -929,8 +923,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
         // simulate searchParamerters that represents a project at [0] and collection at [1]
         firstGroup().getProjects().add(new Project(-1L, colname));
-
-        controller.search();
+        AbstractSearchControllerITCase.doSearch(controller, LookupSource.RESOURCE);
 
         // skeleton lists should have been loaded w/ sparse records...
         assertEquals(proj.getTitle(), firstGroup().getProjects().get(0).getTitle());
@@ -1019,7 +1012,11 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     }
 
     protected void doSearch() {
-        controller.search();
+        doSearch(false);
+    }
+    
+    protected void doSearch(Boolean b) {
+        AbstractSearchControllerITCase.doSearch(controller, LookupSource.RESOURCE, b);
         logger.info("search found: " + controller.getTotalRecords());
     }
 

@@ -16,7 +16,12 @@ public class TdarActionException extends Exception {
         super(message, t);
         this.responseStatusCode = httpStatus;
     }
-    
+
+    public TdarActionException(StatusCode httpStatus, Throwable t) {
+        super(t.getMessage(), t);
+        this.responseStatusCode = httpStatus;
+    }
+
     public String getResultName() {
         return responseStatusCode.getResultName();
     }

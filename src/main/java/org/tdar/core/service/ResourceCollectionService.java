@@ -119,6 +119,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             internalCollection = new ResourceCollection();
             internalCollection.setType(CollectionType.INTERNAL);
             internalCollection.setOwner(resource.getSubmitter());
+            internalCollection.markUpdated(resource.getSubmitter());
             resource.getResourceCollections().add(internalCollection);
             // internalCollection.getResources().add(resource); // WATCH -- may cause failure, if so, remove
             if (shouldSave) {
@@ -291,6 +292,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                     collectionToAdd = potential;
                 } else {
                     collection.setOwner(authenticatedUser);
+                    collection.markUpdated(resource.getSubmitter());
                     collection.setType(CollectionType.SHARED);
                     if (collection.getSortBy() == null) {
                         collection.setSortBy(SortOption.RESOURCE_TYPE);

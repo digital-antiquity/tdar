@@ -17,6 +17,7 @@ import org.tdar.core.bean.resource.sensory.ScannerTechnologyType;
 import org.tdar.core.bean.resource.sensory.SensoryDataImage;
 import org.tdar.core.bean.resource.sensory.SensoryDataScan;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
+import org.tdar.struts.action.TdarActionException;
 
 /**
  * $Id$
@@ -41,7 +42,7 @@ public class SensoryDataController extends AbstractInformationResourceController
     private List<SensoryDataScan> sensoryDataScans;
 
     @Override
-    protected void loadCustomMetadata() {
+    protected void loadCustomMetadata() throws TdarActionException {
         super.loadCustomMetadata();
          sensoryDataScans = new ArrayList<SensoryDataScan>(getPersistable().getSensoryDataScans());
          sensoryDataImages = new ArrayList<SensoryDataImage>(getPersistable().getSensoryDataImages());

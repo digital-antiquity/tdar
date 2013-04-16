@@ -1755,4 +1755,17 @@ public class Resource extends JsonModel.Base implements Persistable,
     public void setCountedInBillingEvaluation(boolean countedInBillingEvaluation) {
         this.countedInBillingEvaluation = countedInBillingEvaluation;
     }
+
+    @Transient
+    @JSONTransient
+    public boolean hasConfidentialFiles() {
+        return false;
+    }
+
+    @Transient
+    @JSONTransient
+    public boolean hasEmbargoedFiles() {
+        return false;
+    }
+
 }
