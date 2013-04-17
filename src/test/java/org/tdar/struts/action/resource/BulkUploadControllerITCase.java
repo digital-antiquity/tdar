@@ -531,6 +531,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         assertTrue(testImagesDirectory.isDirectory());
         List<File> uploadFiles = new ArrayList<File>();
         uploadFiles.addAll(FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, false));
+        assertEquals("sanity check: we just added two files, right?", 2, uploadFiles.size());
 
         Pair<PersonalFilestoreTicket, List<FileProxy>> proxyPair = uploadFilesAsync(uploadFiles);
         final Long ticketId = proxyPair.getFirst().getId();
@@ -569,9 +570,16 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         logger.info("{}", details);
         Set<ResourceCollection> collections = new HashSet<ResourceCollection>();
 
+        logger.debug("inspecting collections created:");
         for (Pair<Long, String> detail : details) {
             Resource resource = resourceService.find(detail.getFirst());
-            collections.addAll(resource.getResourceCollections());
+            Set<ResourceCollection> resourceCollections = resource.getResourceCollections();
+            logger.debug("\t resource:{}\t  resourceCollections:{}", resource.getTitle(), resourceCollections.size());
+            for(ResourceCollection rc : resourceCollections) {
+                logger.debug("\t\t ");
+            }
+            
+            collections.addAll(resourceCollections);
         }
         assertEquals("we should have a total of 3 collections (2 internal +1 shared)", 3, collections.size());
 

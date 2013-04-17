@@ -127,11 +127,11 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     private transient Float score;
     private transient Explanation explanation;
 
-    @Override
-    public java.util.List<?> getEqualityFields() {
-//        return Arrays.asList(type, name, owner, resources);
-        return Arrays.asList(type, name, owner);
-    };
+//    @Override
+//    public java.util.List<?> getEqualityFields() {
+////        return Arrays.asList(type, name, owner, resources);
+////        return Arrays.asList(type, name, owner);
+//    };
 
     @Column
     @Fields({
