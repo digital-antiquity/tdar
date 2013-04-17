@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -27,12 +26,10 @@ import org.hibernate.search.FullTextQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.util.ScheduledBatchProcess;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.SearchService;
@@ -41,10 +38,10 @@ import org.tdar.core.service.external.EmailService;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
-import com.ibm.icu.impl.ICUService.Key;
-
 @Component
 public class PersonAnalysisProcess extends ScheduledBatchProcess<Person> {
+
+    private static final long serialVersionUID = 581887107336388520L;
 
     @Autowired
     private EmailService emailService;
@@ -80,7 +77,11 @@ public class PersonAnalysisProcess extends ScheduledBatchProcess<Person> {
     @Override
     public void execute() {
         List<Person> people = genericDao.findAll(getPersistentClass(), getNextBatch());
+        List<Long> userIdsToIgnoreInLargeTasks = getTdarConfiguration().getUserIdsToIgnoreInLargeTasks();
         for (Person person : people) {
+            if (userIdsToIgnoreInLargeTasks.contains(person.getId())) {
+                continue;
+            }
             Map<Creator, Long> collaborators = new HashMap<>();
             Map<Keyword, Long> keywords = new HashMap<>();
             QueryBuilder query = searchService.generateQueryForRelatedResources(person, null);

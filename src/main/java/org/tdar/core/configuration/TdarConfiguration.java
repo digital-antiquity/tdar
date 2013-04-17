@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -526,5 +527,18 @@ public class TdarConfiguration {
 
     public File getFremarkerTemplateDirectory() {
         return new File(assistant.getStringProperty("freemarker.templatedir", "includes/email/"));
+    }
+
+    public List<Long> getUserIdsToIgnoreInLargeTasks() {
+        String users = assistant.getStringProperty("userids.to.ignore");
+        List<Long> userIds = new ArrayList<Long>();
+        for (String userid : users.split("[|,;]")) {
+            try {
+                userIds.add(Long.parseLong(userid));
+            } catch (Exception e) {
+                logger.warn("skipping: {} {}", userid, e);
+            }
+        }
+        return userIds;
     }
 }
