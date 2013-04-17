@@ -3,6 +3,8 @@ package org.tdar.core.service.processes;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +22,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.math3.stat.descriptive.moment.Mean;
+import org.apache.commons.math3.stat.descriptive.rank.Median;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.search.FullTextQuery;
@@ -38,6 +42,8 @@ import org.tdar.core.service.external.EmailService;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
+import com.google.common.primitives.Doubles;
+
 @Component
 public class PersonAnalysisProcess extends ScheduledBatchProcess<Person> {
 
@@ -53,7 +59,7 @@ public class PersonAnalysisProcess extends ScheduledBatchProcess<Person> {
     private XmlService xmlService;
 
     public String getDisplayName() {
-        return "Overdrawn Account Process";
+        return "Person Analytics Process";
     }
 
     @Override
@@ -79,15 +85,18 @@ public class PersonAnalysisProcess extends ScheduledBatchProcess<Person> {
         List<Person> people = genericDao.findAll(getPersistentClass(), getNextBatch());
         List<Long> userIdsToIgnoreInLargeTasks = getTdarConfiguration().getUserIdsToIgnoreInLargeTasks();
         for (Person person : people) {
+            logger.info("~~~~~ " + person + " ~~~~~~");
             if (userIdsToIgnoreInLargeTasks.contains(person.getId())) {
                 continue;
             }
-            Map<Creator, Long> collaborators = new HashMap<>();
-            Map<Keyword, Long> keywords = new HashMap<>();
+            Map<Creator, Double> collaborators = new HashMap<>();
+            Map<Keyword, Double> keywords = new HashMap<>();
+            int total = 0;
             QueryBuilder query = searchService.generateQueryForRelatedResources(person, null);
             try {
                 FullTextQuery search = searchService.search(query, null);
                 ScrollableResults results = search.scroll(ScrollMode.FORWARD_ONLY);
+                total = search.getResultSize();
                 while (results.next()) {
                     Resource resource = (Resource) results.get()[0];
                     incrementKeywords(keywords, resource);
@@ -99,18 +108,33 @@ public class PersonAnalysisProcess extends ScheduledBatchProcess<Person> {
 
             PersonInfoLog log = new PersonInfoLog();
             log.setPerson(person);
-            for (Entry<Creator, Long> entrySet : collaborators.entrySet()) {
+            log.setTotalRecords(total);
+
+            // refactor to remove dups
+            Mean creatorMean = new Mean();
+            Median creatorMedian = new Median();
+            double[] collbValues = Doubles.toArray(collaborators.values());
+            log.setCreatorMean(creatorMean.evaluate(collbValues));
+            log.setCreatorMedian(creatorMedian.evaluate(collbValues));
+
+            Mean keywordMean = new Mean();
+            Median keywordMedian = new Median();
+            double[] kwdValues = Doubles.toArray(keywords.values());
+            log.setKeywordMean(keywordMean.evaluate(kwdValues));
+            log.setKeywordMedian(keywordMedian.evaluate(kwdValues));
+
+            for (Entry<Creator, Double> entrySet : collaborators.entrySet()) {
                 LogPart part = new LogPart();
-                part.setCount(entrySet.getValue());
+                part.setCount(entrySet.getValue().longValue());
                 Creator key = entrySet.getKey();
                 part.setId(key.getId());
                 part.setSimpleClassName(key.getClass().getSimpleName());
                 part.setName(key.getProperName());
                 log.getCollaboratorLogPart().add(part);
             }
-            for (Entry<Keyword, Long> entrySet : keywords.entrySet()) {
+            for (Entry<Keyword, Double> entrySet : keywords.entrySet()) {
                 LogPart part = new LogPart();
-                part.setCount(entrySet.getValue());
+                part.setCount(entrySet.getValue().longValue());
                 Keyword key = entrySet.getKey();
                 part.setId(key.getId());
                 part.setSimpleClassName(key.getClass().getSimpleName());
@@ -118,7 +142,9 @@ public class PersonAnalysisProcess extends ScheduledBatchProcess<Person> {
                 log.getKeywordLogPart().add(part);
             }
             
-            logger.info("~~~~~ " + person + " ~~~~~~");
+            Collections.sort(log.getCollaboratorLogPart(), new LogPartComparator());
+            Collections.sort(log.getKeywordLogPart(), new LogPartComparator());
+            
             try {
                 File dir = new File(TdarConfiguration.getInstance().getPersonalFileStoreLocation(),"creatorInfo");
                 dir.mkdir();
@@ -132,6 +158,14 @@ public class PersonAnalysisProcess extends ScheduledBatchProcess<Person> {
         }
     }
 
+    public static class LogPartComparator implements Comparator<LogPart> {
+
+        @Override
+        public int compare(LogPart o1, LogPart o2) {
+            return ObjectUtils.compare(o1.getCount(), o2.getCount());
+        }
+    }
+
     @XmlRootElement
     @XmlAccessorType(XmlAccessType.PROPERTY)
     @XmlType(name = "personInfoLog")
@@ -139,6 +173,43 @@ public class PersonAnalysisProcess extends ScheduledBatchProcess<Person> {
         private List<LogPart> collaboratorLogPart = new ArrayList<>();
         private List<LogPart> keywordLogPart = new ArrayList<>();
         private Person person;
+        private int totalRecords;
+        private Double creatorMean;
+        private Double creatorMedian;
+        private Double keywordMean;
+        private Double keywordMedian;
+        
+        public Double getCreatorMean() {
+            return creatorMean;
+        }
+
+        public void setCreatorMean(Double creatorMean) {
+            this.creatorMean = creatorMean;
+        }
+
+        public Double getCreatorMedian() {
+            return creatorMedian;
+        }
+
+        public void setCreatorMedian(Double creatorMedian) {
+            this.creatorMedian = creatorMedian;
+        }
+
+        public Double getKeywordMean() {
+            return keywordMean;
+        }
+
+        public void setKeywordMean(Double keywordMean) {
+            this.keywordMean = keywordMean;
+        }
+
+        public Double getKeywordMedian() {
+            return keywordMedian;
+        }
+
+        public void setKeywordMedian(Double keywordMedian) {
+            this.keywordMedian = keywordMedian;
+        }
 
         @XmlElementWrapper(name = "collaborators")
         @XmlElement(name = "collaborator")
@@ -168,6 +239,14 @@ public class PersonAnalysisProcess extends ScheduledBatchProcess<Person> {
 
         public void setPerson(Person person) {
             this.person = person;
+        }
+
+        public int getTotalRecords() {
+            return totalRecords;
+        }
+
+        public void setTotalRecords(int totalRecords) {
+            this.totalRecords = totalRecords;
         }
 
     }
@@ -220,24 +299,24 @@ public class PersonAnalysisProcess extends ScheduledBatchProcess<Person> {
 
     }
 
-    private void incrementCreators(Person person, Map<Creator, Long> collaborators, Resource resource) {
+    private void incrementCreators(Person person, Map<Creator, Double> collaborators, Resource resource) {
         for (Creator creator : resource.getRelatedCreators()) {
             if (ObjectUtils.equals(creator, person) || creator == null)
                 continue;
-            Long count = collaborators.get(creator);
+            Double count = collaborators.get(creator);
             if (count == null) {
-                count = 0L;
+                count = 0.0;
             }
             count++;
             collaborators.put(creator, count);
         }
     }
 
-    private void incrementKeywords(Map<Keyword, Long> keywords, Resource resource) {
+    private void incrementKeywords(Map<Keyword, Double> keywords, Resource resource) {
         for (Keyword kwd : resource.getAllActiveKeywords()) {
-            Long count = keywords.get(kwd);
+            Double count = keywords.get(kwd);
             if (count == null) {
-                count = 0L;
+                count = 0.0;
             }
             count++;
             keywords.put(kwd, count);
