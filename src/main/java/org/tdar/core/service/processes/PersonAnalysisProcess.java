@@ -22,6 +22,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.rank.Median;
 import org.hibernate.ScrollMode;
@@ -97,6 +98,8 @@ public class PersonAnalysisProcess extends ScheduledBatchProcess<Person> {
                 FullTextQuery search = searchService.search(query, null);
                 ScrollableResults results = search.scroll(ScrollMode.FORWARD_ONLY);
                 total = search.getResultSize();
+                if (total == 0)
+                    continue;
                 while (results.next()) {
                     Resource resource = (Resource) results.get()[0];
                     incrementKeywords(keywords, resource);
@@ -141,15 +144,15 @@ public class PersonAnalysisProcess extends ScheduledBatchProcess<Person> {
                 part.setName(key.getLabel());
                 log.getKeywordLogPart().add(part);
             }
-            
+
             Collections.sort(log.getCollaboratorLogPart(), new LogPartComparator());
             Collections.sort(log.getKeywordLogPart(), new LogPartComparator());
-            
+
             try {
-                File dir = new File(TdarConfiguration.getInstance().getPersonalFileStoreLocation(),"creatorInfo");
+                File dir = new File(TdarConfiguration.getInstance().getPersonalFileStoreLocation(), "creatorInfo");
                 dir.mkdir();
                 FileWriter writer = new FileWriter(new File(dir, person.getId() + ".xml"));
-                xmlService.convertToXML(log,writer);
+                xmlService.convertToXML(log, writer);
                 IOUtils.closeQuietly(writer);
             } catch (Exception e) {
                 // TODO Auto-generated catch block
@@ -178,7 +181,8 @@ public class PersonAnalysisProcess extends ScheduledBatchProcess<Person> {
         private Double creatorMedian;
         private Double keywordMean;
         private Double keywordMedian;
-        
+
+        @XmlAttribute
         public Double getCreatorMean() {
             return creatorMean;
         }
@@ -187,6 +191,7 @@ public class PersonAnalysisProcess extends ScheduledBatchProcess<Person> {
             this.creatorMean = creatorMean;
         }
 
+        @XmlAttribute
         public Double getCreatorMedian() {
             return creatorMedian;
         }
@@ -195,6 +200,7 @@ public class PersonAnalysisProcess extends ScheduledBatchProcess<Person> {
             this.creatorMedian = creatorMedian;
         }
 
+        @XmlAttribute
         public Double getKeywordMean() {
             return keywordMean;
         }
@@ -203,6 +209,7 @@ public class PersonAnalysisProcess extends ScheduledBatchProcess<Person> {
             this.keywordMean = keywordMean;
         }
 
+        @XmlAttribute
         public Double getKeywordMedian() {
             return keywordMedian;
         }
@@ -241,6 +248,7 @@ public class PersonAnalysisProcess extends ScheduledBatchProcess<Person> {
             this.person = person;
         }
 
+        @XmlAttribute
         public int getTotalRecords() {
             return totalRecords;
         }
@@ -301,7 +309,7 @@ public class PersonAnalysisProcess extends ScheduledBatchProcess<Person> {
 
     private void incrementCreators(Person person, Map<Creator, Double> collaborators, Resource resource) {
         for (Creator creator : resource.getRelatedCreators()) {
-            if (ObjectUtils.equals(creator, person) || creator == null)
+            if (ObjectUtils.equals(creator, person) || creator == null || StringUtils.isBlank(creator.getProperName()))
                 continue;
             Double count = collaborators.get(creator);
             if (count == null) {
