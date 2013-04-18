@@ -144,13 +144,23 @@ TDAR.fileupload = function() {
                 }
         };
         
-        
         //add reference to helper object  to form and inputFile
         $(_options.formSelector).add(_options.inputSelector).data('fileuploadHelper', helper);
         
         if($.validator) {
             _registerValidationHandlers($fileupload);
         }
+        
+
+        //just a test to see when this function gets called via event  instead of a callback
+        window.gcount = 0;
+        $fileupload.bind("fileuploadsubmit", function(e, data) {
+            console.log("-------file upload submit-------");
+            console.dir(data);
+            window.gcount++;
+            return window.gcount>2;
+        });
+        
         return helper;
     };
     

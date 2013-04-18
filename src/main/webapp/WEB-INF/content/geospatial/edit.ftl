@@ -1,7 +1,7 @@
 <#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
-<#global validFileExtensions = ['aaa', 'bbb', 'ccc', 'jpg', 'jpeg']>
+<#global validFileExtensions = ['aaa', 'bbb', 'ccc', 'jpg', 'jpeg', 'tif', 'tiff']>
 <head>
 <@edit.title />
 
