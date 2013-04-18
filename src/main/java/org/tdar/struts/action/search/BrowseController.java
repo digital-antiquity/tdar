@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.collections.ListUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.apache.struts2.convention.annotation.Action;
@@ -123,25 +124,18 @@ public class BrowseController extends AbstractLookupController {
 
             SearchParameters params = new SearchParameters(Operator.OR);
             // could use "creator type" to filter; but this doesn't cover the creator type "OTHER"
-            List<Creator> creators = new ArrayList<Creator>();
-            creators.add(creator);
-            if (creator instanceof Dedupable) {
-                creators.addAll(((Dedupable) creator).getSynonyms());
-            }
-            for (Creator toFind : creators) {
-                for (ResourceCreatorRole role : ResourceCreatorRole.values()) {
-                    if (role == ResourceCreatorRole.UPDATER) {
-                        continue;
-                    }
-                    params.getResourceCreatorProxies().add(new ResourceCreatorProxy(toFind, role));
+            for (ResourceCreatorRole role : ResourceCreatorRole.values()) {
+                if (role == ResourceCreatorRole.UPDATER) {
+                    continue;
                 }
+                params.getResourceCreatorProxies().add(new ResourceCreatorProxy(creator, role));
             }
             queryBuilder.append(params);
             ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
             getAuthenticationAndAuthorizationService().initializeReservedSearchParameters(reservedSearchParameters, getAuthenticatedUser());
             queryBuilder.append(reservedSearchParameters);
 
-            if (isEditor() && creator instanceof Person) {
+            if (isEditor() && creator instanceof Person && StringUtils.isNotBlank(((Person) creator).getUsername())) {
                 try {
                     getGroups().addAll(getAuthenticationAndAuthorizationService().getGroupMembership((Person) creator));
                 } catch (Throwable e) {
