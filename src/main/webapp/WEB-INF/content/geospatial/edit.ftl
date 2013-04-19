@@ -16,6 +16,7 @@
 
 <@s.form name='geospatialMetadataForm' id='geospatialMetadataForm'  cssClass="form-horizontal disableFormNavigate"  method='post' enctype='multipart/form-data' action='save'>
 
+<input type="text" name="scantype" id="scantype" data-msg-valuerequiresasyncupload="a file upload is required when using this scan type">
 <@edit.basicInformation "geospatial" "geospatial">
 
 </@edit.basicInformation>
@@ -27,11 +28,26 @@
 
 <@edit.submit fileReminder=false />
 
+
 </@s.form>
 
 
 <@edit.asyncUploadTemplates />
 <@edit.resourceJavascript formSelector="#geospatialMetadataForm" selPrefix="#geospatial" includeAsync=true includeInheritance=true />
+
+
+<script type="text/javascript">
+$(function() {
+    $('#scantype').rules("add", {
+        valueRequiresAsyncUpload: {
+            possibleValues: ["foo", "bar"],
+            fileExt: "jpg",
+            inputElementId: "fileAsyncUpload"},
+        messages: {
+            valueRequiresAsyncUpload: "aaargh"}
+    });
+});
+</script>
 
 </body>
 </#escape>

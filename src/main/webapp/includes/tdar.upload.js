@@ -115,6 +115,7 @@ TDAR.fileupload = function() {
                 inputSelector: _options.inputSelector,
                 
                 //list of existing and new files that are not deleted or serving as a file replacement
+                //FIXME: needs to not include files that were uploaded but failed part way.
                 validFiles: function() {
                     var $rows = $filesContainer.find('tr.template-download').not('.replace-target, .deleted-file');
                     
@@ -150,16 +151,6 @@ TDAR.fileupload = function() {
         if($.validator) {
             _registerValidationHandlers($fileupload);
         }
-        
-
-        //just a test to see when this function gets called via event  instead of a callback
-        window.gcount = 0;
-        $fileupload.bind("fileuploadsubmit", function(e, data) {
-            console.log("-------file upload submit-------");
-            console.dir(data);
-            window.gcount++;
-            return window.gcount>2;
-        });
         
         return helper;
     };
@@ -362,32 +353,33 @@ TDAR.fileupload = function() {
     }
 
 
-  //add custom highlight/unhighlight handler
-  //TODO figure out where to put/call this
-  var _registerValidationHandlers = function($fileupload) {
-      var $filesContainer = $fileupload.fileupload('option', 'filesContainer');
-      var helper = $fileupload.data('fileuploadHelper');
-      var $fileuploadInput = $fileupload.find('[type=file]');
-      
-      $fileuploadInput.on('highlight', function(evt, errorClass, validClass){
-          $filesContainer.find('.neededFiles').remove();
-          console.log("highlight called");
-          var incompleteFiles = $(helper.inputSelector).data('incompleteFiles');
-          $.each(incompleteFiles, function(idx, file){
-              var $td = file.context.find('td.name:first');
-              var $needed = $('<ul class="neededFiles"></ul>')
-              $.each(file.neededFiles, function(idx, neededFile){
-                  $needed.append('<li> missing ' + neededFile + '</li>');
-              });
-              $td.append($needed);
-          });
-          
-      });
-      
-      $fileuploadInput.on('unhighlight', function(evt, errorClass, validClass){
-          $filesContainer.find('.neededFiles').remove();
-      }); 
-  }
+    //add custom highlight/unhighlight handler
+    //TODO figure out where to put/call this
+    var _registerValidationHandlers = function($fileupload) {
+        var $filesContainer = $fileupload.fileupload('option', 'filesContainer');
+        var helper = $fileupload.data('fileuploadHelper');
+        var $fileuploadInput = $fileupload.find('[type=file]');
+        
+        $fileuploadInput.on('highlight', function(evt, errorClass, validClass){
+            $filesContainer.find('.neededFiles').remove();
+            console.log("highlight called");
+            var incompleteFiles = $(helper.inputSelector).data('incompleteFiles');
+            $.each(incompleteFiles, function(idx, file){
+                var $td = file.context.find('td.name:first');
+                var $needed = $('<ul class="neededFiles"></ul>')
+                $.each(file.neededFiles, function(idx, neededFile){
+                    $needed.append('<li> missing ' + neededFile + '</li>');
+                });
+                $td.append($needed);
+            });
+            
+        });
+        
+        $fileuploadInput.on('unhighlight', function(evt, errorClass, validClass){
+            $filesContainer.find('.neededFiles').remove();
+        }); 
+    }
+
 
 
 

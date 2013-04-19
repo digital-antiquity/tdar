@@ -339,6 +339,18 @@ $(function() {
     );
 });
 
+$(function() {
+    $('.scannerTechnology').rules("add", {
+        valueRequiresAsyncUpload: {
+            possibleValues: ["TIME_OF_FLIGHT", "PHASE_BASED", "TRIANGULATION"],
+            fileExt: "xls",
+            inputElementId: "fileAsyncUpload"},
+        messages: {
+            valueRequiresAsyncUpload: "Please include a scan manifest file when choosing this scan type"}
+    });
+});
+
+
 </script>
  
 </body>

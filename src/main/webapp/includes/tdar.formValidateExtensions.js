@@ -181,4 +181,28 @@ $.validator.addMethod("gis-ancillary-files", function(value, element) {
     
     }, $.validator.format("One or more of your uploads is missing an accompanying file"));
 
+//if a form input has a certain value, an accompanying file upload is required
+//  $fileupload - jquery selection containing fileupload widget
+//  possibleValues - array of strings - if element value contained in this array,  this rule requires an async upload
+//  fileExt = optional - only consider files with this extension to satisfy the requirement.
+$.validator.addMethod("valueRequiresAsyncUpload", 
+        function(value, element, parms){
+            var possibleValues = parms.possibleValues;
+            var fileExt = parms.fileExt;
+            var helper = $("#" + parms.inputElementId).data('fileuploadHelper');
+            //if element value doesn't require async file,  no need to go further
+            if($.inArray(value, possibleValues) === -1) return true;
+            var files = helper.validFiles();
+            if(fileExt) {
+                var _ext = fileExt.toLowerCase();
+                files = $.map(files, function(file) {
+                    if(file.ext === _ext){
+                        return file;
+                    }
+                });
+            }
+            var isValid = files.length > 0;
+            return isValid;
+        }, 
+        "This selection requires supporting upload file");
 
