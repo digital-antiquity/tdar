@@ -45,7 +45,7 @@ public class ResourceController extends AuthenticationAware.Base {
      */
     @Action(value = "add",
             results = {
-                    @Result(name = BILLING, location = "../billing-note.ftl"),
+                    @Result(name = BILLING, type=TYPE_REDIRECT, location = "/cart/add"),
                     @Result(name = SUCCESS, location = "add.ftl")
             })
     public String execute() {
@@ -64,12 +64,12 @@ public class ResourceController extends AuthenticationAware.Base {
     @Action(value = "edit",
             results = {
                     @Result(name = INPUT, location = "add.ftl"),
-                    @Result(name = "DATASET", type = "redirect", location = "/dataset/edit?resourceId=${resource.id}"),
-                    @Result(name = "DOCUMENT", type = "redirect", location = "/document/edit?resourceId=${resource.id}"),
-                    @Result(name = "ONTOLOGY", type = "redirect", location = "/ontology/edit?resourceId=${resource.id}"),
-                    @Result(name = "IMAGE", type = "redirect", location = "/image/edit?resourceId=${resource.id}"),
-                    @Result(name = "SENSORY_DATA", type = "redirect", location = "/sensory-data/edit?resourceId=${resource.id}"),
-                    @Result(name = "CODING_SHEET", type = "redirect", location = "/coding-sheet/edit?resourceId=${resource.id}")
+                    @Result(name = "DATASET", type = TYPE_REDIRECT, location = "/dataset/edit?resourceId=${resource.id}"),
+                    @Result(name = "DOCUMENT", type = TYPE_REDIRECT, location = "/document/edit?resourceId=${resource.id}"),
+                    @Result(name = "ONTOLOGY", type = TYPE_REDIRECT, location = "/ontology/edit?resourceId=${resource.id}"),
+                    @Result(name = "IMAGE", type = TYPE_REDIRECT, location = "/image/edit?resourceId=${resource.id}"),
+                    @Result(name = "SENSORY_DATA", type = TYPE_REDIRECT, location = "/sensory-data/edit?resourceId=${resource.id}"),
+                    @Result(name = "CODING_SHEET", type = TYPE_REDIRECT, location = "/coding-sheet/edit?resourceId=${resource.id}")
             })
     public String edit() {
         InformationResource informationResource = getInformationResourceService().find(resourceId);
@@ -101,12 +101,12 @@ public class ResourceController extends AuthenticationAware.Base {
      */
     @Action(value = "view",
             results = {
-                    @Result(name = "DATASET", type = "redirect", location = "/dataset/view?id=${resourceId}"),
-                    @Result(name = "DOCUMENT", type = "redirect", location = "/document/view?id=${resourceId}"),
-                    @Result(name = "ONTOLOGY", type = "redirect", location = "/ontology/view?id=${resourceId}"),
-                    @Result(name = "IMAGE", type = "redirect", location = "/image/view?id=${resourceId}"),
-                    @Result(name = "SENSORY_DATA", type = "redirect", location = "/sensory-data/view?id=${resourceId}"),
-                    @Result(name = "CODING_SHEET", type = "redirect", location = "/coding-sheet/view?id=${resourceId}")
+                    @Result(name = "DATASET", type = TYPE_REDIRECT, location = "/dataset/view?id=${resourceId}"),
+                    @Result(name = "DOCUMENT", type = TYPE_REDIRECT, location = "/document/view?id=${resourceId}"),
+                    @Result(name = "ONTOLOGY", type = TYPE_REDIRECT, location = "/ontology/view?id=${resourceId}"),
+                    @Result(name = "IMAGE", type = TYPE_REDIRECT, location = "/image/view?id=${resourceId}"),
+                    @Result(name = "SENSORY_DATA", type = TYPE_REDIRECT, location = "/sensory-data/view?id=${resourceId}"),
+                    @Result(name = "CODING_SHEET", type = TYPE_REDIRECT, location = "/coding-sheet/view?id=${resourceId}")
             })
     public String view() {
         InformationResource informationResource = getInformationResourceService().find(resourceId);

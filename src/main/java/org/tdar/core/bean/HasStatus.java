@@ -15,4 +15,11 @@ public interface HasStatus {
     public boolean isDeleted();
 
     public boolean isActive();
+
+    public boolean isDraft();
+
+    public boolean isFlagged();
+
+    public boolean isDuplicate();
+
 }

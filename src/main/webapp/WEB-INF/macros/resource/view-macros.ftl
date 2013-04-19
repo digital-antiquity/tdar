@@ -514,8 +514,8 @@ No coding rules have been entered for this coding sheet yet.
 </#if>
 
 <@statusCallout onStatus='${persistable.status?lower_case}' cssClass='${status}'>
-    This resource has been marked as <strong>${persistable.status.label}</strong>. 
-    <#if !persistable.draft> While ${siteAcronym} will retain this resource, it will not appear in search results.</#if>
+    This record has been marked as <strong>${persistable.status.label}</strong>. 
+    <#if !persistable.draft> While ${siteAcronym} will retain this record, it will not appear in search results.</#if>
 </@statusCallout>
 
 </#if> 

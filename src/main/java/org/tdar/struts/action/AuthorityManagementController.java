@@ -20,6 +20,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.TdarGroup;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.AuthorityManagementService;
+import org.tdar.core.service.AuthorityManagementService.DupeMode;
 import org.tdar.struts.RequiresTdarUserGroup;
 import org.tdar.struts.WriteableSession;
 
@@ -45,6 +46,8 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
     public static final String ERROR_TOO_MANY_PROTECTED_RECORDS = "Your selection contains too many protected records.  Protected records can serve as an authority record but cannot be deduped";
     public static final String ERROR_CANNOT_DEDUPE_PROTECTED_RECORDS = "At least one of your selected duplicates is a protected record.  Protected records can serve as an authority record but cannot be deduped";
     public static String FMT_TOO_MANY_DUPLICATES = "You may only select up to %s duplicates.";
+
+    private DupeMode mode = DupeMode.MARK_DUPS_ONLY;
 
     @Autowired
     private AuthorityManagementService authorityManagementService;
@@ -126,7 +129,7 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
 
         // so now we should have everything we need to pass to the service
         try {
-            authorityManagementService.updateReferrers(entityType.getType(), selectedDupeIds, authorityId, false);
+            authorityManagementService.updateReferrers(getAuthenticatedUser(), entityType.getType(), selectedDupeIds, authorityId, mode);
         } catch (TdarRecoverableRuntimeException trex) {
             addActionErrorWithException("Could not de-dupe", trex);
             return INPUT;
@@ -169,6 +172,18 @@ public class AuthorityManagementController extends AuthenticationAware.Base impl
 
     public int getDupeListMaxSize() {
         return TdarConfiguration.getInstance().getAuthorityManagementDupeListMaxSize();
+    }
+
+    public DupeMode getMode() {
+        return mode;
+    }
+
+    public List<DupeMode> getAllDupModes() {
+        return Arrays.asList(DupeMode.values());
+    }
+
+    public void setMode(DupeMode mode) {
+        this.mode = mode;
     }
 
 }

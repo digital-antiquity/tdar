@@ -387,4 +387,21 @@ public abstract class Creator extends JsonModel.Base implements Persistable, Has
         this.addresses = addresses;
     }
 
+    @Transient
+    @XmlTransient
+    public boolean isDraft() {
+        return status == Status.DRAFT;
+    }
+
+    @Transient
+    @XmlTransient
+    public boolean isFlagged() {
+        return status == Status.FLAGGED;
+    }
+
+    @Override
+    public boolean isDuplicate() {
+        return status == Status.DUPLICATE;
+    }
+
 }

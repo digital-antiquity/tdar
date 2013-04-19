@@ -34,6 +34,8 @@ import org.tdar.web.SessionDataAware;
 })
 public interface AuthenticationAware extends SessionDataAware {
 
+    public static final String TYPE_REDIRECT = "redirect";
+
     public AuthenticationAndAuthorizationService getAuthenticationAndAuthorizationService();
 
     Person getAuthenticatedUser();

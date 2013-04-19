@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.collections.ListUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.apache.struts2.convention.annotation.Action;
@@ -20,6 +21,7 @@ import org.tdar.core.bean.cache.HomepageGeographicKeywordCache;
 import org.tdar.core.bean.cache.HomepageResourceCountCache;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Creator;
+import org.tdar.core.bean.entity.Dedupable;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.keyword.CultureKeyword;
@@ -119,7 +121,7 @@ public class BrowseController extends AbstractLookupController {
             creator = getGenericService().find(Creator.class, getId());
             QueryBuilder queryBuilder = getSearchService().generateQueryForRelatedResources(creator,getAuthenticatedUser());
 
-            if (isEditor() && creator instanceof Person) {
+            if (isEditor() && creator instanceof Person && StringUtils.isNotBlank(((Person) creator).getUsername())) {
                 try {
                     getGroups().addAll(getAuthenticationAndAuthorizationService().getGroupMembership((Person) creator));
                 } catch (Throwable e) {
@@ -137,7 +139,7 @@ public class BrowseController extends AbstractLookupController {
                 setSearchTitle(descr);
                 setRecordsPerPage(50);
                 try {
-                handleSearch(queryBuilder);
+                    handleSearch(queryBuilder);
                 } catch (SearchPaginationException spe) {
                     throw new TdarActionException(StatusCode.BAD_REQUEST, spe);
                 } catch (TdarRecoverableRuntimeException tdre) {

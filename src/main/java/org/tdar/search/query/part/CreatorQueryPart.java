@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.lucene.queryParser.QueryParser.Operator;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Creator;
+import org.tdar.core.bean.entity.Dedupable;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -29,12 +30,19 @@ public class CreatorQueryPart<C extends Creator> extends AbstractHydrateableQuer
                 ResourceCreatorProxy proxy = proxyList.get(i);
                 ResourceCreator rc = proxy.getResourceCreator();
                 if (proxy.isValid()) {
-                    if (Persistable.Base.isTransient(rc.getCreator())) {
-                        // user entered a complete-ish creator record but autocomplete callback did fire successfully
-                        throw new TdarRecoverableRuntimeException(String.format("Please use autocomplete when looking for creator %s", rc.getCreator()));
+                    List<Creator> creators = new ArrayList<Creator>();
+                    if (rc.getCreator() instanceof Dedupable<?>) {
+                        creators.addAll(((Dedupable) rc.getCreator()).getSynonyms());
                     }
-                    this.roles.add(rc.getRole());
-                    this.getFieldValues().add((C) rc.getCreator());
+                    creators.add(rc.getCreator());
+                    for (Creator creator_ : creators) {
+                        if (Persistable.Base.isTransient(creator_)) {
+                            // user entered a complete-ish creator record but autocomplete callback did fire successfully
+                            throw new TdarRecoverableRuntimeException(String.format("Please use autocomplete when looking for creator %s", creator_));
+                        }
+                        this.roles.add(rc.getRole());
+                        this.getFieldValues().add((C) creator_);
+                    }
                 }
             } catch (NullPointerException npe) {
                 logger.trace("NPE in creator construction, skipping...", npe);

@@ -14,6 +14,7 @@
             <tr>
                 <th>ID</th>
                 <th>Name</th>
+                <th>Registered</th>
                 <th>email</th>
                 <th>Institution</th>
             </tr>
@@ -23,6 +24,7 @@
             <tr>
                 <td class="datatable-cell-unstyled"><@inputTags dupe/></td>
                 <td>${dupe.name!}</td>
+                <td>${dup.registered?string}</td>
                 <td>${dupe.email!}</td>
                 <td>${dupe.institutionName!}</td>
             </tr>
@@ -87,6 +89,10 @@
     <#default>
         <@renderKeywordTable />
 </#switch>  
+
+<@s.select labelposition='top' label='De-Dupe Mode' name='mode' 
+     list='%{allDupModes}' title="De-Dupe Modes" />
+
 <br />
 <@s.submit value="Merge selected duplicates" />
 <a href="index" class="button">Go back to duplicate selection page</a>
