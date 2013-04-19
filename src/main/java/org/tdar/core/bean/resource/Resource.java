@@ -1560,7 +1560,7 @@ public class Resource extends JsonModel.Base implements Persistable,
 
     @XmlTransient
     public List<Creator> getRelatedCreators() {
-        List<Creator> creators = new ArrayList<>();
+        List<Creator> creators = new ArrayList<Creator>();
         for (ResourceCreator creator : resourceCreators) {
             creators.add(creator.getCreator());
         }

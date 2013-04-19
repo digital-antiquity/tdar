@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.zip.InflaterInputStream;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -187,7 +188,7 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                             byte[] data = (byte[]) currentObject;
 //                            InflaterInputStream iis = new InflaterInputStream(new ByteArrayInputStream(data));
 //                            byte[] uncompressed = IOUtils.toByteArray(iis);
-                            logger.info("{}", currentObject.toString());
+                            logger.info("{}", Hex.encodeHexString(data));
 //                            logger.info("{}", uncompressed);
                             // DATA here is paired with the data in the GDBGeomColumns table to describe the feature type, etc
                             GeometryFactory factory = new GeometryFactory();
@@ -202,7 +203,7 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                             // and http://stackoverflow.com/questions/11483189/transact-sql-function-for-convert-from-esri-personal-geodatabase-shape-column-to
                             com.vividsolutions.jts.geom.Geometry g = null;
                             try {
-                                g = new WKBReader(factory).read(data);
+                                g = new WKBReader(factory).read(Hex.encodeHexString(data).getBytes());
                             } catch (Exception e) {
                                 logger.error("{}", e);
                             }

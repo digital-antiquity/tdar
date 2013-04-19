@@ -118,6 +118,9 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
 
     private transient Long transientDownloadCount;
 
+    private boolean partOfComposite;
+
+    
     @Enumerated(EnumType.STRING)
     @Column(name = "general_type")
     private FileType informationResourceFileType;
@@ -508,6 +511,14 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
 
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
+    }
+
+    public boolean isPartOfComposite() {
+        return partOfComposite;
+    }
+
+    public void setPartOfComposite(boolean partOfComposite) {
+        this.partOfComposite = partOfComposite;
     }
 
 }

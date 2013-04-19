@@ -53,6 +53,8 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
 
     private String format;
 
+    private boolean primaryFile = false;
+
     private String extension;
 
     private String premisId;
@@ -482,6 +484,14 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
 
     public void setSupportingFiles(List<InformationResourceFileVersion> supportingFiles) {
         this.supportingFiles = supportingFiles;
+    }
+
+    public boolean isPrimaryFile() {
+        return primaryFile;
+    }
+
+    public void setPrimaryFile(boolean primaryFile) {
+        this.primaryFile = primaryFile;
     }
 
 }

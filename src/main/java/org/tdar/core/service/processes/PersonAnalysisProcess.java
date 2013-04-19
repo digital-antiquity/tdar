@@ -90,8 +90,8 @@ public class PersonAnalysisProcess extends ScheduledBatchProcess<Person> {
             if (userIdsToIgnoreInLargeTasks.contains(person.getId())) {
                 continue;
             }
-            Map<Creator, Double> collaborators = new HashMap<>();
-            Map<Keyword, Double> keywords = new HashMap<>();
+            Map<Creator, Double> collaborators = new HashMap<Creator, Double>();
+            Map<Keyword, Double> keywords = new HashMap<Keyword, Double>();
             int total = 0;
             QueryBuilder query = searchService.generateQueryForRelatedResources(person, null);
             try {
@@ -173,8 +173,8 @@ public class PersonAnalysisProcess extends ScheduledBatchProcess<Person> {
     @XmlAccessorType(XmlAccessType.PROPERTY)
     @XmlType(name = "personInfoLog")
     public static class PersonInfoLog {
-        private List<LogPart> collaboratorLogPart = new ArrayList<>();
-        private List<LogPart> keywordLogPart = new ArrayList<>();
+        private List<LogPart> collaboratorLogPart = new ArrayList<LogPart>();
+        private List<LogPart> keywordLogPart = new ArrayList<LogPart>();
         private Person person;
         private int totalRecords;
         private Double creatorMean;
