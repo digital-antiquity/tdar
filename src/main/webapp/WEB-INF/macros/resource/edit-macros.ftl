@@ -843,7 +843,7 @@ applyInheritance(project, formSelector);
 </#macro>
 
 <#macro creatorProxyRow proxy=proxy prefix=prefix proxy_index=proxy_index type_override="NONE" 
-    required=false includeRole=true leadTitle="">
+    required=false includeRole=true leadTitle="" showDeleteButton=true>
     <#assign relevantPersonRoles=personAuthorshipRoles />
     <#assign relevantInstitutionRoles=institutionAuthorshipRoles />
     <#if prefix=='credit'>
@@ -873,7 +873,9 @@ applyInheritance(project, formSelector);
                     required=(required) leadTitle="${leadTitle}"/>
             </div>
             <div class="span1">
+                <#if showDeleteButton>
                 <button class="btn  btn-mini repeat-row-delete " type="button" tabindex="-1" ><i class="icon-trash"></i></button>
+                </#if>
             </div>
         </div>
     </div>
@@ -1344,9 +1346,9 @@ $(function() {
         <@helptext.copyrightHoldersTip />
         <div class="" id="copyrightHoldersSection" tiplabel="Primary Copyright Holder" tooltipcontent="#divCopyrightHoldersTip" >
             <h2>${sectionTitle}</h2>
-            <div id="copyrightHolderTable" class="control-group table repeatLastRow creatorProxyTable">
+            <div id="copyrightHolderTable" class="control-group table creatorProxyTable">
                 <@creatorProxyRow proxy=copyrightHolderProxies proxy_index="" prefix="copyrightHolder" required=true 
-                    includeRole=false required=true leadTitle="copyright holder "/>
+                    includeRole=false required=true leadTitle="copyright holder " showDeleteButton=false/>
             </div>
         </div>
     </#if>

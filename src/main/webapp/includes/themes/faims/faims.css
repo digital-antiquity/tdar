@@ -157,9 +157,7 @@ label .required {
 	background-color:transparent;
 }
 
-/* following doesn't get picked up yet */
-form .required label:after {
-	color: #e32;
-	content: '*';
-	display: inline;
+/* specifically required to close up the next element on copyright holder rows, as we've removed the "Add another" button */
+#copyrightHolderRow__ {
+    margin-bottom: -20px;
 }
