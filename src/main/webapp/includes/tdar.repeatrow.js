@@ -158,6 +158,9 @@ TDAR.repeatrow = function() {
 
         // revert all select inputs to first option. 
         $("select", $element).find('option:first').attr("selected", "selected");
+        
+        // allow html5 polyfills for watermarks to be added.
+        applyWatermarks($element);
     };
     
     
@@ -168,7 +171,7 @@ TDAR.repeatrow = function() {
         } else {
             _clearInputs($row);
         }
-    }
+    };
     
     
     // private: return a dom button
@@ -177,7 +180,7 @@ TDAR.repeatrow = function() {
                 "<div class='controls'>" +
                 "<button class='btn' type='button'><i class='icon-plus-sign'></i>" + label + "</button>" +
                 "</div>" +
-                "</div>"
+                "</div>";
        return $(html);
     };
     
