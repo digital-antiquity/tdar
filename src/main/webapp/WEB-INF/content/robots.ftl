@@ -1,6 +1,7 @@
 User-agent: *
 <#if production>
 Disallow: /search/*
+Disallow: /search/
 Disallow: /search/rss
 Disallow: /search/download
 Disallow: /filestore/
