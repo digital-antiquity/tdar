@@ -53,7 +53,7 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
 
     private String format;
 
-    private Boolean primaryFile = false;
+    private Boolean primaryFile = Boolean.FALSE;
 
     private String extension;
 

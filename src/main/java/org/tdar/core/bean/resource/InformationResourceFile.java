@@ -118,7 +118,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
 
     private transient Long transientDownloadCount;
 
-    private Boolean partOfComposite;
+    private Boolean partOfComposite  = Boolean.FALSE;
 
     
     @Enumerated(EnumType.STRING)
