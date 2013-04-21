@@ -8,6 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.bean.entity.Creator;
@@ -206,6 +207,18 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         return getDao().findNumberOfActualContributors();
     }
 
+    @Transactional(readOnly= true)
+    public Creator findAuthorityFromDuplicate(Creator dup) {
+        if (Persistable.Base.isNullOrTransient(dup)) {
+            return null;
+        }
+        if (dup instanceof Person) {
+            return getDao().findAuthorityFromDuplicate((Person)dup);
+        } else {
+            return institutionDao.findAuthorityFromDuplicate((Institution)dup);
+        }
+    }
+    
     @Transactional(readOnly = true)
     public Set<Long> findAllContributorIds() {
         return getDao().findAllContributorIds();

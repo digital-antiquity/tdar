@@ -73,6 +73,20 @@ public class PersonITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback(true)
+    public void testFindDup() {
+        
+        Person person = createAndSaveNewPerson();
+        Person person2 = createAndSaveNewPerson("test@test.com","1");
+        person.getSynonyms().add(person2);
+        person2.setStatus(Status.DUPLICATE);
+        genericService.saveOrUpdate(person);
+        genericService.saveOrUpdate(person2);
+        genericService.synchronize();
+        assertEquals(person, entityService.findAuthorityFromDuplicate(person2));
+    }
+
+    @Test
+    @Rollback(true)
     public void testModifyPerson() {
         Person person = setupPerson();
         Long id = person.getId();

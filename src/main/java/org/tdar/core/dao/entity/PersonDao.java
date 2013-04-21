@@ -1,10 +1,13 @@
 package org.tdar.core.dao.entity;
 
+import java.math.BigInteger;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
@@ -82,6 +85,17 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         return new HashSet<Person>(criteria.list());
     }
 
+    
+    public Person findAuthorityFromDuplicate(Person dup) {
+        Query query = getCurrentSession().createSQLQuery(String.format(QUERY_CREATOR_MERGE_ID, dup.getClass().getSimpleName(), dup.getId()));
+        List<BigInteger> result = (List<BigInteger>)query.list();
+        if (CollectionUtils.isEmpty(result)) {
+            return null;
+        } else {
+            return find(result.get(0).longValue());
+        }
+    }
+    
     /**
      * Returns all people with the given full name.
      */

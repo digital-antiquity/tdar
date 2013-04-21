@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -52,7 +53,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableMapConverter;
 @Service
 public class AuthorityManagementService {
 
-    public enum DupeMode {
+    public enum DupeMode implements HasLabel {
         /*
          * Authority Management really needs multiple modes:
          * 1. Typo cleanup mode -- remove the dups and pretend they never existed
@@ -61,9 +62,20 @@ public class AuthorityManagementService {
          * 3. User consolidation mode -- mark the "dups" as dups, but keep the references set on the "dup" instead of the authority. If I have 2 versions of a
          * person from different jobs, this is useful for consolidating the people, but keeping the context of that person at that time.
          */
-        DELETE_DUPLICATES,
-        MARK_DUPS_AND_CONSOLDIATE,
-        MARK_DUPS_ONLY;
+        DELETE_DUPLICATES("Delete Duplicates (irreversable)"),
+        MARK_DUPS_AND_CONSOLDIATE("Mark duplicates and update references (somewhat reversable)"),
+        MARK_DUPS_ONLY("Mark As Dup (reversable)");
+        
+        private String label;
+        
+        private DupeMode(String label) {
+            this.label = label;
+        }
+
+        public String getLabel() {
+            return label;
+        }
+
     }
 
     public static final String SERVICE_NAME = "Authority Management Service:";
