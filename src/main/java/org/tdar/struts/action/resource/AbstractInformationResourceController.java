@@ -55,6 +55,8 @@ import org.tdar.utils.Pair;
  */
 public abstract class AbstractInformationResourceController<R extends InformationResource> extends AbstractResourceController<R> {
 
+    private static final String MISSING_FILE_PROXY_WARNING = "something bad happened in the JS side of things, there should always be a FileProxy resulting from the upload callback {}";
+
     public static final String WE_WERE_UNABLE_TO_PROCESS_THE_UPLOADED_CONTENT = "We were unable to process the uploaded content.";
 
     public static final String FILE_INPUT_METHOD = "text";
@@ -160,8 +162,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             // if we encounter file that has no matching proxy, we create a new proxy and add it to the final list
             // we assume this happens when proxy fields in form were submitted in state that struts could not type-convert into a proxy instance
             if (proxy == null) {
-                logger.warn("something bad happened in the JS side of things, there should always be a FileProxy resulting from the upload callback {}",
-                        file.getName());
+                logger.warn(MISSING_FILE_PROXY_WARNING, file.getName());
                 proxy = new FileProxy(file.getName(), VersionType.UPLOADED, FileAccessRestriction.PUBLIC);
                 finalProxyList.add(proxy);
             }
@@ -218,12 +219,19 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             logger.debug("Nothing to process, returning.");
             return;
         }
+
         logger.debug("Final proxy set: {}", fileProxiesToProcess);
         ArrayList<InformationResourceFile> modifiedFiles = new ArrayList<InformationResourceFile>();
         PersonalFilestore filestore = filestoreService.getPersonalFilestore(getAuthenticatedUser());
 
-        Pair<List<ExceptionWrapper>, Boolean> exceptions = getInformationResourceService().processFileProxies(filestore, getPersistable(),
-                fileProxiesToProcess, modifiedFiles, ticketId);
+        Pair<List<ExceptionWrapper>, Boolean> exceptions = null;
+        try {
+            exceptions = getInformationResourceService().processFileProxies(filestore, getPersistable(),
+                    fileProxiesToProcess, modifiedFiles, ticketId);
+        } catch (IOException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
         if (exceptions.getSecond()) {
             for (ExceptionWrapper exception : exceptions.getFirst()) {
                 addActionError(exception.getMessage());
@@ -257,16 +265,18 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         List<FileProxy> fileProxiesToProcess = new ArrayList<FileProxy>();
         // Possible scenarios:
         FileProxy textInputFileProxy = processTextInput();
-        if (textInputFileProxy != null) {
-            // 1. text input for CodingSheet or Ontology (everything in a String, needs preprocessing to convert to a FileProxy)
-            fileProxiesToProcess.add(textInputFileProxy);
-        } else if (isMultipleFileUploadEnabled()) {
-            // 2. async uploads for Image or Document or ...
-            fileProxiesToProcess = handleAsyncUploads();
-        } else {
-            // 3. single file upload (dataset|coding sheet|ontology)
-            // there could be an incoming file payload, or just a metadata change.
 
+        // 1. text input for CodingSheet or Ontology (everything in a String, needs preprocessing to convert to a FileProxy)
+        if (textInputFileProxy != null) {
+            fileProxiesToProcess.add(textInputFileProxy);
+        }
+        // 2. async uploads for Image or Document or ...
+        else if (isMultipleFileUploadEnabled()) {
+            fileProxiesToProcess = handleAsyncUploads();
+        } else
+        // 3. single file upload (dataset|coding sheet|ontology)
+        // there could be an incoming file payload, or just a metadata change.
+        {
             fileProxiesToProcess = handleSingleFileUpload(fileProxiesToProcess);
         }
 
@@ -296,21 +306,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         }
         return toProcess;
     }
-
-    //
-    // @Override
-    // protected void postSaveCleanup(String returnString) {
-    // // try {
-    // // if (ticketId != null) {
-    // // PersonalFilestore filestore = filestoreService.getPersonalFilestore(getAuthenticatedUser());
-    // // filestore.purge(getGenericService().find(PersonalFilestoreTicket.class, ticketId));
-    // //
-    // // }
-    // // } catch (Exception e) {
-    // // logger.warn("an error occured when trying to cleanup the filestore: {} for {} ", ticketId, getAuthenticatedUser());
-    // // logger.debug("exception:", e);
-    // // }
-    // }
 
     protected void loadResourceProviderInformation() {
         // load resource provider institution and publishers

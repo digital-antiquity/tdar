@@ -393,7 +393,7 @@ public class BulkUploadService {
                     informationResource.markUpdated(submitter);
                     informationResource.setDescription(" ");
                     genericDao.saveOrUpdate(informationResource);
-                    informationResourceService.processFileProxy(informationResource, fileProxy);
+                    informationResourceService.processFileProxyMetadata(informationResource, fileProxy);
                     receiver.getDetails().add(new Pair<Long, String>(informationResource.getId(), fileName));
                     resourcesCreated.put(fileName, informationResource);
                 }

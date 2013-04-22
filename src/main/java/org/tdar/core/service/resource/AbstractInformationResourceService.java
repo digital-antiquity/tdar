@@ -9,9 +9,9 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +20,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.ResourceType;
@@ -101,12 +102,28 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
 
     @Transactional
     public Pair<List<ExceptionWrapper>, Boolean> processFileProxies(PersonalFilestore filestore, T resource, List<FileProxy> fileProxiesToProcess,
-            List<InformationResourceFile> modifiedFiles, Long ticketId) {
+            List<InformationResourceFile> modifiedFiles, Long ticketId) throws IOException {
+        processMedataForFileProxies(resource, fileProxiesToProcess);
+
+        fileProxiesToProcess = validateAndConsolidateProxies(fileProxiesToProcess);
+
+        Pair<List<ExceptionWrapper>, Boolean> toReturn = storeErrorMessages(fileProxiesToProcess, modifiedFiles);
+
+        /*
+         * FIXME:  Should I purge regardless of errors??? Really???
+         */
+        if (ticketId != null) {
+            filestore.purge(getDao().find(PersonalFilestoreTicket.class, ticketId));
+        }
+        return toReturn;
+    }
+
+    private Pair<List<ExceptionWrapper>, Boolean> storeErrorMessages(List<FileProxy> fileProxiesToProcess, List<InformationResourceFile> modifiedFiles) {
         List<ExceptionWrapper> exceptionsAndMessages = new ArrayList<ExceptionWrapper>();
         Pair<List<ExceptionWrapper>, Boolean> toReturn = new Pair<List<ExceptionWrapper>, Boolean>(exceptionsAndMessages, false);
-        for (FileProxy fileProxy : fileProxiesToProcess) {
-            try {
-                InformationResourceFile file = processFileProxy(resource, fileProxy);
+        if (CollectionUtils.isNotEmpty(fileProxiesToProcess)) {
+            for (FileProxy proxy : fileProxiesToProcess) {
+                InformationResourceFile file = proxy.getInformationResourceFile();
                 if (file != null) {
                     modifiedFiles.add(file);
                     WorkflowContext context = file.getWorkflowContext();
@@ -119,77 +136,72 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                         exceptionsAndMessages.addAll(exceptions);
                     }
                 }
-            } catch (IOException exception) {
-                exceptionsAndMessages
-                        .add(new ExceptionWrapper("Unable to process file " + fileProxy.getFilename(), ExceptionUtils.getFullStackTrace(exception)));
             }
-        }
-        if (ticketId != null) {
-            filestore.purge(getDao().find(PersonalFilestoreTicket.class, ticketId));
-
         }
         return toReturn;
     }
 
     @Transactional
-    public InformationResourceFile processFileProxy(InformationResource informationResource, FileProxy proxy) throws IOException {
+    protected List<FileProxy> validateAndConsolidateProxies(List<FileProxy> fileProxiesToProcess) {
+        // TODO Auto-generated method stub
+        return fileProxiesToProcess;
+    }
+
+    @Transactional
+    public void processFileProxyMetadata(InformationResource informationResource, FileProxy proxy) throws IOException {
         logger.debug("applying {} to {}", proxy, informationResource);
         // will be reassigned in a REPLACE or ADD_DERIVATIVE
         InformationResourceFile irFile = new InformationResourceFile();
+        if (proxy.getAction().requiresExistingIrFile()) {
+            irFile = findInformationResourceFile(proxy);
+            if (irFile == null) {
+                logger.error("FileProxy {} {} had no InformationResourceFile.id ({}) set on it", proxy.getFilename(), proxy.getAction(), proxy.getFileId());
+                return;
+            }
+        }
         switch (proxy.getAction()) {
             case MODIFY_METADATA:
-                irFile = findInformationResourceFile(proxy);
-                if (irFile == null) {
-                    return null;
-                }
                 // set sequence number and confidentiality
                 setInformationResourceFileMetadata(irFile, proxy);
                 genericDao.update(irFile);
                 break;
             case REPLACE:
-                irFile = findInformationResourceFile(proxy);
-                if (irFile == null) {
-                    return null;
-                }
                 // explicit fall through to ADD after loading the existing irFile to
                 // be replaced.
             case ADD:
                 // always set the download/version info and persist the relationships between the InformationResource and its IRFile.
                 incrementVersionNumber(irFile);
                 addInformationResourceFile(informationResource, irFile);
-                createVersion(irFile, proxy);
+                createVersionMetadataAndStore(irFile, proxy);
                 setInformationResourceFileMetadata(irFile, proxy);
                 for (FileProxy additionalVersion : proxy.getAdditionalVersions()) {
                     logger.debug("Creating new version {}", additionalVersion);
-                    createVersion(irFile, additionalVersion);
+                    createVersionMetadataAndStore(irFile, additionalVersion);
                 }
                 genericDao.saveOrUpdate(irFile);
                 logger.debug("all versions for {}", irFile);
                 break;
             case ADD_DERIVATIVE:
-                irFile = findInformationResourceFile(proxy);
-                if (irFile == null) {
-                    return null;
-                }
-                createVersion(irFile, proxy);
+                createVersionMetadataAndStore(irFile, proxy);
                 break;
             case DELETE:
-                // handle deletion
-                irFile = findInformationResourceFile(proxy);
-                if (irFile == null) {
-                    logger.error("FileProxy {} DELETE had no InformationResourceFile.id ({}) set on it", proxy.getFilename(), proxy.getFileId());
-                    return null;
-                }
-                irFile.delete();
+                irFile.markAsDeleted();
                 genericDao.update(irFile);
                 break;
             case NONE:
                 logger.debug("Taking no action on {} with proxy {}", informationResource, proxy);
-                return null;
+                break;
             default:
-                return null;
+                break;
         }
-        return irFile;
+        proxy.setInformationResourceFile(irFile);
+    }
+
+    @Transactional
+    public void processMedataForFileProxies(InformationResource informationResource, List<FileProxy> proxies) throws IOException {
+        for (FileProxy proxy : proxies) {
+            processFileProxyMetadata(informationResource, proxy);
+        }
     }
 
     private void setInformationResourceFileMetadata(InformationResourceFile irFile, FileProxy fileProxy) {
@@ -245,7 +257,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
 
     }
 
-    private void createVersion(InformationResourceFile irFile, FileProxy fileProxy) throws IOException {
+    private void createVersionMetadataAndStore(InformationResourceFile irFile, FileProxy fileProxy) throws IOException {
         String filename = sanitizeFilename(fileProxy.getFilename());
         if (fileProxy.getFile() == null || !fileProxy.getFile().exists()) {
             throw new TdarRecoverableRuntimeException("something went wrong, file " + fileProxy.getFilename() + " does not exist");
@@ -255,19 +267,6 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         irFile.addFileVersion(version);
         filestore.store(fileProxy.getFile(), version);
         genericDao.save(version);
-        switch (fileProxy.getVersionType()) {
-            case UPLOADED:
-            case UPLOADED_ARCHIVAL:
-                irFile.setInformationResourceFileType(analyzer.analyzeFile(version));
-                try {
-                    analyzer.processFile(version);
-                } catch (Exception e) {
-                    logger.warn("caught exception {} while analyzing file {}", e, filename);
-                }
-                break;
-            default:
-                logger.debug("Not setting file type on irFile {} for VersionType {}", irFile, fileProxy.getVersionType());
-        }
         genericDao.saveOrUpdate(irFile);
     }
 

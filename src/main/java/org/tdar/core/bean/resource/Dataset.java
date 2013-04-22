@@ -175,4 +175,8 @@ public class Dataset extends InformationResource {
         return relationships;
     }
 
+    @Transient
+    public boolean isCompositeFilesEnabled() {
+        return false;
+    }
 }

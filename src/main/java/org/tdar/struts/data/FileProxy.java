@@ -37,6 +37,7 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy> {
     private VersionType versionType = VersionType.UPLOADED;
     private FileAccessRestriction restriction = FileAccessRestriction.PUBLIC;
     private Integer sequenceNumber = 0;
+    private InformationResourceFile informationResourceFile;
 
     private List<FileProxy> additionalVersions = new ArrayList<FileProxy>();
 
@@ -201,6 +202,14 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy> {
         File tempFile = File.createTempFile("textInput", ".txt");
         FileUtils.writeStringToFile(tempFile, fileTextInput);
         return tempFile;
+    }
+
+    public InformationResourceFile getInformationResourceFile() {
+        return informationResourceFile;
+    }
+
+    public void setInformationResourceFile(InformationResourceFile informationResourceFile) {
+        this.informationResourceFile = informationResourceFile;
     }
 
 }

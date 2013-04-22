@@ -1773,4 +1773,11 @@ public class Resource extends JsonModel.Base implements Persistable,
         return false;
     }
 
+    @Transient
+    @JSONTransient
+    public boolean isCompositeFilesEnabled() {
+        return true;
+    }
+
+
 }

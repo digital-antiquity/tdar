@@ -245,7 +245,7 @@ public abstract class AbstractPersistableController<P extends Persistable> exten
                 indexPersistable();
                 // who cares what the save implementation says. if there's errors return INPUT
                 if (!getActionErrors().isEmpty()) {
-                    logger.debug("Action errors found; Replacing return status of {} with {}", actionReturnStatus, INPUT);
+                    logger.debug("Action errors found {}; Replacing return status of {} with {}", getActionErrors(), actionReturnStatus, INPUT);
                     // FIXME: if INPUT -- should I just "return"?
                     actionReturnStatus = INPUT;
                 }

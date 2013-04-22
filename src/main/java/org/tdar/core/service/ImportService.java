@@ -146,7 +146,7 @@ public class ImportService {
                 if (!extensionsForType.contains(ext))
                     throw new APIException("invalid file type " + ext + " for resource type -- acceptable:"
                             + StringUtils.join(extensionsForType, ", "), StatusCode.FORBIDDEN);
-                informationResourceService.processFileProxy((InformationResource) incomingResource, proxy);
+                informationResourceService.processFileProxyMetadata((InformationResource) incomingResource, proxy);
             }
         }
 

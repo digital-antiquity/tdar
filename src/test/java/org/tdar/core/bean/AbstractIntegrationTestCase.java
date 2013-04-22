@@ -297,7 +297,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         try {
             FileProxy proxy = new FileProxy(file.getName(), file, VersionType.UPLOADED, FileAction.ADD);
             proxy.setRestriction(restriction);
-            informationResourceService.processFileProxy(ir, proxy);
+            informationResourceService.processFileProxyMetadata(ir, proxy);
             // informationResourceService.addOrReplaceInformationResourceFile(ir, new FileInputStream(file), file.getName(), FileAction.ADD,
             // VersionType.UPLOADED);
         } catch (IOException e) {

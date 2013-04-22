@@ -150,7 +150,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         // http://community.jboss.org/wiki/HibernateFAQ-AdvancedProblems#Hibernate_is_violating_a_unique_constraint
         getDao().synchronize();
 
-        InformationResourceFile processedFileProxy = null;
+        InformationResourceFile irFile = null;
         FileOutputStream translatedFileOutputStream = null;
         try {
             File tempFile = File.createTempFile("translated", ".xls");
@@ -160,13 +160,14 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             FileProxy fileProxy = new FileProxy(filename, tempFile, VersionType.TRANSLATED, FileAction.ADD_DERIVATIVE);
             fileProxy.setRestriction(file.getRestriction());
             fileProxy.setFileId(file.getId());
-            processedFileProxy = processFileProxy(dataset, fileProxy);
+            processFileProxyMetadata(dataset, fileProxy);
+            irFile = fileProxy.getInformationResourceFile();
         } catch (IOException exception) {
             getLogger().error("Unable to create translated file for Dataset: " + dataset, exception);
         } finally {
             IOUtils.closeQuietly(translatedFileOutputStream);
         }
-        return processedFileProxy;
+        return irFile;
     }
 
     /**

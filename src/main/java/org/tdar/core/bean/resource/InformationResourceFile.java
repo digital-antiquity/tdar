@@ -76,6 +76,17 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
                     return false;
             }
         }
+
+        public boolean requiresExistingIrFile() {
+            switch (this) {
+                case ADD:
+                    return false;
+                case NONE:
+                    return false;
+                default:
+                    return true;
+            }
+        }
     }
 
     public enum FileType {
@@ -90,7 +101,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         public String getLabel() {
             return WordUtils.capitalize(this.name().toLowerCase());
         }
-        
+
         public boolean isRestricted() {
             switch (this) {
                 case PUBLIC:
@@ -118,10 +129,9 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
 
     private transient Long transientDownloadCount;
 
-    @Column(name="part_of_composite")
-    private Boolean partOfComposite  = Boolean.FALSE;
+    @Column(name = "part_of_composite")
+    private Boolean partOfComposite = Boolean.FALSE;
 
-    
     @Enumerated(EnumType.STRING)
     @Column(name = "general_type")
     private FileType informationResourceFileType;
@@ -433,7 +443,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         setStatus(null);
     }
 
-    public void delete() {
+    public void markAsDeleted() {
         setStatus(FileStatus.DELETED);
     }
 
