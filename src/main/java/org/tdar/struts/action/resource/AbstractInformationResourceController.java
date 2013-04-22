@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Result;
@@ -25,14 +24,12 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.LicenseType;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.personal.PersonalFilestore;
@@ -78,8 +75,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     private List<Language> languages;
     private List<FileProxy> fileProxies = new ArrayList<FileProxy>();
 
-    private String fileInputMethod;
-    private String fileTextInput;
     private Boolean isAbleToUploadFiles = null;
 
     private List<PersonalFilestoreFile> pendingFiles;
@@ -114,40 +109,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
      * Returns a FileProxy representing the content that was entered.
      */
     protected FileProxy processTextInput() {
-        if (StringUtils.isBlank(fileTextInput)) {
-            addActionError("Please enter your " + getPersistable().getResourceType().getLabel() + " into the text area.");
-            return null;
-        }
-        if (fileTextInput.equals(getLatestUploadedTextVersionText())) {
-            logger.info("incoming and current file input text is the same, skipping further actions");
-            return null;
-        } else {
-            logger.info("processing updated text input for {}", getPersistable());
-        }
-
-        try {
-            // process the String uploaded via the fileTextInput box verbatim as the UPLOADED_TEXT version
-            if (StringUtils.isBlank(getPersistable().getTitle())) {
-                logger.error("Resource title was empty, client side validation failed for {}", getPersistable());
-                addActionError("Please enter a title for your " + getPersistable().getResourceType().getLabel());
-                return null;
-            }
-            String uploadedTextFilename = getPersistable().getTitle() + ".txt";
-
-            FileProxy uploadedTextFileProxy = new FileProxy(uploadedTextFilename,
-                    FileProxy.createTempFileFromString(fileTextInput),
-                    VersionType.UPLOADED_TEXT);
-
-            // next, generate "uploaded" version of the file. In this case the VersionType.UPLOADED isn't entirely accurate
-            // as this is UPLOADED_GENERATED, but it's the file that we want to process in later parts of our code.
-            FileProxy primaryFileProxy = createUploadedFileProxy(fileTextInput);
-            primaryFileProxy.addVersion(uploadedTextFileProxy);
-            setFileProxyAction(primaryFileProxy);
-            return primaryFileProxy;
-        } catch (IOException e) {
-            getLogger().error("unable to create temp file or write " + fileTextInput + " to temp file", e);
-            throw new TdarRecoverableRuntimeException(e);
-        }
+        return null;
     }
 
     protected FileProxy createUploadedFileProxy(String fileTextInput) throws IOException {
@@ -294,18 +256,20 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     protected List<FileProxy> getFileProxiesToProcess() {
         List<FileProxy> fileProxiesToProcess = new ArrayList<FileProxy>();
         // Possible scenarios:
-        if (isTextInput()) {
+        FileProxy textInputFileProxy = processTextInput();
+        if (textInputFileProxy != null) {
             // 1. text input for CodingSheet or Ontology (everything in a String, needs preprocessing to convert to a FileProxy)
-            FileProxy textInputFileProxy = processTextInput();
-            if (textInputFileProxy != null) {
-                fileProxiesToProcess.add(textInputFileProxy);
-            }
+            fileProxiesToProcess.add(textInputFileProxy);
         } else if (isMultipleFileUploadEnabled()) {
             // 2. async uploads for Image or Document or ...
             fileProxiesToProcess = handleAsyncUploads();
         } else {
             // 3. single file upload (dataset|coding sheet|ontology)
             // there could be an incoming file payload, or just a metadata change.
+
+            /*
+             * FIXME: in Jar, hopefully, this goes away
+             */
 
             FileProxy singleFileProxy = CollectionUtils.isEmpty(fileProxies) ? new FileProxy() : fileProxies.get(0);
             if (CollectionUtils.isEmpty(uploadedFiles)) {
@@ -629,20 +593,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         this.ticketId = ticketId;
     }
 
-    protected String getLatestUploadedTextVersionText() {
-        // in order for this to work we need to be generating text versions
-        // of these files for both text input and file uploads
-        for (InformationResourceFileVersion version : getPersistable().getLatestVersions(VersionType.UPLOADED_TEXT)) {
-            try {
-                return FileUtils.readFileToString(version.getFile());
-            } catch (Exception e) {
-                logger.debug("an error occurred when trying to load the text version of a file", e);
-            }
-        }
-        return "";
-    }
-
-    private void setFileProxyAction(FileProxy proxy) {
+    protected void setFileProxyAction(FileProxy proxy) {
         if (getPersistable().hasFiles()) {
             logger.debug("Replacing existing files {} for {}", getPersistable().getInformationResourceFiles(), getPersistable());
             proxy.setAction(FileAction.REPLACE);
@@ -659,26 +610,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     public void setFileProxies(List<FileProxy> fileProxies) {
         this.fileProxies = fileProxies;
-    }
-
-    private boolean isTextInput() {
-        return FILE_INPUT_METHOD.equals(fileInputMethod);
-    }
-
-    public String getFileInputMethod() {
-        return fileInputMethod;
-    }
-
-    public void setFileInputMethod(String fileInputMethod) {
-        this.fileInputMethod = fileInputMethod;
-    }
-
-    public String getFileTextInput() {
-        return fileTextInput;
-    }
-
-    public void setFileTextInput(String fileTextInput) {
-        this.fileTextInput = fileTextInput;
     }
 
     public void setAllowedToViewConfidentialFiles(boolean allowedToViewConfidentialFiles) {
@@ -776,11 +707,10 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     }
 
     public boolean isAbleToUploadFiles() {
-        if(isAbleToUploadFiles == null) {
+        if (isAbleToUploadFiles == null) {
             isAbleToUploadFiles = getAuthenticationAndAuthorizationService().canUploadFiles(getAuthenticatedUser(), getPersistable());
         }
         return isAbleToUploadFiles;
     }
-
 
 }

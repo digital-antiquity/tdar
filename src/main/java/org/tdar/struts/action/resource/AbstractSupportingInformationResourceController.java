@@ -6,22 +6,27 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.SupportsResource;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.InformationResourceFile;
+import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.data.FileProxy;
 
 public abstract class AbstractSupportingInformationResourceController<R extends InformationResource> extends AbstractInformationResourceController<R> {
 
     private static final long serialVersionUID = -3261759402735229520L;
 
     private Long categoryId;
+    private String fileInputMethod;
+    private String fileTextInput;
 
     public Long getCategoryId() {
         return categoryId;
@@ -52,6 +57,44 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
     private List<CategoryVariable> subcategories;
 
     private ArrayList<Resource> relatedResources;
+
+    @Override
+    protected FileProxy processTextInput() {
+        if (StringUtils.isBlank(getFileTextInput())) {
+            addActionError("Please enter your " + getPersistable().getResourceType().getLabel() + " into the text area.");
+            return null;
+        }
+        if (getFileTextInput().equals(getLatestUploadedTextVersionText())) {
+            logger.info("incoming and current file input text is the same, skipping further actions");
+            return null;
+        } else {
+            logger.info("processing updated text input for {}", getPersistable());
+        }
+
+        try {
+            // process the String uploaded via the fileTextInput box verbatim as the UPLOADED_TEXT version
+            // 2013-22-04 AB: if our validation rules for Struts are working, this is not needed as the title already is checked way before this
+            // if (StringUtils.isBlank(getPersistable().getTitle())) {
+            // logger.error("Resource title was empty, client side validation failed for {}", getPersistable());
+            // addActionError("Please enter a title for your " + getPersistable().getResourceType().getLabel());
+            // return null;
+            // }
+            String uploadedTextFilename = getPersistable().getTitle() + ".txt";
+
+            FileProxy uploadedTextFileProxy = new FileProxy(uploadedTextFilename, FileProxy.createTempFileFromString(getFileTextInput()),
+                    VersionType.UPLOADED_TEXT);
+
+            // next, generate "uploaded" version of the file. In this case the VersionType.UPLOADED isn't entirely accurate
+            // as this is UPLOADED_GENERATED, but it's the file that we want to process in later parts of our code.
+            FileProxy primaryFileProxy = createUploadedFileProxy(getFileTextInput());
+            primaryFileProxy.addVersion(uploadedTextFileProxy);
+            setFileProxyAction(primaryFileProxy);
+            return primaryFileProxy;
+        } catch (IOException e) {
+            getLogger().error("unable to create temp file or write " + getFileTextInput() + " to temp file", e);
+            throw new TdarRecoverableRuntimeException(e);
+        }
+    };
 
     @Override
     protected void loadCustomMetadata() throws TdarActionException {
@@ -99,12 +142,6 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
     }
 
     @Override
-    protected void processUploadedFiles(List<InformationResourceFile> uploadedFiles) throws IOException {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
     public Collection<? extends Persistable> getDeleteIssues() {
         return getRelatedResources();
     }
@@ -135,4 +172,34 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
     public boolean supportsMultipleFileUpload() {
         return false;
     }
+
+    protected String getLatestUploadedTextVersionText() {
+        // in order for this to work we need to be generating text versions
+        // of these files for both text input and file uploads
+        for (InformationResourceFileVersion version : getPersistable().getLatestVersions(VersionType.UPLOADED_TEXT)) {
+            try {
+                return FileUtils.readFileToString(version.getFile());
+            } catch (Exception e) {
+                logger.debug("an error occurred when trying to load the text version of a file", e);
+            }
+        }
+        return "";
+    }
+
+    public String getFileInputMethod() {
+        return fileInputMethod;
+    }
+
+    public void setFileInputMethod(String fileInputMethod) {
+        this.fileInputMethod = fileInputMethod;
+    }
+
+    public String getFileTextInput() {
+        return fileTextInput;
+    }
+
+    public void setFileTextInput(String fileTextInput) {
+        this.fileTextInput = fileTextInput;
+    }
+
 }

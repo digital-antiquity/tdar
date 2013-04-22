@@ -30,12 +30,10 @@ import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
-import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
@@ -184,12 +182,12 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     @SuppressWarnings("unchecked")
     @Override
     public String loadAddMetadata() {
-        if (Persistable.Base.isNotNullOrTransient(getResource()) ) {
+        if (Persistable.Base.isNotNullOrTransient(getResource())) {
             setSubmitter(getResource().getSubmitter());
         } else {
             setSubmitter(getAuthenticatedUser());
         }
-        
+
         if (getTdarConfiguration().isPayPerIngestEnabled()) {
             getAccountService().updateTransientAccountInfo(getResource());
             setActiveAccounts(new HashSet<Account>(determineActiveAccounts()));
@@ -421,18 +419,18 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             Person uploader = getEntityService().find(getSubmitter().getId());
             getPersistable().setSubmitter(uploader);
             // if I change the owner, and the owner is me, then make sure I don't loose permissions on the record
-//            if (uploader.equals(getAuthenticatedUser())) {
-//                boolean found = false;
-//                for (AuthorizedUser user : getAuthorizedUsers()) {
-//                    if (user.getUser().equals(uploader)) {
-//                        found = true;
-//                    }
-//                }
-//                // if we're setting the sbumitter
-//                if (!found) {
-//                    getAuthorizedUsers().add(new AuthorizedUser(uploader, GeneralPermissions.MODIFY_RECORD));
-//                }
-//            }
+            // if (uploader.equals(getAuthenticatedUser())) {
+            // boolean found = false;
+            // for (AuthorizedUser user : getAuthorizedUsers()) {
+            // if (user.getUser().equals(uploader)) {
+            // found = true;
+            // }
+            // }
+            // // if we're setting the sbumitter
+            // if (!found) {
+            // getAuthorizedUsers().add(new AuthorizedUser(uploader, GeneralPermissions.MODIFY_RECORD));
+            // }
+            // }
         }
 
         getResourceCollectionService().saveAuthorizedUsersForResource(getResource(), getAuthorizedUsers(), shouldSaveResource());
