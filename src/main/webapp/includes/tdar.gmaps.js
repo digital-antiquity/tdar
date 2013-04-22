@@ -34,90 +34,78 @@ TDAR.maps = function() {
             }
 
     };
+    //deferred representing api init process.  resolved when google api calls our _apiLoaded callback
+    var _deferredApi = null;
     
+    //deferred representing map preparation. resolved when map is loaded and becomes 'idle' 
+    var _deferredMap = $.Deferred();
     
-    
-    //fire the mapapi-ready event, but only after onready
-    //FIXME: ditch this 'map/api ready' model of using jQuery.deferred object.
     var _apiLoaded = function() {
-        $(function(){
-            //console.debug("v3 map api loaded");
-            $('body').trigger("mapapiready");
-            _isApiLoaded = true;
-            
-            while(_pendingOps[0]) {
-                var op = _pendingOps.shift();
-                op();
-            }
-            
-        });
+        _deferredApi.resolve();
     };
-    
-    //private: execute a function only when google api is ready
-    var _executeWhenAPILoaded = function(callback) {
-        if(_isApiLoaded) {
-            callback();
-        } else {
-            _pendingOps.push(callback);
-        }
-        
-    }
     
     //public: dynamically load the gmap v3 api
     var _initGmapApi = function() {
+        if(_deferredApi) return _deferredApi.promise();
+        _deferredApi = $.Deferred();
         var script = document.createElement("script");
         script.type = "text/javascript";
         script.src = "//maps.googleapis.com/maps/api/js?libraries=drawing&key=" +
                 TDAR.maps.googleApiKey +
                 "&sensor=false&callback=TDAR.maps._apiLoaded";
         document.body.appendChild(script);
-        console.log("api loaded");
+        console.log("loading gmap api");
+        return _deferredApi.promise();
     }
+    
+    var _setupMapInner = function(mapDiv, inputContainer) {
+        console.log("running  setupmap");
+        var mapOptions = $.extend({}, _defaults.mapOptions, {
+                zoom: _defaults.zoomLevel,
+                center: new google.maps.LatLng(_defaults.center.lat, _defaults.center.lng),
+                mapTypeControlOptions:{
+                    mapTypeIds: [
+                        google.maps.MapTypeId.TERRAIN,
+                        google.maps.MapTypeId.SATELLITE,
+                        google.maps.MapTypeId.ROADMAP,
+                        google.maps.MapTypeId.HYBRID
+                    ]
+                },
+                mapTypeId: google.maps.MapTypeId.TERRAIN,
+                streetViewControl: false,
+                //scrollwheel zooming frustrates efforts to scroll vertically in the form. 
+                scrollwheel: false
+
+        });
+        
+        
+        var $mapDiv = $(mapDiv);
+        // if we have not specified a height, setting the height to the height of the parent DIV
+        if ($mapDiv.height() < 5) {
+            $mapDiv.height($mapDiv.parent().height() -5);
+        }
+
+        var map = new google.maps.Map(mapDiv, mapOptions);
+        $mapDiv.data("gmap", map);
+
+        if(inputContainer) {
+            _setupLatLongBoxes(mapDiv, inputContainer);
+        }
+        
+        //indicate the map is ready and dom elements loaded (we wrap this because the google.maps api may not be available to the listener at time of call)
+        google.maps.event.addListenerOnce(map, 'idle', function(){
+            console.log("map ready");
+            $(mapDiv).trigger("mapready", [map, $mapDiv.data("resourceRect")]);
+            _deferredMap.resolveWith($mapDiv[0], [map, $mapDiv.data("resourceRect")]);
+        });
+        return map;
+    };
     
     //public: initialize a gmap inside of the specified div element.  If hidden inputs define spatial bounds,  draw
     //          a box and pan/zoom the map to fit the bounds.
     var _setupMap = function(mapDiv, inputContainer) {
-        _executeWhenAPILoaded(function() {
-            console.log("running  setupmap");
-            var mapOptions = $.extend({}, _defaults.mapOptions, {
-                    zoom: _defaults.zoomLevel,
-                    center: new google.maps.LatLng(_defaults.center.lat, _defaults.center.lng),
-                    mapTypeControlOptions:{
-                        mapTypeIds: [
-                            google.maps.MapTypeId.TERRAIN,
-                            google.maps.MapTypeId.SATELLITE,
-                            google.maps.MapTypeId.ROADMAP,
-                            google.maps.MapTypeId.HYBRID
-                        ]
-                    },
-                    mapTypeId: google.maps.MapTypeId.TERRAIN,
-                    streetViewControl: false,
-                    //scrollwheel zooming frustrates efforts to scroll vertically in the form. 
-                    scrollwheel: false
-
-            });
-            
-            
-            var $mapDiv = $(mapDiv);
-            // if we have not specified a height, setting the height to the height of the parent DIV
-            if ($mapDiv.height() < 5) {
-                $mapDiv.height($mapDiv.parent().height() -5);
-            }
-
-            var map = new google.maps.Map(mapDiv, mapOptions);
-            $mapDiv.data("gmap", map);
-
-            if(inputContainer) {
-                _setupLatLongBoxes(mapDiv, inputContainer);
-            }
-            
-            //indicate the map is ready and dom elements loaded (we wrap this because the google.maps api may not be available to the listener at time of call)
-            google.maps.event.addListenerOnce(map, 'idle', function(){
-            	console.log("map ready");
-                $(mapDiv).trigger("mapready", [map, $mapDiv.data("resourceRect")]);
-            });
-            
-            return map;
+        _initGmapApi().done(function() {
+            _setupMapInner(mapDiv, inputContainer);
         });
     };
 
@@ -182,8 +170,8 @@ TDAR.maps = function() {
 
     //public: setup a map in an editing context (after map has been initialized for viewing)
     var _setupEditMap = function(mapDiv, inputContainer) {
-        _setupMap(mapDiv, inputContainer);
-        _executeWhenAPILoaded(function(){
+        _initGmapApi().done(function(){
+            _setupMapInner(mapDiv, inputContainer);
             var gmap = $(mapDiv).data("gmap");
     
             //add "select region" button
@@ -409,7 +397,8 @@ TDAR.maps = function() {
     };
     
     var _setupMapResult = function() {
-        $(".google-map", '#articleBody').one("mapready", function(e, myMap) {
+        //$(".google-map", '#articleBody').one("mapready", function(e, myMap) {
+        _deferredMap.done(function(myMap, ignoredRect) {
         	console.log("setup map results");
           var bounds = new google.maps.LatLngBounds();
           var markers = new Array();
@@ -459,7 +448,8 @@ TDAR.maps = function() {
         defaults: _defaults,
         updateResourceRect: _updateResourceRect,
         setupEditMap: _setupEditMap,
-        setupMapResult: _setupMapResult
+        setupMapResult: _setupMapResult,
+        mapPromise: _deferredMap.promise()
     };
 }();
 

@@ -205,10 +205,18 @@ function serializeFormState() {
         $("input[type=text],input[type=hidden]", frm).each(function(idx, inputElem) {
             $(inputElem).attr("value", inputElem.value);
         });
+        
+        //don't persist dom elements created by google map api
+        console.log("clearing map information")
+        $('#large-google-map').removeData();
+        $('#large-google-map').empty("div");
+=        
         $("#autosave").val($frm.html());
         
         //if doing resource search, clear collection search field so we aren't confused about which tab to display
         $("#queryField").val("");
+        
+        
     });
 }
 
