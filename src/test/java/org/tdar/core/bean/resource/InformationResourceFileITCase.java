@@ -95,6 +95,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
         List<Long> irfvids = new ArrayList<Long>();
         InformationResourceFile irFile = ir.getInformationResourceFiles().iterator().next();
         Map<VersionType, InformationResourceFileVersion> map = new HashMap<VersionType, InformationResourceFileVersion>();
+        logger.info("versions: {} ", irFile.getInformationResourceFileVersions());
         for (InformationResourceFileVersion irfv : irFile.getInformationResourceFileVersions()) {
             map.put(irfv.getFileVersionType(), irfv);
             irfvids.add(irfv.getId());

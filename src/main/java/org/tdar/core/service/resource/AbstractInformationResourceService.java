@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -14,13 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.PersonalFilestoreTicket;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Language;
-import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.resource.InformationResourceFileDao;
@@ -59,32 +56,32 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     @Qualifier("genericDao")
     private GenericDao genericDao;
 
-/*
-    @Transactional(readOnly = true)
-    public List<T> findBySubmitter(Person person) {
-        if (person == null) {
-            getLogger().warn("Trying to find resources for null submitter");
-            return Collections.emptyList();
-        }
-        return getDao().findBySubmitter(person);
-    }
-
-    @Transactional(readOnly = true)
-    public List<T> findSparseBySubmitter(Person person) {
-        if (person == null) {
-            getLogger().warn("Trying to find resources for null submitter");
-            return Collections.emptyList();
-        }
-        return getDao().findSparseResourceBySubmitterType(person, ResourceType.fromClass(getDao().getPersistentClass()));
-    }
-  */  
+    /*
+     * @Transactional(readOnly = true)
+     * public List<T> findBySubmitter(Person person) {
+     * if (person == null) {
+     * getLogger().warn("Trying to find resources for null submitter");
+     * return Collections.emptyList();
+     * }
+     * return getDao().findBySubmitter(person);
+     * }
+     * 
+     * @Transactional(readOnly = true)
+     * public List<T> findSparseBySubmitter(Person person) {
+     * if (person == null) {
+     * getLogger().warn("Trying to find resources for null submitter");
+     * return Collections.emptyList();
+     * }
+     * return getDao().findSparseResourceBySubmitterType(person, ResourceType.fromClass(getDao().getPersistentClass()));
+     * }
+     */
     @Transactional(readOnly = false)
     private void addInformationResourceFile(InformationResource resource, InformationResourceFile irFile, FileProxy proxy) throws IOException {
         // always set the download/version info and persist the relationships between the InformationResource and its IRFile.
         incrementVersionNumber(irFile);
         // genericDao.saveOrUpdate(resource);
         irFile.setInformationResource(resource);
-        createVersionMetadataAndStore(irFile, proxy);
+        proxy.setInformationResourceFileVersion(createVersionMetadataAndStore(irFile, proxy));
         setInformationResourceFileMetadata(irFile, proxy);
         for (FileProxy additionalVersion : proxy.getAdditionalVersions()) {
             logger.debug("Creating new version {}", additionalVersion);
@@ -112,7 +109,24 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
 
         processMedataForFileProxies(resource, fileProxiesToProcess);
         fileProxiesToProcess = validateAndConsolidateProxies(fileProxiesToProcess);
+        for (FileProxy proxy : fileProxiesToProcess) {
+            InformationResourceFile irFile = proxy.getInformationResourceFile();
+            InformationResourceFileVersion version = proxy.getInformationResourceFileVersion();
+            switch (version.getFileVersionType()) {
+                case UPLOADED:
+                case UPLOADED_ARCHIVAL:
+                    irFile.setInformationResourceFileType(analyzer.analyzeFile(version));
+                    try {
+                        analyzer.processFile(proxy.getInformationResourceFileVersion());
+                    } catch (Exception e) {
+                        logger.warn("caught exception {} while analyzing file {}", e, proxy.getFilename());
+                    }
+                    break;
+                default:
+                    logger.debug("Not setting file type on irFile {} for VersionType {}", irFile, proxy.getVersionType());
+            }
 
+        }
         Pair<List<ExceptionWrapper>, Boolean> toReturn = storeErrorMessages(fileProxiesToProcess);
 
         /*
@@ -151,7 +165,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         // TODO Auto-generated method stub
         // if we're dealing with a composite type; find the proxy with the primary file; add all the rest to that and pass it in
         // also validate that the thing is "right"
-        
+
         return fileProxiesToProcess;
     }
 
@@ -255,17 +269,21 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     }
 
     @Transactional(readOnly = false)
-    private void createVersionMetadataAndStore(InformationResourceFile irFile, FileProxy fileProxy) throws IOException {
+    private InformationResourceFileVersion createVersionMetadataAndStore(InformationResourceFile irFile, FileProxy fileProxy) throws IOException {
         String filename = BaseFilestore.sanitizeFilename(fileProxy.getFilename());
         if (fileProxy.getFile() == null || !fileProxy.getFile().exists()) {
             throw new TdarRecoverableRuntimeException("something went wrong, file " + fileProxy.getFilename() + " does not exist");
         }
         InformationResourceFileVersion version = new InformationResourceFileVersion(fileProxy.getVersionType(), filename, irFile);
-        // setInformationResourceFileMetadata(irFile, fileProxy);
+        if (irFile.isTransient()) {
+            genericDao.saveOrUpdate(irFile);
+        }
+        
         irFile.addFileVersion(version);
         filestore.store(fileProxy.getFile(), version);
         genericDao.save(version);
         genericDao.saveOrUpdate(irFile);
+        return version;
     }
 
     public List<Language> findAllLanguages() {

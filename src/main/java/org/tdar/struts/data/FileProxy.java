@@ -38,6 +38,7 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy> {
     private FileAccessRestriction restriction = FileAccessRestriction.PUBLIC;
     private Integer sequenceNumber = 0;
     private InformationResourceFile informationResourceFile;
+    private InformationResourceFileVersion informationResourceFileVersion;
 
     private List<FileProxy> additionalVersions = new ArrayList<FileProxy>();
 
@@ -210,6 +211,14 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy> {
 
     public void setInformationResourceFile(InformationResourceFile informationResourceFile) {
         this.informationResourceFile = informationResourceFile;
+    }
+
+    public InformationResourceFileVersion getInformationResourceFileVersion() {
+        return informationResourceFileVersion;
+    }
+
+    public void setInformationResourceFileVersion(InformationResourceFileVersion informationResourceFileVersion) {
+        this.informationResourceFileVersion = informationResourceFileVersion;
     }
 
 }

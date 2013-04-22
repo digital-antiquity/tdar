@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -100,6 +101,7 @@ import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.Filestore;
+import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.FileProxy;
@@ -297,7 +299,8 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         try {
             FileProxy proxy = new FileProxy(file.getName(), file, VersionType.UPLOADED, FileAction.ADD);
             proxy.setRestriction(restriction);
-            informationResourceService.processFileProxyMetadata(ir, proxy);
+//            PersonalFilestore filestore, T resource, List<FileProxy> fileProxiesToProcess, Long ticketId
+            informationResourceService.processFileProxies(null, ir, Arrays.asList(proxy), null);
             // informationResourceService.addOrReplaceInformationResourceFile(ir, new FileInputStream(file), file.getName(), FileAction.ADD,
             // VersionType.UPLOADED);
         } catch (IOException e) {
