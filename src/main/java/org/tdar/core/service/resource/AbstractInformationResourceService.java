@@ -5,24 +5,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.PersonalFilestoreTicket;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Language;
-import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.resource.InformationResourceFileDao;
@@ -61,32 +56,25 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     @Qualifier("genericDao")
     private GenericDao genericDao;
 
-    @Transactional(readOnly = true)
-    public List<T> findBySubmitter(Person person) {
-        if (person == null) {
-            getLogger().warn("Trying to find resources for null submitter");
-            return Collections.emptyList();
-        }
-        return getDao().findBySubmitter(person);
-    }
-
-    @Transactional(readOnly = true)
-    public List<T> findSparseBySubmitter(Person person) {
-        if (person == null) {
-            getLogger().warn("Trying to find resources for null submitter");
-            return Collections.emptyList();
-        }
-        return getDao().findSparseResourceBySubmitterType(person, ResourceType.fromClass(getDao().getPersistentClass()));
-    }
-
-    private void addInformationResourceFile(InformationResource resource, InformationResourceFile irFile) {
-        genericDao.saveOrUpdate(resource);
+    @Transactional(readOnly = false)
+    private void addInformationResourceFile(InformationResource resource, InformationResourceFile irFile, FileProxy proxy) throws IOException {
+        // always set the download/version info and persist the relationships between the InformationResource and its IRFile.
+        incrementVersionNumber(irFile);
+        // genericDao.saveOrUpdate(resource);
         irFile.setInformationResource(resource);
+        createVersionMetadataAndStore(irFile, proxy);
+        setInformationResourceFileMetadata(irFile, proxy);
+        for (FileProxy additionalVersion : proxy.getAdditionalVersions()) {
+            logger.debug("Creating new version {}", additionalVersion);
+            createVersionMetadataAndStore(irFile, additionalVersion);
+        }
         genericDao.saveOrUpdate(irFile);
         resource.add(irFile);
         genericDao.saveOrUpdate(resource);
+        logger.debug("all versions for {}", irFile);
     }
 
+    @Transactional(readOnly = true)
     private InformationResourceFile findInformationResourceFile(FileProxy proxy) {
         InformationResourceFile irFile = genericDao.find(InformationResourceFile.class, proxy.getFileId());
         if (irFile == null) {
@@ -161,20 +149,9 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                 genericDao.update(irFile);
                 break;
             case REPLACE:
-                // explicit fall through to ADD after loading the existing irFile to
-                // be replaced.
+                // explicit fall through to ADD after loading the existing irFile to be replaced.
             case ADD:
-                // always set the download/version info and persist the relationships between the InformationResource and its IRFile.
-                incrementVersionNumber(irFile);
-                addInformationResourceFile(informationResource, irFile);
-                createVersionMetadataAndStore(irFile, proxy);
-                setInformationResourceFileMetadata(irFile, proxy);
-                for (FileProxy additionalVersion : proxy.getAdditionalVersions()) {
-                    logger.debug("Creating new version {}", additionalVersion);
-                    createVersionMetadataAndStore(irFile, additionalVersion);
-                }
-                genericDao.saveOrUpdate(irFile);
-                logger.debug("all versions for {}", irFile);
+                addInformationResourceFile(informationResource, irFile, proxy);
                 break;
             case ADD_DERIVATIVE:
                 createVersionMetadataAndStore(irFile, proxy);
@@ -252,6 +229,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
 
     }
 
+    @Transactional(readOnly = false)
     private void createVersionMetadataAndStore(InformationResourceFile irFile, FileProxy fileProxy) throws IOException {
         String filename = BaseFilestore.sanitizeFilename(fileProxy.getFilename());
         if (fileProxy.getFile() == null || !fileProxy.getFile().exists()) {
