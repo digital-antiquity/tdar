@@ -20,17 +20,18 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
+import org.tdar.core.dao.resource.InformationResourceFileDao;
 import org.tdar.core.dao.resource.ResourceDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ServiceInterface;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.Filestore;
+import org.tdar.filestore.Filestore.BaseFilestore;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.struts.data.FileProxy;
@@ -52,7 +53,8 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     private static final Filestore filestore = TdarConfiguration.getInstance().getFilestore();
 
     @Autowired
-    private InformationResourceFileService informationResourceFileService;
+    private InformationResourceFileDao informationResourceFileDao;
+
     @Autowired
     private FileAnalyzer analyzer;
     @Autowired
@@ -77,12 +79,6 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         return getDao().findSparseResourceBySubmitterType(person, ResourceType.fromClass(getDao().getPersistentClass()));
     }
 
-    @Transactional
-    public void deleteInformationResourceFile(InformationResource resource, InformationResourceFile irFile) {
-        resource.getInformationResourceFiles().remove(irFile);
-        informationResourceFileService.delete(irFile);
-    }
-
     private void addInformationResourceFile(InformationResource resource, InformationResourceFile irFile) {
         genericDao.saveOrUpdate(resource);
         irFile.setInformationResource(resource);
@@ -101,16 +97,16 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     }
 
     @Transactional
-    public Pair<List<ExceptionWrapper>, Boolean> processFileProxies(PersonalFilestore filestore, T resource, List<FileProxy> fileProxiesToProcess,
-            List<InformationResourceFile> modifiedFiles, Long ticketId) throws IOException {
-        processMedataForFileProxies(resource, fileProxiesToProcess);
+    public Pair<List<ExceptionWrapper>, Boolean> processFileProxies(PersonalFilestore filestore, T resource, List<FileProxy> fileProxiesToProcess, Long ticketId)
+            throws IOException {
 
+        processMedataForFileProxies(resource, fileProxiesToProcess);
         fileProxiesToProcess = validateAndConsolidateProxies(fileProxiesToProcess);
 
-        Pair<List<ExceptionWrapper>, Boolean> toReturn = storeErrorMessages(fileProxiesToProcess, modifiedFiles);
+        Pair<List<ExceptionWrapper>, Boolean> toReturn = storeErrorMessages(fileProxiesToProcess);
 
         /*
-         * FIXME:  Should I purge regardless of errors??? Really???
+         * FIXME: Should I purge regardless of errors??? Really???
          */
         if (ticketId != null) {
             filestore.purge(getDao().find(PersonalFilestoreTicket.class, ticketId));
@@ -118,14 +114,13 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         return toReturn;
     }
 
-    private Pair<List<ExceptionWrapper>, Boolean> storeErrorMessages(List<FileProxy> fileProxiesToProcess, List<InformationResourceFile> modifiedFiles) {
+    private Pair<List<ExceptionWrapper>, Boolean> storeErrorMessages(List<FileProxy> fileProxiesToProcess) {
         List<ExceptionWrapper> exceptionsAndMessages = new ArrayList<ExceptionWrapper>();
         Pair<List<ExceptionWrapper>, Boolean> toReturn = new Pair<List<ExceptionWrapper>, Boolean>(exceptionsAndMessages, false);
         if (CollectionUtils.isNotEmpty(fileProxiesToProcess)) {
             for (FileProxy proxy : fileProxiesToProcess) {
                 InformationResourceFile file = proxy.getInformationResourceFile();
                 if (file != null) {
-                    modifiedFiles.add(file);
                     WorkflowContext context = file.getWorkflowContext();
                     if (context != null) {
                         if (context.isErrorFatal()) {
@@ -243,7 +238,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
                 InformationResourceFileVersion version = iterator.next();
                 if (!version.equals(original) && !version.isUploaded() && !version.isArchival()) {
                     iterator.remove();
-                    informationResourceFileService.delete(version);
+                    informationResourceFileDao.delete(version);
                 }
             }
             // this is a known case where we need to purge the session
@@ -258,7 +253,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     }
 
     private void createVersionMetadataAndStore(InformationResourceFile irFile, FileProxy fileProxy) throws IOException {
-        String filename = sanitizeFilename(fileProxy.getFilename());
+        String filename = BaseFilestore.sanitizeFilename(fileProxy.getFilename());
         if (fileProxy.getFile() == null || !fileProxy.getFile().exists()) {
             throw new TdarRecoverableRuntimeException("something went wrong, file " + fileProxy.getFilename() + " does not exist");
         }
@@ -268,51 +263,6 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         filestore.store(fileProxy.getFile(), version);
         genericDao.save(version);
         genericDao.saveOrUpdate(irFile);
-    }
-
-    /**
-     * This comes from the bad old days and was intended to make dataset filenames safe for postgres importing.
-     * Dataset files are converted into tables in postgres and this method
-     * was used to generate table names that were postgres-safe, e.g., starts with an alphabetic character and < 128 characters.
-     * Now, DatabaseConverter should be responsible for that translation / sanitization internally,
-     * and we should preserve the filename as it was originally sent in as best we can.
-     * 
-     * FIXME: Filestore should be responsible for sanitization of filenames instead
-     * 
-     * @param filename
-     * @return
-     */
-    private String sanitizeFilename(String filename) {
-        filename = filename.toLowerCase();
-        String ext = FilenameUtils.getExtension(filename);
-        String basename = FilenameUtils.getBaseName(filename);
-
-        // // make sure that the total length does not exceed 128 characters
-        // if (basename.length() > 122)
-        // basename = basename.substring(0, 121);
-
-        // replace all whitespace with dashes
-        // basename = basename.replaceAll("\\s", "-");
-
-        // replace all characters that are not alphanumeric, underscore "_", or
-        // dash "-" with a single dash "-".
-        basename = basename.replaceAll("[^\\w\\-]+", "-");
-
-        basename = StringUtils.removeEnd(basename, "-");
-
-        StringBuilder builder = new StringBuilder(basename);
-
-        // ensure that the first letter of the basename is alphabetic
-        // if (!StringUtils.isAlpha(String.valueOf(basename.charAt(0)))) {
-        // builder.insert(0, 'a');
-        // }
-        builder.append('.').append(ext);
-
-        return builder.toString();
-    }
-
-    public InformationResourceFileService getInformationResourceFileService() {
-        return informationResourceFileService;
     }
 
     public List<Language> findAllLanguages() {

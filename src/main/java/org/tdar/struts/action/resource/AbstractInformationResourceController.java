@@ -100,7 +100,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     private boolean resourceFilesHaveChanged = false;
 
-    protected void processUploadedFiles(List<InformationResourceFile> uploadedFiles) throws IOException {
+    protected void processUploadedFiles() throws IOException {
         return;
     }
 
@@ -221,13 +221,11 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         }
 
         logger.debug("Final proxy set: {}", fileProxiesToProcess);
-        ArrayList<InformationResourceFile> modifiedFiles = new ArrayList<InformationResourceFile>();
         PersonalFilestore filestore = filestoreService.getPersonalFilestore(getAuthenticatedUser());
 
         Pair<List<ExceptionWrapper>, Boolean> exceptions = null;
         try {
-            exceptions = getInformationResourceService().processFileProxies(filestore, getPersistable(),
-                    fileProxiesToProcess, modifiedFiles, ticketId);
+            exceptions = getInformationResourceService().processFileProxies(filestore, getPersistable(), fileProxiesToProcess, ticketId);
         } catch (IOException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
@@ -245,7 +243,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         }
         try {
             setResourceFilesHaveChanged(true);
-            processUploadedFiles(modifiedFiles);
+            processUploadedFiles();
         } catch (IOException e) {
             addActionErrorWithException(WE_WERE_UNABLE_TO_PROCESS_THE_UPLOADED_CONTENT, e);
         }

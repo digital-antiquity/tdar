@@ -11,7 +11,7 @@ public class ExceptionWrapper implements Serializable {
 
     
     private String message;
-    
+    private boolean fatal;
     private String stackTrace;
 
     public ExceptionWrapper() {}
@@ -40,5 +40,13 @@ public class ExceptionWrapper implements Serializable {
     @Override
     public String toString() {
         return String.format("%s :: %s", getMessage() , getStackTrace());
+    }
+
+    public boolean isFatal() {
+        return fatal;
+    }
+
+    public void setFatal(boolean fatal) {
+        this.fatal = fatal;
     }
 }

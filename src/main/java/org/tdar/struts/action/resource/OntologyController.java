@@ -47,7 +47,7 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
     }
 
     @Override
-    protected void processUploadedFiles(List<InformationResourceFile> uploadedFiles) throws IOException {
+    protected void processUploadedFiles() throws IOException {
         // after the file has already been generated, etc.
         getOntologyService().shred(getPersistable());
         saveCategories();

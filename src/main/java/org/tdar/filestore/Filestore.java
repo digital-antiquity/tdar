@@ -132,6 +132,47 @@ public interface Filestore {
         // protected static final MimeTypes mimes = TikaConfig.getDefaultConfig().getMimeRepository();
         protected static final Logger logger = LoggerFactory.getLogger(BaseFilestore.class);
 
+        /**
+         * This comes from the bad old days and was intended to make dataset filenames safe for postgres importing.
+         * Dataset files are converted into tables in postgres and this method
+         * was used to generate table names that were postgres-safe, e.g., starts with an alphabetic character and < 128 characters.
+         * Now, DatabaseConverter should be responsible for that translation / sanitization internally,
+         * and we should preserve the filename as it was originally sent in as best we can.
+         * 
+         * FIXME: Filestore should be responsible for sanitization of filenames instead
+         * 
+         * @param filename
+         * @return
+         */
+        public static String sanitizeFilename(String filename) {
+            filename = filename.toLowerCase();
+            String ext = FilenameUtils.getExtension(filename);
+            String basename = FilenameUtils.getBaseName(filename);
+
+            // // make sure that the total length does not exceed 128 characters
+            // if (basename.length() > 122)
+            // basename = basename.substring(0, 121);
+
+            // replace all whitespace with dashes
+            // basename = basename.replaceAll("\\s", "-");
+
+            // replace all characters that are not alphanumeric, underscore "_", or
+            // dash "-" with a single dash "-".
+            basename = basename.replaceAll("[^\\w\\-]+", "-");
+
+            basename = StringUtils.removeEnd(basename, "-");
+
+            StringBuilder builder = new StringBuilder(basename);
+
+            // ensure that the first letter of the basename is alphabetic
+            // if (!StringUtils.isAlpha(String.valueOf(basename.charAt(0)))) {
+            // builder.insert(0, 'a');
+            // }
+            builder.append('.').append(ext);
+
+            return builder.toString();
+        }
+        
         /*
          * This method extracts out the MimeType from the file using Tika, the previous version tried to parse the file
          * but this doesn't need to be so complex.
@@ -311,5 +352,4 @@ public interface Filestore {
         }
 
     }
-
 }

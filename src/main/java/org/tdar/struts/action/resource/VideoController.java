@@ -1,14 +1,11 @@
 package org.tdar.struts.action.resource;
 
-import java.io.IOException;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Video;
 
@@ -39,11 +36,6 @@ public class VideoController extends AbstractInformationResourceController<Video
         handleUploadedFiles();
         getGenericService().saveOrUpdate(video);
         return SUCCESS;
-    }
-
-    @Override
-    protected void processUploadedFiles(List<InformationResourceFile> uploadedFiles) throws IOException {
-        return;
     }
 
     @Override

@@ -50,6 +50,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.DataTableColumnRelationship;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.core.dao.resource.DatasetDao;
+import org.tdar.core.dao.resource.InformationResourceFileDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.DataIntegrationService;
 import org.tdar.core.service.ExcelService;
@@ -84,6 +85,9 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
     @Autowired
     private DataIntegrationService dataIntegrationService;
 
+    @Autowired
+    private InformationResourceFileDao informationResourceFileDao;
+    
     @Autowired
     private ExcelService excelService;
 
@@ -144,7 +148,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             getLogger().warn("Trying to translate {} with a null file payload.", dataset);
             return null;
         }
-        getInformationResourceFileService().deleteTranslatedFiles(file);
+        informationResourceFileDao.deleteTranslatedFiles(file);
 
         // FIXME: remove synchronize once Hibernate learns more about unique constraints
         // http://community.jboss.org/wiki/HibernateFAQ-AdvancedProblems#Hibernate_is_violating_a_unique_constraint

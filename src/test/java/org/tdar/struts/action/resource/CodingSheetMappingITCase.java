@@ -585,7 +585,6 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         uploadedFileNames.add(fileName);
         codingSheetController.setUploadedFilesFileName(uploadedFileNames);
         codingSheetController.setUploadedFiles(uploadedFiles);
-//        codingSheetController.setFileInputMethod(codingSheetController.FILE_INPUT_METHOD);
         codingSheetController.setServletRequest(getServletPostRequest());
         codingSheetController.save();
         Long codingId = codingSheet.getId();

@@ -113,7 +113,7 @@ public class CodingSheetController extends AbstractSupportingInformationResource
     }
 
     @Override
-    protected void processUploadedFiles(List<InformationResourceFile> uploadedFiles) throws IOException {
+    protected void processUploadedFiles() throws IOException {
         // 1. save metadata for coding sheet file
         // 1.1 Create CodingSheet object, and save the metadata
         Collection<InformationResourceFileVersion> files = getPersistable().getLatestVersions(VersionType.UPLOADED);
