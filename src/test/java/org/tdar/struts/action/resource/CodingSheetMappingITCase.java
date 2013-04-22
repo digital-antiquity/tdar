@@ -577,6 +577,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         CodingSheet codingSheet = codingSheetController.getCodingSheet();
         codingSheet.setTitle("test coding sheet");
         codingSheet.setDescription("test description");
+
         List<File> uploadedFiles = new ArrayList<File>();
         List<String> uploadedFileNames = new ArrayList<String>();
         uploadedFiles.add(new File(filePath));
@@ -584,6 +585,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         uploadedFileNames.add(fileName);
         codingSheetController.setUploadedFilesFileName(uploadedFileNames);
         codingSheetController.setUploadedFiles(uploadedFiles);
+//        codingSheetController.setFileInputMethod(codingSheetController.FILE_INPUT_METHOD);
         codingSheetController.setServletRequest(getServletPostRequest());
         codingSheetController.save();
         Long codingId = codingSheet.getId();

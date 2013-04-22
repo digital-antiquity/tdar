@@ -118,6 +118,7 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
 
     private transient Long transientDownloadCount;
 
+    @Column(name="part_of_composite")
     private Boolean partOfComposite  = Boolean.FALSE;
 
     

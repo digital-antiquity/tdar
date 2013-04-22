@@ -53,6 +53,7 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
 
     private String format;
 
+    @Column(name="primary_file")
     private Boolean primaryFile = Boolean.FALSE;
 
     private String extension;

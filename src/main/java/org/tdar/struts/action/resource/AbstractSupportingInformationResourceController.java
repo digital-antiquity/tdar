@@ -6,8 +6,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.SupportsResource;
 import org.tdar.core.bean.resource.CategoryVariable;
@@ -60,11 +62,16 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
 
     @Override
     protected FileProxy processTextInput() {
+        if (!isTextInput()) {
+            return null;
+        }
+
         if (StringUtils.isBlank(getFileTextInput())) {
             addActionError("Please enter your " + getPersistable().getResourceType().getLabel() + " into the text area.");
             return null;
         }
-        if (getFileTextInput().equals(getLatestUploadedTextVersionText())) {
+
+        if (ObjectUtils.equals(getFileTextInput(), getLatestUploadedTextVersionText())) {
             logger.info("incoming and current file input text is the same, skipping further actions");
             return null;
         } else {
@@ -188,6 +195,10 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
 
     public String getFileInputMethod() {
         return fileInputMethod;
+    }
+
+    private boolean isTextInput() {
+        return FILE_INPUT_METHOD.equals(fileInputMethod);
     }
 
     public void setFileInputMethod(String fileInputMethod) {
