@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -13,11 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.PersonalFilestoreTicket;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Language;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.resource.InformationResourceFileDao;
@@ -56,6 +59,25 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     @Qualifier("genericDao")
     private GenericDao genericDao;
 
+/*
+    @Transactional(readOnly = true)
+    public List<T> findBySubmitter(Person person) {
+        if (person == null) {
+            getLogger().warn("Trying to find resources for null submitter");
+            return Collections.emptyList();
+        }
+        return getDao().findBySubmitter(person);
+    }
+
+    @Transactional(readOnly = true)
+    public List<T> findSparseBySubmitter(Person person) {
+        if (person == null) {
+            getLogger().warn("Trying to find resources for null submitter");
+            return Collections.emptyList();
+        }
+        return getDao().findSparseResourceBySubmitterType(person, ResourceType.fromClass(getDao().getPersistentClass()));
+    }
+  */  
     @Transactional(readOnly = false)
     private void addInformationResourceFile(InformationResource resource, InformationResourceFile irFile, FileProxy proxy) throws IOException {
         // always set the download/version info and persist the relationships between the InformationResource and its IRFile.
@@ -127,6 +149,9 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     @Transactional
     protected List<FileProxy> validateAndConsolidateProxies(List<FileProxy> fileProxiesToProcess) {
         // TODO Auto-generated method stub
+        // if we're dealing with a composite type; find the proxy with the primary file; add all the rest to that and pass it in
+        // also validate that the thing is "right"
+        
         return fileProxiesToProcess;
     }
 

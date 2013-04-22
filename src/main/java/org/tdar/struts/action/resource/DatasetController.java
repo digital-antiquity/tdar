@@ -65,11 +65,11 @@ public class DatasetController extends AbstractDatasetController<Dataset> {
         }
         return SUCCESS;
     }
-
+/*
     public List<Dataset> getAllSubmittedDatasets() {
         return getDatasetService().findBySubmitter(getAuthenticatedUser());
     }
-
+*/
     public String getContentDisposition() {
         return String.format("filename=\"dataset_%s.xls\"", getPersistable().getId());
     }

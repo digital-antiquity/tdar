@@ -73,13 +73,13 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
 
     /**
      * @return all ontologies submitted by this user
-     */
     public List<Ontology> getAllSubmittedOntologies() {
         if (allSubmittedOntologies == null) {
             allSubmittedOntologies = getOntologyService().findBySubmitter(getAuthenticatedUser());
         }
         return allSubmittedOntologies;
     }
+     */
 
     public Ontology getOntology() {
         return getPersistable();

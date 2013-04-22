@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
-import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Ontology;
@@ -205,13 +204,13 @@ public class CodingSheetController extends AbstractSupportingInformationResource
      * Returns all coding sheets submitted by the currently authenticated user.
      * 
      * @return all coding sheets submitted by the currently authenticated user.
-     */
     public List<CodingSheet> getAllSubmittedCodingSheets() {
         if (allSubmittedCodingSheets == null) {
             allSubmittedCodingSheets = getCodingSheetService().findBySubmitter(getAuthenticatedUser());
         }
         return allSubmittedCodingSheets;
     }
+     */
 
     /**
      * Get the current concept.
