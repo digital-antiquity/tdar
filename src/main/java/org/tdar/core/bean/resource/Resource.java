@@ -142,7 +142,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
         @FetchProfile(name = "resource-with-people", fetchOverrides = {
                 @FetchOverride(association = "resourceCreators", mode = FetchMode.JOIN, entity = Resource.class),
                 @FetchOverride(association = "submitter", mode = FetchMode.JOIN, entity = Resource.class) }),
-        @FetchProfile(name="simple", fetchOverrides = { })
+        @FetchProfile(name = "simple", fetchOverrides = {})
 })
 public class Resource extends JsonModel.Base implements Persistable,
         Comparable<Resource>, HasName, Updatable, Indexable, Validatable, SimpleSearch,
@@ -1496,20 +1496,14 @@ public class Resource extends JsonModel.Base implements Persistable,
     @JSONTransient
     public String getFormattedAuthorList() {
         StringBuilder sb = new StringBuilder();
-        List<ResourceCreator> primaryCreators = new ArrayList<ResourceCreator>(
-                getPrimaryCreators());
-        Collections.sort(primaryCreators);
-        for (ResourceCreator creator : primaryCreators) {
-            if (creator.getRole() == ResourceCreatorRole.AUTHOR
-                    || creator.getRole() == ResourceCreatorRole.CREATOR) {
-                appendIfNotBlank(sb, creator.getCreator().getProperName(), ",",
-                        "");
+        for (ResourceCreator creator : getPrimaryCreators()) {
+            if (creator.getRole() == ResourceCreatorRole.AUTHOR || creator.getRole() == ResourceCreatorRole.CREATOR) {
+                appendIfNotBlank(sb, creator.getCreator().getProperName(), ",", "");
             }
         }
-        for (ResourceCreator creator : primaryCreators) {
+        for (ResourceCreator creator : getEditors()) {
             if (creator.getRole() == ResourceCreatorRole.EDITOR) {
-                appendIfNotBlank(sb, creator.getCreator().getProperName(), ",",
-                        "");
+                appendIfNotBlank(sb, creator.getCreator().getProperName(), ",", "");
             }
         }
         return sb.toString();
