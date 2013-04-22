@@ -267,28 +267,34 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             // 3. single file upload (dataset|coding sheet|ontology)
             // there could be an incoming file payload, or just a metadata change.
 
-            /*
-             * FIXME: in Jar, hopefully, this goes away
-             */
-
-            FileProxy singleFileProxy = CollectionUtils.isEmpty(fileProxies) ? new FileProxy() : fileProxies.get(0);
-            if (CollectionUtils.isEmpty(uploadedFiles)) {
-                // check for metadata change iff this resource has an existing file.
-                InformationResourceFile file = getPersistable().getFirstInformationResourceFile();
-                if (file != null && (file.getRestriction() != singleFileProxy.getRestriction())) {
-                    singleFileProxy.setAction(FileAction.MODIFY_METADATA);
-                    singleFileProxy.setFileId(file.getId());
-                    fileProxiesToProcess.add(singleFileProxy);
-                }
-            } else {
-                // process a new uploaded file (either ADD or REPLACE)
-                setFileProxyAction(singleFileProxy);
-                singleFileProxy.setFilename(uploadedFilesFileNames.get(0));
-                singleFileProxy.setFile(uploadedFiles.get(0));
-                fileProxiesToProcess.add(singleFileProxy);
-            }
+            fileProxiesToProcess = handleSingleFileUpload(fileProxiesToProcess);
         }
+
         return fileProxiesToProcess;
+    }
+
+    protected List<FileProxy> handleSingleFileUpload(List<FileProxy> toProcess) {
+        /*
+         * FIXME: in Jar, hopefully, this goes away
+         */
+
+        FileProxy singleFileProxy = CollectionUtils.isEmpty(fileProxies) ? new FileProxy() : fileProxies.get(0);
+        if (CollectionUtils.isEmpty(uploadedFiles)) {
+            // check for metadata change iff this resource has an existing file.
+            InformationResourceFile file = getPersistable().getFirstInformationResourceFile();
+            if (file != null && (file.getRestriction() != singleFileProxy.getRestriction())) {
+                singleFileProxy.setAction(FileAction.MODIFY_METADATA);
+                singleFileProxy.setFileId(file.getId());
+                toProcess.add(singleFileProxy);
+            }
+        } else {
+            // process a new uploaded file (either ADD or REPLACE)
+            setFileProxyAction(singleFileProxy);
+            singleFileProxy.setFilename(uploadedFilesFileNames.get(0));
+            singleFileProxy.setFile(uploadedFiles.get(0));
+            toProcess.add(singleFileProxy);
+        }
+        return toProcess;
     }
 
     //
