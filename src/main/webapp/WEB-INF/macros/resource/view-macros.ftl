@@ -511,7 +511,8 @@ No coding rules have been entered for this coding sheet yet.
 </#if>
 
 <@statusCallout onStatus='${persistable.status?lower_case}' cssClass='${status}'>
-    This record has been marked as <strong>${persistable.status.label}</strong> <#if authorityForDup?has_content> of ${authorityForDup.name}</#if>. 
+    This record has been marked as <strong>${persistable.status.label}</strong> <#if authorityForDup?has_content> of 
+    <a href="<@s.url value="/${authorityForDup.urlNamespace}/${authorityForDup.id?c}"/>">${authorityForDup.name}</a></#if>. 
     <#if !persistable.draft> While ${siteAcronym} will retain this record, it will not appear in search results.</#if>
 </@statusCallout>
 
