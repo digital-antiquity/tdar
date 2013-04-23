@@ -1773,5 +1773,4 @@ public class Resource extends JsonModel.Base implements Persistable,
         return true;
     }
 
-
 }
