@@ -2,7 +2,7 @@
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
 <head>
-    <#if (id?has_content && id > 0 )>
+    <#if ((institution.id)?has_content && institution.id > 0 )>
         <title>Editing ${institution.name}</title>
     <#else>
         <title>Add a new Institution</title>
@@ -19,7 +19,7 @@
 
     <@s.form  name="institutionForm" id="frmInstitution"  cssClass="form-horizontal" method='post' enctype='multipart/form-data' action='save'>
     <div class="glide">
-        <h3>Institution Information</h3>
+        <h1>Institution Information for: ${institution.name}</h1>
         <@s.hidden name="id" />
         <@s.textfield name="institution.name" required=true label="Name" id="txtInstitutionName" cssClass="input-xlarge"  maxlength=255 />
 

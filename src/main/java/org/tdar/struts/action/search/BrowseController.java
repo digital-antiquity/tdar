@@ -95,6 +95,10 @@ public class BrowseController extends AbstractLookupController {
         return SUCCESS;
     }
 
+    public Creator getAuthorityForDup() {
+        return getEntityService().findAuthorityFromDuplicate(creator);
+    }
+    
     @Action("collections")
     public String browseCollections() throws ParseException {
         QueryBuilder qb = new ResourceCollectionQueryBuilder();

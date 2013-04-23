@@ -97,14 +97,6 @@
 $(document).ready(function(){
     //switch to the correct tab if coming from collection search
 
-    //other view init stuff;
-    if($('#large-google-map').length) {
-        var mapdiv = $('#large-google-map')[0];
-        TDAR.maps.initMapApi();
-        TDAR.maps.setupEditMap(mapdiv, $("#latlongoptions")[0]);
-        
-    }
-
     serializeFormState();
 
     if ($("#autosave").val() !== '') {
@@ -113,7 +105,11 @@ $(document).ready(function(){
     }
     initAdvancedSearch();
     
-
+    //other view init stuff;
+    if($('#large-google-map').length) {
+        var mapdiv = $('#large-google-map')[0];
+        TDAR.maps.setupEditMap(mapdiv, $("#latlongoptions")[0]);
+    }
 });
 </script>
 

@@ -8,6 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthenticationToken;
 import org.tdar.core.bean.entity.Creator;
@@ -115,6 +116,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
     @Transactional(readOnly = false)
     public <C extends Creator> C findOrSaveCreator(C transientCreator) {
         C creatorToReturn = null;
+        
         if (transientCreator instanceof Person) {
             creatorToReturn = (C) findOrSavePerson((Person) transientCreator);
         }
@@ -134,6 +136,10 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         // entirely and replaced with the persisted person's institution
         if (transientPerson == null || transientPerson.hasNoPersistableValues()) {
             return null;
+        }
+        
+        if (Persistable.Base.isNotNullOrTransient(transientPerson.getId())) {
+            return find(transientPerson.getId());
         }
 
         Person blessedPerson = null;
@@ -170,6 +176,11 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
     private Institution findOrSaveInstitution(Institution transientInstitution) {
         if (transientInstitution == null || StringUtils.isBlank(transientInstitution.getName()))
             return null;
+
+        if (Persistable.Base.isNotNullOrTransient(transientInstitution.getId())) {
+            return getDao().find(Institution.class, transientInstitution.getId());
+        }
+
         Institution blessedInstitution = getDao().findByExample(Institution.class, transientInstitution,
                 Arrays.asList(Institution.getIgnorePropertiesForUniqueness()),
                 FindOptions.FIND_FIRST_OR_CREATE).get(0);
@@ -206,6 +217,18 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         return getDao().findNumberOfActualContributors();
     }
 
+    @Transactional(readOnly= true)
+    public Creator findAuthorityFromDuplicate(Creator dup) {
+        if (Persistable.Base.isNullOrTransient(dup)) {
+            return null;
+        }
+        if (dup instanceof Person) {
+            return getDao().findAuthorityFromDuplicate((Person)dup);
+        } else {
+            return institutionDao.findAuthorityFromDuplicate((Institution)dup);
+        }
+    }
+    
     @Transactional(readOnly = true)
     public Set<Long> findAllContributorIds() {
         return getDao().findAllContributorIds();

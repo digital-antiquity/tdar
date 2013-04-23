@@ -117,6 +117,7 @@ public interface TdarNamedQueries {
             + "(select count(distinct information_resource_id) from information_resource_file irf join resource rr on (rr.id = irf.information_resource_id) where rr.resource_type = rt.resource_type and rr.status = 'ACTIVE' and irf.restriction = 'CONFIDENTIAL') as with_conf,"
             + "rt.* from (select distinct resource_type from resource) as rt";
     // generated HQL formats
+    public static final String QUERY_CREATOR_MERGE_ID = "select merge_creator_id from %1$s where id=%2$s";
 
     // e.g."from Resource r1 where exists (from Resource r2 inner join r2.cultureKeywords ck where r2.id = r1.id and ck.id in (:idlist))"
     public static final String QUERY_HQL_MANY_TO_MANY_REFERENCES =

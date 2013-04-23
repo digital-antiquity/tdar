@@ -1505,20 +1505,14 @@ public class Resource extends JsonModel.Base implements Persistable,
     @JSONTransient
     public String getFormattedAuthorList() {
         StringBuilder sb = new StringBuilder();
-        List<ResourceCreator> primaryCreators = new ArrayList<ResourceCreator>(
-                getPrimaryCreators());
-        Collections.sort(primaryCreators);
-        for (ResourceCreator creator : primaryCreators) {
-            if (creator.getRole() == ResourceCreatorRole.AUTHOR
-                    || creator.getRole() == ResourceCreatorRole.CREATOR) {
-                appendIfNotBlank(sb, creator.getCreator().getProperName(), ",",
-                        "");
+        for (ResourceCreator creator : getPrimaryCreators()) {
+            if (creator.getRole() == ResourceCreatorRole.AUTHOR || creator.getRole() == ResourceCreatorRole.CREATOR) {
+                appendIfNotBlank(sb, creator.getCreator().getProperName(), ",", "");
             }
         }
-        for (ResourceCreator creator : primaryCreators) {
+        for (ResourceCreator creator : getEditors()) {
             if (creator.getRole() == ResourceCreatorRole.EDITOR) {
-                appendIfNotBlank(sb, creator.getCreator().getProperName(), ",",
-                        "");
+                appendIfNotBlank(sb, creator.getCreator().getProperName(), ",", "");
             }
         }
         return sb.toString();

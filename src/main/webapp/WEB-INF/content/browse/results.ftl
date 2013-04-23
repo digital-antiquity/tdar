@@ -31,7 +31,7 @@
     </#if>
     <p itemprop="description">${creator.description!''}</p>
 	<#if creator.synonyms?has_content>
-	<p>Alternate Names: <#list creator.synonyms as syn>${syn.properName}<#if syn_index !=0>,</#if></#list>
+	<p>Alternate Names: <#list creator.synonyms as syn> <#if syn_index !=0>,</#if>${syn.properName}</#list>
 	</p>
 	</#if>
     <br/>

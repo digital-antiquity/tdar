@@ -24,7 +24,7 @@
             <tr>
                 <td class="datatable-cell-unstyled"><@inputTags dupe/></td>
                 <td>${dupe.name!}</td>
-                <td>${dup.registered?string}</td>
+                <td>${dupe.registered?string}</td>
                 <td>${dupe.email!}</td>
                 <td>${dupe.institutionName!}</td>
             </tr>
