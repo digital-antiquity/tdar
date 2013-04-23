@@ -77,6 +77,16 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
             }
         }
 
+        public boolean requiresWorkflowProcessing() {
+            switch (this) {
+                case ADD:
+                case REPLACE:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
         public boolean requiresExistingIrFile() {
             switch (this) {
                 case ADD:

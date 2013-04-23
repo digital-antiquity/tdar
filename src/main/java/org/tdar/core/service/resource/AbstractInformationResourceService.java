@@ -1,14 +1,12 @@
 package org.tdar.core.service.resource;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +14,6 @@ import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
-import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Language;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -25,14 +22,12 @@ import org.tdar.core.dao.resource.InformationResourceFileDao;
 import org.tdar.core.dao.resource.ResourceDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ServiceInterface;
+import org.tdar.core.service.workflow.WorkflowResult;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.Filestore.BaseFilestore;
-import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.struts.data.FileProxy;
-import org.tdar.utils.ExceptionWrapper;
-import org.tdar.utils.Pair;
 
 /**
  * $Id: AbstractInformationResourceService.java 1466 2011-01-18 20:32:38Z abrin$
@@ -57,25 +52,6 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     @Qualifier("genericDao")
     private GenericDao genericDao;
 
-    /*
-     * @Transactional(readOnly = true)
-     * public List<T> findBySubmitter(Person person) {
-     * if (person == null) {
-     * getLogger().warn("Trying to find resources for null submitter");
-     * return Collections.emptyList();
-     * }
-     * return getDao().findBySubmitter(person);
-     * }
-     * 
-     * @Transactional(readOnly = true)
-     * public List<T> findSparseBySubmitter(Person person) {
-     * if (person == null) {
-     * getLogger().warn("Trying to find resources for null submitter");
-     * return Collections.emptyList();
-     * }
-     * return getDao().findSparseResourceBySubmitterType(person, ResourceType.fromClass(getDao().getPersistentClass()));
-     * }
-     */
     @Transactional(readOnly = false)
     private void addInformationResourceFile(InformationResource resource, InformationResourceFile irFile, FileProxy proxy) throws IOException {
         // always set the download/version info and persist the relationships between the InformationResource and its IRFile.
@@ -105,7 +81,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     }
 
     @Transactional
-    public Pair<List<ExceptionWrapper>, Boolean> processFileProxies(PersonalFilestore filestore, T resource, List<FileProxy> fileProxiesToProcess, Long ticketId)
+    public WorkflowResult processFileProxies(PersonalFilestore filestore, T resource, List<FileProxy> fileProxiesToProcess, Long ticketId)
             throws IOException {
 
         processMedataForFileProxies(resource, fileProxiesToProcess);
@@ -114,7 +90,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
             InformationResourceFile irFile = proxy.getInformationResourceFile();
             InformationResourceFileVersion version = proxy.getInformationResourceFileVersion();
             logger.info("version: {} proxy: {} ", version, proxy);
-            if (proxy.getAction() == FileAction.ADD || proxy.getAction() == FileAction.REPLACE) {
+            if (proxy.getAction().requiresWorkflowProcessing()) {
                 switch (version.getFileVersionType()) {
                     case UPLOADED:
                     case UPLOADED_ARCHIVAL:
@@ -131,7 +107,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
             }
 
         }
-        Pair<List<ExceptionWrapper>, Boolean> toReturn = storeErrorMessages(fileProxiesToProcess);
+        WorkflowResult result = new WorkflowResult(fileProxiesToProcess);
 
         /*
          * FIXME: Should I purge regardless of errors??? Really???
@@ -139,29 +115,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         if (ticketId != null) {
             filestore.purge(getDao().find(PersonalFilestoreTicket.class, ticketId));
         }
-        return toReturn;
-    }
-
-    private Pair<List<ExceptionWrapper>, Boolean> storeErrorMessages(List<FileProxy> fileProxiesToProcess) {
-        List<ExceptionWrapper> exceptionsAndMessages = new ArrayList<ExceptionWrapper>();
-        Pair<List<ExceptionWrapper>, Boolean> toReturn = new Pair<List<ExceptionWrapper>, Boolean>(exceptionsAndMessages, false);
-        if (CollectionUtils.isNotEmpty(fileProxiesToProcess)) {
-            for (FileProxy proxy : fileProxiesToProcess) {
-                InformationResourceFile file = proxy.getInformationResourceFile();
-                if (file != null) {
-                    WorkflowContext context = file.getWorkflowContext();
-                    if (context != null) {
-                        if (context.isErrorFatal()) {
-                            toReturn.setSecond(true);
-                        }
-                        List<ExceptionWrapper> exceptions = context.getExceptions();
-                        logger.info("EXCEPTIONS: {}", exceptions);
-                        exceptionsAndMessages.addAll(exceptions);
-                    }
-                }
-            }
-        }
-        return toReturn;
+        return result;
     }
 
     @Transactional

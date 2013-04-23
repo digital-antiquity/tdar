@@ -31,6 +31,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.PersonalFilestoreService;
+import org.tdar.core.service.workflow.WorkflowResult;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
@@ -39,7 +40,6 @@ import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.data.ResourceCreatorProxy;
 import org.tdar.utils.ExceptionWrapper;
 import org.tdar.utils.HashQueue;
-import org.tdar.utils.Pair;
 
 /**
  * $Id$
@@ -223,25 +223,16 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         logger.debug("Final proxy set: {}", fileProxiesToProcess);
         PersonalFilestore filestore = filestoreService.getPersonalFilestore(getAuthenticatedUser());
 
-        Pair<List<ExceptionWrapper>, Boolean> exceptions = null;
         try {
-            exceptions = getInformationResourceService().processFileProxies(filestore, getPersistable(), fileProxiesToProcess, ticketId);
-        } catch (IOException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
-        if (exceptions.getSecond()) {
-            for (ExceptionWrapper exception : exceptions.getFirst()) {
-                addActionError(exception.getMessage());
+            WorkflowResult result = getInformationResourceService().processFileProxies(filestore, getPersistable(), fileProxiesToProcess, ticketId);
+            for (ExceptionWrapper exception : result.getExceptions()) {
+                if (result.getFatalErrors()) {
+                    addActionError(exception.getMessage());
+                } else {
+                    addActionMessage(exception.getMessage());
+                }
                 getStackTraces().add(exception.getStackTrace());
             }
-        } else {
-            for (ExceptionWrapper exception : exceptions.getFirst()) {
-                addActionMessage(exception.getMessage());
-                getStackTraces().add(exception.getStackTrace());
-            }
-        }
-        try {
             setResourceFilesHaveChanged(true);
             processUploadedFiles();
         } catch (IOException e) {
