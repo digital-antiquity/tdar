@@ -51,6 +51,7 @@ import org.tdar.core.service.resource.OntologyNodeService;
 import org.tdar.core.service.resource.OntologyService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.core.service.workflow.ActionMessageErrorSupport;
 import org.tdar.utils.activity.Activity;
 import org.tdar.web.SessionData;
 
@@ -68,7 +69,7 @@ import com.opensymphony.xwork2.ActionSupport;
  */
 @Scope("prototype")
 @Controller
-public abstract class TdarActionSupport extends ActionSupport implements ServletRequestAware, ServletResponseAware {
+public abstract class TdarActionSupport extends ActionSupport implements ServletRequestAware, ServletResponseAware, ActionMessageErrorSupport {
 
     private static final long serialVersionUID = 7084489869489013998L;
 
@@ -444,7 +445,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         logger.debug("ACTIONERROR:: {}", message);
         super.addActionError(message);
     }
-
 
     public List<String> getStackTraces() {
         return stackTraces;

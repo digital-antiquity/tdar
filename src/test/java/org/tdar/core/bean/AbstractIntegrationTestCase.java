@@ -100,8 +100,8 @@ import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.core.service.workflow.ActionMessageErrorListener;
 import org.tdar.filestore.Filestore;
-import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.FileProxy;
@@ -299,8 +299,12 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         try {
             FileProxy proxy = new FileProxy(file.getName(), file, VersionType.UPLOADED, FileAction.ADD);
             proxy.setRestriction(restriction);
-//            PersonalFilestore filestore, T resource, List<FileProxy> fileProxiesToProcess, Long ticketId
-            informationResourceService.processFileProxies(null, ir, Arrays.asList(proxy), null);
+            // PersonalFilestore filestore, T resource, List<FileProxy> fileProxiesToProcess, Long ticketId
+            ActionMessageErrorListener listener = new ActionMessageErrorListener();
+            informationResourceService.importFileProxiesAndProcessThroughWorkflow(ir, null, null, listener, Arrays.asList(proxy));
+            if (listener.hasActionErrors()) {
+                throw new TdarRecoverableRuntimeException(String.format("errors ocurred while processing file: %s", listener));
+            }
             // informationResourceService.addOrReplaceInformationResourceFile(ir, new FileInputStream(file), file.getName(), FileAction.ADD,
             // VersionType.UPLOADED);
         } catch (IOException e) {

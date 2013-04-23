@@ -7,10 +7,12 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.PersonalFilestoreTicket;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
@@ -21,7 +23,9 @@ import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.resource.InformationResourceFileDao;
 import org.tdar.core.dao.resource.ResourceDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.ServiceInterface;
+import org.tdar.core.service.workflow.ActionMessageErrorSupport;
 import org.tdar.core.service.workflow.WorkflowResult;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.Filestore;
@@ -45,6 +49,8 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
 
     @Autowired
     private InformationResourceFileDao informationResourceFileDao;
+    @Autowired
+    private PersonalFilestoreService personalFilestoreService;
 
     @Autowired
     private FileAnalyzer analyzer;
@@ -81,10 +87,14 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     }
 
     @Transactional
-    public WorkflowResult processFileProxies(PersonalFilestore filestore, T resource, List<FileProxy> fileProxiesToProcess, Long ticketId)
-            throws IOException {
+    public WorkflowResult importFileProxiesAndProcessThroughWorkflow(T resource, Person user, Long ticketId, ActionMessageErrorSupport listener,
+            List<FileProxy> fileProxiesToProcess) throws IOException {
+        if (CollectionUtils.isEmpty(fileProxiesToProcess)) {
+            logger.debug("Nothing to process, returning.");
+            return new WorkflowResult(fileProxiesToProcess);
+        }
 
-        processMedataForFileProxies(resource, fileProxiesToProcess);
+        processMedataForFileProxies(resource, fileProxiesToProcess.toArray(new FileProxy[0]));
         fileProxiesToProcess = validateAndConsolidateProxies(fileProxiesToProcess);
         for (FileProxy proxy : fileProxiesToProcess) {
             InformationResourceFile irFile = proxy.getInformationResourceFile();
@@ -108,12 +118,14 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
 
         }
         WorkflowResult result = new WorkflowResult(fileProxiesToProcess);
+        result.addActionErrorsAndMessages(listener);
 
         /*
          * FIXME: Should I purge regardless of errors??? Really???
          */
         if (ticketId != null) {
-            filestore.purge(getDao().find(PersonalFilestoreTicket.class, ticketId));
+            PersonalFilestore personalFilestore = personalFilestoreService.getPersonalFilestore(user);
+            personalFilestore.purge(getDao().find(PersonalFilestoreTicket.class, ticketId));
         }
         return result;
     }
@@ -128,7 +140,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     }
 
     @Transactional
-    public void processFileProxyMetadata(InformationResource informationResource, FileProxy proxy) throws IOException {
+    private void processFileProxyMetadata(InformationResource informationResource, FileProxy proxy) throws IOException {
         logger.debug("applying {} to {}", proxy, informationResource);
         // will be reassigned in a REPLACE or ADD_DERIVATIVE
         InformationResourceFile irFile = new InformationResourceFile();
@@ -167,7 +179,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
     }
 
     @Transactional
-    public void processMedataForFileProxies(InformationResource informationResource, List<FileProxy> proxies) throws IOException {
+    public void processMedataForFileProxies(InformationResource informationResource, FileProxy... proxies) throws IOException {
         for (FileProxy proxy : proxies) {
             processFileProxyMetadata(informationResource, proxy);
         }

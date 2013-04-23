@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.ListIterator;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -28,18 +27,13 @@ import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.LicenseType;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.service.FileProxyService;
 import org.tdar.core.service.PersonalFilestoreService;
-import org.tdar.core.service.workflow.WorkflowResult;
 import org.tdar.filestore.FileAnalyzer;
-import org.tdar.filestore.personal.PersonalFilestore;
-import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.data.ResourceCreatorProxy;
-import org.tdar.utils.ExceptionWrapper;
-import org.tdar.utils.HashQueue;
 
 /**
  * $Id$
@@ -55,13 +49,14 @@ import org.tdar.utils.HashQueue;
  */
 public abstract class AbstractInformationResourceController<R extends InformationResource> extends AbstractResourceController<R> {
 
-    private static final String MISSING_FILE_PROXY_WARNING = "something bad happened in the JS side of things, there should always be a FileProxy resulting from the upload callback {}";
-
     public static final String WE_WERE_UNABLE_TO_PROCESS_THE_UPLOADED_CONTENT = "We were unable to process the uploaded content.";
 
     public static final String FILE_INPUT_METHOD = "text";
 
     private static final long serialVersionUID = -200666002871956655L;
+
+    @Autowired
+    protected FileProxyService fileProxyService;
 
     private List<CategoryVariable> allDomainCategories;
 
@@ -79,7 +74,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     private Boolean isAbleToUploadFiles = null;
 
-    private List<PersonalFilestoreFile> pendingFiles;
+    // private List<PersonalFilestoreFile> pendingFiles;
 
     private Long ticketId;
 
@@ -98,11 +93,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     @Autowired
     protected PersonalFilestoreService filestoreService;
 
-    private boolean resourceFilesHaveChanged = false;
-
-    protected void processUploadedFiles() throws IOException {
-        return;
-    }
+    // private boolean resourceFilesHaveChanged = false;
 
     /**
      * This should be overridden when InformationResource content is entered from a text area in the web form.
@@ -143,67 +134,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
      * @return a List<FileProxy> representing all fully initialized FileProxy objects to be processed by the service layer.
      */
     protected List<FileProxy> handleAsyncUploads() {
-        cullInvalidProxies(fileProxies);
-        pendingFiles = filestoreService.retrieveAllPersonalFilestoreFiles(ticketId);
-        ArrayList<FileProxy> finalProxyList = new ArrayList<FileProxy>(fileProxies);
-
-        // subset of proxy list, hashed into queues.
-        HashQueue<String, FileProxy> proxiesNeedingFiles = buildProxyQueue(fileProxies);
-
-        // FIXME: trying to handle duplicate filenames more gracefully by using hashqueue instead of hashmap, but this assumes that the sequence of pending
-        // files
-        // is *similar* to sequence of incoming file proxies. probably a dodgy assumption, but arguably better than obliterating proxies w/ dupe filenames
-        logger.info("{}", pendingFiles);
-        logger.info("{}", fileProxies);
-        // associates InputStreams with all FileProxy objects that need to create a new version.
-        for (PersonalFilestoreFile pendingFile : pendingFiles) {
-            File file = pendingFile.getFile();
-            FileProxy proxy = proxiesNeedingFiles.poll(file.getName());
-            // if we encounter file that has no matching proxy, we create a new proxy and add it to the final list
-            // we assume this happens when proxy fields in form were submitted in state that struts could not type-convert into a proxy instance
-            if (proxy == null) {
-                logger.warn(MISSING_FILE_PROXY_WARNING, file.getName());
-                proxy = new FileProxy(file.getName(), VersionType.UPLOADED, FileAccessRestriction.PUBLIC);
-                finalProxyList.add(proxy);
-            }
-            proxy.setFile(file);
-        }
-
-        Collections.sort(finalProxyList);
-        return finalProxyList;
-    }
-
-    // build a priorityqueue of proxies that expect files.
-    private HashQueue<String, FileProxy> buildProxyQueue(List<FileProxy> proxies) {
-        HashQueue<String, FileProxy> hashQueue = new HashQueue<String, FileProxy>();
-        for (FileProxy proxy : proxies) {
-            if (proxy == null)
-                continue;
-            if (proxy.getAction() == null) {
-                logger.error("null proxy action on '{}'", proxy);
-                proxy.setAction(FileAction.NONE);
-            }
-            if (proxy.getAction().shouldExpectFileHandle()) {
-                hashQueue.push(proxy.getFilename(), proxy);
-            }
-        }
-        return hashQueue;
-    }
-
-    // return a list of fileProxies, culling null and invalid instances
-    private void cullInvalidProxies(List<FileProxy> proxies) {
-        logger.debug("file proxies: {} ", proxies);
-        ListIterator<FileProxy> iterator = proxies.listIterator();
-        while (iterator.hasNext()) {
-            FileProxy proxy = iterator.next();
-            if (proxy == null) {
-                logger.debug("fileProxy[{}] is null - culling", iterator.previousIndex());
-                iterator.remove();
-            } else if (StringUtils.isEmpty(proxy.getFilename())) {
-                logger.debug("fileProxy[{}].fileName is blank - culling (value: {})", iterator.previousIndex(), proxy);
-                iterator.remove();
-            }
-        }
+        return fileProxyService.reconcilePersonalFilestoreFilesAndFileProxies(fileProxies, ticketId);
     }
 
     /**
@@ -214,27 +145,12 @@ public abstract class AbstractInformationResourceController<R extends Informatio
      */
     protected void handleUploadedFiles() {
         getLogger().debug("handling uploaded files for {}", getPersistable());
-        List<FileProxy> fileProxiesToProcess = getFileProxiesToProcess();
-        if (CollectionUtils.isEmpty(fileProxiesToProcess)) {
-            logger.debug("Nothing to process, returning.");
-            return;
-        }
-
-        logger.debug("Final proxy set: {}", fileProxiesToProcess);
-        PersonalFilestore filestore = filestoreService.getPersonalFilestore(getAuthenticatedUser());
+        List<FileProxy> proxies = getFileProxiesToProcess();
+        logger.debug("Final proxy set: {}", proxies);
 
         try {
-            WorkflowResult result = getInformationResourceService().processFileProxies(filestore, getPersistable(), fileProxiesToProcess, ticketId);
-            for (ExceptionWrapper exception : result.getExceptions()) {
-                if (result.getFatalErrors()) {
-                    addActionError(exception.getMessage());
-                } else {
-                    addActionMessage(exception.getMessage());
-                }
-                getStackTraces().add(exception.getStackTrace());
-            }
-            setResourceFilesHaveChanged(true);
-            processUploadedFiles();
+            getInformationResourceService().importFileProxiesAndProcessThroughWorkflow(getPersistable(), getAuthenticatedUser(), ticketId, this,
+                    proxies);
         } catch (IOException e) {
             addActionErrorWithException(WE_WERE_UNABLE_TO_PROCESS_THE_UPLOADED_CONTENT, e);
         }
@@ -656,13 +572,13 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         return SUCCESS;
     }
 
-    public boolean isResourceFilesHaveChanged() {
-        return resourceFilesHaveChanged;
-    }
-
-    public void setResourceFilesHaveChanged(boolean resourceFilesHaveChanged) {
-        this.resourceFilesHaveChanged = resourceFilesHaveChanged;
-    }
+    // public boolean isResourceFilesHaveChanged() {
+    // return resourceFilesHaveChanged;
+    // }
+    //
+    // public void setResourceFilesHaveChanged(boolean resourceFilesHaveChanged) {
+    // this.resourceFilesHaveChanged = resourceFilesHaveChanged;
+    // }
 
     public boolean isHasDeletedFiles() {
         return hasDeletedFiles;

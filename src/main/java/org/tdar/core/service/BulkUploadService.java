@@ -45,8 +45,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.AsyncUpdateReceiver;
-import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.AsyncUpdateReceiver.DefaultReceiver;
+import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.Account;
 import org.tdar.core.bean.entity.Creator;
@@ -67,13 +67,12 @@ import org.tdar.core.dao.GenericDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.core.service.workflow.ActionMessageErrorListener;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.struts.data.FileProxy;
 import org.tdar.struts.data.ResourceCreatorProxy;
 import org.tdar.utils.Pair;
 import org.tdar.utils.activity.Activity;
-
-import com.google.protobuf.UnknownFieldSet.Field;
 
 /**
  * @author Adam Brin
@@ -115,9 +114,6 @@ public class BulkUploadService {
 
     @Autowired
     private FileAnalyzer analyzer;
-
-    @Autowired
-    private SearchIndexService searchIndexService;
 
     @Autowired
     private ExcelService excelService;
@@ -385,6 +381,7 @@ public class BulkUploadService {
                 ResourceType suggestTypeForFile = analyzer.suggestTypeForFileExtension(extension, getResourceTypesSupportingBulkUpload());
                 Class<? extends Resource> resourceClass = suggestTypeForFile.getResourceClass();
 
+                ActionMessageErrorListener listener = new ActionMessageErrorListener();
                 if (InformationResource.class.isAssignableFrom(resourceClass)) {
                     logger.info("saving " + fileName + "..." + suggestTypeForFile);
                     InformationResource informationResource = (InformationResource) resourceService.createResourceFrom(image, resourceClass);
@@ -393,9 +390,14 @@ public class BulkUploadService {
                     informationResource.markUpdated(submitter);
                     informationResource.setDescription(" ");
                     genericDao.saveOrUpdate(informationResource);
-                    informationResourceService.processFileProxyMetadata(informationResource, fileProxy);
+                    informationResourceService.importFileProxiesAndProcessThroughWorkflow(informationResource, submitter, null, listener,
+                            Arrays.asList(fileProxy));
+
                     receiver.getDetails().add(new Pair<Long, String>(informationResource.getId(), fileName));
                     resourcesCreated.put(fileName, informationResource);
+                    if (listener.hasActionErrors()) {
+                        receiver.addError(new Exception(String.format("Errors: %s", listener)));
+                    }
                 }
             } catch (Exception e) {
                 logger.error("something happend", e);
@@ -431,14 +433,16 @@ public class BulkUploadService {
         Iterator<CellMetadata> fields = nameSet.iterator();
         while (fields.hasNext()) {
             CellMetadata field = fields.next();
-            logger.info(field.getName() + " "  + field.getDisplayName());
+            logger.info(field.getName() + " " + field.getDisplayName());
             if (!TdarConfiguration.getInstance().getLicenseEnabled()) {
-                if (StringUtils.isNotBlank(field.getDisplayName()) && (field.getDisplayName().equals(BulkImportField.LICENSE_TEXT) || field.getDisplayName().equals(BulkImportField.LICENSE_TYPE))) {
+                if (StringUtils.isNotBlank(field.getDisplayName())
+                        && (field.getDisplayName().equals(BulkImportField.LICENSE_TEXT) || field.getDisplayName().equals(BulkImportField.LICENSE_TYPE))) {
                     fields.remove();
                 }
             }
             if (!TdarConfiguration.getInstance().getCopyrightMandatory()) {
-                if (field.getName().contains("copyrightHolder") || StringUtils.isNotBlank(field.getDisplayName()) && (field.getDisplayName().contains(BulkImportField.COPYRIGHT_HOLDER))) {
+                if (field.getName().contains("copyrightHolder") || StringUtils.isNotBlank(field.getDisplayName())
+                        && (field.getDisplayName().contains(BulkImportField.COPYRIGHT_HOLDER))) {
                     fields.remove();
                 }
             }

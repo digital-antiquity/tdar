@@ -43,6 +43,18 @@ public class WorkflowResult implements Serializable {
         }
     }
 
+    public void addActionErrorsAndMessages(ActionMessageErrorSupport actionSupport) {
+        for (ExceptionWrapper exception : getExceptions()) {
+            if (getFatalErrors()) {
+                actionSupport.addActionError(exception.getMessage());
+            } else {
+                actionSupport.addActionMessage(exception.getMessage());
+            }
+            actionSupport.getStackTraces().add(exception.getStackTrace());
+        }
+
+    }
+
     public Boolean getFatalErrors() {
         return fatalErrors;
     }

@@ -2,7 +2,6 @@ package org.tdar.struts.action.resource;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedMap;
@@ -18,8 +17,6 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
-import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
-import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.Resource;
@@ -28,7 +25,6 @@ import org.tdar.core.bean.resource.VersionType;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.parser.CodingSheetParserException;
 import org.tdar.struts.WriteableSession;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.FileProxy;
@@ -52,12 +48,8 @@ public class CodingSheetController extends AbstractSupportingInformationResource
 
     private static final long serialVersionUID = 377533801938016848L;
 
-    private List<CodingSheet> allSubmittedCodingSheets;
-
     private List<OntologyNode> ontologyNodes;
-
     private List<CodingRule> codingRules;
-
     private Ontology ontology;
 
     private SortedMap<String, List<OntologyNode>> suggestions;
@@ -109,43 +101,6 @@ public class CodingSheetController extends AbstractSupportingInformationResource
         String filename = getPersistable().getTitle() + ".csv";
         // ensure csv conversion
         return new FileProxy(filename, FileProxy.createTempFileFromString(fileTextInput), VersionType.UPLOADED);
-    }
-
-    @Override
-    protected void processUploadedFiles() throws IOException {
-        // 1. save metadata for coding sheet file
-        // 1.1 Create CodingSheet object, and save the metadata
-        Collection<InformationResourceFileVersion> files = getPersistable().getLatestVersions(VersionType.UPLOADED);
-        getLogger().debug("processing uploaded coding sheet files: {}", files);
-
-        if (files.size() != 1) {
-            getLogger().warn("Unexpected number of files associated with this coding sheet, expected 1 got " + files.size());
-            return;
-        }
-
-        /*
-         * two cases, either:
-         * 1) 1 file uploaded (csv | tab | xls)
-         * 2) tab entry into form (2 files uploaded 1 archival, 2 not)
-         */
-
-        InformationResourceFileVersion toProcess = files.iterator().next();
-        if (files.size() > 1) {
-            for (InformationResourceFileVersion file : files) {
-                if (file.isArchival())
-                    toProcess = file;
-            }
-        }
-        // should always be 1 based on the check above
-        getLogger().debug("adding coding rules");
-        try {
-            getCodingSheetService().parseUpload(getPersistable(), toProcess);
-            getGenericService().saveOrUpdate(getPersistable());
-        } catch (CodingSheetParserException e) {
-            toProcess.getInformationResourceFile().setStatus(FileStatus.PROCESSING_ERROR);
-            getGenericService().saveOrUpdate(toProcess.getInformationResourceFile());
-            addActionError(e.getMessage());
-        }
     }
 
     @SkipValidation
@@ -204,12 +159,12 @@ public class CodingSheetController extends AbstractSupportingInformationResource
      * Returns all coding sheets submitted by the currently authenticated user.
      * 
      * @return all coding sheets submitted by the currently authenticated user.
-    public List<CodingSheet> getAllSubmittedCodingSheets() {
-        if (allSubmittedCodingSheets == null) {
-            allSubmittedCodingSheets = getCodingSheetService().findBySubmitter(getAuthenticatedUser());
-        }
-        return allSubmittedCodingSheets;
-    }
+     *         public List<CodingSheet> getAllSubmittedCodingSheets() {
+     *         if (allSubmittedCodingSheets == null) {
+     *         allSubmittedCodingSheets = getCodingSheetService().findBySubmitter(getAuthenticatedUser());
+     *         }
+     *         return allSubmittedCodingSheets;
+     *         }
      */
 
     /**

@@ -8,7 +8,6 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.ResourceType;
@@ -32,26 +31,13 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
 
     private static final long serialVersionUID = 4320412741803278996L;
 
-    private List<Ontology> allSubmittedOntologies;
-
     @Override
     protected FileProxy createUploadedFileProxy(String fileTextInput) throws IOException {
         String filename = getPersistable().getTitle() + ".owl";
         // convert text input to OWL XML text and use that as our archival version
         String owlXml = getOntologyService().toOwlXml(getPersistable().getId(), fileTextInput);
         getLogger().trace("owl xml is: \n{}", owlXml);
-        return new FileProxy(filename,
-                FileProxy.createTempFileFromString(owlXml),
-                VersionType.UPLOADED);
-
-    }
-
-    @Override
-    protected void processUploadedFiles() throws IOException {
-        // after the file has already been generated, etc.
-        getOntologyService().shred(getPersistable());
-        saveCategories();
-        getOntologyService().saveOrUpdate(getPersistable());
+        return new FileProxy(filename, FileProxy.createTempFileFromString(owlXml), VersionType.UPLOADED);
     }
 
     /**
@@ -73,12 +59,12 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
 
     /**
      * @return all ontologies submitted by this user
-    public List<Ontology> getAllSubmittedOntologies() {
-        if (allSubmittedOntologies == null) {
-            allSubmittedOntologies = getOntologyService().findBySubmitter(getAuthenticatedUser());
-        }
-        return allSubmittedOntologies;
-    }
+     *         public List<Ontology> getAllSubmittedOntologies() {
+     *         if (allSubmittedOntologies == null) {
+     *         allSubmittedOntologies = getOntologyService().findBySubmitter(getAuthenticatedUser());
+     *         }
+     *         return allSubmittedOntologies;
+     *         }
      */
 
     public Ontology getOntology() {

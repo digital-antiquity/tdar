@@ -6,16 +6,21 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileStatus;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.Ontology;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.service.XmlService;
+import org.tdar.core.service.resource.CodingSheetService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.InformationResourceFileVersionService;
+import org.tdar.core.service.resource.OntologyService;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.filestore.WorkflowContext;
 
@@ -37,7 +42,10 @@ public class WorkflowContextService {
     private XmlService xmlService;
     @Autowired
     private DatasetService datasetService;
-
+    @Autowired
+    private OntologyService ontologyService;
+    @Autowired
+    private CodingSheetService codingSheetService;
     /**
      * This method takes a workflow context once it's been generated and persists it back into tDAR. It will remove all existing derivatives, then
      * rehydrate all of the objects associated with the context, and then save them back into the database
@@ -58,9 +66,10 @@ public class WorkflowContextService {
             irFile.setNumberOfParts(ctx.getNumPages());
         }
 
+        Resource resource = genericDao.find(ctx.getResourceType().getResourceClass(), ctx.getInformationResourceId());
         switch (ctx.getResourceType()) {
             case DATASET:
-                Dataset dataset = (Dataset) genericDao.find(ctx.getResourceType().getResourceClass(), ctx.getInformationResourceId());
+                Dataset dataset = (Dataset) resource;
                 if (ctx.getTransientResource() == null) {
                     break;
                 }
@@ -70,6 +79,15 @@ public class WorkflowContextService {
                 datasetService.reconcileDataset(irFile, dataset, (Dataset) ctx.getTransientResource());
                 genericDao.saveOrUpdate(dataset);
                 break;
+            case ONTOLOGY:
+                Ontology ontology = (Ontology) resource;
+                ontologyService.shred(ontology);
+                ontologyService.saveOrUpdate(ontology);
+            case CODING_SHEET:
+                CodingSheet codingSheet = (CodingSheet) resource;
+                codingSheetService.ingestCodingSheet(codingSheet,ctx);
+                ontologyService.saveOrUpdate(codingSheet);
+
             default:
                 break;
 
