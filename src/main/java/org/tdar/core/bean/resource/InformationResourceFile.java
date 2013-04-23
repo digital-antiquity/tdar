@@ -525,6 +525,9 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     }
 
     public boolean isPartOfComposite() {
+        if (partOfComposite == null) {
+            return false;
+        }
         return partOfComposite;
     }
 

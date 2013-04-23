@@ -488,6 +488,9 @@ public class InformationResourceFileVersion extends Persistable.Base implements 
     }
 
     public boolean isPrimaryFile() {
+        if (primaryFile == null) {
+            return false;
+        }
         return primaryFile;
     }
 
