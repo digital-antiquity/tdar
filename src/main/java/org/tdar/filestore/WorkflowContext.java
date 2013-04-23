@@ -20,7 +20,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.XmlService;
-import org.tdar.core.service.workflow.Workflow;
+import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.filestore.tasks.Task;
 import org.tdar.utils.ExceptionWrapper;

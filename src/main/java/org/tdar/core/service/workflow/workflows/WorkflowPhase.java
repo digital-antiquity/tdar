@@ -1,4 +1,4 @@
-package org.tdar.core.service.workflow;
+package org.tdar.core.service.workflow.workflows;
 
 import org.tdar.core.bean.HasLabel;
 

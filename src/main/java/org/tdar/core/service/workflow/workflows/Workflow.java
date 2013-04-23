@@ -1,4 +1,4 @@
-package org.tdar.core.service.workflow;
+package org.tdar.core.service.workflow.workflows;
 
 import java.util.ArrayList;
 import java.util.Arrays;

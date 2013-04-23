@@ -1,4 +1,4 @@
-package org.tdar.core.service.workflow;
+package org.tdar.core.service.workflow.workflows;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +14,7 @@ import org.tdar.core.parser.CodingSheetParser;
 import org.tdar.core.parser.CsvCodingSheetParser;
 import org.tdar.core.parser.ExcelCodingSheetParser;
 import org.tdar.core.parser.TabCodingSheetParser;
-import org.tdar.core.service.workflow.Workflow.BaseWorkflow;
+import org.tdar.core.service.workflow.workflows.Workflow.BaseWorkflow;
 import org.tdar.db.conversion.converters.AccessDatabaseConverter;
 import org.tdar.db.conversion.converters.CsvConverter;
 import org.tdar.db.conversion.converters.DatasetConverter;

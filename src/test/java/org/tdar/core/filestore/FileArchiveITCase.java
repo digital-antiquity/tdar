@@ -22,9 +22,9 @@ import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.SensoryData;
-import org.tdar.core.service.workflow.FileArchiveWorkflow;
 import org.tdar.core.service.workflow.MessageService;
-import org.tdar.core.service.workflow.Workflow;
+import org.tdar.core.service.workflow.workflows.FileArchiveWorkflow;
+import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.PairtreeFilestore;
 

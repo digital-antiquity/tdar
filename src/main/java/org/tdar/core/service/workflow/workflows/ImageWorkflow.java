@@ -1,9 +1,9 @@
-package org.tdar.core.service.workflow;
+package org.tdar.core.service.workflow.workflows;
 
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.InformationResourceFile.FileType;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.service.workflow.Workflow.BaseWorkflow;
+import org.tdar.core.service.workflow.workflows.Workflow.BaseWorkflow;
 import org.tdar.filestore.tasks.ImageThumbnailTask;
 import org.tdar.filestore.tasks.IndexableTextExtractionTask;
 

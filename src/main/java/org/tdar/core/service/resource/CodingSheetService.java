@@ -28,7 +28,7 @@ import org.tdar.core.dao.resource.CodingSheetDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.parser.CodingSheetParser;
 import org.tdar.core.parser.CodingSheetParserException;
-import org.tdar.core.service.workflow.GenericColumnarDataWorkflow;
+import org.tdar.core.service.workflow.workflows.GenericColumnarDataWorkflow;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.utils.ExceptionWrapper;
 
