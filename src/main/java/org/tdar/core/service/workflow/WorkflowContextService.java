@@ -90,6 +90,7 @@ public class WorkflowContextService {
                 CodingSheet codingSheet = (CodingSheet) resource;
                 codingSheetService.ingestCodingSheet(codingSheet,ctx);
                 ontologyService.saveOrUpdate(codingSheet);
+                datasetService.refreshAssociatedDataTables(codingSheet);
                 break;
             default:
                 break;

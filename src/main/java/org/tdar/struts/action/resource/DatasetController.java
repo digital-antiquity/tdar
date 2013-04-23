@@ -1,7 +1,5 @@
 package org.tdar.struts.action.resource;
 
-import java.util.List;
-
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -48,7 +46,7 @@ public class DatasetController extends AbstractDatasetController<Dataset> {
         super.saveBasicResourceMetadata();
 
         super.saveInformationResourceProperties();
-        getDatasetService().saveOrUpdate(dataset);
+//        getDatasetService().saveOrUpdate(dataset);
         // HACK: implicitly cache fullUsers via call to getProjectAsJson() as workaround for TDAR-1162. This is the software equivalent of turning the radio up
         // to mask weird sounds your engine is making
 
@@ -65,11 +63,12 @@ public class DatasetController extends AbstractDatasetController<Dataset> {
         }
         return SUCCESS;
     }
-/*
-    public List<Dataset> getAllSubmittedDatasets() {
-        return getDatasetService().findBySubmitter(getAuthenticatedUser());
-    }
-*/
+
+    /*
+     * public List<Dataset> getAllSubmittedDatasets() {
+     * return getDatasetService().findBySubmitter(getAuthenticatedUser());
+     * }
+     */
     public String getContentDisposition() {
         return String.format("filename=\"dataset_%s.xls\"", getPersistable().getId());
     }

@@ -42,8 +42,6 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
 
     /**
      * Sets the various pieces of metadata on this ontology and then saves it.
-     * 
-     * 
      * @param ontology
      */
     @Override
@@ -52,20 +50,10 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
         super.saveInformationResourceProperties();
 
         saveCategories();
-        getOntologyService().saveOrUpdate(ontology);
+//        getOntologyService().saveOrUpdate(ontology);
         handleUploadedFiles();
         return SUCCESS;
     }
-
-    /**
-     * @return all ontologies submitted by this user
-     *         public List<Ontology> getAllSubmittedOntologies() {
-     *         if (allSubmittedOntologies == null) {
-     *         allSubmittedOntologies = getOntologyService().findBySubmitter(getAuthenticatedUser());
-     *         }
-     *         return allSubmittedOntologies;
-     *         }
-     */
 
     public Ontology getOntology() {
         return getPersistable();

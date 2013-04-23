@@ -49,6 +49,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.DataTableColumnRelationship;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
+import org.tdar.core.dao.resource.DataTableDao;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.InformationResourceFileDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -87,7 +88,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
 
     @Autowired
     private InformationResourceFileDao informationResourceFileDao;
-    
+
     @Autowired
     private ExcelService excelService;
 
@@ -96,6 +97,9 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
 
     @Autowired
     private FileAnalyzer fileAnalyzer;
+
+    @Autowired
+    private DataTableDao dataTableDao;
 
     @Transactional
     public void translate(DataTableColumn column) {
@@ -526,7 +530,6 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         return wrapper;
     }
 
-
     @Transactional
     public ResultMetadataWrapper selectFromDataTable(final DataTable dataTable, final int start, final int page, boolean includeGenerated, String query) {
         final ResultMetadataWrapper wrapper = new ResultMetadataWrapper();
@@ -541,6 +544,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
         }
         return wrapper;
     }
+
     private final class TdarDataResultSetExtractor implements ResultSetExtractor<List<List<String>>> {
         private final ResultMetadataWrapper wrapper;
         private final int start;
@@ -582,7 +586,7 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             return results;
         }
     }
-    
+
     @Transactional
     public List<DataTableRelationship> listRelationshipsForColumns(DataTableColumn column) {
         List<DataTableRelationship> relationships = new ArrayList<DataTableRelationship>();
@@ -827,6 +831,17 @@ public class DatasetService extends AbstractInformationResourceService<Dataset, 
             results.put(key, val);
         }
         return results;
+    }
+
+    @Transactional
+    public void refreshAssociatedDataTables(CodingSheet codingSheet) {
+        // retranslate associated datatables, and recreate translated files
+        if (CollectionUtils.isNotEmpty(codingSheet.getAssociatedDataTableColumns())) {
+            translate(codingSheet.getAssociatedDataTableColumns(), codingSheet);
+            for (DataTable dataTable : dataTableDao.findDataTablesUsingResource(codingSheet)) {
+                createTranslatedFile(dataTable.getDataset());
+            }
+        }
     }
 
 }

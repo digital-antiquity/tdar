@@ -32,9 +32,9 @@ public class ImageController extends AbstractInformationResourceController<Image
     protected String save(Image image) {
         saveBasicResourceMetadata();
         saveInformationResourceProperties();
-        getGenericService().saveOrUpdate(image);
+//        getGenericService().saveOrUpdate(image);
         handleUploadedFiles();
-        getGenericService().saveOrUpdate(image);
+//        getGenericService().saveOrUpdate(image);
         return SUCCESS;
     }
 

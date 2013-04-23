@@ -365,6 +365,15 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         if (project == null) {
             project = Project.NULL;
         }
+        // look up the Project with the given projectId if either of the
+        // following conditions hold:
+        // 1. the existing project is null
+        // 2. the existing project's id is different from the incoming project's
+        // id.
+        if (Persistable.Base.isNotNullOrTransient(project)) {
+            return project;
+        }
+        project = getProjectService().find(projectId);
         return project;
     }
 
@@ -372,22 +381,21 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         this.project = project;
     }
 
+    private Long projectId;
+
+    public Long getProjectId() {
+        return projectId;
+    }
+
     /**
      * Used to set the parent project for this information resource.
      */
-    public void setProjectId(Long projectId) {
-        if (projectId == null) {
+    public void setProjectId(Long projectId_) {
+        if (Persistable.Base.isNullOrTransient(projectId)) {
             logger.warn("Tried to set null project id, no-op.");
             return;
         }
-        // look up the Project with the given projectId if either of the
-        // following conditions hold:
-        // 1. the existing project is null
-        // 2. the existing project's id is different from the incoming project's
-        // id.
-        if (project == null || !projectId.equals(project.getId())) {
-            project = getProjectService().find(projectId);
-        }
+        setProjectId(projectId_);
     }
 
     /**
@@ -488,7 +496,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     public String getProjectAsJson() {
         return getProject().toJSON().toString();
-        // return json;
     }
 
     public Long getTicketId() {
@@ -571,14 +578,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
         return SUCCESS;
     }
-
-    // public boolean isResourceFilesHaveChanged() {
-    // return resourceFilesHaveChanged;
-    // }
-    //
-    // public void setResourceFilesHaveChanged(boolean resourceFilesHaveChanged) {
-    // this.resourceFilesHaveChanged = resourceFilesHaveChanged;
-    // }
 
     public boolean isHasDeletedFiles() {
         return hasDeletedFiles;

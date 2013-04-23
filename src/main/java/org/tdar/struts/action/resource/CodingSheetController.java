@@ -22,7 +22,6 @@ import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.VersionType;
-import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.struts.WriteableSession;
@@ -78,22 +77,9 @@ public class CodingSheetController extends AbstractSupportingInformationResource
         super.saveInformationResourceProperties();
         super.saveCategories();
 
-        getGenericService().saveOrUpdate(codingSheet);
+//        getGenericService().saveOrUpdate(codingSheet);
         handleUploadedFiles();
-        // datatables associated with this coding sheet need to be updated
-        refreshAssociatedData(codingSheet);
         return SUCCESS;
-    }
-
-    // retranslate associated datatables, and recreate translated files
-    private void refreshAssociatedData(CodingSheet codingSheet) {
-        if (codingSheet.getAssociatedDataTableColumns() != null && codingSheet.getAssociatedDataTableColumns().size() > 0) {
-            getDatasetService().translate(codingSheet.getAssociatedDataTableColumns(), codingSheet);
-            List<DataTable> dataTables = getDataTableService().findDataTablesUsingResource(getPersistable());
-            for (DataTable dataTable : dataTables) {
-                getDatasetService().createTranslatedFile(dataTable.getDataset());
-            }
-        }
     }
 
     @Override
@@ -115,9 +101,8 @@ public class CodingSheetController extends AbstractSupportingInformationResource
         setOntologyNodes(ontology.getSortedOntologyNodesByImportOrder());
         logger.debug("{}", getOntologyNodes());
         setCodingRules(new ArrayList<CodingRule>(getCodingSheet().getSortedCodingRules()));
-        // List<String> distinctColumnValues = getDistinctColumnValues();
-        // generate suggestions for all distinct column values or only those
-        // columns that aren't already mapped?
+
+        // generate suggestions for all distinct column values or only those columns that aren't already mapped?
         suggestions = getOntologyService().applySuggestions(getCodingSheet().getCodingRules(), getOntologyNodes());
         // load existing ontology mappings
 
@@ -132,14 +117,16 @@ public class CodingSheetController extends AbstractSupportingInformationResource
     public String saveValueOntologyNodeMapping() throws TdarActionException {
         checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         try {
-            getLogger().debug("saving coding rule -> ontology node mappings for {} - this will generate a new default coding sheet!");
+            getLogger().debug("saving coding rule -> ontology node mappings for {} - this will generate a new default coding sheet!", getCodingSheet());
             for (CodingRule transientRule : getCodingRules()) {
-                getLogger().debug(" matching column values: {} -> node ids {}", transientRule, transientRule.getOntologyNode());
+                OntologyNode ontologyNode = transientRule.getOntologyNode();
+                getLogger().debug(" matching column values: {} -> node ids {}", transientRule, ontologyNode);
+
                 CodingRule rule = getCodingSheet().getCodingRuleById(transientRule.getId());
                 Ontology ontology = getCodingSheet().getDefaultOntology();
-                if (transientRule.getOntologyNode() != null) {
-                    OntologyNode node = ontology.getOntologyNodeById(transientRule.getOntologyNode().getId());
-                    rule.setOntologyNode(node);
+
+                if (ontologyNode != null) {
+                    rule.setOntologyNode(ontology.getOntologyNodeById(ontologyNode.getId()));
                 }
             }
             getGenericService().save(getCodingSheet().getCodingRules());
@@ -154,18 +141,6 @@ public class CodingSheetController extends AbstractSupportingInformationResource
     public List<CodingRule> getCodingRules() {
         return codingRules;
     }
-
-    /**
-     * Returns all coding sheets submitted by the currently authenticated user.
-     * 
-     * @return all coding sheets submitted by the currently authenticated user.
-     *         public List<CodingSheet> getAllSubmittedCodingSheets() {
-     *         if (allSubmittedCodingSheets == null) {
-     *         allSubmittedCodingSheets = getCodingSheetService().findBySubmitter(getAuthenticatedUser());
-     *         }
-     *         return allSubmittedCodingSheets;
-     *         }
-     */
 
     /**
      * Get the current concept.

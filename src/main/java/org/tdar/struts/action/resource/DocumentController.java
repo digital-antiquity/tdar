@@ -68,10 +68,10 @@ public class DocumentController extends AbstractInformationResourceController<Do
         // save basic metadata
         super.saveBasicResourceMetadata();
         super.saveInformationResourceProperties();
-        getGenericService().saveOrUpdate(document);
+//        getGenericService().saveOrUpdate(document);
         handleUploadedFiles();
         // handleLinkedInformationResource();
-        getGenericService().saveOrUpdate(document);
+//        getGenericService().saveOrUpdate(document);
         return SUCCESS;
 
     }
