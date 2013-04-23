@@ -362,18 +362,14 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     }
 
     public Project getProject() {
+        // if we have a project -- use it, if we have a projectId; look it up
+        if (Persistable.Base.isNullOrTransient(project) && Persistable.Base.isNotNullOrTransient(projectId)) {
+            project = getProjectService().find(projectId);
+        }
+
         if (project == null) {
             project = Project.NULL;
         }
-        // look up the Project with the given projectId if either of the
-        // following conditions hold:
-        // 1. the existing project is null
-        // 2. the existing project's id is different from the incoming project's
-        // id.
-        if (Persistable.Base.isNotNullOrTransient(project)) {
-            return project;
-        }
-        project = getProjectService().find(projectId);
         return project;
     }
 
@@ -395,7 +391,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             logger.warn("Tried to set null project id, no-op.");
             return;
         }
-        setProjectId(projectId_);
+        this.projectId = projectId_;
     }
 
     /**
