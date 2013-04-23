@@ -28,6 +28,9 @@ public class InformationResourceFileService extends ServiceInterface.TypedDaoBas
      */
     public void delete(InformationResourceFile file) {
         purgeFromFilestore(file);
+        if (file.getInformationResource() != null) {
+            file.getInformationResource().getInformationResourceFiles().remove(file);
+        }
         super.delete(file);
     }
 

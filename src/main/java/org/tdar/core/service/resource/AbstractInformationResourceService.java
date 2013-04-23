@@ -16,6 +16,7 @@ import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.InformationResourceFile;
 import org.tdar.core.bean.resource.InformationResourceFile.FileAccessRestriction;
+import org.tdar.core.bean.resource.InformationResourceFile.FileAction;
 import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.Language;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -80,6 +81,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         // always set the download/version info and persist the relationships between the InformationResource and its IRFile.
         incrementVersionNumber(irFile);
         // genericDao.saveOrUpdate(resource);
+        genericDao.saveOrUpdate(resource);
         irFile.setInformationResource(resource);
         proxy.setInformationResourceFileVersion(createVersionMetadataAndStore(irFile, proxy));
         setInformationResourceFileMetadata(irFile, proxy);
@@ -89,7 +91,6 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         }
         genericDao.saveOrUpdate(irFile);
         resource.add(irFile);
-        genericDao.saveOrUpdate(resource);
         logger.debug("all versions for {}", irFile);
     }
 
@@ -112,18 +113,21 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         for (FileProxy proxy : fileProxiesToProcess) {
             InformationResourceFile irFile = proxy.getInformationResourceFile();
             InformationResourceFileVersion version = proxy.getInformationResourceFileVersion();
-            switch (version.getFileVersionType()) {
-                case UPLOADED:
-                case UPLOADED_ARCHIVAL:
-                    irFile.setInformationResourceFileType(analyzer.analyzeFile(version));
-                    try {
-                        analyzer.processFile(proxy.getInformationResourceFileVersion());
-                    } catch (Exception e) {
-                        logger.warn("caught exception {} while analyzing file {}", e, proxy.getFilename());
-                    }
-                    break;
-                default:
-                    logger.debug("Not setting file type on irFile {} for VersionType {}", irFile, proxy.getVersionType());
+            logger.info("version: {} proxy: {} ", version, proxy);
+            if (proxy.getAction() == FileAction.ADD || proxy.getAction() == FileAction.REPLACE) {
+                switch (version.getFileVersionType()) {
+                    case UPLOADED:
+                    case UPLOADED_ARCHIVAL:
+                        irFile.setInformationResourceFileType(analyzer.analyzeFile(version));
+                        try {
+                            analyzer.processFile(proxy.getInformationResourceFileVersion());
+                        } catch (Exception e) {
+                            logger.warn("caught exception {} while analyzing file {}", e, proxy.getFilename());
+                        }
+                        break;
+                    default:
+                        logger.debug("Not setting file type on irFile {} for VersionType {}", irFile, proxy.getVersionType());
+                }
             }
 
         }
@@ -278,7 +282,7 @@ public abstract class AbstractInformationResourceService<T extends InformationRe
         if (irFile.isTransient()) {
             genericDao.saveOrUpdate(irFile);
         }
-        
+
         irFile.addFileVersion(version);
         filestore.store(fileProxy.getFile(), version);
         genericDao.save(version);

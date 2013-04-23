@@ -167,6 +167,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
         for (InformationResourceFile irFile : ir.getInformationResourceFiles()) {
             Long id = irFile.getId();
             informationResourceFileService.delete(irFile);
+//            genericService.synchronize();
             InformationResourceFile irFile2 = informationResourceFileService.find(id);
             assertNull("testing whether the IrFile was actually deleted", irFile2);
             assertEquals(count - 1, ir.getInformationResourceFiles().size());
