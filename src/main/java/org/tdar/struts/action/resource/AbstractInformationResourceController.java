@@ -387,7 +387,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
      * Used to set the parent project for this information resource.
      */
     public void setProjectId(Long projectId_) {
-        if (Persistable.Base.isNullOrTransient(projectId)) {
+        if (Persistable.Base.isNullOrTransient(projectId_)) {
             logger.warn("Tried to set null project id, no-op.");
             return;
         }
