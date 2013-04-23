@@ -52,7 +52,7 @@ public class ActionMessageErrorListener implements Serializable, ActionMessageEr
     }
 
     public boolean hasActionErrors() {
-        return CollectionUtils.isEmpty(actionErrors);
+        return CollectionUtils.isNotEmpty(actionErrors);
     }
     
     @Override
