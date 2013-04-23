@@ -12,3 +12,7 @@ alter table geospatial
     
 alter table information_resource_file add column part_of_composite boolean default false;
 alter table information_resource_file_version add column primary_file boolean default false;
+
+alter table sensory_data
+    add column scanner_technology 
+        character varying(50);

@@ -7,6 +7,8 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
@@ -17,6 +19,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.search.annotations.Indexed;
+import org.tdar.core.bean.resource.sensory.ScannerTechnologyType;
 import org.tdar.core.bean.resource.sensory.SensoryDataImage;
 import org.tdar.core.bean.resource.sensory.SensoryDataScan;
 
@@ -172,6 +175,11 @@ public class SensoryData extends InformationResource {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = false, name = "sensory_data_id")
     private Set<SensoryDataImage> sensoryDataImages = new LinkedHashSet<SensoryDataImage>();
+    
+    @Column(name = "scanner_technology")
+    @Enumerated(EnumType.STRING)
+    private ScannerTechnologyType scannerTechnology;
+    
 
     public SensoryData() {
         setResourceType(ResourceType.SENSORY_DATA);
@@ -539,4 +547,12 @@ public class SensoryData extends InformationResource {
         return true;
     }
 
+    public ScannerTechnologyType getScannerTechnology() {
+        return scannerTechnology;
+    }
+
+    public void setScannerTechnology(ScannerTechnologyType scannerTechnology) {
+        this.scannerTechnology = scannerTechnology;
+    }
+    
 }
