@@ -81,13 +81,15 @@ public class WorkflowContextService {
                 break;
             case ONTOLOGY:
                 Ontology ontology = (Ontology) resource;
+                // should we pass in the context?
                 ontologyService.shred(ontology);
                 ontologyService.saveOrUpdate(ontology);
+                break;
             case CODING_SHEET:
                 CodingSheet codingSheet = (CodingSheet) resource;
                 codingSheetService.ingestCodingSheet(codingSheet,ctx);
                 ontologyService.saveOrUpdate(codingSheet);
-
+                break;
             default:
                 break;
 
