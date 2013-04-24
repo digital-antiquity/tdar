@@ -16,7 +16,6 @@
 
 <@s.form name='geospatialMetadataForm' id='geospatialMetadataForm'  cssClass="form-horizontal disableFormNavigate"  method='post' enctype='multipart/form-data' action='save'>
 
-<input type="text" name="scantype" id="scantype" data-msg-valuerequiresasyncupload="a file upload is required when using this scan type">
 <@edit.basicInformation "geospatial" "geospatial">
 
 </@edit.basicInformation>
@@ -35,19 +34,22 @@
 <@edit.asyncUploadTemplates />
 <@edit.resourceJavascript formSelector="#geospatialMetadataForm" selPrefix="#geospatial" includeAsync=true includeInheritance=true />
 
-
 <script type="text/javascript">
-$(function() {
-    $('#scantype').rules("add", {
-        valueRequiresAsyncUpload: {
-            possibleValues: ["foo", "bar"],
-            fileExt: "jpg",
-            inputElementId: "fileAsyncUpload"},
-        messages: {
-            valueRequiresAsyncUpload: "aaargh"}
+    $(function() {
+        var fv = new  FileuploadValidator("geospatialMetadataForm");
+        fv.addMethod("must-have-foo", function(file, files) {
+            return file.filename.indexOf("foo") > -1;
+        }, "This file does not contain the word 'foo'");
+        
+        fv.addRule("must-have-foo");
+        $(fv.fileupload).bind("fileuploadcompleted", function() {
+            fv.validate();
+        });
+        //expose global for debug;
+        window.fv = fv;
     });
-});
 </script>
+
 
 </body>
 </#escape>
