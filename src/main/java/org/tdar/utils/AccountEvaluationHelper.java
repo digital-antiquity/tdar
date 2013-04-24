@@ -25,8 +25,12 @@ public class AccountEvaluationHelper {
 
 
     public AccountEvaluationHelper(Account account, BillingActivityModel model) {
-        this.id = account.getId();
         this.model = model;
+        updateFromAccount(account);
+    }
+
+    public void updateFromAccount(Account account) {
+        this.id = account.getId();
         this.allocatedSpaceInBytes = account.getTotalSpaceInBytes();
         this.allocatedNumberOfFiles = account.getTotalNumberOfFiles();
         this.spaceUsedInBytes = account.getSpaceUsedInBytes();

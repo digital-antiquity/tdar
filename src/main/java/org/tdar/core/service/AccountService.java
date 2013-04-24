@@ -207,25 +207,28 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         getResourceEvaluator(resourcesToEvaluate);
         saveOrUpdateAll(resourcesToEvaluate);
         getDao().updateTransientAccountOnResources(resourcesToEvaluate);
+        AccountEvaluationHelper helper = new AccountEvaluationHelper(account, getLatestActivityModel());
+        boolean hasUpdates = updateAccountAssociations(account, resourcesToEvaluate, helper);
         getDao().updateAccountInfo(account);
         AccountAdditionStatus status = AccountAdditionStatus.CAN_ADD_RESOURCE;
         // if the account is null ...
         account.initTotals();
-        logger.info("act space used: {} avail:{} ", account.getSpaceUsedInBytes(), account.getAvailableSpaceInBytes());
-        logger.info("act files used: {} avail:{} ", account.getFilesUsed(), account.getAvailableNumberOfFiles());
-        AccountEvaluationHelper helper = new AccountEvaluationHelper(account, getLatestActivityModel());
-        logger.info("helper space used: {} avail:{} ", helper.getSpaceUsedInBytes(), helper.getAvailableSpaceInBytes());
-        logger.info("helper files used: {} avail:{} ", helper.getFilesUsed(), helper.getAvailableNumberOfFiles());
+        Object[] log = { account.getSpaceUsedInBytes(), account.getAvailableSpaceInBytes(), account.getFilesUsed(), account.getAvailableNumberOfFiles() };
+        logger.info("ACCOUNT: space used: {} avail:{} files used: {} avail {}", log);
+        helper.updateFromAccount(account);
+        Object[] log2 = { helper.getSpaceUsedInBytes(), helper.getAvailableSpaceInBytes(), helper.getFilesUsed(), helper.getAvailableNumberOfFiles() };
+        logger.info("HELPER: space used: {} avail:{} files used: {} avail {}", log2);
+        logger.info("CHANGE: existing:{} new:{}", helper.getExistingItems(), helper.getNewItems());
+        boolean overdrawn = account.isOverdrawn(getResourceEvaluator());
+        logger.info("overdrawn: {}", overdrawn);
 
-        boolean hasUpdates = updateAccountAssociations(account, resourcesToEvaluate, helper);
+        if (!hasUpdates || overdrawn) {
+            /*
+             * If we don't have anything to update (no resource has been marked as "changed" or the account has been overdrawn, then we need to start from
+             * scratch with this account. We set it back to the normal state, and we re-evaluate ALL of the resources in the account
+             */
+            resourcesToEvaluate = account.getResources();
 
-        logger.info("existing:{} new:{}", helper.getExistingItems(), helper.getNewItems());
-
-        // not technically necessary to process these separately, but prefer incremental changes to wholesale adds
-        if (hasUpdates) {
-            processResourceGroup(helper, helper.getExistingItems(), Mode.UPDATE);
-            processResourceGroup(helper, helper.getNewItems(), Mode.UPDATE);
-        } else {
             // start at 0 and re-add everything
             // sort by date updated
             account.setStatus(Status.ACTIVE);
@@ -238,7 +241,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
         }
 
         status = updateResourceStatusesAndReconcileAccountStatus(helper, status);
-        boolean overdrawn = !account.isOverdrawn(getResourceEvaluator());
+        overdrawn = account.isOverdrawn(getResourceEvaluator());
         if (CollectionUtils.isNotEmpty(helper.getFlagged()) || overdrawn) {
             account.setStatus(Status.FLAGGED_ACCOUNT_BALANCE);
             logger.info("marking account as FLAGGED {} {}", overdrawn, helper.getFlagged());
@@ -301,7 +304,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     private AccountAdditionStatus updateResourceStatusesAndReconcileAccountStatus(AccountEvaluationHelper helper, AccountAdditionStatus status) {
         markResourcesAsFlagged(helper.getFlagged());
         unMarkResourcesAsFlagged(helper.getUnflagged());
-        logger.info("s{} f{} r:{} ", helper.getAvailableSpaceInBytes(), helper.getAvailableNumberOfFiles(), helper.getUnflagged());
+        logger.info("HELPER FINAL: s:{} f:{} r:{} ", helper.getAvailableSpaceInBytes(), helper.getAvailableNumberOfFiles(), helper.getUnflagged());
         if (helper.getFlagged().size() > 0) {
             if (helper.getAvailableSpaceInBytes() < 0) {
                 status = AccountAdditionStatus.NOT_ENOUGH_SPACE;
@@ -309,7 +312,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
                 status = AccountAdditionStatus.NOT_ENOUGH_FILES;
             }
         }
-        logger.info("marking {} resources {} FLAGGED", status, helper.getUnflagged());
+        logger.info("marking {} resources: {} FLAGGED: {}", status, helper.getUnflagged(), helper.getFlagged());
         return status;
     }
 
@@ -363,7 +366,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             files = resource.getFilesUsed();
             space = resource.getSpaceInBytesUsed();
         }
-        logger.debug(String.format("%s(%s) %s(%s) r:%s", helper.getSpaceUsedInBytes(), space, helper.getFilesUsed(), files, resource.getId()));
+        logger.debug(String.format(" HELPER: space:%s(%s) files:%s(%s) r:%s", helper.getSpaceUsedInBytes(), space, helper.getFilesUsed(), files, resource.getId()));
         helper.setSpaceUsedInBytes(helper.getSpaceUsedInBytes() + space);
         helper.setFilesUsed(helper.getFilesUsed() + files);
     }
@@ -383,15 +386,15 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             logger.debug("Skipping {} in eval b/c it's not counted", resource.getId());
             return true;
         }
-        logger.info("space used: {} avail:{} ", helper.getSpaceUsedInBytes(), helper.getAvailableSpaceInBytes());
-        logger.info("files used: {} avail:{} ", helper.getFilesUsed(), helper.getAvailableNumberOfFiles());
+        Object[] log = { helper.getSpaceUsedInBytes(), helper.getAvailableSpaceInBytes(), helper.getFilesUsed(), helper.getAvailableNumberOfFiles() };
+        logger.info("HELPER: space used: {} avail:{} files used: {} avail {}", log);
         // Trivial changes should fall through and not update because they are no-op in terms of effective changes
         if (helper.getModel().getCountingSpace() && helper.getAvailableSpaceInBytes() - space < 0) {
-            logger.info("{} {} {}", helper.getAvailableSpaceInBytes(), space, resource.getId());
+            logger.info("space used:{} space available:{} resourceId:{}", space, helper.getAvailableSpaceInBytes(), resource.getId());
             return false;
         }
         if (helper.getModel().getCountingFiles() && helper.getAvailableNumberOfFiles() - files < 0) {
-            logger.info("{} {} {}", helper.getAvailableNumberOfFiles(), files, resource.getId());
+            logger.info("files used:{} files available:{} resourceId:{}", files, helper.getAvailableNumberOfFiles(), resource.getId());
             return false;
         }
         return true;
@@ -475,7 +478,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
                 /*
                  * FIXME: if two items have the SAME price, but one has more "stuff" we should choose the one with more "stuff"
                  * Caution: there are many corner cases whereby we may not know about how to determine what's the better pricing decision when we're providing a
-                 * per-file and per-mb price. eg: 8 files and 200 MB or 10 files and 150? There's no way to choose. 
+                 * per-file and per-mb price. eg: 8 files and 200 MB or 10 files and 150? There's no way to choose.
                  */
                 logger.info("{} =??= {} ", lowest, item);
             }

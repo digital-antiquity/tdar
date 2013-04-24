@@ -43,6 +43,8 @@ import org.tdar.core.service.AccountService;
 import org.tdar.core.service.processes.SetupBillingAccountsProcess;
 import org.tdar.struts.data.FileProxy;
 
+import com.rabbitmq.client.GetResponse;
+
 public class AccountITCase extends AbstractIntegrationTestCase {
 
     @Autowired
@@ -216,9 +218,12 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         Account account = setupAccountWithInvoiceForOneFile(model, getUser());
         Document resource = generateInformationResourceWithFileAndUser();
         Document resource2 = generateInformationResourceWithFileAndUser();
+//        ResourceEvaluator resourceEvaluator = accountService.getResourceEvaluator(resource, resource2);
+        
         logger.info("f{} s{}", resource.getFilesUsed(), resource.getSpaceInBytesUsed());
 
         AccountAdditionStatus statusOk = accountService.updateQuota(account, resource);
+        genericService.refresh(account);
         AccountAdditionStatus status = accountService.updateQuota(account, resource2);
         Resource ok = null;
         Resource flagged = null;
