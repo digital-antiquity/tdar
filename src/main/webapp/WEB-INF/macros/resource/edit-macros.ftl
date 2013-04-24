@@ -949,7 +949,6 @@ jquery validation hooks?)
   
     <div id="fileuploadErrors" class="fileupload-error-container" style="display:none">
         <div class="alert alert-block">
-            <button type="button" class="close" data-dismiss="alert">&times;</button>
             <h4>We found the folllowing problems with your uploads</h4>
             <ul class="error-list"></ul>
             </div>

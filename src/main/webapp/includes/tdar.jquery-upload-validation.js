@@ -16,17 +16,33 @@ var FileuploadValidator;
         errorContainer: "#fileuploadErrors",
         errorWrapper: "<li class='fileupload-error'></li>",
         errorClass: "fileupload-error",
-        okayClass:  "fileupload-okay"
+        okayClass:  "fileupload-okay",
+
+        //execute validate() whenever the user updates the fileupload list
+        validateOnChange: true,
+        registerJqueryValidateMethod: true
     };
 
     FileuploadValidator = Class.extend({
+        //errors resulting from the last validate()
         errors: [],
-        rules: [],
+        //similar to $.validator methods. defines for given context whether a file is valid, e.g. 'duplicate-name'
         methods: {},
+
+        //rules designate which methods are applied to the fileupload container.
+        rules: [],
+
+        //default error messages, keyed by method name
         messages: {},
+
+        //fileupload helper class we created in tdar.upload.js
         helper: null,
 
+        //element representing the 'container' of the fileupload widget (usually top-level form)
+        fileupload: null,
+
         init: function(fileuploadId, settings) {
+            var self = this;
             console.log("init");
             var errs = [];
             $.extend(this, _defaults, settings);
@@ -37,7 +53,22 @@ var FileuploadValidator;
             errs.forEach(function(err){
                 console.error(err)
             });
-            console.dir(this);
+
+            if(this.validateOnChange) {
+                //validate on the fileupload custom events (and the fileuploadreplaced event we added)
+                $(this.fileupload).bind("fileuploadcompleted fileuploaddestroyed fileuploadreplaced", function() {
+                    self.validate();
+                });
+
+                //revalidate when the user deletes or "undeletes" a file
+                $(this.fileupload).bind("click", "button.delete-button", function() {
+                    self.validate();
+                });
+            }
+
+            if(this.registerJqueryValidateMethod) {
+                this.registerValidiatorMethod();
+            }
         },
 
         validate: function() {
@@ -67,7 +98,7 @@ var FileuploadValidator;
                     this.showErrors();
                 }
             }
-            return this.errors === 0;
+            return this.errors.length === 0;
         },
 
         clearErrors: function() {
@@ -116,7 +147,24 @@ var FileuploadValidator;
         unhighlight: function(file) {
             console.log("unhighlighting: %s", file.filename);
             file.context.removeClass(this.errorClass).addClass(this.okayClass);
+        },
+
+        //create a $.validator method and rule  which returns false if any fileupload validation errors exist
+        registerValidiatorMethod: function() {
+            var self = this;
+            $.validator.addMethod(
+                "fileuploadErrors",
+                function() {
+                    return self.validate();
+                },
+                "There was a problem with your uploaded files.  See details in the file upload section"
+            );
+
+            //we've added the method, now we need the specific rule that binds the fileinput element to the method
+            var $inputElem = $(this.fileupload).find("input[type=file]");
+            $inputElem.addClass("fileuploadErrors");
         }
+
 
     });
     

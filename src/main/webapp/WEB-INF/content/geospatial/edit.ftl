@@ -23,7 +23,7 @@
 <@edit.citationInfo "geospatial" />
 <@edit.chooseProjectSection />
 
-<@edit.asyncFileUpload  uploadLabel="Attach GIS Files" showMultiple=true inputFileCss="gis-ancillary-files" />
+<@edit.asyncFileUpload  uploadLabel="Attach GIS Files" showMultiple=true inputFileCss="fileuploadErrors" />
 
 <@edit.submit fileReminder=false />
 
@@ -40,11 +40,8 @@
         fv.addMethod("must-have-foo", function(file, files) {
             return file.filename.indexOf("foo") > -1;
         }, "This file does not contain the word 'foo'");
-        
         fv.addRule("must-have-foo");
-        $(fv.fileupload).bind("fileuploadcompleted", function() {
-            fv.validate();
-        });
+         
         //expose global for debug;
         window.fv = fv;
     });

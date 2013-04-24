@@ -148,10 +148,6 @@ TDAR.fileupload = function() {
         //add reference to helper object  to form and inputFile
         $(_options.formSelector).add(_options.inputSelector).data('fileuploadHelper', helper);
         
-        if($.validator) {
-            _registerValidationHandlers($fileupload);
-        }
-        
         return helper;
     };
     
@@ -314,6 +310,7 @@ TDAR.fileupload = function() {
         $targetRow.find('.replacement-text').text("(replacing " + originalFilename + ")");
         $targetRow.find('input, select, button.delete-button').prop("disabled", true);;
         $targetRow.addClass('replace-target');
+        $targetRow.trigger("fileuploadreplaced", [$originalRow, $targetRow]);
     }
     
     //TODO: pull out redundant sections before adam has a chance to put this in a ticket for me.
@@ -351,39 +348,6 @@ TDAR.fileupload = function() {
     var _getRowId = function() {
         return _nextRowId++;
     }
-
-
-    //add custom highlight/unhighlight handler
-    //TODO figure out where to put/call this
-    var _registerValidationHandlers = function($fileupload) {
-        var $filesContainer = $fileupload.fileupload('option', 'filesContainer');
-        var helper = $fileupload.data('fileuploadHelper');
-        var $fileuploadInput = $fileupload.find('[type=file]');
-        
-        $fileuploadInput.on('highlight', function(evt, errorClass, validClass){
-            $filesContainer.find('.neededFiles').remove();
-            console.log("highlight called");
-            var incompleteFiles = $(helper.inputSelector).data('incompleteFiles');
-            $.each(incompleteFiles, function(idx, file){
-                var $td = file.context.find('td.name:first');
-                var $needed = $('<ul class="neededFiles"></ul>')
-                $.each(file.neededFiles, function(idx, neededFile){
-                    $needed.append('<li> missing ' + neededFile + '</li>');
-                });
-                $td.append($needed);
-            });
-            
-        });
-        
-        $fileuploadInput.on('unhighlight', function(evt, errorClass, validClass){
-            $filesContainer.find('.neededFiles').remove();
-        }); 
-    }
-
-
-
-
-    
     
     
     //expose public elements

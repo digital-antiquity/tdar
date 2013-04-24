@@ -722,7 +722,6 @@ TDAR.common = function() {
         errorLabelContainer : $("#error ul"),
         wrapper: "li",
         highlight: function(element, errorClass, validClass) {
-            $(element).trigger("highlight", [errorClass, validClass]);
             $(element).addClass("error");
             $(element).closest("div.control-group").addClass("error");
          },
