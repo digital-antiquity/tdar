@@ -126,9 +126,10 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testUpdated() {
+    public void testUpdatedIsInitializedProperly() {
         Document doc = genericService.findRandom(Document.class, 1).get(0);
         logger.info("{}", doc.isUpdated());
+        assertFalse(doc.isUpdated());
     }
 
     @Test
