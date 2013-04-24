@@ -1,5 +1,6 @@
 package org.tdar.core.bean;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -42,6 +43,8 @@ import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.service.AccountService;
 import org.tdar.core.service.processes.SetupBillingAccountsProcess;
 import org.tdar.struts.data.FileProxy;
+
+import com.rabbitmq.client.GetResponse;
 
 public class AccountITCase extends AbstractIntegrationTestCase {
 
@@ -216,9 +219,12 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         Account account = setupAccountWithInvoiceForOneFile(model, getUser());
         Document resource = generateInformationResourceWithFileAndUser();
         Document resource2 = generateInformationResourceWithFileAndUser();
+//        ResourceEvaluator resourceEvaluator = accountService.getResourceEvaluator(resource, resource2);
+        
         logger.info("f{} s{}", resource.getFilesUsed(), resource.getSpaceInBytesUsed());
 
         AccountAdditionStatus statusOk = accountService.updateQuota(account, resource);
+        genericService.refresh(account);
         AccountAdditionStatus status = accountService.updateQuota(account, resource2);
         Resource ok = null;
         Resource flagged = null;
@@ -237,6 +243,50 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         assertEquals(AccountAdditionStatus.NOT_ENOUGH_SPACE, status);
         assertEquals(Status.ACTIVE, ok.getStatus());
         assertEquals(Status.FLAGGED_ACCOUNT_BALANCE, flagged.getStatus());
+        ok.setTitle("new title");
+        accountService.updateQuota(account, ok);
+        assertEquals(Status.ACTIVE, ok.getStatus());
+        addFileToResource((InformationResource) ok, new File(TestConstants.TEST_DOCUMENT_DIR, "/t1/test.pdf"));
+        accountService.updateQuota(account, ok);
+        assertEquals(Status.FLAGGED_ACCOUNT_BALANCE, ok.getStatus());
+
+    }
+
+    
+    @Test
+    @Rollback
+    public void testAccountUpdateQuotaWithFileOnSecondEdit() throws InstantiationException, IllegalAccessException {
+        BillingActivityModel model = new BillingActivityModel();
+        updateModel(model, false, true, false);
+        model.setActive(true);
+        model.setVersion(100); // forcing the model to be the "latest"
+        genericService.saveOrUpdate(model);
+        Account account = setupAccountWithInvoiceForOneFile(model, getUser());
+        Document resource = generateDocumentWithUser();
+        logger.info("f{} s{}", resource.getFilesUsed(), resource.getSpaceInBytesUsed());
+
+        AccountAdditionStatus statusOk = accountService.updateQuota(account, resource);
+        genericService.refresh(account);
+        addFileToResource(resource, new File(TestConstants.TEST_DOCUMENT));
+        
+        AccountAdditionStatus status = accountService.updateQuota(account, resource);
+        genericService.refresh(account);
+        Resource ok = null;
+        Resource flagged = null;
+        genericService.refresh(account);
+        for (Resource res : account.getResources()) {
+            if (res.getStatus() == Status.ACTIVE) {
+                ok = res;
+            }
+            if (res.getStatus() == Status.FLAGGED_ACCOUNT_BALANCE) {
+                flagged = res;
+            }
+        }
+        assertNotNull(ok);
+        assertNull(flagged);
+        assertEquals(AccountAdditionStatus.CAN_ADD_RESOURCE, statusOk);
+        assertEquals(AccountAdditionStatus.CAN_ADD_RESOURCE, status);
+        assertEquals(Status.ACTIVE, ok.getStatus());
         ok.setTitle("new title");
         accountService.updateQuota(account, ok);
         assertEquals(Status.ACTIVE, ok.getStatus());

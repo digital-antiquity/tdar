@@ -443,7 +443,7 @@ public class Account extends Persistable.Base implements Updatable, HasStatus, A
     }
 
     public boolean isOverdrawn(ResourceEvaluator re) {
-        return canAddResource(re) == AccountAdditionStatus.CAN_ADD_RESOURCE;
+        return canAddResource(re) != AccountAdditionStatus.CAN_ADD_RESOURCE;
     }
 
     public Date getDateUpdated() {

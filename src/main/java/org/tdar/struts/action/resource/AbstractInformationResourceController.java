@@ -215,7 +215,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     protected void loadResourceProviderInformation() {
         // load resource provider institution and publishers
         setResourceProviderInstitution(getResource().getResourceProviderInstitution());
-        setPublisher(getResource().getPublisher());
+        setPublisherName(getResource().getPublisherName());
         if (isCopyrightMandatory() && Persistable.Base.isNotNullOrTransient(getResource().getCopyrightHolder())) {
             copyrightHolderProxies = new ResourceCreatorProxy(getResource().getCopyrightHolder(), ResourceCreatorRole.COPYRIGHT_HOLDER);
         }
@@ -231,19 +231,14 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
         if (StringUtils.isNotBlank(publisherName)) {
             getResource().setPublisher(getEntityService().findOrSaveCreator(new Institution(publisherName)));
+        } else {
+            getResource().setPublisher(null);
         }
 
         if (isCopyrightMandatory() && copyrightHolderProxies != null) {
             ResourceCreator transientCreator = copyrightHolderProxies.getResourceCreator();
             logger.debug("setting copyright holder to:  {} ", transientCreator);
             getResource().setCopyrightHolder(getEntityService().findOrSaveCreator(transientCreator.getCreator()));
-        }
-    }
-
-    // FIXME: is this right?
-    private void setPublisher(Institution publisher) {
-        if (publisher != null) {
-            this.publisherName = publisher.getName();
         }
     }
 
