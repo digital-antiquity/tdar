@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -360,6 +361,11 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         Resource res = getPersistable();
         GenericKeywordService gks = getGenericKeywordService();
 
+        cleanupKeywords(uncontrolledCultureKeywords);
+        cleanupKeywords(uncontrolledSiteTypeKeywords);
+        cleanupKeywords(siteNameKeywords);
+        cleanupKeywords(otherKeywords);
+        cleanupKeywords(temporalKeywords);
         Set<CultureKeyword> culKeys = gks.findOrCreateByLabels(CultureKeyword.class, uncontrolledCultureKeywords);
         culKeys.addAll(getGenericKeywordService().findAll(CultureKeyword.class, approvedCultureKeywordIds));
 
@@ -373,6 +379,23 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
         Persistable.Base.reconcileSet(res.getCultureKeywords(), culKeys);
         Persistable.Base.reconcileSet(res.getSiteTypeKeywords(), siteTypeKeys);
+    }
+
+    private void cleanupKeywords(List<String> kwds) {
+        if (CollectionUtils.isEmpty(kwds)) {
+            return;
+        }
+        String delim = "||";
+        Iterator<String> iter = kwds.iterator();
+        Set<String> toAdd = new HashSet<String>();
+        while (iter.hasNext()) {
+            String keyword = iter.next();
+            if (keyword.contains(delim)) {
+                toAdd.addAll(Arrays.asList(StringUtils.split(keyword, delim)));
+                iter.remove();
+            }
+        }
+        CollectionUtils.addIgnoreNull(kwds, toAdd);
     }
 
     protected void saveTemporalContext() {
