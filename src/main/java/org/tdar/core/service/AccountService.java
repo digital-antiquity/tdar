@@ -199,29 +199,36 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
     @Transactional
     public AccountAdditionStatus updateQuota(Account account, Collection<Resource> resourcesToEvaluate) {
         logger.info("updating quota(s) {} {}", account, resourcesToEvaluate);
+        logger.trace("model {}", getLatestActivityModel());
+
         if (Persistable.Base.isNullOrTransient(account)) {
             throw new TdarRecoverableRuntimeException(ACCOUNT_IS_NULL);
         }
-        // evaluate resources
-        logger.trace("model {}", getLatestActivityModel());
+        /* evaluate resources based on the model, and update their counts of files and space */
         getResourceEvaluator(resourcesToEvaluate);
         saveOrUpdateAll(resourcesToEvaluate);
+
+        /* make sure the account associations are properly set for each resource in the bunch */
         getDao().updateTransientAccountOnResources(resourcesToEvaluate);
         AccountEvaluationHelper helper = new AccountEvaluationHelper(account, getLatestActivityModel());
+
+        /* check if any of the resources have been modified (ie. resource.markUpdated() has been called */
         boolean hasUpdates = updateAccountAssociations(account, resourcesToEvaluate, helper);
+        
+        /* update the account info in the database */
         getDao().updateAccountInfo(account);
         AccountAdditionStatus status = AccountAdditionStatus.CAN_ADD_RESOURCE;
-        // if the account is null ...
+
         account.initTotals();
-        Object[] log = { account.getSpaceUsedInBytes(), account.getAvailableSpaceInBytes(), account.getFilesUsed(), account.getAvailableNumberOfFiles() };
-        logger.info("ACCOUNT: space used: {} avail:{} files used: {} avail {}", log);
         helper.updateFromAccount(account);
-        Object[] log2 = { helper.getSpaceUsedInBytes(), helper.getAvailableSpaceInBytes(), helper.getFilesUsed(), helper.getAvailableNumberOfFiles() };
-        logger.info("HELPER: space used: {} avail:{} files used: {} avail {}", log2);
-        logger.info("CHANGE: existing:{} new:{}", helper.getExistingItems(), helper.getNewItems());
+        logAccountAndHelperState(account, helper);
+
         boolean overdrawn = account.isOverdrawn(getResourceEvaluator());
         logger.info("overdrawn: {}", overdrawn);
 
+        /*
+         * 
+         */
         if (!hasUpdates || overdrawn) {
             /*
              * If we don't have anything to update (no resource has been marked as "changed" or the account has been overdrawn, then we need to start from
@@ -238,28 +245,35 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             helper = new AccountEvaluationHelper(account, getLatestActivityModel());
             logger.info("s{} f{} r:{} ", account.getAvailableSpaceInBytes(), account.getAvailableNumberOfFiles(), helper.getUnflagged());
             processResourcesChronologically(helper, resourcesToEvaluate);
+            
+            status = updateResourceStatusesAndReconcileAccountStatus(helper, status);
+            overdrawn = account.isOverdrawn(getResourceEvaluator());
+            if (CollectionUtils.isNotEmpty(helper.getFlagged()) || overdrawn) {
+                account.setStatus(Status.FLAGGED_ACCOUNT_BALANCE);
+                logger.info("marking account as FLAGGED {} {}", overdrawn, helper.getFlagged());
+            } else {
+                account.setStatus(Status.ACTIVE);
+            }
+            
+            saveOrUpdateAll(resourcesToEvaluate);
+            helper.updateAccount();
+            updateAccountInfo(account);
         }
 
-        status = updateResourceStatusesAndReconcileAccountStatus(helper, status);
-        overdrawn = account.isOverdrawn(getResourceEvaluator());
-        if (CollectionUtils.isNotEmpty(helper.getFlagged()) || overdrawn) {
-            account.setStatus(Status.FLAGGED_ACCOUNT_BALANCE);
-            logger.info("marking account as FLAGGED {} {}", overdrawn, helper.getFlagged());
-        } else {
-            account.setStatus(Status.ACTIVE);
-        }
-
-        saveOrUpdateAll(resourcesToEvaluate);
-        // FIXME: may not work exactly because resource evaluations may not have been "saved" yet.
-        // 20.2.13 -- appears ok
-        helper.updateAccount();
-        updateAccountInfo(account);
         saveOrUpdate(account);
         logger.trace("files used: {} ", account.getFilesUsed());
         logger.trace("files avail: {} ", account.getAvailableNumberOfFiles());
         logger.trace("space used: {} ", account.getSpaceUsedInMb());
         logger.trace("space avail: {} ", account.getAvailableSpaceInMb());
         return status;
+    }
+
+    private void logAccountAndHelperState(Account account, AccountEvaluationHelper helper) {
+        Object[] log = { account.getSpaceUsedInBytes(), account.getAvailableSpaceInBytes(), account.getFilesUsed(), account.getAvailableNumberOfFiles() };
+        logger.info("ACCOUNT: space used: {} avail:{} files used: {} avail {}", log);
+        Object[] log2 = { helper.getSpaceUsedInBytes(), helper.getAvailableSpaceInBytes(), helper.getFilesUsed(), helper.getAvailableNumberOfFiles() };
+        logger.info("HELPER: space used: {} avail:{} files used: {} avail {}", log2);
+        logger.info("CHANGE: existing:{} new:{}", helper.getExistingItems(), helper.getNewItems());
     }
 
     @Transactional
@@ -312,7 +326,7 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
                 status = AccountAdditionStatus.NOT_ENOUGH_FILES;
             }
         }
-        logger.info("marking {} resources: {} FLAGGED: {}", status, helper.getUnflagged(), helper.getFlagged());
+        logger.info("ACCOUNT Status: {} resources: {} FLAGGED: {}", status, helper.getUnflagged(), helper.getFlagged());
         return status;
     }
 
@@ -366,7 +380,8 @@ public class AccountService extends ServiceInterface.TypedDaoBase<Account, Accou
             files = resource.getFilesUsed();
             space = resource.getSpaceInBytesUsed();
         }
-        logger.debug(String.format(" HELPER: space:%s(%s) files:%s(%s) r:%s", helper.getSpaceUsedInBytes(), space, helper.getFilesUsed(), files, resource.getId()));
+        logger.debug(String.format(" HELPER: space:%s(%s) files:%s(%s) r:%s", helper.getSpaceUsedInBytes(), space, helper.getFilesUsed(), files,
+                resource.getId()));
         helper.setSpaceUsedInBytes(helper.getSpaceUsedInBytes() + space);
         helper.setFilesUsed(helper.getFilesUsed() + files);
     }
