@@ -391,7 +391,12 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         while (iter.hasNext()) {
             String keyword = iter.next();
             if (keyword.contains(delim)) {
-                toAdd.addAll(Arrays.asList(StringUtils.split(keyword, delim)));
+                for (String sub : StringUtils.split(keyword, delim)) {
+                    sub = StringUtils.trim(sub);
+                    if (StringUtils.isNotBlank(sub)) {
+                        toAdd.add(sub);
+                    }
+                }
                 iter.remove();
             }
         }
